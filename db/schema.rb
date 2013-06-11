@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130611155225) do
+ActiveRecord::Schema.define(:version => 20130611155518) do
 
   create_table "issues", :force => true do |t|
     t.string   "issue_edition"
@@ -20,6 +20,15 @@ ActiveRecord::Schema.define(:version => 20130611155225) do
     t.string   "copyright"
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
+    t.integer  "location_id"
+  end
+
+  create_table "locations", :force => true do |t|
+    t.string   "city"
+    t.string   "state"
+    t.string   "zip"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "publications", :force => true do |t|
