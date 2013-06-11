@@ -3,4 +3,5 @@ class Issue < ActiveRecord::Base
   
   belongs_to :publication
   belongs_to :location
+  has_many :contents
 end
