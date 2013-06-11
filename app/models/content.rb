@@ -7,6 +7,6 @@ class Content < ActiveRecord::Base
   
   validates_presence_of :issue
   
-  default_scope :include => :issue, :order => "issues.publication_date ASC, contents.created_at ASC"
+  default_scope :include => :issue, :order => "issues.publication_date DESC, contents.created_at DESC"
   
 end
