@@ -11,7 +11,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130611155057) do
+ActiveRecord::Schema.define(:version => 20130611155225) do
+
+  create_table "issues", :force => true do |t|
+    t.string   "issue_edition"
+    t.date     "publication_date"
+    t.integer  "publication_id"
+    t.string   "copyright"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+  end
 
   create_table "publications", :force => true do |t|
     t.string   "name"
