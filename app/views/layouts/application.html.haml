@@ -18,12 +18,14 @@
         .container
           = render 'layouts/site_navigation'
     #main{:role => "main"}
-      .container
+      .container-fluid
         .content
           .row
-            .span12
+            .span9
               = render 'layouts/messages'
               = yield
+            .span3.well
+              = render 'layouts/sidebar'
           %footer
       / ! end of .container
     / ! end of #main

@@ -2,6 +2,7 @@
   = link_to content.title, content
   = content.issue.publication.name
   \-
-  = content.authors
-  \--
-  = content.content
+  - unless content.authors.nil? || content.authors.empty?
+    = content.authors
+    \--
+  = content.content.truncate(150)

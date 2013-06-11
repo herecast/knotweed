@@ -4,4 +4,7 @@ class Issue < ActiveRecord::Base
   belongs_to :publication
   belongs_to :location
   has_many :contents
+  
+  validates_presence_of :publication
+  
 end
