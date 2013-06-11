@@ -12,7 +12,11 @@
     .navbar.navbar-fixed-top
       %nav.navbar-inner
         .container
-          = render 'layouts/navigation'
+          = render 'layouts/user_navigation'
+    .navbar
+      %nav.navbar-inner
+        .container
+          = render 'layouts/site_navigation'
     #main{:role => "main"}
       .container
         .content
