@@ -1,4 +1,3 @@
-%h3 Home
-- @users.each do |user|
-  %p
-    User: #{link_to user.name, user}
+- @contents.each do |content|
+  %p 
+    = render partial: "contents/partials/list", locals: {:content => content}
