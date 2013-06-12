@@ -1,8 +1,12 @@
-.span3.well
+.span4.well
   = link_to content.title, content
   = content.issue.publication.name
   \-
   - unless content.authors.nil? || content.authors.empty?
     = content.authors
+  %br
+  - unless content.location.nil? || content.location.city.nil?
+    = content.location.city
     \--
-  = content.content.truncate(150)
+  = content.content.truncate(150, separator: " ", omission: "")
+  = link_to "More...", content

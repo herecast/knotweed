@@ -1,2 +1,11 @@
-%h1 Contents#show
-%p Find me in app/views/contents/show.html.haml
+- if @content.issue.publication.logo
+  = image_tag @content.issue.publication.logo
+%h1 
+  = @content.title
+- if @content.authors
+  %h5 
+    = @content.authors
+%p
+  - if @content.location
+    = @content.location.city + " -- "
+  = sanitize @content.content

@@ -3,6 +3,10 @@ class Content < ActiveRecord::Base
   belongs_to :issue
   belongs_to :location
   
+  has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
+  accepts_nested_attributes_for :images, allow_destroy: true
+  attr_accessible :images_attributes
+  
   attr_accessible :authors, :content, :issue_id, :location_id, :subject, :subtitle, :title
   
   validates_presence_of :issue

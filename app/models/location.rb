@@ -5,5 +5,12 @@ class Location < ActiveRecord::Base
   
   attr_accessible :city, :state, :zip
   
+  validates_presence_of :city
+  
+  # label method for rails_admin
+  def name
+    "#{city}, #{state} #{zip}"
+  end
+  
   
 end
