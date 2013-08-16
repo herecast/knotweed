@@ -6,10 +6,10 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 gem 'jquery-rails'
-gem "thin", ">= 1.5.0", :group => :production
-gem "mysql2", ">= 0.3.11"
+gem "trinidad"
+gem "activerecord-jdbcmysql-adapter"
+gem "jdbc-mysql"
 gem "haml-rails", ">= 0.4"
-gem "html2haml", ">= 1.0.1", :group => :development
 gem "rspec-rails", ">= 2.12.2", :group => [:development, :test]
 gem "capybara", ">= 2.0.3", :group => :test
 gem "database_cleaner", ">= 1.0.0.RC1", :group => :test
