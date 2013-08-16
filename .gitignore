@@ -75,3 +75,5 @@ pickle-email-*.html
 
 # vim artifacts
 **.swp
+
+/config/setup_load_paths.rb
