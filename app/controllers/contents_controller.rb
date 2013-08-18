@@ -1,6 +1,6 @@
 require "java"
-$CLASSPATH << "/home/mpatek/projects/kim/kim-stack/kim-platform-3.7/kim-api.jar"
-$CLASSPATH << "/home/mpatek/projects/kim/kim-stack/kim-platform-3.7/lib/.*jar"
+$CLASSPATH << "#{Figaro.env.kim_home}/kim-api.jar"
+$CLASSPATH << "#{Figaro.env.kim_home}/lib/.*jar"
 
 java_import java.rmi.RemoteException
 java_import com.ontotext.kim.client.GetService

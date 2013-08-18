@@ -77,3 +77,6 @@ pickle-email-*.html
 **.swp
 
 /config/setup_load_paths.rb
+
+# Ignore application configuration
+/config/application.yml

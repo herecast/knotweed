@@ -32,3 +32,4 @@ gem "binding_of_caller", ">= 0.7.1", :group => :development, :platforms => [:mri
 
 gem "rails_admin"
 gem "carrierwave"
+gem "figaro"
