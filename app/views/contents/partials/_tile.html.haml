@@ -1,0 +1,21 @@
+= link_to(content_path(document_id)) do 
+  %li.tile
+    %h5 
+      %i.icon-align-justify
+      Local News
+
+    .tile-content
+      %span.title
+        = features["TITLE"]
+      %br
+      = features["SOURCE"]
+      - if features["SOURCE"].present?
+        \- 
+      = features["AUTHORS"] if features.has_key? "AUTHORS"
+      = "--" if features["TIMESTAMP"].present?
+      = Time.at(features["TIMESTAMP"]) 
+      %br
+      = features["LOCATION"] if features.has_key? "LOCATION"
+      = "--" if features["LOCATION"].present?
+      = content.truncate(150, separator: " ", omission: "...")
+

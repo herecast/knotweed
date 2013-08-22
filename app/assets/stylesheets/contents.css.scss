@@ -1,3 +1,42 @@
 // Place all the styles related to the contents controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+
+ul#content-tiles {
+  
+
+  a li.tile {
+     text-decoration: none;
+     color: #000000;
+   }
+
+  li.tile {
+    width: 200px;
+    height: 250px;
+    float: left;
+    display: block;
+    margin:10px;
+    padding: 5px;
+    @include border-radius(5px);
+
+    background: #9fc5f8;
+
+
+    h5 {
+      color: #000000;
+      background: #6fa8dc;
+      margin: -5px -5px 0 -5px;
+      padding: 5px;
+      display: block;
+      @include border-top-radius(5px);
+      font-weight: bold;
+    }
+
+    .tile-content {
+      display: block;
+      background: rgba(255,255,255,0.5);
+    }
+
+  }
+}
