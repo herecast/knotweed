@@ -1,12 +1,14 @@
 .span4.well
-  = link_to content.title, content
-  = content.issue.publication.name
-  \-
-  - unless content.authors.nil? || content.authors.empty?
-    = content.authors
+  = link_to features["TITLE"], content_path(document_id)
+  - if features["SOURCE"].present?
+    %br
+  = features["SOURCE"]
+  - if features["AUTHORS"].present?
+    %br
+  = features["AUTHORS"] if features.has_key? "AUTHORS"
+  = "--" if features["TIMESTAMP"].present?
+  = Time.at(features["TIMESTAMP"]) 
   %br
-  - unless content.location.nil? || content.location.city.nil?
-    = content.location.city
-    \--
-  = content.content.truncate(150, separator: " ", omission: "")
-  = link_to "More...", content
+  = features["LOCATION"] if features.has_key? "LOCATION"
+  = "--" if features["LOCATION"].present?
+  = content.truncate(150, separator: " ", omission: "...")

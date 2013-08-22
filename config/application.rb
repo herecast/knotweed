@@ -1,6 +1,7 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
+require 'java'
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
@@ -30,6 +31,10 @@ module Knotweed
     # Custom directories with classes and modules you want to be autoloadable.
     # config.autoload_paths += %W(#{config.root}/extras)
     config.autoload_paths += %W(#{config.root}/lib)
+
+    # set up KIM dependencies in class path
+    $CLASSPATH << "#{Figaro.env.kim_home}/kim-api.jar"
+    Dir["#{Rails.root.to_s}/vendor/kim-api-dependencies/*.jar"].each { |jar| $CLASSPATH << jar }
 
 
     # Only load the plugins named here, in the order given (default is alphabetical).

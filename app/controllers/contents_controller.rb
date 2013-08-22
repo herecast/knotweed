@@ -1,31 +1,37 @@
-require "java"
-$CLASSPATH << "#{Figaro.env.kim_home}/kim-api.jar"
-$CLASSPATH << "#{Figaro.env.kim_home}/lib/.*jar"
-
 java_import java.rmi.RemoteException
 java_import com.ontotext.kim.client.GetService
 java_import com.ontotext.kim.client.KIMService
 java_import com.ontotext.kim.client.corpora.CorporaAPI
 java_import com.ontotext.kim.client.documentrepository.DocumentRepositoryAPI
+java_import com.ontotext.kim.client.documentrepository.DocumentQuery
 java_import com.ontotext.kim.client.semanticannotation.SemanticAnnotationAPI
 java_import com.ontotext.kim.client.query.QueryAPI
 java_import com.ontotext.kim.client.coredb.CoreAPI
+java_import com.ontotext.kim.client.query.DocumentQueryResult
+
 
 class ContentsController < ApplicationController
-  def index
-    @contents = Content.all
 
-    begin
-      KIMService serviceKim = GetService.from()
-      @version = serviceKim.getVersion()
-    rescue StandardError => err
-      print "Error connecting to KIM: " + err
+  @@serviceKim = GetService.from()
+  @@apiDR = @@serviceKim.getDocumentRepositoryAPI()
+
+  def index
+    @version = @@serviceKim.getVersion()
+
+    query = DocumentQuery.new() 
+    query.setMaxResultLength(10)
+    query.setSortFeature("TIMESTAMP", true)
+    listDocIDs = @@apiDR.getDocumentIds(query)
+    @contents = []
+    listDocIDs.each do |id|
+      @contents << @@apiDR.loadDocument(id.getDocumentId())
     end
-      
 
   end
 
   def show
-    @content = Content.find(params[:id])
+    document = @@apiDR.loadDocument(params[:id].to_i)
+    @content = document.content
+    @features = document.features
   end
 end

@@ -1,11 +1,9 @@
-- if @content.issue.publication.logo
-  = image_tag @content.issue.publication.logo
 %h1 
-  = @content.title
-- if @content.authors
+  = @features["TITLE"]
+- if @features.has_key? "AUTHORS"
   %h5 
-    = @content.authors
+    = @features["AUTHORS"]
 %p
-  - if @content.location
-    = @content.location.city + " -- "
-  = sanitize @content.content
+  - if @features.has_key? "LOCATION"
+    = @features["LOCATION"] + " -- " if @features["LOCATION"].present?
+  = @content
