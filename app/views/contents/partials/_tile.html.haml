@@ -1,21 +1,18 @@
-= link_to(content_path(document_id)) do 
-  %li.tile
-    %h5 
-      %i.icon-align-justify
-      Local News
-
-    .tile-content
-      %span.title
-        = features["TITLE"]
+%li.tile
+  %h5 
+    %i.icon-align-justify
+    Local News
+  .tile-content
+    %span.title
+      = link_to features["TITLE"], content_path(document_id)
+    %br
+    = features["SOURCE"]
+    - if features["SOURCE"].present?
+      \- 
+    = features["AUTHORS"]
+    - if features["SOURCE"].present? or features["AUTHORS"].present?
       %br
-      = features["SOURCE"]
-      - if features["SOURCE"].present?
-        \- 
-      = features["AUTHORS"] if features.has_key? "AUTHORS"
-      = "--" if features["PUB_DATE"].present?
-      = features.keys
-      %br
-      = features["LOCATION"] if features.has_key? "LOCATION"
-      = "--" if features["LOCATION"].present?
-      = content.truncate(150, separator: " ", omission: "...")
-
+    = features["LOCATION"] if features.has_key? "LOCATION"
+    = "--" if features["LOCATION"].present?
+    = content.truncate(150, separator: " ", omission: "...") 
+    = link_to "more", content_path(document_id)
