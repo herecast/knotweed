@@ -7,7 +7,7 @@
       = link_to features["TITLE"], content_path(document_id)
     %br
     = features["SOURCE"]
-    - if features["SOURCE"].present?
+    - if features["SOURCE"].present? and features["AUTHORS"].present?
       \- 
     = features["AUTHORS"]
     - if features["SOURCE"].present? or features["AUTHORS"].present?
