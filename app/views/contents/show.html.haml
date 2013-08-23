@@ -6,4 +6,4 @@
 %p
   - if @features.has_key? "LOCATION"
     = @features["LOCATION"] + " -- " if @features["LOCATION"].present?
-  = @content
+  = simple_format @content.gsub("\u2028", "\n\n") # simple_format doesn't catch \u2028
