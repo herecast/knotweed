@@ -12,8 +12,8 @@
       - if features["SOURCE"].present?
         \- 
       = features["AUTHORS"] if features.has_key? "AUTHORS"
-      = "--" if features["TIMESTAMP"].present?
-      = Time.at(features["TIMESTAMP"]) 
+      = "--" if features["PUB_DATE"].present?
+      = features.keys
       %br
       = features["LOCATION"] if features.has_key? "LOCATION"
       = "--" if features["LOCATION"].present?
