@@ -1,7 +1,21 @@
 .row
   .span2
     .well
-      %h4 Entities
+      - if @people.present?
+        %h4 People
+        %ul.entity-list
+          - @people.each do |e|
+            %li= e.gsub("\"", "")
+      - if @orgs.present?
+        %h4 Organizations
+        %ul.entity-list
+          - @orgs.each do |e|
+            %li= e.gsub("\"", "")
+      - if @locations.present?
+        %h4 Locations
+        %ul.entity-list
+          - @locations.each do |e|
+            %li= e.gsub("\"", "")
   .span8
     %h1 
       = @features["TITLE"]

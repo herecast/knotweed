@@ -38,3 +38,12 @@ ul#content-tiles {
 
   }
 }
+
+ul.entity-list {
+  list-style-type: disc;
+
+  li {
+    font-size: 11px;
+    font-weight: bold;
+  }
+}
