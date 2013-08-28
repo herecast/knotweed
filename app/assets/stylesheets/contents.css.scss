@@ -2,42 +2,31 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-ul#content-tiles {
+.tile {
+  margin:10px;
+  padding: 5px;
+  @include border-radius(5px);
+  background: #9fc5f8;
+  width: 250px;
 
-  li.tile {
-    width: 200px;
-    height: 280px;
-    float: left;
+  h3 {
+    background: #6fa8dc;
+    margin: -12px -12px 0 -12px;
+    padding: 5px;
     display: block;
-    margin:10px;
+    @include border-top-radius(5px);
+    line-height: 14px;
+  }
+
+  .tile-content {
+    margin: 5px;
+    display: block;
+    background: rgba(255,255,255,0.5);
     padding: 5px;
     @include border-radius(5px);
-    position: relative;
-    background: #9fc5f8;
-
-    h5 {
-      color: #000000;
-      background: #6fa8dc;
-      margin: -5px -5px 0 -5px;
-      padding: 5px;
-      display: block;
-      @include border-top-radius(5px);
-      font-weight: bold;
-    }
-
-    .tile-content {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      margin: 5px;
-      display: block;
-      background: rgba(255,255,255,0.5);
-      padding: 5px;
-      //@include border-radius(5px);
-    }
-
   }
 }
+
 
 ul.entity-list {
   list-style-type: disc;

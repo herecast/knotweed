@@ -1,19 +1,19 @@
-.row
+.row-fluid
   .span2
     .well
       - if @people.present?
         %h4 People
-        %ul.entity-list
+        %ul.entity-list.star_list
           - @people.each do |e|
             %li= e.gsub("\"", "")
       - if @orgs.present?
         %h4 Organizations
-        %ul.entity-list
+        %ul.entity-list.star_list
           - @orgs.each do |e|
             %li= e.gsub("\"", "")
       - if @locations.present?
         %h4 Locations
-        %ul.entity-list
+        %ul.entity-list.star_list
           - @locations.each do |e|
             %li= e.gsub("\"", "")
   .span8
