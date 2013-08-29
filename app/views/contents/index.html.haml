@@ -1,3 +1,4 @@
-#wall.row-fluid.isotope
-  - @contents.each do |content|
-    = render partial: "contents/partials/tile", locals: {:features => content.features, :document_id => content.document_id, :content => content.content}
+#wrapper
+  #wall.row-fluid.isotope
+    - @contents.each do |content|
+      = render partial: "contents/partials/tile", locals: {:features => content.features, :document_id => content.document_id, :content => content.content}

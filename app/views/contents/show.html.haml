@@ -1,29 +1,30 @@
-.row-fluid
-  .span2
-    .well
-      - if @people.present?
-        %h4 People
-        %ul.entity-list.star_list
-          - @people.each do |e|
-            %li= e.gsub("\"", "")
-      - if @orgs.present?
-        %h4 Organizations
-        %ul.entity-list.star_list
-          - @orgs.each do |e|
-            %li= e.gsub("\"", "")
-      - if @locations.present?
-        %h4 Locations
-        %ul.entity-list.star_list
-          - @locations.each do |e|
-            %li= e.gsub("\"", "")
-  .span8
-    %h1 
-      = @features["TITLE"]
-    %h5 
-      = simple_format @features["AUTHORS"]
-    %p
-      = @features["LOCATION"] + " -- " if @features["LOCATION"].present?
-      = simple_format @content.gsub("\u2028", "\n\n") # simple_format doesn't catch \u2028
-  .span2
-    .well
-      %h4 More
+#wrapper.full
+  .row-fluid
+    .span2
+      .well
+        - if @people.present?
+          %h4 People
+          %ul.entity-list.star_list
+            - @people.each do |e|
+              %li= e.gsub("\"", "")
+        - if @orgs.present?
+          %h4 Organizations
+          %ul.entity-list.star_list
+            - @orgs.each do |e|
+              %li= e.gsub("\"", "")
+        - if @locations.present?
+          %h4 Locations
+          %ul.entity-list.star_list
+            - @locations.each do |e|
+              %li= e.gsub("\"", "")
+    .span8
+      %h1 
+        = @features["TITLE"]
+      %h5 
+        = simple_format @features["AUTHORS"]
+      %p
+        = @features["LOCATION"] + " -- " if @features["LOCATION"].present?
+        = simple_format @content.gsub("\u2028", "\n\n") # simple_format doesn't catch \u2028
+    .span2
+      .well
+        %h4 More
