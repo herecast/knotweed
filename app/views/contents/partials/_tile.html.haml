@@ -1,7 +1,6 @@
 .tile.item.isotope-item
-  %h3 
-    %i.halflings-icon.align-justify
-    Local News
+  .channel-header
+    = image_tag "#{channel}_channel_header.png"
   .tile-content
     %span.title
       = link_to features["TITLE"], content_path(document_id)
