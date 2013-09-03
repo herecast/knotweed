@@ -3,7 +3,15 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 jQuery ->
-  $("#wall").isotope({
-    masonry: { columnWidth: $(this).width() / 12 },
-    itemSelector: ".item"
-  })
+  container = $("#wall")
+  container.imagesLoaded ->
+    container.isotope({
+      resizable: false,
+      masonry: { columnWidth: container.width() / 12 },
+      itemSelector: ".item"
+    })
+
+    $(window).smartresize ->
+      container.isotope({
+        masonry: { columnWidth: container.width() / 12 }
+      })
