@@ -3,7 +3,10 @@
   %span.icon-bar
   %span.icon-bar
 = link_to "Knotweed", root_path, :class => 'brand'
-.nav-collapse.collapse
-  %ul.nav
-    %li
-      = link_to "Home", root_path
+#channels.nav-collapse.collapse
+  %ul.nav.option-set{ data: { option_key: "filter" } }
+    %li.active
+      = link_to "All", "", data: { option_value: "*" }
+    - Channel.all.each do |c|
+      %li
+        = link_to "#{c.name}", "", data: { option_value: ".#{c.name.downcase}" }

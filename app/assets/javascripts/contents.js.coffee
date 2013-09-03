@@ -15,3 +15,8 @@ jQuery ->
       container.isotope({
         masonry: { columnWidth: container.width() / 12 }
       })
+  $("#channels li a").on 'click', ->
+    container.isotope({ filter: $(this).data("option-value") })
+    console.log($(this).data("option-value"))
+    $("#channels li.active").removeClass("active")
+    $(this).parent("li").addClass("active")
