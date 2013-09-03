@@ -30,7 +30,6 @@ class ContentsController < ApplicationController
     listDocIDs.each do |id|
       @contents << @@apiDR.loadDocument(id.getDocumentId())
     end
-
   end
 
   def show

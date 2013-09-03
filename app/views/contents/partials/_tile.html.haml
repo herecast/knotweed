@@ -15,3 +15,7 @@
     = "--" if features["LOCATION"].present?
     = content.truncate(150, separator: " ", omission: "...") 
     = link_to "more", content_path(document_id)
+    Channel: 
+    = channel
+
+    = features.keys
