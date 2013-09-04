@@ -9,4 +9,4 @@
       = link_to "All", "#", data: { option_value: "*" }
     - Channel.all.each do |c|
       %li
-        = link_to "#{c.name}", "#", data: { option_value: ".#{c.name.downcase}" }
+        = link_to "#{c.name}", "#", data: { option_value: ".#{c.name.gsub(" ", "_").downcase}" }

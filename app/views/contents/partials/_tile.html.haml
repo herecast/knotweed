@@ -1,6 +1,9 @@
-.tile.item.isotope-item{ class: "#{channel}" }
+.tile.item.isotope-item{ class: "#{channels.map{ |c| c.name.gsub(" ", "_").downcase }.join(' ') if channels}" }
   .channel-header
-    = image_tag "#{channel}_channel_header.png"
+    - if channels
+      = image_tag "#{channels[0].name.gsub(" ", "_").downcase}_channel_header.png"
+    - else
+      = image_tag "placeholder_channel_header.png"
   .tile-content
     %span.title
       = link_to features["TITLE"], content_path(document_id)
