@@ -23,7 +23,7 @@ class ContentsController < ApplicationController
     @version = @@serviceKim.getVersion()
 
     query = DocumentQuery.new() 
-    query.setMaxResultLength(10)
+    query.setMaxResultLength(100)
     query.setSortFeature("TIMESTAMP", true)
     listDocIDs = @@apiDR.getDocumentIds(query)
     @contents = []
