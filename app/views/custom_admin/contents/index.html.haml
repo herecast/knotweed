@@ -1,0 +1,36 @@
+#wrapper
+  .row
+    #contents-filter.well
+      = form_tag '', method: "get" do 
+        .filter-field
+          = label_tag "source", "Source"
+          = text_field_tag "source", params[:source]
+        .filter-field
+          = label_tag "from", "From"
+          = text_field_tag "from", params[:from], {type: "date"}
+        .filter-field
+          = label_tag "to", "To"
+          = text_field_tag "to", params[:to], {type: "date"}
+        .filter-field
+          = label_tag "title", "Title"
+          = text_field_tag "title", params[:title]
+        .filter-field
+          = label_tag "authors", "Authors"
+          = text_field_tag "authors", params[:authors]
+        .filter-field
+          = submit_tag "Search", class: "btn btn-primary"
+  .row.span12.well
+    %table.table.table-striped
+      %thead
+        %tr
+          %th Source
+          %th Date
+          %th Title
+          %th Authors
+      %tbody
+        - @contents.each do |content|
+          %tr
+            %td.span2= content.features["SOURCE"]
+            %td.span2= Date.parse(content.features["PUBDATE"]).strftime("%m/%d/%Y")
+            %td.span2= content.features["TITLE"]
+            %td.span2= content.features["AUTHORS"]

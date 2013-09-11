@@ -9,4 +9,8 @@ Knotweed::Application.routes.draw do
   resources :users
   
   resources :contents, only: ["show", "index"]
+
+  namespace :custom_admin do
+    resources :contents, only: ["show", "index"]
+  end
 end

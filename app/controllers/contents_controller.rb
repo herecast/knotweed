@@ -1,27 +1,22 @@
-java_import java.rmi.RemoteException
-java_import com.ontotext.kim.client.GetService
-java_import com.ontotext.kim.client.KIMService
-java_import com.ontotext.kim.client.corpora.CorporaAPI
-java_import com.ontotext.kim.client.documentrepository.DocumentRepositoryAPI
-java_import com.ontotext.kim.client.documentrepository.DocumentQuery
-java_import com.ontotext.kim.client.semanticannotation.SemanticAnnotationAPI
-java_import com.ontotext.kim.client.query.QueryAPI
-java_import com.ontotext.kim.client.coredb.CoreAPI
-java_import com.ontotext.kim.client.query.DocumentQueryResult
-
-java_import org.openrdf.model.vocabulary.RDFS
-java_import org.openrdf.model.impl.URIImpl
-
-
 class ContentsController < ApplicationController
+  java_import java.rmi.RemoteException
+  java_import com.ontotext.kim.client.GetService
+  java_import com.ontotext.kim.client.KIMService
+  java_import com.ontotext.kim.client.corpora.CorporaAPI
+  java_import com.ontotext.kim.client.documentrepository.DocumentRepositoryAPI
+  java_import com.ontotext.kim.client.documentrepository.DocumentQuery
+  java_import com.ontotext.kim.client.semanticannotation.SemanticAnnotationAPI
+  java_import com.ontotext.kim.client.query.QueryAPI
+  java_import com.ontotext.kim.client.coredb.CoreAPI
+  java_import com.ontotext.kim.client.query.DocumentQueryResult
+  java_import org.openrdf.model.vocabulary.RDFS
+  java_import org.openrdf.model.impl.URIImpl
 
   @@serviceKim = GetService.from
   @@apiDR = @@serviceKim.getDocumentRepositoryAPI
   @@semanticAPI = @@serviceKim.getSemanticRepositoryAPI
 
   def index
-    @version = @@serviceKim.getVersion()
-
     query = DocumentQuery.new() 
     query.setMaxResultLength(100)
     query.setSortFeature("TIMESTAMP", true)
@@ -58,6 +53,6 @@ class ContentsController < ApplicationController
         end
       end
     end
-
   end
+
 end

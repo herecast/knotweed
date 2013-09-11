@@ -42,3 +42,18 @@ ul.entity-list {
     font-weight: bold;
   }
 }
+
+#contents-filter {
+  width: 100%;
+  padding-bottom:0;
+  .filter-field {
+    @include inline-block;
+
+    input {
+      width: 120px;
+    }
+    input[type="submit"] {
+      margin-top: 15px;
+    }
+   }
+}

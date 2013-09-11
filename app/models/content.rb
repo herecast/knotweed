@@ -7,7 +7,7 @@ class Content < ActiveRecord::Base
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes
   
-  attr_accessible :authors, :content, :issue_id, :location_id, :subject, :subtitle, :title
+  attr_accessible :authors, :content, :issue_id, :location_id, :subject, :subtitle, :title, :source, :date_range_from, :date_range_to
   
   validates_presence_of :issue
   before_save :inherit_issue_location
