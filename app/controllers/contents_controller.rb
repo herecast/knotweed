@@ -1,5 +1,6 @@
 class ContentsController < ApplicationController
   java_import java.rmi.RemoteException
+  java_import java.lang.System
   java_import com.ontotext.kim.client.GetService
   java_import com.ontotext.kim.client.KIMService
   java_import com.ontotext.kim.client.corpora.CorporaAPI
@@ -17,26 +18,36 @@ class ContentsController < ApplicationController
   @@semanticAPI = @@serviceKim.getSemanticRepositoryAPI
 
   def index
+    # this is a stopgap solution. I need to get a better understanding
+    # of how this works, but for now it seems to be cleaning up our crash issue.
+    @contents = []
+    System.gc()
+
     query = DocumentQuery.new() 
     query.setMaxResultLength(100)
     query.setSortFeature("TIMESTAMP", true)
     listDocIDs = @@apiDR.getDocumentIds(query)
-    @contents = []
     listDocIDs.each do |id|
       @contents << @@apiDR.loadDocument(id.getDocumentId())
     end
   end
 
   def show
+    # this is a stopgap solution. I need to get a better understanding
+    # of how this works, but for now it seems to be cleaning up our crash issue.
+    @content = nil
+    @features = nil
+    @people = []
+    @orgs = []
+    @locations = []
+    System.gc()
+
     document = @@apiDR.loadDocument(params[:id].to_i)
     @content = document.content
     @features = document.features
 
     # get entities
     annotations = document.getAnnotations
-    @people = []
-    @orgs = []
-    @locations = []
     annotations.each do |a|
       resource_uri = a.features["inst"]
       unless resource_uri.nil?
