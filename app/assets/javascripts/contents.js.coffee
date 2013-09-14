@@ -20,3 +20,9 @@ jQuery ->
     console.log($(this).data("option-value"))
     $("#channels li.active").removeClass("active")
     $(this).parent("li").addClass("active")
+
+  # custom_admin datatables
+  $('#documents_table').dataTable( {
+    "sDom": "<'row'<'span8'l><'span8'f>r>t<'row'<'span8'i><'span8'p>>",
+    "bFilter": false
+  })

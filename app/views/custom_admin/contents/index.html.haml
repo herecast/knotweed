@@ -19,18 +19,19 @@
           = text_field_tag "authors", params[:authors]
         .filter-field
           = submit_tag "Search", class: "btn btn-primary"
-  .row.span12.well
-    %table.table.table-striped
-      %thead
-        %tr
-          %th Source
-          %th Date
-          %th Title
-          %th Authors
-      %tbody
-        - @contents.each do |content|
+  .row
+    .well
+      %table#documents_table.table.table-striped
+        %thead
           %tr
-            %td.span2= content.features["SOURCE"]
-            %td.span2= Date.parse(content.features["PUBDATE"]).strftime("%m/%d/%Y")
-            %td.span2= content.features["TITLE"]
-            %td.span2= content.features["AUTHORS"]
+            %th Source
+            %th Date
+            %th Title
+            %th Authors
+        %tbody
+          - @contents.each do |content|
+            %tr
+              %td.span2= content.features["SOURCE"]
+              %td.span2= Date.parse(content.features["PUBDATE"]).strftime("%m/%d/%Y")
+              %td.span2= content.features["TITLE"]
+              %td.span2= content.features["AUTHORS"]
