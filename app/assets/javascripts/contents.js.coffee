@@ -23,6 +23,8 @@ jQuery ->
 
   # custom_admin datatables
   $('#documents_table').dataTable( {
-    "sDom": "<'row'<'span8'l><'span8'f>r>t<'row'<'span8'i><'span8'p>>",
-    "bFilter": false
+    "sDom": "<'row-fluid'<'span6'lp><'span6'f>r>t<'row-fluid'<'span6'i><'span6'>>",
+    "sPaginationType": "bootstrap",
+    "bFilter": false,
+    "iDisplayLength": 25
   })

@@ -49,10 +49,21 @@ ul.entity-list {
     @include inline-block;
 
     input {
-      width: 120px;
     }
     input[type="submit"] {
       margin-top: 15px;
     }
-   }
+  }
+
+}
+#documents_table {
+  a {
+    color: #08C;
+  }
+}
+
+form#edit_document {
+  textarea {
+    width: 100%;
+  }
 }

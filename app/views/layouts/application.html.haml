@@ -4,9 +4,6 @@
     %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
       %title= content_for?(:title) ? yield(:title) : "Knotweed"
       %meta{:content => content_for?(:description) ? yield(:description) : "Knotweed", :name => "description"}
-        = javascript_include_tag "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.2.min.js"
-        = stylesheet_link_tag "http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"
-        = javascript_include_tag "http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"
         = stylesheet_link_tag "application", :media => "all"
         = stylesheet_link_tag "http://fonts.googleapis.com/css?family=Droid+Sans:400,700"
         = stylesheet_link_tag "http://fonts.googleapis.com/css?family=Droid+Serif"
@@ -23,8 +20,10 @@
               %span.icon-bar
               %span.icon-bar
             = link_to "Knotweed", root_path, :class => 'brand'
-            - unless controller.is_a? CustomAdmin::ContentsController
-              = render 'layouts/site_navigation'
+            - if controller.is_a? CustomAdmin::ContentsController
+              = render 'layouts/admin_navigation'
+            - elsif controller.is_a? ContentsController and action_name == "index"
+              = render 'layouts/channel_navigation'
             = render 'layouts/user_navigation'
     #main{:role => "main"}
       .container

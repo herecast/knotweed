@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/rweng/jquery-datatables-rails.git
+  revision: 494f752b8eb8350f33841c822a67d014c869219f
+  specs:
+    jquery-datatables-rails (1.11.2)
+      jquery-rails
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -284,6 +291,7 @@ DEPENDENCIES
   guard-rspec (>= 2.5.2)
   haml-rails (>= 0.4)
   jdbc-mysql
+  jquery-datatables-rails!
   jquery-rails
   quiet_assets (>= 1.0.2)
   rails (= 3.2.13)

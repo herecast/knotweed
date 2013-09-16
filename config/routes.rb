@@ -11,6 +11,6 @@ Knotweed::Application.routes.draw do
   resources :contents, only: ["show", "index"]
 
   namespace :custom_admin do
-    resources :contents, only: ["show", "index"]
+    resources :contents, except: ["show"]
   end
 end

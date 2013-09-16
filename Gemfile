@@ -32,3 +32,6 @@ gem "quiet_assets", ">= 1.0.2", :group => :development
 gem "rails_admin"
 gem "carrierwave"
 gem "figaro"
+
+gem 'jquery-datatables-rails', git: 'git://github.com/rweng/jquery-datatables-rails.git'
+

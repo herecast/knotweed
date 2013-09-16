@@ -1,3 +1,7 @@
+//
+// *= require dataTables/jquery.dataTables.bootstrap
+
+
 @import 'compass';
 @import 'ie';
 @import 'print';
@@ -6,4 +10,3 @@
 @import 'bootstrap-responsive';
 @import 'style';
 @import 'contents';
-@import 'jquerydatatables'; // bootstrap css fixes
