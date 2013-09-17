@@ -12,6 +12,7 @@ class CustomAdmin::ContentsController < ContentsController
     query.setSortFeature("TIMESTAMP", true)
 
     querystring = ""
+    querystring << params[:content] if params[:content].present?
     if params[:source].present?
       querystring << " and " unless querystring.empty?
       querystring << "SOURCE:#{params[:source].strip}"

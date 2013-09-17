@@ -18,6 +18,9 @@
           = label_tag "authors", "Authors"
           = text_field_tag "authors", params[:authors], class: "span2"
         .filter-field
+          = label_tag "content", "Content"
+          = text_field_tag "content", params[:content], class: "span4"
+        .filter-field
           = submit_tag "Search", class: "btn btn-primary"
   .row
     .well
