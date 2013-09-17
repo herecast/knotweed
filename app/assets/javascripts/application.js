@@ -13,7 +13,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require bootstrap
-//= require tinymce-jquery
 //= require dataTables/jquery.dataTables
 //= require dataTables/jquery.dataTables.bootstrap
 //= require_tree .
