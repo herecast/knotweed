@@ -1,5 +1,5 @@
 Knotweed::Application.routes.draw do
-  mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
+  mount RailsAdmin::Engine => '/rails_admin', :as => 'rails_admin'
 
   authenticated :user do
     root :to => 'contents#index'
@@ -10,7 +10,7 @@ Knotweed::Application.routes.draw do
   
   resources :contents, only: ["show", "index"]
 
-  namespace :custom_admin do
+  namespace :admin do
     resources :contents, except: ["show"]
   end
 end

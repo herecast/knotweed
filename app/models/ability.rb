@@ -7,7 +7,13 @@ class Ability
       can :access, :rails_admin       # only allow admin users to access Rails Admin
       can :dashboard                  # allow access to dashboard
       can :manage, :all
+      can :access, :admin
+    elsif user.organization
+      can :update, Organization, :id => user.organization_id
+      can :manage, Publication, :organization_id => user.organization_id
+      can :access, :admin
     end
+      
     # Define abilities for the passed in user here. For example:
     #
     #   user ||= User.new # guest user (not logged in)

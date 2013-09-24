@@ -37,5 +37,5 @@
               %td= content.features["SOURCE"]
               %td= Date.parse(content.features["PUBDATE"]).strftime("%m/%d/%Y")
               %td
-                = link_to content.features["TITLE"], edit_custom_admin_content_path(content.getDocumentId)
+                = link_to content.features["TITLE"], edit_admin_content_path(content.getDocumentId)
               %td= content.features["AUTHORS"]

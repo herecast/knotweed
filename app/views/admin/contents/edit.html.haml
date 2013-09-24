@@ -1,7 +1,7 @@
 #wrapper
   .row
     .well
-      = form_tag custom_admin_content_path(@id), method: "put", id: "edit_document" do
+      = form_tag admin_content_path(@id), method: "put", id: "edit_document" do
         .row
           .span3
             = label_tag "title", "Title"

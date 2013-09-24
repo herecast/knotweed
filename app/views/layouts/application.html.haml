@@ -20,7 +20,7 @@
               %span.icon-bar
               %span.icon-bar
             = link_to "Knotweed", root_path, :class => 'brand'
-            - if controller.is_a? CustomAdmin::ContentsController
+            - if controller.is_a? Admin::ContentsController
               = render 'layouts/admin_navigation'
             - elsif controller.is_a? ContentsController and action_name == "index"
               = render 'layouts/channel_navigation'

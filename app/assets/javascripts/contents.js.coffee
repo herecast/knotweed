@@ -21,7 +21,7 @@ jQuery ->
     $("#channels li.active").removeClass("active")
     $(this).parent("li").addClass("active")
 
-  # custom_admin datatables
+  # admin datatables
   $('#documents_table').dataTable( {
     "sDom": "<'row-fluid'<'span6'lp><'span6'f>r>t<'row-fluid'<'span6'i><'span6'>>",
     "sPaginationType": "bootstrap",
