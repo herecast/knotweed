@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130924173041) do
+ActiveRecord::Schema.define(:version => 20130924205949) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -42,6 +42,18 @@ ActiveRecord::Schema.define(:version => 20130924173041) do
     t.datetime "updated_at",     :null => false
   end
 
+  create_table "import_jobs", :force => true do |t|
+    t.integer  "parser_id"
+    t.string   "name"
+    t.text     "config"
+    t.datetime "last_run_at"
+    t.string   "source_path"
+    t.string   "type"
+    t.integer  "organization_id"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
   create_table "issues", :force => true do |t|
     t.string   "issue_edition"
     t.date     "publication_date"
@@ -64,6 +76,22 @@ ActiveRecord::Schema.define(:version => 20130924173041) do
     t.string   "name"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "parameters", :force => true do |t|
+    t.integer  "parser_id"
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "parsers", :force => true do |t|
+    t.string   "filename"
+    t.integer  "organization_id"
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   create_table "publications", :force => true do |t|
