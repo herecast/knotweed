@@ -7,7 +7,7 @@ FactoryGirl.define do
     authors "MyString"
     subject "MyString"
     content "MyText"
-    issue_id 1
-    location_id 1
+    issue
+    location
   end
 end
