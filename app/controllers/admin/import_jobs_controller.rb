@@ -11,7 +11,7 @@ class Admin::ImportJobsController < Admin::AdminController
   def create
     @import_job = ImportJob.new(params[:import_job])
     @import_job.organization = current_user.organization unless @import_job.organization.present?
-    if params[:import_job][:parser_id].present?
+    if params[:parameters].present?
       parameters = params[:parameters]
       config = {}
       parameters.each do |key, val|
