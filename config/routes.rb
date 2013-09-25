@@ -12,5 +12,8 @@ Knotweed::Application.routes.draw do
 
   namespace :admin do
     resources :contents, except: ["show"]
+    resources :import_jobs
+    
+    get 'parsers/:id/parameters', to: "parsers#parameters"
   end
 end

@@ -1,0 +1,9 @@
+= simple_form_for import_job, url: admin_import_jobs_path do |f|
+  = f.error_notification
+  = f.input :name
+  = f.input :source_path
+  = f.association :parser
+  - if current_user.has_role? :admin
+    = f.association :organization
+  #params_fields
+  = f.submit "Create Import Job", class: "btn btn-primary"

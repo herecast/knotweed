@@ -1,0 +1,17 @@
+#wrapper
+  .row
+    .well
+      %table.table.table-striped
+        %thead
+          %tr
+            %th.span2 Name
+            %th.span1 Type
+            %th.span2 Parser
+            %th.span2 Organization
+        %tbody
+          - @import_jobs.each do |job|
+            %tr
+              %td= job.name
+              %td= job.type
+              %td= job.parser.name if job.parser
+              %td= job.organization.name

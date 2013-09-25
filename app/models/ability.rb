@@ -11,6 +11,7 @@ class Ability
     elsif user.organization
       can :update, Organization, :id => user.organization_id
       can :manage, Publication, :organization_id => user.organization_id
+      can :manage, ImportJob, :organization_id => user.organization_id
       can :access, :admin
     end
       

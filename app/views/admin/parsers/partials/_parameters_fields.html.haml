@@ -1,0 +1,6 @@
+%h3 Parser Parameters
+- @parameters.each do |param|
+  .control-group
+    = label_tag "parameters[#{param.name}]", param.name, class: "control-label"
+    .controls
+      = text_field_tag "parameters[#{param.name}]"
