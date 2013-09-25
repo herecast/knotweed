@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :parameter do
-    parser_id 1
-    name "MyString"
+    parser
+    sequence(:name) { |n| "Param-#{n}" }
   end
 end

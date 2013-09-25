@@ -3,6 +3,6 @@
 FactoryGirl.define do
   factory :parser do
     filename "MyString"
-    organization_id 1
+    organization
   end
 end
