@@ -5,13 +5,24 @@
         %thead
           %tr
             %th.span2 Name
-            %th.span1 Type
-            %th.span2 Parser
-            %th.span2 Organization
+            %th.span1 Parser
+            %th.span1 Organization
+            %th.span1 Last Run
+            %th.span1
+            %th.span1 Status
         %tbody
           - @import_jobs.each do |job|
             %tr
               %td= job.name
-              %td= job.type
               %td= job.parser.name if job.parser
               %td= job.organization.name
+              %td= job.last_run_at.strftime("%m/%d/%Y %I:%M%p") if job.last_run_at.present?
+              %td
+                - if job.status == "running"
+                  %span.btn.btn-danger.disabled in process
+                - elsif job.status == "queued"
+                  %span.btn.btn-danger.disabled queued
+                - else
+                  = link_to "Run Job", admin_run_job_path(job), remote: true, class: "btn btn-success"
+              %td
+                %div{ class: "alert alert-#{alert_class_for_status(job.status)}" }= job.status

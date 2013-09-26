@@ -1,6 +1,14 @@
 class Admin::ImportJobsController < Admin::AdminController
   load_and_authorize_resource
   
+  def run_job
+    @import_job = ImportJob.find(params[:id])
+    unless @import_job.status == "running" or @import_job.status = "queued"
+      @import_job.enqueue_job
+    end
+    render :nothing => true
+  end
+  
   def index
   end
   

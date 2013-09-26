@@ -1,3 +1,7 @@
+require 'find'
+require 'json'
+require "builder"
+
 class ImportJob < ActiveRecord::Base
 
   belongs_to :organization
@@ -7,19 +11,116 @@ class ImportJob < ActiveRecord::Base
   
   attr_accessible :config, :last_run_at, :name, :parser_id, :source_path, :type, :organization_id
   
-  after_create :enqueue_job
+  validates :status, inclusion: { in: %w(failed running success queued), allow_nil: true }
   
   # delayed job action
   # 
   # determines the process needed to run the import job (parser, scraping, etc.)
   # and activates it
   def perform
-    # do nothing
+    # for now this is always true...but as we introduce import jobs via scrape, etc., it may change.
+    # we can include the logic for selecting what branch to descend (scrape, parse, etc.) here as it 
+    # is defined
+    if parser.present?
+      traverse_input_tree
+    end
   end
+  
+  # hooks to set status
+  def enqueue(job)
+    self.status = "queued"
+    self.save
+  end
+  
+  def success(job)
+    self.status = "success"
+    self.save
+  end
+  
+  def failure(job)
+    self.status = "failure"
+    self.save
+  end
+  
+  def before(job)
+    self.status = "running"
+    # set last_run_at regardless of success or failure
+    self.last_run_at = Date.now
+    self.save
+  end
+  
+
 
   # enqueues the job object
   def enqueue_job
-    Delayed::Backend::ActiveRecord::Job.enqueue self
+    Delayed::Job.enqueue self
   end
   
+  def traverse_input_tree
+    Find.find(source_path) do |path|
+      if FileTest.directory?(path)
+        next
+      else
+        json = run_parser(path) || nil
+        if json.present?
+          json_to_corpus(json, File.basename(path, ".*"))
+        end
+      end
+    end
+  end
+     
+  # runs the parser's parse_file method on a file located at path
+  # outputs a json array of articles (if parser is correct)
+  def run_parser(path)
+    begin
+      require "#{Figaro.env.parsers_path}/#{parser.filename}"
+      return parse_file(path)
+    rescue
+      $stderr.print "Parsing #{path} failed: " + $!
+    end
+  end
+      
+  # accepts a json array of articles
+  # and a basename (folder name) for the output
+  # outputs a folder structure to the corpus path
+  def json_to_corpus(json, output_basename)
+    json.each do |article|
+      xml = ::Builder::XmlMarkup.new
+      xml.instruct!
+      xml.features do |f|
+        article.keys.each do |k|
+          eval("f.#{k} article[k]")
+        end
+      end
+    
+      xml_out = xml.target!
+    
+      txt_out = ""
+      # quick way to generate txt template
+      ["title", "subtitle", "author", "contentsource", "content", "correctiondate", "correction"].each do |feature|
+        unless article[feature].nil? or article[feature].empty?
+          # this adds an extra line below the content
+          txt_out << "\n" if feature == "content"
+          if feature == "correctiondate"
+            txt_out << "\n" << "Correction Date: "
+          elsif feature == "correction"
+            txt_out << "Correction: "
+          end
+          txt_out << article[feature] << "\n"
+        end
+      end
+    
+      # directory structure of output
+      Dir.mkdir("#{Figaro.env.corpus_path}/#{output_basename}") unless Dir.exists?("#{Figaro.env.corpus_path}/#{output_basename}")
+      month = article["timestamp"][5..6]
+      Dir.mkdir("#{Figaro.env.corpus_path}/#{output_basename}/#{month}") unless Dir.exists?("#{Figaro.env.corpus_path}/#{output_basename}/#{month}")
+      filename = article["guid"].gsub("/", "-").gsub(" ", "_")
+
+      xml_file = File.open("#{Figaro.env.corpus_path}/#{output_basename}/#{month}/#{filename}.xml", "w+:UTF-8")
+      xml_file.write xml_out
+      txt_file = File.open("#{Figaro.env.corpus_path}/#{output_basename}/#{month}/#{filename}.txt", "w+:UTF-8")
+      txt_file.write txt_out
+    end
+  end
+
 end
