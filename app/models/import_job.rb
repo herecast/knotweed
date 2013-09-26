@@ -1,4 +1,5 @@
 require 'find'
+require 'yaml'
 require 'json'
 require "builder"
 
@@ -36,16 +37,28 @@ class ImportJob < ActiveRecord::Base
     self.status = "success"
     self.save
   end
+
+  def error(job, exception)
+    log = Logger.new("#{Rails.root}/log/delayed_job.log")
+    log.debug "input: #{self.source_path}"
+    log.debug "parser: #{Figaro.env.parsers_path}/#{parser.filename}"
+    log.debug "output: #{Figaro.env.corpus_path}"
+    log.debug "error: #{exception}"
+    log.debug "backtrace: #{exception.backtrace}"   
+    self.status = "failed"
+    log.debug self
+    self.save
+  end
   
   def failure(job)
-    self.status = "failure"
+    self.status = "failed"
     self.save
   end
   
   def before(job)
     self.status = "running"
     # set last_run_at regardless of success or failure
-    self.last_run_at = Date.now
+    self.last_run_at = Time.now
     self.save
   end
   
@@ -72,19 +85,18 @@ class ImportJob < ActiveRecord::Base
   # runs the parser's parse_file method on a file located at path
   # outputs a json array of articles (if parser is correct)
   def run_parser(path)
-    begin
-      require "#{Figaro.env.parsers_path}/#{parser.filename}"
-      return parse_file(path)
-    rescue
-      $stderr.print "Parsing #{path} failed: " + $!
-    end
+    require "#{Figaro.env.parsers_path}/#{parser.filename}"
+    # get config from the import_job and convert to hash
+    conf = YAML.load(self.config)
+    return parse_file(path, conf)
   end
       
   # accepts a json array of articles
   # and a basename (folder name) for the output
   # outputs a folder structure to the corpus path
   def json_to_corpus(json, output_basename)
-    json.each do |article|
+    data = JSON.parse json
+    data.each do |article|
       xml = ::Builder::XmlMarkup.new
       xml.instruct!
       xml.features do |f|
@@ -92,12 +104,11 @@ class ImportJob < ActiveRecord::Base
           eval("f.#{k} article[k]")
         end
       end
-    
       xml_out = xml.target!
     
       txt_out = ""
       # quick way to generate txt template
-      ["title", "subtitle", "author", "contentsource", "content", "correctiondate", "correction"].each do |feature|
+      ["title", "subtitle", "author", "contentsource", "content", "correctiondate", "correction", "timestamp"].each do |feature|
         unless article[feature].nil? or article[feature].empty?
           # this adds an extra line below the content
           txt_out << "\n" if feature == "content"
