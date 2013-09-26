@@ -42,7 +42,7 @@ class ImportJob < ActiveRecord::Base
     log = Logger.new("#{Rails.root}/log/delayed_job.log")
     log.debug "input: #{self.source_path}"
     log.debug "parser: #{Figaro.env.parsers_path}/#{parser.filename}"
-    log.debug "output: #{Figaro.env.corpus_path}"
+    log.debug "output: #{Figaro.env.import_job_output_path}"
     log.debug "error: #{exception}"
     log.debug "backtrace: #{exception.backtrace}"   
     self.status = "failed"
@@ -65,13 +65,14 @@ class ImportJob < ActiveRecord::Base
 
 
   # enqueues the job object
+  # note can use option run_at: time to schedule in the future
   def enqueue_job
     Delayed::Job.enqueue self
   end
   
   def traverse_input_tree
     job_folder_label = self.last_run_at.strftime("%Y%m%d%H%M%S")
-    Dir.mkdir("#{Figaro.env.corpus_path}/#{job_folder_label}") unless Dir.exists?("#{Figaro.env.corpus_path}/#{job_folder_label}")
+    Dir.mkdir("#{Figaro.env.import_job_output_path}/#{job_folder_label}") unless Dir.exists?("#{Figaro.env.import_job_output_path}/#{job_folder_label}")
     Find.find(source_path) do |path|
       if FileTest.directory?(path)
         next
@@ -125,7 +126,7 @@ class ImportJob < ActiveRecord::Base
     
       # directory structure of output
       job_folder_label = self.last_run_at.strftime("%Y%m%d%H%M%S")
-      base_path = "#{Figaro.env.corpus_path}/#{job_folder_label}/#{output_basename}"
+      base_path = "#{Figaro.env.import_job_output_path}/#{job_folder_label}/#{output_basename}"
       Dir.mkdir(base_path) unless Dir.exists?(base_path)
       month = article["timestamp"][5..6]
       Dir.mkdir(base_path + "/#{month}") unless Dir.exists?(base_path + "/#{month}")

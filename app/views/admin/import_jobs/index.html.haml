@@ -12,17 +12,12 @@
             %th.span1 Status
         %tbody
           - @import_jobs.each do |job|
-            %tr
+            %tr{ class: "job-#{job.id}" }
               %td= job.name
               %td= job.parser.name if job.parser
               %td= job.organization.name
               %td= job.last_run_at.strftime("%m/%d/%Y %I:%M%p") if job.last_run_at.present?
-              %td
-                - if job.status == "running"
-                  %span.btn.btn-danger.disabled in process
-                - elsif job.status == "queued"
-                  %span.btn.btn-danger.disabled queued
-                - else
-                  = link_to "Run Job", admin_run_job_path(job), remote: true, class: "btn btn-success"
-              %td
+              %td.run-job-button
+                = action_button_for_job(job)
+              %td.job-status
                 %div{ class: "alert alert-#{alert_class_for_status(job.status)}" }= job.status

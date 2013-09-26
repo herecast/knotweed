@@ -15,4 +15,6 @@
 //= require bootstrap
 //= require dataTables/jquery.dataTables
 //= require dataTables/jquery.dataTables.bootstrap
+//= require spin.min
+//= require jquery.spin
 //= require_tree .
