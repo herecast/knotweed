@@ -70,6 +70,8 @@ class ImportJob < ActiveRecord::Base
   end
   
   def traverse_input_tree
+    job_folder_label = self.last_run_at.strftime("%Y%m%d%H%M%S")
+    Dir.mkdir("#{Figaro.env.corpus_path}/#{job_folder_label}") unless Dir.exists?("#{Figaro.env.corpus_path}/#{job_folder_label}")
     Find.find(source_path) do |path|
       if FileTest.directory?(path)
         next
@@ -87,7 +89,7 @@ class ImportJob < ActiveRecord::Base
   def run_parser(path)
     require "#{Figaro.env.parsers_path}/#{parser.filename}"
     # get config from the import_job and convert to hash
-    conf = YAML.load(self.config)
+    conf = YAML.load(self.config) || {}
     return parse_file(path, conf)
   end
       
@@ -122,15 +124,19 @@ class ImportJob < ActiveRecord::Base
       end
     
       # directory structure of output
-      Dir.mkdir("#{Figaro.env.corpus_path}/#{output_basename}") unless Dir.exists?("#{Figaro.env.corpus_path}/#{output_basename}")
+      job_folder_label = self.last_run_at.strftime("%Y%m%d%H%M%S")
+      base_path = "#{Figaro.env.corpus_path}/#{job_folder_label}/#{output_basename}"
+      Dir.mkdir(base_path) unless Dir.exists?(base_path)
       month = article["timestamp"][5..6]
-      Dir.mkdir("#{Figaro.env.corpus_path}/#{output_basename}/#{month}") unless Dir.exists?("#{Figaro.env.corpus_path}/#{output_basename}/#{month}")
+      Dir.mkdir(base_path + "/#{month}") unless Dir.exists?(base_path + "/#{month}")
       filename = article["guid"].gsub("/", "-").gsub(" ", "_")
 
-      xml_file = File.open("#{Figaro.env.corpus_path}/#{output_basename}/#{month}/#{filename}.xml", "w+:UTF-8")
-      xml_file.write xml_out
-      txt_file = File.open("#{Figaro.env.corpus_path}/#{output_basename}/#{month}/#{filename}.txt", "w+:UTF-8")
-      txt_file.write txt_out
+      File.open("#{base_path}/#{month}/#{filename}.xml", "w+:UTF-8") do |f|
+        f.write xml_out
+      end
+      File.open("#{base_path}/#{month}/#{filename}.txt", "w+:UTF-8") do |f|
+        f.write txt_out
+      end
     end
   end
 

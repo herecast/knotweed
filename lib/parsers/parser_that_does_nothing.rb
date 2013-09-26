@@ -1,3 +1,3 @@
-def parse_data(json)
+def parse_file(json, config)
   return nil
 end
