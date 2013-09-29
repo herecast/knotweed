@@ -44,7 +44,7 @@ class ImportJob < ActiveRecord::Base
     log.debug "parser: #{Figaro.env.parsers_path}/#{parser.filename}"
     log.debug "output: #{Figaro.env.import_job_output_path}"
     log.debug "error: #{exception}"
-    log.debug "backtrace: #{exception.backtrace}"   
+    log.debug "backtrace: #{exception.backtrace.join("\n")}"   
     self.status = "failed"
     log.debug self
     self.save
@@ -90,7 +90,11 @@ class ImportJob < ActiveRecord::Base
   def run_parser(path)
     require "#{Figaro.env.parsers_path}/#{parser.filename}"
     # get config from the import_job and convert to hash
-    conf = YAML.load(self.config) || {}
+    if self.config.present?
+      conf = YAML.load(self.config) || {}
+    else
+      conf = {}
+    end
     return parse_file(path, conf)
   end
       
