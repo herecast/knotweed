@@ -2,7 +2,8 @@
 
 FactoryGirl.define do
   factory :parser do
-    filename "MyString"
+    filename "parser.rb"
     organization
+    name "My Parser"
   end
 end

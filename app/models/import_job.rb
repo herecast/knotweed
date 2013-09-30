@@ -71,7 +71,7 @@ class ImportJob < ActiveRecord::Base
   end
   
   def traverse_input_tree
-    job_folder_label = self.last_run_at.strftime("%Y%m%d%H%M%S")
+    job_folder_label = self.job_output_folder
     Dir.mkdir("#{Figaro.env.import_job_output_path}/#{job_folder_label}") unless Dir.exists?("#{Figaro.env.import_job_output_path}/#{job_folder_label}")
     Find.find(source_path) do |path|
       if FileTest.directory?(path)
@@ -129,7 +129,7 @@ class ImportJob < ActiveRecord::Base
       end
     
       # directory structure of output
-      job_folder_label = self.last_run_at.strftime("%Y%m%d%H%M%S")
+      job_folder_label = job_output_folder
       base_path = "#{Figaro.env.import_job_output_path}/#{job_folder_label}/#{output_basename}"
       Dir.mkdir(base_path) unless Dir.exists?(base_path)
       month = article["timestamp"][5..6]
@@ -142,6 +142,16 @@ class ImportJob < ActiveRecord::Base
       File.open("#{base_path}/#{month}/#{filename}.txt", "w+:UTF-8") do |f|
         f.write txt_out
       end
+    end
+  end
+
+  # helper method for defining job-run-specific output folder
+  # (formatting of timestamp)
+  def job_output_folder
+    if last_run_at
+      last_run_at.strftime("%Y%m%d%H%M%S") 
+    else
+      nil
     end
   end
 
