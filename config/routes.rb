@@ -13,6 +13,7 @@ Knotweed::Application.routes.draw do
   namespace :admin do
     resources :contents, except: ["show"]
     resources :import_jobs
+    resources :parsers
     
     get 'import_jobs/:id/run_job', to: 'import_jobs#run_job', as: :run_job
     

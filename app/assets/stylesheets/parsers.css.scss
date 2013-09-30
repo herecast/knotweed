@@ -1,0 +1,24 @@
+.form-column {
+  width: 45%;
+  @include inline-block;
+  vertical-align: top; // note this line must be below include inline-block
+
+  input, textarea {
+    width: 90%;
+    @include inline-block;
+  }
+
+  &#parameters {
+    .close {
+      float: none;
+      @include inline-block;
+    }
+    .control-group {
+      @include inline-block;
+    }
+  }
+}
+
+span.close {
+  cursor: pointer;
+}

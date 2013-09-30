@@ -1,0 +1,21 @@
+#wrapper
+  .row
+    .well
+      = link_to "Register New Parser", new_admin_parser_path, class: "btn btn-primary"
+      %table.table.table-striped
+        %thead
+          %tr
+            %th.span2 Parser
+            %th.span1 Filename
+            %th.span2 Description
+            %th.span1 Organization
+            %th.span1 
+        %tbody
+          - @parsers.each do |parser|
+            %tr{ class: "parser-#{parser.id}" }
+              %td= parser.name
+              %td= parser.filename
+              %td= parser.description
+              %td= parser.organization.name
+              %td.create-import-job
+                "create import job"

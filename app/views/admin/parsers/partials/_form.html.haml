@@ -1,0 +1,21 @@
+= simple_form_for @parser, url: admin_parsers_path do |f|
+  = f.error_notification
+  .form-column
+    = f.input :name
+    = f.input :filename
+    = f.input :description, input_html: { rows: 5 }
+    = f.association :organization
+    = f.submit
+  
+  #parameters.form-column
+    %button#add-to-parameters.btn Add Parameter
+    .existing-fields-for-parameters
+      = f.simple_fields_for :parameters do |param_form|
+        = param_form.input :name, label: "Parameter Key"
+        %span.close &times;
+
+  #fields-for-parameters.numerous
+    = f.simple_fields_for :parameters, Parameter.new, child_index: "replace_this" do |param_form|
+      = param_form.input :name, label: "Parameter Key"
+      %span.close.numerous-remove &times;
+

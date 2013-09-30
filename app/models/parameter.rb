@@ -3,5 +3,5 @@ class Parameter < ActiveRecord::Base
   
   attr_accessible :name, :parser_id
   
-  validates_presence_of :parser_id, :name
+  validates_presence_of :name
 end
