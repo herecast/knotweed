@@ -2,7 +2,7 @@
   = f.error_notification
   = f.input :name
   = f.input :source_path
-  = f.association :parser
+  = f.association :parser, collection: Parser.accessible_by(current_ability, :read)
   - if current_user.has_role? :admin
     = f.association :organization
   #params_fields

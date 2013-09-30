@@ -2,6 +2,18 @@ require 'spec_helper'
 
 describe ImportJob do
 
+  describe "validation" do
+    it "should ensure parser belongs to same organization or is universal" do
+      @org1 = FactoryGirl.create(:organization)
+      @org2 = FactoryGirl.create(:organization)
+      @parser = FactoryGirl.create(:parser, organization: @org1)
+      @univ_parser = FactoryGirl.create(:parser, organization: nil)
+      FactoryGirl.build(:import_job, organization: @org2, parser: @parser).should_not be_valid
+      FactoryGirl.build(:import_job, organization: @org2, parser: @univ_parser).should be_valid
+      FactoryGirl.build(:import_job, organization: @org1, parser: @parser).should be_valid
+    end
+  end
+
   describe "perform job" do
     before do
       @config = { "timestamp" => "20110607", "guid" => "100", "other_param" => "hello" }
@@ -55,8 +67,6 @@ describe ImportJob do
       # clean up folder
       system("rm -rf #{Figaro.env.import_job_output_path}/*")
     end
-
-    
   end
 
 end

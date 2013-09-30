@@ -4,7 +4,7 @@
     = f.input :name
     = f.input :filename
     = f.input :description, input_html: { rows: 5 }
-    = f.association :organization
+    = f.association :organization, collection: Organization.accessible_by(current_ability, :read)
     = f.submit
   
   #parameters.form-column

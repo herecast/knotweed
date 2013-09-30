@@ -6,7 +6,8 @@ describe Admin::ImportJobsController do
     before do
       @user = FactoryGirl.create(:admin)
       sign_in @user
-      @parser = FactoryGirl.create(:parser)
+      @org = FactoryGirl.create(:organization)
+      @parser = FactoryGirl.create(:parser, organization: @org)
       2.times do 
         FactoryGirl.create(:parameter, parser: @parser)
       end

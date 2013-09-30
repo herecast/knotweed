@@ -2,7 +2,6 @@
 
 FactoryGirl.define do
   factory :import_job do
-    parser
     name "MyString"
     source_path "#{Rails.root}/lib/parsers/test/input"
     organization

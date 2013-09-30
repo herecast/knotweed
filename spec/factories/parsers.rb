@@ -2,8 +2,7 @@
 
 FactoryGirl.define do
   factory :parser do
-    filename "parser.rb"
-    organization
+    sequence (:filename) { |n| "parser-#{n}.rb" }
     name "My Parser"
   end
 end
