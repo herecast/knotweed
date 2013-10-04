@@ -16,11 +16,18 @@ describe ImportJob do
 
   describe "perform job" do
     before do
-      @config = { "timestamp" => "20110607", "guid" => "100", "other_param" => "hello" }
+      # note we need sufficient entries in the config hash here for the 
+      # output to validate.
+      @config = { "timestamp" => "2011-06-07T12:25:00", "guid" => "100", "other_param" => "hello", "pubdate" => "2011-06-07T12:25:00",
+                  "source" => "not empty", "title" => "not empty"}
       @parser = FactoryGirl.create(:parser, filename: "parser_that_outputs_config.rb")
       @job = FactoryGirl.create(:import_job, parser: @parser, config: @config.to_yaml)
       # run job via delayed_job hooks (even though delayed_job doesnt run in tests)
       @job.enqueue_job
+      # another job whose output fails validation
+      @config2 = { "guid" => "101", "other_param" => "hello" }
+      @job2 = FactoryGirl.create(:import_job, parser: @parser, config: @config2.to_yaml)
+      @job2.enqueue_job
     end
 
     it "should succeed and set status to success" do
@@ -60,8 +67,30 @@ describe ImportJob do
           contains_param.should be_true
         end
       end
-
     end
+
+    it "should recognize non-validating xml and quarantine those entries in another folder" do 
+      base = "#{Figaro.env.import_job_output_path}/#{@job2.job_output_folder}/quarantine"
+      Dir.exists?(base).should be_true
+      Find.find(@job2.source_path) do |path|
+        if FileTest.directory? path
+          next
+        else
+          file_base = base + "/#{File.basename(path, ".*")}/no-month"
+          Dir.exists?(file_base).should be_true
+          contains_param = false
+          File.open("#{file_base}/#{@config2["guid"]}.xml", 'r') do |f|
+            f.each_line do |line|
+              if line.include? @config2["other_param"]
+                contains_param =true
+              end
+            end
+          end
+          contains_param.should be_true
+        end
+      end
+    end
+
 
     after do
       # clean up folder

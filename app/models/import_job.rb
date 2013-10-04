@@ -2,6 +2,7 @@ require 'find'
 require 'yaml'
 require 'json'
 require "builder"
+require 'fileutils'
 
 class ImportJob < ActiveRecord::Base
 
@@ -105,6 +106,16 @@ class ImportJob < ActiveRecord::Base
   def json_to_corpus(json, output_basename)
     data = JSON.parse json
     data.each do |article|
+
+      base_path = "#{Figaro.env.import_job_output_path}/#{job_output_folder}/#{output_basename}"
+      
+      # validate that article meets the basic format requirements
+      # for the corpus, if not, output to quarantine folder
+      unless validate_doc(article)
+        log = Logger.new("#{Rails.root}/log/import_job.log")
+        log.debug("document #{article['guid']} not valid")
+        base_path = "/#{Figaro.env.import_job_output_path}/#{job_output_folder}/quarantine/#{output_basename}"
+      end
       xml = ::Builder::XmlMarkup.new
       xml.instruct!
       xml.features do |f|
@@ -130,12 +141,16 @@ class ImportJob < ActiveRecord::Base
       end
     
       # directory structure of output
-      job_folder_label = job_output_folder
-      base_path = "#{Figaro.env.import_job_output_path}/#{job_folder_label}/#{output_basename}"
-      Dir.mkdir(base_path) unless Dir.exists?(base_path)
-      month = article["timestamp"][5..6]
-      Dir.mkdir(base_path + "/#{month}") unless Dir.exists?(base_path + "/#{month}")
-      filename = article["guid"].gsub("/", "-").gsub(" ", "_")
+      month = article["timestamp"][5..6] if article.has_key? "timestamp"
+      # ensure we can still write to a directory if month is somehow empty (for non-validating entries)
+      month = "no-month" unless month.present?
+      FileUtils.mkdir_p(base_path + "/#{month}")
+      if article.has_key? "guid"
+        filename = article["guid"].gsub("/", "-").gsub(" ", "_")
+      else
+        # try to come up with something unique enough
+        filename = "#{rand(10000)-rand(10000)}"
+      end
 
       File.open("#{base_path}/#{month}/#{filename}.xml", "w+:UTF-8") do |f|
         f.write xml_out
@@ -146,6 +161,26 @@ class ImportJob < ActiveRecord::Base
     end
   end
 
+  # method to validate incoming documents before sending them to the corpus
+  def validate_doc(doc)
+    # check that the required keys exist
+    unless doc.has_key? "pubdate" and doc.has_key? "timestamp" and doc.has_key? "title" and doc.has_key? "source"
+      return false
+    end
+    # validate pubdate and timestamp format
+    [doc["pubdate"], doc["timestamp"]].each do |date|
+      if /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.match(date).nil?
+        return false
+      end
+    end
+    # validate source and title are present?
+    [doc["source"], doc["title"]].each do |feature|
+      return false unless feature.present?
+    end
+    return true
+  end
+
+    
   # helper method for defining job-run-specific output folder
   # (formatting of timestamp)
   def job_output_folder
