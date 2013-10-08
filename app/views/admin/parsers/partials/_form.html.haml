@@ -5,7 +5,7 @@
     = f.input :filename
     = f.input :description, input_html: { rows: 5 }
     = f.association :organization, collection: Organization.accessible_by(current_ability, :read)
-    = f.submit
+    = f.submit class: "btn btn-primary"
   
   #parameters.form-column
     %button#add-to-parameters.btn Add Parameter
