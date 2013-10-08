@@ -1,5 +1,6 @@
 class Admin::ParsersController < Admin::AdminController
   load_and_authorize_resource
+  respond_to :html
 
   # method for returning parameter fields via ajax
   def parameters
@@ -24,5 +25,15 @@ class Admin::ParsersController < Admin::AdminController
   def index
   end
 
+  def edit
+  end
+  
+  def update
+    @parser = Parser.find(params[:id])
+    if @parser.update_attributes(params[:parser])
+      flash[:notice] = "Successfully updated parser."
+    end
+    respond_with(@parser, location: admin_parsers_url)
+  end
   
 end

@@ -14,8 +14,8 @@
         %tbody
           - @import_jobs.each do |job|
             %tr{ class: "job-#{job.id}" }
-              %td= job.name
-              %td= job.parser.name if job.parser
+              %td= link_to job.name, edit_admin_import_job_path(job)
+              %td= link_to job.parser.name, edit_admin_parser_path(job.parser) if job.parser
               %td= job.organization.name
               %td= job.last_run_at.strftime("%m/%d/%Y %I:%M%p") if job.last_run_at.present?
               %td.run-job-button

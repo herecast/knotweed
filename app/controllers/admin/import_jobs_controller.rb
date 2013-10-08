@@ -1,5 +1,6 @@
 class Admin::ImportJobsController < Admin::AdminController
   load_and_authorize_resource
+  respond_to :html
   
   def run_job
     @job = ImportJob.find(params[:id])
@@ -41,6 +42,11 @@ class Admin::ImportJobsController < Admin::AdminController
   end
   
   def update
+    @import_job = ImportJob.find(params[:id])
+    if @import_job.update_attributes(params[:import_job])
+      flash[:notice] = "Successfully updated import job."
+    end
+    respond_with(@import_job, location: admin_import_jobs_url)
   end
   
   def show

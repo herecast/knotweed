@@ -1,4 +1,4 @@
-= simple_form_for import_job, url: admin_import_jobs_path do |f|
+= simple_form_for [:admin, import_job] do |f|
   = f.error_notification
   = f.input :name
   = f.input :source_path

@@ -1,4 +1,4 @@
-= simple_form_for @parser, url: admin_parsers_path do |f|
+= simple_form_for [:admin, @parser] do |f|
   = f.error_notification
   .form-column
     = f.input :name

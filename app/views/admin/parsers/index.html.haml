@@ -13,7 +13,7 @@
         %tbody
           - @parsers.each do |parser|
             %tr{ class: "parser-#{parser.id}" }
-              %td= parser.name
+              %td= link_to parser.name, edit_admin_parser_path(parser)
               %td= parser.filename
               %td= parser.description
               %td= parser.organization.name
