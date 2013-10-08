@@ -37,3 +37,4 @@ gem 'jquery-datatables-rails', git: 'git://github.com/rweng/jquery-datatables-ra
 
 gem 'delayed_job'
 gem 'delayed_job_active_record'
+gem 'american_date'

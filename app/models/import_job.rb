@@ -79,6 +79,8 @@ class ImportJob < ActiveRecord::Base
       if FileTest.directory?(path)
         next
       else
+        log = Logger.new("#{Rails.root}/log/import_job.log")
+        log.debug("running parser on path: #{path}")
         json = run_parser(path) || nil
         if json.present?
           json_to_corpus(json, File.basename(path, ".*"))

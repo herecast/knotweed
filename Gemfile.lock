@@ -40,6 +40,7 @@ GEM
       i18n (= 0.6.1)
       multi_json (~> 1.0)
     addressable (2.3.4)
+    american_date (1.1.0)
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
     bcrypt-ruby (3.0.1-java)
@@ -280,6 +281,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-jdbcmysql-adapter
+  american_date
   bootstrap-sass (>= 2.3.0.0)
   cancan (>= 1.6.9)
   capybara (>= 2.0.3)
