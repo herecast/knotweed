@@ -1,6 +1,5 @@
 class Admin::ImportJobsController < Admin::AdminController
   load_and_authorize_resource
-  respond_to :html
   
   def run_job
     @job = ImportJob.find(params[:id])
@@ -17,6 +16,10 @@ class Admin::ImportJobsController < Admin::AdminController
   
   def new
     @import_job = ImportJob.new
+    if params[:parser_id]
+      @import_job.parser = Parser.find(params[:parser_id])
+      @import_job.organization = @import_job.parser.organization
+    end
   end
   
   def create
@@ -51,4 +54,12 @@ class Admin::ImportJobsController < Admin::AdminController
   
   def show
   end
+
+  def destroy
+    @import_job = ImportJob.destroy(params[:id])
+    respond_to do |format|
+      format.js
+    end
+  end
+
 end

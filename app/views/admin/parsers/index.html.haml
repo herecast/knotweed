@@ -9,7 +9,8 @@
             %th.span1 Filename
             %th.span2 Description
             %th.span1 Organization
-            %th.span1 
+            %th.span2 
+            %th.span1
         %tbody
           - @parsers.each do |parser|
             %tr{ class: "parser-#{parser.id}" }
@@ -18,4 +19,6 @@
               %td= parser.description
               %td= parser.organization.name
               %td.create-import-job
-                "create import job"
+                = link_to "Create Import Job", admin_new_import_job_for_parser_path(parser.id), class: "btn btn-success"
+              %td.delete-parser
+                = link_to "Delete", admin_parser_path(parser), class: "btn btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }

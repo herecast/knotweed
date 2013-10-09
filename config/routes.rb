@@ -14,6 +14,7 @@ Knotweed::Application.routes.draw do
     resources :contents, except: ["show"]
     resources :import_jobs
     resources :parsers
+    match "parsers/:parser_id/new_import_job" => "import_jobs#new", as: :new_import_job_for_parser
     
     get 'import_jobs/:id/run_job', to: 'import_jobs#run_job', as: :run_job
     

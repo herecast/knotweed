@@ -11,6 +11,7 @@
             %th.span1 Last Run
             %th.span1
             %th.span1 Status
+            %th.span1 
         %tbody
           - @import_jobs.each do |job|
             %tr{ class: "job-#{job.id}" }
@@ -22,3 +23,5 @@
                 = action_button_for_job(job)
               %td.job-status
                 %div{ class: "alert alert-#{alert_class_for_status(job.status)}" }= job.status
+              %td.delete-job
+                = link_to "Delete", admin_import_job_path(job), class: "btn btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }

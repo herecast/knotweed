@@ -36,4 +36,11 @@ class Admin::ParsersController < Admin::AdminController
     respond_with(@parser, location: admin_parsers_url)
   end
   
+  def destroy
+    @parser = Parser.destroy(params[:id])
+    respond_to do |format|
+      format.js
+    end
+  end
+  
 end
