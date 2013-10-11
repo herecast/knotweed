@@ -152,11 +152,11 @@ class ImportJob < ActiveRecord::Base
       end
     
       # directory structure of output
-      month = article["timestamp"][5..6] if article.has_key? "timestamp"
+      month = article["timestamp"][5..6] if article.has_key? "timestamp" and article["timestamp"].present?
       # ensure we can still write to a directory if month is somehow empty (for non-validating entries)
       month = "no-month" unless month.present?
       FileUtils.mkdir_p(base_path + "/#{month}")
-      if article.has_key? "guid"
+      if article.has_key? "guid" and article["guid"].present?
         filename = article["guid"].gsub("/", "-").gsub(" ", "_")
       else
         # try to come up with something unique enough
@@ -199,6 +199,17 @@ class ImportJob < ActiveRecord::Base
       last_run_at.strftime("%Y%m%d%H%M%S") 
     else
       nil
+    end
+  end
+
+  def save_config(parameters)
+    if parameters.present?
+      conf = {}
+      parameters.each do |key, val|
+        conf[key] = val
+      end
+      self.config = conf.to_yaml
+      self.save
     end
   end
 

@@ -26,15 +26,8 @@ class Admin::ImportJobsController < Admin::AdminController
   def create
     @import_job = ImportJob.new(params[:import_job])
     @import_job.organization = current_user.organization unless @import_job.organization.present?
-    if params[:parameters].present?
-      parameters = params[:parameters]
-      config = {}
-      parameters.each do |key, val|
-        config[key.downcase.gsub(" ", "_")] = val
-      end
-      @import_job.config = config.to_yaml
-    end
     if @import_job.save
+      @import_job.save_config(params[:parameters])
       flash[:notice] = "Import job saved."
       redirect_to admin_import_jobs_path
     else
@@ -48,6 +41,7 @@ class Admin::ImportJobsController < Admin::AdminController
   def update
     @import_job = ImportJob.find(params[:id])
     if @import_job.update_attributes(params[:import_job])
+      @import_job.save_config(params[:parameters])
       flash[:notice] = "Successfully updated import job."
     end
     respond_with(@import_job, location: admin_import_jobs_url)
