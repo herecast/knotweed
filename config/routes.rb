@@ -18,6 +18,6 @@ Knotweed::Application.routes.draw do
     
     get 'import_jobs/:id/run_job', to: 'import_jobs#run_job', as: :run_job
     
-    get 'parsers/:id/parameters', to: "parsers#parameters"
+    match 'parsers/:id/parameters', to: "parsers#parameters"
   end
 end
