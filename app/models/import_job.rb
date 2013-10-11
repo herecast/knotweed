@@ -3,6 +3,7 @@ require 'yaml'
 require 'json'
 require "builder"
 require 'fileutils'
+require 'uri'
 
 class ImportJob < ActiveRecord::Base
 
@@ -75,15 +76,23 @@ class ImportJob < ActiveRecord::Base
   def traverse_input_tree
     job_folder_label = self.job_output_folder
     Dir.mkdir("#{Figaro.env.import_job_output_path}/#{job_folder_label}") unless Dir.exists?("#{Figaro.env.import_job_output_path}/#{job_folder_label}")
-    Find.find(source_path) do |path|
-      if FileTest.directory?(path)
-        next
-      else
-        log = Logger.new("#{Rails.root}/log/import_job.log")
-        log.debug("running parser on path: #{path}")
-        json = run_parser(path) || nil
-        if json.present?
-          json_to_corpus(json, File.basename(path, ".*"))
+    # check if source_path is a url -- if it is
+    # this is an rss feeder and we should
+    # just pass the source_path directly to
+    # the parser
+    log = Logger.new("#{Rails.root}/log/import_job.log")
+    log.debug("source path: #{source_path}")
+    if source_path =~ /^#{URI::regexp}$/
+      json = run_parser(source_path) || nil
+      json_to_corpus(json, File.basename(source_path, ".*")) if json.present?
+    else
+      Find.find(source_path) do |path|
+        if FileTest.directory?(path)
+          next
+        else
+          log.debug("running parser on path: #{path}")
+          json = run_parser(path) || nil
+          json_to_corpus(json, File.basename(path, ".*")) if json.present?
         end
       end
     end

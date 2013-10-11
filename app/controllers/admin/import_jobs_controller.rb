@@ -1,5 +1,6 @@
 class Admin::ImportJobsController < Admin::AdminController
   load_and_authorize_resource
+  respond_to :html
   
   def run_job
     @job = ImportJob.find(params[:id])
