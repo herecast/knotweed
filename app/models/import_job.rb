@@ -127,12 +127,35 @@ class ImportJob < ActiveRecord::Base
         log.debug("document #{article['guid']} not valid")
         base_path = "/#{Figaro.env.import_job_output_path}/#{job_output_folder}/quarantine/#{output_basename}"
       end
+
       xml = ::Builder::XmlMarkup.new
       xml.instruct!
-      xml.features do |f|
-        article.keys.each do |k|
-          eval("f.#{k} article[k]")
+      xml.tag!("tns:document", "xmlns:tns"=>"http://www.ontotext.com/DocumentSchema", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance") do |f|
+        f.tag!("tns:feature-set") do |g|
+          article.each do |k, v|
+            g.tag!("tns:feature") do |h|
+              h.tag!("tns:name", k, "type"=>"xs:string")
+              unless k == "content" or k == "title"
+                if k == "pubdate" or k == "timestamp"
+                  type = "xs:datetime"
+                else
+                  type = "xs:string"
+                end
+                g.tag!("tns:value", article[k], "type"=>type)
+              end
+            end
+          end
         end
+        
+        f.tag!("tns:document-parts") do |g|
+          g.tag!("tns:document-part", "part"=>"TITLE", "id"=>"1") do |h|
+            h.tag!("tns:content", article["title"])
+          end
+          g.tag!("tns:document-part", "part"=>"BODY", "id"=>"2") do |h|
+            h.tag!("tns:content", article["content"])
+          end
+        end
+        
       end
       xml_out = xml.target!
     
