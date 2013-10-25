@@ -84,7 +84,8 @@ class ImportJob < ActiveRecord::Base
     log.debug("source path: #{source_path}")
     if source_path =~ /^#{URI::regexp}$/
       json = run_parser(source_path) || nil
-      json_to_corpus(json, File.basename(source_path, ".*")) if json.present?
+      #json_to_corpus(json, File.basename(source_path, ".*")) if json.present?
+      json_to_contents(json) if json.present?
     else
       Find.find(source_path) do |path|
         if FileTest.directory?(path)
@@ -92,7 +93,8 @@ class ImportJob < ActiveRecord::Base
         else
           log.debug("running parser on path: #{path}")
           json = run_parser(path) || nil
-          json_to_corpus(json, File.basename(path, ".*")) if json.present?
+          #json_to_corpus(json, File.basename(path, ".*")) if json.present?
+          json_to_contents(json) if json.present?
         end
       end
     end
@@ -109,6 +111,20 @@ class ImportJob < ActiveRecord::Base
       conf = {}
     end
     return parse_file(path, conf)
+  end
+
+  # accepts json array of articles
+  # and creates content entries for them
+  def json_to_contents(json)
+    data = JSON.parse json
+    data.each do |article|
+      begin
+        Content.create_from_import_job(article)
+      rescue StandardError => bang
+        log = Logger.new("#{Rails.root}/log/contents.log")
+        log.debug("failed to process content: #{bang}")
+      end
+    end
   end
       
   # accepts a json array of articles

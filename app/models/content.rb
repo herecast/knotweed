@@ -4,14 +4,14 @@ class Content < ActiveRecord::Base
   belongs_to :location
   
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
-  belongs_to :contentsource, class_name: Publication
+  belongs_to :contentsource, class_name: "Publication", foreign_key: "contentsource_id"
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes
 
   attr_accessible :title, :subtitle, :authors, :content, :issue_id, :location_id, :copyright
   attr_accessible :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype
   attr_accessible :language, :page, :wordcount, :authoremail, :contentsource_id, :file
-  attr_accessible :quarantine, :contentsource_id
+  attr_accessible :quarantine, :contentsource_id, :doctype, :timestamp
   
   #before_save :inherit_issue_location
   
@@ -55,6 +55,7 @@ class Content < ActiveRecord::Base
       end
       data.delete "edition"
     end
+      
     content.update_attributes(data)
     content.save!
     content

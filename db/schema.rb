@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131024202503) do
+ActiveRecord::Schema.define(:version => 20131025142509) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -45,6 +45,8 @@ ActiveRecord::Schema.define(:version => 20131024202503) do
     t.integer  "contentsource_id"
     t.string   "file"
     t.boolean  "quarantine",       :default => false
+    t.string   "doctype"
+    t.datetime "timestamp"
   end
 
   create_table "delayed_jobs", :force => true do |t|
