@@ -2,8 +2,8 @@
 
 FactoryGirl.define do
   factory :location do
-    city "MyString"
-    state "MyString"
-    zip "MyString"
+    city "City"
+    state "State"
+    zip "55555"
   end
 end

@@ -5,8 +5,8 @@ FactoryGirl.define do
     title "MyString"
     subtitle "MyString"
     authors "MyString"
-    subject "MyString"
     content "MyText"
+    association :contentsource, factory: :publication
     issue
     location
   end

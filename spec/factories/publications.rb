@@ -2,6 +2,6 @@
 
 FactoryGirl.define do
   factory :publication do
-    name "MyString"
+    name "My Publication"
   end
 end
