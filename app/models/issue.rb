@@ -6,5 +6,9 @@ class Issue < ActiveRecord::Base
   has_many :contents
   
   validates_presence_of :publication
+
+  rails_admin do
+    object_label_method :issue_edition
+  end
   
 end
