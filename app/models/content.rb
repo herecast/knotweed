@@ -19,6 +19,19 @@ class Content < ActiveRecord::Base
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
+
+  rails_admin do
+    list do
+      filters [:contentsource, :issue, :title, :authors]
+      items_per_page 100
+      sort_by :pubdate, :contentsource
+      field :pubdate
+      field :contentsource
+      field :issue
+      field :title
+      field :authors
+    end
+  end
   
   # sets content location to issue location if it was left blank
   def inherit_issue_location
@@ -31,32 +44,45 @@ class Content < ActiveRecord::Base
   # is not as simple as just creating new from hash
   # because we need to match locations, publications, etc.
   def self.create_from_import_job(data)
-    content = Content.new
+    # pull special attributes out of the data hash
+    special_attrs = {}
+    ['location', 'source', 'contentsource', 'edition'].each do |key|
+      if data.has_key? key
+        special_attrs[key] = data[key]
+        data.delete key
+      end
+    end
+    data.keys.each do |k|
+      unless Content.accessible_attributes.entries.include? k
+        log = Logger.new("#{Rails.root}/log/contents.log")
+        log.debug("unknown key provided by parser: #{k}")
+        data.delete k
+      end
+    end
+    content = Content.new(data)
     # pull complex key/values out from data to use later
-    if data.has_key? 'location'
-      location = data['location']
+    if special_attrs.has_key? 'location'
+      location = special_attrs['location']
       content.location = Location.where("city LIKE ?", "%#{location}%").first
       content.location = Location.new(city: location) if content.location.nil?
-      data.delete "location"
     end
-    if data.has_key? "source"
-      source = data["source"]
+    if special_attrs.has_key? "source" or special_attrs.has_key? "contentsource"
+      source = special_attrs["source"]
+      # if no source, try contentsource
+      source = special_attrs["contentsource"] if source.nil?
       content.contentsource = Publication.where("name LIKE ?", "%#{source}%").first
       content.contentsource = Publication.create(name: source) if content.contentsource.nil?
-      data.delete "source"
     end
-    if data.has_key? "edition"
-      edition = data["edition"]
-      content.issue = Issue.where("issue_edition LIKE ? AND publication_id = ?", "%#{edition}%", content.contentsource_id).first
+    if special_attrs.has_key? "edition"
+      edition = special_attrs["edition"]
+      content.issue = Issue.where("issue_edition LIKE ?", "%#{edition}%").where(publication_id: content.contentsource_id, publication_date: content.pubdate).first
       # if not found, create a new one
       if content.issue.nil?
-        content.issue = Issue.new(issue_edition: edition)
+        content.issue = Issue.new(issue_edition: edition, publication_date: content.pubdate)
         content.issue.publication = content.contentsource if content.contentsource.present?
       end
-      data.delete "edition"
     end
       
-    content.update_attributes(data)
     content.save!
     content
   end

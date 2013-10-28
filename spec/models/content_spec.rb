@@ -64,18 +64,22 @@ describe Content do
       content = Content.create_from_import_job(@base_data)
       content.issue.issue_edition.should== "Holiday Edition"
     end
-    it "should assign the appropriate publication to the new edition if content has pub" do
+    it "should assign the appropriate data to the newly created issue" do
       @base_data["edition"] = "Holiday Edition"
       @base_data["source"] = "Test Pub"
       content = Content.create_from_import_job(@base_data)
       content.issue.issue_edition.should== "Holiday Edition"
+      content.issue.publication_date.should== content.pubdate
       content.issue.publication.should== content.contentsource
     end
     it "should match existing issues by publication and name" do
-      issue_1 = FactoryGirl.create(:issue) # matching pub
+      pubdate = Time.now
+      issue_1 = FactoryGirl.create(:issue, publication_date: pubdate) # matching pub
       issue_2 = FactoryGirl.create(:issue, issue_edition: issue_1.issue_edition) #matching name, different pub
       @base_data["edition"] = issue_1.issue_edition
       @base_data["source"] = issue_1.publication.name
+      @base_data["pubdate"] = pubdate
+      
       content = Content.create_from_import_job(@base_data)
       content.issue.should== issue_1
     end

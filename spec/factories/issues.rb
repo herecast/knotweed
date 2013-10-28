@@ -3,7 +3,7 @@
 FactoryGirl.define do
   factory :issue do
     issue_edition "MyString"
-    publication_date "2013-06-11"
+    publication_date Time.now
     publication
     copyright "MyString"
   end
