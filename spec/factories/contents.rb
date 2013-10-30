@@ -2,12 +2,13 @@
 
 FactoryGirl.define do
   factory :content do
-    title "MyString"
-    subtitle "MyString"
-    authors "MyString"
-    content "MyText"
+    title "Title"
+    subtitle "Subtitle"
+    authors "John Smith"
+    content "Content goes here"
     association :contentsource, factory: :publication
     issue
     location
+    pubdate Time.now
   end
 end

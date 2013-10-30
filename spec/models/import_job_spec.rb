@@ -42,10 +42,6 @@ describe ImportJob do
       Content.where(timestamp: nil).count.should== 1
     end
 
-    after do
-      # clean up folder
-      system("rm -rf #{Figaro.env.import_job_output_path}/*")
-    end
   end
 
 end

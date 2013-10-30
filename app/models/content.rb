@@ -1,3 +1,6 @@
+require 'fileutils'
+require 'builder'
+
 class Content < ActiveRecord::Base
   
   belongs_to :issue
@@ -19,6 +22,14 @@ class Content < ActiveRecord::Base
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
+  before_save :set_guid
+
+  NEW_FORMAT = "New"
+  KIM_FORMAT = "KIM"
+  EXPORT_FORMATS = [KIM_FORMAT, NEW_FORMAT]
+  DEFAULT_FORMAT = NEW_FORMAT
+
+  PUBDATE_OUTPUT_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
   rails_admin do
     list do
@@ -93,6 +104,114 @@ class Content < ActiveRecord::Base
     unless title.present? and contentsource.present? and pubdate.present?
       self.quarantine = true
     end
+  end
+
+  # if guid is empty, set with our own 
+  def set_guid
+    unless guid.present?
+      self.guid = ""
+      if title.present?
+        self.guid << title.gsub(" ", "_").gsub("/", "-")
+      else
+        self.guid << "#{rand(10000)}-#{rand(10000)}"
+      end
+      self.guid << "-" << pubdate.strftime("%Y-%m-%d") if pubdate.present?
+    end
+  end
+
+  def export_to_xml(format=nil)
+    unless EXPORT_FORMATS.include? format
+      format = DEFAULT_FORMAT
+    end
+    if quarantine == true
+      return false
+    else
+      FileUtils.mkpath(export_path)
+      File.open("#{export_path}/#{guid}.xml", "w+") do |f|
+        if format == KIM_FORMAT
+          f.write to_kim_xml
+        else
+          f.write to_new_xml
+        end
+      end
+      File.open("#{export_path}/#{guid}.html", "w+") do |f|
+        f.write content
+      end
+    end
+  end
+
+  # outputs a string of KIM formatted XML
+  def to_kim_xml
+    xml = ::Builder::XmlMarkup.new
+    xml.instruct!
+    xml.features do |f|
+      attributes.each do |k,v|
+        # ignore all the associations
+        if /[[:alpha:]]*_id/.match(k).nil?
+          if k == "pubdate" or k == "timestamp" and v.present?
+            f.tag!(k, v.strftime(PUBDATE_OUTPUT_FORMAT))
+          else
+            f.tag!(k, v)
+          end
+        end
+      end
+      f.tag!("issue", issue.issue_edition) if issue.present?
+      f.tag!("publication", contentsource.name) if contentsource.present?
+      f.tag!("location", location.city) if location.present?
+    end
+    xml.target!
+  end
+
+  def to_new_xml
+    xml = ::Builder::XmlMarkup.new
+    xml.instruct!
+    xml.tag!("tns:document", "xmlns:tns"=>"http://www.ontotext.com/DocumentSchema", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance") do |f|
+      f.tag!("tns:feature-set") do |g|
+        attributes.each do |k, v|
+          g.tag!("tns:feature") do |h|
+            if ["issue_id", "contentsource_id", "location_id"].include? k
+              if k == "issue_id" and issue.present?
+                key, value = "issue", issue.issue_edition
+              elsif k == "contentsource_id" and contentsource.present?
+                key, value = "publication", contentsource.name
+              elsif k == "location_id" and location.present?
+                key, value = "location", location.city
+              end
+            else
+              key = k
+              if key == "pubdate" or key == "timestamp" and v.present?
+                value = v.strftime(PUBDATE_OUTPUT_FORMAT)
+              else
+                value = v
+              end
+            end
+            unless key == "content"
+              h.tag!("tns:name", key, "type"=>"xs:string")
+              if key == "pubdate" or key == "timestamp"
+                type = "xs:datetime"
+              else
+                type = "xs:string"
+              end
+              g.tag!("tns:value", value, "type"=>type)
+            end
+          end
+        end
+      end
+      
+      f.tag!("tns:document-parts") do |g|
+        g.tag!("tns:document-part", "part"=>"BODY", "id"=>"1") do |h|
+          h.tag!("tns:content", content)
+        end
+      end
+      
+    end
+    xml.target!
+  end
+    
+
+  # construct export path
+  def export_path
+    path = "#{Figaro.env.content_export_path}/#{contentsource.name.gsub(" ", "_")}/#{pubdate.strftime("%Y")}/#{pubdate.strftime("%m")}/#{pubdate.strftime("%d")}"
   end
 
   
