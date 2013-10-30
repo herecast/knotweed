@@ -6,7 +6,7 @@ FactoryGirl.define do
     subtitle "Subtitle"
     authors "John Smith"
     content "Content goes here"
-    association :contentsource, factory: :publication
+    association :source, factory: :publication
     issue
     location
     pubdate Time.now

@@ -27,22 +27,22 @@ describe Content do
     it "should leave valid corpus entries as unquarantined" do
       @base_data["pubdate"] = Time.now
       p = FactoryGirl.create(:publication)
-      @base_data["contentsource_id"] = p.id
+      @base_data["source_id"] = p.id
       content = Content.create_from_import_job(@base_data)
       content.quarantine.should== false
     end
 
-    # check contentsource logic
-    it "should create contentsource if source is provided and it doesn't match existing publications" do
+    # check source logic
+    it "should create source if source is provided and it doesn't match existing publications" do
       @base_data["source"] = "Test Publication"
       content = Content.create_from_import_job(@base_data)
-      content.contentsource.name.should== "Test Publication"
+      content.source.name.should== "Test Publication"
     end
     it "should match an existing publication if source matches publication name" do
       pub = FactoryGirl.create(:publication)
       @base_data["source"] = pub.name
       content = Content.create_from_import_job(@base_data)
-      content.contentsource.should== pub
+      content.source.should== pub
     end
 
     # check location logic
@@ -70,7 +70,7 @@ describe Content do
       content = Content.create_from_import_job(@base_data)
       content.issue.issue_edition.should== "Holiday Edition"
       content.issue.publication_date.should== content.pubdate
-      content.issue.publication.should== content.contentsource
+      content.issue.publication.should== content.source
     end
     it "should match existing issues by publication and name" do
       pubdate = Time.now
@@ -173,7 +173,7 @@ describe Content do
       @xml.include?("<publication").should be_true
       @xml.include?("<location").should be_true
       @xml.include?(@content.issue.issue_edition).should be_true if @content.issue.present?
-      @xml.include?(@content.contentsource.name).should be_true if @content.contentsource.present?
+      @xml.include?(@content.source.name).should be_true if @content.source.present?
       @xml.include?(@content.location.city).should be_true if @content.location.present?
     end
   end

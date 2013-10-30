@@ -7,14 +7,14 @@ class Content < ActiveRecord::Base
   belongs_to :location
   
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
-  belongs_to :contentsource, class_name: "Publication", foreign_key: "contentsource_id"
+  belongs_to :source, class_name: "Publication", foreign_key: "source_id"
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes
 
   attr_accessible :title, :subtitle, :authors, :content, :issue_id, :location_id, :copyright
   attr_accessible :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype
-  attr_accessible :language, :page, :wordcount, :authoremail, :contentsource_id, :file
-  attr_accessible :quarantine, :contentsource_id, :doctype, :timestamp
+  attr_accessible :language, :page, :wordcount, :authoremail, :source_id, :file
+  attr_accessible :quarantine, :doctype, :timestamp, :contentsource
   
   #before_save :inherit_issue_location
   
@@ -33,11 +33,11 @@ class Content < ActiveRecord::Base
 
   rails_admin do
     list do
-      filters [:contentsource, :issue, :title, :authors]
+      filters [:source, :issue, :title, :authors]
       items_per_page 100
-      sort_by :pubdate, :contentsource
+      sort_by :pubdate, :source
       field :pubdate
-      field :contentsource
+      field :source
       field :issue
       field :title
       field :authors
@@ -57,7 +57,7 @@ class Content < ActiveRecord::Base
   def self.create_from_import_job(data)
     # pull special attributes out of the data hash
     special_attrs = {}
-    ['location', 'source', 'contentsource', 'edition'].each do |key|
+    ['location', 'source', 'source', 'edition'].each do |key|
       if data.has_key? key
         special_attrs[key] = data[key]
         data.delete key
@@ -77,20 +77,20 @@ class Content < ActiveRecord::Base
       content.location = Location.where("city LIKE ?", "%#{location}%").first
       content.location = Location.new(city: location) if content.location.nil?
     end
-    if special_attrs.has_key? "source" or special_attrs.has_key? "contentsource"
+    if special_attrs.has_key? "source" or special_attrs.has_key? "source"
       source = special_attrs["source"]
-      # if no source, try contentsource
-      source = special_attrs["contentsource"] if source.nil?
-      content.contentsource = Publication.where("name LIKE ?", "%#{source}%").first
-      content.contentsource = Publication.create(name: source) if content.contentsource.nil?
+      # if no source, try source
+      source = special_attrs["source"] if source.nil?
+      content.source = Publication.where("name LIKE ?", "%#{source}%").first
+      content.source = Publication.create(name: source) if content.source.nil?
     end
     if special_attrs.has_key? "edition"
       edition = special_attrs["edition"]
-      content.issue = Issue.where("issue_edition LIKE ?", "%#{edition}%").where(publication_id: content.contentsource_id, publication_date: content.pubdate).first
+      content.issue = Issue.where("issue_edition LIKE ?", "%#{edition}%").where(publication_id: content.source_id, publication_date: content.pubdate).first
       # if not found, create a new one
       if content.issue.nil?
         content.issue = Issue.new(issue_edition: edition, publication_date: content.pubdate)
-        content.issue.publication = content.contentsource if content.contentsource.present?
+        content.issue.publication = content.source if content.source.present?
       end
     end
       
@@ -101,7 +101,7 @@ class Content < ActiveRecord::Base
   # check that doc validates our xml requirements
   # if not, mark it as quarantined
   def mark_quarantined
-    unless title.present? and contentsource.present? and pubdate.present?
+    unless title.present? and source.present? and pubdate.present?
       self.quarantine = true
     end
   end
@@ -156,7 +156,7 @@ class Content < ActiveRecord::Base
         end
       end
       f.tag!("issue", issue.issue_edition) if issue.present?
-      f.tag!("publication", contentsource.name) if contentsource.present?
+      f.tag!("publication", source.name) if source.present?
       f.tag!("location", location.city) if location.present?
     end
     xml.target!
@@ -169,11 +169,11 @@ class Content < ActiveRecord::Base
       f.tag!("tns:feature-set") do |g|
         attributes.each do |k, v|
           g.tag!("tns:feature") do |h|
-            if ["issue_id", "contentsource_id", "location_id"].include? k
+            if ["issue_id", "source_id", "location_id"].include? k
               if k == "issue_id" and issue.present?
                 key, value = "issue", issue.issue_edition
-              elsif k == "contentsource_id" and contentsource.present?
-                key, value = "publication", contentsource.name
+              elsif k == "source_id" and source.present?
+                key, value = "publication", source.name
               elsif k == "location_id" and location.present?
                 key, value = "location", location.city
               end
@@ -211,7 +211,7 @@ class Content < ActiveRecord::Base
 
   # construct export path
   def export_path
-    path = "#{Figaro.env.content_export_path}/#{contentsource.name.gsub(" ", "_")}/#{pubdate.strftime("%Y")}/#{pubdate.strftime("%m")}/#{pubdate.strftime("%d")}"
+    path = "#{Figaro.env.content_export_path}/#{source.name.gsub(" ", "_")}/#{pubdate.strftime("%Y")}/#{pubdate.strftime("%m")}/#{pubdate.strftime("%d")}"
   end
 
   
