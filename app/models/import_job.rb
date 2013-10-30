@@ -45,7 +45,6 @@ class ImportJob < ActiveRecord::Base
     log = Logger.new("#{Rails.root}/log/delayed_job.log")
     log.debug "input: #{self.source_path}"
     log.debug "parser: #{Figaro.env.parsers_path}/#{parser.filename}"
-    log.debug "output: #{Figaro.env.import_job_output_path}"
     log.debug "error: #{exception}"
     log.debug "backtrace: #{exception.backtrace.join("\n")}"   
     self.status = "failed"
@@ -74,8 +73,6 @@ class ImportJob < ActiveRecord::Base
   end
   
   def traverse_input_tree
-    job_folder_label = self.job_output_folder
-    Dir.mkdir("#{Figaro.env.import_job_output_path}/#{job_folder_label}") unless Dir.exists?("#{Figaro.env.import_job_output_path}/#{job_folder_label}")
     # check if source_path is a url -- if it is
     # this is an rss feeder and we should
     # just pass the source_path directly to
@@ -124,120 +121,6 @@ class ImportJob < ActiveRecord::Base
         log = Logger.new("#{Rails.root}/log/contents.log")
         log.debug("failed to process content: #{bang}")
       end
-    end
-  end
-      
-  # accepts a json array of articles
-  # and a basename (folder name) for the output
-  # outputs a folder structure to the corpus path
-  def json_to_corpus(json, output_basename)
-    data = JSON.parse json
-    data.each do |article|
-
-      base_path = "#{Figaro.env.import_job_output_path}/#{job_output_folder}/#{output_basename}"
-      
-      # validate that article meets the basic format requirements
-      # for the corpus, if not, output to quarantine folder
-      unless validate_doc(article)
-        log = Logger.new("#{Rails.root}/log/import_job.log")
-        log.debug("document #{article['guid']} not valid")
-        base_path = "/#{Figaro.env.import_job_output_path}/#{job_output_folder}/quarantine/#{output_basename}"
-      end
-
-      xml = ::Builder::XmlMarkup.new
-      xml.instruct!
-      xml.tag!("tns:document", "xmlns:tns"=>"http://www.ontotext.com/DocumentSchema", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance") do |f|
-        f.tag!("tns:feature-set") do |g|
-          article.each do |k, v|
-            g.tag!("tns:feature") do |h|
-              h.tag!("tns:name", k, "type"=>"xs:string")
-              unless k == "content" or k == "title"
-                if k == "pubdate" or k == "timestamp"
-                  type = "xs:datetime"
-                else
-                  type = "xs:string"
-                end
-                g.tag!("tns:value", article[k], "type"=>type)
-              end
-            end
-          end
-        end
-        
-        f.tag!("tns:document-parts") do |g|
-          g.tag!("tns:document-part", "part"=>"TITLE", "id"=>"1") do |h|
-            h.tag!("tns:content", article["title"])
-          end
-          g.tag!("tns:document-part", "part"=>"BODY", "id"=>"2") do |h|
-            h.tag!("tns:content", article["content"])
-          end
-        end
-        
-      end
-      xml_out = xml.target!
-    
-      txt_out = ""
-      # quick way to generate txt template
-      ["title", "subtitle", "author", "contentsource", "content", "correctiondate", "correction", "timestamp"].each do |feature|
-        unless article[feature].nil? or article[feature].empty?
-          # this adds an extra line below the content
-          txt_out << "\n" if feature == "content"
-          if feature == "correctiondate"
-            txt_out << "\n" << "Correction Date: "
-          elsif feature == "correction"
-            txt_out << "Correction: "
-          end
-          txt_out << article[feature] << "\n"
-        end
-      end
-    
-      # directory structure of output
-      month = article["timestamp"][5..6] if article.has_key? "timestamp" and article["timestamp"].present?
-      # ensure we can still write to a directory if month is somehow empty (for non-validating entries)
-      month = "no-month" unless month.present?
-      FileUtils.mkdir_p(base_path + "/#{month}")
-      if article.has_key? "guid" and article["guid"].present?
-        filename = article["guid"].gsub("/", "-").gsub(" ", "_")
-      else
-        # try to come up with something unique enough
-        filename = "#{rand(10000)-rand(10000)}"
-      end
-
-      File.open("#{base_path}/#{month}/#{filename}.xml", "w+:UTF-8") do |f|
-        f.write xml_out
-      end
-      File.open("#{base_path}/#{month}/#{filename}.txt", "w+:UTF-8") do |f|
-        f.write txt_out
-      end
-    end
-  end
-
-  # method to validate incoming documents before sending them to the corpus
-  def validate_doc(doc)
-    # check that the required keys exist
-    unless doc.has_key? "pubdate" and doc.has_key? "timestamp" and doc.has_key? "title" and doc.has_key? "source"
-      return false
-    end
-    # validate pubdate and timestamp format
-    [doc["pubdate"], doc["timestamp"]].each do |date|
-      if /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.match(date).nil?
-        return false
-      end
-    end
-    # validate source and title are present?
-    [doc["source"], doc["title"]].each do |feature|
-      return false unless feature.present?
-    end
-    return true
-  end
-
-    
-  # helper method for defining job-run-specific output folder
-  # (formatting of timestamp)
-  def job_output_folder
-    if last_run_at
-      last_run_at.strftime("%Y%m%d%H%M%S") 
-    else
-      nil
     end
   end
 
