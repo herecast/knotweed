@@ -4,19 +4,22 @@ require 'json'
 require "builder"
 require 'fileutils'
 require 'uri'
+require 'lib/scheduledjob.rb'
 
 class ImportJob < ActiveRecord::Base
+
+  include Jobs::ScheduledJob
 
   belongs_to :organization
   belongs_to :parser
   
   validates_presence_of :organization
   
-  attr_accessible :config, :last_run_at, :name, :parser_id, :source_path, :type, :organization_id
+  attr_accessible :config, :last_run_at, :name, :parser_id, :source_path, :type, :organization_id, :frequency
   
   validates :status, inclusion: { in: %w(failed running success queued), allow_nil: true }
   validate :parser_belongs_to_same_organization, unless: "parser.nil?"
-  
+
   # delayed job action
   # 
   # determines the process needed to run the import job (parser, scraping, etc.)
