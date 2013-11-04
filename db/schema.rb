@@ -11,11 +11,20 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131030202107) do
+ActiveRecord::Schema.define(:version => 20131104174823) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
     t.text     "categories"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "contacts", :force => true do |t|
+    t.string   "name"
+    t.string   "phone"
+    t.string   "email"
+    t.text     "notes"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
@@ -112,6 +121,8 @@ ActiveRecord::Schema.define(:version => 20131030202107) do
     t.string   "name"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.string   "type"
+    t.text     "notes"
   end
 
   create_table "parameters", :force => true do |t|
@@ -132,10 +143,15 @@ ActiveRecord::Schema.define(:version => 20131030202107) do
 
   create_table "publications", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
     t.string   "logo"
     t.integer  "organization_id"
+    t.integer  "admin_contact_id"
+    t.integer  "tech_contact_id"
+    t.string   "website"
+    t.string   "publishing_frequency"
+    t.text     "notes"
   end
 
   create_table "rails_admin_histories", :force => true do |t|
