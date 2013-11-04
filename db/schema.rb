@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131104174823) do
+ActiveRecord::Schema.define(:version => 20131104213625) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -89,7 +89,6 @@ ActiveRecord::Schema.define(:version => 20131104174823) do
     t.integer  "parser_id"
     t.string   "name"
     t.text     "config"
-    t.datetime "last_run_at"
     t.string   "source_path"
     t.string   "type"
     t.integer  "organization_id"
@@ -97,6 +96,14 @@ ActiveRecord::Schema.define(:version => 20131104174823) do
     t.datetime "updated_at",                     :null => false
     t.string   "status"
     t.integer  "frequency",       :default => 0
+  end
+
+  create_table "import_records", :force => true do |t|
+    t.integer  "import_job_id"
+    t.integer  "items_imported", :default => 0
+    t.integer  "failures",       :default => 0
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
   end
 
   create_table "issues", :force => true do |t|

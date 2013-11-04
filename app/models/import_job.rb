@@ -12,10 +12,11 @@ class ImportJob < ActiveRecord::Base
 
   belongs_to :organization
   belongs_to :parser
+  has_many :import_records
   
   validates_presence_of :organization
   
-  attr_accessible :config, :last_run_at, :name, :parser_id, :source_path, :type, :organization_id, :frequency
+  attr_accessible :config, :name, :parser_id, :source_path, :type, :organization_id, :frequency
   
   validates :status, inclusion: { in: %w(failed running success queued), allow_nil: true }
   validate :parser_belongs_to_same_organization, unless: "parser.nil?"
@@ -65,7 +66,7 @@ class ImportJob < ActiveRecord::Base
   def before(job)
     self.status = "running"
     # set last_run_at regardless of success or failure
-    self.last_run_at = Time.now
+    self.import_records.create
     self.save
   end
   
@@ -119,14 +120,22 @@ class ImportJob < ActiveRecord::Base
   # and creates content entries for them
   def json_to_contents(json)
     data = JSON.parse json
+    import_record = self.last_import_record
+    successes = 0
+    failures = 0
     data.each do |article|
       begin
         Content.create_from_import_job(article)
+        successes += 1
       rescue StandardError => bang
         log = Logger.new("#{Rails.root}/log/contents.log")
         log.debug("failed to process content: #{bang}")
+        failures += 1
       end
     end
+    import_record.items_imported += successes
+    import_record.failures += failures
+    import_record.save!
   end
 
   def save_config(parameters)
@@ -143,7 +152,7 @@ class ImportJob < ActiveRecord::Base
   # gets next scheduled run
   # returns nil if not scheduled to run
   def next_scheduled_run
-    job = Delayed::Job.where("handler LIKE '%ImportJob%' AND handler LIKE '%id: ?%'", id).order(run_at: :asc).first
+    job = Delayed::Job.where("handler LIKE '%ImportJob%' AND handler LIKE '%id: ?%'", id).order("run_at ASC").first
     job ? job.run_at : nil
   end
 
@@ -151,6 +160,16 @@ class ImportJob < ActiveRecord::Base
   # records pointing to this job
   def cancel_scheduled_runs
     Delayed::Job.where("handler LIKE '%ImportJob%' AND handler LIKE '%id: ?%'", id).delete_all
+  end
+
+  # returns the most recent import record
+  def last_import_record
+    import_records.order("created_at DESC").first
+  end
+
+  # returns time last run at
+  def last_run_at
+    last_import_record.try(:created_at)
   end
 
   private
