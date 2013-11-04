@@ -18,7 +18,11 @@ module ImportJobsHelper
     elsif job.status == "queued"
       content_tag(:span, "queued", { class: "btn btn-danger disabled" })
     else
-      content_tag(:a, "Run Job", { href: admin_run_job_path(job), data: { remote: true }, class: "btn btn-success" })
+      if job.next_scheduled_run.nil?
+        content_tag(:a, "Run Job", { href: admin_run_job_path(job), data: { remote: true }, class: "btn btn-success" })
+      else
+        content_tag(:a, "Cancel Scheduled Runs", { href: admin_cancel_job_path(job), data: { remote: true, method: :delete }, class: "btn btn-danger" })
+      end
     end
   end
       

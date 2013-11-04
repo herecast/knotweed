@@ -17,6 +17,7 @@ Knotweed::Application.routes.draw do
     match "parsers/:parser_id/new_import_job" => "import_jobs#new", as: :new_import_job_for_parser
     
     get 'import_jobs/:id/run_job', to: 'import_jobs#run_job', as: :run_job
+    delete 'import_jobs/:id/cancel', to: 'import_jobs#cancel_job', as: :cancel_job
     
     match 'parsers/:id/parameters', to: "parsers#parameters"
   end

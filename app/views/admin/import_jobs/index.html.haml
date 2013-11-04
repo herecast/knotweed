@@ -9,6 +9,7 @@
             %th.span1 Parser
             %th.span1 Organization
             %th.span1 Last Run
+            %th.span1 Next Scheduled Run
             %th.span1
             %th.span1 Status
             %th.span1 
@@ -19,6 +20,8 @@
               %td= link_to job.parser.name, edit_admin_parser_path(job.parser) if job.parser
               %td= job.organization.name
               %td= job.last_run_at.strftime("%m/%d/%Y %I:%M%p") if job.last_run_at.present?
+              %td.next-run
+                = job.next_scheduled_run.strftime("%m/%d/%Y %I:%M%p") if job.next_scheduled_run.present?
               %td.run-job-button
                 = action_button_for_job(job)
               %td.job-status

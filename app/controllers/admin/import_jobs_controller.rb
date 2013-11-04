@@ -11,6 +11,15 @@ class Admin::ImportJobsController < Admin::AdminController
       format.js
     end
   end
+
+  def cancel_job
+    @job = ImportJob.find(params[:id])
+    @job.cancel_scheduled_runs
+    respond_to do |format|
+      format.js
+    end
+  end
+
   
   def index
   end

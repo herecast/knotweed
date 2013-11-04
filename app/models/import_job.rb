@@ -20,6 +20,8 @@ class ImportJob < ActiveRecord::Base
   validates :status, inclusion: { in: %w(failed running success queued), allow_nil: true }
   validate :parser_belongs_to_same_organization, unless: "parser.nil?"
 
+  after_destroy :cancel_scheduled_runs
+
   # delayed job action
   # 
   # determines the process needed to run the import job (parser, scraping, etc.)
@@ -136,6 +138,19 @@ class ImportJob < ActiveRecord::Base
       self.config = conf.to_yaml
       self.save
     end
+  end
+
+  # gets next scheduled run
+  # returns nil if not scheduled to run
+  def next_scheduled_run
+    job = Delayed::Job.where("handler LIKE '%ImportJob%' AND handler LIKE '%id: ?%'", id).order(run_at: :asc).first
+    job ? job.run_at : nil
+  end
+
+  # cancel scheduled runs by removing any Delayed::Job
+  # records pointing to this job
+  def cancel_scheduled_runs
+    Delayed::Job.where("handler LIKE '%ImportJob%' AND handler LIKE '%id: ?%'", id).delete_all
   end
 
   private
