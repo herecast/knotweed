@@ -5,15 +5,15 @@ class Organization < ActiveRecord::Base
   has_many :parsers
   has_many :import_jobs
 
-  attr_accessible :name, :type, :notes
+  attr_accessible :name, :org_type, :notes
 
-  TYPE_OPTIONS = ["Publisher"]
+  ORG_TYPE_OPTIONS = ["Publisher"]
 
   validates_presence_of :name
-  validates :type, inclusion: { in: TYPE_OPTIONS }, allow_nil: true
+  validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_nil: true
 
-  def type_enum
-    TYPE_OPTIONS
+  def org_type_enum
+    ORG_TYPE_OPTIONS
   end
 
 
