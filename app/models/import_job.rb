@@ -95,7 +95,13 @@ class ImportJob < ActiveRecord::Base
           next
         else
           log.debug("running parser on path: #{path}")
-          json = run_parser(path) || nil
+          begin
+            json = run_parser(path)
+          rescue StandardError => bang
+            log.debug("failed to parse #{path}: #{bang}")
+            json = nil
+          end
+
           #json_to_corpus(json, File.basename(path, ".*")) if json.present?
           json_to_contents(json) if json.present?
         end
