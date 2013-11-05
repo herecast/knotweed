@@ -5,6 +5,7 @@ class Content < ActiveRecord::Base
   
   belongs_to :issue
   belongs_to :location
+  belongs_to :import_record
   
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
   belongs_to :source, class_name: "Publication", foreign_key: "source_id"
@@ -54,7 +55,7 @@ class Content < ActiveRecord::Base
   # creating a new content from import job data
   # is not as simple as just creating new from hash
   # because we need to match locations, publications, etc.
-  def self.create_from_import_job(data)
+  def self.create_from_import_job(data, job=nil)
     # pull special attributes out of the data hash
     special_attrs = {}
     ['location', 'source', 'source', 'edition'].each do |key|
@@ -93,6 +94,7 @@ class Content < ActiveRecord::Base
         content.issue.publication = content.source if content.source.present?
       end
     end
+    content.import_record = job.last_import_record if job.present?
       
     content.save!
     content

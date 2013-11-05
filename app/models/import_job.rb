@@ -125,7 +125,7 @@ class ImportJob < ActiveRecord::Base
     failures = 0
     data.each do |article|
       begin
-        Content.create_from_import_job(article)
+        Content.create_from_import_job(article, self)
         successes += 1
       rescue StandardError => bang
         log = Logger.new("#{Rails.root}/log/contents.log")

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131104213625) do
+ActiveRecord::Schema.define(:version => 20131105161739) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -36,8 +36,8 @@ ActiveRecord::Schema.define(:version => 20131104213625) do
     t.text     "content"
     t.integer  "issue_id"
     t.integer  "location_id"
-    t.datetime "created_at",                       :null => false
-    t.datetime "updated_at",                       :null => false
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
     t.string   "copyright"
     t.string   "guid"
     t.datetime "pubdate"
@@ -53,10 +53,11 @@ ActiveRecord::Schema.define(:version => 20131104213625) do
     t.string   "authoremail"
     t.integer  "source_id"
     t.string   "file"
-    t.boolean  "quarantine",    :default => false
+    t.boolean  "quarantine",       :default => false
     t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
+    t.integer  "import_record_id"
   end
 
   create_table "delayed_jobs", :force => true do |t|

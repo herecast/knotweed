@@ -35,6 +35,13 @@ describe ImportJob do
       @job.status.should== "success"
     end
 
+    it "should create an import record attached to the job" do
+      ImportRecord.count.should== 2
+      ImportRecord.where(import_job_id: @job.id).count.should==1
+      record = ImportRecord.where(import_job_id: @job.id).first
+      @job.last_import_record.should== record
+    end
+
     it "should create a new Content entry" do
       # 2 since we've run two jobs with two different configs here
       Content.count.should== 2

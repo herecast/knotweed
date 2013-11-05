@@ -84,6 +84,12 @@ describe Content do
       content.issue.should== issue_1
     end
 
+    it "should set the import_record_id of content if provided" do
+      record = FactoryGirl.create(:import_record)
+      content = Content.create_from_import_job(@base_data, record.import_job)
+      content.import_record.should== record
+    end
+
   end
 
   describe "set guid if not present" do
