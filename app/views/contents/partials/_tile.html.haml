@@ -6,15 +6,15 @@
       = image_tag "placeholder_channel_header.png"
   .tile-content
     %span.title
-      = link_to features["TITLE"], content_path(document_id)
+      = link_to content.title, content
     %br
-    = features["SOURCE"]
-    - if features["SOURCE"].present? and features["AUTHORS"].present?
+    = content.source.try(:name)
+    - if content.source.present? and content.authors.present?
       \- 
-    = features["AUTHORS"]
-    - if features["SOURCE"].present? or features["AUTHORS"].present?
+    = content.authors
+    - if content.source.present? or content.authors.present?
       %br
-    = features["LOCATION"] if features.has_key? "LOCATION"
-    = "--" if features["LOCATION"].present?
-    = content.truncate(150, separator: " ", omission: "...") 
-    = link_to "more", content_path(document_id)
+    = content.location.try(:city)
+    = "--" if content.location.present?
+    = content.content.truncate(150, separator: " ", omission: "...") 
+    = link_to "more", content

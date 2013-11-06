@@ -19,12 +19,12 @@
               %li= e.gsub("\"", "")
     .span8
       %h1 
-        = @features["TITLE"]
+        = @content.title
       %h5 
-        = simple_format @features["AUTHORS"]
+        = simple_format @content.authors
       %p
-        = @features["LOCATION"] + " -- " if @features["LOCATION"].present?
-        = simple_format @content.gsub("\u2028", "\n\n") # simple_format doesn't catch \u2028
+        = @content.location.city + " -- "
+        = simple_format @content.content.gsub("\u2028", "\n\n") # simple_format doesn't catch \u2028
     .span2
       .well
         %h4 More

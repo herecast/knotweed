@@ -7,9 +7,7 @@ group :assets do
   gem 'compass-rails'
 end
 gem 'jquery-rails'
-gem "trinidad"
-gem "activerecord-jdbcmysql-adapter"
-gem "jdbc-mysql"
+gem "mysql2"
 gem "haml-rails", ">= 0.4"
 gem "rspec-rails", ">= 2.12.2", :group => [:development, :test]
 gem "capybara", ">= 2.0.3", :group => :test

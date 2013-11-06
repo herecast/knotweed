@@ -1,33 +1,3 @@
 #wrapper
   .row
     .well
-      = form_tag admin_content_path(@id), method: "put", id: "edit_document" do
-        .row
-          .span3
-            = label_tag "title", "Title"
-            = text_field_tag "title", @features["TITLE"]
-            = label_tag "subtitle", "Subtitle"
-            = text_field_tag "subtitle", @features["SUBTITLE"]
-            = label_tag "authors", "Authors"
-            = text_field_tag "authors", @features["AUTHORS"]
-          .span3
-            = label_tag "edition", "Edition"
-            = text_field_tag "edition", @features["EDITION"]
-            = label_tag "categories", "Categories"
-            = text_field_tag "categories", @features["CATEGORIES"]
-            = label_tag "location", "Location"
-            = text_field_tag "location", @features["LOCATION"]
-          .span3
-            = label_tag "topics", "Topics"
-            = text_field_tag "topics", @features["TOPICS"]
-            = label_tag "copyright", "Copyright"
-            = text_field_tag "copyright", @features["COPYRIGHT"]
-            = label_tag "pubdate", "Publication Date"
-            = text_field_tag "pubdate", Date.parse(@features["PUBDATE"]), {type: "date"}
-        .row
-          .span11
-            = label_tag "content", "Content"
-            = text_area_tag "content", @content.gsub("\u2028", "\n\n"), rows: 20
-        .row
-          .span11
-            = submit_tag "Update Document", class: "btn btn-primary"

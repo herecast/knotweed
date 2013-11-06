@@ -4,7 +4,7 @@ require 'json'
 require "builder"
 require 'fileutils'
 require 'uri'
-require 'lib/scheduledjob.rb'
+require 'jobs/scheduledjob'
 
 class ImportJob < ActiveRecord::Base
 

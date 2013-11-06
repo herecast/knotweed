@@ -29,10 +29,6 @@ GEM
       activesupport (= 3.2.13)
       arel (~> 3.0.2)
       tzinfo (~> 0.3.29)
-    activerecord-jdbc-adapter (1.2.9.1)
-    activerecord-jdbcmysql-adapter (1.2.9)
-      activerecord-jdbc-adapter (~> 1.2.9)
-      jdbc-mysql (~> 5.1.0)
     activeresource (3.2.13)
       activemodel (= 3.2.13)
       activesupport (= 3.2.13)
@@ -127,7 +123,6 @@ GEM
       railties (>= 3.1, < 4.1)
     hike (1.2.3)
     i18n (0.6.1)
-    jdbc-mysql (5.1.25)
     journey (1.0.4)
     jquery-rails (3.0.1)
       railties (>= 3.0, < 5.0)
@@ -135,7 +130,6 @@ GEM
     jquery-ui-rails (3.0.1)
       jquery-rails
       railties (>= 3.1.0)
-    jruby-rack (1.1.13.2)
     json (1.8.0)
     json (1.8.0-java)
     kaminari (0.14.1)
@@ -156,6 +150,7 @@ GEM
     mime-types (1.23)
     mini_portile (0.5.0)
     multi_json (1.7.6)
+    mysql2 (0.3.13)
     nested_form (0.3.2)
     nokogiri (1.6.0)
       mini_portile (~> 0.5.0)
@@ -268,10 +263,6 @@ GEM
     treetop (1.4.14)
       polyglot
       polyglot (>= 0.3.1)
-    trinidad (1.4.5)
-      jruby-rack (>= 1.1.13)
-      trinidad_jars (>= 1.2.3)
-    trinidad_jars (1.2.4)
     tzinfo (0.3.37)
     uglifier (2.1.1)
       execjs (>= 0.3.0)
@@ -286,7 +277,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activerecord-jdbcmysql-adapter
   american_date
   bootstrap-sass (>= 2.3.0.0)
   cancan (>= 1.6.9)
@@ -305,9 +295,9 @@ DEPENDENCIES
   guard-rails (>= 0.4.0)
   guard-rspec (>= 2.5.2)
   haml-rails (>= 0.4)
-  jdbc-mysql
   jquery-datatables-rails!
   jquery-rails
+  mysql2
   quiet_assets (>= 1.0.2)
   rails (= 3.2.13)
   rails_admin
@@ -319,5 +309,4 @@ DEPENDENCIES
   ruby-gmail
   sass-rails (~> 3.2.3)
   simple_form (>= 2.1.0)
-  trinidad
   uglifier (>= 1.0.3)
