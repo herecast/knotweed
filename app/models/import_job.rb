@@ -88,7 +88,7 @@ class ImportJob < ActiveRecord::Base
     if source_path =~ /^#{URI::regexp}$/
       json = run_parser(source_path) || nil
       #json_to_corpus(json, File.basename(source_path, ".*")) if json.present?
-      json_to_contents(json) if json.present?
+      docs_to_contents(json) if json.present?
     else
       Find.find(source_path) do |path|
         if FileTest.directory?(path)
@@ -103,7 +103,7 @@ class ImportJob < ActiveRecord::Base
           end
 
           #json_to_corpus(json, File.basename(path, ".*")) if json.present?
-          json_to_contents(json) if json.present?
+          docs_to_contents(json) if json.present?
         end
       end
     end
@@ -111,6 +111,7 @@ class ImportJob < ActiveRecord::Base
      
   # runs the parser's parse_file method on a file located at path
   # outputs a json array of articles (if parser is correct)
+  # 
   def run_parser(path)
     require "#{Figaro.env.parsers_path}/#{parser.filename}"
     # get config from the import_job and convert to hash
@@ -124,8 +125,12 @@ class ImportJob < ActiveRecord::Base
 
   # accepts json array of articles
   # and creates content entries for them
-  def json_to_contents(json)
-    data = JSON.parse json
+  def docs_to_contents(docs)
+    if docs.is_a? String
+      data = JSON.parse docs
+    else
+      data = docs
+    end
     import_record = self.last_import_record
     successes = 0
     failures = 0
