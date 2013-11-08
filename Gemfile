@@ -37,3 +37,6 @@ gem 'delayed_job'
 gem 'delayed_job_active_record'
 gem 'american_date'
 gem 'ruby-gmail' 
+
+gem 'bullet', group: :develompent
+gem 'mail'

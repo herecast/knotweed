@@ -158,7 +158,7 @@ class ImportJob < ActiveRecord::Base
   # gets next scheduled run
   # returns nil if not scheduled to run
   def next_scheduled_run
-    job = Delayed::Job.where("handler LIKE '%ImportJob%' AND handler LIKE '% id: ?%'", id).order("run_at ASC").first
+    job = Delayed::Job.where("handler LIKE '%ImportJob%' AND handler LIKE '% id: ?%' AND run_at > ?", id, Time.now).order("run_at ASC").first
     job ? job.run_at : nil
   end
 

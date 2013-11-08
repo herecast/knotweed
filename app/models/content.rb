@@ -7,7 +7,7 @@ class Content < ActiveRecord::Base
   belongs_to :location
   belongs_to :import_record
   
-  has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
+  has_many :images, as: :imageable, inverse_of: :imageable #, dependent: :destroy
   belongs_to :source, class_name: "Publication", foreign_key: "source_id"
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes
@@ -60,7 +60,7 @@ class Content < ActiveRecord::Base
     # pull special attributes out of the data hash
     special_attrs = {}
     ['location', 'source', 'source', 'edition'].each do |key|
-      if data.has_key? key
+      if data.has_key? key and data[key].present?
         special_attrs[key] = data[key]
         data.delete key
       end
@@ -79,10 +79,8 @@ class Content < ActiveRecord::Base
       content.location = Location.where("city LIKE ?", "%#{location}%").first
       content.location = Location.new(city: location) if content.location.nil?
     end
-    if special_attrs.has_key? "source" or special_attrs.has_key? "source"
+    if special_attrs.has_key? "source"
       source = special_attrs["source"]
-      # if no source, try source
-      source = special_attrs["source"] if source.nil?
       content.source = Publication.where("name LIKE ?", "%#{source}%").first
       content.source = Publication.create(name: source) if content.source.nil?
     end
