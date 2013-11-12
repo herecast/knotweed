@@ -15,7 +15,7 @@ class Content < ActiveRecord::Base
   attr_accessible :title, :subtitle, :authors, :content, :issue_id, :location_id, :copyright
   attr_accessible :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype
   attr_accessible :language, :page, :wordcount, :authoremail, :source_id, :file
-  attr_accessible :quarantine, :doctype, :timestamp, :contentsource
+  attr_accessible :quarantine, :doctype, :timestamp, :contentsource, :source_content_id
   
   #before_save :inherit_issue_location
   

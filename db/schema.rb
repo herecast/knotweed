@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131105174143) do
+ActiveRecord::Schema.define(:version => 20131112142608) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -36,8 +36,8 @@ ActiveRecord::Schema.define(:version => 20131105174143) do
     t.text     "content"
     t.integer  "issue_id"
     t.integer  "location_id"
-    t.datetime "created_at",                          :null => false
-    t.datetime "updated_at",                          :null => false
+    t.datetime "created_at",                           :null => false
+    t.datetime "updated_at",                           :null => false
     t.string   "copyright"
     t.string   "guid"
     t.datetime "pubdate"
@@ -53,12 +53,20 @@ ActiveRecord::Schema.define(:version => 20131105174143) do
     t.string   "authoremail"
     t.integer  "source_id"
     t.string   "file"
-    t.boolean  "quarantine",       :default => false
+    t.boolean  "quarantine",        :default => false
     t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
+    t.string   "source_content_id"
   end
+
+  add_index "contents", ["authors"], :name => "authors"
+  add_index "contents", ["guid"], :name => "guid"
+  add_index "contents", ["location_id"], :name => "location_id"
+  add_index "contents", ["pubdate"], :name => "pubdate"
+  add_index "contents", ["source_id"], :name => "source_id"
+  add_index "contents", ["title"], :name => "title"
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0, :null => false
