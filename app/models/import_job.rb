@@ -16,12 +16,14 @@ class ImportJob < ActiveRecord::Base
   
   validates_presence_of :organization
   
-  attr_accessible :config, :name, :parser_id, :source_path, :type, :organization_id, :frequency
+  attr_accessible :config, :name, :parser_id, :source_path, :type, :organization_id, :frequency, :archive
   
   validates :status, inclusion: { in: %w(failed running success queued), allow_nil: true }
   validate :parser_belongs_to_same_organization, unless: "parser.nil?"
 
   after_destroy :cancel_scheduled_runs
+
+  default_scope { where archive: false }
 
   # delayed job action
   # 

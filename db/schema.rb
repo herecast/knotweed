@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131113162742) do
+ActiveRecord::Schema.define(:version => 20131113204154) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -62,13 +62,6 @@ ActiveRecord::Schema.define(:version => 20131113162742) do
     t.string   "image"
   end
 
-  add_index "contents", ["authors"], :name => "authors"
-  add_index "contents", ["guid"], :name => "guid"
-  add_index "contents", ["location_id"], :name => "location_id"
-  add_index "contents", ["pubdate"], :name => "pubdate"
-  add_index "contents", ["source_id"], :name => "source_id"
-  add_index "contents", ["title"], :name => "title"
-
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0, :null => false
     t.integer  "attempts",   :default => 0, :null => false
@@ -102,10 +95,11 @@ ActiveRecord::Schema.define(:version => 20131113162742) do
     t.string   "source_path"
     t.string   "type"
     t.integer  "organization_id"
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
     t.string   "status"
     t.integer  "frequency",       :default => 0
+    t.boolean  "archive",         :default => false, :null => false
   end
 
   create_table "import_records", :force => true do |t|
