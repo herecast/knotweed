@@ -61,13 +61,6 @@ ActiveRecord::Schema.define(:version => 20131112142608) do
     t.string   "source_content_id"
   end
 
-  add_index "contents", ["authors"], :name => "authors"
-  add_index "contents", ["guid"], :name => "guid"
-  add_index "contents", ["location_id"], :name => "location_id"
-  add_index "contents", ["pubdate"], :name => "pubdate"
-  add_index "contents", ["source_id"], :name => "source_id"
-  add_index "contents", ["title"], :name => "title"
-
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0, :null => false
     t.integer  "attempts",   :default => 0, :null => false
