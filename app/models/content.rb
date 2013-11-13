@@ -1,6 +1,5 @@
 require 'fileutils'
 require 'builder'
-
 class Content < ActiveRecord::Base
   
   belongs_to :issue
@@ -94,7 +93,17 @@ class Content < ActiveRecord::Base
       end
     end
     content.import_record = job.last_import_record if job.present?
-      
+
+    # deal with existing content that needs to be overwritten
+    # starting with matching publication AND source_content_id
+    # but need to add (our) guid matching as well
+    #
+    # there's also an argument for having this above, and updating the record
+    # instead of deleting the old one and creating a new one. not sure.
+    if content.source.present? and content.source_content_id.present?
+      Content.where(source_id: content.source.id, source_content_id: content.source_content_id).first.try(:destroy)
+    end
+
     content.save!
     content
   end

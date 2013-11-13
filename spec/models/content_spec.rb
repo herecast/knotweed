@@ -9,7 +9,8 @@ describe Content do
       @base_data = {
         "title" => "This is a Title",
         "subtitle" => "Subtitle",
-        "page" => "a3"
+        "page" => "a3",
+        "source_content_id" => "1234567"
       }
     end
         
@@ -30,6 +31,21 @@ describe Content do
       @base_data["source_id"] = p.id
       content = Content.create_from_import_job(@base_data)
       content.quarantine.should== false
+    end
+
+    it "should overwrite any existing content with the same publication and source_content_id" do
+      p = FactoryGirl.create(:publication)
+      @base_data["source_id"] = p.id
+      content_orig = Content.create_from_import_job(@base_data)
+      @new_data = {
+        "title" => "Different Title",
+        "source_content_id" => @base_data["source_content_id"],
+        "source_id" => @base_data["source_id"]
+      }
+      new_content = Content.create_from_import_job(@new_data)
+      Content.count.should== 1
+      db_content = Content.all.first
+      db_content.title.should== "Different Title"
     end
 
     # check source logic
