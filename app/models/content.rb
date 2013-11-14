@@ -38,6 +38,7 @@ class Content < ActiveRecord::Base
       items_per_page 100
       sort_by :pubdate, :source
       field :import_record
+      field :location
       field :pubdate
       field :source
       field :issue
