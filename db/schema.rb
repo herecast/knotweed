@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131113204154) do
+ActiveRecord::Schema.define(:version => 20131115153116) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -60,7 +60,15 @@ ActiveRecord::Schema.define(:version => 20131113204154) do
     t.integer  "import_record_id"
     t.string   "source_content_id"
     t.string   "image"
+    t.boolean  "published",         :default => false, :null => false
   end
+
+  add_index "contents", ["authors"], :name => "authors"
+  add_index "contents", ["guid"], :name => "guid"
+  add_index "contents", ["location_id"], :name => "location_id"
+  add_index "contents", ["pubdate"], :name => "pubdate"
+  add_index "contents", ["source_id"], :name => "source_id"
+  add_index "contents", ["title"], :name => "title"
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0, :null => false
@@ -127,6 +135,39 @@ ActiveRecord::Schema.define(:version => 20131113204154) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  add_index "locations", ["city"], :name => "city"
+
+  create_table "locations_bad", :force => true do |t|
+    t.string   "city"
+    t.string   "state"
+    t.string   "zip"
+    t.string   "action",     :limit => 128
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+  end
+
+  add_index "locations_bad", ["city"], :name => "city"
+
+  create_table "locations_new", :force => true do |t|
+    t.string   "city"
+    t.string   "state"
+    t.string   "zip"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "locations_new", ["city"], :name => "city"
+
+  create_table "locations_sav", :force => true do |t|
+    t.string   "city"
+    t.string   "state"
+    t.string   "zip"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "locations_sav", ["city"], :name => "city"
 
   create_table "organizations", :force => true do |t|
     t.string   "name"

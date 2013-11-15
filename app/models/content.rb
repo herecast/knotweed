@@ -1,6 +1,9 @@
 require 'fileutils'
 require 'builder'
 class Content < ActiveRecord::Base
+  include HTTParty
+  base_uri 'http://tech.ontotext.com'
+  headers 'Content-Type' => "application/vnd.ontotext.ces.document+xml"
   
   belongs_to :issue
   belongs_to :location
@@ -15,9 +18,7 @@ class Content < ActiveRecord::Base
   attr_accessible :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype
   attr_accessible :language, :page, :wordcount, :authoremail, :source_id, :file
   attr_accessible :quarantine, :doctype, :timestamp, :contentsource, :source_content_id
-  attr_accessible :image
-  
-  #before_save :inherit_issue_location
+  attr_accessible :image, :published
   
   default_scope :include => :issue, :order => "issues.publication_date DESC, contents.created_at DESC"
 
@@ -47,13 +48,6 @@ class Content < ActiveRecord::Base
     end
   end
   
-  # sets content location to issue location if it was left blank
-  def inherit_issue_location
-    if self.location.nil?
-      self.location = self.issue.location
-    end
-  end
-
   # creating a new content from import job data
   # is not as simple as just creating new from hash
   # because we need to match locations, publications, etc.
@@ -152,6 +146,12 @@ class Content < ActiveRecord::Base
     end
   end
 
+  # function to post to Ontotext's prototype
+  # using the "new" xml format
+  def post_to_ontotext
+    self.post('/prototype/processDocument?persist=true', { :body => self.to_new_xml }) 
+  end
+
   # outputs a string of KIM formatted XML
   def to_kim_xml
     xml = ::Builder::XmlMarkup.new
@@ -177,7 +177,7 @@ class Content < ActiveRecord::Base
   def to_new_xml
     xml = ::Builder::XmlMarkup.new
     xml.instruct!
-    xml.tag!("tns:document", "xmlns:tns"=>"http://www.ontotext.com/DocumentSchema", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance") do |f|
+    xml.tag!("tns:document", "xmlns:tns"=>"http://www.ontotext.com/DocumentSchema", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "id" => guid) do |f|
       f.tag!("tns:feature-set") do |g|
         attributes.each do |k, v|
           g.tag!("tns:feature") do |h|

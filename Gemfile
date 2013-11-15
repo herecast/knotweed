@@ -40,3 +40,4 @@ gem 'ruby-gmail'
 
 gem 'bullet', group: :develompent
 gem 'mail'
+gem 'httparty'
