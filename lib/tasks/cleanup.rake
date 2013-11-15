@@ -18,7 +18,20 @@ namespace :cleanup do
       "be removed from this list",
       "Upper Valley-wide posts should be sent",
       "list homepage with posting guidelines",
-      "discussion list is provided at no cost"
+      "discussion list is provided at no cost",
+      "over [0-9,]+ \\w+ listserv",
+      "more than [0-9,]+ \\w+ listserv",
+      "_____________________________",
+      "keep it specific to the town",
+      "POSTING RULES SUMMARY",
+      "Keep the listserv readable",
+      "IMPORTANT NOTICE REGARDING THIS ELECTRONIC MESSAGE",
+      "This message is intended for the use of the person",
+      "moderator \\(\\w+ \\w+\\) can be reached",
+      "HOW TO JOIN?",
+      "HOW TO POST?",
+      "HOW TO REPLY?",
+      "HOW TO UNSUBSCRIBE"
       ]
 
 
@@ -29,7 +42,7 @@ namespace :cleanup do
       content_pieces.map! do |cp|
         new_val = cp
         bad_phrases.each do |phrase|
-          if cp.include? phrase
+          if /#{phrase}/.match cp
             new_val = nil
           end
         end

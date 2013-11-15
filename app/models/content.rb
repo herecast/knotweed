@@ -34,7 +34,7 @@ class Content < ActiveRecord::Base
 
   rails_admin do
     list do
-      filters [:source, :issue, :title, :authors, :import_record]
+      filters [:source, :issue, :title, :authors, :import_record, :location]
       items_per_page 100
       sort_by :pubdate, :source
       field :import_record
