@@ -217,12 +217,7 @@ class Content < ActiveRecord::Base
               end
               unless key == "CONTENT"
                 h.tag!("tns:name", key, "type"=>"xs:string")
-                if key == "PUBDATE" or key == "TIMESTAMP"
-                  type = "xs:datetime"
-                else
-                  type = "xs:string"
-                end
-                g.tag!("tns:value", value, "type"=>type)
+                g.tag!("tns:value", value, "type"=>"xs:string")
               end
             end
           end
