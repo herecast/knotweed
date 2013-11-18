@@ -50,6 +50,21 @@ describe Content do
       db_content.title.should== "Different Title"
     end
 
+    it "should overwrite any existing content with the same guid" do
+      p = FactoryGirl.create(:publication)
+      @base_data["source_id"] = p.id
+      c1 = Content.create_from_import_job(@base_data)
+      orig_id = c1.id
+      @new_data = {
+        "title" => "Different Title",
+        "source_id" => @base_data["source_id"],
+        "guid" => c1.guid
+      }
+      c2 = Content.create_from_import_job(@base_data)
+      Content.count.should== 1
+      Content.first.id.should== orig_id
+    end
+
     # check source logic
     it "should create source if source is provided and it doesn't match existing publications" do
       @base_data["source"] = "Test Publication"

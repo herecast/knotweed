@@ -88,16 +88,24 @@ class Content < ActiveRecord::Base
     end
     content.import_record = job.last_import_record if job.present?
 
+    content.set_guid # otherwise it won't be set till save and we need it for overwriting
+
     # deal with existing content that needs to be overwritten
     # starting with matching publication AND source_content_id
     # but need to add (our) guid matching as well
     #
-    # there's also an argument for having this above, and updating the record
-    # instead of deleting the old one and creating a new one. not sure.
+    # logic here is: IF source exists and source_content_id exists, overwrite based on matching those two
+    # ELSIF: overwrite based on matching guid
+    # ELSE: don't overwrite, create a new one
+    #
+    # TODO: this should probably be factored out into a before_save filter
     if content.source.present? and content.source_content_id.present?
       existing_content = Content.where(source_id: content.source.id, source_content_id: content.source_content_id).try(:first)
     end
-    if existing_content
+    if existing_content.nil? and content.source.present?
+      existing_content = Content.where(source_id: content.source.id, guid: content.guid).try(:first)
+    end
+    if existing_content.present?
       content.id = existing_content.id
       existing_content.destroy
     end
