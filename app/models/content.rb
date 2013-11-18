@@ -1,10 +1,6 @@
 require 'fileutils'
 require 'builder'
 class Content < ActiveRecord::Base
-  include HTTParty
-  base_uri 'http://tech.ontotext.com'
-  headers 'Content-Type' => "application/vnd.ontotext.ces.document+xml"
-  
   belongs_to :issue
   belongs_to :location
   belongs_to :import_record
@@ -32,6 +28,8 @@ class Content < ActiveRecord::Base
   DEFAULT_FORMAT = NEW_FORMAT
 
   PUBDATE_OUTPUT_FORMAT = "%Y-%m-%dT%H:%M:%S"
+
+  BASE_URI = "http://www.subtext.org/Document"
 
   rails_admin do
     list do
@@ -145,11 +143,14 @@ class Content < ActiveRecord::Base
       end
     end
   end
-
+  
   # function to post to Ontotext's prototype
   # using the "new" xml format
   def post_to_ontotext
-    self.post('/prototype/processDocument?persist=true', { :body => self.to_new_xml }) 
+    options = { :body => self.to_new_xml }
+    
+    response = Admin::OntotextController.post('/prototype/processDocument?persist=true', options)
+    puts response
   end
 
   # outputs a string of KIM formatted XML
@@ -177,44 +178,48 @@ class Content < ActiveRecord::Base
   def to_new_xml
     xml = ::Builder::XmlMarkup.new
     xml.instruct!
-    xml.tag!("tns:document", "xmlns:tns"=>"http://www.ontotext.com/DocumentSchema", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "id" => guid) do |f|
-      f.tag!("tns:feature-set") do |g|
-        attributes.each do |k, v|
-          g.tag!("tns:feature") do |h|
-            if ["issue_id", "source_id", "location_id"].include? k
-              if k == "issue_id" and issue.present?
-                key, value = "issue", issue.issue_edition
-              elsif k == "source_id" and source.present?
-                key, value = "publication", source.name
-              elsif k == "location_id" and location.present?
-                key, value = "location", location.city
-              end
-            else
-              key = k
-              if key == "pubdate" or key == "timestamp" and v.present?
-                value = v.strftime(PUBDATE_OUTPUT_FORMAT)
-              else
-                value = v
-              end
+    xml.tag!("tns:document", "xmlns:tns"=>"http://www.ontotext.com/DocumentSchema", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "id" => "#{BASE_URI}/#{id}") do |f|
+
+      f.tag!("tns:document-parts") do |g|
+        f.tag!("tns:feature-set") do |g|
+          attributes.each do |k, v|
+            if ["id", "created_at", "updated_at", "quarantine", "import_record_id", "published"].include? k
+              next
             end
-            unless key == "content"
-              h.tag!("tns:name", key, "type"=>"xs:string")
-              if key == "pubdate" or key == "timestamp"
-                type = "xs:datetime"
+            g.tag!("tns:feature") do |h|
+              if ["issue_id", "source_id", "location_id"].include? k
+                if k == "issue_id" and issue.present?
+                  key, value = "ISSUE", issue.issue_edition
+                elsif k == "source_id" and source.present?
+                  key, value = "SOURCE", source.name
+                elsif k == "location_id" and location.present?
+                  key, value = "LOCATION", location.city
+                end
               else
-                type = "xs:string"
+                key = k.upcase
+                if key == "PUBDATE" or key == "TIMESTAMP" and v.present?
+                  value = v.strftime(PUBDATE_OUTPUT_FORMAT)
+                else
+                  value = v
+                end
               end
-              g.tag!("tns:value", value, "type"=>type)
+              unless key == "CONTENT"
+                h.tag!("tns:name", key, "type"=>"xs:string")
+                if key == "PUBDATE" or key == "TIMESTAMP"
+                  type = "xs:datetime"
+                else
+                  type = "xs:string"
+                end
+                g.tag!("tns:value", value, "type"=>type)
+              end
             end
           end
         end
-      end
-      
-      f.tag!("tns:document-parts") do |g|
         g.tag!("tns:document-part", "part"=>"BODY", "id"=>"1") do |h|
           h.tag!("tns:content", content)
         end
       end
+      
       
     end
     xml.target!
