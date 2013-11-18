@@ -37,12 +37,14 @@ describe Content do
       p = FactoryGirl.create(:publication)
       @base_data["source_id"] = p.id
       content_orig = Content.create_from_import_job(@base_data)
+      orig_id = content_orig.id
       @new_data = {
         "title" => "Different Title",
         "source_content_id" => @base_data["source_content_id"],
         "source_id" => @base_data["source_id"]
       }
       new_content = Content.create_from_import_job(@new_data)
+      new_content.id.should== orig_id
       Content.count.should== 1
       db_content = Content.all.first
       db_content.title.should== "Different Title"

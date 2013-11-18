@@ -95,11 +95,15 @@ class Content < ActiveRecord::Base
     # there's also an argument for having this above, and updating the record
     # instead of deleting the old one and creating a new one. not sure.
     if content.source.present? and content.source_content_id.present?
-      Content.where(source_id: content.source.id, source_content_id: content.source_content_id).first.try(:destroy)
+      existing_content = Content.where(source_id: content.source.id, source_content_id: content.source_content_id).try(:first)
     end
-
+    if existing_content
+      content.id = existing_content.id
+      existing_content.destroy
+    end
     content.save!
     content
+
   end
 
   # check that doc validates our xml requirements
