@@ -65,6 +65,10 @@ class Content < ActiveRecord::Base
         data.delete k
       end
     end
+    # if job is passed in, set organization
+    if job
+      organization = job.try(:organization)
+    end
     content = Content.new(data)
     # pull complex key/values out from data to use later
     if special_attrs.has_key? 'location'
@@ -74,7 +78,11 @@ class Content < ActiveRecord::Base
     end
     if special_attrs.has_key? "source"
       source = special_attrs["source"]
-      content.source = Publication.where("name LIKE ?", "%#{source}%").first
+      if organization
+        content.source = Publication.where(organization_id: organization.id).where("name LIKE ?", "%#{source}%").first
+      else
+        content.source = Publication.where("name LIKE ?", "%#{source}%").first
+      end
       content.source = Publication.create(name: source) if content.source.nil?
     end
     if special_attrs.has_key? "edition"
