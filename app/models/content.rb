@@ -16,7 +16,6 @@ class Content < ActiveRecord::Base
   attr_accessible :quarantine, :doctype, :timestamp, :contentsource, :source_content_id
   attr_accessible :image, :published
   
-  default_scope :include => :issue, :order => "issues.publication_date DESC, contents.created_at DESC"
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -151,14 +150,14 @@ class Content < ActiveRecord::Base
       return false
     else
       FileUtils.mkpath(export_path)
-      File.open("#{export_path}/#{guid}.xml", "w+") do |f|
+      File.open("#{export_path}/#{CGI::escape guid}.xml", "w+") do |f|
         if format == KIM_FORMAT
           f.write to_kim_xml
         else
           f.write to_new_xml
         end
       end
-      File.open("#{export_path}/#{guid}.html", "w+") do |f|
+      File.open("#{export_path}/#{CGI::escape guid}.html", "w+") do |f|
         f.write content
       end
     end
@@ -167,10 +166,18 @@ class Content < ActiveRecord::Base
   # function to post to Ontotext's prototype
   # using the "new" xml format
   def post_to_ontotext
-    options = { :body => self.to_new_xml }
+    options = { :body => self.to_new_xml, :timeout => 10*60 }
     
     response = Admin::OntotextController.post('/prototype/processDocument?persist=true', options)
-    puts response
+    if response.body.include? "#{BASE_URI}/#{id}"
+      self.published = true
+      self.save
+      return true
+    else
+      log = Logger.new("#{Rails.root}/log/publishing.log")
+      log.debug("failed to post doc #{self.id}")
+      return false
+    end
   end
 
   # outputs a string of KIM formatted XML
