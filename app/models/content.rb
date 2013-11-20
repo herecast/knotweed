@@ -78,7 +78,7 @@ class Content < ActiveRecord::Base
     if special_attrs.has_key? "source"
       source = special_attrs["source"]
       if organization
-        content.source = Publication.where(organization_id: organization.id).where("name LIKE ?", "%#{source}%").first
+        content.source = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).where("name LIKE ?", "%#{source}%").first
       else
         content.source = Publication.where("name LIKE ?", "%#{source}%").first
       end
