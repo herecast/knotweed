@@ -56,6 +56,11 @@ GEM
     carrierwave (0.8.0)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
+    chosen-rails (1.0.1)
+      coffee-rails (>= 3.2)
+      compass-rails (>= 1.0)
+      railties (>= 3.0)
+      sass-rails (>= 3.2)
     chunky_png (1.2.8)
     coderay (1.0.9)
     coffee-rails (3.2.2)
@@ -291,6 +296,7 @@ DEPENDENCIES
   cancan (>= 1.6.9)
   capybara (>= 2.0.3)
   carrierwave
+  chosen-rails
   coffee-rails (~> 3.2.1)
   compass-rails
   database_cleaner (>= 1.0.0.RC1)

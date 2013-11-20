@@ -18,4 +18,6 @@
 //= require spin.min
 //= require jquery.spin
 //= require numerous-2.1.1.min
+//= require chosen-jquery
 //= require_tree .
+

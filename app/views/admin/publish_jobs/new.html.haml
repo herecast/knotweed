@@ -1,0 +1,27 @@
+#wrapper
+  .row
+    .well
+      %h1 Publishing Portal
+      %h3 Select Contents
+      = form_tag admin_contents_count_path, method: "post", remote: true, id: "contents-query" do
+        .form-column
+          .filter-field
+            = label_tag "source", "Source"
+            = collection_select(:content, :source_id, Publication.all, :id, :name, {}, { multiple: true, class: "chosen-select" })
+          .filter-field
+            = label_tag "from", "From"
+            = text_field_tag "from", params[:from], type: "date"
+          .filter-field
+            = label_tag "to", "To"
+            = text_field_tag "to", params[:to], type: "date"
+          .filter-field
+            = label_tag "location", "Location"
+            = collection_select(:content, :location_id, Location.all, :id, :name, {}, { multiple: true, class: "chosen-select" })
+          .filter-field
+            = label_tag "published", "Already Published?"
+            = select_tag :published, options_for_select([false, true, "both"])
+        .form-column
+          %h3 Contents Found:
+          %h3#number-of-contents 
+            0
+            
