@@ -1,0 +1,27 @@
+= simple_form_for [:admin, @publish_job] do |f|
+  %fieldset#contents-query.form-column{ data: { contents_query_path: admin_contents_count_path } }
+    = label_tag "source", "Source"
+    = select_tag "source_id", options_from_collection_for_select(Publication.accessible_by(current_ability, :read), "id", "name", @publish_job.query_params[:source_id]), { multiple: true, class: "chosen-select" }
+    = label_tag "from", "From"
+    = text_field_tag "from", @publish_job.query_params[:from], type: "date"
+    = label_tag "to", "To"
+    = text_field_tag "to", @publish_job.query_params[:to], type: "date"
+    = label_tag "location", "Location"
+    = select_tag :location_id, options_from_collection_for_select(Location.accessible_by(current_ability, :read), "id", "name", @publish_job.query_params[:location_id]), { multiple: true, class: "chosen-select" }
+    = label_tag "published", "Already Published?"
+    = select_tag :published, options_for_select([false, true, "both"], @publish_job.query_params[:published])
+  .form-column
+    %h3 Contents Found:
+    %h3#number-of-contents 
+      0
+  %hr
+    = f.error_notification
+    = f.input :name
+    = f.input :description
+    = f.input :publish_method, collection: PublishJob::PUBLISH_METHODS, label_method: "humanize", required: true
+    .control-group.boolean.optional.recurring
+      = label_tag "import_job_recurring", "Recurring?", { class: "boolean optional control-label" }
+      .controls
+        = check_box_tag "import_job_recurring"
+    = f.input :frequency, hint: "Repeat every x hours", wrapper_html: { class: "frequency" }
+    = f.submit nil, class: "btn btn-primary"

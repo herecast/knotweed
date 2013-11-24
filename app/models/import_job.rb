@@ -18,7 +18,7 @@ class ImportJob < ActiveRecord::Base
   
   attr_accessible :config, :name, :parser_id, :source_path, :type, :organization_id, :frequency, :archive
   
-  validates :status, inclusion: { in: %w(failed running success queued), allow_nil: true }
+  validates :status, inclusion: { in: %w(failed running success queued) }, allow_nil: true
   validate :parser_belongs_to_same_organization, unless: "parser.nil?"
 
   after_destroy :cancel_scheduled_runs
@@ -71,13 +71,11 @@ class ImportJob < ActiveRecord::Base
     self.import_records.create
     self.save
   end
-  
-
 
   # enqueues the job object
   # note can use option run_at: time to schedule in the future
   def enqueue_job
-    Delayed::Job.enqueue self
+    Delayed::Job.enqueue self, queue: 'imports'
   end
   
   def traverse_input_tree
@@ -160,19 +158,6 @@ class ImportJob < ActiveRecord::Base
       self.config = conf.to_yaml
       self.save
     end
-  end
-
-  # gets next scheduled run
-  # returns nil if not scheduled to run
-  def next_scheduled_run
-    job = Delayed::Job.where("handler LIKE '%ImportJob%' AND handler LIKE '% id: ?\n%' AND run_at > ?", id, Time.now).order("run_at ASC").first
-    job ? job.run_at : nil
-  end
-
-  # cancel scheduled runs by removing any Delayed::Job
-  # records pointing to this job
-  def cancel_scheduled_runs
-    Delayed::Job.where("handler LIKE '%ImportJob%' AND handler LIKE '% id: ?%'", id).delete_all
   end
 
   # returns the most recent import record

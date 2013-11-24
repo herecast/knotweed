@@ -1,39 +1,51 @@
+require 'jobs/jobcontroller'
+
 class Admin::PublishJobsController < Admin::AdminController
+  load_and_authorize_resource
 
-  def new
-  end
+  include Jobs::JobController
 
+  # ajax method responds to queries that serialize the form for creating
+  # publish jobs
   def contents_count
-
-    @count = contents_query.count
+    @count = Content.contents_query(params).count
     respond_to do |format|
       format.js
     end
-
   end
 
-  private
-
-  def contents_query
-    query = {
-      quarantine: false, # can't publish quarantined docs
-      published: false # default to not yet published
-    }
-    if params[:content][:source_id].present?
-      query[:source_id] = params[:content][:source_id].map { |s| s.to_i } 
-    end
-    if params[:content][:location_id].present? and params[:content][:location_id].count > 1
-      query[:location_id] = params[:content][:location_id].map { |s| s.to_i } 
-    end
-    if params[:published] == "true"
-      query[:published] = true
-    elsif params[:published] == "both"
-      query.delete(:published)
-    end
-    contents = Content.where(query)
-    contents = contents.where("pubdate >= ?", Date.parse(params[:from])) if params[:from].present?
-    contents = contents.where("pubdate <= ?", Date.parse(params[:to])) if params[:to].present?
-    return contents
+  def job_contents_count
+    @publish_job = PublishJob.find(params[:id])
+    render layout: false
   end
-    
+
+  def create
+    @publish_job = PublishJob.new()
+    @publish_job.query_params = {}
+    PublishJob::QUERY_PARAMS_FIELDS.each do |key|
+      @publish_job.query_params[key.to_sym] = params[key]
+    end
+
+    if @publish_job.update_attributes(params[:publish_job])
+      redirect_to admin_publish_jobs_path
+    else
+      flash.now[:error] = "Could not save publish job"
+      render action: "new"
+    end
+  end
+
+  def update
+    @publish_job = PublishJob.find(params[:id])
+    PublishJob::QUERY_PARAMS_FIELDS.each do |key|
+      @publish_job.query_params[key.to_sym] = params[key]
+    end
+    if @publish_job.update_attributes(params[:publish_job])
+      redirect_to admin_publish_jobs_path
+    else
+      flash.now[:error] = "Could not save publish job"
+      render action: "edit"
+    end
+  end
+
+
 end

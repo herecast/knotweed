@@ -19,9 +19,25 @@ module ImportJobsHelper
       content_tag(:span, "queued", { class: "btn btn-danger disabled" })
     else
       if job.next_scheduled_run.nil?
-        content_tag(:a, "Run Job", { href: admin_run_job_path(job), data: { remote: true }, class: "btn btn-success" })
+        content_tag(:a, "Run Job", { href: get_path_for_job_action("run", job), data: { remote: true }, class: "btn btn-success" })
       else
-        content_tag(:a, "Cancel Scheduled Runs", { href: admin_cancel_job_path(job), data: { remote: true, method: :delete }, class: "btn btn-danger" })
+        content_tag(:a, "Cancel Scheduled Runs", { href: get_path_for_job_action("cancel", job), data: { remote: true, method: :delete }, class: "btn btn-danger" })
+      end
+    end
+  end
+
+  def get_path_for_job_action(action, job)
+    if job.class == PublishJob
+      if action == "run"
+        admin_run_publish_job_path(job)
+      elsif action == "cancel"
+        admin_cancel_publish_job_path(job)
+      end
+    elsif job.class == ImportJob
+      if action == "run"
+        admin_run_import_job_path(job)
+      elsif action == "cancel"
+        admin_cancel_import_job_path(job)
       end
     end
   end

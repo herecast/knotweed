@@ -139,6 +139,7 @@ class Content < ActiveRecord::Base
         self.guid << "#{rand(10000)}-#{rand(10000)}"
       end
       self.guid << "-" << pubdate.strftime("%Y-%m-%d") if pubdate.present?
+      self.guid = CGI::escape guid
     end
   end
 
@@ -150,14 +151,14 @@ class Content < ActiveRecord::Base
       return false
     else
       FileUtils.mkpath(export_path)
-      File.open("#{export_path}/#{CGI::escape guid}.xml", "w+") do |f|
+      File.open("#{export_path}/#{guid}.xml", "w+") do |f|
         if format == KIM_FORMAT
           f.write to_kim_xml
         else
           f.write to_new_xml
         end
       end
-      File.open("#{export_path}/#{CGI::escape guid}.html", "w+") do |f|
+      File.open("#{export_path}/#{guid}.html", "w+") do |f|
         f.write content
       end
     end
@@ -253,5 +254,29 @@ class Content < ActiveRecord::Base
     path = "#{Figaro.env.content_export_path}/#{source.name.gsub(" ", "_")}/#{pubdate.strftime("%Y")}/#{pubdate.strftime("%m")}/#{pubdate.strftime("%d")}"
   end
 
-  
+  # method that constructs an active relation
+  # of contents based on a query hash of conditions
+  # expects query_params to look like the params hash from a form
+  def self.contents_query(query_params)
+    query = {
+      quarantine: false, # can't publish quarantined docs
+      published: false # default to not yet published
+    }
+    if query_params[:source_id].present?
+      query[:source_id] = query_params[:source_id].map { |s| s.to_i } 
+    end
+    if query_params[:location_id].present?
+      query[:location_id] = query_params[:location_id].map { |s| s.to_i } 
+    end
+    if query_params[:published] == "true"
+      query[:published] = true
+    elsif query_params[:published] == "both"
+      query.delete(:published)
+    end
+    contents = Content.where(query)
+    contents = contents.where("pubdate >= ?", Date.parse(query_params[:from])) if query_params[:from].present?
+    contents = contents.where("pubdate <= ?", Date.parse(query_params[:to])) if query_params[:to].present?
+    return contents
+  end
+    
 end

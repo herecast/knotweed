@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131115153116) do
+ActiveRecord::Schema.define(:version => 20131121150938) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -62,13 +62,6 @@ ActiveRecord::Schema.define(:version => 20131115153116) do
     t.string   "image"
     t.boolean  "published",         :default => false, :null => false
   end
-
-  add_index "contents", ["authors"], :name => "authors"
-  add_index "contents", ["guid"], :name => "guid"
-  add_index "contents", ["location_id"], :name => "location_id"
-  add_index "contents", ["pubdate"], :name => "pubdate"
-  add_index "contents", ["source_id"], :name => "source_id"
-  add_index "contents", ["title"], :name => "title"
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0, :null => false
@@ -136,39 +129,6 @@ ActiveRecord::Schema.define(:version => 20131115153116) do
     t.datetime "updated_at", :null => false
   end
 
-  add_index "locations", ["city"], :name => "city"
-
-  create_table "locations_bad", :force => true do |t|
-    t.string   "city"
-    t.string   "state"
-    t.string   "zip"
-    t.string   "action",     :limit => 128
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
-  end
-
-  add_index "locations_bad", ["city"], :name => "city"
-
-  create_table "locations_new", :force => true do |t|
-    t.string   "city"
-    t.string   "state"
-    t.string   "zip"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
-  add_index "locations_new", ["city"], :name => "city"
-
-  create_table "locations_sav", :force => true do |t|
-    t.string   "city"
-    t.string   "state"
-    t.string   "zip"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
-  add_index "locations_sav", ["city"], :name => "city"
-
   create_table "organizations", :force => true do |t|
     t.string   "name"
     t.datetime "created_at", :null => false
@@ -204,6 +164,20 @@ ActiveRecord::Schema.define(:version => 20131115153116) do
     t.string   "website"
     t.string   "publishing_frequency"
     t.text     "notes"
+  end
+
+  create_table "publish_jobs", :force => true do |t|
+    t.text     "query_params"
+    t.integer  "organization_id"
+    t.string   "status"
+    t.integer  "frequency",       :default => 0
+    t.string   "publish_method"
+    t.boolean  "archive",         :default => false
+    t.string   "error"
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
   end
 
   create_table "rails_admin_histories", :force => true do |t|

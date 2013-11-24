@@ -14,14 +14,17 @@ Knotweed::Application.routes.draw do
     resources :contents, except: ["show"]
     resources :import_jobs
     resources :parsers
-    resources :publish_jobs, only: ["new"]
+    resources :publish_jobs
 
     match 'publish_jobs/contents_count' => "publish_jobs#contents_count", as: :contents_count
+    match 'publish_jobs/contents_count/:id' => "publish_jobs#job_contents_count", as: :job_contents_count
 
     match "parsers/:parser_id/new_import_job" => "import_jobs#new", as: :new_import_job_for_parser
     
-    get 'import_jobs/:id/run_job', to: 'import_jobs#run_job', as: :run_job
-    delete 'import_jobs/:id/cancel', to: 'import_jobs#cancel_job', as: :cancel_job
+    get 'import_jobs/:id/run_job', to: 'import_jobs#run_job', as: :run_import_job
+    delete 'import_jobs/:id/cancel', to: 'import_jobs#cancel_job', as: :cancel_import_job
+    get 'publish_jobs/:id/run_job', to: 'publish_jobs#run_job', as: :run_publish_job
+    delete 'publish_jobs/:id/cancel', to: 'publish_jobs#cancel_job', as: :cancel_publish_job
     
     match 'parsers/:id/parameters', to: "parsers#parameters"
 

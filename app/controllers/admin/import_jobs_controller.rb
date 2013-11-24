@@ -1,28 +1,11 @@
+require 'jobs/jobcontroller'
+
 class Admin::ImportJobsController < Admin::AdminController
   load_and_authorize_resource
+
+  include Jobs::JobController
+
   respond_to :html
-  
-  def run_job
-    @job = ImportJob.find(params[:id])
-    unless @job.status == "running" or @job.status == "queued"
-      @job.enqueue_job
-    end
-    respond_to do |format|
-      format.js
-    end
-  end
-
-  def cancel_job
-    @job = ImportJob.find(params[:id])
-    @job.cancel_scheduled_runs
-    respond_to do |format|
-      format.js
-    end
-  end
-
-  
-  def index
-  end
   
   def new
     @import_job = ImportJob.new
@@ -44,9 +27,6 @@ class Admin::ImportJobsController < Admin::AdminController
     end
   end
   
-  def edit
-  end
-  
   def update
     @import_job = ImportJob.find(params[:id])
     if @import_job.update_attributes(params[:import_job])
@@ -54,16 +34,6 @@ class Admin::ImportJobsController < Admin::AdminController
       flash[:notice] = "Successfully updated import job."
     end
     respond_with(@import_job, location: admin_import_jobs_url)
-  end
-  
-  def show
-  end
-
-  def destroy
-    @import_job = ImportJob.destroy(params[:id])
-    respond_to do |format|
-      format.js
-    end
   end
 
 end
