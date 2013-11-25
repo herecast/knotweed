@@ -233,6 +233,9 @@ describe Content do
             # account for pubdate / timestamp formatting
             if k == "pubdate" or k == "timestamp"
               @xml.include?("#{v.strftime(Content::PUBDATE_OUTPUT_FORMAT)}</tns:value>").should be_true
+            # account for cdata
+            elsif k == "authoremail" or k == "authors"
+              @xml.include?("#{v}]]></tns:value>").should be_true
             else
               @xml.include?("#{v}</tns:value>").should be_true
             end
@@ -242,7 +245,8 @@ describe Content do
     end
 
     it "should contain document part with content" do
-      @xml.include?("#{@content.content}</tns:content>").should be_true
+      # note the brackets at the end are closing CDATA
+      @xml.include?("#{@content.content}]]></tns:content>").should be_true
     end 
   end
 

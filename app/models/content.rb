@@ -233,13 +233,23 @@ class Content < ActiveRecord::Base
               end
               unless key == "CONTENT"
                 h.tag!("tns:name", key, "type"=>"xs:string")
-                g.tag!("tns:value", value, "type"=>"xs:string")
+                if key == "AUTHORS" or key == "AUTHOREMAIL"
+                  g.tag!("tns:value", "type"=>"xs:string") do |i|
+                    if value.present?
+                      i.cdata!(value)
+                    end
+                  end
+                else
+                  g.tag!("tns:value", value, "type"=>"xs:string")
+                end
               end
             end
           end
         end
         g.tag!("tns:document-part", "part"=>"BODY", "id"=>"1") do |h|
-          h.tag!("tns:content", content)
+          h.tag!("tns:content") do |i|
+            i.cdata!(content)
+          end
         end
       end
       
