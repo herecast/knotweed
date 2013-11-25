@@ -40,7 +40,19 @@ describe PublishJob do
       c = Content.first
       File.exists?("#{c.export_path}/#{c.guid}.xml").should be_true
       File.exists?("#{c.export_path}/#{c.guid}.html").should be_true
+      c.published.should== true
     end
+
+    it "should create a publish record attached to the job" do
+      PublishRecord.count.should== 1
+      PublishRecord.first.publish_job.should== @job
+    end
+
+    it "should assign any contents published to the attached publish record" do
+      record = PublishRecord.first
+      record.contents.count.should== Content.count
+    end
+      
   end
 
 end

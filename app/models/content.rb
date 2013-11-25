@@ -4,6 +4,8 @@ class Content < ActiveRecord::Base
   belongs_to :issue
   belongs_to :location
   belongs_to :import_record
+
+  has_and_belongs_to_many :publish_records
   
   has_many :images, as: :imageable, inverse_of: :imageable #, dependent: :destroy
   belongs_to :source, class_name: "Publication", foreign_key: "source_id"
@@ -143,6 +145,20 @@ class Content < ActiveRecord::Base
     end
   end
 
+  # catchall publish method that handles interacting w/ the publish record
+  def publish(method)
+    record = publish_records.order("created_at DESC").first
+    begin
+      if self.send(method.to_sym) == true
+        update_attribute(:published, true)
+      end
+      record.items_published += 1
+    rescue
+      record.failures += 1
+    end
+    record.save
+  end
+
   def export_to_xml(format=nil)
     unless EXPORT_FORMATS.include? format
       format = DEFAULT_FORMAT
@@ -161,6 +177,7 @@ class Content < ActiveRecord::Base
       File.open("#{export_path}/#{guid}.html", "w+") do |f|
         f.write content
       end
+      return true
     end
   end
   
@@ -171,8 +188,6 @@ class Content < ActiveRecord::Base
     
     response = Admin::OntotextController.post('/prototype/processDocument?persist=true', options)
     if response.body.include? "#{BASE_URI}/#{id}"
-      self.published = true
-      self.save
       return true
     else
       log = Logger.new("#{Rails.root}/log/publishing.log")

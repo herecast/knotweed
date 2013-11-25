@@ -40,13 +40,11 @@ class ImportJob < ActiveRecord::Base
   
   # hooks to set status
   def enqueue(job)
-    self.status = "queued"
-    self.save
+    update_attribute(:status, "queued")
   end
   
   def success(job)
-    self.status = "success"
-    self.save
+    update_attribute(:status, "success")
   end
 
   def error(job, exception)
@@ -55,21 +53,18 @@ class ImportJob < ActiveRecord::Base
     log.debug "parser: #{Figaro.env.parsers_path}/#{parser.filename}"
     log.debug "error: #{exception}"
     log.debug "backtrace: #{exception.backtrace.join("\n")}"   
-    self.status = "failed"
+    update_attribute(:status, "failed")
     log.debug self
-    self.save
   end
   
   def failure(job)
-    self.status = "failed"
-    self.save
+    update_attribute(:status, "failed")
   end
   
   def before(job)
-    self.status = "running"
+    update_attribute(:status, "running")
     # set last_run_at regardless of success or failure
-    self.import_records.create
-    self.save
+    import_records.create
   end
 
   # enqueues the job object

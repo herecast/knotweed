@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131121150938) do
+ActiveRecord::Schema.define(:version => 20131125160409) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -61,6 +61,11 @@ ActiveRecord::Schema.define(:version => 20131121150938) do
     t.string   "source_content_id"
     t.string   "image"
     t.boolean  "published",         :default => false, :null => false
+  end
+
+  create_table "contents_publish_records", :id => false, :force => true do |t|
+    t.integer "content_id"
+    t.integer "publish_record_id"
   end
 
   create_table "delayed_jobs", :force => true do |t|
@@ -179,6 +184,16 @@ ActiveRecord::Schema.define(:version => 20131121150938) do
     t.datetime "created_at",                         :null => false
     t.datetime "updated_at",                         :null => false
   end
+
+  create_table "publish_records", :force => true do |t|
+    t.integer  "publish_job_id"
+    t.integer  "items_published", :default => 0
+    t.integer  "failures",        :default => 0
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+  end
+
+  add_index "publish_records", ["publish_job_id"], :name => "index_publish_records_on_publish_job_id"
 
   create_table "rails_admin_histories", :force => true do |t|
     t.text     "message"
