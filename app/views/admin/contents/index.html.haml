@@ -1,2 +1,51 @@
 #wrapper
   .row
+    .well
+      %h1 Find Contents
+      = search_form_for @search, url: admin_contents_path do |f|
+        .controls.controls-row
+          .field.span3
+            = f.label :source_id_in, "Source"
+            = f.collection_select :source_id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
+          .field.span3
+            = f.label :pubdate_gteq, "From"
+            = f.text_field :pubdate_gteq, type: :date
+          .field.span3
+            = f.label :pubdate_lteq, "To"
+            = f.text_field :pubdate_lteq, type: :date
+        .controls.controls-row
+          .field.span3
+            = f.label :location_id_in, "Location"
+            = f.collection_select :location_id_in, Location.accessible_by(current_ability), :id, :city, {}, { multiple: true, class: "chosen-select" }
+          .field.span3
+            = f.label :title_cont, "Title"
+            = f.text_field :title_cont
+          .field.span3
+            = f.label :authors_cont, "Authors"
+            = f.text_field :authors_cont
+          .span2
+            = f.submit "Search", class: "btn btn-primary"
+      %table.table.table-striped.table-hover.table-condensed
+        %thead
+          %tr
+            %th Source
+            %th Title
+            %th Authors
+            %th Location
+            %th Pubdate
+        = page_entries_info @contents if @contents.present?
+        %tbody
+          - @contents.each do |c|
+            %tr
+              %td
+                - if c.source.present?
+                  = link_to c.source.name, admin_contents_path(q: { source_id_in: c.source.id })
+              %td= link_to c.title, [:admin, c]
+              %td
+                - if c.authors.present?
+                  = link_to c.authors, admin_contents_path(q: { authors_cont: c.authors })
+              %td
+                - if c.location.present?
+                  = link_to c.location.city, admin_contents_path(q: { location_id_in: c.location.id })
+              %td= c.pubdate.strftime("%Y-%m-%d")
+      = paginate @contents, window: 2 if @contents.present?

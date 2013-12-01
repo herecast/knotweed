@@ -33,7 +33,7 @@ class PublishJob < ActiveRecord::Base
     record = last_publish_record
     Content.contents_query(query_params).find_each(batch_size: 500) do |c|
       record.contents << c
-      c.publish(publish_method)
+      c.publish(publish_method, record)
     end
   end
 

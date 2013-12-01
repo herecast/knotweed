@@ -1,0 +1,10 @@
+#wrapper
+  .row
+    .well
+      %h1= @content.title
+      %h2= @content.source.try(:name)
+      %h3= @content.location.try(:city)
+      %h4= @content.authors
+      %h4= @content.pubdate.strftime("%Y-%m-%d")
+      %span
+        = link_to "Publish", admin_publish_content_path(@content), class: "btn btn-info"

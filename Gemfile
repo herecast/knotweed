@@ -42,3 +42,5 @@ gem 'bullet', group: :development
 gem 'mail'
 gem 'httparty'
 gem 'chosen-rails'
+gem 'ransack'
+gem 'kaminari'

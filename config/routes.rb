@@ -11,7 +11,7 @@ Knotweed::Application.routes.draw do
   resources :contents, only: ["show", "index"]
 
   namespace :admin do
-    resources :contents, except: ["show"]
+    resources :contents, except: [:destroy, :create, :new]
     resources :import_jobs
     resources :parsers
     resources :publish_jobs
@@ -20,6 +20,8 @@ Knotweed::Application.routes.draw do
     match 'publish_jobs/contents_count/:id' => "publish_jobs#job_contents_count", as: :job_contents_count
 
     match "parsers/:parser_id/new_import_job" => "import_jobs#new", as: :new_import_job_for_parser
+
+    get "contents/:id/publish", to: "contents#publish", as: :publish_content
     
     get 'import_jobs/:id/run_job', to: 'import_jobs#run_job', as: :run_import_job
     delete 'import_jobs/:id/cancel', to: 'import_jobs#cancel_job', as: :cancel_import_job

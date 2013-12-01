@@ -17,7 +17,6 @@ class Content < ActiveRecord::Base
   attr_accessible :language, :page, :wordcount, :authoremail, :source_id, :file
   attr_accessible :quarantine, :doctype, :timestamp, :contentsource, :source_content_id
   attr_accessible :image, :published
-  
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -31,6 +30,8 @@ class Content < ActiveRecord::Base
   PUBDATE_OUTPUT_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
   BASE_URI = "http://www.subtext.org/Document"
+
+  DEFAULT_PUBLISH_METHOD = "export_to_xml"
 
   rails_admin do
     list do
@@ -146,17 +147,19 @@ class Content < ActiveRecord::Base
   end
 
   # catchall publish method that handles interacting w/ the publish record
-  def publish(method)
-    record = publish_records.order("created_at DESC").first
+  def publish(method=nil, record=nil)
+    if method.nil?
+      method = DEFAULT_PUBLISH_METHOD
+    end
     begin
       if self.send(method.to_sym) == true
         update_attribute(:published, true)
       end
-      record.items_published += 1
+      record.items_published += 1 if record.present?
     rescue
-      record.failures += 1
+      record.failures += 1 if record.present?
     end
-    record.save
+    record.save if record.present?
   end
 
   def export_to_xml(format=nil)
