@@ -44,3 +44,4 @@ gem 'httparty'
 gem 'chosen-rails'
 gem 'ransack'
 gem 'kaminari'
+gem "fog"

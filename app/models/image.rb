@@ -1,11 +1,11 @@
 class Image < ActiveRecord::Base
   belongs_to :imageable, polymorphic: true, inverse_of: :images
   
-  attr_accessible :caption, :credit, :image, :image_cache, :remove_image, :imageable_id, :imageable_type
+  attr_accessible :caption, :credit, :image, :image_cache, :remove_image, :imageable_id, :imageable_type, :remote_image_url
   
   mount_uploader :image, ImageUploader
   
-  validates_presence_of :image
+#  validates_presence_of :image
   
   rails_admin do
     nested do
@@ -40,7 +40,7 @@ class Image < ActiveRecord::Base
   
   # alias for rails_admin to find label method
   def name
-    image.file.identifier
+    image.try(:identifier)
   end
   
 end
