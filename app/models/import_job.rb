@@ -123,13 +123,15 @@ class ImportJob < ActiveRecord::Base
   def docs_to_contents(docs)
     if docs.is_a? String
       data = JSON.parse docs
-    else
+    else # it's already a hash and we don't need to decode from JSON
       data = docs
     end
     import_record = self.last_import_record
     successes = 0
     failures = 0
     data.each do |article|
+      # trim all fields so we don't get any unnecessary whitespace
+      article.each_value { |v| v.strip! }
       begin
         Content.create_from_import_job(article, self)
         successes += 1

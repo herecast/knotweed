@@ -67,10 +67,10 @@ class Content < ActiveRecord::Base
         data.delete k
       end
     end
+
     # if job is passed in, set organization
-    if job
-      organization = job.try(:organization)
-    end
+    organization = job.try(:organization)
+
     content = Content.new(data)
     # pull complex key/values out from data to use later
     if special_attrs.has_key? 'location'
