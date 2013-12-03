@@ -132,6 +132,12 @@ class ImportJob < ActiveRecord::Base
     data.each do |article|
       # trim all fields so we don't get any unnecessary whitespace
       article.each_value { |v| v.strip! }
+      # remove leading empty <p> tags from content
+      if article.has_key? "content"
+        content_start = article["content"].match(/\A(<p>|<\/p>| )+/)[0].length - 1
+        article["content"].slice!(0..content_start)
+      end
+        
       begin
         Content.create_from_import_job(article, self)
         successes += 1
