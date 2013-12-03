@@ -54,7 +54,7 @@ class Content < ActiveRecord::Base
   def self.create_from_import_job(data, job=nil)
     # pull special attributes out of the data hash
     special_attrs = {}
-    ['location', 'source', 'source', 'edition'].each do |key|
+    ['image', 'location', 'source', 'source', 'edition'].each do |key|
       if data.has_key? key and data[key].present?
         special_attrs[key] = data[key]
         data.delete key
@@ -120,6 +120,13 @@ class Content < ActiveRecord::Base
       existing_content.destroy
     end
     content.save!
+
+    # if the content saves, add any images that came in
+    if special_attrs.has_key? "image"
+      # CarrierWave validation should take care of validating this for us
+      content.images.create(remote_image_url: special_attrs["image"])
+    end
+
     content
 
   end
