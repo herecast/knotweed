@@ -134,8 +134,11 @@ class ImportJob < ActiveRecord::Base
       article.each_value { |v| v.strip! if v.is_a? String }
       # remove leading empty <p> tags from content
       if article.has_key? "content"
-        content_start = article["content"].match(/\A(<p>|<\/p>| )+/)[0].length - 1
-        article["content"].slice!(0..content_start)
+        p_tags_match = article["content"].match(/\A(<p>|<\/p>| )+/)
+        if p_tags_match
+          content_start = p_tags_match[0].length - 1
+          article["content"].slice!(0..content_start)
+        end
       end
         
       begin
