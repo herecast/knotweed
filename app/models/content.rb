@@ -124,7 +124,7 @@ class Content < ActiveRecord::Base
     # if the content saves, add any images that came in
     if special_attrs.has_key? "image"
       # CarrierWave validation should take care of validating this for us
-      content.images.create(remote_image_url: special_attrs["image"])
+      content.images.create(remote_image_url: special_attrs["image"], source_url: special_attrs["image"])
     end
 
     content

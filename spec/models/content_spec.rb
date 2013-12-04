@@ -127,7 +127,9 @@ describe Content do
       @base_data["image"] = "https://www.google.com/images/srpr/logo11w.png"
       c = Content.create_from_import_job(@base_data)
       c.images.count.should == 1
-      c.images.first.image.url.present?.should be_true
+      image = c.images.first
+      image.image.url.present?.should be_true
+      image.source_url.should== "https://www.google.com/images/srpr/logo11w.png"
     end
 
   end
