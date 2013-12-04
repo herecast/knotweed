@@ -6,5 +6,12 @@ CarrierWave.configure do |config|
   }
   config.fog_directory = Figaro.env.aws_bucket_name
   config.ignore_download_errors = false
+
+  if Rails.env.test? 
+    config.storage = :file
+  else
+    config.storage = :fog
+  end
+
 end
 
