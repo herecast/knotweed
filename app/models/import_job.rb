@@ -131,7 +131,7 @@ class ImportJob < ActiveRecord::Base
     failures = 0
     data.each do |article|
       # trim all fields so we don't get any unnecessary whitespace
-      article.each_value { |v| v.strip! }
+      article.each_value { |v| v.strip! if v.is_a? String }
       # remove leading empty <p> tags from content
       if article.has_key? "content"
         content_start = article["content"].match(/\A(<p>|<\/p>| )+/)[0].length - 1
