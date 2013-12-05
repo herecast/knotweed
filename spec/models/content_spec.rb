@@ -123,6 +123,15 @@ describe Content do
       content.import_record.should== record
     end
 
+    it "should create an image record and copy the file to our CDN if 'image' is provided" do
+      @base_data["image"] = "https://www.google.com/images/srpr/logo11w.png"
+      c = Content.create_from_import_job(@base_data)
+      c.images.count.should == 1
+      image = c.images.first
+      image.image.url.present?.should be_true
+      image.source_url.should== "https://www.google.com/images/srpr/logo11w.png"
+    end
+
   end
 
   describe "set guid if not present" do

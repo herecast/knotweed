@@ -19,7 +19,8 @@ describe ImportJob do
       # note we need sufficient entries in the config hash here for the 
       # output to validate.
       @config = { "timestamp" => "2011-06-07T12:25:00", "guid" => "100", "other_param" => "hello", "pubdate" => "2011-06-07T12:25:00",
-                  "source" => "not empty", "title" => "not empty"}
+                  "source" => "not empty", "title" => "      not empty and with whitespace  ",
+                  "content" => "<p> </p> <p> </p> Content begins here" }
       @parser = FactoryGirl.create(:parser, filename: "parser_that_outputs_config.rb")
       @job = FactoryGirl.create(:import_job, parser: @parser, config: @config.to_yaml)
       # run job via delayed_job hooks (even though delayed_job doesnt run in tests)
@@ -44,9 +45,17 @@ describe ImportJob do
 
     it "should create a new Content entry" do
       # 2 since we've run two jobs with two different configs here
+      # also note that @config["title"] has to be stripped
+      # to confirm the import job is stripping all data fields before
+      # passing it to Content
       Content.count.should== 2
-      Content.where(title: @config["title"]).count.should== 1
+      Content.where(title: @config["title"].strip).count.should== 1
       Content.where(timestamp: nil).count.should== 1
+    end
+
+    it "should strip empty p tags from the beginning of content" do
+      c = Content.where(title: @config["title"].strip).first
+      c.content.should== "Content begins here"
     end
 
   end

@@ -38,7 +38,7 @@ gem 'delayed_job_active_record'
 gem 'american_date'
 gem 'ruby-gmail' 
 
-gem 'bullet', group: :development
+#gem 'bullet', group: :development
 gem 'mail'
 gem 'httparty'
 gem 'chosen-rails'
@@ -48,3 +48,4 @@ gem 'kaminari'
 gem "yomu"
 gem "nokogiri"
 
+gem "fog"
