@@ -13,8 +13,8 @@ describe Admin::ImportJobsController do
       end
     end
     
-    it "should compile parameters into a YAML formatted config field" do
-      params = {
+    it "should save parameters as serialized Hash" do 
+      parameters = {
           "#{@parser.parameters[0].name.downcase.gsub(" ", "_")}" => "param 1 val",
           "#{@parser.parameters[1].name.downcase.gsub(" ", "_")}" => "param 2 val"
         }
@@ -23,11 +23,11 @@ describe Admin::ImportJobsController do
         source_path: "Test Path",
         parser_id: @parser.id,
         organization_id: @parser.organization.id
-        }, parameters: params
+        }, parameters: parameters
       response.should redirect_to(admin_import_jobs_path)
       job = ImportJob.find_by_parser_id(@parser.id)
       job.should_not be_nil
-      job.config.should== params.to_yaml
+      job.config.should== parameters
     end
     
   end

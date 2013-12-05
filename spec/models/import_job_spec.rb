@@ -22,12 +22,12 @@ describe ImportJob do
                   "source" => "not empty", "title" => "      not empty and with whitespace  ",
                   "content" => "<p> </p> <p> </p> Content begins here" }
       @parser = FactoryGirl.create(:parser, filename: "parser_that_outputs_config.rb")
-      @job = FactoryGirl.create(:import_job, parser: @parser, config: @config.to_yaml)
+      @job = FactoryGirl.create(:import_job, parser: @parser, config: @config)
       # run job via delayed_job hooks (even though delayed_job doesnt run in tests)
       @job.enqueue_job
       # another job whose output fails validation
       @config2 = { "guid" => "101", "other_param" => "hello" }
-      @job2 = FactoryGirl.create(:import_job, parser: @parser, config: @config2.to_yaml)
+      @job2 = FactoryGirl.create(:import_job, parser: @parser, config: @config2)
       @job2.enqueue_job
     end
 

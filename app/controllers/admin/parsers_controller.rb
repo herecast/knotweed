@@ -7,7 +7,7 @@ class Admin::ParsersController < Admin::AdminController
     @parameters = {}
     if params[:import_job_id].present?
       job = ImportJob.find(params[:import_job_id])
-      config = YAML.load(job.config) || {}
+      config = job.config || {}
     end
     Parameter.where("parser_id = ?", params[:id]).each do |param|
       if config.present? and config.has_key? param.name

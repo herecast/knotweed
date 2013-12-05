@@ -1,5 +1,4 @@
 require 'find'
-require 'yaml'
 require 'json'
 require "builder"
 require 'fileutils'
@@ -24,6 +23,8 @@ class ImportJob < ActiveRecord::Base
   after_destroy :cancel_scheduled_runs
 
   default_scope { where archive: false }
+
+  serialize :config, Hash
 
   # delayed job action
   # 
@@ -109,13 +110,7 @@ class ImportJob < ActiveRecord::Base
   # 
   def run_parser(path)
     require "#{Figaro.env.parsers_path}/#{parser.filename}"
-    # get config from the import_job and convert to hash
-    if self.config.present?
-      conf = YAML.load(self.config) || {}
-    else
-      conf = {}
-    end
-    return parse_file(path, conf)
+    return parse_file(path, config)
   end
 
   # accepts json array of articles
@@ -156,14 +151,7 @@ class ImportJob < ActiveRecord::Base
   end
 
   def save_config(parameters)
-    if parameters.present?
-      conf = {}
-      parameters.each do |key, val|
-        conf[key] = val
-      end
-      self.config = conf.to_yaml
-      self.save
-    end
+    self.update_attribute(:config, parameters)
   end
 
   # returns the most recent import record
