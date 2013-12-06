@@ -2,8 +2,11 @@
 
 FactoryGirl.define do
   factory :location do
-    city "City"
-    state "State"
-    zip "55555"
+    city "Norwich"
+    state "VT"
+    zip "05055"
+    country "USA"
+    link_name "NORWICH VT"
+    link_name_full "NORWICH VERMONT"
   end
 end

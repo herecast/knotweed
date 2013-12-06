@@ -171,6 +171,5 @@ class ImportJob < ActiveRecord::Base
       errors.add(:parser_id, 'parser must belong to the same organization')
     end
   end
-      
 
 end

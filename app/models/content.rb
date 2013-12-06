@@ -75,8 +75,7 @@ class Content < ActiveRecord::Base
     # pull complex key/values out from data to use later
     if special_attrs.has_key? 'location'
       location = special_attrs['location']
-      content.location = Location.where("city LIKE ?", "%#{location}%").first
-      content.location = Location.new(city: location) if content.location.nil?
+      content.location = Location.find_or_create_from_match_string(location)
     end
     if special_attrs.has_key? "source"
       source = special_attrs["source"]

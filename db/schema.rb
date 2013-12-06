@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131204150756) do
+ActiveRecord::Schema.define(:version => 20131206195849) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -131,9 +131,21 @@ ActiveRecord::Schema.define(:version => 20131204150756) do
     t.string   "city"
     t.string   "state"
     t.string   "zip"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
+    t.integer  "parent_id"
+    t.integer  "region_id"
+    t.string   "country",        :limit => 128
+    t.string   "link_name"
+    t.string   "link_name_full"
+    t.integer  "status",         :limit => 1,   :default => 1, :null => false
+    t.string   "usgs_id",        :limit => 128
   end
+
+  add_index "locations", ["link_name"], :name => "index_locations_on_link_name"
+  add_index "locations", ["state"], :name => "index_locations_on_state"
+  add_index "locations", ["status"], :name => "index_locations_on_status"
+  add_index "locations", ["usgs_id"], :name => "index_locations_on_usgs_id"
 
   create_table "organizations", :force => true do |t|
     t.string   "name"
