@@ -32,6 +32,10 @@ class Content < ActiveRecord::Base
   BASE_URI = "http://www.subtext.org/Document"
 
   DEFAULT_PUBLISH_METHOD = "export_to_xml"
+  PUBLISH_METHODS = [
+    "export_to_xml",
+    "post_to_ontotext"
+  ]
 
   rails_admin do
     list do

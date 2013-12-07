@@ -21,7 +21,7 @@ class Admin::ContentsController < Admin::AdminController
 
   def publish
     @content = Content.find(params[:id])
-    @content.publish
+    @content.publish(params[:method])
     flash[:notice] = "Content published"
     redirect_to [:admin, @content]
   end

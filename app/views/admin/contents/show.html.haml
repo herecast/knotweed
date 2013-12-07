@@ -6,5 +6,7 @@
       %h3= @content.location.try(:city)
       %h4= @content.authors
       %h4= @content.pubdate.strftime("%Y-%m-%d")
-      %span
-        = link_to "Publish", admin_publish_content_path(@content), class: "btn btn-info"
+      - Content::PUBLISH_METHODS.each do |method|
+        = link_to method.humanize, admin_publish_content_path(@content, method), class: "btn btn-info"
+      %h3 Content:
+      = sanitize @content.content
