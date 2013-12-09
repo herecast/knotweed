@@ -229,6 +229,8 @@ describe Content do
   describe "to new xml" do
     before do
       @content = FactoryGirl.create(:content)
+      @image1 = FactoryGirl.create(:image)
+      @image2 = FactoryGirl.create(:image)
       @xml = @content.to_new_xml
     end
 
@@ -253,6 +255,15 @@ describe Content do
       end
     end
 
+    it "should populate with a publication image if content doesnt have one" do
+      @content.source.images << @image1
+      @content.to_new_xml.include?("IMAGE</tns:name").should be_true
+    end
+
+    it "should populate with content image if it exists" do
+      @content.images << @image2
+      @content.to_new_xml.include?("IMAGE</tns:name").should be_true
+    end
     it "should contain document part with content" do
       # note the brackets at the end are closing CDATA
       @xml.include?("#{@content.content}]]></tns:content>").should be_true

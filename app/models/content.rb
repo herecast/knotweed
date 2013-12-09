@@ -250,6 +250,7 @@ class Content < ActiveRecord::Base
                   key, value = "SOURCE", source.name
                 elsif k == "location_id" and location.present?
                   key, value = "LOCATION", location.city
+                 
                 end
               else
                 key = k.upcase
@@ -273,6 +274,17 @@ class Content < ActiveRecord::Base
               end
             end
           end
+          if images.present? or source.images.present?
+            g.tag!("tns:feature") do |h|
+              h.tag!("tns:name", "IMAGE", "type"=>"xs:string")
+              if images.present?
+                g.tag!("tns:value", images.first.image.url, "type"=>"xs:string")
+              elsif source.images.present?
+                g.tag!("tns:value", source.images.first.image.url, "type"=>"xs:string")
+              end
+            end
+          end
+            
         end
         g.tag!("tns:document-part", "part"=>"BODY", "id"=>"1") do |h|
           h.tag!("tns:content") do |i|

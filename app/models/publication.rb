@@ -4,12 +4,16 @@ class Publication < ActiveRecord::Base
   belongs_to :organization
   has_many :contents, inverse_of: :source, foreign_key: "source_id"
 
+  # default images for contents
+  has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
+
   belongs_to :admin_contact, class_name: "Contact"
   belongs_to :tech_contact, class_name: "Contact"
   
   attr_accessible :name, :logo, :logo_cache, :remove_logo, :organization_id,
                   :admin_contact_id, :tech_contact_id, :website, :publishing_frequency,
                   :notes
+  attr_accessible :images_attributes
   
   mount_uploader :logo, ImageUploader
 
