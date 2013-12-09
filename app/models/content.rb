@@ -249,8 +249,9 @@ class Content < ActiveRecord::Base
                 elsif k == "source_id" and source.present?
                   key, value = "SOURCE", source.name
                 elsif k == "location_id" and location.present?
-                  key, value = "LOCATION", location.city
-                 
+                  if location.status == Location::STATUS_GOOD
+                    key, value = "LOCATION", location.city
+                  end
                 end
               else
                 key = k.upcase
