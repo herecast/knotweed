@@ -8,5 +8,6 @@ FactoryGirl.define do
     country "USA"
     link_name "NORWICH VT"
     link_name_full "NORWICH VERMONT"
+    region_id 1
   end
 end
