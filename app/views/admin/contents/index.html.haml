@@ -15,8 +15,8 @@
             = f.text_field :pubdate_lteq, type: :date
         .controls.controls-row
           .field.span3
-            = f.label :location_id_in, "Location"
-            = f.collection_select :location_id_in, Location.top_level.where(region_id: 1).accessible_by(current_ability), :id, :city, {}, { multiple: true, class: "chosen-select" }
+            = f.label :location_link_name_cont, "Location"
+            = f.text_field :location_link_name_cont
           .field.span3
             = f.label :title_cont, "Title"
             = f.text_field :title_cont
