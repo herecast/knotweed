@@ -26,7 +26,7 @@ class Location < ActiveRecord::Base
   # from parsers into our locations database
   def self.find_or_create_from_match_string(query_string)
     match = false
-    link_name = query_string.upcase.gsub(",", "").gsub(".", "").gsub(/ {2,}/, " ")
+    link_name = query_string.upcase.gsub(",", "").gsub(".", "").gsub("_", " ").gsub(/ {2,}/, " ")
 
     # first try to match just straight to the "city" entry
     query = Location.where("UPPER(city) = ?", query_string)
