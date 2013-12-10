@@ -29,7 +29,7 @@ class Location < ActiveRecord::Base
     link_name = query_string.upcase.gsub(",", "").gsub(".", "").gsub("_", " ").gsub(/ {2,}/, " ")
 
     # first try to match just straight to the "city" entry
-    query = Location.where("UPPER(city) = ?", query_string)
+    query = Location.where("UPPER(city) = ?", query_string.upcase)
     query = Location.where("link_name = ?", link_name) if query.empty?
     query = Location.where("link_name_full = ?", link_name) if query.empty?
 
