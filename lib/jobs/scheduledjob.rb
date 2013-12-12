@@ -15,7 +15,7 @@ module Jobs
 
     def schedule
       if self.try(:frequency).present? and self.frequency != 0
-        self.frequency.hours.from_now
+        self.frequency.minutes.from_now
       else
         nil
       end

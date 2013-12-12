@@ -6,7 +6,7 @@
     = label_tag "import_job_recurring", "Recurring?", { class: "boolean optional control-label" }
     .controls
       = check_box_tag "import_job_recurring"
-  = f.input :frequency, hint: "Repeat every x hours", wrapper_html: { class: "frequency" }
+  = f.input :frequency, hint: "Repeat every x minutes", wrapper_html: { class: "frequency" }
   = f.association :parser, collection: Parser.accessible_by(current_ability, :read)
   - if current_user.has_role? :admin
     = f.association :organization
