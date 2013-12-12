@@ -16,7 +16,7 @@ class Content < ActiveRecord::Base
   attr_accessible :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype
   attr_accessible :language, :page, :wordcount, :authoremail, :source_id, :file
   attr_accessible :quarantine, :doctype, :timestamp, :contentsource, :source_content_id
-  attr_accessible :image, :published
+  attr_accessible :published
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -240,7 +240,7 @@ class Content < ActiveRecord::Base
       f.tag!("tns:document-parts") do |g|
         f.tag!("tns:feature-set") do |g|
           attributes.each do |k, v|
-            if ["id", "created_at", "updated_at", "quarantine", "import_record_id", "published"].include? k
+            if ["id", "created_at", "updated_at", "quarantine", "import_record_id", "published", "image"].include? k
               next
             end
             g.tag!("tns:feature") do |h|
