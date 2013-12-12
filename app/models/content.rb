@@ -85,10 +85,11 @@ class Content < ActiveRecord::Base
       source = special_attrs["source"]
       if organization
         content.source = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).where("name LIKE ?", "%#{source}%").first
+        content.source = Publication.create(name: source, organization_id: organization.id) if content.source.nil?
       else
         content.source = Publication.where("name LIKE ?", "%#{source}%").first
+        content.source = Publication.create(name: source) if content.source.nil?
       end
-      content.source = Publication.create(name: source) if content.source.nil?
     end
     if special_attrs.has_key? "edition"
       edition = special_attrs["edition"]
@@ -137,7 +138,7 @@ class Content < ActiveRecord::Base
   # check that doc validates our xml requirements
   # if not, mark it as quarantined
   def mark_quarantined
-    unless title.present? and source.present? and pubdate.present?
+    unless title.present? and source.present? and pubdate.present? and content.present?
       self.quarantine = true
     end
   end

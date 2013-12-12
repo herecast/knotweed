@@ -26,10 +26,13 @@ describe Content do
     end
 
     it "should leave valid corpus entries as unquarantined" do
-      @base_data["pubdate"] = Time.now
       p = FactoryGirl.create(:publication)
-      @base_data["source_id"] = p.id
-      content = Content.create_from_import_job(@base_data)
+      extra_data = @base_data.merge({
+        "pubdate" => Time.now,
+        "content" => "hello",
+        "source_id" => p.id
+      })
+      content = Content.create_from_import_job(extra_data)
       content.quarantine.should== false
     end
 
