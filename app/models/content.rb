@@ -65,6 +65,9 @@ class Content < ActiveRecord::Base
       end
     end
     data.keys.each do |k|
+      if k.is_a? Symbol
+        k = k.to_s
+      end
       unless Content.accessible_attributes.entries.include? k
         log = Logger.new("#{Rails.root}/log/contents.log")
         log.debug("unknown key provided by parser: #{k}")
