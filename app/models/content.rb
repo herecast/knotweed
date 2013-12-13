@@ -55,19 +55,24 @@ class Content < ActiveRecord::Base
   # creating a new content from import job data
   # is not as simple as just creating new from hash
   # because we need to match locations, publications, etc.
-  def self.create_from_import_job(data, job=nil)
+  def self.create_from_import_job(input, job=nil)
     # pull special attributes out of the data hash
     special_attrs = {}
-    ['image', 'location', 'source', 'source', 'edition'].each do |key|
-      if data.has_key? key and data[key].present?
-        special_attrs[key] = data[key]
-        data.delete key
+    # convert symbols to strings
+    data = {}
+    input.each do |k,v|
+      if k.is_a? Symbol
+        key = k.to_s
+      else
+        key = k
+      end
+      if ['image', 'location', 'source', 'edition'].include? key
+        special_attrs[key] = v
+      else
+        data[key] = v
       end
     end
     data.keys.each do |k|
-      if k.is_a? Symbol
-        k = k.to_s
-      end
       unless Content.accessible_attributes.entries.include? k
         log = Logger.new("#{Rails.root}/log/contents.log")
         log.debug("unknown key provided by parser: #{k}")

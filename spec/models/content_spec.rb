@@ -239,7 +239,7 @@ describe Content do
 
     it "should contain all the attributes as feature name/value pairs" do
       @content.attributes.each do |k, v|
-        unless ["id", "created_at", "updated_at", "quarantine", "published", "content"].include? k or /.+id/.match(k)
+        unless ["id", "image", "created_at", "updated_at", "quarantine", "published", "content"].include? k or /.+id/.match(k)
           # just checking with closing tags so we don't have to deal
           # with exact formatting of opening tag and attributes
           @xml.include?("#{k.upcase}</tns:name>").should be_true
