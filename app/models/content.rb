@@ -67,8 +67,8 @@ class Content < ActiveRecord::Base
         key = k
       end
       if ['image', 'location', 'source', 'edition'].include? key
-        special_attrs[key] = v
-      else
+        special_attrs[key] = v if v.present?
+      elsif v.present?
         data[key] = v
       end
     end
