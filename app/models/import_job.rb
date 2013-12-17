@@ -8,6 +8,7 @@ require 'jobs/scheduledjob'
 class ImportJob < ActiveRecord::Base
 
   include Jobs::ScheduledJob
+  QUEUE = "imports"
 
   belongs_to :organization
   belongs_to :parser
@@ -71,7 +72,7 @@ class ImportJob < ActiveRecord::Base
   # enqueues the job object
   # note can use option run_at: time to schedule in the future
   def enqueue_job
-    Delayed::Job.enqueue self, queue: 'imports'
+    Delayed::Job.enqueue self, queue: QUEUE
   end
   
   def traverse_input_tree

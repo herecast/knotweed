@@ -3,6 +3,7 @@ require 'jobs/scheduledjob'
 class PublishJob < ActiveRecord::Base
 
   include Jobs::ScheduledJob
+  QUEUE = 'publishing'
 
   belongs_to :organization
   has_many :publish_records
@@ -60,7 +61,7 @@ class PublishJob < ActiveRecord::Base
   end
 
   def enqueue_job
-    Delayed::Job.enqueue self, queue: 'publishing'
+    Delayed::Job.enqueue self, queue: QUEUE
   end
 
   def contents_count

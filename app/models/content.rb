@@ -146,9 +146,12 @@ class Content < ActiveRecord::Base
   # check that doc validates our xml requirements
   # if not, mark it as quarantined
   def mark_quarantined
-    unless title.present? and source.present? and pubdate.present? and content.present?
+    if title.present? and source.present? and pubdate.present? and content.present?
+      self.quarantine = false
+    else
       self.quarantine = true
     end
+    true
   end
 
   # if guid is empty, set with our own 

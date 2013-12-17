@@ -24,7 +24,7 @@ module Jobs
     def schedule!
       # avoid repeating indefinitely in tests
       unless Rails.env == "test"
-        Delayed::Job.enqueue self, { :priority => 0, :run_at => self.schedule } if self.schedule 
+        Delayed::Job.enqueue self, { :priority => 0, :run_at => self.schedule, :queue => self.class::QUEUE } if self.schedule 
       end
     end
     
