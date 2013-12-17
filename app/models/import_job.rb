@@ -12,11 +12,13 @@ class ImportJob < ActiveRecord::Base
 
   belongs_to :organization
   belongs_to :parser
+  belongs_to :content_set
   has_many :import_records
   
   validates_presence_of :organization
   
-  attr_accessible :config, :name, :parser_id, :source_path, :type, :organization_id, :frequency, :archive
+  attr_accessible :config, :name, :parser_id, :source_path, :type, 
+                  :organization_id, :frequency, :archive, :content_set_id
   
   validates :status, inclusion: { in: %w(failed running success queued) }, allow_nil: true
   validate :parser_belongs_to_same_organization, unless: "parser.nil?"

@@ -2,7 +2,13 @@ class Publication < ActiveRecord::Base
   
   has_many :issues
   belongs_to :organization
+
+  belongs_to :parent, class_name: "Publication"
+  has_many :children, class_name: "Publication", foreign_key: "parent_id"
+
   has_many :contents, inverse_of: :source, foreign_key: "source_id"
+
+  has_many :content_sets
 
   # default images for contents
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
@@ -12,8 +18,7 @@ class Publication < ActiveRecord::Base
   
   attr_accessible :name, :logo, :logo_cache, :remove_logo, :organization_id,
                   :admin_contact_id, :tech_contact_id, :website, :publishing_frequency,
-                  :notes
-  attr_accessible :images_attributes
+                  :notes, :images_attributes, :parent_id
   
   mount_uploader :logo, ImageUploader
 

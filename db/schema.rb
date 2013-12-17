@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131206195849) do
+ActiveRecord::Schema.define(:version => 20131217184336) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -27,6 +27,18 @@ ActiveRecord::Schema.define(:version => 20131206195849) do
     t.text     "notes"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "content_sets", :force => true do |t|
+    t.string   "import_method"
+    t.text     "import_method_details"
+    t.integer  "publication_id"
+    t.string   "name"
+    t.text     "description"
+    t.text     "notes"
+    t.string   "status"
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
   end
 
   create_table "contents", :force => true do |t|
@@ -107,6 +119,7 @@ ActiveRecord::Schema.define(:version => 20131206195849) do
     t.string   "status"
     t.integer  "frequency",       :default => 0
     t.boolean  "archive",         :default => false, :null => false
+    t.integer  "content_set_id"
   end
 
   create_table "import_records", :force => true do |t|
@@ -182,6 +195,7 @@ ActiveRecord::Schema.define(:version => 20131206195849) do
     t.string   "website"
     t.string   "publishing_frequency"
     t.text     "notes"
+    t.integer  "parent_id"
   end
 
   create_table "publish_jobs", :force => true do |t|
