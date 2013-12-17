@@ -15,10 +15,12 @@ class Publication < ActiveRecord::Base
 
   belongs_to :admin_contact, class_name: "Contact"
   belongs_to :tech_contact, class_name: "Contact"
+
+  has_and_belongs_to_many :locations
   
   attr_accessible :name, :logo, :logo_cache, :remove_logo, :organization_id,
                   :admin_contact_id, :tech_contact_id, :website, :publishing_frequency,
-                  :notes, :images_attributes, :parent_id
+                  :notes, :images_attributes, :parent_id, :location_ids
   
   mount_uploader :logo, ImageUploader
 

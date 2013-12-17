@@ -1,4 +1,4 @@
-class CreateLocations < ActiveRecord::Migration
+class CreateLocationsOld < ActiveRecord::Migration
   def change
     create_table :locations do |t|
       t.string :city
