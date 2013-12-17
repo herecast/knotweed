@@ -8,7 +8,7 @@ FactoryGirl.define do
     content "Content goes here"
     association :source, factory: :publication
     issue
-    location
+    import_location
     pubdate Time.now
   end
 end

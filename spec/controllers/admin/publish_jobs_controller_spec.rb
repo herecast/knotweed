@@ -11,7 +11,7 @@ describe Admin::PublishJobsController do
       post_params = { publish_job: {
         name: "Test Publish Job",
         publish_method: PublishJob::EXPORT_TO_XML },
-        source_id: ["3"], location_id: ["4"],
+        source_id: ["3"], import_location_id: ["4"],
         from: nil, to: nil, published: nil }
         
       post :create, post_params

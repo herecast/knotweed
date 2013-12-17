@@ -15,8 +15,8 @@
             = f.text_field :pubdate_lteq, type: :date
         .controls.controls-row
           .field.span3
-            = f.label :location_link_name_cont, "Location"
-            = f.text_field :location_link_name_cont
+            = f.label :import_location_link_name_cont, "Location"
+            = f.text_field :import_location_link_name_cont
           .field.span3
             = f.label :title_cont, "Title"
             = f.text_field :title_cont
@@ -45,7 +45,7 @@
                 - if c.authors.present?
                   = link_to c.authors, admin_contents_path(q: { authors_cont: c.authors })
               %td
-                - if c.location.present?
-                  = link_to c.location.city, admin_contents_path(q: { location_id_in: c.location.id })
+                - if c.import_location.present?
+                  = link_to c.import_location.city, admin_contents_path(q: { import_location_id_in: c.import_location.id })
               %td= c.pubdate.strftime("%Y-%m-%d")
       = paginate @contents, window: 2 if @contents.present?

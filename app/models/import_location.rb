@@ -1,10 +1,10 @@
-class Location < ActiveRecord::Base
+class ImportLocation < ActiveRecord::Base
   
   has_many :issues
   has_many :contents
 
-  belongs_to :parent, :class_name => "Location"
-  has_many :aliases, :class_name => "Location", :foreign_key => "parent_id"
+  belongs_to :parent, :class_name => "ImportLocation"
+  has_many :aliases, :class_name => "ImportLocation", :foreign_key => "parent_id"
   
   attr_accessible :city, :state, :zip, :country, :link_name, :link_name_full, :status,
                   :region_id, :parent_id, :usgs_id
@@ -29,13 +29,13 @@ class Location < ActiveRecord::Base
     link_name = query_string.upcase.gsub(",", "").gsub(".", "").gsub("_", " ").gsub(/ {2,}/, " ")
 
     # first try to match just straight to the "city" entry
-    query = Location.where("UPPER(city) = ?", query_string.upcase)
-    query = Location.where("link_name = ?", link_name) if query.empty?
-    query = Location.where("link_name_full = ?", link_name) if query.empty?
+    query = ImportLocation.where("UPPER(city) = ?", query_string.upcase)
+    query = ImportLocation.where("link_name = ?", link_name) if query.empty?
+    query = ImportLocation.where("link_name_full = ?", link_name) if query.empty?
 
     if query.empty?
       # if nothing found, create new location record with status: REVIEW
-      match = Location.create(city: query_string, link_name: link_name, status: STATUS_REVIEW)
+      match = ImportLocation.create(city: query_string, link_name: link_name, status: STATUS_REVIEW)
     # might want to add logic in the future in the case where
     # query.length > 1...not sure.
     else query.length == 1

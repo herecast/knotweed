@@ -2,7 +2,7 @@ require 'fileutils'
 require 'builder'
 class Content < ActiveRecord::Base
   belongs_to :issue
-  belongs_to :location
+  belongs_to :import_location
   belongs_to :import_record
 
   has_and_belongs_to_many :publish_records
@@ -12,7 +12,7 @@ class Content < ActiveRecord::Base
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes
 
-  attr_accessible :title, :subtitle, :authors, :content, :issue_id, :location_id, :copyright
+  attr_accessible :title, :subtitle, :authors, :content, :issue_id, :import_location_id, :copyright
   attr_accessible :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype
   attr_accessible :language, :page, :wordcount, :authoremail, :source_id, :file
   attr_accessible :quarantine, :doctype, :timestamp, :contentsource, :source_content_id
@@ -39,11 +39,11 @@ class Content < ActiveRecord::Base
 
   rails_admin do
     list do
-      filters [:source, :issue, :title, :authors, :import_record, :location]
+      filters [:source, :issue, :title, :authors, :import_record, :import_location]
       items_per_page 100
       sort_by :pubdate, :source
       field :import_record
-      field :location
+      field :import_location
       field :pubdate
       field :source
       field :issue
@@ -86,8 +86,8 @@ class Content < ActiveRecord::Base
     content = Content.new(data)
     # pull complex key/values out from data to use later
     if special_attrs.has_key? 'location'
-      location = special_attrs['location']
-      content.location = Location.find_or_create_from_match_string(location)
+      import_location = special_attrs['location']
+      content.import_location = ImportLocation.find_or_create_from_match_string(import_location)
     end
     if special_attrs.has_key? "source"
       source = special_attrs["source"]
@@ -238,7 +238,7 @@ class Content < ActiveRecord::Base
       end
       f.tag!("issue", issue.issue_edition) if issue.present?
       f.tag!("publication", source.name) if source.present?
-      f.tag!("location", location.city) if location.present?
+      f.tag!("location", import_location.city) if import_location.present?
     end
     xml.target!
   end
@@ -255,14 +255,14 @@ class Content < ActiveRecord::Base
               next
             end
             g.tag!("tns:feature") do |h|
-              if ["issue_id", "source_id", "location_id"].include? k
+              if ["issue_id", "source_id", "import_location_id"].include? k
                 if k == "issue_id" and issue.present?
                   key, value = "ISSUE", issue.issue_edition
                 elsif k == "source_id" and source.present?
                   key, value = "SOURCE", source.name
-                elsif k == "location_id" and location.present?
-                  if location.status == Location::STATUS_GOOD
-                    key, value = "LOCATION", location.city
+                elsif k == "import_location_id" and import_location.present?
+                  if import_location.status == ImportLocation::STATUS_GOOD
+                    key, value = "LOCATION", import_location.city
                   end
                 end
               else
@@ -328,8 +328,8 @@ class Content < ActiveRecord::Base
     if query_params[:source_id].present?
       query[:source_id] = query_params[:source_id].map { |s| s.to_i } 
     end
-    if query_params[:location_id].present?
-      query[:location_id] = query_params[:location_id].map { |s| s.to_i } 
+    if query_params[:import_location_id].present?
+      query[:import_location_id] = query_params[:import_location_id].map { |s| s.to_i } 
     end
     if query_params[:published] == "true"
       query[:published] = true

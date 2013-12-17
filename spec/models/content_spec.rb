@@ -85,13 +85,13 @@ describe Content do
     it "should create a new location if none is found" do
       @base_data["location"] = "Test Location"
       content = Content.create_from_import_job(@base_data)
-      content.location.city.should== "Test Location"
+      content.import_location.city.should== "Test Location"
     end
     it "should match existing locations by city" do
-      loc = FactoryGirl.create(:location)
+      loc = FactoryGirl.create(:import_location)
       @base_data["location"] = loc.city
       content = Content.create_from_import_job(@base_data)
-      content.location.city.should== loc.city
+      content.import_location.city.should== loc.city
     end
     
     # check issue/edition logic
@@ -225,7 +225,7 @@ describe Content do
       @xml.include?("<location").should be_true
       @xml.include?(@content.issue.issue_edition).should be_true if @content.issue.present?
       @xml.include?(@content.source.name).should be_true if @content.source.present?
-      @xml.include?(@content.location.city).should be_true if @content.location.present?
+      @xml.include?(@content.import_location.city).should be_true if @content.import_location.present?
     end
   end
 

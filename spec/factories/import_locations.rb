@@ -1,7 +1,7 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do
-  factory :location do
+  factory :import_location do
     city "Norwich"
     state "VT"
     zip "05055"

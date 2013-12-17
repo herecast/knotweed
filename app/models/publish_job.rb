@@ -24,7 +24,7 @@ class PublishJob < ActiveRecord::Base
   EXPORT_TO_XML = "export_to_xml"
   PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML]
 
-  QUERY_PARAMS_FIELDS = %w(source_id from to location_id published)
+  QUERY_PARAMS_FIELDS = %w(source_id from to import_location_id published)
   
   validates :publish_method, inclusion: { in: PUBLISH_METHODS }, allow_nil: true
 
