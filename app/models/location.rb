@@ -4,6 +4,8 @@ class Location < ActiveRecord::Base
 
   attr_accessible :city, :county, :lat, :long, :state, :zip, :publication_ids
 
+  default_scope order: :city
+
   def name
     "#{try(:city)} #{try(:state)}"
   end
