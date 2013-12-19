@@ -209,7 +209,8 @@ class Content < ActiveRecord::Base
   # function to post to Ontotext's prototype
   # using the "new" xml format
   def post_to_ontotext
-    options = { :body => self.to_new_xml, :timeout => 10*60 }
+    options = { :body => self.to_new_xml }
+                
     
     response = Admin::OntotextController.post('/prototype/processDocument?persist=true', options)
     if response.body.include? "#{BASE_URI}/#{id}"
