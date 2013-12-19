@@ -28,6 +28,15 @@ class Publication < ActiveRecord::Base
 
   validates :publishing_frequency, inclusion: { in: FREQUENCY_OPTIONS  }, allow_nil: true
 
+  rails_admin do
+    edit do
+      exclude_fields :contents, :issues
+    end
+    show do
+      exclude_fields :contents, :issues
+    end
+  end
+
   def publishing_frequency_enum
     FREQUENCY_OPTIONS
   end
