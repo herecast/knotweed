@@ -9,4 +9,4 @@
       - Content::PUBLISH_METHODS.each do |method|
         = link_to method.humanize, admin_publish_content_path(@content, method), class: "btn btn-info"
       %h3 Content:
-      = sanitize @content.content
+      = simple_format @content.content
