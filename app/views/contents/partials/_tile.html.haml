@@ -14,7 +14,7 @@
     = content.authors
     - if content.source.present? or content.authors.present?
       %br
-    = content.location.try(:city)
-    = "--" if content.location.present?
+    = content.import_location.try(:city)
+    = "--" if content.import_location.present?
     = content.content.truncate(150, separator: " ", omission: "...") 
     = link_to "more", content

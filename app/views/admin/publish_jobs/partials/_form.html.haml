@@ -6,8 +6,8 @@
     = text_field_tag "from", @publish_job.query_params[:from], type: "date"
     = label_tag "to", "To"
     = text_field_tag "to", @publish_job.query_params[:to], type: "date"
-    = label_tag "location", "Location"
-    = select_tag :location_id, options_from_collection_for_select(Location.where(region_id: 1).accessible_by(current_ability, :read), "id", "name", @publish_job.query_params[:location_id]), { multiple: true, class: "chosen-select" }
+    = label_tag "import_location", "Location"
+    = select_tag :import_location_id, options_from_collection_for_select(ImportLocation.where(region_id: 1).accessible_by(current_ability, :read), "id", "name", @publish_job.query_params[:import_location_id]), { multiple: true, class: "chosen-select" }
     = label_tag "published", "Already Published?"
     = select_tag :published, options_for_select([false, true, "both"], @publish_job.query_params[:published])
   .form-column

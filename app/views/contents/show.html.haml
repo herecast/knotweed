@@ -23,7 +23,7 @@
       %h5 
         = simple_format @content.authors
       %p
-        = @content.location.city + " -- "
+        = @content.import_location.try(:city) + " -- "
         = simple_format @content.content.gsub("\u2028", "\n\n") # simple_format doesn't catch \u2028
     .span2
       .well
