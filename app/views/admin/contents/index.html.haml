@@ -5,6 +5,9 @@
       = search_form_for @search, url: admin_contents_path do |f|
         .controls.controls-row
           .field.span3
+            = f.label :id_eq, "ID"
+            = f.text_field :id_eq
+          .field.span3
             = f.label :source_id_in, "Source"
             = f.collection_select :source_id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
