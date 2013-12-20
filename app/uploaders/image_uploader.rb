@@ -17,7 +17,13 @@ class ImageUploader < CarrierWave::Uploader::Base
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-    "uploads/#{model.class.to_s.underscore}/#{model.id}"
+    # "uploads/#{model.class.to_s.underscore}/#{model.id}"
+    # new one
+    if model.imageable.present?
+      "#{model.imageable_type.underscore}/#{model.imageable.id}"
+    else
+      "uploads"
+    end
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
