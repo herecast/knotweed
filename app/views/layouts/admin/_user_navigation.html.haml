@@ -1,14 +1,14 @@
-%li.light-blue
+%li.dark.user-menu.dropdown
   %a.dropdown-toggle{href: "#", :data => {toggle: "dropdown"}}
-    %span.user-info
-      %small Welcome, 
+    %span.user-name
       = current_user.name
-    %i.icon-caret-down
-  %ul.user-menu.pull-right.dropdown-menu.dropdown-yellow.dropdown-caret.dropdown-closer
+    %b.caret
+  %ul.dropdown-menu
     %li 
-      %i.icon-cog
-      = link_to 'Edit Account', edit_user_registration_path
+      = link_to edit_user_registration_path do
+        %i.icon-cog
+        Edit Account
     %li
-      %i.icon-off
-      = link_to 'Logout', destroy_user_session_path, method: "delete"
-    
+      = link_to destroy_user_session_path, method: "delete" do
+        %i.icon-off
+        Logout

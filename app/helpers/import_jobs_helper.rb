@@ -14,14 +14,14 @@ module ImportJobsHelper
 
   def action_button_for_job(job)
     if job.status == "running"
-      content_tag(:span, "in process", { class: "btn btn-danger disabled" })
+      content_tag(:span, "in process", { class: "btn-small btn-danger disabled" })
     elsif job.status == "queued"
-      content_tag(:span, "queued", { class: "btn btn-danger disabled" })
+      content_tag(:span, "queued", { class: "btn-small btn-danger disabled" })
     else
       if job.next_scheduled_run.nil?
-        content_tag(:a, "Run Job", { href: get_path_for_job_action("run", job), data: { remote: true }, class: "btn btn-success" })
+        content_tag(:a, "Run Job", { href: get_path_for_job_action("run", job), data: { remote: true }, class: "btn-small btn-success" })
       else
-        content_tag(:a, "Cancel Scheduled Runs", { href: get_path_for_job_action("cancel", job), data: { remote: true, method: :delete }, class: "btn btn-danger" })
+        content_tag(:a, "Cancel Scheduled Runs", { href: get_path_for_job_action("cancel", job), data: { remote: true, method: :delete }, class: "btn-small btn-danger" })
       end
     end
   end

@@ -1,5 +1,8 @@
-#wrapper
-  .row
-    .well
-      %h1 Edit Import Job
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-pencil
+        Edit Import Job
+    .box-content
       = render partial: "admin/import_jobs/partials/form", locals: { import_job: @import_job }

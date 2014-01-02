@@ -4,27 +4,20 @@
 
 jQuery ->
   container = $("#wall")
-  container.imagesLoaded ->
-    container.isotope({
-      resizable: false,
-      masonry: { columnWidth: container.width() / 12 },
-      itemSelector: ".item"
-    })
-
-    $(window).smartresize ->
+  if container.length > 0
+    container.imagesLoaded ->
       container.isotope({
-        masonry: { columnWidth: container.width() / 12 }
+        resizable: false,
+        masonry: { columnWidth: container.width() / 12 },
+        itemSelector: ".item"
       })
-  $("#channels li a").on 'click', ->
-    container.isotope({ filter: $(this).data("option-value") })
-    console.log($(this).data("option-value"))
-    $("#channels li.active").removeClass("active")
-    $(this).parent("li").addClass("active")
 
-  # admin datatables
-  $('#documents_table').dataTable( {
-    "sDom": "<'row-fluid'<'span6'lp><'span6'f>r>t<'row-fluid'<'span6'i><'span6'>>",
-    "sPaginationType": "bootstrap",
-    "bFilter": false,
-    "iDisplayLength": 25
-  })
+      $(window).smartresize ->
+        container.isotope({
+          masonry: { columnWidth: container.width() / 12 }
+        })
+    $("#channels li a").on 'click', ->
+      container.isotope({ filter: $(this).data("option-value") })
+      console.log($(this).data("option-value"))
+      $("#channels li.active").removeClass("active")
+      $(this).parent("li").addClass("active")

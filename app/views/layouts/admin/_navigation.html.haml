@@ -1,4 +1,44 @@
-%li= link_to "Import Jobs", admin_import_jobs_path
-%li= link_to "Parsers", admin_parsers_path
-%li= link_to "Publish Jobs", admin_publish_jobs_path
-%li= link_to "Contents", admin_contents_path
+%li
+  = link_to "#", class: "dropdown-collapse" do
+    %span
+      Import Jobs
+    %i.icon-angle-down.angle-down
+  %ul.nav.nav-stacked.in
+    %li{ class: current_page?(admin_import_jobs_path) ? "active" : "" }
+      = link_to admin_import_jobs_path do
+        %i.icon-tasks
+        %span Active
+    %li{ class: current_page?(new_admin_import_job_path) ? "active" : "" }
+      = link_to new_admin_import_job_path do
+        %i.icon-plus
+        %span Create New
+%li
+  = link_to "#", class: "dropdown-collapse" do
+    %span Parsers
+    %i.icon-angle-down.angle-down
+  %ul.nav.nav-stacked.in
+    %li{ class: current_page?(admin_parsers_path) ? "active" : "" }
+      = link_to admin_parsers_path do
+        %i.icon-tasks
+        %span All
+    %li{ class: current_page?(new_admin_parser_path) ? "active" : "" }
+      = link_to new_admin_parser_path do
+        %i.icon-plus
+        %span Create New
+%li
+  = link_to admin_publish_jobs_path do
+    %span Publish Jobs
+    %i.icon-angle-down.angle-down
+  %ul.nav.nav-stacked.in
+    %li{ class: current_page?(admin_publish_jobs_path) ? "active" : "" }
+      = link_to admin_publish_jobs_path do
+        %i.icon-tasks
+        %span All
+    %li{ class: current_page?(new_admin_publish_job_path) ? "active" : "" }
+      = link_to new_admin_publish_job_path do
+        %i.icon-plus
+        %span Create New
+%li
+  = link_to admin_contents_path do
+    %span
+      Contents

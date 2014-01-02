@@ -1,24 +1,20 @@
-#wrapper
-  .row
-    .well
-      = link_to "Register New Parser", new_admin_parser_path, class: "btn btn-primary"
-      %table.table.table-striped
-        %thead
-          %tr
-            %th.span2 Parser
-            %th.span1 Filename
-            %th.span2 Description
-            %th.span1 Organization
-            %th.span2 
-            %th.span1
-        %tbody
-          - @parsers.each do |parser|
-            %tr{ class: "parser-#{parser.id}" }
-              %td= link_to parser.name, edit_admin_parser_path(parser)
-              %td= parser.filename
-              %td= parser.description
-              %td= parser.organization.name
-              %td.create-import-job
-                = link_to "Create Import Job", admin_new_import_job_for_parser_path(parser.id), class: "btn btn-success"
-              %td.delete-parser
-                = link_to "Delete", admin_parser_path(parser), class: "btn btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }
+%table.table.table-striped.table-bordered.data-table.table-condensed
+  %thead
+    %tr
+      %th Parser
+      %th Filename
+      %th Description
+      %th Organization
+      %th
+      %th
+  %tbody
+    - @parsers.each do |parser|
+      %tr{ class: "parser-#{parser.id}" }
+        %td= link_to parser.name, edit_admin_parser_path(parser)
+        %td= parser.filename
+        %td= parser.description
+        %td= parser.organization.name
+        %td.create-import-job
+          = link_to "Create Import Job", admin_new_import_job_for_parser_path(parser.id), class: "btn btn-success"
+        %td.delete-parser
+          = link_to "Delete", admin_parser_path(parser), class: "btn-small btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }

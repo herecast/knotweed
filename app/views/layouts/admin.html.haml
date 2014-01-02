@@ -1,3 +1,4 @@
+!!!
 %html
   %head
     %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
@@ -9,33 +10,25 @@
     = javascript_include_tag "application"
     = csrf_meta_tags
     = yield(:head)
-  %body{:class => "#{controller_name} #{action_name}"}
-    .navbar.navbar-default#navbar
-      :javascript
-        try{ace.settings.check('navbar' , 'fixed')}catch(e){};
-      .navbar-container#navbar-container
-        .navbar-header.pull-left
-          = link_to root_path, :class => 'navbar-brand' do 
-            %small 
-              %i.icon-leaf
-              Knotweed
-        .navbar-header.pull-right{ role: "navigation" }
-          %ul.nav.ace-nav
-            = render 'layouts/admin/user_navigation'
-    .main-container#main-container{:role => "main"}
-      .main-container-inner
-        .sidebar#sidebar
-          :javascript
-            try{ace.settings.check('sidebar' , 'fixed')}catch(e){};
-          %ul.nav.nav-list
+  %body{:class => "#{controller_name} #{action_name} contrast-sea-blue"}
+    %header
+      %nav.navbar
+        .navbar-inner
+          .container-fluid
+            = link_to "Knotweed", root_path, class: "brand"
+            = link_to "#", class: "toggle-nav btn pull-left" do
+              %i.icon-reorder
+            %ul.nav.pull-right
+              = render 'layouts/admin/user_navigation'
+    #wrapper
+      #main-nav-bg
+      %nav#main-nav
+        .navigation
+          %ul.nav.nav-stacked
             = render 'layouts/admin/navigation'
-        .main-content
-          .page-content
-            .page-header
-            .row
-              .col-xs-12
-                = render 'layouts/messages'
-                = yield
-      / %footer
-      / ! end of .container
-    / ! end of #main
+      %section#content
+        .container-fluid
+          .row-fluid#content-wrapper
+            .span12
+              = render 'layouts/messages'
+              = yield

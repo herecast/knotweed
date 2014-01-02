@@ -4,8 +4,7 @@
     = f.input :name
     = f.input :filename
     = f.input :description, input_html: { rows: 5 }
-    = f.association :organization, collection: Organization.accessible_by(current_ability, :read)
-    = f.submit class: "btn btn-primary"
+    = f.association :organization, collection: Organization.accessible_by(current_ability, :read), input_html: { class: "span11 select2" }
   
   #parameters.form-column
     %button#add-to-parameters.btn Add Parameter
@@ -19,3 +18,5 @@
     = f.simple_fields_for :parameters, Parameter.new, child_index: "replace_this" do |param_form|
       = param_form.input :name, label: "Parameter Key"
       %span.close.numerous-remove &times;
+  .form-actions
+    = f.submit class: "btn btn-primary"

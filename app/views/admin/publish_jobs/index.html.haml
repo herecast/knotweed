@@ -1,30 +1,26 @@
-#wrapper
-  .row
-    .well
-      = link_to "Create New Publish Job", new_admin_publish_job_path, class: "btn btn-primary"
-      %table.table.table-striped
-        %thead
-          %tr
-            %th.span2 Name
-            %th.span1 Matching Contents
-            %th.span1 Publish Method
-            %th.span1 Last Run
-            %th.span1 Next Scheduled Run
-            %th.span1
-            %th.span1 Status
-            %th.span1 
-        %tbody
-          - @publish_jobs.each do |job|
-            %tr{ class: "job-#{job.id}", data: { job_contents_count_path: admin_job_contents_count_path(job) } }
-              %td= link_to job.name, edit_admin_publish_job_path(job)
-              %td.num-contents-matched
-              %td= job.publish_method.humanize
-              %td= job.last_run_at.strftime("%m/%d/%Y %I:%M%p") if job.last_run_at.present?
-              %td.next-run
-                = job.next_scheduled_run.strftime("%m/%d/%Y %I:%M%p") if job.next_scheduled_run.present?
-              %td.run-job-button
-                = action_button_for_job(job)
-              %td.job-status
-                %div{ class: "alert alert-#{alert_class_for_status(job.status)}" }= job.status
-              %td.delete-job
-                = link_to "Delete", admin_publish_job_path(job), class: "btn btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }
+%table.table.table-striped.table-bordered.data-table.table-condensed
+  %thead
+    %tr
+      %th Name
+      %th Matching Contents
+      %th Publish Method
+      %th Last Run
+      %th Next Scheduled Run
+      %th
+      %th Status
+      %th
+  %tbody
+    - @publish_jobs.each do |job|
+      %tr{ class: "job-#{job.id}", data: { job_contents_count_path: admin_job_contents_count_path(job) } }
+        %td= link_to job.name, edit_admin_publish_job_path(job)
+        %td.num-contents-matched
+        %td= job.publish_method.humanize
+        %td= job.last_run_at.strftime("%m/%d/%Y %I:%M%p") if job.last_run_at.present?
+        %td.next-run
+          = job.next_scheduled_run.strftime("%m/%d/%Y %I:%M%p") if job.next_scheduled_run.present?
+        %td.run-job-button
+          = action_button_for_job(job)
+        %td.job-status
+          %div{ class: "label label-#{alert_class_for_status(job.status)}" }= job.status
+        %td.delete-job
+          = link_to "Delete", admin_publish_job_path(job), class: "btn-small btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }

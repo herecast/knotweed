@@ -1,6 +1,8 @@
-#wrapper
-  .row
-    .well
-      %h1 Publishing Portal
-      %h3 Select Contents
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-plus
+        Create Publish Job
+    .box-content
       = render 'admin/publish_jobs/partials/form'

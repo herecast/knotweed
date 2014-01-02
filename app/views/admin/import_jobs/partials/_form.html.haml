@@ -1,4 +1,4 @@
-= simple_form_for [:admin, import_job], html: { data: { id: import_job.id } } do |f|
+= simple_form_for [:admin, import_job], html: { data: { id: import_job.id }, class: "form form-horizontal" } do |f|
   = f.error_notification
   = f.input :name
   = f.input :source_path
@@ -7,8 +7,9 @@
     .controls
       = check_box_tag "import_job_recurring"
   = f.input :frequency, hint: "Repeat every x minutes", wrapper_html: { class: "frequency" }
-  = f.association :parser, collection: Parser.accessible_by(current_ability, :read)
+  = f.association :parser, collection: Parser.accessible_by(current_ability, :read), input_html: { class: "select2 span4" }
   - if current_user.has_role? :admin
-    = f.association :organization
+    = f.association :organization, input_html: { class: "select2 span4" }
   #params_fields
-  = f.submit class: "btn btn-primary"
+  .form-actions
+    = f.submit class: "btn btn-primary"
