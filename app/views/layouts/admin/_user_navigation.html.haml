@@ -1,0 +1,14 @@
+%li.light-blue
+  %a.dropdown-toggle{href: "#", :data => {toggle: "dropdown"}}
+    %span.user-info
+      %small Welcome, 
+      = current_user.name
+    %i.icon-caret-down
+  %ul.user-menu.pull-right.dropdown-menu.dropdown-yellow.dropdown-caret.dropdown-closer
+    %li 
+      %i.icon-cog
+      = link_to 'Edit Account', edit_user_registration_path
+    %li
+      %i.icon-off
+      = link_to 'Logout', destroy_user_session_path, method: "delete"
+    

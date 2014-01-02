@@ -1,30 +1,32 @@
-#wrapper
-  .row
-    .well
-      = link_to "Create New Import Job", new_admin_import_job_path, class: "btn btn-primary"
-      %table.table.table-striped
-        %thead
-          %tr
-            %th.span2 Name
-            %th.span1 Parser
-            %th.span1 Organization
-            %th.span1 Last Run
-            %th.span1 Next Scheduled Run
-            %th.span1
-            %th.span1 Status
-            %th.span1 
-        %tbody
-          - @import_jobs.each do |job|
-            %tr{ class: "job-#{job.id}" }
-              %td= link_to job.name, edit_admin_import_job_path(job)
-              %td= link_to job.parser.name, edit_admin_parser_path(job.parser) if job.parser
-              %td= job.organization.name
-              %td= job.last_run_at.strftime("%m/%d/%Y %I:%M%p") if job.last_run_at.present?
-              %td.next-run
-                = job.next_scheduled_run.strftime("%m/%d/%Y %I:%M%p") if job.next_scheduled_run.present?
-              %td.run-job-button
-                = action_button_for_job(job)
-              %td.job-status
-                %div{ class: "alert alert-#{alert_class_for_status(job.status)}" }= job.status
-              %td.delete-job
-                = link_to "Delete", admin_import_job_path(job), class: "btn btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }
+/.row
+/  .col-xs-12
+/    = link_to "Create New Import Job", new_admin_import_job_path, class: "btn btn-primary"
+/.row
+/  .col-xs-12
+.table-responsive
+  %table.table.table-striped.table-bordered
+    %thead.thin-border-bottom
+      %tr
+        %th.span2 Name
+        %th.span1 Parser
+        %th.span1 Organization
+        %th.span1 Last Run
+        %th.span1 Next Scheduled Run
+        %th.span1
+        %th.span1 Status
+        %th.span1 
+    %tbody
+      - @import_jobs.each do |job|
+        %tr{ class: "job-#{job.id}" }
+          %td= link_to job.name, edit_admin_import_job_path(job)
+          %td= link_to job.parser.name, edit_admin_parser_path(job.parser) if job.parser
+          %td= job.organization.name
+          %td= job.last_run_at.strftime("%m/%d/%Y %I:%M%p") if job.last_run_at.present?
+          %td.next-run
+            = job.next_scheduled_run.strftime("%m/%d/%Y %I:%M%p") if job.next_scheduled_run.present?
+          %td.run-job-button
+            = action_button_for_job(job)
+          %td.job-status
+            %div{ class: "alert alert-#{alert_class_for_status(job.status)}" }= job.status
+          %td.delete-job
+            = link_to "Delete", admin_import_job_path(job), class: "btn btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }

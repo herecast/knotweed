@@ -12,12 +12,14 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require bootstrap
+//= require bootstrap.min
 //= require dataTables/jquery.dataTables
 //= require dataTables/jquery.dataTables.bootstrap
 //= require spin.min
 //= require jquery.spin
 //= require numerous-2.1.1.min
 //= require chosen-jquery
-//= require_tree .
-
+//= require ace.min
+//= require ace-elements.min
+//= require ace-extra.min
+//= require prettify

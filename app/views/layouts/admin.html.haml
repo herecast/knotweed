@@ -1,0 +1,41 @@
+%html
+  %head
+    %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
+    %title= content_for?(:title) ? yield(:title) : "Knotweed"
+    %meta{:content => content_for?(:description) ? yield(:description) : "Knotweed", :name => "description"}
+    = stylesheet_link_tag "admin", :media => "all"
+    = stylesheet_link_tag "http://fonts.googleapis.com/css?family=Droid+Sans:400,700"
+    = stylesheet_link_tag "http://fonts.googleapis.com/css?family=Droid+Serif"
+    = javascript_include_tag "application"
+    = csrf_meta_tags
+    = yield(:head)
+  %body{:class => "#{controller_name} #{action_name}"}
+    .navbar.navbar-default#navbar
+      :javascript
+        try{ace.settings.check('navbar' , 'fixed')}catch(e){};
+      .navbar-container#navbar-container
+        .navbar-header.pull-left
+          = link_to root_path, :class => 'navbar-brand' do 
+            %small 
+              %i.icon-leaf
+              Knotweed
+        .navbar-header.pull-right{ role: "navigation" }
+          %ul.nav.ace-nav
+            = render 'layouts/admin/user_navigation'
+    .main-container#main-container{:role => "main"}
+      .main-container-inner
+        .sidebar#sidebar
+          :javascript
+            try{ace.settings.check('sidebar' , 'fixed')}catch(e){};
+          %ul.nav.nav-list
+            = render 'layouts/admin/navigation'
+        .main-content
+          .page-content
+            .page-header
+            .row
+              .col-xs-12
+                = render 'layouts/messages'
+                = yield
+      / %footer
+      / ! end of .container
+    / ! end of #main
