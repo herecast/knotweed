@@ -1,0 +1,27 @@
+= simple_form_for [:admin, @content], html: { class: "form" } do |f|
+  = f.error_notification
+  .tabbable
+    %ul.nav.nav-tabs.nav-tabs-simple#edit_doctabs
+      %li.active
+        = link_to "#", class: 'green-border', data: { toggle: "tab", target: "#features" } do
+          %i.icon-info
+          Features
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#doc_content" } do
+          %i.icon-reorder
+          Content
+    .tab-content
+      .tab-pane.active#features
+        = f.input :title
+        = f.input :subtitle
+        = f.association :source, input_html: { class: "select2", placeholder: "Select a source" }
+        = f.input :copyright
+        = f.input :pubdate, as: :datetime_picker
+        = f.input :timestamp, as: :datetime_picker
+        = f.input :categories
+        = f.input :url
+        = f.input :origin
+      .tab-pane#doc_content
+        = f.input :content, input_html: { class: "wysihtml5 input-block-level" }
+  .form-actions
+    = f.submit nil, class: "btn btn-primary"

@@ -50,3 +50,4 @@ gem "nokogiri"
 
 gem "fog"
 gem 'unf'
+gem 'datetimepicker-rails', :require => 'datetimepicker-rails', :git => 'git://github.com/zpaulovics/datetimepicker-rails.git'

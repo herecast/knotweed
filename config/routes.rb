@@ -11,7 +11,7 @@ Knotweed::Application.routes.draw do
   resources :contents, only: ["show", "index"]
 
   namespace :admin do
-    resources :contents, except: [:destroy, :create, :new]
+    resources :contents, except: [:destroy]
     resources :import_jobs
     resources :parsers
     resources :publish_jobs

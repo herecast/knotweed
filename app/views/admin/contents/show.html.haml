@@ -1,12 +1,61 @@
-#wrapper
-  .row
-    .well
-      %h1= @content.title
-      %h2= @content.source.try(:name)
-      %h3= @content.import_location.try(:city)
-      %h4= @content.authors
-      %h4= @content.pubdate.strftime("%Y-%m-%d")
-      - Content::PUBLISH_METHODS.each do |method|
-        = link_to method.humanize, admin_publish_content_path(@content, method), class: "btn btn-info"
-      %h3 Content:
-      = simple_format @content.content
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        Document ID #{@content.id} - 
+        = link_to edit_admin_content_path(@content) do
+          %i.icon-pencil
+          Edit
+    .box-content
+      .tabbable
+        %ul.nav.nav-tabs.nav-tabs-simple#doctabs
+          %li.active
+            = link_to "#", class: 'green-border', data: { toggle: "tab", target: "#features" } do
+              %i.icon-info
+              Features
+          %li
+            = link_to "#", class: "green-border", data: { toggle: "tab", target: "#doc_content" } do
+              %i.icon-reorder
+              Content
+          %li
+            = link_to "#", class: "green-border", data: { toggle: "tab", target: "#publish" } do
+              %i.icon-upload
+              Publish/Export
+        .tab-content
+          .tab-pane.active#features
+            %dl
+              %dt Title
+              %dd= @content.title
+              %dt Subtitle
+              %dd= @content.subtitle
+              %dt Source
+              %dd= @content.source.try(:name)
+              %dt Copyright
+              %dd= @content.copyright
+              %dt Issue
+              %dd= @content.issue.try(:name)
+              %dt Pub Date
+              %dd= @content.pubdate.strftime("%Y-%m-%d")
+              %dt Authors
+              %dd= @content.authors
+              %dt Import Location
+              %dd= @content.import_location.try(:city)
+              %dt Categories
+              %dd= @content.categories
+              %dt URL
+              %dd= @content.url
+              %dt Origin
+              %dd= @content.origin
+              %dt Quarantined?
+              %dd
+                - if @content.quarantine
+                  %i.icon-ok
+              %dt Published?
+              %dd
+                - if @content.published
+                  %i.icon-ok
+          .tab-pane#doc_content
+            = sanitize simple_format @content.content
+          .tab-pane#publish
+            - Content::PUBLISH_METHODS.each do |method|
+              = link_to method.humanize, admin_publish_content_path(@content, method), class: "btn btn-info"

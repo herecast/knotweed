@@ -26,7 +26,7 @@
         %i.icon-plus
         %span Create New
 %li
-  = link_to admin_publish_jobs_path do
+  = link_to "#", class: "dropdown-collapse" do
     %span Publish Jobs
     %i.icon-angle-down.angle-down
   %ul.nav.nav-stacked.in
@@ -39,6 +39,15 @@
         %i.icon-plus
         %span Create New
 %li
-  = link_to admin_contents_path do
-    %span
-      Contents
+  = link_to "#", class: "dropdown-collapse" do
+    %span Contents
+    %i.icon-angle-down.angle-down
+  %ul.nav.nav-stacked.in
+    %li{ class: current_page?(admin_contents_path) ? "active" : "" }
+      = link_to admin_contents_path do
+        %i.icon-tasks
+        %span Search
+    %li{ class: current_page?(new_admin_content_path) ? "active" : "" }
+      = link_to new_admin_content_path do
+        %i.icon-plus
+        %span Create New

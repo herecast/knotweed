@@ -5,6 +5,12 @@ GIT
     jquery-datatables-rails (1.12.2)
       jquery-rails
 
+GIT
+  remote: git://github.com/zpaulovics/datetimepicker-rails.git
+  revision: f0316e55d6a46794e56d5e636ea838c9eaef34cb
+  specs:
+    datetimepicker-rails (0.0.8)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -334,6 +340,7 @@ DEPENDENCIES
   coffee-rails (~> 3.2.1)
   compass-rails
   database_cleaner (>= 1.0.0.RC1)
+  datetimepicker-rails!
   delayed_job
   delayed_job_active_record
   devise (>= 2.2.3)
