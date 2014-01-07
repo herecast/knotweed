@@ -35,7 +35,7 @@
               %dt Issue
               %dd= @content.issue.try(:name)
               %dt Pub Date
-              %dd= @content.pubdate.strftime("%Y-%m-%d")
+              %dd= @content.pubdate.try(:strftime, "%Y-%m-%d")
               %dt Authors
               %dd= @content.authors
               %dt Import Location

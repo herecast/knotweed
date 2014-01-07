@@ -60,4 +60,4 @@
         %td
           - if c.import_location.present?
             = link_to c.import_location.city, admin_contents_path(q: { import_location_id_in: c.import_location.id })
-        %td= c.pubdate.strftime("%Y-%m-%d")
+        %td= c.pubdate.try(:strftime, "%Y-%m-%d")
