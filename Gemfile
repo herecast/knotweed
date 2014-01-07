@@ -51,3 +51,8 @@ gem "nokogiri"
 gem "fog"
 gem 'unf'
 gem 'datetimepicker-rails', :require => 'datetimepicker-rails', :git => 'git://github.com/zpaulovics/datetimepicker-rails.git'
+
+group :development do
+  gem "better_errors"
+  gem "binding_of_caller"
+end
