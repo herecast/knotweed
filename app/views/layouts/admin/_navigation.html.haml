@@ -1,5 +1,14 @@
 %li
   = link_to "#", class: "dropdown-collapse" do
+    %span Publications
+    %i.icon-angle-down.angle-down
+  %ul.nav.nav-stacked.in
+    %li{ class: current_page?(admin_publications_path) ? "active" : "" }
+      = link_to admin_publications_path do
+        %i.icon-search
+        %span Search
+%li
+  = link_to "#", class: "dropdown-collapse" do
     %span
       Import Jobs
     %i.icon-angle-down.angle-down

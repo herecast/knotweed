@@ -41,4 +41,9 @@ class Publication < ActiveRecord::Base
     FREQUENCY_OPTIONS
   end
 
+  def self.parent_pubs
+    ids = self.where("parent_id IS NOT NULL").select(:parent_id).uniq.map { |p| p.parent_id }
+    self.find(ids)
+  end
+
 end

@@ -1,0 +1,52 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-search
+        Find Publications
+      .actions
+        %a.btn.box-remove.btn-mini.btn-link{ href: "#" }
+          %i.icon-remove
+        %a.btn.box-collapse.btn-mini.btn-link{ href: "#" }
+          %i
+    .box-content
+      = search_form_for @search, url: admin_publications_path do |f|
+        .controls.controls-row
+          .field.span3
+            = f.label :organization_id_in, "Organization"
+            = f.collection_select :organization_id_in, Organization.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
+          .field.span3
+            = f.label :parent_id_in, "Parent Publication"
+            = f.collection_select :parent_id_in, Publication.parent_pubs, :id, :name, {}, { multiple: true, class: "chosen-select" }
+          .field.span3
+            = f.label :id_in, "Publication"
+            = f.collection_select :id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
+        .controls.controls-row
+          .field.span3
+            = f.label :locations_id_in, "Location"
+            = f.collection_select :locations_id_in, Location.accessible_by(current_ability), :id, :city, {}, { multiple: true, class: "chosen-select" }
+          .field.span3
+            = f.label nil, "Content Set Status"
+          .field.span3
+            = f.label nil, "Import Status"
+        .form-actions
+          = f.submit "Search", class: "btn btn-primary"
+%table.table.table-striped.table-bordered.data-table.table-condensed
+  %thead
+    %tr
+      %th ID
+      %th Publication
+      %th Organization
+      %th Parent
+      %th Functions
+  %tbody
+    - @publications.each do |publication|
+      %tr{ class: "publication-#{publication.id}" }
+        %td= publication.id
+        %td= link_to publication.name, [:admin, publication]
+        %td= link_to publication.organization.try(:name), "#"
+        %td
+          - if publication.parent.present?
+            = link_to publication.parent.try(:name), [:admin, publication.parent]
+        %td
+          Functions
