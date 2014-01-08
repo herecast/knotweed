@@ -20,8 +20,7 @@
 //= require flatty/plugins/mobile_events/jquery.mobile-events.min
 //= require flatty/jquery/jquery-migrate.min
 //= require flatty/jquery_ui/jquery-ui.min
-//= require flatty/plugins/plugins
-//= require flatty/nav
+//= require flatty_plugins
 //= require flatty/tables
 //= require flatty/theme
 //= require jquery.isotope.min
@@ -30,3 +29,4 @@
 //= require import_jobs
 //= require parsers
 //= require publish_jobs
+//= require admin/images

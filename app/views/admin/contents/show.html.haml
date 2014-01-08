@@ -18,6 +18,10 @@
               %i.icon-reorder
               Content
           %li
+            = link_to "#", class: "green-border", data: { toggle: "tab", target: "#images" } do
+              %i.icon-picture
+              Images
+          %li
             = link_to "#", class: "green-border", data: { toggle: "tab", target: "#publish" } do
               %i.icon-upload
               Publish/Export
@@ -56,6 +60,8 @@
                   %i.icon-ok
           .tab-pane#doc_content
             = sanitize simple_format @content.content
+          .tab-pane#images
+            = render @content.images
           .tab-pane#publish
             - Content::PUBLISH_METHODS.each do |method|
               = link_to method.humanize, admin_publish_content_path(@content, method), class: "btn btn-info"

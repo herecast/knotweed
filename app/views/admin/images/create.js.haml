@@ -1,0 +1,10 @@
+- if @image.new_record?
+  alert("Failed to upload image: #{j @image.errors.full_messages.join(', ').html_safe}");
+- else
+  $("#image_list").append("#{j render @image}");
+  / if we're creating images without content as content is new
+  - if @image.imageable.nil?
+    old_val = $("#content_image_ids").val();
+    if (old_val.length > 0) {new_val = $("#content_image_ids").val() + ",#{@image.id}";} 
+    else {new_val = "#{@image.id}"}
+    $("#content_image_ids").val(new_val);

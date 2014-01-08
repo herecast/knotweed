@@ -1,4 +1,6 @@
 class Image < ActiveRecord::Base
+  include Rails.application.routes.url_helpers
+
   belongs_to :imageable, polymorphic: true, inverse_of: :images
   
   attr_accessible :caption, :credit, :image, :image_cache, :remove_image, 
@@ -42,7 +44,7 @@ class Image < ActiveRecord::Base
   
   # alias for rails_admin to find label method
   def name
-    image.try(:identifier)
+    image_identifier
   end
   
 end

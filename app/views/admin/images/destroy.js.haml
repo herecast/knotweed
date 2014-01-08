@@ -1,0 +1,12 @@
+- if @image.destroyed?
+  $("#image_#{@image.id}").remove();
+  - if @image.imageable.nil?
+    console.log("hello");
+    var ids = $("#content_image_ids").val().split(",");
+    console.log(ids);
+    ids = ids.filter(function(val) { return val != #{@image.id.to_s} });
+    console.log(ids);
+    $("#content_image_ids").val(ids.join(","));
+      
+- else
+  alert("Failed to delete image: #{j @image.errors.full_messages.join(", ").html_safe}");

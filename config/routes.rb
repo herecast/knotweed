@@ -15,6 +15,7 @@ Knotweed::Application.routes.draw do
     resources :import_jobs
     resources :parsers
     resources :publish_jobs
+    resources :images
 
     match 'publish_jobs/contents_count' => "publish_jobs#contents_count", as: :contents_count
     match 'publish_jobs/contents_count/:id' => "publish_jobs#job_contents_count", as: :job_contents_count

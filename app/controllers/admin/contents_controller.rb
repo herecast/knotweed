@@ -14,8 +14,31 @@ class Admin::ContentsController < Admin::AdminController
   end
 
   def create
+    #params[:content].delete(:image_ids) if params[:content].has_key? :image_ids
+    image_list = params[:content].delete(:image_list)
+    image_ids = image_list.try(:split, ",")
     @content = Content.new(params[:content])
+    connection = nil
     if @content.save
+      image_ids.each do |image_id|
+        image = Image.find(image_id)
+        old_path = "uploads/#{image.image.file.filename}"
+        @content.images << image
+        image = Image.find(image_id)
+        new_path = image.image.path.to_s
+        if old_path != new_path
+          if connection.nil?
+            connection = Fog::Storage.new({
+              provider: "AWS",
+              aws_access_key_id: Figaro.env.aws_access_key_id,
+              aws_secret_access_key: Figaro.env.aws_secret_access_key
+            })
+          end
+          # unfortunately we have to copy directly on AWS here
+          connection.copy_object(Figaro.env.aws_bucket_name, old_path, Figaro.env.aws_bucket_name, new_path)
+          connection.delete_object(Figaro.env.aws_bucket_name, old_path)
+        end
+      end
       flash[:notice] = "Created content with id #{@content.id}"
       redirect_to admin_contents_path
     else

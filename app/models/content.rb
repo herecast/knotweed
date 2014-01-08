@@ -16,7 +16,7 @@ class Content < ActiveRecord::Base
   attr_accessible :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype
   attr_accessible :language, :page, :wordcount, :authoremail, :source_id, :file
   attr_accessible :quarantine, :doctype, :timestamp, :contentsource, :source_content_id
-  attr_accessible :published
+  attr_accessible :published, :image_ids
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
