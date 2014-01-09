@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131217203235) do
+ActiveRecord::Schema.define(:version => 20140109191405) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -25,8 +25,16 @@ ActiveRecord::Schema.define(:version => 20131217203235) do
     t.string   "phone"
     t.string   "email"
     t.text     "notes"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+    t.string   "contact_type"
+  end
+
+  create_table "contacts_publications", :force => true do |t|
+    t.integer  "contact_id"
+    t.integer  "publication_id"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
   end
 
   create_table "content_sets", :force => true do |t|
@@ -208,8 +216,6 @@ ActiveRecord::Schema.define(:version => 20131217203235) do
     t.datetime "updated_at",           :null => false
     t.string   "logo"
     t.integer  "organization_id"
-    t.integer  "admin_contact_id"
-    t.integer  "tech_contact_id"
     t.string   "website"
     t.string   "publishing_frequency"
     t.text     "notes"

@@ -32,7 +32,25 @@
           .span3.form-horizontal
             = f.input :remote_logo_url, label: "OR Upload from URL:"
       .tab-pane#contacts
-        contacts  
+        %table.table.table-striped.table-condensed.sortable
+          %thead
+            %tr
+              %th ID
+              %th Type
+              %th Name
+              %th Phone
+              %th Email
+              %th Notes
+              %th
+          %tbody
+            - @publication.contacts.each do |contact|
+              %td= contact.id
+              %td= contact.contact_type
+              %td= contact.name
+              %td= contact.phone
+              %td= mail_to contact.email
+              %td= truncate(contact.notes, length: 75)
+              %td.actions
       .tab-pane#locations
         locations
       .tab-pane#history

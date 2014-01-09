@@ -31,3 +31,4 @@
 //= require parsers
 //= require publish_jobs
 //= require admin/images
+//= require admin/admin

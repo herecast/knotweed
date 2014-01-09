@@ -6,5 +6,6 @@ FactoryGirl.define do
     phone "MyString"
     email "MyString"
     notes "MyText"
+    contact_type Contact::CONTACT_TYPES[0]
   end
 end
