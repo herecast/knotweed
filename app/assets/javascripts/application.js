@@ -21,6 +21,7 @@
 //= require flatty/jquery/jquery-migrate.min
 //= require flatty/jquery_ui/jquery-ui.min
 //= require flatty_plugins
+//= require flatty/nav
 //= require flatty/tables
 //= require flatty/theme
 //= require jquery.isotope.min
