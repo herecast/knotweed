@@ -17,6 +17,9 @@ Knotweed::Application.routes.draw do
     resources :publish_jobs
     resources :images
     resources :publications
+    resources :contacts, only: [:create, :update, :new, :edit, :destroy]
+
+    get "publications/:id/contacts/new", to: "publications#new_contact", as: :publication_new_contact
 
     match 'publish_jobs/contents_count' => "publish_jobs#contents_count", as: :contents_count
     match 'publish_jobs/contents_count/:id' => "publish_jobs#job_contents_count", as: :job_contents_count

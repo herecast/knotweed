@@ -1,0 +1,3 @@
+$("tr.contact-#{@contact.id}").addClass("for-removal"); 
+$("tr.contact-#{@contact.id}").before("#{ j render 'admin/contacts/contact_row', contact: @contact }");
+$(".for-removal").remove();

@@ -17,6 +17,7 @@ class Admin::PublicationsController < Admin::AdminController
   end
 
   def edit
+    @contact = Contact.new
   end
 
   def update
@@ -39,4 +40,12 @@ class Admin::PublicationsController < Admin::AdminController
   def destroy
     @publication.destroy
   end
+
+  # this is called via ajax for modals in the publication context
+  def new_contact
+    @publication = Publication.find(params[:id])
+    @contact = Contact.new
+    render partial: "admin/contacts/form", layout: false
+  end
+
 end

@@ -1,0 +1,12 @@
+= simple_form_for [:admin, @contact], remote: true do |f|
+  = f.input :contact_type, collection: Contact::CONTACT_TYPES, input_html: { class: "input-block-level" }, include_blank: false
+  = f.input :name, input_html: { class: "input-block-level" }
+  .row-fluid
+    .span6
+      = f.input :phone, input_html: { data: { mask: "(999) 999-9999" } }
+    .span6
+      = f.input :email
+  = f.input :notes, input_html: { class: "input-block-level", rows: 5 }
+  - if @publication
+    = f.association :publications, as: :hidden, input_html: { value: @publication.id }
+  = f.submit nil, class: "btn btn-success"

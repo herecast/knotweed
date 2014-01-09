@@ -6,3 +6,9 @@ jQuery ->
     "bFilter": false
     "bSort": true
     "bInfo": false
+
+  # may want to change this in the future, but for now:
+  # any form submit button inside a modal should close the modal
+  $(document).on "ajax:success", "form", ->
+    console.log("hello")
+    $(this).parents(".modal").modal("hide")

@@ -32,3 +32,4 @@
 //= require publish_jobs
 //= require admin/images
 //= require admin/admin
+//= require admin/publications

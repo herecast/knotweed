@@ -32,6 +32,8 @@
           .span3.form-horizontal
             = f.input :remote_logo_url, label: "OR Upload from URL:"
       .tab-pane#contacts
+        .pull-right
+          = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { toggle: "modal", target: "#contact_form", form_url: admin_publication_new_contact_path(@publication) }, id: "new_contact_button"
         %table.table.table-striped.table-condensed.sortable
           %thead
             %tr
@@ -42,15 +44,9 @@
               %th Email
               %th Notes
               %th
-          %tbody
+          %tbody#contact_list
             - @publication.contacts.each do |contact|
-              %td= contact.id
-              %td= contact.contact_type
-              %td= contact.name
-              %td= contact.phone
-              %td= mail_to contact.email
-              %td= truncate(contact.notes, length: 75)
-              %td.actions
+              = render "admin/contacts/contact_row", contact: contact
       .tab-pane#locations
         locations
       .tab-pane#history
@@ -58,3 +54,10 @@
       .form-actions
         = submit_tag nil, class: "btn btn-primary"
         = link_to "Cancel", :back, class: "btn"
+
+.modal.hide.fade#contact_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Publication Contact
+  .modal-body
+    Loading...
