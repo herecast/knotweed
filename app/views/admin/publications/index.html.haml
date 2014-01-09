@@ -43,10 +43,10 @@
     - @publications.each do |publication|
       %tr{ class: "publication-#{publication.id}" }
         %td= publication.id
-        %td= link_to publication.name, [:admin, publication]
+        %td= link_to publication.name, edit_admin_publication_path(publication)
         %td= link_to publication.organization.try(:name), "#"
         %td
           - if publication.parent.present?
-            = link_to publication.parent.try(:name), [:admin, publication.parent]
+            = link_to publication.parent.try(:name), edit_admin_publication_path(publication.parent)
         %td
           Functions

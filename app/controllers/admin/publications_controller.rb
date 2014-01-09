@@ -20,11 +20,23 @@ class Admin::PublicationsController < Admin::AdminController
   end
 
   def update
+    if @publication.update_attributes(params[:publication])
+      flash[:notice] = "Successfully updated publication #{@publication.id}"
+      redirect_to admin_publications_path
+    else
+      render "edit"
+    end
   end
 
   def create
+    if @publication.save
+      flash[:notice] = "Created publication with id #{@publication.id}"
+    else
+      render "new"
+    end
   end
 
   def destroy
+    @publication.destroy
   end
 end

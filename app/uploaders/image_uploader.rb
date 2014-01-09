@@ -19,8 +19,10 @@ class ImageUploader < CarrierWave::Uploader::Base
   def store_dir
     # "uploads/#{model.class.to_s.underscore}/#{model.id}"
     # new one
-    if model.imageable.present?
+    if model.methods.include? :imageable and model.imageable.present?
       "#{model.imageable_type.underscore}/#{model.imageable.id}"
+    elsif model.class != Image # i.e. if it's a publication
+      "#{model.class.to_s.underscore}/#{model.id}"
     else
       "uploads"
     end

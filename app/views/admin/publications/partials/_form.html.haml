@@ -1,0 +1,42 @@
+= simple_form_for [:admin, @publication], html: { class: "form" } do |f|
+  = f.error_notification
+  .tabbable
+    %ul.nav.nav-tabs.nav-tabs-simple#edit_pubtabs
+      %li.active
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#details" } do
+          Details
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#logo" } do
+          Logo
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#contacts" } do
+          Contacts
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#locations" } do
+          Locations
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#history" } do
+          History
+    .tab-content
+      .tab-pane.active.form-horizontal#details
+        = f.input :name, input_html: { class: "span5" }
+        = f.association :organization, input_html: { class: "span5 select2" }
+        = f.association :parent, label: "Parent Publication (Syndication)", input_html: { class: "span5 select2" }, include_blank: true
+        = f.input :website, input_html: { class: "span5" }
+        = f.input :notes, input_html: { class: "span5", rows: 10 } 
+      .tab-pane#logo
+        = image_tag(@publication.logo.url) if @publication.logo?
+        .row-fluid
+          .span1
+            = f.input :logo, label: false
+          .span3.form-horizontal
+            = f.input :remote_logo_url, label: "OR Upload from URL:"
+      .tab-pane#contacts
+        contacts  
+      .tab-pane#locations
+        locations
+      .tab-pane#history
+        histry
+      .form-actions
+        = submit_tag nil, class: "btn btn-primary"
+        = link_to "Cancel", :back, class: "btn"
