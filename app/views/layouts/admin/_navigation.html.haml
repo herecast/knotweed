@@ -1,12 +1,54 @@
 %li
+  = link_to "#" do
+    %span Dashboard
+%li
+  = link_to "#", class: "dropdown-collapse" do
+    %span Organizations
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "organizations" ? "in" : "" }" }
+    %li
+      = link_to "#" do
+        %i.icon-search
+        %span Search
+    %li
+      = link_to "#" do
+        %i.icon-plus
+        %span Create New
+%li
   = link_to "#", class: "dropdown-collapse" do
     %span Publications
     %i.icon-angle-down.angle-down
-  %ul.nav.nav-stacked.in
+  %ul{ class: "nav nav-stacked #{controller_name == "publications" ? "in" : "" }" }
     %li{ class: current_page?(admin_publications_path) ? "active" : "" }
       = link_to admin_publications_path do
         %i.icon-search
         %span Search
+%li
+  = link_to "#", class: "dropdown-collapse" do
+    %span Contents
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "contents" ? "in" : "" }" }
+    %li{ class: current_page?(admin_contents_path) ? "active" : "" }
+      = link_to admin_contents_path do
+        %i.icon-tasks
+        %span Search
+    %li{ class: current_page?(new_admin_content_path) ? "active" : "" }
+      = link_to new_admin_content_path do
+        %i.icon-plus
+        %span Create New
+%li
+  = link_to "#", class: "dropdown-collapse" do
+    %span Content Sets
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "content_sets" ? "in" : "" }" }
+    %li
+      = link_to "#" do
+        %i.icon-tasks
+        %span Search
+    %li
+      = link_to "#" do
+        %i.icon-plus
+        %span Create New
 %li
   = link_to "#", class: "dropdown-collapse" do
     %span
@@ -23,19 +65,6 @@
         %span Create New
 %li
   = link_to "#", class: "dropdown-collapse" do
-    %span Parsers
-    %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "parsers" ? "in" : "" }" }
-    %li{ class: current_page?(admin_parsers_path) ? "active" : "" }
-      = link_to admin_parsers_path do
-        %i.icon-tasks
-        %span All
-    %li{ class: current_page?(new_admin_parser_path) ? "active" : "" }
-      = link_to new_admin_parser_path do
-        %i.icon-plus
-        %span Create New
-%li
-  = link_to "#", class: "dropdown-collapse" do
     %span Publish Jobs
     %i.icon-angle-down.angle-down
   %ul{ class: "nav nav-stacked #{controller_name == "publish_jobs" ? "in" : "" }" }
@@ -47,16 +76,17 @@
       = link_to new_admin_publish_job_path do
         %i.icon-plus
         %span Create New
-%li
-  = link_to "#", class: "dropdown-collapse" do
-    %span Contents
+%li 
+  = link_to "#" do
+    %span Campaigns
     %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "contents" ? "in" : "" }" }
-    %li{ class: current_page?(admin_contents_path) ? "active" : "" }
-      = link_to admin_contents_path do
-        %i.icon-tasks
-        %span Search
-    %li{ class: current_page?(new_admin_content_path) ? "active" : "" }
-      = link_to new_admin_content_path do
-        %i.icon-plus
-        %span Create New
+%li 
+  = link_to "#" do
+    %span Users
+%li 
+  = link_to "#" do
+    %span More
+    %i.icon-angle-down.angle-down
+%li{ class: "#{controller_name == "parsers" ? "active" : "" }" } 
+  = link_to admin_parsers_path do
+    %span Parsers/Parameters
