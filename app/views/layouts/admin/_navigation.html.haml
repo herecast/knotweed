@@ -3,7 +3,7 @@
     %span
       Import Jobs
     %i.icon-angle-down.angle-down
-  %ul.nav.nav-stacked.in
+  %ul{ class: "nav nav-stacked #{controller_name == "import_jobs" ? "in" : "" }" }
     %li{ class: current_page?(admin_import_jobs_path) ? "active" : "" }
       = link_to admin_import_jobs_path do
         %i.icon-tasks
@@ -16,7 +16,7 @@
   = link_to "#", class: "dropdown-collapse" do
     %span Parsers
     %i.icon-angle-down.angle-down
-  %ul.nav.nav-stacked.in
+  %ul{ class: "nav nav-stacked #{controller_name == "parsers" ? "in" : "" }" }
     %li{ class: current_page?(admin_parsers_path) ? "active" : "" }
       = link_to admin_parsers_path do
         %i.icon-tasks
@@ -29,7 +29,7 @@
   = link_to "#", class: "dropdown-collapse" do
     %span Publish Jobs
     %i.icon-angle-down.angle-down
-  %ul.nav.nav-stacked.in
+  %ul{ class: "nav nav-stacked #{controller_name == "publish_jobs" ? "in" : "" }" }
     %li{ class: current_page?(admin_publish_jobs_path) ? "active" : "" }
       = link_to admin_publish_jobs_path do
         %i.icon-tasks
@@ -42,7 +42,7 @@
   = link_to "#", class: "dropdown-collapse" do
     %span Contents
     %i.icon-angle-down.angle-down
-  %ul.nav.nav-stacked.in
+  %ul{ class: "nav nav-stacked #{controller_name == "contents" ? "in" : "" }" }
     %li{ class: current_page?(admin_contents_path) ? "active" : "" }
       = link_to admin_contents_path do
         %i.icon-tasks
