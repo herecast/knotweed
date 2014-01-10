@@ -10,6 +10,9 @@ jQuery ->
   $(document).on "click", ".edit-contact-link", ->
     $(".modal#contact_form .modal-body").load($(this).data("formUrl"))
 
+  $("#new_location_button").on 'click', ->
+    $(".modal#location_form .modal-body").load($(this).data("formUrl"))
+
   $("#publication_location_ids").multiSelect
     selectableHeader: "<div class='custom-header'>Available</div>"
     selectionHeader: "<div class='custom-header'>Selected</div>"

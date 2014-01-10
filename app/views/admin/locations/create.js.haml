@@ -1,0 +1,2 @@
+$("select.locations-select").append("<option value=#{@location.id} selected='selected'>#{@location.city} #{@location.state}</option>");
+$("select.locations-select.multi-select").multiSelect('refresh');

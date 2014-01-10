@@ -49,13 +49,18 @@
               = render "admin/contacts/contact_row", contact: contact
       .tab-pane#locations
         .row-fluid
-          .span9
+          .span8
             = text_field_tag :search_locations, nil, class: "span12", placeholder: "search available locations"
-          .span3
-            = link_to "select all", "#", id: "select-all-locs"
-            \/
-            = link_to "deselect all", "#", id: "deselect-all-locs"
-        = f.association :locations, label: false
+          .span4
+            = link_to "+ Add New Location", "#", class: "btn btn-success", data: { toggle: "modal", target: "#location_form", form_url: new_admin_location_path }, id: "new_location_button"
+          .row-fluid
+            .span8
+              = f.association :locations, label: false, input_html: { class: "locations-select multi-select" }
+          .row-fluid
+            .span2.offset2.text-right
+              = link_to "select all", "#", id: "select-all-locs"
+            .span2.text-left
+              = link_to "deselect all", "#", id: "deselect-all-locs"
       .tab-pane#history
         histry
       .form-actions
@@ -66,5 +71,12 @@
   .modal-header
     %button.close{ type: "button", data: { dismiss: "modal" } } x
     %h3 Publication Contact
+  .modal-body
+    Loading...
+
+.modal.hide.fade#location_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Location
   .modal-body
     Loading...
