@@ -33,3 +33,5 @@
 //= require admin/images
 //= require admin/admin
 //= require admin/publications
+//= require jquery.multi-select
+//= require jquery.quicksearch

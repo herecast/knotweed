@@ -48,7 +48,14 @@
             - @publication.contacts.each do |contact|
               = render "admin/contacts/contact_row", contact: contact
       .tab-pane#locations
-        locations
+        .row-fluid
+          .span9
+            = text_field_tag :search_locations, nil, class: "span12", placeholder: "search available locations"
+          .span3
+            = link_to "select all", "#", id: "select-all-locs"
+            \/
+            = link_to "deselect all", "#", id: "deselect-all-locs"
+        = f.association :locations, label: false
       .tab-pane#history
         histry
       .form-actions
