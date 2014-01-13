@@ -1,6 +1,7 @@
 //= require flatty/plugins/bootstrap_switch/bootstrapSwitch.min
 //= require flatty/plugins/datatables/jquery.dataTables.min
 //= require flatty/plugins/datatables/jquery.dataTables.columnFilter
+//= require flatty/plugins/datatables/dataTables.fnAddTr
 //= require flatty/plugins/common/wysihtml5.min
 //= require flatty/plugins/common/bootstrap-wysihtml5
 //= require flatty/plugins/select2/select2

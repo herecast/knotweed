@@ -1,1 +1,10 @@
-$("tbody#contact_list").append('#{ j render "admin/contacts/contact_row", contact: @contact}');
+$("tbody#contact_list").append("#{ j render 'admin/contacts/contact_row', contact: @contact }");
+$("#contacts_table").dataTable().fnAddTr($("tr.contact-#{@contact.id}")[0]);
+
+/ if we are attaching contacts to a non-existent record
+/ we need to fill in the hidden field
+- unless @contact.publications.present?
+  old_val = $("#publication_contact_ids").val();
+  if (old_val.length > 0) { new_val = old_val + ",#{@contact.id}"; }
+  else { new_val = "#{@contact.id}"; }
+  $("#publication_contact_ids").val(new_val);

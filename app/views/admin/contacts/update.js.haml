@@ -1,3 +1,1 @@
-$("tr.contact-#{@contact.id}").addClass("for-removal"); 
-$("tr.contact-#{@contact.id}").before("#{ j render 'admin/contacts/contact_row', contact: @contact }");
-$(".for-removal").remove();
+$("#contacts_table").dataTable().fnUpdate(#{ render 'admin/contacts/datatable_row', contact: @contact},$("tr.contact-#{@contact.id}")[0]);

@@ -1,5 +1,5 @@
 class Admin::PublicationsController < Admin::AdminController
-  load_and_authorize_resource 
+  load_and_authorize_resource except: [:create]
 
   def index
     @search = Publication.search(params[:q])
@@ -29,9 +29,23 @@ class Admin::PublicationsController < Admin::AdminController
     end
   end
 
+  # have to put the CanCan authorization code in here directly
+  # as we're pulling a special param ("contact_list") from the params
+  # list before doing anything and load_and_authorize_resource uses
+  # a before filter.
   def create
+    contact_list = params[:publication].delete("contact_list")
+    contact_ids = contact_list.try(:split, ",")
+    @publication = Publication.new
+    current_ability.attributes_for(:create, Publication).each do |key, value|
+      @publication.send("#{key}=", value)
+    end
+    @publication.attributes = params[:publication]
+    authorize! :create, @publication
     if @publication.save
+      @publication.update_attribute(:contact_ids, contact_ids) unless contact_ids.nil?
       flash[:notice] = "Created publication with id #{@publication.id}"
+      redirect_to admin_publications_path
     else
       render "new"
     end
@@ -43,7 +57,7 @@ class Admin::PublicationsController < Admin::AdminController
 
   # this is called via ajax for modals in the publication context
   def new_contact
-    @publication = Publication.find(params[:id])
+    @publication = Publication.find(params[:id]) if params[:id]
     @contact = Contact.new
     render partial: "admin/contacts/form", layout: false
   end

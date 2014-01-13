@@ -1,2 +1,8 @@
-%h1 Admin::Publications#new
-%p Find me in app/views/admin/publications/new.html.haml
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-plus
+        Add Publication
+    .box-content
+      = render partial: "admin/publications/partials/form"

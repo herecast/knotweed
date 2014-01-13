@@ -1,1 +1,1 @@
-$("tr.contact-#{@contact.id}").remove();
+$("#contacts_table").dataTable().fnDeleteRow($("tr.contact-#{@contact.id}")[0]);

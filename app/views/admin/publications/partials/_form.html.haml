@@ -34,7 +34,10 @@
       .tab-pane#contacts
         .pull-right
           = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { toggle: "modal", target: "#contact_form", form_url: admin_publication_new_contact_path(@publication) }, id: "new_contact_button"
-        %table.table.table-striped.table-condensed.sortable
+          / hidden field for creating contacts associated with a new publication record
+          - unless @publication.id
+            = f.association :contacts, as: :hidden, input_html: { name: "publication[contact_list]" , value: "" }
+        %table.table.table-striped.table-condensed.sortable#contacts_table
           %thead
             %tr
               %th ID
