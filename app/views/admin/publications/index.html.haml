@@ -49,4 +49,4 @@
           - if publication.parent.present?
             = link_to publication.parent.try(:name), edit_admin_publication_path(publication.parent)
         %td
-          Functions
+          = link_to "content", admin_contents_path(q: { source_id_in: publication.id })
