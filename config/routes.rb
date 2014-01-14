@@ -18,6 +18,7 @@ Knotweed::Application.routes.draw do
     resources :images
     resources :publications
     resources :organizations
+    resources :content_sets
     resources :contacts, only: [:create, :update, :new, :edit, :destroy]
     resources :locations, only: [:create, :update, :new, :edit, :destroy]
 

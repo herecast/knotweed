@@ -50,8 +50,8 @@
     %span Content Sets
     %i.icon-angle-down.angle-down
   %ul{ class: "nav nav-stacked #{controller_name == "content_sets" ? "in" : "" }" }
-    %li
-      = link_to "#" do
+    %li{ class: current_page?(admin_content_sets_path) ? "active" : "" }
+      = link_to admin_content_sets_path do
         %i.icon-tasks
         %span Search
     %li
