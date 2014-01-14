@@ -22,6 +22,7 @@
         = f.input :name, input_html: { class: "span5" }
         = f.association :organization, input_html: { class: "span5 select2" }
         = f.association :parent, label: "Parent Publication (Syndication)", input_html: { class: "span5 select2" }, include_blank: true
+        = f.input :publishing_frequency, collection: Publication::FREQUENCY_OPTIONS, input_html: { class: "span5" }
         = f.input :website, input_html: { class: "span5" }
         = f.input :notes, input_html: { class: "span5", rows: 10 } 
       .tab-pane#logo
