@@ -6,7 +6,8 @@ FactoryGirl.define do
     name "MyString"
     description "MyText"
     notes "MyText"
-    status "MyString"
+    status ContentSet::STATUSES[0]
+    format ContentSet::FORMATS[0]
     import_method ContentSet::IMPORT_METHODS[0]
   end
 end

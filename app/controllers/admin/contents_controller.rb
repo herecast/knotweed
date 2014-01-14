@@ -14,7 +14,6 @@ class Admin::ContentsController < Admin::AdminController
   end
 
   def create
-    #params[:content].delete(:image_ids) if params[:content].has_key? :image_ids
     image_list = params[:content].delete(:image_list)
     image_ids = image_list.try(:split, ",")
     @content = Content.new(params[:content])

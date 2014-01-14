@@ -26,7 +26,7 @@
       = link_to admin_publications_path do
         %i.icon-search
         %span Search
-    %li
+    %li{ class: current_page?(new_admin_publication_path) ? "active" : "" }
       = link_to new_admin_publication_path do
         %i.icon-plus
         %span Create New
@@ -54,8 +54,8 @@
       = link_to admin_content_sets_path do
         %i.icon-tasks
         %span Search
-    %li
-      = link_to "#" do
+    %li{ class: current_page?(new_admin_content_set_path) ? "active" : "" }
+      = link_to new_admin_content_set_path do
         %i.icon-plus
         %span Create New
 %li

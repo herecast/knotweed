@@ -1,0 +1,23 @@
+= simple_form_for [:admin, @content_set], html: { class: "form" } do |f|
+  = f.error_notification
+  .tabbable
+    %ul.nav.nav-tabs.nav-tabs-simple#edit_contentset_tabs
+      %li.active
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#details" } do
+          Details
+    .tab-content
+      .tab-pane.active.form-horizontal#details
+        = f.input :name, input_html: { class: "span5" }
+        = f.association :publication, input_html: { class: "span5 chosen-select" }
+        = f.input :status, collection: ContentSet::STATUSES
+        = f.input :description, input_html: { class: "span5", rows: 5 }
+        .row-fluid
+          = f.input :start_date, as: :date_picker
+          = f.input :end_date, as: :date_picker
+        = f.input :ongoing, label: "Ongoing?"
+        = f.input :import_method, collection: ContentSet::IMPORT_METHODS, input_html: { class: "span5" }
+        = f.input :format, collection: ContentSet::FORMATS, input_html: { class: "span5" }
+        = f.input :notes, input_html: { class: "span5", rows: 5 }
+      .form-actions
+        = submit_tag nil, class: "btn btn-primary"
+        = link_to "Cancel", :back, class: "btn"

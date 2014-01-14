@@ -29,6 +29,12 @@ class Admin::ContentSetsController < Admin::AdminController
   end
 
   def create
+    if @content_set.save
+      flash[:notice] = "Created content set with id #{@content_set.id}"
+      redirect_to admin_content_sets_path
+    else
+      render "new"
+    end
   end
 
   def destroy
