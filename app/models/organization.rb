@@ -4,6 +4,7 @@ class Organization < ActiveRecord::Base
   has_many :users
   has_many :parsers
   has_many :import_jobs
+  has_many :locations, through: :publications
 
   attr_accessible :name, :org_type, :notes
 

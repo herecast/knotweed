@@ -8,8 +8,8 @@
     %span Organizations
     %i.icon-angle-down.angle-down
   %ul{ class: "nav nav-stacked #{controller_name == "organizations" ? "in" : "" }" }
-    %li
-      = link_to "#" do
+    %li{ class: current_page?(admin_organizations_path) ? "active" : "" }
+      = link_to admin_organizations_path do
         %i.icon-search
         %span Search
     %li
