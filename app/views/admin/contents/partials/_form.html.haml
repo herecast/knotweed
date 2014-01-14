@@ -27,7 +27,7 @@
         = f.input :categories, input_html: { class: "input-block-level" }
         = f.input :url, input_html: { class: "input-block-level" }
       .tab-pane#doc_content
-        = f.input :content, input_html: { class: "wysihtml5 input-block-level" }
+        = f.input :content, input_html: { class: "ckeditor input-block-level" }
       .tab-pane#images
         = fields_for Image.new do |i|
           %fieldset#image_fields
