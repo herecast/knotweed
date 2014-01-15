@@ -1,7 +1,8 @@
 class Contact < ActiveRecord::Base
-  attr_accessible :email, :name, :notes, :phone, :contact_type, :publication_ids
+  attr_accessible :email, :name, :notes, :phone, :contact_type, :publication_ids, :organization_ids
 
   has_and_belongs_to_many :publications
+  has_and_belongs_to_many :organizations
 
   ADMINISTRATIVE = "Administrative"
   TECHNICAL = "Technical"

@@ -1,5 +1,6 @@
 class Organization < ActiveRecord::Base
 
+  has_and_belongs_to_many :contacts
   has_many :publications
   has_many :users
   has_many :parsers
@@ -8,7 +9,7 @@ class Organization < ActiveRecord::Base
 
   attr_accessible :name, :org_type, :notes
 
-  ORG_TYPE_OPTIONS = ["Publisher"]
+  ORG_TYPE_OPTIONS = ["Publisher", "Business", "Ad Agency"]
 
   validates_presence_of :name
   validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_nil: true

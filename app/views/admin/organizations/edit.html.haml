@@ -1,0 +1,8 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-pencil
+        ID #{@organization.id} #{@organization.name}
+    .box-content
+      = render partial: "admin/organizations/partials/form"

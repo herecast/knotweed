@@ -1,5 +1,5 @@
 class Admin::OrganizationsController < Admin::AdminController
-  load_and_authorize_resource
+  load_and_authorize_resource except: [:create]
 
   def index
     @search = Organization.search(params[:q])
@@ -29,7 +29,23 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def create
+    contact_list = params[:organization].delete("contact_list")
+    contact_ids = contact_list.try(:split, ",")
+    @organization = Organization.new
+    current_ability.attributes_for(:create, Organization).each do |key, value|
+      @organization.send("#{key}=", value)
+    end
+    @organization.attributes = params[:organization]
+    authorize! :create, @organization
+    if @organization.save
+      @organization.update_attribute(:contact_ids, contact_ids) unless contact_ids.nil?
+      flash[:notice] = "Created organization with id #{@organization.id}"
+      redirect_to admin_organizations_path
+    else
+      render "new"
+    end
   end
+  
 
   def destroy
     @organization.destroy

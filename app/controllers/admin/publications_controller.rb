@@ -55,11 +55,4 @@ class Admin::PublicationsController < Admin::AdminController
     @publication.destroy
   end
 
-  # this is called via ajax for modals in the publication context
-  def new_contact
-    @publication = Publication.find(params[:id]) if params[:id]
-    @contact = Contact.new
-    render partial: "admin/contacts/form", layout: false
-  end
-
 end
