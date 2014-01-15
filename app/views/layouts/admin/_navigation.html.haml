@@ -12,8 +12,8 @@
       = link_to admin_organizations_path do
         %i.icon-search
         %span Search
-    %li
-      = link_to "#" do
+    %li{ class: current_page?(new_admin_organization_path) ? "active" : "" }
+      = link_to new_admin_organization_path do
         %i.icon-plus
         %span Create New
 %li

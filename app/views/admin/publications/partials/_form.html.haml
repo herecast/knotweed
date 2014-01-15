@@ -34,7 +34,7 @@
             = f.input :remote_logo_url, label: "OR Upload from URL:"
       .tab-pane#contacts
         .pull-right
-          = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { toggle: "modal", target: "#contact_form", form_url: admin_publication_new_contact_path(@publication) }, id: "new_contact_button"
+          = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { toggle: "modal", target: "#contact_form", form_url: admin_new_contact_path(Publication, @publication.id) }, id: "new_contact_button"
           / hidden field for creating contacts associated with a new publication record
           - unless @publication.id
             = f.association :contacts, as: :hidden, input_html: { name: "publication[contact_list]" , value: "" }

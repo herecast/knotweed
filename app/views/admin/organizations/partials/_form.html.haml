@@ -1,0 +1,54 @@
+= simple_form_for [:admin, @organization], html: { class: "form" } do |f|
+  = f.error_notification
+  .tabbable
+    %ul.nav.nav-tabs.nav-tabs-simple#edit_orgtabs
+      %li.active
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#details" } do
+          Details
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#contacts" } do
+          Contacts
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#history" } do
+          History
+    .tab-content
+      .tab-pane.active.form-horizontal#details
+        = f.input :name, input_html: { class: "span5" }
+        = f.input :org_type, collection: Organization::ORG_TYPE_OPTIONS, label: "Organization Type"
+        = f.input :notes, input_html: { class: "span5", rows: 10 }
+        .control-group.text.optional
+          = f.label "Publications"
+          .controls
+            .publication-list
+              - @organization.publications.each do |p|
+                = link_to p.name + (p == @organization.publications.last ? "" : ","), edit_admin_publication_path(p)
+      .tab-pane#contacts
+        .pull-right
+          = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { toggle: "modal", target: "#contact_form", form_url: admin_new_contact_path(Organization, @organization.id) }, id: "new_contact_button"
+          / hidden field for creating contacts associated with a new publication record
+          - unless @organization.id
+            = f.association :contacts, as: :hidden, input_html: { name: "organization[contact_list]" , value: "" }
+        %table.table.table-striped.table-condensed.sortable#contacts_table
+          %thead
+            %tr
+              %th ID
+              %th Type
+              %th Name
+              %th Phone
+              %th Email
+              %th Notes
+              %th
+          %tbody#contact_list
+            - @organization.contacts.each do |contact|
+              = render "admin/contacts/contact_row", contact: contact
+      .tab-pane#history
+      .form-actions
+        = submit_tag nil, class: "btn btn-primary"
+        = link_to "Cancel", :back, class: "btn"
+
+.modal.hide.fade#contact_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Publication Contact
+  .modal-body
+    Loading...   

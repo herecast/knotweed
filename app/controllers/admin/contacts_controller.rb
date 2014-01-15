@@ -8,6 +8,11 @@ class Admin::ContactsController < Admin::AdminController
   end
 
   def new
+    if params[:model].present? and params[:id].present?
+      # need to revisit this for security, at least validate that "model" is in fact just a model
+      eval("@#{params[:model].downcase.underscore} = #{params[:model]}.find(#{params[:id]})")
+    end
+    render partial: "admin/contacts/form", layout: false 
   end
 
   def create

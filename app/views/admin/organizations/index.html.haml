@@ -33,6 +33,6 @@
     - @organizations.each do |organization|
       %tr{ class: "organization-#{organization.id}" }
         %td= organization.id
-        %td= link_to organization.name, "#" # edit_admin_organizations_path(organization) once that template exists
+        %td= link_to organization.name, edit_admin_organization_path(organization)
         %td
           = link_to "publications", admin_publications_path(q: { organization_id_in: organization.id })
