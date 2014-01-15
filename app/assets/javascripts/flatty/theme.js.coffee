@@ -173,7 +173,7 @@ $(document).ready ->
     dt = $(elem).dataTable
       sDom: sdom
       sPaginationType: "bootstrap"
-      "iDisplayLength": $(elem).data("pagination-records") || 10
+      "iDisplayLength": $(elem).data("pagination-records") || 25
       oLanguage:
         sLengthMenu: "_MENU_ records per page"
     dt.columnFilter() if $(elem).hasClass("data-table-column-filter")
