@@ -22,7 +22,11 @@ class Admin::OrganizationsController < Admin::AdminController
   def update
     if @organization.update_attributes(params[:organization])
       flash[:notice] = "Successfully updated organization #{@organization.id}"
-      redirect_to admin_organizations_path
+      if params[:add_publication]
+        redirect_to new_admin_publication_path(:publication => { :organization_id => @organization.id })
+      else
+        redirect_to admin_organizations_path
+      end
     else
       render "edit"
     end
@@ -40,7 +44,11 @@ class Admin::OrganizationsController < Admin::AdminController
     if @organization.save
       @organization.update_attribute(:contact_ids, contact_ids) unless contact_ids.nil?
       flash[:notice] = "Created organization with id #{@organization.id}"
-      redirect_to admin_organizations_path
+      if params[:add_publication]
+        redirect_to new_admin_publication_path(:publication => { :organization_id => @organization.id })
+      else
+        redirect_to admin_organizations_path
+      end
     else
       render "new"
     end

@@ -43,6 +43,7 @@
               = render "admin/contacts/contact_row", contact: contact
       .tab-pane#history
       .form-actions
+        = submit_tag "Submit and Create New Publication", class: "btn btn-success", name: "add_publication"
         = submit_tag nil, class: "btn btn-primary"
         = link_to "Cancel", :back, class: "btn"
 
