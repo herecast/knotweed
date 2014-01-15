@@ -23,7 +23,7 @@ class Publication < ActiveRecord::Base
   
   mount_uploader :logo, ImageUploader
 
-  FREQUENCY_OPTIONS = ["Daily", "Weekly", "Ad Hoc", "Quarterly", "Posts"]
+  FREQUENCY_OPTIONS = ["Daily", "Weekly", "Ad Hoc", "Quarterly", "Seasonally", "Posts"]
 
   validates :publishing_frequency, inclusion: { in: FREQUENCY_OPTIONS  }, allow_nil: true
 
