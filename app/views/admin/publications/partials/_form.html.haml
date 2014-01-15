@@ -21,7 +21,7 @@
       .tab-pane.active.form-horizontal#details
         = f.input :name, input_html: { class: "span5" }
         = f.association :organization, input_html: { class: "span5 select2" }
-        = f.association :parent, label: "Parent Publication (Syndication)", input_html: { class: "span5 select2" }, include_blank: true
+        = f.association :parent, collection: Publication.parent_pubs, label: "Parent Publication (Syndication)", input_html: { class: "span5 select2" }, include_blank: true
         = f.input :publishing_frequency, collection: Publication::FREQUENCY_OPTIONS, input_html: { class: "span5" }
         = f.input :website, input_html: { class: "span5" }
         = f.input :notes, input_html: { class: "span5", rows: 10 } 
@@ -68,6 +68,7 @@
       .tab-pane#history
         histry
       .form-actions
+        = submit_tag "Submit and Create New Content Set", class: "btn btn-success", name: "add_content_set"
         = submit_tag nil, class: "btn btn-primary"
         = link_to "Cancel", :back, class: "btn"
 

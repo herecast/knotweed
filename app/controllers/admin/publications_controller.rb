@@ -23,7 +23,11 @@ class Admin::PublicationsController < Admin::AdminController
   def update
     if @publication.update_attributes(params[:publication])
       flash[:notice] = "Successfully updated publication #{@publication.id}"
-      redirect_to admin_publications_path
+      if params[:add_content_set]
+        redirect_to new_admin_content_set_path(:content_set => { :publication_id => @publication.id })
+      else
+        redirect_to admin_publications_path
+      end
     else
       render "edit"
     end
@@ -45,7 +49,11 @@ class Admin::PublicationsController < Admin::AdminController
     if @publication.save
       @publication.update_attribute(:contact_ids, contact_ids) unless contact_ids.nil?
       flash[:notice] = "Created publication with id #{@publication.id}"
-      redirect_to admin_publications_path
+      if params[:add_content_set]
+        redirect_to new_admin_content_set_path(:content_set => { :publication_id => @publication.id })
+      else
+        redirect_to admin_publications_path
+      end
     else
       render "new"
     end
