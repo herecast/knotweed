@@ -34,6 +34,7 @@ Knotweed::Application.routes.draw do
     
     get 'import_jobs/:id/run_job', to: 'import_jobs#run_job', as: :run_import_job
     delete 'import_jobs/:id/cancel', to: 'import_jobs#cancel_job', as: :cancel_import_job
+    get 'import_jobs/:id/archive', to: 'import_jobs#archive', as: :archive_import_job
     get 'publish_jobs/:id/run_job', to: 'publish_jobs#run_job', as: :run_publish_job
     delete 'publish_jobs/:id/cancel', to: 'publish_jobs#cancel_job', as: :cancel_publish_job
     
