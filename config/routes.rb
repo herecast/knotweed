@@ -2,10 +2,10 @@ Knotweed::Application.routes.draw do
   mount RailsAdmin::Engine => '/rails_admin', :as => 'rails_admin'
 
   authenticated :user do
-    root :to => 'contents#index'
+    root :to => redirect("/admin")
   end
-  root :to => "contents#index"
   devise_for :users
+  root :to => redirect("/users/sign_in")
   resources :users
   
   resources :contents, only: ["show", "index"]
