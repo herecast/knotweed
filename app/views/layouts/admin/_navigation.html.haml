@@ -1,5 +1,5 @@
-%li
-  = link_to "#" do
+%li{ class: current_page?(admin_dashboard_path) ? "active" : "" }
+  = link_to admin_dashboard_path do
     %i.icon-dashboard
     %span Dashboard
 %li

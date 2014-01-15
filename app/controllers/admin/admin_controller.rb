@@ -3,6 +3,9 @@ class Admin::AdminController < ApplicationController
 
   layout "admin"
 
+  def dashboard
+  end
+
   private
 
   def authorize_access!

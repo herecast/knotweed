@@ -11,6 +11,7 @@ Knotweed::Application.routes.draw do
   resources :contents, only: ["show", "index"]
 
   namespace :admin do
+    get "/", to: "admin#dashboard", as: :dashboard
     resources :contents, except: [:destroy]
     resources :import_jobs
     resources :parsers
