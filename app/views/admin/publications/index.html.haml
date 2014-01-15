@@ -38,7 +38,7 @@
       %th Publication
       %th Organization
       %th Parent
-      %th Functions
+      %th 
   %tbody
     - @publications.each do |publication|
       %tr{ class: "publication-#{publication.id}" }
@@ -49,4 +49,4 @@
           - if publication.parent.present?
             = link_to publication.parent.try(:name), edit_admin_publication_path(publication.parent)
         %td
-          = link_to "content", admin_contents_path(q: { source_id_in: publication.id })
+          = link_to "content", admin_contents_path(q: { source_id_in: publication.id }), class: "btn btn-mini btn-info"
