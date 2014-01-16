@@ -37,6 +37,7 @@ Knotweed::Application.routes.draw do
     get 'import_jobs/:id/archive', to: 'import_jobs#archive', as: :archive_import_job
     get 'publish_jobs/:id/run_job', to: 'publish_jobs#run_job', as: :run_publish_job
     delete 'publish_jobs/:id/cancel', to: 'publish_jobs#cancel_job', as: :cancel_publish_job
+    get 'publish_jobs/:id/archive', to: 'publish_jobs#archive', as: :archive_publish_job
     
     match 'parsers/:id/parameters', to: "parsers#parameters"
 
