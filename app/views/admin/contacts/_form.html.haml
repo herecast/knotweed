@@ -6,7 +6,8 @@
       = f.input :phone, input_html: { data: { mask: "(999) 999-9999" } }
     .span6
       = f.input :email
-  = f.input :notes, input_html: { class: "input-block-level", rows: 5 }
+  = f.input :address, input_html: { class: "input-block-level", rows: 1 }
+  = f.input :notes, input_html: { class: "input-block-level", rows: 2 }
   - if @publication
     = f.association :publications, as: :hidden, input_html: { value: @publication.id }
   - if @organization
