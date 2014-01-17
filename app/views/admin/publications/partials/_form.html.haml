@@ -32,6 +32,8 @@
             = f.input :logo, label: false
           .span3.form-horizontal
             = f.input :remote_logo_url, label: "OR Upload from URL:"
+        - if @publication.logo?
+          = f.input :remove_logo, as: :boolean, label: "Remove logo?"
       .tab-pane#contacts
         .pull-right
           = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { toggle: "modal", target: "#contact_form", form_url: admin_new_contact_path(Publication, @publication.id) }, id: "new_contact_button"
