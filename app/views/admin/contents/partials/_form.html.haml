@@ -32,6 +32,7 @@
         = fields_for Image.new do |i|
           %fieldset#image_fields
             = file_field_tag :image, title: "Add Images +", data: { upload_url: admin_images_path }, multiple: true, name: "image[image]", id: "image_image"
+            = label_tag "or just drag & drop here"
             / if content exists, submit a hidden content id field as well
             - if @content.id
               = i.hidden_field :imageable_type, value: @content.class.to_s
