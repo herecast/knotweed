@@ -11,6 +11,7 @@
 // GO AFTER THE REQUIRES BELOW.
 //
 //= require jquery
+//= require jquery.turbolinks
 //= require jquery_ujs
 //= require flatty/bootstrap/bootstrap.min
 //= require spin.min
@@ -35,3 +36,4 @@
 //= require admin/publications
 //= require jquery.multi-select
 //= require jquery.quicksearch
+//= require turbolinks
