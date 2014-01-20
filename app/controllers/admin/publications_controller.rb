@@ -2,8 +2,12 @@ class Admin::PublicationsController < Admin::AdminController
   load_and_authorize_resource except: [:create]
 
   def index
-    @search = Publication.search(params[:q])
+    # if posted, save to session
     if params[:q].present?
+      session[:publications_search] = params[:q]
+    end
+    @search = Publication.search(session[:publications_search])
+    if session[:publications_search].present?
       @publications = @search.result(distinct: true)
     else
       @publications = Publication.all

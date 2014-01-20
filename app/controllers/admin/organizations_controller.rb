@@ -2,8 +2,12 @@ class Admin::OrganizationsController < Admin::AdminController
   load_and_authorize_resource except: [:create]
 
   def index
-    @search = Organization.search(params[:q])
+    # if posted, save to session
     if params[:q].present?
+      session[:organizations_search] = params[:q]
+    end
+    @search = Organization.search(session[:organizations_search])
+    if session[:organizations_search].present?
       @organizations = @search.result(distinct: true)
     else
       @organizations = Organization.all

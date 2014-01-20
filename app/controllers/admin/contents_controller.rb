@@ -1,8 +1,13 @@
 class Admin::ContentsController < Admin::AdminController
 
   def index
-    @search = Content.search(params[:q])
+    # if posted, save to session
     if params[:q].present?
+      session[:contents_search] = params[:q]
+    end
+    
+    @search = Content.search(session[:contents_search])
+    if session[:contents_search].present?
       @contents = @search.result(distinct: true).order("pubdate DESC").page params[:page]
     else
       @contents = []
