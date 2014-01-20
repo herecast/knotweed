@@ -8,7 +8,7 @@ class Admin::ContentsController < Admin::AdminController
     
     @search = Content.search(session[:contents_search])
     if session[:contents_search].present?
-      @contents = @search.result(distinct: true).order("pubdate DESC").page params[:page]
+      @contents = @search.result(distinct: true).order("pubdate DESC").page(params[:page]).per(100)
     else
       @contents = []
     end
