@@ -16,6 +16,9 @@
             = f.label :organization_id_in, "Organization"
             = f.collection_select :organization_id_in, Organization.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
+            = f.label :organization_org_type_in, "Organization Type"
+            = f.select :organization_org_type_in, Organization::ORG_TYPE_OPTIONS, {}, { multiple: true, class: "chosen-select" }
+          .field.span3
             = f.label :parent_id_in, "Parent Publication"
             = f.collection_select :parent_id_in, Publication.parent_pubs, :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3

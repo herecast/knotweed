@@ -12,7 +12,7 @@ class Organization < ActiveRecord::Base
   ORG_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher"]
 
   validates_presence_of :name
-  validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_nil: true
+  validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_blank: true
 
   def org_type_enum
     ORG_TYPE_OPTIONS
