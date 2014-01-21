@@ -83,6 +83,8 @@ GEM
       railties (>= 3.0)
       sass-rails (>= 3.2)
     chunky_png (1.2.9)
+    ckeditor_rails (4.3.1)
+      railties (>= 3.0)
     coderay (1.1.0)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
@@ -360,6 +362,7 @@ DEPENDENCIES
   carrierwave
   carrierwave-mimetype-fu
   chosen-rails
+  ckeditor_rails
   coffee-rails (~> 3.2.1)
   compass-rails
   database_cleaner (>= 1.0.0.RC1)

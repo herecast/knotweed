@@ -13,6 +13,7 @@
 //= require jquery
 //= require jquery.turbolinks
 //= require jquery_ujs
+//= require ckeditor-jquery
 //= require flatty/bootstrap/bootstrap.min
 //= require spin.min
 //= require jquery.spin

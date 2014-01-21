@@ -61,3 +61,5 @@ end
 
 gem "turbolinks"
 gem "jquery-turbolinks"
+
+gem "ckeditor_rails"
