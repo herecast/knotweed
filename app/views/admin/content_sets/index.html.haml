@@ -13,6 +13,9 @@
       = search_form_for @search, url: admin_content_sets_path do |f|
         .controls.controls-row
           .field.span3
+            = f.label :publication_id_in, "Publications"
+            = f.collection_select :publication_id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
+          .field.span3
             = f.label :import_method_in, "Import Method"
             = f.select :import_method_in, ContentSet::IMPORT_METHODS, {}, { multiple: true, class: "chosen-select", include_blank: true }
           .field.span3

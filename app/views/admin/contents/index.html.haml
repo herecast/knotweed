@@ -16,7 +16,7 @@
             = f.label :id_eq, "ID"
             = f.text_field :id_eq
           .field.span3
-            = f.label :source_id_in, "Source"
+            = f.label :source_id_in, "Publications"
             = f.collection_select :source_id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
             = f.label :pubdate_gteq, "From"
