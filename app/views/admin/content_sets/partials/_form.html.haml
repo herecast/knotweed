@@ -10,6 +10,7 @@
         = f.association :publication, input_html: { class: "span5 chosen-select" }
         = f.input :name, input_html: { class: "span5" }
         = f.input :status, collection: ContentSet::STATUSES
+        = f.input :publishing_frequency, collection: Publication::FREQUENCY_OPTIONS, input_html: { class: "span5" }
         = f.input :description, input_html: { class: "span5", rows: 5 }
         .row-fluid
           = f.input :start_date, as: :date_picker

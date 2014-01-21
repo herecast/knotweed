@@ -21,7 +21,7 @@ class Admin::ContentSetsController < Admin::AdminController
 
   def update
     if @content_set.update_attributes(params[:content_set])
-      flash[:notice] = "Successfully updated content_set #{@content_set.id}"
+      flash[:notice] = "Successfully updated content set #{@content_set.id}"
       redirect_to admin_content_sets_path
     else
       render "edit"
