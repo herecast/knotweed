@@ -34,6 +34,7 @@
       %th Date Range
       %th Ongoing?
       %th Import Method
+      %th
   %tbody
     - @content_sets.each do |content_set|
       %tr{ class: "content_set-#{content_set.id}" }
@@ -46,3 +47,4 @@
           - if content_set.ongoing
             %i.icon-check
         %td= content_set.import_method
+        %td= link_to "Import Jobs", admin_import_jobs_path(content_set_id: content_set.id), class: "btn btn-mini btn-success"

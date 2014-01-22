@@ -36,4 +36,10 @@ class Admin::ImportJobsController < Admin::AdminController
     respond_with(@import_job, location: admin_import_jobs_url)
   end
 
+  def index
+    if params[:content_set_id]
+      @import_jobs = @import_jobs.where(content_set_id: params[:content_set_id])
+    end
+  end
+
 end
