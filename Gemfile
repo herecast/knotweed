@@ -5,6 +5,7 @@ group :assets do
   gem 'coffee-rails', '~> 3.2.1'
   gem 'uglifier', '>= 1.0.3'
   gem 'compass-rails'
+  gem 'turbo-sprockets-rails3'
 end
 gem 'jquery-rails'
 gem "mysql2"
@@ -25,6 +26,10 @@ gem "cancan", ">= 1.6.9"
 gem "rolify", ">= 3.2.0"
 gem "simple_form", ">= 2.1.0"
 gem "quiet_assets", ">= 1.0.2", :group => :development
+gem "capistrano", "~> 3.1.0"
+gem "capistrano-bundler", ">= 1.1.0"
+gem "capistrano-rvm"
+gem "capistrano-rails", "~> 1.1"
 
 gem "rails_admin"
 gem "carrierwave"
@@ -35,6 +40,7 @@ gem 'jquery-datatables-rails', git: 'git://github.com/rweng/jquery-datatables-ra
 
 gem 'delayed_job'
 gem 'delayed_job_active_record'
+gem 'daemons'
 gem 'american_date'
 gem 'ruby-gmail' 
 
