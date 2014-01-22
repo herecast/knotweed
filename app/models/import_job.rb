@@ -52,13 +52,13 @@ class ImportJob < ActiveRecord::Base
   end
 
   def error(job, exception)
-    log = Logger.new("#{Rails.root}/log/delayed_job.log")
-    log.debug "input: #{self.source_path}"
-    log.debug "parser: #{Figaro.env.parsers_path}/#{parser.filename}"
-    log.debug "error: #{exception}"
-    log.debug "backtrace: #{exception.backtrace.join("\n")}"   
+    log = last_import_record.log_file
+    log.info "input: #{self.source_path}"
+    log.info "parser: #{Figaro.env.parsers_path}/#{parser.filename}"
+    log.error "error: #{exception}"
+    log.error "backtrace: #{exception.backtrace.join("\n")}"   
     update_attribute(:status, "failed")
-    log.debug self
+    log.info "#{self.inspect}"
   end
   
   def failure(job)
@@ -82,27 +82,25 @@ class ImportJob < ActiveRecord::Base
     # this is an rss feeder and we should
     # just pass the source_path directly to
     # the parser
-    log = Logger.new("#{Rails.root}/log/import_job.log")
-    log.debug("source path: #{source_path}")
+    log = last_import_record.log_file
+    log.info("#{Time.now}")
+    log.info("source path: #{source_path}")
     if source_path =~ /^#{URI::regexp}$/
-      json = run_parser(source_path) || nil
-      #json_to_corpus(json, File.basename(source_path, ".*")) if json.present?
-      docs_to_contents(json) if json.present?
+      data = run_parser(source_path) || nil
+      docs_to_contents(data) if data.present?
     else
       Find.find(source_path) do |path|
         if FileTest.directory?(path)
           next
         else
-          log.debug("running parser on path: #{path}")
+          #log.debug("running parser on path: #{path}")
           begin
-            json = run_parser(path)
+            data = run_parser(path)
           rescue StandardError => bang
-            log.debug("failed to parse #{path}: #{bang}")
-            json = nil
+            log.error("failed to parse #{path}: #{bang}")
+            data = nil
           end
-
-          #json_to_corpus(json, File.basename(path, ".*")) if json.present?
-          docs_to_contents(json) if json.present?
+          docs_to_contents(data) if data.present?
         end
       end
     end
@@ -124,9 +122,10 @@ class ImportJob < ActiveRecord::Base
     else # it's already a hash and we don't need to decode from JSON
       data = docs
     end
-    import_record = self.last_import_record
+    import_record = last_import_record
     successes = 0
     failures = 0
+    log = import_record.log_file
     data.each do |article|
       # trim all fields so we don't get any unnecessary whitespace
       article.each_value { |v| v.strip! if v.is_a? String }
@@ -140,14 +139,16 @@ class ImportJob < ActiveRecord::Base
       end
         
       begin
-        Content.create_from_import_job(article, self)
+        c = Content.create_from_import_job(article, self)
+        log.info("content #{c.id} created")
         successes += 1
       rescue StandardError => bang
-        log = Logger.new("#{Rails.root}/log/contents.log")
-        log.debug("failed to process content: #{bang}")
+        log.error("failed to process content: #{bang}")
         failures += 1
       end
     end
+    log.info("successes: #{successes}")
+    log.info("failures: #{failures}")
     import_record.items_imported += successes
     import_record.failures += failures
     import_record.save!
