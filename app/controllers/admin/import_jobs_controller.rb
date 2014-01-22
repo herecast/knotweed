@@ -36,12 +36,4 @@ class Admin::ImportJobsController < Admin::AdminController
     respond_with(@import_job, location: admin_import_jobs_url)
   end
 
-  def archive
-    @import_job = ImportJob.find(params[:id])
-    @import_job.update_attribute(:archive, true)
-    respond_to do |format|
-      format.js
-    end
-  end
-
 end

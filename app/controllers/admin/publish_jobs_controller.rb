@@ -47,12 +47,4 @@ class Admin::PublishJobsController < Admin::AdminController
     end
   end
 
-  def archive
-    @publish_job = PublishJob.find(params[:id])
-    @publish_job.update_attribute(:archive, true)
-    respond_to do |format|
-      format.js
-    end
-  end
-
 end

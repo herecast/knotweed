@@ -23,7 +23,7 @@ jQuery ->
       $(".frequency input").val("0")
 
   # replace run job button with spinner until remote load is finished and status updated
-  $("td.run-job-button").on 'click', ->
+  $(".run-job-button").on 'click', ->
     $(this).html("")
     $(this).spin({
       lines: 8,

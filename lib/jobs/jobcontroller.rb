@@ -27,5 +27,13 @@ module Jobs
       end
     end
 
+    def archive
+      @job = controller_name.classify.constantize.find(params[:id])
+      @job.update_attribute(:archive, true)
+      respond_to do |format|
+        format.js { render "admin/jobs/archive" }
+      end
+    end
+
   end
 end

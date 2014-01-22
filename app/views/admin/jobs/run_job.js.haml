@@ -6,4 +6,4 @@ status_div.removeClass("alert-success alert-error alert-info");
 // add appropriate class to status
 status_div.addClass("#{j alert_class_for_status(@job.status)}");
 
-$("tr.job-#{@job.id} td.run-job-button").html("#{j action_button_for_job(@job)}");
+$("tr.job-#{@job.id} .run-job-button").html("#{j action_button_for_job(@job)}");

@@ -6,22 +6,21 @@
       %th Publish Method
       %th Last Run
       %th Next Scheduled Run
-      %th
       %th Status
       %th
   %tbody
     - @publish_jobs.each do |job|
-      %tr{ class: "publish-job-#{job.id}", data: { job_contents_count_path: admin_job_contents_count_path(job) } }
+      %tr{ class: "job-#{job.id}", data: { job_contents_count_path: admin_job_contents_count_path(job) } }
         %td= link_to job.name, edit_admin_publish_job_path(job)
         %td.num-contents-matched
         %td= job.publish_method.humanize
         %td= job.last_run_at.strftime("%m/%d/%Y %I:%M%p") if job.last_run_at.present?
         %td.next-run
           = job.next_scheduled_run.strftime("%m/%d/%Y %I:%M%p") if job.next_scheduled_run.present?
-        %td.run-job-button
-          = action_button_for_job(job)
         %td.job-status
           %div{ class: "label label-#{alert_class_for_status(job.status)}" }= job.status
-        %td.delete-job
-          = link_to "Archive", admin_archive_publish_job_path(job), class: "btn btn-small btn-warning", remote: true, data: { confirm: "Are you sure?" }
-          = link_to "Delete", admin_publish_job_path(job), class: "btn-small btn btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }
+        %td.job-actions
+          .run-job-button
+            = action_button_for_job(job)
+          = link_to "Archive", admin_archive_publish_job_path(job), class: "btn btn-mini btn-warning", remote: true, data: { confirm: "Are you sure?" }
+          = link_to "Delete", admin_publish_job_path(job), class: "btn-mini btn btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }
