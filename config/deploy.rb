@@ -59,10 +59,8 @@ namespace :deploy do
       # end
     end
   end
-
-  # delayed job
-  after "stop", "delayed_job:stop"
-  after "start", "delayed_job:start"
-  after "restart", "delayed_job:restart"
+  after :starting, "delayed_job:stop"
+  after :finishing, "delayed_job:start"
+  after :restart, "delayed_job:restart"
 
 end
