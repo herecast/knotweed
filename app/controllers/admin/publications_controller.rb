@@ -3,7 +3,9 @@ class Admin::PublicationsController < Admin::AdminController
 
   def index
     # if posted, save to session
-    if params[:q].present?
+    if params[:reset]
+      session[:publications_search] = nil
+    elsif params[:q].present?
       session[:publications_search] = params[:q]
     end
     @search = Publication.search(session[:publications_search])

@@ -3,7 +3,9 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def index
     # if posted, save to session
-    if params[:q].present?
+    if params[:reset]
+      session[:organizations_search] = nil
+    elsif params[:q].present?
       session[:organizations_search] = params[:q]
     end
     @search = Organization.search(session[:organizations_search])

@@ -23,6 +23,7 @@
             = f.collection_select :locations_id_in, Location.accessible_by(current_ability), :id, :city, {}, { multiple: true, class: "chosen-select" }
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
+          = f.submit "Reset", name: "reset", class: "btn"
 %table.table.table-striped.table-bordered.data-table.table-condensed
   %thead
     %tr

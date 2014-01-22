@@ -2,7 +2,9 @@ class Admin::ContentsController < Admin::AdminController
 
   def index
     # if posted, save to session
-    if params[:q].present?
+    if params[:reset]
+      session[:contents_search] = nil
+    elsif params[:q].present?
       session[:contents_search] = params[:q]
     end
     

@@ -2,8 +2,14 @@ class Admin::ContentSetsController < Admin::AdminController
   load_and_authorize_resource
 
   def index
-    @search = ContentSet.search(params[:q])
-    if params[:q].present?
+    # if posted, save to session
+    if params[:reset]
+      session[:content_sets_search] = nil
+    elsif params[:q].present?
+      session[:content_sets_search] = params[:q]
+    end
+    @search = ContentSet.search(session[:content_sets_search])
+    if session[:content_sets_search].present?
       @content_sets = @search.result(distinct: true)
     else
       @content_sets = ContentSet.all
