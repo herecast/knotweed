@@ -20,10 +20,10 @@
             = f.collection_select :source_id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
             = f.label :pubdate_gteq, "From"
-            = f.text_field :pubdate_gteq, type: :date
+            = f.text_field :pubdate_gteq, type: :date, value: date_search_field_value(:pubdate_gteq)
           .field.span3
             = f.label :pubdate_lteq, "To"
-            = f.text_field :pubdate_lteq, type: :date
+            = f.text_field :pubdate_lteq, type: :date, value: date_search_field_value(:pubdate_lteq)
         .controls.controls-row
           .field.span3
             = f.label :import_location_link_name_cont, "Location"
