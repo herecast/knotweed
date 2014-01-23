@@ -26,7 +26,7 @@ gem "cancan", ">= 1.6.9"
 gem "rolify", ">= 3.2.0"
 gem "simple_form", ">= 2.1.0"
 gem "quiet_assets", ">= 1.0.2", :group => :development
-gem "capistrano", "~> 3.1.0"
+gem "capistrano", git: 'git@github.com:capistrano/capistrano.git'
 gem "capistrano-bundler", ">= 1.1.0"
 gem "capistrano-rvm"
 gem "capistrano-rails", "~> 1.1"
