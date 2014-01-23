@@ -1,5 +1,5 @@
 class Admin::OrganizationsController < Admin::AdminController
-  load_and_authorize_resource except: [:create]
+  load_and_authorize_resource except: [:create, :update_content_sets]
 
   def index
     # if posted, save to session
@@ -63,6 +63,12 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def destroy
     @organization.destroy
+  end
+
+  # for dynamically updating content set select boxes
+  def update_content_sets
+    org = Organization.find(params[:organization_id])
+    @content_sets = org.content_sets.map{ |cs| [cs.name, cs.id]}.insert(0, nil)
   end
 
 

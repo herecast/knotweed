@@ -2,6 +2,7 @@ class Organization < ActiveRecord::Base
 
   has_and_belongs_to_many :contacts
   has_many :publications
+  has_many :content_sets, through: :publications
   has_many :users
   has_many :parsers
   has_many :import_jobs

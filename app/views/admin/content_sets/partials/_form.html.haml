@@ -21,5 +21,6 @@
         = f.input :notes, input_html: { class: "span5", rows: 5 }
         = f.input :developer_notes, input_html: { class: "span5", rows: 5 }
       .form-actions
+        = submit_tag "Submit and Create New Import Job", class: "btn btn-success", name: "add_import_job"
         = submit_tag nil, class: "btn btn-primary"
         = link_to "Cancel", :back, class: "btn"

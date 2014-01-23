@@ -8,12 +8,17 @@ class Admin::ImportJobsController < Admin::AdminController
   respond_to :html
   
   def new
-    @import_job = ImportJob.new
+    @content_sets = ContentSet.accessible_by(current_ability)
     if params[:parser_id]
       @import_job.parser = Parser.find(params[:parser_id])
       @import_job.organization = @import_job.parser.organization
     end
   end
+
+  def edit
+    @content_sets = ContentSet.accessible_by(current_ability)
+  end
+
   
   def create
     @import_job = ImportJob.new(params[:import_job])

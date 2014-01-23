@@ -18,6 +18,7 @@ Knotweed::Application.routes.draw do
     resources :publish_jobs
     resources :images
     resources :publications
+    get "organizations/update_content_sets", to: "organizations#update_content_sets", as: :update_content_sets
     resources :organizations
     resources :content_sets
     resources :contacts, only: [:create, :update, :edit, :destroy]

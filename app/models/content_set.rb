@@ -1,5 +1,6 @@
 class ContentSet < ActiveRecord::Base
   belongs_to :publication
+  has_one :organization, through: :publication
   has_many :import_jobs
 
   attr_accessible :description, :import_method, :import_method_details, 

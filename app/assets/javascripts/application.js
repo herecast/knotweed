@@ -35,6 +35,7 @@
 //= require admin/images
 //= require admin/admin
 //= require admin/publications
+//= require admin/organizations
 //= require jquery.multi-select
 //= require jquery.quicksearch
 //= require turbolinks
