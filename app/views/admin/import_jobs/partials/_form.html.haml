@@ -1,4 +1,4 @@
-= simple_form_for [:admin, import_job], html: { data: { id: import_job.id }, class: "form form-horizontal" } do |f|
+= simple_form_for [:admin, import_job], html: { data: { id: import_job.id }, class: "form form-horizontal edit_import_job" } do |f|
   = f.error_notification
   = f.input :name
   = f.input :source_path
