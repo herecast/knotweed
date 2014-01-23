@@ -49,8 +49,6 @@ namespace :deploy do
     end
   end
 
-  before :publishing, :run_tests
-
   after :publishing, :restart
 
   after :restart, :clear_cache do
