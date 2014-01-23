@@ -38,7 +38,7 @@ class Admin::ImportJobsController < Admin::AdminController
 
   def index
     if params[:content_set_id]
-      @import_jobs = @import_jobs.where(content_set_id: params[:content_set_id])
+      @import_jobs = @import_jobs.unscoped.where(content_set_id: params[:content_set_id])
     end
   end
 
