@@ -15,6 +15,9 @@ set :rvm_ruby_version, '1.9.3-p429@knotweed'
 
 set :delayed_job_args, "-n 2"
 
+# for parsers submodule
+set :git_enable_submodules, 1
+
 # Default value for :scm is :git
 # set :scm, :git
 
