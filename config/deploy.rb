@@ -39,14 +39,6 @@ set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
-# run tests after deploying but before symlinking to current
-desc "Run the full tests on the deployed app." 
-task :run_tests do
-  on roles(:all) do |h|
-    execute "cd #{release_path} && rspec && cat /dev/null > log/test.log" 
-  end
-end
-
 namespace :deploy do
 
   desc 'Restart application'
