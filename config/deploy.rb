@@ -39,6 +39,14 @@ set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
+# run tests after deploying but before symlinking to current
+desc "Run the full tests on the deployed app." 
+task :run_tests do
+  on roles(:web) do |h|
+    execute "cd #{release_path} && RAILS_ENV=production rake && cat /dev/null > log/test.log" 
+  end
+end
+
 namespace :deploy do
 
   desc 'Restart application'
@@ -48,6 +56,8 @@ namespace :deploy do
       execute :touch, release_path.join('tmp/restart.txt')
     end
   end
+
+  before :publishing, :run_tests
 
   after :publishing, :restart
 
@@ -64,3 +74,4 @@ namespace :deploy do
   after :restart, "delayed_job:restart"
 
 end
+
