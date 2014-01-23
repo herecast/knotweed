@@ -1,5 +1,7 @@
 require 'spec_helper'
 
 describe Publication do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it "should fail" do
+    0.should == 1
+  end
 end

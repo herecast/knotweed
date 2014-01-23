@@ -42,8 +42,8 @@ set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public
 # run tests after deploying but before symlinking to current
 desc "Run the full tests on the deployed app." 
 task :run_tests do
-  on roles(:web) do |h|
-    execute "cd #{release_path} && RAILS_ENV=production rake && cat /dev/null > log/test.log" 
+  on roles(:all) do |h|
+    execute "cd #{release_path} && rspec && cat /dev/null > log/test.log" 
   end
 end
 
