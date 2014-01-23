@@ -37,7 +37,7 @@
               %dt Copyright
               %dd= @content.copyright
               %dt Issue
-              %dd= @content.issue.try(:name)
+              %dd= @content.issue.try(:issue_edition)
               %dt Pub Date
               %dd= @content.pubdate.try(:strftime, "%Y-%m-%d")
               %dt Authors
