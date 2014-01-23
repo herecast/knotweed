@@ -38,7 +38,7 @@ class ImportLocation < ActiveRecord::Base
       match = ImportLocation.create(city: query_string, link_name: link_name, status: STATUS_REVIEW)
     # might want to add logic in the future in the case where
     # query.length > 1...not sure.
-    else query.length == 1
+    else #query.length == 1
       match = query.first
       # if the match has a parent, return that instead
       match = match.parent if match.parent.present?
