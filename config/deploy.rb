@@ -1,3 +1,4 @@
+require './lib/capistrano/submodule_strategy'
 # config valid only for Capistrano 3.1
 lock '3.1.0'
 
@@ -16,7 +17,6 @@ set :rvm_ruby_version, '1.9.3-p429@knotweed'
 set :delayed_job_args, "-n 2"
 
 # for parsers submodule
-require 'lib/capistrano/submodule_strategy'
 set :git_strategy, SubmoduleStrategy
 # Default value for :scm is :git
 # set :scm, :git
@@ -40,7 +40,7 @@ set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
 # Default value for keep_releases is 5
-# set :keep_releases, 5
+set :keep_releases, 3
 
 namespace :deploy do
 
