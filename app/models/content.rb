@@ -74,7 +74,11 @@ class Content < ActiveRecord::Base
     end
     data.keys.each do |k|
       unless Content.accessible_attributes.entries.include? k
-        log = Logger.new("#{Rails.root}/log/contents.log")
+        if job
+          log = job.last_import_record.log_file
+        else
+          log = Logger.new("#{Rails.root}/log/contents.log")
+        end
         log.debug("unknown key provided by parser: #{k}")
         data.delete k
       end
@@ -173,23 +177,39 @@ class Content < ActiveRecord::Base
     if method.nil?
       method = DEFAULT_PUBLISH_METHOD
     end
+    # if there is a publish record, log output to corresponding log file
+    if record.present?
+      log = record.log_file
+    else
+      log = Logger.new("#{Rails.root}/log/publishing.log")
+    end
     begin
-      if self.send(method.to_sym) == true
+      result = self.send(method.to_sym)
+      if result == true
         update_attribute(:published, true)
+        record.items_published += 1 if record.present?
+      else
+        log.error(result)
+        record.failures += 1 if record.present?
       end
-      record.items_published += 1 if record.present?
     rescue
+      log.error(result)
       record.failures += 1 if record.present?
     end
     record.save if record.present?
   end
+
+  # below are our various "publish methods"
+  # new publish methods should return true
+  # if publishing is successful and a string
+  # with an error message if it is not.
 
   def export_to_xml(format=nil)
     unless EXPORT_FORMATS.include? format
       format = DEFAULT_FORMAT
     end
     if quarantine == true
-      return false
+      return "doc #{id} is quarantined and was not exported"
     else
       FileUtils.mkpath(export_path)
       File.open("#{export_path}/#{guid}.xml", "w+") do |f|
@@ -216,9 +236,7 @@ class Content < ActiveRecord::Base
     if response.body.include? "#{BASE_URI}/#{id}"
       return true
     else
-      log = Logger.new("#{Rails.root}/log/publishing.log")
-      log.debug("failed to post doc #{self.id}")
-      return false
+      return "failed to post doc: #{self.id}\nresponse:#{response.body}"
     end
   end
 

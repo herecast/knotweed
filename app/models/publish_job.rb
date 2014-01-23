@@ -36,6 +36,9 @@ class PublishJob < ActiveRecord::Base
       record.contents << c
       c.publish(publish_method, record)
     end
+    log = record.log_file
+    log.info("failures: #{record.failures}")
+    log.info("items published: #{record.items_published}")
   end
 
   # status hooks

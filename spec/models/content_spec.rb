@@ -162,11 +162,11 @@ describe Content do
     # fun note: we can assume certain attributes are present
     # after this test because quarantining guarantees that
     # those attributes are present, and export_to_xml doesn't work
-    # and returns false if quarantine is true
+    # and returns an error message if quarantine is true
     it "should not allow export of quarantined contents" do
       @content.quarantine = true
       # returns false if it fails to run
-      @content.export_to_xml.should== false
+      @content.export_to_xml.should_not== true
     end
 
     it "should write xml and content to local corpus" do
