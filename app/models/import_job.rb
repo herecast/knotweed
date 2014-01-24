@@ -93,7 +93,7 @@ class ImportJob < ActiveRecord::Base
         if FileTest.directory?(path)
           next
         else
-          #log.debug("running parser on path: #{path}")
+          log.debug("running parser on path: #{path}")
           begin
             data = run_parser(path)
           rescue StandardError => bang
@@ -128,7 +128,7 @@ class ImportJob < ActiveRecord::Base
     log = import_record.log_file
     data.each do |article|
       # trim all fields so we don't get any unnecessary whitespace
-      article.each_value { |v| v.strip! if v.is_a? String }
+      article.each_value { |v| v = v.strip if v.is_a? String }
       # remove leading empty <p> tags from content
       if article.has_key? "content" and article["content"].present?
         p_tags_match = article["content"].match(/\A(<p>|<\/p>| )+/)
