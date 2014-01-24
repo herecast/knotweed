@@ -24,3 +24,13 @@ to start the ssh-agent then
     ssh-add
 
 to load your public key. At that point you should be able to run the deploy process no problem assuming your public key is in /home/deploy/.ssh/authorized_keys.
+
+Logging
+--------------------------
+Log files are shared between 'releases' so they should be continuous across multiple deployments. If you need to access them, they're in
+
+    /home/deploy/knotweed/current/log
+
+delayed_job.log is a simple file that shows output from running jobs -- mostly just "job id is running," "job finished," that sort of thing.
+
+More specific logging for imports and publishing is found in log/import_records and log/publish_records respectively. You should be able to read those files from any user account.
