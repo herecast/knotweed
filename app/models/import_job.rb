@@ -128,9 +128,9 @@ class ImportJob < ActiveRecord::Base
     log = import_record.log_file
     data.each do |article|
       # trim all fields so we don't get any unnecessary whitespace
-      article.each_value { |v| v = v.strip if v.is_a? String }
+      article.each_value { |v| v.strip! if v.is_a? String and v.frozen? == false }
       # remove leading empty <p> tags from content
-      if article.has_key? "content" and article["content"].present?
+      if article.has_key? "content"
         p_tags_match = article["content"].match(/\A(<p>|<\/p>| )+/)
         if p_tags_match
           content_start = p_tags_match[0].length - 1
