@@ -2,7 +2,14 @@ class Admin::OntotextController
   include HTTParty
   base_uri 'http://tech.ontotext.com'
   headers 'Content-Type'=>"application/vnd.ontotext.ces.document+xml;charset=UTF-8"
-  # debug_output
+  
+  # set debug_output based on environment
+  def self.set_debug_output
+    unless Rails.env.production?
+      debug_output
+    end
+  end
+  set_debug_output
 
   # override post method here to insert auth config
   def self.post(dest, options)
