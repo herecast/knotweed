@@ -34,3 +34,7 @@
 //= require flatty/plugins/bootstrap_hover_dropdown/twitter-bootstrap-hover-dropdown.min
 //= require flatty/plugins/slider_nav/slidernav-min
 //= require flatty/plugins/fuelux/wizard
+
+$(document).ready(function() {
+  $(".ckeditor").ckeditor({});
+});
