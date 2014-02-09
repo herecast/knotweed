@@ -17,7 +17,7 @@ class ContentSet < ActiveRecord::Base
   IMPORT_METHODS = [FILE_IMPORT, RSS_FEED, WEB_SCRAPE, POP3_EMAIL, MANUAL]
 
   FORMATS = ["json", "xml", "rtf", "pdf", "other"]
-  STATUSES = ["New", "Approved for Import", "Access Issues", "Processed", "Rejected"]
+  STATUSES = ["New", "Approved for Import", "Access Issues", "Processed", "Rejected", "Contact Source"]
 
   validates :import_method, inclusion: { in: IMPORT_METHODS }, allow_blank: true
   validates :format, inclusion: { in: FORMATS }, allow_blank: true
