@@ -12,7 +12,8 @@ describe Admin::PublishJobsController do
         name: "Test Publish Job",
         publish_method: PublishJob::EXPORT_TO_XML },
         source_id: ["3"], import_location_id: ["4"],
-        from: nil, to: nil, published: nil }
+        from: nil, to: nil, published: nil,
+        ids: nil}
         
       post :create, post_params
       response.should redirect_to(admin_publish_jobs_path)

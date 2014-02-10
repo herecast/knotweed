@@ -340,24 +340,30 @@ class Content < ActiveRecord::Base
   # of contents based on a query hash of conditions
   # expects query_params to look like the params hash from a form
   def self.contents_query(query_params)
-    query = {
-      quarantine: false, # can't publish quarantined docs
-      published: false # default to not yet published
-    }
-    if query_params[:source_id].present?
-      query[:source_id] = query_params[:source_id].map { |s| s.to_i } 
+    # if the query contains a list of ids, use that
+    if query_params[:ids].present?
+      id_array = query_params[:ids].split(",").map { |i| i.strip.to_i }
+      contents = Content.where(:id => id_array)
+    else
+      query = {
+        quarantine: false, # can't publish quarantined docs
+        published: false # default to not yet published
+      }
+      if query_params[:source_id].present?
+        query[:source_id] = query_params[:source_id].map { |s| s.to_i } 
+      end
+      if query_params[:import_location_id].present?
+        query[:import_location_id] = query_params[:import_location_id].map { |s| s.to_i } 
+      end
+      if query_params[:published] == "true"
+        query[:published] = true
+      elsif query_params[:published] == "both"
+        query.delete(:published)
+      end
+      contents = Content.where(query)
+      contents = contents.where("pubdate >= ?", Date.parse(query_params[:from])) if query_params[:from].present?
+      contents = contents.where("pubdate <= ?", Date.parse(query_params[:to])) if query_params[:to].present?
     end
-    if query_params[:import_location_id].present?
-      query[:import_location_id] = query_params[:import_location_id].map { |s| s.to_i } 
-    end
-    if query_params[:published] == "true"
-      query[:published] = true
-    elsif query_params[:published] == "both"
-      query.delete(:published)
-    end
-    contents = Content.where(query)
-    contents = contents.where("pubdate >= ?", Date.parse(query_params[:from])) if query_params[:from].present?
-    contents = contents.where("pubdate <= ?", Date.parse(query_params[:to])) if query_params[:to].present?
     return contents
   end
     

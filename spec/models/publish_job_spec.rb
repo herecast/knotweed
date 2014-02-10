@@ -19,6 +19,15 @@ describe PublishJob do
       @job.save!
       @job.contents_count.should== Content.where(source_id: @publication.id).count
     end
+
+    it "should return only the ids listed if any ids are in the query" do
+      @job.query_params[:source_id] = [@publication.id]
+      @job.save!
+      @job.contents_count.should > 1
+      @job.query_params[:ids] = "#{Content.last.id}"
+      @job.save!
+      @job.contents_count.should== 1
+    end
   end
 
   describe "perform job" do

@@ -2,6 +2,11 @@ jQuery ->
   $('.chosen-select').chosen();
 
   $("fieldset#contents-query").on 'change', ->
+    if $(this).find("#ids").val().length > 0
+      console.log 'hello'
+      $(this).find("#query-fields").attr("style", "opacity: 0.5;").find(":input").attr("disabled", true)
+    else
+      $(this).find("#query-fields").attr("style", "opacity: inherit;").find(":input").attr("disabled", false)
     $.ajax({
       type: "POST",
       url: $(this).data("contentsQueryPath"),
@@ -15,6 +20,7 @@ jQuery ->
           top: 4,
           left: 20})
     })
+
   # trigger a change event so that on edit, we load the count
   $("fieldset#contents-query").trigger 'change'
 
