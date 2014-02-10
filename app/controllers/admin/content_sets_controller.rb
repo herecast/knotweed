@@ -43,7 +43,13 @@ class Admin::ContentSetsController < Admin::AdminController
   def create
     if @content_set.save
       flash[:notice] = "Created content set with id #{@content_set.id}"
-      redirect_to admin_content_sets_path
+      if params[:add_import_job]
+        import_job = { :organization_id => @content_set.organization.id, :content_set_id => @content_set.id }
+        import_job[:source_path] = @content_set.import_url_path if @content_set.import_url_path.present?
+        redirect_to new_admin_import_job_path(:import_job => import_job)
+      else
+        redirect_to admin_content_sets_path
+      end
     else
       render "new"
     end
