@@ -6,7 +6,7 @@ class ContentSet < ActiveRecord::Base
   attr_accessible :description, :import_method, :import_method_details, 
                   :name, :notes, :publication_id, :status, :import_jobs_attributes,
                   :start_date, :end_date, :ongoing, :format, :publishing_frequency,
-                  :developer_notes
+                  :developer_notes, :import_priority
 
 
   FILE_IMPORT = "File Import"
@@ -15,12 +15,14 @@ class ContentSet < ActiveRecord::Base
   POP3_EMAIL = "POP3 Email"
   MANUAL = "Manual"
   IMPORT_METHODS = [FILE_IMPORT, RSS_FEED, WEB_SCRAPE, POP3_EMAIL, MANUAL]
+  IMPORT_PRIORITIES = 1..4
 
   FORMATS = ["json", "xml", "rtf", "pdf", "other"]
   STATUSES = ["New", "Approved for Import", "Access Issues", "Processed", "Rejected", "Contact Source"]
 
   validates :import_method, inclusion: { in: IMPORT_METHODS }, allow_blank: true
   validates :format, inclusion: { in: FORMATS }, allow_blank: true
+  validates :import_priority, inclusion: { in: IMPORT_PRIORITIES }
   validates_presence_of :publication
   validates_presence_of :name
   validates :publishing_frequency, inclusion: { in: Publication::FREQUENCY_OPTIONS }, allow_blank: true 

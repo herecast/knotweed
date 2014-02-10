@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140122141311) do
+ActiveRecord::Schema.define(:version => 20140210205509) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -51,14 +51,15 @@ ActiveRecord::Schema.define(:version => 20140122141311) do
     t.text     "description"
     t.text     "notes"
     t.string   "status"
-    t.datetime "created_at",            :null => false
-    t.datetime "updated_at",            :null => false
+    t.datetime "created_at",                           :null => false
+    t.datetime "updated_at",                           :null => false
     t.date     "start_date"
     t.date     "end_date"
     t.boolean  "ongoing"
     t.string   "format"
     t.string   "publishing_frequency"
     t.text     "developer_notes"
+    t.integer  "import_priority",       :default => 1
   end
 
   create_table "contents", :force => true do |t|

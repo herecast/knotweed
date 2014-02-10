@@ -21,6 +21,9 @@
           .field.span3
             = f.label :status_in, "Status"
             = f.select :status_in, ContentSet::STATUSES, {}, { multiple: true, class: "chosen-select", include_blank: true }
+          .field.span2
+            = f.label :import_priority_eq, "Import Priority"
+            = f.select :import_priority_eq, ContentSet::IMPORT_PRIORITIES, include_blank: true
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
@@ -34,6 +37,7 @@
       %th Date Range
       %th Ongoing?
       %th Import Method
+      %th Import Priority
       %th
   %tbody
     - @content_sets.each do |content_set|
@@ -47,4 +51,5 @@
           - if content_set.ongoing
             %i.icon-check
         %td= content_set.import_method
+        %td= content_set.import_priority
         %td= link_to "Import Jobs", admin_import_jobs_path(content_set_id: content_set.id), class: "btn btn-mini btn-success"
