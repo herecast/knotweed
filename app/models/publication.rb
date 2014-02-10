@@ -36,6 +36,9 @@ class Publication < ActiveRecord::Base
     end
   end
 
+  scope :alphabetical, order("name ASC")
+  default_scope alphabetical
+
   def publishing_frequency_enum
     FREQUENCY_OPTIONS
   end
