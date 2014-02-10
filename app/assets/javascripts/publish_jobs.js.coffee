@@ -3,7 +3,6 @@ jQuery ->
 
   $("fieldset#contents-query").on 'change', ->
     if $(this).find("#ids").val().length > 0
-      console.log 'hello'
       $(this).find("#query-fields").attr("style", "opacity: 0.5;").find(":input").attr("disabled", true)
     else
       $(this).find("#query-fields").attr("style", "opacity: inherit;").find(":input").attr("disabled", false)
