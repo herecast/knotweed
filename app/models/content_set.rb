@@ -6,7 +6,7 @@ class ContentSet < ActiveRecord::Base
   attr_accessible :description, :import_method, :import_method_details, 
                   :name, :notes, :publication_id, :status, :import_jobs_attributes,
                   :start_date, :end_date, :ongoing, :format, :publishing_frequency,
-                  :developer_notes, :import_priority
+                  :developer_notes, :import_priority, :import_url_path
 
 
   FILE_IMPORT = "File Import"
@@ -17,7 +17,7 @@ class ContentSet < ActiveRecord::Base
   IMPORT_METHODS = [FILE_IMPORT, RSS_FEED, WEB_SCRAPE, POP3_EMAIL, MANUAL]
   IMPORT_PRIORITIES = 1..4
 
-  FORMATS = ["json", "xml", "rtf", "pdf", "other"]
+  FORMATS = ["json", "xml", "rtf", "pdf", "other", "txt", "doc", "docx", "html", "xls", "xlxx", "csv", "odt"]
   STATUSES = ["New", "Approved for Import", "Access Issues", "Processed", "Rejected", "Contact Source"]
 
   validates :import_method, inclusion: { in: IMPORT_METHODS }, allow_blank: true
