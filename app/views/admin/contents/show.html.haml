@@ -62,6 +62,8 @@
             = sanitize simple_format @content.content
           .tab-pane#images
             = render @content.images
-          .tab-pane#publish
+          .tab-pane#publish{ data: { no_turbolink: "" } }
             - Content::PUBLISH_METHODS.each do |method|
               = link_to method.humanize, admin_publish_content_path(@content, method), class: "btn btn-info"
+            - if @content.published
+              = link_to "Export Gate XML", admin_rdf_to_gate_path(@content), class: "btn btn-info", target: "_blank"

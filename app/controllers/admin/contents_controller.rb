@@ -77,4 +77,17 @@ class Admin::ContentsController < Admin::AdminController
     redirect_to [:admin, @content]
   end
 
+  def rdf_to_gate
+    @content = Content.find(params[:id])
+    gate_xml = @content.rdf_to_gate
+    if gate_xml == false
+      render text: "content #{@content.id} not found on Ontotext server"
+    else
+      #render :xml => gate_xml
+      f = File.new("#{Rails.root}/tmp/#{@content.id}.gate.xml", "w+")
+      f.write(gate_xml)
+      send_file f, :filename => "#{@content.id}.gate.xml", type: :xml, disposition: 'attachment'
+    end
+  end
+
 end

@@ -31,7 +31,8 @@ Knotweed::Application.routes.draw do
 
     match "parsers/:parser_id/new_import_job" => "import_jobs#new", as: :new_import_job_for_parser
 
-    get "contents/:id/:method", to: "contents#publish", as: :publish_content
+    get "contents/:id/publish/:method", to: "contents#publish", as: :publish_content
+    get "contents/:id/generate_gate_xml", to: "contents#rdf_to_gate", as: :rdf_to_gate
     
     get 'import_jobs/:id/run_job', to: 'import_jobs#run_job', as: :run_import_job
     delete 'import_jobs/:id/cancel', to: 'import_jobs#cancel_job', as: :cancel_import_job

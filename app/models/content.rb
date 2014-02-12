@@ -366,5 +366,9 @@ class Content < ActiveRecord::Base
     end
     return contents
   end
+
+  def rdf_to_gate
+    return Admin::OntotextController.rdf_to_gate(id)
+  end
     
 end
