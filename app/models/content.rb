@@ -64,6 +64,11 @@ class Content < ActiveRecord::Base
   # is not as simple as just creating new from hash
   # because we need to match locations, publications, etc.
   def self.create_from_import_job(input, job=nil)
+    if job
+      log = job.last_import_record.log_file
+    else
+      log = Logger.new("#{Rails.root}/log/contents.log")
+    end
     # pull special attributes out of the data hash
     special_attrs = {}
     # convert symbols to strings
@@ -82,11 +87,6 @@ class Content < ActiveRecord::Base
     end
     data.keys.each do |k|
       unless Content.accessible_attributes.entries.include? k
-        if job
-          log = job.last_import_record.log_file
-        else
-          log = Logger.new("#{Rails.root}/log/contents.log")
-        end
         log.debug("unknown key provided by parser: #{k}")
         data.delete k
       end
@@ -122,7 +122,7 @@ class Content < ActiveRecord::Base
     end
     content.import_record = job.last_import_record if job.present?
 
-    content.set_guid # otherwise it won't be set till save and we need it for overwriting
+    content.set_guid unless content.guid.present? # otherwise it won't be set till save and we need it for overwriting
 
     # deal with existing content that needs to be overwritten
     # starting with matching publication AND source_content_id
@@ -168,7 +168,7 @@ class Content < ActiveRecord::Base
 
   # if guid is empty, set with our own 
   def set_guid
-    unless guid.present?
+    unless self.guid.present?
       self.guid = ""
       if title.present?
         self.guid << title.gsub(" ", "_").gsub("/", "-")
