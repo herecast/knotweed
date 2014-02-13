@@ -32,10 +32,14 @@ class Content < ActiveRecord::Base
   BASE_URI = "http://www.subtext.org/Document"
 
   DEFAULT_PUBLISH_METHOD = "export_to_xml"
-  PUBLISH_METHODS = [
-    "export_to_xml",
-    "post_to_ontotext"
-  ]
+
+  # publish methods are string representations
+  # of methods on the Content model
+  # that are called via send on each piece of content
+  POST_TO_ONTOTEXT = "post_to_ontotext"
+  EXPORT_TO_XML = "export_to_xml"
+  REPROCESS = "reprocess"
+  PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS]
 
   rails_admin do
     list do
@@ -50,6 +54,10 @@ class Content < ActiveRecord::Base
       field :title
       field :authors
     end
+  end
+
+  def document_uri
+    "#{BASE_URI}/#{id}"
   end
   
   # creating a new content from import job data
@@ -231,12 +239,21 @@ class Content < ActiveRecord::Base
   def post_to_ontotext
     options = { :body => self.to_new_xml }
                 
-    
     response = Admin::OntotextController.post('/prototype/processDocument?persist=true', options)
-    if response.body.include? "#{BASE_URI}/#{id}"
+    if response.body.include? document_uri
       return true
     else
       return "failed to post doc: #{self.id}\nresponse:#{response.body}"
+    end
+  end
+
+  def reprocess
+    options = { :id => document_uri }
+    response = Admin::OntotextController.post('/prototype/reprocessDcument', options)
+    if response.code != 200
+      post_to_ontotext
+    else
+      return true
     end
   end
 
@@ -265,7 +282,7 @@ class Content < ActiveRecord::Base
   def to_new_xml
     xml = ::Builder::XmlMarkup.new
     xml.instruct!
-    xml.tag!("tns:document", "xmlns:tns"=>"http://www.ontotext.com/DocumentSchema", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "id" => "#{BASE_URI}/#{id}") do |f|
+    xml.tag!("tns:document", "xmlns:tns"=>"http://www.ontotext.com/DocumentSchema", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "id" => document_uri) do |f|
 
       f.tag!("tns:document-parts") do |g|
         f.tag!("tns:feature-set") do |g|
@@ -370,5 +387,5 @@ class Content < ActiveRecord::Base
   def rdf_to_gate
     return Admin::OntotextController.rdf_to_gate(id)
   end
-    
+
 end

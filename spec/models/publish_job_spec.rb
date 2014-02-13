@@ -32,7 +32,7 @@ describe PublishJob do
 
   describe "perform job" do
     before do
-      @job = FactoryGirl.create(:publish_job, publish_method: PublishJob::EXPORT_TO_XML)
+      @job = FactoryGirl.create(:publish_job, publish_method: Content::EXPORT_TO_XML)
       FactoryGirl.create_list(:content, 3)
       @job.enqueue_job
     end

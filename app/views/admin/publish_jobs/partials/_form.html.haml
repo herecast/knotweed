@@ -7,7 +7,7 @@
       = f.error_notification
       = f.input :name, input_html: { class: "input-block-level" }
       = f.input :description, input_html: { class: "input-block-level", rows: 5}
-      = f.input :publish_method, collection: PublishJob::PUBLISH_METHODS, label_method: "humanize", required: true
+      = f.input :publish_method, collection: Content::PUBLISH_METHODS, label_method: "humanize", required: true
       .control-group.boolean.optional.recurring
         = label_tag "import_job_recurring", "Recurring?", { class: "boolean optional control-label" }
         .controls

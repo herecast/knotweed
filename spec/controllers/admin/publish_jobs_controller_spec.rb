@@ -10,7 +10,7 @@ describe Admin::PublishJobsController do
     it "should properly serialize query params" do
       post_params = { publish_job: {
         name: "Test Publish Job",
-        publish_method: PublishJob::EXPORT_TO_XML },
+        publish_method: Content::EXPORT_TO_XML },
         source_id: ["3"], import_location_id: ["4"],
         from: nil, to: nil, published: nil,
         ids: nil}

@@ -17,16 +17,10 @@ class PublishJob < ActiveRecord::Base
 
   default_scope { where archive: false }
 
-  # publish methods are string representations
-  # of methods on the Content model
-  # that are called via send on each piece of content
-  POST_TO_ONTOTEXT = "post_to_ontotext"
-  EXPORT_TO_XML = "export_to_xml"
-  PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML]
 
   QUERY_PARAMS_FIELDS = %w(source_id from to import_location_id published ids)
   
-  validates :publish_method, inclusion: { in: PUBLISH_METHODS }, allow_nil: true
+  validates :publish_method, inclusion: { in: Content::PUBLISH_METHODS }, allow_nil: true
 
   # determine publish method and construct
   # Content query from query_params hash

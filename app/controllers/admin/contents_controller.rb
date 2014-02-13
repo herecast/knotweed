@@ -73,7 +73,7 @@ class Admin::ContentsController < Admin::AdminController
   def publish
     @content = Content.find(params[:id])
     @content.publish(params[:method])
-    flash[:notice] = "Content published"
+    flash[:notice] = "#{params[:method].humanize} successful"
     redirect_to [:admin, @content]
   end
 
