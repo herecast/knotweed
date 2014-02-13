@@ -38,7 +38,7 @@ class Content < ActiveRecord::Base
   # that are called via send on each piece of content
   POST_TO_ONTOTEXT = "post_to_ontotext"
   EXPORT_TO_XML = "export_to_xml"
-  REPROCESS = "reprocess"
+  REPROCESS = "reannotate_at_ontotext"
   PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS]
 
   rails_admin do
@@ -247,9 +247,9 @@ class Content < ActiveRecord::Base
     end
   end
 
-  def reprocess
+  def reannotate_at_ontotext
     options = { :id => document_uri }
-    response = Admin::OntotextController.post('/prototype/reprocessDcument', options)
+    response = Admin::OntotextController.post('/prototype/reprocessDocument', options)
     if response.code != 200
       post_to_ontotext
     else
