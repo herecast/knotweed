@@ -1,6 +1,7 @@
 class User < ActiveRecord::Base
 
   belongs_to :organization # for organization admin
+  has_many :notifiers
 
   rolify
   # Include default devise modules. Others available are:

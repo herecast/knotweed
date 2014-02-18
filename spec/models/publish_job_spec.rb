@@ -35,6 +35,10 @@ describe PublishJob do
       @job = FactoryGirl.create(:publish_job, publish_method: Content::EXPORT_TO_XML)
       FactoryGirl.create_list(:content, 3)
       @job.enqueue_job
+      successes, failures = Delayed::Worker.new(:max_priority => nil,
+        :min_priority => nil,
+        :quiet => false, 
+        :queues => ["imports", "publishing"]).work_off
     end
     after do
       #clean up output folder
@@ -42,7 +46,8 @@ describe PublishJob do
     end
 
     it "should succeed and set status to success" do
-      @job.status.should== "success"
+      job = PublishJob.find(@job.id)
+      job.status.should== "success"
     end
 
     it "should publish the contents via desired method (export to xml)" do

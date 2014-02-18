@@ -9,7 +9,6 @@ module Jobs
       respond_to do |format|
         format.js { render "admin/jobs/run_job" }
       end
-      
     end
   
     def cancel_job
@@ -32,6 +31,12 @@ module Jobs
       @job.update_attribute(:archive, true)
       respond_to do |format|
         format.js { render "admin/jobs/archive" }
+      end
+    end
+
+    def subscribe_user(job)
+      if job.respond_to? :notifyees and current_user.present?
+        job.notifyees << current_user
       end
     end
 

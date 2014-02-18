@@ -8,6 +8,9 @@ class PublishJob < ActiveRecord::Base
   belongs_to :organization
   has_many :publish_records
 
+  has_many :notifiers, as: :notifyable
+  has_many :notifyees, through: :notifiers, class_name: "User", source: "user"
+
   serialize :query_params, Hash
 
   attr_accessible :frequency, :organization_id, :publish_method, :query_params, :status,

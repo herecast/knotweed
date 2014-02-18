@@ -6,4 +6,8 @@ class ImportRecord < ActiveRecord::Base
   def log_file
     Logger.new("#{Rails.root}/log/import_records/#{id}.log")
   end
+
+  def job
+    import_job
+  end
 end

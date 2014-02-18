@@ -1,0 +1,9 @@
+#{@job.class.name} "#{@job.name}" (ID #{@job.id}) has failed on run record #{@record.id}
+
+See log files for details.
+
+- if @job.frequency.present?
+  Job will not run again until it is manually restarted. 
+
+Error message:
+= @error

@@ -24,6 +24,7 @@ class Admin::ImportJobsController < Admin::AdminController
     @import_job = ImportJob.new(params[:import_job])
     @import_job.organization = current_user.organization unless @import_job.organization.present?
     if @import_job.save
+      subscribe_user(@import_job)
       @import_job.save_config(params[:parameters])
       flash[:notice] = "Import job saved."
       redirect_to admin_import_jobs_path

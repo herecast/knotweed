@@ -6,4 +6,8 @@ class PublishRecord < ActiveRecord::Base
   def log_file
     Logger.new("#{Rails.root}/log/publish_records/#{id}.log")
   end
+
+  def job
+    publish_job
+  end
 end

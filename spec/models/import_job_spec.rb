@@ -29,11 +29,16 @@ describe ImportJob do
       @config2 = { "guid" => "101", "other_param" => "hello" }
       @job2 = FactoryGirl.create(:import_job, parser: @parser, config: @config2)
       @job2.enqueue_job
+      successes, failures = Delayed::Worker.new(:max_priority => nil,
+        :min_priority => nil,
+        :quiet => false, 
+        :queues => ["imports", "publishing"]).work_off
     end
 
     it "should succeed and set status to success" do
       # confirm DJ thinks job succeeded
-      @job.status.should== "success"
+      job = ImportJob.find(@job.id)
+      job.status.should== "success"
     end
 
     it "should create an import record attached to the job" do

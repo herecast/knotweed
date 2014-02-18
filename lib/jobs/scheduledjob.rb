@@ -13,6 +13,7 @@ module Jobs
       end
     end
 
+
     def schedule
       if self.try(:frequency).present? and self.frequency != 0
         self.frequency.minutes.from_now

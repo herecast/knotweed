@@ -12,22 +12,36 @@ describe Admin::ImportJobsController do
         FactoryGirl.create(:parameter, parser: @parser)
       end
     end
-    
-    it "should save parameters as serialized Hash" do 
-      parameters = {
-          "#{@parser.parameters[0].name.downcase.gsub(" ", "_")}" => "param 1 val",
-          "#{@parser.parameters[1].name.downcase.gsub(" ", "_")}" => "param 2 val"
+
+    describe "on success" do
+      before do
+        @parameters = {
+            "#{@parser.parameters[0].name.downcase.gsub(" ", "_")}" => "param 1 val",
+            "#{@parser.parameters[1].name.downcase.gsub(" ", "_")}" => "param 2 val"
         }
-      post :create, import_job: { 
-        name: "Test Job",
-        source_path: "Test Path",
-        parser_id: @parser.id,
-        organization_id: @parser.organization.id
-        }, parameters: parameters
-      response.should redirect_to(admin_import_jobs_path)
-      job = ImportJob.find_by_parser_id(@parser.id)
-      job.should_not be_nil
-      job.config.should== parameters
+        @import_job_hash = {
+          name: "Test Job",
+          source_path: "Test Path",
+          parser_id: @parser.id,
+          organization_id: @parser.organization.id
+        }
+        post :create, import_job: @import_job_hash, parameters: @parameters
+        @job = ImportJob.find_by_parser_id(@parser.id)
+      end
+    
+      it "should redirect to import jobs path" do
+        response.should redirect_to(admin_import_jobs_path)
+      end
+
+      it "should save parameters as serialized Hash" do 
+        @job.should_not be_nil
+        @job.config.should== @parameters
+      end
+
+      it "should register current user as a notifyee of the job" do
+        @job.should_not be_nil
+        @job.notifyees.include?(@user).should== true
+      end
     end
     
   end

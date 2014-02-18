@@ -14,6 +14,9 @@ class ImportJob < ActiveRecord::Base
   belongs_to :parser
   belongs_to :content_set
   has_many :import_records
+
+  has_many :notifiers, as: :notifyable
+  has_many :notifyees, through: :notifiers, class_name: "User", source: "user"
   
   validates_presence_of :organization
   
@@ -56,6 +59,9 @@ class ImportJob < ActiveRecord::Base
     log.info "input: #{self.source_path}"
     log.info "parser: #{Figaro.env.parsers_path}/#{parser.filename}"
     log.error "error: #{exception}"
+    if notifyees.present?
+      JobMailer.error_email(last_import_record, exception).deliver
+    end
     log.error "backtrace: #{exception.backtrace.join("\n")}"   
     update_attribute(:status, "failed")
     log.info "#{self.inspect}"

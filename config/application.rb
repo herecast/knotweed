@@ -68,6 +68,18 @@ module Knotweed
     # parameters by using an attr_accessible or attr_protected declaration.
     config.active_record.whitelist_attributes = true
 
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = 
+      {
+        address: 'smtp.gmail.com',
+        port: 587,
+        domain: 'subtext.org',
+        user_name: Figaro.env.notification_email,
+        password: Figaro.env.notification_email_password,
+        authentication: :plain,
+        enable_starttls_auto: true
+      }
+
     # Enable the asset pipeline
     config.assets.enabled = true
 

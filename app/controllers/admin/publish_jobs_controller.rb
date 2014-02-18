@@ -27,6 +27,7 @@ class Admin::PublishJobsController < Admin::AdminController
     end
 
     if @publish_job.update_attributes(params[:publish_job])
+      subscribe_user(@publish_job)
       redirect_to admin_publish_jobs_path
     else
       flash.now[:error] = "Could not save publish job"
