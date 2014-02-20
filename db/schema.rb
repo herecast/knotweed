@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140217151737) do
+ActiveRecord::Schema.define(:version => 20140220185555) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -100,6 +100,25 @@ ActiveRecord::Schema.define(:version => 20140217151737) do
   create_table "contents_publish_records", :id => false, :force => true do |t|
     t.integer "content_id"
     t.integer "publish_record_id"
+  end
+
+  create_table "data_contexts", :force => true do |t|
+    t.string   "context"
+    t.boolean  "loaded",     :default => false
+    t.datetime "last_load"
+    t.boolean  "archived",   :default => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+  end
+
+  create_table "datasets", :force => true do |t|
+    t.integer  "data_context_id"
+    t.string   "name"
+    t.string   "description"
+    t.string   "realm"
+    t.string   "model_type"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   create_table "delayed_jobs", :force => true do |t|
@@ -291,6 +310,21 @@ ActiveRecord::Schema.define(:version => 20140217151737) do
 
   add_index "roles", ["name", "resource_type", "resource_id"], :name => "index_roles_on_name_and_resource_type_and_resource_id"
   add_index "roles", ["name"], :name => "index_roles_on_name"
+
+  create_table "triples", :force => true do |t|
+    t.integer  "dataset_id"
+    t.string   "resource_class"
+    t.integer  "resource_id"
+    t.string   "resource_text"
+    t.string   "predicate"
+    t.string   "object_type"
+    t.string   "object_class"
+    t.integer  "object_resource_id"
+    t.string   "object_resource_text"
+    t.string   "realm"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+  end
 
   create_table "users", :force => true do |t|
     t.string   "email",                  :default => "", :null => false
