@@ -46,11 +46,23 @@ class Admin::DataContextsController < Admin::AdminController
   end
 
   def update
+    if @data_context.update_attributes(params[:data_context])
+      flash[:notice] = "Successfully updated data context #{@data_context.id}"
+      redirect_to admin_data_contexts_path
+    else
+      render "edit"
+    end
   end
 
   def new
   end
 
   def create
+    if @data_context.save
+      flash[:notice] = "Created data context with id #{@data_context.id}"
+      redirect_to admin_data_contexts_path
+    else
+      render "new"
+    end
   end
 end

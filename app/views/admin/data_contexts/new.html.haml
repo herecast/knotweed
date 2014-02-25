@@ -1,2 +1,8 @@
-%h1 Admin::DataContexts#new
-%p Find me in app/views/admin/data_contexts/new.html.haml
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-plus
+        Add Data Context
+    .box-content
+      = render partial: "admin/data_contexts/partials/form"

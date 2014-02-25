@@ -86,6 +86,20 @@
       = link_to new_admin_publish_job_path do
         %i.icon-plus
         %span Create New
+%li
+  = link_to admin_data_contexts_path do
+    %i.icon-table
+    %span Data Contexts
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "data_contexts" ? "in" : "" }" }
+    %li{ class: current_page?(admin_data_contexts_path) ? "active" : "" }
+      = link_to admin_data_contexts_path do
+        %i.icon-tasks
+        %span Search
+    %li{ class: current_page?(new_admin_data_context_path) ? "active" : "" }
+      = link_to new_admin_data_context_path do
+        %i.icon-plus
+        %span Create New
 %li 
   = link_to "#" do
     %i.icon-usd
