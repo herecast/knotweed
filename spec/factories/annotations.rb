@@ -2,8 +2,8 @@
 
 FactoryGirl.define do
   factory :annotation do
-    annotation_report_id 1
-    annotation_id "MyString"
+    annotation_report
+    annotation_id "an_0001"
     accepted false
   end
 end
