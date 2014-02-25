@@ -5,6 +5,9 @@ class Content < ActiveRecord::Base
   belongs_to :import_location
   belongs_to :import_record
 
+  has_many :annotation_reports
+  has_many :annotations, through: :annotation_reports
+
   has_and_belongs_to_many :publish_records
   
   has_many :images, as: :imageable, inverse_of: :imageable #, dependent: :destroy
