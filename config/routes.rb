@@ -1,4 +1,5 @@
 Knotweed::Application.routes.draw do
+
   mount RailsAdmin::Engine => '/rails_admin', :as => 'rails_admin'
 
   authenticated :user do
@@ -23,6 +24,8 @@ Knotweed::Application.routes.draw do
     resources :content_sets
     resources :contacts, only: [:create, :update, :edit, :destroy]
     resources :locations, only: [:create, :update, :new, :edit, :destroy]
+
+    resources :data_contexts
 
     match 'contacts/new(/:model(/:id))', to: "contacts#new", as: :new_contact
 
