@@ -1,0 +1,11 @@
+#annotation_details
+  .label.span3
+    %h3 Label: 
+    %span #{@annotation.annotated_string}
+  .type.span3
+    %h3 Type:
+    %span #{@annotation.annotation_type}
+  .actions.span3
+    = label_tag :accepted, "Status"
+    = select_tag :accepted, options_for_select([nil, ["Accepted", true], ["Rejected", false]], @annotation.accepted),
+      { data: { action_url: admin_accept_annotation_path(@annotation.id) } }

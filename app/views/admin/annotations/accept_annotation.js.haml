@@ -1,0 +1,6 @@
+$("#annotation_form").html("");
+$("#annotation_form").hide();
+
+-# find the underline corresponding to the submitted annotation
+-# and give it the "reviewed" class
+$(".t_underline.#{@annotation.annotation_id}").addClass("reviewed");

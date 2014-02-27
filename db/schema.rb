@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140226171038) do
+ActiveRecord::Schema.define(:version => 20140227015149) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -56,7 +56,7 @@ ActiveRecord::Schema.define(:version => 20140226171038) do
     t.datetime "updated_at",           :null => false
     t.string   "startnode"
     t.string   "endnode"
-    t.string   "type"
+    t.string   "annotation_type"
     t.boolean  "is_generated"
     t.string   "lookup_class"
     t.string   "token_feature"
