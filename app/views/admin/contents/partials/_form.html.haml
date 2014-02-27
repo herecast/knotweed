@@ -14,6 +14,10 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#images" } do
           %i.icon-reorder
           Images
+      - if @content.published
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#annotation_reports" } do
+            Annotation Reports
     .tab-content
       .tab-pane.active.form-horizontal#features
         = f.input :title, input_html: { class: "input-block-level" }
@@ -47,6 +51,36 @@
               .bar{ style: "width: 0%" }
         .row-fluid#image_list
           = render @content.images
+      - if @content.published == true
+        .tab-pane#annotation_reports
+          .pull-left
+            .span4
+              = link_to "+ Create New", "#", class: "btn btn-success", data: { toggle: "modal", target: "#annotations", action_url: admin_create_annotation_report_path(@content.id) }, id: "create-annotation-report"
+            .field.span5
+              = label_tag :report_name, "Name"
+              = text_field_tag :report_name
+          %table.table.table-striped.table-condensed
+            %thead
+              %tr
+                %th Name
+                %th Description
+                %th Created At
+            %tbody
+              - @content.annotation_reports.each do |ar|
+                %tr
+                  %td= ar.name
+                  %td= ar.description
+                  %td= ar.created_at
     .form-actions
       = submit_tag nil, class: "btn btn-primary"
       = link_to "Cancel", :back, class: "btn"
+
+.modal.hide.fade#annotations
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Annotation Report
+  #annotation_form
+  .modal-body
+    Loading annotations...
+
+.baloon{style: "display: none;"}

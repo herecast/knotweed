@@ -1,0 +1,25 @@
+// Place all the styles related to the admin/annotation_reports controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+#annotation_form {
+  position: relative;
+  padding: 15px;
+  max-height:200px;
+  overflow-y:auto;
+
+  .actions { 
+    a {
+      margin-left: 0;
+    }
+  }
+
+  border-bottom: 1px solid #eee;
+
+}
+.t_underline.reviewed {
+  border: 2px dotted black;
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box; 
+}

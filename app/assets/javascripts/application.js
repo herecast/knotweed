@@ -39,3 +39,7 @@
 //= require jquery.multi-select
 //= require jquery.quicksearch
 //= require turbolinks
+//= require admin/annotation_reports
+//= require admin/annotations
+//= require add.dsp
+//= require add.mind

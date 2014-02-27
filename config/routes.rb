@@ -27,6 +27,11 @@ Knotweed::Application.routes.draw do
 
     resources :data_contexts
 
+    match 'annotation_reports/create/:content_id', to: "annotation_reports#create", as: :create_annotation_report
+    match 'annotation_reports/:annotation_report_id/annotations/:annotation_id/edit', to: "annotations#edit", as: :edit_annotation_report
+
+    match 'annotations/:id/accept(/:accepted)' => "annotations#accept_annotation", as: :accept_annotation
+
     match 'contacts/new(/:model(/:id))', to: "contacts#new", as: :new_contact
 
     match 'publish_jobs/contents_count' => "publish_jobs#contents_count", as: :contents_count

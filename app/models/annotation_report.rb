@@ -4,4 +4,6 @@ class AnnotationReport < ActiveRecord::Base
   has_many :annotations
 
   attr_accessible :content_id, :name, :description
+
+  default_scope order('created_at DESC')
 end
