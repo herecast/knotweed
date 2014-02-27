@@ -16,8 +16,15 @@ class Annotation < ActiveRecord::Base
     end
   end
 
+  def cached_http_get(url, params)
+    Rails.cache.fetch([url, params], :expires => 1.hour) do
+      response = HTTParty.get(url, params)
+      {:code => response.code, :body => response.body}
+    end
+  end
+
   def edges
-    
+
     edges = nil
 
     if lookup_class
@@ -41,11 +48,11 @@ class Annotation < ActiveRecord::Base
 
       options = { :headers => { "Accept" => "application/sparql-results+json" } }
 
-      response = HTTParty.get(Figaro.env.SESAME_RDF_ENDPOINT + "/repositories/subtext?query=#{query}&queryLn=sparql", options)
+      response = self.cached_http_get(Figaro.env.SESAME_RDF_ENDPOINT + "/repositories/subtext?query=#{query}&queryLn=sparql", options)
 
-      if response.code == 200
-        response.body
-        result = JSON.parse(response.body)
+      if response[:code] == 200
+        response[:body]
+        result = JSON.parse(response[:body])
         edges = result["results"]["bindings"]
       end
 
