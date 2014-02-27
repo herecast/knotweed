@@ -23,3 +23,8 @@
   -moz-box-sizing: border-box;    /* Firefox, other Gecko */
   box-sizing: border-box; 
 }
+
+.modal#annotations {
+  width: 80%;
+  margin-left: -40%;
+}
