@@ -53,7 +53,7 @@ class Admin::OntotextController
       options[:headers] = request_headers
     end
 
-    response = self.get(Figaro.env.SESAME_RDF_ENDPOINT + "/repositories/subtext?query=#{query}&queryLn=sparql", options)
+    response = self.get(Figaro.env.sesame_rdf_endpoint + "/repositories/subtext?query=#{query}&queryLn=sparql", options)
     if response.code == 200
       response.body
     else

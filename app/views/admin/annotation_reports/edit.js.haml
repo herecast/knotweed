@@ -3,6 +3,4 @@ var reportId = #{@annotation_report.id};
 var annotationFormBasePath = "/admin/annotation_reports/" + reportId + "/annotations/";
 $(".modal-body").html(featuresHTML(annData["document-parts"]["feature-set"]) + '<div id="__bak" class="t_background"></div><div id="__tit" class="t_title"></div><div id="__sum" class="t_summary"></div><div id="__txt" class="t_text"></div><div id="__ann" class="t_annotations"></div>');
 UI.ANNOTATE(annData);
-
-$("#annotation_reports table tbody").prepend("<tr><td>#{@annotation_report.name}</td><td>#{@annotation_report.description}</td><td>#{@annotation_report.created_at}</td></tr>");
 annData = null;

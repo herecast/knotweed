@@ -9,3 +9,10 @@ jQuery ->
       data: {
         "name": $("input#report_name").val()
       }
+  $(document).on 'click', ".edit-annotation-report-link", ->
+    $.ajax $(this).data("actionUrl"),
+      dataType: "script"
+
+  $(".modal#annotations").on 'hidden', ->
+    $(this).find("#annotation_form").html("")
+    $(this).find(".modal-body").html("Loading annotations...")

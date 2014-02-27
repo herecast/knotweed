@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140227015149) do
+ActiveRecord::Schema.define(:version => 20140227200547) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -42,10 +42,11 @@ ActiveRecord::Schema.define(:version => 20140227015149) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
     t.string   "name"
     t.text     "description"
+    t.text     "json_response"
   end
 
   create_table "annotations", :force => true do |t|

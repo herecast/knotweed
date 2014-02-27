@@ -1,10 +1,9 @@
 class Admin::AnnotationReportsController < Admin::AdminController
 
   def create
-    @json_data = JSON.parse(Admin::OntotextController.get_annotations(params[:content_id]))["results"]["bindings"][0]["annotation"]["value"]
-    @annotation_report = AnnotationReport.create(content_id: params[:content_id], name: params[:name])
-    @hash_data = JSON.parse(@json_data)
-    @annotations = []
+    json_data = JSON.parse(Admin::OntotextController.get_annotations(params[:content_id]))["results"]["bindings"][0]["annotation"]["value"]
+    @annotation_report = AnnotationReport.create(content_id: params[:content_id], name: params[:name], json_response: json_data)
+    @hash_data = JSON.parse(json_data)
     @hash_data["annotation-sets"][0]["annotation"].each do |ant|
       new_ant = Annotation.new(annotation_report_id: @annotation_report.id, annotation_id: ant["id"], 
                                 startnode: ant["startnode"], endnode: ant["endnode"], annotation_type: ant["type"])
@@ -27,11 +26,18 @@ class Admin::AnnotationReportsController < Admin::AdminController
       end
 
       new_ant.save
-
+      @annotation_report.annotations << new_ant
     end
 
     respond_to do |format|
       format.js { render "create" }
+    end
+  end
+
+  def edit
+    @annotation_report = AnnotationReport.find(params[:id])
+    respond_to do |format|
+      format.js { render "edit" }
     end
   end
 
