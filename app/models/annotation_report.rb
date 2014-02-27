@@ -7,44 +7,47 @@ class AnnotationReport < ActiveRecord::Base
 
   def metrics
     report = {
-      "recognized" => 0,
-      "distinct_recognized" => 0,
-      "correct_recognized" => 0,
-      "distinct_correct_recognized" => 0,
-      "trusted" => 0,
-      "distinct_trusted" => 0,
-      "correct_trusted" => 0,
-      "distinct_correct_trusted" => 0
+      :recognized => 0,
+      :distinct_recognized => 0,
+      :correct_recognized => 0,
+      :distinct_correct_recognized => 0,
+      :trusted => 0,
+      :distinct_trusted => 0,
+      :correct_trusted => 0,
+      :distinct_correct_trusted => 0
     }
 
-    seen_annotations = Set.new
+    seen_recognized = Set.new
+    seen_trusted = Set.new
     annotations.each do |annotation|
-      seen = seen_annotations.include? annotation.annotated_string
       correct = annotation.status == "accepted"
-      seen_annotations.add annotation.annotated_string
       if annotation.lookup_class.blank?
         if !annotation.recognized_class.blank?
-            report["recognized"] += 1
+            seen = seen_recognized.include? annotation.annotated_string
+            seen_recognized.add annotation.annotated_string
+            report[:recognized] += 1
             if !seen
-              report["distinct_recognized"] += 1
+              report[:distinct_recognized] += 1
               if correct
-                report["distinct_correct_recognized"] += 1
+                report[:distinct_correct_recognized] += 1
               end
             end
             if correct
-              report["correct_recognized"] += 1
+              report[:correct_recognized] += 1
             end
         end
       else
-        report["trusted"] += 1
+        seen = seen_trusted.include? annotation.annotated_string
+        seen_trusted.add annotation.annotated_string
+        report[:trusted] += 1
         if !seen
-          report["distinct_trusted"] += 1
+          report[:distinct_trusted] += 1
           if correct
-            report["distinct_correct_trusted"] += 1
+            report[:distinct_correct_trusted] += 1
           end
         end
         if correct
-          report["correct_trusted"] += 1
+          report[:correct_trusted] += 1
         end
       end
     end 
