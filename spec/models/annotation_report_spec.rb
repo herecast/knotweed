@@ -161,6 +161,26 @@ describe AnnotationReport do
       )
       ar.metrics[:distinct_correct_trusted].should== 2
     end
+    it "should return lookup_edges == 0 when there are no annotations" do
+      ar = FactoryGirl.create(:annotation_report)
+      ar.metrics[:lookup_edges].should== 0
+    end
+    it "should return distinct_lookup_edges == 0 when there are no annotations" do
+      ar = FactoryGirl.create(:annotation_report)
+      ar.metrics[:distinct_lookup_edges].should== 0
+    end
+    it "should return same number of lookup edges as annotations with edges" do
+      ar = FactoryGirl.create(:annotation_report)
+      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
+      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
+      ar.metrics[:lookup_edges].should== ann_1.edges.length + ann_2.edges.length
+    end
+    it "should return same number of distinct lookup edges as distinct (by lookup url ) annotations with edges" do
+      ar = FactoryGirl.create(:annotation_report)
+      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
+      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
+      ar.metrics[:distinct_lookup_edges].should== ann_1.edges.length
+    end
 
   end
 end

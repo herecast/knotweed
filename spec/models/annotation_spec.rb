@@ -31,10 +31,9 @@ describe Annotation do
       ann.edges.should== []
     end
     it "should return an non-empty list when lookup class is found" do
-      ann = FactoryGirl.create(:annotation, lookup_class: "http://www.subtext.org/resource/Company_T.7685")
+      ann = FactoryGirl.create(:annotation, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
       ann.edges.length.should be >= 1
     end
-
   end
       
 end

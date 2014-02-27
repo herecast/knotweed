@@ -14,11 +14,14 @@ class AnnotationReport < ActiveRecord::Base
       :trusted => 0,
       :distinct_trusted => 0,
       :correct_trusted => 0,
-      :distinct_correct_trusted => 0
+      :distinct_correct_trusted => 0,
+      :lookup_edges => 0,
+      :distinct_lookup_edges => 0
     }
 
     seen_recognized = Set.new
     seen_trusted = Set.new
+    seen_lookups = Set.new
     annotations.each do |annotation|
       correct = annotation.status == "accepted"
       if annotation.lookup_class.blank?
@@ -49,6 +52,18 @@ class AnnotationReport < ActiveRecord::Base
         if correct
           report[:correct_trusted] += 1
         end
+
+        edges = annotation.edges
+        if !edges.nil?
+          report[:lookup_edges] += edges.length
+
+          seen_lookup = seen_lookups.include? annotation.lookup_class
+          seen_lookups.add annotation.lookup_class
+          if !seen_lookup
+            report[:distinct_lookup_edges] += edges.length
+          end
+        end
+
       end
     end 
 
