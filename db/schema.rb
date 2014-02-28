@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140227200547) do
+ActiveRecord::Schema.define(:version => 20140228161217) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -64,6 +64,7 @@ ActiveRecord::Schema.define(:version => 20140227200547) do
     t.string   "recognized_class"
     t.string   "annotated_string"
     t.string   "instance"
+    t.text     "edges"
   end
 
   create_table "channel_map", :force => true do |t|

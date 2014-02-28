@@ -2,11 +2,15 @@ require 'json'
 
 class Annotation < ActiveRecord::Base
 
+  serialize :edges, Array
+
   belongs_to :annotation_report
 
   attr_accessible :accepted, :annotation_id, :annotation_report_id, :startnode, :endnode, :annotation_type,
                   :is_generated, :lookup_class, :token_feature, :recognized_class, :annotated_string,
-                  :instance
+                  :instance, :edges
+
+  before_save :set_edges
 
   def status
     if accepted == true
@@ -25,9 +29,15 @@ class Annotation < ActiveRecord::Base
     end
   end
 
-  def edges
+  def set_edges
+    unless self.edges.present?
+      self.edges = self.find_edges
+    end
+  end
 
-    edges = nil
+  def find_edges
+
+    found_edges = nil
 
     if lookup_class
       query = CGI::escape "
@@ -56,12 +66,12 @@ class Annotation < ActiveRecord::Base
       if response[:code] == 200
         response[:body]
         result = JSON.parse(response[:body])
-        edges = result["results"]["bindings"]
+        found_edges = result["results"]["bindings"]
       end
 
     end
 
-    edges
+    found_edges
 
   end
 
