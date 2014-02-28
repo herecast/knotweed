@@ -105,6 +105,7 @@ class AnnotationReport < ActiveRecord::Base
 
     reports = self.where( content_id: content_id )
     CSV.generate do |csv|
+
       csv << [
         "Name",
         "Date",
@@ -121,6 +122,27 @@ class AnnotationReport < ActiveRecord::Base
         "Correct Additional Edges",
         "Distinct Correct Additional Edges"
       ]
+
+      reports.each { |report| 
+        metrics = report.metrics
+        csv << [
+          report.name,
+          report.created_at,
+          metrics[:recognized],
+          metrics[:distinct_recognized],
+          metrics[:correct_recognized],
+          metrics[:distinct_correct_recognized],
+          metrics[:trusted],
+          metrics[:distinct_trusted],
+          metrics[:correct_trusted],
+          metrics[:distinct_correct_trusted],
+          metrics[:lookup_edges],
+          metrics[:distinct_lookup_edges],
+          metrics[:correct_lookup_edges],
+          metrics[:distinct_correct_lookup_edges]
+        ]
+      }
+
     end
 
   end
