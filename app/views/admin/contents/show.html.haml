@@ -82,16 +82,31 @@
               %table.table.table-striped.table-condensed
                 %thead
                   %tr
+                    %th 
+                    %th 
+                    %th.metric{ colspan: 2} Recognized
+                    %th.metric{ colspan: 2} Lookups
+                    %th.metric Additional Edges
+                  %tr
                     %th Name
-                    %th Description
                     %th Created At
+                    %th.metric Total
+                    %th.metric Correct
+                    %th.metric Total
+                    %th.metric Correct
+                    %th.metric Total
                 %tbody
                   - @content.annotation_reports.each do |ar|
+                    - report = ar.metrics
                     %tr
                       -#%td= link_to ar.name, "#", class: "edit-annotation-report-link", data: { toggle: "modal", target: "#annotations", action_url: edit_admin_annotation_report_path(ar) }
                       %td= ar.name
-                      %td= ar.description
-                      %td= ar.created_at
+                      %td= ar.created_at.strftime("%m/%d/%Y %I:%M %P")
+                      %td.metric= report[:recognized]
+                      %td.metric= report[:correct_recognized]
+                      %td.metric= report[:trusted]
+                      %td.metric= report[:correct_trusted]
+                      %td.metric= report[:lookup_edges]
 - if @content.published == true
   .modal.hide.fade#annotations
     .modal-header
