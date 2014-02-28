@@ -20,12 +20,18 @@ class AnnotationReport < ActiveRecord::Base
       :correct_trusted => 0,
       :distinct_correct_trusted => 0,
       :lookup_edges => 0,
-      :distinct_lookup_edges => 0
+      :distinct_lookup_edges => 0,
+      :correct_lookup_edges => 0,
+      :distinct_correct_lookup_edges => 0
     }
 
     seen_recognized = Set.new
+    seen_correct_recognized = Set.new
     seen_trusted = Set.new
-    seen_lookups = Set.new
+    seen_correct_trusted = Set.new
+    seen_instances = Set.new
+    seen_correct_instances = Set.new
+
     annotations.each do |annotation|
       correct = annotation.status == "accepted"
       if annotation.lookup_class.blank?
@@ -35,12 +41,14 @@ class AnnotationReport < ActiveRecord::Base
             report[:recognized] += 1
             if !seen
               report[:distinct_recognized] += 1
-              if correct
-                report[:distinct_correct_recognized] += 1
-              end
             end
             if correct
+              seen = seen_correct_recognized.include? annotation.annotated_string
+              seen_correct_recognized.add annotation.annotated_string
               report[:correct_recognized] += 1
+              if !seen
+                report[:distinct_correct_recognized] += 1
+              end
             end
         end
       else
@@ -49,25 +57,33 @@ class AnnotationReport < ActiveRecord::Base
         report[:trusted] += 1
         if !seen
           report[:distinct_trusted] += 1
-          if correct
+        end
+        if correct
+          seen = seen_correct_trusted.include? annotation.annotated_string
+          seen_correct_trusted.add annotation.annotated_string
+          report[:correct_trusted] += 1
+          if !seen
             report[:distinct_correct_trusted] += 1
           end
         end
-        if correct
-          report[:correct_trusted] += 1
-        end
-
       end
 
-      if annotation.instance.present?
-        edges = annotation.edges
-        if !edges.nil?
-          report[:lookup_edges] += edges.length
+      edges = annotation.edges
+      if edges
 
-          seen_lookup = seen_lookups.include? annotation.instance
-          seen_lookups.add annotation.instance
-          if !seen_lookup
-            report[:distinct_lookup_edges] += edges.length
+        edges = AnnotationReport.filter_edges(edges)
+        seen = seen_instances.include? annotation.instance
+        seen_instances.add annotation.instance
+        report[:lookup_edges] += edges.length
+        if !seen
+          report[:distinct_lookup_edges] += edges.length
+        end
+        if correct
+          seen = seen_correct_instances.include? annotation.instance
+          seen_correct_instances.add annotation.instance
+          report[:correct_lookup_edges] += edges.length
+          if !seen
+            report[:distinct_correct_lookup_edges] += edges.length
           end
         end
       end
@@ -77,11 +93,33 @@ class AnnotationReport < ActiveRecord::Base
     report
   end
 
+  def self.filter_edges(edges)
+    edges.select { |e|
+      edge_type = Annotation.parse_uri_for_class e["predicate"]["value"]
+      edge_type != "label" && edge_type != "mainLabel"
+    }
+  end
+
   def self.csv_report(content_id)
 
     reports = self.where( content_id: content_id )
     CSV.generate do |csv|
-      csv << ["Name"]
+      csv << [
+        "Name",
+        "Date",
+        "Total Recognized",
+        "Distinct Recognized",
+        "Correct Recognized",
+        "Distinct Correct Recognized",
+        "Total Lookups",
+        "Distinct Lookups",
+        "Correct Lookups",
+        "Distinct Correct Lookups",
+        "Total Additional Edges",
+        "Distinct Additional Edges",
+        "Correct Additional Edges",
+        "Distinct Correct Additional Edges"
+      ]
     end
 
   end
