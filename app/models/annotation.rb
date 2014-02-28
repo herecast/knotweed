@@ -57,6 +57,10 @@ class Annotation < ActiveRecord::Base
         response[:body]
         result = JSON.parse(response[:body])
         edges = result["results"]["bindings"]
+        edges = edges.select { |e|
+          edge_type = Annotation.parse_uri_for_class e["predicate"]["value"]
+          edge_type != "label" && edge_type != "mainLabel"
+        }
       end
 
     end
