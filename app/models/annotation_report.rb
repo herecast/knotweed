@@ -1,3 +1,5 @@
+require 'csv'
+
 class AnnotationReport < ActiveRecord::Base
 
   belongs_to :content
@@ -55,20 +57,33 @@ class AnnotationReport < ActiveRecord::Base
           report[:correct_trusted] += 1
         end
 
+      end
+
+      if annotation.instance.present?
         edges = annotation.edges
         if !edges.nil?
           report[:lookup_edges] += edges.length
 
-          seen_lookup = seen_lookups.include? annotation.lookup_class
-          seen_lookups.add annotation.lookup_class
+          seen_lookup = seen_lookups.include? annotation.instance
+          seen_lookups.add annotation.instance
           if !seen_lookup
             report[:distinct_lookup_edges] += edges.length
           end
         end
-
       end
+
     end 
 
     report
   end
+
+  def self.csv_report(content_id)
+
+    reports = self.where( content_id: content_id )
+    CSV.generate do |csv|
+      csv << ["Name"]
+    end
+
+  end
+
 end

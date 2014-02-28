@@ -5,7 +5,7 @@
   .annotation-info{ class: @annotation.lookup_class ? "span2" : "span3" }
     %h5 Label
     %span.annotation-val #{@annotation.annotated_string}
-  - if @annotation.lookup_class
+  - if @annotation.lookup_class.present?
     .annotation-info.span2
       %h5 Lookup Type
       %span.annotation-val #{@annotation.parsed_lookup_class}

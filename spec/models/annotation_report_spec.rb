@@ -171,16 +171,68 @@ describe AnnotationReport do
     end
     it "should return same number of lookup edges as annotations with edges" do
       ar = FactoryGirl.create(:annotation_report)
-      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
-      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
+      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, instance: "http://www.subtext.org/resource/Company_T.7687")
+      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, instance: "http://www.subtext.org/resource/Company_T.7687")
       ar.metrics[:lookup_edges].should== ann_1.edges.length + ann_2.edges.length
     end
     it "should return same number of distinct lookup edges as distinct (by lookup url ) annotations with edges" do
       ar = FactoryGirl.create(:annotation_report)
-      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
-      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
+      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, instance: "http://www.subtext.org/resource/Company_T.7687")
+      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, instance: "http://www.subtext.org/resource/Company_T.7687")
       ar.metrics[:distinct_lookup_edges].should== ann_1.edges.length
     end
 
   end
+
+  describe "csv_report" do
+    it "should contain a 'Name' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Name")
+    end
+    it "should contain a 'Date' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Date")
+    end
+    it "should contain a 'Total Recognized' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Total Recognized")
+    end
+    it "should contain a 'Distinct Recognized' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Distinct Recognized")
+    end
+    it "should contain a 'Correct Recognized' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Correct Recognized")
+    end
+    it "should contain a 'Distinct Correct Recognized' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Distinct Correct Recognized")
+    end
+    it "should contain a 'Total Lookups' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Total Lookups")
+    end
+    it "should contain a 'Distinct Lookups' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Distinct Lookups")
+    end
+    it "should contain a 'Correct Lookups' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Correct Lookups")
+    end
+    it "should contain a 'Distinct Correct Lookups' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Distinct Correct Lookups")
+    end
+    it "should contain a 'Additional Edges' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Additional Edges")
+    end
+    it "should contain a 'Distinct Additional Edges' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Additional Edges")
+    end
+  end
+
 end

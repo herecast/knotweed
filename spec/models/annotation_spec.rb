@@ -18,20 +18,21 @@ describe Annotation do
   end
 
   describe "edges" do
-    it "should return nil when it has no lookup_class" do
+    it "should return [] when it has no lookup_class" do
       ann = FactoryGirl.create(:annotation, lookup_class: nil)
-      ann.edges.should== nil
-    end
-    it "should return an nil when lookup class is bad" do
-      ann = FactoryGirl.create(:annotation, lookup_class: "bad_lookup_class")
-      ann.edges.should== nil
-    end
-    it "should return an empty list when lookup class is not found" do
-      ann = FactoryGirl.create(:annotation, lookup_class: "http://www.subtext.org/resource/Company_T.12345")
       ann.edges.should== []
     end
-    it "should return an non-empty list when lookup class is found" do
-      ann = FactoryGirl.create(:annotation, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
+    it "should return [] when instance is bad" do
+      ann = FactoryGirl.create(:annotation, instance: "bad_lookup_class")
+      ann.edges.should== []
+    end
+    it "should return an empty list when instance is not found" do
+      ann = FactoryGirl.create(:annotation, instance: "http://www.subtext.org/resource/Company_T.12345")
+      ann.edges.should== []
+    end
+    it "should return an non-empty list when instance is found" do
+      ann = FactoryGirl.create(:annotation, instance: "http://www.subtext.org/resource/Company_T.7687",
+                                lookup_class: "http://www.subtext.org/ontology/Company")
       ann.edges.length.should be >= 1
     end
   end
