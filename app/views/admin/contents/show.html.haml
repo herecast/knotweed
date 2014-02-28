@@ -87,6 +87,7 @@
                     %th.metric{ colspan: 2} Recognized
                     %th.metric{ colspan: 2} Lookups
                     %th.metric Additional Edges
+                    %th
                   %tr
                     %th Name
                     %th Created At
@@ -95,6 +96,7 @@
                     %th.metric Total
                     %th.metric Correct
                     %th.metric Total
+                    %th &nbsp;
                 %tbody
                   - @content.annotation_reports.each do |ar|
                     = render partial: "admin/annotation_reports/partials/table_row", locals: { ar: ar}
