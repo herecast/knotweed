@@ -185,9 +185,53 @@ describe AnnotationReport do
   end
 
   describe "csv_report" do
-    it "should return contain a 'Name' header" do
-      report = AnnotationReport.csv_report "ContentId12345"
+    it "should contain a 'Name' header" do
+      report = AnnotationReport.csv_report 12345
       report.should include("Name")
+    end
+    it "should contain a 'Date' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Date")
+    end
+    it "should contain a 'Total Recognized' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Total Recognized")
+    end
+    it "should contain a 'Distinct Recognized' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Distinct Recognized")
+    end
+    it "should contain a 'Correct Recognized' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Correct Recognized")
+    end
+    it "should contain a 'Distinct Correct Recognized' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Distinct Correct Recognized")
+    end
+    it "should contain a 'Total Lookups' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Total Lookups")
+    end
+    it "should contain a 'Distinct Lookups' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Distinct Lookups")
+    end
+    it "should contain a 'Correct Lookups' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Correct Lookups")
+    end
+    it "should contain a 'Distinct Correct Lookups' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Distinct Correct Lookups")
+    end
+    it "should contain a 'Additional Edges' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Additional Edges")
+    end
+    it "should contain a 'Distinct Additional Edges' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Additional Edges")
     end
   end
 
