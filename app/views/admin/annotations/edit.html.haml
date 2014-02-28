@@ -15,7 +15,7 @@
     .annotation-info.span3
       %h5 Immediate Edges
       %dl.annotation-val
-        - @annotation.closest_edges.each do |e|
+        - @annotation.closest_edges_labels.each do |e|
           %dt= e[0]
           %dd= e[1]
 

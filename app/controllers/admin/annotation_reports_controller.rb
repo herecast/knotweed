@@ -41,4 +41,9 @@ class Admin::AnnotationReportsController < Admin::AdminController
     end
   end
 
+  def table_row
+    @annotation_report = AnnotationReport.find(params[:id])
+    render partial: "admin/annotation_reports/partials/table_row", layout: false, locals: {ar: @annotation_report}
+  end
+
 end

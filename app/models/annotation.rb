@@ -88,7 +88,7 @@ class Annotation < ActiveRecord::Base
   end
     
 
-  def closest_edges
+  def closest_edges_labels
     closest = []
     if lookup_class
       edges.each do |e|
