@@ -169,17 +169,29 @@ describe AnnotationReport do
       ar = FactoryGirl.create(:annotation_report)
       ar.metrics[:distinct_lookup_edges].should== 0
     end
+    it "should return correct_lookup_edges == 0 when there are no annotations" do
+      ar = FactoryGirl.create(:annotation_report)
+      ar.metrics[:correct_lookup_edges].should== 0
+    end
+    it "should return distinct_correct_lookup_edges == 0 when there are no annotations" do
+      ar = FactoryGirl.create(:annotation_report)
+      ar.metrics[:distinct_correct_lookup_edges].should== 0
+    end
     it "should return same number of lookup edges as annotations with edges" do
       ar = FactoryGirl.create(:annotation_report)
-      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, instance: "http://www.subtext.org/resource/Company_T.7687")
-      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, instance: "http://www.subtext.org/resource/Company_T.7687")
-      ar.metrics[:lookup_edges].should== ann_1.edges.length + ann_2.edges.length
+      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "LookupClass1", instance: "http://www.subtext.org/resource/Company_T.7687")
+      edges_1 = AnnotationReport.filter_edges(ann_1.edges)
+      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "LookupClass2", instance: "http://www.subtext.org/resource/Company_T.7687")
+      edges_2 = AnnotationReport.filter_edges(ann_2.edges)
+      ar.metrics[:lookup_edges].should== edges_1.length + edges_2.length
     end
     it "should return same number of distinct lookup edges as distinct (by lookup url ) annotations with edges" do
       ar = FactoryGirl.create(:annotation_report)
-      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, instance: "http://www.subtext.org/resource/Company_T.7687")
-      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, instance: "http://www.subtext.org/resource/Company_T.7687")
-      ar.metrics[:distinct_lookup_edges].should== ann_1.edges.length
+      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "LookupClass1", instance: "http://www.subtext.org/resource/Company_T.7687")
+      edges_1 = AnnotationReport.filter_edges(ann_1.edges)
+      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "LookupClass2", instance: "http://www.subtext.org/resource/Company_T.7687")
+      edges_2 = AnnotationReport.filter_edges(ann_2.edges)
+      ar.metrics[:distinct_lookup_edges].should== edges_1.length
     end
 
   end
@@ -225,14 +237,24 @@ describe AnnotationReport do
       report = AnnotationReport.csv_report 12345
       report.should include("Distinct Correct Lookups")
     end
-    it "should contain a 'Additional Edges' header" do
+    it "should contain a 'Total Additional Edges' header" do
       report = AnnotationReport.csv_report 12345
-      report.should include("Additional Edges")
+      report.should include("Total Additional Edges")
     end
     it "should contain a 'Distinct Additional Edges' header" do
       report = AnnotationReport.csv_report 12345
-      report.should include("Additional Edges")
+      report.should include("Distinct Additional Edges")
     end
+    it "should contain a 'Correct Additional Edges' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Correct Additional Edges")
+    end
+    it "should contain a 'Distinct Correct Additional Edges' header" do
+      report = AnnotationReport.csv_report 12345
+      report.should include("Distinct Correct Additional Edges")
+    end
+
+
   end
 
 end

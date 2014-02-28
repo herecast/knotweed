@@ -1,21 +1,21 @@
 #annotation_details
-  .annotation-info{ class: @annotation.lookup_class ? "span2" : "span3" }
-    %h3 Label
-    %span.annotation-val #{@annotation.annotated_string}
   .annotation-info{ class: @annotation.lookup_class ? "span1" : "span3" }
-    %h3 Type
+    %h5 Type
     %span.annotation-val #{@annotation.annotation_type}
+  .annotation-info{ class: @annotation.lookup_class ? "span2" : "span3" }
+    %h5 Label
+    %span.annotation-val #{@annotation.annotated_string}
   - if @annotation.lookup_class
     .annotation-info.span2
-      %h3 Lookup Type
+      %h5 Lookup Type
       %span.annotation-val #{@annotation.parsed_lookup_class}
     .annotation-info.span2
-      %h3 Lookup 
+      %h5 Lookup 
       %span.annotation-val #{@annotation.lookup_label}
     .annotation-info.span3
-      %h3 Immediate Edges
+      %h5 Immediate Edges
       %dl.annotation-val
-        - @annotation.closest_edges.each do |e|
+        - @annotation.closest_edges_labels.each do |e|
           %dt= e[0]
           %dd= e[1]
 
