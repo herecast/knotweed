@@ -2,6 +2,7 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
+
 jQuery ->
   $(document).on 'change', "#annotation_form select#accepted", ->
     $.ajax $(this).data("actionUrl") + "/" + $(this).val(),

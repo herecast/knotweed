@@ -3,4 +3,13 @@ $("#annotation_form").hide();
 
 -# find the underline corresponding to the submitted annotation
 -# and give it the "reviewed" class
+-# if for some reason accepted was set to nil, remove class reviewed
+if ("#{@annotation.accepted}" != "") {
 $(".t_underline.#{@annotation.annotation_id}").addClass("reviewed");
+} else {
+$(".t_underline.#{@annotation.annotation_id}").removeClass("reviewed");
+}
+
+total = $("#__ann").children().length;
+reviewed = $("#__ann").children(".reviewed").length;
+$("#num-reviewed").html(reviewed + " of " + total + " reviewed");

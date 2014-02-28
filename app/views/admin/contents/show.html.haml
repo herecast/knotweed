@@ -101,7 +101,8 @@
 - if @content.published == true
   .modal.hide.fade#annotations
     .modal-header
-      %a.pull-right.btn.btn-primary{ href: "#", data: { dismiss: "modal" } } Finish
+      %a.pull-right.btn.btn-primary.span2{ href: "#", data: { dismiss: "modal" } } Finish
+      %span.pull-right#num-reviewed.span2
       %h3#annotation_report_name
     #annotation_form
     .modal-body

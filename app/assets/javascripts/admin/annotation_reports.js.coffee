@@ -10,6 +10,7 @@ jQuery ->
         "name": $("input#report_name").val()
       }
     $("input#report_name").val("")
+
   $(document).on 'click', ".edit-annotation-report-link", ->
     $.ajax $(this).data("actionUrl"),
       dataType: "script"
