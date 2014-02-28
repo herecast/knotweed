@@ -40,7 +40,8 @@ class Annotation < ActiveRecord::Base
 
       SELECT * 
       WHERE { 
-        <#{lookup_class}>  ?predicate ?object .
+        <#{instance}>  ?predicate ?object .
+        OPTIONAL { ?object <http://www.w3.org/2000/01/rdf-schema#label> ?label }
 
         FILTER (
           ?predicate != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> 
@@ -62,6 +63,50 @@ class Annotation < ActiveRecord::Base
 
     edges
 
+  end
+
+  def lookup_label
+    if lookup_class
+      label = nil
+      edges.each do |e|
+        if e["predicate"]["value"] == "http://www.w3.org/2000/01/rdf-schema#label"
+          label = e["object"]["value"]
+        end
+      end
+      label
+    else
+      false
+    end
+  end
+
+  def self.parse_uri_for_class(uri)
+    uri.split("/")[-1].split("#")[-1]
+  end
+
+  def parsed_lookup_class
+    lookup_class.present? ? Annotation.parse_uri_for_class(lookup_class) : nil
+  end
+    
+
+  def closest_edges
+    closest = []
+    if lookup_class
+      edges.each do |e|
+        # skip label
+        unless e["predicate"]["value"] == "http://www.w3.org/2000/01/rdf-schema#label"
+          if e["label"]
+            object_label = e["label"]["value"]
+          else
+            object_label = e["object"]["value"]
+          end
+          predicate = Annotation.parse_uri_for_class(e["predicate"]["value"])
+          closest << [predicate, object_label]
+        end
+      end
+      closest
+    else
+      false
+    end
   end
 
 end

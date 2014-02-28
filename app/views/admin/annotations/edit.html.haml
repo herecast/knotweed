@@ -1,11 +1,25 @@
 #annotation_details
-  .label.span3
-    %h3 Label: 
-    %span #{@annotation.annotated_string}
-  .type.span3
-    %h3 Type:
-    %span #{@annotation.annotation_type}
-  .actions.span3
+  .annotation-info{ class: @annotation.lookup_class ? "span2" : "span3" }
+    %h3 Label
+    %span.annotation-val #{@annotation.annotated_string}
+  .annotation-info{ class: @annotation.lookup_class ? "span1" : "span3" }
+    %h3 Type
+    %span.annotation-val #{@annotation.annotation_type}
+  - if @annotation.lookup_class
+    .annotation-info.span2
+      %h3 Lookup Type
+      %span.annotation-val #{@annotation.parsed_lookup_class}
+    .annotation-info.span2
+      %h3 Lookup 
+      %span.annotation-val #{@annotation.lookup_label}
+    .annotation-info.span3
+      %h3 Immediate Edges
+      %dl.annotation-val
+        - @annotation.closest_edges.each do |e|
+          %dt= e[0]
+          %dd= e[1]
+
+  .actions.span2
     = label_tag :accepted, "Status"
     = select_tag :accepted, options_for_select([nil, ["Accepted", true], ["Rejected", false]], @annotation.accepted),
-      { data: { action_url: admin_accept_annotation_path(@annotation.id) } }
+      { data: { action_url: admin_accept_annotation_path(@annotation.id) }, class: "span12" }

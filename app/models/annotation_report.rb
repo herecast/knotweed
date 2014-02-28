@@ -1,7 +1,7 @@
 class AnnotationReport < ActiveRecord::Base
 
   belongs_to :content
-  has_many :annotations
+  has_many :annotations, dependent: :destroy
 
   attr_accessible :content_id, :name, :description, :json_response
   
