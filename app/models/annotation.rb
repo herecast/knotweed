@@ -29,7 +29,7 @@ class Annotation < ActiveRecord::Base
 
     edges = nil
 
-    if lookup_class
+    if instance 
       query = CGI::escape "
       PREFIX sbtxo:<http://www.subtext.org/ontology/>
       PREFIX sbtxr:<http://www.subtext.org/resource/>

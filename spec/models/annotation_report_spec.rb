@@ -171,16 +171,24 @@ describe AnnotationReport do
     end
     it "should return same number of lookup edges as annotations with edges" do
       ar = FactoryGirl.create(:annotation_report)
-      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
-      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
+      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, instance: "http://www.subtext.org/resource/Company_T.7687")
+      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, instance: "http://www.subtext.org/resource/Company_T.7687")
       ar.metrics[:lookup_edges].should== ann_1.edges.length + ann_2.edges.length
     end
     it "should return same number of distinct lookup edges as distinct (by lookup url ) annotations with edges" do
       ar = FactoryGirl.create(:annotation_report)
-      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
-      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "http://www.subtext.org/resource/Company_T.7687")
+      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, instance: "http://www.subtext.org/resource/Company_T.7687")
+      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, instance: "http://www.subtext.org/resource/Company_T.7687")
       ar.metrics[:distinct_lookup_edges].should== ann_1.edges.length
     end
 
   end
+
+  describe "csv_report" do
+    it "should return contain a 'Name' header" do
+      report = AnnotationReport.csv_report "ContentId12345"
+      report.should include("Name")
+    end
+  end
+
 end
