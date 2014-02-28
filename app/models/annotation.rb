@@ -39,7 +39,7 @@ class Annotation < ActiveRecord::Base
 
     found_edges = nil
 
-    if lookup_class
+    if lookup_class.present?
       query = CGI::escape "
       PREFIX sbtxo:<http://www.subtext.org/ontology/>
       PREFIX sbtxr:<http://www.subtext.org/resource/>
@@ -68,7 +68,6 @@ class Annotation < ActiveRecord::Base
         result = JSON.parse(response[:body])
         found_edges = result["results"]["bindings"]
       end
-
     end
 
     found_edges
@@ -76,7 +75,7 @@ class Annotation < ActiveRecord::Base
   end
 
   def lookup_label
-    if lookup_class
+    if lookup_class.present?
       label = nil
       edges.each do |e|
         if e["predicate"]["value"] == "http://www.w3.org/2000/01/rdf-schema#label"

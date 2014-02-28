@@ -46,4 +46,11 @@ class Admin::AnnotationReportsController < Admin::AdminController
     render partial: "admin/annotation_reports/partials/table_row", layout: false, locals: {ar: @annotation_report}
   end
 
+  def destroy
+    @annotation_report = AnnotationReport.destroy(params[:id])
+    respond_to do |format|
+      format.js
+    end
+  end
+
 end

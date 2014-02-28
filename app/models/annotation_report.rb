@@ -86,7 +86,6 @@ class AnnotationReport < ActiveRecord::Base
             report[:distinct_correct_lookup_edges] += edges.length
           end
         end
-
       end
 
     end 
