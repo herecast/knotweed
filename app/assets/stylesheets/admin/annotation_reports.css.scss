@@ -27,4 +27,15 @@
 .modal#annotations {
   width: 80%;
   margin-left: -40%;
+
+  .modal-body {
+    .title {
+      padding-left: 15px;
+    }
+    .feature {
+      display: inline-block;
+    }
+  }
+
 }
+

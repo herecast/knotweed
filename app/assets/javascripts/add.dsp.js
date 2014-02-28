@@ -42,31 +42,24 @@ featuresHTML = function(features){
 
 	var _date='',
 		_source='',
-		_category='',
+    _title='',
 		_authors='';
 
 	for(var i=0; i<features.length; i++){
 		var f = featuresMapping( features[i] );
 		switch(f.NAME){
+      case 'TITLE':
+        _title = '<div class="title"><span class="labelTxt">' + f.NAME + ':</span> ' + f.VALUE + '</div>';
+        break;
 			case 'PUBDATE':
 				var _time = new Date(f.VALUE);
 				var _d = _time.getDate();
 				var _m = months[_time.getMonth()];
 				var _y = _time.getFullYear();
-				_date = '<div class="dateTxt">'+ _m +' '+ _d +', '+ _y +'</div>';
+				_date = '<div class="feature"><span class="labelTxt">' + f.NAME + ':</span> '+ _m +' '+ _d +', '+ _y +'</div>';
 				break;
 			case 'SOURCE':
 				_source = '<div class="feature"><span class="labelTxt">' + f.NAME + ':</span> ' + f.VALUE + '</div>';
-				break;
-			case 'CATEGORIES':
-				if (f.VALUE) {
-					_category = '<div class="feature"><span class="labelTxt">' + f.NAME + ':</span> ' + f.VALUE + '</div>';
-				}
-				break;
-			case 'CATEGORY':
-				if (f.VALUE) {
-					_category = '<div class="feature"><span class="labelTxt">' + f.NAME + ':</span> ' + f.VALUE + '</div>';
-				}
 				break;
 			case 'AUTHOR':
 				if (f.VALUE) {
@@ -82,7 +75,7 @@ featuresHTML = function(features){
 	}
 
 
-	return ('<fieldset class="extras_fieldset features_fieldset"><legend>Document Info</legend><div id="docHints">'+_date+'<br style="line-height:40px">'+_source+_category+_authors+'</div></fieldset>');
+	return ('<fieldset class="extras_fieldset features_fieldset"><div id="docHints">'+_title+_source+_date+_authors+'</div></fieldset>');
 };
 /*
 var typesFix = [
