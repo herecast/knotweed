@@ -10,6 +10,6 @@ $(".t_underline.#{@annotation.annotation_id}").addClass("reviewed");
 $(".t_underline.#{@annotation.annotation_id}").removeClass("reviewed");
 }
 
-total = $("#__ann").children().length;
-reviewed = $("#__ann").children(".reviewed").length;
+total = #{@annotation_report.annotations.count};
+reviewed = #{@annotation_report.annotations.where("accepted IS NOT NULL").count};
 $("#num-reviewed").html(reviewed + " of " + total + " reviewed");

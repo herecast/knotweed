@@ -10,6 +10,7 @@ class Admin::AnnotationsController < Admin::AdminController
   def accept_annotation
     @annotation = Annotation.find(params[:id])
     @annotation.update_attribute :accepted, params[:accepted]
+    @annotation_report = @annotation.annotation_report
   end
 
 end
