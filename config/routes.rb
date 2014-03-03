@@ -28,6 +28,7 @@ Knotweed::Application.routes.draw do
     resources :data_contexts
 
     match 'annotation_reports/create/:content_id', to: "annotation_reports#create", as: :create_annotation_report
+    match 'annotation_reports/export/:content_id', to: "annotation_reports#export", as: :export_annotation_reports
     match 'annotation_reports/:annotation_report_id/annotations/:annotation_id/edit', to: "annotations#edit", as: :edit_annotation_report
     resources :annotation_reports, only: [:edit, :destroy]
     get 'annotation_reports/:id/table_row' => 'annotation_reports#table_row', as: :annotation_report_table_row

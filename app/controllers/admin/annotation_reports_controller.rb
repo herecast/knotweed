@@ -53,4 +53,10 @@ class Admin::AnnotationReportsController < Admin::AdminController
     end
   end
 
+  def export
+    respond_to do |format|
+      format.csv { send_data AnnotationReport.csv_report(params[:content_id]) }
+    end
+  end
+
 end
