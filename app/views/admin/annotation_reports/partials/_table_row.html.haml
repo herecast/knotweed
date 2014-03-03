@@ -7,5 +7,5 @@
   %td.metric= report[:correct_recognized]
   %td.metric= report[:trusted]
   %td.metric= report[:correct_trusted]
-  %td.metric= report[:lookup_edges]
+  %td.metric= report[:correct_lookup_edges]
   %td= link_to "Delete", admin_annotation_report_path(ar), class: "btn btn-mini btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }
