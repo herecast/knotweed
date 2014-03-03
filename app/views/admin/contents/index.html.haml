@@ -13,8 +13,13 @@
       = search_form_for @search, url: admin_contents_path do |f|
         .controls.controls-row
           .field.span3
-            = f.label :id_eq, "ID"
-            = f.text_field :id_eq
+            = f.label :id_in, "ID"
+            -# format id_in val for display so it matches what's entered
+            - if session.has_key? :contents_search and session[:contents_search].present? and session[:contents_search].has_key? :id_in
+              - id_in_val = session[:contents_search][:id_in].join(',')
+            - else
+              - id_in_val = ""
+            = f.text_field :id_in, value: id_in_val
           .field.span3
             = f.label :source_id_in, "Publications"
             = f.collection_select :source_id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }

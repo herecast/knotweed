@@ -5,6 +5,9 @@ class Admin::ContentsController < Admin::AdminController
     if params[:reset]
       session[:contents_search] = nil
     elsif params[:q].present?
+      if params[:q][:id_in].present?
+        params[:q][:id_in] = params[:q][:id_in].split(',').map{ |s| s.strip }
+      end
       session[:contents_search] = params[:q]
     end
     
