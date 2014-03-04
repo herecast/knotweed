@@ -2,6 +2,8 @@ var UI={};
 var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 UI.colorizer;
 
+var documentIdentifier = "";
+
 cleanArrayFromDuplicates = function(arr){
 	var _new = [];
 	for(var e=0; e<arr.length; e++){
@@ -76,6 +78,11 @@ featuresHTML = function(features){
 	return ('<fieldset class="extras_fieldset features_fieldset"><div id="docHints">'+_title+_source+_date+_authors+'</div></fieldset>');
 };
 
+UI.SUBTEXT_ANNOTATION_REPORT = function(json) {
+  $(".modal-body").html(featuresHTML(json["document-parts"]["feature-set"]) + '<div id="__bak" class="t_background"></div><div id="__tit" class="t_title"></div><div id="__sum" class="t_summary"></div><div id="__txt" class="t_text"></div><div id="__ann" class="t_annotations"></div>');
+  UI.ANNOTATE(json);
+}
+
 UI.ANNOTATE=function(json) {
 	//////////////
 	// DEFAULTS //
@@ -83,7 +90,6 @@ UI.ANNOTATE=function(json) {
 	var MEMO = {
     optimization : true,								// OPTIMIZE -> GROUP TOGETHER ANNOTATIONS WITH SAME TYPE ON SAME OFFSET AND BUBBLE IDs
     errorMessage : debug,								// ERROR OUTPUT
-    viewAnnotation : UI.SEARCHTYPE.CALL,						// annotation details
     startAlpha : 50,									// FADED ANNOTATIONS (100 -> NO FADE)
     ant : [],											// list annotations
     bak : document.getElementById('__bak'),				// backgorund - text highlights
@@ -424,8 +430,6 @@ UI.ANNOTATE=function(json) {
 			_inst: _getFeatureSetInst(v["feature-set"])
 		}];
 
-    console.log(MEMO.ant);
-    console.log(MEMO.ant[_index]);
 		for (var i = 0; i < MEMO.ant[_index].innerRows; i++) {
 
 			MEMO.ant[_index].elm[i] = document.createElement('div');

@@ -2,9 +2,7 @@ annData = #{@annotation_report.json_response.html_safe};
 reportId = #{@annotation_report.id};
 annotationFormBasePath = "/admin/annotation_reports/" + reportId + "/annotations/";
 $("h3#annotation_report_name").html("Annotation Report: #{@annotation_report.name}");
-$(".modal-body").html(featuresHTML(annData["document-parts"]["feature-set"]) + '<div id="__bak" class="t_background"></div><div id="__tit" class="t_title"></div><div id="__sum" class="t_summary"></div><div id="__txt" class="t_text"></div><div id="__ann" class="t_annotations"></div>');
 
-
-UI.ANNOTATE(annData);
+UI.SUBTEXT_ANNOTATION_REPORT(annData);
 
 $("#num-reviewed").html("#{@annotation_report.annotations.where("accepted IS NOT NULL").count} of #{@annotation_report.annotations.count} reviewed");
