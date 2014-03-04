@@ -13,3 +13,16 @@ $(".t_underline.#{@annotation.annotation_id}").removeClass("reviewed");
 total = #{@annotation_report.annotations.count};
 reviewed = #{@annotation_report.annotations.where("accepted IS NOT NULL").count};
 $("#num-reviewed").html(reviewed + " of " + total + " reviewed");
+
+-# update annotation report row in table if it's there
+-# with any changed metrics
+metrics = #{@metrics.to_json.html_safe};
+
+console.log(metrics);
+
+$("tr#ar-row-#{@annotation_report.id} td").each(function() {
+if (metrics.hasOwnProperty(this.id)) {
+$(this).html(metrics[this.id]);
+}
+});
+

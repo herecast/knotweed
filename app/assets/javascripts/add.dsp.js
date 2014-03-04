@@ -80,7 +80,7 @@ featuresHTML = function(features){
 
 UI.SUBTEXT_ANNOTATION_REPORT = function(json) {
   $(".modal-body").html(featuresHTML(json["document-parts"]["feature-set"]) + '<div id="__bak" class="t_background"></div><div id="__tit" class="t_title"></div><div id="__sum" class="t_summary"></div><div id="__txt" class="t_text"></div><div id="__ann" class="t_annotations"></div>');
-  UI.ANNOTATE(json);
+  setTimeout(function() {UI.ANNOTATE(json);}, 500);
 }
 
 UI.ANNOTATE=function(json) {
