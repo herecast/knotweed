@@ -34,7 +34,8 @@ class AnnotationReport < ActiveRecord::Base
 
     annotations.each do |annotation|
       correct = annotation.status == "accepted"
-      if annotation.lookup_class.blank?
+      # if isGenerated, then it is NOT a lookup
+      if annotation.is_generated
         if !annotation.recognized_class.blank?
             seen = seen_recognized.include? annotation.annotated_string
             seen_recognized.add annotation.annotated_string

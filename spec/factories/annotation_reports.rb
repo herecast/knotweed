@@ -2,6 +2,6 @@
 
 FactoryGirl.define do
   factory :annotation_report do
-    content_id 1
+    content
   end
 end
