@@ -22,12 +22,12 @@ describe Annotation do
       ann.edges.should== []
     end
     it "should return an empty list when instance is not found" do
-      ann = FactoryGirl.create(:annotation, lookup_class: "Lookup1", instance: "http://www.subtext.org/resource/Company_T.12345")
+      ann = FactoryGirl.create(:lookup_annotation, instance: "http://www.subtext.org/resource/Company_T.12345")
       ann.set_edges
       ann.edges.should== []
     end
     it "should return an non-empty list when instance is found" do
-      ann = FactoryGirl.create(:annotation, lookup_class: "Lookup2", instance: "http://www.subtext.org/resource/Company_T.7687")
+      ann = FactoryGirl.create(:lookup_annotation, instance: "http://www.subtext.org/resource/Company_T.7687")
       ann.set_edges
       ann.edges.length.should be >= 1
     end

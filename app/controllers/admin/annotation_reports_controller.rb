@@ -22,6 +22,10 @@ class Admin::AnnotationReportsController < Admin::AdminController
           new_ant.lookup_class = val
         when "tokenFeature"
           new_ant.token_feature = val
+        when "isTrusted"
+          new_ant.is_trusted = val
+        when "rule"
+          new_ant.rule = val
         end
       end
 

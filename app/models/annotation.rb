@@ -8,7 +8,7 @@ class Annotation < ActiveRecord::Base
 
   attr_accessible :accepted, :annotation_id, :annotation_report_id, :startnode, :endnode, :annotation_type,
                   :is_generated, :lookup_class, :token_feature, :recognized_class, :annotated_string,
-                  :instance, :edges
+                  :instance, :edges, :is_trusted, :rule
 
   before_save :set_edges
 
@@ -39,7 +39,7 @@ class Annotation < ActiveRecord::Base
 
     found_edges = nil
 
-    if lookup_class.present?
+    if is_trusted
       query = CGI::escape "
       PREFIX sbtxo:<http://www.subtext.org/ontology/>
       PREFIX sbtxr:<http://www.subtext.org/resource/>
@@ -75,7 +75,7 @@ class Annotation < ActiveRecord::Base
   end
 
   def lookup_label
-    if lookup_class.present?
+    if edges
       label = nil
       edges.each do |e|
         if e["predicate"]["value"] == "http://www.w3.org/2000/01/rdf-schema#label"
@@ -84,7 +84,7 @@ class Annotation < ActiveRecord::Base
       end
       label
     else
-      false
+      "Lookup"
     end
   end
 
@@ -93,13 +93,13 @@ class Annotation < ActiveRecord::Base
   end
 
   def parsed_lookup_class
-    lookup_class.present? ? Annotation.parse_uri_for_class(lookup_class) : nil
+    lookup_class.present? ? Annotation.parse_uri_for_class(lookup_class) : "Lookup"
   end
     
 
   def closest_edges_labels
     closest = []
-    if lookup_class
+    if edges.present?
       edges.each do |e|
         # skip label
         unless e["predicate"]["value"] == "http://www.w3.org/2000/01/rdf-schema#label"

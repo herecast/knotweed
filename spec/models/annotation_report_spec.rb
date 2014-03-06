@@ -48,11 +48,9 @@ describe AnnotationReport do
     it "should return recognized == 0 when there is 1 trusted annotation" do
       ar = FactoryGirl.create(:annotation_report)
       FactoryGirl.create(
-        :annotation,
+        :lookup_annotation,
         annotation_report: ar,
-        recognized_class: "SomeNonemptyValue",
-        lookup_class: "LookupClassValue",
-        is_generated: false
+        recognized_class: "SomeNonemptyValue"
       )
       ar.metrics[:recognized].should== 0
     end
@@ -96,56 +94,56 @@ describe AnnotationReport do
     end
     it "should return trusted == 1 when there is 1 trusted annotation" do
       ar = FactoryGirl.create(:annotation_report)
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", is_generated: false)
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar)
       ar.metrics[:trusted].should== 1
     end
     it "should return trusted == 2 when there are 2 trusted annotations" do
       ar = FactoryGirl.create(:annotation_report)
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", is_generated: false)
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", is_generated: false)
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar)
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar)
       ar.metrics[:trusted].should== 2
     end
     it "should return distinct_trusted == 1 when are 2 indistinct trusted annotations" do
       ar = FactoryGirl.create(:annotation_report)
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", is_generated: false, annotated_string: "Some Text")
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", is_generated: false, annotated_string: "Some Text")
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar, annotated_string: "Some Text")
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar, annotated_string: "Some Text")
       ar.metrics[:distinct_trusted].should== 1
     end
     it "should return distinct_trusted == 2 when are 2 distinct trusted annotations" do
       ar = FactoryGirl.create(:annotation_report)
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", is_generated: false, annotated_string: "Some Text")
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", is_generated: false, annotated_string: "Some Other Text")
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar, annotated_string: "Some Text")
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar, annotated_string: "Some Other Text")
       ar.metrics[:distinct_trusted].should== 2
     end
     it "should return correct_trusted == 0 when there is 1 incorrect trusted annotation" do
       ar = FactoryGirl.create(:annotation_report)
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", accepted: false, is_generated: false)
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar, accepted: false)
       ar.metrics[:correct_trusted].should== 0
     end
     it "should return correct_trusted == 1 when there is 1 correct trusted annotation" do
       ar = FactoryGirl.create(:annotation_report)
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", accepted: true, is_generated: false)
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar, accepted: true)
       ar.metrics[:correct_trusted].should== 1
     end
     it "should return correct_trusted == 2 when there are 2 correct trusted annotations" do
       ar = FactoryGirl.create(:annotation_report)
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", accepted: true, is_generated: false)
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", accepted: true, is_generated: false)
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar, accepted: true)
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar, accepted: true)
       ar.metrics[:correct_trusted].should== 2
     end
     it "should return distinct_correct_trusted == 1 when there are 2 indistinct correct trusted annotations" do
       ar = FactoryGirl.create(:annotation_report)
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", accepted: true, annotated_string: "SomeText", is_generated: false)
-      FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "SomeLookupClass", accepted: true, annotated_string: "SomeText", is_generated: false)
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar, accepted: true, annotated_string: "SomeText")
+      FactoryGirl.create(:lookup_annotation, annotation_report: ar, accepted: true, annotated_string: "SomeText")
       ar.metrics[:distinct_correct_trusted].should== 1
     end
     it "should return distinct_correct_trusted == 2 when there are 2 distinct correct trusted annotations" do
       ar = FactoryGirl.create(:annotation_report)
       FactoryGirl.create(
-        :annotation, annotation_report: ar, lookup_class: "SomeLookupClass", accepted: true, annotated_string: "SomeText", is_generated: false
+        :lookup_annotation, annotation_report: ar, accepted: true, annotated_string: "SomeText"
       )
       FactoryGirl.create(
-        :annotation, annotation_report: ar, lookup_class: "SomeLookupClass", accepted: true, annotated_string: "SomeNewText", is_generated: false
+        :lookup_annotation, annotation_report: ar, accepted: true, annotated_string: "SomeNewText"
       )
       ar.metrics[:distinct_correct_trusted].should== 2
     end
@@ -155,10 +153,10 @@ describe AnnotationReport do
         :annotation, annotation_report: ar, recognized_class: "RC", accepted: true, annotated_string: "SomeText"
       )
       FactoryGirl.create(
-        :annotation, annotation_report: ar, lookup_class: "SomeLookupClass", accepted: true, annotated_string: "SomeText", is_generated: false
+        :lookup_annotation, annotation_report: ar, accepted: true, annotated_string: "SomeText"
       )
       FactoryGirl.create(
-        :annotation, annotation_report: ar, lookup_class: "SomeLookupClass", accepted: true, annotated_string: "SomeNewText", is_generated: false
+        :lookup_annotation, annotation_report: ar, accepted: true, annotated_string: "SomeNewText"
       )
       ar.metrics[:distinct_correct_trusted].should== 2
     end
@@ -180,17 +178,17 @@ describe AnnotationReport do
     end
     it "should return same number of lookup edges as annotations with edges" do
       ar = FactoryGirl.create(:annotation_report)
-      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "LookupClass1", instance: "http://www.subtext.org/resource/Company_T.7687", is_generated: false)
+      ann_1 = FactoryGirl.create(:lookup_annotation, annotation_report: ar, lookup_class: "LookupClass1", instance: "http://www.subtext.org/resource/Company_T.7687")
       edges_1 = AnnotationReport.filter_edges(ann_1.edges)
-      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "LookupClass2", instance: "http://www.subtext.org/resource/Company_T.7687", is_generated: false)
+      ann_2 = FactoryGirl.create(:lookup_annotation, annotation_report: ar, lookup_class: "LookupClass2", instance: "http://www.subtext.org/resource/Company_T.7687")
       edges_2 = AnnotationReport.filter_edges(ann_2.edges)
       ar.metrics[:lookup_edges].should== edges_1.length + edges_2.length
     end
     it "should return same number of distinct lookup edges as distinct (by lookup url ) annotations with edges" do
       ar = FactoryGirl.create(:annotation_report)
-      ann_1 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "LookupClass1", instance: "http://www.subtext.org/resource/Company_T.7687", is_generated: false)
+      ann_1 = FactoryGirl.create(:lookup_annotation, annotation_report: ar, lookup_class: "LookupClass1", instance: "http://www.subtext.org/resource/Company_T.7687")
       edges_1 = AnnotationReport.filter_edges(ann_1.edges)
-      ann_2 = FactoryGirl.create(:annotation, annotation_report: ar, lookup_class: "LookupClass2", instance: "http://www.subtext.org/resource/Company_T.7687", is_generated: false)
+      ann_2 = FactoryGirl.create(:lookup_annotation, annotation_report: ar, lookup_class: "LookupClass2", instance: "http://www.subtext.org/resource/Company_T.7687")
       edges_2 = AnnotationReport.filter_edges(ann_2.edges)
       ar.metrics[:distinct_lookup_edges].should== edges_1.length
     end
