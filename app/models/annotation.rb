@@ -61,11 +61,11 @@ class Annotation < ActiveRecord::Base
 
       options = { :headers => { "Accept" => "application/sparql-results+json" } }
 
-      response = self.cached_http_get(Figaro.env.sesame_rdf_endpoint + "?query=#{query}&queryLn=sparql", options)
+      # NOTE: can't cache this because we're iterating quickly with these reports
+      response = HTTParty.get(Figaro.env.sesame_rdf_endpoint + "?query=#{query}&queryLn=sparql", options)
 
-      if response[:code] == 200
-        response[:body]
-        result = JSON.parse(response[:body])
+      if response.code == 200
+        result = JSON.parse(response.body)
         found_edges = result["results"]["bindings"]
       end
     end
