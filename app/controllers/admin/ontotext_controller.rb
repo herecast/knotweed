@@ -1,6 +1,6 @@
 class Admin::OntotextController
   include HTTParty
-  base_uri 'http://tech.ontotext.com'
+  base_uri Figaro.env.ontotext_api_base_uri
   
   # set debug_output based on environment
   def self.set_debug_output
@@ -53,7 +53,7 @@ class Admin::OntotextController
       options[:headers] = request_headers
     end
 
-    response = self.get(Figaro.env.sesame_rdf_endpoint + "/repositories/subtext?query=#{query}&queryLn=sparql", options)
+    response = self.get(Figaro.env.sesame_rdf_endpoint + "?query=#{query}&queryLn=sparql", options)
     if response.code == 200
       response.body
     else

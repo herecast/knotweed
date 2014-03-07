@@ -61,7 +61,7 @@ class Annotation < ActiveRecord::Base
 
       options = { :headers => { "Accept" => "application/sparql-results+json" } }
 
-      response = self.cached_http_get(Figaro.env.SESAME_RDF_ENDPOINT + "/repositories/subtext?query=#{query}&queryLn=sparql", options)
+      response = self.cached_http_get(Figaro.env.sesame_rdf_endpoint + "?query=#{query}&queryLn=sparql", options)
 
       if response[:code] == 200
         response[:body]
