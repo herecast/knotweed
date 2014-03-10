@@ -1,7 +1,0 @@
-.span2.image{ id: "image_#{image.id}" }
-  = link_to image_tag(image.image.url), image.image.url if image.image?
-  .name= image.image_identifier
-  .actions
-    = link_to admin_image_path(image), :confirm => "Are you sure?", :method => :delete, remote: true, class: "btn btn-small btn-danger" do
-      remove
-      %i.icon-remove

@@ -241,7 +241,7 @@ class Content < ActiveRecord::Base
   def post_to_ontotext
     options = { :body => self.to_new_xml }
                 
-    response = Admin::OntotextController.post('/prototype/processDocument?persist=true', options)
+    response = OntotextController.post('/prototype/processDocument?persist=true', options)
     if response.body.include? document_uri
       return true
     else
@@ -251,7 +251,7 @@ class Content < ActiveRecord::Base
 
   def reannotate_at_ontotext
     options = { :id => document_uri }
-    response = Admin::OntotextController.post('/prototype/reprocessDocument', options)
+    response = OntotextController.post('/prototype/reprocessDocument', options)
     if response.code != 200
       post_to_ontotext
     else
@@ -387,7 +387,7 @@ class Content < ActiveRecord::Base
   end
 
   def rdf_to_gate
-    return Admin::OntotextController.rdf_to_gate(id)
+    return OntotextController.rdf_to_gate(id)
   end
 
 end

@@ -1,0 +1,15 @@
+= simple_form_for @import_job, html: { data: { id: @import_job.id }, class: "form form-horizontal edit_import_job" } do |f|
+  = f.error_notification
+  = f.input :name
+  = f.input :source_path
+  .control-group.boolean.optional.recurring
+    = label_tag "import_job_recurring", "Recurring?", { class: "boolean optional control-label" }
+    .controls
+      = check_box_tag "import_job_recurring"
+  = f.input :frequency, hint: "Repeat every x minutes", wrapper_html: { class: "frequency" }
+  = f.association :parser, collection: Parser.accessible_by(current_ability, :read), input_html: { class: "chosen-select span4" }
+  = f.association :organization, input_html: { class: "chosen-select span4", id: "organizations_select", data: { update_content_sets_url: update_content_sets_path } }
+  = f.association :content_set, collection: @content_sets, input_html: { class: "chosen-select span4", id: "content_sets_select" }
+  #params_fields
+  .form-actions
+    = f.submit class: "btn btn-primary"

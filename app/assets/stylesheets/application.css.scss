@@ -1,21 +1,16 @@
-@import 'admin';
-
-// front facing consumer stuff
-/*
 @import 'compass';
-@import 'ie';
-@import 'print';
-@import 'screen';
-@import 'bootstrap.min';
-@import 'style';
+@import 'chosen';
 @import 'contents';
 @import 'parsers';
-
-table a {
-  color: #3A87AD;
-}
-
-#main {
-  padding-top:80px;
-}
-*/
+@import 'flatty/theme-colors';
+@import 'flatty/bootstrap/bootstrap';
+@import 'flatty/bootstrap/bootstrap-responsive';
+@import 'flatty/plugins/plugins';
+@import 'flatty/jquery_ui/jquery_ui';
+@import 'flatty/dark-theme';
+@import 'multi-select';
+@import 'publications';
+@import 'organizations';
+@import 'jobs';
+@import 'add.dsp';
+@import 'annotation_reports';

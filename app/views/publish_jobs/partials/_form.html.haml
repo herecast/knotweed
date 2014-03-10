@@ -1,0 +1,42 @@
+= simple_form_for @publish_job do |f|
+  %fieldset
+    .span4
+      .lead
+        Publish Job Details
+    .span6.offset1
+      = f.error_notification
+      = f.input :name, input_html: { class: "input-block-level" }
+      = f.input :description, input_html: { class: "input-block-level", rows: 5}
+      = f.input :publish_method, collection: Content::PUBLISH_METHODS, label_method: "humanize", required: true
+      .control-group.boolean.optional.recurring
+        = label_tag "import_job_recurring", "Recurring?", { class: "boolean optional control-label" }
+        .controls
+          = check_box_tag "import_job_recurring"
+      = f.input :frequency, hint: "Repeat every x hours", wrapper_html: { class: "frequency" }
+  %hr.hr-normal
+  %fieldset#contents-query{ data: { contents_query_path: contents_count_path } }
+    .span4
+      .lead
+        %i.icon-search.text-contrast
+        Contents Filter
+        %h4 Currently matching:
+        %h4#number-of-contents
+      %small.muted
+        Select parameters to determine which contents will be published by this job.
+    .span6.offset1
+      #id-list
+        = label_tag "ids", "Content IDs (comma-separated list, e.g. '3,7,9')"
+        = text_field_tag "ids", @publish_job.query_params[:ids], class: "input-block-level"
+      #query-fields
+        = label_tag "source", "Source"
+        = select_tag "source_id", options_from_collection_for_select(Publication.accessible_by(current_ability, :read), "id", "name", @publish_job.query_params[:source_id]), { multiple: true, class: "select2 input-block-level", placeholder: "Select some options" }
+        = label_tag "from", "From"
+        = text_field_tag "from", @publish_job.query_params[:from], type: "date", class: "input-block-level"
+        = label_tag "to", "To"
+        = text_field_tag "to", @publish_job.query_params[:to], type: "date", class: "input-block-level"
+        = label_tag "import_location", "Location"
+        = select_tag :import_location_id, options_from_collection_for_select(ImportLocation.where(region_id: 1).accessible_by(current_ability, :read), "id", "name", @publish_job.query_params[:import_location_id]), { multiple: true, class: "select2 input-block-level", placeholder: "Select some options" }
+        = label_tag "published", "Already Published?"
+        = select_tag :published, options_for_select([false, true, "both"], @publish_job.query_params[:published])
+  .form-actions
+    = f.submit nil, class: "btn btn-primary"

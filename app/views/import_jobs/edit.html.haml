@@ -1,0 +1,8 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-pencil
+        Import Job ID #{@import_job.id} #{@import_job.name}
+    .box-content
+      = render partial: "import_jobs/partials/form"

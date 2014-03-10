@@ -1,0 +1,17 @@
+annData = #{@annotation_report.json_response.html_safe};
+reportId = #{@annotation_report.id};
+annotationFormBasePath = "/annotation_reports/" + reportId + "/annotations/";
+$("h3#annotation_report_name").html("Annotation Report: #{@annotation_report.name}");
+
+UI.SUBTEXT_ANNOTATION_REPORT(annData);
+
+$("#num-reviewed").html("#{@annotation_report.annotations.where("accepted IS NOT NULL").count} of #{@annotation_report.annotations.count} reviewed");
+
+var updateAlreadyReviewed = function() {
+-# need to add the 'reviewed' class to any that have already been reviewed
+- @annotation_report.annotations.where("accepted IS NOT NULL").each do |ann|
+  $(".t_underline.#{ann.annotation_id}").addClass("reviewed");
+}
+-# pause to make sure annotations have been rendered
+setTimeout(updateAlreadyReviewed, 500);
+

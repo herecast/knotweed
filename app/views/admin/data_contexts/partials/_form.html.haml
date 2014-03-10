@@ -1,9 +1,0 @@
-= simple_form_for [:admin, @data_context], html: { class: "form form-horizontal" } do |f|
-  = f.error_notification
-  = f.input :context, label: "Context Name"
-  - if @data_context.id
-    = f.input :loaded, label: "Gazetteer Status", as: :string, disabled: true, input_html: { value: text_for_displaying_loaded_field(@data_context) }
-    = f.input :last_load, as: :string, disabled: true
-    = f.input :archived
-  .form-actions
-    = f.submit class: "btn btn-primary"

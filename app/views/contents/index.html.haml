@@ -1,4 +1,69 @@
-#wrapper
-  #wall.row-fluid.isotope
-    - @contents.each do |content|
-      = render partial: "contents/partials/tile", locals: { :content => content, :channels => Channel.get_channels_for_content(content) }
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-search
+        Find Contents
+      .actions
+        %a.btn.box-remove.btn-mini.btn-link{ href: "#" }
+          %i.icon-remove
+        %a.btn.box-collapse.btn-mini.btn-link{ href: "#" }
+          %i
+    .box-content
+      = search_form_for @search, url: contents_path do |f|
+        .controls.controls-row
+          .field.span3
+            = f.label :id_in, "ID"
+            -# format id_in val for display so it matches what's entered
+            - if session.has_key? :contents_search and session[:contents_search].present? and session[:contents_search].has_key? :id_in
+              - id_in_val = session[:contents_search][:id_in].join(',')
+            - else
+              - id_in_val = ""
+            = f.text_field :id_in, value: id_in_val
+          .field.span3
+            = f.label :source_id_in, "Publications"
+            = f.collection_select :source_id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
+          .field.span3
+            = f.label :pubdate_gteq, "From"
+            = f.text_field :pubdate_gteq, type: :date, value: date_search_field_value(:pubdate_gteq)
+          .field.span3
+            = f.label :pubdate_lteq, "To"
+            = f.text_field :pubdate_lteq, type: :date, value: date_search_field_value(:pubdate_lteq)
+        .controls.controls-row
+          .field.span3
+            = f.label :import_location_link_name_cont, "Location"
+            = f.text_field :import_location_link_name_cont
+          .field.span3
+            = f.label :title_cont, "Title"
+            = f.text_field :title_cont
+          .field.span3
+            = f.label :authors_cont, "Authors"
+            = f.text_field :authors_cont
+        .form-actions
+          = f.submit "Search", class: "btn btn-primary"
+          = f.submit "Reset", name: "reset", class: "btn"
+%table.table.table-striped.table-hover.table-condensed
+  %thead
+    %tr
+      %th Source
+      %th Title
+      %th Authors
+      %th Location
+      %th Pubdate
+  .span5
+    = page_entries_info @contents if @contents.present?
+    = paginate @contents, window: 2 if @contents.present?
+  %tbody
+    - @contents.each do |c|
+      %tr
+        %td
+          - if c.source.present?
+            = link_to c.source.name, contents_path(q: { source_id_in: c.source.id })
+        %td= link_to c.title, c
+        %td
+          - if c.authors.present?
+            = link_to c.authors, contents_path(q: { authors_cont: c.authors })
+        %td
+          - if c.import_location.present?
+            = link_to c.import_location.city, contents_path(q: { import_location_id_in: c.import_location.id })
+        %td= c.pubdate.try(:strftime, "%Y-%m-%d")

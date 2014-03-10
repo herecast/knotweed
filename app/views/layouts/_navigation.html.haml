@@ -1,0 +1,120 @@
+%li{ class: current_page?(dashboard_path) ? "active" : "" }
+  = link_to dashboard_path do
+    %i.icon-dashboard
+    %span Dashboard
+%li
+  = link_to organizations_path do
+    %i.icon-group
+    %span Organizations
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "organizations" ? "in" : "" }" }
+    %li{ class: current_page?(organizations_path) ? "active" : "" }
+      = link_to organizations_path do
+        %i.icon-search
+        %span Search
+    %li{ class: current_page?(new_organization_path) ? "active" : "" }
+      = link_to new_organization_path do
+        %i.icon-plus
+        %span Create New
+%li
+  = link_to publications_path do
+    %i.icon-anchor
+    %span Publications
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "publications" ? "in" : "" }" }
+    %li{ class: current_page?(publications_path) ? "active" : "" }
+      = link_to publications_path do
+        %i.icon-search
+        %span Search
+    %li{ class: current_page?(new_publication_path) ? "active" : "" }
+      = link_to new_publication_path do
+        %i.icon-plus
+        %span Create New
+%li
+  = link_to contents_path do
+    %i.icon-file-alt
+    %span Contents
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "contents" ? "in" : "" }" }
+    %li{ class: current_page?(contents_path) ? "active" : "" }
+      = link_to contents_path do
+        %i.icon-tasks
+        %span Search
+    %li{ class: current_page?(new_content_path) ? "active" : "" }
+      = link_to new_content_path do
+        %i.icon-plus
+        %span Create New
+%li
+  = link_to content_sets_path do
+    %i.icon-copy
+    %span Content Sets
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "content_sets" ? "in" : "" }" }
+    %li{ class: current_page?(content_sets_path) ? "active" : "" }
+      = link_to content_sets_path do
+        %i.icon-tasks
+        %span Search
+    %li{ class: current_page?(new_content_set_path) ? "active" : "" }
+      = link_to new_content_set_path do
+        %i.icon-plus
+        %span Create New
+%li
+  = link_to import_jobs_path do
+    %i.icon-circle-arrow-up
+    %span Import Jobs
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "import_jobs" ? "in" : "" }" }
+    %li{ class: current_page?(import_jobs_path) ? "active" : "" }
+      = link_to import_jobs_path do
+        %i.icon-tasks
+        %span Active
+    %li{ class: current_page?(new_import_job_path) ? "active" : "" }
+      = link_to new_import_job_path do
+        %i.icon-plus
+        %span Create New
+%li
+  = link_to publish_jobs_path do
+    %i.icon-circle-arrow-right
+    %span Publish Jobs
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "publish_jobs" ? "in" : "" }" }
+    %li{ class: current_page?(publish_jobs_path) ? "active" : "" }
+      = link_to publish_jobs_path do
+        %i.icon-tasks
+        %span All
+    %li{ class: current_page?(new_publish_job_path) ? "active" : "" }
+      = link_to new_publish_job_path do
+        %i.icon-plus
+        %span Create New
+%li
+  = link_to data_contexts_path do
+    %i.icon-table
+    %span Data Contexts
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "data_contexts" ? "in" : "" }" }
+    %li{ class: current_page?(data_contexts_path) ? "active" : "" }
+      = link_to data_contexts_path do
+        %i.icon-tasks
+        %span Search
+    %li{ class: current_page?(new_data_context_path) ? "active" : "" }
+      = link_to new_data_context_path do
+        %i.icon-plus
+        %span Create New
+%li 
+  = link_to "#" do
+    %i.icon-usd
+    %span Campaigns
+    %i.icon-angle-down.angle-down
+%li 
+  = link_to "#" do
+    %i.icon-user
+    %span Users
+%li 
+  = link_to "#" do
+    %i.icon-hand-right
+    %span More
+    %i.icon-angle-down.angle-down
+%li{ class: "#{controller_name == "parsers" ? "active" : "" }" } 
+  = link_to parsers_path do
+    %i.icon-book
+    %span Parsers/Parameters
