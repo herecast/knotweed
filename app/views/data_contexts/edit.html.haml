@@ -1,0 +1,8 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-pencil
+        Data Context ID #{@data_context.id} #{@data_context.context}
+    .box-content
+      = render partial: "data_contexts/partials/form"

@@ -1,0 +1,26 @@
+%table.table.table-striped.table-bordered.data-table.table-condensed
+  %thead
+    %tr
+      %th Name
+      %th Matching Contents
+      %th Publish Method
+      %th Last Run
+      %th Next Scheduled Run
+      %th Status
+      %th
+  %tbody
+    - @publish_jobs.each do |job|
+      %tr{ class: "job-#{job.id}", data: { job_contents_count_path: job_contents_count_path(job) } }
+        %td= link_to job.name, edit_publish_job_path(job)
+        %td.num-contents-matched
+        %td= job.publish_method.humanize
+        %td= job.last_run_at.strftime("%m/%d/%Y %I:%M%p") if job.last_run_at.present?
+        %td.next-run
+          = job.next_scheduled_run.strftime("%m/%d/%Y %I:%M%p") if job.next_scheduled_run.present?
+        %td.job-status
+          %div{ class: "label label-#{alert_class_for_status(job.status)}" }= job.status
+        %td.job-actions
+          .run-job-button
+            = action_button_for_job(job)
+          = link_to "Archive", archive_publish_job_path(job), class: "btn btn-mini btn-warning", remote: true, data: { confirm: "Are you sure?" }
+          = link_to "Delete", publish_job_path(job), class: "btn-mini btn btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }

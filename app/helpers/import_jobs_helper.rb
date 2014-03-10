@@ -29,15 +29,15 @@ module ImportJobsHelper
   def get_path_for_job_action(action, job)
     if job.class == PublishJob
       if action == "run"
-        admin_run_publish_job_path(job)
+        run_publish_job_path(job)
       elsif action == "cancel"
-        admin_cancel_publish_job_path(job)
+        cancel_publish_job_path(job)
       end
     elsif job.class == ImportJob
       if action == "run"
-        admin_run_import_job_path(job)
+        run_import_job_path(job)
       elsif action == "cancel"
-        admin_cancel_import_job_path(job)
+        cancel_import_job_path(job)
       end
     end
   end

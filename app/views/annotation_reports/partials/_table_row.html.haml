@@ -1,0 +1,10 @@
+- report = ar.metrics
+%tr{ id: "ar-row-#{ar.id}" }
+  %td= link_to ar.name, "#", class: "edit-annotation-report-link", data: { toggle: "modal", target: "#annotations", action_url: edit_annotation_report_path(ar) }
+  %td= ar.created_at.strftime("%m/%d/%Y %I:%M %P")
+  %td#recognized.metric= report[:recognized]
+  %td#correct_recognized.metric= report[:correct_recognized]
+  %td#trusted.metric= report[:trusted]
+  %td#correct_trusted.metric= report[:correct_trusted]
+  %td#correct_lookup_edges.metric= report[:correct_lookup_edges]
+  %td= link_to "Delete", annotation_report_path(ar), class: "btn btn-mini btn-danger", remote: true, method: :delete, data: { confirm: "Are you sure?" }

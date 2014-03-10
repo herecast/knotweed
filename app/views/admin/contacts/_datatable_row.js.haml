@@ -1,2 +1,0 @@
-["#{contact.id}","#{contact.contact_type}","#{contact.name}","#{contact.phone}","#{ j mail_to contact.email }","#{ truncate(contact.notes, length: 75) }",
-"<a href='#' class='edit-contact-link btn btn-success' data-form-url='#{edit_admin_contact_path(contact)}' data-toggle='modal' data-target='#contact_form'><i class='icon-pencil'></i></a><a href='#{admin_contact_path(contact)}' class='btn btn-danger' data-confirm='Are you sure?' data-method='delete' data-remote='true' rel='nofollow'>X</a>"]

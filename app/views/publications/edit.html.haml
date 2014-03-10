@@ -1,0 +1,8 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-pencil
+        Publication ID #{@publication.id} #{@publication.name}
+    .box-content
+      = render partial: "publications/partials/form"

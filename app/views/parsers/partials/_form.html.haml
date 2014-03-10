@@ -1,0 +1,22 @@
+= simple_form_for @parser do |f|
+  = f.error_notification
+  .form-column
+    = f.input :name
+    = f.input :filename
+    = f.input :description, input_html: { rows: 5 }
+    = f.association :organization, collection: Organization.accessible_by(current_ability, :read), input_html: { class: "span11 select2" }
+  
+  #parameters.form-column
+    %button#add-to-parameters.btn Add Parameter
+    .existing-fields-for-parameters
+      = f.simple_fields_for :parameters do |param_form|
+        = param_form.input :name, label: "Parameter Key"
+        %span.close &times;
+        = param_form.input :_destroy, as: :hidden, value: false
+
+  #fields-for-parameters.numerous
+    = f.simple_fields_for :parameters, Parameter.new, child_index: "replace_this" do |param_form|
+      = param_form.input :name, label: "Parameter Key"
+      %span.close.numerous-remove &times;
+  .form-actions
+    = f.submit class: "btn btn-primary"
