@@ -7,7 +7,7 @@ module Jobs
         @job.enqueue_job
       end
       respond_to do |format|
-        format.js { render "admin/jobs/run_job" }
+        format.js { render "jobs/run_job" }
       end
     end
   
@@ -15,14 +15,14 @@ module Jobs
       @job = controller_name.classify.constantize.find(params[:id])
       @job.cancel_scheduled_runs
       respond_to do |format|
-        format.js { render "admin/jobs/cancel_job" }
+        format.js { render "jobs/cancel_job" }
       end
     end
 
     def destroy
       @job = controller_name.classify.constantize.destroy(params[:id])
       respond_to do |format|
-        format.js { render "admin/jobs/destroy" }
+        format.js { render "jobs/destroy" }
       end
     end
 
@@ -30,7 +30,7 @@ module Jobs
       @job = controller_name.classify.constantize.find(params[:id])
       @job.update_attribute(:archive, true)
       respond_to do |format|
-        format.js { render "admin/jobs/archive" }
+        format.js { render "jobs/archive" }
       end
     end
 
