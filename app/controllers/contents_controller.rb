@@ -75,9 +75,12 @@ class ContentsController < ApplicationController
 
   def publish
     @content = Content.find(params[:id])
-    @content.publish(params[:method])
-    flash[:notice] = "#{params[:method].humanize} successful"
-    redirect_to [:admin, @content]
+    if @content.publish(params[:method]) == true
+      flash[:notice] = "#{params[:method].humanize} successful"
+    else
+      flash[:error] = "#{params[:method].humanize} encountered an error"
+    end
+    redirect_to @content
   end
 
   def rdf_to_gate

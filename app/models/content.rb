@@ -193,6 +193,7 @@ class Content < ActiveRecord::Base
     else
       log = Logger.new("#{Rails.root}/log/publishing.log")
     end
+    result = false
     begin
       result = self.send(method.to_sym)
       if result == true
@@ -207,6 +208,7 @@ class Content < ActiveRecord::Base
       record.failures += 1 if record.present?
     end
     record.save if record.present?
+    result
   end
 
   # below are our various "publish methods"
@@ -241,7 +243,7 @@ class Content < ActiveRecord::Base
   def post_to_ontotext
     options = { :body => self.to_new_xml }
                 
-    response = Admin::OntotextController.post('/processDocument?persist=true', options)
+    response = OntotextController.post('/processDocument?persist=true', options)
     if response.body.include? document_uri
       return true
     else
@@ -251,7 +253,7 @@ class Content < ActiveRecord::Base
 
   def reannotate_at_ontotext
     options = { :id => document_uri }
-    response = Admin::OntotextController.post('/reprocessDocument', options)
+    response = OntotextController.post('/reprocessDocument', options)
     if response.code != 200
       post_to_ontotext
     else
