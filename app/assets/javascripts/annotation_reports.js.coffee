@@ -17,7 +17,7 @@ jQuery ->
 
   $(".modal#annotations").on 'hidden', ->
     if reportId and $("tr#ar-row-"+reportId).length == 0
-      $.get "/admin/annotation_reports/" + reportId + "/table_row", (data)->
+      $.get "/annotation_reports/" + reportId + "/table_row", (data)->
         $("#annotation_reports table tbody").prepend(data)
     $(this).find("#annotation_form").html("")
     $(this).find(".modal-body").html("Loading annotations...")
