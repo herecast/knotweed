@@ -27,7 +27,8 @@ class OntotextController
 
   # ping the rdf to gate endpoint and return the GATE xml
   def self.rdf_to_gate(content_id, options={})
-    response = self.get(Figaro.env.rdf_to_gate_endpoint + "/rdfToGate/#{content_id.to_s}", options)
+    endpoint = CGI::escape Figaro.env.sesame_rdf_endpoint
+    response = self.get(Figaro.env.rdf_to_gate_endpoint + "/rdfToGate/#{content_id.to_s}/#{endpoint}", options)
     if response.code == 200
       response.body
     else
