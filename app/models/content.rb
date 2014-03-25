@@ -9,7 +9,7 @@ class Content < ActiveRecord::Base
 
   has_and_belongs_to_many :publish_records
   
-  has_many :images, as: :imageable, inverse_of: :imageable #, dependent: :destroy
+  has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
   belongs_to :source, class_name: "Publication", foreign_key: "source_id"
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes
