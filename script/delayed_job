@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/home/deploy/.rvm/rubies/ruby-1.9.3-p545/bin/ruby
 
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
 require 'delayed/command'
