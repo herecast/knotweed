@@ -10,7 +10,7 @@ module SubmoduleStrategy
 
   # make sure to move your existing bare repo out of the way
   def clone
-    git :clone, fetch(:branch), '--recursive', repo_url, repo_path
+    git :clone, '--branch', fetch(:branch), '--recursive', repo_url, repo_path
   end
 
   # put the working tree in a release-branch,
