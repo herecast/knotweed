@@ -9,6 +9,7 @@ class ImportJob < ActiveRecord::Base
 
   include Jobs::ScheduledJob
   QUEUE = "imports"
+  PARSER_PATH = Rails.root + "/lib/parsers"
 
   belongs_to :organization
   belongs_to :parser
@@ -57,7 +58,7 @@ class ImportJob < ActiveRecord::Base
   def error(job, exception)
     log = last_import_record.log_file
     log.info "input: #{self.source_path}"
-    log.info "parser: #{Figaro.env.parsers_path}/#{parser.filename}"
+    log.info "parser: #{PARSER_PATH}/#{parser.filename}"
     log.error "error: #{exception}"
     if notifyees.present?
       JobMailer.error_email(last_import_record, exception).deliver
@@ -116,7 +117,7 @@ class ImportJob < ActiveRecord::Base
   # outputs a json array of articles (if parser is correct)
   # 
   def run_parser(path)
-    require "#{Figaro.env.parsers_path}/#{parser.filename}"
+    require "#{PARSER_PATH}/#{parser.filename}"
     return parse_file(path, config)
   end
 
