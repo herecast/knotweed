@@ -9,7 +9,7 @@ class ImportJob < ActiveRecord::Base
 
   include Jobs::ScheduledJob
   QUEUE = "imports"
-  PARSER_PATH = Rails.root + "/lib/parsers"
+  PARSER_PATH = "#{Rails.root}/lib/parsers"
 
   belongs_to :organization
   belongs_to :parser

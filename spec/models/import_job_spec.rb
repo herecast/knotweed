@@ -21,7 +21,7 @@ describe ImportJob do
       @config = { "timestamp" => "2011-06-07T12:25:00", "guid" => "100", "other_param" => "hello", "pubdate" => "2011-06-07T12:25:00",
                   "source" => "not empty", "title" => "      not empty and with whitespace  ",
                   "content" => "<p> </p> <p> </p> Content begins here" }
-      @parser = FactoryGirl.create(:parser, filename: "parser_that_outputs_config.rb")
+      @parser = FactoryGirl.create(:parser, filename: "test/parser_that_outputs_config.rb")
       @job = FactoryGirl.create(:import_job, parser: @parser, config: @config)
       # run job via delayed_job hooks (even though delayed_job doesnt run in tests)
       @job.enqueue_job
