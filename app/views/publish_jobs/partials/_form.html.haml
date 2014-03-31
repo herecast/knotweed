@@ -12,7 +12,7 @@
         = label_tag "import_job_recurring", "Recurring?", { class: "boolean optional control-label" }
         .controls
           = check_box_tag "import_job_recurring"
-      = f.input :frequency, hint: "Repeat every x hours", wrapper_html: { class: "frequency" }
+      = f.input :frequency, hint: "Repeat every x minutes", wrapper_html: { class: "frequency" }
   %hr.hr-normal
   %fieldset#contents-query{ data: { contents_query_path: contents_count_path } }
     .span4
