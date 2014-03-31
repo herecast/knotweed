@@ -14,7 +14,7 @@ server 'localhost', roles: %w{web app db}, primary: true, user: 'deploy'
 
 set :rvm_ruby_version, '1.9.3-p545@knotweed'
 
-set :delayed_job_args, "-n 2"
+set :delayed_job_args, "-n 4"
 
 # for parsers submodule
 set :git_strategy, SubmoduleStrategy
