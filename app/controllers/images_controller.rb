@@ -20,4 +20,13 @@ class ImagesController < ApplicationController
     end
   end
 
+  def update
+    @image = Image.find(params[:id])
+    if @image.update_attributes(params[:image])
+      respond_to do |format|
+        format.js
+      end
+    end
+  end
+
 end

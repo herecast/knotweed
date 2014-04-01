@@ -1,7 +1,16 @@
-.span2.image{ id: "image_#{image.id}" }
+.span3.image{ id: "image_#{image.id}" }
   = link_to image_tag(image.image.url), image.image.url if image.image?
   .name= image.image_identifier
-  .actions
-    = link_to image_path(image), :confirm => "Are you sure?", :method => :delete, remote: true, class: "btn btn-small btn-danger" do
-      remove
-      %i.icon-remove
+  = simple_fields_for image, html: { class: "form" } do |f|
+    = f.input :caption, input_html: { id: "image_#{image.id}_caption" }
+    = f.input :credit, input_html: { id: "image_#{image.id}_credit" }
+    .actions
+      %span.span12.alert.alert-success.updated-alert{style: "display: none;" }
+        Updated
+        %i.icon-ok
+      = link_to "#", class: "update-image btn btn-small btn-success", data: { url: image_path(image), image_id: image.id } do
+        update
+        %i.icon-pencil
+      = link_to image_path(image), :confirm => "Are you sure?", :method => :delete, remote: true, class: "btn btn-small btn-danger" do
+        remove
+        %i.icon-remove

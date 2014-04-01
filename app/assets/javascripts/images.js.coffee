@@ -24,3 +24,17 @@ jQuery ->
       if data.context
         data.context.remove()
       $("span.file-input-name").text("")
+
+  $(document).on 'click', 'a.update-image', (event)->
+    event.preventDefault()
+    imageId = $(this).data("imageId")
+    $.ajax($(this).data("url"), {
+      type: "PUT",
+      dataType: "script",
+      data: { 
+        "image": { 
+          "caption": $("#image_" + imageId + "_caption").val(),
+          "credit": $("#image_" + imageId + "_credit").val()
+        }
+      }
+    })
