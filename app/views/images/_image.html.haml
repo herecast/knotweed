@@ -2,7 +2,7 @@
   = link_to image_tag(image.image.url), image.image.url if image.image?
   .name= image.image_identifier
   = simple_fields_for image, html: { class: "form" } do |f|
-    = f.input :caption, input_html: { id: "image_#{image.id}_caption" }
+    = f.input :caption, as: :text, input_html: { id: "image_#{image.id}_caption", cols: 40, rows: (image.caption.present? ? (image.caption.length/30.0).ceil : 1), class: "caption-field" }
     = f.input :credit, input_html: { id: "image_#{image.id}_credit" }
     .actions
       %span.span12.alert.alert-success.updated-alert{style: "display: none;" }
