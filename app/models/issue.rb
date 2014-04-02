@@ -10,5 +10,9 @@ class Issue < ActiveRecord::Base
   rails_admin do
     object_label_method :issue_edition
   end
+
+  def name
+    issue_edition
+  end
   
 end

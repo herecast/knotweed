@@ -11,6 +11,7 @@ Knotweed::Application.routes.draw do
   
   get "/", to: "admin#dashboard", as: :dashboard
   resources :contents, except: [:destroy]
+  get "issues/select_options", to: "issues#select_options", as: :issue_select_options
   resources :import_jobs
   resources :parsers
   resources :publish_jobs

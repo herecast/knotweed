@@ -40,3 +40,4 @@
 //= require annotations
 //= require add.dsp
 //= require add.mind
+//= require contents
