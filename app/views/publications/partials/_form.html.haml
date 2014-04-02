@@ -14,9 +14,13 @@
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#locations" } do
           Locations
-      %li
-        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#history" } do
-          History
+      - if @publication.id
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#issues" } do
+            Issues
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#history" } do
+            History
     .tab-content
       .tab-pane.active.form-horizontal#details
         = f.input :name, input_html: { class: "span5" }
@@ -67,8 +71,23 @@
               = link_to "select all", "#", id: "select-all-locs"
             .span2.text-left
               = link_to "deselect all", "#", id: "deselect-all-locs"
-      .tab-pane#history
-        histry
+      - if @publication.id
+        .tab-pane#issues
+          .pull-right
+            = link_to "+ Add New Issue", "#", class: "btn btn-success", data: { toggle: "modal", target: "#issue_form", form_url: new_issue_path({publication_id: @publication.id}) }, id: "new_issue_button"
+          %table.table.table-striped.table-condensed.sortable#issues_table
+            %thead
+              %tr
+                %th ID
+                %th Edition
+                %th Copyright
+                %th Publication Date
+                %th
+            %tbody#issue_list
+              - @publication.issues.each do |issue|
+                = render "issues/issue_row", issue: issue
+        .tab-pane#history
+          histry
       .form-actions
         = submit_tag "Submit and Create New Content Set", class: "btn btn-success", name: "add_content_set"
         = submit_tag nil, class: "btn btn-primary"
@@ -85,5 +104,12 @@
   .modal-header
     %button.close{ type: "button", data: { dismiss: "modal" } } x
     %h3 Location
+  .modal-body
+    Loading...
+
+.modal.hide.fade#issue_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Issue
   .modal-body
     Loading...

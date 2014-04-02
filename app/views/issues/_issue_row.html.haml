@@ -1,0 +1,9 @@
+%tr{ class: "issue-#{issue.id}" }
+  %td= issue.id
+  %td= issue.issue_edition
+  %td= issue.copyright
+  %td= issue.publication_date.try(:strftime, "%m/%d/%Y")
+  %td
+    = link_to "#", class: "edit-issue-link btn btn-success", data: { form_url: edit_issue_path(issue), toggle: "modal", target: "#issue_form" } do
+      %i.icon-pencil
+    = link_to "X", issue_path(issue), method: :delete, remote: true, class: "btn btn-danger", confirm: "Are you sure?"

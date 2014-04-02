@@ -9,6 +9,13 @@ jQuery ->
   # this needs to be from document to allow editing of newly added ones
   $(document).on "click", ".edit-contact-link", ->
     $(".modal#contact_form .modal-body").load($(this).data("formUrl"))
+  
+  $(document).on "click", ".edit-issue-link", ->
+    $(".modal#issue_form .modal-body").load $(this).data("formUrl"), ->
+      $(".modal-body").find(".datetimepicker").datetimepicker()
+  $(document).on "click", "#new_issue_button", ->
+    $(".modal#issue_form .modal-body").load $(this).data("formUrl"), ->
+      $(".modal-body").find(".datetimepicker").datetimepicker()
 
   $("#new_location_button").on 'click', ->
     $(".modal#location_form .modal-body").load($(this).data("formUrl"))
