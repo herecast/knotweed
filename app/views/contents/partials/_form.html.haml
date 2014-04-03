@@ -23,7 +23,7 @@
           = f.association :source, input_html: { class: "chosen-select span12" }, wrapper_html: { class: "span6" }, label: "Publication"
           = f.input :copyright, input_html: { class: "span12" }, wrapper_html: { class: "span6" }
         .row-fluid
-          = f.association :issue, collection: (@content.source.present? ? @content.source.issues : ["Select a Publication First"]), input_html: { class: "chosen-select span12", data: { options_url: issue_select_options_path } }, wrapper_html: { class: "span6" }
+          = f.association :issue, collection: (@content.source.present? ? @content.source.issues.order("issue_edition ASC") : ["Select a Publication First"]), input_html: { class: "chosen-select span12", data: { options_url: issue_select_options_path } }, wrapper_html: { class: "span6" }
         .row-fluid
           = f.input :pubdate, as: :datetime_picker, wrapper_html: { class: "span6" }
           = f.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }

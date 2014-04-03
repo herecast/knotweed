@@ -3,9 +3,9 @@ class IssuesController < ApplicationController
 
   def select_options
     if params[:publication_id].present?
-      issues = Publication.find(params[:publication_id]).issues
+      issues = Publication.find(params[:publication_id]).issues.order("issue_edition ASC")
     else
-      issues = Issue.all
+      issues = Issue.all.order("issue_edition ASC")
     end
     @issues = issues.map{ |i| [i.issue_edition, i.id]}.insert(0, nil)
     respond_to do |format|
