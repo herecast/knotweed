@@ -81,7 +81,7 @@ class Content < ActiveRecord::Base
       else
         key = k
       end
-      if ['image', 'location', 'source', 'edition'].include? key
+      if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit'].include? key
         special_attrs[key] = v if v.present?
       elsif v.present?
         data[key] = v
@@ -150,7 +150,13 @@ class Content < ActiveRecord::Base
     # if the content saves, add any images that came in
     if special_attrs.has_key? "image"
       # CarrierWave validation should take care of validating this for us
-      content.images.create(remote_image_url: special_attrs["image"], source_url: special_attrs["image"])
+      image_attrs = {
+        remote_image_url: special_attrs["image"],
+        source_url: special_attrs["image"]
+      }
+      image_attrs[:caption] = special_attrs["imagecaption"] if special_attrs.has_key? "imagecaption"
+      image_attrs[:credit] = special_attrs["imagecredit"] if special_attrs.has_key? "imagecredit"
+      content.images.create(image_attrs)
     end
 
     content
