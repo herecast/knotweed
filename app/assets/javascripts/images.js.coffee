@@ -2,7 +2,7 @@ updateRows = (ele)->
   if ele.scrollTop() > 0
     ele.attr("rows", parseInt(ele.attr("rows"))+1)
 
-jQuery -
+jQuery ->
   submitUrl = $("#image_image").data("uploadUrl")
   $("#image_image").fileupload
     url: submitUrl
