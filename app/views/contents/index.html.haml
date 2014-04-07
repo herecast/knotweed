@@ -25,10 +25,10 @@
             = f.collection_select :source_id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
             = f.label :pubdate_gteq, "From"
-            = f.text_field :pubdate_gteq, type: :date, value: date_search_field_value(:pubdate_gteq)
+            = f.text_field :pubdate_gteq, type: :date, value: search_field_value(:pubdate_gteq)
           .field.span3
             = f.label :pubdate_lteq, "To"
-            = f.text_field :pubdate_lteq, type: :date, value: date_search_field_value(:pubdate_lteq)
+            = f.text_field :pubdate_lteq, type: :date, value: search_field_value(:pubdate_lteq)
         .controls.controls-row
           .field.span3
             = f.label :import_location_link_name_cont, "Location"
@@ -39,6 +39,9 @@
           .field.span3
             = f.label :authors_cont, "Authors"
             = f.text_field :authors_cont
+          .field.span3
+            = f.label :published_true, "Published?"
+            = f.select:published_true, options_for_select([["Both", nil], ["Yes", 1], ["No", 0]], search_field_value(:published_true))
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
