@@ -26,6 +26,12 @@ class IssuesController < ApplicationController
     end
   end
 
+  def show
+    respond_to do |format|
+      format.js { render json: { issue: @issue } }
+    end
+  end
+
   def new
     if params[:publication_id]
       @issue.publication = Publication.find(params[:publication_id])
