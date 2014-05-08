@@ -3,7 +3,7 @@ require './lib/capistrano/submodule_strategy'
 lock '3.1.0'
 
 set :application, 'knotweed'
-set :repo_url, 'git@github.com:mjadmin/knotweed.git'
+set :repo_url, 'git@github.com:subtextmedia/knotweed.git'
 
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
