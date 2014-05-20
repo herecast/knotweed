@@ -53,4 +53,9 @@ Knotweed::Application.routes.draw do
   
   match 'parsers/:id/parameters', to: "parsers#parameters"
 
+  # API
+  namespace :api do
+    post 'contents/create_and_publish', to: 'contents#create_and_publish', as: :create_and_publish_content
+  end
+
 end
