@@ -90,9 +90,9 @@ class ContentsController < ApplicationController
       render text: "content #{@content.id} not found on Ontotext server"
     else
       #render :xml => gate_xml
-      f = File.new("#{Rails.root}/tmp/#{@content.id}.gate.xml", "w+")
-      f.write(gate_xml)
-      send_file f, :filename => "#{@content.id}.gate.xml", type: :xml, disposition: 'attachment'
+      #f = File.new("#{Rails.root}/tmp/#{@content.id}.gate.xml", "w+")
+      #f.write(gate_xml)
+      send_data gate_xml, :filename => "#{@content.id}.gate.xml", type: :xml, disposition: 'attachment'
     end
   end
 
