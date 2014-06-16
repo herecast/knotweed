@@ -14,6 +14,9 @@ class Content < ActiveRecord::Base
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes
 
+  belongs_to :parent, class_name: "Content"
+  has_many :children, class_name: "Content", foreign_key: "parent_id"
+
   attr_accessible :title, :subtitle, :authors, :content, :issue_id, :import_location_id, :copyright
   attr_accessible :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype
   attr_accessible :language, :page, :wordcount, :authoremail, :source_id, :file
@@ -81,7 +84,7 @@ class Content < ActiveRecord::Base
       else
         key = k
       end
-      if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit'].include? key
+      if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to'].include? key
         special_attrs[key] = v if v.present?
       elsif v.present?
         data[key] = v
@@ -145,6 +148,11 @@ class Content < ActiveRecord::Base
       content.id = existing_content.id
       existing_content.destroy
     end
+
+    if special_attrs.has_key? "in_reply_to"
+      content.parent = Content.find_by_guid(special_attrs["in_reply_to"])
+    end
+
     content.save!
 
     # if the content saves, add any images that came in
@@ -301,7 +309,7 @@ class Content < ActiveRecord::Base
               next
             end
             g.tag!("tns:feature") do |h|
-              if ["issue_id", "source_id", "import_location_id"].include? k
+              if ["issue_id", "source_id", "import_location_id", "parent_id"].include? k
                 if k == "issue_id" and issue.present?
                   key, value = "ISSUE", issue.issue_edition
                 elsif k == "source_id" and source.present?
@@ -310,6 +318,8 @@ class Content < ActiveRecord::Base
                   if import_location.status == ImportLocation::STATUS_GOOD
                     key, value = "LOCATION", import_location.city
                   end
+                elsif k == "parent_id" and parent.present?
+                  key, value = "PARENT", Figaro.env.document_prefix + id
                 end
               else
                 key = k.upcase
@@ -396,6 +406,17 @@ class Content < ActiveRecord::Base
 
   def rdf_to_gate
     return OntotextController.rdf_to_gate(id)
+  end
+
+  # for threaded contents
+  # returns the original content of the thread by recursively iterating through parent
+  # association
+  def find_root_parent
+    if parent.present?
+      parent.find_root_parent
+    else
+      self
+    end
   end
 
 end

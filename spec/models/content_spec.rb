@@ -2,6 +2,20 @@ require 'spec_helper'
 
 describe Content do
 
+  describe "find_root_parent" do
+    it "should return self for a content with no parent" do
+      c = FactoryGirl.create(:content)
+      c.find_root_parent.should == c
+    end
+    it "should return the root parent for content" do
+      c1 = FactoryGirl.create(:content)
+      c2 = FactoryGirl.create(:content, source: c1.source, parent: c1)
+      c3 = FactoryGirl.create(:content, source: c1.source, parent: c2)
+      c2.find_root_parent.should == c1
+      c3.find_root_parent.should == c1
+    end
+  end
+
   describe "new from import job" do
     before do
       # base_data is not enough to pass quarantine
@@ -34,6 +48,18 @@ describe Content do
       })
       content = Content.create_from_import_job(extra_data)
       content.quarantine.should== false
+    end
+
+    it "should correctly identify parent based on in_reply_to" do
+      c = FactoryGirl.create(:content, guid: "this-is-a-guid")
+      extra_data = @base_data.merge({
+        "pubdate" => Time.now,
+        "content" => "hello",
+        "source_id" => c.source.id,
+        "in_reply_to" => c.guid
+      })
+      c2 = Content.create_from_import_job(extra_data)
+      c2.parent.should== c
     end
 
     it "should overwrite any existing content with the same publication and source_content_id" do
