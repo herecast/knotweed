@@ -319,7 +319,7 @@ class Content < ActiveRecord::Base
                     key, value = "LOCATION", import_location.city
                   end
                 elsif k == "parent_id" and parent.present?
-                  key, value = "PARENT", "#{Figaro.env.document_prefix}#{id}"
+                  key, value = "PARENT", "#{Figaro.env.document_prefix}#{v}"
                 end
               else
                 key = k.upcase
