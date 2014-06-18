@@ -16,6 +16,41 @@ describe Content do
     end
   end
 
+  describe "get_downstream_thread" do 
+    it "should return nil for contents without children" do
+      c = FactoryGirl.create(:content)
+      c.get_downstream_thread.should == nil
+    end
+
+    it "should return a hash representing the full thread below the content" do
+      c1 = FactoryGirl.create(:content)
+      c2 = FactoryGirl.create(:content, source: c1.source, parent: c1)
+      c3 = FactoryGirl.create(:content, source: c1.source, parent: c1)
+      c4 = FactoryGirl.create(:content, source: c1.source, parent: c3)
+      c1.get_downstream_thread.should == {
+        c2.id => nil, c3.id => { 
+          c4.id => nil 
+        } 
+      }
+    end
+  end
+
+  describe "get_full_thread" do
+    it "should return the full thread regardless of what member it is called on" do
+      c1 = FactoryGirl.create(:content)
+      c2 = FactoryGirl.create(:content, source: c1.source, parent: c1)
+      c3 = FactoryGirl.create(:content, source: c1.source, parent: c1)
+      c4 = FactoryGirl.create(:content, source: c1.source, parent: c3)
+      c3.get_full_thread.should == {
+        c1.id => { 
+          c2.id => nil, c3.id => { 
+            c4.id => nil 
+          } 
+        }
+      }
+    end
+  end
+
   describe "new from import job" do
     before do
       # base_data is not enough to pass quarantine

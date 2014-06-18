@@ -21,7 +21,7 @@ class Content < ActiveRecord::Base
   attr_accessible :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype
   attr_accessible :language, :page, :wordcount, :authoremail, :source_id, :file
   attr_accessible :quarantine, :doctype, :timestamp, :contentsource, :source_content_id
-  attr_accessible :published, :image_ids
+  attr_accessible :published, :image_ids, :parent_id
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -416,6 +416,56 @@ class Content < ActiveRecord::Base
       parent.find_root_parent
     else
       self
+    end
+  end
+
+  # return ordered hash of downstream thread
+  def get_downstream_thread
+    if children.present?
+      children_hash = {}
+      children.each do |c|
+        children_hash[c.id] = c.get_downstream_thread
+      end
+      children_hash
+    else
+      nil
+    end
+  end
+
+  # returns full conversation regardless of where in the conversation this doc is
+  def get_full_thread
+    p = find_root_parent
+    { p.id => p.get_downstream_thread }
+  end
+
+  def get_ordered_thread_with_tiers
+    hash = get_full_thread
+  end
+
+  def get_ordered_downstream_thread(tier=0)
+    downstream_thread = []
+    if children.present?
+      children.each do |c|
+        downstream_thread << [c.id, tier+1]
+        children2 = c.get_ordered_downstream_thread(tier+1)
+        downstream_thread += children2 if children2.present?
+      end
+    end
+    if downstream_thread.empty?
+      nil
+    else
+      downstream_thread
+    end
+  end
+
+  def get_full_ordered_thread
+    p = find_root_parent
+    thread = [[p.id, 0]]
+    downstream = p.get_ordered_downstream_thread
+    if downstream.nil?
+      thread
+    else
+      thread + p.get_ordered_downstream_thread
     end
   end
 
