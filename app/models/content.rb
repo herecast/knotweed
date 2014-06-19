@@ -446,7 +446,7 @@ class Content < ActiveRecord::Base
     downstream_thread = []
     if children.present?
       children.each do |c|
-        downstream_thread << [c.id, tier+1]
+        downstream_thread << [c.to_consumer_app_hash, tier+1]
         children2 = c.get_ordered_downstream_thread(tier+1)
         downstream_thread += children2 if children2.present?
       end
@@ -460,13 +460,25 @@ class Content < ActiveRecord::Base
 
   def get_full_ordered_thread
     p = find_root_parent
-    thread = [[p.id, 0]]
+    thread = [[p.to_consumer_app_hash, 0]]
     downstream = p.get_ordered_downstream_thread
     if downstream.nil?
       thread
     else
       thread + p.get_ordered_downstream_thread
     end
+  end
+
+  def to_consumer_app_hash
+    { 
+      source: source.name,
+      title: title,
+      authors: authors,
+      authoremail: authoremail,
+      content: content,
+      pubdate: pubdate,
+      id: id
+    }
   end
 
 end
