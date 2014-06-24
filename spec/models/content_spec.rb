@@ -300,7 +300,7 @@ describe Content do
 
     it "should contain all the attributes as feature name/value pairs" do
       @content.attributes.each do |k, v|
-        unless ["id", "image", "created_at", "updated_at", "quarantine", "published", "content"].include? k or /.+id/.match(k)
+        unless ["id", "image", "created_at", "updated_at", "quarantine", "published", "content", "categories"].include? k or /.+id/.match(k)
           # just checking with closing tags so we don't have to deal
           # with exact formatting of opening tag and attributes
           @xml.include?("#{k.upcase}</tns:name>").should be_true
@@ -317,6 +317,11 @@ describe Content do
           end
         end
       end
+    end
+
+    it "should use the publication's category_override if that is set" do
+      @content.source.update_attribute :category_override, "Test Category"
+      @content.to_new_xml.include?("Test Category").should be_true
     end
 
     it "should populate with a publication image if content doesnt have one" do
