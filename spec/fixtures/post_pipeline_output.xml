@@ -1,0 +1,409 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<GateDocument version="2">
+<!-- The document's features-->
+
+<GateDocumentFeatures>
+<Feature>
+  <Name className="java.lang.String">SUMMARY</Name>
+  <Value className="java.lang.String"></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String"></Name>
+  <Value className="java.lang.String"></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">WORDCOUNT</Name>
+  <Value className="java.lang.String"></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">GUID</Name>
+  <Value className="java.lang.String">CAMiA7GFwUQS3WUr_mCzsArcbLU7cNJbKPLQotXHrA0503_TUkw@mail.gmail.com</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">AUTHOREMAIL</Name>
+  <Value className="java.lang.String">stuart.pompian@gmail.com</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">com.ontotext.document.secretFeatures</Name>
+  <Value className="gate.corpora.ObjectWrapper"><![CDATA[<?xml version='1.0' encoding='UTF-8'?><gate.corpora.ObjectWrapper><value class="map"><entry><string>com.ontotext.document.secret.partsToUnescape</string><list/></entry></value></gate.corpora.ObjectWrapper>]]></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">SUBTITLE</Name>
+  <Value className="java.lang.String"></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">COPYRIGHT</Name>
+  <Value className="java.lang.String">ValleyNet Listserv</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">listserv</Name>
+  <Value className="java.lang.String">true</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">com.ontotext.document.id</Name>
+  <Value className="java.lang.String">http://www.subtext.org/Document/640367</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">SOURCE</Name>
+  <Value className="java.lang.String">Hanover Listserve</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">CATEGORY</Name>
+  <Value className="java.lang.String">Discussion</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">PUBDATE</Name>
+  <Value className="java.lang.String">2014-04-06T22:40:42</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">keyphrasesTfIdf</Name>
+  <Value className="java.lang.String">Www.uppervalley.score;SCORE workshop;Workshop series;Stuart Pompian;NH;</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">encoding</Name>
+  <Value className="java.lang.String">UTF-8</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">FILE</Name>
+  <Value className="java.lang.String"></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">URL</Name>
+  <Value className="java.lang.String"></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">gate.SourceURL</Name>
+  <Value className="java.lang.String">created from String</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">TOPICS</Name>
+  <Value className="java.lang.String"></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">PAGE</Name>
+  <Value className="java.lang.String"></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">LANGUAGE</Name>
+  <Value className="java.lang.String">en</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">DESCRIPTION</Name>
+  <Value className="java.lang.String">... a new online technique that may suit your business. Come tothis SCORE workshop next Thursday to learn the ins and outs of how it's done!
+
+Our presenters (SCORE members from Lebanon and Manchester, NH) have hands-on ...</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">IMAGE</Name>
+  <Value className="java.lang.String">https://knotweed.s3.amazonaws.com/publication/317/1386855910-vnet_hanover.jpg.jpg</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">ORIGIN</Name>
+  <Value className="java.lang.String">GMail</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">LOCATION</Name>
+  <Value className="java.lang.String">Hanover</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">AUTHORS</Name>
+  <Value className="java.lang.String">Stuart Pompian</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">SOURCE_CONTENT_ID</Name>
+  <Value className="java.lang.String"></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">DOCTYPE</Name>
+  <Value className="java.lang.String">http://proton.semanticweb.org/2004/12/protonu#EMail</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">CONTENTSOURCE</Name>
+  <Value className="java.lang.String"></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">CATEGORIES</Name>
+  <Value className="java.lang.String"></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">MIMETYPE</Name>
+  <Value className="java.lang.String"></Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">TIMESTAMP</Name>
+  <Value className="java.lang.String">2014-04-06T22:40:42</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">TITLE</Name>
+  <Value className="java.lang.String">[Hanover Discussion] Crowdfunding Your Small Business</Value>
+</Feature>
+</GateDocumentFeatures>
+<!-- The document content area with serialized nodes -->
+
+<TextWithNodes><Node id="0"/>Raising money throughcrowdfundingis a new online technique that may suit your business. Come tothis SCORE workshop next Thursday to learn the ins and outs of how it's done!
+
+Our presenters (SCORE members from <Node id="209"/>Lebanon<Node id="216"/> and <Node id="221"/>Manchester<Node id="231"/>, <Node id="233"/>NH<Node id="235"/>) have hands-on experience with this <Node id="272"/>technology<Node id="282"/>.
+
+We are grateful for the support of <Node id="320"/>Merchants Bank<Node id="334"/> in underwriting this workshop series. Please go to our web site to register, get directions, etc.
+
+
+
+www.uppervalley.score,org
+
+Kind regards,
+
+
+
+<Node id="480"/>Stuart Pompian<Node id="494"/>
+<Node id="495"/></TextWithNodes>
+<!-- The default annotation set -->
+
+<AnnotationSet>
+</AnnotationSet>
+
+<!-- Named annotation set -->
+
+<AnnotationSet Name="Final">
+<Annotation Id="414" Type="Keyphrase" StartNode="233" EndNode="235">
+<Feature>
+  <Name className="java.lang.String">isGenerated</Name>
+  <Value className="java.lang.String">true</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">tfidf</Name>
+  <Value className="java.lang.Double">0.5140009711814828</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">lemmatizedForm</Name>
+  <Value className="java.lang.String">NH</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">elemNo</Name>
+  <Value className="java.lang.Integer">1</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">rightNo</Name>
+  <Value className="java.lang.Integer">51</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">class</Name>
+  <Value className="java.lang.String">http://www.ontotext.com/proton/protontop#Topic</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">label</Name>
+  <Value className="java.lang.String">Pos</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">confidence</Name>
+  <Value className="java.lang.Double">0.98504291340685</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">leftNo</Name>
+  <Value className="java.lang.Integer">41</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">inst</Name>
+  <Value className="java.lang.String">http://data.ontotext.com/publishing/topic/NH</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">mllabel</Name>
+  <Value className="java.lang.String">Pos = 2.09375&amp;Neg = -2.09375</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">tfIdfDisc</Name>
+  <Value className="java.lang.String">10</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">com.ontotext.document.secret.preserve.generated</Name>
+  <Value className="java.lang.Boolean">false</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">string</Name>
+  <Value className="java.lang.String">NH</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">rule</Name>
+  <Value className="java.lang.String">FixOverlaps</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">length</Name>
+  <Value className="java.lang.String">1</Value>
+</Feature>
+</Annotation>
+<Annotation Id="415" Type="Keyphrase" StartNode="272" EndNode="282">
+<Feature>
+  <Name className="java.lang.String">isGenerated</Name>
+  <Value className="java.lang.String">true</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">tfidf</Name>
+  <Value className="java.lang.Double">0.14918508501929953</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">lemmatizedForm</Name>
+  <Value className="java.lang.String">Technology</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">elemNo</Name>
+  <Value className="java.lang.Integer">1</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">rightNo</Name>
+  <Value className="java.lang.Integer">42</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">class</Name>
+  <Value className="java.lang.String">http://www.ontotext.com/proton/protontop#Topic</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">label</Name>
+  <Value className="java.lang.String">Pos</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">confidence</Name>
+  <Value className="java.lang.Double">0.7185943925708561</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">leftNo</Name>
+  <Value className="java.lang.Integer">50</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">inst</Name>
+  <Value className="java.lang.String">http://data.ontotext.com/publishing/topic/technology</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">mllabel</Name>
+  <Value className="java.lang.String">Pos = 0.46875&amp;Neg = -0.46875</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">tfIdfDisc</Name>
+  <Value className="java.lang.String">2</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">com.ontotext.document.secret.preserve.generated</Name>
+  <Value className="java.lang.Boolean">false</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">string</Name>
+  <Value className="java.lang.String">Technology</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">rule</Name>
+  <Value className="java.lang.String">FixOverlaps</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">length</Name>
+  <Value className="java.lang.String">1</Value>
+</Feature>
+</Annotation>
+<Annotation Id="470" Type="Organization" StartNode="320" EndNode="334">
+<Feature>
+  <Name className="java.lang.String">class</Name>
+  <Value className="java.lang.String">http://www.ontotext.com/proton/protontop#Organization</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">isGenerated</Name>
+  <Value className="java.lang.String">true</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">com.ontotext.document.secret.preserve.generated</Name>
+  <Value className="java.lang.Boolean">false</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">inst</Name>
+  <Value className="java.lang.String">http://data.ontotext.com/publishing/organization/Merchants_Bank</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">string</Name>
+  <Value className="java.lang.String">Merchants Bank</Value>
+</Feature>
+</Annotation>
+<Annotation Id="468" Type="Location" StartNode="209" EndNode="216">
+<Feature>
+  <Name className="java.lang.String">class</Name>
+  <Value className="java.lang.String">http://www.ontotext.com/proton/protontop#Location</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">isGenerated</Name>
+  <Value className="java.lang.String">true</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">com.ontotext.document.secret.preserve.generated</Name>
+  <Value className="java.lang.Boolean">false</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">inst</Name>
+  <Value className="java.lang.String">http://data.ontotext.com/publishing/location/Lebanon</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">string</Name>
+  <Value className="java.lang.String">Lebanon</Value>
+</Feature>
+</Annotation>
+<Annotation Id="469" Type="Location" StartNode="221" EndNode="231">
+<Feature>
+  <Name className="java.lang.String">class</Name>
+  <Value className="java.lang.String">http://www.ontotext.com/proton/protontop#Location</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">isGenerated</Name>
+  <Value className="java.lang.String">true</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">com.ontotext.document.secret.preserve.generated</Name>
+  <Value className="java.lang.Boolean">false</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">inst</Name>
+  <Value className="java.lang.String">http://data.ontotext.com/publishing/location/Manchester</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">string</Name>
+  <Value className="java.lang.String">Manchester</Value>
+</Feature>
+</Annotation>
+<Annotation Id="467" Type="Person" StartNode="480" EndNode="494">
+<Feature>
+  <Name className="java.lang.String">class</Name>
+  <Value className="java.lang.String">http://www.ontotext.com/proton/protontop#Person</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">isGenerated</Name>
+  <Value className="java.lang.String">true</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">com.ontotext.document.secret.preserve.generated</Name>
+  <Value className="java.lang.Boolean">false</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">inst</Name>
+  <Value className="java.lang.String">http://data.ontotext.com/publishing/person/Stuart_Pompian</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">string</Name>
+  <Value className="java.lang.String">Stuart Pompian</Value>
+</Feature>
+</Annotation>
+</AnnotationSet>
+
+<!-- Named annotation set -->
+
+<AnnotationSet Name="PLO">
+</AnnotationSet>
+
+<!-- Named annotation set -->
+
+<AnnotationSet Name="Original markups">
+<Annotation Id="0" Type="document-part" StartNode="0" EndNode="495">
+<Feature>
+  <Name className="java.lang.String">com.ontotext.document.part</Name>
+  <Value className="java.lang.String">CONTENT</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">com.ontotext.document.id</Name>
+  <Value className="java.lang.String">1</Value>
+</Feature>
+</Annotation>
+</AnnotationSet>
+
+</GateDocument>
