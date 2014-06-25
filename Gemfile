@@ -31,6 +31,11 @@ gem "capistrano-bundler", ">= 1.1.0"
 gem "capistrano-rvm"
 gem "capistrano-rails", "~> 1.1"
 
+group :test do
+  gem "webmock"
+  gem "vcr"
+end
+
 gem "rails_admin"
 gem "carrierwave"
 gem 'carrierwave-mimetype-fu'

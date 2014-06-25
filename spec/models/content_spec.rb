@@ -61,6 +61,17 @@ describe Content do
         "page" => "a3",
         "source_content_id" => "1234567"
       }
+
+      # Stub out image requests
+      raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
+      stub_request(:get, "https://www.google.com/images/srpr/logo11w.png").
+        with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+        to_return(raw_resp.read)
+      ImageUploader.storage = :file
+    end
+
+    after do
+      FileUtils.rm_rf('./public/content')
     end
         
     it "should create a new content with basic data passed by hash" do
