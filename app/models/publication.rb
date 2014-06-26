@@ -19,7 +19,7 @@ class Publication < ActiveRecord::Base
   attr_accessible :name, :logo, :logo_cache, :remove_logo, :organization_id,
                   :admin_contact_id, :tech_contact_id, :website, :publishing_frequency,
                   :notes, :images_attributes, :parent_id, :location_ids,
-                  :remote_logo_url, :contact_ids
+                  :remote_logo_url, :contact_ids, :category_override
   
   mount_uploader :logo, ImageUploader
 

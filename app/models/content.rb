@@ -311,7 +311,7 @@ class Content < ActiveRecord::Base
               next
             end
             g.tag!("tns:feature") do |h|
-              if ["issue_id", "source_id", "import_location_id", "parent_id"].include? k
+              if ["issue_id", "source_id", "import_location_id", "parent_id", "categories"].include? k
                 if k == "issue_id" and issue.present?
                   key, value = "ISSUE", issue.issue_edition
                 elsif k == "source_id" and source.present?
@@ -322,6 +322,13 @@ class Content < ActiveRecord::Base
                   end
                 elsif k == "parent_id" and parent.present?
                   key, value = "PARENT", "#{Figaro.env.document_prefix}#{v}"
+                elsif k == "categories"
+                  if source.present? and source.category_override.present?
+                    cat = source.category_override
+                  else
+                    cat = categories
+                  end
+                  key, value = "CATEGORIES", cat if cat.present?
                 end
               else
                 key = k.upcase
