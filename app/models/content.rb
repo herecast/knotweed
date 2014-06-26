@@ -44,7 +44,9 @@ class Content < ActiveRecord::Base
   POST_TO_ONTOTEXT = "post_to_ontotext"
   EXPORT_TO_XML = "export_to_xml"
   REPROCESS = "reannotate_at_ontotext"
-  PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS]
+  EXPORT_PRE_PIPELINE = "export_pre_pipeline_xml"
+  EXPORT_POST_PIPELINE = "export_post_pipeline_xml"
+  PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE, EXPORT_POST_PIPELINE]
 
   rails_admin do
     list do
@@ -366,7 +368,39 @@ class Content < ActiveRecord::Base
     end
     xml.target!
   end
+
+  # Export Gate Document directly before/after Pipeline processing
+  def export_pre_pipeline_xml
+    options = { :body => self.to_new_xml }
+
+    res = OntotextController.post('/processPrePipeline', options)
+
+    # TODO: Make check for erroneous response better
+    unless res.body.nil? || res.body.empty?
+      FileUtils.mkpath("#{export_path}/pre_pipeline")
+      File.open("#{export_path}/pre_pipeline/#{guid}.xml", "w+") { |f| f.write(res.body) }
+      File.open("#{export_path}/pre_pipeline/#{guid}.html", "w+") { |f| f.write(content) }
+      return true
+    else
+      return false
+    end
+  end
     
+  def export_post_pipeline_xml
+    options = { :body => self.to_new_xml }
+
+    res = OntotextController.post('/processPostPipeline', options)
+
+    # TODO: Make check for erroneous response better
+    unless res.body.nil? || res.body.empty?
+      FileUtils.mkpath("#{export_path}/post_pipeline")
+      File.open("#{export_path}/post_pipeline/#{guid}.xml", "w+") { |f| f.write(res.body) }
+      File.open("#{export_path}/post_pipeline/#{guid}.html", "w+") { |f| f.write(content) }
+      return true
+    else
+      return false
+    end
+  end
 
   # construct export path
   def export_path

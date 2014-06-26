@@ -61,6 +61,17 @@ describe Content do
         "page" => "a3",
         "source_content_id" => "1234567"
       }
+
+      # Stub out image requests
+      raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
+      stub_request(:get, "https://www.google.com/images/srpr/logo11w.png").
+        with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+        to_return(raw_resp.read)
+      ImageUploader.storage = :file
+    end
+
+    after do
+      FileUtils.rm_rf('./public/content')
     end
         
     it "should create a new content with basic data passed by hash" do
@@ -332,6 +343,75 @@ describe Content do
       # note the brackets at the end are closing CDATA
       @xml.include?("#{@content.content}]]></tns:content>").should be_true
     end 
+  end
+
+  describe "" do
+    before do
+      @content = FactoryGirl.create(:content)
+    end
+
+    after do
+      # clean up output folder
+      system("rm -rf #{Figaro.env.content_export_path}/*")
+    end
+
+    describe "#export_pre_pipeline_xml" do
+      before do
+        stub_request(:post, "http://#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{ENV['ONTOTEXT_API_BASE_URI'].sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPrePipeline").
+          with(:headers => {'Content-Type'=>'application/vnd.ontotext.ces.document+xml;charset=UTF-8'}).
+          to_return(:status => 200, 
+                    :body => File.open('spec/fixtures/pre_pipeline_output.xml', 'r').readlines.join(),
+                    :headers => {})
+      end
+
+      subject { @content.export_pre_pipeline_xml }
+      let(:base_path) { "#{@content.export_path}/pre_pipeline/#{@content.guid}" }
+
+      it "should return true for successful export" do
+        expect(subject).to be_true
+      end
+
+      it "should create xml and html files" do
+        subject
+        expect(File.exists? "#{base_path}.xml").to be_true
+        expect(File.exists? "#{base_path}.html").to be_true
+      end
+
+      it "should have a well-formed XML file" do
+        subject
+        export = File.open("#{base_path}.xml", "r").readlines.join()
+        expect(Nokogiri::XML(export) { |config| config.strict }).to_not be_nil
+      end
+    end
+    
+    describe "postpipeline xml" do
+      before do
+        stub_request(:post, "http://#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{ENV['ONTOTEXT_API_BASE_URI'].sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPostPipeline").
+          with(:headers => {'Content-Type'=>'application/vnd.ontotext.ces.document+xml;charset=UTF-8'}).
+          to_return(:status => 200, 
+                    :body => File.open('spec/fixtures/post_pipeline_output.xml', 'r').readlines.join(),
+                    :headers => {})
+      end
+
+      subject { @content.export_post_pipeline_xml }
+      let(:base_path) { "#{@content.export_path}/post_pipeline/#{@content.guid}" }
+
+      it "should return true for successful export" do
+        expect(subject).to be_true
+      end
+
+      it "should create xml and html files" do
+        subject
+        expect(File.exists? "#{base_path}.xml").to be_true
+        expect(File.exists? "#{base_path}.html").to be_true
+      end
+
+      it "should have a well-formed XML file" do
+        subject
+        export = File.open("#{base_path}.xml", "r").readlines.join()
+        expect(Nokogiri::XML(export) { |config| config.strict }).to_not be_nil
+      end
+    end
   end
 
 end

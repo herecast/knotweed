@@ -17,6 +17,16 @@ describe Annotation do
   end
 
   describe "edges" do
+    before do
+      stub_request(:get, "#{ENV['SESAME_RDF_ENDPOINT']}?query=%0A%20%20%20%20%20%20PREFIX%20sbtxo:%3Chttp://www.subtext.org/ontology/%3E%0A%20%20%20%20%20%20PREFIX%20sbtxr:%3Chttp://www.subtext.org/resource/%3E%0A%20%20%20%20%20%20PREFIX%20sbtxd:%20%3Chttp://www.subtext.org/Document/%3E%0A%20%20%20%20%20%20PREFIX%20rdfs:%3Chttp://www.w3.org/2000/01/rdf-schema%23%3E%0A%20%20%20%20%20%20PREFIX%20rdf:%3Chttp://www.w3.org/1999/02/22-rdf-syntax-ns%23%3E%0A%20%20%20%20%20%20PREFIX%20pub:%20%3Chttp://ontology.ontotext.com/publishing%23%3E%0A%0A%20%20%20%20%20%20SELECT%20*%20%0A%20%20%20%20%20%20WHERE%20%7B%20%0A%20%20%20%20%20%20%20%20%3Chttp://www.subtext.org/resource/Company_T.12345%3E%20%20?predicate%20?object%20.%0A%20%20%20%20%20%20%20%20OPTIONAL%20%7B%20?object%20%3Chttp://www.w3.org/2000/01/rdf-schema%23label%3E%20?label%20%7D%0A%0A%20%20%20%20%20%20%20%20FILTER%20(%0A%20%20%20%20%20%20%20%20%20%20?predicate%20!=%20%3Chttp://www.w3.org/1999/02/22-rdf-syntax-ns%23type%3E%20%0A%20%20%20%20%20%20%20%20%20%20)%0A%0A%20%20%20%20%20%20%7D&queryLn=sparql").
+      with(:headers => {'Accept'=>'application/sparql-results+json'}).
+      to_return(:body => File.new('spec/fixtures/annotation_instance_not_found.json', 'r'), :status => 200)
+
+    stub_request(:get, "#{ENV['SESAME_RDF_ENDPOINT']}?query=%0A%20%20%20%20%20%20PREFIX%20sbtxo:%3Chttp://www.subtext.org/ontology/%3E%0A%20%20%20%20%20%20PREFIX%20sbtxr:%3Chttp://www.subtext.org/resource/%3E%0A%20%20%20%20%20%20PREFIX%20sbtxd:%20%3Chttp://www.subtext.org/Document/%3E%0A%20%20%20%20%20%20PREFIX%20rdfs:%3Chttp://www.w3.org/2000/01/rdf-schema%23%3E%0A%20%20%20%20%20%20PREFIX%20rdf:%3Chttp://www.w3.org/1999/02/22-rdf-syntax-ns%23%3E%0A%20%20%20%20%20%20PREFIX%20pub:%20%3Chttp://ontology.ontotext.com/publishing%23%3E%0A%0A%20%20%20%20%20%20SELECT%20*%20%0A%20%20%20%20%20%20WHERE%20%7B%20%0A%20%20%20%20%20%20%20%20%3Chttp://www.subtext.org/resource/Company_T.7687%3E%20%20?predicate%20?object%20.%0A%20%20%20%20%20%20%20%20OPTIONAL%20%7B%20?object%20%3Chttp://www.w3.org/2000/01/rdf-schema%23label%3E%20?label%20%7D%0A%0A%20%20%20%20%20%20%20%20FILTER%20(%0A%20%20%20%20%20%20%20%20%20%20?predicate%20!=%20%3Chttp://www.w3.org/1999/02/22-rdf-syntax-ns%23type%3E%20%0A%20%20%20%20%20%20%20%20%20%20)%0A%0A%20%20%20%20%20%20%7D&queryLn=sparql").
+         with(:headers => {'Accept'=>'application/sparql-results+json'}).
+         to_return(:status => 200, :body => File.new('spec/fixtures/annotation_instance_found.json', 'r'))
+    end
+
     it "should return empty array when it has no lookup_class" do
       ann = FactoryGirl.create(:annotation, lookup_class: nil)
       ann.edges.should== []

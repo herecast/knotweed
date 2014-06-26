@@ -87,3 +87,6 @@ pickle-email-*.html
 !/lib/parsers/*/
 
 /public/assets/
+
+# VCR cassettes
+spec/fixtures/vcr_cassettes/
