@@ -87,6 +87,20 @@
         %i.icon-plus
         %span Create New
 %li
+  = link_to repositories_path do
+    %i.icon-table
+    %span Repositories
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "repositories" ? "in" : "" }" }
+    %li{ class: current_page?(repositories_path) ? "active" : "" }
+      = link_to repositories_path do
+        %i.icon-tasks
+        %span All
+    %li{ class: current_page?(new_repository_path) ? "active" : "" }
+      = link_to new_repository_path do
+        %i.icon-plus
+        %span Create New
+%li
   = link_to data_contexts_path do
     %i.icon-table
     %span Data Contexts

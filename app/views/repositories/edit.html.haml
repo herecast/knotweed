@@ -1,0 +1,8 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-pencil
+        Repository ID #{@repository.id} #{@repository.name}
+    .box-content
+      = render partial: "repositories/partials/form"

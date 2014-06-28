@@ -1,0 +1,6 @@
+= simple_form_for @repository do |f|
+  = f.error_notification
+  = f.input :name
+  = f.input :dsp_endpoint
+  = f.input :sesame_endpoint
+  = f.submit class: "btn btn-primary"

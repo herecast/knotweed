@@ -2,6 +2,7 @@
 
 FactoryGirl.define do
   factory :annotation_report do
+    repository
     content
   end
 end

@@ -36,7 +36,6 @@ group :test do
   gem "vcr"
 end
 
-gem "rails_admin"
 gem "carrierwave"
 gem 'carrierwave-mimetype-fu'
 gem "figaro"
@@ -74,3 +73,4 @@ gem "turbolinks"
 gem "jquery-turbolinks"
 
 gem "ckeditor_rails"
+ gem'rails_admin'

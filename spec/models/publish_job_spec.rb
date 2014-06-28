@@ -8,6 +8,7 @@ describe PublishJob do
       FactoryGirl.create_list(:content, 3, source: @publication)
       FactoryGirl.create_list(:content, 5)
       @job = FactoryGirl.create(:publish_job)
+      @repo = FactoryGirl.create(:repository)
     end
 
     it "should return the total number of contents when no query provided" do
@@ -27,6 +28,22 @@ describe PublishJob do
       @job.query_params[:ids] = "#{Content.last.id}"
       @job.save!
       @job.contents_count.should== 1
+    end
+
+    it "should return only the contents already published to the specified repo" do
+      @job.query_params[:repository_id] = @repo.id
+      @job.query_params[:published] = "true"
+      @job.save!
+      contents = FactoryGirl.create_list(:content, 3)
+      @repo.contents << contents
+      @job.contents_count.should== 3
+    end
+
+    it "should return all contents matching the query that are not published to the specified repo when published is false" do
+      @job.query_params[:repository_id] = @repo.id
+      @job.query_params[:published] = "false"
+      @job.save!
+      @job.contents_count.should== Content.count - @repo.contents.count
     end
   end
 

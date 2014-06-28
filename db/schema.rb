@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140624200044) do
+ActiveRecord::Schema.define(:version => 20140628211714) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(:version => 20140624200044) do
     t.string   "name"
     t.text     "description"
     t.text     "json_response", :limit => 2147483647
+    t.integer  "repository_id"
   end
 
   create_table "annotations", :force => true do |t|
@@ -132,6 +133,13 @@ ActiveRecord::Schema.define(:version => 20140624200044) do
   create_table "contents_publish_records", :id => false, :force => true do |t|
     t.integer "content_id"
     t.integer "publish_record_id"
+  end
+
+  create_table "contents_repositories", :force => true do |t|
+    t.integer  "content_id"
+    t.integer  "repository_id"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
   end
 
   create_table "data_contexts", :force => true do |t|
@@ -320,18 +328,13 @@ ActiveRecord::Schema.define(:version => 20140624200044) do
 
   add_index "publish_records", ["publish_job_id"], :name => "index_publish_records_on_publish_job_id"
 
-  create_table "rails_admin_histories", :force => true do |t|
-    t.text     "message"
-    t.string   "username"
-    t.integer  "item"
-    t.string   "table"
-    t.integer  "month",      :limit => 2
-    t.integer  "year",       :limit => 8
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
+  create_table "repositories", :force => true do |t|
+    t.string   "name"
+    t.string   "dsp_endpoint"
+    t.string   "sesame_endpoint"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
-
-  add_index "rails_admin_histories", ["item", "table", "month", "year"], :name => "index_rails_admin_histories"
 
   create_table "roles", :force => true do |t|
     t.string   "name"

@@ -1,8 +1,9 @@
 class AnnotationReportsController < ApplicationController
 
   def create
-    json_data = JSON.parse(OntotextController.get_annotations(params[:content_id]))["results"]["bindings"][0]["annotation"]["value"]
-    @annotation_report = AnnotationReport.create(content_id: params[:content_id], name: params[:name], json_response: json_data)
+    repo = Repository.find(params[:repository_id])
+    json_data = JSON.parse(OntotextController.get_annotations(params[:content_id], repo))["results"]["bindings"][0]["annotation"]["value"]
+    @annotation_report = AnnotationReport.create(content_id: params[:content_id], name: params[:name], repository: repo, json_response: json_data)
     @hash_data = JSON.parse(json_data)
     @hash_data["annotation-sets"][0]["annotation"].each do |ant|
       new_ant = Annotation.new(annotation_report_id: @annotation_report.id, annotation_id: ant["id"], 

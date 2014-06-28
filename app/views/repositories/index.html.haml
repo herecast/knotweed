@@ -1,0 +1,14 @@
+%table.table.table-striped.table-bordered.data-table.table-condensed
+  %thead
+    %tr
+      %th Name
+      %th DSP Endpoint
+      %th Sesame Endpoint
+      %th Contents Published
+  %tbody
+    - @repositories.each do |repo|
+      %tr{ class: "repo-#{repo.id}" }
+        %td= link_to repo.name, edit_repository_path(repo)
+        %td= repo.dsp_endpoint
+        %td= repo.sesame_endpoint
+        %td= repo.contents.count

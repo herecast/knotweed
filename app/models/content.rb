@@ -8,6 +8,7 @@ class Content < ActiveRecord::Base
   has_many :annotation_reports
 
   has_and_belongs_to_many :publish_records
+  has_and_belongs_to_many :repositories
   
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
   belongs_to :source, class_name: "Publication", foreign_key: "source_id"
@@ -21,7 +22,7 @@ class Content < ActiveRecord::Base
   attr_accessible :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype
   attr_accessible :language, :page, :wordcount, :authoremail, :source_id, :file
   attr_accessible :quarantine, :doctype, :timestamp, :contentsource, :source_content_id
-  attr_accessible :published, :image_ids, :parent_id
+  attr_accessible :image_ids, :parent_id
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -48,18 +49,13 @@ class Content < ActiveRecord::Base
   EXPORT_POST_PIPELINE = "export_post_pipeline_xml"
   PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE, EXPORT_POST_PIPELINE]
 
-  rails_admin do
-    list do
-      filters [:source, :issue, :title, :authors, :import_record, :import_location]
-      items_per_page 100
-      sort_by :pubdate, :source
-      field :import_record
-      field :import_location
-      field :pubdate
-      field :source
-      field :issue
-      field :title
-      field :authors
+  # if passed a repo, checks if this content was published in that repo
+  # otherwise, checks if it is published in any repo
+  def published?(repo=nil)
+    if repo.present?
+      repo.include? self
+    else
+      repositories.present?
     end
   end
 
@@ -199,7 +195,7 @@ class Content < ActiveRecord::Base
   end
 
   # catchall publish method that handles interacting w/ the publish record
-  def publish(method=nil, record=nil)
+  def publish(method, repo, record=nil)
     if method.nil?
       method = DEFAULT_PUBLISH_METHOD
     end
@@ -211,7 +207,7 @@ class Content < ActiveRecord::Base
     end
     result = false
     begin
-      result = self.send(method.to_sym)
+      result = self.send method.to_sym, repo
       if result == true
         update_attribute(:published, true)
         record.items_published += 1 if record.present?
@@ -256,20 +252,21 @@ class Content < ActiveRecord::Base
   
   # function to post to Ontotext's prototype
   # using the "new" xml format
-  def post_to_ontotext
+  def post_to_ontotext(repo)
     options = { :body => self.to_new_xml }
                 
-    response = OntotextController.post('/processDocument?persist=true', options)
+    response = OntotextController.post(repo.dsp_endpoint + '/processDocument?persist=true', options)
     if response.body.include? document_uri
+      repo.contents << self
       return true
     else
       return "failed to post doc: #{self.id}\nresponse:#{response.body}"
     end
   end
 
-  def reannotate_at_ontotext
+  def reannotate_at_ontotext(repo)
     options = { :id => document_uri }
-    response = OntotextController.post('/reprocessDocument', options)
+    response = OntotextController.post(repo.dsp_endpoint + '/reprocessDocument', options)
     if response.code != 200
       post_to_ontotext
     else
@@ -377,10 +374,10 @@ class Content < ActiveRecord::Base
   end
 
   # Export Gate Document directly before/after Pipeline processing
-  def export_pre_pipeline_xml
+  def export_pre_pipeline_xml(repo)
     options = { :body => self.to_new_xml }
 
-    res = OntotextController.post('/processPrePipeline', options)
+    res = OntotextController.post("#{repo.dsp_endpoint}/processPrePipeline", options)
 
     # TODO: Make check for erroneous response better
     unless res.body.nil? || res.body.empty?
@@ -393,10 +390,10 @@ class Content < ActiveRecord::Base
     end
   end
     
-  def export_post_pipeline_xml
+  def export_post_pipeline_xml(repo)
     options = { :body => self.to_new_xml }
 
-    res = OntotextController.post('/processPostPipeline', options)
+    res = OntotextController.post("#{repo.dsp_endpoint}/processPostPipeline", options)
 
     # TODO: Make check for erroneous response better
     unless res.body.nil? || res.body.empty?
@@ -424,8 +421,7 @@ class Content < ActiveRecord::Base
       contents = Content.where(:id => id_array)
     else
       query = {
-        quarantine: false, # can't publish quarantined docs
-        published: false # default to not yet published
+        quarantine: false # can't publish quarantined docs
       }
       if query_params[:source_id].present?
         query[:source_id] = query_params[:source_id].map { |s| s.to_i } 
@@ -433,20 +429,29 @@ class Content < ActiveRecord::Base
       if query_params[:import_location_id].present?
         query[:import_location_id] = query_params[:import_location_id].map { |s| s.to_i } 
       end
-      if query_params[:published] == "true"
-        query[:published] = true
-      elsif query_params[:published] == "both"
-        query.delete(:published)
+
+      repo = Repository.find(query_params[:repository_id]) if query_params[:repository_id].present?
+
+      if query_params[:published] == "true" and repo.present?
+        contents = repo.contents
+        contents = contents.where(query)
+      else
+        contents = Content.where(query)
       end
-      contents = Content.where(query)
+
       contents = contents.where("pubdate >= ?", Date.parse(query_params[:from])) if query_params[:from].present?
       contents = contents.where("pubdate <= ?", Date.parse(query_params[:to])) if query_params[:to].present?
+      
+      # filter for content publish status in a specific repo
+      if query_params[:published] == "false" and repo.present?
+        contents = contents - repo.contents
+      end
     end
     return contents
   end
 
-  def rdf_to_gate
-    return OntotextController.rdf_to_gate(id)
+  def rdf_to_gate(repository)
+    return OntotextController.rdf_to_gate(id, repository)
   end
 
   # for threaded contents

@@ -1,7 +1,5 @@
 Knotweed::Application.routes.draw do
 
-  mount RailsAdmin::Engine => '/rails_admin', :as => 'rails_admin'
-
   authenticated :user do
     root :to => "application#dashboard"
   end
@@ -25,6 +23,7 @@ Knotweed::Application.routes.draw do
   resources :locations, only: [:create, :update, :new, :edit, :destroy]
 
   resources :data_contexts
+  resources :repositories
 
   match 'annotation_reports/create/:content_id', to: "annotation_reports#create", as: :create_annotation_report
   match 'annotation_reports/export/:content_id', to: "annotation_reports#export", as: :export_annotation_reports
@@ -41,8 +40,10 @@ Knotweed::Application.routes.draw do
 
   match "parsers/:parser_id/new_import_job" => "import_jobs#new", as: :new_import_job_for_parser
 
-  get "contents/:id/publish/:method", to: "contents#publish", as: :publish_content
-  get "contents/:id/generate_gate_xml", to: "contents#rdf_to_gate", as: :rdf_to_gate
+  # NOTE: these calls must end in :repository_id so that the javascript
+  # that updates the action buttons on the onesie page works correctly
+  get "contents/:id/publish/:method/repository/:repository_id", to: "contents#publish", as: :publish_content
+  get "contents/:id/generate_gate_xml/repository/:repository_id", to: "contents#rdf_to_gate", as: :rdf_to_gate
   
   get 'import_jobs/:id/run_job', to: 'import_jobs#run_job', as: :run_import_job
   delete 'import_jobs/:id/cancel', to: 'import_jobs#cancel_job', as: :cancel_import_job

@@ -39,9 +39,6 @@
           .field.span3
             = f.label :authors_cont, "Authors"
             = f.text_field :authors_cont
-          .field.span3
-            = f.label :published_eq, "Published?"
-            = f.select :published_eq, options_for_select([["Both", nil], ["Yes", true], ["No", false]], search_field_value(:published_eq))
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"

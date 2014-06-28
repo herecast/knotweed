@@ -1,11 +1,21 @@
 jQuery ->
   $('.chosen-select').chosen();
 
+  # hide published select box if no repo is selected
+  if $("#repository_id").length > 0 and $("#repository_id").val().length == 0
+    $("#published_selector").hide()
+
   $("fieldset#contents-query").on 'change', ->
     if $(this).find("#ids").val().length > 0
       $(this).find("#query-fields").attr("style", "opacity: 0.5;").find(":input").attr("disabled", true)
     else
       $(this).find("#query-fields").attr("style", "opacity: inherit;").find(":input").attr("disabled", false)
+
+    if $("#repository_id").val().length > 0
+      $("#published_selector").show()
+    else
+      $("#published_selector").hide()
+
     $.ajax({
       type: "POST",
       url: $(this).data("contentsQueryPath"),

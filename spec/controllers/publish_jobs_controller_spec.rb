@@ -10,6 +10,7 @@ describe PublishJobsController do
 
     describe "on success" do
       before do
+        @repo = FactoryGirl.create(:repository)
         @publish_job_hash = {
           name: "Test Publish Job",
           publish_method: Content::EXPORT_TO_XML
@@ -17,7 +18,8 @@ describe PublishJobsController do
         @query_hash = {
           source_id: ["3"], import_location_id: ["4"],
           from: nil, to: nil, published: nil,
-          ids: nil
+          ids: nil,
+          repository_id: nil
         }
         post_params = @query_hash.merge({ publish_job: @publish_job_hash })
         post :create, post_params
@@ -39,6 +41,5 @@ describe PublishJobsController do
 
     end
   end
-
 
 end

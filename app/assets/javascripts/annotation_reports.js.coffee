@@ -7,7 +7,8 @@ jQuery ->
     $.ajax $(this).data("actionUrl"),
       dataType: "script",
       data: {
-        "name": $("input#report_name").val()
+        "name": $("input#report_name").val(),
+        "repository_id": $("select#repository_id").val()
       }
     $("input#report_name").val("")
 

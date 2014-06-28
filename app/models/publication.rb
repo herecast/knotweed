@@ -27,15 +27,6 @@ class Publication < ActiveRecord::Base
 
   validates :publishing_frequency, inclusion: { in: FREQUENCY_OPTIONS  }, allow_blank: true
 
-  rails_admin do
-    edit do
-      exclude_fields :contents, :issues
-    end
-    show do
-      exclude_fields :contents, :issues
-    end
-  end
-
   scope :alphabetical, order("name ASC")
   default_scope alphabetical
 

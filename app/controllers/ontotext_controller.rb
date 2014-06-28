@@ -1,6 +1,5 @@
 class OntotextController
   include HTTParty
-  base_uri Figaro.env.ontotext_api_base_uri
   
   # set debug_output based on environment
   def self.set_debug_output
@@ -26,8 +25,8 @@ class OntotextController
   end
 
   # ping the rdf to gate endpoint and return the GATE xml
-  def self.rdf_to_gate(content_id, options={})
-    endpoint = CGI::escape Figaro.env.sesame_rdf_endpoint
+  def self.rdf_to_gate(content_id, repository, options={})
+    endpoint = CGI::escape repository.sesame_endpoint
     response = self.get(Figaro.env.rdf_to_gate_endpoint + "/rdfToGate/#{content_id.to_s}/#{endpoint}", options)
     if response.code == 200
       response.body
@@ -36,7 +35,7 @@ class OntotextController
     end
   end
 
-  def self.get_annotations(content_id, options={})
+  def self.get_annotations(content_id, repository, options={})
     query = CGI::escape "PREFIX sbtxd: <http://www.subtext.org/Document/>
     PREFIX pub: <http://ontology.ontotext.com/publishing#>
 
@@ -54,7 +53,7 @@ class OntotextController
       options[:headers] = request_headers
     end
 
-    response = self.get(Figaro.env.sesame_rdf_endpoint + "?query=#{query}&queryLn=sparql", options)
+    response = self.get(repository.sesame_endpoint + "?query=#{query}&queryLn=sparql", options)
     if response.code == 200
       response.body
     else

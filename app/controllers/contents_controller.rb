@@ -75,7 +75,12 @@ class ContentsController < ApplicationController
 
   def publish
     @content = Content.find(params[:id])
-    if @content.publish(params[:method]) == true
+    if params[:repository_id].present?
+      repo = Repository.find(params[:repository_id])
+    else
+      repo = nil
+    end
+    if @content.publish(params[:method], repo) == true
       flash[:notice] = "#{params[:method].humanize} successful"
     else
       flash[:error] = "#{params[:method].humanize} encountered an error"
@@ -85,13 +90,11 @@ class ContentsController < ApplicationController
 
   def rdf_to_gate
     @content = Content.find(params[:id])
-    gate_xml = @content.rdf_to_gate
+    repo = Repository.find(params[:repository_id])
+    gate_xml = @content.rdf_to_gate(repo)
     if gate_xml == false
       render text: "content #{@content.id} not found on Ontotext server"
     else
-      #render :xml => gate_xml
-      #f = File.new("#{Rails.root}/tmp/#{@content.id}.gate.xml", "w+")
-      #f.write(gate_xml)
       send_data gate_xml, :filename => "#{@content.id}.gate.xml", type: :xml, disposition: 'attachment'
     end
   end

@@ -20,8 +20,7 @@ class PublishJob < ActiveRecord::Base
 
   default_scope { where archive: false }
 
-
-  QUERY_PARAMS_FIELDS = %w(source_id from to import_location_id published ids)
+  QUERY_PARAMS_FIELDS = %w(source_id from to import_location_id published ids repository_id)
   
   validates :publish_method, inclusion: { in: Content::PUBLISH_METHODS }, allow_nil: true
 
@@ -29,9 +28,14 @@ class PublishJob < ActiveRecord::Base
   # Content query from query_params hash
   def perform
     record = last_publish_record
+    if query_params[:repository_id].present?
+      repo = Repository.find query_params[:repository_id]
+    else
+      repo = nil
+    end
     Content.contents_query(query_params).find_each(batch_size: 500) do |c|
       record.contents << c
-      c.publish(publish_method, record)
+      c.publish(publish_method, repo, record)
     end
     log = record.log_file
     log.info("failures: #{record.failures}")

@@ -353,6 +353,7 @@ describe Content do
   describe "" do
     before do
       @content = FactoryGirl.create(:content)
+      @repo = FactoryGirl.create(:repository)
     end
 
     after do
@@ -362,14 +363,14 @@ describe Content do
 
     describe "#export_pre_pipeline_xml" do
       before do
-        stub_request(:post, "http://#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{ENV['ONTOTEXT_API_BASE_URI'].sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPrePipeline").
+        stub_request(:post, "http://#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPrePipeline").
           with(:headers => {'Content-Type'=>'application/vnd.ontotext.ces.document+xml;charset=UTF-8'}).
           to_return(:status => 200, 
                     :body => File.open('spec/fixtures/pre_pipeline_output.xml', 'r').readlines.join(),
                     :headers => {})
       end
 
-      subject { @content.export_pre_pipeline_xml }
+      subject { @content.export_pre_pipeline_xml(@repo) }
       let(:base_path) { "#{@content.export_path}/pre_pipeline/#{@content.guid}" }
 
       it "should return true for successful export" do
@@ -391,14 +392,14 @@ describe Content do
     
     describe "postpipeline xml" do
       before do
-        stub_request(:post, "http://#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{ENV['ONTOTEXT_API_BASE_URI'].sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPostPipeline").
+        stub_request(:post, "http://#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPostPipeline").
           with(:headers => {'Content-Type'=>'application/vnd.ontotext.ces.document+xml;charset=UTF-8'}).
           to_return(:status => 200, 
                     :body => File.open('spec/fixtures/post_pipeline_output.xml', 'r').readlines.join(),
                     :headers => {})
       end
 
-      subject { @content.export_post_pipeline_xml }
+      subject { @content.export_post_pipeline_xml(@repo) }
       let(:base_path) { "#{@content.export_path}/post_pipeline/#{@content.guid}" }
 
       it "should return true for successful export" do
@@ -417,6 +418,29 @@ describe Content do
         expect(Nokogiri::XML(export) { |config| config.strict }).to_not be_nil
       end
     end
+
+    describe "#post_to_ontotext" do
+      before do
+        stub_request(:post, "#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processDocument?persist=true").
+          with(:headers => { 'Content-Type' => 'application/vnd.ontotext.ces.document+xml;charset=UTF-8'}). 
+          to_return(:status => 200,
+                    :body => File.open('spec/fixtures/post_to_ontotext.xml', 'r').readlines.join(),
+                    :headers => {})
+      end
+
+      subject { @content.post_to_ontotext(@repo) }
+
+      it "should return true for successful publish" do
+        expect(subject).to be_true
+      end
+
+      it "should have been addd to the repo's contents" do
+        subject
+        @repo.contents.include?(@content).should == true
+      end
+
+    end
+
   end
 
 end
