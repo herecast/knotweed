@@ -431,20 +431,15 @@ class Content < ActiveRecord::Base
       end
 
       repo = Repository.find(query_params[:repository_id]) if query_params[:repository_id].present?
-
-      if query_params[:published] == "true" and repo.present?
-        contents = repo.contents
-        contents = contents.where(query)
-      else
-        contents = Content.where(query)
-      end
+      contents = Content.where(query)
 
       contents = contents.where("pubdate >= ?", Date.parse(query_params[:from])) if query_params[:from].present?
       contents = contents.where("pubdate <= ?", Date.parse(query_params[:to])) if query_params[:to].present?
-      
-      # filter for content publish status in a specific repo
-      if query_params[:published] == "false" and repo.present?
-        contents = contents - repo.contents
+
+      if query_params[:published] == "true" and repo.present?
+        contents = contents.where("id IN (select id from contents_repositories where repository_id=#{repo.id})")
+      elsif query_params[:published] == "false" and repo.present?
+        contents = contents.where("id NOT IN (select id from contents_repositories where repository_id=#{repo.id})")
       end
     end
     return contents
