@@ -71,7 +71,6 @@ describe PublishJob do
       c = Content.first
       File.exists?("#{c.export_path}/#{c.guid}.xml").should be_true
       File.exists?("#{c.export_path}/#{c.guid}.html").should be_true
-      c.published.should== true
     end
 
     it "should create a publish record attached to the job" do
