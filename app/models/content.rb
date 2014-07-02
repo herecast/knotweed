@@ -206,8 +206,9 @@ class Content < ActiveRecord::Base
       log = Logger.new("#{Rails.root}/log/publishing.log")
     end
     result = false
+    opts = {}
     begin
-      result = self.send method.to_sym, repo
+      result = self.send method.to_sym, repo, opts
       if result == true
         update_attribute(:published, true)
         record.items_published += 1 if record.present?
@@ -228,7 +229,7 @@ class Content < ActiveRecord::Base
   # if publishing is successful and a string
   # with an error message if it is not.
 
-  def export_to_xml(format=nil)
+  def export_to_xml(repo, opts = {}, format=nil)
     unless EXPORT_FORMATS.include? format
       format = DEFAULT_FORMAT
     end
@@ -252,7 +253,7 @@ class Content < ActiveRecord::Base
   
   # function to post to Ontotext's prototype
   # using the "new" xml format
-  def post_to_ontotext(repo)
+  def post_to_ontotext(repo, opts={})
     options = { :body => self.to_new_xml }
                 
     response = OntotextController.post(repo.dsp_endpoint + '/processDocument?persist=true', options)
@@ -264,7 +265,7 @@ class Content < ActiveRecord::Base
     end
   end
 
-  def reannotate_at_ontotext(repo)
+  def reannotate_at_ontotext(repo, opts = {})
     options = { :id => document_uri }
     response = OntotextController.post(repo.dsp_endpoint + '/reprocessDocument', options)
     if response.code != 200
