@@ -218,8 +218,8 @@ class Content < ActiveRecord::Base
         log.error(result)
         record.failures += 1 if record.present?
       end
-    rescue
-      log.error(result)
+    rescue => e
+      log.error("Error exporting #{self.id}: #{e}")
       record.failures += 1 if record.present?
     end
     record.save if record.present?
