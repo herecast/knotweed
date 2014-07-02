@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :content do
-    title "Title"
+    title { "Title-#{[*('A'..'Z')].sample(8).join}" }
     subtitle "Subtitle"
     authors "John Smith"
     content "Content goes here"

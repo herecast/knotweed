@@ -71,6 +71,7 @@ end
 
 gem "turbolinks"
 gem "jquery-turbolinks"
+gem "rubyzip", "~> 1.1.4"
 
 gem "ckeditor_rails"
  gem'rails_admin'

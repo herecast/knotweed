@@ -10,4 +10,8 @@ class PublishRecord < ActiveRecord::Base
   def job
     publish_job
   end
+
+  def files
+    @file_list ||= Array.new
+  end
 end
