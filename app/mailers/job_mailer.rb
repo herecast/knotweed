@@ -10,4 +10,11 @@ class JobMailer < ActionMailer::Base
     end
   end
 
+  def file_ready(record)
+    @job = record.job
+    @record = record
+    mail(to: @job.notifyees.map(&:email), subject: "Archive File ready for #{@job.class.name} #{@job.id}") do |format|
+      format.html
+    end
+  end
 end

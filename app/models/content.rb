@@ -202,12 +202,15 @@ class Content < ActiveRecord::Base
     # if there is a publish record, log output to corresponding log file
     if record.present?
       log = record.log_file
+      file_list = record.files
     else
       log = Logger.new("#{Rails.root}/log/publishing.log")
     end
     result = false
+    opts = {}
+    opts[:file_list] = file_list unless file_list.nil?
     begin
-      result = self.send method.to_sym, repo
+      result = self.send method.to_sym, repo, opts
       if result == true
         update_attribute(:published, true)
         record.items_published += 1 if record.present?
@@ -215,8 +218,8 @@ class Content < ActiveRecord::Base
         log.error(result)
         record.failures += 1 if record.present?
       end
-    rescue
-      log.error(result)
+    rescue => e
+      log.error("Error exporting #{self.id}: #{e}")
       record.failures += 1 if record.present?
     end
     record.save if record.present?
@@ -228,7 +231,8 @@ class Content < ActiveRecord::Base
   # if publishing is successful and a string
   # with an error message if it is not.
 
-  def export_to_xml(format=nil)
+  def export_to_xml(repo, opts = {}, format=nil)
+    file_list = opts[:file_list] || Array.new
     unless EXPORT_FORMATS.include? format
       format = DEFAULT_FORMAT
     end
@@ -236,7 +240,8 @@ class Content < ActiveRecord::Base
       return "doc #{id} is quarantined and was not exported"
     else
       FileUtils.mkpath(export_path)
-      File.open("#{export_path}/#{guid}.xml", "w+") do |f|
+      xml_path = "#{export_path}/#{guid}.xml"
+      File.open(xml_path, "w+") do |f|
         if format == KIM_FORMAT
           f.write to_kim_xml
         else
@@ -246,13 +251,14 @@ class Content < ActiveRecord::Base
       File.open("#{export_path}/#{guid}.html", "w+") do |f|
         f.write content
       end
+      file_list << xml_path
       return true
     end
   end
   
   # function to post to Ontotext's prototype
   # using the "new" xml format
-  def post_to_ontotext(repo)
+  def post_to_ontotext(repo, opts={})
     options = { :body => self.to_new_xml }
                 
     response = OntotextController.post(repo.dsp_endpoint + '/processDocument?persist=true', options)
@@ -264,7 +270,7 @@ class Content < ActiveRecord::Base
     end
   end
 
-  def reannotate_at_ontotext(repo)
+  def reannotate_at_ontotext(repo, opts = {})
     options = { :id => document_uri }
     response = OntotextController.post(repo.dsp_endpoint + '/reprocessDocument', options)
     if response.code != 200
@@ -374,32 +380,38 @@ class Content < ActiveRecord::Base
   end
 
   # Export Gate Document directly before/after Pipeline processing
-  def export_pre_pipeline_xml(repo)
+  def export_pre_pipeline_xml(repo, opts = {})
     options = { :body => self.to_new_xml }
+    file_list = opts[:file_list] || Array.new
 
     res = OntotextController.post("#{repo.dsp_endpoint}/processPrePipeline", options)
 
     # TODO: Make check for erroneous response better
     unless res.body.nil? || res.body.empty?
       FileUtils.mkpath("#{export_path}/pre_pipeline")
-      File.open("#{export_path}/pre_pipeline/#{guid}.xml", "w+") { |f| f.write(res.body) }
+      xml_path = "#{export_path}/pre_pipeline/#{guid}.xml"
+      File.open(xml_path, "w+") { |f| f.write(res.body) }
       File.open("#{export_path}/pre_pipeline/#{guid}.html", "w+") { |f| f.write(content) }
+      file_list << xml_path
       return true
     else
       return false
     end
   end
     
-  def export_post_pipeline_xml(repo)
+  def export_post_pipeline_xml(repo, opts = {})
     options = { :body => self.to_new_xml }
+    file_list = opts[:file_list] || Array.new
 
     res = OntotextController.post("#{repo.dsp_endpoint}/processPostPipeline", options)
 
     # TODO: Make check for erroneous response better
     unless res.body.nil? || res.body.empty?
       FileUtils.mkpath("#{export_path}/post_pipeline")
-      File.open("#{export_path}/post_pipeline/#{guid}.xml", "w+") { |f| f.write(res.body) }
+      xml_path = "#{export_path}/post_pipeline/#{guid}.xml"
+      File.open(xml_path, "w+") { |f| f.write(res.body) }
       File.open("#{export_path}/post_pipeline/#{guid}.html", "w+") { |f| f.write(content) }
+      file_list << xml_path
       return true
     else
       return false

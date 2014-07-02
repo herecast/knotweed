@@ -42,4 +42,57 @@ describe PublishJobsController do
     end
   end
 
+  describe "GET 'file_archive'" do
+    context "with a completed job with a file_archive" do
+      before do
+        @job = FactoryGirl.create(:publish_job, publish_method: Content::EXPORT_TO_XML)
+        FactoryGirl.create_list(:content, 3)
+        @job.before @job
+        @job.perform
+      end
+
+      after do
+        system("rm -rf #{Figaro.env.content_export_path}/*")
+        FileUtils.rm_rf(File.join("public", "exports"))
+      end
+
+      context "with a logged in user" do
+        before do
+          @user = FactoryGirl.create(:admin)
+          sign_in @user
+        end
+
+        it "should return a file download" do
+          get :file_archive, { id: @job.id }
+          expect(response.body).to eq(IO.binread(@job.file_archive))
+        end
+      end
+
+      context "without logging in" do
+        it "should redirect to sign in" do
+          get :file_archive, { id: @job.id }
+          expect(response).to redirect_to(new_user_session_path)
+        end
+      end
+    end
+
+    context "with a job without a file_archive" do
+      before do
+        @job = FactoryGirl.create(:publish_job, publish_method: Content::POST_TO_ONTOTEXT)
+        Content.any_instance.stub(:post_to_ontotext).and_return(true)
+        FactoryGirl.create_list(:content, 3)
+        @job.before @job
+        @job.perform
+
+        @user = FactoryGirl.create(:admin)
+        sign_in @user
+      end
+
+      it "should return a 404" do
+        get :file_archive, { id: @job.id }
+        expect(response.status).to be(404)
+      end
+    end
+  end
+
 end

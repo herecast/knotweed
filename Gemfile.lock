@@ -328,6 +328,7 @@ GEM
       mime (>= 0.1)
       shared-mime-info
     ruby-hmac (0.4.0)
+    rubyzip (1.1.4)
     safe_yaml (0.9.7)
     sass (3.2.13)
     sass-rails (3.2.6)
@@ -441,6 +442,7 @@ DEPENDENCIES
   rolify (>= 3.2.0)
   rspec-rails (>= 2.12.2)
   ruby-gmail
+  rubyzip (~> 1.1.4)
   sass-rails (~> 3.2.3)
   simple_form (>= 2.1.0)
   turbo-sprockets-rails3

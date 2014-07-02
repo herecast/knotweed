@@ -48,41 +48,53 @@ describe PublishJob do
   end
 
   describe "perform job" do
-    before do
-      @job = FactoryGirl.create(:publish_job, publish_method: Content::EXPORT_TO_XML)
-      FactoryGirl.create_list(:content, 3)
-      @job.enqueue_job
-      successes, failures = Delayed::Worker.new(:max_priority => nil,
-        :min_priority => nil,
-        :quiet => false, 
-        :queues => ["imports", "publishing"]).work_off
-    end
-    after do
-      #clean up output folder
-      system("rm -rf #{Figaro.env.content_export_path}/*")
-    end
+    context "that outputs files" do
+      before do
+        @mail_count = ActionMailer::Base.deliveries.count
+        @job = FactoryGirl.create(:publish_job, publish_method: Content::EXPORT_TO_XML)
+        FactoryGirl.create_list(:content, 3)
+        user = FactoryGirl.create(:user)
+        @job.notifyees << user
+        @job.enqueue_job
+        successes, failures = Delayed::Worker.new(:max_priority => nil,
+          :min_priority => nil,
+          :quiet => false, 
+          :queues => ["imports", "publishing"]).work_off
+      end
+      after do
+        #clean up output folder
+        system("rm -rf #{Figaro.env.content_export_path}/*")
+        FileUtils.rm_rf(File.join("public", "exports"))
+      end
 
-    it "should succeed and set status to success" do
-      job = PublishJob.find(@job.id)
-      job.status.should== "success"
-    end
+      it "should succeed and set status to success" do
+        job = PublishJob.find(@job.id)
+        job.status.should== "success"
+      end
 
-    it "should publish the contents via desired method (export to xml)" do
-      c = Content.first
-      File.exists?("#{c.export_path}/#{c.guid}.xml").should be_true
-      File.exists?("#{c.export_path}/#{c.guid}.html").should be_true
-    end
+      it "should publish the contents via desired method (export to xml)" do
+        c = Content.first
+        File.exists?("#{c.export_path}/#{c.guid}.xml").should be_true
+        File.exists?("#{c.export_path}/#{c.guid}.html").should be_true
+      end
 
-    it "should create a publish record attached to the job" do
-      PublishRecord.count.should== 1
-      PublishRecord.first.publish_job.should== @job
-    end
+      it "should create a publish record attached to the job" do
+        PublishRecord.count.should== 1
+        PublishRecord.first.publish_job.should== @job
+      end
 
-    it "should assign any contents published to the attached publish record" do
-      record = PublishRecord.first
-      record.contents.count.should== Content.count
+      it "should assign any contents published to the attached publish record" do
+        record = PublishRecord.first
+        record.contents.count.should== Content.count
+      end
+
+      it "should create a zip archive" do
+        expect(File.exists?("public/exports/#{@job.id}.zip")).to be_true
+      end
+
+      it "should generate a file ready email" do
+        expect(ActionMailer::Base.deliveries.count).to eq(@mail_count + 1)
+      end
     end
-      
   end
-
 end

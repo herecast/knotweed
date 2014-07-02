@@ -48,4 +48,14 @@ class PublishJobsController < ApplicationController
     end
   end
 
+  def file_archive
+    @publish_job = PublishJob.find(params[:id])
+    unless @publish_job.file_archive.nil?
+      send_file @publish_job.file_archive
+    else
+      raise ActionController::RoutingError.new("Not Found")
+    end
+
+  end
+
 end
