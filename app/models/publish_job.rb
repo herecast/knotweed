@@ -1,4 +1,5 @@
 require 'jobs/scheduledjob'
+require 'zip'
 
 class PublishJob < ActiveRecord::Base
 
@@ -27,19 +28,39 @@ class PublishJob < ActiveRecord::Base
   # determine publish method and construct
   # Content query from query_params hash
   def perform
-    record = last_publish_record
-    if query_params[:repository_id].present?
-      repo = Repository.find query_params[:repository_id]
-    else
-      repo = nil
+    begin
+      record = last_publish_record
+      if query_params[:repository_id].present?
+        repo = Repository.find query_params[:repository_id]
+      else
+        repo = nil
+      end
+      Content.contents_query(query_params).find_each(batch_size: 500) do |c|
+        record.contents << c
+        c.publish(publish_method, repo, record)
+      end
+      log = record.log_file
+      log.info("failures: #{record.failures}")
+      log.info("items published: #{record.items_published}")
+      create_file_archive(record) unless record.files.empty?
+    rescue => e
+      log.error("Error creating file archive: #{e}\n#{e.backtrace.join("\n")}")
     end
-    Content.contents_query(query_params).find_each(batch_size: 500) do |c|
-      record.contents << c
-      c.publish(publish_method, repo, record)
+  end
+
+  # Create a zipped archive of all files created by a publish job
+  # Archives live at public/exports/job_id.zip
+  def create_file_archive(record)
+    FileUtils.mkpath(File.join("public", "exports"))
+
+    zip_file_name = File.join("public", "exports", "#{record.id.to_s}.zip")
+
+    Zip::File.open(zip_file_name, Zip::File::CREATE) do |zipfile|
+      record.files.each {|f| zipfile.add(File.basename(f), f) }
     end
-    log = record.log_file
-    log.info("failures: #{record.failures}")
-    log.info("items published: #{record.items_published}")
+    self.file_archive = zip_file_name
+    self.save
+    JobMailer.file_ready(record).deliver
   end
 
   # status hooks

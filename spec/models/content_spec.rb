@@ -238,12 +238,12 @@ describe Content do
     it "should not allow export of quarantined contents" do
       @content.quarantine = true
       # returns false if it fails to run
-      @content.export_to_xml.should_not== true
+      expect(@content.export_to_xml nil).to_not eq(true)
     end
 
     it "should write xml and content to local corpus" do
       # output base dir defined by Figaro
-      @content.export_to_xml
+      @content.export_to_xml nil
       File.exists?("#{@content.export_path}/#{@content.guid}.xml").should be_true
       File.exists?("#{@content.export_path}/#{@content.guid}.html").should be_true
       # check the content file includes the content
