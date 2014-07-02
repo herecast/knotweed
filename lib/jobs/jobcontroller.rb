@@ -3,6 +3,7 @@ module Jobs
 
     def run_job
       @job = controller_name.classify.constantize.find(params[:id])
+      subscribe_user(@job)
       unless @job.status == "running" or @job.status == "queued"
         @job.enqueue_job
       end

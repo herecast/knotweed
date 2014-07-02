@@ -37,7 +37,7 @@ Knotweed::Application.routes.draw do
 
   match 'publish_jobs/contents_count' => "publish_jobs#contents_count", as: :contents_count
   match 'publish_jobs/contents_count/:id' => "publish_jobs#job_contents_count", as: :job_contents_count
-  match 'publish_jobs/:id/file_archive' => "publish_jobs#file_archive", as: :job_file_archive
+  match 'publish_jobs/:id/file_archive.zip' => "publish_jobs#file_archive", as: :job_file_archive
 
   match "parsers/:parser_id/new_import_job" => "import_jobs#new", as: :new_import_job_for_parser
 

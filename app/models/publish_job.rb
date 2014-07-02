@@ -56,7 +56,7 @@ class PublishJob < ActiveRecord::Base
     zip_file_name = File.join("public", "exports", "#{record.id.to_s}.zip")
 
     Zip::File.open(zip_file_name, Zip::File::CREATE) do |zipfile|
-      record.files.each {|f| zipfile.add(File.basename(f, '.*'), f) }
+      record.files.each {|f| zipfile.add(File.basename(f), f) }
     end
     self.file_archive = zip_file_name
     self.save
