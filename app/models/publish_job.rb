@@ -60,6 +60,7 @@ class PublishJob < ActiveRecord::Base
     end
     self.file_archive = zip_file_name
     self.save
+    JobMailer.file_ready(record).deliver
   end
 
   # status hooks

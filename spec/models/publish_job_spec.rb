@@ -91,6 +91,10 @@ describe PublishJob do
       it "should create a zip archive" do
         expect(File.exists?("public/exports/#{@job.id}.zip")).to be_true
       end
+
+      it "should generate a file ready email" do
+        expect(ActionMailer::Base.deliveries.count).to eq(@mail_count + 1)
+      end
     end
   end
 end
