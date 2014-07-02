@@ -39,6 +39,9 @@
           .field.span3
             = f.label :authors_cont, "Authors"
             = f.text_field :authors_cont
+          .field.span3
+            = f.label :repositories_id_eq, "Published in Repository?"
+            = f.collection_select :repositories_id_eq, Repository.all, :id, :name, { include_blank: true }
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
