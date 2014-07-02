@@ -212,7 +212,6 @@ class Content < ActiveRecord::Base
     begin
       result = self.send method.to_sym, repo, opts
       if result == true
-        update_attribute(:published, true)
         record.items_published += 1 if record.present?
       else
         log.error(result)
