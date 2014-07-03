@@ -325,12 +325,7 @@ class Content < ActiveRecord::Base
                 elsif k == "parent_id" and parent.present?
                   key, value = "PARENT", "#{Figaro.env.document_prefix}#{v}"
                 elsif k == "categories"
-                  if source.present? and source.category_override.present?
-                    cat = source.category_override
-                  else
-                    cat = categories
-                  end
-                  key, value = "CATEGORIES", cat if cat.present?
+                  key, value = "CATEGORIES", publish_category
                 end
               else
                 key = k.upcase
@@ -518,6 +513,20 @@ class Content < ActiveRecord::Base
       thread
     else
       thread + p.get_ordered_downstream_thread
+    end
+  end
+
+  # helper to retrieve the category that the content should be published with
+  def publish_category
+    if source.present? and source.category_override.present?
+      source.category_override
+    else 
+      c = Category.find_or_create_by_name(categories)
+      if c.channel.present?
+        c.channel.name
+      else
+        c.name
+      end
     end
   end
 
