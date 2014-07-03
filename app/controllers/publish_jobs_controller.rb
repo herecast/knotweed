@@ -20,6 +20,8 @@ class PublishJobsController < ApplicationController
   end
 
   def create
+    # this is a hack -- I'm including the field on the page to make error display simpler
+    params[:publish_job].delete(:query_params)
     @publish_job = PublishJob.new()
     @publish_job.query_params = {}
     PublishJob::QUERY_PARAMS_FIELDS.each do |key|
@@ -36,11 +38,13 @@ class PublishJobsController < ApplicationController
   end
 
   def update
+    # this is a hack -- I'm including the field on the page to make error display simpler
+    params[:publish_job].delete(:query_params)
     @publish_job = PublishJob.find(params[:id])
     PublishJob::QUERY_PARAMS_FIELDS.each do |key|
       @publish_job.query_params[key.to_sym] = params[key]
     end
-    if @publish_job.update_attributes(params[:publish_job])
+    if @publish_job.save and @publish_job.update_attributes(params[:publish_job])
       redirect_to publish_jobs_path
     else
       flash.now[:error] = "Could not save publish job"

@@ -25,6 +25,8 @@ class PublishJob < ActiveRecord::Base
   
   validates :publish_method, inclusion: { in: Content::PUBLISH_METHODS }, allow_nil: true
 
+  validate :repository_present
+
   # determine publish method and construct
   # Content query from query_params hash
   def perform
@@ -102,4 +104,11 @@ class PublishJob < ActiveRecord::Base
     last_publish_record.try(:created_at)
   end
 
+  # validates that auery_params includes a repository
+  def repository_present
+    # validation happens before the form is serialized into a hash
+    unless query_params.has_key? :repository_id and query_params[:repository_id].present?
+      errors.add(:query_params, "You must select a repository")
+    end
+  end
 end

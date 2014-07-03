@@ -19,7 +19,7 @@ describe PublishJobsController do
           source_id: ["3"], import_location_id: ["4"],
           from: nil, to: nil, published: nil,
           ids: nil,
-          repository_id: nil
+          repository_id: FactoryGirl.create(:repository).id.to_s
         }
         post_params = @query_hash.merge({ publish_job: @publish_job_hash })
         post :create, post_params
@@ -46,6 +46,9 @@ describe PublishJobsController do
     context "with a completed job with a file_archive" do
       before do
         @job = FactoryGirl.create(:publish_job, publish_method: Content::EXPORT_TO_XML)
+        repo = FactoryGirl.create(:repository)
+        @job.query_params[:repository_id] = repo.id
+
         FactoryGirl.create_list(:content, 3)
         @job.before @job
         @job.perform
