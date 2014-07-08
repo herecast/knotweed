@@ -95,6 +95,12 @@ class Content < ActiveRecord::Base
       end
     end
 
+    # try to clean up HTML
+    if data.has_key? "content" and data['content'].present?
+      html = Hpricot(data['content'], :xhtml_strict => true)
+      data['content'] = html.html
+    end
+
     # if job is passed in, set organization
     organization = job.try(:organization)
 
