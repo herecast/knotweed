@@ -5,12 +5,13 @@ class Api::ContentsController < Api::ApiController
     # find source_id from source name
     source = params[:content].delete :source
     pub = Publication.find_by_name(source)
+    repo = Repository.find_by_dsp_endpoint(params[:repository])
 
     @content = Content.new(params[:content])
     @content.source = pub
     @content.pubdate = @content.timestamp = Time.zone.now
     if @content.save
-      if @content.publish(Content::POST_TO_ONTOTEXT)
+      if @content.publish(Content::POST_TO_ONTOTEXT, repo)
         render text: "#{@content.id}"
       else
         render text: "Content was created, but not published", status: 500
