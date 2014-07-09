@@ -485,16 +485,6 @@ class Content < ActiveRecord::Base
     end
   end
 
-  # returns full conversation regardless of where in the conversation this doc is
-  def get_full_thread
-    p = find_root_parent
-    { p.id => p.get_downstream_thread }
-  end
-
-  def get_ordered_thread_with_tiers
-    hash = get_full_thread
-  end
-
   def get_ordered_downstream_thread(tier=0)
     downstream_thread = []
     if children.present?
@@ -511,6 +501,7 @@ class Content < ActiveRecord::Base
     end
   end
 
+  # returns full conversation regardless of where in the conversation this doc is
   def get_full_ordered_thread
     p = find_root_parent
     thread = [[p.id, 0]]

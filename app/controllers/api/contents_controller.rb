@@ -23,8 +23,15 @@ class Api::ContentsController < Api::ApiController
 
   # returns hash of IDs representing a full thread of conversation
   def get_tree
-    @content = Content.find params[:id]
-    render json: @content.get_full_ordered_thread
+    if Content.exists? params[:id]
+      @content = Content.find params[:id] 
+      @repo = Repository.find_by_dsp_endpoint(params[:repository])
+      thread = @content.get_full_ordered_thread
+      thread.select! { |pair| @repo.contents.include? Content.find(pair[0]) }
+      render json: thread
+    else
+      render json: {}
+    end
   end
 
 end
