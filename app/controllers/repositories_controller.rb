@@ -32,4 +32,12 @@ class RepositoriesController < ApplicationController
 
   def edit
   end
+
+  def clear_published_contents
+    @repository = Repository.find(params[:id])
+    @repository.contents.clear
+    respond_to do |format|
+      format.js
+    end
+  end
 end

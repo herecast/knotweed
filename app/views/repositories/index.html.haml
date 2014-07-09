@@ -5,10 +5,13 @@
       %th DSP Endpoint
       %th Sesame Endpoint
       %th Contents Published
+      %th
   %tbody
     - @repositories.each do |repo|
       %tr{ class: "repo-#{repo.id}" }
         %td= link_to repo.name, edit_repository_path(repo)
         %td= repo.dsp_endpoint
         %td= repo.sesame_endpoint
-        %td= repo.contents.count
+        %td.contents-count= repo.contents.count
+        %td.actions
+          = link_to "Clear Published Contents", clear_published_contents_path(repo), class: "btn btn-mini btn-warning", remote: true, data: { confirm: "Are you sure?" }
