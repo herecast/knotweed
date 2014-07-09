@@ -8,7 +8,7 @@ class Content < ActiveRecord::Base
   has_many :annotation_reports
 
   has_and_belongs_to_many :publish_records
-  has_and_belongs_to_many :repositories
+  has_and_belongs_to_many :repositories, :uniq => true
   
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
   belongs_to :source, class_name: "Publication", foreign_key: "source_id"
@@ -268,7 +268,7 @@ class Content < ActiveRecord::Base
                 
     response = OntotextController.post(repo.dsp_endpoint + '/processDocument?persist=true', options)
     if response.body.include? document_uri
-      repo.contents << self
+      repo.contents << self unless repo.contents.include? self
       return true
     else
       return "failed to post doc: #{self.id}\nresponse:#{response.body}"
@@ -449,9 +449,9 @@ class Content < ActiveRecord::Base
       contents = contents.where("pubdate <= ?", Date.parse(query_params[:to])) if query_params[:to].present?
 
       if query_params[:published] == "true" and repo.present?
-        contents = contents.where("id IN (select id from contents_repositories where repository_id=#{repo.id})")
+        contents = contents.where("id IN (select content_id from contents_repositories where repository_id=#{repo.id})")
       elsif query_params[:published] == "false" and repo.present?
-        contents = contents.where("id NOT IN (select id from contents_repositories where repository_id=#{repo.id})")
+        contents = contents.where("id NOT IN (select content_id from contents_repositories where repository_id=#{repo.id})")
       end
     end
     return contents

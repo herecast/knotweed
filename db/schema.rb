@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140708205639) do
+ActiveRecord::Schema.define(:version => 20140709172759) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -154,15 +154,12 @@ ActiveRecord::Schema.define(:version => 20140708205639) do
     t.integer "publish_record_id"
   end
 
-  create_table "contents_repositories", :force => true do |t|
-    t.integer  "content_id"
-    t.integer  "repository_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+  create_table "contents_repositories", :id => false, :force => true do |t|
+    t.integer "content_id",    :null => false
+    t.integer "repository_id", :null => false
   end
 
-  add_index "contents_repositories", ["content_id"], :name => "index_contents_repositories_on_content_id"
-  add_index "contents_repositories", ["repository_id"], :name => "index_contents_repositories_on_repository_id"
+  add_index "contents_repositories", ["content_id", "repository_id"], :name => "index_contents_repositories_on_content_id_and_repository_id"
 
   create_table "data_contexts", :force => true do |t|
     t.string   "context"
