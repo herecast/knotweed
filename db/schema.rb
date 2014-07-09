@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140703165319) do
+ActiveRecord::Schema.define(:version => 20140708205639) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -51,6 +51,17 @@ ActiveRecord::Schema.define(:version => 20140703165319) do
   end
 
   add_index "categories", ["name"], :name => "index_categories_on_name"
+
+  create_table "category_corrections", :force => true do |t|
+    t.integer  "content_id"
+    t.string   "old_category"
+    t.string   "new_category"
+    t.string   "user_email"
+    t.string   "title"
+    t.text     "content_body"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
 
   create_table "channels", :force => true do |t|
     t.string   "name"

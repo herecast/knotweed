@@ -59,6 +59,7 @@ Knotweed::Application.routes.draw do
   namespace :api do
     post 'contents/create_and_publish', to: 'contents#create_and_publish', as: :create_and_publish_content
     get 'contents/:id/get_tree', to: 'contents#get_tree', as: :get_tree
+    post 'category_corrections', to: 'category_corrections#create'
   end
 
 end
