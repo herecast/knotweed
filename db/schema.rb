@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140630164423) do
+ActiveRecord::Schema.define(:version => 20140709172759) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -43,9 +43,28 @@ ActiveRecord::Schema.define(:version => 20140630164423) do
     t.string   "rule"
   end
 
+  create_table "categories", :force => true do |t|
+    t.string   "name"
+    t.integer  "channel_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "categories", ["name"], :name => "index_categories_on_name"
+
+  create_table "category_corrections", :force => true do |t|
+    t.integer  "content_id"
+    t.string   "old_category"
+    t.string   "new_category"
+    t.string   "user_email"
+    t.string   "title"
+    t.text     "content_body"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
   create_table "channels", :force => true do |t|
     t.string   "name"
-    t.text     "categories"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
@@ -135,15 +154,12 @@ ActiveRecord::Schema.define(:version => 20140630164423) do
     t.integer "publish_record_id"
   end
 
-  create_table "contents_repositories", :force => true do |t|
-    t.integer  "content_id"
-    t.integer  "repository_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+  create_table "contents_repositories", :id => false, :force => true do |t|
+    t.integer "content_id",    :null => false
+    t.integer "repository_id", :null => false
   end
 
-  add_index "contents_repositories", ["content_id"], :name => "index_contents_repositories_on_content_id"
-  add_index "contents_repositories", ["repository_id"], :name => "index_contents_repositories_on_repository_id"
+  add_index "contents_repositories", ["content_id", "repository_id"], :name => "index_contents_repositories_on_content_id_and_repository_id"
 
   create_table "data_contexts", :force => true do |t|
     t.string   "context"
@@ -319,6 +335,7 @@ ActiveRecord::Schema.define(:version => 20140630164423) do
     t.text     "description"
     t.datetime "created_at",                         :null => false
     t.datetime "updated_at",                         :null => false
+    t.text     "file_archive"
   end
 
   create_table "publish_records", :force => true do |t|

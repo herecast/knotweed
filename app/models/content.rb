@@ -8,7 +8,7 @@ class Content < ActiveRecord::Base
   has_many :annotation_reports
 
   has_and_belongs_to_many :publish_records
-  has_and_belongs_to_many :repositories
+  has_and_belongs_to_many :repositories, :uniq => true
   
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
   belongs_to :source, class_name: "Publication", foreign_key: "source_id"
@@ -93,6 +93,12 @@ class Content < ActiveRecord::Base
         log.debug("unknown key provided by parser: #{k}")
         data.delete k
       end
+    end
+
+    # try to clean up HTML
+    if data.has_key? "content" and data['content'].present?
+      html = Hpricot(data['content'], :xhtml_strict => true)
+      data['content'] = html.html
     end
 
     # if job is passed in, set organization
@@ -262,7 +268,7 @@ class Content < ActiveRecord::Base
                 
     response = OntotextController.post(repo.dsp_endpoint + '/processDocument?persist=true', options)
     if response.body.include? document_uri
-      repo.contents << self
+      repo.contents << self unless repo.contents.include? self
       return true
     else
       return "failed to post doc: #{self.id}\nresponse:#{response.body}"
@@ -325,12 +331,7 @@ class Content < ActiveRecord::Base
                 elsif k == "parent_id" and parent.present?
                   key, value = "PARENT", "#{Figaro.env.document_prefix}#{v}"
                 elsif k == "categories"
-                  if source.present? and source.category_override.present?
-                    cat = source.category_override
-                  else
-                    cat = categories
-                  end
-                  key, value = "CATEGORIES", cat if cat.present?
+                  key, value = "CATEGORIES", publish_category
                 end
               else
                 key = k.upcase
@@ -448,9 +449,9 @@ class Content < ActiveRecord::Base
       contents = contents.where("pubdate <= ?", Date.parse(query_params[:to])) if query_params[:to].present?
 
       if query_params[:published] == "true" and repo.present?
-        contents = contents.where("id IN (select id from contents_repositories where repository_id=#{repo.id})")
+        contents = contents.where("id IN (select content_id from contents_repositories where repository_id=#{repo.id})")
       elsif query_params[:published] == "false" and repo.present?
-        contents = contents.where("id NOT IN (select id from contents_repositories where repository_id=#{repo.id})")
+        contents = contents.where("id NOT IN (select content_id from contents_repositories where repository_id=#{repo.id})")
       end
     end
     return contents
@@ -484,16 +485,6 @@ class Content < ActiveRecord::Base
     end
   end
 
-  # returns full conversation regardless of where in the conversation this doc is
-  def get_full_thread
-    p = find_root_parent
-    { p.id => p.get_downstream_thread }
-  end
-
-  def get_ordered_thread_with_tiers
-    hash = get_full_thread
-  end
-
   def get_ordered_downstream_thread(tier=0)
     downstream_thread = []
     if children.present?
@@ -510,6 +501,7 @@ class Content < ActiveRecord::Base
     end
   end
 
+  # returns full conversation regardless of where in the conversation this doc is
   def get_full_ordered_thread
     p = find_root_parent
     thread = [[p.id, 0]]
@@ -518,6 +510,20 @@ class Content < ActiveRecord::Base
       thread
     else
       thread + p.get_ordered_downstream_thread
+    end
+  end
+
+  # helper to retrieve the category that the content should be published with
+  def publish_category
+    if source.present? and source.category_override.present?
+      source.category_override
+    else 
+      c = Category.find_or_create_by_name(categories)
+      if c.channel.present?
+        c.channel.name
+      else
+        c.name
+      end
     end
   end
 

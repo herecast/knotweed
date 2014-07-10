@@ -5,12 +5,13 @@ class Api::ContentsController < Api::ApiController
     # find source_id from source name
     source = params[:content].delete :source
     pub = Publication.find_by_name(source)
+    repo = Repository.find_by_dsp_endpoint(params[:repository])
 
     @content = Content.new(params[:content])
     @content.source = pub
     @content.pubdate = @content.timestamp = Time.zone.now
     if @content.save
-      if @content.publish(Content::POST_TO_ONTOTEXT)
+      if @content.publish(Content::POST_TO_ONTOTEXT, repo)
         render text: "#{@content.id}"
       else
         render text: "Content was created, but not published", status: 500
@@ -22,8 +23,15 @@ class Api::ContentsController < Api::ApiController
 
   # returns hash of IDs representing a full thread of conversation
   def get_tree
-    @content = Content.find params[:id]
-    render json: @content.get_full_ordered_thread
+    if Content.exists? params[:id]
+      @content = Content.find params[:id] 
+      @repo = Repository.find_by_dsp_endpoint(params[:repository])
+      thread = @content.get_full_ordered_thread
+      thread.select! { |pair| @repo.contents.include? Content.find(pair[0]) }
+      render json: thread
+    else
+      render json: {}
+    end
   end
 
 end

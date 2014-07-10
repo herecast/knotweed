@@ -14,7 +14,7 @@
           = check_box_tag "import_job_recurring"
       = f.input :frequency, hint: "Repeat every x minutes", wrapper_html: { class: "frequency" }
   %hr.hr-normal
-  %fieldset#contents-query{ data: { contents_query_path: contents_count_path } }
+  %fieldset#query_params{ data: { contents_query_path: contents_count_path } }
     .span4
       .lead
         %i.icon-search.text-contrast
@@ -24,9 +24,21 @@
       %small.muted
         Select parameters to determine which contents will be published by this job.
     .span6.offset1
+      #query_params_errors
+        = f.input :query_params, label: false, input_html: { style: "display: none;" }
       #id-list
         = label_tag "ids", "Content IDs (comma-separated list, e.g. '3,7,9')"
         = text_field_tag "ids", @publish_job.query_params[:ids], class: "input-block-level"
+      #repo-selection
+        .row-fluid
+          .span5
+            = label_tag :repository_id do
+              %abbr{ title: "required" } *
+              Repository
+            = select_tag :repository_id, options_from_collection_for_select(Repository.all, "id", "name", @publish_job.query_params[:repository_id]), { include_blank: true, required: true }
+          .span5#published_selector
+            = label_tag "published", "Already Published?"
+            = select_tag :published, options_for_select(["both", false, true], @publish_job.query_params[:published])
       #query-fields
         = label_tag "source", "Source"
         = select_tag "source_id", options_from_collection_for_select(Publication.accessible_by(current_ability, :read), "id", "name", @publish_job.query_params[:source_id]), { multiple: true, class: "select2 input-block-level", placeholder: "Select some options" }
@@ -36,12 +48,5 @@
         = text_field_tag "to", @publish_job.query_params[:to], type: "date", class: "input-block-level"
         = label_tag "import_location", "Location"
         = select_tag :import_location_id, options_from_collection_for_select(ImportLocation.where(region_id: 1).accessible_by(current_ability, :read), "id", "name", @publish_job.query_params[:import_location_id]), { multiple: true, class: "select2 input-block-level", placeholder: "Select some options" }
-        .row-fluid
-          .span5
-            = label_tag "repository", "Repository"
-            = select_tag :repository_id, options_from_collection_for_select(Repository.all, "id", "name", @publish_job.query_params[:repository_id]), { include_blank: true }
-          .span5#published_selector
-            = label_tag "published", "Already Published?"
-            = select_tag :published, options_for_select([false, true, "both"], @publish_job.query_params[:published])
   .form-actions
     = f.submit nil, class: "btn btn-primary"

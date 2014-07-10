@@ -35,22 +35,6 @@ describe Content do
     end
   end
 
-  describe "get_full_thread" do
-    it "should return the full thread regardless of what member it is called on" do
-      c1 = FactoryGirl.create(:content)
-      c2 = FactoryGirl.create(:content, source: c1.source, parent: c1)
-      c3 = FactoryGirl.create(:content, source: c1.source, parent: c1)
-      c4 = FactoryGirl.create(:content, source: c1.source, parent: c3)
-      c3.get_full_thread.should == {
-        c1.id => { 
-          c2.id => nil, c3.id => { 
-            c4.id => nil 
-          } 
-        }
-      }
-    end
-  end
-
   describe "new from import job" do
     before do
       # base_data is not enough to pass quarantine
@@ -335,6 +319,12 @@ describe Content do
       @content.to_new_xml.include?("Test Category").should be_true
     end
 
+    it "should use the category-mapping instead of categories if available" do
+      cat = FactoryGirl.create(:category)
+      @content.update_attribute :categories, cat.name
+      @content.to_new_xml.include?(cat.channel.name).should be_true
+    end
+
     it "should populate with a publication image if content doesnt have one" do
       @content.source.images << @image1
       @content.to_new_xml.include?("IMAGE</tns:name").should be_true
@@ -439,6 +429,39 @@ describe Content do
         @repo.contents.include?(@content).should == true
       end
 
+    end
+
+  end
+
+  describe "publish_category" do
+    before do
+      @content = FactoryGirl.create(:content)
+    end
+
+    describe "if no Category record exists" do
+      it "should return the value of categories" do
+        @content.publish_category.should== @content.categories
+      end
+
+      it "should create a Category record with empty channel_id" do
+        @content.publish_category
+        Category.find_by_name(@content.categories).present?.should== true
+      end
+    end
+
+    describe "if category exists with mapped channel" do
+      it "should return the corresponding channel's name" do
+        cat = FactoryGirl.create(:category)
+        @content.update_attribute :categories, cat.name
+        @content.publish_category.should== cat.channel.name
+      end
+    end
+
+    describe "if source.category_override is set" do
+      it "should return source.category_override" do
+        @content.source.update_attribute :category_override, "Test Override"
+        @content.publish_category.should== "Test Override"
+      end
     end
 
   end

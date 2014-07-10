@@ -24,6 +24,7 @@ Knotweed::Application.routes.draw do
 
   resources :data_contexts
   resources :repositories
+  get "repositories/:id/clear_published_contents", to: "repositories#clear_published_contents", as: :clear_published_contents
 
   match 'annotation_reports/create/:content_id', to: "annotation_reports#create", as: :create_annotation_report
   match 'annotation_reports/export/:content_id', to: "annotation_reports#export", as: :export_annotation_reports
@@ -59,6 +60,7 @@ Knotweed::Application.routes.draw do
   namespace :api do
     post 'contents/create_and_publish', to: 'contents#create_and_publish', as: :create_and_publish_content
     get 'contents/:id/get_tree', to: 'contents#get_tree', as: :get_tree
+    post 'category_corrections', to: 'category_corrections#create'
   end
 
 end
