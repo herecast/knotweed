@@ -1,0 +1,11 @@
+%tr{ class: "business-location-#{business_location.id}" }
+  %td= business_location.id
+  %td= business_location.name
+  %td= business_location.address
+  %td= business_location.phone
+  %td= mail_to business_location.email
+  %td= business_location.hours
+  %td
+    = link_to "#", class: "edit-business-location-link btn btn-success", data: { form_url: edit_business_location_path(business_location), toggle: "modal", target: "#business_location_form" } do
+      %i.icon-pencil
+    = link_to "X", business_location_path(business_location), method: :delete, remote: true, class: "btn btn-danger", confirm: "Are you sure?"

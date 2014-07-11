@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140709172759) do
+ActiveRecord::Schema.define(:version => 20140710203456) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -41,6 +41,17 @@ ActiveRecord::Schema.define(:version => 20140709172759) do
     t.text     "edges"
     t.boolean  "is_trusted"
     t.string   "rule"
+  end
+
+  create_table "business_locations", :force => true do |t|
+    t.string   "name"
+    t.integer  "organization_id"
+    t.string   "address"
+    t.string   "phone"
+    t.string   "email"
+    t.string   "hours"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   create_table "categories", :force => true do |t|

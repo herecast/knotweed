@@ -21,6 +21,7 @@ Knotweed::Application.routes.draw do
   resources :contacts, only: [:create, :update, :edit, :destroy]
   resources :issues, only: [:new, :create, :update, :edit, :destroy, :show]
   resources :locations, only: [:create, :update, :new, :edit, :destroy]
+  resources :business_locations, only: [:create, :update, :new, :edit, :destroy]
 
   resources :data_contexts
   resources :repositories

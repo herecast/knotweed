@@ -1,0 +1,11 @@
+= simple_form_for @business_location, remote: true do |f|
+  = f.input :name, input_html: { class: "input-block-level" }
+  = f.input :address, input_html: { class: "input-block-level" }
+  .row-fluid
+    .span6
+      = f.input :email
+    .span6
+      = f.input :phone, input_html: { data: { mask: "(999) 999-9999" } }
+  = f.input :hours, input_html: { class: "input-block-level" }
+  = f.association :organization, as: :hidden
+  = f.submit nil, class: "btn btn-success"
