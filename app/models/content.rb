@@ -220,7 +220,7 @@ class Content < ActiveRecord::Base
       if result == true
         record.items_published += 1 if record.present?
       else
-        log.error(result)
+        log.error("Export of #{self.id} failed (returned: #{result})")
         record.failures += 1 if record.present?
       end
     rescue => e
