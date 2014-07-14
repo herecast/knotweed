@@ -20,11 +20,14 @@ describe Api::ContentsController do
       response.body.should == JSON.generate([[@content.id, 0]])
     end
 
-    it "should exclude contents not in the specified repo" do
-      c2 = FactoryGirl.create(:content, parent: @content) # not in the repo
-      subject
-      response.body.should == JSON.generate([[@content.id, 0]])
-    end
+    # this piece of functionality was requested to be removed
+    # but I expect it might come back, so just commenting for now (NG)
+    #
+    #it "should exclude contents not in the specified repo" do
+    #  c2 = FactoryGirl.create(:content, parent: @content) # not in the repo
+    #  subject
+    #  response.body.should == JSON.generate([[@content.id, 0]])
+    #end
   end
 
 end

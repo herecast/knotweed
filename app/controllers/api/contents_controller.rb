@@ -27,7 +27,11 @@ class Api::ContentsController < Api::ApiController
       @content = Content.find params[:id] 
       @repo = Repository.find_by_dsp_endpoint(params[:repository])
       thread = @content.get_full_ordered_thread
-      thread.select! { |pair| @repo.contents.include? Content.find(pair[0]) }
+      # requested to remove this functionality because our published flag
+      # is not always accurate right now. NG's opinion is that we should work
+      # on making the published flag accurate rather than removing this filter
+      # but to each their own I suppose.
+      #thread.select! { |pair| @repo.contents.include? Content.find(pair[0]) }
       render json: thread
     else
       render json: {}
