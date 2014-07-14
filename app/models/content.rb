@@ -6,6 +6,7 @@ class Content < ActiveRecord::Base
   belongs_to :import_record
 
   has_many :annotation_reports
+  has_many :category_corrections
 
   has_and_belongs_to_many :publish_records
   has_and_belongs_to_many :repositories, :uniq => true
@@ -149,6 +150,10 @@ class Content < ActiveRecord::Base
       existing_content = Content.where(source_id: content.source.id, guid: content.guid).try(:first)
     end
     if existing_content.present?
+      # check for a category correction and use the corrected category if it exists
+      if existing_content.category_corrections.present?
+        content.categories = existing_content.category_corrections.last.new_category
+      end
       content.id = existing_content.id
       existing_content.destroy
     end

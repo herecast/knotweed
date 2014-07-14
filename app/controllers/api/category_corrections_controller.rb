@@ -4,7 +4,9 @@ class Api::CategoryCorrectionsController < Api::ApiController
     content = Content.find params[:category_correction].delete :content_id
     @category_correction = CategoryCorrection.new(params[:category_correction])
     @category_correction.content = content
-    @category_correction.old_category = content.categories
+    # expect old category to be passed as a param but if not,
+    # assign it the content's original category
+    @category_correction.old_category = content.categories unless @category_correction.old_category.present?
     if @category_correction.save
       render text: "#{@category_correction.content.id} updated"
     else

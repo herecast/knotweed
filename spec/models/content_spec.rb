@@ -35,7 +35,7 @@ describe Content do
     end
   end
 
-  describe "new from import job" do
+  describe "create from import job" do
     before do
       # base_data is not enough to pass quarantine
       # need to add pubdate, source to validate
@@ -122,6 +122,23 @@ describe Content do
       c2 = Content.create_from_import_job(@base_data)
       Content.count.should== 1
       Content.first.id.should== orig_id
+    end
+
+    it "should overwrite any content but retain new category if category_correction exists" do
+      p = FactoryGirl.create(:publication)
+      @base_data["source_id"] = p.id
+      c1 = Content.create_from_import_job(@base_data)
+      orig_id = c1.id
+      @new_data = {
+        "title" => "Different Title",
+        "source_id" => @base_data["source_id"],
+        "guid" => c1.guid
+      }
+      cat_corr = CategoryCorrection.create(content: c1, new_category: "Test Cat", old_category: "Discussion", user_email: "test@test.com")
+      c2 = Content.create_from_import_job(@base_data)
+      Content.count.should== 1
+      Content.first.id.should== orig_id
+      Content.first.categories.should == cat_corr.new_category
     end
 
     # check source logic
