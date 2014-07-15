@@ -22,6 +22,11 @@
         = f.input :name, input_html: { class: "span5" }
         = f.input :org_type, collection: Organization::ORG_TYPE_OPTIONS, label: "Organization Type"
         = f.input :tagline, input_html: { class: "span5" }
+        .offset1
+          = image_tag @organization.header.url if @organization.header?
+        - if @organization.header?
+          = f.input :remove_header, as: :boolean, label: "Remove header?"
+        = f.input :header
         = f.input :notes, input_html: { class: "span5", rows: 10 }
         .control-group.text.optional
           = f.label "Publications"
