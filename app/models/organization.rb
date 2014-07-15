@@ -9,7 +9,11 @@ class Organization < ActiveRecord::Base
   has_many :locations, through: :publications
   has_many :business_locations
 
-  attr_accessible :name, :org_type, :notes, :general, :tagline
+  attr_accessible :name, :org_type, :notes, :general, :tagline, :header, :header_cache,
+                  :remove_header, :logo, :logo_cache, :removeLogo
+
+  mount_uploader :header, ImageUploader
+  mount_uploader :logo, ImageUploader
 
   serialize :general, Hash
 

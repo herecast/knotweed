@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140711211610) do
+ActiveRecord::Schema.define(:version => 20140715194614) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -433,6 +433,8 @@ ActiveRecord::Schema.define(:version => 20140711211610) do
     t.text     "links"
     t.text     "social_media"
     t.text     "general"
+    t.string   "header"
+    t.string   "logo"
   end
 
   create_table "parameters", :force => true do |t|
