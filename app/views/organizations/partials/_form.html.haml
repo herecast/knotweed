@@ -6,6 +6,9 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#details" } do
           Details
       %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#properties" } do 
+          Properties
+      %li
         = link_to '#', class: "green-border", data: { toggle: "tab", target: "#business_locations" } do
           Locations
       %li
@@ -18,6 +21,7 @@
       .tab-pane.active.form-horizontal#details
         = f.input :name, input_html: { class: "span5" }
         = f.input :org_type, collection: Organization::ORG_TYPE_OPTIONS, label: "Organization Type"
+        = f.input :tagline, input_html: { class: "span5" }
         = f.input :notes, input_html: { class: "span5", rows: 10 }
         .control-group.text.optional
           = f.label "Publications"
@@ -25,6 +29,20 @@
             .publication-list
               - @organization.publications.each do |p|
                 = link_to p.name + (p == @organization.publications.last ? "" : ","), edit_publication_path(p)
+      .tab-pane#properties
+        .row-fluid
+          %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "general" } } + Add New Property
+          = text_field_tag "new_general_field", nil, class: "new-serialized-field span3"
+        = f.fields_for :general do |g|
+          .row-fluid.serialized-field-header
+            .span2= label_tag "Label"
+            .span3= label_tag "Value"
+          - @organization.general.each_pair do |k,v|
+            .row-fluid.serialized-field-row
+              .span2= label_tag k
+              .span6= g.text_field "#{k}", value: v, class: "span12"
+              .span2
+                .btn.btn-danger.remove-serialized-field X
       .tab-pane#business_locations
         .pull-right
           = link_to "+ Add New Location", "#", class: "btn btn-success", data: { toggle: "modal", target: "#business_location_form", form_url: new_business_location_path({ organization_id: @organization.id }  )}, id: "new_business_location_button" 

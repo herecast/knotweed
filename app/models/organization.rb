@@ -9,7 +9,9 @@ class Organization < ActiveRecord::Base
   has_many :locations, through: :publications
   has_many :business_locations
 
-  attr_accessible :name, :org_type, :notes
+  attr_accessible :name, :org_type, :notes, :general, :tagline
+
+  serialize :general, Hash
 
   ORG_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher"]
 
