@@ -19,11 +19,11 @@ class Content < ActiveRecord::Base
   belongs_to :parent, class_name: "Content"
   has_many :children, class_name: "Content", foreign_key: "parent_id"
 
-  attr_accessible :title, :subtitle, :authors, :content, :issue_id, :import_location_id, :copyright
-  attr_accessible :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype
-  attr_accessible :language, :page, :wordcount, :authoremail, :source_id, :file
-  attr_accessible :quarantine, :doctype, :timestamp, :contentsource, :source_content_id
-  attr_accessible :image_ids, :parent_id
+  attr_accessible :title, :subtitle, :authors, :content, :issue_id, :import_location_id, :copyright,
+                  :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype,
+                  :language, :page, :wordcount, :authoremail, :source_id, :file,
+                  :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
+                  :image_ids, :parent_id, :source_uri
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -62,6 +62,10 @@ class Content < ActiveRecord::Base
 
   def document_uri
     "#{BASE_URI}/#{id}"
+  end
+
+  def source_uri
+    "<http://www.subtext.org/#{source.class.to_s}/#{source.id}>"
   end
   
   # creating a new content from import job data
@@ -319,7 +323,7 @@ class Content < ActiveRecord::Base
 
       f.tag!("tns:document-parts") do |g|
         f.tag!("tns:feature-set") do |g|
-          attributes.each do |k, v|
+          attributes.merge({"source_uri" => source_uri}).each do |k, v|
             if ["id", "created_at", "updated_at", "quarantine", "import_record_id", "published", "image"].include? k
               next
             end
