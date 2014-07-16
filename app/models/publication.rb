@@ -19,9 +19,13 @@ class Publication < ActiveRecord::Base
   attr_accessible :name, :logo, :logo_cache, :remove_logo, :organization_id,
                   :admin_contact_id, :tech_contact_id, :website, :publishing_frequency,
                   :notes, :images_attributes, :parent_id, :location_ids,
-                  :remote_logo_url, :contact_ids, :category_override
+                  :remote_logo_url, :contact_ids, :category_override, :tagline, :links, 
+                  :social_media, :general, :header, :header_cache, :remove_header
   
   mount_uploader :logo, ImageUploader
+  mount_uploader :header, ImageUploader
+
+  serialize :general, Hash
 
   FREQUENCY_OPTIONS = ["Posts", "Daily", "Semiweekly", "Weekly", "Biweekly", "Semimonthly", "Monthly", "Bimonthly", "Quarterly", "Seasonally", "Semiannually", "Annually", "Biennially", "Ad Hoc"]
 

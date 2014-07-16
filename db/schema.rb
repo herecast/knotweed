@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140710203456) do
+ActiveRecord::Schema.define(:version => 20140716203309) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -154,11 +154,18 @@ ActiveRecord::Schema.define(:version => 20140710203456) do
     t.integer  "import_record_id"
     t.string   "source_content_id"
     t.string   "image",              :limit => 400
-    t.boolean  "published",                         :default => false, :null => false
     t.integer  "parent_id"
   end
 
+  add_index "contents", ["authors"], :name => "authors"
+  add_index "contents", ["categories"], :name => "categories"
+  add_index "contents", ["guid"], :name => "guid"
+  add_index "contents", ["import_location_id"], :name => "location_id"
+  add_index "contents", ["import_record_id"], :name => "import_record_id"
   add_index "contents", ["parent_id"], :name => "index_contents_on_parent_id"
+  add_index "contents", ["pubdate"], :name => "pubdate"
+  add_index "contents", ["source_id"], :name => "source_id"
+  add_index "contents", ["title"], :name => "title"
 
   create_table "contents_publish_records", :id => false, :force => true do |t|
     t.integer "content_id"
@@ -234,24 +241,26 @@ ActiveRecord::Schema.define(:version => 20140710203456) do
   end
 
   create_table "import_locations", :force => true do |t|
+    t.integer  "parent_id",                     :default => 0
+    t.integer  "region_id",                     :default => 0
     t.string   "city"
     t.string   "state"
     t.string   "zip"
-    t.datetime "created_at",                                   :null => false
-    t.datetime "updated_at",                                   :null => false
-    t.integer  "parent_id"
-    t.integer  "region_id"
     t.string   "country",        :limit => 128
     t.string   "link_name"
     t.string   "link_name_full"
-    t.integer  "status",         :limit => 1,   :default => 1, :null => false
+    t.integer  "status",                        :default => 0
     t.string   "usgs_id",        :limit => 128
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
   end
 
-  add_index "import_locations", ["link_name"], :name => "index_locations_on_link_name"
-  add_index "import_locations", ["state"], :name => "index_locations_on_state"
-  add_index "import_locations", ["status"], :name => "index_locations_on_status"
-  add_index "import_locations", ["usgs_id"], :name => "index_locations_on_usgs_id"
+  add_index "import_locations", ["city"], :name => "city"
+  add_index "import_locations", ["link_name"], :name => "link_name"
+  add_index "import_locations", ["link_name_full"], :name => "link_name_full"
+  add_index "import_locations", ["state"], :name => "state"
+  add_index "import_locations", ["status"], :name => "status"
+  add_index "import_locations", ["usgs_id"], :name => "usgs_id"
 
   create_table "import_records", :force => true do |t|
     t.integer  "import_job_id"
@@ -332,6 +341,11 @@ ActiveRecord::Schema.define(:version => 20140710203456) do
     t.text     "notes"
     t.integer  "parent_id"
     t.string   "category_override"
+    t.text     "tagline"
+    t.text     "links"
+    t.text     "social_media"
+    t.text     "general"
+    t.text     "header"
   end
 
   create_table "publish_jobs", :force => true do |t|

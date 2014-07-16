@@ -6,6 +6,9 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#details" } do
           Details
       %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#properties" } do 
+          Properties
+      %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#logo" } do
           Logo
       %li
@@ -24,12 +27,32 @@
     .tab-content
       .tab-pane.active.form-horizontal#details
         = f.input :name, input_html: { class: "span5" }
+        = f.input :tagline, as: :string, input_html: { class: "span5" }
+        .offset1
+          = f.input :header, as: :file
+          = image_tag @publication.header.url if @publication.header?
+        - if @publication.header?
+          = f.input :remove_header, as: :boolean, label: "Remove header?"
         = f.association :organization, input_html: { class: "span5 select2" }
         = f.association :parent, collection: Publication.parent_pubs, label: "Parent Publication (Syndication)", input_html: { class: "span5 select2" }, include_blank: true
         = f.input :category_override, input_html: { class: "span5" }, hint: "Set this option to force all content to publish with a specific category."
         = f.input :publishing_frequency, collection: Publication::FREQUENCY_OPTIONS, input_html: { class: "span5" }
         = f.input :website, input_html: { class: "span5" }
         = f.input :notes, input_html: { class: "span5", rows: 10 } 
+      .tab-pane#properties
+        .row-fluid
+          %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "general" } } + Add New Property
+          = text_field_tag "new_general_field", nil, class: "new-serialized-field span3"
+        = f.fields_for :general do |g|
+          .row-fluid.serialized-field-header
+            .span2= label_tag "Label"
+            .span3= label_tag "Value"
+          - @publication.general.each_pair do |k,v|
+            .row-fluid.serialized-field-row
+              .span2= label_tag k
+              .span6= g.text_field "#{k}", value: v, class: "span12"
+              .span2
+                .btn.btn-danger.remove-serialized-field X
       .tab-pane#logo
         = image_tag(@publication.logo.url) if @publication.logo?
         .row-fluid
