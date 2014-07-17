@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: annotation_reports
+#
+#  id            :integer          not null, primary key
+#  content_id    :integer
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  name          :string(255)
+#  description   :text
+#  json_response :text(2147483647)
+#  repository_id :integer
+#
+
 require 'csv'
 
 class AnnotationReport < ActiveRecord::Base

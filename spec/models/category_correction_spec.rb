@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: category_corrections
+#
+#  id           :integer          not null, primary key
+#  content_id   :integer
+#  old_category :string(255)
+#  new_category :string(255)
+#  user_email   :string(255)
+#  title        :string(255)
+#  content_body :text
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+
 require 'spec_helper'
 
 describe CategoryCorrection do
