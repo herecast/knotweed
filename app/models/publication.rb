@@ -37,6 +37,8 @@ class Publication < ActiveRecord::Base
 
   has_and_belongs_to_many :contacts
   has_and_belongs_to_many :locations
+
+  has_many :promotions, inverse_of: :publication
   
   attr_accessible :name, :logo, :logo_cache, :remove_logo, :organization_id,
                   :admin_contact_id, :tech_contact_id, :website, :publishing_frequency,

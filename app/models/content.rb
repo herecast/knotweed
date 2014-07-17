@@ -57,6 +57,8 @@ class Content < ActiveRecord::Base
   belongs_to :parent, class_name: "Content"
   has_many :children, class_name: "Content", foreign_key: "parent_id"
 
+  has_many :promotions
+
   attr_accessible :title, :subtitle, :authors, :content, :issue_id, :import_location_id, :copyright,
                   :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype,
                   :language, :page, :wordcount, :authoremail, :source_id, :file,

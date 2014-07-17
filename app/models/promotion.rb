@@ -16,4 +16,14 @@ class Promotion < ActiveRecord::Base
   belongs_to :publication
   belongs_to :content
   attr_accessible :active, :banner, :description
+  after_initialize :init
+
+  mount_uploader :banner, ImageUploader
+
+  validates_presence_of :banner
+  validates_presence_of :publication
+
+  def init
+    self.active ||= true
+  end
 end
