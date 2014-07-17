@@ -1,5 +1,7 @@
 class PublicationsController < ApplicationController
-  load_and_authorize_resource except: [:create]
+  load_and_authorize_resource except: [:create, :show]
+  load_resource only: [:show]
+  skip_before_filter :authorize_access!, only: [:show]
 
   def index
     # if posted, save to session
@@ -20,6 +22,10 @@ class PublicationsController < ApplicationController
   end
 
   def show
+    respond_to do |format|
+      format.html
+      format.json { render :json => @publication }
+    end
   end
 
   def edit
