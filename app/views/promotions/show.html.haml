@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Active:
+  = @promotion.active
+%p
+  %b Banner:
+  = @promotion.banner
+%p
+  %b Publication:
+  = @promotion.publication
+%p
+  %b Content:
+  = @promotion.content
+%p
+  %b Description:
+  = @promotion.description
+
+= link_to 'Edit', edit_promotion_path(@promotion)
+\|
+= link_to 'Back', promotions_path

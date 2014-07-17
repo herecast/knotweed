@@ -1,5 +1,8 @@
 Knotweed::Application.routes.draw do
 
+  resources :promotions
+
+
   authenticated :user do
     root :to => "application#dashboard"
   end

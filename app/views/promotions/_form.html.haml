@@ -1,0 +1,12 @@
+= simple_form_for(@promotion) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :active
+    = f.input :banner
+    = f.association :publication
+    = f.association :content
+    = f.input :description
+
+  .form-actions
+    = f.button :submit

@@ -330,6 +330,19 @@ ActiveRecord::Schema.define(:version => 20140716203309) do
     t.datetime "updated_at",      :null => false
   end
 
+  create_table "promotions", :force => true do |t|
+    t.boolean  "active"
+    t.string   "banner"
+    t.integer  "publication_id"
+    t.integer  "content_id"
+    t.text     "description"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  add_index "promotions", ["content_id"], :name => "index_promotions_on_content_id"
+  add_index "promotions", ["publication_id"], :name => "index_promotions_on_publication_id"
+
   create_table "publications", :force => true do |t|
     t.string   "name"
     t.datetime "created_at",           :null => false
