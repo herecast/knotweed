@@ -34,7 +34,7 @@ class PublicationsController < ApplicationController
 
   def update
     # ensure serialized values are set to empty if no fields are passed in via form
-    params[:publication][:general] = nil unless params[:publication].has_key? :general
+    params[:publication][:links] = nil unless params[:publication].has_key? :links
     if @publication.update_attributes(params[:publication])
       flash[:notice] = "Successfully updated publication #{@publication.id}"
       if params[:add_content_set]

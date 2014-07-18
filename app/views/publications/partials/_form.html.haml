@@ -7,7 +7,7 @@
           Details
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#properties" } do 
-          Properties
+          Links
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#logo" } do
           Logo
@@ -16,7 +16,7 @@
           Contacts
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#locations" } do
-          Locations
+          Service Areas
       - if @publication.id
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#issues" } do
@@ -33,21 +33,23 @@
           = image_tag @publication.header.url if @publication.header?
         - if @publication.header?
           = f.input :remove_header, as: :boolean, label: "Remove header?"
+        = f.input :pub_type, collection: Publication::PUB_TYPE_OPTIONS, label: "Publication Type"
         = f.association :organization, input_html: { class: "span5 select2" }
         = f.association :parent, collection: Publication.parent_pubs, label: "Parent Publication (Syndication)", input_html: { class: "span5 select2" }, include_blank: true
         = f.input :category_override, input_html: { class: "span5" }, hint: "Set this option to force all content to publish with a specific category."
         = f.input :publishing_frequency, collection: Publication::FREQUENCY_OPTIONS, input_html: { class: "span5" }
         = f.input :website, input_html: { class: "span5" }
+        = f.input :display_attributes
         = f.input :notes, input_html: { class: "span5", rows: 10 } 
       .tab-pane#properties
         .row-fluid
-          %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "general" } } + Add New Property
-          = text_field_tag "new_general_field", nil, class: "new-serialized-field span3"
-        = f.fields_for :general do |g|
+          %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "links" } } + Add New Link
+          = text_field_tag "new_link_field", nil, class: "new-serialized-field span3"
+        = f.fields_for :links do |g|
           .row-fluid.serialized-field-header
             .span2= label_tag "Label"
             .span3= label_tag "Value"
-          - @publication.general.each_pair do |k,v|
+          - @publication.links.each_pair do |k,v|
             .row-fluid.serialized-field-row
               .span2= label_tag k
               .span6= g.text_field "#{k}", value: v, class: "span12"
