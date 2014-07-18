@@ -1,0 +1,18 @@
+- promotion ||= @promotion
+- publication ||= promotion.publication unless promotion.nil?
+- ajax_submit ||= false
+%p Promotion for: #{link_to publication.name, edit_publication_path(publication)}
+= simple_form_for(promotion, url: publication_promotions_path(publication), method: :post) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :active
+    = f.input :banner
+    = f.association :content, collection: publication.contents
+    = f.input :description
+
+  .form-actions
+    - if ajax_submit
+      %span.btn.btn-primary.create-new-promotion{ data: { submit_url: publication_promotions_path(publication) } } Create Promotion
+    - else
+      = f.button :submit

@@ -62,19 +62,4 @@ describe Promotion do
       expect{subject}.to_not change{Promotion.count}
     end
   end
-
-  context "without an upload" do
-    let (:params) do 
-      valid_params.delete(:banner)
-      valid_params
-    end
-
-    it "should not be valid" do
-      expect(subject).to_not be_valid
-    end
-
-    it "should not create a new promotion" do
-      expect{subject}.to_not change{Promotion.count}
-    end
-  end
 end

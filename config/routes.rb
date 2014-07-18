@@ -17,7 +17,7 @@ Knotweed::Application.routes.draw do
   resources :publish_jobs
   resources :images
   resources :publications do
-    resources :promotions, shallow: true, except: [:new] 
+    resources :promotions, shallow: true
   end
 
   get "organizations/update_content_sets", to: "organizations#update_content_sets", as: :update_content_sets

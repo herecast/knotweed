@@ -1,27 +1,7 @@
-%h1 Listing promotions
-
-%table
-  %tr
-    %th Active
-    %th Banner
-    %th Publication
-    %th Content
-    %th Description
-    %th
-    %th
-    %th
-
-  - @promotions.each do |promotion|
-    %tr
-      %td= promotion.active
-      %td= promotion.banner
-      %td= promotion.publication
-      %td= promotion.content
-      %td= promotion.description
-      %td= link_to 'Show', promotion
-      %td= link_to 'Edit', edit_promotion_path(promotion)
-      %td= link_to 'Destroy', promotion, :method => :delete, :data => { :confirm => 'Are you sure?' }
-
-%br
-
-= link_to 'New Promotion', new_promotion_path
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        Promotions for #{@publication.name}
+    .box-content
+      = render "promotions/partials/promotions_tab", publication: @publication
