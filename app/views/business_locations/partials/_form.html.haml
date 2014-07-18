@@ -7,5 +7,5 @@
     .span6
       = f.input :phone, input_html: { data: { mask: "(999) 999-9999" } }
   = f.input :hours, input_html: { class: "input-block-level" }
-  = f.association :organization, as: :hidden
+  = f.association :publication, as: :hidden
   = f.submit nil, class: "btn btn-success"

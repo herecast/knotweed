@@ -19,7 +19,6 @@ class Organization < ActiveRecord::Base
   has_many :parsers
   has_many :import_jobs
   has_many :locations, through: :publications
-  has_many :business_locations
 
   attr_accessible :name, :org_type, :notes
 

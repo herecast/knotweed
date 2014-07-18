@@ -18,7 +18,7 @@
 FactoryGirl.define do
   factory :business_location do
     name "MyString"
-    organization_id 1
+    publication
     address "MyString"
     phone "MyString"
     email "MyString"

@@ -9,6 +9,9 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#properties" } do 
           Links
       %li
+        = link_to '#', class: "green-border", data: { toggle: "tab", target: "#business_locations" } do
+          Locations
+      %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#logo" } do
           Logo
       %li
@@ -58,6 +61,26 @@
               .span6= g.text_field "#{k}", value: v, class: "span12"
               .span2
                 .btn.btn-danger.remove-serialized-field X
+      .tab-pane#business_locations
+        .pull-right
+          = link_to "+ Add New Location", "#", class: "btn btn-success", data: { toggle: "modal", target: "#business_location_form", form_url: new_business_location_path({ publication_id: @publication.id }  )}, id: "new_business_location_button" 
+          / hidden field for creating business locations associated with a new publication record
+          - unless @publication.id
+            = f.association :business_locations, as: :hidden, input_html: { name: "publication[business_location_list]", value: "" }
+        %table.table.table-striped.table-condensed.sortable#business_locations_table
+          %thead
+            %tr
+              %th ID
+              %th Name
+              %th Address
+              %th Phone
+              %th Email
+              %th Hours
+              %th
+          %tbody#business_locations_list
+            - @publication.business_locations.each do |loc|
+              = render "business_locations/partials/row", business_location: loc
+      
       .tab-pane#logo
         = image_tag(@publication.logo.url) if @publication.logo?
         .row-fluid
@@ -132,12 +155,6 @@
   .modal-body
     Loading...
 
-.modal.hide.fade#location_form
-  .modal-header
-    %button.close{ type: "button", data: { dismiss: "modal" } } x
-    %h3 Location
-  .modal-body
-    Loading...
 
 .modal.hide.fade#issue_form
   .modal-header
@@ -145,3 +162,17 @@
     %h3 Issue
   .modal-body
     Loading...
+
+.modal.hide.fade#location_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Location
+  .modal-body
+    Loading...
+
+.modal.hide.fade#business_location_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Business Location
+  .modal-body
+    Loading...   

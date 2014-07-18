@@ -66,3 +66,11 @@ jQuery ->
 
   $(document).on 'click', '.remove-serialized-field', ->
     $(this).parents(".serialized-field-row").remove()
+
+  # add new business location
+  $("#new_business_location_button").on 'click', ->
+    console.log 'hello'
+    $(".modal#business_location_form .modal-body").load($(this).data("formUrl"))
+  # edit existing location
+  $(document).on 'click', '.edit-business-location-link', ->
+    $(".modal#business_location_form .modal-body").load($(this).data("formUrl"))

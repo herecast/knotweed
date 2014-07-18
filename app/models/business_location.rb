@@ -4,7 +4,7 @@
 #
 #  id              :integer          not null, primary key
 #  name            :string(255)
-#  organization_id :integer
+#  publication_id  :integer
 #  address         :string(255)
 #  phone           :string(255)
 #  email           :string(255)
@@ -14,7 +14,7 @@
 #
 
 class BusinessLocation < ActiveRecord::Base
-  belongs_to :organization
+  belongs_to :publication
 
-  attr_accessible :address, :email, :hours, :name, :organization_id, :phone
+  attr_accessible :address, :email, :hours, :name, :publication_id, :phone
 end

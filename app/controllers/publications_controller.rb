@@ -54,6 +54,10 @@ class PublicationsController < ApplicationController
   def create
     contact_list = params[:publication].delete("contact_list")
     contact_ids = contact_list.try(:split, ",")
+
+    business_loc_list = params[:publication].delete("business_location_list")
+    business_location_ids = business_loc_list.try(:split, ",")
+
     @publication = Publication.new
     current_ability.attributes_for(:create, Publication).each do |key, value|
       @publication.send("#{key}=", value)
@@ -62,6 +66,7 @@ class PublicationsController < ApplicationController
     authorize! :create, @publication
     if @publication.save
       @publication.update_attribute(:contact_ids, contact_ids) unless contact_ids.nil?
+      @publication.update_attribute(:business_location_ids, business_location_ids) unless business_location_ids.nil?
       flash[:notice] = "Created publication with id #{@publication.id}"
       if params[:add_content_set]
         redirect_to new_content_set_path(:content_set => { :publication_id => @publication.id })
