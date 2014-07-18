@@ -2,7 +2,7 @@ class PromotionsController < ApplicationController
   # GET /promotions
   # GET /promotions.json
   def index
-    @promotions = Promotion.all
+    @promotions = Publication.find(params[:publication_id]).promotions.all
 
     respond_to do |format|
       format.html # index.html.erb
@@ -41,13 +41,15 @@ class PromotionsController < ApplicationController
   # POST /promotions.json
   def create
     @promotion = Promotion.new(params[:promotion])
+    pub = Publication.find params[:publication_id]
+    @promotion.publication = pub
 
     respond_to do |format|
       if @promotion.save
         format.html { redirect_to @promotion, notice: 'Promotion was successfully created.' }
         format.json { render json: @promotion, status: :created, location: @promotion }
       else
-        format.html { render action: "new" }
+        format.html { redirect_to edit_publication_path(pub), error: @promotion.errors.messages }
         format.json { render json: @promotion.errors, status: :unprocessable_entity }
       end
     end
@@ -73,10 +75,11 @@ class PromotionsController < ApplicationController
   # DELETE /promotions/1.json
   def destroy
     @promotion = Promotion.find(params[:id])
+    pub = @promotion.publication
     @promotion.destroy
 
     respond_to do |format|
-      format.html { redirect_to promotions_url }
+      format.html { redirect_to publication_promotions_path(pub), notice: 'Promotion successfully destroyed!' }
       format.json { head :no_content }
     end
   end

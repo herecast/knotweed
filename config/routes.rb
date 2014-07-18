@@ -1,6 +1,5 @@
 Knotweed::Application.routes.draw do
 
-  resources :promotions
 
 
   authenticated :user do
@@ -17,7 +16,10 @@ Knotweed::Application.routes.draw do
   resources :parsers
   resources :publish_jobs
   resources :images
-  resources :publications
+  resources :publications do
+    resources :promotions, shallow: true, except: [:new] 
+  end
+
   get "organizations/update_content_sets", to: "organizations#update_content_sets", as: :update_content_sets
   resources :organizations
   resources :content_sets

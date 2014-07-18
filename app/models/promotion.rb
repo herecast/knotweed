@@ -15,7 +15,7 @@
 class Promotion < ActiveRecord::Base
   belongs_to :publication
   belongs_to :content
-  attr_accessible :active, :banner, :description
+  attr_accessible :active, :banner, :banner_cache, :remove_banner, :description
   after_initialize :init
 
   mount_uploader :banner, ImageUploader
@@ -24,6 +24,6 @@ class Promotion < ActiveRecord::Base
   validates_presence_of :publication
 
   def init
-    self.active ||= true
+    self.active = true if self.active.nil?
   end
 end

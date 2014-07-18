@@ -16,10 +16,10 @@
 
 FactoryGirl.define do
   factory :promotion do
-    active false
-    banner "MyString"
-    publication nil
-    content nil
-    description "MyText"
+    active true
+    banner File.open("spec/fixtures/photo.jpg", "r")
+    publication 
+    content 
+    description "What a terrible promotion"
   end
 end
