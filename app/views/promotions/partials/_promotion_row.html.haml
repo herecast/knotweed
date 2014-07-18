@@ -1,0 +1,12 @@
+%tr{ class: "promotion-#{promotion.id}" }
+  %td= promotion.id
+  - if promotion.content.nil?
+    %td= "None"
+  - else
+    %td= link_to promotion.content.title, edit_content_path(promotion.content)
+  %td= link_to promotion.banner, promotion.banner.url
+  %td= promotion.description
+  %td= promotion.active
+  %td
+    = link_to "Edit Promotion", edit_promotion_path(promotion) 
+    = link_to "X", promotion_path(promotion), method: :delete, class: "btn btn-danger", confirm: "Are you sure?"

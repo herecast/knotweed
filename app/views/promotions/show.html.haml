@@ -1,21 +1,29 @@
-%p#notice= notice
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        Promotion ID #{@promotion.id} - 
+        = link_to edit_promotion_path(@promotion) do
+          %i.icon-pencil
+          Edit
+    .box-content
+      %p#notice= notice
 
-%p
-  %b Active:
-  = @promotion.active
-%p
-  %b Banner:
-  = @promotion.banner
-%p
-  %b Publication:
-  = @promotion.publication
-%p
-  %b Content:
-  = @promotion.content
-%p
-  %b Description:
-  = @promotion.description
-
-= link_to 'Edit', edit_promotion_path(@promotion)
-\|
-= link_to 'Back', promotions_path
+      %p
+        %b Active:
+        = @promotion.active
+      %p
+        %b Banner:
+        = link_to @promotion.banner, @promotion.banner.url
+      %p
+        %b Publication:
+        = link_to @promotion.publication.name, edit_publication_path(@promotion.publication)
+      %p
+        %b Content:
+        - if @promotion.content.nil?
+          None
+        - else
+          = link_to @promotion.content.title, content_path(@promotion.content)
+      %p
+        %b Description:
+        = @promotion.description

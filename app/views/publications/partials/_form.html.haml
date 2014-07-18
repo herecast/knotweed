@@ -24,6 +24,9 @@
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#history" } do
             History
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#promotions" } do
+            Promotions
     .tab-content
       .tab-pane.active.form-horizontal#details
         = f.input :name, input_html: { class: "span5" }
@@ -114,6 +117,9 @@
                 = render "issues/issue_row", issue: issue
         .tab-pane#history
           histry
+        .tab-pane#promotions
+          = render "promotions/partials/promotions_tab", publication: @publication
+          
       .form-actions
         = submit_tag "Submit and Create New Content Set", class: "btn btn-success", name: "add_content_set"
         = submit_tag nil, class: "btn btn-primary"

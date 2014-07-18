@@ -63,18 +63,6 @@ describe PromotionsController do
         expect(response).to redirect_to(Promotion.last)
       end
     end
-
-    describe "with invalid params" do
-      let (:options) { { banner: nil } }
-      it "assigns a newly created but unsaved promotion as @promotion" do
-        subject
-        expect(assigns(:promotion)).to be_a_new(Promotion)
-      end
-
-      it "doesn't save the promotion" do
-        expect { subject }.to_not change(Promotion, :count)
-      end
-    end
   end
 
   describe "PUT update" do

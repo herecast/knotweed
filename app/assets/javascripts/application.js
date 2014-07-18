@@ -31,6 +31,7 @@
 //= require publish_jobs
 //= require images
 //= require scaffold
+//= require promotions
 //= require publications
 //= require organizations
 //= require jquery.multi-select

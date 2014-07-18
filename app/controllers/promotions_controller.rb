@@ -2,7 +2,8 @@ class PromotionsController < ApplicationController
   # GET /promotions
   # GET /promotions.json
   def index
-    @promotions = Publication.find(params[:publication_id]).promotions.all
+    @publication = Publication.find(params[:publication_id])
+    @promotions = @publication.promotions
 
     respond_to do |format|
       format.html # index.html.erb
@@ -24,7 +25,10 @@ class PromotionsController < ApplicationController
   # GET /promotions/new
   # GET /promotions/new.json
   def new
-    @promotion = Promotion.new
+    publication = Publication.find(params[:publication_id])
+    content = Content.find(params[:content_id]) unless params[:content_id].nil?
+    @promotion = Promotion.new publication: publication
+    @promotion.content = content unless content.nil?
 
     respond_to do |format|
       format.html # new.html.erb

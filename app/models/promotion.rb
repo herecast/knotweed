@@ -15,12 +15,16 @@
 class Promotion < ActiveRecord::Base
   belongs_to :publication
   belongs_to :content
-  attr_accessible :active, :banner, :banner_cache, :remove_banner, :description
+  # TODO: At some point we probably want to lock this down a bit more so it's not so easy to attach 
+  # promotions to any content/publication
+  attr_accessible :active, :banner, :banner_cache, :remove_banner, :description, :content, :publication,
+                  :publication_id, :content_id
   after_initialize :init
 
   mount_uploader :banner, ImageUploader
 
-  validates_presence_of :banner
+  #TODO: figure out this validation
+  #validates_presence_of :banner
   validates_presence_of :publication
 
   def init

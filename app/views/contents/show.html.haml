@@ -29,6 +29,10 @@
             %li
               = link_to "#", class: "green-border", data: { toggle: "tab", target: "#annotation_reports" } do
                 Annotation Reports
+          %li
+            = link_to "#", class: "green-border", data: { toggle: "tab", target: "#promotions" } do
+              %i.icon-eye-open
+              Promote Content
         .tab-content
           .tab-pane.active#features
             %dl
@@ -75,6 +79,8 @@
                 = link_to method.humanize, publish_content_path(@content, method, Repository.first.id), class: "btn btn-info"
               - if @content.published?
                 = link_to "Export Gate XML", rdf_to_gate_path(@content, Repository.first.id), class: "btn btn-info", target: "_blank"
+          .tab-pane#promotions
+            = render "promotions/partials/promotions_tab", content: @content
           - if @content.published?
             .tab-pane#annotation_reports
               .pull-left
