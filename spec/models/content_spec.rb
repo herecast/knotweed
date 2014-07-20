@@ -521,4 +521,25 @@ describe Content do
 
   end
 
+  describe "has_active_promotion?" do
+    before do
+      @content = FactoryGirl.create(:content)
+    end
+
+    it "should return false if there are no promotions" do
+      @content.has_active_promotion?.should == false
+    end
+
+    it "should return false if there is a promotion but it is inactive" do
+      promotion = FactoryGirl.create(:promotion, active: false, content: @content)
+      @content.has_active_promotion?.should == false
+    end
+
+    it "should return true if there is an active promotion attached" do
+      promotion = FactoryGirl.create(:promotion, active: true, content: @content)
+      @content.has_active_promotion?.should == true
+    end
+
+  end
+
 end

@@ -363,7 +363,7 @@ class Content < ActiveRecord::Base
 
       f.tag!("tns:document-parts") do |g|
         f.tag!("tns:feature-set") do |g|
-          attributes.merge({"source_uri" => source_uri}).each do |k, v|
+          feature_set.each do |k, v|
             if ["id", "created_at", "updated_at", "quarantine", "import_record_id", "published", "image"].include? k
               next
             end
@@ -423,9 +423,17 @@ class Content < ActiveRecord::Base
         end
       end
       
-      
     end
     xml.target!
+  end
+
+  # the "attributes" hash no longer contains everything we want to push as a feature to DSP
+  # so this method returns the full feature list (attributes hash + whatever else)
+  def feature_set
+    attributes.merge({
+      "source_uri" => source_uri,
+      "has_active_promotion" => "#{has_active_promotion? ? 1 : 0}"
+    })
   end
 
   # Export Gate Document directly before/after Pipeline processing
@@ -574,6 +582,10 @@ class Content < ActiveRecord::Base
         c.name
       end
     end
+  end
+
+  def has_active_promotion?
+    promotions.where(active: true).count > 0
   end
 
 end

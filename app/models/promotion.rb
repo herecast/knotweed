@@ -21,6 +21,8 @@ class Promotion < ActiveRecord::Base
                   :publication_id, :content_id
   after_initialize :init
 
+  after_save :republish_content
+
   mount_uploader :banner, ImageUploader
 
   #TODO: figure out this validation
@@ -29,5 +31,16 @@ class Promotion < ActiveRecord::Base
 
   def init
     self.active = true if self.active.nil?
+  end
+
+  # whenever a promotion is modified, we need to republish the content in case
+  # it no longer qualifies as having a promotion (we have to update that feature
+  # in the repo).
+  def republish_content
+    if content.present?
+      content.repositories.each do |r|
+        content.publish Content::POST_TO_ONTOTEXT, r
+      end
+    end
   end
 end
