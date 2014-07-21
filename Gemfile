@@ -76,3 +76,4 @@ gem "rubyzip", "~> 1.1.4"
 
 gem "ckeditor_rails"
 gem 'hpricot'
+gem 'active_model_serializers', '~> 0.9.0.alpha1'

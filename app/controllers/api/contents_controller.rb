@@ -32,7 +32,7 @@ class Api::ContentsController < Api::ApiController
       # on making the published flag accurate rather than removing this filter
       # but to each their own I suppose.
       #thread.select! { |pair| @repo.contents.include? Content.find(pair[0]) }
-      render json: thread
+      render json: thread.to_json
     else
       render json: {}
     end
