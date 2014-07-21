@@ -14,7 +14,7 @@ Knotweed::Application.routes.draw do
   resources :parsers
   resources :publish_jobs
   resources :images
-  resources :publications do
+  resources :publications, except: [:show] do
     resources :promotions, shallow: true
   end
 
@@ -65,6 +65,7 @@ Knotweed::Application.routes.draw do
     post 'contents/create_and_publish', to: 'contents#create_and_publish', as: :create_and_publish_content
     get 'contents/:id/get_tree', to: 'contents#get_tree', as: :get_tree
     post 'category_corrections', to: 'category_corrections#create'
+    resources 'publications', only: [:show]
   end
 
 end
