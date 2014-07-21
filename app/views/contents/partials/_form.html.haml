@@ -14,10 +14,11 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#images" } do
           %i.icon-reorder
           Images
-      %li
-        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#promotions" } do
-          %i.icon-eye-open
-          Promotions
+      - if @content.source.present?
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#promotions" } do
+            %i.icon-eye-open
+            Promotions
     .tab-content
       .tab-pane.active.form-horizontal#features
         = f.input :title, input_html: { class: "input-block-level" }
@@ -53,8 +54,9 @@
               .bar{ style: "width: 0%" }
         .row-fluid#image_list
           = render @content.images
-      .tab-pane#promotions
-        = render "promotions/partials/promotions_tab", content: @content
+      - if @content.source.present?
+        .tab-pane#promotions
+          = render "promotions/partials/promotions_tab", content: @content
     .form-actions
       = submit_tag nil, class: "btn btn-primary"
       = link_to "Cancel", :back, class: "btn"
