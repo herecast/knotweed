@@ -2,7 +2,7 @@
 - publication ||= promotion.publication unless promotion.nil?
 - ajax_submit ||= false
 %p Promotion for: #{link_to publication.name, edit_publication_path(publication)}
-= simple_form_for(promotion, url: publication_promotions_path(publication), method: :post) do |f|
+= simple_form_for (promotion.id ? promotion : [publication, promotion]) do |f|
   = f.error_notification
 
   .form-inputs
