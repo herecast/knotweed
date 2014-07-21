@@ -13,28 +13,17 @@
       = search_form_for @search, url: publications_path do |f|
         .controls.controls-row
           .field.span3
-            = f.label :organization_id_in, "Organization"
-            = f.collection_select :organization_id_in, Organization.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
-          .field.span3
-            = f.label :organization_org_type_in, "Organization Type"
-            = f.select :organization_org_type_in, Organization::ORG_TYPE_OPTIONS, {}, { multiple: true, class: "chosen-select" }
-          .field.span3
-            = f.label :parent_id_in, "Parent Publication"
-            = f.collection_select :parent_id_in, Publication.parent_pubs, :id, :name, {}, { multiple: true, class: "chosen-select" }
-          .field.span3
             = f.label :id_in, "Publication"
             = f.collection_select :id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
-        .controls.controls-row
-          .field.span3
-            = f.label :locations_id_in, "Location"
-            = f.collection_select :locations_id_in, Location.accessible_by(current_ability), :id, :city, {}, { multiple: true, class: "chosen-select" }
           .field.span3
             = f.label :pub_type_in, "Publication Type"
             = f.select :pub_type_in, Publication::PUB_TYPE_OPTIONS, {}, { multiple: true, class: "chosen-select" }
           .field.span3
-            = f.label nil, "Content Set Status"
+            = f.label :organization_id_in, "Organization"
+            = f.collection_select :organization_id_in, Organization.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
-            = f.label nil, "Import Status"
+            = f.label :locations_id_in, "Service Area"
+            = f.collection_select :locations_id_in, Location.accessible_by(current_ability), :id, :city, {}, { multiple: true, class: "chosen-select" }
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"

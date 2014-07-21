@@ -6,20 +6,20 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#details" } do
           Details
       %li
-        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#properties" } do 
-          Links
-      %li
         = link_to '#', class: "green-border", data: { toggle: "tab", target: "#business_locations" } do
           Locations
       %li
-        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#logo" } do
-          Logo
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#images" } do
+          Images
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#contacts" } do
           Contacts
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#locations" } do
           Service Areas
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#properties" } do 
+          Links
       - if @publication.id
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#issues" } do
@@ -34,11 +34,6 @@
       .tab-pane.active.form-horizontal#details
         = f.input :name, input_html: { class: "span5" }
         = f.input :tagline, as: :string, input_html: { class: "span5" }
-        .offset1
-          = f.input :header, as: :file
-          = image_tag @publication.header.url if @publication.header?
-        - if @publication.header?
-          = f.input :remove_header, as: :boolean, label: "Remove header?"
         = f.input :pub_type, collection: Publication::PUB_TYPE_OPTIONS, label: "Publication Type"
         = f.association :organization, input_html: { class: "span5 select2" }
         = f.association :parent, collection: Publication.parent_pubs, label: "Parent Publication (Syndication)", input_html: { class: "span5 select2" }, include_blank: true
@@ -81,15 +76,23 @@
             - @publication.business_locations.each do |loc|
               = render "business_locations/partials/row", business_location: loc
       
-      .tab-pane#logo
+      .tab-pane#images
+        = label_tag "Logo"
         = image_tag(@publication.logo.url) if @publication.logo?
+        - if @publication.logo?
+          = f.input :remove_logo, as: :boolean, label: "Remove logo?"
         .row-fluid
           .span1
             = f.input :logo, label: false
           .span3.form-horizontal
             = f.input :remote_logo_url, label: "OR Upload from URL:"
-        - if @publication.logo?
-          = f.input :remove_logo, as: :boolean, label: "Remove logo?"
+        %hr
+        .row-fluid
+          = label_tag "Header"
+          = image_tag @publication.header.url if @publication.header?
+          - if @publication.header?
+            = f.input :remove_header, as: :boolean, label: "Remove header?"
+          = f.input :header, as: :file, label: false
       .tab-pane#contacts
         .pull-right
           = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { toggle: "modal", target: "#contact_form", form_url: new_contact_path(Publication, @publication.id) }, id: "new_contact_button"

@@ -7,6 +7,7 @@
 
   .form-inputs
     = f.input :active
+    = image_tag promotion.banner.url if promotion.banner?
     = f.input :banner
     = f.association :content, collection: publication.contents
     = f.input :description
@@ -15,4 +16,5 @@
     - if ajax_submit
       %span.btn.btn-primary.create-new-promotion{ data: { submit_url: publication_promotions_path(publication) } } Create Promotion
     - else
-      = f.button :submit
+      = f.button :submit, class: "btn-primary btn"
+    = link_to "Cancel", 'javascript:history.back()', class: "btn"
