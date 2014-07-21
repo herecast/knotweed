@@ -29,6 +29,9 @@
             = f.label :locations_id_in, "Location"
             = f.collection_select :locations_id_in, Location.accessible_by(current_ability), :id, :city, {}, { multiple: true, class: "chosen-select" }
           .field.span3
+            = f.label :pub_type_in, "Publication Type"
+            = f.select :pub_type_in, Publication::PUB_TYPE_OPTIONS, {}, { multiple: true, class: "chosen-select" }
+          .field.span3
             = f.label nil, "Content Set Status"
           .field.span3
             = f.label nil, "Import Status"

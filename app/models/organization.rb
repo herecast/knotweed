@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: organizations
+#
+#  id         :integer          not null, primary key
+#  name       :string(255)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  org_type   :string(255)
+#  notes      :text
+#
+
 class Organization < ActiveRecord::Base
 
   has_and_belongs_to_many :contacts
@@ -7,7 +19,6 @@ class Organization < ActiveRecord::Base
   has_many :parsers
   has_many :import_jobs
   has_many :locations, through: :publications
-  has_many :business_locations
 
   attr_accessible :name, :org_type, :notes, :general, :tagline, :header, :header_cache,
                   :remove_header, :logo, :logo_cache, :removeLogo

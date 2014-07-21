@@ -6,12 +6,6 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#details" } do
           Details
       %li
-        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#properties" } do 
-          Properties
-      %li
-        = link_to '#', class: "green-border", data: { toggle: "tab", target: "#business_locations" } do
-          Locations
-      %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#contacts" } do
           Contacts
       %li
@@ -34,39 +28,6 @@
             .publication-list
               - @organization.publications.each do |p|
                 = link_to p.name + (p == @organization.publications.last ? "" : ","), edit_publication_path(p)
-      .tab-pane#properties
-        .row-fluid
-          %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "general" } } + Add New Property
-          = text_field_tag "new_general_field", nil, class: "new-serialized-field span3"
-        = f.fields_for :general do |g|
-          .row-fluid.serialized-field-header
-            .span2= label_tag "Label"
-            .span3= label_tag "Value"
-          - @organization.general.each_pair do |k,v|
-            .row-fluid.serialized-field-row
-              .span2= label_tag k
-              .span6= g.text_field "#{k}", value: v, class: "span12"
-              .span2
-                .btn.btn-danger.remove-serialized-field X
-      .tab-pane#business_locations
-        .pull-right
-          = link_to "+ Add New Location", "#", class: "btn btn-success", data: { toggle: "modal", target: "#business_location_form", form_url: new_business_location_path({ organization_id: @organization.id }  )}, id: "new_business_location_button" 
-          / hidden field for creating business locations associated with a new organization record
-          - unless @organization.id
-            = f.association :business_locations, as: :hidden, input_html: { name: "organization[business_location_list]", value: "" }
-        %table.table.table-striped.table-condensed.sortable#business_locations_table
-          %thead
-            %tr
-              %th ID
-              %th Name
-              %th Address
-              %th Phone
-              %th Email
-              %th Hours
-              %th
-          %tbody#business_locations_list
-            - @organization.business_locations.each do |loc|
-              = render "business_locations/partials/row", business_location: loc
       .tab-pane#contacts
         .pull-right
           = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { toggle: "modal", target: "#contact_form", form_url: new_contact_path(Organization, @organization.id) }, id: "new_contact_button"
@@ -99,9 +60,3 @@
   .modal-body
     Loading...   
 
-.modal.hide.fade#business_location_form
-  .modal-header
-    %button.close{ type: "button", data: { dismiss: "modal" } } x
-    %h3 Business Location
-  .modal-body
-    Loading...   

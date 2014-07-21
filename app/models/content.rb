@@ -1,3 +1,41 @@
+# == Schema Information
+#
+# Table name: contents
+#
+#  id                 :integer          not null, primary key
+#  title              :string(255)
+#  subtitle           :string(255)
+#  authors            :string(255)
+#  content            :text
+#  issue_id           :integer
+#  import_location_id :integer
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  copyright          :string(255)
+#  guid               :string(255)
+#  pubdate            :datetime
+#  categories         :string(255)
+#  topics             :string(255)
+#  summary            :text
+#  url                :string(255)
+#  origin             :string(255)
+#  mimetype           :string(255)
+#  language           :string(255)
+#  page               :string(255)
+#  wordcount          :string(255)
+#  authoremail        :string(255)
+#  source_id          :integer
+#  file               :string(255)
+#  quarantine         :boolean          default(FALSE)
+#  doctype            :string(255)
+#  timestamp          :datetime
+#  contentsource      :string(255)
+#  import_record_id   :integer
+#  source_content_id  :string(255)
+#  image              :string(400)
+#  parent_id          :integer
+#
+
 require 'fileutils'
 require 'builder'
 class Content < ActiveRecord::Base
@@ -19,11 +57,13 @@ class Content < ActiveRecord::Base
   belongs_to :parent, class_name: "Content"
   has_many :children, class_name: "Content", foreign_key: "parent_id"
 
-  attr_accessible :title, :subtitle, :authors, :content, :issue_id, :import_location_id, :copyright
-  attr_accessible :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype
-  attr_accessible :language, :page, :wordcount, :authoremail, :source_id, :file
-  attr_accessible :quarantine, :doctype, :timestamp, :contentsource, :source_content_id
-  attr_accessible :image_ids, :parent_id
+  has_many :promotions
+
+  attr_accessible :title, :subtitle, :authors, :content, :issue_id, :import_location_id, :copyright,
+                  :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype,
+                  :language, :page, :wordcount, :authoremail, :source_id, :file,
+                  :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
+                  :image_ids, :parent_id, :source_uri
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -62,6 +102,10 @@ class Content < ActiveRecord::Base
 
   def document_uri
     "#{BASE_URI}/#{id}"
+  end
+
+  def source_uri
+    "<http://www.subtext.org/#{source.class.to_s}/#{source.id}>"
   end
   
   # creating a new content from import job data
@@ -319,7 +363,7 @@ class Content < ActiveRecord::Base
 
       f.tag!("tns:document-parts") do |g|
         f.tag!("tns:feature-set") do |g|
-          attributes.each do |k, v|
+          feature_set.each do |k, v|
             if ["id", "created_at", "updated_at", "quarantine", "import_record_id", "published", "image"].include? k
               next
             end
@@ -379,9 +423,17 @@ class Content < ActiveRecord::Base
         end
       end
       
-      
     end
     xml.target!
+  end
+
+  # the "attributes" hash no longer contains everything we want to push as a feature to DSP
+  # so this method returns the full feature list (attributes hash + whatever else)
+  def feature_set
+    attributes.merge({
+      "source_uri" => source_uri,
+      "has_active_promotion" => "#{has_active_promotion? ? 1 : 0}"
+    })
   end
 
   # Export Gate Document directly before/after Pipeline processing
@@ -530,6 +582,10 @@ class Content < ActiveRecord::Base
         c.name
       end
     end
+  end
+
+  def has_active_promotion?
+    promotions.where(active: true).count > 0
   end
 
 end

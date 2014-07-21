@@ -1,0 +1,11 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        Create a New Promotion 
+    .box-content
+      = render 'promotions/partials/form'
+
+      %p= link_to 'Back to Promotions List', publication_promotions_path(@promotion.publication)
+      - unless @promotion.content.nil?
+        %p= link_to 'Back to Content', content_path(@promotion.content)

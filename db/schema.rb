@@ -10,35 +10,7 @@
 # you'll amass, the slower it'll run and the greater likelihood for issues).
 #
 # It's strongly recommended to check this file into your version control system.
-
-ActiveRecord::Schema.define(:version => 20140715194614) do
-
-  create_table "USGS_pop", :force => true do |t|
-    t.integer "FEATURE_ID"
-    t.string  "FEATURE_NAME",    :limit => 120
-    t.string  "FEATURE_CLASS",   :limit => 50
-    t.string  "STATE_ALPHA",     :limit => 2
-    t.string  "STATE_NUMERIC",   :limit => 2
-    t.string  "COUNTY_NAME",     :limit => 100
-    t.string  "COUNTY_NUMERIC",  :limit => 3
-    t.string  "PRIMARY_LAT_DMS", :limit => 7
-    t.string  "PRIM_LONG_DMS",   :limit => 8
-    t.decimal "PRIM_LAT_DEC",                   :precision => 11, :scale => 7
-    t.decimal "PRIM_LONG_DEC",                  :precision => 12, :scale => 7
-    t.string  "SOURCE_LAT_DMS",  :limit => 7
-    t.string  "SOURCE_LONG_DMS", :limit => 8
-    t.decimal "SOURCE_LAT_DEC",                 :precision => 11, :scale => 7
-    t.decimal "SOURCE_LONG_DEC",                :precision => 12, :scale => 7
-    t.integer "ELEV_IN_M"
-    t.integer "ELEV_IN_FT"
-    t.string  "MAP_NAME",        :limit => 100
-    t.date    "DATE_CREATED"
-    t.date    "DATE_EDITED"
-  end
-
-  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+ActiveRecord::Schema.define(:version => 20140718212134) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -72,13 +44,13 @@ ActiveRecord::Schema.define(:version => 20140715194614) do
 
   create_table "business_locations", :force => true do |t|
     t.string   "name"
-    t.integer  "organization_id"
     t.string   "address"
     t.string   "phone"
     t.string   "email"
     t.string   "hours"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+    t.integer  "publication_id"
   end
 
   create_table "categories", :force => true do |t|
@@ -190,6 +162,7 @@ ActiveRecord::Schema.define(:version => 20140715194614) do
     t.string   "source_content_id"
     t.string   "image",              :limit => 400
     t.integer  "parent_id"
+    t.string   "source_type"
   end
 
   add_index "contents", ["authors"], :name => "authors"
@@ -453,6 +426,19 @@ ActiveRecord::Schema.define(:version => 20140715194614) do
     t.datetime "updated_at",      :null => false
   end
 
+  create_table "promotions", :force => true do |t|
+    t.boolean  "active"
+    t.string   "banner"
+    t.integer  "publication_id"
+    t.integer  "content_id"
+    t.text     "description"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  add_index "promotions", ["content_id"], :name => "index_promotions_on_content_id"
+  add_index "promotions", ["publication_id"], :name => "index_promotions_on_publication_id"
+
   create_table "publications", :force => true do |t|
     t.string   "name"
     t.datetime "created_at",           :null => false
@@ -464,6 +450,12 @@ ActiveRecord::Schema.define(:version => 20140715194614) do
     t.text     "notes"
     t.integer  "parent_id"
     t.string   "category_override"
+    t.text     "tagline"
+    t.text     "links"
+    t.text     "social_media"
+    t.text     "general"
+    t.text     "header"
+    t.string   "pub_type"
   end
 
   create_table "publish_jobs", :force => true do |t|

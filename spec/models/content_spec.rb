@@ -1,3 +1,41 @@
+# == Schema Information
+#
+# Table name: contents
+#
+#  id                 :integer          not null, primary key
+#  title              :string(255)
+#  subtitle           :string(255)
+#  authors            :string(255)
+#  content            :text
+#  issue_id           :integer
+#  import_location_id :integer
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  copyright          :string(255)
+#  guid               :string(255)
+#  pubdate            :datetime
+#  categories         :string(255)
+#  topics             :string(255)
+#  summary            :text
+#  url                :string(255)
+#  origin             :string(255)
+#  mimetype           :string(255)
+#  language           :string(255)
+#  page               :string(255)
+#  wordcount          :string(255)
+#  authoremail        :string(255)
+#  source_id          :integer
+#  file               :string(255)
+#  quarantine         :boolean          default(FALSE)
+#  doctype            :string(255)
+#  timestamp          :datetime
+#  contentsource      :string(255)
+#  import_record_id   :integer
+#  source_content_id  :string(255)
+#  image              :string(400)
+#  parent_id          :integer
+#
+
 require 'spec_helper'
 
 describe Content do
@@ -479,6 +517,27 @@ describe Content do
         @content.source.update_attribute :category_override, "Test Override"
         @content.publish_category.should== "Test Override"
       end
+    end
+
+  end
+
+  describe "has_active_promotion?" do
+    before do
+      @content = FactoryGirl.create(:content)
+    end
+
+    it "should return false if there are no promotions" do
+      @content.has_active_promotion?.should == false
+    end
+
+    it "should return false if there is a promotion but it is inactive" do
+      promotion = FactoryGirl.create(:promotion, active: false, content: @content)
+      @content.has_active_promotion?.should == false
+    end
+
+    it "should return true if there is an active promotion attached" do
+      promotion = FactoryGirl.create(:promotion, active: true, content: @content)
+      @content.has_active_promotion?.should == true
     end
 
   end

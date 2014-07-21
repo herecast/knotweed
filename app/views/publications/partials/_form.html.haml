@@ -6,6 +6,12 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#details" } do
           Details
       %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#properties" } do 
+          Links
+      %li
+        = link_to '#', class: "green-border", data: { toggle: "tab", target: "#business_locations" } do
+          Locations
+      %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#logo" } do
           Logo
       %li
@@ -13,7 +19,7 @@
           Contacts
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#locations" } do
-          Locations
+          Service Areas
       - if @publication.id
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#issues" } do
@@ -21,15 +27,60 @@
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#history" } do
             History
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#promotions" } do
+            Promotions
     .tab-content
       .tab-pane.active.form-horizontal#details
         = f.input :name, input_html: { class: "span5" }
+        = f.input :tagline, as: :string, input_html: { class: "span5" }
+        .offset1
+          = f.input :header, as: :file
+          = image_tag @publication.header.url if @publication.header?
+        - if @publication.header?
+          = f.input :remove_header, as: :boolean, label: "Remove header?"
+        = f.input :pub_type, collection: Publication::PUB_TYPE_OPTIONS, label: "Publication Type"
         = f.association :organization, input_html: { class: "span5 select2" }
         = f.association :parent, collection: Publication.parent_pubs, label: "Parent Publication (Syndication)", input_html: { class: "span5 select2" }, include_blank: true
         = f.input :category_override, input_html: { class: "span5" }, hint: "Set this option to force all content to publish with a specific category."
         = f.input :publishing_frequency, collection: Publication::FREQUENCY_OPTIONS, input_html: { class: "span5" }
         = f.input :website, input_html: { class: "span5" }
+        = f.input :display_attributes
         = f.input :notes, input_html: { class: "span5", rows: 10 } 
+      .tab-pane#properties
+        .row-fluid
+          %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "links" } } + Add New Link
+          = text_field_tag "new_link_field", nil, class: "new-serialized-field span3"
+        = f.fields_for :links do |g|
+          .row-fluid.serialized-field-header
+            .span2= label_tag "Label"
+            .span3= label_tag "Value"
+          - @publication.links.each_pair do |k,v|
+            .row-fluid.serialized-field-row
+              .span2= label_tag k
+              .span6= g.text_field "#{k}", value: v, class: "span12"
+              .span2
+                .btn.btn-danger.remove-serialized-field X
+      .tab-pane#business_locations
+        .pull-right
+          = link_to "+ Add New Location", "#", class: "btn btn-success", data: { toggle: "modal", target: "#business_location_form", form_url: new_business_location_path({ publication_id: @publication.id }  )}, id: "new_business_location_button" 
+          / hidden field for creating business locations associated with a new publication record
+          - unless @publication.id
+            = f.association :business_locations, as: :hidden, input_html: { name: "publication[business_location_list]", value: "" }
+        %table.table.table-striped.table-condensed.sortable#business_locations_table
+          %thead
+            %tr
+              %th ID
+              %th Name
+              %th Address
+              %th Phone
+              %th Email
+              %th Hours
+              %th
+          %tbody#business_locations_list
+            - @publication.business_locations.each do |loc|
+              = render "business_locations/partials/row", business_location: loc
+      
       .tab-pane#logo
         = image_tag(@publication.logo.url) if @publication.logo?
         .row-fluid
@@ -89,6 +140,9 @@
                 = render "issues/issue_row", issue: issue
         .tab-pane#history
           histry
+        .tab-pane#promotions
+          = render "promotions/partials/promotions_tab", publication: @publication
+          
       .form-actions
         = submit_tag "Submit and Create New Content Set", class: "btn btn-success", name: "add_content_set"
         = submit_tag nil, class: "btn btn-primary"
@@ -101,12 +155,6 @@
   .modal-body
     Loading...
 
-.modal.hide.fade#location_form
-  .modal-header
-    %button.close{ type: "button", data: { dismiss: "modal" } } x
-    %h3 Location
-  .modal-body
-    Loading...
 
 .modal.hide.fade#issue_form
   .modal-header
@@ -114,3 +162,17 @@
     %h3 Issue
   .modal-body
     Loading...
+
+.modal.hide.fade#location_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Location
+  .modal-body
+    Loading...
+
+.modal.hide.fade#business_location_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Business Location
+  .modal-body
+    Loading...   

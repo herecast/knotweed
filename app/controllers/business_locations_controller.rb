@@ -8,8 +8,8 @@ class BusinessLocationsController < ApplicationController
   end
 
   def new
-    if params.has_key? :organization_id
-      @business_location.organization = Organization.find params[:organization_id]
+    if params.has_key? :publication_id
+      @business_location.publication = Publication.find params[:publication_id]
     end
     render partial: "business_locations/partials/form", layout: false
   end
