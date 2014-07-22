@@ -250,7 +250,7 @@ class Content < ActiveRecord::Base
   end
 
   # catchall publish method that handles interacting w/ the publish record
-  def publish(method, repo, record=nil)
+  def publish(method, repo, record=nil, opts={})
     if method.nil?
       method = DEFAULT_PUBLISH_METHOD
     end
@@ -260,9 +260,11 @@ class Content < ActiveRecord::Base
       file_list = record.files
     else
       log = Logger.new("#{Rails.root}/log/publishing.log")
+      if opts[:download_result].present?
+        file_list = []
+      end
     end
     result = false
-    opts = {}
     opts[:file_list] = file_list unless file_list.nil?
     begin
       result = self.send method.to_sym, repo, opts
@@ -277,6 +279,9 @@ class Content < ActiveRecord::Base
       record.failures += 1 if record.present?
     end
     record.save if record.present?
+    if opts[:download_result].present? and not file_list.nil? and file_list.length > 0
+      opts[:download_result] = file_list[0]
+    end
     result
   end
 

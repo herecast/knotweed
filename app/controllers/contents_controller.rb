@@ -75,16 +75,24 @@ class ContentsController < ApplicationController
 
   def publish
     @content = Content.find(params[:id])
+    opts = {}
     if params[:repository_id].present?
       repo = Repository.find(params[:repository_id])
     else
       repo = nil
     end
-    if @content.publish(params[:method], repo) == true
+    if params[:download_result].present? and params[:download_result]
+      opts[:download_result] = true
+    end
+    if @content.publish(params[:method], repo, nil, opts) == true
       flash[:notice] = "#{params[:method].humanize} successful"
+      if opts[:download_result].present? and opts[:download_result].is_a? String
+        return send_file opts[:download_result]
+      end
     else
       flash[:error] = "#{params[:method].humanize} encountered an error"
     end
+
     redirect_to @content
   end
 
