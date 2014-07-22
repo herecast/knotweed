@@ -76,4 +76,9 @@ class Publication < ActiveRecord::Base
     self.find(ids)
   end
 
+  # returns the latest content owned by this publication that has category "presentation"
+  # purpose: on consumer app, publication#show uses this content
+  def latest_presentation
+    contents.where(categories: "presentation").order("pubdate DESC").first
+  end
 end

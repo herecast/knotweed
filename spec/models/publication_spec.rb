@@ -23,4 +23,20 @@
 require 'spec_helper'
 
 describe Publication do
+  before do
+    @publication = FactoryGirl.create(:publication)
+  end
+
+  describe "latest_presentation" do
+    it "should return nil if there are no presentation contents" do
+      @publication.latest_presentation.should == nil
+    end
+
+    it "should return the most recent presentation content" do
+      c1 = FactoryGirl.create(:content, pubdate: 1.day.ago, source: @publication, categories: "presentation")
+      c2 = FactoryGirl.create(:content, pubdate: 2.days.ago, source: @publication, categories: "presentation")
+      @publication.latest_presentation.should == c1
+    end
+  end
+
 end
