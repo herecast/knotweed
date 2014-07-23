@@ -4,6 +4,10 @@ jQuery ->
       data:
         publication_id: $(this).val()
       dataType: "script"
+    $.ajax $("#content_parent_id").data("optionsUrl"),
+      data:
+        publication_id: $(this).val(),
+        content_id: $("#content_parent_id").data("contentId")
 
   $(document).on 'change', "#content_issue_id", ->
     $.ajax "/issues/" + $(this).val(),

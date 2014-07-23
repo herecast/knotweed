@@ -107,4 +107,17 @@ class ContentsController < ApplicationController
     end
   end
 
+  def parent_select_options
+    publication = Publication.find(params[:publication_id])
+    conts = publication.contents
+    if params[:content_id].present?
+      conts = conts - [Content.find(params[:content_id])]
+    end
+    @contents = conts.map{ |c| [c.title, c.id] }.insert(0,nil)
+    respond_to do |format|
+      format.js
+    end
+  end
+
+
 end

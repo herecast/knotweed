@@ -8,6 +8,8 @@ Knotweed::Application.routes.draw do
   resources :users
   
   get "/", to: "admin#dashboard", as: :dashboard
+
+  get "contents/parent_options", to: "contents#parent_select_options", as: :parent_select_options
   resources :contents, except: [:destroy]
   get "issues/select_options", to: "issues#select_options", as: :issue_select_options
   resources :import_jobs
