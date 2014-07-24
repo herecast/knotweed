@@ -8,4 +8,6 @@ INSERT
     ?uid pub:featureValue True .
     <http://www.subtext.org/Document/%{content_id}> pub:Feature ?uid .
 }
-WHERE { BIND(URI(CONCAT('http://data.ontotext.com/watt/Feature/', STRUUID())) as ?uid) }
+WHERE { 
+    BIND(URI(CONCAT('http://data.ontotext.com/watt/Feature/', STRUUID())) as ?uid) 
+}
