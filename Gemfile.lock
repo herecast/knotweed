@@ -12,6 +12,15 @@ GIT
     datetimepicker-rails (0.0.8)
 
 GIT
+  remote: git@github.com:bencpeters/sparql-client.git
+  revision: 7f4981fd59a5cd4ff9f05490b3af2d135dd365bb
+  branch: update-url
+  specs:
+    sparql-client (1.1.2)
+      net-http-persistent (~> 1.4)
+      rdf (~> 1.1)
+
+GIT
   remote: git@github.com:capistrano/capistrano.git
   revision: 1f86d32fd48d08311b92446e1db428613b180309
   specs:
@@ -298,6 +307,7 @@ GEM
     rb-fsevent (0.9.3)
     rb-inotify (0.9.3)
       ffi (>= 0.5.0)
+    rdf (1.1.4.2)
     rdoc (3.12.2)
       json (~> 1.4)
     rolify (3.2.0)
@@ -443,6 +453,7 @@ DEPENDENCIES
   rubyzip (~> 1.1.4)
   sass-rails (~> 3.2.3)
   simple_form (>= 2.1.0)
+  sparql-client!
   turbo-sprockets-rails3
   turbolinks
   uglifier (>= 1.0.3)

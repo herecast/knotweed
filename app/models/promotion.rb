@@ -23,6 +23,8 @@ class Promotion < ActiveRecord::Base
 
   after_save :republish_content
 
+  @@sparql = ::SPARQL::Client.new Figaro.env.sesame_rdf_endpoint
+
   mount_uploader :banner, ImageUploader
 
   #TODO: figure out this validation
@@ -37,10 +39,16 @@ class Promotion < ActiveRecord::Base
   # it no longer qualifies as having a promotion (we have to update that feature
   # in the repo).
   def republish_content
-    if content.present?
-      content.repositories.each do |r|
-        content.publish Content::POST_TO_ONTOTEXT, r
-      end
+    if content.present? and active
+      mark_active_promotion
+      # TODO: add logic here to check whether we're save removing the active promotion flag - 
+      # I think this basically means the content has no active promotions at all.
     end
+  end
+
+  private
+  def mark_active_promotion
+    query = File.read('./lib/queries/add_active_promo.rq') % {content_id: content.id}
+    @@sparql.update(query, { endpoint: Figaro.env.sesame_rdf_endpoint + "/statements"})
   end
 end
