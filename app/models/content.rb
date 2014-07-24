@@ -60,10 +60,10 @@ class Content < ActiveRecord::Base
   has_many :promotions
 
   attr_accessible :title, :subtitle, :authors, :content, :issue_id, :import_location_id, :copyright,
-                  :guid, :pubdate, :categories, :topics, :summary, :url, :origin, :mimetype,
+                  :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
                   :language, :page, :wordcount, :authoremail, :source_id, :file,
                   :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
-                  :image_ids, :parent_id, :source_uri
+                  :image_ids, :parent_id, :source_uri, :category
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -127,7 +127,7 @@ class Content < ActiveRecord::Base
       else
         key = k
       end
-      if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to'].include? key
+      if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories'].include? key
         special_attrs[key] = v if v.present?
       elsif v.present?
         data[key] = v
@@ -174,6 +174,13 @@ class Content < ActiveRecord::Base
         content.issue.publication = content.source if content.source.present?
       end
     end
+    if special_attrs.has_key? "categories"
+      content.source_category = special_attrs['categories']
+    end
+    if special_attrs.has_key? "in_reply_to"
+      content.parent = Content.find_by_guid(special_attrs["in_reply_to"])
+    end
+      
     content.import_record = job.last_import_record if job.present?
 
     content.set_guid unless content.guid.present? # otherwise it won't be set till save and we need it for overwriting
@@ -196,19 +203,17 @@ class Content < ActiveRecord::Base
     if existing_content.present?
       # check for a category correction and use the corrected category if it exists
       if existing_content.category_corrections.present?
-        content.categories = existing_content.category_corrections.last.new_category
+        content.category = existing_content.category_corrections.last.new_category
       end
       content.id = existing_content.id
       existing_content.destroy
     end
 
-    if special_attrs.has_key? "in_reply_to"
-      content.parent = Content.find_by_guid(special_attrs["in_reply_to"])
-    end
-
     content.save!
 
     # if the content saves, add any images that came in
+    # this has to be down here, not in the special_attributes CASE statement
+    # because we don't want to create the images if the content doesn't save.
     if special_attrs.has_key? "image"
       # CarrierWave validation should take care of validating this for us
       image_attrs = {
@@ -369,11 +374,8 @@ class Content < ActiveRecord::Base
       f.tag!("tns:document-parts") do |g|
         f.tag!("tns:feature-set") do |g|
           feature_set.each do |k, v|
-            if ["id", "created_at", "updated_at", "quarantine", "import_record_id", "published", "image"].include? k
-              next
-            end
             g.tag!("tns:feature") do |h|
-              if ["issue_id", "source_id", "import_location_id", "parent_id", "categories"].include? k
+              if ["issue_id", "source_id", "import_location_id", "parent_id"].include? k
                 if k == "issue_id" and issue.present?
                   key, value = "ISSUE", issue.issue_edition
                 elsif k == "source_id" and source.present?
@@ -384,8 +386,6 @@ class Content < ActiveRecord::Base
                   end
                 elsif k == "parent_id" and parent.present?
                   key, value = "PARENT", "#{Figaro.env.document_prefix}#{v}"
-                elsif k == "categories"
-                  key, value = "CATEGORIES", publish_category
                 end
               else
                 key = k.upcase
@@ -435,10 +435,13 @@ class Content < ActiveRecord::Base
   # the "attributes" hash no longer contains everything we want to push as a feature to DSP
   # so this method returns the full feature list (attributes hash + whatever else)
   def feature_set
-    attributes.merge({
+    set = attributes.merge({
       "source_uri" => source_uri,
-      "has_active_promotion" => "#{has_active_promotion? ? 1 : 0}"
+      "has_active_promotion" => "#{has_active_promotion? ? 1 : 0}",
+      "categories" => publish_category
     })
+    set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
+               "import_record_id", "published", "image")
   end
 
   # Export Gate Document directly before/after Pipeline processing
@@ -579,8 +582,10 @@ class Content < ActiveRecord::Base
   def publish_category
     if source.present? and source.category_override.present?
       source.category_override
+    elsif category.present?
+      category
     else 
-      c = Category.find_or_create_by_name(categories)
+      c = Category.find_or_create_by_name(source_category)
       if c.channel.present?
         c.channel.name
       else

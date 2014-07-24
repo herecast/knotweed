@@ -33,7 +33,7 @@
         .row-fluid
           = f.input :pubdate, as: :datetime_picker, wrapper_html: { class: "span6" }
           = f.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }
-        = f.input :categories, input_html: { class: "input-block-level" }
+        = f.input :category, input_html: { class: "input-block-level" }
         = f.input :url, input_html: { class: "input-block-level" }
       .tab-pane#doc_content
         = f.input :content, input_html: { class: "ckeditor input-block-level" }

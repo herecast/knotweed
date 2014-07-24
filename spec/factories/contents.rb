@@ -48,5 +48,6 @@ FactoryGirl.define do
     issue
     import_location
     pubdate Time.now
+    source_category "Category"
   end
 end

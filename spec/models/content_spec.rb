@@ -176,7 +176,7 @@ describe Content do
       c2 = Content.create_from_import_job(@base_data)
       Content.count.should== 1
       Content.first.id.should== orig_id
-      Content.first.categories.should == cat_corr.new_category
+      Content.first.category.should == cat_corr.new_category
     end
 
     # check source logic
@@ -349,8 +349,8 @@ describe Content do
     end
 
     it "should contain all the attributes as feature name/value pairs" do
-      @content.attributes.each do |k, v|
-        unless ["id", "image", "created_at", "updated_at", "quarantine", "published", "content", "categories"].include? k or /.+id/.match(k)
+      @content.feature_set.each do |k, v|
+        unless ["content", "source_id", "import_location_id", "parent_id", "issue_id"].include? k
           # just checking with closing tags so we don't have to deal
           # with exact formatting of opening tag and attributes
           @xml.include?("#{k.upcase}</tns:name>").should be_true
@@ -362,7 +362,7 @@ describe Content do
             elsif k == "authoremail" or k == "authors"
               @xml.include?("#{v}]]></tns:value>").should be_true
             else
-              @xml.include?("#{v}</tns:value>").should be_true
+              @xml.include?("#{CGI::escapeHTML v}</tns:value>").should be_true
             end
           end
         end
@@ -374,9 +374,10 @@ describe Content do
       @content.to_new_xml.include?("Test Category").should be_true
     end
 
-    it "should use the category-mapping instead of categories if available" do
+    it "should use the category-mapping instead of source_category if available" do
       cat = FactoryGirl.create(:category)
-      @content.update_attribute :categories, cat.name
+      @content.update_attribute :source_category, cat.name
+      @content.update_attribute :category, nil
       @content.to_new_xml.include?(cat.channel.name).should be_true
     end
 
@@ -493,29 +494,46 @@ describe Content do
       @content = FactoryGirl.create(:content)
     end
 
-    describe "if no Category record exists" do
-      it "should return the value of categories" do
-        @content.publish_category.should== @content.categories
-      end
-
-      it "should create a Category record with empty channel_id" do
-        @content.publish_category
-        Category.find_by_name(@content.categories).present?.should== true
-      end
-    end
-
-    describe "if category exists with mapped channel" do
-      it "should return the corresponding channel's name" do
-        cat = FactoryGirl.create(:category)
-        @content.update_attribute :categories, cat.name
-        @content.publish_category.should== cat.channel.name
-      end
-    end
+    subject { @content.publish_category }
 
     describe "if source.category_override is set" do
       it "should return source.category_override" do
         @content.source.update_attribute :category_override, "Test Override"
-        @content.publish_category.should== "Test Override"
+        subject.should== "Test Override"
+      end
+    end
+
+    describe "with source_category and category set" do
+      it "should return category" do
+        @content.category = "Test Subtext Category"
+        @content.source_category = "Test Source Category"
+        subject.should == "Test Subtext Category"
+      end
+    end
+
+    describe "with only source_category set" do
+      before do
+        @content.category = nil
+        @content.source_category = "Test Source Category"
+      end
+
+      describe "if no Category record exists" do
+        it "should return the value of source_category" do
+          subject.should== @content.source_category
+        end
+
+        it "should create a Category record with empty channel_id" do
+          subject
+          Category.find_by_name(@content.source_category).present?.should== true
+        end
+      end
+
+      describe "if category exists with mapped channel" do
+        it "should return the corresponding channel's name" do
+          cat = FactoryGirl.create(:category)
+          @content.source_category = cat.name
+          subject.should== cat.channel.name
+        end
       end
     end
 
@@ -523,7 +541,11 @@ describe Content do
 
   describe "has_active_promotion?" do
     before do
+      ImageUploader.storage = :file
       @content = FactoryGirl.create(:content)
+    end
+    after do
+      FileUtils.rm_rf('./public/promotion')
     end
 
     it "should return false if there are no promotions" do

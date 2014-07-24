@@ -52,8 +52,10 @@
               %dd= @content.authors
               %dt Import Location
               %dd= @content.import_location.try(:city)
-              %dt Categories
-              %dd= @content.categories
+              %dt Category
+              %dd= @content.category
+              %dt Source Category
+              %dd= @content.source_category
               %dt URL
               %dd= @content.url
               %dt Origin
