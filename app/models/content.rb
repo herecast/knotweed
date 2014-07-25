@@ -602,8 +602,10 @@ class Content < ActiveRecord::Base
   end
 
   def get_related_promotion
+    clean_content = SparqlUtilities.sanitize_input(SparqlUtilities.clean_lucene_query(
+                    ActionView::Base.full_sanitizer.sanitize(content)))
     query = File.read(Rails.root.join("lib", "queries", "query_promo_similarity_index.rq")) % 
-            { content: ActionView::Base.full_sanitizer.sanitize(content), content_id: id }
+            { content: clean_content, content_id: id }
     results = @@sparql.query(query)
     unless results.empty?
       uri = results[0][:uid].to_s

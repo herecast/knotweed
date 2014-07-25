@@ -19,6 +19,7 @@ describe Promotion do
     ImageUploader.storage = :file
     @pub = FactoryGirl.create(:publication)
     @content = FactoryGirl.create(:content)
+    Promotion.any_instance.stub(:update_active_promotions).and_return(true)
   end
 
   after do
