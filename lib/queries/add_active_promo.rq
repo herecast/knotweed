@@ -4,8 +4,8 @@ PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 INSERT
 {
     ?uid rdf:type pub:Feature .
-    ?uid pub:featureName 'hasActivePromo' .
-    ?uid pub:featureValue True .
+    ?uid pub:featureName 'HAS_ACTIVE_PROMOTION' .
+    ?uid pub:featureValue "1" .
     <http://www.subtext.org/Document/%{content_id}> pub:Feature ?uid .
 }
 WHERE { 

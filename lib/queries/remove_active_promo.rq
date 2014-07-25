@@ -7,7 +7,7 @@ DELETE {
 }
 WHERE {
     ?feature ?p ?v .
-    ?feature pub:featureName "hasActivePromo" .
+    ?feature pub:featureName "HAS_ACTIVE_PROMOTION" .
     ?o ?p2 ?feature .
     FILTER(?o = <http://www.subtext.org/Document/%{content_id}>) .
 }
