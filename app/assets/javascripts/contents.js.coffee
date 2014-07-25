@@ -8,6 +8,7 @@ jQuery ->
       data:
         publication_id: $(this).val(),
         content_id: $("#content_parent_id").data("contentId")
+  $("#content_source_id").trigger('change')
 
   $(document).on 'change', "#content_issue_id", ->
     $.ajax "/issues/" + $(this).val(),

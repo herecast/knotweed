@@ -1,2 +1,2 @@
-$("#content_parent_id").html("#{ j options_for_select(@contents) }");
+$("#content_parent_id").html("#{ j options_for_select(@contents, @orig_content.parent_id) }");
 $("#content_parent_id").trigger("chosen:updated");

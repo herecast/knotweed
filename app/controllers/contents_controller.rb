@@ -111,7 +111,8 @@ class ContentsController < ApplicationController
     publication = Publication.find(params[:publication_id])
     conts = publication.contents
     if params[:content_id].present?
-      conts = conts - [Content.find(params[:content_id])]
+      @orig_content = Content.find(params[:content_id])
+      conts = conts - [@orig_content]
     end
     @contents = conts.map{ |c| [c.title, c.id] }.insert(0,nil)
     respond_to do |format|
