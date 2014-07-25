@@ -69,9 +69,6 @@ class Content < ActiveRecord::Base
   before_save :mark_quarantined
   before_save :set_guid
 
-  @@sparql = ::SPARQL::Client.new Figaro.env.sesame_rdf_endpoint
-  @@upload_endpoint = Figaro.env.sesame_rdf_endpoint + "/statements"
-
   NEW_FORMAT = "New"
   KIM_FORMAT = "KIM"
   EXPORT_FORMATS = [KIM_FORMAT, NEW_FORMAT]
@@ -601,12 +598,14 @@ class Content < ActiveRecord::Base
     promotions.where(active: true).count > 0
   end
 
-  def get_related_promotion
+  def get_related_promotion(repo)
+    sparql = ::SPARQL::Client.new repo.sesame_endpoint
+    
     clean_content = SparqlUtilities.sanitize_input(SparqlUtilities.clean_lucene_query(
                     ActionView::Base.full_sanitizer.sanitize(content)))
     query = File.read(Rails.root.join("lib", "queries", "query_promo_similarity_index.rq")) % 
             { content: clean_content, content_id: id }
-    results = @@sparql.query(query)
+    results = sparql.query(query)
     unless results.empty?
       uri = results[0][:uid].to_s
       idx = uri.rindex("/")

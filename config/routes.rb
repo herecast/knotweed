@@ -11,7 +11,6 @@ Knotweed::Application.routes.draw do
 
   get "contents/parent_options", to: "contents#parent_select_options", as: :parent_select_options
   resources :contents, except: [:destroy]
-  get "contents/:id/related_promotion", to: 'contents#banner'
   get "issues/select_options", to: "issues#select_options", as: :issue_select_options
   resources :import_jobs
   resources :parsers

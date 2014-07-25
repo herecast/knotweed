@@ -40,8 +40,9 @@ class Api::ContentsController < Api::ApiController
 
   def banner
     @content = Content.find(params[:id])
+    @repo = Repository.find_by_dsp_endpoint(params[:repository])
     begin
-      promoted_content_id = @content.get_related_promotion
+      promoted_content_id = @content.get_related_promotion(@repo)
       new_content = Content.find promoted_content_id
     rescue
       new_content = nil

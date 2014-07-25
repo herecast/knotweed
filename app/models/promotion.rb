@@ -25,8 +25,7 @@ class Promotion < ActiveRecord::Base
   before_destroy { |record| record.active = false; true }
   after_destroy :update_active_promotions
 
-  @@sparql = ::SPARQL::Client.new Figaro.env.sesame_rdf_endpoint
-  @@upload_endpoint = Figaro.env.sesame_rdf_endpoint + "/statements"
+  UPLOAD_ENDPOINT = "/statements"
 
   mount_uploader :banner, ImageUploader
 
@@ -47,22 +46,26 @@ class Promotion < ActiveRecord::Base
         has_active_promo = content.has_active_promotion?
       end
 
-      if has_active_promo
-        mark_active_promotion
-      else
-        remove_promotion
+      content.repositories.each do |r|
+        if has_active_promo
+          mark_active_promotion(r)
+        else
+          remove_promotion(r)
+        end
       end
     end
   end
 
   private
-  def mark_active_promotion
+  def mark_active_promotion(repo)
     query = File.read('./lib/queries/add_active_promo.rq') % {content_id: content.id}
-    @@sparql.update(query, { endpoint: @@upload_endpoint })
+    sparql = ::SPARQL::Client.new repo.sesame_endpoint
+    sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
   end
 
-  def remove_promotion
+  def remove_promotion(repo)
     query = File.read('./lib/queries/remove_active_promo.rq') % {content_id: content.id}
-    @@sparql.update(query, { endpoint: @@upload_endpoint })
+    sparql = ::SPARQL::Client.new repo.sesame_endpoint
+    sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
   end
 end
