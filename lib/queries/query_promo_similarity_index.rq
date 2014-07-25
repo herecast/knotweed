@@ -1,0 +1,15 @@
+PREFIX pub: <http://ontology.ontotext.com/publishing#>
+PREFIX luc4: <http://www.ontotext.com/owlim/lucene4#>
+
+SELECT ?uid ?title ?summary ?score WHERE {
+    ?uid luc4:promoSimilarityIndex """%{content}""" .
+    ?uid luc4:score ?score .
+    ?uid pub:title ?title .
+    ?uid pub:summary ?summary .
+    ?uid pub:Feature ?feature .
+    ?feature pub:featureName ?featurename .
+    ?feature pub:featureValue ?featureval .
+    FILTER(?featurename = "hasActivePromo") .
+    FILTER(?featureval = true) .
+    FILTER(?uid != <http://www.subtext.org/Document/%{content_id}>) .
+} LIMIT 1

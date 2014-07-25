@@ -38,4 +38,19 @@ class Api::ContentsController < Api::ApiController
     end
   end
 
+  def banner
+    @content = Content.find(params[:id])
+    begin
+      promoted_content_id = @content.get_related_promotion
+      new_content = Content.find promoted_content_id
+    rescue
+      new_content = nil
+    end
+
+    if new_content.nil?
+      render json: {}
+    else
+      render json: { banner: new_content.promotions.first.banner.url, content_id: new_content.id }
+    end
+  end
 end

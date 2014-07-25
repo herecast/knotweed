@@ -47,8 +47,7 @@ class Promotion < ActiveRecord::Base
         has_active_promo = true
       else
         # Not totally atomic, but we'll live with that for now...
-        content.reload  
-        has_active_promo = content.promotions.any? {|p| p.active }
+        has_active_promo = content.has_active_promotion?
       end
 
       if has_active_promo

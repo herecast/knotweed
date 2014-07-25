@@ -9,6 +9,7 @@ Knotweed::Application.routes.draw do
   
   get "/", to: "admin#dashboard", as: :dashboard
   resources :contents, except: [:destroy]
+  get "contents/:id/related_promotion", to: 'contents#banner'
   get "issues/select_options", to: "issues#select_options", as: :issue_select_options
   resources :import_jobs
   resources :parsers
@@ -64,6 +65,7 @@ Knotweed::Application.routes.draw do
   namespace :api do
     post 'contents/create_and_publish', to: 'contents#create_and_publish', as: :create_and_publish_content
     get 'contents/:id/get_tree', to: 'contents#get_tree', as: :get_tree
+    get 'contents/:id/related_promotion', to: 'contents#banner', as: :related_promotion
     post 'category_corrections', to: 'category_corrections#create'
     resources 'publications', only: [:show]
   end

@@ -107,4 +107,20 @@ class ContentsController < ApplicationController
     end
   end
 
+  def banner
+    @content = Content.find(params[:id])
+    begin
+      promoted_content_id = @content.get_related_promotion
+      new_content = Content.find promoted_content_id
+    rescue
+      new_content = nil
+    end
+
+    if new_content.nil?
+      render show, flash[:error] = "No related promotions found!"
+    else
+      redirect_to new_content
+    end
+  end
+
 end
