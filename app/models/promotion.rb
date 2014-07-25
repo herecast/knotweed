@@ -21,9 +21,9 @@ class Promotion < ActiveRecord::Base
                   :publication_id, :content_id
   after_initialize :init
 
-  after_save :republish_content
+  after_save :update_active_promotions
   before_destroy { |record| record.active = false; true }
-  after_destroy :republish_content
+  after_destroy :update_active_promotions
 
   @@sparql = ::SPARQL::Client.new Figaro.env.sesame_rdf_endpoint
   @@upload_endpoint = Figaro.env.sesame_rdf_endpoint + "/statements"
@@ -38,10 +38,7 @@ class Promotion < ActiveRecord::Base
     self.active = true if self.active.nil?
   end
 
-  # whenever a promotion is modified, we need to republish the content in case
-  # it no longer qualifies as having a promotion (we have to update that feature
-  # in the repo).
-  def republish_content
+  def update_active_promotions
     if content.present?
       if active 
         has_active_promo = true

@@ -9,6 +9,7 @@ describe PromotionsController do
     sign_in user
     @pub = FactoryGirl.create(:publication)
     @content = FactoryGirl.create(:content)
+    Promotion.any_instance.stub(:update_active_promotions).and_return(true)
     @promotion = FactoryGirl.create(:promotion, publication: @pub, content: @content)
   end
 

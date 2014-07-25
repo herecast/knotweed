@@ -40,6 +40,8 @@ require 'spec_helper'
 
 describe Content do
 
+  before { Promotion.any_instance.stub(:update_active_promotions).and_return(true) }
+
   describe "find_root_parent" do
     it "should return self for a content with no parent" do
       c = FactoryGirl.create(:content)
