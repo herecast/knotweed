@@ -72,6 +72,7 @@ class PublishJob < ActiveRecord::Base
   # Create a zipped archive of all files created by a publish job
   # Archives live at public/exports/job_id.zip
   def create_file_archive(record)
+    log = record.log_file
     FileUtils.mkpath(File.join("public", "exports"))
 
     zip_file_name = File.join("public", "exports", "#{record.id.to_s}.zip")
