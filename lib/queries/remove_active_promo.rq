@@ -1,0 +1,13 @@
+PREFIX pub: <http://ontology.ontotext.com/publishing#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+DELETE {
+    ?feature ?p ?v .
+    ?o ?p2 ?feature .
+}
+WHERE {
+    ?feature ?p ?v .
+    ?feature pub:featureName "hasActivePromo" .
+    ?o ?p2 ?feature .
+    FILTER(?o = <http://www.subtext.org/Document/%{content_id}>) .
+}

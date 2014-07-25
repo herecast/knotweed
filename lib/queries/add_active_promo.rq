@@ -1,0 +1,13 @@
+PREFIX pub: <http://ontology.ontotext.com/publishing#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+INSERT
+{
+    ?uid rdf:type pub:Feature .
+    ?uid pub:featureName 'hasActivePromo' .
+    ?uid pub:featureValue True .
+    <http://www.subtext.org/Document/%{content_id}> pub:Feature ?uid .
+}
+WHERE { 
+    BIND(URI(CONCAT('http://data.ontotext.com/watt/Feature/', STRUUID())) as ?uid) 
+}

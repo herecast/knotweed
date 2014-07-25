@@ -22,6 +22,11 @@ class Promotion < ActiveRecord::Base
   after_initialize :init
 
   after_save :republish_content
+  before_destroy { |record| record.active = false; true }
+  after_destroy :republish_content
+
+  @@sparql = ::SPARQL::Client.new Figaro.env.sesame_rdf_endpoint
+  @@upload_endpoint = Figaro.env.sesame_rdf_endpoint + "/statements"
 
   mount_uploader :banner, ImageUploader
 
@@ -38,9 +43,29 @@ class Promotion < ActiveRecord::Base
   # in the repo).
   def republish_content
     if content.present?
-      content.repositories.each do |r|
-        content.publish Content::POST_TO_ONTOTEXT, r
+      if active 
+        has_active_promo = true
+      else
+        # Not totally atomic, but we'll live with that for now...
+        has_active_promo = content.has_active_promotion?
+      end
+
+      if has_active_promo
+        mark_active_promotion
+      else
+        remove_promotion
       end
     end
+  end
+
+  private
+  def mark_active_promotion
+    query = File.read('./lib/queries/add_active_promo.rq') % {content_id: content.id}
+    @@sparql.update(query, { endpoint: @@upload_endpoint })
+  end
+
+  def remove_promotion
+    query = File.read('./lib/queries/remove_active_promo.rq') % {content_id: content.id}
+    @@sparql.update(query, { endpoint: @@upload_endpoint })
   end
 end
