@@ -50,6 +50,23 @@
           = f.input :cost, wrapper_html: { class: "span6" }, input_html: { class: "span12" }
           = f.input :recurrence, wrapper_html: { class: "span6" }, input_html: { class: "span12" }
         %hr
+        %h3 Location
+        .row-fluid
+          = f.association :business_location, collection: @content.source.try(:business_locations), 
+            label_method: :name, hint: "Select a location or add a new one on the right.", 
+            label: false, wrapper_html: { class: "span4" }, selected: @business_location_id, include_blank: true
+          .span7
+            = f.simple_fields_for :business_location do |g|
+              = g.input :name, input_html: { class: "input-block-level" }
+              = g.input :address, input_html: { class: "input-block-level" }
+              .row-fluid
+                = g.input :email, wrapper_html: { class: "span6" }
+                = g.input :phone, wrapper_html: { class: "span6" }
+              = g.input :hours, input_html: { class: "input-block-level" }
+              .pull-right
+                = label_tag "Save to publication?"
+                = check_box_tag :save_to_publication
+        %hr
         %h3 Links
         .row-fluid
           %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "links", model: "content" } } + Add New Link

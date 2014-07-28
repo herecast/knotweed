@@ -1,5 +1,7 @@
 class ContentsController < ApplicationController
 
+  before_filter :process_business_loc_params, only: [:create, :update]
+
   def index
     # if posted, save to session
     if params[:reset]
@@ -21,6 +23,7 @@ class ContentsController < ApplicationController
 
   def new
     @content = Content.new
+    @content.build_business_location
   end
 
   def create
@@ -57,9 +60,16 @@ class ContentsController < ApplicationController
 
   def edit
     @content = Content.find(params[:id])
+    # ensure the form fields aren't filled with a location from the dropdown
+    # really pretty hacky...oh well.
+    if @content.source.try(:business_locations).include? @content.business_location
+      @business_location_id = @content.business_location.id
+      @content.build_business_location
+    end
   end
 
   def update
+
     # ensure serialized values are set to empty if no fields are passed in via form
     params[:content][:links] = nil unless params[:content].has_key? :links
     @content = Content.find(params[:id])
@@ -119,6 +129,18 @@ class ContentsController < ApplicationController
     @contents = conts.map{ |c| [c.title, c.id] }.insert(0,nil)
     respond_to do |format|
       format.js
+    end
+  end
+
+  private
+  def process_business_loc_params
+    if params[:content][:business_location_id].present?
+      params[:content].delete :business_location_attributes
+    else
+      params[:content].delete :business_location_id
+      if params[:save_to_publication]
+        params[:content][:business_location_attributes][:publication_id] = params[:content][:source_id]
+      end
     end
   end
 

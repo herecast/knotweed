@@ -43,6 +43,10 @@ class Content < ActiveRecord::Base
   belongs_to :import_location
   belongs_to :import_record
 
+  belongs_to :business_location # for event type contents
+  accepts_nested_attributes_for :business_location
+  attr_accessible :business_location_attributes, :business_location_id
+
   has_many :annotation_reports
   has_many :category_corrections
 

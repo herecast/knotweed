@@ -15,6 +15,7 @@
 
 class BusinessLocation < ActiveRecord::Base
   belongs_to :publication
+  has_many :contents
 
   attr_accessible :address, :email, :hours, :name, :publication_id, :phone
 end
