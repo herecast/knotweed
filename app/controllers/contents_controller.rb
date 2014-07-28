@@ -1,7 +1,5 @@
 class ContentsController < ApplicationController
 
-  before_filter :process_host_organization, only: [:create, :update]
-
   def index
     # if posted, save to session
     if params[:reset]
@@ -121,13 +119,6 @@ class ContentsController < ApplicationController
     @contents = conts.map{ |c| [c.title, c.id] }.insert(0,nil)
     respond_to do |format|
       format.js
-    end
-  end
-
-  private
-  def process_host_organization
-    if params[:host_organization_text].present?
-      params[:content][:host_organization] = params.delete :host_organization_text
     end
   end
 
