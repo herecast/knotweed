@@ -10,6 +10,23 @@ jQuery ->
         content_id: $("#content_parent_id").data("contentId")
   $("#content_source_id").trigger('change')
 
+  $(document).on 'change', '#content_category', ->
+    if $(this).val() == "event"
+      $("#event_tab_link").removeClass("hidden")
+    else
+      $("#event_tab_link").addClass("hidden")
+  $("#content_category").trigger('change')
+
+  # this empties the host_organization_text field if host_organization is selected
+  $(document).on 'change', '#content_host_organization', ->
+    if $(this).val().length > 0
+      $("#host_organization_text").val('')
+  $("#content_host_organization").trigger('change')
+  # and the converse...
+  $(document).on 'change', '#host_organization_text', ->
+    if $(this).val().length > 0
+      $("#content_host_organization").val('')
+
   $(document).on 'change', "#content_issue_id", ->
     $.ajax "/issues/" + $(this).val(),
       dataType: "json"

@@ -1,5 +1,7 @@
 class ContentsController < ApplicationController
 
+  before_filter :process_host_organization, only: [:create, :update]
+
   def index
     # if posted, save to session
     if params[:reset]
@@ -60,6 +62,8 @@ class ContentsController < ApplicationController
   end
 
   def update
+    # ensure serialized values are set to empty if no fields are passed in via form
+    params[:content][:links] = nil unless params[:content].has_key? :links
     @content = Content.find(params[:id])
     if @content.update_attributes(params[:content])
       flash[:notice] = "Successfully updated content #{@content.id}"
@@ -117,6 +121,13 @@ class ContentsController < ApplicationController
     @contents = conts.map{ |c| [c.title, c.id] }.insert(0,nil)
     respond_to do |format|
       format.js
+    end
+  end
+
+  private
+  def process_host_organization
+    if params[:host_organization_text].present?
+      params[:content][:host_organization] = params.delete :host_organization_text
     end
   end
 

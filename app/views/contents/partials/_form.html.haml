@@ -6,6 +6,10 @@
         = link_to "#", class: 'green-border', data: { toggle: "tab", target: "#features" } do
           %i.icon-info
           Features
+      %li#event_tab_link
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#event_features" } do
+          %i.icon-info
+          Event Features
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#doc_content" } do
           %i.icon-reorder
@@ -21,6 +25,7 @@
             Promotions
     .tab-content
       .tab-pane.active.form-horizontal#features
+        = f.input :category, collection: Content::CATEGORIES.map{ |c| [c.titlecase, c] }
         = f.input :title, input_html: { class: "input-block-level" }
         = f.input :subtitle, input_html: { class: "input-block-level" }
         = f.input :authors, input_html: { class: "input-block-level" }
@@ -33,8 +38,34 @@
         .row-fluid
           = f.input :pubdate, as: :datetime_picker, wrapper_html: { class: "span6" }
           = f.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }
-        = f.input :category, input_html: { class: "input-block-level" }
         = f.input :url, input_html: { class: "input-block-level" }
+      .tab-pane.form-horizontal#event_features
+        = f.input :event_type, input_html: { class: "input-block-level" }
+        .row-fluid
+          = f.input :start_date, as: :datetime_picker, wrapper_html: { class: "span6" }
+          = f.input :end_date, as: :datetime_picker, wrapper_html: { class: "span6" }
+        .row-fluid
+          = f.input :host_organization, collection: Publication.all.map{ |p| p.name }, input_html: { class: "" }, wrapper_html: { class: "span5" }
+          %label.span1 - OR -
+          = text_field_tag :host_organization_text, @content.host_organization, class: "span3"
+        .row-fluid
+          = f.input :cost, wrapper_html: { class: "span6" }, input_html: { class: "span12" }
+          = f.input :recurrence, wrapper_html: { class: "span6" }, input_html: { class: "span12" }
+        %hr
+        %h3 Links
+        .row-fluid
+          %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "links", model: "content" } } + Add New Link
+          = text_field_tag "new_link_field", nil, class: "new-serialized-field span3"
+        = f.fields_for :links do |g|
+          .row-fluid.serialized-field-header
+            .span2= label_tag "Label"
+            .span3= label_tag "Value"
+          - @content.links.each_pair do |k,v|
+            .row-fluid.serialized-field-row
+              .span2= label_tag k
+              .span6= g.text_field "#{k}", value: v, class: "span12"
+              .span2
+                .btn.btn-danger.remove-serialized-field X
       .tab-pane#doc_content
         = f.input :content, input_html: { class: "ckeditor input-block-level" }
       .tab-pane#images

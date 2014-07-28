@@ -63,7 +63,11 @@ class Content < ActiveRecord::Base
                   :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
                   :language, :page, :wordcount, :authoremail, :source_id, :file,
                   :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
-                  :image_ids, :parent_id, :source_uri, :category
+                  :image_ids, :parent_id, :source_uri, :category,
+                  :event_type, :start_date, :end_date, :cost, :recurrence, :host_organization,
+                  :links
+
+  serialize :links, Hash
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -89,6 +93,10 @@ class Content < ActiveRecord::Base
   EXPORT_PRE_PIPELINE = "export_pre_pipeline_xml"
   EXPORT_POST_PIPELINE = "export_post_pipeline_xml"
   PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE, EXPORT_POST_PIPELINE]
+
+  CATEGORIES = %w(business campaign discussion event for_free lifestyle 
+                  local_news nation_world offered presentation recommendation
+                  sale_event sports wanted)
 
   # if passed a repo, checks if this content was published in that repo
   # otherwise, checks if it is published in any repo
@@ -389,7 +397,7 @@ class Content < ActiveRecord::Base
                 end
               else
                 key = k.upcase
-                if key == "PUBDATE" or key == "TIMESTAMP" and v.present?
+                if ["PUBDATE", "TIMESTAMP", "START_DATE", "END_DATE"].include? key and v.present?
                   value = v.strftime(PUBDATE_OUTPUT_FORMAT)
                 else
                   value = v
@@ -441,7 +449,7 @@ class Content < ActiveRecord::Base
       "categories" => publish_category
     })
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
-               "import_record_id", "published", "image")
+               "import_record_id", "published", "image", "links")
   end
 
   # Export Gate Document directly before/after Pipeline processing
