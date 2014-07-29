@@ -26,15 +26,23 @@ class PromotionsController < ApplicationController
   # GET /promotions/new.json
   def new
     publication = Publication.find(params[:publication_id])
-    content = Content.find(params[:content_id]) unless params[:content_id].nil?
-    @promotion = Promotion.new publication: publication
-    @promotion.content = content unless content.nil?
+    # as of now, we are not allowing creation of promotions without
+    # pre-specifying the content, so if params[:content_id] is nil,
+    # redirect back from whence they came
+    if params[:content_id].present?
+      content = Content.find(params[:content_id]) unless params[:content_id].nil?
+      @promotion = Promotion.new publication: publication
+      @promotion.content = content unless content.nil?
 
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @promotion }
+      respond_to do |format|
+        format.html # new.html.erb
+        format.json { render json: @promotion }
+      end
+    else
+      flash[:notice] = "Can't create a promotion with no content"
+      redirect_to edit_publication_path(publication)
     end
-  end
+    end
 
   # GET /promotions/1/edit
   def edit

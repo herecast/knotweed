@@ -12,6 +12,7 @@
   %tbody#promotion_list
     - promotions.each do |promotion|
       = render "promotions/partials/promotion_row", promotion: promotion
-= link_to "+ Create a new Promotion", PromotionsHelper.new_promotion_link(publication, content), class: "btn btn-primary", id: "new_promotion_button"
+- if controller_name == "contents"
+  = link_to "+ Create a new Promotion", PromotionsHelper.new_promotion_link(publication, content), class: "btn btn-primary", id: "new_promotion_button"
 -# If we can get ajax image uploading, render the form right here!
 -# = render "promotions/partials/form", promotion: Promotion.new(publication: @publication), ajax_submit: true
