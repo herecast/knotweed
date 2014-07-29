@@ -120,8 +120,13 @@ class ContentsController < ApplicationController
   end
 
   def parent_select_options
-    publication = Publication.find(params[:publication_id])
-    conts = publication.contents
+    # check if search query is an integer; if it is, use it as ID query, otherwise title
+    if params[:search_query].to_i.to_s == params[:search_query]
+      params[:q][:id_eq] = params.delete :search_query
+    else
+      params[:q][:title_cont] = params.delete :search_query
+    end
+    conts = Content.search(params[:q]).result(distinct: true).order("pubdate DESC")
     if params[:content_id].present?
       @orig_content = Content.find(params[:content_id])
       conts = conts - [@orig_content]

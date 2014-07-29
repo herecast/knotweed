@@ -1,2 +1,8 @@
-$("#content_parent_id").html("#{ j options_for_select(@contents, @orig_content.parent_id) }");
-$("#content_parent_id").trigger("chosen:updated");
+-# note: the numbers in this conditional are one higher than expected because
+  we're inserting the [0, nil] pair in the controller.
+- if @contents.length == 2
+  $("#content_parent_id").html("#{ j options_for_select(@contents, @contents.last[1]) }");
+- elsif @contents.length == 1
+  $("#content_parent_id").html("#{ j options_for_select(["No content found.", nil], nil) }");
+- else
+  $("#content_parent_id").html("#{ j options_for_select(@contents, @orig_content.parent_id) }");

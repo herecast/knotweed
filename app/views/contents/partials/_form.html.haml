@@ -33,8 +33,17 @@
           = f.association :source, input_html: { class: "chosen-select span12" }, wrapper_html: { class: "span6" }, label: "Publication"
           = f.input :copyright, input_html: { class: "span12" }, wrapper_html: { class: "span6" }
         .row-fluid
-          = f.association :parent, collection: ["Loading..."], input_html: { class: "chosen-select span12", data: { options_url: parent_select_options_path, content_id: @content.id } }, wrapper_html: { class: "span6" }, label: "Parent Content", include_blank: true
+          .span6.control-group
+            = label_tag "Search for parent content", nil, class: "control-label"
+            .controls
+              = text_field_tag "parent_search", nil, class: "span12"
           = f.association :issue, collection: (@content.source.present? ? @content.source.issues.order("issue_edition ASC") : ["Select a Publication First"]), input_html: { class: "chosen-select span12", data: { options_url: issue_select_options_path } }, wrapper_html: { class: "span6" }
+        .row-fluid
+          = f.association :parent, collection: (@content.parent.present? ? [[@content.parent.title, @content.parent.id]] : []), 
+            input_html: { class: "chosen-select span12", 
+            data: { options_url: parent_select_options_path, content_id: @content.id } },
+            wrapper_html: { class: "span6" }, label: false, include_blank: true,
+            hint: "Search for options by typing an ID or title in the text box above."
         .row-fluid
           = f.input :pubdate, as: :datetime_picker, wrapper_html: { class: "span6" }
           = f.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }
