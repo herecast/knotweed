@@ -81,5 +81,4 @@ class PublicationsController < ApplicationController
     end
   end
 
-
 end

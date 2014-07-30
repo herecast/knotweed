@@ -147,6 +147,8 @@
           = render "promotions/partials/promotions_tab", content: @content
     .form-actions
       = submit_tag nil, class: "btn btn-primary"
+      = submit_tag "Submit and continue with this record", class: "btn btn-success", name: "continue_editing"
+      = submit_tag "Submit and add new", class: "btn btn-success", name: "create_new"
       = link_to "Cancel", :back, class: "btn"
 
 - if @content.published?

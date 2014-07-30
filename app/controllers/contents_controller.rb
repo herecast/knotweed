@@ -54,7 +54,7 @@ class ContentsController < ApplicationController
         end
       end
       flash[:notice] = "Created content with id #{@content.id}"
-      redirect_to contents_path
+      redirect_to form_submit_redirect_path(@content.id)
     else
       render "new"
     end
@@ -78,7 +78,7 @@ class ContentsController < ApplicationController
     @content = Content.find(params[:id])
     if @content.update_attributes(params[:content])
       flash[:notice] = "Successfully updated content #{@content.id}"
-      redirect_to contents_path
+      redirect_to form_submit_redirect_path(@content.id)
     else
       render "edit"
     end
@@ -152,4 +152,13 @@ class ContentsController < ApplicationController
     end
   end
 
+  def form_submit_redirect_path(id=nil)
+    if params[:continue_editing]
+      edit_content_path(id)
+    elsif params[:create_new]
+      new_content_path
+    else
+      contents_path
+    end
+  end
 end
