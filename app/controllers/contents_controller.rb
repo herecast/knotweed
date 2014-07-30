@@ -1,6 +1,7 @@
 class ContentsController < ApplicationController
 
   before_filter :process_business_loc_params, only: [:create, :update]
+  before_filter :process_date_params, only: [:create, :update]
 
   def index
     # if posted, save to session
@@ -148,6 +149,15 @@ class ContentsController < ApplicationController
       params[:content].delete :business_location_id
       if params[:save_to_publication]
         params[:content][:business_location_attributes][:publication_id] = params[:content][:source_id]
+      end
+    end
+  end
+
+  def process_date_params
+    Chronic.time_class = Time.zone
+    [:start_date, :end_date].each do |field|
+      if params[:content][field].present?
+        params[:content][field] = Chronic.parse(params[:content][field])
       end
     end
   end
