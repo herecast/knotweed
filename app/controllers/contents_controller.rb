@@ -85,7 +85,7 @@ class ContentsController < ApplicationController
   end
 
   def show
-    @content = Content.find(params[:id])
+    redirect_to edit_content_path(params[:id])
   end
 
   def publish

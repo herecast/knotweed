@@ -18,6 +18,15 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#images" } do
           %i.icon-reorder
           Images
+      - if @content.id.present?
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#publish" } do
+            %i.icon-upload
+            Publish/Export
+      - if @content.published?
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#annotation_reports" } do
+            Annotation Reports
       - if @content.source.present?
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#promotions" } do
@@ -25,13 +34,27 @@
             Promotions
     .tab-content
       .tab-pane.active.form-horizontal#features
-        = f.input :category, collection: Content::CATEGORIES.map{ |c| [c.titlecase, c] }
+        -# uneditable features displayed in info box if content exists
+        .row-fluid
+          .span6
+            = f.input :category, collection: Content::CATEGORIES.map{ |c| [c.titlecase, c] }
+            = f.association :source, input_html: { class: "chosen-select span12" }, label: "Publication"
+          - if @content.id.present?
+            .span6
+              %dl
+                %dt Origin
+                %dd= @content.origin
+                %dt Source Category
+                %dd= @content.source_category
+                %dt Quarantined?
+                %dd
+                  - if @content.quarantine
+                    %i.icon-ok
+                %dt Published?
+                %dd= @content.repositories.map{ |r| r.dsp_endpoint }.join(", ")
         = f.input :title, input_html: { class: "input-block-level" }
         = f.input :subtitle, input_html: { class: "input-block-level" }
         = f.input :authors, input_html: { class: "input-block-level" }
-        .row-fluid
-          = f.association :source, input_html: { class: "chosen-select span12" }, wrapper_html: { class: "span6" }, label: "Publication"
-          = f.input :copyright, input_html: { class: "span12" }, wrapper_html: { class: "span6" }
         .row-fluid
           .span6.control-group
             = label_tag "Search for parent content", nil, class: "control-label"
@@ -44,8 +67,9 @@
             data: { options_url: parent_select_options_path, content_id: @content.id } },
             wrapper_html: { class: "span6" }, label: false, include_blank: true,
             hint: "Search for options by typing an ID or title in the text box above."
+          = f.input :copyright, input_html: { class: "span12" }, wrapper_html: { class: "span6" }
         .row-fluid
-          = f.input :pubdate, as: :datetime_picker, wrapper_html: { class: "span6" }
+          = f.input :pubdate, as: :datetime_picker, input_html: { value: @content.pubdate || Date.today }, wrapper_html: { class: "span6" }
           = f.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }
         = f.input :url, input_html: { class: "input-block-level" }
       .tab-pane.form-horizontal#event_features
@@ -112,9 +136,25 @@
               .bar{ style: "width: 0%" }
         .row-fluid#image_list
           = render @content.images
+      - if @content.id.present?
+        .tab-pane#publish{ data: { no_turbolink: "" } }
+          = render 'contents/partials/publishing_tab'
+      - if @content.published?
+        .tab-pane#annotation_reports
+          = render 'contents/partials/annotation_reports_tab'
       - if @content.source.present?
         .tab-pane#promotions
           = render "promotions/partials/promotions_tab", content: @content
     .form-actions
       = submit_tag nil, class: "btn btn-primary"
       = link_to "Cancel", :back, class: "btn"
+
+- if @content.published?
+  .modal.hide.fade#annotations
+    .modal-header
+      %a.pull-right.btn.btn-primary.span2{ href: "#", data: { dismiss: "modal" } } Finish
+      %span.pull-right#num-reviewed.span2
+      %h3#annotation_report_name
+    #annotation_form
+    .modal-body
+      Loading annotations...

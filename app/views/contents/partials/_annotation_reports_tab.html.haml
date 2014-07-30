@@ -1,0 +1,33 @@
+.pull-left
+  .span4
+    = link_to "+ Create New", "#", class: "btn btn-success", data: { toggle: "modal", target: "#annotations", action_url: create_annotation_report_path(@content.id) }, id: "create-annotation-report"
+  .field.span5
+    = label_tag :repository_id, "Repository"
+    = select_tag :repository_id, options_from_collection_for_select(Repository.all, "id", "name")
+  .field.span3
+    = label_tag :report_name, "Name"
+    = text_field_tag :report_name
+.pull-right
+  .span4
+    = link_to "CSV Export", export_annotation_reports_path(@content.id, format: :csv), class: "btn btn-success"
+%table.table.table-striped.table-condensed
+  %thead
+    %tr
+      %th 
+      %th 
+      %th.metric{ colspan: 2} Recognized
+      %th.metric{ colspan: 2} Lookups
+      %th.metric Additional Edges
+      %th
+    %tr
+      %th Name
+      %th Created At
+      %th.metric Total
+      %th.metric Correct
+      %th.metric Total
+      %th.metric Correct
+      %th.metric Total
+      %th &nbsp;
+  %tbody
+    - @content.annotation_reports.each do |ar|
+      = render partial: "annotation_reports/partials/table_row", locals: { ar: ar}
