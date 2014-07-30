@@ -437,7 +437,6 @@ class Content < ActiveRecord::Base
   def feature_set
     set = attributes.merge({
       "source_uri" => source_uri,
-      "has_active_promotion" => "#{has_active_promotion? ? 1 : 0}",
       "categories" => publish_category
     })
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
