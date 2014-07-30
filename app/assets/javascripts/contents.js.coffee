@@ -1,4 +1,12 @@
 jQuery ->
+  $(".tab-traversal-link").on 'click', ->
+    current = $(".nav-tabs-simple li.active")[0]
+    index = $(".nav-tabs-simple li").index(current)
+    new_index = index + parseInt($(this).data("moveIndex"))
+    if new_index < 0
+      new_index = 0
+    $(".nav-tabs-simple li a:eq(" + new_index + ")").tab('show')
+
   updateIssueOptions()
   $(document).on 'change', '#content_source_id', ->
     updateIssueOptions()
