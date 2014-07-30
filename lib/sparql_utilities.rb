@@ -7,23 +7,35 @@ module SparqlUtilities
   def sanitize_input(input_string)
     new_str = ""
     input_string.each_char do |c|
+      # unfortunately, the SPARQL client relies on Net::HTTPHeader#set_form_data, which does some
+      # pretty weird escaping stuff. Because of this, the safest way to sanitize input is just
+      # going to be to kill all of these types of characters. I left the "theoretically better"
+      # escaped version commented out in case this dependency changes in the future sometime.
       case c
       when "\'"
-        new_str << "\\\'"
+        new_str << ""
+        #new_str << "\\\'"
       when "\\"
-        new_str << "\\\\"
+        new_str << ""
+        #new_str << "\\\\"
       when "\t"
-        new_str << "\\t"
+        new_str << ""
+        #new_str << "\\t"
       when "\n"
-        new_str << "\\n"
+        new_str << ""
+        #new_str << "\\n"
       when "\r"
-        new_str << "\\r"
+        new_str << ""
+        #new_str << "\\r"
       when "\b"
-        new_str << "\\b"
+        new_str << ""
+        #new_str << "\\b"
       when "\""
-        new_str << "\\\""
+        new_str << ""
+        #new_str << "\\\""
       when "\0"
-        new_str << "\\0"
+        new_str << ""
+        #new_str << "\\0"
       else 
         new_str << c
       end
