@@ -61,9 +61,11 @@
         %hr
         %h3 Location
         .row-fluid
-          = f.association :business_location, collection: @content.source.try(:business_locations), 
-            label_method: :name, hint: "Select a location or add a new one on the right.", 
-            label: false, wrapper_html: { class: "span4" }, selected: @business_location_id, include_blank: true
+          = f.association :business_location, collection: @business_location_options, 
+            hint: "Select a location or add a new one on the right.", 
+            label: false, wrapper_html: { class: "span4" }, 
+            selected: @business_location_id, include_blank: true,
+            input_html: { data: { options_url: business_location_options_path } }
           .span7
             = f.simple_fields_for :business_location do |g|
               = g.input :name, input_html: { class: "input-block-level" }

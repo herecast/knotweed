@@ -1,11 +1,8 @@
 jQuery ->
+  updateIssueOptions()
   $(document).on 'change', '#content_source_id', ->
-    $.ajax $("#content_issue_id").data("optionsUrl"),
-      data:
-        publication_id: $(this).val()
-      dataType: "script"
-
-  $("#content_source_id").trigger('change')
+    updateIssueOptions()
+    updateBusinessLocationOptions()
 
   $(document).on 'change', '#content_category', ->
     if $(this).val() == "event"
@@ -51,3 +48,15 @@ updateParentOptions = ->
     success: ->
       $("#content_parent_id_chosen .chosen-single").spin(false)
       $("#content_parent_id").trigger('chosen:updated')
+
+updateIssueOptions = ->
+  $.ajax $("#content_issue_id").data("optionsUrl"),
+    data:
+      publication_id: $("#content_source_id").val()
+    dataType: "script"
+
+updateBusinessLocationOptions = ->
+  $.ajax $("#content_business_location_id").data("optionsUrl"),
+    data:
+      publication_id: $("#content_source_id").val()
+    dataType: "script"

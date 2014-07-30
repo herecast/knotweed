@@ -24,6 +24,7 @@ class ContentsController < ApplicationController
   def new
     @content = Content.new
     @content.build_business_location
+    @business_location_options = [["None available.", nil]]
   end
 
   def create
@@ -31,6 +32,7 @@ class ContentsController < ApplicationController
     image_ids = image_list.try(:split, ",")
     @content = Content.new(params[:content])
     connection = nil
+    @business_location_id = nil
     if @content.save
       image_ids.each do |image_id|
         image = Image.find(image_id)
@@ -62,7 +64,8 @@ class ContentsController < ApplicationController
     @content = Content.find(params[:id])
     # ensure the form fields aren't filled with a location from the dropdown
     # really pretty hacky...oh well.
-    if @content.source.try(:business_locations).include? @content.business_location
+    @business_location_options = @content.source.try(:business_locations)
+    if @business_location_options.include? @content.business_location
       @business_location_id = @content.business_location.id
       @content.build_business_location
     end

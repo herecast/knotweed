@@ -73,4 +73,13 @@ class PublicationsController < ApplicationController
     @publication.destroy
   end
 
+  def business_location_options
+    pub = Publication.find params[:publication_id]
+    @business_locations = pub.business_locations.map{ |bl| [bl.name, bl.id] }.insert(0, nil)
+    respond_to do |format|
+      format.js
+    end
+  end
+
+
 end
