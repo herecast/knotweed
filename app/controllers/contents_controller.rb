@@ -88,6 +88,7 @@ class ContentsController < ApplicationController
   end
 
   def show
+    flash.keep
     redirect_to edit_content_path(params[:id])
   end
 
