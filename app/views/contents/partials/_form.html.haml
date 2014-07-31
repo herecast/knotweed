@@ -78,11 +78,15 @@
       .tab-pane.form-horizontal#event_features
         = f.input :event_type, input_html: { class: "input-block-level" }
         .row-fluid
-          = f.input :start_date, as: :string, wrapper_html: { class: "span6" }, 
-            hint: "You can type any sort of date representation here, including something like 'Tomorrow 6pm' or 'next tuesday'",
-            input_html: { value: f.object.start_date }
-          = f.input :end_date, as: :string, wrapper_html: { class: "span6" },
-            input_html: { value: f.object.end_date }
+          = f.input :start_day, as: :fake, wrapper_html: { class: "span4" },
+            input_html: { value: f.object.start_date.try(:strftime, "%m/%d/%Y") }
+          = f.input :start_time, as: :fake, wrapper_html: { class: "span4" },
+            input_html: { value: f.object.start_date.try(:strftime, "%l:%M %P") }
+        .row-fluid
+          = f.input :end_day, as: :fake, wrapper_html: { class: "span4" },
+            input_html: { value: f.object.end_date.try(:strftime, "%m/%d/%Y") }
+          = f.input :end_time, as: :fake, wrapper_html: { class: "span4" },
+            input_html: { value: f.object.end_date.try(:strftime, "%l:%M %P") }
         .row-fluid
           = f.input :host_organization, input_html: { class: "input-block-level", value: (@content.host_organization.present? ? @content.host_organization : @content.source.try(:name)) }
         .row-fluid

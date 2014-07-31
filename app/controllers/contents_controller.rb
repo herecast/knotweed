@@ -35,23 +35,25 @@ class ContentsController < ApplicationController
     connection = nil
     @business_location_id = nil
     if @content.save
-      image_ids.each do |image_id|
-        image = Image.find(image_id)
-        old_path = "uploads/#{image.image.file.filename}"
-        @content.images << image
-        image = Image.find(image_id)
-        new_path = image.image.path.to_s
-        if old_path != new_path
-          if connection.nil?
-            connection = Fog::Storage.new({
-              provider: "AWS",
-              aws_access_key_id: Figaro.env.aws_access_key_id,
-              aws_secret_access_key: Figaro.env.aws_secret_access_key
-            })
+      if image_ids.present?
+        image_ids.each do |image_id|
+          image = Image.find(image_id)
+          old_path = "uploads/#{image.image.file.filename}"
+          @content.images << image
+          image = Image.find(image_id)
+          new_path = image.image.path.to_s
+          if old_path != new_path
+            if connection.nil?
+              connection = Fog::Storage.new({
+                provider: "AWS",
+                aws_access_key_id: Figaro.env.aws_access_key_id,
+                aws_secret_access_key: Figaro.env.aws_secret_access_key
+              })
+            end
+            # unfortunately we have to copy directly on AWS here
+            connection.copy_object(Figaro.env.aws_bucket_name, old_path, Figaro.env.aws_bucket_name, new_path)
+            connection.delete_object(Figaro.env.aws_bucket_name, old_path)
           end
-          # unfortunately we have to copy directly on AWS here
-          connection.copy_object(Figaro.env.aws_bucket_name, old_path, Figaro.env.aws_bucket_name, new_path)
-          connection.delete_object(Figaro.env.aws_bucket_name, old_path)
         end
       end
       flash[:notice] = "Created content with id #{@content.id}"
@@ -155,11 +157,12 @@ class ContentsController < ApplicationController
 
   def process_date_params
     Chronic.time_class = Time.zone
-    [:start_date, :end_date].each do |field|
-      if params[:content][field].present?
-        params[:content][field] = Chronic.parse(params[:content][field])
-      end
+    params[:content][:start_date] = Chronic.parse(params[:start_day] + " " + params[:start_time])
+    # if end time is specified, but no end day, use start day
+    if params[:end_time].present? and !params[:end_day].present?
+      params[:end_day] = params[:start_day]
     end
+    params[:content][:end_date] = Chronic.parse(params[:end_day] + " " + params[:end_time])
   end
 
   def form_submit_redirect_path(id=nil)

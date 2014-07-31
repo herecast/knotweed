@@ -323,6 +323,7 @@ describe Content do
             if k == "pubdate" or k == "timestamp"
               @xml.include?("<#{k}>#{v.strftime(Content::PUBDATE_OUTPUT_FORMAT)}</#{k}>").should be_true
             else
+              puts "#{k} IS PROBLEM" unless @xml.include?("#{k}>#{v}")
               @xml.include?("<#{k}>#{v}</#{k}>").should be_true
             end
           else

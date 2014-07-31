@@ -453,7 +453,8 @@ class Content < ActiveRecord::Base
       "categories" => publish_category
     })
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
-               "import_record_id", "published", "image", "links")
+               "import_record_id", "published", "image", "links", "start_date", "end_date",
+               "links" )
   end
 
   # Export Gate Document directly before/after Pipeline processing
