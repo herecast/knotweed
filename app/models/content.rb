@@ -78,8 +78,7 @@ class Content < ActiveRecord::Base
   before_save :set_guid
 
   NEW_FORMAT = "New"
-  KIM_FORMAT = "KIM"
-  EXPORT_FORMATS = [KIM_FORMAT, NEW_FORMAT]
+  EXPORT_FORMATS = [NEW_FORMAT]
   DEFAULT_FORMAT = NEW_FORMAT
 
   PUBDATE_OUTPUT_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -318,11 +317,7 @@ class Content < ActiveRecord::Base
       FileUtils.mkpath(export_path)
       xml_path = "#{export_path}/#{guid}.xml"
       File.open(xml_path, "w+") do |f|
-        if format == KIM_FORMAT
-          f.write to_kim_xml
-        else
-          f.write to_new_xml
-        end
+        f.write to_new_xml
       end
       File.open("#{export_path}/#{guid}.html", "w+") do |f|
         f.write content
@@ -354,28 +349,6 @@ class Content < ActiveRecord::Base
     else
       return true
     end
-  end
-
-  # outputs a string of KIM formatted XML
-  def to_kim_xml
-    xml = ::Builder::XmlMarkup.new
-    xml.instruct!
-    xml.features do |f|
-      attributes.each do |k,v|
-        # ignore all the associations
-        if /[[:alpha:]]*_id/.match(k).nil?
-          if k == "pubdate" or k == "timestamp" and v.present?
-            f.tag!(k, v.strftime(PUBDATE_OUTPUT_FORMAT))
-          else
-            f.tag!(k, v)
-          end
-        end
-      end
-      f.tag!("issue", issue.issue_edition) if issue.present?
-      f.tag!("publication", source.name) if source.present?
-      f.tag!("location", import_location.city) if import_location.present?
-    end
-    xml.target!
   end
 
   def to_new_xml

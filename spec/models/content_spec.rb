@@ -309,40 +309,6 @@ describe Content do
     end
   end
 
-  describe "to kim xml" do
-    before do
-      @content = FactoryGirl.create(:content)
-      @xml = @content.to_kim_xml
-    end
-
-    it "should contain all the attributes aside from associations" do
-      @content.attributes.each do |k, v|
-        if /[[:alpha:]]*_id/.match(k).nil?
-          unless v.nil?
-            # account for pubdate / timestamp formatting
-            if k == "pubdate" or k == "timestamp"
-              @xml.include?("<#{k}>#{v.strftime(Content::PUBDATE_OUTPUT_FORMAT)}</#{k}>").should be_true
-            else
-              puts "#{k} IS PROBLEM" unless @xml.include?("#{k}>#{v}")
-              @xml.include?("<#{k}>#{v}</#{k}>").should be_true
-            end
-          else
-            @xml.include?("<#{k}/>").should be_true
-          end
-        end
-      end
-    end
-
-    it "should contain the associations" do
-      @xml.include?("<issue").should be_true
-      @xml.include?("<publication").should be_true
-      @xml.include?("<location").should be_true
-      @xml.include?(@content.issue.issue_edition).should be_true if @content.issue.present?
-      @xml.include?(@content.source.name).should be_true if @content.source.present?
-      @xml.include?(@content.import_location.city).should be_true if @content.import_location.present?
-    end
-  end
-
   describe "to new xml" do
     before do
       @content = FactoryGirl.create(:content)
