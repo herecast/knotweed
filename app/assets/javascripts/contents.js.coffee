@@ -19,9 +19,11 @@ jQuery ->
 
   $(document).on 'change', '#content_category', ->
     if $(this).val() == "event"
+      $("#add_new_publication").show()
       $("#event_tab_link").removeClass("hidden")
       $("label[for='content_source_id']").text("Organization")
     else
+      $("#add_new_publication").hide()
       $("#event_tab_link").addClass("hidden")
       $("label[for='content_source_id']").text("Publication")
   $("#content_category").trigger('change')
