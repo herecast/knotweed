@@ -11,12 +11,15 @@ jQuery ->
   $(document).on 'change', '#content_source_id', ->
     updateIssueOptions()
     updateBusinessLocationOptions()
+    updateHostOrganization()
 
   $(document).on 'change', '#content_category', ->
     if $(this).val() == "event"
       $("#event_tab_link").removeClass("hidden")
+      $("label[for='content_source_id']").text("Organization")
     else
       $("#event_tab_link").addClass("hidden")
+      $("label[for='content_source_id']").text("Publication")
   $("#content_category").trigger('change')
 
   # parent content search box
@@ -68,3 +71,8 @@ updateBusinessLocationOptions = ->
     data:
       publication_id: $("#content_source_id").val()
     dataType: "script"
+
+updateHostOrganization = ->
+  if $("#content_host_organization").val().length == 0
+    $("#content_host_organization").val($("#content_source_id option:selected").text())
+
