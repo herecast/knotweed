@@ -44,7 +44,7 @@
         = f.input :notes, input_html: { class: "span5", rows: 10 } 
       .tab-pane#properties
         .row-fluid
-          %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "links" } } + Add New Link
+          %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "links", model: "content" } } + Add New Link
           = text_field_tag "new_link_field", nil, class: "new-serialized-field span3"
         = f.fields_for :links do |g|
           .row-fluid.serialized-field-header

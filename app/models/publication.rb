@@ -81,4 +81,8 @@ class Publication < ActiveRecord::Base
   def latest_presentation
     contents.where(category: "presentation").order("pubdate DESC").first
   end
+
+  def business_location_options
+    business_locations.map{ |bl| ["#{bl.name} - #{bl.address}", bl.id] }
+  end
 end

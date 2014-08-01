@@ -44,6 +44,7 @@ jQuery ->
 
   $(".add-new-field-link").on 'click', ->
     field_type = $(this).data("fieldType")
+    model = $(this).data("model")
     val = $(this).next(".new-serialized-field").val()
     $(this).next(".new-serialized-field").val("")
     if val.length == 0
@@ -54,7 +55,7 @@ jQuery ->
           <label for="' + val + '">' + val + '</label>
         </div>
         <div class="span6">
-          <input class="span12" id="publication_'+ field_type + '_' + val + '" name="publication[' + field_type + '][' + val + ']" size="30" type="text" value="" />
+          <input class="span12" id="' + model + '_'+ field_type + '_' + val + '" name="' + model + '[' + field_type + '][' + val + ']" size="30" type="text" value="" />
         </div>
         <div class="span2">
           <div class="btn btn-danger remove-serialized-field">

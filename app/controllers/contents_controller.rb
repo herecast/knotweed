@@ -1,5 +1,8 @@
 class ContentsController < ApplicationController
 
+  before_filter :process_business_loc_params, only: [:create, :update]
+  before_filter :process_date_params, only: [:create, :update]
+
   def index
     # if posted, save to session
     if params[:reset]
@@ -21,6 +24,8 @@ class ContentsController < ApplicationController
 
   def new
     @content = Content.new
+    @content.build_business_location
+    @business_location_options = [["None available.", nil]]
   end
 
   def create
@@ -28,28 +33,31 @@ class ContentsController < ApplicationController
     image_ids = image_list.try(:split, ",")
     @content = Content.new(params[:content])
     connection = nil
+    @business_location_id = nil
     if @content.save
-      image_ids.each do |image_id|
-        image = Image.find(image_id)
-        old_path = "uploads/#{image.image.file.filename}"
-        @content.images << image
-        image = Image.find(image_id)
-        new_path = image.image.path.to_s
-        if old_path != new_path
-          if connection.nil?
-            connection = Fog::Storage.new({
-              provider: "AWS",
-              aws_access_key_id: Figaro.env.aws_access_key_id,
-              aws_secret_access_key: Figaro.env.aws_secret_access_key
-            })
+      if image_ids.present?
+        image_ids.each do |image_id|
+          image = Image.find(image_id)
+          old_path = "uploads/#{image.image.file.filename}"
+          @content.images << image
+          image = Image.find(image_id)
+          new_path = image.image.path.to_s
+          if old_path != new_path
+            if connection.nil?
+              connection = Fog::Storage.new({
+                provider: "AWS",
+                aws_access_key_id: Figaro.env.aws_access_key_id,
+                aws_secret_access_key: Figaro.env.aws_secret_access_key
+              })
+            end
+            # unfortunately we have to copy directly on AWS here
+            connection.copy_object(Figaro.env.aws_bucket_name, old_path, Figaro.env.aws_bucket_name, new_path)
+            connection.delete_object(Figaro.env.aws_bucket_name, old_path)
           end
-          # unfortunately we have to copy directly on AWS here
-          connection.copy_object(Figaro.env.aws_bucket_name, old_path, Figaro.env.aws_bucket_name, new_path)
-          connection.delete_object(Figaro.env.aws_bucket_name, old_path)
         end
       end
       flash[:notice] = "Created content with id #{@content.id}"
-      redirect_to contents_path
+      redirect_to form_submit_redirect_path(@content.id)
     else
       render "new"
     end
@@ -57,20 +65,35 @@ class ContentsController < ApplicationController
 
   def edit
     @content = Content.find(params[:id])
+    # ensure the form fields aren't filled with a location from the dropdown
+    # really pretty hacky...oh well.
+    bls = @content.source.try(:business_locations)
+    @business_location_options = @content.source.try(:business_location_options)
+    if bls.include? @content.business_location
+      @business_location_id = @content.business_location.id
+      # we need to ensure the fields on the right exist
+      @content.build_business_location
+    elsif @content.business_location.nil?
+      @content.build_business_location
+    end
   end
 
   def update
+
+    # ensure serialized values are set to empty if no fields are passed in via form
+    params[:content][:links] = nil unless params[:content].has_key? :links
     @content = Content.find(params[:id])
     if @content.update_attributes(params[:content])
       flash[:notice] = "Successfully updated content #{@content.id}"
-      redirect_to contents_path
+      redirect_to form_submit_redirect_path(@content.id)
     else
       render "edit"
     end
   end
 
   def show
-    @content = Content.find(params[:id])
+    flash.keep
+    redirect_to edit_content_path(params[:id])
   end
 
   def publish
@@ -108,8 +131,13 @@ class ContentsController < ApplicationController
   end
 
   def parent_select_options
-    publication = Publication.find(params[:publication_id])
-    conts = publication.contents
+    # check if search query is an integer; if it is, use it as ID query, otherwise title
+    if params[:search_query].to_i.to_s == params[:search_query]
+      params[:q][:id_eq] = params.delete :search_query
+    else
+      params[:q][:title_cont] = params.delete :search_query
+    end
+    conts = Content.search(params[:q]).result(distinct: true).order("pubdate DESC")
     if params[:content_id].present?
       @orig_content = Content.find(params[:content_id])
       conts = conts - [@orig_content]
@@ -120,4 +148,35 @@ class ContentsController < ApplicationController
     end
   end
 
+  private
+  def process_business_loc_params
+    if params[:content][:business_location_id].present?
+      params[:content].delete :business_location_attributes
+    else
+      params[:content].delete :business_location_id
+      if params[:save_to_publication]
+        params[:content][:business_location_attributes][:publication_id] = params[:content][:source_id]
+      end
+    end
+  end
+
+  def process_date_params
+    Chronic.time_class = Time.zone
+    params[:content][:start_date] = Chronic.parse(params[:start_day] + " " + params[:start_time])
+    # if end time is specified, but no end day, use start day
+    if params[:end_time].present? and !params[:end_day].present?
+      params[:end_day] = params[:start_day]
+    end
+    params[:content][:end_date] = Chronic.parse(params[:end_day] + " " + params[:end_time])
+  end
+
+  def form_submit_redirect_path(id=nil)
+    if params[:continue_editing]
+      edit_content_path(id)
+    elsif params[:create_new]
+      new_content_path
+    else
+      contents_path
+    end
+  end
 end

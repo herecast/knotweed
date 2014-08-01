@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140724192007) do
+ActiveRecord::Schema.define(:version => 20140728211303) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -130,8 +130,8 @@ ActiveRecord::Schema.define(:version => 20140724192007) do
     t.text     "content"
     t.integer  "issue_id"
     t.integer  "import_location_id"
-    t.datetime "created_at",                                           :null => false
-    t.datetime "updated_at",                                           :null => false
+    t.datetime "created_at",                                             :null => false
+    t.datetime "updated_at",                                             :null => false
     t.string   "copyright"
     t.string   "guid"
     t.datetime "pubdate"
@@ -147,17 +147,25 @@ ActiveRecord::Schema.define(:version => 20140724192007) do
     t.string   "authoremail"
     t.integer  "source_id"
     t.string   "file"
-    t.boolean  "quarantine",                        :default => false
+    t.boolean  "quarantine",                          :default => false
     t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
     t.string   "source_content_id"
-    t.string   "image",              :limit => 400
-    t.boolean  "published",                         :default => false, :null => false
+    t.string   "image",                :limit => 400
+    t.boolean  "published",                           :default => false, :null => false
     t.integer  "parent_id"
     t.string   "source_type"
     t.string   "category"
+    t.string   "event_type"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.string   "cost"
+    t.string   "recurrence"
+    t.text     "links"
+    t.string   "host_organization"
+    t.integer  "business_location_id"
   end
 
   add_index "contents", ["parent_id"], :name => "index_contents_on_parent_id"

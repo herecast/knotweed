@@ -43,6 +43,10 @@ class Content < ActiveRecord::Base
   belongs_to :import_location
   belongs_to :import_record
 
+  belongs_to :business_location # for event type contents
+  accepts_nested_attributes_for :business_location
+  attr_accessible :business_location_attributes, :business_location_id
+
   has_many :annotation_reports
   has_many :category_corrections
 
@@ -63,15 +67,18 @@ class Content < ActiveRecord::Base
                   :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
                   :language, :page, :wordcount, :authoremail, :source_id, :file,
                   :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
-                  :image_ids, :parent_id, :source_uri, :category
+                  :image_ids, :parent_id, :source_uri, :category,
+                  :event_type, :start_date, :end_date, :cost, :recurrence, :host_organization,
+                  :links
+
+  serialize :links, Hash
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
   before_save :set_guid
 
   NEW_FORMAT = "New"
-  KIM_FORMAT = "KIM"
-  EXPORT_FORMATS = [KIM_FORMAT, NEW_FORMAT]
+  EXPORT_FORMATS = [NEW_FORMAT]
   DEFAULT_FORMAT = NEW_FORMAT
 
   PUBDATE_OUTPUT_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -89,6 +96,10 @@ class Content < ActiveRecord::Base
   EXPORT_PRE_PIPELINE = "export_pre_pipeline_xml"
   EXPORT_POST_PIPELINE = "export_post_pipeline_xml"
   PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE, EXPORT_POST_PIPELINE]
+
+  CATEGORIES = %w(business campaign discussion event for_free lifestyle 
+                  local_news nation_world offered presentation recommendation
+                  sale_event sports wanted)
 
   # if passed a repo, checks if this content was published in that repo
   # otherwise, checks if it is published in any repo
@@ -306,11 +317,7 @@ class Content < ActiveRecord::Base
       FileUtils.mkpath(export_path)
       xml_path = "#{export_path}/#{guid}.xml"
       File.open(xml_path, "w+") do |f|
-        if format == KIM_FORMAT
-          f.write to_kim_xml
-        else
-          f.write to_new_xml
-        end
+        f.write to_new_xml
       end
       File.open("#{export_path}/#{guid}.html", "w+") do |f|
         f.write content
@@ -344,28 +351,6 @@ class Content < ActiveRecord::Base
     end
   end
 
-  # outputs a string of KIM formatted XML
-  def to_kim_xml
-    xml = ::Builder::XmlMarkup.new
-    xml.instruct!
-    xml.features do |f|
-      attributes.each do |k,v|
-        # ignore all the associations
-        if /[[:alpha:]]*_id/.match(k).nil?
-          if k == "pubdate" or k == "timestamp" and v.present?
-            f.tag!(k, v.strftime(PUBDATE_OUTPUT_FORMAT))
-          else
-            f.tag!(k, v)
-          end
-        end
-      end
-      f.tag!("issue", issue.issue_edition) if issue.present?
-      f.tag!("publication", source.name) if source.present?
-      f.tag!("location", import_location.city) if import_location.present?
-    end
-    xml.target!
-  end
-
   def to_new_xml
     xml = ::Builder::XmlMarkup.new
     xml.instruct!
@@ -389,7 +374,7 @@ class Content < ActiveRecord::Base
                 end
               else
                 key = k.upcase
-                if key == "PUBDATE" or key == "TIMESTAMP" and v.present?
+                if ["PUBDATE", "TIMESTAMP", "START_DATE", "END_DATE"].include? key and v.present?
                   value = v.strftime(PUBDATE_OUTPUT_FORMAT)
                 else
                   value = v
@@ -440,7 +425,8 @@ class Content < ActiveRecord::Base
       "categories" => publish_category
     })
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
-               "import_record_id", "published", "image")
+               "import_record_id", "published", "image", "links", "start_date", "end_date",
+               "links" )
   end
 
   # Export Gate Document directly before/after Pipeline processing

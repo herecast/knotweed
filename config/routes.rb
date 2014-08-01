@@ -12,6 +12,7 @@ Knotweed::Application.routes.draw do
   get "contents/parent_options", to: "contents#parent_select_options", as: :parent_select_options
   resources :contents, except: [:destroy]
   get "issues/select_options", to: "issues#select_options", as: :issue_select_options
+  get "publications/business_location_options", to: "publications#business_location_options", as: :business_location_options
   resources :import_jobs
   resources :parsers
   resources :publish_jobs

@@ -81,3 +81,5 @@ gem "ckeditor_rails"
 gem 'hpricot'
 gem 'active_model_serializers', '~> 0.9.0.alpha1'
 gem 'sparql-client', git: "git@github.com:bencpeters/sparql-client.git", branch: "update-url"
+
+gem 'chronic'

@@ -1,14 +1,31 @@
 jQuery ->
+  $(".tab-traversal-link").on 'click', ->
+    current = $(".nav-tabs-simple li.active")[0]
+    index = $(".nav-tabs-simple li").index(current)
+    new_index = index + parseInt($(this).data("moveIndex"))
+    if new_index < 0
+      new_index = 0
+    $(".nav-tabs-simple li a:eq(" + new_index + ")").tab('show')
+
+  updateIssueOptions()
   $(document).on 'change', '#content_source_id', ->
-    $.ajax $("#content_issue_id").data("optionsUrl"),
-      data:
-        publication_id: $(this).val()
-      dataType: "script"
-    $.ajax $("#content_parent_id").data("optionsUrl"),
-      data:
-        publication_id: $(this).val(),
-        content_id: $("#content_parent_id").data("contentId")
-  $("#content_source_id").trigger('change')
+    updateIssueOptions()
+    updateBusinessLocationOptions()
+    updateHostOrganization()
+
+  $(document).on 'change', '#content_category', ->
+    if $(this).val() == "event"
+      $("#event_tab_link").removeClass("hidden")
+      $("label[for='content_source_id']").text("Organization")
+    else
+      $("#event_tab_link").addClass("hidden")
+      $("label[for='content_source_id']").text("Publication")
+  $("#content_category").trigger('change')
+
+  # parent content search box
+  $("#parent_search").on 'change', ->
+    if $("#content_parent_id").length > 0
+      updateParentOptions()
 
   $(document).on 'change', "#content_issue_id", ->
     $.ajax "/issues/" + $(this).val(),
@@ -29,3 +46,33 @@ jQuery ->
       split_href[split_href.length-1] = new_repo_id
       new_href = split_href.join("/")
       $(this).attr("href", new_href)
+
+updateParentOptions = ->
+  $.ajax $("#content_parent_id").data("optionsUrl"),
+    data:
+      content_id: $("#content_parent_id").data("contentId"),
+      search_query: $("#parent_search").val(),
+      q:
+        publication_id: $("#content_source_id").val(),
+    beforeSend: ->
+      $("#content_parent_id_chosen .chosen-single").spin({radius: 1})
+    success: ->
+      $("#content_parent_id_chosen .chosen-single").spin(false)
+      $("#content_parent_id").trigger('chosen:updated')
+
+updateIssueOptions = ->
+  $.ajax $("#content_issue_id").data("optionsUrl"),
+    data:
+      publication_id: $("#content_source_id").val()
+    dataType: "script"
+
+updateBusinessLocationOptions = ->
+  $.ajax $("#content_business_location_id").data("optionsUrl"),
+    data:
+      publication_id: $("#content_source_id").val()
+    dataType: "script"
+
+updateHostOrganization = ->
+  if $("#content_host_organization").val().length == 0
+    $("#content_host_organization").val($("#content_source_id option:selected").text())
+

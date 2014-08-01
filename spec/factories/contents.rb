@@ -49,5 +49,10 @@ FactoryGirl.define do
     import_location
     pubdate Time.now
     source_category "Category"
+    
+    factory :event do
+      category "event"
+      start_date 1.day.from_now
+    end
   end
 end
