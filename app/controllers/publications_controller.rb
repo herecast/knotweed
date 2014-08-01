@@ -17,6 +17,11 @@ class PublicationsController < ApplicationController
   end
 
   def new
+    if params[:short_form]
+      render partial: "publications/partials/short_form", layout: false
+    else
+      render 'new'
+    end
   end
 
   def edit
@@ -58,11 +63,16 @@ class PublicationsController < ApplicationController
     if @publication.save
       @publication.update_attribute(:contact_ids, contact_ids) unless contact_ids.nil?
       @publication.update_attribute(:business_location_ids, business_location_ids) unless business_location_ids.nil?
-      flash[:notice] = "Created publication with id #{@publication.id}"
-      if params[:add_content_set]
-        redirect_to new_content_set_path(:content_set => { :publication_id => @publication.id })
-      else
-        redirect_to publications_path
+      respond_to do |format|
+        format.js
+        format.html do
+          flash[:notice] = "Created publication with id #{@publication.id}"
+          if params[:add_content_set]
+            redirect_to new_content_set_path(:content_set => { :publication_id => @publication.id })
+          else
+            redirect_to publications_path
+          end
+        end
       end
     else
       render "new"

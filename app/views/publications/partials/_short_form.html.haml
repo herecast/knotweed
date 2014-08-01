@@ -1,0 +1,6 @@
+= simple_form_for @publication, remote: true, html: { class: "form" } do |f|
+  = f.error_notification
+  = f.input :name, input_html: { class: "input-block-level" }
+  = f.input :pub_type, collection: Publication::PUB_TYPE_OPTIONS,
+            label: "Publication Type"
+  = submit_tag nil, class: "btn btn-primary"

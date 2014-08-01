@@ -1,4 +1,8 @@
 jQuery ->
+  $("#add_new_publication").on 'click', ->
+    console.log 'hello'
+    $(".modal#publication_form .modal-body").load($(this).data('formUrl'))
+
   $(".tab-traversal-link").on 'click', ->
     current = $(".nav-tabs-simple li.active")[0]
     index = $(".nav-tabs-simple li").index(current)
@@ -59,6 +63,7 @@ updateParentOptions = ->
     success: ->
       $("#content_parent_id_chosen .chosen-single").spin(false)
       $("#content_parent_id").trigger('chosen:updated')
+
 
 updateIssueOptions = ->
   $.ajax $("#content_issue_id").data("optionsUrl"),

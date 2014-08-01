@@ -1,0 +1,3 @@
+$("#content_source_id option:selected").attr('selected', '');
+$("#content_source_id").append("<option value='#{@publication.id}' selected='selected'>#{@publication.name}</option>");
+$("#content_source_id").trigger("chosen:updated");

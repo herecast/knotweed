@@ -39,11 +39,16 @@
       .tab-pane.active.form-horizontal#features
         -# uneditable features displayed in info box if content exists
         .row-fluid
-          .span6
+          .span8
             = f.input :category, collection: Content::CATEGORIES.map{ |c| [c.titlecase, c] }
-            = f.association :source, input_html: { class: "chosen-select span12" }, label: "Publication"
+            = f.association :source, input_html: { class: "chosen-select span12" }, 
+                label: "Publication", wrapper_html: { class: "span9" }
+            .span2
+              %span.btn.btn-small.btn-success#add_new_publication{ data: { toggle: "modal", 
+                  target: "#publication_form", form_url: new_publication_path(short_form: true) } }
+                + Add New
           - if @content.id.present?
-            .span6
+            .span4
               %dl
                 %dt Origin
                 %dd= @content.origin
@@ -171,3 +176,10 @@
     #annotation_form
     .modal-body
       Loading annotations...
+
+.modal.hide.fade#publication_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Add Publication
+  .modal-body
+    Loading form...
