@@ -70,6 +70,7 @@ Knotweed::Application.routes.draw do
     get 'contents/:id/related_promotion', to: 'contents#banner', as: :related_promotion
     post 'category_corrections', to: 'category_corrections#create'
     resources 'publications', only: [:show]
+    resources :events, only: [:show, :index], controller: "contents"
   end
 
 end

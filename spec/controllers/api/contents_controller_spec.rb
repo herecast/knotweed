@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe Api::ContentsController do
+
   describe "GET get_tree" do
     before do
       @content = FactoryGirl.create(:content)

@@ -179,4 +179,5 @@ class ContentsController < ApplicationController
       contents_path
     end
   end
+
 end

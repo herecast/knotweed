@@ -1,4 +1,23 @@
 class Api::ContentsController < Api::ApiController
+  before_filter :set_events_param
+
+  def index
+    if params[:events]
+      params[:start_date] = params[:start_date] || 1.month.ago
+      @contents = Content.events.where('start_date > ?', params[:start_date]).order('start_date DESC')
+    end
+
+    if params[:repository].present? and @contents.present?
+      repo = Repository.find_by_dsp_endpoint(params[:repository])
+      @contents = @contents.select { |c| c.repositories.include? repo }
+    end
+    render json: @contents || nil
+  end
+
+  def show
+    @content = Content.find(params[:id])
+    render json: Content.find(params[:id])
+  end
 
   # for now, this doesn't need to handle images
   def create_and_publish
@@ -52,6 +71,22 @@ class Api::ContentsController < Api::ApiController
       render json: {}
     else
       render json: { banner: new_content.promotions.first.banner.url, content_id: new_content.id }
+    end
+  end
+
+  private
+
+  # detects if the route is through events
+  # and sets params[:events] = true if so
+  # in order to allow action to respond accordingly
+  def set_events_param
+    # if it is passed in already, don't set it
+    unless params[:events].present?
+      if request.url.match /events/
+        params[:events] = true
+      else
+        params[:events] = false
+      end
     end
   end
 end

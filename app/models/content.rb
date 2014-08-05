@@ -77,6 +77,8 @@ class Content < ActiveRecord::Base
   before_save :mark_quarantined
   before_save :set_guid
 
+  scope :events, where(:category => "event")
+
   NEW_FORMAT = "New"
   EXPORT_FORMATS = [NEW_FORMAT]
   DEFAULT_FORMAT = NEW_FORMAT
