@@ -8,6 +8,7 @@ class IssuesController < ApplicationController
       issues = Issue.all.order("issue_edition ASC")
     end
     @issues = issues.map{ |i| [i.issue_edition, i.id]}.insert(0, nil)
+    @selected_id = params[:selected_id]
     respond_to do |format|
       format.js { render "issues/select_options" }
     end

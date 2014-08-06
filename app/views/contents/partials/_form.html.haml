@@ -68,7 +68,11 @@
             = label_tag "Search for parent content", nil, class: "control-label"
             .controls
               = text_field_tag "parent_search", nil, class: "span12"
-          = f.association :issue, collection: (@content.source.present? ? @content.source.issues.order("issue_edition ASC") : ["Select a Publication First"]), input_html: { class: "chosen-select span12", data: { options_url: issue_select_options_path } }, wrapper_html: { class: "span6" }
+          = f.association :issue, 
+            collection: (@content.source.present? ? @content.source.issues.order("issue_edition ASC") : ["Select a Publication First"]), 
+            input_html: { class: "chosen-select span12", 
+            data: { options_url: issue_select_options_path, selected_id: @content.issue.try(:id) } }, 
+            wrapper_html: { class: "span6" }
         .row-fluid
           = f.association :parent, collection: (@content.parent.present? ? [[@content.parent.title, @content.parent.id]] : []), 
             input_html: { class: "chosen-select span12", 

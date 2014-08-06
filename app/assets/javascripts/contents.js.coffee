@@ -70,7 +70,8 @@ updateParentOptions = ->
 updateIssueOptions = ->
   $.ajax $("#content_issue_id").data("optionsUrl"),
     data:
-      publication_id: $("#content_source_id").val()
+      publication_id: $("#content_source_id").val(),
+      selected_id: $("#content_issue_id").data('selectedId')
     dataType: "script"
 
 updateBusinessLocationOptions = ->

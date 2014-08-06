@@ -1,2 +1,2 @@
-$("#content_issue_id").html("#{ j options_for_select(@issues) }");
+$("#content_issue_id").html("#{ j options_for_select(@issues, @selected_id) }");
 $("#content_issue_id").trigger("chosen:updated");
