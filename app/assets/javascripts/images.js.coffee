@@ -31,18 +31,28 @@ jQuery ->
 
   $(document).on 'click', 'a.update-image', (event)->
     event.preventDefault()
-    imageId = $(this).data("imageId")
-    $.ajax($(this).data("url"), {
-      type: "PUT",
-      dataType: "script",
-      data: { 
-        "image": { 
-          "caption": $("#image_" + imageId + "_caption").val(),
-          "credit": $("#image_" + imageId + "_credit").val()
-        }
-      }
-    })
+    saveImageAttributes(this)
+
+  $(document).on 'change', '.image-field', ->
+    updateButton = $(this).closest('.image').find("a.update-image")
+    saveImageAttributes(updateButton)
+
 
   # resize textbox
   $(document).on 'keyup', ".caption-field", ->
     updateRows($(this))
+
+# saves image attributes 
+# called when "update" is pressed or when the text fields are changed
+saveImageAttributes = (updateButton) ->
+  imageId = $(updateButton).data('imageId')
+  $.ajax($(updateButton).data("url"), {
+    type: "PUT",
+    dataType: "script",
+    data: { 
+      "image": { 
+        "caption": $("#image_" + imageId + "_caption").val(),
+        "credit": $("#image_" + imageId + "_credit").val()
+      }
+    }
+  })
