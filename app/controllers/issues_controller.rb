@@ -5,7 +5,7 @@ class IssuesController < ApplicationController
     if params[:publication_id].present?
       issues = Publication.find(params[:publication_id]).issues.order("issue_edition ASC")
     else
-      issues = Issue.all.order("issue_edition ASC")
+      issues = Issue.order("issue_edition ASC")
     end
     @issues = issues.map{ |i| [i.issue_edition, i.id]}.insert(0, nil)
     @selected_id = params[:selected_id]

@@ -69,7 +69,7 @@ class ContentsController < ApplicationController
     # really pretty hacky...oh well.
     bls = @content.source.try(:business_locations)
     @business_location_options = @content.source.try(:business_location_options)
-    if bls.include? @content.business_location
+    if bls.present? and bls.include? @content.business_location
       @business_location_id = @content.business_location.id
       # we need to ensure the fields on the right exist
       @content.build_business_location
