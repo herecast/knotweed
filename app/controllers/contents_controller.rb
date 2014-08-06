@@ -2,6 +2,8 @@ class ContentsController < ApplicationController
 
   before_filter :process_business_loc_params, only: [:create, :update]
   before_filter :process_date_params, only: [:create, :update]
+  
+  PUBLISH_METHODS_TO_DOWNLOAD = ["export_pre_pipeline_xml", "export_post_pipeline_xml"]
 
   def index
     # if posted, save to session
@@ -104,7 +106,7 @@ class ContentsController < ApplicationController
     else
       repo = nil
     end
-    if params[:download_result].present? and params[:download_result]
+    if PUBLISH_METHODS_TO_DOWNLOAD.include? params[:method] 
       opts[:download_result] = true
     end
     if @content.publish(params[:method], repo, nil, opts) == true
