@@ -69,7 +69,7 @@ class Content < ActiveRecord::Base
                   :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
                   :image_ids, :parent_id, :source_uri, :category,
                   :event_type, :start_date, :end_date, :cost, :recurrence, :host_organization,
-                  :links
+                  :links, :featured
 
   serialize :links, Hash
 
@@ -428,7 +428,7 @@ class Content < ActiveRecord::Base
     })
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
                "import_record_id", "published", "image", "links", "start_date", "end_date",
-               "links" )
+               "links", "featured" )
   end
 
   # Export Gate Document directly before/after Pipeline processing
