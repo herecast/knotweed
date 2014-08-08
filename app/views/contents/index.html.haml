@@ -22,7 +22,8 @@
             = f.text_field :id_in, value: id_in_val
           .field.span3
             = f.label :source_id_in, "Publications"
-            = f.collection_select :source_id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
+            = f.collection_select :source_id_in, Publication.accessible_by(current_ability), 
+              :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
             = f.label :pubdate_gteq, "From"
             = f.text_field :pubdate_gteq, type: :date, value: search_field_value(:pubdate_gteq)
@@ -31,8 +32,10 @@
             = f.text_field :pubdate_lteq, type: :date, value: search_field_value(:pubdate_lteq)
         .controls.controls-row
           .field.span3
-            = f.label :import_location_link_name_cont, "Location"
-            = f.text_field :import_location_link_name_cont
+            = f.label :category_in, "Category"
+            = f.select :category_in, Content::CATEGORIES.map { |c| [c.titlecase, c] }, 
+              { include_blank: true },
+              { multiple: true, class: "chosen-select" }
           .field.span3
             = f.label :title_cont, "Title"
             = f.text_field :title_cont
@@ -48,6 +51,7 @@
 %table.table.table-striped.table-hover.table-condensed
   %thead
     %tr
+      %th Category
       %th Source
       %th Title
       %th Authors
@@ -59,6 +63,7 @@
   %tbody
     - @contents.each do |c|
       %tr
+        %td= c.category.try(:titlecase)
         %td
           - if c.source.present?
             = link_to c.source.name, contents_path(q: { source_id_in: c.source.id })
