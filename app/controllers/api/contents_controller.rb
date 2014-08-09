@@ -3,8 +3,18 @@ class Api::ContentsController < Api::ApiController
 
   def index
     if params[:events]
-      params[:start_date] = params[:start_date] || 1.month.ago
-      @contents = Content.events.where('start_date > ?', params[:start_date]).order('start_date DESC')
+      @contents = Content.events.order('start_date DESC')
+      if params[:start_date].present?
+        start_date = Chronic.parse(params[:start_date])
+        @contents = @contents.where('start_date >= ?', start_date)
+      end
+      if params[:end_date].present?
+        end_date = Chronic.parse(params[:end_date]).end_of_day
+        if end_date == start_date
+          end_date = start_date.end_of_day
+        end
+        @contents = @contents.where('start_date <= ?', end_date)
+      end
     end
 
     if params[:repository].present? and @contents.present?
