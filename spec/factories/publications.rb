@@ -18,6 +18,8 @@
 #  social_media         :text
 #  general              :text
 #  header               :text
+#  pub_type             :string(255)
+#  display_attributes   :boolean          default(FALSE)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

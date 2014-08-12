@@ -18,6 +18,8 @@
 #  social_media         :text
 #  general              :text
 #  header               :text
+#  pub_type             :string(255)
+#  display_attributes   :boolean          default(FALSE)
 #
 
 require 'spec_helper'

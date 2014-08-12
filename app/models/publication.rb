@@ -19,7 +19,7 @@
 #  general              :text
 #  header               :text
 #  pub_type             :string(255)
-#  display_attributes   :boolean          default: false
+#  display_attributes   :boolean          default(FALSE)
 #
 
 class Publication < ActiveRecord::Base
