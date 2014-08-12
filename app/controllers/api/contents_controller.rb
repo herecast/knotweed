@@ -49,7 +49,7 @@ class Api::ContentsController < Api::ApiController
 
   def show
     @content = Content.find(params[:id])
-    render json: Content.find(params[:id])
+    render json: @content
   end
 
   # for now, this doesn't need to handle images
