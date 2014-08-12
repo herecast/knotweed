@@ -2,8 +2,21 @@ class Api::ContentsController < Api::ApiController
   before_filter :set_events_param
 
   def index
+    if params[:max_results].present? 
+      @contents = Content.events.limit(params[:max_results])
+    end
     if params[:events]
-      @contents = Content.events.order('start_date DESC')
+      if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
+        sort_order = params[:sort_order]
+      else
+        sort_order = 'ASC'
+      end
+
+      if @contents.nil?
+        @contents = Content.events.order("start_date #{sort_order}")
+      else
+        @contents = @contents.order("start_date #{sort_order}")
+      end
       if params[:start_date].present?
         start_date = Chronic.parse(params[:start_date])
         @contents = @contents.where('start_date >= ?', start_date)
@@ -15,12 +28,22 @@ class Api::ContentsController < Api::ApiController
         end
         @contents = @contents.where('start_date <= ?', end_date)
       end
+
+      if params[:request_featured].present?
+        @featured_contents = @contents.clone
+        @contents = @contents.where('featured = false')
+        @featured_contents = @featured_contents.limit(5)
+        @featured_contents = @featured_contents.where('featured = true')
+      end
     end
 
     if params[:repository].present? and @contents.present?
       repo = Repository.find_by_dsp_endpoint(params[:repository])
       @contents = @contents.select { |c| c.repositories.include? repo }
     end
+
+    @contents = (@contents + @featured_contents).sort{|a, b| a.start_date <=> b.start_date } unless @featured_contents.nil?
+
     render json: @contents || nil
   end
 
