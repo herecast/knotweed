@@ -1,7 +1,7 @@
 class ContentSerializer < ActiveModel::Serializer
 
-  attributes :id, :title, :start_date, :end_date, :event_type, :host_organization,                                                                                                                     
-    :cost, :recurrence, :content, :featured
+  attributes :id, :title, :start_date, :end_date, :event_type, :host_organization,
+    :cost, :recurrence, :content, :featured, :links
 
   self.root = false
 
