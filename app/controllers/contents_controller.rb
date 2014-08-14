@@ -81,7 +81,8 @@ class ContentsController < ApplicationController
   end
 
   def update
-
+    # hack to remove duplicate content entry
+    params[:content].delete :content1 if params[:content].present?
     # ensure serialized values are set to empty if no fields are passed in via form
     params[:content][:links] = nil unless params[:content].has_key? :links
     @content = Content.find(params[:id])

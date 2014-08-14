@@ -1,4 +1,7 @@
 jQuery ->
+  $('#event_tab_link, #contents_tab_link').on 'click', ->
+    $("#content_category").trigger('change')
+
   $("#add_new_publication").on 'click', ->
     console.log 'hello'
     $(".modal#publication_form .modal-body").load($(this).data('formUrl'))
@@ -25,6 +28,8 @@ jQuery ->
       $("label[for='content_source_id']").text("Organization")
       contentEditor = $("#event_features #cke_content_content")
       contentEditor[0].remove() if contentEditor.length > 1
+      $("#event_features .content_content textarea").attr("name", "content[content]")
+      $("#doc_content .content_content textarea").attr("name", "content[content1]")
     else
       $("#add_new_publication").hide()
       $("#event_tab_link").addClass("hidden")
@@ -32,6 +37,8 @@ jQuery ->
       $("label[for='content_source_id']").text("Publication")
       contentEditor = $("#doc_content #cke_content_content")
       contentEditor[0].remove() if contentEditor.length > 1
+      $("#doc_content .content_content textarea").attr("name", "content[content]")
+      $("#event_features .content_content textarea").attr("name", "content[content1]")
   $("#content_category").trigger('change')
 
   # parent content search box
