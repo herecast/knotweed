@@ -3,6 +3,6 @@
     .box-header.blue-background
       .title
         %i.icon-pencil
-        Content ID #{@content.id}
+        Content ID #{@content.id} #{@content.title}
     .box-content
       = render partial: "contents/partials/form"

@@ -57,6 +57,7 @@
       %th Authors
       %th Location
       %th Pubdate
+      %th Startdate
   .span5
     = page_entries_info @contents if @contents.present?
     = paginate @contents, window: 2 if @contents.present?
@@ -75,3 +76,4 @@
           - if c.import_location.present?
             = link_to c.import_location.city, contents_path(q: { import_location_id_in: c.import_location.id })
         %td= c.pubdate.try(:strftime, "%Y-%m-%d")
+        %td= c.start_date.try(:strftime, "%Y-%m-%d")

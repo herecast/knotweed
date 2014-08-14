@@ -10,7 +10,7 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#event_features" } do
           %i.icon-info
           Event Features
-      %li
+      %li#contents_tab_link
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#doc_content" } do
           %i.icon-reorder
           Content
@@ -87,6 +87,8 @@
       .tab-pane.form-horizontal#event_features
         = f.input :event_type, wrapper_html: { class: "span6" }, input_html: { class: "span12" }
         = f.input :featured, wrapper_html: { class: "span6" }, label: "Featured?"
+        .row-fluid#event_content
+        = f.input :content, wrapper_html: { class: "span10" }, input_html: {class: "ckeditor input-block-level" }, label: "Description"
         .row-fluid
           = f.input :start_day, as: :fake, wrapper_html: { class: "span4" },
             input_html: { value: f.object.start_date.try(:strftime, "%m/%d/%Y") }

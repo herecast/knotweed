@@ -21,11 +21,17 @@ jQuery ->
     if $(this).val() == "event"
       $("#add_new_publication").show()
       $("#event_tab_link").removeClass("hidden")
+      $("#contents_tab_link").addClass("hidden")
       $("label[for='content_source_id']").text("Organization")
+      contentEditor = $("#event_features #cke_content_content")
+      contentEditor[0].remove() if contentEditor.length > 1
     else
       $("#add_new_publication").hide()
       $("#event_tab_link").addClass("hidden")
+      $("#contents_tab_link").removeClass("hidden")
       $("label[for='content_source_id']").text("Publication")
+      contentEditor = $("#doc_content #cke_content_content")
+      contentEditor[0].remove() if contentEditor.length > 1
   $("#content_category").trigger('change')
 
   # parent content search box
