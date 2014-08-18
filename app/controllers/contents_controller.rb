@@ -31,6 +31,8 @@ class ContentsController < ApplicationController
   end
 
   def create
+    # hack to remove duplicate content entry
+    params[:content].delete :content1 if params[:content].present?
     image_list = params[:content].delete(:image_list)
     image_ids = image_list.try(:split, ",")
     @content = Content.new(params[:content])
