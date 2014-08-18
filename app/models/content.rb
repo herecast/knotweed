@@ -53,7 +53,8 @@ class Content < ActiveRecord::Base
   belongs_to :import_record
 
   belongs_to :business_location # for event type contents
-  accepts_nested_attributes_for :business_location
+  accepts_nested_attributes_for :business_location,
+    reject_if: proc { |attributes| attributes['name'].blank? and attributes['address'].blank? }
   attr_accessible :business_location_attributes, :business_location_id
 
   has_many :annotation_reports

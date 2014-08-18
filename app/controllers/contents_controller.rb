@@ -72,7 +72,7 @@ class ContentsController < ApplicationController
     # ensure the form fields aren't filled with a location from the dropdown
     # really pretty hacky...oh well.
     bls = @content.source.try(:business_locations)
-    @business_location_options = @content.source.try(:business_location_options)
+    @business_location_options = @content.source.try(:business_location_options) || []
     if bls.present? and bls.include? @content.business_location
       @business_location_id = @content.business_location.id
       # we need to ensure the fields on the right exist
