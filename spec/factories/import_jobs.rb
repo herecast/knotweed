@@ -15,6 +15,7 @@
 #  frequency       :integer          default(0)
 #  archive         :boolean          default(FALSE), not null
 #  content_set_id  :integer
+#  run_at          :datetime
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

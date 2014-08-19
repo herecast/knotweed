@@ -15,6 +15,7 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  file_archive    :text
+#  run_at          :datetime
 #
 
 require 'jobs/scheduledjob'
@@ -34,7 +35,7 @@ class PublishJob < ActiveRecord::Base
   serialize :query_params, Hash
 
   attr_accessible :frequency, :organization_id, :publish_method, :query_params, :status,
-                  :archive, :error, :name, :description
+                  :archive, :error, :name, :description, :run_at
 
   after_destroy :cancel_scheduled_runs
 
@@ -93,7 +94,7 @@ class PublishJob < ActiveRecord::Base
 
   # status hooks
   def enqueue(job)
-    update_attribute(:status, "queued")
+    update_attribute(:status, "scheduled")
   end
 
   def success(job)
@@ -114,7 +115,7 @@ class PublishJob < ActiveRecord::Base
   end
 
   def enqueue_job
-    Delayed::Job.enqueue self, queue: QUEUE
+    Delayed::Job.enqueue self, queue: QUEUE, run_at: run_at
   end
 
   def contents_count

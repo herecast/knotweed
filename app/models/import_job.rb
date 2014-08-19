@@ -15,6 +15,7 @@
 #  frequency       :integer          default(0)
 #  archive         :boolean          default(FALSE), not null
 #  content_set_id  :integer
+#  run_at          :datetime
 #
 
 require 'find'
@@ -41,9 +42,10 @@ class ImportJob < ActiveRecord::Base
   validates_presence_of :organization
   
   attr_accessible :config, :name, :parser_id, :source_path, :type, 
-                  :organization_id, :frequency, :archive, :content_set_id
+                  :organization_id, :frequency, :archive, :content_set_id,
+                  :run_at
   
-  validates :status, inclusion: { in: %w(failed running success queued) }, allow_nil: true
+  validates :status, inclusion: { in: %w(failed running success scheduled) }, allow_nil: true
   validate :parser_belongs_to_same_organization, unless: "parser.nil?"
 
   after_destroy :cancel_scheduled_runs
@@ -67,7 +69,7 @@ class ImportJob < ActiveRecord::Base
   
   # hooks to set status
   def enqueue(job)
-    update_attribute(:status, "queued")
+    update_attribute(:status, "scheduled")
   end
   
   def success(job)
@@ -100,7 +102,7 @@ class ImportJob < ActiveRecord::Base
   # enqueues the job object
   # note can use option run_at: time to schedule in the future
   def enqueue_job
-    Delayed::Job.enqueue self, queue: QUEUE
+    Delayed::Job.enqueue self, queue: QUEUE, run_at: run_at
   end
   
   def traverse_input_tree

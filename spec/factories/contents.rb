@@ -43,6 +43,7 @@
 #  links                :text
 #  host_organization    :string(255)
 #  business_location_id :integer
+#  featured             :boolean          default(FALSE)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

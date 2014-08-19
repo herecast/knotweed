@@ -15,6 +15,7 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  file_archive    :text
+#  run_at          :datetime
 #
 
 require 'spec_helper'

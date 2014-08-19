@@ -1,6 +1,9 @@
 var status_div = $("tr.job-#{@job.id} td.job-status div");
 status_div.html("#{@job.status}");
 
+var next_run_div = $("tr.job-#{@job.id} td.next-run");
+next_run_div.html("#{@job.next_scheduled_run.try(:strftime, '%m/%d/%Y %I:%M%p')}");
+
 // clear 
 status_div.removeClass("alert-success alert-error alert-info");
 // add appropriate class to status

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140807173416) do
+ActiveRecord::Schema.define(:version => 20140818211000) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -245,6 +245,7 @@ ActiveRecord::Schema.define(:version => 20140807173416) do
     t.integer  "frequency",       :default => 0
     t.boolean  "archive",         :default => false, :null => false
     t.integer  "content_set_id"
+    t.datetime "run_at"
   end
 
   create_table "import_locations", :force => true do |t|
@@ -386,6 +387,7 @@ ActiveRecord::Schema.define(:version => 20140807173416) do
     t.datetime "created_at",                         :null => false
     t.datetime "updated_at",                         :null => false
     t.text     "file_archive"
+    t.datetime "run_at"
   end
 
   create_table "publish_records", :force => true do |t|

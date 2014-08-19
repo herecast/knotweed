@@ -16,7 +16,9 @@ module Jobs
 
     def schedule
       if self.try(:frequency).present? and self.frequency != 0
-        self.frequency.minutes.from_now
+        prev_run = self.last_run_at || self.run_at || Time.now
+        new_start = prev_run + self.frequency.minutes
+        new_start
       else
         nil
       end
@@ -37,7 +39,7 @@ module Jobs
     # gets next scheduled run
     # returns nil if not scheduled to run
     def next_scheduled_run
-      job = Delayed::Job.where("handler LIKE ? AND handler LIKE '% id: ?\n%' AND run_at > ?", "%#{self.class.to_s}%", id, Time.now).order("run_at ASC").first
+      job = Delayed::Job.where("handler LIKE ? AND handler LIKE '% id: ?\n%'", "%#{self.class.to_s}%", id).order("run_at ASC").first
       job ? job.run_at : nil
     end
     
@@ -45,6 +47,12 @@ module Jobs
     # records pointing to this job
     def cancel_scheduled_runs
       Delayed::Job.where("handler LIKE ? AND handler LIKE '% id: ?%'", "%#{self.class.to_s}%", id).delete_all
+      # if status was scheduled, change to blank
+      # otherwise (in scenario where job just succeeded or failed)
+      # leave status be
+      if self.status == "scheduled"
+        self.update_attribute :status, ""
+      end
     end
 
   end

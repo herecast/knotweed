@@ -15,6 +15,7 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  file_archive    :text
+#  run_at          :datetime
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

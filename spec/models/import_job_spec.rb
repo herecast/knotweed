@@ -15,6 +15,7 @@
 #  frequency       :integer          default(0)
 #  archive         :boolean          default(FALSE), not null
 #  content_set_id  :integer
+#  run_at          :datetime
 #
 
 require 'spec_helper'

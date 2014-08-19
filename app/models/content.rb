@@ -43,6 +43,7 @@
 #  links                :text
 #  host_organization    :string(255)
 #  business_location_id :integer
+#  featured             :boolean          default(FALSE)
 #
 
 require 'fileutils'
