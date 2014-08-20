@@ -8,10 +8,6 @@ set :repo_url, 'git@github.com:subtextmedia/knotweed.git'
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 
-# Default deploy_to directory is /var/www/my_app
-set :deploy_to, "/var/www/knotweed-admin"
-server 'localhost', roles: %w{web app db}, primary: true, user: 'deploy'
-
 set :rvm_ruby_version, '1.9.3-p545@knotweed'
 
 set :delayed_job_args, "-n 4"
