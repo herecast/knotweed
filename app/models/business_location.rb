@@ -17,5 +17,10 @@ class BusinessLocation < ActiveRecord::Base
   belongs_to :publication
   has_many :contents
 
-  attr_accessible :address, :email, :hours, :name, :publication_id, :phone
+  attr_accessible :address, :email, :hours, :name, :publication_id, :phone, 
+    :latitude, :longitude
+
+  geocoded_by :address
+
+  after_validation :geocode, if: ->(obj){ obj.address.present? and obj.address_changed? }
 end

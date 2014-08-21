@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140818211000) do
+ActiveRecord::Schema.define(:version => 20140821214638) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -52,6 +52,8 @@ ActiveRecord::Schema.define(:version => 20140818211000) do
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
     t.integer  "publication_id"
+    t.float    "latitude"
+    t.float    "longitude"
   end
 
   create_table "categories", :force => true do |t|
