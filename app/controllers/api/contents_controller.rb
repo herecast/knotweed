@@ -17,7 +17,8 @@ class Api::ContentsController < Api::ApiController
       else
         @contents = @contents.order("start_date #{sort_order}")
       end
-      if params[:start_date].present?
+      
+    if params[:start_date].present?
         start_date = Chronic.parse(params[:start_date])
         @contents = @contents.where('start_date >= ?', start_date)
       end
@@ -27,6 +28,9 @@ class Api::ContentsController < Api::ApiController
           end_date = start_date.end_of_day
         end
         @contents = @contents.where('start_date <= ?', end_date)
+      end
+      if params[:event_type].present?
+        @contents = @contents.where(event_type: params[:event_type])
       end
 
       if params[:request_featured].present?
