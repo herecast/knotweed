@@ -21,7 +21,7 @@ jQuery ->
     updateHostOrganization()
 
   $(document).on 'change', '#content_category', ->
-    if $(this).val() == "event"
+    if $(this).val() == "event" or $(this).val() == "sale_event"
       $("#add_new_publication").show()
       $("#event_tab_link").removeClass("hidden")
       $("#contents_tab_link").addClass("hidden")
