@@ -12,4 +12,8 @@ module ContentsHelper
     end
   end
 
+  def fix_ts_excerpt(string)
+    string.encode('iso-8859-1').force_encoding('utf-8')
+  end
+
 end

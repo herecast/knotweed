@@ -111,6 +111,35 @@ class Api::ContentsController < Api::ApiController
     end
   end
 
+  def search
+    query = Riddle::Query.escape(params[:query])
+
+    opts = { select: '*, weight()', excerpts: { limit: 350, around: 5, html_strip_mode: "strip" } }
+    opts[:order] = 'timestamp DESC' if params[:order] == 'pubdate'
+    opts[:per_page] = params[:limit] if params[:limit].present?
+
+    if params[:repository].present?
+      opts[:with] ||= {}
+      repo = Repository.find_by_dsp_endpoint(params[:repository])
+      opts[:with].merge!({repo_ids: repo.id})
+    end
+    if params[:publications].present?
+      opts[:with] ||= {}
+      allowed_pubs = []
+      params[:publications].each do |pub|
+        p = Publication.find_by_name pub
+        unless p.nil?
+          allowed_pubs << p.id 
+        end
+      end
+      opts[:with].merge!({:pub_id => allowed_pubs})
+    end
+
+    @contents = Content.search query, opts
+    @contents.context[:panes] << ThinkingSphinx::Panes::WeightPane
+    @contents.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
+  end
+
   private
 
   # detects if the route is through events

@@ -47,6 +47,7 @@ gem 'delayed_job_active_record'
 gem 'daemons'
 gem 'american_date'
 gem 'ruby-gmail' 
+gem 'whenever'
 
 #gem 'bullet', group: :development
 gem 'mail'
@@ -84,3 +85,5 @@ gem 'sparql-client', git: "git@github.com:bencpeters/sparql-client.git", branch:
 
 gem 'chronic'
 gem 'geocoder'
+gem 'thinking-sphinx'
+gem 'jbuilder'
