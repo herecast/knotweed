@@ -9,7 +9,7 @@ class ContentSerializer < ActiveModel::Serializer
   has_many :images
 
   def filter(keys)
-    if object.category == "event"
+    if object.category == "event" or object.category == "sale_event"
       keys
     else
       # we will at some point want to be defining the regular contents attributes here
