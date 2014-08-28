@@ -348,6 +348,8 @@ class Content < ActiveRecord::Base
     response = OntotextController.post(repo.dsp_endpoint + '/processDocument?persist=true', options)
     if response.body.include? document_uri
       repo.contents << self unless repo.contents.include? self
+      # trigger feedback update from pipeline (updating DB with pipeline-processed fields)
+      update_from_repo(repo)
       return true
     else
       return "failed to post doc: #{self.id}\nresponse:#{response.body}"
@@ -606,6 +608,33 @@ class Content < ActiveRecord::Base
       idx = uri.rindex("/")
       id = uri[idx+1..uri.length]
     end
+  end
+
+  # callback function to update fields with repo info
+  # this is run after publish to retrieve pipeline-processed
+  # fields that we want to update in our DB.
+  #
+  # as of now, it only updates category
+  def update_from_repo(repo)
+    sparql = ::SPARQL::Client.new repo.sesame_endpoint
+    response = sparql.query("
+      prefix pub: <http://ontology.ontotext.com/publishing#>
+      PREFIX sbtxd: <#{Figaro.env.document_prefix}>
+
+      select ?category
+      where {
+        OPTIONAL { sbtxd:#{id} pub:hasCategory ?category . }
+      }")
+    response_hash = response[0].to_hash
+    # if we add more fields to be updated, we can iterate through the hash
+    # and use send to update the content
+    # not necessary for now.
+    begin
+      cat = response_hash[:category].to_s.split("/")[-1]
+      update_attribute :category, cat if cat.present?
+    rescue
+    end
+
   end
 
   private 

@@ -446,6 +446,7 @@ describe Content do
 
     describe "#post_to_ontotext" do
       before do
+        stub_retrieve_update_fields_from_repo(@content, @repo)
         stub_request(:post, "#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processDocument?persist=true").
           with(:headers => { 'Content-Type' => 'application/vnd.ontotext.ces.document+xml;charset=UTF-8'}). 
           to_return(:status => 200,
@@ -541,6 +542,22 @@ describe Content do
       @content.has_active_promotion?.should == true
     end
 
+  end
+
+  describe "update_from_repo" do
+    before do
+      @content = FactoryGirl.create :content
+      @repository = FactoryGirl.create :repository
+      @repository.contents << @content
+      @new_cat = stub_retrieve_update_fields_from_repo(@content, @repository)
+    end
+
+    it "should overwrite @content.category with data from the repository" do
+      orig_cat = @content.category
+      @content.update_from_repo(@repository)
+      @content.category.should_not == orig_cat
+      @content.category.should == @new_cat
+    end
   end
 
 end
