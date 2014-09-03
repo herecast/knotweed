@@ -48,4 +48,12 @@ class ImportJobsController < ApplicationController
     end
   end
 
+  def stop_ongoing_job
+    @import_job = ImportJob.find(params[:id])
+    @import_job.update_attribute :stop_loop, true
+    respond_to do |format|
+      format.js
+    end
+  end
+
 end

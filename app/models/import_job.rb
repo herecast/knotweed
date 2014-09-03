@@ -7,7 +7,7 @@
 #  name            :string(255)
 #  config          :text
 #  source_path     :string(255)
-#  type            :string(255)
+#  job_type            :string(255)
 #  organization_id :integer
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
@@ -16,6 +16,7 @@
 #  archive         :boolean          default(FALSE), not null
 #  content_set_id  :integer
 #  run_at          :datetime
+#
 #
 
 require 'find'
@@ -34,6 +35,7 @@ class ImportJob < ActiveRecord::Base
   belongs_to :organization
   belongs_to :parser
   belongs_to :content_set
+  belongs_to :repository
   has_many :import_records
 
   has_many :notifiers, as: :notifyable
@@ -41,9 +43,10 @@ class ImportJob < ActiveRecord::Base
   
   validates_presence_of :organization
   
-  attr_accessible :config, :name, :parser_id, :source_path, :type, 
+  attr_accessible :config, :name, :parser_id, :source_path, :job_type, 
                   :organization_id, :frequency, :archive, :content_set_id,
-                  :run_at
+                  :run_at, :stop_loop, :automatically_publish, :repository_id,
+                  :publish_method, :job_type
   
   validates :status, inclusion: { in: %w(failed running success scheduled) }, allow_nil: true
   validate :parser_belongs_to_same_organization, unless: "parser.nil?"
@@ -53,6 +56,24 @@ class ImportJob < ActiveRecord::Base
   default_scope { where archive: false }
 
   serialize :config, Hash
+
+  CONTINUOUS = "continuous"
+  AD_HOC = "ad_hoc"
+  RECURRING = "recurring"
+  JOB_TYPES = [CONTINUOUS, AD_HOC, RECURRING]
+
+  before_validation :set_stop_loop
+
+  # if job type is continuous, save stop_loop as false
+  # otherwise, save it to true so non-continuous jobs don't loop
+  def set_stop_loop
+    if job_type == CONTINUOUS
+      self.stop_loop = false
+    else
+      self.stop_loop = true
+    end
+    true
+  end
 
   # delayed job action
   # 
@@ -114,8 +135,22 @@ class ImportJob < ActiveRecord::Base
     log.info("#{Time.now}")
     log.info("source path: #{source_path}")
     if source_path =~ /^#{URI::regexp}$/
-      data = run_parser(source_path) || nil
-      docs_to_contents(data) if data.present?
+      # this is where we loop continuous jobs
+      # continuous jobs are automatically set to have stop_loop set to false
+      # other jobs have stop_loop set to true (by an after_create callback).
+      while true
+        log.info("Running parser at #{Time.now}")
+        data = run_parser(source_path) || nil
+        docs_to_contents(data) if data.present?
+        # reload to double check for stop_loop
+        self.reload
+        break if self.stop_loop
+      end
+      # if it was a continuous job that was manually stopped using the stop_loop flag
+      # we need to reset the flag to false
+      if self.stop_loop and job_type == CONTINUOUS
+        update_attribute :stop_loop, false
+      end
     else
       Find.find(source_path) do |path|
         if FileTest.directory?(path)
@@ -170,6 +205,9 @@ class ImportJob < ActiveRecord::Base
         c = Content.create_from_import_job(article, self)
         log.info("content #{c.id} created")
         successes += 1
+        if automatically_publish and repository.present?
+          c.publish(publish_method, repository)
+        end
       rescue StandardError => bang
         log.error("failed to process content: #{bang}")
         failures += 1
@@ -179,7 +217,7 @@ class ImportJob < ActiveRecord::Base
     log.info("failures: #{failures}")
     import_record.items_imported += successes
     import_record.failures += failures
-    import_record.save!
+    import_record.save
   end
 
   def save_config(parameters)
