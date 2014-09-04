@@ -48,7 +48,9 @@
 
 require 'fileutils'
 require 'builder'
+include ActionView::Helpers::TextHelper
 class Content < ActiveRecord::Base
+
   belongs_to :issue
   belongs_to :import_location
   belongs_to :import_record
@@ -166,6 +168,7 @@ class Content < ActiveRecord::Base
 
     # try to clean up HTML
     if data.has_key? "content" and data['content'].present?
+      data['content'] = simple_format data['content']
       html = Hpricot(data['content'], :xhtml_strict => true)
       data['content'] = html.html
     end

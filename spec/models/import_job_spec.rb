@@ -80,7 +80,7 @@ describe ImportJob do
 
     it "should strip empty p tags from the beginning of content" do
       c = Content.where(title: @config["title"].strip).first
-      c.content.should== "Content begins here"
+      c.content.include?("<p> </p>").should == false
     end
 
   end
