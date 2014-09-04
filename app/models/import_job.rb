@@ -141,7 +141,12 @@ class ImportJob < ActiveRecord::Base
       while true
         log.info("Running parser at #{Time.now}")
         data = run_parser(source_path) || nil
-        docs_to_contents(data) if data.present?
+        if data.present?
+          docs_to_contents(data)
+        else
+          # sleep for a bit if there is no new contents to import
+          sleep(60.0)
+        end
         # reload to double check for stop_loop
         self.reload
         break if self.stop_loop
