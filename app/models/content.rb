@@ -168,15 +168,16 @@ class Content < ActiveRecord::Base
 
     # try to clean up HTML
     if data.has_key? "content" and data['content'].present?
-      data['content'] = simple_format data['content']
-      html = Hpricot(data['content'], :xhtml_strict => true)
-      data['content'] = html.html
+      html = Hpricot(simple_format(data.delete('content'), {}, sanitize: false), :xhtml_strict => true)
+      processed_content = html.html
     end
 
     # if job is passed in, set organization
     organization = job.try(:organization)
 
     content = Content.new(data)
+    content.content = processed_content
+    
     # pull complex key/values out from data to use later
     if special_attrs.has_key? 'location'
       import_location = special_attrs['location']

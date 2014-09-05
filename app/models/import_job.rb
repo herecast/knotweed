@@ -144,8 +144,8 @@ class ImportJob < ActiveRecord::Base
         if data.present?
           docs_to_contents(data)
         else
-          # sleep for a bit if there is no new contents to import
-          sleep(60.0)
+          # sleep for a bit if there is no new contents to import and we're supposed to keep looping
+          sleep(60.0) unless self.stop_loop
         end
         # reload to double check for stop_loop
         self.reload
