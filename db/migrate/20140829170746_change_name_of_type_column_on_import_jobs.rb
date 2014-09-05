@@ -2,7 +2,7 @@ class ChangeNameOfTypeColumnOnImportJobs < ActiveRecord::Migration
   def up
     rename_column :import_jobs, :type, :job_type
     # set all existing jobs to appropriate job type
-    ImportJob.each do |ij|
+    ImportJob.all.each do |ij|
       if ij.frequency > 0
         ij.update_attribute :job_type, ImportJob::RECURRING
       else
