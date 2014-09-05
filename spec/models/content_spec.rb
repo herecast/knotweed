@@ -174,21 +174,21 @@ describe Content do
       Content.first.id.should== orig_id
     end
 
-    it "should overwrite any content but retain new category if category_correction exists" do
+    it "should overwrite any content but retain new category if category field is populated " do
       p = FactoryGirl.create(:publication)
       @base_data["source_id"] = p.id
       c1 = Content.create_from_import_job(@base_data)
+      c1.update_attribute :category, "Test Category"
       orig_id = c1.id
       @new_data = {
         "title" => "Different Title",
         "source_id" => @base_data["source_id"],
         "guid" => c1.guid
       }
-      cat_corr = CategoryCorrection.create(content: c1, new_category: "Test Cat", old_category: "Discussion", user_email: "test@test.com")
       c2 = Content.create_from_import_job(@base_data)
       Content.count.should== 1
       Content.first.id.should== orig_id
-      Content.first.category.should == cat_corr.new_category
+      Content.first.category.should == "Test Category"
     end
 
     # check source logic
