@@ -15,7 +15,7 @@ module ImportJobsHelper
   def action_button_for_job(job)
     if job.status == "running"
       # if job is continuously repeating job
-      if job.try(:job_type) == ImportJob::CONTINUOUS
+      if job.is_a? ImportJob and job.try(:job_type) == ImportJob::CONTINUOUS
         if job.try(:stop_loop) # indicate job will stop after this run
           content_tag(:span, "stopping", { class: "btn btn-mini btn-danger disabled" })
         else # insert cancel button
