@@ -1,0 +1,13 @@
+= simple_form_for @message, html: { data: { id: @message.id }, class: "form form-horizontal" } do |f|
+  = f.error_notification
+  = f.input :start_date, as: :datetime_picker, 
+    input_html: { value: @message.start_date.strftime("%m/%d/%Y %-l:%M %p") || Time.zone.now.strftime("%m/%d/%Y %H:%M") }
+  = f.input :end_date, as: :datetime_picker
+  = f.input :controller, collection: Message::CONTROLLER_OPTIONS, include_blank: false,
+    hint: "Specify which module of the consumer app the message should display in."
+  = f.input :action, collection: Message::ACTION_OPTIONS, include_blank: true,
+    hint: "Specify which action it should display on. 'Edit' only corresponds to user accounts at this point. Leaving this blank will make the message show on all pages belonging to that module -- e.g. the events calendar AND event detail pages."
+  = f.input :content, input_html: { class: "input-block-level", rows: 5 },
+    hint: "The actual message to display to users. This can include HTML."
+  .form-actions
+    = submit_tag nil, class: "btn btn-primary"

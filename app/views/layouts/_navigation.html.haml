@@ -114,6 +114,21 @@
       = link_to new_data_context_path do
         %i.icon-plus
         %span Create New
+%li
+  = link_to "#" do
+    %i.icon-envelope
+    %span Messages
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "messages" ? "in" : "" }" }
+    %li{ class: current_page?(messages_path) ? "active" : "" }
+      = link_to messages_path do
+        %i.icon-tasks
+        %span Search
+    %li{ class: current_page?(new_message_path) ? "active" : "" }
+      = link_to new_message_path do
+        %i.icon-plus
+        %span Create New
+
 %li 
   = link_to "#" do
     %i.icon-usd
