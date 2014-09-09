@@ -17,6 +17,7 @@ Knotweed::Application.routes.draw do
   resources :parsers
   resources :messages
   resources :publish_jobs
+  resources :wufoo_forms
   resources :images
   resources :publications, except: [:show] do
     resources :promotions, shallow: true
@@ -74,6 +75,7 @@ Knotweed::Application.routes.draw do
     resources 'publications', only: [:show]
     resources :events, only: [:show, :index], controller: "contents"
     resources :messages, only: [:index]
+    resources :wufoo_forms, only: [:show, :index]
   end
 
 end

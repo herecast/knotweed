@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140908205621) do
+ActiveRecord::Schema.define(:version => 20140909000524) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -481,5 +481,19 @@ ActiveRecord::Schema.define(:version => 20140908205621) do
   end
 
   add_index "users_roles", ["user_id", "role_id"], :name => "index_users_roles_on_user_id_and_role_id"
+
+  create_table "wufoo_forms", :force => true do |t|
+    t.string   "form_hash"
+    t.string   "email_field"
+    t.string   "name"
+    t.text     "call_to_action"
+    t.string   "controller"
+    t.string   "action"
+    t.boolean  "active",         :default => true
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
+  end
+
+  add_index "wufoo_forms", ["controller", "action", "active"], :name => "index_wufoo_forms_on_controller_and_action_and_active", :unique => true
 
 end

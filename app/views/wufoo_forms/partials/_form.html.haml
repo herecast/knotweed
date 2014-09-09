@@ -1,0 +1,12 @@
+= simple_form_for @wufoo_form, html: { data: { id: @wufoo_form.id }, class: "form form-horizontal" } do |f|
+  = f.error_notification
+  = f.input :name
+  = f.input :active
+  = f.input :form_hash
+  = f.input :email_field, input_html: { type: :text }
+  = f.input :controller, collection: Message::CONTROLLER_OPTIONS + ["application"], include_blank: false
+  = f.input :action, collection: Message::ACTION_OPTIONS, include_blank: true
+  = f.input :call_to_action, input_html: { class: "input-block-level", rows: 5 },
+    hint: "The text that displays in the alert notifying the user about the form. This text is automatically linked to the form."
+  .form-actions
+    = submit_tag nil, class: "btn btn-primary"

@@ -115,7 +115,7 @@
         %i.icon-plus
         %span Create New
 %li
-  = link_to "#" do
+  = link_to messages_path do
     %i.icon-envelope
     %span Messages
     %i.icon-angle-down.angle-down
@@ -126,6 +126,20 @@
         %span Search
     %li{ class: current_page?(new_message_path) ? "active" : "" }
       = link_to new_message_path do
+        %i.icon-plus
+        %span Create New
+%li
+  = link_to wufoo_forms_path do
+    %i.icon-comment
+    %span Wufoo Forms
+    %i.icon-angle-down.angle-down
+  %ul{ class: "nav nav-stacked #{controller_name == "wufoo_forms" ? "in" : "" }" }
+    %li{ class: current_page?(wufoo_forms_path) ? "active" : "" }
+      = link_to wufoo_forms_path do
+        %i.icon-tasks
+        %span Search
+    %li{ class: current_page?(new_wufoo_form_path) ? "active" : "" }
+      = link_to new_wufoo_form_path do
         %i.icon-plus
         %span Create New
 
