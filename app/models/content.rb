@@ -112,7 +112,7 @@ class Content < ActiveRecord::Base
   EXPORT_POST_PIPELINE = "export_post_pipeline_xml"
   PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE, EXPORT_POST_PIPELINE]
 
-  CATEGORIES = %w(business campaign discussion event for_free lifestyle 
+  CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle 
                   local_news nation_world offered presentation recommendation
                   sale_event sports wanted)
 
