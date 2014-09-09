@@ -1,7 +1,7 @@
 = simple_form_for @message, html: { data: { id: @message.id }, class: "form form-horizontal" } do |f|
   = f.error_notification
   = f.input :start_date, as: :datetime_picker, 
-    input_html: { value: @message.start_date.strftime("%m/%d/%Y %-l:%M %p") || Time.zone.now.strftime("%m/%d/%Y %H:%M") }
+    input_html: { value: @message.start_date.try(:strftime, "%m/%d/%Y %-l:%M %p") || Time.zone.now.strftime("%m/%d/%Y %H:%M") }
   = f.input :end_date, as: :datetime_picker
   = f.input :controller, collection: Message::CONTROLLER_OPTIONS, include_blank: false,
     hint: "Specify which module of the consumer app the message should display in."
