@@ -232,9 +232,6 @@ ActiveRecord::Schema.define(:version => 20140909000524) do
     t.integer  "publication_id"
   end
 
-  create_table "contents_id", :force => true do |t|
-  end
-
   create_table "contents_publish_records", :id => false, :force => true do |t|
     t.integer "content_id"
     t.integer "publish_record_id"
@@ -246,14 +243,6 @@ ActiveRecord::Schema.define(:version => 20140909000524) do
   end
 
   add_index "contents_repositories", ["content_id", "repository_id"], :name => "index_contents_repositories_on_content_id_and_repository_id"
-
-  create_table "contents_repositories_tmp", :id => false, :force => true do |t|
-    t.string  "content_uri",   :limit => 100
-    t.integer "content_id",                   :null => false
-    t.integer "repository_id",                :null => false
-  end
-
-  add_index "contents_repositories_tmp", ["content_id", "repository_id"], :name => "index_contents_repositories_on_content_id_and_repository_id"
 
   create_table "countries", :force => true do |t|
     t.string  "country_name"
