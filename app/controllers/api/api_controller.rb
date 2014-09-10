@@ -18,7 +18,7 @@ class Api::ApiController < ActionController::Base
   # only works on objects that have a habtm relationship with consumer apps
   # (e.g. wufooforms and messages)
   def filter_active_record_relation_for_consumer_app(relation)
-    if @requesting_app.present?
+    if @requesting_app.present? and relation.present?
       relation.select { |r| r.consumer_app_ids.include? @requesting_app.id }
     else
       relation
