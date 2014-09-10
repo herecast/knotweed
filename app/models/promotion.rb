@@ -56,7 +56,10 @@ class Promotion < ActiveRecord::Base
     end
   end
 
-  private
+  # NOTE: NG made this a public method so that it could be calld directly
+  # on contents#post_to_ontotext, as we don't want the publish method to 
+  # update every single repo a doc is published to -- just the one we're
+  # actively publishing to
   def mark_active_promotion(repo)
     query = File.read('./lib/queries/add_active_promo.rq') % {content_id: content.id}
     sparql = ::SPARQL::Client.new repo.sesame_endpoint

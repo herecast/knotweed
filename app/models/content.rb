@@ -350,6 +350,12 @@ class Content < ActiveRecord::Base
     response = OntotextController.post(repo.dsp_endpoint + '/processDocument?persist=true', options)
     if response.body.include? document_uri
       repo.contents << self unless repo.contents.include? self
+      # trigger updating hasActivePromotion if publish succeeded
+      if has_active_promotion?
+        # we only need this run on one promotion, not all of them
+        promotions.where(active: true).first.mark_active_promotion(repo)
+      end
+
       # trigger feedback update from pipeline (updating DB with pipeline-processed fields)
       update_from_repo(repo)
       return true
