@@ -1,0 +1,13 @@
+%table.table.table-striped.table-bordered.data-table.table-condensed
+  %thead
+    %tr
+      %th Name
+      %th URI
+      %th
+  %tbody
+    - @consumer_apps.each do |app|
+      %tr{ class: "consumer-app-#{app.id}" }
+        %td= app.name
+        %td= app.uri
+        %td.actions
+          = link_to "edit", edit_consumer_app_path(app), class: "btn btn-mini btn-warning"

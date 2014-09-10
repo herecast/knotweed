@@ -1,6 +1,7 @@
 = simple_form_for @wufoo_form, html: { data: { id: @wufoo_form.id }, class: "form form-horizontal" } do |f|
   = f.error_notification
   = f.input :name
+  = f.association :consumer_apps, input_html: { class: "chosen-select" }
   = f.input :active
   = f.input :form_hash
   = f.input :email_field, input_html: { type: :text }

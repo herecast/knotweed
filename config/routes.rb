@@ -15,9 +15,10 @@ Knotweed::Application.routes.draw do
   get "publications/business_location_options", to: "publications#business_location_options", as: :business_location_options
   resources :import_jobs
   resources :parsers
-  resources :messages
+  resources :messages, except: [:show]
   resources :publish_jobs
-  resources :wufoo_forms
+  resources :wufoo_forms, except: [:show]
+  resources :consumer_apps, except: [:show]
   resources :images
   resources :publications, except: [:show] do
     resources :promotions, shallow: true

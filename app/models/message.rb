@@ -1,6 +1,7 @@
 class Message < ActiveRecord::Base
   belongs_to :created_by, class_name: "User"
-  attr_accessible :action, :content, :controller, :created_by, :end_date, :start_date
+  has_and_belongs_to_many :consumer_apps
+  attr_accessible :action, :content, :controller, :created_by, :end_date, :start_date, :consumer_app_ids
 
   scope :active, lambda { where("start_date < ? AND (end_date > ? or end_date IS NULL)", Time.zone.now, Time.zone.now) }
   

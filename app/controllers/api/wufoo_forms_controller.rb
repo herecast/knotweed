@@ -1,6 +1,6 @@
 class Api::WufooFormsController < Api::ApiController
   def index
-    @wufoo_forms = WufooForm.active
+    @wufoo_forms = filter_active_record_relation_for_consumer_app(WufooForm.active)
 
     if params[:wufoo_forms].present?
       @wufoo_forms = @wufoo_forms.where(controller: params[:wufoo_forms][:controller]) if params[:wufoo_forms][:controller].present?
