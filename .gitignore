@@ -29,10 +29,12 @@ db/*.sqlite3
 .sass-cache
 /config/config.yml
 /config/database.yml
+/config/*.sphinx.conf
 /coverage.data
 /coverage/
 /db/*.javadb/
 /db/*.sqlite3
+/db/sphinx
 /doc/api/
 /doc/app/
 /doc/features.html

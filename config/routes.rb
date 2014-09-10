@@ -71,6 +71,7 @@ Knotweed::Application.routes.draw do
     post 'contents/create_and_publish', to: 'contents#create_and_publish', as: :create_and_publish_content
     get 'contents/:id/get_tree', to: 'contents#get_tree', as: :get_tree
     get 'contents/:id/related_promotion', to: 'contents#banner', as: :related_promotion
+    post 'contents/search', to: 'contents#search', as: :contents_search
     post 'category_corrections', to: 'category_corrections#create'
     resources 'publications', only: [:show]
     resources :events, only: [:show, :index], controller: "contents"

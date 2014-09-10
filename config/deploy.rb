@@ -6,11 +6,12 @@ set :application, 'knotweed'
 set :repo_url, 'git@github.com:subtextmedia/knotweed.git'
 
 # Default branch is :master
-# ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
+ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 
 set :rvm_ruby_version, '1.9.3-p545@knotweed'
 
 set :delayed_job_args, "-n 4"
+set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
 
 # for parsers submodule
 set :git_strategy, SubmoduleStrategy
@@ -27,16 +28,20 @@ set :git_strategy, SubmoduleStrategy
 # set :pty, true
 
 # Default value for :linked_files is []
-set :linked_files, %w{config/database.yml config/application.yml}
+set :linked_files, %w{config/database.yml config/application.yml config/production.sphinx.conf config/thinking_sphinx.yml}
 
 # Default value for linked_dirs is []
-set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/exports}
+set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/exports binlog db/sphinx}
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
 # Default value for keep_releases is 5
 set :keep_releases, 3
+
+# Hack for a bug in Thinking Sphinx, will be fixed with next release
+# (https://github.com/pat/thinking-sphinx/issues/787)
+set :thinking_sphinx_rails_env, fetch(:rails_env, 'production')
 
 namespace :deploy do
 
@@ -50,6 +55,8 @@ namespace :deploy do
   end
 
   after :publishing, :restart
+
+  after :publishing, 'thinking_sphinx:rebuild'
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
