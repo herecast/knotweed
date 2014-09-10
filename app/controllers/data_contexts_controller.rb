@@ -28,7 +28,7 @@ class DataContextsController < ApplicationController
         session[:data_contexts_search][:archived_eq] = true
       end
     end
-    @search = DataContext.search(session[:data_contexts_search])
+    @search = DataContext.ransack(session[:data_contexts_search])
     if session[:data_contexts_search].present?
       @data_contexts = @search.result(distinct:true)
     else

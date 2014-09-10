@@ -8,7 +8,7 @@ class PublicationsController < ApplicationController
     elsif params[:q].present?
       session[:publications_search] = params[:q]
     end
-    @search = Publication.search(session[:publications_search])
+    @search = Publication.ransack(session[:publications_search])
     if session[:publications_search].present?
       @publications = @search.result(distinct: true)
     else

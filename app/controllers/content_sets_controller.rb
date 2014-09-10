@@ -8,7 +8,7 @@ class ContentSetsController < ApplicationController
     elsif params[:q].present?
       session[:content_sets_search] = params[:q]
     end
-    @search = ContentSet.search(session[:content_sets_search])
+    @search = ContentSet.ransack(session[:content_sets_search])
     if session[:content_sets_search].present?
       @content_sets = @search.result(distinct: true)
     else

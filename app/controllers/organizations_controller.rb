@@ -8,7 +8,7 @@ class OrganizationsController < ApplicationController
     elsif params[:q].present?
       session[:organizations_search] = params[:q]
     end
-    @search = Organization.search(session[:organizations_search])
+    @search = Organization.ransack(session[:organizations_search])
     if session[:organizations_search].present?
       @organizations = @search.result(distinct: true)
     else

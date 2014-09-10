@@ -142,7 +142,7 @@ class ContentsController < ApplicationController
     else
       params[:q][:title_cont] = params.delete :search_query
     end
-    conts = Content.search(params[:q]).result(distinct: true).order("pubdate DESC")
+    conts = Content.ransack(params[:q]).result(distinct: true).order("pubdate DESC")
     if params[:content_id].present?
       @orig_content = Content.find(params[:content_id])
       conts = conts - [@orig_content]
