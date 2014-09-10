@@ -1,5 +1,6 @@
 = simple_form_for @message, html: { data: { id: @message.id }, class: "form form-horizontal" } do |f|
   = f.error_notification
+  = f.association :consumer_apps, input_html: { class: "chosen-select"}
   = f.input :start_date, as: :datetime_picker, 
     input_html: { value: @message.start_date.try(:strftime, "%m/%d/%Y %-l:%M %p") || Time.zone.now.strftime("%m/%d/%Y %H:%M") }
   = f.input :end_date, as: :datetime_picker

@@ -1,0 +1,8 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-pencil
+        Consumer App ID #{@consumer_app.id}
+    .box-content
+      = render partial: "consumer_apps/partials/form"

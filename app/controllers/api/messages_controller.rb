@@ -1,6 +1,6 @@
 class Api::MessagesController < Api::ApiController
   def index
-    @messages = Message.active
+    @messages = filter_active_record_relation_for_consumer_app(Message.active)
     
     if params[:messages].present?
       @messages = @messages.where(controller: params[:messages][:controller]) if params[:messages][:controller].present?

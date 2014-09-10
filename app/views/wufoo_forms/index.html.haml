@@ -3,6 +3,7 @@
     %tr
       %th Active?
       %th Name
+      %th Consumer Apps
       %th Controller
       %th Action
       %th
@@ -15,6 +16,7 @@
           - else
             %i.icon-remove
         %td= link_to wufoo_form.name, edit_wufoo_form_path(wufoo_form)
+        %td= wufoo_form.consumer_apps.map{ |ca| ca.name }.join(", ")
         %td= wufoo_form.controller
         %td= wufoo_form.action
         %td.actions

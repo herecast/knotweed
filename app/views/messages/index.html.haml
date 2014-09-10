@@ -2,6 +2,7 @@
   %thead
     %tr
       %th Active?
+      %th Consumer Apps
       %th Controller
       %th Action
       %th Content
@@ -16,6 +17,7 @@
             %i.icon-ok
           - else
             %i.icon-remove
+        %td= message.consumer_apps.map{ |ca| ca.name }.join(", ")
         %td= message.controller
         %td= message.action
         %td= truncate(strip_tags(message.content), length: 50)
