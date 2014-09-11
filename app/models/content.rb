@@ -144,6 +144,20 @@ class Content < ActiveRecord::Base
     "<http://www.subtext.org/#{source.class.to_s}/#{source.id}>"
   end
 
+  def parent_uri
+    "#{BASE_URI}/#{parent_id}" unless parent_id.nil?
+  end
+
+  def source_name
+    source.name
+  end
+
+  def location
+    unless import_location.nil?
+      import_location.city if import_location.status == ImportLocation::STATUS_GOOD
+    end
+  end
+
   def category
     return content_category.name unless content_category.nil?
   end
