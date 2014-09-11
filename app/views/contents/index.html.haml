@@ -48,7 +48,7 @@
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
-%table.table.table-striped.table-hover.table-condensed
+%table.table.table-striped.table-hover.table-condensed#contents_index
   %thead
     %tr
       %th Category
@@ -57,13 +57,14 @@
       %th Authors
       %th Location
       %th Pubdate
-      %th Startdate
+      %th Start date
+      %th
   .span5
     = page_entries_info @contents if @contents.present?
     = paginate @contents, window: 2 if @contents.present?
   %tbody
     - @contents.each do |c|
-      %tr
+      %tr{ class: "content-#{c.id}" }
         %td= c.category.try(:titlecase)
         %td
           - if c.source.present?
@@ -77,3 +78,6 @@
             = link_to c.import_location.city, contents_path(q: { import_location_id_in: c.import_location.id })
         %td= c.pubdate.try(:strftime, "%Y-%m-%d")
         %td= c.start_date.try(:strftime, "%Y-%m-%d")
+        %td.actions
+          = link_to "edit", edit_content_path(c), class: "btn btn-mini btn-warning"
+          = link_to "delete", content_path(c), method: :delete, remote: true, confirm: "Are you sure?", class: "btn btn-mini btn-danger"

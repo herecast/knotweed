@@ -101,6 +101,13 @@ class ContentsController < ApplicationController
     redirect_to edit_content_path(params[:id])
   end
 
+  def destroy
+    @content = Content.destroy(params[:id])
+    respond_to do |format|
+      format.js
+    end
+  end
+
   def publish
     @content = Content.find(params[:id])
     opts = {}
