@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140910173720) do
+ActiveRecord::Schema.define(:version => 20140911172614) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -414,6 +414,8 @@ ActiveRecord::Schema.define(:version => 20140910173720) do
     t.text     "header"
     t.string   "pub_type"
   end
+
+  add_index "publications", ["name"], :name => "index_publications_on_name", :unique => true
 
   create_table "publish_jobs", :force => true do |t|
     t.text     "query_params"

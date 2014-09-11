@@ -26,7 +26,7 @@
 
 FactoryGirl.define do
   factory :publication do
-    name "My Publication"
+    sequence(:name) {|n| "My Publication #{n}" }
     organization
   end
 end

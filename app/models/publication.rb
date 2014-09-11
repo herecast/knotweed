@@ -65,7 +65,10 @@ class Publication < ActiveRecord::Base
   default_scope alphabetical
 
   PUB_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher"]
-  validates :pub_type, inclusion: { in: PUB_TYPE_OPTIONS }, allow_blank: true
+  validates :pub_type, inclusion: { in: PUB_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
+
+  validates_uniqueness_of :name
+  validates_presence_of :name
 
   def publishing_frequency_enum
     FREQUENCY_OPTIONS
