@@ -58,9 +58,15 @@ class Api::ContentsController < Api::ApiController
 
   # for now, this doesn't need to handle images
   def create_and_publish
-    # find source_id from source name
+    # hack to identify beta_talk category contents
+    # and automatically set the publication
+    category = params[:content][:category]
     source = params[:content].delete :source
-    pub = Publication.find_by_name(source)
+    if category == "beta_talk"
+      pub = Publication.find_or_create_by_name "Beta Talk"
+    else
+      pub = Publication.find_by_name(source)
+    end
     repo = Repository.find_by_dsp_endpoint(params[:repository])
 
     @content = Content.new(params[:content])
