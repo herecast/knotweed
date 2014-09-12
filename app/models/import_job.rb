@@ -122,8 +122,8 @@ class ImportJob < ActiveRecord::Base
 
   # enqueues the job object
   # note can use option run_at: time to schedule in the future
-  def enqueue_job
-    Delayed::Job.enqueue self, queue: QUEUE, run_at: run_at
+  def enqueue_job(specific_time=nil)
+    Delayed::Job.enqueue self, queue: QUEUE, run_at: (specific_time || run_at)
   end
   
   def traverse_input_tree
@@ -138,7 +138,7 @@ class ImportJob < ActiveRecord::Base
       # this is where we loop continuous jobs
       # continuous jobs are automatically set to have stop_loop set to false
       # other jobs have stop_loop set to true (by an after_create callback).
-      while true
+      while (! self.stop_loop)
         log.info("Running parser at #{Time.now}")
         data = run_parser(source_path) || nil
         if data.present?
@@ -147,9 +147,16 @@ class ImportJob < ActiveRecord::Base
           # sleep for a bit if there is no new contents to import and we're supposed to keep looping
           sleep(60.0) unless self.stop_loop
         end
-        # reload to double check for stop_loop
-        self.reload
-        break if self.stop_loop
+        # hacky trick to stop continuous jobs during backup time
+        if Time.now > Chronic.parse("6:45 am") and Time.now < Chronic.parse("7:45 am")
+          # then update stop_loop attribute to break out of the cycle
+          update_attribute :stop_loop, true
+          # first, schedule the job to run again at 7:45 am.
+          enqueue_job(Chronic.parse("8:00 am"))
+        else
+          # reload to double check for stop_loop
+          self.reload
+        end
       end
       # if it was a continuous job that was manually stopped using the stop_loop flag
       # we need to reset the flag to false
