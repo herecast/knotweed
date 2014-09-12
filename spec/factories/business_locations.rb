@@ -11,6 +11,8 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  publication_id :integer
+#  latitude       :float
+#  longitude      :float
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

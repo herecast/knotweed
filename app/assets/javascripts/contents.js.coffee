@@ -1,6 +1,6 @@
 jQuery ->
   $('#event_tab_link, #contents_tab_link').on 'click', ->
-    $("#content_category").trigger('change')
+    $("#content_content_category").trigger('change')
 
   $("#add_new_publication").on 'click', ->
     console.log 'hello'
@@ -20,7 +20,7 @@ jQuery ->
     updateBusinessLocationOptions()
     updateHostOrganization()
 
-  $(document).on 'change', '#content_category', ->
+  $(document).on 'change', '#content_content_category', ->
     if $(this).val() == "event" or $(this).val() == "sale_event"
       $("#add_new_publication").show()
       $("#event_tab_link").removeClass("hidden")
@@ -39,7 +39,7 @@ jQuery ->
       contentEditor[0].remove() if contentEditor.length > 1
       $("#doc_content .content_content textarea").attr("name", "content[content]")
       $("#event_features .content_content textarea").attr("name", "content[content1]")
-  $("#content_category").trigger('change')
+  $("#content_content_category").trigger('change')
 
   # parent content search box
   $("#parent_search").on 'change', ->

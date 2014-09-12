@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: messages
+#
+#  id            :integer          not null, primary key
+#  created_by_id :integer
+#  controller    :string(255)
+#  action        :string(255)
+#  start_date    :datetime
+#  end_date      :datetime
+#  content       :text
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#
+
 require 'spec_helper'
 
 describe Message do

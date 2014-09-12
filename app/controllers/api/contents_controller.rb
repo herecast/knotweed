@@ -69,8 +69,12 @@ class Api::ContentsController < Api::ApiController
     end
     repo = Repository.find_by_dsp_endpoint(params[:repository])
 
+    cat_name = params[:content].delete :category
+    cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
+
     @content = Content.new(params[:content])
     @content.source = pub
+    @content.content_category = cat unless cat.nil?
     @content.pubdate = @content.timestamp = Time.zone.now
     if @content.save
       if @content.publish(Content::POST_TO_ONTOTEXT, repo)
@@ -125,20 +129,17 @@ class Api::ContentsController < Api::ApiController
     opts[:per_page] = params[:limit] if params[:limit].present?
 
     if params[:repository].present?
-      opts[:with] ||= {}
       repo = Repository.find_by_dsp_endpoint(params[:repository])
+      return if repo.nil?
       opts[:with].merge!({repo_ids: repo.id})
     end
     if params[:publications].present?
-      opts[:with] ||= {}
-      allowed_pubs = []
-      params[:publications].each do |pub|
-        p = Publication.find_by_name pub
-        unless p.nil?
-          allowed_pubs << p.id 
-        end
-      end
+      allowed_pubs = Publication.where(name: params[:publications]).collect{|p| p.id}
       opts[:with].merge!({:pub_id => allowed_pubs})
+    end
+    if params[:categories].present?
+      allowed_cats = ContentCategory.where(name: params[:categories]).collect{|c| c.id}
+      opts[:with].merge!({:cat_ids => allowed_cats})
     end
 
     @contents = Content.search query, opts
