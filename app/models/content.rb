@@ -186,8 +186,14 @@ class Content < ActiveRecord::Base
     if special_attrs.has_key? "source"
       source = special_attrs["source"]
       if organization
-        content.source = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).where("name LIKE ?", "%#{source}%").first
-        content.source = Publication.create(name: source, organization_id: organization.id) if content.source.nil?
+        # try to match content name exactly
+        pub = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).find_by_name(source)
+        # if that doesn't work, try a "LIKE" query
+        pub = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).where("name LIKE ?", "%#{source}%").first if pub.nil?
+        # if that still doesn't work, create a new publication
+        pub = Publication.create(name: source, organization_id: organization.id) if pub.nil?
+
+        content.source = pub
       else
         content.source = Publication.where("name LIKE ?", "%#{source}%").first
         content.source = Publication.create(name: source) if content.source.nil?

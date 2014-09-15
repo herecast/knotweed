@@ -21,7 +21,7 @@ require 'spec_helper'
 
 describe ImportLocation do
   
-  describe "find or create from match string should operate according to spec" do
+  describe "find or create from match string" do
 
     it "should create a new location record with status pending" do
       query = "blarghus"
