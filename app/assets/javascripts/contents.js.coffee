@@ -40,7 +40,7 @@ jQuery ->
       contentEditor[0].remove() if contentEditor.length > 1
       $("#doc_content .content_content textarea").attr("name", "content[content]")
       $("#event_features .content_content textarea").attr("name", "content[content1]")
-  $("#content_content_category").trigger('change')
+  $("#content_content_category_id").trigger('change')
 
   # parent content search box
   $("#parent_search").on 'change', ->
