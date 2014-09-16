@@ -141,7 +141,7 @@ class ImportJob < ActiveRecord::Base
       # this is where we loop continuous jobs
       # continuous jobs are automatically set to have stop_loop set to false
       # other jobs have stop_loop set to true (by an after_create callback).
-      while (! self.stop_loop)
+      while true
         log.info("Running parser at #{Time.now}")
         data = run_parser(source_path) || nil
         if data.present?
@@ -156,10 +156,9 @@ class ImportJob < ActiveRecord::Base
           update_attribute :stop_loop, true
           # first, schedule the job to run again at 7:45 am.
           enqueue_job(Chronic.parse("8:00 am"))
-        else
-          # reload to double check for stop_loop
-          self.reload
         end
+        self.reload
+        break if self.stop_loop
       end
       # if it was a continuous job that was manually stopped using the stop_loop flag
       # we need to reset the flag to false
