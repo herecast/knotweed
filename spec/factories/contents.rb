@@ -34,7 +34,6 @@
 #  source_content_id    :string(255)
 #  image                :string(400)
 #  parent_id            :integer
-#  category             :string(255)
 #  event_type           :string(255)
 #  start_date           :datetime
 #  end_date             :datetime
@@ -44,6 +43,7 @@
 #  host_organization    :string(255)
 #  business_location_id :integer
 #  featured             :boolean          default(FALSE)
+#  content_category_id  :integer
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
@@ -61,7 +61,7 @@ FactoryGirl.define do
     source_category "Category"
     
     factory :event do
-      category "event"
+      content "event" 
       start_date 1.day.from_now
     end
   end

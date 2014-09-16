@@ -82,7 +82,7 @@ class Publication < ActiveRecord::Base
   # returns the latest content owned by this publication that has category "presentation"
   # purpose: on consumer app, publication#show uses this content
   def latest_presentation
-    contents.where(category: "presentation").order("pubdate DESC").first
+    contents.joins(:content_category).where(content_categories: { name: "presentation"}).order("pubdate DESC").first
   end
 
   def business_location_options

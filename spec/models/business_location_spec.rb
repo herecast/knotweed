@@ -11,6 +11,8 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  publication_id :integer
+#  latitude       :float
+#  longitude      :float
 #
 
 require 'spec_helper'

@@ -1,6 +1,12 @@
+attrs = [:id, :title, :start_date, :end_date, :event_type, :host_organization, :cost, :recurrence,
+         :featured, :links, :pubdate, :authors, :image, :category, :source_name, :location, 
+         :parent_uri]
+
+json.page @page unless @page.nil?
+json.total_pages @pages unless @pages.nil?
 json.contents @contents do |c|
-  json.id c.id
   json.content fix_ts_excerpt(c.excerpts.content)
   json.title fix_ts_excerpt(c.excerpts.title)
   json.score c.weight
+  attrs.each{|attr| json.set! attr, c.send(attr) }
 end

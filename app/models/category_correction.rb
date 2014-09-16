@@ -25,7 +25,8 @@ class CategoryCorrection < ActiveRecord::Base
 
   def update_content
     update_attributes( content_body: content.content, title: content.title )
-    content.update_attribute :category, new_category
+    category = ContentCategory.find_or_create_by_name new_category
+    content.update_attribute :content_category, category
     # update for all repos
     content.repositories.each do |r|
       content.publish(Content::POST_TO_ONTOTEXT, r)

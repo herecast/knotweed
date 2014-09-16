@@ -18,7 +18,7 @@ class Api::ContentsController < Api::ApiController
         @contents = @contents.order("start_date #{sort_order}")
       end
       
-    if params[:start_date].present?
+      if params[:start_date].present?
         start_date = Chronic.parse(params[:start_date])
         @contents = @contents.where('start_date >= ?', start_date)
       end
@@ -39,16 +39,33 @@ class Api::ContentsController < Api::ApiController
         @featured_contents = @featured_contents.limit(5)
         @featured_contents = @featured_contents.where('featured = true')
       end
+
+      @contents = (@contents + @featured_contents).sort{|a, b| a.start_date <=> b.start_date } unless @featured_contents.nil?
+    else
+      @contents = Content.order('created_at DESC')
+      if params[:publications].present?
+        allowed_pubs = Publication.where(name: params[:publications])
+        @contents = @contents.where(source_id: allowed_pubs)
+      end
+      if params[:categories].present?
+        allowed_cats = ContentCategory.where(name: params[:categories])
+        @contents = @contents.where(content_category_id: allowed_cats)
+      end
+      if params[:start_date].present?
+        start_date = Chronic.parse(params[:start_date])
+        @contents = @contents.where("created_at >= :start_date", { start_date: start_date}) unless start_date.nil?
+      end
+      params[:page] ||= 1
+      params[:per_page] ||= 30
+      @contents = @contents.order('created_at DESC').page(params[:page].to_i).per(params[:per_page].to_i)
+      @page = params[:page]
+      @pages = @contents.total_pages unless @contents.empty?
     end
 
     if params[:repository].present? and @contents.present?
       repo = Repository.find_by_dsp_endpoint(params[:repository])
       @contents = @contents.select { |c| c.repositories.include? repo }
     end
-
-    @contents = (@contents + @featured_contents).sort{|a, b| a.start_date <=> b.start_date } unless @featured_contents.nil?
-
-    render json: @contents || nil
   end
 
   def show
@@ -69,8 +86,12 @@ class Api::ContentsController < Api::ApiController
     end
     repo = Repository.find_by_dsp_endpoint(params[:repository])
 
+    cat_name = params[:content].delete :category
+    cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
+
     @content = Content.new(params[:content])
     @content.source = pub
+    @content.content_category = cat unless cat.nil?
     @content.pubdate = @content.timestamp = Time.zone.now
     if @content.save
       if @content.publish(Content::POST_TO_ONTOTEXT, repo)
@@ -120,30 +141,35 @@ class Api::ContentsController < Api::ApiController
   def search
     query = Riddle::Query.escape(params[:query])
 
+    params[:page] ||= 1
+    params[:per_page] ||= 30
+
     opts = { select: '*, weight()', excerpts: { limit: 350, around: 5, html_strip_mode: "strip" } }
     opts[:order] = 'timestamp DESC' if params[:order] == 'pubdate'
-    opts[:per_page] = params[:limit] if params[:limit].present?
+    opts[:per_page] = params[:per_page]
+    opts[:page] = params[:page]
+
+    opts[:with] = {}
 
     if params[:repository].present?
-      opts[:with] ||= {}
       repo = Repository.find_by_dsp_endpoint(params[:repository])
+      return if repo.nil?
       opts[:with].merge!({repo_ids: repo.id})
     end
     if params[:publications].present?
-      opts[:with] ||= {}
-      allowed_pubs = []
-      params[:publications].each do |pub|
-        p = Publication.find_by_name pub
-        unless p.nil?
-          allowed_pubs << p.id 
-        end
-      end
+      allowed_pubs = Publication.where(name: params[:publications]).collect{|p| p.id}
       opts[:with].merge!({:pub_id => allowed_pubs})
+    end
+    if params[:categories].present?
+      allowed_cats = ContentCategory.where(name: params[:categories]).collect{|c| c.id}
+      opts[:with].merge!({:cat_ids => allowed_cats})
     end
 
     @contents = Content.search query, opts
     @contents.context[:panes] << ThinkingSphinx::Panes::WeightPane
     @contents.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
+    @page = @contents.current_page 
+    @pages = @contents.total_pages
   end
 
   private

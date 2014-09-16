@@ -34,7 +34,6 @@
 #  source_content_id    :string(255)
 #  image                :string(400)
 #  parent_id            :integer
-#  category             :string(255)
 #  event_type           :string(255)
 #  start_date           :datetime
 #  end_date             :datetime
@@ -44,6 +43,7 @@
 #  host_organization    :string(255)
 #  business_location_id :integer
 #  featured             :boolean          default(FALSE)
+#  content_category_id  :integer
 #
 
 require 'fileutils'
@@ -76,6 +76,8 @@ class Content < ActiveRecord::Base
 
   has_many :promotions
 
+  belongs_to :content_category
+
   attr_accessible :title, :subtitle, :authors, :content, :issue_id, :import_location_id, :copyright,
                   :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
                   :language, :page, :wordcount, :authoremail, :source_id, :file,
@@ -91,6 +93,14 @@ class Content < ActiveRecord::Base
   before_save :set_guid
 
   scope :events, -> { where("category = ? or category = ?", "event", "sale_event") }
+
+  def initialize args = {}
+    if not args.nil? and args[:category].present? 
+      cat = ContentCategory.find_or_create_by_name(args.delete :category) 
+      send("content_category=", cat)
+    end
+    super
+  end
 
   NEW_FORMAT = "New"
   EXPORT_FORMATS = [NEW_FORMAT]
@@ -132,6 +142,29 @@ class Content < ActiveRecord::Base
 
   def source_uri
     "<http://www.subtext.org/#{source.class.to_s}/#{source.id}>"
+  end
+
+  def parent_uri
+    "#{BASE_URI}/#{parent_id}" unless parent_id.nil?
+  end
+
+  def source_name
+    source.name
+  end
+
+  def location
+    unless import_location.nil?
+      import_location.city if import_location.status == ImportLocation::STATUS_GOOD
+    end
+  end
+
+  def category
+    return content_category.name unless content_category.nil?
+  end
+
+  def category= new_cat
+    cat = ContentCategory.find_or_create_by_name new_cat unless new_cat.nil?
+    self.content_category = cat 
   end
   
   # creating a new content from import job data
@@ -236,7 +269,7 @@ class Content < ActiveRecord::Base
     end
     if existing_content.present?
       # check for category field being populated (either manually or via category corrections)
-      content.category = existing_content.category
+      content.content_category = existing_content.content_category
       content.id = existing_content.id
       existing_content.destroy
     end
@@ -645,7 +678,8 @@ class Content < ActiveRecord::Base
     # not necessary for now.
     begin
       cat = response_hash[:category].to_s.split("/")[-1]
-      update_attribute :category, cat if cat.present?
+      cat = ContentCategory.find_or_create_by_name(cat) unless cat.nil? 
+      update_attribute :content_category, cat unless cat.nil?
     rescue
     end
 
