@@ -92,7 +92,8 @@ class Content < ActiveRecord::Base
   before_save :mark_quarantined
   before_save :set_guid
 
-  scope :events, -> { where("category = ? or category = ?", "event", "sale_event") }
+  scope :events, -> { joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",
+                                                     "event", "sale_event") }
 
   def initialize args = {}
     if not args.nil? and args[:category].present? 
