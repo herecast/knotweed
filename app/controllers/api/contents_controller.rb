@@ -41,8 +41,12 @@ class Api::ContentsController < Api::ApiController
       end
 
       @contents = (@contents + @featured_contents).sort{|a, b| a.start_date <=> b.start_date } unless @featured_contents.nil?
+      if params[:repository].present? and @contents.present?
+        repo = Repository.find_by_dsp_endpoint(params[:repository])
+        @contents = @contents.select { |c| c.repositories.include? repo }
+      end
     else
-      @contents = Content.order('created_at DESC')
+      @contents = Content.order('pubdate DESC')
       if params[:publications].present?
         allowed_pubs = Publication.where(name: params[:publications])
         @contents = @contents.where(source_id: allowed_pubs)
@@ -53,19 +57,18 @@ class Api::ContentsController < Api::ApiController
       end
       if params[:start_date].present?
         start_date = Chronic.parse(params[:start_date])
-        @contents = @contents.where("created_at >= :start_date", { start_date: start_date}) unless start_date.nil?
+        @contents = @contents.where("pubdate >= :start_date", { start_date: start_date}) unless start_date.nil?
+      end
+      if params[:repository].present?
+        @contents = @contents.includes(:repositories).where(repositories: {dsp_endpoint: params[:repository]})
       end
       params[:page] ||= 1
       params[:per_page] ||= 30
-      @contents = @contents.order('created_at DESC').page(params[:page].to_i).per(params[:per_page].to_i)
+      @contents = @contents.page(params[:page].to_i).per(params[:per_page].to_i)
       @page = params[:page]
       @pages = @contents.total_pages unless @contents.empty?
     end
 
-    if params[:repository].present? and @contents.present?
-      repo = Repository.find_by_dsp_endpoint(params[:repository])
-      @contents = @contents.select { |c| c.repositories.include? repo }
-    end
   end
 
   def show
