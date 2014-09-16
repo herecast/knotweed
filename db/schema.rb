@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140911172614) do
+ActiveRecord::Schema.define(:version => 20140916191042) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -164,6 +164,12 @@ ActiveRecord::Schema.define(:version => 20140911172614) do
     t.datetime "updated_at",     :null => false
   end
 
+  create_table "content_categories", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "content_sets", :force => true do |t|
     t.string   "import_method"
     t.text     "import_method_details"
@@ -191,8 +197,8 @@ ActiveRecord::Schema.define(:version => 20140911172614) do
     t.text     "content"
     t.integer  "issue_id"
     t.integer  "import_location_id"
-    t.datetime "created_at",                                             :null => false
-    t.datetime "updated_at",                                             :null => false
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
     t.string   "copyright"
     t.string   "guid"
     t.datetime "pubdate"
@@ -208,15 +214,13 @@ ActiveRecord::Schema.define(:version => 20140911172614) do
     t.string   "authoremail"
     t.integer  "source_id"
     t.string   "file"
-    t.boolean  "quarantine",                          :default => false
+    t.boolean  "quarantine",           :default => false
     t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
     t.string   "source_content_id"
-    t.string   "image",                :limit => 400
     t.integer  "parent_id"
-    t.string   "category"
     t.string   "event_type"
     t.datetime "start_date"
     t.datetime "end_date"
@@ -225,11 +229,11 @@ ActiveRecord::Schema.define(:version => 20140911172614) do
     t.text     "links"
     t.string   "host_organization"
     t.integer  "business_location_id"
-    t.boolean  "featured",                            :default => false
+    t.boolean  "featured",             :default => false
+    t.integer  "content_category_id"
   end
 
   add_index "contents", ["authors"], :name => "authors"
-  add_index "contents", ["category"], :name => "index_contents_on_category"
   add_index "contents", ["end_date"], :name => "index_contents_on_end_date"
   add_index "contents", ["guid"], :name => "guid"
   add_index "contents", ["import_location_id"], :name => "location_id"
@@ -255,6 +259,30 @@ ActiveRecord::Schema.define(:version => 20140911172614) do
     t.integer  "lupdate_by"
     t.integer  "publication_id"
   end
+
+  create_table "contents_events", :id => false, :force => true do |t|
+    t.integer  "id",                                      :null => false
+    t.string   "title"
+    t.string   "guid"
+    t.datetime "pubdate"
+    t.integer  "source_id"
+    t.string   "event_type"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.string   "cost"
+    t.string   "recurrence"
+    t.text     "links"
+    t.string   "host_organization"
+    t.integer  "business_location_id"
+    t.boolean  "featured",             :default => false
+  end
+
+  add_index "contents_events", ["end_date"], :name => "index_contents_on_end_date"
+  add_index "contents_events", ["guid"], :name => "guid"
+  add_index "contents_events", ["pubdate"], :name => "pubdate"
+  add_index "contents_events", ["source_id"], :name => "source_id"
+  add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
+  add_index "contents_events", ["title"], :name => "title"
 
   create_table "contents_publish_records", :id => false, :force => true do |t|
     t.integer "content_id"
