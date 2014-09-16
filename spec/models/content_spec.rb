@@ -32,7 +32,6 @@
 #  contentsource        :string(255)
 #  import_record_id     :integer
 #  source_content_id    :string(255)
-#  image                :string(400)
 #  parent_id            :integer
 #  event_type           :string(255)
 #  start_date           :datetime

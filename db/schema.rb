@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140916185913) do
+ActiveRecord::Schema.define(:version => 20140916191042) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -197,8 +197,8 @@ ActiveRecord::Schema.define(:version => 20140916185913) do
     t.text     "content"
     t.integer  "issue_id"
     t.integer  "import_location_id"
-    t.datetime "created_at",                                             :null => false
-    t.datetime "updated_at",                                             :null => false
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
     t.string   "copyright"
     t.string   "guid"
     t.datetime "pubdate"
@@ -214,13 +214,12 @@ ActiveRecord::Schema.define(:version => 20140916185913) do
     t.string   "authoremail"
     t.integer  "source_id"
     t.string   "file"
-    t.boolean  "quarantine",                          :default => false
+    t.boolean  "quarantine",           :default => false
     t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
     t.string   "source_content_id"
-    t.string   "image",                :limit => 400
     t.integer  "parent_id"
     t.string   "event_type"
     t.datetime "start_date"
@@ -230,7 +229,7 @@ ActiveRecord::Schema.define(:version => 20140916185913) do
     t.text     "links"
     t.string   "host_organization"
     t.integer  "business_location_id"
-    t.boolean  "featured",                            :default => false
+    t.boolean  "featured",             :default => false
     t.integer  "content_category_id"
   end
 
@@ -246,6 +245,21 @@ ActiveRecord::Schema.define(:version => 20140916185913) do
   add_index "contents", ["source_id"], :name => "source_id"
   add_index "contents", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents", ["title"], :name => "title"
+
+  create_table "contents_NT", :force => true do |t|
+    t.string   "title"
+    t.string   "subtitle"
+    t.string   "authors"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "issue_id"
+    t.integer  "location_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.boolean  "reviewed",       :default => false
+    t.integer  "lupdate_by"
+    t.integer  "publication_id"
+  end
 
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false

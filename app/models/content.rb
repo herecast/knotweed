@@ -32,7 +32,6 @@
 #  contentsource        :string(255)
 #  import_record_id     :integer
 #  source_content_id    :string(255)
-#  image                :string(400)
 #  parent_id            :integer
 #  event_type           :string(255)
 #  start_date           :datetime
@@ -488,7 +487,7 @@ class Content < ActiveRecord::Base
       "categories" => publish_category
     })
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
-               "import_record_id", "published", "image", "links", "start_date", "end_date",
+               "import_record_id", "published", "links", "start_date", "end_date",
                "links", "featured" )
   end
 
