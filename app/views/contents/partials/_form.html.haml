@@ -40,7 +40,7 @@
         -# uneditable features displayed in info box if content exists
         .row-fluid
           .span8
-            = f.association :content_category, collection: ContentCategory::CATEGORIES.map{ |c| [c.titlecase, c] }
+            = f.association :content_category, label_method: :label
             = f.association :source, input_html: { class: "chosen-select span12" }, 
                 label: "Publication", wrapper_html: { class: "span9" }
             .span2
