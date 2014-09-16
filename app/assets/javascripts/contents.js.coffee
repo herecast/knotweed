@@ -20,8 +20,9 @@ jQuery ->
     updateBusinessLocationOptions()
     updateHostOrganization()
 
-  $(document).on 'change', '#content_content_category', ->
-    if $(this).val() == "event" or $(this).val() == "sale_event"
+  $(document).on 'change', '#content_content_category_id', ->
+    name = $(this).find("option:selected").text()
+    if name == "Event" or name == "Sale Event"
       $("#add_new_publication").show()
       $("#event_tab_link").removeClass("hidden")
       $("#contents_tab_link").addClass("hidden")

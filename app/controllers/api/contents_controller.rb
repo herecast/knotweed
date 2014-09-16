@@ -33,18 +33,17 @@ class Api::ContentsController < Api::ApiController
         @contents = @contents.where(event_type: params[:event_type])
       end
 
+      if params[:repository].present? and @contents.present?
+        @contents = @contents.includes(:repositories).where(repositories: {dsp_endpoint: params[:repository]}) 
+      end
+
       if params[:request_featured].present?
         @featured_contents = @contents.clone
         @contents = @contents.where('featured = false')
         @featured_contents = @featured_contents.limit(5)
         @featured_contents = @featured_contents.where('featured = true')
       end
-
       @contents = (@contents + @featured_contents).sort{|a, b| a.start_date <=> b.start_date } unless @featured_contents.nil?
-      if params[:repository].present? and @contents.present?
-        repo = Repository.find_by_dsp_endpoint(params[:repository])
-        @contents = @contents.select { |c| c.repositories.include? repo }
-      end
     else
       @contents = Content.order('pubdate DESC')
       if params[:publications].present?
