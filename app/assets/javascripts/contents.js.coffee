@@ -1,6 +1,6 @@
 jQuery ->
   $('#event_tab_link, #contents_tab_link').on 'click', ->
-    $("#content_content_category").trigger('change')
+    $("#content_content_category_id").trigger('change')
 
   $("#add_new_publication").on 'click', ->
     console.log 'hello'
