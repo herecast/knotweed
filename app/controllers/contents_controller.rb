@@ -16,8 +16,8 @@ class ContentsController < ApplicationController
       session[:contents_search] = params[:q]
     end
     
-    @search = Content.ransack(session[:contents_search])
     if session[:contents_search].present?
+      @search = Content.ransack(session[:contents_search])
       @contents = @search.result(distinct: true).order("pubdate DESC").page(params[:page]).per(100)
     else
       @contents = []
