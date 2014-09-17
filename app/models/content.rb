@@ -83,7 +83,7 @@ class Content < ActiveRecord::Base
                   :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
                   :image_ids, :parent_id, :source_uri, :category,
                   :event_type, :start_date, :end_date, :cost, :recurrence, :host_organization,
-                  :links, :featured
+                  :links, :featured, :content_category_id
 
   serialize :links, Hash
 
@@ -678,9 +678,9 @@ class Content < ActiveRecord::Base
     # not necessary for now.
     begin
       cat = response_hash[:category].to_s.split("/")[-1]
-      cat = ContentCategory.find_or_create_by_name(cat) unless cat.nil? 
-      update_attribute :content_category, cat unless cat.nil?
-    rescue
+      cat = ContentCategory.find_or_create_by_name(cat).id unless cat.nil? 
+      update_attributes(content_category_id: cat)
+    rescue => e
     end
 
   end
