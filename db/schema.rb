@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140916191042) do
+ActiveRecord::Schema.define(:version => 20140917173038) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -296,6 +296,7 @@ ActiveRecord::Schema.define(:version => 20140916191042) do
   end
 
   add_index "contents_repositories", ["content_id", "repository_id"], :name => "index_contents_repositories_on_content_id_and_repository_id"
+  add_index "contents_repositories", ["repository_id", "content_id"], :name => "index_contents_repositories_on_repository_id_and_content_id"
 
   create_table "countries", :force => true do |t|
     t.string  "country_name"
