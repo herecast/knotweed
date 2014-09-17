@@ -72,7 +72,10 @@ class Api::ContentsController < Api::ApiController
 
   def show
     @content = Content.find(params[:id])
-    render json: @content
+    if params[:repository].present? and @content.present?
+      repo = @content.repositories.find_by_dsp_endpoint params[:repository]
+      @content = nil if repo.nil?
+    end
   end
 
   # for now, this doesn't need to handle images
