@@ -5,6 +5,7 @@
   = f.input :active
   = f.input :form_hash
   = f.input :email_field, input_html: { type: :text }
+  = f.input :page_url_field
   = f.input :controller, collection: Message::CONTROLLER_OPTIONS + ["application"], include_blank: false
   = f.input :action, collection: Message::ACTION_OPTIONS, include_blank: true
   = f.input :call_to_action, input_html: { class: "input-block-level", rows: 5 },
