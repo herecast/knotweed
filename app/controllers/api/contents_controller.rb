@@ -3,21 +3,27 @@ class Api::ContentsController < Api::ApiController
 
   def index
     if params[:max_results].present? 
-      @contents = Content.events.limit(params[:max_results])
+      @contents = Content.limit(params[:max_results])
+    else
+      @contents = Content
     end
-    if params[:events]
-      if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
-        sort_order = params[:sort_order]
-      else
-        sort_order = 'ASC'
-      end
 
-      if @contents.nil?
-        @contents = Content.events.order("start_date #{sort_order}")
-      else
-        @contents = @contents.order("start_date #{sort_order}")
-      end
-      
+    if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
+      sort_order = params[:sort_order]
+    end
+
+    if params[:repository].present? and @contents.present?
+      @contents = @contents.includes(:repositories).where(repositories: {dsp_endpoint: params[:repository]}) 
+    end
+    
+    if params[:events]
+      @contents = @contents.events
+      sort_order ||= "ASC"
+      @contents = @contents.order("start_date #{sort_order}")
+
+      # limit query so we're not accidentally rendering thousands of json objects
+      @contents = Content.limit(500) unless params[:max_results].present?
+
       if params[:start_date].present?
         start_date = Chronic.parse(params[:start_date])
         @contents = @contents.where('start_date >= ?', start_date)
@@ -33,19 +39,14 @@ class Api::ContentsController < Api::ApiController
         @contents = @contents.where(event_type: params[:event_type])
       end
 
-      if params[:repository].present? and @contents.present?
-        @contents = @contents.includes(:repositories).where(repositories: {dsp_endpoint: params[:repository]}) 
+      # don't return featured events unless they're requested
+      unless params[:request_featured].present?
+        @contents = @contents.where(featured: false)
       end
-
-      if params[:request_featured].present?
-        @featured_contents = @contents.clone
-        @contents = @contents.where('featured = false')
-        @featured_contents = @featured_contents.limit(5)
-        @featured_contents = @featured_contents.where('featured = true')
-      end
-      @contents = (@contents + @featured_contents).sort{|a, b| a.start_date <=> b.start_date } unless @featured_contents.nil?
+      @contents = @contents.includes(:business_location, :images, :import_location)
     else
-      @contents = Content.order('pubdate DESC')
+      sort_order ||= "DESC"
+      @contents = @contents.order("pubdate #{sort_order}")
       if params[:publications].present?
         allowed_pubs = Publication.where(name: params[:publications])
         @contents = @contents.where(source_id: allowed_pubs)
@@ -57,9 +58,6 @@ class Api::ContentsController < Api::ApiController
       if params[:start_date].present?
         start_date = Chronic.parse(params[:start_date])
         @contents = @contents.where("pubdate >= :start_date", { start_date: start_date}) unless start_date.nil?
-      end
-      if params[:repository].present?
-        @contents = @contents.includes(:repositories).where(repositories: {dsp_endpoint: params[:repository]})
       end
       params[:page] ||= 1
       params[:per_page] ||= 30
