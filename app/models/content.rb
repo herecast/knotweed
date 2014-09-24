@@ -666,13 +666,13 @@ class Content < ActiveRecord::Base
     begin
       sparql = ::SPARQL::Client.new repo.sesame_endpoint
       response = sparql.query("
-        prefix pub: <http://ontology.ontotext.com/publishing#>
-        PREFIX sbtxd: <#{Figaro.env.document_prefix}>
+      prefix pub: <http://ontology.ontotext.com/publishing#>
+      PREFIX sbtxd: <#{Figaro.env.document_prefix}>
 
-        select ?category
-        where {
-          OPTIONAL { sbtxd:#{id} pub:hasCategory ?category . }
-        }")
+      select ?category
+      where {
+        OPTIONAL { sbtxd:#{id} pub:hasCategory ?category . }
+      }")
       response_hash = response[0].to_hash
       # if we add more fields to be updated, we can iterate through the hash
       # and use send to update the content
