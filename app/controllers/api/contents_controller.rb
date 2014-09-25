@@ -175,6 +175,16 @@ class Api::ContentsController < Api::ApiController
     @pages = @contents.total_pages
   end
 
+
+  # as of now, the only updating we're doing is marking things reviewed
+  # so for security's sake, that's all this method can do.
+  def update
+    @content = Content.find(params[:id])
+    if params[:content][:category_reviewed].present?
+      @content.update_attribute :category_reviewed, params[:content][:category_reviewed]
+    end
+  end
+
   private
 
   # detects if the route is through events

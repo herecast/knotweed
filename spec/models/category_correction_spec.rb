@@ -22,6 +22,7 @@ describe CategoryCorrection do
       cat_cor = FactoryGirl.create(:category_correction, content: c)
       c = Content.find c.id
       c.category.should == cat_cor.new_category
+      c.category_reviewed.should == true
       cat_cor.content_body.should == c.content
       cat_cor.title.should == c.title
     end

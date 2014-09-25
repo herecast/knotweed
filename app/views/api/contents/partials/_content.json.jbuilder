@@ -1,6 +1,6 @@
 attrs = [:id, :title, :start_date, :end_date, :event_type, :host_organization, :cost, :recurrence,
          :featured, :links, :pubdate, :authors, :category, :source_name, :location, 
-         :parent_uri, :business_location]
+         :parent_uri, :business_location, :category_reviewed]
 attrs.reject!{|a| without_attributes.include? a } if defined? without_attributes
 attrs.merge!(without_attributes)if defined? with_attributes
 

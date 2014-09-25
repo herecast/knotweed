@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140917192549) do
+ActiveRecord::Schema.define(:version => 20140925170747) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -231,6 +231,7 @@ ActiveRecord::Schema.define(:version => 20140917192549) do
     t.integer  "business_location_id"
     t.boolean  "featured",             :default => false
     t.integer  "content_category_id"
+    t.boolean  "category_reviewed",    :default => false
   end
 
   add_index "contents", ["authors"], :name => "authors"

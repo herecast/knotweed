@@ -43,6 +43,7 @@
 #  business_location_id :integer
 #  featured             :boolean          default(FALSE)
 #  content_category_id  :integer
+#  category_reviewed    :boolean          default(FALSE)
 #
 
 require 'spec_helper'

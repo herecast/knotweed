@@ -39,14 +39,20 @@
       .tab-pane.active.form-horizontal#features
         -# uneditable features displayed in info box if content exists
         .row-fluid
-          .span8
-            = f.association :content_category, label_method: :label
-            = f.association :source, input_html: { class: "chosen-select span12" }, 
-                label: "Publication", wrapper_html: { class: "span9" }
-            .span2
-              %span.btn.btn-small.btn-success#add_new_publication{ data: { toggle: "modal", 
-                  target: "#publication_form", form_url: new_publication_path(short_form: true) } }
-                + Add New
+          .span4
+            .row-fluid
+              .span12
+                = f.association :content_category, label_method: :label
+            .row-fluid
+              .span12
+                = f.association :source, input_html: { class: "chosen-select span12" }, 
+                  label: "Publication"
+          .span2
+            = f.input :category_reviewed, label: "Category Reviewed?"
+            %span.btn.btn-small.btn-success#add_new_publication{ data: { toggle: "modal", 
+                target: "#publication_form", form_url: new_publication_path(short_form: true) } }
+              + Add New
+
           - if @content.id.present?
             .span4
               %dl

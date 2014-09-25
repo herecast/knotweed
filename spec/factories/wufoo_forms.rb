@@ -12,6 +12,7 @@
 #  active         :boolean          default(TRUE)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  page_url_field :string(255)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

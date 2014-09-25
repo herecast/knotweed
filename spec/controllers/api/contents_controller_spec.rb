@@ -31,4 +31,24 @@ describe Api::ContentsController do
     #end
   end
 
+  describe "UPDATE" do
+    before do
+      @content = FactoryGirl.create(:content, category_reviewed: false)
+    end
+
+    subject { put :update, format: :json, id: @content, content: { category_reviewed: 1 } }
+
+    it "has a 200 status code" do
+      subject
+      response.code.should eq('200')
+    end
+
+    it "updates the content with the new attribute" do
+      subject
+      @content.reload
+      @content.category_reviewed.should == true
+    end
+  end
+
+
 end

@@ -43,6 +43,7 @@
 #  business_location_id :integer
 #  featured             :boolean          default(FALSE)
 #  content_category_id  :integer
+#  category_reviewed    :boolean          default(FALSE)
 #
 
 require 'fileutils'
@@ -83,7 +84,7 @@ class Content < ActiveRecord::Base
                   :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
                   :image_ids, :parent_id, :source_uri, :category,
                   :event_type, :start_date, :end_date, :cost, :recurrence, :host_organization,
-                  :links, :featured, :content_category_id
+                  :links, :featured, :content_category_id, :category_reviewed
 
   serialize :links, Hash
 
@@ -488,7 +489,7 @@ class Content < ActiveRecord::Base
     })
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
                "import_record_id", "published", "links", "start_date", "end_date",
-               "links", "featured" )
+               "links", "featured", "category_reviewed" )
   end
 
   # Export Gate Document directly before/after Pipeline processing
