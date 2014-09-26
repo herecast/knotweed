@@ -47,7 +47,8 @@ namespace :deploy do
 
   desc 'Restart application'
   task :restart do
-    invoke 'delayed_job:restart'
+    restart_delayed_jobs = fetch(:restart_delayed_jobs, true)
+    invoke 'delayed_job:restart' if restart_delayed_jobs
     on roles(:app), in: :sequence, wait: 5 do
       # Your restart mechanism here, for example:
       execute :touch, release_path.join('tmp/restart.txt')
