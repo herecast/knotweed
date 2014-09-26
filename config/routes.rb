@@ -4,7 +4,7 @@ Knotweed::Application.routes.draw do
     root :to => "application#dashboard"
   end
   devise_for :users
-  root :to => redirect("/users/sign_in")
+  root :to => redirect("#{"#{ENV['RAILS_RELATIVE_URL_ROOT']}" unless ENV['RAILS_RELATIVE_URL_ROOT'].nil?}/users/sign_in")
   resources :users
   
   get "/", to: "admin#dashboard", as: :dashboard
