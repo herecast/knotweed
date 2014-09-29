@@ -113,10 +113,6 @@ class ImportJob < ActiveRecord::Base
     log.info "#{self.inspect}"
   end
   
-  def failure(job)
-    update_attribute(:status, "failed")
-  end
-  
   def before(job)
     update_attribute(:status, "running")
     # set last_run_at regardless of success or failure

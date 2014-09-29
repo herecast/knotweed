@@ -36,6 +36,10 @@ module Jobs
       self.schedule!
     end
 
+    def failure(job)
+      update_attribute(:status, "failed")
+    end
+
     # gets next scheduled run
     # returns nil if not scheduled to run
     def next_scheduled_run

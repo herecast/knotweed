@@ -105,10 +105,6 @@ class PublishJob < ActiveRecord::Base
     update_attributes(:status => "failed")
   end
 
-  def failure(job)
-    update_attribute(:status, "failed")
-  end
-
   def before(job)
     update_attribute(:status, "running")
     publish_records.create
