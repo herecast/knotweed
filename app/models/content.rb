@@ -78,13 +78,13 @@ class Content < ActiveRecord::Base
 
   belongs_to :content_category
 
-  attr_accessible :title, :subtitle, :authors, :content, :issue_id, :import_location_id, :copyright,
+  attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
                   :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
                   :language, :page, :wordcount, :authoremail, :source_id, :file,
                   :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
                   :image_ids, :parent_id, :source_uri, :category,
                   :event_type, :start_date, :end_date, :cost, :recurrence, :host_organization,
-                  :links, :featured, :content_category_id, :category_reviewed
+                  :links, :featured, :content_category_id, :category_reviewed, :raw_content, :processed_content
 
   serialize :links, Hash
 
@@ -126,6 +126,16 @@ class Content < ActiveRecord::Base
   CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle 
                   local_news nation_world offered presentation recommendation
                   sale_event sports wanted)
+
+   # display processed content if available
+  # otherwise, raw content
+  def content
+    if processed_content.present?
+      processed_content
+    else
+      raw_content
+    end
+  end
 
   # if passed a repo, checks if this content was published in that repo
   # otherwise, checks if it is published in any repo
@@ -193,6 +203,13 @@ class Content < ActiveRecord::Base
         data[key] = v
       end
     end
+
+    # try to clean up HTML
+    if data.has_key? "content" and data['content'].present?
+      html = Hpricot(simple_format(data.delete('content'), {}, sanitize: false), :xhtml_strict => true)
+      raw_content = html.html
+    end
+
     data.keys.each do |k|
       unless Content.accessible_attributes.entries.include? k
         log.debug("unknown key provided by parser: #{k}")
@@ -200,17 +217,11 @@ class Content < ActiveRecord::Base
       end
     end
 
-    # try to clean up HTML
-    if data.has_key? "content" and data['content'].present?
-      html = Hpricot(simple_format(data.delete('content'), {}, sanitize: false), :xhtml_strict => true)
-      processed_content = html.html
-    end
-
     # if job is passed in, set organization
     organization = job.try(:organization)
 
     content = Content.new(data)
-    content.content = processed_content
+    content.raw_content = raw_content
     
     # pull complex key/values out from data to use later
     if special_attrs.has_key? 'location'
@@ -298,7 +309,7 @@ class Content < ActiveRecord::Base
   # check that doc validates our xml requirements
   # if not, mark it as quarantined
   def mark_quarantined
-    if title.present? and source.present? and pubdate.present? and content.present?
+    if title.present? and source.present? and pubdate.present? and raw_content.present?
       self.quarantine = false
     else
       self.quarantine = true
@@ -375,7 +386,7 @@ class Content < ActiveRecord::Base
         f.write to_new_xml
       end
       File.open("#{export_path}/#{guid}.html", "w+") do |f|
-        f.write content
+        f.write raw_content
       end
       file_list << xml_path
       return true
@@ -471,7 +482,7 @@ class Content < ActiveRecord::Base
         end
         g.tag!("tns:document-part", "part"=>"BODY", "id"=>"1") do |h|
           h.tag!("tns:content") do |i|
-            i.cdata!(content)
+            i.cdata!(raw_content)
           end
         end
       end
@@ -489,7 +500,7 @@ class Content < ActiveRecord::Base
     })
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
                "import_record_id", "published", "links", "start_date", "end_date",
-               "links", "featured", "category_reviewed" )
+               "links", "featured", "category_reviewed", "raw_content", "processed_content" )
   end
 
   # Export Gate Document directly before/after Pipeline processing
@@ -504,7 +515,7 @@ class Content < ActiveRecord::Base
       FileUtils.mkpath("#{export_path}/pre_pipeline")
       xml_path = "#{export_path}/pre_pipeline/#{guid}.xml"
       File.open(xml_path, "w+") { |f| f.write(res.body) }
-      File.open("#{export_path}/pre_pipeline/#{guid}.html", "w+") { |f| f.write(content) }
+      File.open("#{export_path}/pre_pipeline/#{guid}.html", "w+") { |f| f.write(raw_content) }
       file_list << xml_path
       return true
     else
@@ -523,7 +534,7 @@ class Content < ActiveRecord::Base
       FileUtils.mkpath("#{export_path}/post_pipeline")
       xml_path = "#{export_path}/post_pipeline/#{guid}.xml"
       File.open(xml_path, "w+") { |f| f.write(res.body) }
-      File.open("#{export_path}/post_pipeline/#{guid}.html", "w+") { |f| f.write(content) }
+      File.open("#{export_path}/post_pipeline/#{guid}.html", "w+") { |f| f.write(raw_content) }
       file_list << xml_path
       return true
     else
@@ -670,8 +681,9 @@ class Content < ActiveRecord::Base
       prefix pub: <http://ontology.ontotext.com/publishing#>
       PREFIX sbtxd: <#{Figaro.env.document_prefix}>
 
-      select ?category
+      select ?category ?processed_content
       where {
+        sbtxd:#{id} pub:content ?processed_content .
         OPTIONAL { sbtxd:#{id} pub:hasCategory ?category . }
       }")
       response_hash = response[0].to_hash
@@ -680,7 +692,7 @@ class Content < ActiveRecord::Base
       # not necessary for now.
       cat = response_hash[:category].to_s.split("/")[-1]
       cat = ContentCategory.find_or_create_by_name(cat).id unless cat.nil? 
-      update_attributes(content_category_id: cat)
+      update_attributes(content_category_id: cat, processed_content: response_hash[:processed_content].to_s)
     rescue => e
     end
 

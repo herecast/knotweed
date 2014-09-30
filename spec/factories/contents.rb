@@ -53,7 +53,7 @@ FactoryGirl.define do
     title { "Title-#{[*('A'..'Z')].sample(8).join}" }
     subtitle "Subtitle"
     authors "John Smith"
-    content "Content goes here"
+    raw_content "Content goes here"
     association :source, factory: :publication
     issue
     import_location
@@ -61,7 +61,7 @@ FactoryGirl.define do
     source_category "Category"
     
     factory :event do
-      content "event" 
+      raw_content "event" 
       start_date 1.day.from_now
     end
   end

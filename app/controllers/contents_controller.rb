@@ -32,7 +32,7 @@ class ContentsController < ApplicationController
 
   def create
     # hack to remove duplicate content entry
-    params[:content].delete :content1 if params[:content].present?
+    params[:content].delete :raw_content1 if params[:content].present?
     image_list = params[:content].delete(:image_list)
     image_ids = image_list.try(:split, ",")
     @content = Content.new(params[:content])
@@ -84,7 +84,7 @@ class ContentsController < ApplicationController
 
   def update
     # hack to remove duplicate content entry
-    params[:content].delete :content1 if params[:content].present?
+    params[:content].delete :raw_content1 if params[:content].present?
     # ensure serialized values are set to empty if no fields are passed in via form
     params[:content][:links] = nil unless params[:content].has_key? :links
     @content = Content.find(params[:id])

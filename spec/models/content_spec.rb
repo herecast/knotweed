@@ -558,6 +558,11 @@ describe Content do
       @content.category.should_not == orig_cat
       @content.category.should == @new_cat
     end
+
+    it "should update processed_content field with data from the repo" do
+      @content.update_from_repo(@repository)
+      @content.processed_content.present?.should == true
+    end
   end
 
 end

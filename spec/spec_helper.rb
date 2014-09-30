@@ -5,6 +5,7 @@ require 'rspec/rails'
 require 'email_spec'
 require 'rspec/autorun'
 require 'webmock/rspec'
+require 'pry-debugger'
 require 'vcr'
 WebMock.disable_net_connect!(allow_localhost: true)
 
