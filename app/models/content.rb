@@ -646,6 +646,10 @@ class Content < ActiveRecord::Base
     promotions.where(active: true).count > 0
   end
 
+  def has_active_promotion
+    has_active_promotion?
+  end
+
   def get_related_promotion(repo)
     results = query_promo_similarity_index(content, repo)
     results = query_promo_similarity_index(summary, repo) if results.empty?
