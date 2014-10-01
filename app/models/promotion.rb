@@ -63,12 +63,22 @@ class Promotion < ActiveRecord::Base
   def mark_active_promotion(repo)
     query = File.read('./lib/queries/add_active_promo.rq') % {content_id: content.id}
     sparql = ::SPARQL::Client.new repo.sesame_endpoint
-    sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
+    # wrap this in begin/rescue clause just in case
+    # TODO: figure out a way to provide feedback to this and set up a queue
+    # of updates that need to be made. Possibly would be best to pass this off entirely
+    # to a queue and have a worker that repeats until it succeeds.
+    begin
+      sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
+    rescue
+    end
   end
 
   def remove_promotion(repo)
     query = File.read('./lib/queries/remove_active_promo.rq') % {content_id: content.id}
     sparql = ::SPARQL::Client.new repo.sesame_endpoint
-    sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
+    begin
+      sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
+    rescue
+    end
   end
 end
