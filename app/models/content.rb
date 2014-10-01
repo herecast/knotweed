@@ -125,7 +125,7 @@ class Content < ActiveRecord::Base
 
   # features that can be overwritten when we reimport
   REIMPORT_FEATURES = %w(title subtitle authors content pubdate source_category topics summary
-                         url authoremail)
+                         url authoremail import_record)
 
   CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle 
                   local_news nation_world offered presentation recommendation
