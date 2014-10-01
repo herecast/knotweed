@@ -123,6 +123,10 @@ class Content < ActiveRecord::Base
   EXPORT_POST_PIPELINE = "export_post_pipeline_xml"
   PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE, EXPORT_POST_PIPELINE]
 
+  # features that can be overwritten when we reimport
+  REIMPORT_FEATURES = %w(title subtitle authors content pubdate source_category topics summary
+                         url authoremail)
+
   CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle 
                   local_news nation_world offered presentation recommendation
                   sale_event sports wanted)
@@ -269,13 +273,16 @@ class Content < ActiveRecord::Base
       existing_content = Content.where(source_id: content.source.id, guid: content.guid).try(:first)
     end
     if existing_content.present?
-      # check for category field being populated (either manually or via category corrections)
-      content.content_category = existing_content.content_category
-      content.id = existing_content.id
-      existing_content.destroy
+      # if existing content is there, rather than saving, we update
+      # the whitelisted reimport attributes
+      REIMPORT_FEATURES.each do |f|
+        existing_content.send "#{f}=", content.send(f.to_sym) if content.send(f.to_sym).present?
+      end
+      content = existing_content
     end
 
     content.save!
+
 
     # if the content saves, add any images that came in
     # this has to be down here, not in the special_attributes CASE statement
