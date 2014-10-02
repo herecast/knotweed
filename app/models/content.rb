@@ -675,26 +675,22 @@ class Content < ActiveRecord::Base
   #
   # as of now, it only updates category
   def update_from_repo(repo)
-    begin
-      sparql = ::SPARQL::Client.new repo.sesame_endpoint
-      response = sparql.query("
-      prefix pub: <http://ontology.ontotext.com/publishing#>
-      PREFIX sbtxd: <#{Figaro.env.document_prefix}>
+    sparql = ::SPARQL::Client.new repo.sesame_endpoint
+    response = sparql.query("
+    prefix pub: <http://ontology.ontotext.com/publishing#>
+    PREFIX sbtxd: <#{Figaro.env.document_prefix}>
 
-      select ?category
-      where {
-        OPTIONAL { sbtxd:#{id} pub:hasCategory ?category . }
-      }")
-      response_hash = response[0].to_hash
-      # if we add more fields to be updated, we can iterate through the hash
-      # and use send to update the content
-      # not necessary for now.
-      cat = response_hash[:category].to_s.split("/")[-1]
-      cat = ContentCategory.find_or_create_by_name(cat).id unless cat.nil? 
-      update_attributes(content_category_id: cat)
-    rescue => e
-    end
-
+    select ?category
+    where {
+      OPTIONAL { sbtxd:#{id} pub:hasCategory ?category . }
+    }")
+    response_hash = response[0].to_hash
+    # if we add more fields to be updated, we can iterate through the hash
+    # and use send to update the content
+    # not necessary for now.
+    cat = response_hash[:category].to_s.split("/")[-1]
+    cat = ContentCategory.find_or_create_by_name(cat).id unless cat.nil? 
+    update_attributes(content_category_id: cat)
   end
 
   private 
