@@ -677,6 +677,7 @@ class Content < ActiveRecord::Base
   def update_from_repo(repo)
     sparql = ::SPARQL::Client.new repo.sesame_endpoint
     response = sparql.query("
+    # update from repo query
     prefix pub: <http://ontology.ontotext.com/publishing#>
     PREFIX sbtxd: <#{Figaro.env.document_prefix}>
 
