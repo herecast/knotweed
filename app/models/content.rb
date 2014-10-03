@@ -123,6 +123,10 @@ class Content < ActiveRecord::Base
   EXPORT_POST_PIPELINE = "export_post_pipeline_xml"
   PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE, EXPORT_POST_PIPELINE]
 
+  # features that can be overwritten when we reimport
+  REIMPORT_FEATURES = %w(title subtitle authors content pubdate source_category topics summary
+                         url authoremail import_record)
+
   CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle 
                   local_news nation_world offered presentation recommendation
                   sale_event sports wanted)
@@ -280,13 +284,16 @@ class Content < ActiveRecord::Base
       existing_content = Content.where(source_id: content.source.id, guid: content.guid).try(:first)
     end
     if existing_content.present?
-      # check for category field being populated (either manually or via category corrections)
-      content.content_category = existing_content.content_category
-      content.id = existing_content.id
-      existing_content.destroy
+      # if existing content is there, rather than saving, we update
+      # the whitelisted reimport attributes
+      REIMPORT_FEATURES.each do |f|
+        existing_content.send "#{f}=", content.send(f.to_sym) if content.send(f.to_sym).present?
+      end
+      content = existing_content
     end
 
     content.save!
+
 
     # if the content saves, add any images that came in
     # this has to be down here, not in the special_attributes CASE statement
@@ -657,6 +664,10 @@ class Content < ActiveRecord::Base
     promotions.where(active: true).count > 0
   end
 
+  def has_active_promotion
+    has_active_promotion?
+  end
+
   def get_related_promotion(repo)
     results = query_promo_similarity_index(content, repo)
     results = query_promo_similarity_index(summary, repo) if results.empty?
@@ -675,27 +686,24 @@ class Content < ActiveRecord::Base
   #
   # as of now, it only updates category
   def update_from_repo(repo)
-    begin
-      sparql = ::SPARQL::Client.new repo.sesame_endpoint
-      response = sparql.query("
-      prefix pub: <http://ontology.ontotext.com/publishing#>
-      PREFIX sbtxd: <#{Figaro.env.document_prefix}>
+    sparql = ::SPARQL::Client.new repo.sesame_endpoint
+    response = sparql.query("
+    # update from repo query
+    prefix pub: <http://ontology.ontotext.com/publishing#>
+    PREFIX sbtxd: <#{Figaro.env.document_prefix}>
 
-      select ?category ?processed_content
-      where {
-        sbtxd:#{id} pub:content ?processed_content .
-        OPTIONAL { sbtxd:#{id} pub:hasCategory ?category . }
-      }")
-      response_hash = response[0].to_hash
-      # if we add more fields to be updated, we can iterate through the hash
-      # and use send to update the content
-      # not necessary for now.
-      cat = response_hash[:category].to_s.split("/")[-1]
-      cat = ContentCategory.find_or_create_by_name(cat).id unless cat.nil? 
-      update_attributes(content_category_id: cat, processed_content: response_hash[:processed_content].to_s)
-    rescue => e
-    end
-
+    select ?category ?processed_content
+    where {
+      sbtxd:#{id} pub:content ?processed_content .
+      OPTIONAL { sbtxd:#{id} pub:hasCategory ?category . }
+    }")
+    response_hash = response[0].to_hash
+    # if we add more fields to be updated, we can iterate through the hash
+    # and use send to update the content
+    # not necessary for now.
+    cat = response_hash[:category].to_s.split("/")[-1]
+    cat = ContentCategory.find_or_create_by_name(cat).id unless cat.nil? 
+    update_attributes(content_category_id: cat, processed_content: response_hash[:processed_content].to_s)
   end
 
   private 

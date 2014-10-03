@@ -137,7 +137,7 @@ class Api::ContentsController < Api::ApiController
     if new_content.nil?
       render json: {}
     else
-      render json: { banner: new_content.promotions.first.banner.url, content_id: new_content.id }
+      render json: { banner: new_content.promotions.where(active: true).first.banner.url, content_id: new_content.id }
     end
   end
 

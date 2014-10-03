@@ -169,7 +169,7 @@ describe Content do
         "source_id" => @base_data["source_id"],
         "guid" => c1.guid
       }
-      c2 = Content.create_from_import_job(@base_data)
+      c2 = Content.create_from_import_job(@new_data)
       Content.count.should== 1
       Content.first.id.should== orig_id
     end
@@ -185,10 +185,27 @@ describe Content do
         "source_id" => @base_data["source_id"],
         "guid" => c1.guid
       }
-      c2 = Content.create_from_import_job(@base_data)
+      c2 = Content.create_from_import_job(@new_data)
       Content.count.should== 1
       Content.first.id.should== orig_id
       Content.first.category.should == "Test Category"
+    end
+
+    it "should not overwrite any fields not in the REIMPORT_FEATURES whitelist" do
+      p = FactoryGirl.create(:publication)
+      @base_data["source_id"] = p.id
+      c1 = Content.create_from_import_job(@base_data)
+      c1.update_attribute :cost, "$5"
+      @new_data = {
+        "title" => "New Title",
+        "source_id" => @base_data["source_id"],
+        "guid" => c1.guid,
+        "cost" => "$10"
+      }
+      Content.create_from_import_job(@new_data)
+      c1.reload
+      c1.title.should == @new_data["title"]
+      c1.cost.should == "$5" # original cost
     end
 
     # check source logic
