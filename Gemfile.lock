@@ -28,8 +28,8 @@ GIT
       activesupport (>= 3.0, < 4.1)
 
 GIT
-  remote: git@github.com:ngottlieb/sparql-client.git
-  revision: 1c0a23eb2b59aa0b3f4844174624f93c5b684d55
+  remote: git@github.com:ruby-rdf/sparql-client.git
+  revision: 7028605ae5a0122443bd1f057657ddf1b9a0321b
   branch: develop
   specs:
     sparql-client (1.1.3)
