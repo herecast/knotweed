@@ -165,7 +165,6 @@ class Api::ContentsController < Api::ApiController
     end
     if params[:categories].present?
       allowed_cats = ContentCategory.find_with_children(name: params[:categories]).collect{|c| c.id}
-      binding.pry
       opts[:with].merge!({:cat_ids => allowed_cats})
     end
 
