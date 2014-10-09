@@ -163,6 +163,8 @@ GEM
       launchy (~> 2.1)
       mail (~> 2.2)
     erubis (2.7.0)
+    ethon (0.7.1)
+      ffi (>= 1.3.0)
     excon (0.31.0)
     execjs (2.0.2)
     factory_girl (4.3.0)
@@ -223,7 +225,7 @@ GEM
     joiner (0.2.0)
       activerecord (>= 3.1.0, < 4.1.0)
     journey (1.0.4)
-    jquery-rails (3.0.4)
+    jquery-rails (3.1.2)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
     jquery-turbolinks (2.0.1)
@@ -253,7 +255,9 @@ GEM
     mime-types (1.25.1)
     mimetype-fu (0.1.2)
     mini_portile (0.5.2)
-    multi_json (1.8.2)
+    mixpanel_client (4.1.1)
+      typhoeus (~> 0.6.7)
+    multi_json (1.10.1)
     multi_xml (0.5.5)
     mysql2 (0.3.14)
     net-http-persistent (2.9.4)
@@ -287,7 +291,7 @@ GEM
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
-    rack-ssl (1.3.3)
+    rack-ssl (1.3.4)
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -306,7 +310,7 @@ GEM
       rake (>= 0.8.7)
       rdoc (~> 3.4)
       thor (>= 0.14.6, < 2.0)
-    rake (10.1.1)
+    rake (10.3.2)
     ransack (1.1.0)
       actionpack (>= 3.0)
       activerecord (>= 3.0)
@@ -373,7 +377,7 @@ GEM
       joiner (>= 0.2.0)
       middleware (>= 0.1.0)
       riddle (>= 1.5.11)
-    thor (0.18.1)
+    thor (0.19.1)
     thread_safe (0.1.3)
       atomic
     thread_safe (0.1.3-java)
@@ -389,6 +393,8 @@ GEM
       sprockets (>= 2.2.0)
     turbolinks (2.2.0)
       coffee-rails
+    typhoeus (0.6.9)
+      ethon (>= 0.7.1)
     tzinfo (0.3.38)
     uglifier (2.4.0)
       execjs (>= 0.3.0)
@@ -459,6 +465,7 @@ DEPENDENCIES
   jquery-turbolinks
   kaminari
   mail
+  mixpanel_client
   mysql2
   net-http-persistent (~> 2.9)
   nokogiri

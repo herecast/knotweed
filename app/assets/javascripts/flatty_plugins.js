@@ -34,6 +34,8 @@
 //= require flatty/plugins/bootstrap_hover_dropdown/twitter-bootstrap-hover-dropdown.min
 //= require flatty/plugins/slider_nav/slidernav-min
 //= require flatty/plugins/fuelux/wizard
+//= require flatty/plugins/flot/flot.min
+//= require flatty/plugins/flot/flot.pie
 
 $(document).ready(function() {
   $(".ckeditor").ckeditor({});

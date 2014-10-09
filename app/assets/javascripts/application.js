@@ -42,3 +42,4 @@
 //= require add.dsp
 //= require add.mind
 //= require contents
+//= require dashboard

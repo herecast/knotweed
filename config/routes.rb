@@ -1,13 +1,13 @@
 Knotweed::Application.routes.draw do
 
   authenticated :user do
-    root :to => "application#dashboard"
+    root :to => "dashboard#index"
   end
   devise_for :users
   root :to => redirect("#{"#{ENV['RAILS_RELATIVE_URL_ROOT']}" unless ENV['RAILS_RELATIVE_URL_ROOT'].nil?}/users/sign_in")
   resources :users
   
-  get "/", to: "admin#dashboard", as: :dashboard
+  get "/", to: "dashboard#index", as: :dashboard
 
   get "contents/parent_options", to: "contents#parent_select_options", as: :parent_select_options
   resources :contents
