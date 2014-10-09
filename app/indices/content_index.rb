@@ -1,6 +1,6 @@
 ThinkingSphinx::Index.define :content, :with => :active_record do
   # fields
-  indexes content
+  indexes processed_content, as: :content
   indexes title
   indexes subtitle
   indexes authors
