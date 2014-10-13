@@ -583,4 +583,30 @@ describe Content do
     end
   end
 
+  describe "category" do
+    before do
+      @cat = FactoryGirl.create :content_category
+      @content = FactoryGirl.create :content
+      @content.update_attribute :content_category_id, @cat.id
+    end
+
+    it "should return the name of the attached content category" do
+      @content.category.should == @cat.name
+    end
+
+  end
+
+  describe "parent_category" do
+    before do
+      @cat = FactoryGirl.create :content_category
+      @content = FactoryGirl.create :content
+      @content.update_attribute :content_category_id, @cat.id
+      @parent_cat = FactoryGirl.create :content_category
+      @cat.update_attribute :parent_id, @parent_cat.id
+    end
+    it "should return the parent category's name" do
+      @content.parent_category.should == @parent_cat.name
+    end
+  end
+
 end

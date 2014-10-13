@@ -178,6 +178,12 @@ class Content < ActiveRecord::Base
     return content_category.name unless content_category.nil?
   end
 
+  # return parent category name if it exists
+  def parent_category
+    return self.try(:content_category).try(:parent).try(:name)
+  end
+
+
   def category= new_cat
     cat = ContentCategory.find_or_create_by_name new_cat unless new_cat.nil?
     self.content_category = cat 
