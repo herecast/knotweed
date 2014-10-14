@@ -1,18 +1,20 @@
 class DashboardController < ApplicationController
 
-  @@mixpanel = Mixpanel::Client.new(
-    api_key: Figaro.env.mixpanel_api_key,
-    api_secret: Figaro.env.mixpanel_api_secret
-  )
 
-  def index
+  # asynchronously load the mixpanel charts into the dashboard page
+  # in case there's an error.
+  def mixpanel_charts
+    mixpanel = Mixpanel::Client.new(
+      api_key: Figaro.env.mixpanel_api_key,
+      api_secret: Figaro.env.mixpanel_api_secret
+    )
     @metrics = {}
-    data = @@mixpanel.request(
+    data = mixpanel.request(
       'engage',
       where: 'properties["testGroup"]!="subtext"'
     )
     @metrics[:total_users] = data["results"].count
-    sign_in_data = @@mixpanel.request(
+    sign_in_data = mixpanel.request(
       'segmentation',
       event: "signIn",
       from_date: 1.week.ago.strftime("%Y-%m-%d"),
@@ -23,14 +25,14 @@ class DashboardController < ApplicationController
     @metrics[:sign_ins] = { yesterday: sign_in_data[yesterday] }
     @metrics[:sign_ins][:past_week] = sign_in_data.map{ |k,v| v}.inject(:+)
     
-    landing_clicks = @@mixpanel.request(
+    landing_clicks = mixpanel.request(
       'segmentation',
       event: "clickLandingLink",
       from_date: 1.week.ago.strftime("%Y-%m-%d"),
       to_date: Time.zone.now.strftime("%Y-%m-%d"),
       where: 'properties["testGroup"]!="subtext"'
     )["data"]["values"]["clickLandingLink"]
-    relevant_clicks = @@mixpanel.request(
+    relevant_clicks = mixpanel.request(
       'segmentation',
       event: "clickRelevantLink",
       from_date: 1.week.ago.strftime("%Y-%m-%d"),
@@ -47,15 +49,18 @@ class DashboardController < ApplicationController
     clicks = [:yesterday, :past_week].map do |sym| 
       [{
         label: "Relevant Clicks: #{@metrics[:relevant_clicks][sym]}",
-        data: ((@metrics[:relevant_clicks][sym] / @metrics[:article_clicks][sym].to_f) * 100).to_i
+        data: ((@metrics[:relevant_clicks][sym] / @metrics[:article_clicks][sym].to_f) * 100)
       }, {
         label: "Landing Clicks: #{@metrics[:landing_clicks][sym]}",
-        data: ((@metrics[:landing_clicks][sym] / @metrics[:article_clicks][sym].to_f) * 100).to_i
+        data: ((@metrics[:landing_clicks][sym] / @metrics[:article_clicks][sym].to_f) * 100)
       }].to_json
     end    
     @yesterday_pie_chart_data = clicks[0]
     @pastweek_pie_chart_data  = clicks[1]
+    render partial: "mixpanel_charts"
+  end
 
+  def index
   end
 
 end

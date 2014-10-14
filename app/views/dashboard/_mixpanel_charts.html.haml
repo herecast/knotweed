@@ -1,0 +1,33 @@
+.row-fluid
+  .span6.box
+    .box-header
+      .title Sign Ins
+    .box-content.dashboard-box
+      .row-fluid
+        .span3
+          %dl.horizontal
+            %dt Yesterday Sign Ins
+            %dd= @metrics[:sign_ins][:yesterday]
+            %dt Past Week
+            %dd= @metrics[:sign_ins][:past_week]
+            %dt Total Users
+            %dd= @metrics[:total_users]
+        .span9
+          .progress
+            .bar.bar-success{ style: "width:#{yesterday_signed_in_percentage(@metrics)}%;" } Yesterday
+            .bar.bar-warning{ style: "width:#{past_week_signed_in_percentage(@metrics)}%;" } Past Week
+  .span6.box.dashboard-box
+    .box-header
+      .title Article Clicks
+    .box-content
+      .span6
+        %h3 Yesterday
+        #yesterday_article_clicks.article-clicks-pie-chart{style: "height: 300px;width: 100%;" }
+      .span6
+        %h3 Past Week
+        #past_week_article_clicks.article-clicks-pie-chart{style: "height: 300px;width: 100%;" }
+  
+
+:javascript
+  var yesterday_clicks_data = #{@yesterday_pie_chart_data};
+  var past_week_clicks_data = #{@pastweek_pie_chart_data};

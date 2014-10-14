@@ -8,6 +8,7 @@ Knotweed::Application.routes.draw do
   resources :users
   
   get "/", to: "dashboard#index", as: :dashboard
+  get "/mixpanel_charts", to: "dashboard#mixpanel_charts", as: :mixpanel_charts
 
   get "contents/parent_options", to: "contents#parent_select_options", as: :parent_select_options
   resources :contents
