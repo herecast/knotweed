@@ -6,7 +6,7 @@
 #  title                :string(255)
 #  subtitle             :string(255)
 #  authors              :string(255)
-#  content              :text
+#  raw_content          :text
 #  issue_id             :integer
 #  import_location_id   :integer
 #  created_at           :datetime         not null
@@ -44,6 +44,7 @@
 #  featured             :boolean          default(FALSE)
 #  content_category_id  :integer
 #  category_reviewed    :boolean          default(FALSE)
+#  processed_content    :text
 #
 
 require 'spec_helper'
@@ -579,6 +580,32 @@ describe Content do
     it "should update processed_content field with data from the repo" do
       @content.update_from_repo(@repository)
       @content.processed_content.present?.should == true
+    end
+  end
+
+  describe "category" do
+    before do
+      @cat = FactoryGirl.create :content_category
+      @content = FactoryGirl.create :content
+      @content.update_attribute :content_category_id, @cat.id
+    end
+
+    it "should return the name of the attached content category" do
+      @content.category.should == @cat.name
+    end
+
+  end
+
+  describe "parent_category" do
+    before do
+      @cat = FactoryGirl.create :content_category
+      @content = FactoryGirl.create :content
+      @content.update_attribute :content_category_id, @cat.id
+      @parent_cat = FactoryGirl.create :content_category
+      @cat.update_attribute :parent_id, @parent_cat.id
+    end
+    it "should return the parent category's name" do
+      @content.parent_category.should == @parent_cat.name
     end
   end
 

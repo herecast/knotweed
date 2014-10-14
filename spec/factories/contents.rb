@@ -6,7 +6,7 @@
 #  title                :string(255)
 #  subtitle             :string(255)
 #  authors              :string(255)
-#  content              :text
+#  raw_content          :text
 #  issue_id             :integer
 #  import_location_id   :integer
 #  created_at           :datetime         not null
@@ -44,6 +44,7 @@
 #  featured             :boolean          default(FALSE)
 #  content_category_id  :integer
 #  category_reviewed    :boolean          default(FALSE)
+#  processed_content    :text
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

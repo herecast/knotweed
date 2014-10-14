@@ -52,7 +52,7 @@ class Api::ContentsController < Api::ApiController
         @contents = @contents.where(source_id: allowed_pubs)
       end
       if params[:categories].present?
-        allowed_cats = ContentCategory.where(name: params[:categories])
+        allowed_cats = ContentCategory.find_with_children(name: params[:categories])
         @contents = @contents.where(content_category_id: allowed_cats)
       end
       if params[:start_date].present?
@@ -164,7 +164,7 @@ class Api::ContentsController < Api::ApiController
       opts[:with].merge!({:pub_id => allowed_pubs})
     end
     if params[:categories].present?
-      allowed_cats = ContentCategory.where(name: params[:categories]).collect{|c| c.id}
+      allowed_cats = ContentCategory.find_with_children(name: params[:categories]).collect{|c| c.id}
       opts[:with].merge!({:cat_ids => allowed_cats})
     end
 
