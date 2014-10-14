@@ -3,7 +3,7 @@
 See log files for details.
 
 - if @job.frequency.present?
-  Job will not run again until it is manually restarted. 
+  Job will attempt to repeat again. If it fails 3 times in a row, it will stop until manually restarted.
 
 Error message:
 = @error
