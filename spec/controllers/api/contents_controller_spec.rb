@@ -48,7 +48,14 @@ describe Api::ContentsController do
       @content.reload
       @content.category_reviewed.should == true
     end
-  end
 
+    it "creates a new dummy category_correction" do
+      subject
+      cat_cor = CategoryCorrection.last
+      cat_cor.content.should == @content
+      cat_cor.new_category.should == @content.category
+      cat_cor.old_category.should == @content.category
+    end
+  end
 
 end

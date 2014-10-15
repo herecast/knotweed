@@ -21,7 +21,7 @@ class CategoryCorrection < ActiveRecord::Base
 
   validates_presence_of :content
 
-  after_create :update_content
+  after_create :update_content, :remove_previous_category_corrections
 
   def update_content
     update_attributes( content_body: content.content, title: content.title )
@@ -33,6 +33,11 @@ class CategoryCorrection < ActiveRecord::Base
     content.repositories.each do |r|
       content.publish(Content::POST_TO_ONTOTEXT, r)
     end
+  end
+  
+  # it was requested that we remove all previous category corrections when a new one is added...
+  def remove_previous_category_corrections
+    CategoryCorrection.where(content_id: content_id).where("id != ?", id).destroy_all
   end
 
 end

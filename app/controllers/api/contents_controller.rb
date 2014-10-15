@@ -182,6 +182,10 @@ class Api::ContentsController < Api::ApiController
     @content = Content.find(params[:id])
     if params[:content][:category_reviewed].present?
       @content.update_attribute :category_reviewed, params[:content][:category_reviewed]
+      # requested to create a (essentially) blank category_correction object when marking reviewed
+      if params[:content][:category_reviewed] # if true
+        CategoryCorrection.create(content: @content, new_category: @content.category, old_category: @content.category)
+      end
     end
   end
 

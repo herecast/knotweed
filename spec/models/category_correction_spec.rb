@@ -26,5 +26,14 @@ describe CategoryCorrection do
       cat_cor.content_body.should == c.content
       cat_cor.title.should == c.title
     end
+
+    it "should remove all previous category corrections attached to content" do
+      c = FactoryGirl.create(:content)
+      cat_cor_1 = FactoryGirl.create(:category_correction, content: c)
+      cat_cor_2 = FactoryGirl.create(:category_correction, content: c)
+      CategoryCorrection.where(content_id: c.id).count.should == 1
+      CategoryCorrection.where(content_id: c.id)[0].should == cat_cor_2
+    end
+
   end
 end

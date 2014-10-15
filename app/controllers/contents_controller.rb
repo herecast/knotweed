@@ -88,6 +88,16 @@ class ContentsController < ApplicationController
     # ensure serialized values are set to empty if no fields are passed in via form
     params[:content][:links] = nil unless params[:content].has_key? :links
     @content = Content.find(params[:id])
+    # if category is changed, create a category_correction object
+    # normally I would put this in a callback on the model
+    # but given the callbacks already on category_correction and the weirdness
+    # of this functionality to begin with, it seems more straightforward
+    # to put it here:
+    if params[:content][:content_category_id].present? and @content.content_category_id != params[:content][:content_category_id] 
+      CategoryCorrection.create(content: @content, old_category: @content.category, 
+                                new_category: ContentCategory.find(params[:content][:content_category_id]).name)
+      params[:content].delete :content_category_id # already taken care of updating this
+    end
     if @content.update_attributes(params[:content])
       flash[:notice] = "Successfully updated content #{@content.id}"
       redirect_to form_submit_redirect_path(@content.id)
@@ -173,13 +183,15 @@ class ContentsController < ApplicationController
   end
 
   def process_date_params
-    Chronic.time_class = Time.zone
-    params[:content][:start_date] = Chronic.parse(params[:start_day] + " " + params[:start_time])
-    # if end time is specified, but no end day, use start day
-    if params[:end_time].present? and !params[:end_day].present?
-      params[:end_day] = params[:start_day]
+    if params.has_key? :start_day and params.has_key? :start_time
+      Chronic.time_class = Time.zone
+      params[:content][:start_date] = Chronic.parse(params[:start_day] + " " + params[:start_time])
+      # if end time is specified, but no end day, use start day
+      if params[:end_time].present? and !params[:end_day].present?
+        params[:end_day] = params[:start_day]
+      end
+      params[:content][:end_date] = Chronic.parse(params[:end_day] + " " + params[:end_time])
     end
-    params[:content][:end_date] = Chronic.parse(params[:end_day] + " " + params[:end_time])
   end
 
   def form_submit_redirect_path(id=nil)
