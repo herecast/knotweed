@@ -127,7 +127,7 @@ class Content < ActiveRecord::Base
   PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE, EXPORT_POST_PIPELINE]
 
   # features that can be overwritten when we reimport
-  REIMPORT_FEATURES = %w(title subtitle authors content pubdate source_category topics summary
+  REIMPORT_FEATURES = %w(title subtitle authors raw_content pubdate source_category topics summary
                          url authoremail import_record)
 
   CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle 
@@ -219,11 +219,7 @@ class Content < ActiveRecord::Base
       end
     end
 
-    # try to clean up HTML
-    if data.has_key? "content" and data['content'].present?
-      html = Hpricot(simple_format(data.delete('content'), {}, sanitize: false), :xhtml_strict => true)
-      raw_content = html.html
-    end
+    raw_content = data.delete 'content'
 
     data.keys.each do |k|
       unless Content.accessible_attributes.entries.include? k
