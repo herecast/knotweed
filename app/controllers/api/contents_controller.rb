@@ -92,6 +92,10 @@ class Api::ContentsController < Api::ApiController
     cat_name = params[:content].delete :category
     cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
 
+    if params[:content][:content].present?
+      params[:content][:raw_content] = params[:content].delete :content
+    end
+
     @content = Content.new(params[:content])
     @content.source = pub
     @content.content_category = cat unless cat.nil?
