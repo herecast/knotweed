@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141009193631) do
+ActiveRecord::Schema.define(:version => 20141021225139) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -532,8 +532,8 @@ ActiveRecord::Schema.define(:version => 20141009193631) do
 
   create_table "publications", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",                              :null => false
-    t.datetime "updated_at",                              :null => false
+    t.datetime "created_at",                               :null => false
+    t.datetime "updated_at",                               :null => false
     t.string   "logo"
     t.integer  "organization_id"
     t.string   "website"
@@ -547,7 +547,8 @@ ActiveRecord::Schema.define(:version => 20141009193631) do
     t.text     "general"
     t.text     "header"
     t.string   "pub_type"
-    t.boolean  "display_attributes",   :default => false
+    t.boolean  "display_attributes",    :default => false
+    t.string   "reverse_publish_email"
   end
 
   add_index "publications", ["name"], :name => "index_publications_on_name", :unique => true

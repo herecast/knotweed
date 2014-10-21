@@ -49,7 +49,7 @@ class Publication < ActiveRecord::Base
                   :notes, :images_attributes, :parent_id, :location_ids,
                   :remote_logo_url, :contact_ids, :category_override, :tagline, :links, 
                   :social_media, :general, :header, :header_cache, :remove_header,
-                  :pub_type, :display_attributes
+                  :pub_type, :display_attributes, :reverse_publish_email
   
   mount_uploader :logo, ImageUploader
   mount_uploader :header, ImageUploader

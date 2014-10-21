@@ -1,7 +1,15 @@
 class Api::PublicationsController < Api::ApiController
 
   def show
-    @publication = Publication.find(params[:id])
-    render :json => @publication
+    if params[:id].present?
+      @publication = Publication.find(params[:id])
+    elsif params[:name].present?
+      @publication = Publication.find_by_name(params[:name])
+    end
+    if @publication.present?
+      render :json => @publication
+    else
+      render text: "No publication found.", status: 500
+    end
   end
 end
