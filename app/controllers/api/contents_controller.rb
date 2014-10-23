@@ -78,8 +78,15 @@ class Api::ContentsController < Api::ApiController
 
   # for now, this doesn't need to handle images
   def create_and_publish
+    # REVERSE PUBLISHING
+    # PHASE 1
+    # First we establish whether or not something is supposed to be reverse published.
+    # If YES, we construct an email to the reverse_publishing_email of the publication
+    # and send it from the user email provided.
+    # If NO, we follow our normal create-and-publish mechanism.
+
     # hack to identify beta_talk category contents
-    # and automatically set the publication
+    # and automatically set the publication based on category
     category = params[:content][:category]
     source = params[:content].delete :source
     if category == "beta_talk"
@@ -87,27 +94,35 @@ class Api::ContentsController < Api::ApiController
     else
       pub = Publication.find_by_name(source)
     end
-    repo = Repository.find_by_dsp_endpoint(params[:repository])
 
+    # create content here so we can pass it to mailer OR create it
+    # in PHASE 2 we will be doing both
     cat_name = params[:content].delete :category
     cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
-
     if params[:content][:content].present?
       params[:content][:raw_content] = params[:content].delete :content
     end
-
     @content = Content.new(params[:content])
     @content.source = pub
     @content.content_category = cat unless cat.nil?
     @content.pubdate = @content.timestamp = Time.zone.now
-    if @content.save
-      if @content.publish(Content::POST_TO_ONTOTEXT, repo)
-        render text: "#{@content.id}"
-      else
-        render text: "Content was created, but not published", status: 500
-      end
+
+    # this is where we branch for reverse publishing
+    if pub.reverse_publish_email.present?
+      ReversePublisher.send_content_to_reverse_publishing_email(@content, pub).deliver
+      render text: "Post sent to listserve, it should appear momentarily", status: 200
     else
-      render text: "Content could not be created", status: 500
+      repo = Repository.find_by_dsp_endpoint(params[:repository])
+
+      if @content.save
+        if @content.publish(Content::POST_TO_ONTOTEXT, repo)
+          render text: "#{@content.id}"
+        else
+          render text: "Content was created, but not published", status: 500
+        end
+      else
+        render text: "Content could not be created", status: 500
+      end
     end
   end
 

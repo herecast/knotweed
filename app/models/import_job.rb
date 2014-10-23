@@ -144,7 +144,7 @@ class ImportJob < ActiveRecord::Base
           docs_to_contents(data)
         else
           # sleep for a bit if there is no new contents to import and we're supposed to keep looping
-          sleep(60.0) unless self.stop_loop
+          sleep(5.0) unless self.stop_loop
         end
         # hacky trick to stop continuous jobs during backup time
         if Time.now > Chronic.parse("6:45 am") and Time.now < Chronic.parse("7:45 am")
