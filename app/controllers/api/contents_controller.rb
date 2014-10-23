@@ -110,6 +110,9 @@ class Api::ContentsController < Api::ApiController
     # this is where we branch for reverse publishing
     if pub.reverse_publish_email.present?
       ReversePublisher.send_content_to_reverse_publishing_email(@content, pub).deliver
+      # need to send separate email to user rather than CC because their spam filter would catch
+      # us spoofing emails "from" them
+      ReversePublisher.send_copy_to_sender_from_dailyuv(@content, pub).deliver
       render text: "Post sent to listserve, it should appear momentarily", status: 200
     else
       repo = Repository.find_by_dsp_endpoint(params[:repository])
