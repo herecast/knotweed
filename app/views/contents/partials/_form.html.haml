@@ -94,7 +94,7 @@
         = f.input :event_type, wrapper_html: { class: "span6" }, input_html: { class: "span12" }
         = f.input :featured, wrapper_html: { class: "span6" }, label: "Featured?"
         .row-fluid#event_content
-          = f.input :raw_content, wrapper_html: { class: "span10" }, input_html: {class: "ckeditor span12" }, label: "Description"
+          = f.input :sanitized_content, wrapper_html: { class: "span10" }, input_html: {class: "ckeditor span12" }, label: "Description", as: :text
         .row-fluid
           = f.input :start_day, as: :fake, wrapper_html: { class: "span4" },
             input_html: { value: f.object.start_date.try(:strftime, "%m/%d/%Y") }
@@ -147,7 +147,7 @@
                 .span2
                   .btn.btn-danger.remove-serialized-field X
       .tab-pane#doc_content
-        = f.input :raw_content, input_html: { class: "ckeditor input-block-level" }, label: "Content"
+        = f.input :sanitized_content, input_html: { class: "ckeditor input-block-level" }, label: "Content", as: :text
       .tab-pane#images
         = fields_for Image.new do |i|
           %fieldset#image_fields

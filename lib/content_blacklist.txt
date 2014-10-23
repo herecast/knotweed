@@ -1,0 +1,12 @@
+/(?:---------------------------)?[\s]*(?:(?:\n)?<br(?:\ \/)?>)?[\s]*(?:Visit[^\n]*for[^\n]*information\..*)?You\ received\ this\ message\ as\ a\ subscriber.*vitalcommunities\.org(?:\.)?/m
+/Greetings\ from\ the[^\n]*[\s]*(?:(?:\n)?<br(?:\ \/)?>)?[\s]*POSTING.*[\s]*(?:(?:\n)?<br(?:\ \/)?>)?[\s]*---------------------------------(?:<\/p>)?[\n]*/m
+/(?:---------------------------)?[\s]*(?:(?:\n)?<br(?:\ \/)?>)?[\s]*?To\ POST\ a message\ to\ this\ list,\ email\ your\ message\ to.*vitalcommunities\.org(?:\.)?/m
+/Welcome\ to\ your\ West\ Fairlee\ community\ listserv.*posting\ rules\ at\ the\ end\ of\ this\ email(?:.)?/
+/(?:---------------------------)?[\s]*(?:(?:\n)?<br(?:\ \/)?>)?[\s]*?You\ received\ this\ message\ as\ a\ subscriber.*DO\ NOT\ INCLUDE\ THE\ PREVIOUS.*IN\ YOUR\ NEW\ POST(?:\.)?/m
+/The\ Strafford\ listserv[^\n]*subscribers\..*Please\ sign\ your\ posts\.[\s]*(?:(?:\n)?<br(?:\ \/)?>)?[\s]*________________________________________________________________[\s]*(?:(?:\n)?<br(?:\ \/)?>)?[\s]*/m
+/(?:---------------------------)?[\s]*(?:(?:\n)?<br(?:\ \/)?>)?[\s]*?To\ be\ removed\ from\ this\ list,\ send\ a\ blank\ message.*more\ information\ on\ this\ community\ organization(?:\.)?/m
+/Please\ DO\ NOT\ REPLY\ TO\ THIS\ MESSAGE\ to\ post\ to\ this\ listserv!.*valley\.net\ for\ more\ information(?:\.)?/m
+/(?:---------------------------)?[\s]*(?:(?:\n)?<br(?:\ \/)?>)?[\s]*(?:Visit[^\n]*for[^\n]*information\..*)?You\ received\ this\ message\ as\ a\ subscriber.*All\ Upper\ Valley-wide\ posts\ should\ be\ sent\ ONLY\ to\ uppervalley@lists\.valley\.net(?:\.)?/m
+/[^\n]*here\ are\ [^\n]*(Thetford|groton_area|Lebanon|Newbury)\ listserv.*POSTING\ RULES.*________________________________________________________________/m
+/(?:---------------------------)?[\s]*(?:(?:\n)?<br(?:\ \/)?>)?[\s]*?You\ received\ this\ message\ as\ a\ subscriber.*(thetford|groton_area|lebanon|mascoma|newbury)@lists\.valley\.net\ address\ in\ the\ TO\ field(?:\.)?/m
+/There\ are\ over\ [0-9,]*\ Bradford\ listserv.*________________________________/m

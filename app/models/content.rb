@@ -1,3 +1,4 @@
+# encoding: utf-8
 # == Schema Information
 #
 # Table name: contents
@@ -85,7 +86,8 @@ class Content < ActiveRecord::Base
                   :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
                   :image_ids, :parent_id, :source_uri, :category,
                   :event_type, :start_date, :end_date, :cost, :recurrence, :host_organization,
-                  :links, :featured, :content_category_id, :category_reviewed, :raw_content, :processed_content
+                  :links, :featured, :content_category_id, :category_reviewed, :raw_content, :processed_content,
+                  :sanitized_content
 
   serialize :links, Hash
 
@@ -131,6 +133,8 @@ class Content < ActiveRecord::Base
   CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle 
                   local_news nation_world offered presentation recommendation
                   sale_event sports wanted)
+
+  BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt')) 
 
    # display processed content if available
   # otherwise, raw content
@@ -713,6 +717,120 @@ class Content < ActiveRecord::Base
     update_attributes(content_category_id: cat, processed_content: response_hash[:processed_content].to_s)
   end
 
+  # Creates HTML-annotated, sanitized version of the raw_content that should be
+  # as display-ready as possible
+  def sanitized_content
+    pre_sanitize_filters = [
+      [:gsub!, ["\u{a0}",""]], # get rid of... this
+      [:gsub!, [/<!--(?:(?!-->).)*-->/m, ""]], # get rid of HTML comments
+      [:gsub!, [/<![^>]*>/, ""]], # get rid of doctype
+    ]
+
+    c = raw_content.gsub(/[[:alpha:]]\.[[:alpha:]]\./) {|s| s.upcase }
+    pre_sanitize_filters.each {|f| c.send f[0], *f[1]}
+    c = sanitize(c, tags: %w(div span img a p br h1 h2 h3 h4 h5 h6 strong table td tr th ul ol li))
+    doc = Nokogiri::HTML.parse(c)
+    doc.search('//text()').each {|t| t.content = t.content.sub(/^[^>\n]*>\p{Space}*\z/, "") } # kill tag fragments
+    is_newline = Proc.new do |t|
+      not t.nil? and (t.matches? "br" or (t.matches? "p" and t.children.empty?))
+    end
+    remove_dup_newlines = Proc.new do |this_e, &block|
+      while is_newline.call(this_e.next())
+        block.call() if block
+        this_e.next().remove()
+      end
+    end
+    doc.search("p").each do |e|
+      # This removes completely empty <p> tags... hopefully helps with excess whitespace issues
+      if e.children.empty?
+        e.remove
+      # We saw content where only a text fragment was inside a "<p>" block, but then the following
+      # tags "really" should have been part of that initial text fragment. This logic attempts to
+      # remove excess whitespace in that and consolidate into 1 or more <p> blocks.
+      elsif e.children.length == 1
+        next_e = e.next()
+        text = [e.content]
+        until next_e.nil? do
+          if next_e.text?
+            text[-1] += next_e.text
+          elsif is_newline.call(next_e)
+            remove_dup_newlines.call(next_e)
+          elsif next_e.matches? "strong"
+            text.append "" if is_newline.call(next_e.next())
+            text[-1] += " " if text[-1][-1] != " "
+            text[-1] += next_e.to_html unless next_e.children.empty?
+          else
+            break
+          end
+          this_e = next_e
+          next_e = next_e.next()
+          this_e.remove()
+        end
+        text = text.delete_if {|t| t.empty? or t.blank?}
+        new_node = Nokogiri::HTML.fragment("<p>#{text.shift}</p>")
+        e = e.replace(new_node)
+        text.reverse_each { |t| e.after("<p>#{t}</p>") }
+      end
+    end
+
+    # try to remove any lingering inline CSS or bad text
+    text_block = { text: "", nodes: [] }
+    e_iter = doc.search("body").first.children.first unless doc.search("body").first.nil?
+    until e_iter.nil? do
+      if e_iter.text?
+        text_block[:text] += e_iter.text
+        text_block[:nodes].append e_iter
+      elsif e_iter.matches? "br"
+      else
+        # This is a pretty lazy regex match for inline CSS... probably want something better
+        text_block[:nodes].each {|n| n.remove() } if text_block[:text].match(/^.*{.*}$/) or text_block[:text].blank?
+        text_block = { text: "", nodes: [] }
+      end
+      e_iter = e_iter.next()
+    end
+
+    # Get rid of excess whitespace caused by a ton of <br> tags
+    doc.search("br").each {|e| remove_dup_newlines.call(e) }
+    c = doc.search("body").first.to_html unless doc.search("body").first.nil?
+    c ||= doc.to_html
+    c = simple_format c
+
+    BLACKLIST_BLOCKS.each do |b| 
+      if /^\/(.*)\/([a-z]*)$/ =~ b.strip
+        match = $~
+        opts = 0
+        match[2].each_char do |flag|
+          case flag
+          when "i"
+            opts |= Regexp::IGNORECASE
+          when "m"
+            opts |= Regexp::MULTILINE
+          when "x"
+            opts |= Regexp::EXTENDED
+          end
+        end
+        b = Regexp.new match[1], opts
+      else 
+        b = b.strip
+      end
+      c.gsub!(b, "")
+    end
+
+    # Try to get rid of extaneous whitespace
+    if c.include? "div"
+      replace = ""
+    else
+      replace = "<br />"
+    end
+
+    c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, replace)
+    c.gsub(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, replace)
+  end
+
+  def sanitized_content= new_content
+    self.raw_content = new_content
+  end
+
   private 
 
   def query_promo_similarity_index(query_term, repo)
@@ -721,7 +839,7 @@ class Content < ActiveRecord::Base
                     ActionView::Base.full_sanitizer.sanitize(query_term)))
     query = File.read(Rails.root.join("lib", "queries", "query_promo_similarity_index.rq")) % 
             { content: clean_content, content_id: id }
-    results = sparql.query(query)
+    sparql.query(query)
   end
 
 end
