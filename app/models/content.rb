@@ -400,7 +400,7 @@ class Content < ActiveRecord::Base
         f.write to_new_xml
       end
       File.open("#{export_path}/#{guid}.html", "w+") do |f|
-        f.write raw_content
+        f.write sanitized_content
       end
       file_list << xml_path
       return true
@@ -496,7 +496,7 @@ class Content < ActiveRecord::Base
         end
         g.tag!("tns:document-part", "part"=>"BODY", "id"=>"1") do |h|
           h.tag!("tns:content") do |i|
-            i.cdata!(raw_content)
+            i.cdata!(sanitized_content)
           end
         end
       end
@@ -529,7 +529,7 @@ class Content < ActiveRecord::Base
       FileUtils.mkpath("#{export_path}/pre_pipeline")
       xml_path = "#{export_path}/pre_pipeline/#{guid}.xml"
       File.open(xml_path, "w+") { |f| f.write(res.body) }
-      File.open("#{export_path}/pre_pipeline/#{guid}.html", "w+") { |f| f.write(raw_content) }
+      File.open("#{export_path}/pre_pipeline/#{guid}.html", "w+") { |f| f.write(sanitized_content) }
       file_list << xml_path
       return true
     else
@@ -548,7 +548,7 @@ class Content < ActiveRecord::Base
       FileUtils.mkpath("#{export_path}/post_pipeline")
       xml_path = "#{export_path}/post_pipeline/#{guid}.xml"
       File.open(xml_path, "w+") { |f| f.write(res.body) }
-      File.open("#{export_path}/post_pipeline/#{guid}.html", "w+") { |f| f.write(raw_content) }
+      File.open("#{export_path}/post_pipeline/#{guid}.html", "w+") { |f| f.write(sanitized_content) }
       file_list << xml_path
       return true
     else
