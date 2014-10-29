@@ -720,11 +720,12 @@ class Content < ActiveRecord::Base
       [:gsub!, ["\u{a0}",""]], # get rid of... this
       [:gsub!, [/<!--(?:(?!-->).)*-->/m, ""]], # get rid of HTML comments
       [:gsub!, [/<![^>]*>/, ""]], # get rid of doctype
+      [:gsub!, [/<\/div><div[^>]*>/, "\n\n"]], # replace divs with new lines
     ]
 
     c = raw_content.gsub(/[[:alpha:]]\.[[:alpha:]]\./) {|s| s.upcase }
     pre_sanitize_filters.each {|f| c.send f[0], *f[1]}
-    c = sanitize(c, tags: %w(div span img a p br h1 h2 h3 h4 h5 h6 strong table td tr th ul ol li))
+    c = sanitize(c, tags: %w(span img a p br h1 h2 h3 h4 h5 h6 strong table td tr th ul ol li))
     doc = Nokogiri::HTML.parse(c)
     doc.search('//text()').each {|t| t.content = t.content.sub(/^[^>\n]*>\p{Space}*\z/, "") } # kill tag fragments
     is_newline = Proc.new do |t|
@@ -812,15 +813,8 @@ class Content < ActiveRecord::Base
       c.gsub!(b, "")
     end
 
-    # Try to get rid of extaneous whitespace
-    if c.include? "div"
-      replace = ""
-    else
-      replace = "<br />"
-    end
-
-    c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, replace)
-    c.gsub(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, replace)
+    c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
+    c.gsub(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
   end
 
   def sanitized_content= new_content
