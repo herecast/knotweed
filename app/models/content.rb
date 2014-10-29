@@ -717,7 +717,8 @@ class Content < ActiveRecord::Base
   # as display-ready as possible
   def sanitized_content
     pre_sanitize_filters = [
-      [:gsub!, ["\u{a0}",""]], # get rid of... this
+      # HACK: not sure exactly what this is...
+      #[:gsub!, ["\u{a0}",""]], # get rid of... this
       [:gsub!, [/<!--(?:(?!-->).)*-->/m, ""]], # get rid of HTML comments
       [:gsub!, [/<![^>]*>/, ""]], # get rid of doctype
       [:gsub!, [/<\/div><div[^>]*>/, "\n\n"]], # replace divs with new lines
@@ -814,7 +815,7 @@ class Content < ActiveRecord::Base
       c.gsub!(b, "")
     end
 
-    c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
+    c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "<br />")
     c.gsub(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
   end
 
