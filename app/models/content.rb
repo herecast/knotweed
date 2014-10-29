@@ -791,6 +791,7 @@ class Content < ActiveRecord::Base
     c = doc.search("body").first.to_html unless doc.search("body").first.nil?
     c ||= doc.to_html
     c = simple_format c
+    c.gsub!(/(<a href="http[^>]*)>/, '\1 target="_blank">')
 
     BLACKLIST_BLOCKS.each do |b| 
       if /^\/(.*)\/([a-z]*)$/ =~ b.strip
