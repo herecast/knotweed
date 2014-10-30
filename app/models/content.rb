@@ -776,13 +776,9 @@ class Content < ActiveRecord::Base
     e_iter = doc.search("body").first.children.first unless doc.search("body").first.nil?
     until e_iter.nil? do
       if e_iter.text?
-        text_block[:text] += e_iter.text
-        text_block[:nodes].append e_iter
+        e_iter.remove() if text_block[:text].match(/\A.*{.*}\Z/) or text_block[:text].blank?
       elsif e_iter.matches? "br"
       else
-        # This is a pretty lazy regex match for inline CSS... probably want something better
-        text_block[:nodes].each {|n| n.remove() } if text_block[:text].match(/^.*{.*}$/) or text_block[:text].blank?
-        text_block = { text: "", nodes: [] }
       end
       e_iter = e_iter.next()
     end
