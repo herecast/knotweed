@@ -716,6 +716,7 @@ class Content < ActiveRecord::Base
   # Creates HTML-annotated, sanitized version of the raw_content that should be
   # as display-ready as possible
   def sanitized_content
+    return raw_content if raw_content.nil?
     pre_sanitize_filters = [
       # HACK: not sure exactly what this is...
       #[:gsub!, ["\u{a0}",""]], # get rid of... this
