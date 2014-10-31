@@ -727,8 +727,8 @@ class Content < ActiveRecord::Base
 
     c = raw_content.gsub(/[[:alpha:]]\.[[:alpha:]]\./) {|s| s.upcase }
     pre_sanitize_filters.each {|f| c.send f[0], *f[1]}
-    c = sanitize(c, tags: %w(span img a p br h1 h2 h3 h4 h5 h6 strong table td tr th ul ol li))
     doc = Nokogiri::HTML.parse(c)
+    doc.search("style").each {|t| t.remove() }
     doc.search('//text()').each {|t| t.content = t.content.sub(/^[^>\n]*>\p{Space}*\z/, "") } # kill tag fragments
     is_newline = Proc.new do |t|
       not t.nil? and (t.matches? "br" or (t.matches? "p" and t.children.empty?))
@@ -773,11 +773,10 @@ class Content < ActiveRecord::Base
     end
 
     # try to remove any lingering inline CSS or bad text
-    text_block = { text: "", nodes: [] }
     e_iter = doc.search("body").first.children.first unless doc.search("body").first.nil?
     until e_iter.nil? do
       if e_iter.text?
-        e_iter.remove() if text_block[:text].match(/\A.*{.*}\Z/) or text_block[:text].blank?
+        e_iter.remove() if e_iter.text.match(/\A.*{.*}\Z/) or e_iter.text.blank?
       elsif e_iter.matches? "br"
       else
       end
@@ -788,6 +787,7 @@ class Content < ActiveRecord::Base
     doc.search("br").each {|e| remove_dup_newlines.call(e) }
     c = doc.search("body").first.to_html unless doc.search("body").first.nil?
     c ||= doc.to_html
+    c = sanitize(c, tags: %w(span img a p br h1 h2 h3 h4 h5 h6 strong table td tr th ul ol li))
     c = simple_format c
     c.gsub!(/(<a href="http[^>]*)>/, '\1 target="_blank">')
 
