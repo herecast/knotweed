@@ -389,7 +389,7 @@ describe Content do
     end
     it "should contain document part with content" do
       # note the brackets at the end are closing CDATA
-      @xml.include?("#{@content.content}]]></tns:content>").should be_true
+      @xml.include?("#{@content.sanitized_content}]]></tns:content>").should be_true
     end 
   end
 
