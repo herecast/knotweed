@@ -1,10 +1,35 @@
+# Place all the behaviors and hooks related to the matching controller here.
+# All this logic will automatically be available in application.js.
+# You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
+
 jQuery ->
   $('#event_tab_link, #contents_tab_link').on 'click', ->
     $("#content_content_category_id").trigger('change')
 
   $("#add_new_publication").on 'click', ->
-    console.log 'hello'
     $(".modal#publication_form .modal-body").load($(this).data('formUrl'))
+
+  $("#new_venue_link").on 'click', ->
+    $(".modal#business_location_form .modal-body").load($(this).data('formUrl'))
+
+  # edit venue link logic
+  $("#content_business_location_id").select2
+    allowClear: true
+  # hide and show based on whether a venue is selected
+  $("#content_business_location_id").on 'change', ->
+    val = $(this).select2('val')
+    console.log val
+    if val.length > 0
+      $("#edit_venue_link").show()
+      form_url = $("#edit_venue_link").data("formUrl")
+      new_form_url = form_url.replace(/[0-9]+/, val)
+      console.log new_form_url
+      $("#edit_venue_link").data("formUrl", new_form_url)
+    else
+      $("#edit_venue_link").hide()
+
+  $("#edit_venue_link").on 'click', ->
+    $(".modal#business_location_form .modal-body").load($(this).data('formUrl'))
 
   $(".tab-traversal-link").on 'click', ->
     current = $(".nav-tabs-simple li.active")[0]
@@ -12,7 +37,12 @@ jQuery ->
     new_index = index + parseInt($(this).data("moveIndex"))
     if new_index < 0
       new_index = 0
-    $(".nav-tabs-simple li a:eq(" + new_index + ")").tab('show')
+    # account for tabs that might be hidden
+    new_tab = $(".nav-tabs-simple li a:eq(" + new_index + ")")
+    while new_tab.parent().hasClass("hidden")
+      new_index = new_index + parseInt($(this).data("moveIndex"))
+      new_tab = $(".nav-tabs-simple li a:eq(" + new_index + ")")
+    new_tab.tab('show')
 
   updateIssueOptions()
   $(document).on 'change', '#content_source_id', ->
@@ -27,19 +57,11 @@ jQuery ->
       $("#event_tab_link").removeClass("hidden")
       $("#contents_tab_link").addClass("hidden")
       $("label[for='content_source_id']").text("Organization")
-      contentEditor = $("#event_features #cke_content_sanitized_content")
-      contentEditor[0].remove() if contentEditor.length > 1
-      $("#event_features .content_sanitized_content textarea").attr("name", "content[sanitized_content]")
-      $("#doc_content .content_sanitized_content textarea").attr("name", "content[sanitized_content1]")
     else
       $("#add_new_publication").hide()
       $("#event_tab_link").addClass("hidden")
       $("#contents_tab_link").removeClass("hidden")
       $("label[for='content_source_id']").text("Publication")
-      contentEditor = $("#doc_content #cke_content_sanitized_content")
-      contentEditor[0].remove() if contentEditor.length > 1
-      $("#doc_content .content_sanitized_content textarea").attr("name", "content[sanitized_content]")
-      $("#event_features .content_sanitized_content textarea").attr("name", "content[sanitized_content1]")
   $("#content_content_category_id").trigger('change')
 
   # parent content search box

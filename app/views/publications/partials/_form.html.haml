@@ -60,7 +60,10 @@
                 .btn.btn-danger.remove-serialized-field X
       .tab-pane#business_locations
         .pull-right
-          = link_to "+ Add New Location", "#", class: "btn btn-success", data: { toggle: "modal", target: "#business_location_form", form_url: new_business_location_path({ publication_id: @publication.id }  )}, id: "new_business_location_button" 
+          = link_to "+ Add New Location", "#", class: "btn btn-success", 
+            data: { toggle: "modal", target: "#business_location_form", 
+            form_url: new_business_location_path({ publication_id: @publication.id }  )}, 
+            id: "new_business_location_button" 
           / hidden field for creating business locations associated with a new publication record
           - unless @publication.id
             = f.association :business_locations, as: :hidden, input_html: { name: "publication[business_location_list]", value: "" }
