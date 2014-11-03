@@ -1,5 +1,8 @@
+/ if we are on the publications page, take the following two actions
+if ($("#business_locations_list").length > 0) {
 $("tbody#business_locations_list").append("#{ j render 'business_locations/partials/row', business_location: @business_location }");
 $("#business_locations_table").dataTable().fnAddTr($("tr.business-location-#{@business_location.id}")[0]);
+}
 
 / fill in hidden field if publication doesn't exist yet
 if ($("#publication_business_location_ids").length > 0) {
@@ -7,4 +10,10 @@ old_val = $("#publication_business_location_ids").val();
 if (old_val.length > 0) { new_val = old_val + ",#{@business_location.id}"; }
 else { new_val = "#{@business_location.id}"; }
 $("#publication_business_location_ids").val(new_val);
+}
+
+/ otherwise, if a business_location select box is on the page, we need to add the new one to it.
+if ($("#content_business_location_id").length > 0) {
+$("#content_business_location_id").append("#{ j options_from_collection_for_select([@business_location], 'id', 'select_option_label') }");
+$("#content_business_location_id").select2("val", "#{@business_location.id}");
 }

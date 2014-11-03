@@ -29,3 +29,22 @@ form#edit_document {
 #contents_index {
   font-size:90%;
 }
+#event_features {
+  .row-fluid .control-group {
+    margin-bottom: 0; // decrease vertical padding in event details form
+  }
+  .venue-links {
+    span {
+      border-right: 1px solid black;
+      &:last-of-type {
+        border: none;
+      }
+      padding: 0 5px 0 5px;
+
+      cursor: pointer;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

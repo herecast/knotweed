@@ -43,3 +43,4 @@
 //= require add.mind
 //= require contents
 //= require dashboard
+//= require select2

@@ -1,6 +1,5 @@
 class ContentsController < ApplicationController
 
-  before_filter :process_business_loc_params, only: [:create, :update]
   before_filter :process_date_params, only: [:create, :update]
   
   PUBLISH_METHODS_TO_DOWNLOAD = ["export_pre_pipeline_xml", "export_post_pipeline_xml"]
@@ -26,18 +25,13 @@ class ContentsController < ApplicationController
 
   def new
     @content = Content.new
-    @content.build_business_location
-    @business_location_options = [["None available.", nil]]
   end
 
   def create
-    # hack to remove duplicate content entry
-    params[:content].delete :sanitized_content1 if params[:content].present?
     image_list = params[:content].delete(:image_list)
     image_ids = image_list.try(:split, ",")
     @content = Content.new(params[:content])
     connection = nil
-    @business_location_id = nil
     if @content.save
       if image_ids.present?
         image_ids.each do |image_id|
@@ -69,22 +63,9 @@ class ContentsController < ApplicationController
 
   def edit
     @content = Content.find(params[:id])
-    # ensure the form fields aren't filled with a location from the dropdown
-    # really pretty hacky...oh well.
-    bls = @content.source.try(:business_locations)
-    @business_location_options = @content.source.try(:business_location_options) || []
-    if bls.present? and bls.include? @content.business_location
-      @business_location_id = @content.business_location.id
-      # we need to ensure the fields on the right exist
-      @content.build_business_location
-    elsif @content.business_location.nil?
-      @content.build_business_location
-    end
   end
 
   def update
-    # hack to remove duplicate content entry
-    params[:content].delete :sanitized_content1 if params[:content].present?
     # ensure serialized values are set to empty if no fields are passed in via form
     params[:content][:links] = nil unless params[:content].has_key? :links
     @content = Content.find(params[:id])
@@ -171,17 +152,6 @@ class ContentsController < ApplicationController
   end
 
   private
-  def process_business_loc_params
-    if params[:content][:business_location_id].present?
-      params[:content].delete :business_location_attributes
-    else
-      params[:content].delete :business_location_id
-      if params[:save_to_publication]
-        params[:content][:business_location_attributes][:publication_id] = params[:content][:source_id]
-      end
-    end
-  end
-
   def process_date_params
     if params.has_key? :start_day and params.has_key? :start_time
       Chronic.time_class = Time.zone

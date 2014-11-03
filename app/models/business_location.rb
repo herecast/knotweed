@@ -25,4 +25,9 @@ class BusinessLocation < ActiveRecord::Base
   geocoded_by :address
 
   after_validation :geocode, if: ->(obj){ obj.address.present? and obj.address_changed? }
+
+  def select_option_label
+    "#{name} - #{address}"
+  end
+
 end
