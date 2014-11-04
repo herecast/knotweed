@@ -117,11 +117,11 @@
                 .row-fluid
                   = f.label :business_location_id, label: "Venue", class: "span9"
                   .span3.venue-links
-                    %span.text-right#edit_venue_link{ style: "#{ @content.business_location.present? ? "" : "display: none;" }",
+                    %span.text-right.venue-link#edit_venue_link{ style: "#{ @content.business_location.present? ? "" : "display: none;" }",
                       data: { toggle: "modal", target: "#business_location_form", 
                       form_url: edit_business_location_path(@content.business_location.present? ? @content.business_location.id : 1) } }
                       Edit
-                    %span.text-right#new_venue_link{ data: { form_url: new_business_location_path,
+                    %span.text-right.venue-link#new_venue_link{ data: { form_url: new_business_location_path,
                       toggle: "modal", target: "#business_location_form" } }
                       + Create Venue
 

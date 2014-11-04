@@ -1,3 +1,31 @@
 # Place all the behaviors and hooks related to the matching controller here.
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
+
+jQuery ->
+
+  # content form logic
+  # edit venue link logic
+  $("#content_business_location_id").select2
+    allowClear: true
+  # hide and show based on whether a venue is selected
+  $("#content_business_location_id").on 'change', ->
+    val = $(this).select2('val')
+    console.log val
+    if val.length > 0
+      $("#edit_venue_link").show()
+      form_url = $("#edit_venue_link").data("formUrl")
+      new_form_url = form_url.replace(/[0-9]+/, val)
+      console.log new_form_url
+      $("#edit_venue_link").data("formUrl", new_form_url)
+    else
+      $("#edit_venue_link").hide()
+
+  $(".venue-link").on 'click', ->
+    $(".modal#business_location_form .modal-body").load($(this).data('formUrl'))
+
+  $(document).on 'click', '#locate_on_map_button', ->
+    base_src_url = $("#confirm_location_map").data("baseSrcUrl")
+    console.log base_src_url
+    new_src = base_src_url.replace(/q=.*/, "q=" + $("#business_location_address").val())
+    $("#confirm_location_map").attr("src", new_src)

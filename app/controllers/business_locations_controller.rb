@@ -34,4 +34,5 @@ class BusinessLocationsController < ApplicationController
       format.js
     end
   end
+
 end

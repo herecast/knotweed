@@ -44,3 +44,4 @@
 //= require contents
 //= require dashboard
 //= require select2
+//= require business_locations

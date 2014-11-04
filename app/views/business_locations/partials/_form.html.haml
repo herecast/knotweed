@@ -1,11 +1,18 @@
 = simple_form_for @business_location, remote: true do |f|
   = f.input :name, input_html: { class: "input-block-level" }
-  = f.input :address, input_html: { class: "input-block-level" }
+  = f.input :address, input_html: { class: "input-block-level" },
+    label: "Address (street, city, state, zip)"
   .row-fluid
     .span6
-      = f.input :email
+      = f.input :email, input_html: { class: "input-block-level" }
+      = f.input :phone, input_html: { data: { mask: "(999) 999-9999" }, class: "input-block-level" }
     .span6
-      = f.input :phone, input_html: { data: { mask: "(999) 999-9999" } }
+      %span.pull-right.btn.btn-primary#locate_on_map_button Locate on Map
+      - if @business_location.address.present?
+        %iframe#confirm_location_map{ data: { base_src_url: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=" },
+          src: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=#{CGI::escape @business_location.address}" }
+      - else
+        %iframe#confirm_location_map{ data: { base_src_url: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=" } }
   = f.input :hours, input_html: { class: "input-block-level" }
   = f.association :publication, as: :hidden
   = f.submit nil, class: "btn btn-success"
