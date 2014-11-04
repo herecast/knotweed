@@ -62,6 +62,20 @@ class ContentsController < ApplicationController
   end
 
   def edit
+    # need to determine id of "next record" if we got here from the search index
+    if params[:index].present?
+      params[:page] = 1 unless params[:page].present?
+      contents = Content.ransack(session[:contents_search]).result(distinct: true).order("pubdate DESC").page(params[:page]).per(100).select("id")
+      @next_index = params[:index].to_i + 1
+      @next_content_id = contents[@next_index].try(:id)
+      # account for scenario where we are at end of page
+      if @next_content_id.nil?
+        params[:page] = params[:page].to_i + 1
+        contents = Content.ransack(session[:contents_search]).result(distinct: true).order("pubdate DESC").page(params[:page]).per(100).select("id")
+        @next_index = 0 # first one on the new page
+        @next_content_id = contents[@next_index].try(:id)
+      end
+    end
     @content = Content.find(params[:id])
   end
 
@@ -169,6 +183,8 @@ class ContentsController < ApplicationController
       edit_content_path(id)
     elsif params[:create_new]
       new_content_path
+    elsif params[:next_record]
+      edit_content_path(params[:next_record_id], index: params[:index], page: params[:page])
     else
       contents_path
     end
