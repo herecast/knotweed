@@ -20,7 +20,7 @@ class BusinessLocation < ActiveRecord::Base
   has_many :contents
 
   attr_accessible :address, :email, :hours, :name, :publication_id, :phone, 
-    :latitude, :longitude
+    :latitude, :longitude, :venue_url
 
   geocoded_by :address
 
