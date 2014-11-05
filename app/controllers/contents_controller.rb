@@ -65,7 +65,7 @@ class ContentsController < ApplicationController
     # need to determine id of "next record" if we got here from the search index
     if params[:index].present?
       params[:page] = 1 unless params[:page].present?
-      contents = Content.ransack(session[:contents_search]).result(distinct: true).order("pubdate DESC").page(params[:page]).per(100).select("id")
+      contents = Content.ransack(session[:contents_search]).result(distinct: true).order("pubdate DESC").page(params[:page]).per(100).select("contents.id")
       @next_index = params[:index].to_i + 1
       @next_content_id = contents[@next_index].try(:id)
       # account for scenario where we are at end of page
