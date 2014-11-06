@@ -515,7 +515,8 @@ class Content < ActiveRecord::Base
     })
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
                "import_record_id", "published", "links", "start_date", "end_date",
-               "links", "featured", "category_reviewed", "raw_content", "processed_content" )
+               "links", "featured", "category_reviewed", "raw_content", "processed_content",
+               "has_event_calendar")
   end
 
   # Export Gate Document directly before/after Pipeline processing
