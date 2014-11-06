@@ -94,7 +94,7 @@
         .row-fluid
           .span6
             = f.input :event_description, wrapper_html: { class: "span12" }, input_html: {class: "ckeditor span12",
-              value: @content.event_description.present? ? @content.event_description : @content.sanitized_content }, 
+              value: @content.event_description.present? ? @content.event_description : @content.sanitized_content}, 
               label: "Description", as: :text
           .span6
             .row-fluid
