@@ -170,7 +170,7 @@ class Api::ContentsController < Api::ApiController
     params[:per_page] ||= 30
 
     opts = { select: '*, weight()', excerpts: { limit: 350, around: 5, html_strip_mode: "strip" } }
-    opts[:order] = 'timestamp DESC' if params[:order] == 'pubdate'
+    opts[:order] = 'pubdate DESC' if params[:order] == 'pubdate'
     opts[:per_page] = params[:per_page]
     opts[:page] = params[:page]
 
