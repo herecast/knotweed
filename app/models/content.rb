@@ -87,7 +87,8 @@ class Content < ActiveRecord::Base
                   :image_ids, :parent_id, :source_uri, :category,
                   :event_type, :start_date, :end_date, :cost, :recurrence, :host_organization,
                   :links, :featured, :content_category_id, :category_reviewed, :raw_content, :processed_content,
-                  :sanitized_content, :event_title, :event_description, :sponsor_url, :event_url
+                  :sanitized_content, :event_title, :event_description, :sponsor_url, :event_url,
+                  :has_event_calendar
 
   serialize :links, Hash
 

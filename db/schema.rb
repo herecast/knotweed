@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141104184307) do
+ActiveRecord::Schema.define(:version => 20141106150756) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -239,6 +239,7 @@ ActiveRecord::Schema.define(:version => 20141104184307) do
     t.text     "event_description"
     t.string   "event_url"
     t.string   "sponsor_url"
+    t.boolean  "has_event_calendar",   :default => false
   end
 
   add_index "contents", ["authors"], :name => "authors"

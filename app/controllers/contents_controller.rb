@@ -15,9 +15,30 @@ class ContentsController < ApplicationController
       session[:contents_search] = params[:q]
     end
     
-    @search = Content.ransack(session[:contents_search])
+    # have to merge two searches to deal with event calendar predicate
+    # because we also need to include if start_date present?
+    if session[:contents_search].present? and session[:contents_search].has_key? :has_event_calendar_true and session[:contents_search][:has_event_calendar_true].present? 
+      shared_context = Ransack::Context.for(Content)
+      @search = Content.ransack(session[:contents_search], context: shared_context)
+      search_two_params = session[:contents_search].clone
+      event_cal_query = search_two_params.delete :has_event_calendar_true
+      search_two_params[:start_date_present] = event_cal_query
+      search_two = Content.ransack(search_two_params, context: shared_context)
+      shared_conditions = [@search, search_two].map { |search|
+        Ransack::Visitor.new.accept(search.base)
+      }
+      # if has_event calendar is true, we use OR
+      # otherwise AND
+      if event_cal_query == "1"
+        @contents = Content.joins(shared_context.join_sources).where(shared_conditions.reduce(&:or)).order("pubdate DESC").page(params[:page]).per(100)
+      else
+        @contents = Content.joins(shared_context.join_sources).where(shared_conditions.reduce(&:and)).order("pubdate DESC").page(params[:page]).per(100)
+      end
+    else
+      @search = Content.ransack(session[:contents_search])
+    end
     if session[:contents_search].present?
-      @contents = @search.result(distinct: true).order("pubdate DESC").page(params[:page]).per(100)
+      @contents = @contents || @search.result(distinct: true).order("pubdate DESC").page(params[:page]).per(100)
     else
       @contents = []
     end

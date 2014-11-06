@@ -269,7 +269,7 @@ GEM
     nokogiri (1.6.1-java)
       mini_portile (~> 0.5.0)
     orm_adapter (0.5.0)
-    polyamorous (0.6.4)
+    polyamorous (1.1.0)
       activerecord (>= 3.0)
     polyglot (0.3.3)
     pry (0.9.12.4)
@@ -311,10 +311,12 @@ GEM
       rdoc (~> 3.4)
       thor (>= 0.14.6, < 2.0)
     rake (10.3.2)
-    ransack (1.1.0)
+    ransack (1.5.1)
       actionpack (>= 3.0)
       activerecord (>= 3.0)
-      polyamorous (~> 0.6.0)
+      activesupport (>= 3.0)
+      i18n
+      polyamorous (~> 1.1)
     rb-fchange (0.0.6)
       ffi
     rb-fsevent (0.9.3)

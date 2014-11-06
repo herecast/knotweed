@@ -98,6 +98,9 @@
               label: "Description", as: :text
           .span6
             .row-fluid
+              .span2.pull-right
+                = f.input :has_event_calendar, label: "Has Event?"
+            .row-fluid
               = f.input :event_title, wrapper_html: { class: "span12" }, input_html: { class: "span12",
                 value: @content.event_title.present? ? @content.event_title : @content.title }
             .row-fluid

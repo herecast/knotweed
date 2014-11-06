@@ -1,3 +1,5 @@
+= @shared_conditions
+
 .row-fluid
   .span12.box.bordered-box.blue-border
     .box-header.blue-background
@@ -12,39 +14,43 @@
     .box-content
       = search_form_for @search, url: contents_path do |f|
         .controls.controls-row
-          .field.span3
+          .field.span2
             = f.label :id_in, "ID"
             -# format id_in val for display so it matches what's entered
-            - if session.has_key? :contents_search and session[:contents_search].present? and session[:contents_search].has_key? :id_in
+            - if session[:contents_search].present? and session[:contents_search].has_key? :id_in and session[:contents_search][:id_in].present?
               - id_in_val = session[:contents_search][:id_in].join(',')
             - else
               - id_in_val = ""
-            = f.text_field :id_in, value: id_in_val
-          .field.span3
+            = f.text_field :id_in, value: id_in_val, class: "span12"
+          .field.span2
             = f.label :source_id_in, "Publications"
             = f.collection_select :source_id_in, Publication.accessible_by(current_ability), 
-              :id, :name, {}, { multiple: true, class: "chosen-select" }
-          .field.span3
+              :id, :name, {}, { multiple: true, class: "chosen-select span12" }
+          .field.span2
             = f.label :pubdate_gteq, "From"
-            = f.text_field :pubdate_gteq, type: :date, value: search_field_value(:pubdate_gteq)
-          .field.span3
+            = f.text_field :pubdate_gteq, type: :date, value: search_field_value(:pubdate_gteq), class: "span12"
+          .field.span2
             = f.label :pubdate_lteq, "To"
-            = f.text_field :pubdate_lteq, type: :date, value: search_field_value(:pubdate_lteq)
-        .controls.controls-row
-          .field.span3
+            = f.text_field :pubdate_lteq, type: :date, value: search_field_value(:pubdate_lteq), class: "span12"
+          .field.span2
             = f.label :content_category_id_in, "Category"
             = f.collection_select :content_category_id_in, ContentCategory.accessible_by(current_ability),
               :id, :label, { include_blank: true },
-              { multiple: true, class: "chosen-select" }
-          .field.span3
+              { multiple: true, class: "chosen-select span12" }
+        .controls.controls-row
+          .field.span2
             = f.label :title_cont, "Title"
-            = f.text_field :title_cont
-          .field.span3
+            = f.text_field :title_cont, class: "span12"
+          .field.span2
             = f.label :authors_cont, "Authors"
-            = f.text_field :authors_cont
-          .field.span3
+            = f.text_field :authors_cont, class: "span12"
+          .field.span2
             = f.label :repositories_id_eq, "Published in Repository?"
-            = f.collection_select :repositories_id_eq, Repository.all, :id, :name, { include_blank: true }
+            = f.collection_select :repositories_id_eq, Repository.all, :id, :name, { include_blank: true }, class: "span12"
+          .field.span2
+            = f.label :has_event_calendar_true, "Event Cal"
+            = f.select :has_event_calendar_true, options_for_select([["Both", nil], ["Yes", 1], ["No", 0]], search_field_value(:has_event_calendar_true)),
+              { class: "span12"}
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
@@ -57,7 +63,7 @@
       %th Authors
       %th Location
       %th Pubdate
-      %th Start date
+      %th Event?
       %th
   .span5
     = page_entries_info @contents if @contents.present?
@@ -77,7 +83,9 @@
           - if c.import_location.present?
             = link_to c.import_location.city, contents_path(q: { import_location_id_in: c.import_location.id })
         %td= c.pubdate.try(:strftime, "%Y-%m-%d")
-        %td= c.start_date.try(:strftime, "%Y-%m-%d")
+        %td
+          - if c.start_date.present? or c.has_event_calendar
+            %i.glyphicons.icon-ok
         %td.actions
           = link_to "edit", edit_content_path(c), class: "btn btn-mini btn-warning"
           - unless c.published?
