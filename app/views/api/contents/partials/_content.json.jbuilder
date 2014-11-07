@@ -1,7 +1,7 @@
 # we need to provide different attributes if it is a "truncated" query
 if params[:truncated]
   attrs = [:id, :title, :subtitle, :start_date, :event_type, :host_organization,
-           :event_title, :event_description]
+           :event_title, :event_description, :business_location]
   json.content content.raw_content
 else
   attrs = [:id, :title, :start_date, :end_date, :event_type, :host_organization, :cost, :recurrence,
