@@ -18,7 +18,7 @@ class Promotion < ActiveRecord::Base
   # TODO: At some point we probably want to lock this down a bit more so it's not so easy to attach 
   # promotions to any content/publication
   attr_accessible :active, :banner, :banner_cache, :remove_banner, :description, :content, :publication,
-                  :publication_id, :content_id
+                  :publication_id, :content_id, :target_url
   after_initialize :init
 
   after_save :update_active_promotions

@@ -25,5 +25,8 @@
         - else
           = link_to @promotion.content.title, content_path(@promotion.content)
       %p
+        %b Target URL:
+        = link_to nil, @promotion.target_url
+      %p
         %b Description:
         = @promotion.description

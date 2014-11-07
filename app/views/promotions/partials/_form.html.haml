@@ -12,6 +12,7 @@
     = f.label :content
     %label= promotion.content.try(:title)
     = f.input :content_id, as: :hidden
+    = f.input :target_url, input_html: { class: "input-block-level" }
     = f.input :description, input_html: { class: "input-block-level", rows: 5 }
 
   .form-actions
