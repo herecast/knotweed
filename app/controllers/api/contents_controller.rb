@@ -213,6 +213,17 @@ class Api::ContentsController < Api::ApiController
     end
   end
 
+  def featured_events
+    params[:truncated] = true
+    @contents = Content.where(featured: true).where("start_date > ?", Time.zone.now).order("start_date ASC")
+    if params[:publications].present?
+      allowed_pubs = Publication.where(name: params[:publications])
+      @contents = @contents.where(source_id: allowed_pubs)
+    end
+    @contents= @contents.limit(5)
+    render "index"
+  end
+    
   private
 
   # detects if the route is through events

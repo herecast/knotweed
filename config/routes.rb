@@ -77,6 +77,7 @@ Knotweed::Application.routes.draw do
     post 'category_corrections', to: 'category_corrections#create'
     resources 'publications', only: [:show]
     get 'publications', to: "publications#show", as: :find_publication
+    get 'events/featured', to: 'contents#featured_events', as: :featured_events
     resources :events, only: [:show, :index], controller: "contents"
     resources :contents, only: [:index, :show, :update], controller: "contents"
     resources :messages, only: [:index]
