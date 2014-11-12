@@ -91,6 +91,18 @@ class ImportJob < ActiveRecord::Base
     end
   end
   
+  # if config var RESCHEDULE_AT is set (to a number of seconds),
+  # override delayed_job reschedule_at and schedule next attempt
+  # using config var.
+  # if not set, default to standard delayed_job behavior
+  def reschedule_at(current_time, attempts)
+    if Figaro.env.respond_to? :reschedule_at
+      current_time + Figaro.env.reschedule_at.to_i.seconds
+    else # default delayed_job behavior
+      current_time + attempts**4 + 5
+    end
+  end
+
   # hooks to set status
   def enqueue(job)
     update_attribute(:status, "scheduled")
