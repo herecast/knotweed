@@ -289,6 +289,22 @@ describe Content do
     end
   end
     
+  describe "populate_raw_content_with_event_description_if_blank" do
+    it "should save event_description into raw_content if raw_content is empty" do
+      c = FactoryGirl.build :content, raw_content: "", event_description: "Not blank"
+      c.save
+      c.reload
+      c.raw_content.should == c.event_description
+    end
+
+    it "should not do anything when raw_content is populated" do
+      c = FactoryGirl.build :content, raw_content: "Not blank at all", event_description: "Also not blank"
+      c.save
+      c.reload
+      c.raw_content.should_not == c.event_description
+      c.raw_content.should == "Not blank at all"
+    end
+  end
 
   describe "export to xml" do
     before do
