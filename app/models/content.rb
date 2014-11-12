@@ -95,6 +95,7 @@ class Content < ActiveRecord::Base
   # check if it should be marked quarantined
   before_save :mark_quarantined
   before_save :set_guid
+  before_save :populate_raw_content_with_event_description_if_blank
 
   scope :events, -> { joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",
                                                      "event", "sale_event") }
@@ -820,6 +821,16 @@ class Content < ActiveRecord::Base
 
   def sanitized_content= new_content
     self.raw_content = new_content
+  end
+
+  # when saving content, if raw_content is empty but event_description is populated,
+  # copy event_description into raw_content
+  def populate_raw_content_with_event_description_if_blank
+    unless raw_content.present?
+      if event_description.present?
+        self.raw_content = event_description
+      end
+    end
   end
 
   private 
