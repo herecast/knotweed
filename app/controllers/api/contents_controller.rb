@@ -15,7 +15,7 @@ class Api::ContentsController < Api::ApiController
     if params[:repository].present? and @contents.present?
       @contents = @contents.includes(:repositories).where(repositories: {dsp_endpoint: params[:repository]}) 
     end
-    
+
     if params[:events]
       @contents = @contents.events
       sort_order ||= "ASC"
@@ -51,13 +51,23 @@ class Api::ContentsController < Api::ApiController
         allowed_pubs = Publication.where(name: params[:publications])
         @contents = @contents.where(source_id: allowed_pubs)
       end
-      if params[:categories].present?
-        allowed_cats = ContentCategory.find_with_children(name: params[:categories])
-        @contents = @contents.where(content_category_id: allowed_cats)
-      end
       if params[:start_date].present?
         start_date = Chronic.parse(params[:start_date])
         @contents = @contents.where("pubdate >= :start_date", { start_date: start_date}) unless start_date.nil?
+      end
+      if params[:home_list].present?
+        home_list = Publication.find_by_name(params[:home_list])
+      end
+      if params[:categories].present?
+        allowed_cats = ContentCategory.find_with_children(name: params[:categories])
+        @contents = @contents.where(content_category_id: allowed_cats)
+        # unfortunate hack for talk of the town query
+        # in the scenario where they are looking just at talk of the town,
+        # we can add a home_list parameter to the sql query.
+        if home_list.present?
+          talk_of_the_town_cat = ContentCategory.find_by_name("talk_of_the_town")
+          @contents = @contents.where("(content_category_id != ? OR source_id = ?)", talk_of_the_town_cat.id, home_list.id)
+        end
       end
       params[:page] ||= 1
       params[:per_page] ||= 30
@@ -231,7 +241,7 @@ class Api::ContentsController < Api::ApiController
   # in order to allow action to respond accordingly
   def set_events_param
     # if it is passed in already, don't set it
-    unless params[:events].present?
+    unless params.has_key? :events
       if request.url.match /events/
         params[:events] = true
       else

@@ -171,7 +171,7 @@ class Content < ActiveRecord::Base
   end
 
   def source_name
-    source.name
+    source.try(:name)
   end
 
   def location

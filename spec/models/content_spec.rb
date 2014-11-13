@@ -363,7 +363,7 @@ describe Content do
 
     it "should contain all the attributes as feature name/value pairs" do
       @content.feature_set.each do |k, v|
-        unless ["content", "source_id", "import_location_id", "parent_id", "issue_id"].include? k
+        unless ["content", "source_id", "import_location_id", "parent_id", "issue_id", "content_category_id"].include? k
           # just checking with closing tags so we don't have to deal
           # with exact formatting of opening tag and attributes
           @xml.include?("#{k.upcase}</tns:name>").should be_true
@@ -580,7 +580,7 @@ describe Content do
 
   describe "update_from_repo" do
     before do
-      @content = FactoryGirl.create :content
+      @content = FactoryGirl.create :content, content_category: nil
       @repository = FactoryGirl.create :repository
       @repository.contents << @content
       @new_cat = stub_retrieve_update_fields_from_repo(@content, @repository)
@@ -602,8 +602,7 @@ describe Content do
   describe "category" do
     before do
       @cat = FactoryGirl.create :content_category
-      @content = FactoryGirl.create :content
-      @content.update_attribute :content_category_id, @cat.id
+      @content = FactoryGirl.create :content, content_category: @cat
     end
 
     it "should return the name of the attached content category" do
@@ -614,11 +613,9 @@ describe Content do
 
   describe "parent_category" do
     before do
-      @cat = FactoryGirl.create :content_category
-      @content = FactoryGirl.create :content
-      @content.update_attribute :content_category_id, @cat.id
       @parent_cat = FactoryGirl.create :content_category
-      @cat.update_attribute :parent_id, @parent_cat.id
+      @cat = FactoryGirl.create :content_category, parent_id: @parent_cat.id
+      @content = FactoryGirl.create :content, content_category: @cat
     end
     it "should return the parent category's name" do
       @content.parent_category.should == @parent_cat.name

@@ -60,6 +60,7 @@ FactoryGirl.define do
     import_location
     pubdate Time.now
     source_category "Category"
+    content_category
     
     factory :event do
       raw_content "event" 

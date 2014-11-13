@@ -58,4 +58,39 @@ describe Api::ContentsController do
     end
   end
 
+  describe "GET index" do
+
+    it "has a 200 status code" do
+      get :index, format: :json
+      response.code.should eq('200')
+    end
+
+    describe "talk_of_the_town hack" do
+
+      before do
+        @tot = FactoryGirl.create(:content_category, name: "talk_of_the_town")
+        @pub1 = FactoryGirl.create :publication
+        @pub2 = FactoryGirl.create :publication
+        FactoryGirl.create_list(:content, 2, source: @pub1)
+        FactoryGirl.create_list(:content, 3, source: @pub2)
+        @tot_content = FactoryGirl.create(:content, source: @pub1, content_category: @tot)
+        @tot_content_2 = FactoryGirl.create(:content, source: @pub2, content_category: @tot)
+      end
+
+      describe "when home list is provided" do
+
+        it "should only return talk_of_the_town contents belonging to home_list" do
+          query_params = { home_list: @pub1.name, categories: ContentCategory.all.map{ |cc| cc.name }, events: false,
+          publications: Publication.all.map{ |p| p.name } }
+          get :index, query_params.merge({format: :json})
+          assigns(:contents).include?(@tot_content).should == true
+          assigns(:contents).include?(@tot_content_2).should == false
+          assigns(:contents).include?(@pub2.contents.where("content_category_id != ?", @tot.id).first).should == true
+        end
+
+      end
+    end
+
+  end
+
 end
