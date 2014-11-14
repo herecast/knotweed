@@ -61,6 +61,7 @@ class DashboardController < ApplicationController
   end
 
   def index
+    authorize! :access, :dashboard
   end
 
 end

@@ -1,163 +1,186 @@
-%li{ class: current_page?(dashboard_path) ? "active" : "" }
-  = link_to dashboard_path do
-    %i.icon-dashboard
-    %span Dashboard
-%li
-  = link_to organizations_path do
-    %i.icon-group
-    %span Organizations
-    %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "organizations" ? "in" : "" }" }
-    %li{ class: current_page?(organizations_path) ? "active" : "" }
-      = link_to organizations_path do
-        %i.icon-search
-        %span Search
-    %li{ class: current_page?(new_organization_path) ? "active" : "" }
-      = link_to new_organization_path do
-        %i.icon-plus
-        %span Create New
-%li
-  = link_to publications_path do
-    %i.icon-anchor
-    %span Publications
-    %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "publications" ? "in" : "" }" }
-    %li{ class: current_page?(publications_path) ? "active" : "" }
-      = link_to publications_path do
-        %i.icon-search
-        %span Search
-    %li{ class: current_page?(new_publication_path) ? "active" : "" }
-      = link_to new_publication_path do
-        %i.icon-plus
-        %span Create New
-%li
-  = link_to contents_path do
-    %i.icon-file-alt
-    %span Contents
-    %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "contents" ? "in" : "" }" }
-    %li{ class: current_page?(contents_path) ? "active" : "" }
-      = link_to contents_path do
-        %i.icon-tasks
-        %span Search
-    %li{ class: current_page?(new_content_path) ? "active" : "" }
-      = link_to new_content_path do
-        %i.icon-plus
-        %span Create New
-%li
-  = link_to content_sets_path do
-    %i.icon-copy
-    %span Content Sets
-    %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "content_sets" ? "in" : "" }" }
-    %li{ class: current_page?(content_sets_path) ? "active" : "" }
-      = link_to content_sets_path do
-        %i.icon-tasks
-        %span Search
-    %li{ class: current_page?(new_content_set_path) ? "active" : "" }
-      = link_to new_content_set_path do
-        %i.icon-plus
-        %span Create New
-%li
-  = link_to import_jobs_path do
-    %i.icon-circle-arrow-up
-    %span Import Jobs
-    %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "import_jobs" ? "in" : "" }" }
-    %li{ class: current_page?(import_jobs_path) ? "active" : "" }
-      = link_to import_jobs_path do
-        %i.icon-tasks
-        %span Active
-    %li{ class: current_page?(new_import_job_path) ? "active" : "" }
-      = link_to new_import_job_path do
-        %i.icon-plus
-        %span Create New
-%li
-  = link_to publish_jobs_path do
-    %i.icon-circle-arrow-right
-    %span Publish Jobs
-    %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "publish_jobs" ? "in" : "" }" }
-    %li{ class: current_page?(publish_jobs_path) ? "active" : "" }
-      = link_to publish_jobs_path do
-        %i.icon-tasks
-        %span All
-    %li{ class: current_page?(new_publish_job_path) ? "active" : "" }
-      = link_to new_publish_job_path do
-        %i.icon-plus
-        %span Create New
-%li
-  = link_to repositories_path do
-    %i.icon-table
-    %span Repositories
-    %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "repositories" ? "in" : "" }" }
-    %li{ class: current_page?(repositories_path) ? "active" : "" }
-      = link_to repositories_path do
-        %i.icon-tasks
-        %span All
-    %li{ class: current_page?(new_repository_path) ? "active" : "" }
-      = link_to new_repository_path do
-        %i.icon-plus
-        %span Create New
-%li
-  = link_to data_contexts_path do
-    %i.icon-table
-    %span Data Contexts
-    %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "data_contexts" ? "in" : "" }" }
-    %li{ class: current_page?(data_contexts_path) ? "active" : "" }
-      = link_to data_contexts_path do
-        %i.icon-tasks
-        %span Search
-    %li{ class: current_page?(new_data_context_path) ? "active" : "" }
-      = link_to new_data_context_path do
-        %i.icon-plus
-        %span Create New
-%li
-  = link_to consumer_apps_path do
-    %i.icon-comment
-    %span Consumer Apps
-    %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "consumer_apps" ? "in" : "" }" }
-    %li{ class: current_page?(consumer_apps_path) ? "active" : "" }
-      = link_to consumer_apps_path do
-        %i.icon-tasks
-        %span Search
-    %li{ class: current_page?(new_consumer_app_path) ? "active" : "" }
-      = link_to new_consumer_app_path do
-        %i.icon-plus
-        %span Create New
-%li
-  = link_to messages_path do
-    %i.icon-envelope
-    %span Messages
-    %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "messages" ? "in" : "" }" }
-    %li{ class: current_page?(messages_path) ? "active" : "" }
-      = link_to messages_path do
-        %i.icon-tasks
-        %span Search
-    %li{ class: current_page?(new_message_path) ? "active" : "" }
-      = link_to new_message_path do
-        %i.icon-plus
-        %span Create New
-%li
-  = link_to wufoo_forms_path do
-    %i.icon-comment
-    %span Wufoo Forms
-    %i.icon-angle-down.angle-down
-  %ul{ class: "nav nav-stacked #{controller_name == "wufoo_forms" ? "in" : "" }" }
-    %li{ class: current_page?(wufoo_forms_path) ? "active" : "" }
-      = link_to wufoo_forms_path do
-        %i.icon-tasks
-        %span Search
-    %li{ class: current_page?(new_wufoo_form_path) ? "active" : "" }
-      = link_to new_wufoo_form_path do
-        %i.icon-plus
-        %span Create New
-
-%li{ class: "#{controller_name == "parsers" ? "active" : "" }" } 
-  = link_to parsers_path do
-    %i.icon-book
-    %span Parsers/Parameters
+- if can? :access, :dashboard
+  %li{ class: current_page?(dashboard_path) ? "active" : "" }
+    = link_to dashboard_path do
+      %i.icon-dashboard
+      %span Dashboard
+- if can? :read, Organization
+  %li
+    = link_to organizations_path do
+      %i.icon-group
+      %span Organizations
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "organizations" ? "in" : "" }" }
+      %li{ class: current_page?(organizations_path) ? "active" : "" }
+        = link_to organizations_path do
+          %i.icon-search
+          %span Search
+      - if can? :create, Organization
+        %li{ class: current_page?(new_organization_path) ? "active" : "" }
+          = link_to new_organization_path do
+            %i.icon-plus
+            %span Create New
+- if can? :read, Publication
+  %li
+    = link_to publications_path do
+      %i.icon-anchor
+      %span Publications
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "publications" ? "in" : "" }" }
+      %li{ class: current_page?(publications_path) ? "active" : "" }
+        = link_to publications_path do
+          %i.icon-search
+          %span Search
+      - if can? :create, Publication
+        %li{ class: current_page?(new_publication_path) ? "active" : "" }
+          = link_to new_publication_path do
+            %i.icon-plus
+            %span Create New
+- if can? :read, Content
+  %li
+    = link_to contents_path do
+      %i.icon-file-alt
+      %span Contents
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "contents" ? "in" : "" }" }
+      %li{ class: current_page?(contents_path) ? "active" : "" }
+        = link_to contents_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, Content
+        %li{ class: current_page?(new_content_path) ? "active" : "" }
+          = link_to new_content_path do
+            %i.icon-plus
+            %span Create New
+- if can? :read, ContentSet
+  %li
+    = link_to content_sets_path do
+      %i.icon-copy
+      %span Content Sets
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "content_sets" ? "in" : "" }" }
+      %li{ class: current_page?(content_sets_path) ? "active" : "" }
+        = link_to content_sets_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, ContentSet
+        %li{ class: current_page?(new_content_set_path) ? "active" : "" }
+          = link_to new_content_set_path do
+            %i.icon-plus
+            %span Create New
+- if can? :read, ImportJob
+  %li
+    = link_to import_jobs_path do
+      %i.icon-circle-arrow-up
+      %span Import Jobs
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "import_jobs" ? "in" : "" }" }
+      %li{ class: current_page?(import_jobs_path) ? "active" : "" }
+        = link_to import_jobs_path do
+          %i.icon-tasks
+          %span Active
+      - if can? :create, ImportJob
+        %li{ class: current_page?(new_import_job_path) ? "active" : "" }
+          = link_to new_import_job_path do
+            %i.icon-plus
+            %span Create New
+- if can? :read, PublishJob
+  %li
+    = link_to publish_jobs_path do
+      %i.icon-circle-arrow-right
+      %span Publish Jobs
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "publish_jobs" ? "in" : "" }" }
+      %li{ class: current_page?(publish_jobs_path) ? "active" : "" }
+        = link_to publish_jobs_path do
+          %i.icon-tasks
+          %span All
+      - if can? :create, PublishJob
+        %li{ class: current_page?(new_publish_job_path) ? "active" : "" }
+          = link_to new_publish_job_path do
+            %i.icon-plus
+            %span Create New
+- if can? :read, Repository
+  %li
+    = link_to repositories_path do
+      %i.icon-table
+      %span Repositories
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "repositories" ? "in" : "" }" }
+      %li{ class: current_page?(repositories_path) ? "active" : "" }
+        = link_to repositories_path do
+          %i.icon-tasks
+          %span All
+      - if can? :create, Repository
+        %li{ class: current_page?(new_repository_path) ? "active" : "" }
+          = link_to new_repository_path do
+            %i.icon-plus
+            %span Create New
+- if can? :read, DataContext
+  %li
+    = link_to data_contexts_path do
+      %i.icon-table
+      %span Data Contexts
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "data_contexts" ? "in" : "" }" }
+      %li{ class: current_page?(data_contexts_path) ? "active" : "" }
+        = link_to data_contexts_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, DataContext
+        %li{ class: current_page?(new_data_context_path) ? "active" : "" }
+          = link_to new_data_context_path do
+            %i.icon-plus
+            %span Create New
+- if can? :read, ConsumerApp
+  %li
+    = link_to consumer_apps_path do
+      %i.icon-comment
+      %span Consumer Apps
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "consumer_apps" ? "in" : "" }" }
+      %li{ class: current_page?(consumer_apps_path) ? "active" : "" }
+        = link_to consumer_apps_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, ConsumerApp
+        %li{ class: current_page?(new_consumer_app_path) ? "active" : "" }
+          = link_to new_consumer_app_path do
+            %i.icon-plus
+            %span Create New
+- if can? :read, Message
+  %li
+    = link_to messages_path do
+      %i.icon-envelope
+      %span Messages
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "messages" ? "in" : "" }" }
+      %li{ class: current_page?(messages_path) ? "active" : "" }
+        = link_to messages_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, Message
+        %li{ class: current_page?(new_message_path) ? "active" : "" }
+          = link_to new_message_path do
+            %i.icon-plus
+            %span Create New
+- if can? :read, WufooForm
+  %li
+    = link_to wufoo_forms_path do
+      %i.icon-comment
+      %span Wufoo Forms
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "wufoo_forms" ? "in" : "" }" }
+      %li{ class: current_page?(wufoo_forms_path) ? "active" : "" }
+        = link_to wufoo_forms_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, WufooForm
+        %li{ class: current_page?(new_wufoo_form_path) ? "active" : "" }
+          = link_to new_wufoo_form_path do
+            %i.icon-plus
+            %span Create New
+- if can? :read, Parser
+  %li{ class: "#{controller_name == "parsers" ? "active" : "" }" } 
+    = link_to parsers_path do
+      %i.icon-book
+      %span Parsers/Parameters

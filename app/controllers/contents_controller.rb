@@ -42,16 +42,23 @@ class ContentsController < ApplicationController
     else
       @contents = []
     end
+    @contents = @contents.accessible_by(current_ability)
   end
 
   def new
     @content = Content.new
+    # for users that can only access certain specific attribute contents
+    current_ability.attributes_for(:new, Content).each do |key,value|
+      @content.send("#{key}=", value)
+    end
+    authorize! :new, @content
   end
 
   def create
     image_list = params[:content].delete(:image_list)
     image_ids = image_list.try(:split, ",")
     @content = Content.new(params[:content])
+    authorize! :create, @content
     connection = nil
     if @content.save
       if image_ids.present?
@@ -98,12 +105,14 @@ class ContentsController < ApplicationController
       end
     end
     @content = Content.find(params[:id])
+    authorize! :edit, @content
   end
 
   def update
     # ensure serialized values are set to empty if no fields are passed in via form
     params[:content][:links] = nil unless params[:content].has_key? :links
     @content = Content.find(params[:id])
+    authorize! :update, @content
     # if category is changed, create a category_correction object
     # normally I would put this in a callback on the model
     # but given the callbacks already on category_correction and the weirdness
@@ -128,7 +137,9 @@ class ContentsController < ApplicationController
   end
 
   def destroy
-    @content = Content.destroy(params[:id])
+    @content = Content.find params[:id]
+    authorize! :destroy, @content
+    @content.destroy
     respond_to do |format|
       format.js
     end

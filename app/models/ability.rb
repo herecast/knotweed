@@ -4,9 +4,15 @@ class Ability
   def initialize(user)
     user ||= User.new # guest user (not logged in)
     if user.has_role? :admin
-      can :dashboard                  # allow access to dashboard
+      can :access, :dashboard
       can :manage, :all
-      can :access, :admin
+      # can :access, :admin
+    elsif user.has_role? :event_manager
+      can :access, :dashboard
+      # give access only to event category contents
+      event_category = ContentCategory.find_or_create_by_name("event")
+      can :manage, Content, content_category_id: event_category.id
+      can :manage, BusinessLocation # for event venues
     elsif user.organization
       can [:update, :read], Organization, :id => user.organization_id
       can :manage, Publication, :organization_id => user.organization_id

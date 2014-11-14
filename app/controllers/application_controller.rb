@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
   def authorize_access!
     unless self.class == Devise::SessionsController
       authenticate_user!
-      authorize! :access, :admin
+      #authorize! :access, :admin
     end
   end
 

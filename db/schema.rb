@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141106234719) do
+ActiveRecord::Schema.define(:version => 20141114194948) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -445,10 +445,6 @@ ActiveRecord::Schema.define(:version => 20141106234719) do
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
     t.string   "copyright"
-  end
-
-  create_table "knotweed_development_rich", :id => false, :force => true do |t|
-    t.integer "id"
   end
 
   create_table "locations", :force => true do |t|
