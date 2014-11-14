@@ -66,7 +66,8 @@ class Api::ContentsController < Api::ApiController
         # we can add a home_list parameter to the sql query.
         if home_list.present?
           talk_of_the_town_cat = ContentCategory.find_by_name("talk_of_the_town")
-          @contents = @contents.where("(content_category_id != ? OR source_id = ?)", talk_of_the_town_cat.id, home_list.id)
+          tot_cat_list = talk_of_the_town_cat.children + [talk_of_the_town_cat]
+          @contents = @contents.where("(content_category_id not in (?) OR source_id = ?)", tot_cat_list, home_list.id)
         end
       end
       params[:page] ||= 1
