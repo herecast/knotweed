@@ -1,0 +1,8 @@
+= simple_form_for @user do |f|
+  = f.error_notification
+  = f.input :name
+  = f.input :email
+  = f.input :password
+  = f.association :organization
+  = f.input :role_ids, as: :select, collection: Role.all, label: "Role"
+  = f.submit nil, class: "btn btn-primary"

@@ -184,3 +184,18 @@
     = link_to parsers_path do
       %i.icon-book
       %span Parsers/Parameters
+- if can? :manage, User
+  %li{ class: "#{controller_name == "users" ? "active" : "" }" }
+    = link_to users_path do
+      %i.icon-male
+      %span Users
+    %ul{ class: "nav nav-stacked #{controller_name == "users" ? "in" : "" }" }
+      %li{ class: current_page?(users_path) ? "active" : "" }
+        = link_to users_path do
+          %i.icon-female
+          %span All
+      - if can? :create, User
+        %li{ class: current_page?(new_user_path) ? "active" : "" }
+          = link_to new_user_path do
+            %i.icon-plus
+            %span Create New
