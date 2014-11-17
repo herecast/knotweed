@@ -1,38 +1,28 @@
 class DashboardController < ApplicationController
 
+    @@mixpanel = Mixpanel::Client.new(
+      api_key: Figaro.env.mixpanel_api_key,
+      api_secret: Figaro.env.mixpanel_api_secret
+    )
 
   # asynchronously load the mixpanel charts into the dashboard page
   # in case there's an error.
   def mixpanel_charts
-    mixpanel = Mixpanel::Client.new(
-      api_key: Figaro.env.mixpanel_api_key,
-      api_secret: Figaro.env.mixpanel_api_secret
-    )
     @metrics = {}
-    data = mixpanel.request(
+    data = @@mixpanel.request(
       'engage',
       where: 'properties["testGroup"]!="subtext"'
     )
-    @metrics[:total_users] = data["results"].count
-    sign_in_data = mixpanel.request(
-      'segmentation',
-      event: "signIn",
-      from_date: 1.week.ago.strftime("%Y-%m-%d"),
-      to_date: Time.zone.now.strftime("%Y-%m-%d"),
-      where: 'properties["testGroup"]!="subtext"'
-    )["data"]["values"]["signIn"]
     yesterday = (Time.current - 1.day).strftime("%Y-%m-%d")
-    @metrics[:sign_ins] = { yesterday: sign_in_data[yesterday] }
-    @metrics[:sign_ins][:past_week] = sign_in_data.map{ |k,v| v}.inject(:+)
     
-    landing_clicks = mixpanel.request(
+    landing_clicks = @@mixpanel.request(
       'segmentation',
       event: "clickLandingLink",
       from_date: 1.week.ago.strftime("%Y-%m-%d"),
       to_date: Time.zone.now.strftime("%Y-%m-%d"),
       where: 'properties["testGroup"]!="subtext"'
     )["data"]["values"]["clickLandingLink"]
-    relevant_clicks = mixpanel.request(
+    relevant_clicks = @@mixpanel.request(
       'segmentation',
       event: "clickRelevantLink",
       from_date: 1.week.ago.strftime("%Y-%m-%d"),
@@ -63,5 +53,60 @@ class DashboardController < ApplicationController
   def index
     authorize! :access, :dashboard
   end
+
+
+  def total_sign_ins
+    if params[:time_frame].nil?
+      from_date = 1.month.ago.strftime("%Y-%m-%d") if from_date.nil?
+      unit = "day"
+    elsif params[:time_frame] == "month"
+      from_date = 1.month.ago.strftime("%Y-%m-%d")
+      unit = "day"
+    elsif params[:time_frame] == "week"
+      from_date = 1.week.ago.strftime("%Y-%m-%d")
+      unit = "day"
+    elsif params[:time_frame] == "day"
+      from_date = 1.day.ago.strftime("%Y-%m-%d")
+      unit = "hour"
+    else # try to parse a date out of time frame
+      from_date = Chronic.parse(params[:time_frame])
+      unit = "day"
+    end
+    params[:sign_in_time_frame] = params[:time_frame]
+    # default value month
+    sign_in_data = @@mixpanel.request(
+      'segmentation',
+      event: "signIn",
+      from_date: from_date,
+      unit: unit,
+      to_date: Time.zone.now.strftime("%Y-%m-%d"),
+      where: 'properties["testGroup"]!="subtext"'
+    )["data"]["values"]["signIn"]
+    ordered = sign_in_data.map{ |k,v| [Chronic.parse(k).to_i*1000, v] }.sort{ |a,b| a[0]<=>b[0] }
+
+    unique_sign_in_data = @@mixpanel.request(
+      'segmentation',
+      event: "signIn",
+      from_date: from_date,
+      unit: unit,
+      to_date: Time.zone.now.strftime("%Y-%m-%d"),
+      where: 'properties["testGroup"]!="subtext"',
+      type: 'unique'
+    )["data"]["values"]["signIn"]
+    ordered_uniq = unique_sign_in_data.map{ |k,v| [Chronic.parse(k).to_i*1000, v] }.sort{ |a,b| a[0]<=>b[0] }
+
+    @sign_in_json = [
+      {
+        label: "Total Sign Ins",
+        data: ordered
+      },
+      {
+        label: "Unique Sign Ins",
+        data: ordered_uniq
+      }
+    ].to_json
+    render partial: "dashboard/total_sign_ins"
+  end
+
 
 end

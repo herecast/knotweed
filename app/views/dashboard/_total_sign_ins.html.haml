@@ -1,0 +1,8 @@
+.row-fluid
+  .pull-right
+    = select_tag :sign_in_time_frame, options_for_select([["Last Month", "month"],["Last Week", "week"],["Last 24 Hours", "day"]], params[:sign_in_time_frame])
+.row-fluid
+  .span12#sign_in_line_graph{ style: "height: 300px; width: 100%;" }
+&nbsp;
+:javascript
+  var sign_in_data = #{@sign_in_json};

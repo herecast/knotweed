@@ -1,21 +1,4 @@
 .row-fluid
-  .span6.box
-    .box-header
-      .title Sign Ins
-    .box-content.dashboard-box
-      .row-fluid
-        .span3
-          %dl.horizontal
-            %dt Yesterday Sign Ins
-            %dd= @metrics[:sign_ins][:yesterday]
-            %dt Past Week
-            %dd= @metrics[:sign_ins][:past_week]
-            %dt Total Users
-            %dd= @metrics[:total_users]
-        .span9
-          .progress
-            .bar.bar-success{ style: "width:#{yesterday_signed_in_percentage(@metrics)}%;" } Yesterday
-            .bar.bar-warning{ style: "width:#{past_week_signed_in_percentage(@metrics)}%;" } Past Week
   .span6.box.dashboard-box
     .box-header
       .title Article Clicks

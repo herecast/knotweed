@@ -9,6 +9,7 @@ Knotweed::Application.routes.draw do
   
   get "/", to: "dashboard#index", as: :dashboard
   get "/mixpanel_charts", to: "dashboard#mixpanel_charts", as: :mixpanel_charts
+  get "/total_sign_ins", to: "dashboard#total_sign_ins", as: :total_sign_ins
 
   get "contents/parent_options", to: "contents#parent_select_options", as: :parent_select_options
   resources :contents

@@ -36,6 +36,7 @@
 //= require flatty/plugins/fuelux/wizard
 //= require flatty/plugins/flot/flot.min
 //= require flatty/plugins/flot/flot.pie
+//= require flatty/plugins/flot/jquery.flot.time
 
 $(document).ready(function() {
   $(".ckeditor").ckeditor({});
