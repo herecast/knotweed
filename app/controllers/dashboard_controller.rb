@@ -29,6 +29,7 @@ class DashboardController < ApplicationController
       to_date: Time.zone.now.strftime("%Y-%m-%d"),
       where: 'properties["testGroup"]!="subtext"'
     )["data"]["values"]["clickRelevantLink"]
+
     @metrics[:relevant_clicks] = { yesterday: relevant_clicks[yesterday] }
     @metrics[:relevant_clicks][:past_week] = relevant_clicks.map{ |k,v| v }.inject(:+)
     @metrics[:landing_clicks] = { yesterday: landing_clicks[yesterday] }
@@ -54,31 +55,51 @@ class DashboardController < ApplicationController
     authorize! :access, :dashboard
   end
 
+  def article_clicks
+    process_time_frame
+
+    params[:article_clicks_time_frame] = params[:time_frame]
+
+    landing_clicks = @@mixpanel.request(
+      'segmentation',
+      event: "clickLandingLink",
+      from_date: @from_date,
+      unit: @unit,
+      to_date: Time.zone.now.strftime("%Y-%m-%d"),
+      where: 'properties["testGroup"]!="subtext"'
+    )["data"]["values"]["clickLandingLink"]
+    relevant_clicks = @@mixpanel.request(
+      'segmentation',
+      event: "clickRelevantLink",
+      from_date: @from_date,
+      unit: @unit,
+      to_date: Time.zone.now.strftime("%Y-%m-%d"),
+      where: 'properties["testGroup"]!="subtext"'
+    )["data"]["values"]["clickRelevantLink"]
+    total_clicks = relevant_clicks.merge(landing_clicks){|k,v1,v2| v1 + v2 }
+    ordered = total_clicks.map{ |k,v| [Chronic.parse(k).to_i*1000, v] }.sort{ |a,b| a[0]<=>b[0] }
+
+    @article_clicks_json = [
+      {
+        label: "Total Clicks",
+        data: ordered
+      }
+    ].to_json
+
+   render partial: "dashboard/article_clicks"
+    
+  end
 
   def total_sign_ins
-    if params[:time_frame].nil?
-      from_date = 1.month.ago.strftime("%Y-%m-%d") if from_date.nil?
-      unit = "day"
-    elsif params[:time_frame] == "month"
-      from_date = 1.month.ago.strftime("%Y-%m-%d")
-      unit = "day"
-    elsif params[:time_frame] == "week"
-      from_date = 1.week.ago.strftime("%Y-%m-%d")
-      unit = "day"
-    elsif params[:time_frame] == "day"
-      from_date = 1.day.ago.strftime("%Y-%m-%d")
-      unit = "hour"
-    else # try to parse a date out of time frame
-      from_date = Chronic.parse(params[:time_frame])
-      unit = "day"
-    end
+    process_time_frame
+
     params[:sign_in_time_frame] = params[:time_frame]
     # default value month
     sign_in_data = @@mixpanel.request(
       'segmentation',
       event: "signIn",
-      from_date: from_date,
-      unit: unit,
+      from_date: @from_date,
+      unit: @unit,
       to_date: Time.zone.now.strftime("%Y-%m-%d"),
       where: 'properties["testGroup"]!="subtext"'
     )["data"]["values"]["signIn"]
@@ -87,8 +108,8 @@ class DashboardController < ApplicationController
     unique_sign_in_data = @@mixpanel.request(
       'segmentation',
       event: "signIn",
-      from_date: from_date,
-      unit: unit,
+      from_date: @from_date,
+      unit: @unit,
       to_date: Time.zone.now.strftime("%Y-%m-%d"),
       where: 'properties["testGroup"]!="subtext"',
       type: 'unique'
@@ -108,5 +129,25 @@ class DashboardController < ApplicationController
     render partial: "dashboard/total_sign_ins"
   end
 
+  private
+
+  def process_time_frame
+    if params[:time_frame].nil?
+      @from_date = 1.month.ago.strftime("%Y-%m-%d")
+      @unit = "day"
+    elsif params[:time_frame] == "month"
+      @from_date = 1.month.ago.strftime("%Y-%m-%d")
+      @unit = "day"
+    elsif params[:time_frame] == "week"
+      @from_date = 1.week.ago.strftime("%Y-%m-%d")
+      @unit = "day"
+    elsif params[:time_frame] == "day"
+      @from_date = 1.day.ago.strftime("%Y-%m-%d")
+      @unit = "hour"
+    else # try to parse a date out of time frame
+      @from_date = Chronic.parse(params[:time_frame])
+      @unit = "day"
+    end
+  end
 
 end

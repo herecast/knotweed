@@ -23,6 +23,10 @@ jQuery ->
   $(document).on 'change', "#sign_in_time_frame", ->
     loadSignInsGraph()
 
+  loadArticleClicksGraph()
+  $(document).on 'change', "#article_clicks_time_frame", ->
+    loadArticleClicksGraph()
+
   
 loadSignInsGraph = ->
   $("#total_sign_ins_container").spin
@@ -39,6 +43,25 @@ loadSignInsGraph = ->
         series:
           lines: { show: true } 
         xaxis: 
+          mode: "time"
+          timeformat: timeformat
+      $(this).spin(false)
+
+loadArticleClicksGraph = ->
+  $("#article_clicks_container").spin
+    radius: 5
+  url = $("#article_clicks_container").data("loadPath")
+  timeformat = "%b %e"
+  if $("#article_clicks_time_frame").length > 0
+    url = url + "?" + $.param({ time_frame: $("#article_clicks_time_frame").val() })
+    if $("#article_clicks_time_frame").val() == "day"
+      timeformat = "%a %I%p"
+  $("#article_clicks_container").load url, (response, status, xhr) ->
+    if status != "error"
+      $.plot $("#article_clicks_line_graph"), article_clicks_data,
+        series:
+          lines: { show: true }
+        xaxis:
           mode: "time"
           timeformat: timeformat
       $(this).spin(false)
