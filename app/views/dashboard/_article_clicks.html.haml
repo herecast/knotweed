@@ -1,8 +1,8 @@
 .row-fluid
   .pull-right
-    = select_tag :article_clicks_time_frame, options_for_select([["Last Month", "month"],["Last Week", "week"],["Last 24 Hours", "day"]], params[:article_clicks_time_frame])
+    = select_tag :article_clicks_time_frame, options_for_select([["Past Month", "month"],["Past Week", "week"],["Past 24 Hours", "day"]], params[:article_clicks_time_frame])
 .row-fluid
-  .span12#article_clicks_line_graph{ style: "height: 300px; width: 100%;" }
+  .span12#article_clicks_line_graph.dashboard-graph
 &nbsp;
 :javascript
   var article_clicks_data = #{@article_clicks_json};

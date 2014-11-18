@@ -27,6 +27,9 @@ jQuery ->
   $(document).on 'change', "#article_clicks_time_frame", ->
     loadArticleClicksGraph()
 
+  loadClicksByCategoryGraph()
+  $(document).on 'change', "#clicks_by_category_time_frame", ->
+    loadClicksByCategoryGraph()
   
 loadSignInsGraph = ->
   $("#total_sign_ins_container").spin
@@ -64,4 +67,23 @@ loadArticleClicksGraph = ->
         xaxis:
           mode: "time"
           timeformat: timeformat
+      $(this).spin(false)
+
+loadClicksByCategoryGraph = ->
+  $("#clicks_by_category_container").spin
+    radius: 5
+  url = $("#clicks_by_category_container").data("loadPath")
+  if $("#clicks_by_category_time_frame").length > 0
+    url = url + "?" + $.param({ time_frame: $("#clicks_by_category_time_frame").val() })
+  $("#clicks_by_category_container").load url, (response, status, xhr) ->
+    if status != "error"
+      $.plot $("#clicks_by_category_bar_graph"), clicks_by_category_data,
+        series:
+          bars: 
+            show: true
+            barWidth: 0.6
+            align: "center"
+        xaxis:
+          mode: "categories"
+          tickLength: 0
       $(this).spin(false)

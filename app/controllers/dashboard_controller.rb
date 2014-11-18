@@ -5,52 +5,6 @@ class DashboardController < ApplicationController
       api_secret: Figaro.env.mixpanel_api_secret
     )
 
-  # asynchronously load the mixpanel charts into the dashboard page
-  # in case there's an error.
-  def mixpanel_charts
-    @metrics = {}
-    data = @@mixpanel.request(
-      'engage',
-      where: 'properties["testGroup"]!="subtext"'
-    )
-    yesterday = (Time.current - 1.day).strftime("%Y-%m-%d")
-    
-    landing_clicks = @@mixpanel.request(
-      'segmentation',
-      event: "clickLandingLink",
-      from_date: 1.week.ago.strftime("%Y-%m-%d"),
-      to_date: Time.zone.now.strftime("%Y-%m-%d"),
-      where: 'properties["testGroup"]!="subtext"'
-    )["data"]["values"]["clickLandingLink"]
-    relevant_clicks = @@mixpanel.request(
-      'segmentation',
-      event: "clickRelevantLink",
-      from_date: 1.week.ago.strftime("%Y-%m-%d"),
-      to_date: Time.zone.now.strftime("%Y-%m-%d"),
-      where: 'properties["testGroup"]!="subtext"'
-    )["data"]["values"]["clickRelevantLink"]
-
-    @metrics[:relevant_clicks] = { yesterday: relevant_clicks[yesterday] }
-    @metrics[:relevant_clicks][:past_week] = relevant_clicks.map{ |k,v| v }.inject(:+)
-    @metrics[:landing_clicks] = { yesterday: landing_clicks[yesterday] }
-    @metrics[:landing_clicks][:past_week] = landing_clicks.map{ |k,v| v }.inject(:+)
-    @metrics[:article_clicks] = { yesterday: @metrics[:relevant_clicks][:yesterday] + @metrics[:landing_clicks][:yesterday] }
-    @metrics[:article_clicks][:past_week] = @metrics[:relevant_clicks][:past_week] + @metrics[:landing_clicks][:past_week]
-
-    clicks = [:yesterday, :past_week].map do |sym| 
-      [{
-        label: "Relevant Clicks: #{@metrics[:relevant_clicks][sym]}",
-        data: ((@metrics[:relevant_clicks][sym] / @metrics[:article_clicks][sym].to_f) * 100)
-      }, {
-        label: "Landing Clicks: #{@metrics[:landing_clicks][sym]}",
-        data: ((@metrics[:landing_clicks][sym] / @metrics[:article_clicks][sym].to_f) * 100)
-      }].to_json
-    end    
-    @yesterday_pie_chart_data = clicks[0]
-    @pastweek_pie_chart_data  = clicks[1]
-    render partial: "mixpanel_charts"
-  end
-
   def index
     authorize! :access, :dashboard
   end
@@ -88,6 +42,53 @@ class DashboardController < ApplicationController
 
    render partial: "dashboard/article_clicks"
     
+  end
+
+  def clicks_by_category
+    process_time_frame
+
+    params[:clicks_by_category_time_frame] = params[:time_frame]
+    # unfortunately, we can't get sums for different properties with one query
+    # from the mixpanel api, so we have to make a request for each category.
+    click_data = []
+    ContentCategory.all.each do |cc|
+      # skip categories with no content
+      if cc.contents.count == 0 or cc.name.empty?
+        next
+      end
+      landing_clicks = @@mixpanel.request(
+        'segmentation',
+        event: "clickLandingLink",
+        from_date: @from_date,
+        unit: "day", # we just want the sum so why deal with shorter units
+        to_date: Time.zone.now.strftime("%Y-%m-%d"),
+        where: ('properties["testGroup"]!="subtext" and properties["docChannel"] == "' + cc.name + '"')
+      )["data"]["values"]["clickLandingLink"]
+      relevant_clicks = @@mixpanel.request(
+        'segmentation',
+        event: "clickRelevantLink",
+        from_date: @from_date,
+        unit: "day", # we just want the sum so why deal with shorter units
+        to_date: Time.zone.now.strftime("%Y-%m-%d"),
+        where: ('properties["testGroup"]!="subtext" and properties["docChannel"] == "' + cc.name + '"')
+      )["data"]["values"]["clickRelevantLink"]
+
+      sum = 0
+      [landing_clicks, relevant_clicks].each do |h|
+        if h.present?
+          h.each do |k,v|
+            sum += v
+          end
+        end
+      end
+
+      if sum > 0
+        click_data.push([cc.name.titlecase, sum])
+      end
+    end
+    @clicks_by_category_json = [click_data].to_json
+
+    render partial: "dashboard/clicks_by_category"
   end
 
   def total_sign_ins

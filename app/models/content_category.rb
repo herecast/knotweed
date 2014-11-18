@@ -12,7 +12,7 @@
 class ContentCategory < ActiveRecord::Base
   attr_accessible :name
 
-  has_many :content
+  has_many :contents
 
   belongs_to :parent, class_name: "ContentCategory"
   has_many :children, class_name: "ContentCategory", foreign_key: "parent_id"

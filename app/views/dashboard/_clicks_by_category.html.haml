@@ -1,0 +1,8 @@
+.row-fluid
+  .pull-right
+    = select_tag :clicks_by_category_time_frame, options_for_select([["Past Month", "month"],["Past Week", "week"],["Past 24 Hours", "day"]], params[:clicks_by_category_time_frame])
+.row-fluid
+  .span12#clicks_by_category_bar_graph.dashboard-graph
+&nbsp;
+:javascript
+  var clicks_by_category_data = #{@clicks_by_category_json};
