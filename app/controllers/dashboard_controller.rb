@@ -1,12 +1,61 @@
+require 'google/api_client'
+require 'oauth2'
+
 class DashboardController < ApplicationController
 
-    @@mixpanel = Mixpanel::Client.new(
-      api_key: Figaro.env.mixpanel_api_key,
-      api_secret: Figaro.env.mixpanel_api_secret
-    )
+  @@mixpanel = Mixpanel::Client.new(
+    api_key: Figaro.env.mixpanel_api_key,
+    api_secret: Figaro.env.mixpanel_api_secret
+  )
 
   def index
     authorize! :access, :dashboard
+  end
+
+  def session_duration
+
+    params[:session_duration_time_frame] = params[:time_frame]
+
+    # can't use process_time_frame because the method takes a different format from mixpanel
+    if !params[:time_frame].present? or params[:time_frame] == "month"
+      @from_date = 1.month.ago
+      dimensions = :date
+    elsif params[:time_frame] == "week"
+      @from_date = 1.week.ago
+    elsif params[:time_frame] == "day"
+      @from_date = 1.day.ago
+    else
+      @from_date = 1.month.ago #default
+    end
+
+    user = service_account_user
+    profile = user.profiles.first
+    @results = GaSession.results(profile, start_date: @from_date)
+    if params[:time_frame] == "day"
+      @results.dimensions << :hour
+    else
+      @results.dimensions << :date
+    end
+
+    result_hash = {}
+    @results.each do |r|
+      if r.try(:hour).present?
+        date = DateTime.parse("#{Date.today.strftime("%Y%m%d ")} #{r.hour}")
+        result_hash[date] = r.avgSessionDuration.to_f
+      else
+        date = DateTime.parse(r.date)
+        result_hash[date] = r.avgSessionDuration.to_f
+      end
+    end
+    @r = result_hash
+
+    results_array = []
+    result_hash.each do |k,v|
+      results_array.push([k.to_i*1000, v/60])
+    end
+    @session_duration_json = [results_array].to_json
+
+    render partial: "dashboard/session_duration"
   end
 
   def article_clicks
@@ -149,6 +198,22 @@ class DashboardController < ApplicationController
       @from_date = Chronic.parse(params[:time_frame])
       @unit = "day"
     end
+  end
+  
+  def service_account_user(scope="https://www.googleapis.com/auth/analytics.readonly")
+    client = Google::APIClient.new(
+      :application_name => "Subtext",
+      :application_version => "0.1.5"
+    )
+    key = Google::APIClient::KeyUtils.load_from_pkcs12("#{Rails.root}/config/ga_key.p12", "notasecret")
+    service_account = Google::APIClient::JWTAsserter.new("614656289384-k0nmd03lltqqf2pvfks267fb1csdj4j6@developer.gserviceaccount.com", scope, key)
+    client.authorization = service_account.authorize
+    oauth_client = OAuth2::Client.new("", "", {
+      :authorize_url => 'https://accounts.google.com/o/oauth2/auth',
+      :token_url => 'https://accounts.google.com/o/oauth2/token'
+    })
+    token = OAuth2::AccessToken.new(oauth_client, client.authorization.access_token, expires_in: 1.hour)
+    user = Legato::User.new(token)
   end
 
 end

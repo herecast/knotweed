@@ -1,0 +1,8 @@
+.row-fluid
+  .pull-right
+    = select_tag :session_duration_time_frame, options_for_select([["Past Month", "month"],["Past Week", "week"],["Past 24 Hours", "day"]], params[:session_duration_time_frame])
+.row-fluid
+  .span12#session_duration_line_graph.dashboard-graph
+&nbsp;
+:javascript
+  var session_duration_data = #{@session_duration_json};

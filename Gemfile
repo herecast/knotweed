@@ -92,3 +92,6 @@ gem 'jbuilder'
 gem 'mixpanel_client'
 
 gem "select2-rails"
+gem "legato"
+gem "google-api-client"
+gem 'oauth2'

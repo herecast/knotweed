@@ -12,6 +12,7 @@ Knotweed::Application.routes.draw do
   get "/dashboard/total_sign_ins", to: "dashboard#total_sign_ins", as: :total_sign_ins
   get "dashboard/article_clicks", to: "dashboard#article_clicks", as: :article_clicks
   get "dashboard/clicks_by_category", to: "dashboard#clicks_by_category", as: :clicks_by_category
+  get "dashboard/session_duration", to: "dashboard#session_duration", as: :session_duration
 
   get "contents/parent_options", to: "contents#parent_select_options", as: :parent_select_options
   resources :contents

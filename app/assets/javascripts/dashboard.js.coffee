@@ -30,6 +30,10 @@ jQuery ->
   loadClicksByCategoryGraph()
   $(document).on 'change', "#clicks_by_category_time_frame", ->
     loadClicksByCategoryGraph()
+
+  loadSessionDurationGraph()
+  $(document).on 'change', "#session_duration_time_frame", ->
+    loadSessionDurationGraph()
   
 loadSignInsGraph = ->
   $("#total_sign_ins_container").spin
@@ -62,6 +66,25 @@ loadArticleClicksGraph = ->
   $("#article_clicks_container").load url, (response, status, xhr) ->
     if status != "error"
       $.plot $("#article_clicks_line_graph"), article_clicks_data,
+        series:
+          lines: { show: true }
+        xaxis:
+          mode: "time"
+          timeformat: timeformat
+      $(this).spin(false)
+
+loadSessionDurationGraph = ->
+  $("#session_duration_container").spin
+    radius: 5
+  url = $("#session_duration_container").data("loadPath")
+  timeformat = "%b %e"
+  if $("#session_duration_time_frame").length > 0
+    url = url + "?" + $.param({ time_frame: $("#session_duration_time_frame").val() })
+    if $("#session_duration_time_frame").val() == "day"
+      timeformat = "%a %I%p"
+  $("#session_duration_container").load url, (response, status, xhr) ->
+    if status != "error"
+      $.plot $("#session_duration_line_graph"), session_duration_data,
         series:
           lines: { show: true }
         xaxis:

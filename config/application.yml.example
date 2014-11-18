@@ -46,3 +46,4 @@ GMAPS_API_KEY: gmapskey
 # if not set, uses default delayed_job calculation:
 # attempts**4 + 5
 RESCHEDULE_AT: 10
+
