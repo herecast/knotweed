@@ -1,3 +1,7 @@
+/*
+I'm not sure where this stuff came from (NG).
+I went to create a scaffold.css to include the chosen stuff (bottom)
+and this was already here, but not included, so I'm commenting it out.
 body {
   background-color: #fff;
   color: #333;
@@ -66,4 +70,13 @@ div {
     font-size: 12px;
     list-style: square;
   }
+}*/
+
+/* fix problem with Chosen selects that are hidden when the page is loaded */
+/* Fix 100% width */
+.chosen-container, .chosen-drop, .chosen-drop .chosen-search, .chosen-drop .chosen-search input {
+  width: 100% !important;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
