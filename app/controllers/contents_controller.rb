@@ -110,9 +110,20 @@ class ContentsController < ApplicationController
 
   def update
     # ensure serialized values are set to empty if no fields are passed in via form
-    params[:content][:links] = nil unless params[:content].has_key? :links
+    if params[:content].present?
+      params[:content][:links] = nil unless params[:content].has_key? :links
+    end
     @content = Content.find(params[:id])
     authorize! :update, @content
+
+    # if only param is has_event_calendar, this is an ajax call from contents#index
+    # in that case, we don't need to render anything -- just return status
+    if params[:has_event_calendar]
+      @content.update_attribute :has_event_calendar, params[:has_event_calendar]
+      render status: 200, json: @content.to_json
+      return
+    end
+
     # if category is changed, create a category_correction object
     # normally I would put this in a callback on the model
     # but given the callbacks already on category_correction and the weirdness
