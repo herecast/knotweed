@@ -833,6 +833,14 @@ class Content < ActiveRecord::Base
     end
   end
 
+  def is_event?
+    if category == "event" or category == "sale_event"
+      true
+    else
+      false
+    end
+  end
+
   private 
 
   def query_promo_similarity_index(query_term, repo)

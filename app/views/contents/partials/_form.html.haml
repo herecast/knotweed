@@ -2,11 +2,11 @@
   = f.error_notification
   .tabbable
     %ul.nav.nav-tabs.nav-tabs-simple#edit_doctabs
-      %li.active
+      %li{ class: @content.is_event? ? "" : "active" }
         = link_to "#", class: 'green-border', data: { toggle: "tab", target: "#features" } do
           %i.icon-info
           Features
-      %li#event_tab_link
+      %li#event_tab_link{ class: @content.is_event? ? "active" : "" }
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#event_features" } do
           %i.icon-info
           Event Features
@@ -36,7 +36,7 @@
         %span.btn.btn-small.tab-traversal-link{ data: { move_index: "-1" } } Previous
         %span.btn.btn-small.tab-traversal-link{ data: { move_index: "1" } } Next
     .tab-content
-      .tab-pane.active.form-horizontal#features
+      .tab-pane.form-horizontal#features{ class: @content.is_event? ? "" : "active" }
         -# uneditable features displayed in info box if content exists
         .row-fluid
           .span4
@@ -90,7 +90,7 @@
           = f.input :pubdate, as: :datetime_picker, input_html: { value: @content.pubdate || Date.today }, wrapper_html: { class: "span6" }
           = f.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }
         = f.input :url, input_html: { class: "input-block-level" }
-      .tab-pane#event_features
+      .tab-pane#event_features{ class: @content.is_event? ? "active" : "" }
         .row-fluid
           .span6
             = f.input :event_description, wrapper_html: { class: "span12" }, input_html: {class: "ckeditor span12",
