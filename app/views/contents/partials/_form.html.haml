@@ -139,8 +139,7 @@
             .row-fluid
               = f.input :event_url, input_html: { class: "input-block-level" }, label: "Event URL"
             .row-fluid
-              = f.input :host_organization, input_html: { class: "input-block-level", 
-                value: (@content.host_organization.present? ? @content.host_organization : @content.source.try(:name)) },
+              = f.input :host_organization, input_html: { class: "input-block-level" },
                 label: "Sponsor"
             .row-fluid
               = f.input :sponsor_url, input_html: { class: "input-block-level" }, label: "Sponsor URL"
