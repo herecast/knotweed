@@ -33,8 +33,6 @@ jQuery ->
   updateIssueOptions()
   $(document).on 'change', '#content_source_id', ->
     updateIssueOptions()
-    updateBusinessLocationOptions()
-    updateHostOrganization()
 
   $(document).on 'change', '#content_content_category_id', ->
     name = $(this).find("option:selected").text()
@@ -95,14 +93,3 @@ updateIssueOptions = ->
       publication_id: $("#content_source_id").val(),
       selected_id: $("#content_issue_id").data('selectedId')
     dataType: "script"
-
-updateBusinessLocationOptions = ->
-  $.ajax $("#content_business_location_id").data("optionsUrl"),
-    data:
-      publication_id: $("#content_source_id").val()
-    dataType: "script"
-
-updateHostOrganization = ->
-  if $("#content_host_organization").val().length == 0
-    $("#content_host_organization").val($("#content_source_id option:selected").text())
-
