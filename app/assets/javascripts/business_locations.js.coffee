@@ -3,7 +3,6 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 jQuery ->
-
   # content form logic
   # edit venue link logic
   $("#content_business_location_id").select2
@@ -22,7 +21,21 @@ jQuery ->
       $("#edit_venue_link").hide()
 
   $(".venue-link").on 'click', ->
-    $(".modal#business_location_form .modal-body").load($(this).data('formUrl'))
+    $("#embedded_business_location_form").load $(this).data('formUrl'), ->
+      $("#embedded_business_location_form").show(200)
+      $("#embedded_business_location_form").find("span.close").show()
+        .on 'click', ->
+          $("#embedded_business_location_form").html("").hide()
+
+  # rather than write an extra view for this embedded form, we're overriding
+  # the submit button's default action and submitting the fields via jQuery
+  $(document).on 'click', '#embedded_business_location_form input[type="submit"]', (e) ->
+    e.preventDefault()
+    $.ajax $(this).data("submitUrl"),
+      type: $(this).data("submitMethod")
+      data: $("#embedded_business_location_form input[type!='submit']")
+      success: ->
+        $("#embedded_business_location_form").html("").hide()
 
   $(document).on 'click', '#locate_on_map_button', ->
     base_src_url = $("#confirm_location_map").data("baseSrcUrl")

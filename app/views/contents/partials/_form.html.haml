@@ -121,12 +121,12 @@
                   = f.label :business_location_id, label: "Venue", class: "span6"
                   .span6.venue-links.text-right
                     %span.text-right.venue-link#edit_venue_link{ style: "#{ @content.business_location.present? ? "" : "display: none;" }",
-                      data: { toggle: "modal", target: "#business_location_form", 
-                      form_url: edit_business_location_path(@content.business_location.present? ? @content.business_location.id : 1) } }
+                      data: {form_url: edit_business_location_path(@content.business_location.present? ? @content.business_location.id : 1) } }
                       Edit
-                    %span.text-right.venue-link#new_venue_link{ data: { form_url: new_business_location_path,
-                      toggle: "modal", target: "#business_location_form" } }
+                    %span.text-right.venue-link#new_venue_link{ data: { form_url: new_business_location_path } }
                       + Create Venue
+                .row-fluid
+                  .span10offset1#embedded_business_location_form{ style: "display: none;" }
 
                 .row-fluid
                   .controls.span12
@@ -217,10 +217,3 @@
     %h3 Add Publication
   .modal-body
     Loading form...
-
-.modal.hide.fade#business_location_form
-  .modal-header
-    %button.close{ type: "button", data: { dismiss: "modal" } } x
-    %h3 Business Location
-  .modal-body
-    Loading...   

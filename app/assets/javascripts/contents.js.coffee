@@ -9,7 +9,6 @@ jQuery ->
       method: "PUT"
       data:
         has_event_calendar: $(this).prop("checked")
-      
 
   $('#event_tab_link, #contents_tab_link').on 'click', ->
     $("#content_content_category_id").trigger('change')
