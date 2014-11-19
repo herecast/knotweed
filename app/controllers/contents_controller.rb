@@ -39,10 +39,10 @@ class ContentsController < ApplicationController
     end
     if session[:contents_search].present?
       @contents = @contents || @search.result(distinct: true).order("pubdate DESC").page(params[:page]).per(100)
+      @contents = @contents.accessible_by(current_ability)
     else
       @contents = []
     end
-    @contents = @contents.accessible_by(current_ability)
   end
 
   def new
