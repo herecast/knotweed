@@ -80,3 +80,10 @@ div {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+
+.tab-pane {
+  hr {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
