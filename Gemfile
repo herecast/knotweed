@@ -92,3 +92,4 @@ gem 'jbuilder'
 gem 'mixpanel_client'
 
 gem "select2-rails"
+gem "rdf"

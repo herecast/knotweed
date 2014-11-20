@@ -1,0 +1,8 @@
+PREFIX pub: <http://ontology.ontotext.com/publishing#>
+
+SELECT ?fid ?fn ?fv
+WHERE {
+    <http://www.subtext.org/Document/%{content_id}> pub:Feature ?fid .
+    ?fid pub:featureName ?fn .
+    ?fid pub:featureValue ?fv .
+} 

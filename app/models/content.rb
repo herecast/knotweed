@@ -124,7 +124,9 @@ class Content < ActiveRecord::Base
   REPROCESS = "reannotate_at_ontotext"
   EXPORT_PRE_PIPELINE = "export_pre_pipeline_xml"
   EXPORT_POST_PIPELINE = "export_post_pipeline_xml"
-  PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE, EXPORT_POST_PIPELINE]
+  POST_TO_NEW_ONTOTEXT = "post_to_new_ontotext"
+  PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE,
+                     EXPORT_POST_PIPELINE, POST_TO_NEW_ONTOTEXT]
 
   # features that can be overwritten when we reimport
   REIMPORT_FEATURES = %w(title subtitle authors raw_content pubdate source_category topics summary
@@ -381,6 +383,108 @@ class Content < ActiveRecord::Base
     result
   end
 
+  # Extracts mentions (e.g. Person, Organization, Keyphrases) from full annotations
+  def extract_mentions_from_annotations(annotations)
+    mentions = []
+    annotations['annotation-sets'].each do |s| 
+      s['annotation'].each do |a|
+        value = nil
+        a['feature-set'].each do |feature|
+          value = feature['value']['value'] if feature['name']['name'] == "inst"
+        end
+        mentions << { type: a['type'], value: value }
+      end
+    end
+    mentions
+  end
+
+  # Creates an Ontotext "recommendation" doc suitable for submission to the API
+  # from annotations returned by the content extraction service
+  def create_recommendation_doc_from_annotations(annotations)
+    rec_doc = { id: annotations['id'],
+                title: title,
+                summary: summary,
+                content: sanitized_content,
+                published: pubdate.utc.iso8601,
+                url: url,
+                tags: [],
+                keyphrases: [],
+    }
+
+    extract_mentions_from_annotations(annotations).each do |m|
+      if ["Location", "Person", "Organization"].include? m[:type]
+        rec_doc[:tags] << m[:value]
+      else
+        rec_doc[:keyphrases] << m[:value]
+      end
+    end
+
+    rec_doc[:tags] = rec_doc[:tags].join(" ")
+    rec_doc[:keyphrases] = rec_doc[:keyphrases].join(" ")
+
+    [rec_doc]
+  end
+
+  # Updates this content's category based on the annotations from the CES 
+  # If no category annotation is found, this is a no-op
+  def update_category_from_annotations(annotations)
+    category = nil
+    annotations['document-parts']['feature-set'].each do |feature|
+      category = feature['value']['value'] if feature['name']['name'] == "CATEGORY"
+    end
+
+    unless category.nil?
+      cat_id = ContentCategory.find_or_create_by_name(category).id 
+      update_attributes(content_category_id: cat_id)
+    end
+  end
+
+  # Persists this content to GraphDB as a series of tuples.
+  def persist_to_graph_db(repo, annotations)
+    graph = RDF::Graph.new
+    pub = RDF::Vocabulary.new("http://ontology.ontotext.com/publishing#")
+    category = RDF::Vocabulary.new("http://data.ontotext.com/Category/")
+    facets = RDF::Vocabulary.new("http://data.ontotext.com/facets/facetLink#")
+    features = RDF::Vocabulary.new("http://data.ontotext.com/watt/Feature/")
+    id_uri = RDF::URI(annotations['id'])
+
+    graph << [RDF::URI(annotations['id']), RDF.type, pub['Document']]
+    graph << [id_uri, pub['title'], title]
+    graph << [id_uri, pub['summary'], summary.nil? ? "" : summary]
+    graph << [id_uri, pub['creationDate'], pubdate.utc.iso8601]
+    graph << [id_uri, pub['content'], sanitized_content]
+    graph << [id_uri, pub['hasCategory'], category[content_category.name]]
+    graph << [id_uri, pub['annotatedContent'], JSON.generate(annotations)]
+    
+    extract_mentions_from_annotations(annotations).each do |m|
+      graph << [id_uri, facets[m[:type]], RDF::URI(m[:value])]
+    end
+
+    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
+    query = File.read(Rails.root.join("lib", "queries", "get_features.rq")) %
+            {content_id: id}
+    res = sparql.query(query)
+
+    unless res.empty?
+      existing_features = Hash[res.collect { |r| [r.fn.to_s, r.fid] }]
+    end
+
+    annotations['document-parts']['feature-set'].each do |feature|
+      if not existing_features.nil? and existing_features.include? feature['name']['name']
+        feature_key = existing_features[feature['name']['name']]
+      else 
+        feature_key = features[SecureRandom.uuid]
+      end
+      graph << [feature_key, RDF.type, pub['Feature']]
+      graph << [feature_key, pub['featureName'], feature['name']['name']]
+      graph << [feature_key, pub['featureValue'], feature['value']['value']]
+      graph << [id_uri, pub['Feature'], feature_key]
+    end
+
+    sparql.update("INSERT DATA {\n#{graph.dump(:ntriples)}}", { endpoint: repo.graphdb_endpoint + "/statements" })
+    graph
+  end
+
   # below are our various "publish methods"
   # new publish methods should return true
   # if publishing is successful and a string
@@ -407,10 +511,42 @@ class Content < ActiveRecord::Base
     end
   end
   
-  # function to post to Ontotext's prototype
-  # using the "new" xml format
+  # Post to Ontotext's new CES & Recommendations API
+  def post_to_new_ontotext(repo, opts={})
+    annotate_resp = JSON.parse(
+      OntotextController.post(repo.annotate_endpoint + '/extract', 
+        { body: to_new_xml,
+          headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",
+                     'Accept' => "application/vnd.ontotext.ces.document+json" }}))
+    if annotate_resp['id'].include? document_uri
+      update_category_from_annotations(annotate_resp)
+      rec_doc = create_recommendation_doc_from_annotations(annotate_resp)
+
+      response = OntotextController.post(repo.recommendation_endpoint + "/content?key=#{Figaro.env.ontotext_recommend_key}", 
+          { headers: { "Content-type" => "application/json",
+                       "Accept" => "application/json" },
+            body: rec_doc.to_json } )
+
+      if response["type"] == "SUCCESS"
+        repo.contents << self unless repo.contents.include? self
+        # trigger updating hasActivePromotion if publish succeeded
+        if has_active_promotion?
+          # we only need this run on one promotion, not all of them
+          promotions.where(active: true).first.mark_active_promotion(repo)
+        end
+
+        persist_to_graph_db(repo, annotate_resp);
+        return true
+      end
+    end
+
+    return "failed to post doc: #{self.id}\nresponse:#{response.body}"
+  end
+
+  # Publish content to the DSP (old) controller 
   def post_to_ontotext(repo, opts={})
-    options = { :body => self.to_new_xml }
+    options = { body: self.to_new_xml(true),
+                headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",}}
                 
     response = OntotextController.post(repo.dsp_endpoint + '/processDocument?persist=true', options)
     if response.body.include? document_uri
@@ -439,7 +575,7 @@ class Content < ActiveRecord::Base
     end
   end
 
-  def to_new_xml
+  def to_new_xml(include_tags=false)
     xml = ::Builder::XmlMarkup.new
     xml.instruct!
     xml.tag!("tns:document", "xmlns:tns"=>"http://www.ontotext.com/DocumentSchema", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "id" => document_uri) do |f|
@@ -496,7 +632,9 @@ class Content < ActiveRecord::Base
         end
         g.tag!("tns:document-part", "part"=>"BODY", "id"=>"1") do |h|
           h.tag!("tns:content") do |i|
-            i.cdata!(sanitized_content)
+            doc_content = sanitized_content
+            doc_content = strip_tags(doc_content) unless include_tags
+            i.cdata!(doc_content)
           end
         end
       end
@@ -692,6 +830,8 @@ class Content < ActiveRecord::Base
   # fields that we want to update in our DB.
   #
   # as of now, it only updates category
+  #
+  # TODO: decide whether we still need this method. publish_to_ontotext no longer uses it...
   def update_from_repo(repo)
     sparql = ::SPARQL::Client.new repo.sesame_endpoint
     response = sparql.query("

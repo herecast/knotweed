@@ -15,12 +15,6 @@ class OntotextController
                       { username: Figaro.env.ontotext_api_username,
                         password: Figaro.env.ontotext_api_password },
                      :timeout => 10*60 }) 
-    request_headers = { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8" }
-    if options.has_key? :headers and options[:headers].present?
-      options[:headers].merge! request_headers
-    else
-      options[:headers] = request_headers
-    end
     super(dest, options)
   end
 
