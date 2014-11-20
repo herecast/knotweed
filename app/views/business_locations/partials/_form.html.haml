@@ -2,7 +2,11 @@
 .pull-right
   %span.close{ style: "display: none;" } X
 = simple_form_for @business_location, remote: true do |f|
-  = f.input :name, input_html: { class: "input-block-level" }
+  .row-fluid
+    .span6
+      = f.input :name, input_html: { class: "input-block-level" }
+    .span6
+      = f.input :locate_include_name, label: "Include name in google address"
   = f.input :address, input_html: { class: "input-block-level" },
     label: "Address (street, city, state, zip)"
   = f.input :venue_url, input_html: { class: "input-block-level" },

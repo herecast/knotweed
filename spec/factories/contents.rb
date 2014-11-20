@@ -45,6 +45,11 @@
 #  content_category_id  :integer
 #  category_reviewed    :boolean          default(FALSE)
 #  processed_content    :text
+#  event_title          :string(255)
+#  event_description    :text
+#  event_url            :string(255)
+#  sponsor_url          :string(255)
+#  has_event_calendar   :boolean          default(FALSE)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

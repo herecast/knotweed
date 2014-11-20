@@ -39,6 +39,10 @@ jQuery ->
 
   $(document).on 'click', '#locate_on_map_button', ->
     base_src_url = $("#confirm_location_map").data("baseSrcUrl")
-    console.log base_src_url
-    new_src = base_src_url.replace(/q=.*/, "q=" + $("#business_location_address").val())
+    loc_string = ""
+    if ($("#business_location_locate_include_name").prop('checked'))
+      loc_string = loc_string + $("#business_location_name") + " "
+    loc_string = loc_string +  $("#business_location_address").val()
+    new_src = base_src_url.replace(/q=.*/, "q=" + loc_string)
+    console.log new_src
     $("#confirm_location_map").attr("src", new_src)

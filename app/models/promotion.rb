@@ -10,6 +10,7 @@
 #  description    :text
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  target_url     :string(255)
 #
 
 class Promotion < ActiveRecord::Base

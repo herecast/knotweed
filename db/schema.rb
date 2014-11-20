@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141114194948) do
+ActiveRecord::Schema.define(:version => 20141120185711) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -76,12 +76,13 @@ ActiveRecord::Schema.define(:version => 20141114194948) do
     t.string   "phone"
     t.string   "email"
     t.string   "hours"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
     t.integer  "publication_id"
     t.float    "latitude"
     t.float    "longitude"
     t.string   "venue_url"
+    t.boolean  "locate_include_name", :default => false
   end
 
   create_table "categories", :force => true do |t|
