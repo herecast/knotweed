@@ -43,6 +43,7 @@ jQuery ->
     $("#publication_location_ids").multiSelect("deselect_all")
 
   $(".add-new-field-link").on 'click', ->
+    $('.serialized-field-header').show()
     field_type = $(this).data("fieldType")
     model = $(this).data("model")
     val = $(this).next(".new-serialized-field").val()

@@ -149,17 +149,17 @@
         %h3 Links
         .row-fluid
           %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "links", model: "content" } } + Add New Link
-          = text_field_tag "new_link_field", nil, class: "new-serialized-field span3"
+          = text_field_tag "new_link_field", nil, class: "new-serialized-field span3", placeholder: "Link Label"
         = f.fields_for :links do |g|
-          .row-fluid.serialized-field-header
-            .span2= label_tag "Label"
+          .row-fluid.serialized-field-header{ style: @content.links.present? ? "" : "display: none;" }
+            .span2= label_tag "Link Label"
             .span3= label_tag "Value"
           - if @content.links.present?
             - @content.links.each_pair do |k,v|
               .row-fluid.serialized-field-row
                 .span2= label_tag k
                 .span6= g.text_field "#{k}", value: v, class: "span12"
-                .span2
+                .span1
                   .btn.btn-danger.remove-serialized-field X
       .tab-pane#doc_content
         = f.input :sanitized_content, input_html: { class: "ckeditor input-block-level" }, label: "Content", as: :text
