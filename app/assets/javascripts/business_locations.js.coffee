@@ -10,12 +10,10 @@ jQuery ->
   # hide and show based on whether a venue is selected
   $("#content_business_location_id").on 'change', ->
     val = $(this).select2('val')
-    console.log val
     if val.length > 0
       $("#edit_venue_link").show()
       form_url = $("#edit_venue_link").data("formUrl")
       new_form_url = form_url.replace(/[0-9]+/, val)
-      console.log new_form_url
       $("#edit_venue_link").data("formUrl", new_form_url)
     else
       $("#edit_venue_link").hide()
@@ -33,7 +31,7 @@ jQuery ->
     e.preventDefault()
     $.ajax $(this).data("submitUrl"),
       type: $(this).data("submitMethod")
-      data: $("#embedded_business_location_form input[type!='submit']")
+      data: $("#embedded_business_location_form input[type!='submit']").serialize()
       success: ->
         $("#embedded_business_location_form").html("").hide()
 
