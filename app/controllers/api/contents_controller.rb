@@ -12,7 +12,7 @@ class Api::ContentsController < Api::ApiController
       sort_order = params[:sort_order]
     end
 
-    if params[:repository].present? and @contents.present?
+    if params[:repository].present?
       @contents = @contents.includes(:repositories).where(repositories: {dsp_endpoint: params[:repository]}) 
     end
 
@@ -22,7 +22,7 @@ class Api::ContentsController < Api::ApiController
       @contents = @contents.order("start_date #{sort_order}")
 
       # limit query so we're not accidentally rendering thousands of json objects
-      @contents = Content.limit(500) unless params[:max_results].present?
+      @contents = @contents.limit(500) unless params[:max_results].present?
 
       if params[:start_date].present?
         start_date = Chronic.parse(params[:start_date])
@@ -230,6 +230,9 @@ class Api::ContentsController < Api::ApiController
     if params[:publications].present?
       allowed_pubs = Publication.where(name: params[:publications])
       @contents = @contents.where(source_id: allowed_pubs)
+    end
+    if params[:repository].present?
+      @contents = @contents.includes(:repositories).where(repositories: {dsp_endpoint: params[:repository]}) 
     end
     @contents= @contents.limit(5)
     render "index"
