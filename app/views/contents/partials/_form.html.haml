@@ -102,7 +102,7 @@
                 = f.input :has_event_calendar, label: "Curated?"
             .row-fluid
               = f.input :event_title, wrapper_html: { class: "span12" }, input_html: { class: "span12",
-                value: @content.event_title.present? ? @content.event_title : @content.title }
+                value: @content.event_title.present? ? @content.event_title : remove_list_from_title(@content.title) }
             .row-fluid
               = f.input :start_day, as: :fake, wrapper_html: { class: "span6" },
                 input_html: { value: f.object.start_date.try(:strftime, "%m/%d/%Y"), class: "span12" }
@@ -157,7 +157,7 @@
           - if @content.links.present?
             - @content.links.each_pair do |k,v|
               .row-fluid.serialized-field-row
-                .span2= label_tag k
+                .span2= text_field_tag
                 .span6= g.text_field "#{k}", value: v, class: "span12"
                 .span2
                   .btn.btn-danger.remove-serialized-field X
