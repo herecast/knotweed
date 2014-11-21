@@ -98,3 +98,4 @@ gem "select2-rails"
 gem "legato"
 gem "google-api-client"
 gem 'oauth2'
+gem "rdf"
