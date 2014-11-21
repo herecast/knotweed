@@ -1,5 +1,5 @@
 class Api::ContentsController < Api::ApiController
-  before_filter :set_events_param
+  before_filter :set_events_param, :set_consumer_app
 
   def index
     if params[:max_results].present? 
@@ -47,16 +47,23 @@ class Api::ContentsController < Api::ApiController
     else
       sort_order ||= "DESC"
       @contents = @contents.order("pubdate #{sort_order}")
-      if params[:publications].present?
-        allowed_pubs = Publication.where(name: params[:publications])
+      if params[:home_list].present?
+        home_list = Publication.find_by_name(params[:home_list])
+      end
+      # filter contents by publication based on what publications are allowed
+      # for the incoming consumer app
+      if @consumer_app.present?
+        allowed_pubs = @consumer_app.publications
+        if params[:publications].present? # allows the My List / All Lists filter to work
+          filter_pubs = Publication.where(name: params[:publications])
+          allowed_pubs.select! { |p| filter_pubs.include? p }
+        end
+        # if viewing just the home list
         @contents = @contents.where(source_id: allowed_pubs)
       end
       if params[:start_date].present?
         start_date = Chronic.parse(params[:start_date])
         @contents = @contents.where("pubdate >= :start_date", { start_date: start_date}) unless start_date.nil?
-      end
-      if params[:home_list].present?
-        home_list = Publication.find_by_name(params[:home_list])
       end
       if params[:categories].present?
         allowed_cats = ContentCategory.find_with_children(name: params[:categories])
@@ -251,6 +258,13 @@ class Api::ContentsController < Api::ApiController
       else
         params[:events] = false
       end
+    end
+  end
+
+  # find incoming consumer app using provided parameter
+  def set_consumer_app
+    if params[:consumer_app_uri].present?
+      @consumer_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
     end
   end
 end

@@ -91,6 +91,35 @@ describe Api::ContentsController do
       end
     end
 
+    describe "if consumer app is specified" do
+      before do
+        @pub1 = FactoryGirl.create :publication
+        @pub2 = FactoryGirl.create :publication
+        @pub3 = FactoryGirl.create :publication
+        @consumer_app = FactoryGirl.create :consumer_app
+        @consumer_app.publications << @pub1 << @pub3
+        FactoryGirl.create_list :content, 1, source: @pub1
+        FactoryGirl.create_list :content, 1, source: @pub3
+        FactoryGirl.create_list :content, 3, source: @pub2
+      end
+
+      it "should filter results based on consumer_app.publications" do
+        get :index, format: :json, consumer_app_uri: @consumer_app.uri, events: false
+        assigns(:contents).count.should == 2
+      end
+
+      describe "and publication is specified" do
+
+        it "should filter by consumer_app.publications AND specified publications" do
+          get :index, format: :json, consumer_app_uri: @consumer_app.uri, events: false,
+            publications: [@pub1.name]
+          assigns(:contents).count.should == 1
+        end
+      end
+
+    end
+
+
   end
 
 end
