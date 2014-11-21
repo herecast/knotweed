@@ -1,5 +1,4 @@
 = simple_form_for @publication, html: { class: "form" } do |f|
-
   = f.error_notification
   .tabbable
     %ul.nav.nav-tabs.nav-tabs-simple#edit_pubtabs
@@ -33,17 +32,21 @@
             Promotions
     .tab-content
       .tab-pane.active.form-horizontal#details
-        = f.input :name, input_html: { class: "span5" }
-        = f.input :tagline, as: :string, input_html: { class: "span5" }
-        = f.input :pub_type, collection: Publication::PUB_TYPE_OPTIONS, label: "Publication Type"
-        = f.association :organization, input_html: { class: "span5 select2" }
-        = f.association :parent, collection: Publication.parent_pubs, label: "Parent Publication (Syndication)", input_html: { class: "span5 select2" }, include_blank: true
-        = f.input :category_override, input_html: { class: "span5" }, hint: "Set this option to force all content to publish with a specific category."
-        = f.input :publishing_frequency, collection: Publication::FREQUENCY_OPTIONS, input_html: { class: "span5" }
-        = f.input :website, input_html: { class: "span5" }
-        = f.input :reverse_publish_email, input_html: { class: "span5" }
-        = f.input :display_attributes
-        = f.input :notes, input_html: { class: "span5", rows: 10 } 
+        .row-fluid
+          .span5
+            = f.input :name, input_html: { class: "input-block-level" }
+            = f.input :tagline, as: :string, input_html: { class: "input-block-level" }
+            = f.input :pub_type, collection: Publication::PUB_TYPE_OPTIONS, label: "Publication Type"
+            = f.association :consumer_apps, input_html: { class: "chosen-select input-block-level" }
+            = f.association :organization, input_html: { class: "input-block-level select2" }
+            = f.association :parent, collection: Publication.parent_pubs, label: "Parent Publication (Syndication)", input_html: { class: "input-block-level select2" }, include_blank: true
+          .span7
+            = f.input :category_override, input_html: { class: "input-block-level" }, hint: "Set this option to force all content to publish with a specific category."
+            = f.input :publishing_frequency, collection: Publication::FREQUENCY_OPTIONS, input_html: { class: "input-block-level" }
+            = f.input :website, input_html: { class: "input-block-level" }
+            = f.input :reverse_publish_email, input_html: { class: "input-block-level" }
+            = f.input :display_attributes
+            = f.input :notes, input_html: { class: "input-block-level", rows: 10 } 
       .tab-pane#properties
         .row-fluid
           %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "links", model: "publication" } } + Add New Link

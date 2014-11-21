@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141120185711) do
+ActiveRecord::Schema.define(:version => 20141121205058) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -135,6 +135,13 @@ ActiveRecord::Schema.define(:version => 20141120185711) do
   end
 
   add_index "consumer_apps_messages", ["consumer_app_id", "message_id"], :name => "consumer_apps_messages_joins_index", :unique => true
+
+  create_table "consumer_apps_publications", :id => false, :force => true do |t|
+    t.integer "consumer_app_id", :null => false
+    t.integer "publication_id",  :null => false
+  end
+
+  add_index "consumer_apps_publications", ["consumer_app_id", "publication_id"], :name => "consumer_app_publication_index"
 
   create_table "consumer_apps_wufoo_forms", :id => false, :force => true do |t|
     t.integer "consumer_app_id"
