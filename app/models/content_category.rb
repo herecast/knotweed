@@ -30,5 +30,9 @@ class ContentCategory < ActiveRecord::Base
     children = ContentCategory.where(parent_id: allowed_cats)
     allowed_cats + children
   end
+
+  def self.event_categories
+    ContentCategory.where(name: ["sale_event", "event"])
+  end
 end
 
