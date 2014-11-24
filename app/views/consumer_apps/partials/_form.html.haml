@@ -1,8 +1,8 @@
 = simple_form_for @consumer_app, html: { data: { id: @consumer_app.id }, class: "form form-horizontal" } do |f|
   = f.error_notification
-  = f.input :name
-  = f.input :uri
-  = f.association :repository
+  = f.input :name, input_html: { class: "input-block-level" }
+  = f.input :uri, input_html: { class: "input-block-level" }
+  = f.association :repository, input_html: { class: "input-block-level" }
+  = f.association :publications, input_html: { class: "chosen-select input-block-level" }
   .form-actions
     = submit_tag nil, class: "btn btn-primary"
-

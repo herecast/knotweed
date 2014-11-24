@@ -40,6 +40,7 @@ class Publication < ActiveRecord::Base
 
   has_and_belongs_to_many :contacts
   has_and_belongs_to_many :locations
+  has_and_belongs_to_many :consumer_apps
   
   has_many :business_locations
 
@@ -50,7 +51,8 @@ class Publication < ActiveRecord::Base
                   :notes, :images_attributes, :parent_id, :location_ids,
                   :remote_logo_url, :contact_ids, :category_override, :tagline, :links, 
                   :social_media, :general, :header, :header_cache, :remove_header,
-                  :pub_type, :display_attributes, :reverse_publish_email
+                  :pub_type, :display_attributes, :reverse_publish_email,
+                  :consumer_app_ids
   
   mount_uploader :logo, ImageUploader
   mount_uploader :header, ImageUploader

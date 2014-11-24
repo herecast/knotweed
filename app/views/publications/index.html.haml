@@ -24,6 +24,10 @@
           .field.span3
             = f.label :locations_id_in, "Service Area"
             = f.collection_select :locations_id_in, Location.accessible_by(current_ability), :id, :city, {}, { multiple: true, class: "chosen-select" }
+        .controls.controls-row
+          .field.span3
+            = f.label :consumer_apps_id_in, "Consumer Apps"
+            = f.collection_select :consumer_apps_id_in, ConsumerApp.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
