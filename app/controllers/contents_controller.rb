@@ -1,6 +1,6 @@
 class ContentsController < ApplicationController
 
-  before_filter :process_date_params, only: [:create, :update]
+  before_filter :process_date_params, :remove_raw_content_param_if_event, only: [:create, :update]
   
   PUBLISH_METHODS_TO_DOWNLOAD = ["export_pre_pipeline_xml", "export_post_pipeline_xml"]
 
@@ -129,11 +129,12 @@ class ContentsController < ApplicationController
     # but given the callbacks already on category_correction and the weirdness
     # of this functionality to begin with, it seems more straightforward
     # to put it here:
-    if params[:content][:content_category_id].present? and @content.content_category_id != params[:content][:content_category_id] 
+    if params[:content][:content_category_id].present? and @content.content_category_id != params[:content][:content_category_id].to_i
       CategoryCorrection.create(content: @content, old_category: @content.category, 
                                 new_category: ContentCategory.find(params[:content][:content_category_id]).name)
       params[:content].delete :content_category_id # already taken care of updating this
     end
+
     if @content.update_attributes(params[:content])
       flash[:notice] = "Successfully updated content #{@content.id}"
       redirect_to form_submit_redirect_path(@content.id)
@@ -230,6 +231,14 @@ class ContentsController < ApplicationController
       edit_content_path(params[:next_record_id], index: params[:index], page: params[:page])
     else
       contents_path
+    end
+  end
+
+  def remove_raw_content_param_if_event
+    if params[:content].present?
+      if ContentCategory.event_categories.map{ |cc| cc.id }.include? params[:content][:content_category_id].to_i
+        params[:content].delete :sanitized_content
+      end
     end
   end
 
