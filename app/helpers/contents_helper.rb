@@ -17,7 +17,11 @@ module ContentsHelper
   end
 
   def remove_list_from_title(title)
-    title.gsub(/\[.*\]/, '')
+    if title.present?
+      title.gsub(/\[.*\]/, '')
+    else
+      nil
+    end
   end
 
 end
