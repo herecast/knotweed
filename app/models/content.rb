@@ -552,8 +552,8 @@ class Content < ActiveRecord::Base
 
   # Publish content to the DSP (old) controller 
   def post_to_ontotext(repo, opts={})
-    options = { body: self.to_new_xml(true),
-                headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",}}
+    options = { body: to_new_xml(true),
+                headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8"}}
                 
     response = OntotextController.post(repo.dsp_endpoint + '/processDocument?persist=true', options)
     if response.body.include? document_uri
@@ -639,9 +639,11 @@ class Content < ActiveRecord::Base
         end
         g.tag!("tns:document-part", "part"=>"BODY", "id"=>"1") do |h|
           h.tag!("tns:content") do |i|
-            doc_content = sanitized_content
-            doc_content = strip_tags(doc_content) unless include_tags
-            i.cdata!(doc_content)
+            if include_tags
+              i.cdata!(sanitized_content)
+            else
+              i.cdata!(strip_tags(sanitized_content))
+            end
           end
         end
       end

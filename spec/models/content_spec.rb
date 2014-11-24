@@ -363,7 +363,7 @@ describe Content do
       @content = FactoryGirl.create(:content)
       @image1 = FactoryGirl.create(:image)
       @image2 = FactoryGirl.create(:image)
-      @xml = @content.to_new_xml
+      @xml = @content.to_new_xml(true)
     end
 
     it "should contain all the attributes as feature name/value pairs" do
@@ -428,7 +428,6 @@ describe Content do
     describe "#export_pre_pipeline_xml" do
       before do
         stub_request(:post, "http://#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPrePipeline").
-          with(:headers => {'Content-Type'=>'application/vnd.ontotext.ces.document+xml;charset=UTF-8'}).
           to_return(:status => 200, 
                     :body => File.open('spec/fixtures/pre_pipeline_output.xml', 'r').readlines.join(),
                     :headers => {})
@@ -457,7 +456,6 @@ describe Content do
     describe "postpipeline xml" do
       before do
         stub_request(:post, "http://#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPostPipeline").
-          with(:headers => {'Content-Type'=>'application/vnd.ontotext.ces.document+xml;charset=UTF-8'}).
           to_return(:status => 200, 
                     :body => File.open('spec/fixtures/post_pipeline_output.xml', 'r').readlines.join(),
                     :headers => {})
@@ -487,7 +485,6 @@ describe Content do
       before do
         stub_retrieve_update_fields_from_repo(@content, @repo)
         stub_request(:post, "#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processDocument?persist=true").
-          with(:headers => { 'Content-Type' => 'application/vnd.ontotext.ces.document+xml;charset=UTF-8'}). 
           to_return(:status => 200,
                     :body => File.open('spec/fixtures/post_to_ontotext.xml', 'r').readlines.join(),
                     :headers => {})
