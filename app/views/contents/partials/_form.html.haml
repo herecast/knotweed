@@ -157,7 +157,7 @@
           - if @content.links.present?
             - @content.links.each_pair do |k,v|
               .row-fluid.serialized-field-row
-                .span2= text_field_tag
+                .span2= label_tag k
                 .span6= g.text_field "#{k}", value: v, class: "span12"
                 .span1
                   .btn.btn-danger.remove-serialized-field X
