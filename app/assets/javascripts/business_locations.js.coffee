@@ -39,7 +39,7 @@ jQuery ->
     base_src_url = $("#confirm_location_map").data("baseSrcUrl")
     loc_string = ""
     if ($("#business_location_locate_include_name").prop('checked'))
-      loc_string = loc_string + $("#business_location_name") + " "
+      loc_string = loc_string + $("#business_location_name").val() + " "
     loc_string = loc_string +  $("#business_location_address").val()
     new_src = base_src_url.replace(/q=.*/, "q=" + loc_string)
     console.log new_src
