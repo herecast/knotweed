@@ -332,7 +332,7 @@ class Content < ActiveRecord::Base
   # check that doc validates our xml requirements
   # if not, mark it as quarantined
   def mark_quarantined
-    if title.present? and source.present? and pubdate.present? and raw_content.present? and strip_tags(sanitized_content).present?
+    if title.present? and source.present? and pubdate.present? and (strip_tags(sanitized_content).present? or strip_tags(event_description).present?)
       self.quarantine = false
     else
       self.quarantine = true
@@ -639,11 +639,7 @@ class Content < ActiveRecord::Base
         end
         g.tag!("tns:document-part", "part"=>"BODY", "id"=>"1") do |h|
           h.tag!("tns:content") do |i|
-            if include_tags
-              i.cdata!(sanitized_content)
-            else
-              i.cdata!(strip_tags(sanitized_content))
-            end
+            i.cdata!(publish_content(include_tags))
           end
         end
       end
@@ -862,6 +858,22 @@ class Content < ActiveRecord::Base
     cat = ContentCategory.find_or_create_by_name(cat).id unless cat.nil? 
     update_attributes(content_category_id: cat, processed_content: response_hash[:processed_content].to_s)
   end
+
+  # returns the content for sending to the DSP for annotation
+  def publish_content(include_tags=false)
+    if strip_tags(sanitized_content).present?
+      pub_content = sanitized_content
+    else
+      pub_content = event_description
+    end
+    if include_tags
+      pub_content
+    else
+      strip_tags(pub_content)
+    end
+  end
+
+
 
   # Creates HTML-annotated, sanitized version of the raw_content that should be
   # as display-ready as possible

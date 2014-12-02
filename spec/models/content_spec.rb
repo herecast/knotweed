@@ -107,6 +107,40 @@ describe Content do
       @content.quarantine.should== true
     end
 
+    it "should mark it NOT quarantined if sanitized_content is empty but event_description is populated" do
+      @content.raw_content = ""
+      @content.event_description = "hello this is not blank"
+      @content.save
+      @content.reload
+      @content.quarantine.should== false
+    end
+  end
+
+  describe "publish_content" do
+    before do
+      @content = FactoryGirl.create(:content)
+    end
+
+    it "should return sanitized_content if it has anything in it" do
+      @content.publish_content(true).should == @content.sanitized_content
+    end
+
+    it "should return event_description if strip_tags sanitized_content is empty" do
+      @content.raw_content = "<br/>"
+      @content.publish_content.should == @content.event_description # nil in this case
+      @content.event_description = "hello"
+      @content.publish_content.should == "hello"
+    end
+
+    it "should strip tags from result if include_tags parameter is false" do
+      @content.raw_content = "<p>Hello</p>"
+      @content.publish_content(false).should == "Hello"
+    end
+
+    it "should not strip tags from result if include_tags parameter is true" do
+      @content.raw_content = "<p>Hello</p>"
+      @content.publish_content(true).include?(@content.raw_content).should == true
+    end
   end
 
   describe "create from import job" do
