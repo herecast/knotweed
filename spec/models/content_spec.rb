@@ -91,6 +91,24 @@ describe Content do
     end
   end
 
+  describe "mark_quarantined" do
+    before do
+      @content = FactoryGirl.create(:content)
+    end
+
+    it "should leave valid content unquarantined" do
+      @content.quarantine.should== false
+    end
+    
+    it "should mark it quarantined if sanitized_content is empty" do
+      @content.raw_content = "<br/>"
+      @content.save
+      @content.reload
+      @content.quarantine.should== true
+    end
+
+  end
+
   describe "create from import job" do
     before do
       # base_data is not enough to pass quarantine

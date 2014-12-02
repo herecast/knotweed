@@ -332,7 +332,7 @@ class Content < ActiveRecord::Base
   # check that doc validates our xml requirements
   # if not, mark it as quarantined
   def mark_quarantined
-    if title.present? and source.present? and pubdate.present? and raw_content.present?
+    if title.present? and source.present? and pubdate.present? and raw_content.present? and strip_tags(sanitized_content).present?
       self.quarantine = false
     else
       self.quarantine = true
