@@ -18,8 +18,12 @@
     .span6
       %span.pull-right.btn.btn-primary#locate_on_map_button Locate on Map
       - if @business_location.address.present?
+        - if @business_location.locate_include_name
+          - addr = CGI::escape "#{@business_location.name} #{@business_location.address}"
+        - else
+          - addr = CGI::escape @business_location.address
         %iframe#confirm_location_map{ data: { base_src_url: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=" },
-          src: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=#{CGI::escape @business_location.address}" }
+          src: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=#{addr}" }
       - else
         %iframe#confirm_location_map{ data: { base_src_url: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=" } }
   = f.input :hours, input_html: { class: "input-block-level" }
