@@ -25,7 +25,7 @@ class Api::ContentsController < Api::ApiController
       @contents = @contents.limit(500) unless params[:max_results].present?
 
       if params[:start_date].present?
-        start_date = Chronic.parse(params[:start_date])
+        start_date = Chronic.parse(params[:start_date]).beginning_of_day
         @contents = @contents.where('start_date >= ?', start_date)
       end
       if params[:end_date].present?
