@@ -1000,6 +1000,25 @@ class Content < ActiveRecord::Base
     end
   end
 
+
+  # field sets for API responses
+  def self.truncated_event_fields
+    [:id, :title, :subtitle, :start_date, :event_type, :host_organization,
+             :event_title, :event_description, :business_location, :featured]
+  end
+
+  def self.start_date_only_fields
+    [:id, :start_date]
+  end
+
+  def self.truncated_content_fields
+    [:id, :title, :start_date, :end_date, :event_type, :host_organization, :cost, :recurrence,
+             :featured, :links, :pubdate, :authors, :category, :parent_category, :source_name, :source_id, :location, 
+             :parent_uri, :business_location, :category_reviewed, :authoremail, :event_title,
+             :event_description, :event_url, :sponsor_url, :subtitle]
+  end
+
+
   private 
 
   def query_promo_similarity_index(query_term, repo)
