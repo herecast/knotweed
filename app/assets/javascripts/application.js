@@ -14,6 +14,7 @@
 //= require jquery.turbolinks
 //= require jquery_ujs
 //= require ckeditor-jquery
+//= require flatty/jquery_ui/jquery-ui.min
 //= require flatty/bootstrap/bootstrap.min
 //= require spin.min
 //= require jquery.spin
@@ -21,7 +22,6 @@
 //= require chosen-jquery
 //= require flatty/plugins/mobile_events/jquery.mobile-events.min
 //= require flatty/jquery/jquery-migrate.min
-//= require flatty/jquery_ui/jquery-ui.min
 //= require flatty_plugins
 //= require flatty/nav
 //= require flatty/tables
