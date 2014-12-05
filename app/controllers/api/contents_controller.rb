@@ -7,6 +7,7 @@ class Api::ContentsController < Api::ApiController
     else
       @contents = Content
     end
+    @contents = @contents.includes(:source).includes(:content_category).includes(:images).includes(:import_location)
 
     if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
       sort_order = params[:sort_order]
@@ -43,7 +44,7 @@ class Api::ContentsController < Api::ApiController
       unless params[:request_featured].present?
         @contents = @contents.where(featured: false)
       end
-      @contents = @contents.includes(:business_location, :images, :import_location)
+      @contents = @contents.includes(:business_location)
     else
       sort_order ||= "DESC"
       @contents = @contents.order("pubdate #{sort_order}")

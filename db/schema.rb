@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141121205058) do
+ActiveRecord::Schema.define(:version => 20141205004301) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -384,6 +384,8 @@ ActiveRecord::Schema.define(:version => 20141121205058) do
     t.datetime "updated_at",                    :null => false
     t.string   "source_url",     :limit => 400
   end
+
+  add_index "images", ["imageable_type", "imageable_id"], :name => "index_images_on_imageable_type_and_imageable_id"
 
   create_table "import_jobs", :force => true do |t|
     t.integer  "parser_id"
