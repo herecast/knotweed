@@ -41,7 +41,7 @@ class Api::ContentsController < Api::ApiController
       end
 
       # don't return featured events unless they're requested
-      unless params[:request_featured].present?
+      unless params[:request_featured]
         @contents = @contents.where(featured: false)
       end
       @contents = @contents.includes(:business_location)
@@ -234,7 +234,7 @@ class Api::ContentsController < Api::ApiController
 
   def featured_events
     params[:truncated] = true
-    @contents = Content.where(featured: true).where("start_date > ?", Time.zone.now).order("start_date ASC")
+    @contents = Content.where(featured: true).where("start_date >= ?", Date.today).order("start_date ASC")
     if params[:publications].present?
       allowed_pubs = Publication.where(name: params[:publications])
       @contents = @contents.where(source_id: allowed_pubs)
