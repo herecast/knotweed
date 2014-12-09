@@ -372,7 +372,9 @@ class Content < ActiveRecord::Base
     result = false
     opts[:file_list] = file_list unless file_list.nil?
     begin
-      result = self.send method.to_sym, repo, opts
+      Content.benchmark("full_#{method}") do
+        result = self.send method.to_sym, repo, opts
+      end
       if result == true
         record.items_published += 1 if record.present?
       else
@@ -488,7 +490,9 @@ class Content < ActiveRecord::Base
       graph << [id_uri, pub['Feature'], feature_key]
     end
 
-    sparql.update("INSERT DATA {\n#{graph.dump(:ntriples)}}", { endpoint: repo.graphdb_endpoint + "/statements" })
+    Content.benchmark('sparqlPersist') do
+      sparql.update("INSERT DATA {\n#{graph.dump(:ntriples)}}", { endpoint: repo.graphdb_endpoint + "/statements" })
+    end
     graph
   end
 
@@ -520,19 +524,26 @@ class Content < ActiveRecord::Base
   
   # Post to Ontotext's new CES & Recommendations API
   def post_to_new_ontotext(repo, opts={})
-    annotate_resp = JSON.parse(
-      OntotextController.post(repo.annotate_endpoint + '/extract', 
-        { body: to_new_xml,
-          headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",
-                     'Accept' => "application/vnd.ontotext.ces.document+json" }}))
+    annotate_resp_raw = nil
+    Content.benchmark('annotatingEvent') do
+       annotate_resp_raw = OntotextController.post(repo.annotate_endpoint + '/extract', 
+          { body: to_new_xml,
+            headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",
+                       'Accept' => "application/vnd.ontotext.ces.document+json" }})
+    end
+    annotate_resp = JSON.parse(annotate_resp_raw)
+
     if annotate_resp['id'].include? document_uri
       update_category_from_annotations(annotate_resp)
       rec_doc = create_recommendation_doc_from_annotations(annotate_resp)
 
-      response = OntotextController.post(repo.recommendation_endpoint + "/content?key=#{Figaro.env.ontotext_recommend_key}", 
-          { headers: { "Content-type" => "application/json",
-                       "Accept" => "application/json" },
-            body: rec_doc.to_json } )
+      response = nil
+      Content.benchmark('recommendEvent') do
+        response = OntotextController.post(repo.recommendation_endpoint + "/content?key=#{Figaro.env.ontotext_recommend_key}", 
+            { headers: { "Content-type" => "application/json",
+                         "Accept" => "application/json" },
+              body: rec_doc.to_json } )
+      end
 
       if response["type"] == "SUCCESS"
         repo.contents << self unless repo.contents.include? self
@@ -542,7 +553,9 @@ class Content < ActiveRecord::Base
           promotions.where(active: true).first.mark_active_promotion(repo)
         end
 
-        persist_to_graph_db(repo, annotate_resp);
+        Content.benchmark('persistMethod') do
+          persist_to_graph_db(repo, annotate_resp);
+        end
         return true
       end
     end
