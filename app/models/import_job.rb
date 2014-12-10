@@ -159,11 +159,11 @@ class ImportJob < ActiveRecord::Base
           sleep(5.0) unless self.stop_loop
         end
         # hacky trick to stop continuous jobs during backup time
-        if Time.now > Chronic.parse("6:45 am") and Time.now < Chronic.parse("7:45 am")
+        if Time.now > Chronic.parse("2:55 am") and Time.now < Chronic.parse("3:40 am")
           # then update stop_loop attribute to break out of the cycle
           update_attribute :stop_loop, true
           # first, schedule the job to run again at 7:45 am.
-          enqueue_job(Chronic.parse("8:00 am"))
+          enqueue_job(Chronic.parse("3:45 am"))
         end
         self.reload
         break if self.stop_loop
