@@ -72,7 +72,7 @@ class Api::ContentsController < Api::ApiController
         # unfortunate hack for talk of the town query
         # in the scenario where they are looking just at talk of the town,
         # we can add a home_list parameter to the sql query.
-        if home_list.present?
+        if home_list.present? and (params[:admin].nil? or !(params[:admin]=="true"))
           talk_of_the_town_cat = ContentCategory.find_by_name("talk_of_the_town")
           tot_cat_list = talk_of_the_town_cat.children + [talk_of_the_town_cat]
           @contents = @contents.where("(content_category_id not in (?) OR source_id = ?)", tot_cat_list, home_list.id)

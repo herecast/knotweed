@@ -88,6 +88,16 @@ describe Api::ContentsController do
           assigns(:contents).include?(@pub2.contents.where("content_category_id != ?", @tot.id).first).should == true
         end
 
+        describe "if user is an admin" do
+          it "should return all talk_of_the_town not just home_list" do
+            query_params = { home_list: @pub1.name, categories: ContentCategory.all.map{ |cc| cc.name }, events: false,
+              publications: Publication.all.map{ |p| p.name }, admin: "true" }
+            get :index, query_params.merge({format: :json})
+            assigns(:contents).include?(@tot_content).should == true
+            assigns(:contents).include?(@tot_content_2).should == true
+          end
+        end
+
       end
     end
 
