@@ -23,7 +23,7 @@ class Api::ContentsController < Api::ApiController
       @contents = @contents.order("start_date #{sort_order}")
 
       # limit query so we're not accidentally rendering thousands of json objects
-      @contents = @contents.limit(500) unless params[:max_results].present?
+      @contents = @contents.limit(1000) unless params[:max_results].present?
 
       if params[:start_date].present?
         start_date = Chronic.parse(params[:start_date]).beginning_of_day
