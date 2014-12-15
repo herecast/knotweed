@@ -47,3 +47,10 @@ GMAPS_API_KEY: gmapskey
 # attempts**4 + 5
 RESCHEDULE_AT: 10
 
+# config vars that specify when backup starts and ends for use with
+# pausing delayed_jobs and preventing publishing
+# if not specified, default is 2:45-3:45AM (server time, which is EST now)
+# what is placed here in app.yml is parsed by chronic so a simple
+# "2:45 am" will suffice
+BACKUP_START: "2:45 am"
+BACKUP_END: "3:45 am"
