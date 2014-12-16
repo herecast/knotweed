@@ -34,8 +34,8 @@ class ImportJob < ActiveRecord::Base
   include Jobs::ScheduledJob
   QUEUE = "imports"
   PARSER_PATH = "#{Rails.root}/lib/parsers"
-  BACKUP_START = Figaro.env.backup_start.present? ? Chronic.parse(Figaro.env.backup_start) : Chronic.parse("2:45 am")
-  BACKUP_END = Figaro.env.backup_end.present? ? Chronic.parse(Figaro.env.backup_end) : Chronic.parse("3:45 am")
+  BACKUP_START = Figaro.env.respond_to?(:backup_start) ? Chronic.parse(Figaro.env.backup_start) : Chronic.parse("2:45 am")
+  BACKUP_END = Figaro.env.respond_to?(:backup_end) ? Chronic.parse(Figaro.env.backup_end) : Chronic.parse("3:45 am")
 
   belongs_to :organization
   belongs_to :parser
