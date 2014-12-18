@@ -36,6 +36,7 @@ gem 'net-http-persistent', '~> 2.9'
 group :test do
   gem "webmock"
   gem "vcr"
+  gem "timecop"
 end
 
 gem "carrierwave"

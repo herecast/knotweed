@@ -221,7 +221,7 @@ class Content < ActiveRecord::Base
       else
         key = k
       end
-      if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories'].include? key
+      if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories', 'source_field'].include? key
         special_attrs[key] = v if v.present?
       elsif v.present?
         data[key] = v
@@ -248,20 +248,30 @@ class Content < ActiveRecord::Base
       import_location = special_attrs['location']
       content.import_location = ImportLocation.find_or_create_from_match_string(import_location)
     end
-    if special_attrs.has_key? "source"
-      source = special_attrs["source"]
-      if organization
-        # try to match content name exactly
-        pub = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).find_by_name(source)
-        # if that doesn't work, try a "LIKE" query
-        pub = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).where("name LIKE ?", "%#{source}%").first if pub.nil?
-        # if that still doesn't work, create a new publication
-        pub = Publication.create(name: source, organization_id: organization.id) if pub.nil?
 
-        content.source = pub
+    if special_attrs.has_key? "source"
+      if special_attrs.has_key? "source_field"
+        source_field = special_attrs["source_field"].to_sym
       else
-        content.source = Publication.where("name LIKE ?", "%#{source}%").first
-        content.source = Publication.create(name: source) if content.source.nil?
+        source_field = :name
+      end
+      source = special_attrs["source"]
+      if source_field == :name
+        if organization
+          # try to match content name exactly
+          pub = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).find_by_name(source)
+          # if that doesn't work, try a "LIKE" query
+          pub = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).where("name LIKE ?", "%#{source}%").first if pub.nil?
+          # if that still doesn't work, create a new publication
+          pub = Publication.create(name: source, organization_id: organization.id) if pub.nil?
+
+          content.source = pub
+        else
+          content.source = Publication.where("name LIKE ?", "%#{source}%").first
+          content.source = Publication.create(name: source) if content.source.nil?
+        end
+      else # deal with special source_fields
+        content.source = Publication.where(source_field => source).first
       end
     end
     if special_attrs.has_key? "edition"
@@ -356,6 +366,10 @@ class Content < ActiveRecord::Base
 
   # catchall publish method that handles interacting w/ the publish record
   def publish(method, repo, record=nil, opts={})
+    # do not allow publishing during BACKUPS
+    if ImportJob::BACKUP_START < Time.now and Time.now < ImportJob::BACKUP_END
+      return false
+    end
     if method.nil?
       method = DEFAULT_PUBLISH_METHOD
     end

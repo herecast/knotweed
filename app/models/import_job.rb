@@ -34,6 +34,8 @@ class ImportJob < ActiveRecord::Base
   include Jobs::ScheduledJob
   QUEUE = "imports"
   PARSER_PATH = "#{Rails.root}/lib/parsers"
+  BACKUP_START = Figaro.env.respond_to?(:backup_start) ? Chronic.parse(Figaro.env.backup_start) : Chronic.parse("2:45 am")
+  BACKUP_END = Figaro.env.respond_to?(:backup_end) ? Chronic.parse(Figaro.env.backup_end) : Chronic.parse("3:45 am")
 
   belongs_to :organization
   belongs_to :parser
@@ -159,11 +161,11 @@ class ImportJob < ActiveRecord::Base
           sleep(5.0) unless self.stop_loop
         end
         # hacky trick to stop continuous jobs during backup time
-        if Time.now > Chronic.parse("2:55 am") and Time.now < Chronic.parse("3:40 am")
+        if Time.now > BACKUP_START and Time.now < BACKUP_END
           # then update stop_loop attribute to break out of the cycle
           update_attribute :stop_loop, true
           # first, schedule the job to run again at 7:45 am.
-          enqueue_job(Chronic.parse("3:45 am"))
+          enqueue_job(BACKUP_END)
         end
         self.reload
         break if self.stop_loop
