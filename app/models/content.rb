@@ -437,7 +437,7 @@ class Content < ActiveRecord::Base
   def update_category_from_annotations(annotations)
     category = nil
     annotations['document-parts']['feature-set'].each do |feature|
-      category = feature['value']['value'] if feature['name']['name'] == "CATEGORY"
+      category = feature['value']['value'] if feature['name']['name'] == "CATEGORIES"
     end
 
     unless category.nil?
@@ -448,6 +448,7 @@ class Content < ActiveRecord::Base
 
   # Persists this content to GraphDB as a series of tuples.
   def persist_to_graph_db(repo, annotations)
+    #create/populate graph
     graph = RDF::Graph.new
     pub = RDF::Vocabulary.new("http://ontology.ontotext.com/publishing#")
     category = RDF::Vocabulary.new("http://data.ontotext.com/Category/")
@@ -462,37 +463,36 @@ class Content < ActiveRecord::Base
     graph << [id_uri, pub['content'], sanitized_content]
     graph << [id_uri, pub['hasCategory'], category[content_category.name]]
     graph << [id_uri, pub['annotatedContent'], JSON.generate(annotations)]
-    
+
     extract_mentions_from_annotations(annotations).each do |m|
       graph << [id_uri, facets[m[:type]], RDF::URI(m[:value])]
     end
 
     sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-    query = File.read(Rails.root.join("lib", "queries", "get_features.rq")) %
-            {content_id: id}
-    res = sparql.query(query)
 
-    unless res.empty?
-      existing_features = Hash[res.collect { |r| [r.fn.to_s, r.fid] }]
-    end
+    #clean out existing annotatedContent for this uri
+    query = File.read(Rails.root.join("lib", "queries", "remove_statements.rq")) %
+            {content_id: id}
+    sparql.update(query, { endpoint: repo.graphdb_endpoint + "/statements" })
 
     annotations['document-parts']['feature-set'].each do |feature|
-      if not existing_features.nil? and existing_features.include? feature['name']['name']
-        feature_key = existing_features[feature['name']['name']]
-      else 
+     # populate features ONLY IF they have a value
+      if not feature['value']['value'].empty?
         feature_key = features[SecureRandom.uuid]
+        graph << [feature_key, RDF.type, pub['Feature']]
+        graph << [feature_key, pub['featureName'], feature['name']['name']]
+        graph << [feature_key, pub['featureValue'], feature['value']['value']]
+        graph << [id_uri, pub['Feature'], feature_key]
       end
-      graph << [feature_key, RDF.type, pub['Feature']]
-      graph << [feature_key, pub['featureName'], feature['name']['name']]
-      graph << [feature_key, pub['featureValue'], feature['value']['value']]
-      graph << [id_uri, pub['Feature'], feature_key]
     end
 
-    sparql.update("INSERT DATA {\n#{graph.dump(:ntriples)}}", { endpoint: repo.graphdb_endpoint + "/statements" })
-    graph
-  end
+    query = "INSERT DATA {"+graph.dump(:ntriples)+"}"
 
-  # below are our various "publish methods"
+    sparql.update(query, { endpoint: repo.graphdb_endpoint + "/statements" })
+    graph
+  end  
+
+# below are our various "publish methods"
   # new publish methods should return true
   # if publishing is successful and a string
   # with an error message if it is not.
