@@ -28,6 +28,7 @@
 FactoryGirl.define do
   factory :publication do
     sequence(:name) {|n| "My Publication #{n}" }
+    sequence(:reverse_publish_email) {|n| "reverse-publish-#{n}@subtext.org" }
     organization
   end
 end

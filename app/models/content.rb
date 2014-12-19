@@ -221,7 +221,7 @@ class Content < ActiveRecord::Base
       else
         key = k
       end
-      if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories'].include? key
+      if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories', 'source_field'].include? key
         special_attrs[key] = v if v.present?
       elsif v.present?
         data[key] = v
@@ -248,20 +248,30 @@ class Content < ActiveRecord::Base
       import_location = special_attrs['location']
       content.import_location = ImportLocation.find_or_create_from_match_string(import_location)
     end
-    if special_attrs.has_key? "source"
-      source = special_attrs["source"]
-      if organization
-        # try to match content name exactly
-        pub = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).find_by_name(source)
-        # if that doesn't work, try a "LIKE" query
-        pub = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).where("name LIKE ?", "%#{source}%").first if pub.nil?
-        # if that still doesn't work, create a new publication
-        pub = Publication.create(name: source, organization_id: organization.id) if pub.nil?
 
-        content.source = pub
+    if special_attrs.has_key? "source"
+      if special_attrs.has_key? "source_field"
+        source_field = special_attrs["source_field"].to_sym
       else
-        content.source = Publication.where("name LIKE ?", "%#{source}%").first
-        content.source = Publication.create(name: source) if content.source.nil?
+        source_field = :name
+      end
+      source = special_attrs["source"]
+      if source_field == :name
+        if organization
+          # try to match content name exactly
+          pub = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).find_by_name(source)
+          # if that doesn't work, try a "LIKE" query
+          pub = Publication.where("organization_id = ? OR organization_id IS NULL", organization.id).where("name LIKE ?", "%#{source}%").first if pub.nil?
+          # if that still doesn't work, create a new publication
+          pub = Publication.create(name: source, organization_id: organization.id) if pub.nil?
+
+          content.source = pub
+        else
+          content.source = Publication.where("name LIKE ?", "%#{source}%").first
+          content.source = Publication.create(name: source) if content.source.nil?
+        end
+      else # deal with special source_fields
+        content.source = Publication.where(source_field => source).first
       end
     end
     if special_attrs.has_key? "edition"
@@ -376,7 +386,9 @@ class Content < ActiveRecord::Base
     result = false
     opts[:file_list] = file_list unless file_list.nil?
     begin
-      result = self.send method.to_sym, repo, opts       # usually calls post_to_ontotext
+      Content.benchmark("full_#{method}") do
+        result = self.send method.to_sym, repo, opts
+    end
       if result == true
         record.items_published += 1 if record.present?
       else
@@ -441,7 +453,7 @@ class Content < ActiveRecord::Base
   def update_category_from_annotations(annotations)
     category = nil
     annotations['document-parts']['feature-set'].each do |feature|
-      category = feature['value']['value'] if feature['name']['name'] == "CATEGORY"
+      category = feature['value']['value'] if feature['name']['name'] == "CATEGORIES"
     end
 
     unless category.nil?
@@ -452,6 +464,7 @@ class Content < ActiveRecord::Base
 
   # Persists this content to GraphDB as a series of tuples.
   def persist_to_graph_db(repo, annotations)
+    #create/populate graph
     graph = RDF::Graph.new
     pub = RDF::Vocabulary.new("http://ontology.ontotext.com/publishing#")
     category = RDF::Vocabulary.new("http://data.ontotext.com/Category/")
@@ -466,37 +479,36 @@ class Content < ActiveRecord::Base
     graph << [id_uri, pub['content'], sanitized_content]
     graph << [id_uri, pub['hasCategory'], category[content_category.name]]
     graph << [id_uri, pub['annotatedContent'], JSON.generate(annotations)]
-    
+
     extract_mentions_from_annotations(annotations).each do |m|
       graph << [id_uri, facets[m[:type]], RDF::URI(m[:value])]
     end
 
     sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-    query = File.read(Rails.root.join("lib", "queries", "get_features.rq")) %
-            {content_id: id}
-    res = sparql.query(query)
 
-    unless res.empty?
-      existing_features = Hash[res.collect { |r| [r.fn.to_s, r.fid] }]
-    end
+    #clean out existing annotatedContent for this uri
+    query = File.read(Rails.root.join("lib", "queries", "remove_statements.rq")) %
+            {content_id: id}
+    sparql.update(query, { endpoint: repo.graphdb_endpoint + "/statements" })
 
     annotations['document-parts']['feature-set'].each do |feature|
-      if not existing_features.nil? and existing_features.include? feature['name']['name']
-        feature_key = existing_features[feature['name']['name']]
-      else 
+     # populate features ONLY IF they have a value
+      if not feature['value']['value'].empty?
         feature_key = features[SecureRandom.uuid]
+        graph << [feature_key, RDF.type, pub['Feature']]
+        graph << [feature_key, pub['featureName'], feature['name']['name']]
+        graph << [feature_key, pub['featureValue'], feature['value']['value']]
+        graph << [id_uri, pub['Feature'], feature_key]
       end
-      graph << [feature_key, RDF.type, pub['Feature']]
-      graph << [feature_key, pub['featureName'], feature['name']['name']]
-      graph << [feature_key, pub['featureValue'], feature['value']['value']]
-      graph << [id_uri, pub['Feature'], feature_key]
     end
 
-    sparql.update("INSERT DATA {\n#{graph.dump(:ntriples)}}", { endpoint: repo.graphdb_endpoint + "/statements" })
-    graph
-  end
+    query = "INSERT DATA {"+graph.dump(:ntriples)+"}"
 
-  # below are our various "publish methods"
+    sparql.update(query, { endpoint: repo.graphdb_endpoint + "/statements" })
+    graph
+  end  
+
+# below are our various "publish methods"
   # new publish methods should return true
   # if publishing is successful and a string
   # with an error message if it is not.
@@ -524,19 +536,26 @@ class Content < ActiveRecord::Base
   
   # Post to Ontotext's new CES & Recommendations API
   def post_to_new_ontotext(repo, opts={})
-    annotate_resp = JSON.parse(
-      OntotextController.post(repo.annotate_endpoint + '/extract', 
-        { body: to_new_xml,
-          headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",
-                     'Accept' => "application/vnd.ontotext.ces.document+json" }}))
+    annotate_resp_raw = nil
+    Content.benchmark('annotatingEvent') do
+       annotate_resp_raw = OntotextController.post(repo.annotate_endpoint + '/extract', 
+          { body: to_new_xml,
+            headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",
+                       'Accept' => "application/vnd.ontotext.ces.document+json" }})
+    end
+    annotate_resp = JSON.parse(annotate_resp_raw)
+
     if annotate_resp['id'].include? document_uri
       update_category_from_annotations(annotate_resp)
       rec_doc = create_recommendation_doc_from_annotations(annotate_resp)
 
-      response = OntotextController.post(repo.recommendation_endpoint + "/content?key=#{Figaro.env.ontotext_recommend_key}", 
-          { headers: { "Content-type" => "application/json",
-                       "Accept" => "application/json" },
-            body: rec_doc.to_json } )
+      response = nil
+      Content.benchmark('recommendEvent') do
+        response = OntotextController.post(repo.recommendation_endpoint + "/content?key=#{Figaro.env.ontotext_recommend_key}", 
+            { headers: { "Content-type" => "application/json",
+                         "Accept" => "application/json" },
+              body: rec_doc.to_json } )
+      end
 
       if response["type"] == "SUCCESS"
         repo.contents << self unless repo.contents.include? self
@@ -546,7 +565,9 @@ class Content < ActiveRecord::Base
           promotions.where(active: true).first.mark_active_promotion(repo)
         end
 
-        persist_to_graph_db(repo, annotate_resp);
+        Content.benchmark('persistMethod') do
+          persist_to_graph_db(repo, annotate_resp);
+        end
         return true
       end
     end

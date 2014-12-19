@@ -1,0 +1,5 @@
+DELETE {
+  <http://www.subtext.org/Document/%{content_id}> ?p ?o .
+} WHERE {
+  <http://www.subtext.org/Document/%{content_id}> ?p ?o .
+}

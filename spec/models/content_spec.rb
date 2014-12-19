@@ -172,6 +172,16 @@ describe Content do
       Content.count.should== 1
     end
 
+    it "should match publication based on 'source_field' entry if provided" do
+      publication = FactoryGirl.create(:publication, reverse_publish_email: "test@test.com")
+      data = @base_data.merge({
+        source: publication.reverse_publish_email,
+        source_field: "reverse_publish_email"
+      })
+      content = Content.create_from_import_job(data)
+      content.source.should == publication
+    end
+
     it "should mark non-valid corpus entries as quarantined" do
       content = Content.create_from_import_job(@base_data)
       content.quarantine.should be_true
@@ -272,7 +282,7 @@ describe Content do
       content = Content.create_from_import_job(@base_data)
       content.source.name.should== "Test Publication"
     end
-    it "should match an existing publication if source matches publication name" do
+    it "should match an existing publication if source matches publication name and source_field not provided" do
       pub = FactoryGirl.create(:publication)
       @base_data["source"] = pub.name
       content = Content.create_from_import_job(@base_data)

@@ -70,7 +70,7 @@ class Publication < ActiveRecord::Base
   PUB_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher"]
   validates :pub_type, inclusion: { in: PUB_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
 
-  validates_uniqueness_of :name
+  validates_uniqueness_of :name, :reverse_publish_email
   validates_presence_of :name
 
   def publishing_frequency_enum
