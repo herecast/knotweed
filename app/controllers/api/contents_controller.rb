@@ -41,7 +41,7 @@ class Api::ContentsController < Api::ApiController
       end
 
       # don't return featured events unless they're requested
-      unless params[:request_featured]
+      unless params[:request_featured].present?
         @contents = @contents.where(featured: false)
       end
       @contents = @contents.includes(:business_location)
@@ -114,6 +114,20 @@ class Api::ContentsController < Api::ApiController
       pub = Publication.find_by_name(source)
     end
 
+    # handle images
+    if params[:content][:image].present?
+	    hImage = params[:content][:image]
+	    # hImage = params[:content].delete :image ?? should this replace the delete at end of block
+	    image_temp_file = Tempfile.new('tmpImage')
+	    image_temp_file.puts hImage[:image_content]
+	    file_to_upload = ActionDispatch::Http::UploadedFile.new(tempfile: image_temp_file,
+			                    filename: hImage[:image_name], type: hImage[:image_type])
+	    @image = Image.new
+	    @image.image = file_to_upload
+	    @image.imageable_type='Content'
+	    params[:content].delete :image
+    end
+
     # create content here so we can pass it to mailer OR create it
     # in PHASE 2 we will be doing both
     cat_name = params[:content].delete :category
@@ -125,9 +139,10 @@ class Api::ContentsController < Api::ApiController
     @content.source = pub
     @content.content_category = cat unless cat.nil?
     @content.pubdate = @content.timestamp = Time.zone.now
+		@content.images=[@image] unless @image.nil?
 
     # this is where we branch for reverse publishing
-    if pub.reverse_publish_email.present?
+    if pub.present? and pub.reverse_publish_email.present?
       ReversePublisher.send_content_to_reverse_publishing_email(@content, pub).deliver
       # need to send separate email to user rather than CC because their spam filter would catch
       # us spoofing emails "from" them
@@ -140,7 +155,7 @@ class Api::ContentsController < Api::ApiController
         if @content.publish(Content::POST_TO_ONTOTEXT, repo)
           render text: "#{@content.id}"
         else
-          render text: "Content was created, but not published", status: 500
+          render text: "Content #{@content.id} was created, but not published", status: 500
         end
       else
         render text: "Content could not be created", status: 500

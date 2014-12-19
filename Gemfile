@@ -38,7 +38,9 @@ group :test do
   gem "vcr"
   gem "timecop"
 end
-
+group :rubymine do
+ 	gem "thin"
+end
 gem "carrierwave"
 gem 'carrierwave-mimetype-fu'
 gem "figaro"

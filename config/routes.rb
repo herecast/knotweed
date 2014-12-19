@@ -82,6 +82,7 @@ Knotweed::Application.routes.draw do
     get 'publications/find', to: "publications#show", as: :find_publication
     resources 'publications', only: [:show, :index]
     get 'events/featured', to: 'contents#featured_events', as: :featured_events
+    resources 'business_locations', only: [:show, :index]
     resources :events, only: [:show, :index], controller: "contents"
     resources :contents, only: [:index, :show, :update], controller: "contents"
     resources :messages, only: [:index]

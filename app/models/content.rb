@@ -376,7 +376,7 @@ class Content < ActiveRecord::Base
     result = false
     opts[:file_list] = file_list unless file_list.nil?
     begin
-      result = self.send method.to_sym, repo, opts
+      result = self.send method.to_sym, repo, opts       # usually calls post_to_ontotext
       if result == true
         record.items_published += 1 if record.present?
       else
@@ -580,7 +580,7 @@ class Content < ActiveRecord::Base
     options = { :id => document_uri }
     response = OntotextController.post(repo.dsp_endpoint + '/reprocessDocument', options)
     if response.code != 200
-      post_to_ontotext
+      post_to_ontotext(repo, opts)
     else
       return true
     end
@@ -854,13 +854,15 @@ class Content < ActiveRecord::Base
       sbtxd:#{id} pub:content ?processed_content .
       OPTIONAL { sbtxd:#{id} pub:hasCategory ?category . }
     }")
-    response_hash = response[0].to_hash
-    # if we add more fields to be updated, we can iterate through the hash
-    # and use send to update the content
-    # not necessary for now.
-    cat = response_hash[:category].to_s.split("/")[-1]
-    cat = ContentCategory.find_or_create_by_name(cat).id unless cat.nil? 
-    update_attributes(content_category_id: cat, processed_content: response_hash[:processed_content].to_s)
+    unless response[0].nil?
+	    response_hash = response[0].to_hash
+	    # if we add more fields to be updated, we can iterate through the hash
+	    # and use send to update the content
+	    # not necessary for now.
+	    cat = response_hash[:category].to_s.split("/")[-1]
+	    cat = ContentCategory.find_or_create_by_name(cat).id unless cat.nil?
+	    update_attributes(content_category_id: cat, processed_content: response_hash[:processed_content].to_s)
+		end
   end
 
   # returns the content for sending to the DSP for annotation
