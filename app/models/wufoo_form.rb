@@ -20,7 +20,7 @@ class WufooForm < ActiveRecord::Base
     :email_field, :page_url_field, :form_hash, :name, :consumer_app_ids
   has_and_belongs_to_many :consumer_apps
 
-  validates_presence_of :controller, :form_hash, :call_to_action
+  validates_presence_of :form_hash, :call_to_action
 
   scope :active, where(active: true)
 

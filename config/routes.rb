@@ -80,6 +80,7 @@ Knotweed::Application.routes.draw do
     post 'contents/search', to: 'contents#search', as: :contents_search
     post 'category_corrections', to: 'category_corrections#create'
     get 'publications/find', to: "publications#show", as: :find_publication
+    get 'wufoo_forms/find', to: "wufoo_forms#show", as: :find_wufoo_form
     resources 'publications', only: [:show, :index]
     get 'events/featured', to: 'contents#featured_events', as: :featured_events
     resources 'business_locations', only: [:show, :index]

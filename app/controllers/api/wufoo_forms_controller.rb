@@ -12,7 +12,15 @@ class Api::WufooFormsController < Api::ApiController
   end
 
   def show
-    @wufoo_form = WufooForm.find(params[:id])
-    render json: @wufoo_form
+    if params[:id].present?
+      @wufoo_form = WufooForm.find(params[:id])
+    elsif params[:form_hash].present?
+      @wufoo_form = WufooForm.find_by_form_hash(params[:form_hash])
+    end
+    if @wufoo_form.present?
+      render json: @wufoo_form
+    else
+      render text: "No Wufoo form found.", status: 500
+    end
   end
 end
