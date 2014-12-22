@@ -245,6 +245,29 @@ class Api::ContentsController < Api::ApiController
         CategoryCorrection.create(content: @content, new_category: @content.category, old_category: @content.category)
       end
     end
+		if @content.category == 'event'
+			# handle images
+			if params[:content][:image].present?
+				hImage = params[:content][:image]
+				# hImage = params[:content].delete :image ?? should this replace the delete at end of block
+				image_temp_file = Tempfile.new('tmpImage')
+				image_temp_file.puts hImage[:image_content]
+				file_to_upload = ActionDispatch::Http::UploadedFile.new(tempfile: image_temp_file,
+				                                                        filename: hImage[:image_name], type: hImage[:image_type])
+				@image = Image.new
+				@image.image = file_to_upload
+				@image.imageable_type='Content'
+				@image.imageable_id = @content.id
+				params[:content].delete :image
+				@image.save
+			end
+
+			if @content.update_attributes(params[:content])
+				render text: "#{@content.id}"
+			else
+				render text: "update of event #{@content.id} failed", status: 500
+			end
+		end
   end
 
   def featured_events
