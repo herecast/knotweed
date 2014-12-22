@@ -386,9 +386,7 @@ class Content < ActiveRecord::Base
     result = false
     opts[:file_list] = file_list unless file_list.nil?
     begin
-      Content.benchmark("full_#{method}") do
-        result = self.send method.to_sym, repo, opts
-    end
+      result = self.send method.to_sym, repo, opts
       if result == true
         record.items_published += 1 if record.present?
       else
@@ -536,26 +534,19 @@ class Content < ActiveRecord::Base
   
   # Post to Ontotext's new CES & Recommendations API
   def post_to_new_ontotext(repo, opts={})
-    annotate_resp_raw = nil
-    Content.benchmark('annotatingEvent') do
-       annotate_resp_raw = OntotextController.post(repo.annotate_endpoint + '/extract', 
-          { body: to_new_xml,
-            headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",
-                       'Accept' => "application/vnd.ontotext.ces.document+json" }})
-    end
-    annotate_resp = JSON.parse(annotate_resp_raw)
-
+    annotate_resp = JSON.parse(
+      OntotextController.post(repo.annotate_endpoint + '/extract', 
+        { body: to_new_xml,
+          headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",
+                     'Accept' => "application/vnd.ontotext.ces.document+json" }}))
     if annotate_resp['id'].include? document_uri
       update_category_from_annotations(annotate_resp)
       rec_doc = create_recommendation_doc_from_annotations(annotate_resp)
 
-      response = nil
-      Content.benchmark('recommendEvent') do
-        response = OntotextController.post(repo.recommendation_endpoint + "/content?key=#{Figaro.env.ontotext_recommend_key}", 
-            { headers: { "Content-type" => "application/json",
-                         "Accept" => "application/json" },
-              body: rec_doc.to_json } )
-      end
+      response = OntotextController.post(repo.recommendation_endpoint + "/content?key=#{Figaro.env.ontotext_recommend_key}", 
+          { headers: { "Content-type" => "application/json",
+                       "Accept" => "application/json" },
+            body: rec_doc.to_json } )
 
       if response["type"] == "SUCCESS"
         repo.contents << self unless repo.contents.include? self
@@ -565,9 +556,7 @@ class Content < ActiveRecord::Base
           promotions.where(active: true).first.mark_active_promotion(repo)
         end
 
-        Content.benchmark('persistMethod') do
-          persist_to_graph_db(repo, annotate_resp);
-        end
+        persist_to_graph_db(repo, annotate_resp);
         return true
       end
     end
