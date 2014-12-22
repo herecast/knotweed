@@ -124,7 +124,6 @@ class Api::ContentsController < Api::ApiController
 			                    filename: hImage[:image_name], type: hImage[:image_type])
 	    @image = Image.new
 	    @image.image = file_to_upload
-	    @image.imageable_type='Content'
 	    params[:content].delete :image
     end
 
@@ -234,8 +233,6 @@ class Api::ContentsController < Api::ApiController
   end
 
 
-  # as of now, the only updating we're doing is marking things reviewed
-  # so for security's sake, that's all this method can do.
   def update
     @content = Content.find(params[:id])
     if params[:content][:category_reviewed].present?
@@ -256,13 +253,18 @@ class Api::ContentsController < Api::ApiController
 				                                                        filename: hImage[:image_name], type: hImage[:image_type])
 				@image = Image.new
 				@image.image = file_to_upload
-				@image.imageable_type='Content'
-				@image.imageable_id = @content.id
 				params[:content].delete :image
-				@image.save
 			end
 
 			if @content.update_attributes(params[:content])
+        if @image.present?
+          # would just do @content.images << @image, but despite the fact
+          # that we are set up to have more than one image per content,
+          # on the consumer side, we're assuming there's only one image.
+          # So to ensure we're displaying the right one, we have to do this.
+          @content.images = [@image]
+          @content.save
+        end
 				render text: "#{@content.id}"
 			else
 				render text: "update of event #{@content.id} failed", status: 500
