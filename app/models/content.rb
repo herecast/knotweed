@@ -367,7 +367,7 @@ class Content < ActiveRecord::Base
   # catchall publish method that handles interacting w/ the publish record
   def publish(method, repo, record=nil, opts={})
     # do not allow publishing during BACKUPS
-    if ImportJob::BACKUP_START < Time.now and Time.now < ImportJob::BACKUP_END
+    if ImportJob.backup_start < Time.now and Time.now < ImportJob.backup_end
       return false
     end
     if method.nil?

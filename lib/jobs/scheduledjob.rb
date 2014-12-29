@@ -17,8 +17,8 @@ module Jobs
     def schedule
       if self.try(:frequency).present? and self.frequency != 0
         prev_run = self.last_run_at || self.run_at || Time.now
-        if ImportJob::BACKUP_START < Time.now and Time.now < ImportJob::BACKUP_END
-          new_start = ImportJob::BACKUP_END
+        if ImportJob.backup_start < Time.now and Time.now < ImportJob.backup_end
+          new_start = ImportJob.backup_end
         else
           new_start = prev_run + self.frequency.minutes
         end
