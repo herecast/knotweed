@@ -63,13 +63,23 @@ class Promotion < ActiveRecord::Base
   # actively publishing to
   def mark_active_promotion(repo)
     query = File.read('./lib/queries/add_active_promo.rq') % {content_id: content.id}
-    sparql = ::SPARQL::Client.new repo.sesame_endpoint
-    sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
+    if repo.graphdb_endpoint.present?
+      sparql = ::SPARQL::Client.new repo.graphdb_endpoint
+      sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
+    else
+      sparql = ::SPARQL::Client.new repo.sesame_endpoint
+      sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
+    end
   end
 
   def remove_promotion(repo)
     query = File.read('./lib/queries/remove_active_promo.rq') % {content_id: content.id}
-    sparql = ::SPARQL::Client.new repo.sesame_endpoint
-    sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
+    if repo.graphdb_endpoint.present?
+      sparql = ::SPARQL::Client.new repo.graphdb_endpoint
+      sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
+    else
+      sparql = ::SPARQL::Client.new repo.sesame_endpoint
+      sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
+    end
   end
 end
