@@ -102,6 +102,8 @@ class Content < ActiveRecord::Base
   before_save :set_guid
   before_save :populate_raw_content_with_event_description_if_blank
 
+  TMP_EXPORT_PATH = Rails.root + "/tmp/exports"
+
   scope :events, -> { joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",
                                                      "event", "sale_event") }
 
@@ -716,7 +718,7 @@ class Content < ActiveRecord::Base
 
   # construct export path
   def export_path
-    path = "#{Figaro.env.content_export_path}/#{source.name.gsub(" ", "_")}/#{pubdate.strftime("%Y")}/#{pubdate.strftime("%m")}/#{pubdate.strftime("%d")}"
+    path = "#{TMP_EXPORT_PATH}/#{source.name.gsub(" ", "_")}/#{pubdate.strftime("%Y")}/#{pubdate.strftime("%m")}/#{pubdate.strftime("%d")}"
   end
 
   # method that constructs an active relation

@@ -6,9 +6,6 @@
 # STRIPE_API_KEY: EdAvEPVEC3LuaTg5Q3z6WbDVqZlcBQ8Z
 # STRIPE_PUBLIC_KEY: pk_BRgD57O8fHja9HxduJUszhef6jCyS
 
-CORPUS_PATH: /home/nickg:import_jobs_testing/corpus
-IMPORT_JOB_OUTPUT_PATH: /home/nickg/import_jobs_testing/corpus
-CONTENT_EXPORT_PATH: /home/nickg/import_jobs_testing/corpus
 AWS_ACCESS_KEY_ID: aws-key
 AWS_SECRET_ACCESS_KEY: aws-secret-key
 AWS_BUCKET_NAME: knotweed

@@ -83,7 +83,7 @@ describe PublishJob do
       end
       after do
         #clean up output folder
-        system("rm -rf #{Figaro.env.content_export_path}/*")
+        system("rm -rf #{Content::TMP_EXPORT_PATH}/*")
         FileUtils.rm_rf(File.join("public", "exports"))
       end
 
