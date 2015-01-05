@@ -88,6 +88,7 @@ Knotweed::Application.routes.draw do
     resources :contents, only: [:index, :show, :update], controller: "contents"
     resources :messages, only: [:index]
     resources :wufoo_forms, only: [:show, :index]
+    resources :mail, only: [:create]
   end
 
 end
