@@ -617,7 +617,7 @@ class Content < ActiveRecord::Base
                     key, value = "LOCATION", import_location.city
                   end
                 elsif k == "parent_id" and parent.present?
-                  key, value = "PARENT", "#{Figaro.env.document_prefix}#{v}"
+                  key, value = "PARENT", "#{BASE_URI}/#{v}"
                 end
               else
                 key = k.upcase
@@ -859,7 +859,7 @@ class Content < ActiveRecord::Base
     response = sparql.query("
     # update from repo query
     prefix pub: <http://ontology.ontotext.com/publishing#>
-    PREFIX sbtxd: <#{Figaro.env.document_prefix}>
+    PREFIX sbtxd: <#{BASE_URI}/>
 
     select ?category ?processed_content
     where {
