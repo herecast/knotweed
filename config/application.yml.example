@@ -6,39 +6,38 @@
 # STRIPE_API_KEY: EdAvEPVEC3LuaTg5Q3z6WbDVqZlcBQ8Z
 # STRIPE_PUBLIC_KEY: pk_BRgD57O8fHja9HxduJUszhef6jCyS
 
-CORPUS_PATH: /home/nickg:import_jobs_testing/corpus
-IMPORT_JOB_OUTPUT_PATH: /home/nickg/import_jobs_testing/corpus
-CONTENT_EXPORT_PATH: /home/nickg/import_jobs_testing/corpus
 AWS_ACCESS_KEY_ID: aws-key
 AWS_SECRET_ACCESS_KEY: aws-secret-key
 AWS_BUCKET_NAME: knotweed
 test:
   AWS_BUCKET_NAME: knotweed-test
+
+# HTTP Auth for the Ontotext DSP
+# Auth may change with DSP upgrade?
 ONTOTEXT_API_USERNAME: KW05055
 ONTOTEXT_API_PASSWORD: knotweed05055
+
+# Our "Export GATE XML" functionality depends on an external Java
+# application -- this specifies the web endpoint for that app
 RDF_TO_GATE_ENDPOINT: http://23.92.16.168:9000
 
-# still using these for tests so that we can appropriately stub requests
+# still using these for rspec test suite so that we can appropriately stub requests
 # even though their app functionality has been abstracted to the repository model
+#
+# TODO: adjust rspec code so that request stubs are generated dynamically
+# from repository records so we no longer need these records
 SESAME_RDF_ENDPOINT: http://23.92.16.168:8081/openrdf-sesame/repositories/subtext
 ONTOTEXT_API_BASE_URI: http://23.92.16.168:8080
 
-DOCUMENT_PREFIX: http://www.subtext.org/Document/
-development:
-  NOTIFICATION_EMAIL: kwnotifications@gmail.com
-  NOTIFICATION_EMAIL_PASSWORD: Vermont53
-test:
-  NOTIFICATION_EMAIL: kwnotifications@gmail.com
-  NOTIFICATION_EMAIL_PASSWORD: Vermont53
-production:
-  NOTIFICATION_EMAIL: kwnotifications@gmail.com
-  NOTIFICATION_EMAIL_PASSWORD: Vermont53
+# GMail credentials for sending system notifications
+NOTIFICATION_EMAIL: kwnotifications@gmail.com
+NOTIFICATION_EMAIL_PASSWORD: Vermont53
 
-API_USERNAME: admin_api_username
-API_PASSWORD: admin_api_password
-
+# Mixpanel API credentials needed for generating dashboard metrics
 MIXPANEL_API_KEY: mixpanel-api-key
 MIXPANEL_API_SECRET: mixpanel-api-secret
+
+# google maps api key for generating business_location maps
 GMAPS_API_KEY: gmapskey
 
 # optional configuration that allows you to specify how many seconds to wait

@@ -379,7 +379,7 @@ describe Content do
     end
     after do
       # clean up output folder
-      system("rm -rf #{Figaro.env.content_export_path}/*")
+      system("rm -rf #{Content::TMP_EXPORT_PATH}/*")
     end
 
 
@@ -394,7 +394,6 @@ describe Content do
     end
 
     it "should write xml and content to local corpus" do
-      # output base dir defined by Figaro
       @content.export_to_xml nil
       File.exists?("#{@content.export_path}/#{@content.guid}.xml").should be_true
       File.exists?("#{@content.export_path}/#{@content.guid}.html").should be_true
@@ -484,7 +483,7 @@ describe Content do
 
     after do
       # clean up output folder
-      system("rm -rf #{Figaro.env.content_export_path}/*")
+      system("rm -rf #{Content::TMP_EXPORT_PATH}/*")
     end
 
     describe "#export_pre_pipeline_xml" do

@@ -2,7 +2,7 @@ class ContentsController < ApplicationController
 
   before_filter :process_date_params, :remove_raw_content_param_if_event, only: [:create, :update]
   
-  PUBLISH_METHODS_TO_DOWNLOAD = ["export_pre_pipeline_xml", "export_post_pipeline_xml"]
+  PUBLISH_METHODS_TO_DOWNLOAD = ["export_pre_pipeline_xml", "export_post_pipeline_xml", "export_to_xml"]
 
   def index
     # if posted, save to session
