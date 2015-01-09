@@ -69,6 +69,7 @@ FactoryGirl.define do
     
     factory :event do
       raw_content "event" 
+      content_category { ContentCategory.find_or_create_by_name("event") }
       start_date 1.day.from_now
     end
   end

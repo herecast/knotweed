@@ -76,7 +76,7 @@ class Content < ActiveRecord::Base
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
   belongs_to :source, class_name: "Publication", foreign_key: "source_id"
   accepts_nested_attributes_for :images, allow_destroy: true
-  attr_accessible :images_attributes
+  attr_accessible :images_attributes, :images
 
   belongs_to :parent, class_name: "Content"
   has_many :children, class_name: "Content", foreign_key: "parent_id"

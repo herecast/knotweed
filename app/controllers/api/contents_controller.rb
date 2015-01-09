@@ -1,5 +1,4 @@
 class Api::ContentsController < Api::ApiController
-  before_filter :set_events_param, :set_consumer_app
 
   def index
     if params[:max_results].present? 
@@ -7,6 +6,7 @@ class Api::ContentsController < Api::ApiController
     else
       @contents = Content
     end
+
     @contents = @contents.includes(:source).includes(:content_category).includes(:images).includes(:import_location)
 
     if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
@@ -17,74 +17,43 @@ class Api::ContentsController < Api::ApiController
       @contents = @contents.includes(:repositories).where(repositories: {dsp_endpoint: params[:repository]}) 
     end
 
-    if params[:events]
-      @contents = @contents.events
-      sort_order ||= "ASC"
-      @contents = @contents.order("start_date #{sort_order}")
-
-      # limit query so we're not accidentally rendering thousands of json objects
-      @contents = @contents.limit(1000) unless params[:max_results].present?
-
-      if params[:start_date].present?
-        start_date = Chronic.parse(params[:start_date]).beginning_of_day
-        @contents = @contents.where('start_date >= ?', start_date)
-      end
-      if params[:end_date].present?
-        end_date = Chronic.parse(params[:end_date]).end_of_day
-        if end_date == start_date
-          end_date = start_date.end_of_day
-        end
-        @contents = @contents.where('start_date <= ?', end_date)
-      end
-      if params[:event_type].present?
-        @contents = @contents.where(event_type: params[:event_type])
-      end
-
-      # don't return featured events unless they're requested
-      unless params[:request_featured].present?
-        @contents = @contents.where(featured: false)
-      end
-      @contents = @contents.includes(:business_location)
-    else
-      sort_order ||= "DESC"
-      @contents = @contents.order("pubdate #{sort_order}")
-      if params[:home_list].present?
-        home_list = Publication.find_by_name(params[:home_list])
-      end
-      # filter contents by publication based on what publications are allowed
-      # for the incoming consumer app
-      if @consumer_app.present?
-        allowed_pubs = @consumer_app.publications
-        if params[:publications].present? # allows the My List / All Lists filter to work
-          filter_pubs = Publication.where(name: params[:publications])
-          allowed_pubs.select! { |p| filter_pubs.include? p }
-        end
-        # if viewing just the home list
-        @contents = @contents.where(source_id: allowed_pubs)
-      end
-      if params[:start_date].present?
-        start_date = Chronic.parse(params[:start_date])
-        @contents = @contents.where("pubdate >= :start_date", { start_date: start_date}) unless start_date.nil?
-      end
-      if params[:categories].present?
-        allowed_cats = ContentCategory.find_with_children(name: params[:categories])
-        @contents = @contents.where(content_category_id: allowed_cats)
-        # unfortunate hack for talk of the town query
-        # in the scenario where they are looking just at talk of the town,
-        # we can add a home_list parameter to the sql query.
-        if home_list.present? and (params[:admin].nil? or !(params[:admin]=="true"))
-          talk_of_the_town_cat = ContentCategory.find_by_name("talk_of_the_town")
-          tot_cat_list = talk_of_the_town_cat.children + [talk_of_the_town_cat]
-          @contents = @contents.where("(content_category_id not in (?) OR source_id = ?)", tot_cat_list, home_list.id)
-        end
-      end
-      params[:page] ||= 1
-      params[:per_page] ||= 30
-      @contents = @contents.page(params[:page].to_i).per(params[:per_page].to_i)
-      @page = params[:page]
-      @pages = @contents.total_pages unless @contents.empty?
+    sort_order ||= "DESC"
+    @contents = @contents.order("pubdate #{sort_order}")
+    if params[:home_list].present?
+      home_list = Publication.find_by_name(params[:home_list])
     end
-
+    # filter contents by publication based on what publications are allowed
+    # for the incoming consumer app
+    if @requesting_app.present?
+      allowed_pubs = @requesting_app.publications
+      if params[:publications].present? # allows the My List / All Lists filter to work
+        filter_pubs = Publication.where(name: params[:publications])
+        allowed_pubs.select! { |p| filter_pubs.include? p }
+      end
+      # if viewing just the home list
+      @contents = @contents.where(source_id: allowed_pubs)
+    end
+    if params[:start_date].present?
+      start_date = Chronic.parse(params[:start_date])
+      @contents = @contents.where("pubdate >= :start_date", { start_date: start_date}) unless start_date.nil?
+    end
+    if params[:categories].present?
+      allowed_cats = ContentCategory.find_with_children(name: params[:categories])
+      @contents = @contents.where(content_category_id: allowed_cats)
+      # unfortunate hack for talk of the town query
+      # in the scenario where they are looking just at talk of the town,
+      # we can add a home_list parameter to the sql query.
+      if home_list.present? and (params[:admin].nil? or !(params[:admin]=="true"))
+        talk_of_the_town_cat = ContentCategory.find_by_name("talk_of_the_town")
+        tot_cat_list = talk_of_the_town_cat.children + [talk_of_the_town_cat]
+        @contents = @contents.where("(content_category_id not in (?) OR source_id = ?)", tot_cat_list, home_list.id)
+      end
+    end
+    params[:page] ||= 1
+    params[:per_page] ||= 30
+    @contents = @contents.page(params[:page].to_i).per(params[:per_page].to_i)
+    @page = params[:page]
+    @pages = @contents.total_pages unless @contents.empty?
   end
 
   def show
@@ -112,19 +81,6 @@ class Api::ContentsController < Api::ApiController
       pub = Publication.find_or_create_by_name "Beta Talk"
     else
       pub = Publication.find_by_name(source)
-    end
-
-    # handle images
-    if params[:content][:image].present?
-	    hImage = params[:content][:image]
-	    # hImage = params[:content].delete :image ?? should this replace the delete at end of block
-	    image_temp_file = Tempfile.new('tmpImage')
-	    image_temp_file.puts hImage[:image_content]
-	    file_to_upload = ActionDispatch::Http::UploadedFile.new(tempfile: image_temp_file,
-			                    filename: hImage[:image_name], type: hImage[:image_type])
-	    @image = Image.new
-	    @image.image = file_to_upload
-	    params[:content].delete :image
     end
 
     # create content here so we can pass it to mailer OR create it
@@ -242,70 +198,6 @@ class Api::ContentsController < Api::ApiController
         CategoryCorrection.create(content: @content, new_category: @content.category, old_category: @content.category)
       end
     end
-		if @content.category == 'event'
-			# handle images
-			if params[:content][:image].present?
-				hImage = params[:content][:image]
-				# hImage = params[:content].delete :image ?? should this replace the delete at end of block
-				image_temp_file = Tempfile.new('tmpImage')
-				image_temp_file.puts hImage[:image_content]
-				file_to_upload = ActionDispatch::Http::UploadedFile.new(tempfile: image_temp_file,
-				                                                        filename: hImage[:image_name], type: hImage[:image_type])
-				@image = Image.new
-				@image.image = file_to_upload
-				params[:content].delete :image
-			end
-
-			if @content.update_attributes(params[:content])
-        if @image.present?
-          # would just do @content.images << @image, but despite the fact
-          # that we are set up to have more than one image per content,
-          # on the consumer side, we're assuming there's only one image.
-          # So to ensure we're displaying the right one, we have to do this.
-          @content.images = [@image]
-          @content.save
-        end
-				render text: "#{@content.id}"
-			else
-				render text: "update of event #{@content.id} failed", status: 500
-			end
-		end
   end
 
-  def featured_events
-    params[:truncated] = true
-    @contents = Content.where(featured: true).where("start_date >= ?", Date.today).order("start_date ASC")
-    if params[:publications].present?
-      allowed_pubs = Publication.where(name: params[:publications])
-      @contents = @contents.where(source_id: allowed_pubs)
-    end
-    if params[:repository].present?
-      @contents = @contents.includes(:repositories).where(repositories: {dsp_endpoint: params[:repository]}) 
-    end
-    @contents= @contents.limit(5)
-    render "index"
-  end
-    
-  private
-
-  # detects if the route is through events
-  # and sets params[:events] = true if so
-  # in order to allow action to respond accordingly
-  def set_events_param
-    # if it is passed in already, don't set it
-    unless params.has_key? :events
-      if request.url.match /events/
-        params[:events] = true
-      else
-        params[:events] = false
-      end
-    end
-  end
-
-  # find incoming consumer app using provided parameter
-  def set_consumer_app
-    if params[:consumer_app_uri].present?
-      @consumer_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
-    end
-  end
 end

@@ -82,10 +82,10 @@ Knotweed::Application.routes.draw do
     get 'publications/find', to: "publications#show", as: :find_publication
     get 'wufoo_forms/find', to: "wufoo_forms#show", as: :find_wufoo_form
     resources 'publications', only: [:show, :index]
-    get 'events/featured', to: 'contents#featured_events', as: :featured_events
     resources 'business_locations', only: [:show, :index]
-    resources :events, only: [:show, :index], controller: "contents"
-    resources :contents, only: [:index, :show, :update], controller: "contents"
+    get 'events/featured', to: 'events#featured_events', as: :featured_events
+    resources :events, only: [:show, :index, :update, :create]
+    resources :contents, only: [:index, :show, :update]
     resources :messages, only: [:index]
     resources :wufoo_forms, only: [:show, :index]
     resources :mail, only: [:create]
