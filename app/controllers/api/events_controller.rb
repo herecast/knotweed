@@ -109,6 +109,9 @@ class Api::EventsController < Api::ApiController
     cat_name = params[:event].delete :category
     cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
 
+    # destinations for reverse publishing
+    destinations = params[:event].delete :destinations
+
     # TODO: there has got to be a better way! but I tried simply piping the image straight through
     # and allowing mass assignment to upload it as you would a normal form submission and no dice, so using
     # JS's solution until we think of something better.
@@ -128,6 +131,19 @@ class Api::EventsController < Api::ApiController
     @event.pubdate = @event.timestamp = Time.zone.now
 
     if @event.save
+
+      # reverse publish to specified destinations
+      if destinations.present?
+        destinations.each do |d|
+          next if d.empty?
+          dest_pub = Publication.find_by_name(d)
+          # skip if it doesn't exist or if it can't reverse publish
+          next if dest_pub.nil? or !dest_pub.can_reverse_publish
+          ReversePublisher.send_event_to_listserv(@event, dest_pub, @requesting_app).deliver
+          logger.debug(dest_pub.name)
+        end
+      end
+
       repo = Repository.find_by_dsp_endpoint(params[:repository])
       if repo.present? and params[:publish] == "true"
         if @event.publish(Content::POST_TO_ONTOTEXT, repo)

@@ -16,4 +16,17 @@ class ReversePublisher < ActionMailer::Base
          subject: content.title)
   end
 
+  def send_event_to_listserv(event, publication, consumer_app=nil)
+    # custom header so that we can identify events
+    # that already exist in our system as "curated" when they come back through
+    headers['X-Original-Content-Id'] = event.id
+    @event = event
+    if consumer_app.present?
+      @base_uri = consumer_app.uri
+    end
+    mail(from: '"'+event.authors+'" <'+event.authoremail+'>',
+         to: publication.reverse_publish_email,
+         subject: (event.event_title || event.title))
+  end
+
 end

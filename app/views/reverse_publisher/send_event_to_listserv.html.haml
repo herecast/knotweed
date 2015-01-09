@@ -1,0 +1,39 @@
+%p= @event.event_title || @event.title
+
+%p
+  = @event.start_date.strftime("%b %-d, %Y")
+  %br
+  - time_range = @event.start_date.strftime("%-l:%M %P")
+  - if @event.end_date.present?
+    - time_range += " - " + @event.end_date.strftime("%-l:%M %P")
+  = time_range
+
+- if @event.business_location.present?
+  %p
+    = @event.business_location.name if @event.business_location.name.present?
+    = @event.business_location.address if @event.business_location.address.present?
+    = @event.business_location.phone if @event.business_location.phone.present?
+    = @event.business_location.email if @event.business_location.email.present?
+
+%p= @event.event_url if @event.event_url.present?
+
+- if @base_uri.present?
+  %p
+    View More:
+    = link_to nil, "#{@base_uri}/events/#{@event.id}"
+
+= (@event.event_description || @event.raw_content).html_safe
+
+- if @event.cost.present?
+  %p
+    Cost: #{@event.cost}
+
+- if @event.sponsor_url.present?
+  %p
+    Sponsor: #{@event.sponsor_url}
+
+- if @event.links.present?
+  %p
+    - @event.links.each do |k,v| 
+      #{k}: #{v}
+      %br
