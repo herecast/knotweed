@@ -453,7 +453,7 @@ class Content < ActiveRecord::Base
   def update_category_from_annotations(annotations)
     category = nil
     annotations['document-parts']['feature-set'].each do |feature|
-      category = feature['value']['value'] if feature['name']['name'] == "CATEGORIES"
+      category = feature['value']['value'] if feature['name']['name'] == "CATEGORY"
     end
 
     unless category.nil?
