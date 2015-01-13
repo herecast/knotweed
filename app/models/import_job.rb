@@ -157,48 +157,47 @@ class ImportJob < ActiveRecord::Base
     log = last_import_record.log_file
     log.info("#{Time.now}")
     log.info("source path: #{source_path}")
-    if source_path =~ /^#{URI::regexp}$/
-      # this is where we loop continuous jobs
-      # continuous jobs are automatically set to have stop_loop set to false
-      # other jobs have stop_loop set to true (by an after_create callback).
-      while true
-        log.info("Running parser at #{Time.now}")
+    # this is where we loop continuous jobs
+    # continuous jobs are automatically set to have stop_loop set to false
+    # other jobs have stop_loop set to true (by an after_create callback).
+    while true
+      log.info("Running parser at #{Time.now}")
+      if source_path =~ /^#{URI::regexp}$/
         data = run_parser(source_path) || nil
-        if data.present?
-          docs_to_contents(data)
-        else
-          # sleep for a bit if there is no new contents to import and we're supposed to keep looping
-          sleep(5.0) unless self.stop_loop
+      else
+        Find.find(source_path) do |path|
+          if FileTest.directory?(path)
+            next
+          else
+            log.debug("running parser on path: #{path}")
+            begin
+              data = run_parser(path)
+            rescue StandardError => bang
+              log.error("failed to parse #{path}: #{bang}")
+              data = nil
+            end
+          end
         end
-        # hacky trick to stop continuous jobs during backup time
-        if Time.now > ImportJob.backup_start and Time.now < ImportJob.backup_end
-          # then update stop_loop attribute to break out of the cycle
-          update_attribute :stop_loop, true
-          # first, schedule the job to run again at 7:45 am.
-          enqueue_job(ImportJob.backup_end)
-        end
-        self.reload
-        break if self.stop_loop
       end
+      if data.present?
+        docs_to_contents(data)
+      else
+        # sleep for a bit if there is no new contents to import and we're supposed to keep looping
+        sleep(5.0) unless self.stop_loop
+      end
+      # hacky trick to stop continuous jobs during backup time
+      if Time.now > ImportJob.backup_start and Time.now < ImportJob.backup_end
+        # then update stop_loop attribute to break out of the cycle
+        update_attribute :stop_loop, true
+        # first, schedule the job to run again at 7:45 am.
+        enqueue_job(ImportJob.backup_end)
+      end
+      self.reload
+      break if self.stop_loop
       # if it was a continuous job that was manually stopped using the stop_loop flag
       # we need to reset the flag to false
       if self.stop_loop and job_type == CONTINUOUS
         update_attribute :stop_loop, false
-      end
-    else
-      Find.find(source_path) do |path|
-        if FileTest.directory?(path)
-          next
-        else
-          log.debug("running parser on path: #{path}")
-          begin
-            data = run_parser(path)
-          rescue StandardError => bang
-            log.error("failed to parse #{path}: #{bang}")
-            data = nil
-          end
-          docs_to_contents(data) if data.present?
-        end
       end
     end
   end
