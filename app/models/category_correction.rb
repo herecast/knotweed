@@ -31,7 +31,11 @@ class CategoryCorrection < ActiveRecord::Base
     content.update_attribute :category_reviewed, true
     # update for all repos
     content.repositories.each do |r|
-      content.publish(Content::POST_TO_ONTOTEXT, r)
+      if r.graphdb_endpoint.present?
+        content.publish(Content::POST_TO_NEW_ONTOTEXT, r)
+      else
+        content.publish(Content::POST_TO_ONTOTEXT, r)
+      end
     end
   end
   

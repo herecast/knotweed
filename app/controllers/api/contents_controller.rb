@@ -107,7 +107,7 @@ class Api::ContentsController < Api::ApiController
       repo = Repository.find_by_dsp_endpoint(params[:repository])
 
       if @content.save
-        if @content.publish(Content::POST_TO_ONTOTEXT, repo)
+        if @content.publish(Content::POST_TO_NEW_ONTOTEXT, repo)
           render text: "#{@content.id}"
         else
           render text: "Content #{@content.id} was created, but not published", status: 500
