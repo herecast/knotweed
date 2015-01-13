@@ -477,7 +477,7 @@ class Content < ActiveRecord::Base
     graph << [id_uri, pub['summary'], summary.nil? ? "" : summary]
     graph << [id_uri, pub['creationDate'], pubdate.utc.iso8601]
     graph << [id_uri, pub['content'], sanitized_content]
-    graph << [id_uri, pub['hasCategory'], category[content_category.name]]
+    graph << [id_uri, pub['hasCategory'], category[publish_category]]
     graph << [id_uri, pub['annotatedContent'], JSON.generate(annotations)]
 
     extract_mentions_from_annotations(annotations).each do |m|
