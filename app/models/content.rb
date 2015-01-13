@@ -451,21 +451,21 @@ class Content < ActiveRecord::Base
   # Updates this content's category based on the annotations from the CES 
   # If no category annotation is found, this is a no-op
   def update_category_from_annotations(annotations)
-    category = nil
+    cat = nil
     annotations['document-parts']['feature-set'].each do |feature|
       # if we get "CATEGORY" returned, use that to populate category
       # if not, try CATEGORIES
-      if feature["name"]["name"] = "CATEGORY"
-        category = feature['value']['value']
+      if feature["name"]["name"] == "CATEGORY"
+        cat= feature['value']['value']
       else
-        if feature["name"]["name"] = "CATEGORIES" and category.nil?
-          category = feature["value"]["value"]
+        if feature["name"]["name"] == "CATEGORIES" and !cat.present?
+          cat= feature["value"]["value"]
         end
       end
     end
 
-    unless category.nil?
-      cat_id = ContentCategory.find_or_create_by_name(category).id 
+    if cat.present?
+      cat_id = ContentCategory.find_or_create_by_name(cat).id 
       update_attributes(content_category_id: cat_id)
     end
   end
