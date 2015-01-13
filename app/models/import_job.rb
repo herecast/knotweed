@@ -165,16 +165,16 @@ class ImportJob < ActiveRecord::Base
       if source_path =~ /^#{URI::regexp}$/
         data = run_parser(source_path) || nil
       else
+        data = []
         Find.find(source_path) do |path|
           if FileTest.directory?(path)
             next
           else
             log.debug("running parser on path: #{path}")
             begin
-              data = run_parser(path)
+              data += run_parser(path)
             rescue StandardError => bang
               log.error("failed to parse #{path}: #{bang}")
-              data = nil
             end
           end
         end
@@ -203,26 +203,27 @@ class ImportJob < ActiveRecord::Base
   end
      
   # runs the parser's parse_file method on a file located at path
-  # outputs a json array of articles (if parser is correct)
+  # outputs an array of articles (if parser is correct)
   # 
   def run_parser(path)
     require "#{PARSER_PATH}/#{parser.filename}"
-    return parse_file(path, config)
+    resp = parse_file(path, config)
+    # if JSON
+    if resp.is_a? String
+      JSON.parse resp
+    else
+      resp
+    end
   end
 
-  # accepts json array of articles
+  # accepts array of articles
   # and creates content entries for them
   def docs_to_contents(docs)
-    if docs.is_a? String
-      data = JSON.parse docs
-    else # it's already a hash and we don't need to decode from JSON
-      data = docs
-    end
     import_record = last_import_record
     successes = 0
     failures = 0
     log = import_record.log_file
-    data.each do |article|
+    docs.each do |article|
       # trim all fields so we don't get any unnecessary whitespace
       article.each_value { |v| v.strip! if v.is_a? String and v.frozen? == false }
       # remove leading empty <p> tags from content
