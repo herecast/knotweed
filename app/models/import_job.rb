@@ -206,7 +206,7 @@ class ImportJob < ActiveRecord::Base
   # outputs an array of articles (if parser is correct)
   # 
   def run_parser(path)
-    require "#{PARSER_PATH}/#{parser.filename}"
+    load "#{PARSER_PATH}/#{parser.filename}"
     resp = parse_file(path, config)
     # if JSON
     if resp.is_a? String
