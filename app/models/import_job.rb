@@ -194,11 +194,11 @@ class ImportJob < ActiveRecord::Base
       end
       self.reload
       break if self.stop_loop
-      # if it was a continuous job that was manually stopped using the stop_loop flag
-      # we need to reset the flag to false
-      if self.stop_loop and job_type == CONTINUOUS
-        update_attribute :stop_loop, false
-      end
+    end
+    # if it was a continuous job that was manually stopped using the stop_loop flag
+    # we need to reset the flag to false
+    if self.stop_loop and job_type == CONTINUOUS
+      update_attribute :stop_loop, false
     end
   end
      
