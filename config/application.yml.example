@@ -29,6 +29,9 @@ RDF_TO_GATE_ENDPOINT: http://23.92.16.168:9000
 SESAME_RDF_ENDPOINT: http://23.92.16.168:8081/openrdf-sesame/repositories/subtext
 ONTOTEXT_API_BASE_URI: http://23.92.16.168:8080
 
+#Ontotext recommend key is required for publishing
+ONTOTEXT_RECOMMEND_KEY: ontotext-recommend-api-key
+
 # GMail credentials for sending system notifications
 NOTIFICATION_EMAIL: kwnotifications@gmail.com
 NOTIFICATION_EMAIL_PASSWORD: Vermont53
