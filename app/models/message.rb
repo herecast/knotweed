@@ -25,7 +25,7 @@ class Message < ActiveRecord::Base
   validates_presence_of :controller, :content, :start_date
   validate :end_date_greater_than_start_date
 
-  CONTROLLER_OPTIONS = %w(contents events users)
+  CONTROLLER_OPTIONS = %w(contents events users home)
   ACTION_OPTIONS = %w(index show edit)
 
   def active?
