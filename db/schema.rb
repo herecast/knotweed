@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141216154115) do
+ActiveRecord::Schema.define(:version => 20150204011612) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -105,10 +105,18 @@ ActiveRecord::Schema.define(:version => 20141216154115) do
     t.datetime "updated_at",   :null => false
   end
 
+  create_table "category_tmp", :id => false, :force => true do |t|
+    t.integer "content_id"
+    t.string  "cat_name"
+    t.integer "category_id"
+  end
+
+  add_index "category_tmp", ["content_id"], :name => "content_id"
+
   create_table "channel_map", :force => true do |t|
-    t.integer  "channel_id"
-    t.text     "category"
-    t.datetime "created_at", :null => false
+    t.integer   "channel_id"
+    t.text      "category"
+    t.timestamp "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -178,6 +186,11 @@ ActiveRecord::Schema.define(:version => 20141216154115) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.integer  "parent_id"
+  end
+
+  create_table "content_categories_publications", :id => false, :force => true do |t|
+    t.integer "content_category_id"
+    t.integer "publication_id"
   end
 
   create_table "content_sets", :force => true do |t|
@@ -253,6 +266,7 @@ ActiveRecord::Schema.define(:version => 20141216154115) do
   add_index "contents", ["authors"], :name => "authors"
   add_index "contents", ["content_category_id"], :name => "content_category_id"
   add_index "contents", ["end_date"], :name => "index_contents_on_end_date"
+  add_index "contents", ["featured"], :name => "featured"
   add_index "contents", ["guid"], :name => "guid"
   add_index "contents", ["import_location_id"], :name => "location_id"
   add_index "contents", ["import_record_id"], :name => "import_record_id"
@@ -263,20 +277,29 @@ ActiveRecord::Schema.define(:version => 20141216154115) do
   add_index "contents", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents", ["title"], :name => "title"
 
-  create_table "contents_NT", :force => true do |t|
+  create_table "contents_events", :id => false, :force => true do |t|
+    t.integer  "id",                                      :null => false
     t.string   "title"
-    t.string   "subtitle"
-    t.string   "authors"
-    t.string   "subject"
-    t.text     "content"
-    t.integer  "issue_id"
-    t.integer  "location_id"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
-    t.boolean  "reviewed",       :default => false
-    t.integer  "lupdate_by"
-    t.integer  "publication_id"
+    t.string   "guid"
+    t.datetime "pubdate"
+    t.integer  "source_id"
+    t.string   "event_type"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.string   "cost"
+    t.string   "recurrence"
+    t.text     "links"
+    t.string   "host_organization"
+    t.integer  "business_location_id"
+    t.boolean  "featured",             :default => false
   end
+
+  add_index "contents_events", ["end_date"], :name => "index_contents_on_end_date"
+  add_index "contents_events", ["guid"], :name => "guid"
+  add_index "contents_events", ["pubdate"], :name => "pubdate"
+  add_index "contents_events", ["source_id"], :name => "source_id"
+  add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
+  add_index "contents_events", ["title"], :name => "title"
 
   create_table "contents_publish_records", :id => false, :force => true do |t|
     t.integer "content_id"
@@ -375,15 +398,15 @@ ActiveRecord::Schema.define(:version => 20141216154115) do
   end
 
   create_table "import_locations", :force => true do |t|
-    t.integer  "parent_id"
-    t.integer  "region_id"
+    t.integer  "parent_id",                     :default => 0
+    t.integer  "region_id",                     :default => 0
     t.string   "city"
     t.string   "state"
     t.string   "zip"
     t.string   "country",        :limit => 128
     t.string   "link_name"
     t.string   "link_name_full"
-    t.integer  "status",                        :default => 1
+    t.integer  "status",                        :default => 0
     t.string   "usgs_id",        :limit => 128
     t.datetime "created_at",                                   :null => false
     t.datetime "updated_at",                                   :null => false
@@ -642,7 +665,7 @@ ActiveRecord::Schema.define(:version => 20141216154115) do
   add_index "states", ["statename"], :name => "statename"
 
   create_table "temp_1", :id => false, :force => true do |t|
-    t.string "city", :limit => 128
+    t.integer "id", :default => 0
   end
 
   create_table "triples", :force => true do |t|

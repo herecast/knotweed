@@ -21,6 +21,7 @@
 #  confirmation_sent_at   :datetime
 #  unconfirmed_email      :string(255)
 #  organization_id        :integer
+#  default_repository_id  :integer
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

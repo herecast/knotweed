@@ -21,6 +21,7 @@
 #  pub_type              :string(255)
 #  display_attributes    :boolean          default(FALSE)
 #  reverse_publish_email :string(255)
+#  can_reverse_publish   :boolean          default(FALSE)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
