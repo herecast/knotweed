@@ -694,4 +694,42 @@ describe Content do
     end
   end
 
+  describe "externally visible instance method" do
+    before do
+      @cat = FactoryGirl.create :content_category
+      @pub = FactoryGirl.create :publication
+    end
+
+    it "should return false if the content category is not in the source's external_categories" do
+      c = FactoryGirl.create :content, source: @pub
+      c.externally_visible.should be_false
+    end
+
+    it "should return true if the content's category is in the source's external categories" do
+      c = FactoryGirl.create :content, source: @pub, content_category: @cat
+      @pub.external_categories << @cat
+      c.externally_visible.should be_true
+    end
+  end
+
+  describe "externally visible scope" do
+    before do
+      # create a bunch of random content
+      FactoryGirl.create_list :content, 5
+      pub = FactoryGirl.create :publication
+      cat = FactoryGirl.create :content_category
+      pub.external_categories << cat
+      @c = FactoryGirl.create :content, content_category: cat, source: pub
+      @c2 = FactoryGirl.create :content, source: pub
+      @c3 = FactoryGirl.create :content, content_category: cat
+    end
+
+    subject { Content.externally_visible } 
+
+    it "should return only the content belonging to its source's external categories" do
+      subject.count.should eq(1)
+      subject.should eq([@c])
+    end
+  end
+
 end

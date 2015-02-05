@@ -277,6 +277,21 @@ ActiveRecord::Schema.define(:version => 20150204011612) do
   add_index "contents", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents", ["title"], :name => "title"
 
+  create_table "contents_NT", :force => true do |t|
+    t.string   "title"
+    t.string   "subtitle"
+    t.string   "authors"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "issue_id"
+    t.integer  "location_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.boolean  "reviewed",       :default => false
+    t.integer  "lupdate_by"
+    t.integer  "publication_id"
+  end
+
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
     t.string   "title"
@@ -665,7 +680,7 @@ ActiveRecord::Schema.define(:version => 20150204011612) do
   add_index "states", ["statename"], :name => "statename"
 
   create_table "temp_1", :id => false, :force => true do |t|
-    t.integer "id", :default => 0
+    t.string "city", :limit => 128
   end
 
   create_table "triples", :force => true do |t|

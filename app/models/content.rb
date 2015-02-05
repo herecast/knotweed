@@ -107,6 +107,9 @@ class Content < ActiveRecord::Base
   scope :events, -> { joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",
                                                      "event", "sale_event") }
 
+  scope :externally_visible, -> { Content.joins(:source)
+        .joins("inner join content_categories_publications ccp on publications.id = ccp.publication_id AND contents.content_category_id = ccp.content_category_id")}
+
   def initialize args = {}
     if not args.nil? and args[:category].present? 
       cat = ContentCategory.find_or_create_by_name(args.delete :category) 
@@ -1044,6 +1047,16 @@ class Content < ActiveRecord::Base
              :event_description, :event_url, :sponsor_url, :subtitle]
   end
 
+  # Checks if a content is within its source's external_categories
+  #
+  # @return [Boolean]
+  def externally_visible
+    if source.try(:external_categories).include? try(:content_category)
+      true
+    else
+      false
+    end
+  end
 
   private 
 
