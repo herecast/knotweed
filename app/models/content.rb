@@ -543,6 +543,12 @@ class Content < ActiveRecord::Base
   end
   
   # Post to Ontotext's new CES & Recommendations API
+  # - passes content thru pipeline (annotation)
+  # - formats annotation and posts to recommendation engine
+  # - persists content to graphdb and updates active promo if applicable
+  # @todo investigate why we're passing opts
+  # @param repo [Repo] the repo object
+  # @param opts [Array] publish options e.g. :download_result 
   def post_to_new_ontotext(repo, opts={})
     annotate_resp = JSON.parse(
       OntotextController.post(repo.annotate_endpoint + '/extract', 
@@ -560,13 +566,15 @@ class Content < ActiveRecord::Base
 
       if response["type"] == "SUCCESS"
         repo.contents << self unless repo.contents.include? self
+
+        persist_to_graph_db(repo, annotate_resp);
+
         # trigger updating hasActivePromotion if publish succeeded
         if has_active_promotion?
           # we only need this run on one promotion, not all of them
           promotions.where(active: true).first.mark_active_promotion(repo)
         end
 
-        persist_to_graph_db(repo, annotate_resp);
         return true
       end
     end
