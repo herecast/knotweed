@@ -1,7 +1,7 @@
 attrs = [:id, :title, :start_date, :end_date, :event_type, :host_organization, :cost, :recurrence,
          :featured, :links, :pubdate, :authors, :category, :parent_category, :source_name, :source_id, :location, 
          :parent_uri, :business_location, :category_reviewed, :has_active_promotion, :authoremail, :event_title,
-         :event_description, :event_url, :sponsor_url, :subtitle]
+         :event_description, :event_url, :sponsor_url, :subtitle, :externally_visible]
 json.content content.sanitized_content
 
 if content.images.present?

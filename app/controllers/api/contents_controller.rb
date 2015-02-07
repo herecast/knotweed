@@ -49,6 +49,12 @@ class Api::ContentsController < Api::ApiController
         @contents = @contents.where("(content_category_id not in (?) OR source_id = ?)", tot_cat_list, home_list.id)
       end
     end
+
+    # external contents (used for UVMarket)
+    if params[:external_only].present?
+      @contents = @contents.externally_visible
+    end
+
     params[:page] ||= 1
     params[:per_page] ||= 30
     @contents = @contents.page(params[:page].to_i).per(params[:per_page].to_i)

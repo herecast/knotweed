@@ -21,6 +21,7 @@
 #  confirmation_sent_at   :datetime
 #  unconfirmed_email      :string(255)
 #  organization_id        :integer
+#  default_repository_id  :integer
 #
 
 require 'spec_helper'
