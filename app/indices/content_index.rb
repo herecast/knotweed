@@ -1,10 +1,9 @@
 ThinkingSphinx::Index.define :content, :with => :active_record do
   # fields
-  indexes processed_content, as: :content
+  indexes raw_content, as: :content
   indexes title
   indexes subtitle
   indexes authors
-  indexes subtitle
 
   # attributes
   has pubdate
