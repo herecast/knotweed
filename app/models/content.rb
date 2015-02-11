@@ -1066,6 +1066,27 @@ class Content < ActiveRecord::Base
     end
   end
 
+  # event date for show page
+  def full_event_date_display
+    result = full_date_string(start_date)
+    if end_date.present?
+      result.sub!("at ", "")
+      result += " to "
+      # if they are on the same day, but different times, display just time
+      if start_date.strftime("%A, %B %-d") == end_date.strftime("%A, %B %-d")
+        result += end_date.strftime("%-l:%M %P")
+      else
+        result += full_date_string(end_date)
+        result.sub!("at ", "")
+      end
+    end
+    result
+  end
+
+  def full_date_string(date)
+    date.strftime("%A, %B %-d at %-l:%M %P")
+  end
+
   private 
 
   def query_promo_similarity_index(query_term, repo)

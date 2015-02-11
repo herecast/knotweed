@@ -1,12 +1,7 @@
 %p= @event.event_title || @event.title
 
 %p
-  = @event.start_date.strftime("%b %-d, %Y")
-  %br
-  - time_range = @event.start_date.strftime("%-l:%M %P")
-  - if @event.end_date.present?
-    - time_range += " - " + @event.end_date.strftime("%-l:%M %P")
-  = time_range
+  = @event.full_event_date_display
 
 - if @event.business_location.present?
   %p
