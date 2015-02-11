@@ -1,7 +1,7 @@
 %p= @event.event_title || @event.title
 
 %p
-  = @event.full_event_date_display
+  = full_event_date_display(@event)
 
 - if @event.business_location.present?
   %p
