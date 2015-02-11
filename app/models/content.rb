@@ -1066,7 +1066,7 @@ class Content < ActiveRecord::Base
     end
   end
 
-  private 
+  private
 
   def query_promo_similarity_index(query_term, repo)
     sparql = ::SPARQL::Client.new repo.sesame_endpoint

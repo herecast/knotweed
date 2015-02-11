@@ -1,4 +1,5 @@
 class ReversePublisher < ActionMailer::Base
+  helper :events
 
   def send_content_to_reverse_publishing_email(content, publication)
     headers['In-Reply-To'] = content.parent.try(:guid)
