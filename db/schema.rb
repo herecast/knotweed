@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150204011612) do
+ActiveRecord::Schema.define(:version => 20150212230956) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -277,21 +277,6 @@ ActiveRecord::Schema.define(:version => 20150204011612) do
   add_index "contents", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents", ["title"], :name => "title"
 
-  create_table "contents_NT", :force => true do |t|
-    t.string   "title"
-    t.string   "subtitle"
-    t.string   "authors"
-    t.string   "subject"
-    t.text     "content"
-    t.integer  "issue_id"
-    t.integer  "location_id"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
-    t.boolean  "reviewed",       :default => false
-    t.integer  "lupdate_by"
-    t.integer  "publication_id"
-  end
-
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
     t.string   "title"
@@ -378,6 +363,22 @@ ActiveRecord::Schema.define(:version => 20150204011612) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
+
+  create_table "events", :force => true do |t|
+    t.integer  "content_id"
+    t.string   "event_type"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.integer  "venue_id"
+    t.string   "cost"
+    t.string   "event_url"
+    t.string   "sponsor"
+    t.string   "sponsor_url"
+    t.text     "links"
+    t.boolean  "featured"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
 
   create_table "images", :force => true do |t|
     t.string   "caption"
@@ -680,7 +681,7 @@ ActiveRecord::Schema.define(:version => 20150204011612) do
   add_index "states", ["statename"], :name => "statename"
 
   create_table "temp_1", :id => false, :force => true do |t|
-    t.string "city", :limit => 128
+    t.integer "id", :default => 0
   end
 
   create_table "triples", :force => true do |t|

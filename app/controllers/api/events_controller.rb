@@ -1,7 +1,7 @@
 class Api::EventsController < Api::ApiController
 
   def featured_events
-    @events = Content.where(featured: true).where("start_date >= ?", Date.today).order("start_date ASC")
+    @events = Event.where(featured: true).where("start_date >= ?", Date.today).order("start_date ASC")
     if params[:publications].present?
       allowed_pubs = Publication.where(name: params[:publications])
       @events = @events.where(source_id: allowed_pubs)
@@ -15,11 +15,10 @@ class Api::EventsController < Api::ApiController
 
   def index
     if params[:max_results].present? 
-      @events = Content.limit(params[:max_results])
+      @events = Event.limit(params[:max_results])
     else
-      @events = Content
+      @events = Event
     end
-    @events = @events.events
     @events = @events.includes(:source).includes(:content_category).includes(:images).includes(:import_location)
 
     if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
@@ -62,7 +61,7 @@ class Api::EventsController < Api::ApiController
   end
 
   def show
-    @event = Content.find(params[:id])
+    @event = Event.find(params[:id])
     if params[:repository].present? and @event.present?
       repo = @event.repositories.find_by_dsp_endpoint params[:repository]
       @event = nil if repo.nil?
@@ -70,7 +69,7 @@ class Api::EventsController < Api::ApiController
   end
 
   def update
-    @event = Content.find(params[:id])
+    @event = Event.find(params[:id])
 		# handle images
 		if params[:event][:image].present?
 			hImage = params[:event].delete :image
@@ -112,6 +111,8 @@ class Api::EventsController < Api::ApiController
     # destinations for reverse publishing
     destinations = params[:event].delete :destinations
 
+    start_date = params[:event].delete(:start_date)
+
     # TODO: there has got to be a better way! but I tried simply piping the image straight through
     # and allowing mass assignment to upload it as you would a normal form submission and no dice, so using
     # JS's solution until we think of something better.
@@ -124,7 +125,10 @@ class Api::EventsController < Api::ApiController
       event_image = Image.new image: file_to_upload
     end
 
-    @event = Content.new(params[:event])
+    # create content record to associate with the new event record
+    event_content = Content.new(params[:event])
+
+    @event = Event.new(content: event_content, start_date: start_date)
     @event.images = [event_image] if event_image.present?
     @event.content_category = cat
     @event.source = pub

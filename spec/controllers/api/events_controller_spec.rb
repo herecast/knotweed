@@ -55,7 +55,7 @@ describe Api::EventsController do
     it "should filter by repository if repository is specified" do
       events = FactoryGirl.create_list(:event, 3)
       r = FactoryGirl.create :repository
-      r.contents << events[0]
+      r.contents << events[0].content
       get :index, format: :json, repository: r.dsp_endpoint
       assigns(:events).should == [events[0]]
     end
@@ -106,7 +106,7 @@ describe Api::EventsController do
       end
 
       it "should respond with the event if it does belong to the repository" do
-        @repo.contents << @event
+        @repo.contents << @event.content
         subject
         assigns(:event).should == @event
       end

@@ -85,6 +85,9 @@ class Content < ActiveRecord::Base
 
   belongs_to :content_category
 
+  #channel associations
+  has_one :event
+
   attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
                   :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
                   :language, :page, :wordcount, :authoremail, :source_id, :file,
