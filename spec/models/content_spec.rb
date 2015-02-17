@@ -18,26 +18,6 @@
 #  topics              :string(255)
 #  summary             :text
 #  url                 :string(255)
-#  origin              :string(255)
-#  mimetype            :string(255)
-#  language            :string(255)
-#  page                :string(255)
-#  wordcount           :string(255)
-#  authoremail         :string(255)
-#  source_id           :integer
-#  file                :string(255)
-#  quarantine          :boolean          default(FALSE)
-#  doctype             :string(255)
-#  timestamp           :datetime
-#  contentsource       :string(255)
-#  import_record_id    :integer
-#  source_content_id   :string(255)
-#  parent_id           :integer
-#  content_category_id :integer
-#  category_reviewed   :boolean          default(FALSE)
-#  processed_content   :text
-#  has_event_calendar  :boolean          default(FALSE)
-#
 
 require 'spec_helper'
 

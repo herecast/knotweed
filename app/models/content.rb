@@ -19,26 +19,6 @@
 #  topics              :string(255)
 #  summary             :text
 #  url                 :string(255)
-#  origin              :string(255)
-#  mimetype            :string(255)
-#  language            :string(255)
-#  page                :string(255)
-#  wordcount           :string(255)
-#  authoremail         :string(255)
-#  source_id           :integer
-#  file                :string(255)
-#  quarantine          :boolean          default(FALSE)
-#  doctype             :string(255)
-#  timestamp           :datetime
-#  contentsource       :string(255)
-#  import_record_id    :integer
-#  source_content_id   :string(255)
-#  parent_id           :integer
-#  content_category_id :integer
-#  category_reviewed   :boolean          default(FALSE)
-#  processed_content   :text
-#  has_event_calendar  :boolean          default(FALSE)
-#
 
 require 'fileutils'
 require 'builder'
@@ -82,9 +62,9 @@ class Content < ActiveRecord::Base
   serialize :links, Hash
 
   attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
-                  :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
-                  :language, :page, :wordcount, :authoremail, :source_id, :file,
-                  :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
+                  :guid, :pubdate, :source_category, :topics, :summary, :url, 
+                  :language, :authoremail, :source_id, 
+                  :quarantine, :timestamp, :contentsource, :source_content_id,
                   :image_ids, :parent_id, :source_uri, :category,
                   :content_category_id, :category_reviewed, :raw_content, :processed_content,
                   :sanitized_content,  
