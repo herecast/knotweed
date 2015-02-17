@@ -36,11 +36,6 @@ class ImportLocation < ActiveRecord::Base
   STATUS_GOOD = 1
   STATUS_REVIEW = 2
   
-  # label method for rails_admin
-  def name
-    "#{city}, #{state} #{zip}"
-  end
-
   # this method is for matching location strings
   # from parsers into our locations database
   def self.find_or_create_from_match_string(query_string)
@@ -65,6 +60,5 @@ class ImportLocation < ActiveRecord::Base
 
     return match
   end
-  
   
 end
