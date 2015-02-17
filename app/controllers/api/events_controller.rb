@@ -57,7 +57,7 @@ class Api::EventsController < Api::ApiController
     unless params[:request_featured].present?
       @events = @events.where(featured: false)
     end
-    @events = @events.includes(:business_location)
+    @events = @events.includes(:venue)
   end
 
   def show
@@ -70,6 +70,10 @@ class Api::EventsController < Api::ApiController
 
   def update
     @event = Event.find(params[:id])
+    # legacy handling of event_description and event_title fields
+    params[:event][:title] = params[:event].delete :event_title if params[:event][:event_title].present?
+    params[:event][:description] = params[:event].delete :event_description if params[:event][:event_description].present?
+
 		# handle images
 		if params[:event][:image].present?
 			hImage = params[:event].delete :image

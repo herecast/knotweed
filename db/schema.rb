@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150212230956) do
+ActiveRecord::Schema.define(:version => 20150217011451) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -220,8 +220,8 @@ ActiveRecord::Schema.define(:version => 20150212230956) do
     t.text     "raw_content"
     t.integer  "issue_id"
     t.integer  "import_location_id"
-    t.datetime "created_at",                              :null => false
-    t.datetime "updated_at",                              :null => false
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
     t.string   "copyright"
     t.string   "guid"
     t.datetime "pubdate"
@@ -237,36 +237,21 @@ ActiveRecord::Schema.define(:version => 20150212230956) do
     t.string   "authoremail"
     t.integer  "source_id"
     t.string   "file"
-    t.boolean  "quarantine",           :default => false
+    t.boolean  "quarantine",          :default => false
     t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
     t.string   "source_content_id"
     t.integer  "parent_id"
-    t.string   "event_type"
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.string   "cost"
-    t.string   "recurrence"
-    t.text     "links"
-    t.string   "host_organization"
-    t.integer  "business_location_id"
-    t.boolean  "featured",             :default => false
     t.integer  "content_category_id"
-    t.boolean  "category_reviewed",    :default => false
+    t.boolean  "category_reviewed",   :default => false
     t.text     "processed_content"
-    t.string   "event_title"
-    t.text     "event_description"
-    t.string   "event_url"
-    t.string   "sponsor_url"
-    t.boolean  "has_event_calendar",   :default => false
+    t.boolean  "has_event_calendar",  :default => false
   end
 
   add_index "contents", ["authors"], :name => "authors"
   add_index "contents", ["content_category_id"], :name => "content_category_id"
-  add_index "contents", ["end_date"], :name => "index_contents_on_end_date"
-  add_index "contents", ["featured"], :name => "featured"
   add_index "contents", ["guid"], :name => "guid"
   add_index "contents", ["import_location_id"], :name => "location_id"
   add_index "contents", ["import_record_id"], :name => "import_record_id"
@@ -274,8 +259,22 @@ ActiveRecord::Schema.define(:version => 20150212230956) do
   add_index "contents", ["pubdate"], :name => "pubdate"
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["source_id"], :name => "source_id"
-  add_index "contents", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents", ["title"], :name => "title"
+
+  create_table "contents_NT", :force => true do |t|
+    t.string   "title"
+    t.string   "subtitle"
+    t.string   "authors"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "issue_id"
+    t.integer  "location_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.boolean  "reviewed",       :default => false
+    t.integer  "lupdate_by"
+    t.integer  "publication_id"
+  end
 
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
@@ -681,7 +680,7 @@ ActiveRecord::Schema.define(:version => 20150212230956) do
   add_index "states", ["statename"], :name => "statename"
 
   create_table "temp_1", :id => false, :force => true do |t|
-    t.integer "id", :default => 0
+    t.string "city", :limit => 128
   end
 
   create_table "triples", :force => true do |t|

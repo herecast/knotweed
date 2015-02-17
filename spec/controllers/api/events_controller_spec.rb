@@ -123,7 +123,7 @@ describe Api::EventsController do
       post :update, format: :json, id: @event.id, event: { event_description: "New Description" }
       response.code.should eq("200")
       @event.reload
-      @event.event_description.should == "New Description"
+      @event.description.should == "New Description"
     end
 
   end

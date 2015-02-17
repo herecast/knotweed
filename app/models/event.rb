@@ -1,3 +1,23 @@
+# == Schema Information
+#
+# Table name: events
+#
+#  id          :integer          not null, primary key
+#  content_id  :integer
+#  event_type  :string(255)
+#  start_date  :datetime
+#  end_date    :datetime
+#  venue_id    :integer
+#  cost        :string(255)
+#  event_url   :string(255)
+#  sponsor     :string(255)
+#  sponsor_url :string(255)
+#  links       :text
+#  featured    :boolean
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+
 class Event < ActiveRecord::Base
   belongs_to :content
   has_one :source, through: :content, class_name: "Publication", foreign_key: "source_id"
@@ -6,18 +26,27 @@ class Event < ActiveRecord::Base
   has_many :repositories, through: :content
   has_one :import_location, through: :content
 
-  # just temporary to make app work before we move the business_location association
-  # entirely to this model
-  has_one :business_location, through: :content
-
-  belongs_to :venue, class_name: "BusinessLocation"
+  belongs_to :venue, class_name: "BusinessLocation", foreign_key: "venue_id"
   accepts_nested_attributes_for :venue,
     reject_if: proc { |attributes| attributes['name'].blank? and attributes['address'].blank? }
+  attr_accessible :venue_attributes, :venue_id
 
   validates_presence_of :content_id, :start_date
 
   attr_accessible :content_id, :cost, :end_date, :event_type, :event_url, :featured, 
-    :links, :sponsor, :sponsor_url, :start_date, :venue_id, :venue, :content
+    :links, :sponsor, :sponsor_url, :start_date, :venue, :content, :description
+
+  serialize :links, Hash
+
+  # this callback allows us to essentially forget that the associated content
+  # exists (and helps us maintain legacy code) because it means we can do things
+  # like this:
+  #     event.title = "New Title"
+  #     event.save
+  #  and end up with the event's content record's title updated.
+  after_save do |event|
+    event.content.save
+  end
 
   # override default method_missing to pipe through any attribute calls that aren't on the
   # event model directly through to the attached content record.
@@ -50,4 +79,18 @@ class Event < ActiveRecord::Base
   def description
     content.content
   end
+  def description=(new_desc)
+    content.raw_content = new_desc
+  end
+
+  # field sets for API responses
+  def self.truncated_event_fields
+    [:id, :title, :subtitle, :start_date, :event_type, :sponsor,
+             :featured]
+  end
+  
+  def self.start_date_only_fields
+    [:id, :start_date]
+  end
+
 end

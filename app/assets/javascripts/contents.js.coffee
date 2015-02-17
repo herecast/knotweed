@@ -10,9 +10,6 @@ jQuery ->
       data:
         has_event_calendar: $(this).prop("checked")
 
-  $('#event_tab_link, #contents_tab_link').on 'click', ->
-    $("#content_content_category_id").trigger('change')
-
   $("#add_new_publication").on 'click', ->
     $(".modal#publication_form .modal-body").load($(this).data('formUrl'))
 
@@ -37,13 +34,9 @@ jQuery ->
     name = $(this).find("option:selected").text()
     if name == "Event" or name == "Sale Event"
       $("#add_new_publication").show()
-      $("#event_tab_link").removeClass("hidden")
-      $("#contents_tab_link").addClass("hidden")
       $("label[for='content_source_id']").text("Organization")
     else
       $("#add_new_publication").hide()
-      $("#event_tab_link").addClass("hidden")
-      $("#contents_tab_link").removeClass("hidden")
       $("label[for='content_source_id']").text("Publication")
   $("#content_content_category_id").trigger('change')
 

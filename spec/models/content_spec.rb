@@ -2,54 +2,41 @@
 #
 # Table name: contents
 #
-#  id                   :integer          not null, primary key
-#  title                :string(255)
-#  subtitle             :string(255)
-#  authors              :string(255)
-#  raw_content          :text
-#  issue_id             :integer
-#  import_location_id   :integer
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  copyright            :string(255)
-#  guid                 :string(255)
-#  pubdate              :datetime
-#  source_category      :string(255)
-#  topics               :string(255)
-#  summary              :text
-#  url                  :string(255)
-#  origin               :string(255)
-#  mimetype             :string(255)
-#  language             :string(255)
-#  page                 :string(255)
-#  wordcount            :string(255)
-#  authoremail          :string(255)
-#  source_id            :integer
-#  file                 :string(255)
-#  quarantine           :boolean          default(FALSE)
-#  doctype              :string(255)
-#  timestamp            :datetime
-#  contentsource        :string(255)
-#  import_record_id     :integer
-#  source_content_id    :string(255)
-#  parent_id            :integer
-#  event_type           :string(255)
-#  start_date           :datetime
-#  end_date             :datetime
-#  cost                 :string(255)
-#  recurrence           :string(255)
-#  links                :text
-#  host_organization    :string(255)
-#  business_location_id :integer
-#  featured             :boolean          default(FALSE)
-#  content_category_id  :integer
-#  category_reviewed    :boolean          default(FALSE)
-#  processed_content    :text
-#  event_title          :string(255)
-#  event_description    :text
-#  event_url            :string(255)
-#  sponsor_url          :string(255)
-#  has_event_calendar   :boolean          default(FALSE)
+#  id                  :integer          not null, primary key
+#  title               :string(255)
+#  subtitle            :string(255)
+#  authors             :string(255)
+#  raw_content         :text
+#  issue_id            :integer
+#  import_location_id  :integer
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  copyright           :string(255)
+#  guid                :string(255)
+#  pubdate             :datetime
+#  source_category     :string(255)
+#  topics              :string(255)
+#  summary             :text
+#  url                 :string(255)
+#  origin              :string(255)
+#  mimetype            :string(255)
+#  language            :string(255)
+#  page                :string(255)
+#  wordcount           :string(255)
+#  authoremail         :string(255)
+#  source_id           :integer
+#  file                :string(255)
+#  quarantine          :boolean          default(FALSE)
+#  doctype             :string(255)
+#  timestamp           :datetime
+#  contentsource       :string(255)
+#  import_record_id    :integer
+#  source_content_id   :string(255)
+#  parent_id           :integer
+#  content_category_id :integer
+#  category_reviewed   :boolean          default(FALSE)
+#  processed_content   :text
+#  has_event_calendar  :boolean          default(FALSE)
 #
 
 require 'spec_helper'
@@ -107,13 +94,6 @@ describe Content do
       @content.quarantine.should== true
     end
 
-    it "should mark it NOT quarantined if sanitized_content is empty but event_description is populated" do
-      @content.raw_content = ""
-      @content.event_description = "hello this is not blank"
-      @content.save
-      @content.reload
-      @content.quarantine.should== false
-    end
   end
 
   describe "publish_content" do
@@ -123,13 +103,6 @@ describe Content do
 
     it "should return sanitized_content if it has anything in it" do
       @content.publish_content(true).should == @content.sanitized_content
-    end
-
-    it "should return event_description if strip_tags sanitized_content is empty" do
-      @content.raw_content = "<br/>"
-      @content.publish_content.should == @content.event_description # nil in this case
-      @content.event_description = "hello"
-      @content.publish_content.should == "hello"
     end
 
     it "should strip tags from result if include_tags parameter is false" do
@@ -263,17 +236,17 @@ describe Content do
       p = FactoryGirl.create(:publication)
       @base_data["source_id"] = p.id
       c1 = Content.create_from_import_job(@base_data)
-      c1.update_attribute :cost, "$5"
+      c1.update_attribute :copyright, "ropycight" #an attribute that is not whitelisted for reimport
       @new_data = {
         "title" => "New Title",
         "source_id" => @base_data["source_id"],
         "guid" => c1.guid,
-        "cost" => "$10"
+        "copyright" => "different" # an attribute that is not whitelisted
       }
       Content.create_from_import_job(@new_data)
       c1.reload
       c1.title.should == @new_data["title"]
-      c1.cost.should == "$5" # original cost
+      c1.copyright.should == "ropycight" # original
     end
 
     # check source logic
@@ -356,23 +329,6 @@ describe Content do
     end
   end
     
-  describe "populate_raw_content_with_event_description_if_blank" do
-    it "should save event_description into raw_content if raw_content is empty" do
-      c = FactoryGirl.build :content, raw_content: "", event_description: "Not blank"
-      c.save
-      c.reload
-      c.raw_content.should == c.event_description
-    end
-
-    it "should not do anything when raw_content is populated" do
-      c = FactoryGirl.build :content, raw_content: "Not blank at all", event_description: "Also not blank"
-      c.save
-      c.reload
-      c.raw_content.should_not == c.event_description
-      c.raw_content.should == "Not blank at all"
-    end
-  end
-
   describe "export to xml" do
     before do
       @content = FactoryGirl.create(:content)
@@ -433,7 +389,7 @@ describe Content do
           # just checking with closing tags so we don't have to deal
           # with exact formatting of opening tag and attributes
           @xml.include?("#{k.upcase}</tns:name>").should be_true
-          unless v.nil?
+          if v.present?
             # account for pubdate / timestamp formatting
             if k == "pubdate" or k == "timestamp"
               @xml.include?("#{v.strftime(Content::PUBDATE_OUTPUT_FORMAT)}</tns:value>").should be_true

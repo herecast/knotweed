@@ -1,8 +1,8 @@
 json.events @events do |e|
   if params[:start_date_only] # calendar query
-    attrs = Content.start_date_only_fields
+    attrs = Event.start_date_only_fields
   else
-    attrs = Content.truncated_event_fields
+    attrs = Event.truncated_event_fields
     # populate the content attribute with raw_content for speed
     json.content e.raw_content
 

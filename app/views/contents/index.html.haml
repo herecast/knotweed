@@ -1,5 +1,3 @@
-= @shared_conditions
-
 .row-fluid
   .span12.box.bordered-box.blue-border
     .box-header.blue-background
@@ -84,10 +82,8 @@
             = link_to c.import_location.city, contents_path(q: { import_location_id_in: c.import_location.id })
         %td= c.pubdate.try(:strftime, "%Y-%m-%d")
         %td
-          - disabled = false
-          - disabled = "disabled" if c.start_date.present?
-          = check_box_tag :has_event_calendar, true, (c.start_date.present? or c.has_event_calendar), 
-            disabled: disabled, class: "index-curated-checkbox", data: { update_path: content_path(c) }, id: nil
+          = check_box_tag :has_event_calendar, true, c.has_event_calendar, 
+            class: "index-curated-checkbox", data: { update_path: content_path(c) }, id: nil
         %td.actions
           = link_to "edit", edit_content_path(c), class: "btn btn-mini btn-warning"
           - unless c.published?
