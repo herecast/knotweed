@@ -60,5 +60,10 @@ class ImportLocation < ActiveRecord::Base
 
     return match
   end
+
+  # returns name for display in select boxes, other UI place
+  def name
+    "#{city}, #{state} #{zip}"
+  end
   
 end
