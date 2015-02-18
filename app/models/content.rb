@@ -49,6 +49,9 @@ class Content < ActiveRecord::Base
 
   # channel associations
   has_one :event
+  # mapping to content record that represents the channelized content
+  belongs_to :channelized_content, class_name: "Content"
+  has_one :unchannelized_original, class_name: "Content", foreign_key: "channelized_content_id"
 
   # NOTE: the code immediately below this comment IS DEPRECATED
   # however, it cannot be removed until after the data migration

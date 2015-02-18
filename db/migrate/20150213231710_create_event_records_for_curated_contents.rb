@@ -1,7 +1,10 @@
 class CreateEventRecordsForCuratedContents < ActiveRecord::Migration
   def up
+    add_column :contents, :channelized_content_id, :integer
     Content.where("start_date IS NOT NULL").find_each do |c|
       # skip if content already has an event record in existence
+      # shouldn't happen in production, but just in case on dev instances
+      # want to be sure we aren't creating multiple content/event pairs 
       if c.event.present?
         next
       end
@@ -17,6 +20,7 @@ class CreateEventRecordsForCuratedContents < ActiveRecord::Migration
         new_content.title = new_content.event_title
       end
       new_content.save
+      c.update_attribute :channelized_content_id, new_content.id
       e = Event.new content_id: new_content.id, cost: new_content.cost, start_date: new_content.start_date,
         venue: new_content.business_location, featured: new_content.featured,
         end_date: new_content.end_date, sponsor: new_content.host_organization,
@@ -28,6 +32,7 @@ class CreateEventRecordsForCuratedContents < ActiveRecord::Migration
   # because events are required to have a content record associated with them,
   # the only meaningful "down" we can really accomplish is dropping all events.
   def down
+    remove_column :contents, :channelized_content_id
     Event.destroy_all
   end
 end
