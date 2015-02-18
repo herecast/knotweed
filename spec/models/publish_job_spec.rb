@@ -29,10 +29,19 @@ describe PublishJob do
       FactoryGirl.create_list(:content, 5)
       @job = FactoryGirl.create(:publish_job)
       @repo = FactoryGirl.create(:repository)
+      @content_category = FactoryGirl.create :content_category
     end
 
     it "should return the total number of contents when no query provided" do
       @job.contents_count.should== Content.count
+    end
+
+    it "should allow querying by content category id" do
+      @job.query_params[:content_category_id] = [@content_category.id]
+      @job.save!
+      @job.contents_count.should eq(0)
+      Content.last.update_attribute :content_category_id, @content_category.id
+      @job.contents_count.should eq(1)
     end
 
     it "should return the correct number of matching contents" do
