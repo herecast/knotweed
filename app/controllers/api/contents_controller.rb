@@ -178,10 +178,16 @@ class Api::ContentsController < Api::ApiController
       return if repo.nil?
       opts[:with].merge!({repo_ids: repo.id})
     end
-    if params[:publications].present?
-      allowed_pubs = Publication.where(name: params[:publications]).collect{|p| p.id}
-      opts[:with].merge!({:pub_id => allowed_pubs})
+
+    if @requesting_app.present?
+      allowed_pubs = @requesting_app.publications
+      if params[:publications].present? # allows the My List / All Lists filter to work
+        filter_pubs = Publication.where(name: params[:publications])
+        allowed_pubs.select! { |p| filter_pubs.include? p }
+      end
+      opts[:with].merge!({pub_id: allowed_pubs.collect{|c| c.id} })
     end
+
     if params[:categories].present?
       allowed_cats = ContentCategory.find_with_children(name: params[:categories]).collect{|c| c.id}
       opts[:with].merge!({:cat_ids => allowed_cats})
