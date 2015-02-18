@@ -129,7 +129,6 @@ describe Api::ContentsController do
 
     end
 
-
   end
 
 end
