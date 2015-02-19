@@ -737,6 +737,9 @@ class Content < ActiveRecord::Base
       if query_params[:import_location_id].present?
         query[:import_location_id] = query_params[:import_location_id].map { |s| s.to_i } 
       end
+      if query_params[:content_category_id].present?
+        query[:content_category_id] = query_params[:content_category_id].map { |s| s.to_i } 
+      end
 
       repo = Repository.find(query_params[:repository_id]) if query_params[:repository_id].present?
       contents = Content.where(query)
