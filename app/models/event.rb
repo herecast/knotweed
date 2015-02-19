@@ -31,6 +31,10 @@ class Event < ActiveRecord::Base
     reject_if: proc { |attributes| attributes['name'].blank? and attributes['address'].blank? }
   attr_accessible :venue_attributes, :venue_id
 
+  # event instances represent individual datetimes for events that might occur more than once
+  # they can also have a subtitle and description that "override" the master 
+  has_many :event_instances
+
   validates_presence_of :content_id, :start_date
 
   attr_accessible :content_id, :cost, :end_date, :event_type, :event_url, :featured, 
@@ -85,7 +89,7 @@ class Event < ActiveRecord::Base
 
   # field sets for API responses
   def self.truncated_event_fields
-    [:id, :title, :subtitle, :start_date, :event_type, :sponsor,
+    [:id, :title, :subtitle, :event_type, :sponsor,
              :featured]
   end
   

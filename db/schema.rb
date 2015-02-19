@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150217213631) do
+ActiveRecord::Schema.define(:version => 20150219170553) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -114,9 +114,9 @@ ActiveRecord::Schema.define(:version => 20150217213631) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer   "channel_id"
-    t.text      "category"
-    t.timestamp "created_at", :null => false
+    t.integer  "channel_id"
+    t.text     "category"
+    t.datetime "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -343,11 +343,19 @@ ActiveRecord::Schema.define(:version => 20150217213631) do
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
+  create_table "event_instances", :force => true do |t|
+    t.integer  "event_id"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.string   "subtitle_override"
+    t.text     "description_override"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+  end
+
   create_table "events", :force => true do |t|
     t.integer  "content_id"
     t.string   "event_type"
-    t.datetime "start_date"
-    t.datetime "end_date"
     t.integer  "venue_id"
     t.string   "cost"
     t.string   "event_url"
