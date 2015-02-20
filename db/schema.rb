@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150220214039) do
+ActiveRecord::Schema.define(:version => 20150220214915) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -355,6 +355,10 @@ ActiveRecord::Schema.define(:version => 20150220214039) do
     t.datetime "updated_at",           :null => false
   end
 
+  add_index "event_instances", ["end_date"], :name => "index_event_instances_on_end_date"
+  add_index "event_instances", ["event_id"], :name => "index_event_instances_on_event_id"
+  add_index "event_instances", ["start_date"], :name => "index_event_instances_on_start_date"
+
   create_table "events", :force => true do |t|
     t.integer  "content_id"
     t.string   "event_type"
@@ -368,6 +372,10 @@ ActiveRecord::Schema.define(:version => 20150220214039) do
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
+
+  add_index "events", ["content_id"], :name => "index_events_on_content_id"
+  add_index "events", ["featured"], :name => "index_events_on_featured"
+  add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 
   create_table "images", :force => true do |t|
     t.string   "caption"
