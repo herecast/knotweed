@@ -35,10 +35,10 @@ class Event < ActiveRecord::Base
   # they can also have a subtitle and description that "override" the master 
   has_many :event_instances
 
-  validates_presence_of :content_id, :start_date
+  validates_presence_of :content_id
 
   attr_accessible :content_id, :cost, :end_date, :event_type, :event_url, :featured, 
-    :links, :sponsor, :sponsor_url, :start_date, :venue, :content, :description
+    :links, :sponsor, :sponsor_url, :venue, :content, :description
 
   serialize :links, Hash
 
@@ -91,10 +91,6 @@ class Event < ActiveRecord::Base
   def self.truncated_event_fields
     [:id, :title, :subtitle, :event_type, :sponsor,
              :featured]
-  end
-  
-  def self.start_date_only_fields
-    [:id, :start_date]
   end
 
 end

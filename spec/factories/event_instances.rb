@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :event_instance do
-    event
     start_date 1.week.from_now
   end
 end
+
