@@ -28,4 +28,18 @@ module EventsHelper
     date.strftime("%A, %B %-d at %-l:%M %P")
   end
 
+  # helper method to provide values for search fields
+  # based on existing search or session-stored search
+  def event_search_field_value(key)
+    if params[:reset]
+      nil
+    elsif session[:events_search].present?
+      session[:events_search][key]
+    elsif params[:q].present?
+      params[:q][key]
+    else
+      nil
+    end
+  end
+
 end

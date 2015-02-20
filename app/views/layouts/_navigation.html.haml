@@ -51,6 +51,22 @@
           = link_to new_content_path do
             %i.icon-plus
             %span Create New
+- if can? :read, Event
+  %li
+    = link_to events_path do
+      %i.icon-calendar
+      %span Event Calendar
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "events" ? "in" : "" }" }
+      %li{ class: current_page?(events_path) ? "active" : "" }
+        = link_to events_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, Event
+        %li{ class: current_page?(new_content_path) ? "active" : "" }
+          = link_to new_event_path do
+            %i.icon-plus
+            %span Create New
 - if can? :read, ContentSet
   %li
     = link_to content_sets_path do
