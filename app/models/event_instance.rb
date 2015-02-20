@@ -10,7 +10,9 @@ class EventInstance < ActiveRecord::Base
   # takes the end_date and automatically sets it to the same date as start_date,
   # but with its own time
   def process_end_time
-    self.end_date = Chronic.parse(start_date.to_date.to_s + " " + end_date.strftime("%I:%M%p"))
+    if end_date.present?
+      self.end_date = Chronic.parse(start_date.to_date.to_s + " " + end_date.strftime("%I:%M%p"))
+    end
   end
 
   # returns instance's subtitle override if available,

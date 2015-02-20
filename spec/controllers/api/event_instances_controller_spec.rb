@@ -57,7 +57,7 @@ describe Api::EventInstancesController do
       event["id"].should eq(@instance.id) # ID passed to consumer app is that of the instance accessed
       event["content_id"].should eq(@event.content.id)
       event["instances"].count.should eq(1)
-      Chronic.parse(event["instances"][0]["start_date"]).should eq(@instance.start_date)
+      Chronic.parse(event["instances"][0]["start_date"]).should eq(Chronic.parse(@instance.start_date.to_s))
     end
 
     describe "with more than one instance" do

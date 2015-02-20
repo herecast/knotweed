@@ -32,8 +32,8 @@ FactoryGirl.define do
     featured false
     association :venue, factory: :business_location
 
-    after(:create) do |e, evaluator|
-      ei = FactoryGirl.create :event_instance, event_id: e.id, start_date: evaluator.start_date,
+    after(:build) do |e, evaluator|
+      ei = FactoryGirl.create :event_instance, start_date: evaluator.start_date,
         subtitle_override: evaluator.subtitle_override, description_override: evaluator.description_override
       e.event_instances << ei
     end
