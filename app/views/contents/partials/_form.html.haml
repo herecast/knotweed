@@ -35,7 +35,7 @@
       .tab-pane.form-horizontal#features{ class: "active" }
         -# uneditable features displayed in info box if content exists
         .row-fluid
-          .span4
+          .span6
             .row-fluid
               .span12
                 = f.association :content_category, label_method: :label
@@ -43,14 +43,13 @@
               .span12
                 = f.association :source, input_html: { class: "chosen-select span12" }, 
                   label: "Publication"
-          .span2
+          .span3
             = f.input :category_reviewed, label: "Category Reviewed?"
             %span.btn.btn-small.btn-success#add_new_publication{ data: { toggle: "modal", 
                 target: "#publication_form", form_url: new_publication_path(short_form: true) } }
               + Add New
 
-          - if @content.id.present?
-            .span4
+            - if @content.id.present?
               %dl
                 %dt Source Category
                 %dd= @content.source_category
@@ -60,6 +59,23 @@
                     %i.icon-ok
                 %dt Published?
                 %dd= @content.repositories.map{ |r| r.dsp_endpoint }.join(", ")
+          -# was originally going to show and hide this with javascript, but that doesn't make sense.
+          -# it can only be curated into an event if it's been saved as an event record, so no javascript
+          -# showing/hiding here.
+          .span3.channel-related-actions.text-right{ class: @content.category == "event" ? "" : "hidden" }
+            -# if it has already been curated, just link to curated record
+            - if @content.channelized_content.present?
+              -# we just link to the channelized content here and handle redirection
+              -# to the appropriate channel (currently just events)
+              -# in the contents controller#edit action
+              -# NOTE: we're hardcoding the text of this link to event right now.
+              -# to suppor other channels, when we create them, we'll need to add
+              -# an extra database field somewhere that represents which channel the content
+              -# is channelized to and use that value to generate this text.
+              = link_to "See Event Calendar Record", content_path(@content.channelized_content.id)
+            - else
+              = link_to "Create Calendar Event from record", new_event_path(unchannelized_content_id: @content.id), class: "btn btn-success"
+            = f.input :has_event_calendar, label: "Curated?"
         = f.input :title, input_html: { class: "input-block-level" }
         = f.input :subtitle, input_html: { class: "input-block-level" }
         = f.input :authors, input_html: { class: "input-block-level" }
@@ -84,7 +100,6 @@
           = f.input :pubdate, as: :datetime_picker, input_html: { value: @content.pubdate || Date.today }, wrapper_html: { class: "span6" }
           = f.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }
           = f.input :url, input_html: { class: "input-block-level" }
-          = f.input :has_event_calendar, label: "Curated?"
       .tab-pane#doc_content
         = f.input :sanitized_content, input_html: { class: "ckeditor input-block-level" }, label: "Content", as: :text
       .tab-pane#images

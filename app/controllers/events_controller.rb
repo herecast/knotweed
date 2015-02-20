@@ -25,6 +25,12 @@ class EventsController < ApplicationController
     @event = Event.new(params[:event])
     authorize! :create, @event
     if @event.save!
+      # if this was curated from an existing content record, we need to update
+      # that content record to reflect that
+      if params[:unchannelized_content_id].present?
+        unchan_content = Content.find params[:unchannelized_content_id]
+        unchan_content.update_attributes channelized_content_id: @event.content.id, has_event_calendar: true
+      end
       flash[:notice] = "Created content with id #{@event.id}"
       redirect_to form_submit_redirect_path(@event.id)
     else
@@ -69,9 +75,26 @@ class EventsController < ApplicationController
 
   def new
     @event = Event.new
+    # if this is curating an existing piece of content, we get passed "unchannelized_content_id"
+    # and use that to construct our new content
+    if params[:unchannelized_content_id].present?
+      unchannelized_content = Content.find(params[:unchannelized_content_id])
+      @event.content = unchannelized_content.dup
+    else
+      @event.content = Content.new
+    end
+
+    # set default fields for event channelized content here
+    
     # for the record, I hate this. That we're hard coding "event" which is represented by a database
     # field *throughout* the codebase. It's done under protest.
-    @event.content = Content.new(content_category_id: ContentCategory.find_or_create_by_name("event").id)
+    @event.content.content_category_id = ContentCategory.find_or_create_by_name("event").id
+
+    # hard coding some other things
+    @event.content.category_reviewed = true
+    # again with the under protest...
+    @event.content.source_id = Publication.find_or_create_by_name("Subtext Events").id
+
     @event.content.images.build 
     # for users that can only access certain specific attribute events
     current_ability.attributes_for(:new, Event).each do |key,value|

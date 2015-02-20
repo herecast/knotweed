@@ -67,6 +67,11 @@ class ContentsController < ApplicationController
     end
   end
 
+  def show
+    flash.keep
+    redirect_to edit_content_path(params[:id])
+  end
+
   def edit
     # need to determine id of "next record" if we got here from the search index
     if params[:index].present?

@@ -70,7 +70,7 @@ class Content < ActiveRecord::Base
                   :quarantine, :timestamp, :contentsource, :source_content_id,
                   :image_ids, :parent_id, :source_uri, :category,
                   :content_category_id, :category_reviewed, :raw_content, :processed_content,
-                  :sanitized_content,  
+                  :sanitized_content, :channelized_content_id,
                   :has_event_calendar
 
 

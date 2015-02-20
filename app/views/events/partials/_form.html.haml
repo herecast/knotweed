@@ -34,6 +34,8 @@
           .row-fluid
             .span6
               = g.association :content_category, as: :hidden
+              = g.input :category_reviewed, as: :hidden
+              = hidden_field_tag :unchannelized_content_id, params[:unchannelized_content_id]
               .row-fluid
                 .span8
                   = g.association :source, input_html: { class: "chosen-select span12" }, 
