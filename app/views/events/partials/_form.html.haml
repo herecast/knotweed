@@ -1,12 +1,12 @@
-= simple_form_for @event, html: { class: "form" } do |f|
+= simple_form_for @event, html: { class: "event-form form" } do |f|
   = f.error_notification
   .tabbable
     %ul.nav.nav-tabs.nav-tabs-simple#edit_doctabs
-      %li{ class: "active" }
+      %li{ }
         = link_to "#", class: 'green-border', data: { toggle: "tab", target: "#features" } do
           %i.icon-info
           Features
-      %li#calendar_tab_link
+      %li#calendar_tab_link{ class: "active" }
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#calendar" } do
           %i.icon-reorder
           Calendar
@@ -28,7 +28,7 @@
         %span.btn.btn-small.tab-traversal-link{ data: { move_index: "-1" } } Previous
         %span.btn.btn-small.tab-traversal-link{ data: { move_index: "1" } } Next
     .tab-content
-      .tab-pane.form-horizontal#features{ class: "active" }
+      .tab-pane.form-horizontal#features
         -# content model fields in here
         = f.simple_fields_for :content do |g|
           .row-fluid
@@ -55,7 +55,6 @@
                       %i.icon-ok
                   %dt Published?
                   %dd= @event.repositories.map{ |r| r.dsp_endpoint }.join(", ")
-          = g.input :title, input_html: { class: "input-block-level" }
           = g.input :subtitle, input_html: { class: "input-block-level" }
           = g.input :authors, input_html: { class: "input-block-level" }
           .row-fluid
@@ -64,13 +63,15 @@
             = g.input :pubdate, as: :datetime_picker, input_html: { value: @event.pubdate || Date.today }, wrapper_html: { class: "span6" }
             = g.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }
             = g.input :url, input_html: { class: "input-block-level" }
-      .tab-pane#calendar
+      .tab-pane#calendar{ class: "active" }
         .row-fluid
           .span6
             = f.simple_fields_for :content do |g|
               = g.input :sanitized_content, input_html: { class: "ckeditor input-block-level" }, label: "Event Description", as: :text
           -# event specific fields
           .span6 
+            = f.simple_fields_for :content do |g|
+              = g.input :title, input_html: { class: "input-block-level" }
             .row-fluid
               .control-group.select.optional.event_venue.span12
                 .row-fluid
@@ -93,17 +94,23 @@
             = f.input :sponsor, input_html: { class: "input-block-level" }
             = f.input :sponsor_url, input_html: { class: "input-block-level" }
             -# image field
-            .span5
-              = f.simple_fields_for :content do |g|
-                = g.simple_fields_for :images do |i|
-                  = i.input :image, as: :file
-            .span6
-              - if @event.content.images.present? and @event.content.images.first.id
-                = image_tag @event.content.images.first.image.url
-              - elsif @placeholder_image.present?
-                = image_tag @placeholder_image.image.url
-        .row-fluid
-          .span12 Event instances placeholder
+            .row-fluid
+              .span5
+                = f.simple_fields_for :content do |g|
+                  = g.simple_fields_for :images do |i|
+                    = i.input :image, as: :file
+              .span6
+                - if @event.content.images.present? and @event.content.images.first.id
+                  = image_tag @event.content.images.first.image.url
+                - elsif @placeholder_image.present?
+                  = image_tag @placeholder_image.image.url
+            = f.input :featured, input_html: { class: "input-block-level" }
+        %hr
+        %h3 Event Instances
+        = f.hint "At least one instance is required."
+        = link_to_add_fields "Add Event Instance", f, :event_instances
+        = f.simple_fields_for :event_instances do |g|
+          = render 'event_instance_fields', f: g
         %hr
         %h3 Links
         .row-fluid

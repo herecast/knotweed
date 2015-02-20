@@ -1,0 +1,15 @@
+.row-fluid
+  %fieldset
+    = f.input :start_date, wrapper_html: { class: "span2" },
+      input_html: { class: "span12" }, as: :datetime_picker
+    = f.input :end_date, wrapper_html: { class: "span2" }, 
+      input_html: { class: "span12" }, as: :time_picker, label: "End Time (opt)"
+    = f.input :subtitle_override, wrapper_html: { class: "span6" }, label: "Subtitle (opt)",
+      input_html: { class: "span12" }
+    = f.hidden_field :_destroy
+    %span.btn.btn-danger.pull-right.remove_fields remove
+:javascript
+  jQuery(function() {
+  $(".datetimepicker").datetimepicker();
+  $(".timepicker").datetimepicker({ pickDate: false });
+  });

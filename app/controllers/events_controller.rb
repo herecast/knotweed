@@ -108,6 +108,7 @@ class EventsController < ApplicationController
     end
 
     @event.content.images.build unless @event.content.images.present?
+    @event.event_instances.build
 
     # set default fields for event channelized content here
     
