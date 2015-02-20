@@ -60,6 +60,8 @@ class Event < ActiveRecord::Base
   #     event.save
   #  and end up with the event's content record's title updated.
   after_save do |event|
+    # ensure said content is marked channelized
+    event.content.channelized = true
     event.content.save
   end
 

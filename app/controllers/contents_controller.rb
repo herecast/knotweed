@@ -12,6 +12,8 @@ class ContentsController < ApplicationController
       end
       session[:contents_search] = params[:q]
     end
+
+    session[:contents_search][:channelized_false] = true
     
     @search = Content.ransack(session[:contents_search])
 

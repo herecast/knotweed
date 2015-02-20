@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150219170553) do
+ActiveRecord::Schema.define(:version => 20150220214039) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -114,9 +114,9 @@ ActiveRecord::Schema.define(:version => 20150219170553) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer  "channel_id"
-    t.text     "category"
-    t.datetime "created_at", :null => false
+    t.integer   "channel_id"
+    t.text      "category"
+    t.timestamp "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -243,9 +243,11 @@ ActiveRecord::Schema.define(:version => 20150219170553) do
     t.text     "processed_content"
     t.boolean  "has_event_calendar",     :default => false
     t.integer  "channelized_content_id"
+    t.boolean  "channelized",            :default => false
   end
 
   add_index "contents", ["authors"], :name => "authors"
+  add_index "contents", ["channelized"], :name => "index_contents_on_channelized"
   add_index "contents", ["content_category_id"], :name => "content_category_id"
   add_index "contents", ["guid"], :name => "guid"
   add_index "contents", ["import_location_id"], :name => "location_id"
