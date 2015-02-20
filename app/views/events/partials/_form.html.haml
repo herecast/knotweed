@@ -98,8 +98,10 @@
                 = g.simple_fields_for :images do |i|
                   = i.input :image, as: :file
             .span6
-              - if @event.images.present?
-                = image_tag @event.images.first.image.url
+              - if @event.content.images.present? and @event.content.images.first.id
+                = image_tag @event.content.images.first.image.url
+              - elsif @placeholder_image.present?
+                = image_tag @placeholder_image.image.url
         .row-fluid
           .span12 Event instances placeholder
         %hr

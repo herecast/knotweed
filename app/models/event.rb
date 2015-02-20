@@ -37,6 +37,7 @@ class Event < ActiveRecord::Base
   # event instances represent individual datetimes for events that might occur more than once
   # they can also have a subtitle and description that "override" the master 
   has_many :event_instances
+  #validates_presence_of :event_instances # at least one must exist
 
   # we can either remove this validation (the path I chose) OR
   # make the events#create action a lot more complex in that it would have

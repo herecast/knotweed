@@ -33,6 +33,22 @@ class EventsController < ApplicationController
       if params[:unchannelized_content_id].present?
         unchan_content = Content.find params[:unchannelized_content_id]
         unchan_content.update_attributes channelized_content_id: @event.content.id, has_event_calendar: true
+        # make a copy of the original image if it exists and if
+        # the new event/content was created without uploading a new image
+        if unchan_content.images.present? and @event.images.empty?
+          original_image = unchan_content.images.first
+          @event.content.images << Image.create(image: original_image.image, source_url: original_image.source_url,
+                                               caption: original_image.caption, credit: original_image.credit)
+          # we need to make a copy of the image in its new path
+          connection = Fog::Storage.new({
+            provider: "AWS",
+            aws_access_key_id: Figaro.env.aws_access_key_id,
+            aws_secret_access_key: Figaro.env.aws_secret_access_key
+          })
+          old_path = original_image.image.path.to_s
+          new_path = @event.content.images.first.image.path.to_s
+          connection.copy_object(Figaro.env.aws_bucket_name, old_path, Figaro.env.aws_bucket_name, new_path)
+        end
       end
       flash[:notice] = "Created content with id #{@event.id}"
       redirect_to form_submit_redirect_path(@event.id)
@@ -83,9 +99,15 @@ class EventsController < ApplicationController
     if params[:unchannelized_content_id].present?
       unchannelized_content = Content.find(params[:unchannelized_content_id])
       @event.content = unchannelized_content.dup
+      # we pass in a placeholder for the image url so that we can display it
+      # (if the original content had an image),
+      # then in create we duplicate the original image and assign it to the new content.
+      @placeholder_image = unchannelized_content.images.first
     else
       @event.content = Content.new
     end
+
+    @event.content.images.build unless @event.content.images.present?
 
     # set default fields for event channelized content here
     
@@ -98,7 +120,6 @@ class EventsController < ApplicationController
     # again with the under protest...
     @event.content.source_id = Publication.find_or_create_by_name("Subtext Events").id
 
-    @event.content.images.build 
     # for users that can only access certain specific attribute events
     current_ability.attributes_for(:new, Event).each do |key,value|
       @event.send("#{key}=", value)
