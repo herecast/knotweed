@@ -1,23 +1,26 @@
 class EventsController < ApplicationController
 
+  # It turns out -- after coding this controller -- that they actually want every event instance
+  # to show up in a row. So, this search action actually happens on event indices. Which has a 
+  # side effect of making our query parameters REALLY long, but that's ok.
   def index
     # if posted, save to session
     if params[:reset]
       session[:events_search] = nil
     elsif params[:q].present?
-      if params[:q][:id_in].present?
-        params[:q][:id_in] = params[:q][:id_in].split(',').map{ |s| s.strip }
+      if params[:q][:event_content_id_in].present?
+        params[:q][:event_content_id_in] = params[:q][:event_content_id_in].split(',').map{ |s| s.strip }
       end
       session[:events_search] = params[:q]
     end
     
-    @search = Event.ransack(session[:events_search])
+    @search = EventInstance.ransack(session[:events_search])
 
     if session[:events_search].present?
-      @events = @search.result(distinct: true).joins(:content).order("contents.pubdate DESC").page(params[:page]).per(100)
-      @events = @events.accessible_by(current_ability)
+      @event_instances = @search.result(distinct: true).joins(event: :content).order("start_date DESC").page(params[:page]).per(100)
+      @event_instances = @event_instances.accessible_by(current_ability)
     else
-      @events = []
+      @event_instances = []
     end
   end
 
@@ -57,7 +60,7 @@ class EventsController < ApplicationController
     # need to determine id of "next record" if we got here from the search index
     if params[:index].present?
       params[:page] = 1 unless params[:page].present?
-      events = Event.ransack(session[:events_search]).result(distinct: true).order("pubdate DESC").page(params[:page]).per(100).select("events.id")
+      events = EventInstance.ransack(session[:events_search]).result(distinct: true).joins(:event).order("start_date DESC").page(params[:page]).per(100).select("events.id")
       @next_index = params[:index].to_i + 1
       @next_event_id = events[@next_index].try(:id)
       # account for scenario where we are at end of page

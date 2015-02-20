@@ -13,45 +13,55 @@
       = search_form_for @search, url: events_path do |f|
         .controls.controls-row
           .field.span2
-            = f.label :id_in, "ID"
+            = f.label :event_content_id_in, "Content ID"
             -# format id_in val for display so it matches what's entered
-            - if session[:events_search].present? and session[:events_search].has_key? :id_in and session[:events_search][:id_in].present?
-              - id_in_val = session[:events_search][:id_in].join(',')
+            - if session[:events_search].present? and session[:events_search].has_key? :event_content_id_in and session[:events_search][:event_content_id_in].present?
+              - id_in_val = session[:events_search][:event_content_id_in].join(',')
             - else
               - id_in_val = ""
-            = f.text_field :id_in, value: id_in_val, class: "span12"
+            = f.text_field :event_content_id_in, value: id_in_val, class: "span12"
           .field.span2
-            = f.label :content_title_cont, "Title"
-            = f.text_field :content_title_cont, class: "span12"
+            = f.label :event_content_title_cont, "Title"
+            = f.text_field :event_content_title_cont, class: "span12"
           .field.span2
-            = f.label :content_pubdate_gteq, "From"
-            = f.text_field :content_pubdate_gteq, type: :date, value: event_search_field_value(:content_pubdate_gteq), class: "span12"
+            = f.label :event_content_pubdate_gteq, "Pubdate From"
+            = f.text_field :event_content_pubdate_gteq, type: :date, 
+              value: event_search_field_value(:event_content_pubdate_gteq), class: "span12"
           .field.span2
-            = f.label :content_pubdate_lteq, "To"
-            = f.text_field :content_pubdate_lteq, type: :date, value: event_search_field_value(:content_pubdate_lteq), class: "span12"
+            = f.label :event_content_pubdate_lteq, "Pubdate To"
+            = f.text_field :event_content_pubdate_lteq, type: :date, 
+              value: event_search_field_value(:event_content_pubdate_lteq), class: "span12"
           .field.span2
-            = f.label :content_content_category_id_in, "Category"
-            = f.collection_select :content_content_category_id_in, ContentCategory.accessible_by(current_ability),
+            = f.label :event_content_content_category_id_in, "Category"
+            = f.collection_select :event_content_content_category_id_in, ContentCategory.accessible_by(current_ability),
               :id, :label, { include_blank: true },
               { multiple: true, class: "chosen-select span12" }
         .controls.controls-row
           .field.span2
-            = f.label :content_source_id_in, "Publications"
-            = f.collection_select :content_source_id_in, Publication.accessible_by(current_ability), 
+            = f.label :event_content_source_id_in, "Publications"
+            = f.collection_select :event_content_source_id_in, Publication.accessible_by(current_ability), 
               :id, :name, {}, { multiple: true, class: "chosen-select span12" }
           .field.span2
-            = f.label :content_authors_cont, "Authors"
-            = f.text_field :content_authors_cont, class: "span12"
+            = f.label :event_content_authors_cont, "Authors"
+            = f.text_field :event_content_authors_cont, class: "span12"
           .field.span2
-            = f.label :content_repositories_id_eq, "Published in Repository?"
-            = f.collection_select :content_repositories_id_eq, Repository.all, :id, :name, { include_blank: true }, class: "span12"
+            = f.label :start_date_gteq, "Start Date From"
+            = f.text_field :start_date_gteq, type: :date, 
+              value: event_search_field_value(:start_date_gteq), class: "span12"
+          .field.span2
+            = f.label :start_date_lteq, "Start Date From"
+            = f.text_field :start_date_lteq, type: :date, 
+              value: event_search_field_value(:start_date_lteq), class: "span12"
+          .field.span2
+            = f.label :event_content_repositories_id_eq, "Published in Repository?"
+            = f.collection_select :event_content_repositories_id_eq, Repository.all, :id, :name, { include_blank: true }, class: "span12"
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
 %table.table.table-striped.table-hover.table-condensed#events_index
   %thead
     %tr
-      %th ID
+      %th Content ID
       %th Title
       %th Source
       %th Authors
@@ -60,21 +70,20 @@
       %th Featured?
       %th
   .span5
-    = page_entries_info @events if @events.present?
-    = paginate @events, window: 2 if @events.present?
+    = page_entries_info @event_instances if @event_instances.present?
+    = paginate @event_instances, window: 2 if @event_instances.present?
   %tbody
-    - @events.each_with_index do |e, i|
-      %tr{ class: "content-#{e.id}" }
-        %td= e.id
-        %td= link_to e.title, edit_event_path(e, index: i, page: params[:page])
-        %td= link_to e.source.name, events_path(q: { content_source_id_in: e.source.id })
-        %td= link_to e.authors, events_path(q: { authors_cont: e.authors })
-        %td= e.pubdate.try(:strftime, "%Y-%m-%d")
+    - @event_instances.each_with_index do |ei, i|
+      - e = ei.event
+      %tr{ class: "content-#{ei.id}" }
+        %td= e.content.id
+        %td= link_to e.title, edit_event_path(e.id, index: i, page: params[:page])
         %td
-          - if e.event_instances.count == 1
-            = e.event_instances[0].start_date.strftime("%Y-%m-%d")
-          - else
-            %label.label-success Multiple Instances
+          - if e.content.source.present?
+            = link_to e.source.name, events_path(q: { event_content_source_id_in: e.source.id })
+        %td= link_to e.authors, events_path(q: { event_authors_cont: e.authors })
+        %td= e.pubdate.try(:strftime, "%Y-%m-%d")
+        %td= ei.start_date.strftime("%Y-%m-%d")
         %td
           - if e.featured
             %i.icon-check
