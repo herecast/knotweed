@@ -57,6 +57,7 @@
 %table.table.table-striped.table-hover.table-condensed#contents_index
   %thead
     %tr
+      %th ID
       %th Category
       %th Source
       %th Title
@@ -71,6 +72,7 @@
   %tbody
     - @contents.each_with_index do |c, i|
       %tr{ class: "content-#{c.id}" }
+        %td= c.id
         %td= c.category.try(:titlecase)
         %td
           - if c.source.present?
