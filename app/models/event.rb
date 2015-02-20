@@ -20,6 +20,9 @@
 
 class Event < ActiveRecord::Base
   belongs_to :content
+  accepts_nested_attributes_for :content
+  attr_accessible :content_attributes
+
   has_one :source, through: :content, class_name: "Publication", foreign_key: "source_id"
   has_one :content_category, through: :content
   has_many :images, through: :content
@@ -35,7 +38,10 @@ class Event < ActiveRecord::Base
   # they can also have a subtitle and description that "override" the master 
   has_many :event_instances
 
-  validates_presence_of :content_id
+  # we can either remove this validation (the path I chose) OR
+  # make the events#create action a lot more complex in that it would have
+  # to first save and create the content, then save the event.
+  # validates_presence_of :content_id
 
   attr_accessible :content_id, :cost, :end_date, :event_type, :event_url, :featured, 
     :links, :sponsor, :sponsor_url, :venue, :content, :description

@@ -5,10 +5,10 @@
 jQuery ->
   # content form logic
   # edit venue link logic
-  $("#content_business_location_id").select2
+  $("#event_venue_id").select2
     allowClear: true
   # hide and show based on whether a venue is selected
-  $("#content_business_location_id").on 'change', ->
+  $("#event_venue_id").on 'change', ->
     val = $(this).select2('val')
     if val.length > 0
       $("#edit_venue_link").show()

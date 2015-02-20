@@ -83,6 +83,12 @@ class ContentsController < ApplicationController
       end
     end
     @content = Content.find(params[:id])
+    # if content is a channelized event
+    # in the future, we'll want to perhaps add a "is_channelized?" method
+    # that returns the class of the channel so we can redirect more generically
+    if @content.event.present?
+      redirect_to edit_event_path(@content.event)
+    end
     authorize! :edit, @content
   end
 
@@ -115,11 +121,6 @@ class ContentsController < ApplicationController
     else
       render "edit"
     end
-  end
-
-  def show
-    flash.keep
-    redirect_to edit_content_path(params[:id])
   end
 
   def destroy

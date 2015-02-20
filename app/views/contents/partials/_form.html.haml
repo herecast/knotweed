@@ -107,10 +107,10 @@
           = render @content.images
       - if @content.id.present?
         .tab-pane#publish{ data: { no_turbolink: "" } }
-          = render 'contents/partials/publishing_tab'
+          = render partial: 'contents/partials/publishing_tab', locals: { content: @content }
       - if @content.published?
         .tab-pane#annotation_reports
-          = render 'contents/partials/annotation_reports_tab'
+          = render partial: 'contents/partials/annotation_reports_tab', locals: { content: @content }
       - if @content.source.present?
         .tab-pane#promotions
           = render "promotions/partials/promotions_tab", content: @content

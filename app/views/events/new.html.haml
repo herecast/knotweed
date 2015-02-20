@@ -1,2 +1,8 @@
-%h1 Events#new
-%p Find me in app/views/events/new.html.haml
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-plus
+        Add Event
+    .box-content
+      = render partial: "events/partials/form"

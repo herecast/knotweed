@@ -3,6 +3,6 @@
   = select_tag :publish_repository_id, options_from_collection_for_select(Repository.all, "id", "name")
 .span9.publish-methods
   - Content::PUBLISH_METHODS.each do |method|
-    = link_to method.humanize, publish_content_path(@content, method, Repository.first.id), class: "btn btn-info"
-  - if @content.published?
-    = link_to "Export Gate XML", rdf_to_gate_path(@content, Repository.first.id), class: "btn btn-info", target: "_blank"
+    = link_to method.humanize, publish_content_path(content, method, Repository.first.id), class: "btn btn-info"
+  - if content.published?
+    = link_to "Export Gate XML", rdf_to_gate_path(content, Repository.first.id), class: "btn btn-info", target: "_blank"

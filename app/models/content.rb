@@ -86,14 +86,6 @@ class Content < ActiveRecord::Base
   scope :externally_visible, -> { Content.joins(:source)
         .joins("inner join content_categories_publications ccp on publications.id = ccp.publication_id AND contents.content_category_id = ccp.content_category_id")}
 
-  def initialize args = {}
-    if not args.nil? and args[:category].present? 
-      cat = ContentCategory.find_or_create_by_name(args.delete :category) 
-      send("content_category=", cat)
-    end
-    super
-  end
-
   NEW_FORMAT = "New"
   EXPORT_FORMATS = [NEW_FORMAT]
   DEFAULT_FORMAT = NEW_FORMAT
