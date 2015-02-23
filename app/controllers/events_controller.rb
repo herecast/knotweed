@@ -86,13 +86,13 @@ class EventsController < ApplicationController
     # need to determine id of "next record" if we got here from the search index
     if params[:index].present?
       params[:page] = 1 unless params[:page].present?
-      events = EventInstance.ransack(session[:events_search]).result(distinct: true).joins(:event).order("start_date DESC").page(params[:page]).per(100).select("events.id")
+      events = EventInstance.ransack(session[:events_search]).result(distinct: true).joins(event: :content).order("start_date DESC").page(params[:page]).per(100).select("events.id")
       @next_index = params[:index].to_i + 1
       @next_event_id = events[@next_index].try(:id)
       # account for scenario where we are at end of page
       if @next_event_id.nil?
         params[:page] = params[:page].to_i + 1
-        events = Event.ransack(session[:events_search]).result(distinct: true).order("pubdate DESC").page(params[:page]).per(100).select("id")
+        events = EventInstance.ransack(session[:events_search]).result(distinct: true).joins(event: :content).order("start_date DESC").page(params[:page]).per(100).select("events.id")
         @next_index = 0 # first one on the new page
         @next_event_id = events[@next_index].try(:id)
       end

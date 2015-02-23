@@ -48,6 +48,7 @@ class Api::EventsController < Api::ApiController
     destinations = params[:event].delete :destinations
 
     start_date = params[:event].delete(:start_date)
+    venue_id = params[:event].delete(:business_location_id)
 
     # TODO: there has got to be a better way! but I tried simply piping the image straight through
     # and allowing mass assignment to upload it as you would a normal form submission and no dice, so using
@@ -62,13 +63,20 @@ class Api::EventsController < Api::ApiController
     end
 
     # create content record to associate with the new event record
-    event_content = Content.new(params[:event])
+    content_record = Content.new
+    content_record.title = params[:event].delete(:title)
+    content_record.raw_content = params[:event].delete(:event_description)
+    content_record.authors = params[:event].delete(:authors)
+    content_record.authoremail = params[:event].delete(:authoremail)
+    content_record.images = [event_image] if event_image.present?
+    content_record.content_category = cat
+    content_record.source = pub
+    content_record.pubdate = content_record.timestamp = Time.zone.now
 
-    @event = Event.new(content: event_content, start_date: start_date)
-    @event.images = [event_image] if event_image.present?
-    @event.content_category = cat
-    @event.source = pub
-    @event.pubdate = @event.timestamp = Time.zone.now
+#    instance = EventInstance.new params[:event][:event_instances]
+
+    @event = Event.new(content: content_record, venue_id: venue_id, featured: 0)
+    @event.event_instances.new params[:event][:event_instances]
 
     if @event.save
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150220214915) do
+ActiveRecord::Schema.define(:version => 20150223002227) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -36,9 +36,9 @@ ActiveRecord::Schema.define(:version => 20150220214915) do
     t.date    "DATE_EDITED"
   end
 
-  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+  add_index "usgs_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
+  add_index "usgs_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
+  add_index "usgs_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -85,6 +85,8 @@ ActiveRecord::Schema.define(:version => 20150220214915) do
     t.boolean  "locate_include_name", :default => false
   end
 
+  add_index "business_locations", ["name"], :name => "index_business_locations_on_name"
+
   create_table "categories", :force => true do |t|
     t.string   "name"
     t.integer  "channel_id"
@@ -114,9 +116,9 @@ ActiveRecord::Schema.define(:version => 20150220214915) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer  "channel_id"
-    t.text     "category"
-    t.datetime "created_at", :null => false
+    t.integer   "channel_id"
+    t.text      "category"
+    t.timestamp "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"

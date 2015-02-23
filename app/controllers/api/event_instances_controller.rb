@@ -1,4 +1,5 @@
 class Api::EventInstancesController < Api::ApiController
+
   def featured_events
     # pull all events that are featured and upcoming ordered by start_date (of the event instances)
     @event_instances = EventInstance.where("start_date >= ?", DateTime.now).joins(:event).where("events.featured = true")
