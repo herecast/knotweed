@@ -36,9 +36,9 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
     t.date    "DATE_EDITED"
   end
 
-  add_index "usgs_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "usgs_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "usgs_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
+  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
+  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -231,6 +231,7 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
     t.string   "topics"
     t.text     "summary"
     t.string   "url"
+    t.string   "origin"
     t.string   "language"
     t.string   "authoremail"
     t.integer  "source_id"
@@ -240,9 +241,22 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
     t.integer  "import_record_id"
     t.string   "source_content_id"
     t.integer  "parent_id"
+    t.string   "event_type"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.string   "cost"
+    t.string   "recurrence"
+    t.text     "links"
+    t.string   "host_organization"
+    t.integer  "business_location_id"
+    t.boolean  "featured",               :default => false
     t.integer  "content_category_id"
     t.boolean  "category_reviewed",      :default => false
     t.text     "processed_content"
+    t.string   "event_title"
+    t.text     "event_description"
+    t.string   "event_url"
+    t.string   "sponsor_url"
     t.boolean  "has_event_calendar",     :default => false
     t.integer  "channelized_content_id"
     t.boolean  "channelized",            :default => false
@@ -250,7 +264,10 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
 
   add_index "contents", ["authors"], :name => "authors"
   add_index "contents", ["channelized"], :name => "index_contents_on_channelized"
+  add_index "contents", ["channelized_content_id"], :name => "index_contents_on_channelized_content_id"
   add_index "contents", ["content_category_id"], :name => "content_category_id"
+  add_index "contents", ["end_date"], :name => "index_contents_on_end_date"
+  add_index "contents", ["featured"], :name => "featured"
   add_index "contents", ["guid"], :name => "guid"
   add_index "contents", ["import_location_id"], :name => "location_id"
   add_index "contents", ["import_record_id"], :name => "import_record_id"
@@ -258,7 +275,23 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
   add_index "contents", ["pubdate"], :name => "pubdate"
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["source_id"], :name => "source_id"
+  add_index "contents", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents", ["title"], :name => "title"
+
+  create_table "contents_NT", :force => true do |t|
+    t.string   "title"
+    t.string   "subtitle"
+    t.string   "authors"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "issue_id"
+    t.integer  "location_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.boolean  "reviewed",       :default => false
+    t.integer  "lupdate_by"
+    t.integer  "publication_id"
+  end
 
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
@@ -283,6 +316,10 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
+
+  create_table "contents_id", :force => true do |t|
+    t.string "category", :limit => 128
+  end
 
   create_table "contents_publish_records", :id => false, :force => true do |t|
     t.integer "content_id"

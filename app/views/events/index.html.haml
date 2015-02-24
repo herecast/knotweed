@@ -32,15 +32,10 @@
             = f.text_field :event_content_pubdate_lteq, type: :date, 
               value: event_search_field_value(:event_content_pubdate_lteq), class: "span12"
           .field.span2
-            = f.label :event_content_content_category_id_in, "Category"
-            = f.collection_select :event_content_content_category_id_in, ContentCategory.accessible_by(current_ability),
-              :id, :label, { include_blank: true },
-              { multiple: true, class: "chosen-select span12" }
-        .controls.controls-row
-          .field.span2
             = f.label :event_content_source_id_in, "Publications"
-            = f.collection_select :event_content_source_id_in, Publication.accessible_by(current_ability), 
+            = f.collection_select :event_content_source_id_in, Publication.accessible_by(current_ability),
               :id, :name, {}, { multiple: true, class: "chosen-select span12" }
+        .controls.controls-row
           .field.span2
             = f.label :event_content_authors_cont, "Authors"
             = f.text_field :event_content_authors_cont, class: "span12"
@@ -58,7 +53,7 @@
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
-%table.table.table-striped.table-hover.table-condensed#events_index
+%table.table.table-striped.data-table.table-hover.table-condensed#events_index
   %thead
     %tr
       %th Content ID
