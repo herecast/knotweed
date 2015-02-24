@@ -5,7 +5,7 @@ module EventsHelper
     if event_instance.end_date.present?
       time_range += " - " + event_instance.end_date.strftime("%-l:%M %P")
     end
-    subtitle = ' - ' + event_instance.subtitle if event_instance.subtitle.present? || ''
+    subtitle = (' - ' + event_instance.subtitle if event_instance.subtitle.present?) || ''
 
     instance_string = event_instance.start_date.strftime("%b %-d, %Y") + time_range + subtitle
     instance_string
