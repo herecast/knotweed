@@ -27,7 +27,7 @@ class ReversePublisher < ActionMailer::Base
     end
     mail(from: '"'+event.authors+'" <'+event.authoremail+'>',
          to: publication.reverse_publish_email,
-         subject: (event.event_title || event.title))
+         subject: event.title)
   end
 
 end

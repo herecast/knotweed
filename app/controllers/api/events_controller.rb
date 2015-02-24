@@ -10,6 +10,9 @@ class Api::EventsController < Api::ApiController
     params[:event][:description] = params[:event].delete :event_description if params[:event][:event_description].present?
     params[:event][:id] = @event.id
 
+    # destinations for reverse publishing
+    destinations = params[:event].delete :destinations
+
     # handle images
     if params[:event][:image].present?
       hImage = params[:event].delete :image
@@ -37,7 +40,27 @@ class Api::EventsController < Api::ApiController
         @event.images = [@image]
         @event.save
       end
-      render text: "#{@event.id}"
+
+      # reverse publish to specified destinations
+      if destinations.present?
+        destinations.each do |d|
+          next if d.empty?
+          dest_pub = Publication.find_by_name(d)
+          # skip if it doesn't exist or if it can't reverse publish
+          next if dest_pub.nil? or !dest_pub.can_reverse_publish
+          ReversePublisher.send_event_to_listserv(@event, dest_pub, @requesting_app).deliver
+          logger.debug(dest_pub.name)
+        end
+      end
+
+      repo = Repository.find_by_dsp_endpoint(params[:repository])
+      if repo.present? and params[:publish] == "true"
+        if @event.publish(Content::POST_TO_NEW_ONTOTEXT, repo)
+          render text: "#{@event.id}"
+        else
+          render text: "Event #{@event.id} updated but failed to publish", status: 500
+        end
+      end
     else
       render text: "update of event #{@event.id} failed", status: 500
     end
@@ -73,18 +96,20 @@ class Api::EventsController < Api::ApiController
     end
 
     # create content record to associate with the new event record
-    content_record = Content.new
-    content_record.title = params[:event].delete(:title)
-    content_record.raw_content = params[:event].delete(:event_description)
-    content_record.authors = params[:event].delete(:authors)
-    content_record.authoremail = params[:event].delete(:authoremail)
-    content_record.images = [event_image] if event_image.present?
-    content_record.content_category = cat
-    content_record.source = pub
-    content_record.pubdate = content_record.timestamp = Time.zone.now
+    content_record = {}
+    content_record['title'] = params[:event].delete(:title)
+    content_record['raw_content'] = params[:event].delete(:event_description)
+    content_record['authors'] = params[:event].delete(:authors)
+    content_record['authoremail'] = params[:event].delete(:authoremail)
+    content_record['images'] = [event_image] if event_image.present?
+    content_record['content_category_id'] = cat.id
+    content_record['source_id'] = pub.id
+    content_record['pubdate'] = content_record['timestamp'] = Time.zone.now
 
-    @event = Event.new(content: content_record, venue_id: venue_id, featured: 0)
-    @event.event_instances.new params[:event][:event_instances]
+
+    @event = Event.new(content_attributes: content_record, venue_id: venue_id, featured: 0)
+    #@event.content_attributes = content_record
+    @event.event_instances.new params[:event][:event_instances_attributes]
 
     if @event.save
 

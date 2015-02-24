@@ -1,10 +1,8 @@
-= @event.event_title || @event.title
+=# @event.event_title || @event.title
+= @event.title
 
-= @event.start_date.strftime("%b %-d, %Y")
-- time_range = @event.start_date.strftime("%-l:%M %P")
-- if @event.end_date.present?
-  - time_range += " - " + @event.end_date.strftime("%-l:%M %P")
-= time_range
+- @event.event_instances.each do |instance|
+  = event_instance_display(instance)
 
 - if @event.business_location.present?
   = @event.business_location.name if @event.business_location.name.present?
@@ -14,10 +12,7 @@
 
 = @event.event_url if @event.event_url.present?
 
-- if @base_uri.present?
-  View More: #{@base_uri}/events/#{@event.id}
-
-= strip_tags(@event.event_description || @event.raw_content)
+= strip_tags(@event.raw_content)
 
 - if @event.cost.present?
   Cost: #{@event.cost}
@@ -28,3 +23,11 @@
 - if @event.links.present?
   - @event.links.each do |k,v| 
     #{k}: #{v}
+
+- if @base_uri.present?
+  - url = "#{@base_uri}/events/#{@event.event_instances.first.id}"
+- else
+  - url = "http://www.dailyuv.com/events"
+
+= 'View map and discover more on '
+= link_to 'dailyUV.com', url

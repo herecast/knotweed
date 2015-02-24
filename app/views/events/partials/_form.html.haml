@@ -108,9 +108,10 @@
         %hr
         %h3 Event Instances
         = f.hint "At least one instance is required."
-        = link_to_add_fields "Add Event Instance", f, :event_instances
         = f.simple_fields_for :event_instances do |g|
           = render 'event_instance_fields', f: g
+        = link_to_add_fields "Add Event Instance", f, :event_instances
+
         %hr
         %h3 Links
         .row-fluid

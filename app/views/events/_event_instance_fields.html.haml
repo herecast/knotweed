@@ -1,15 +1,21 @@
 .row-fluid
   %fieldset
-    = f.input :start_date, wrapper_html: { class: "span2" },
-      input_html: { class: "span12" }, as: :datetime_picker
-    = f.input :end_date, wrapper_html: { class: "span2" }, 
-      input_html: { class: "span12" }, as: :time_picker, label: "End Time (opt)"
-    = f.input :subtitle_override, wrapper_html: { class: "span6" }, label: "Subtitle (opt)",
-      input_html: { class: "span12" }
+    - start_date = f.object.start_date
+    - end_date = f.object.end_date
+    = f.input :start_day, wrapper_html: { class: 'span2' },
+      input_html: { value: start_date.try(:strftime, '%m/%d/%Y'), class: 'span9' }, as: :date_picker
+    = f.input :start_time, label: 'Start Time', wrapper_html: { class: 'span2' },
+      input_html: { value: start_date.try(:strftime, '%l:%M %P'), class: 'span8' }
+    = f.input :end_time, label: 'End Time', wrapper_html: { class: 'span2' },
+      input_html: { value: end_date.try(:strftime, '%l:%M %P'), class: 'span8' }
+    = f.input :subtitle_override, wrapper_html: { class: 'span4' }, label: "Subtitle (opt)",
+      input_html: { class: 'span12' }
+    = f.hidden_field :id
     = f.hidden_field :_destroy
     %span.btn.btn-danger.pull-right.remove_fields remove
 :javascript
   jQuery(function() {
   $(".datetimepicker").datetimepicker();
+  $(".datepicker").datetimepicker({pickTime: false});
   $(".timepicker").datetimepicker({ pickDate: false });
   });

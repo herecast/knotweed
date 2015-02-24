@@ -50,7 +50,6 @@ class Event < ActiveRecord::Base
 
   attr_accessible :content_id, :cost, :event_type, :event_url, :featured,
     :links, :sponsor, :sponsor_url, :venue
-#    :links, :sponsor, :sponsor_url, :venue, :description, :title
 
   serialize :links, Hash
 
