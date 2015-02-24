@@ -1,5 +1,16 @@
 module EventsHelper
 
+  def event_instance_display(event_instance)
+    time_range = event_instance.start_date.strftime("%-l:%M %P")
+    if event_instance.end_date.present?
+      time_range += " - " + event_instance.end_date.strftime("%-l:%M %P")
+    end
+    subtitle = ' - ' + event_instance.subtitle if event_instance.subtitle.present? || ''
+
+    instance_string = event_instance.start_date.strftime("%b %-d, %Y") + time_range + subtitle
+    instance_string
+  end
+
   # convert start_date (and optional end_date) to a human readable time range
   #
   # @param [Event]

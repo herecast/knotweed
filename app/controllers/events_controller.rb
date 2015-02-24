@@ -72,6 +72,15 @@ class EventsController < ApplicationController
     if params[:event].present?
       params[:event][:links] = nil unless params[:event].has_key? :links
     end
+
+    # clean up the event instance data
+    instances = []
+    params[:event][:event_instances_attributes].each do |instance|
+      process_instance_date_params(instance[1])
+      instances << instance[1]
+    end
+    params[:event][:event_instances_attributes] = instances
+
     @event = Event.find(params[:id])
     authorize! :update, @event
     if @event.update_attributes(params[:event])
@@ -151,6 +160,25 @@ class EventsController < ApplicationController
       contents_path
     else
       events_path
+    end
+  end
+
+  def process_instance_date_params(event_instance)
+    if event_instance.has_key? :start_day and event_instance.has_key? :start_time
+      Chronic.time_class = Time.zone
+      event_instance[:start_date] = (Chronic.parse(event_instance[:start_day] + " " + event_instance[:start_time])).to_s
+      # if end time is specified, but no end day, use start day
+      # if (event_instance[:end_time].present? or event_instance[:end_time].blank?)
+      if (event_instance[:end_time].present?)
+        event_instance[:end_day] = event_instance[:start_day]
+        event_instance[:end_date] = (Chronic.parse(event_instance[:end_day] + " " + event_instance[:end_time])).to_s
+      end
+
+      # clean up unneeded stuff
+      event_instance.delete(:start_day)
+      event_instance.delete(:start_time)
+      event_instance.delete(:end_day)
+      event_instance.delete(:end_time)
     end
   end
 
