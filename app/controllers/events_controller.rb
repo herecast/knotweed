@@ -50,11 +50,11 @@ class EventsController < ApplicationController
           new_path = @event.content.images.first.image.path.to_s
           connection.copy_object(Figaro.env.aws_bucket_name, old_path, Figaro.env.aws_bucket_name, new_path)
         end
-
-        if current_user.default_repository.present?
-           publish_success = @event.content.publish(Content::POST_TO_NEW_ONTOTEXT, current_user.default_repository)
-        end
       end
+      if current_user.default_repository.present?
+         publish_success = @event.content.publish(Content::POST_TO_NEW_ONTOTEXT, current_user.default_repository)
+      end
+
       flash[:notice] = "Created event with id #{@event.id}"
       if publish_success == true
         flash[:notice] = flash[:notice] + " and published successfully"

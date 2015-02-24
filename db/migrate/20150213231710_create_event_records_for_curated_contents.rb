@@ -25,6 +25,13 @@ class CreateEventRecordsForCuratedContents < ActiveRecord::Migration
       if new_content.event_title.present?
         new_content.title = new_content.event_title
       end
+      #set certain fields to null
+      new_content.authors = nil
+      new_content.authoremail = nil
+      new_content.copyright = nil
+      new_content.authoremail = nil
+      #set source_id to 423 (Subtext Events) - [hard coding id, not the best - i know]
+      new_content.source_id = 423
       # we want this new record to be flagged as 'channelized'
       new_content.channelized = true
       new_content.save

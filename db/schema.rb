@@ -231,6 +231,7 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
     t.string   "topics"
     t.text     "summary"
     t.string   "url"
+    t.string   "origin"
     t.string   "language"
     t.string   "authoremail"
     t.integer  "source_id"

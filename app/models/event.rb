@@ -48,8 +48,8 @@ class Event < ActiveRecord::Base
   # to first save and create the content, then save the event.
   # validates_presence_of :content_id
 
-  attr_accessible :content_id, :cost, :start_date, :end_date, :event_type, :event_url, :featured, 
-    :links, :sponsor, :sponsor_url, :venue, :content, :description
+  attr_accessible :content_id, :cost, :event_type, :event_url, :featured, 
+    :links, :sponsor, :sponsor_url, :venue
 
   serialize :links, Hash
 
