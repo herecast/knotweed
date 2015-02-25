@@ -25,6 +25,15 @@ class EventsController < ApplicationController
   end
 
   def create
+
+    # clean up the event instance data
+    instances = []
+    params[:event][:event_instances_attributes].each do |instance|
+      process_instance_date_params(instance[1])
+      instances << instance[1]
+    end
+    params[:event][:event_instances_attributes] = instances
+
     @event = Event.new(params[:event])
     authorize! :create, @event
     if @event.save!
