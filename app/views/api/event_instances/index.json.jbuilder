@@ -15,7 +15,7 @@ json.events @event_instances do |e|
     instance_attrs = [:id, :start_date, :subtitle, :description]
 
     if e.event.images.present?
-      json.image e.images.first.image.url
+      json.image e.event.images.first.image.url
     end
   end
 

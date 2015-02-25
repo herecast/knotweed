@@ -2,13 +2,13 @@ class Api::EventInstancesController < Api::ApiController
 
   def featured_events
     # pull all events that are featured and upcoming ordered by start_date (of the event instances)
-    @event_instances = EventInstance.where("start_date >= ?", DateTime.now).joins(:event).where("events.featured = true")
+    @event_instances = EventInstance.where("event_instances.start_date >= ?", DateTime.now).joins(:event).where("events.featured = true")
 
     # filter by repository
     if params[:repository].present?
       @event_instances = @event_instances.joins(event: :repositories).where(repositories: {dsp_endpoint: params[:repository]}) 
     end
-    @event_instances = @event_instances.order("start_date ASC").limit(5)
+    @event_instances = @event_instances.order("event_instances.start_date ASC").limit(5)
     render "index"
   end
 
@@ -33,18 +33,18 @@ class Api::EventInstancesController < Api::ApiController
     end
 
     sort_order ||= "ASC"
-    @event_instances = @event_instances.order("start_date #{sort_order}")
+    @event_instances = @event_instances.order("event_instances.start_date #{sort_order}")
 
     if params[:start_date].present?
       start_date = Chronic.parse(params[:start_date]).beginning_of_day
-      @event_instances = @event_instances.where('start_date >= ?', start_date)
+      @event_instances = @event_instances.where('event_instances.start_date >= ?', start_date)
     end
     if params[:end_date].present?
       end_date = Chronic.parse(params[:end_date]).end_of_day
       if end_date == start_date
         end_date = start_date.end_of_day
       end
-      @event_instances = @event_instances.where('start_date <= ?', end_date)
+      @event_instances = @event_instances.where('event_instances.start_date <= ?', end_date)
     end
 
     # don't return featured events unless they're requested
