@@ -5,12 +5,12 @@
     = event_instance_display(instance)
     %br
 
-- if @event.business_location.present?
+- if @venue.present?
   %p
-    = @event.business_location.name if @event.business_location.name.present?
-    = @event.business_location.address if @event.business_location.address.present?
-    = @event.business_location.phone if @event.business_location.phone.present?
-    = @event.business_location.email if @event.business_location.email.present?
+    = @venue.name if @venue.name.present?
+    = @venue.address if @venue.address.present?
+    = @venue.phone if @venue.phone.present?
+    = @venue.email if @event.business_location.email.present?
 
 %p= @event.event_url if @event.event_url.present?
 
