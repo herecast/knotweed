@@ -78,7 +78,9 @@
         %td
           - if e.content.source.present?
             = link_to e.source.name, events_path(q: { event_content_source_id_in: e.source.id })
-        %td= link_to e.authors, events_path(q: { event_authors_cont: e.authors })
+        %td
+          - if e.authors.present?
+            = link_to e.authors, events_path(q: { event_content_authors_cont: e.authors })
         %td
           - if e.pubdate.present?
             = e.pubdate.try(:strftime, "%Y-%m-%d")
