@@ -33,5 +33,6 @@ FactoryGirl.define do
     pubdate Time.now
     source_category "Category"
     content_category
+    channelized false
   end
 end
