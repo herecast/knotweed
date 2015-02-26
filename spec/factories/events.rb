@@ -22,7 +22,7 @@
 
 FactoryGirl.define do
   factory :event do
-    ignore do
+    transient do
       start_date 1.week.from_now
       subtitle_override nil
       description_override nil
