@@ -53,7 +53,9 @@
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
-%table.table.table-striped.data-table.table-hover.table-condensed#events_index
+
+%table.table.table-striped.table-hover.table-condensed#events_index
+
   %thead
     %tr
       %th Content ID
@@ -76,9 +78,15 @@
         %td
           - if e.content.source.present?
             = link_to e.source.name, events_path(q: { event_content_source_id_in: e.source.id })
-        %td= link_to e.authors, events_path(q: { event_authors_cont: e.authors })
-        %td= e.pubdate.try(:strftime, "%Y-%m-%d")
-        %td= ei.start_date.strftime("%Y-%m-%d")
+        %td
+          - if e.authors.present?
+            = link_to e.authors, events_path(q: { event_content_authors_cont: e.authors })
+        %td
+          - if e.pubdate.present?
+            = e.pubdate.try(:strftime, "%Y-%m-%d")
+        %td
+          - if ei.start_date.present?
+            = ei.start_date.strftime("%Y-%m-%d")
         %td
           - if e.featured
             %i.icon-check

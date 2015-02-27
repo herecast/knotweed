@@ -19,7 +19,6 @@ VCR.configure do |c|
 end
 
 RSpec.configure do |config|
-  config.include Devise::TestHelpers, :type => :controller
   config.include(EmailSpec::Helpers)
   config.include(EmailSpec::Matchers)
   # ## Mock Framework
