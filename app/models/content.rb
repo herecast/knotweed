@@ -19,6 +19,14 @@
 #  topics              :string(255)
 #  summary             :text
 #  url                 :string(255)
+#  origin              :string(255)
+#  mimetype            :string(255)
+#  language            :string(255)
+#  page                :string(255)
+#  wordcount           :string(255)
+#  authoremail         :string(255)
+#  source_id           :integer
+
 
 require 'fileutils'
 require 'builder'
@@ -64,15 +72,14 @@ class Content < ActiveRecord::Base
     :sponsor_url, :event_url, :recurrence, :links
   serialize :links, Hash
 
-  attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
-                  :guid, :pubdate, :source_category, :topics, :summary, :url, 
-                  :language, :authoremail, :source_id, 
-                  :quarantine, :timestamp, :contentsource, :source_content_id,
-                  :image_ids, :parent_id, :source_uri, :category,
-                  :content_category_id, :category_reviewed, :raw_content, :processed_content,
-                  :sanitized_content, :channelized_content_id,
-                  :has_event_calendar, :channelized
-
+attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
+                :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
+                :language, :authoremail, :source_id,
+                :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
+                :image_ids, :parent_id, :source_uri, :category,
+                :content_category_id, :category_reviewed, :raw_content, :processed_content,
+                :sanitized_content, :channelized_content_id,
+                :has_event_calendar, :channelized
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -315,7 +322,7 @@ class Content < ActiveRecord::Base
   # check that doc validates our xml requirements
   # if not, mark it as quarantined
   def mark_quarantined
-    if title.present? and source.present? and pubdate.present? and strip_tags(sanitized_content).present?.present?
+    if title.present? and source.present? and pubdate.present? and strip_tags(sanitized_content).present?
       self.quarantine = false
     else
       self.quarantine = true
