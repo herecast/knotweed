@@ -82,11 +82,9 @@
           - if e.authors.present?
             = link_to e.authors, events_path(q: { event_content_authors_cont: e.authors })
         %td
-          - if e.pubdate.present?
-            = e.pubdate.try(:strftime, "%Y-%m-%d")
+          = e.pubdate.try(:strftime, "%Y-%m-%d")
         %td
-          - if ei.start_date.present?
-            = ei.start_date.strftime("%Y-%m-%d")
+          = ei.start_date.try(:strftime, "%Y-%m-%d")
         %td
           - if e.featured
             %i.icon-check

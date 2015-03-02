@@ -13,13 +13,7 @@ class ContentsController < ApplicationController
       session[:contents_search] = params[:q]
     end
 
-    if session[:contents_search].present?
-      session[:contents_search][:channelized_false] = true
-    else
-      cf = Hash.new
-      cf[:channelized_false] = true
-      session[:contents_search] = cf
-    end
+    session[:contents_search][:channelized_false] = true if session[:contents_search].present?
     
     @search = Content.ransack(session[:contents_search])
 
