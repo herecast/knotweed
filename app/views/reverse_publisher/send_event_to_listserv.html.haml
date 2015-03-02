@@ -10,7 +10,7 @@
     = @venue.name if @venue.name.present?
     = @venue.address if @venue.address.present?
     = @venue.phone if @venue.phone.present?
-    = @venue.email if @event.business_location.email.present?
+    = @venue.email if @venue.email.present?
 
 %p= @event.event_url if @event.event_url.present?
 
@@ -33,7 +33,7 @@
 
 %p
   - if @base_uri.present?
-    - url = "#{@base_uri}/events/#{@event.event_instances.first.id}"
+    - url = "#{@base_uri}/events/#{@event.content_id}/#{@event.event_instances.first.id}"
   - else
     - url = "http://www.dailyuv.com/events"
 
