@@ -12,7 +12,7 @@ module EventsHelper
       subtitle = ' - ' + event_instance.subtitle
     end
 
-    instance_string = event_instance.start_date.strftime("%b %-d, %Y") + time_range + subtitle
+    instance_string = event_instance.start_date.strftime("%b %-d, %Y") + '  ' + time_range + subtitle
     instance_string
   end
 
