@@ -3,7 +3,7 @@
     - start_date = f.object.start_date
     - end_date = f.object.end_date
     = f.input :start_day, wrapper_html: { class: 'span2' },
-      input_html: { value: start_date.try(:strftime, '%m/%d/%Y'), class: 'span9' }, as: :date_picker
+      input_html: { value: start_date.try(:strftime, '%m/%d/%Y'), class: 'span9' }, as: :date_picker, required: true
     = f.input :start_time, label: 'Start Time', wrapper_html: { class: 'span2' },
       input_html: { value: start_date.try(:strftime, '%l:%M %P'), class: 'span8' }
     = f.input :end_time, label: 'End Time', wrapper_html: { class: 'span2' },
