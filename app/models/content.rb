@@ -79,7 +79,7 @@ attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :co
                 :image_ids, :parent_id, :source_uri, :category,
                 :content_category_id, :category_reviewed, :raw_content, :processed_content,
                 :sanitized_content, :channelized_content_id,
-                :has_event_calendar, :channelized
+                :has_event_calendar, :channelized, :remove_boilerplate
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -993,6 +993,42 @@ attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :co
   end
 
   def sanitized_content= new_content
+    self.raw_content = new_content
+  end
+
+  # removes boilerplate
+  def remove_boilerplate
+    return raw_content if raw_content.nil?
+
+    c = raw_content
+
+    BLACKLIST_BLOCKS.each do |b|
+      if /^\/(.*)\/([a-z]*)$/ =~ b.strip
+        match = $~
+        opts = 0
+        match[2].each_char do |flag|
+          case flag
+            when "i"
+              opts |= Regexp::IGNORECASE
+            when "m"
+              opts |= Regexp::MULTILINE
+            when "x"
+              opts |= Regexp::EXTENDED
+          end
+        end
+        b = Regexp.new match[1], opts
+      else
+        b = b.strip
+      end
+      c.gsub!(b, "")
+    end
+
+    c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "<br />")
+    c.gsub(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
+
+  end
+
+  def remove_boilerplate= new_content
     self.raw_content = new_content
   end
 

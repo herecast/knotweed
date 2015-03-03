@@ -141,6 +141,7 @@ class EventsController < ApplicationController
       # (if the original content had an image),
       # then in create we duplicate the original image and assign it to the new content.
       @placeholder_image = unchannelized_content.images.first
+      @event.content.title = remove_list_from_title(unchannelized_content.title)
     else
       @event.content = Content.new
     end
@@ -200,5 +201,14 @@ class EventsController < ApplicationController
       event_instance.delete(:end_time)
     end
   end
+
+  def remove_list_from_title(title)
+    if title.present?
+      title.gsub(/\[.*\]/, '')
+    else
+      nil
+    end
+  end
+
 
 end
