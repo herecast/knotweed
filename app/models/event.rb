@@ -39,8 +39,7 @@ class Event < ActiveRecord::Base
   has_many :event_instances
 #  validates_presence_of :event_instances # at least one must exist
 
-  accepts_nested_attributes_for :event_instances, allow_destroy: true,
-    reject_if: proc { |attr| !attr['start_date'].present? }
+  accepts_nested_attributes_for :event_instances, allow_destroy: true
   attr_accessible :event_instances_attributes
 
   # we can either remove this validation (the path I chose) OR

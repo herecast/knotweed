@@ -7,6 +7,8 @@ class EventInstance < ActiveRecord::Base
   # that needs to be combined with the date from start_date into a full date.
   before_save :process_end_time
 
+  validates_presence_of :start_date
+
   # takes the end_date and automatically sets it to the same date as start_date,
   # but with its own time
   def process_end_time
