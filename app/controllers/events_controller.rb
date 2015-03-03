@@ -36,6 +36,7 @@ class EventsController < ApplicationController
 
     @event = Event.new(params[:event])
     authorize! :create, @event
+    begin
     if @event.save!
       # if this was curated from an existing content record, we need to update
       # that content record to reflect that
@@ -72,6 +73,10 @@ class EventsController < ApplicationController
       end
       redirect_to form_submit_redirect_path(@event.id)
     else
+      render "new"
+    end
+    rescue
+      flash[:notice] = "Creating the event failed - There must be one valid event instance with a start date"
       render "new"
     end
   end
