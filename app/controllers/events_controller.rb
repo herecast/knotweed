@@ -92,8 +92,18 @@ class EventsController < ApplicationController
 
     @event = Event.find(params[:id])
     authorize! :update, @event
+
     if @event.update_attributes(params[:event])
+      # re-publish updated content
+      if current_user.default_repository.present?
+         publish_success = @event.content.publish(Content::POST_TO_NEW_ONTOTEXT, current_user.default_repository)
+      end
       flash[:notice] = "Successfully updated event #{@event.id}"
+      if publish_success == true
+        flash[:notice] = flash[:notice] + " and re-published"
+      elsif publish_success == false
+        flash[:warning] = "Publish failed"
+      end
       redirect_to form_submit_redirect_path(@event.id)
     else
       render "edit"

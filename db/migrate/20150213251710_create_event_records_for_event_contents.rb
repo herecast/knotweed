@@ -1,7 +1,7 @@
 class CreateEventRecordsForEventContents < ActiveRecord::Migration
   def up
     # get all calendar records that were originally listserv posts
-    Content.where("start_date IS NOT NULL AND channelized <> 1 AND source_id NOT IN (305,313,314,317,306,307,308,309,310,311,312,315,316,318,319,320,321,322,323,437,424,444)").find_each do |c|
+    Content.where("start_date IS NOT NULL AND channelized <> 1  AND channelized_content_id IS NULL AND source_id NOT IN (305,313,314,317,306,307,308,309,310,311,312,315,316,318,319,320,321,322,323,437,424,444)").find_each do |c|
       # skip if content already has an event record in existence
       # shouldn't happen in production, but just in case on dev instances
       # want to be sure we aren't creating multiple content/event pairs 
