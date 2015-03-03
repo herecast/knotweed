@@ -12,5 +12,5 @@ json.events [@event_instance] do |ei|
   end
 
   attrs.each{|attr| json.set! attr, ei.event.send(attr) }
-  json.instances @event_instance.event.event_instances
+  json.event_instances @event_instance.event.event_instances
 end
