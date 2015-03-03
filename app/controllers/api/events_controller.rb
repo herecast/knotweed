@@ -1,9 +1,8 @@
 class Api::EventsController < Api::ApiController
 
   def update
-    # this function is called with an event_instance id, but needs the parent event for processing.
-    ev_id = Event.joins(:event_instances).where(event_instances: {id: params[:id]}).select('events.id')
-    @event = Event.find(ev_id)
+
+    @event = Event.find(params[:id])
 
     # legacy handling of event_description and event_title fields
     params[:event][:title] = params[:event].delete :event_title if params[:event][:event_title].present?
@@ -20,8 +19,9 @@ class Api::EventsController < Api::ApiController
       image_temp_file.puts hImage[:image_content]
       file_to_upload = ActionDispatch::Http::UploadedFile.new(tempfile: image_temp_file,
                                                               filename: hImage[:image_name], type: hImage[:image_type])
-      @image = Image.new
-      @image.image = file_to_upload
+      @content = @event.content
+      @content.images = [@image]
+      @content.save
     end
 
     # need to pass attributes for the content record through content_attributes
