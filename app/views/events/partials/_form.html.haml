@@ -67,7 +67,7 @@
         .row-fluid
           .span6
             = f.simple_fields_for :content do |g|
-              = g.input :raw_content, input_html: { class: "ckeditor input-block-level" }, label: "Event Description", as: :text
+              = g.input :remove_boilerplate, input_html: { class: "ckeditor input-block-level" }, label: "Event Description", as: :text
           -# event specific fields
           .span6 
             = f.simple_fields_for :content do |g|
