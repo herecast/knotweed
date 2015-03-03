@@ -106,10 +106,9 @@ class Api::EventsController < Api::ApiController
     content_record['source_id'] = pub.id
     content_record['pubdate'] = content_record['timestamp'] = Time.zone.now
 
-
-    @event = Event.new(content_attributes: content_record, venue_id: venue_id, featured: 0)
-    #@event.content_attributes = content_record
-    @event.event_instances.new params[:event][:event_instances_attributes]
+    # create the new event and the associated content record
+    @event = Event.new(params[:event], featured: 0)
+    @event.content_attributes = content_record
 
     if @event.save
 
