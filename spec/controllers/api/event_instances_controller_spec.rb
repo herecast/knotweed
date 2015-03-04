@@ -56,8 +56,8 @@ describe Api::EventInstancesController do
       event = resp["events"][0] # save some characters below
       event["id"].should eq(@instance.id) # ID passed to consumer app is that of the instance accessed
       event["content_id"].should eq(@event.content.id)
-      event["instances"].count.should eq(1)
-      Chronic.parse(event["instances"][0]["start_date"]).should eq(Chronic.parse(@instance.start_date.to_s))
+      event["event_instances"].count.should eq(1)
+      Chronic.parse(event["event_instances"][0]["start_date"]).should eq(Chronic.parse(@instance.start_date.to_s))
     end
 
     describe "with more than one instance" do
@@ -68,7 +68,7 @@ describe Api::EventInstancesController do
       it "should respond with multiple instances in array" do
         subject
         event = JSON.parse(response.body)["events"][0]
-        event["instances"].count.should eq(2)
+        event["event_instances"].count.should eq(2)
       end
     end
   end
