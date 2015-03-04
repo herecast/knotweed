@@ -1,9 +1,12 @@
 json.events [@event] do |e|
-  attrs = [:id, :title, :start_date, :end_date, :event_type, :host_organization, :cost, :recurrence,
+  attrs = [:id, :title, :start_date, :end_date, :sponsor, :cost,
            :featured, :links, :pubdate, :authors, :category, :parent_category, :source_name, :source_id, :location, 
-           :parent_uri, :business_location, :category_reviewed, :has_active_promotion, :authoremail, :event_title,
-           :event_description, :event_url, :sponsor_url, :subtitle]
+           :parent_uri, :venue, :category_reviewed, :has_active_promotion, :authoremail,
+           :event_url, :sponsor_url, :subtitle]
   json.content e.sanitized_content
+
+  # include the attached content record's id so that it can be used to retrieve related content
+  json.content_id e.content_id
 
   if e.images.present?
     json.image e.images.first.image.url

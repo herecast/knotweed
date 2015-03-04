@@ -66,7 +66,7 @@ class Publication < ActiveRecord::Base
 
   FREQUENCY_OPTIONS = ["Posts", "Daily", "Semiweekly", "Weekly", "Biweekly", "Semimonthly", "Monthly", "Bimonthly", "Quarterly", "Seasonally", "Semiannually", "Annually", "Biennially", "Ad Hoc"]
 
-  validates :publishing_frequency, inclusion: { in: FREQUENCY_OPTIONS  }, allow_blank: true
+  validates :publishing_frequency, inclusion: { in: FREQUENCY_OPTIONS  }, allow_blank: true, allow_nil: true
 
   scope :alphabetical, order("name ASC")
   default_scope alphabetical
@@ -74,7 +74,8 @@ class Publication < ActiveRecord::Base
   PUB_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher"]
   validates :pub_type, inclusion: { in: PUB_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
 
-  validates_uniqueness_of :name, :reverse_publish_email
+  validates_uniqueness_of :name
+  validates_uniqueness_of :reverse_publish_email, allow_nil: true
   validates_presence_of :name
 
   def publishing_frequency_enum

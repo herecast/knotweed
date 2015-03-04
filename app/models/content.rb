@@ -3,55 +3,30 @@
 #
 # Table name: contents
 #
-#  id                   :integer          not null, primary key
-#  title                :string(255)
-#  subtitle             :string(255)
-#  authors              :string(255)
-#  raw_content          :text
-#  issue_id             :integer
-#  import_location_id   :integer
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  copyright            :string(255)
-#  guid                 :string(255)
-#  pubdate              :datetime
-#  source_category      :string(255)
-#  topics               :string(255)
-#  summary              :text
-#  url                  :string(255)
-#  origin               :string(255)
-#  mimetype             :string(255)
-#  language             :string(255)
-#  page                 :string(255)
-#  wordcount            :string(255)
-#  authoremail          :string(255)
-#  source_id            :integer
-#  file                 :string(255)
-#  quarantine           :boolean          default(FALSE)
-#  doctype              :string(255)
-#  timestamp            :datetime
-#  contentsource        :string(255)
-#  import_record_id     :integer
-#  source_content_id    :string(255)
-#  parent_id            :integer
-#  event_type           :string(255)
-#  start_date           :datetime
-#  end_date             :datetime
-#  cost                 :string(255)
-#  recurrence           :string(255)
-#  links                :text
-#  host_organization    :string(255)
-#  business_location_id :integer
-#  featured             :boolean          default(FALSE)
-#  content_category_id  :integer
-#  category_reviewed    :boolean          default(FALSE)
-#  processed_content    :text
-#  event_title          :string(255)
-#  event_description    :text
-#  event_url            :string(255)
-#  sponsor_url          :string(255)
-#  has_event_calendar   :boolean          default(FALSE)
-#
+#  id                  :integer          not null, primary key
+#  title               :string(255)
+#  subtitle            :string(255)
+#  authors             :string(255)
+#  raw_content         :text
+#  issue_id            :integer
+#  import_location_id  :integer
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  copyright           :string(255)
+#  guid                :string(255)
+#  pubdate             :datetime
+#  source_category     :string(255)
+#  topics              :string(255)
+#  summary             :text
+#  url                 :string(255)
+#  origin              :string(255)
+#  mimetype            :string(255)
+#  language            :string(255)
+#  page                :string(255)
+#  wordcount           :string(255)
+#  authoremail         :string(255)
+#  source_id           :integer
+
 
 require 'fileutils'
 require 'builder'
@@ -61,11 +36,6 @@ class Content < ActiveRecord::Base
   belongs_to :issue
   belongs_to :import_location
   belongs_to :import_record
-
-  belongs_to :business_location # for event type contents
-  accepts_nested_attributes_for :business_location,
-    reject_if: proc { |attributes| attributes['name'].blank? and attributes['address'].blank? }
-  attr_accessible :business_location_attributes, :business_location_id
 
   has_many :annotation_reports
   has_many :category_corrections
@@ -85,22 +55,35 @@ class Content < ActiveRecord::Base
 
   belongs_to :content_category
 
-  attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
-                  :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
-                  :language, :page, :wordcount, :authoremail, :source_id, :file,
-                  :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
-                  :image_ids, :parent_id, :source_uri, :category,
-                  :event_type, :start_date, :end_date, :cost, :recurrence, :host_organization,
-                  :links, :featured, :content_category_id, :category_reviewed, :raw_content, :processed_content,
-                  :sanitized_content, :event_title, :event_description, :sponsor_url, :event_url,
-                  :has_event_calendar
+  # channel associations
+  has_one :event
+  # mapping to content record that represents the channelized content
+  belongs_to :channelized_content, class_name: "Content"
+  has_one :unchannelized_original, class_name: "Content", foreign_key: "channelized_content_id"
 
+  # NOTE: the code immediately below this comment IS DEPRECATED
+  # however, it cannot be removed until after the data migration
+  # moving contents to events has happened. Because of the way migrations
+  # are typically run, this code needs to stay until after the migration
+  # is deployed to production (unless we come up with a SQL-based workaround for
+  # that migration.
+  belongs_to :business_location
+  attr_accessible :cost, :start_date, :end_date, :featured, :host_organization,
+    :sponsor_url, :event_url, :recurrence, :links
   serialize :links, Hash
+
+attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
+                :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
+                :language, :authoremail, :source_id,
+                :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
+                :image_ids, :parent_id, :source_uri, :category,
+                :content_category_id, :category_reviewed, :raw_content, :processed_content,
+                :sanitized_content, :channelized_content_id,
+                :has_event_calendar, :channelized, :remove_boilerplate
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
   before_save :set_guid
-  before_save :populate_raw_content_with_event_description_if_blank
 
   TMP_EXPORT_PATH = Rails.root + "/tmp/exports"
 
@@ -109,14 +92,6 @@ class Content < ActiveRecord::Base
 
   scope :externally_visible, -> { Content.joins(:source)
         .joins("inner join content_categories_publications ccp on publications.id = ccp.publication_id AND contents.content_category_id = ccp.content_category_id")}
-
-  def initialize args = {}
-    if not args.nil? and args[:category].present? 
-      cat = ContentCategory.find_or_create_by_name(args.delete :category) 
-      send("content_category=", cat)
-    end
-    super
-  end
 
   NEW_FORMAT = "New"
   EXPORT_FORMATS = [NEW_FORMAT]
@@ -150,14 +125,11 @@ class Content < ActiveRecord::Base
 
   BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt')) 
 
-   # display processed content if available
-  # otherwise, raw content
+  # holdover from when we used to use processed_content by preference.
+  # Seemed easier to keep this method, but just make it point directly to raw content 
+  # than to remove references to the method altogether
   def content
-    if processed_content.present?
-      processed_content
-    else
-      raw_content
-    end
+    raw_content
   end
 
   # if passed a repo, checks if this content was published in that repo
@@ -347,7 +319,7 @@ class Content < ActiveRecord::Base
   # check that doc validates our xml requirements
   # if not, mark it as quarantined
   def mark_quarantined
-    if title.present? and source.present? and pubdate.present? and (strip_tags(sanitized_content).present? or strip_tags(event_description).present?)
+    if title.present? and source.present? and pubdate.present? and strip_tags(sanitized_content).present?
       self.quarantine = false
     else
       self.quarantine = true
@@ -690,10 +662,13 @@ class Content < ActiveRecord::Base
       "source_uri" => source_uri,
       "categories" => publish_category
     })
+    # note: the second except here is temporary, because we can't remove the attr_accessors for these
+    # until after the migrations are done, so we need to exclude these nonexistent fields here
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
-               "import_record_id", "published", "links", "start_date", "end_date",
-               "links", "featured", "category_reviewed", "raw_content", "processed_content",
-               "has_event_calendar")
+               "import_record_id", "published",
+               "category_reviewed", "raw_content", "processed_content",
+               "has_event_calendar").except(:cost, :start_date, :end_date, :featured, :host_organization,
+               :sponsor_url, :event_url, :recurrence, :links)
   end
 
   # Export Gate Document directly before/after Pipeline processing
@@ -901,11 +876,7 @@ class Content < ActiveRecord::Base
 
   # returns the content for sending to the DSP for annotation
   def publish_content(include_tags=false)
-    if strip_tags(sanitized_content).present?
-      pub_content = sanitized_content
-    else
-      pub_content = event_description
-    end
+    pub_content = sanitized_content
     if include_tags
       pub_content
     else
@@ -1022,14 +993,40 @@ class Content < ActiveRecord::Base
     self.raw_content = new_content
   end
 
-  # when saving content, if raw_content is empty but event_description is populated,
-  # copy event_description into raw_content
-  def populate_raw_content_with_event_description_if_blank
-    unless raw_content.present?
-      if event_description.present?
-        self.raw_content = event_description
+  # removes boilerplate
+  def remove_boilerplate
+    return raw_content if raw_content.nil?
+
+    c = raw_content
+
+    BLACKLIST_BLOCKS.each do |b|
+      if /^\/(.*)\/([a-z]*)$/ =~ b.strip
+        match = $~
+        opts = 0
+        match[2].each_char do |flag|
+          case flag
+            when "i"
+              opts |= Regexp::IGNORECASE
+            when "m"
+              opts |= Regexp::MULTILINE
+            when "x"
+              opts |= Regexp::EXTENDED
+          end
+        end
+        b = Regexp.new match[1], opts
+      else
+        b = b.strip
       end
+      c.gsub!(b, "")
     end
+
+    c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "<br />")
+    c.gsub(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
+
+  end
+
+  def remove_boilerplate= new_content
+    self.raw_content = new_content
   end
 
   def is_event?
@@ -1040,22 +1037,10 @@ class Content < ActiveRecord::Base
     end
   end
 
-
-  # field sets for API responses
-  def self.truncated_event_fields
-    [:id, :title, :subtitle, :start_date, :event_type, :host_organization,
-             :event_title, :event_description, :business_location, :featured]
-  end
-
-  def self.start_date_only_fields
-    [:id, :start_date]
-  end
-
   def self.truncated_content_fields
-    [:id, :title, :start_date, :end_date, :event_type, :host_organization, :cost, :recurrence,
-             :featured, :links, :pubdate, :authors, :category, :parent_category, :source_name, :source_id, :location, 
-             :parent_uri, :business_location, :category_reviewed, :authoremail, :event_title,
-             :event_description, :event_url, :sponsor_url, :subtitle]
+    [:id, :title,:featured, :links, :pubdate, :authors, :category, 
+     :parent_category, :source_name, :source_id, :location, 
+     :parent_uri, :category_reviewed, :authoremail, :subtitle]
   end
 
   # Checks if a content is within its source's external_categories

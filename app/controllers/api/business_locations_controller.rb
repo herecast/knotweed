@@ -12,7 +12,7 @@ class Api::BusinessLocationsController < Api::ApiController
 			@businessLocations = BusinessLocation.all
 		end
 =end
-		@businessLocations = BusinessLocation.all
+		@businessLocations = BusinessLocation.select('id, name, address').order('name')
 		render json: @businessLocations
 	end
 

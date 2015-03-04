@@ -22,12 +22,13 @@ class ReversePublisher < ActionMailer::Base
     # that already exist in our system as "curated" when they come back through
     headers['X-Original-Content-Id'] = event.id
     @event = event
+    @venue = BusinessLocation.find(@event.venue_id)
     if consumer_app.present?
       @base_uri = consumer_app.uri
     end
     mail(from: '"'+event.authors+'" <'+event.authoremail+'>',
          to: publication.reverse_publish_email,
-         subject: (event.event_title || event.title))
+         subject: event.title)
   end
 
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150204011612) do
+ActiveRecord::Schema.define(:version => 20150223002227) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -84,6 +84,8 @@ ActiveRecord::Schema.define(:version => 20150204011612) do
     t.string   "venue_url"
     t.boolean  "locate_include_name", :default => false
   end
+
+  add_index "business_locations", ["name"], :name => "index_business_locations_on_name"
 
   create_table "categories", :force => true do |t|
     t.string   "name"
@@ -220,8 +222,8 @@ ActiveRecord::Schema.define(:version => 20150204011612) do
     t.text     "raw_content"
     t.integer  "issue_id"
     t.integer  "import_location_id"
-    t.datetime "created_at",                              :null => false
-    t.datetime "updated_at",                              :null => false
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
     t.string   "copyright"
     t.string   "guid"
     t.datetime "pubdate"
@@ -230,15 +232,10 @@ ActiveRecord::Schema.define(:version => 20150204011612) do
     t.text     "summary"
     t.string   "url"
     t.string   "origin"
-    t.string   "mimetype"
     t.string   "language"
-    t.string   "page"
-    t.string   "wordcount"
     t.string   "authoremail"
     t.integer  "source_id"
-    t.string   "file"
-    t.boolean  "quarantine",           :default => false
-    t.string   "doctype"
+    t.boolean  "quarantine",             :default => false
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
@@ -252,18 +249,22 @@ ActiveRecord::Schema.define(:version => 20150204011612) do
     t.text     "links"
     t.string   "host_organization"
     t.integer  "business_location_id"
-    t.boolean  "featured",             :default => false
+    t.boolean  "featured",               :default => false
     t.integer  "content_category_id"
-    t.boolean  "category_reviewed",    :default => false
+    t.boolean  "category_reviewed",      :default => false
     t.text     "processed_content"
     t.string   "event_title"
     t.text     "event_description"
     t.string   "event_url"
     t.string   "sponsor_url"
-    t.boolean  "has_event_calendar",   :default => false
+    t.boolean  "has_event_calendar",     :default => false
+    t.integer  "channelized_content_id"
+    t.boolean  "channelized",            :default => false
   end
 
   add_index "contents", ["authors"], :name => "authors"
+  add_index "contents", ["channelized"], :name => "index_contents_on_channelized"
+  add_index "contents", ["channelized_content_id"], :name => "index_contents_on_channelized_content_id"
   add_index "contents", ["content_category_id"], :name => "content_category_id"
   add_index "contents", ["end_date"], :name => "index_contents_on_end_date"
   add_index "contents", ["featured"], :name => "featured"
@@ -315,6 +316,10 @@ ActiveRecord::Schema.define(:version => 20150204011612) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
+
+  create_table "contents_id", :force => true do |t|
+    t.string "category", :limit => 128
+  end
 
   create_table "contents_publish_records", :id => false, :force => true do |t|
     t.integer "content_id"
@@ -378,6 +383,38 @@ ActiveRecord::Schema.define(:version => 20150204011612) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
+
+  create_table "event_instances", :force => true do |t|
+    t.integer  "event_id"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.string   "subtitle_override"
+    t.text     "description_override"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+  end
+
+  add_index "event_instances", ["end_date"], :name => "index_event_instances_on_end_date"
+  add_index "event_instances", ["event_id"], :name => "index_event_instances_on_event_id"
+  add_index "event_instances", ["start_date"], :name => "index_event_instances_on_start_date"
+
+  create_table "events", :force => true do |t|
+    t.integer  "content_id"
+    t.string   "event_type"
+    t.integer  "venue_id"
+    t.string   "cost"
+    t.string   "event_url"
+    t.string   "sponsor"
+    t.string   "sponsor_url"
+    t.text     "links"
+    t.boolean  "featured"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "events", ["content_id"], :name => "index_events_on_content_id"
+  add_index "events", ["featured"], :name => "index_events_on_featured"
+  add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 
   create_table "images", :force => true do |t|
     t.string   "caption"
@@ -680,7 +717,7 @@ ActiveRecord::Schema.define(:version => 20150204011612) do
   add_index "states", ["statename"], :name => "statename"
 
   create_table "temp_1", :id => false, :force => true do |t|
-    t.string "city", :limit => 128
+    t.integer "id", :default => 0
   end
 
   create_table "triples", :force => true do |t|

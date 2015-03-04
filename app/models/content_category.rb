@@ -22,7 +22,7 @@ class ContentCategory < ActiveRecord::Base
                   sale_event sports wanted)
 
   def label
-    name.titlecase
+    name.try :titlecase
   end
 
   def self.find_with_children(conditions)

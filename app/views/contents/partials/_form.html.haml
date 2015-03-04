@@ -2,14 +2,10 @@
   = f.error_notification
   .tabbable
     %ul.nav.nav-tabs.nav-tabs-simple#edit_doctabs
-      %li{ class: @content.is_event? ? "" : "active" }
+      %li{ class: "active" }
         = link_to "#", class: 'green-border', data: { toggle: "tab", target: "#features" } do
           %i.icon-info
           Features
-      %li#event_tab_link{ class: @content.is_event? ? "active" : "" }
-        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#event_features" } do
-          %i.icon-info
-          Event Features
       %li#contents_tab_link
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#doc_content" } do
           %i.icon-reorder
@@ -36,10 +32,10 @@
         %span.btn.btn-small.tab-traversal-link{ data: { move_index: "-1" } } Previous
         %span.btn.btn-small.tab-traversal-link{ data: { move_index: "1" } } Next
     .tab-content
-      .tab-pane.form-horizontal#features{ class: @content.is_event? ? "" : "active" }
+      .tab-pane.form-horizontal#features{ class: "active" }
         -# uneditable features displayed in info box if content exists
         .row-fluid
-          .span4
+          .span6
             .row-fluid
               .span12
                 = f.association :content_category, label_method: :label
@@ -47,17 +43,14 @@
               .span12
                 = f.association :source, input_html: { class: "chosen-select span12" }, 
                   label: "Publication"
-          .span2
+          .span3
             = f.input :category_reviewed, label: "Category Reviewed?"
             %span.btn.btn-small.btn-success#add_new_publication{ data: { toggle: "modal", 
                 target: "#publication_form", form_url: new_publication_path(short_form: true) } }
               + Add New
 
-          - if @content.id.present?
-            .span4
+            - if @content.id.present?
               %dl
-                %dt Origin
-                %dd= @content.origin
                 %dt Source Category
                 %dd= @content.source_category
                 %dt Quarantined?
@@ -66,6 +59,23 @@
                     %i.icon-ok
                 %dt Published?
                 %dd= @content.repositories.map{ |r| r.dsp_endpoint }.join(", ")
+          -# was originally going to show and hide this with javascript, but that doesn't make sense.
+          -# it can only be curated into an event if it's been saved as an event record, so no javascript
+          -# showing/hiding here.
+          .span3.channel-related-actions.text-right{ class: @content.category == "event" ? "" : "hidden" }
+            -# if it has already been curated, just link to curated record
+            - if @content.channelized_content.present?
+              -# we just link to the channelized content here and handle redirection
+              -# to the appropriate channel (currently just events)
+              -# in the contents controller#edit action
+              -# NOTE: we're hardcoding the text of this link to event right now.
+              -# to suppor other channels, when we create them, we'll need to add
+              -# an extra database field somewhere that represents which channel the content
+              -# is channelized to and use that value to generate this text.
+              = link_to "See Event Calendar Record", content_path(@content.channelized_content.id)
+            - else
+              = link_to "Create Calendar Event from record", new_event_path(unchannelized_content_id: @content.id), class: "btn btn-success"
+            = f.input :has_event_calendar, label: "Curated?"
         = f.input :title, input_html: { class: "input-block-level" }
         = f.input :subtitle, input_html: { class: "input-block-level" }
         = f.input :authors, input_html: { class: "input-block-level" }
@@ -89,78 +99,7 @@
         .row-fluid
           = f.input :pubdate, as: :datetime_picker, input_html: { value: @content.pubdate || Date.today }, wrapper_html: { class: "span6" }
           = f.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }
-        = f.input :url, input_html: { class: "input-block-level" }
-      .tab-pane#event_features{ class: @content.is_event? ? "active" : "" }
-        .row-fluid
-          .span6
-            = f.input :event_description, wrapper_html: { class: "span12" }, input_html: {class: "ckeditor span12",
-              value: @content.event_description.present? ? @content.event_description : @content.sanitized_content}, 
-              label: "Description", as: :text
-          .span6
-            .row-fluid
-              .span2.pull-right
-                = f.input :has_event_calendar, label: "Curated?"
-            .row-fluid
-              = f.input :event_title, wrapper_html: { class: "span12" }, input_html: { class: "span12",
-                value: @content.event_title.present? ? @content.event_title : remove_list_from_title(@content.title) }
-            .row-fluid
-              = f.input :start_day, as: :fake, wrapper_html: { class: "span6" },
-                input_html: { value: f.object.start_date.try(:strftime, "%m/%d/%Y"), class: "span12" }
-              = f.input :start_time, as: :fake, wrapper_html: { class: "span6" },
-                input_html: { value: f.object.start_date.try(:strftime, "%l:%M %P"), class: "span12"}
-            .row-fluid
-              = f.input :end_day, as: :fake, wrapper_html: { class: "span6" },
-                input_html: { value: f.object.end_date.try(:strftime, "%m/%d/%Y"), class: "span12" }
-              = f.input :end_time, as: :fake, wrapper_html: { class: "span6" },
-                input_html: { value: f.object.end_date.try(:strftime, "%l:%M %P"), class: "span12" }
-            .row-fluid
-              = f.input :recurrence, wrapper_html: { class: "span12" }, input_html: { class: "span12" }
-            .row-fluid
-              .control-group.select.optional.content_business_location.span12
-                .row-fluid
-                  = f.label :business_location_id, label: "Venue", class: "span6"
-                  .span6.venue-links.text-right
-                    %span.text-right.venue-link#edit_venue_link{ style: "#{ @content.business_location.present? ? "" : "display: none;" }",
-                      data: {form_url: edit_business_location_path(@content.business_location.present? ? @content.business_location.id : 1) } }
-                      Edit
-                    %span.text-right.venue-link#new_venue_link{ data: { form_url: new_business_location_path } }
-                      + Create Venue
-                .row-fluid
-                  .span10offset1#embedded_business_location_form{ style: "display: none;" }
-
-                .row-fluid
-                  .controls.span12
-                    = f.input_field :business_location_id, class: "span12 select2", 
-                      collection: BusinessLocation.all, label_method: :select_option_label,
-                      include_blank: true, placeholder: "Select a venue"
-            .row-fluid
-              = f.input :event_type, wrapper_html: { class: "span9" }, input_html: { class: "span12" }
-              = f.input :featured, wrapper_html: { class: "span3" }, label: "Featured?"
-            .row-fluid
-              = f.input :event_url, input_html: { class: "input-block-level" }, label: "Event URL"
-            .row-fluid
-              = f.input :host_organization, input_html: { class: "input-block-level" },
-                label: "Sponsor"
-            .row-fluid
-              = f.input :sponsor_url, input_html: { class: "input-block-level" }, label: "Sponsor URL"
-            .row-fluid
-              = f.input :cost, wrapper_html: { class: "span12" }, input_html: { class: "span12" }
-        %hr
-        %h3 Links
-        .row-fluid
-          %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "links", model: "content" } } + Add New Link
-          = text_field_tag "new_link_field", nil, class: "new-serialized-field span3", placeholder: "Link Label"
-        = f.fields_for :links do |g|
-          .row-fluid.serialized-field-header{ style: @content.links.present? ? "" : "display: none;" }
-            .span2= label_tag "Link Label"
-            .span3= label_tag "Value"
-          - if @content.links.present?
-            - @content.links.each_pair do |k,v|
-              .row-fluid.serialized-field-row
-                .span2= label_tag k
-                .span6= g.text_field "#{k}", value: v, class: "span12"
-                .span1
-                  .btn.btn-danger.remove-serialized-field X
+          = f.input :url, input_html: { class: "input-block-level" }
       .tab-pane#doc_content
         = f.input :sanitized_content, input_html: { class: "ckeditor input-block-level" }, label: "Content", as: :text
       .tab-pane#images
@@ -183,10 +122,10 @@
           = render @content.images
       - if @content.id.present?
         .tab-pane#publish{ data: { no_turbolink: "" } }
-          = render 'contents/partials/publishing_tab'
+          = render partial: 'contents/partials/publishing_tab', locals: { content: @content }
       - if @content.published?
         .tab-pane#annotation_reports
-          = render 'contents/partials/annotation_reports_tab'
+          = render partial: 'contents/partials/annotation_reports_tab', locals: { content: @content }
       - if @content.source.present?
         .tab-pane#promotions
           = render "promotions/partials/promotions_tab", content: @content

@@ -1,5 +1,21 @@
 module EventsHelper
 
+  def event_instance_display(event_instance)
+    time_range = event_instance.start_date.strftime("%-l:%M %P")
+    if event_instance.end_date.present?
+      time_range += " - " + event_instance.end_date.strftime("%-l:%M %P")
+    end
+
+    subtitle = ''
+
+    if event_instance.subtitle.present?
+      subtitle = ' - ' + event_instance.subtitle
+    end
+
+    instance_string = event_instance.start_date.strftime("%b %-d, %Y") + '  ' + time_range + subtitle
+    instance_string
+  end
+
   # convert start_date (and optional end_date) to a human readable time range
   #
   # @param [Event]
@@ -26,6 +42,20 @@ module EventsHelper
   # @return [String] of form Monday, July 1 at 3:00 pm
   def full_date_string(date)
     date.strftime("%A, %B %-d at %-l:%M %P")
+  end
+
+  # helper method to provide values for search fields
+  # based on existing search or session-stored search
+  def event_search_field_value(key)
+    if params[:reset]
+      nil
+    elsif session[:events_search].present?
+      session[:events_search][key]
+    elsif params[:q].present?
+      params[:q][key]
+    else
+      nil
+    end
   end
 
 end

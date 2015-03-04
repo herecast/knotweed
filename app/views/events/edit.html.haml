@@ -1,0 +1,8 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-pencil
+        Event ID #{@event.id} #{@event.title}
+    .box-content
+      = render partial: "events/partials/form"

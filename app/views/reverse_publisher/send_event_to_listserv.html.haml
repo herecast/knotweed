@@ -1,23 +1,21 @@
-%p= @event.event_title || @event.title
+%p= @event.title
 
 %p
-  = full_event_date_display(@event)
+  - @event.event_instances.each do |instance|
+    = event_instance_display(instance)
+    %br
 
-- if @event.business_location.present?
+- if @venue.present?
   %p
-    = @event.business_location.name if @event.business_location.name.present?
-    = @event.business_location.address if @event.business_location.address.present?
-    = @event.business_location.phone if @event.business_location.phone.present?
-    = @event.business_location.email if @event.business_location.email.present?
+    = @venue.name if @venue.name.present?
+    = @venue.address if @venue.address.present?
+    = @venue.phone if @venue.phone.present?
+    = @venue.email if @venue.email.present?
 
 %p= @event.event_url if @event.event_url.present?
 
-- if @base_uri.present?
-  %p
-    View More:
-    = link_to nil, "#{@base_uri}/events/#{@event.id}"
 
-= (@event.event_description || @event.raw_content).html_safe
+= (@event.raw_content).html_safe
 
 - if @event.cost.present?
   %p
@@ -32,3 +30,12 @@
     - @event.links.each do |k,v| 
       #{k}: #{v}
       %br
+
+%p
+  - if @base_uri.present?
+    - url = "#{@base_uri}/events/#{@event.content_id}/#{@event.event_instances.first.id}"
+  - else
+    - url = "http://www.dailyuv.com/events"
+
+  = 'View map and discover more on '
+  = link_to 'dailyUV.com', url

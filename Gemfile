@@ -20,7 +20,7 @@ gem "guard-rspec", ">= 2.5.2", :group => :development
 gem "rb-inotify", ">= 0.9.0", :group => :development, :require => false
 gem "rb-fsevent", ">= 0.9.3", :group => :development, :require => false
 gem "rb-fchange", ">= 0.0.6", :group => :development, :require => false
-gem "factory_girl_rails", ">= 4.2.0", :group => [:development, :test]
+gem "factory_girl_rails", "~> 4.3.0", :group => [:development, :test]
 gem "devise", ">= 2.2.3"
 gem "cancan", ">= 1.6.9"
 gem "rolify", ">= 3.2.0"

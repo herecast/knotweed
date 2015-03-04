@@ -36,6 +36,7 @@ Knotweed::Application.routes.draw do
   resources :issues, only: [:new, :create, :update, :edit, :destroy, :show]
   resources :locations, only: [:create, :update, :new, :edit, :destroy]
   resources :business_locations, only: [:create, :update, :new, :edit, :destroy]
+  resources :events, except: [:show, :destroy]
 
   resources :data_contexts
   resources :repositories
@@ -83,8 +84,19 @@ Knotweed::Application.routes.draw do
     get 'wufoo_forms/find', to: "wufoo_forms#show", as: :find_wufoo_form
     resources 'publications', only: [:show, :index]
     resources 'business_locations', only: [:show, :index]
-    get 'events/featured', to: 'events#featured_events', as: :featured_events
-    resources :events, only: [:show, :index, :update, :create]
+
+    # with the multi-event instances model, it makes sense for our
+    # index related actions to route through an event_instances controller,
+    # but create and update actions should still use an event controller
+    #
+    # additionally, because of the requirement that each separate event_instance
+    # has its own URL on the consumer side, it makes sense to route the SHOW action
+    # through the event_instance controller as well, even though showing an event
+    # instance will show the entire event and all its instances on the consumer side.
+    get 'events/featured', to: 'event_instances#featured_events', as: :featured_events
+    resources :event_instances, path: "events", only: [:show, :index]
+    resources :events, only: [:create, :update]
+
     resources :contents, only: [:index, :show, :update]
     resources :messages, only: [:index]
     resources :wufoo_forms, only: [:show, :index]

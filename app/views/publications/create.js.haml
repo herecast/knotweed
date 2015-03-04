@@ -1,3 +1,9 @@
+// if this is done on the contents edit page, this logic applies
 $("#content_source_id option:selected").attr('selected', '');
 $("#content_source_id").append("<option value='#{@publication.id}' selected='selected'>#{@publication.name}</option>");
 $("#content_source_id").trigger("chosen:updated");
+
+// equivalent for event edit page
+$("#event_content_attributes_source_id option:selected").attr('selected', '');
+$("#event_content_attributes_source_id").append("<option value='#{@publication.id}' selected='selected'>#{@publication.name}</option>");
+$("#event_content_attributes_source_id").trigger("chosen:updated");

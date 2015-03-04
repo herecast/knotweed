@@ -1,0 +1,166 @@
+= simple_form_for @event, html: { class: "event-form form" } do |f|
+  = f.error_notification
+  .tabbable
+    %ul.nav.nav-tabs.nav-tabs-simple#edit_doctabs
+      %li{ }
+        = link_to "#", class: 'green-border', data: { toggle: "tab", target: "#features" } do
+          %i.icon-info
+          Features
+      %li#calendar_tab_link{ class: "active" }
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#calendar" } do
+          %i.icon-reorder
+          Calendar
+      - if @event.id.present?
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#publish" } do
+            %i.icon-upload
+            Publish/Export
+      - if @event.published?
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#annotation_reports" } do
+            Annotation Reports
+      - if @event.source.present?
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#promotions" } do
+            %i.icon-eye-open
+            Promotions
+      %li.pull-right
+        %span.btn.btn-small.tab-traversal-link{ data: { move_index: "-1" } } Previous
+        %span.btn.btn-small.tab-traversal-link{ data: { move_index: "1" } } Next
+    .tab-content
+      .tab-pane.form-horizontal#features
+        -# content model fields in here
+        = f.simple_fields_for :content do |g|
+          .row-fluid
+            .span6
+              = g.association :content_category, as: :hidden
+              = g.input :category_reviewed, as: :hidden
+              = hidden_field_tag :unchannelized_content_id, params[:unchannelized_content_id]
+              .row-fluid
+                .span8
+                  = g.association :source, input_html: { class: "chosen-select span12" }, 
+                    label: "Publication"
+                .span4
+                  %span.btn.btn-small.btn-success#add_new_publication{ data: { toggle: "modal", 
+                      target: "#publication_form", form_url: new_publication_path(short_form: true) } }
+                    + Add New
+            - if @event.id.present? # i.e. event is a saved record, not a new one
+              .span4
+                %dl
+                  %dt Source Category
+                  %dd= @event.source_category
+                  %dt Quarantined?
+                  %dd
+                    - if @event.quarantine
+                      %i.icon-ok
+                  %dt Published?
+                  %dd= @event.repositories.map{ |r| r.dsp_endpoint }.join(", ")
+          = g.input :subtitle, input_html: { class: "input-block-level" }
+          = g.input :authors, input_html: { class: "input-block-level" }
+          .row-fluid
+            = g.input :copyright, input_html: { class: "span12" }, wrapper_html: { class: "span6" }
+          .row-fluid
+            = g.input :pubdate, as: :datetime_picker, input_html: { value: @event.pubdate || Date.today }, wrapper_html: { class: "span6" }
+            = g.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }
+            = g.input :url, input_html: { class: "input-block-level" }
+      .tab-pane#calendar{ class: "active" }
+        .row-fluid
+          .span6
+            = f.simple_fields_for :content do |g|
+              = g.input :remove_boilerplate, input_html: { class: "ckeditor input-block-level" }, label: "Event Description", as: :text
+          -# event specific fields
+          .span6 
+            = f.simple_fields_for :content do |g|
+              = g.input :title, input_html: { class: "input-block-level" }
+            .row-fluid
+              .control-group.select.optional.event_venue.span12
+                .row-fluid
+                  = f.label :venue_id, label: "Venue", class: "span6"
+                  .span6.venue-links.text-right
+                    %span.text-right.venue-link#edit_venue_link{ style: "#{ @event.venue.present? ? "" : "display: none;" }",
+                      data: {form_url: edit_business_location_path(@event.venue.present? ? @event.venue.id : 1) } }
+                      Edit
+                    %span.text-right.venue-link#new_venue_link{ data: { form_url: new_business_location_path } }
+                      + Create Venue
+                .row-fluid
+                  .span10offset1#embedded_business_location_form{ style: "display: none;" }
+                .row-fluid
+                  .controls.span12
+                    = f.input_field :venue_id, class: "span12 select2", 
+                      collection: BusinessLocation.all, label_method: :select_option_label,
+                      include_blank: true, placeholder: "Select a venue"
+            = f.input :event_url, input_html: { class: "input-block-level" }
+            = f.input :cost, input_html: { class: "input-block-level" }
+            = f.input :sponsor, input_html: { class: "input-block-level" }
+            = f.input :sponsor_url, input_html: { class: "input-block-level" }
+            -# image field
+            .row-fluid
+              .span5
+                = f.simple_fields_for :content do |g|
+                  = g.simple_fields_for :images do |i|
+                    = i.input :image, as: :file
+              .span6
+                - if @event.content.images.present? and @event.content.images.first.id
+                  = image_tag @event.content.images.first.image.url
+                - elsif @placeholder_image.present?
+                  = image_tag @placeholder_image.image.url
+            = f.input :featured, input_html: { class: "input-block-level" }
+        %hr
+        %h3 Event Instances
+        = f.hint "At least one instance is required."
+        = f.simple_fields_for :event_instances do |g|
+          = render 'event_instance_fields', f: g
+        = link_to_add_fields "Add Event Instance", f, :event_instances
+
+        %hr
+        %h3 Links
+        .row-fluid
+          %span.pull-left.btn.btn-success.add-new-field-link{ data: { field_type: "links", model: "event" } } + Add New Link
+          = text_field_tag "new_link_field", nil, class: "new-serialized-field span3", placeholder: "Link Label"
+        = f.fields_for :links do |g|
+          .row-fluid.serialized-field-header{ style: @event.links.present? ? "" : "display: none;" }
+            .span2= label_tag "Link Label"
+            .span3= label_tag "Value"
+          - if @event.links.present?
+            - @event.links.each_pair do |k,v|
+              .row-fluid.serialized-field-row
+                .span2= label_tag k
+                .span6= g.text_field "#{k}", value: v, class: "span12"
+                .span1
+                  .btn.btn-danger.remove-serialized-field X
+      - if @event.id.present?
+        .tab-pane#publish{ data: { no_turbolink: "" } }
+          = render partial: 'contents/partials/publishing_tab', locals: { content: @event.content }
+      - if @event.published?
+        .tab-pane#annotation_reports
+          = render partial: 'contents/partials/annotation_reports_tab', locals: { content: @event.content } 
+      - if @event.source.present?
+        .tab-pane#promotions
+          = render "promotions/partials/promotions_tab", content: @event.content
+    .form-actions
+      = submit_tag nil, class: "btn btn-primary"
+      = submit_tag "Submit and continue with this record", class: "btn btn-success", name: "continue_editing"
+      - if @next_content_id.present?
+        = hidden_field_tag :next_record_id, @next_content_id
+        = hidden_field_tag :index, @next_index
+        = hidden_field_tag :page, params[:page]
+        = submit_tag "Submit and go to next record", class: "btn btn-success", name: "next_record"
+      = submit_tag "Submit and add new", class: "btn btn-success", name: "create_new"
+      = link_to "Cancel", :back, class: "btn cancel"
+
+- if @event.published?
+  .modal.hide.fade#annotations
+    .modal-header
+      %a.pull-right.btn.btn-primary.span2{ href: "#", data: { dismiss: "modal" } } Finish
+      %span.pull-right#num-reviewed.span2
+      %h3#annotation_report_name
+    #annotation_form
+    .modal-body
+      Loading annotations...
+
+.modal.hide.fade#publication_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Add Publication
+  .modal-body
+    Loading form...
