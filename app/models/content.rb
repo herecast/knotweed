@@ -125,14 +125,11 @@ attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :co
 
   BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt')) 
 
-   # display processed content if available
-  # otherwise, raw content
+  # holdover from when we used to use processed_content by preference.
+  # Seemed easier to keep this method, but just make it point directly to raw content 
+  # than to remove references to the method altogether
   def content
-    if processed_content.present?
-      processed_content
-    else
-      raw_content
-    end
+    raw_content
   end
 
   # if passed a repo, checks if this content was published in that repo
