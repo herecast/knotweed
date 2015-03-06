@@ -1039,7 +1039,7 @@ attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :co
 
   def self.truncated_content_fields
     [:id, :title,:featured, :links, :pubdate, :authors, :category, 
-     :parent_category, :source_name, :source_id, :location, 
+     :parent_category, :source_name, :source_id,
      :parent_uri, :category_reviewed, :authoremail, :subtitle]
   end
 

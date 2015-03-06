@@ -7,7 +7,7 @@ class Api::ContentsController < Api::ApiController
       @contents = Content
     end
 
-    @contents = @contents.includes(:source).includes(:content_category).includes(:images).includes(:import_location)
+    @contents = @contents.includes(:source).includes(:content_category).includes(:images)
 
     if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
       sort_order = params[:sort_order]
