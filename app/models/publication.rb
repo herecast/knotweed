@@ -75,7 +75,7 @@ class Publication < ActiveRecord::Base
   validates :pub_type, inclusion: { in: PUB_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
 
   validates_uniqueness_of :name
-  validates_uniqueness_of :reverse_publish_email, allow_nil: true
+  validates_uniqueness_of :reverse_publish_email, allow_nil: true, allow_blank: true
   validates_presence_of :name
 
   def publishing_frequency_enum

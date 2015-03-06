@@ -57,12 +57,13 @@
           .row-fluid.serialized-field-header
             .span2= label_tag "Label"
             .span3= label_tag "Value"
-          - @publication.links.each_pair do |k,v|
-            .row-fluid.serialized-field-row
-              .span2= label_tag k
-              .span6= g.text_field "#{k}", value: v, class: "span12"
-              .span2
-                .btn.btn-danger.remove-serialized-field X
+          - if @publication.links.present?
+            - @publication.links.each_pair do |k,v|
+              .row-fluid.serialized-field-row
+                .span2= label_tag k
+                .span6= g.text_field "#{k}", value: v, class: "span12"
+                .span2
+                  .btn.btn-danger.remove-serialized-field X
       .tab-pane#business_locations
         .pull-right
           = link_to "+ Add New Location", "#", class: "btn btn-success", 
