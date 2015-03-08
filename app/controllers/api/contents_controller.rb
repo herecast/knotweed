@@ -13,10 +13,6 @@ class Api::ContentsController < Api::ApiController
       sort_order = params[:sort_order]
     end
 
-    if params[:repository].present?
-      @contents = @contents.includes(:repositories).where(repositories: {dsp_endpoint: params[:repository]}) 
-    end
-
     sort_order ||= "DESC"
     @contents = @contents.order("pubdate #{sort_order}")
     if params[:home_list].present?
