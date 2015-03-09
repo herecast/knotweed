@@ -51,6 +51,12 @@ class Api::ContentsController < Api::ApiController
       @contents = @contents.externally_visible
     end
 
+    # workaround to avoid the extremely costly contents_repositories inner join
+    # using the new "published" boolean on the content model
+    # to avoid breaking specs and more accurately replicate the old behavior,
+    # we're only introducing this condition when a repository parameter is provided.
+    @contents = @contents.published if params[:repository].present?
+
     params[:page] ||= 1
     params[:per_page] ||= 30
     @contents = @contents.page(params[:page].to_i).per(params[:per_page].to_i)
