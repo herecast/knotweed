@@ -50,6 +50,10 @@
           .field.span2
             = f.label :event_content_repositories_id_eq, "Published in Repository?"
             = f.collection_select :event_content_repositories_id_eq, Repository.all, :id, :name, { include_blank: true }, class: "span12"
+          .field.span2
+            = f.label :event_featured_true, "Featured"
+            = f.select :event_featured_true, options_for_select([["Both", nil], ["Yes", 1], ["No", 0]], event_search_field_value(:event_featured_true)),
+              { class: "span12"}
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
