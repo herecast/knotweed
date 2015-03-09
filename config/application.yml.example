@@ -56,3 +56,8 @@ RESCHEDULE_AT: 10
 # "2:45 am" will suffice
 BACKUP_START: "2:45 am"
 BACKUP_END: "3:45 am"
+
+# this is used to determine whether or not to set the "published" flag (content model)
+# to true when content is published to a repository. It defaults to 3, which is our
+# "production repository" on prod, but can be overridden by specifying it in application.yml
+PRODUCTION_REPOSITORY_ID: 3

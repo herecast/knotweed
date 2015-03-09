@@ -76,6 +76,26 @@ describe Content do
 
   end
 
+  describe "mark_published association callback" do
+    before do
+      @prod_repo = FactoryGirl.create(:repository, id: Repository::PRODUCTION_REPOSITORY_ID)
+      @non_prod_repo = FactoryGirl.create(:repository)
+      @content = FactoryGirl.create(:content)
+    end
+
+    it "should not mark content published when added to a non-production repository" do
+      @content.repositories << @non_prod_repo
+      @content.reload
+      @content.published.should eq(false)
+    end
+
+    it "should mark content published when added to prod repo" do
+      @content.repositories << @prod_repo
+      @content.reload
+      @content.published.should eq(true)
+    end
+  end
+
   describe "publish_content" do
     before do
       @content = FactoryGirl.create(:content)
