@@ -48,7 +48,7 @@ class Event < ActiveRecord::Base
   # validates_presence_of :content_id
 
   attr_accessible :content_id, :cost, :event_type, :event_url, :featured,
-    :links, :sponsor, :sponsor_url, :venue
+    :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, :contact_url
 
   serialize :links, Hash
 
