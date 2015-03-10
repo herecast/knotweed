@@ -85,16 +85,6 @@ ActiveRecord::Schema.define(:version => 20150305223204) do
     t.boolean  "locate_include_name", :default => false
   end
 
-  create_table "busloc_corrections", :force => true do |t|
-    t.integer "new_id",  :null => false
-    t.string  "name"
-    t.string  "address"
-    t.string  "phone"
-    t.string  "email"
-  end
-
-  add_index "busloc_corrections", ["name"], :name => "index_business_locations_on_name"
-
   create_table "categories", :force => true do |t|
     t.string   "name"
     t.integer  "channel_id"
