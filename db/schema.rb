@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150223002227) do
+ActiveRecord::Schema.define(:version => 20150305223204) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -36,9 +36,9 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
     t.date    "DATE_EDITED"
   end
 
-  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+  add_index "usgs_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
+  add_index "usgs_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
+  add_index "usgs_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -84,8 +84,6 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
     t.string   "venue_url"
     t.boolean  "locate_include_name", :default => false
   end
-
-  add_index "business_locations", ["name"], :name => "index_business_locations_on_name"
 
   create_table "categories", :force => true do |t|
     t.string   "name"
@@ -232,10 +230,15 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
     t.text     "summary"
     t.string   "url"
     t.string   "origin"
+    t.string   "mimetype"
     t.string   "language"
+    t.string   "page"
+    t.string   "wordcount"
     t.string   "authoremail"
     t.integer  "source_id"
+    t.string   "file"
     t.boolean  "quarantine",             :default => false
+    t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
@@ -278,21 +281,6 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
   add_index "contents", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents", ["title"], :name => "title"
 
-  create_table "contents_NT", :force => true do |t|
-    t.string   "title"
-    t.string   "subtitle"
-    t.string   "authors"
-    t.string   "subject"
-    t.text     "content"
-    t.integer  "issue_id"
-    t.integer  "location_id"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
-    t.boolean  "reviewed",       :default => false
-    t.integer  "lupdate_by"
-    t.integer  "publication_id"
-  end
-
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
     t.string   "title"
@@ -316,10 +304,6 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
-
-  create_table "contents_id", :force => true do |t|
-    t.string "category", :limit => 128
-  end
 
   create_table "contents_publish_records", :id => false, :force => true do |t|
     t.integer "content_id"
@@ -408,8 +392,11 @@ ActiveRecord::Schema.define(:version => 20150223002227) do
     t.string   "sponsor_url"
     t.text     "links"
     t.boolean  "featured"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+    t.string   "contact_phone"
+    t.string   "contact_email"
+    t.string   "contact_url"
   end
 
   add_index "events", ["content_id"], :name => "index_events_on_content_id"
