@@ -17,6 +17,10 @@
 - if @event.cost.present?
   Cost: #{@event.cost}
 
+- contact_string = event_contact_display(@event)
+- if contact_string.present?
+  Contact: #{contact_string}
+
 - if @event.sponsor_url.present?
   Sponsor: #{@event.sponsor_url}
 
