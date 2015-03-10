@@ -68,8 +68,9 @@
           .span6
             = f.simple_fields_for :content do |g|
               = g.input :remove_boilerplate, input_html: { class: "ckeditor input-block-level" }, label: "Event Description", as: :text
+
           -# event specific fields
-          .span6 
+          .span6
             = f.simple_fields_for :content do |g|
               = g.input :title, input_html: { class: "input-block-level" }
             .row-fluid
@@ -81,7 +82,7 @@
                       data: {form_url: edit_business_location_path(@event.venue.present? ? @event.venue.id : 1) } }
                       Edit
                     %span.text-right.venue-link#new_venue_link{ data: { form_url: new_business_location_path } }
-                      + Create Venue
+                      Create Venue
                 .row-fluid
                   .span10offset1#embedded_business_location_form{ style: "display: none;" }
                 .row-fluid
@@ -90,27 +91,44 @@
                       collection: BusinessLocation.all, label_method: :select_option_label,
                       include_blank: true, placeholder: "Select a venue"
             = f.input :event_url, input_html: { class: "input-block-level" }
-            = f.input :cost, input_html: { class: "input-block-level" }
-            = f.input :sponsor, input_html: { class: "input-block-level" }
-            = f.input :sponsor_url, input_html: { class: "input-block-level" }
-            -# image field
-            .row-fluid
-              .span5
-                = f.simple_fields_for :content do |g|
-                  = g.simple_fields_for :images do |i|
-                    = i.input :image, as: :file
-              .span6
-                - if @event.content.images.present? and @event.content.images.first.id
-                  = image_tag @event.content.images.first.image.url
-                - elsif @placeholder_image.present?
-                  = image_tag @placeholder_image.image.url
+
+            %table
+              %tr
+                %td
+                  = f.input :contact_phone, input_html: { class: "input-block-level" }
+                %td
+                  = f.input :contact_email, input_html: { class: "input-block-level" }
+              %tr
+                %td
+                  = f.input :contact_url, input_html: { class: "input-block-level" }
+                %td
+                  = f.input :cost, input_html: { class: "input-block-level" }
+              %tr
+                %td
+                  = f.input :sponsor, input_html: { class: "input-block-level" }
+                %td
+                  = f.input :sponsor_url, input_html: { class: "input-block-level" }
             = f.input :featured, input_html: { class: "input-block-level" }
+
         %hr
         %h3 Event Instances
         = f.hint "At least one instance is required."
         = f.simple_fields_for :event_instances do |g|
           = render 'event_instance_fields', f: g
         = link_to_add_fields "Add Event Instance", f, :event_instances
+
+        -# image field
+        %hr
+        .row-fluid
+          .span3
+            = f.simple_fields_for :content do |g|
+              = g.simple_fields_for :images do |i|
+                = i.input :image, as: :file
+          .span3
+            - if @event.content.images.present? and @event.content.images.first.id
+              = image_tag @event.content.images.first.image.url
+            - elsif @placeholder_image.present?
+              = image_tag @placeholder_image.image.url
 
         %hr
         %h3 Links
