@@ -7,14 +7,10 @@ class Api::ContentsController < Api::ApiController
       @contents = Content
     end
 
-    @contents = @contents.includes(:source).includes(:content_category).includes(:images).includes(:import_location)
+    @contents = @contents.includes(:source).includes(:content_category).includes(:images)
 
     if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
       sort_order = params[:sort_order]
-    end
-
-    if params[:repository].present?
-      @contents = @contents.includes(:repositories).where(repositories: {dsp_endpoint: params[:repository]}) 
     end
 
     sort_order ||= "DESC"
@@ -54,6 +50,12 @@ class Api::ContentsController < Api::ApiController
     if params[:external_only].present?
       @contents = @contents.externally_visible
     end
+
+    # workaround to avoid the extremely costly contents_repositories inner join
+    # using the new "published" boolean on the content model
+    # to avoid breaking specs and more accurately replicate the old behavior,
+    # we're only introducing this condition when a repository parameter is provided.
+    @contents = @contents.published if params[:repository].present?
 
     params[:page] ||= 1
     params[:per_page] ||= 30

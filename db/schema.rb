@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150305223204) do
+ActiveRecord::Schema.define(:version => 20150309171434) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -114,9 +114,9 @@ ActiveRecord::Schema.define(:version => 20150305223204) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer   "channel_id"
-    t.text      "category"
-    t.timestamp "created_at", :null => false
+    t.integer  "channel_id"
+    t.text     "category"
+    t.datetime "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -263,6 +263,7 @@ ActiveRecord::Schema.define(:version => 20150305223204) do
     t.boolean  "has_event_calendar",     :default => false
     t.integer  "channelized_content_id"
     t.boolean  "channelized",            :default => false
+    t.boolean  "published",              :default => false
   end
 
   add_index "contents", ["authors"], :name => "authors"
@@ -276,6 +277,7 @@ ActiveRecord::Schema.define(:version => 20150305223204) do
   add_index "contents", ["import_record_id"], :name => "import_record_id"
   add_index "contents", ["parent_id"], :name => "index_contents_on_parent_id"
   add_index "contents", ["pubdate"], :name => "pubdate"
+  add_index "contents", ["published"], :name => "index_contents_on_published"
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["source_id"], :name => "source_id"
   add_index "contents", ["start_date"], :name => "index_contents_on_start_date"

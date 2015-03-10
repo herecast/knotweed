@@ -41,7 +41,7 @@ class Content < ActiveRecord::Base
   has_many :category_corrections
 
   has_and_belongs_to_many :publish_records
-  has_and_belongs_to_many :repositories, :uniq => true
+  has_and_belongs_to_many :repositories, :uniq => true, after_add: :mark_published
   
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
   belongs_to :source, class_name: "Publication", foreign_key: "source_id"
@@ -72,7 +72,7 @@ class Content < ActiveRecord::Base
     :sponsor_url, :event_url, :recurrence, :links
   serialize :links, Hash
 
-attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
+  attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
                 :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
                 :language, :authoremail, :source_id,
                 :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
@@ -92,6 +92,8 @@ attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :co
 
   scope :externally_visible, -> { Content.joins(:source)
         .joins("inner join content_categories_publications ccp on publications.id = ccp.publication_id AND contents.content_category_id = ccp.content_category_id")}
+
+  scope :published, -> { where(published: true) }
 
   NEW_FORMAT = "New"
   EXPORT_FORMATS = [NEW_FORMAT]
@@ -125,6 +127,16 @@ attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :co
 
   BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt')) 
 
+  # callback that is run after a contents_repositories entry is added
+  # sets content.published = true IF the repository is the "production"
+  # repository
+  def mark_published(repo)
+    if repo.id == Repository::PRODUCTION_REPOSITORY_ID
+      update_attribute :published, true
+    end
+  end
+
+
   # holdover from when we used to use processed_content by preference.
   # Seemed easier to keep this method, but just make it point directly to raw content 
   # than to remove references to the method altogether
@@ -136,7 +148,7 @@ attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :co
   # otherwise, checks if it is published in any repo
   def published?(repo=nil)
     if repo.present?
-      repo.include? self
+      repositories.include? repo
     else
       repositories.present?
     end
@@ -540,7 +552,7 @@ attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :co
             body: rec_doc.to_json } )
 
       if response["type"] == "SUCCESS"
-        repo.contents << self unless repo.contents.include? self
+        repositories << repo unless repositories.include? repo
 
         persist_to_graph_db(repo, annotate_resp);
 
@@ -1039,7 +1051,7 @@ attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :co
 
   def self.truncated_content_fields
     [:id, :title,:featured, :links, :pubdate, :authors, :category, 
-     :parent_category, :source_name, :source_id, :location, 
+     :parent_category, :source_name, :source_id,
      :parent_uri, :category_reviewed, :authoremail, :subtitle]
   end
 
