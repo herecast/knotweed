@@ -22,6 +22,7 @@ class Event < ActiveRecord::Base
   belongs_to :content
   accepts_nested_attributes_for :content
   attr_accessible :content_attributes
+  validates_associated :content
 
   has_one :source, through: :content, class_name: "Publication", foreign_key: "source_id"
   has_one :content_category, through: :content
@@ -37,7 +38,7 @@ class Event < ActiveRecord::Base
   # event instances represent individual datetimes for events that might occur more than once
   # they can also have a subtitle and description that "override" the master 
   has_many :event_instances
-#  validates_presence_of :event_instances # at least one must exist
+  validates_associated :event_instances # at least one must exist
 
   accepts_nested_attributes_for :event_instances, allow_destroy: true
   attr_accessible :event_instances_attributes
