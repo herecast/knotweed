@@ -19,9 +19,7 @@ class Api::EventsController < Api::ApiController
       image_temp_file.puts hImage[:image_content]
       file_to_upload = ActionDispatch::Http::UploadedFile.new(tempfile: image_temp_file,
                                                               filename: hImage[:image_name], type: hImage[:image_type])
-      @content = @event.content
-      @content.images = [@image]
-      @content.save
+      event_image = Image.new image: file_to_upload
     end
 
     # need to pass attributes for the content record through content_attributes
@@ -32,14 +30,15 @@ class Api::EventsController < Api::ApiController
     params[:event][:content_attributes] = content_attributes
 
     if @event.update_attributes(params[:event])
-      if @image.present?
+      if event_image.present?
         # would just do @event.images << @image, but despite the fact
         # that we are set up to have more than one image per content,
         # on the consumer side, we're assuming there's only one image.
         # So to ensure we're displaying the right one, we have to do this.
-        @event.images = [@image]
-        @event.save
-      end
+        @content = @event.content
+        @content.images = [event_image]
+        @content.save
+     end
 
       # reverse publish to specified destinations
       if destinations.present?
