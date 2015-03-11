@@ -79,7 +79,9 @@ class Content < ActiveRecord::Base
                 :image_ids, :parent_id, :source_uri, :category,
                 :content_category_id, :category_reviewed, :raw_content, :processed_content,
                 :sanitized_content, :channelized_content_id,
-                :has_event_calendar, :channelized, :remove_boilerplate
+                :has_event_calendar, :channelized
+
+  validates_presence_of :raw_content, :title, if: :is_event?
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -1037,16 +1039,9 @@ class Content < ActiveRecord::Base
 
   end
 
-  def remove_boilerplate= new_content
-    self.raw_content = new_content
-  end
-
+  # returns true if content has attached event
   def is_event?
-    if category == "event" or category == "sale_event"
-      true
-    else
-      false
-    end
+    event.present?
   end
 
   def self.truncated_content_fields

@@ -8,6 +8,7 @@ class EventInstance < ActiveRecord::Base
   before_save :process_end_time
 
   validates_presence_of :start_date
+  validate :end_date_after_start_date
 
   # takes the end_date and automatically sets it to the same date as start_date,
   # but with its own time
@@ -35,4 +36,12 @@ class EventInstance < ActiveRecord::Base
     end
   end
 
+  # validation method that confirms end_date is either nil
+  # or greater than start_date.
+  def end_date_after_start_date
+    if end_date.present? and end_date < start_date
+      errors.add(:end_time, "End date cannot be before start date.")
+    end
+  end
+  
 end
