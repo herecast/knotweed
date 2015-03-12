@@ -4,7 +4,7 @@ json.events [@event_instance] do |ei|
            :parent_uri, :venue, :category_reviewed, :has_active_promotion, :authoremail,
            :event_url, :sponsor_url, :subtitle, :contact_phone, :contact_email, :contact_url]
   json.event_id ei.event.id
-  json.content_id ei.event.content_id
+  json.content_id ei.event.content.id
   json.content ei.event.description
 
   if ei.event.images.present?

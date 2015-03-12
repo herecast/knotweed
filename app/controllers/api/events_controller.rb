@@ -24,7 +24,7 @@ class Api::EventsController < Api::ApiController
 
     # need to pass attributes for the content record through content_attributes
     content_attributes = {}
-    content_attributes[:id] = @event.content_id
+    content_attributes[:id] = @event.content.id
     content_attributes[:title] = params[:event].delete :title if params[:event][:title].present?
     content_attributes[:raw_content] = params[:event].delete :description if params[:event][:description].present?
     params[:event][:content_attributes] = content_attributes
@@ -59,6 +59,8 @@ class Api::EventsController < Api::ApiController
         else
           render text: "Event #{@event.id} updated but failed to publish", status: 500
         end
+      else
+        render text: "#{@event.id}"
       end
     else
       render text: "update of event #{@event.id} failed", status: 500
