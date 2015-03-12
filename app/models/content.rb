@@ -55,8 +55,6 @@ class Content < ActiveRecord::Base
 
   belongs_to :content_category
 
-  # channel associations
-  has_one :event
   # mapping to content record that represents the channelized content
   belongs_to :channelized_content, class_name: "Content"
   has_one :unchannelized_original, class_name: "Content", foreign_key: "channelized_content_id"
@@ -79,13 +77,16 @@ class Content < ActiveRecord::Base
                 :image_ids, :parent_id, :source_uri, :category,
                 :content_category_id, :category_reviewed, :raw_content, :processed_content,
                 :sanitized_content, :channelized_content_id,
-                :has_event_calendar, :channelized
+                :has_event_calendar, :channel_type, :channel_id, :channel
 
   validates_presence_of :raw_content, :title, if: :is_event?
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
   before_save :set_guid
+
+  # channel relationships
+  belongs_to :channel, polymorphic: true, inverse_of: :content
 
   TMP_EXPORT_PATH = Rails.root + "/tmp/exports"
 
@@ -1041,7 +1042,7 @@ class Content < ActiveRecord::Base
 
   # returns true if content has attached event
   def is_event?
-    event.present?
+    channel_type.present? and channel_type == "Event"
   end
 
   def self.truncated_content_fields

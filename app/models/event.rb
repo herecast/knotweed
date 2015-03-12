@@ -19,7 +19,7 @@
 #
 
 class Event < ActiveRecord::Base
-  belongs_to :content
+  has_one :content, as: :channel
   accepts_nested_attributes_for :content
   attr_accessible :content_attributes
   validates_associated :content
@@ -48,7 +48,7 @@ class Event < ActiveRecord::Base
   # to first save and create the content, then save the event.
   # validates_presence_of :content_id
 
-  attr_accessible :content_id, :cost, :event_type, :event_url, :featured,
+  attr_accessible :content, :cost, :event_type, :event_url, :featured,
     :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, :contact_url
 
   serialize :links, Hash
@@ -60,8 +60,6 @@ class Event < ActiveRecord::Base
   #     event.save
   #  and end up with the event's content record's title updated.
   after_save do |event|
-    # ensure said content is marked channelized
-    event.content.channelized = true
     event.content.save
   end
 

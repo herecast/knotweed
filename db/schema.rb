@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150309171434) do
+ActiveRecord::Schema.define(:version => 20150311220045) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -36,9 +36,9 @@ ActiveRecord::Schema.define(:version => 20150309171434) do
     t.date    "DATE_EDITED"
   end
 
-  add_index "usgs_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "usgs_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "usgs_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
+  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
+  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -85,6 +85,8 @@ ActiveRecord::Schema.define(:version => 20150309171434) do
     t.boolean  "locate_include_name", :default => false
   end
 
+  add_index "business_locations", ["name"], :name => "index_business_locations_on_name"
+
   create_table "categories", :force => true do |t|
     t.string   "name"
     t.integer  "channel_id"
@@ -114,9 +116,9 @@ ActiveRecord::Schema.define(:version => 20150309171434) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer  "channel_id"
-    t.text     "category"
-    t.datetime "created_at", :null => false
+    t.integer   "channel_id"
+    t.text      "category"
+    t.timestamp "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -262,12 +264,14 @@ ActiveRecord::Schema.define(:version => 20150309171434) do
     t.string   "sponsor_url"
     t.boolean  "has_event_calendar",     :default => false
     t.integer  "channelized_content_id"
-    t.boolean  "channelized",            :default => false
     t.boolean  "published",              :default => false
+    t.string   "channel_type"
+    t.integer  "channel_id"
   end
 
   add_index "contents", ["authors"], :name => "authors"
-  add_index "contents", ["channelized"], :name => "index_contents_on_channelized"
+  add_index "contents", ["channel_id"], :name => "index_contents_on_channel_id"
+  add_index "contents", ["channel_type"], :name => "index_contents_on_channel_type"
   add_index "contents", ["channelized_content_id"], :name => "index_contents_on_channelized_content_id"
   add_index "contents", ["content_category_id"], :name => "content_category_id"
   add_index "contents", ["end_date"], :name => "index_contents_on_end_date"
@@ -385,7 +389,6 @@ ActiveRecord::Schema.define(:version => 20150309171434) do
   add_index "event_instances", ["start_date"], :name => "index_event_instances_on_start_date"
 
   create_table "events", :force => true do |t|
-    t.integer  "content_id"
     t.string   "event_type"
     t.integer  "venue_id"
     t.string   "cost"
@@ -401,7 +404,6 @@ ActiveRecord::Schema.define(:version => 20150309171434) do
     t.string   "contact_url"
   end
 
-  add_index "events", ["content_id"], :name => "index_events_on_content_id"
   add_index "events", ["featured"], :name => "index_events_on_featured"
   add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 

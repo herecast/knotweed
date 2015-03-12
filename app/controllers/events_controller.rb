@@ -17,7 +17,8 @@ class EventsController < ApplicationController
     @search = EventInstance.ransack(session[:events_search])
 
     if session[:events_search].present?
-      @event_instances = @search.result(distinct: true).joins(event: :content).order("start_date DESC").page(params[:page]).per(100)
+      @event_instances = @search.result(distinct: true)
+        .joins(event: :content).order("start_date DESC").page(params[:page]).per(100)
       @event_instances = @event_instances.accessible_by(current_ability)
     else
       @event_instances = []

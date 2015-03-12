@@ -25,6 +25,19 @@ describe Content do
 
   before { Promotion.any_instance.stub(:update_active_promotions).and_return(true) }
 
+  # for ease of querying, our polymorphic channel relationship
+  # is redundantly specified using the content_id attribute
+  # from each channel submodel. Rails doesn't provide an easy way to
+  # ensure the redundant field is saved, or vice versa, 
+  # so we add a callback on each model
+  describe "redundant channel relationship" do
+    before do 
+      @content = FactoryGirl.create :content
+      @event = FactoryGirl.create :event
+      @event2 = FactoryGirl.create :event
+    end
+  end
+
   describe "find_root_parent" do
     it "should return self for a content with no parent" do
       c = FactoryGirl.create(:content)
