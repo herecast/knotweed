@@ -71,10 +71,10 @@ describe Api::ContentsController do
         @tot = FactoryGirl.create(:content_category, name: "talk_of_the_town")
         @pub1 = FactoryGirl.create :publication
         @pub2 = FactoryGirl.create :publication
-        FactoryGirl.create_list(:content, 2, source: @pub1)
-        FactoryGirl.create_list(:content, 3, source: @pub2)
-        @tot_content = FactoryGirl.create(:content, source: @pub1, content_category: @tot)
-        @tot_content_2 = FactoryGirl.create(:content, source: @pub2, content_category: @tot)
+        FactoryGirl.create_list(:content, 2, publication: @pub1)
+        FactoryGirl.create_list(:content, 3, publication: @pub2)
+        @tot_content = FactoryGirl.create(:content, publication: @pub1, content_category: @tot)
+        @tot_content_2 = FactoryGirl.create(:content, publication: @pub2, content_category: @tot)
       end
 
       describe "when home list is provided" do
@@ -108,9 +108,9 @@ describe Api::ContentsController do
         @pub3 = FactoryGirl.create :publication
         @consumer_app = FactoryGirl.create :consumer_app
         @consumer_app.publications << @pub1 << @pub3
-        FactoryGirl.create_list :content, 1, source: @pub1
-        FactoryGirl.create_list :content, 1, source: @pub3
-        FactoryGirl.create_list :content, 3, source: @pub2
+        FactoryGirl.create_list :content, 1, publication: @pub1
+        FactoryGirl.create_list :content, 1, publication: @pub3
+        FactoryGirl.create_list :content, 3, publication: @pub2
       end
 
       it "should filter results based on consumer_app.publications" do

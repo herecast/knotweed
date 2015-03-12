@@ -1,4 +1,4 @@
-attrs = [:id, :title, :pubdate, :authors, :category, :parent_category, :source_name, :source_id, :location, 
+attrs = [:id, :title, :pubdate, :authors, :category, :parent_category, :source_name, :publication_id, :location, 
          :parent_uri, :category_reviewed, :has_active_promotion, :authoremail, 
          :subtitle, :externally_visible, :channel_type, :channel_id]
 json.content content.sanitized_content

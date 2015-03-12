@@ -2,20 +2,20 @@
 #
 # Table name: events
 #
-#  id          :integer          not null, primary key
-#  content_id  :integer
-#  event_type  :string(255)
-#  start_date  :datetime
-#  end_date    :datetime
-#  venue_id    :integer
-#  cost        :string(255)
-#  event_url   :string(255)
-#  sponsor     :string(255)
-#  sponsor_url :string(255)
-#  links       :text
-#  featured    :boolean
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  id            :integer          not null, primary key
+#  event_type    :string(255)
+#  venue_id      :integer
+#  cost          :string(255)
+#  event_url     :string(255)
+#  sponsor       :string(255)
+#  sponsor_url   :string(255)
+#  links         :text
+#  featured      :boolean
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  contact_phone :string(255)
+#  contact_email :string(255)
+#  contact_url   :string(255)
 #
 
 class Event < ActiveRecord::Base
@@ -24,7 +24,7 @@ class Event < ActiveRecord::Base
   attr_accessible :content_attributes
   validates_associated :content
 
-  has_one :source, through: :content, class_name: "Publication", foreign_key: "source_id"
+  has_one :source, through: :content, class_name: "Publication", foreign_key: "publication_id"
   has_one :content_category, through: :content
   has_many :images, through: :content
   has_many :repositories, through: :content

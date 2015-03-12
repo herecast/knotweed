@@ -51,5 +51,5 @@
             = link_to publication.parent.try(:name), edit_publication_path(publication.parent)
         %td= publication.contents.count
         %td
-          = link_to "content", contents_path(q: { source_id_in: publication.id }), class: "btn btn-mini btn-info"
+          = link_to "content", contents_path(q: { publication_id_in: publication.id }), class: "btn btn-mini btn-info"
           = link_to "content sets", content_sets_path(q: { publication_id_in: publication.id }), class: "btn btn-mini btn-success"

@@ -25,7 +25,7 @@ describe PublishJob do
   describe "contents count" do
     before do
       @publication = FactoryGirl.create(:publication)
-      FactoryGirl.create_list(:content, 3, source: @publication)
+      FactoryGirl.create_list(:content, 3, publication: @publication)
       FactoryGirl.create_list(:content, 5)
       @job = FactoryGirl.create(:publish_job)
       @repo = FactoryGirl.create(:repository)
@@ -45,13 +45,13 @@ describe PublishJob do
     end
 
     it "should return the correct number of matching contents" do
-      @job.query_params[:source_id] = [@publication.id]
+      @job.query_params[:publication_id] = [@publication.id]
       @job.save!
-      @job.contents_count.should== Content.where(source_id: @publication.id).count
+      @job.contents_count.should== Content.where(publication_id: @publication.id).count
     end
 
     it "should return only the ids listed if any ids are in the query" do
-      @job.query_params[:source_id] = [@publication.id]
+      @job.query_params[:publication_id] = [@publication.id]
       @job.save!
       @job.contents_count.should > 1
       @job.query_params[:ids] = "#{Content.last.id}"

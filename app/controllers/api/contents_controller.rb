@@ -7,7 +7,7 @@ class Api::ContentsController < Api::ApiController
       @contents = Content
     end
 
-    @contents = @contents.includes(:source).includes(:content_category).includes(:images)
+    @contents = @contents.includes(:publication).includes(:content_category).includes(:images)
 
     if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
       sort_order = params[:sort_order]
@@ -27,7 +27,7 @@ class Api::ContentsController < Api::ApiController
         allowed_pubs.select! { |p| filter_pubs.include? p }
       end
       # if viewing just the home list
-      @contents = @contents.where(source_id: allowed_pubs)
+      @contents = @contents.where(publication_id: allowed_pubs)
     end
     if params[:start_date].present?
       start_date = Chronic.parse(params[:start_date])
@@ -42,7 +42,7 @@ class Api::ContentsController < Api::ApiController
       if home_list.present? and (params[:admin].nil? or !(params[:admin]=="true"))
         talk_of_the_town_cat = ContentCategory.find_by_name("talk_of_the_town")
         tot_cat_list = talk_of_the_town_cat.children + [talk_of_the_town_cat]
-        @contents = @contents.where("(content_category_id not in (?) OR source_id = ?)", tot_cat_list, home_list.id)
+        @contents = @contents.where("(content_category_id not in (?) OR publication_id = ?)", tot_cat_list, home_list.id)
       end
     end
 
@@ -99,7 +99,7 @@ class Api::ContentsController < Api::ApiController
       params[:content][:raw_content] = params[:content].delete :content
     end
     @content = Content.new(params[:content])
-    @content.source = pub
+    @content.publication = pub
     @content.content_category = cat unless cat.nil?
     @content.pubdate = @content.timestamp = Time.zone.now
 		@content.images=[@image] unless @image.nil?

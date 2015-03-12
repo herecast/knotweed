@@ -3,30 +3,59 @@
 #
 # Table name: contents
 #
-#  id                  :integer          not null, primary key
-#  title               :string(255)
-#  subtitle            :string(255)
-#  authors             :string(255)
-#  raw_content         :text
-#  issue_id            :integer
-#  import_location_id  :integer
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  copyright           :string(255)
-#  guid                :string(255)
-#  pubdate             :datetime
-#  source_category     :string(255)
-#  topics              :string(255)
-#  summary             :text
-#  url                 :string(255)
-#  origin              :string(255)
-#  mimetype            :string(255)
-#  language            :string(255)
-#  page                :string(255)
-#  wordcount           :string(255)
-#  authoremail         :string(255)
-#  source_id           :integer
-
+#  id                     :integer          not null, primary key
+#  title                  :string(255)
+#  subtitle               :string(255)
+#  authors                :string(255)
+#  raw_content            :text
+#  issue_id               :integer
+#  import_location_id     :integer
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  copyright              :string(255)
+#  guid                   :string(255)
+#  pubdate                :datetime
+#  source_category        :string(255)
+#  topics                 :string(255)
+#  summary                :text
+#  url                    :string(255)
+#  origin                 :string(255)
+#  mimetype               :string(255)
+#  language               :string(255)
+#  page                   :string(255)
+#  wordcount              :string(255)
+#  authoremail            :string(255)
+#  publication_id         :integer
+#  file                   :string(255)
+#  quarantine             :boolean          default(FALSE)
+#  doctype                :string(255)
+#  timestamp              :datetime
+#  contentsource          :string(255)
+#  import_record_id       :integer
+#  source_content_id      :string(255)
+#  parent_id              :integer
+#  event_type             :string(255)
+#  start_date             :datetime
+#  end_date               :datetime
+#  cost                   :string(255)
+#  recurrence             :string(255)
+#  links                  :text
+#  host_organization      :string(255)
+#  business_location_id   :integer
+#  featured               :boolean          default(FALSE)
+#  content_category_id    :integer
+#  category_reviewed      :boolean          default(FALSE)
+#  processed_content      :text
+#  event_title            :string(255)
+#  event_description      :text
+#  event_url              :string(255)
+#  sponsor_url            :string(255)
+#  has_event_calendar     :boolean          default(FALSE)
+#  channelized_content_id :integer
+#  published              :boolean          default(FALSE)
+#  channel_type           :string(255)
+#  channel_id             :integer
+#
 
 require 'fileutils'
 require 'builder'
@@ -44,7 +73,7 @@ class Content < ActiveRecord::Base
   has_and_belongs_to_many :repositories, :uniq => true, after_add: :mark_published
   
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
-  belongs_to :source, class_name: "Publication", foreign_key: "source_id"
+  belongs_to :publication
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes, :images
 
@@ -72,7 +101,7 @@ class Content < ActiveRecord::Base
 
   attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
                 :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
-                :language, :authoremail, :source_id,
+                :language, :authoremail, :publication_id,
                 :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
                 :image_ids, :parent_id, :source_uri, :category,
                 :content_category_id, :category_reviewed, :raw_content, :processed_content,
@@ -93,7 +122,7 @@ class Content < ActiveRecord::Base
   scope :events, -> { joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",
                                                      "event", "sale_event") }
 
-  scope :externally_visible, -> { Content.joins(:source)
+  scope :externally_visible, -> { Content.joins(:publication)
         .joins("inner join content_categories_publications ccp on publications.id = ccp.publication_id AND contents.content_category_id = ccp.content_category_id")}
 
   scope :published, -> { where(published: true) }
@@ -162,7 +191,7 @@ class Content < ActiveRecord::Base
   end
 
   def source_uri
-    "<http://www.subtext.org/#{source.class.to_s}/#{source.id}>"
+    "<http://www.subtext.org/#{publication.class.to_s}/#{publication.id}>"
   end
 
   def parent_uri
@@ -170,7 +199,7 @@ class Content < ActiveRecord::Base
   end
 
   def source_name
-    source.try(:name)
+    publication.try(:name)
   end
 
   def location
@@ -257,22 +286,22 @@ class Content < ActiveRecord::Base
           # if that still doesn't work, create a new publication
           pub = Publication.create(name: source, organization_id: organization.id) if pub.nil?
 
-          content.source = pub
+          content.publication = pub
         else
-          content.source = Publication.where("name LIKE ?", "%#{source}%").first
-          content.source = Publication.create(name: source) if content.source.nil?
+          content.publication = Publication.where("name LIKE ?", "%#{source}%").first
+          content.publication = Publication.create(name: source) if content.publication.nil?
         end
       else # deal with special source_fields
-        content.source = Publication.where(source_field => source).first
+        content.publication = Publication.where(source_field => source).first
       end
     end
     if special_attrs.has_key? "edition"
       edition = special_attrs["edition"]
-      content.issue = Issue.where("issue_edition LIKE ?", "%#{edition}%").where(publication_id: content.source_id, publication_date: content.pubdate).first
+      content.issue = Issue.where("issue_edition LIKE ?", "%#{edition}%").where(publication_id: content.publication_id, publication_date: content.pubdate).first
       # if not found, create a new one
       if content.issue.nil?
         content.issue = Issue.new(issue_edition: edition, publication_date: content.pubdate)
-        content.issue.publication = content.source if content.source.present?
+        content.issue.publication = content.publication if content.publication.present?
       end
     end
     if special_attrs.has_key? "categories"
@@ -295,11 +324,11 @@ class Content < ActiveRecord::Base
     # ELSE: don't overwrite, create a new one
     #
     # TODO: this should probably be factored out into a before_save filter
-    if content.source.present? and content.source_content_id.present?
-      existing_content = Content.where(source_id: content.source.id, source_content_id: content.source_content_id).try(:first)
+    if content.publication.present? and content.source_content_id.present?
+      existing_content = Content.where(publication_id: content.publication_id, source_content_id: content.source_content_id).try(:first)
     end
-    if existing_content.nil? and content.source.present?
-      existing_content = Content.where(source_id: content.source.id, guid: content.guid).try(:first)
+    if existing_content.nil? and content.publication.present?
+      existing_content = Content.where(publication_id: content.publication_id, guid: content.guid).try(:first)
     end
     if existing_content.present?
       # if existing content is there, rather than saving, we update
@@ -334,7 +363,7 @@ class Content < ActiveRecord::Base
   # check that doc validates our xml requirements
   # if not, mark it as quarantined
   def mark_quarantined
-    if title.present? and source.present? and pubdate.present? and strip_tags(sanitized_content).present?
+    if title.present? and publication.present? and pubdate.present? and strip_tags(sanitized_content).present?
       self.quarantine = false
     else
       self.quarantine = true
@@ -613,11 +642,11 @@ class Content < ActiveRecord::Base
         f.tag!("tns:feature-set") do |g|
           feature_set.each do |k, v|
             g.tag!("tns:feature") do |h|
-              if ["issue_id", "source_id", "import_location_id", "parent_id"].include? k
+              if ["issue_id", "publication_id", "import_location_id", "parent_id"].include? k
                 if k == "issue_id" and issue.present?
                   key, value = "ISSUE", issue.issue_edition
-                elsif k == "source_id" and source.present?
-                  key, value = "SOURCE", source.name
+                elsif k == "publication_id" and publication.present?
+                  key, value = "SOURCE", publication.name
                 elsif k == "import_location_id" and import_location.present?
                   if import_location.status == ImportLocation::STATUS_GOOD
                     key, value = "LOCATION", import_location.city
@@ -647,13 +676,13 @@ class Content < ActiveRecord::Base
               end
             end
           end
-          if images.present? or source.images.present?
+          if images.present? or publication.images.present?
             g.tag!("tns:feature") do |h|
               h.tag!("tns:name", "IMAGE", "type"=>"xs:string")
               if images.present?
                 g.tag!("tns:value", images.first.image.url, "type"=>"xs:string")
-              elsif source.images.present?
-                g.tag!("tns:value", source.images.first.image.url, "type"=>"xs:string")
+              elsif publication.images.present?
+                g.tag!("tns:value", publication.images.first.image.url, "type"=>"xs:string")
               end
             end
           end
@@ -727,7 +756,7 @@ class Content < ActiveRecord::Base
 
   # construct export path
   def export_path
-    path = "#{TMP_EXPORT_PATH}/#{source.name.gsub(" ", "_")}/#{pubdate.strftime("%Y")}/#{pubdate.strftime("%m")}/#{pubdate.strftime("%d")}"
+    path = "#{TMP_EXPORT_PATH}/#{publication.name.gsub(" ", "_")}/#{pubdate.strftime("%Y")}/#{pubdate.strftime("%m")}/#{pubdate.strftime("%d")}"
   end
 
   # method that constructs an active relation
@@ -742,8 +771,8 @@ class Content < ActiveRecord::Base
       query = {
         quarantine: false # can't publish quarantined docs
       }
-      if query_params[:source_id].present?
-        query[:source_id] = query_params[:source_id].map { |s| s.to_i } 
+      if query_params[:publication_id].present?
+        query[:publication_id] = query_params[:publication_id].map { |s| s.to_i } 
       end
       if query_params[:import_location_id].present?
         query[:import_location_id] = query_params[:import_location_id].map { |s| s.to_i } 
@@ -825,8 +854,8 @@ class Content < ActiveRecord::Base
 
   # helper to retrieve the category that the content should be published with
   def publish_category
-    if source.present? and source.category_override.present?
-      source.category_override
+    if publication.present? and publication.category_override.present?
+      publication.category_override
     elsif category.present?
       category
     else 
@@ -1047,7 +1076,7 @@ class Content < ActiveRecord::Base
 
   def self.truncated_content_fields
     [:id, :title,:featured, :links, :pubdate, :authors, :category, 
-     :parent_category, :source_name, :source_id,
+     :parent_category, :source_name, :publication_id,
      :parent_uri, :category_reviewed, :authoremail, :subtitle]
   end
 
@@ -1055,7 +1084,7 @@ class Content < ActiveRecord::Base
   #
   # @return [Boolean]
   def externally_visible
-    if source.try(:external_categories).include? try(:content_category)
+    if publication.try(:external_categories).include? try(:content_category)
       true
     else
       false
