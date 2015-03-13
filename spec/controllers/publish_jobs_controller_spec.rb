@@ -16,7 +16,7 @@ describe PublishJobsController do
           publish_method: Content::EXPORT_TO_XML
         }
         @query_hash = {
-          source_id: ["3"], import_location_id: ["4"],
+          publication_id: ["3"], import_location_id: ["4"],
           from: nil, to: nil, published: nil,
           ids: nil, content_category_id: nil,
           repository_id: FactoryGirl.create(:repository).id.to_s

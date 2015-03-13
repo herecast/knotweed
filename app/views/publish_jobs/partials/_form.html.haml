@@ -42,7 +42,7 @@
             = select_tag :published, options_for_select(["both", false, true], @publish_job.query_params[:published])
       #query-fields
         = label_tag "source", "Source"
-        = select_tag "source_id", options_from_collection_for_select(Publication.accessible_by(current_ability, :read), "id", "name", @publish_job.query_params[:source_id]), { multiple: true, class: "select2 input-block-level", placeholder: "Select some options" }
+        = select_tag "publication_id", options_from_collection_for_select(Publication.accessible_by(current_ability, :read), "id", "name", @publish_job.query_params[:publication_id]), { multiple: true, class: "select2 input-block-level", placeholder: "Select some options" }
         = label_tag "from", "From"
         = text_field_tag "from", @publish_job.query_params[:from], type: "date", class: "input-block-level"
         = label_tag "to", "To"

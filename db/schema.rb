@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150311220045) do
+ActiveRecord::Schema.define(:version => 20150312232204) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -116,9 +116,9 @@ ActiveRecord::Schema.define(:version => 20150311220045) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer   "channel_id"
-    t.text      "category"
-    t.timestamp "created_at", :null => false
+    t.integer  "channel_id"
+    t.text     "category"
+    t.datetime "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -195,6 +195,8 @@ ActiveRecord::Schema.define(:version => 20150311220045) do
     t.integer "publication_id"
   end
 
+  add_index "content_categories_publications", ["content_category_id", "publication_id"], :name => "index_on_content_category_id_and_publication_id"
+
   create_table "content_sets", :force => true do |t|
     t.string   "import_method"
     t.text     "import_method_details"
@@ -232,15 +234,10 @@ ActiveRecord::Schema.define(:version => 20150311220045) do
     t.text     "summary"
     t.string   "url"
     t.string   "origin"
-    t.string   "mimetype"
     t.string   "language"
-    t.string   "page"
-    t.string   "wordcount"
     t.string   "authoremail"
-    t.integer  "source_id"
-    t.string   "file"
+    t.integer  "publication_id"
     t.boolean  "quarantine",             :default => false
-    t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
@@ -281,11 +278,26 @@ ActiveRecord::Schema.define(:version => 20150311220045) do
   add_index "contents", ["import_record_id"], :name => "import_record_id"
   add_index "contents", ["parent_id"], :name => "index_contents_on_parent_id"
   add_index "contents", ["pubdate"], :name => "pubdate"
+  add_index "contents", ["publication_id"], :name => "source_id"
   add_index "contents", ["published"], :name => "index_contents_on_published"
   add_index "contents", ["source_category"], :name => "categories"
-  add_index "contents", ["source_id"], :name => "source_id"
   add_index "contents", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents", ["title"], :name => "title"
+
+  create_table "contents_NT", :force => true do |t|
+    t.string   "title"
+    t.string   "subtitle"
+    t.string   "authors"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "issue_id"
+    t.integer  "location_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.boolean  "reviewed",       :default => false
+    t.integer  "lupdate_by"
+    t.integer  "publication_id"
+  end
 
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
@@ -310,6 +322,10 @@ ActiveRecord::Schema.define(:version => 20150311220045) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
+
+  create_table "contents_id", :force => true do |t|
+    t.string "category", :limit => 128
+  end
 
   create_table "contents_publish_records", :id => false, :force => true do |t|
     t.integer "content_id"
@@ -549,6 +565,20 @@ ActiveRecord::Schema.define(:version => 20150311220045) do
   end
 
   add_index "locations_sav", ["city"], :name => "city"
+
+  create_table "market_posts", :force => true do |t|
+    t.string   "cost"
+    t.string   "contact_phone"
+    t.string   "contact_email"
+    t.string   "contact_url"
+    t.string   "locate_name"
+    t.string   "locate_address"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.boolean  "locate_include_name"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
+  end
 
   create_table "messages", :force => true do |t|
     t.integer  "created_by_id"

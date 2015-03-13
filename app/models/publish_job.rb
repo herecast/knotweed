@@ -41,7 +41,7 @@ class PublishJob < ActiveRecord::Base
 
   default_scope { where archive: false }
 
-  QUERY_PARAMS_FIELDS = %w(source_id from to import_location_id published ids repository_id content_category_id)
+  QUERY_PARAMS_FIELDS = %w(publication_id from to import_location_id published ids repository_id content_category_id)
   
   validates :publish_method, inclusion: { in: Content::PUBLISH_METHODS }, allow_nil: true
 

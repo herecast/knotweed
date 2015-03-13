@@ -21,8 +21,8 @@
               - id_in_val = ""
             = f.text_field :id_in, value: id_in_val, class: "span12"
           .field.span2
-            = f.label :source_id_in, "Publications"
-            = f.collection_select :source_id_in, Publication.accessible_by(current_ability), 
+            = f.label :publication_id_in, "Publications"
+            = f.collection_select :publication_id_in, Publication.accessible_by(current_ability), 
               :id, :name, {}, { multiple: true, class: "chosen-select span12" }
           .field.span2
             = f.label :pubdate_gteq, "From"
@@ -73,8 +73,8 @@
         %td= c.id
         %td= c.category.try(:titlecase)
         %td
-          - if c.source.present?
-            = link_to c.source.name, contents_path(q: { source_id_in: c.source.id })
+          - if c.publication.present?
+            = link_to c.publication.name, contents_path(q: { publication_id_in: c.publication_id })
         %td= link_to c.title, edit_content_path(id: c.id, index: i, page: params[:page])
         %td
           - if c.authors.present?

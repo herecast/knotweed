@@ -27,17 +27,17 @@ jQuery ->
     new_tab.tab('show')
 
   updateIssueOptions()
-  $(document).on 'change', '#content_source_id', ->
+  $(document).on 'change', '#content_publication_id', ->
     updateIssueOptions()
 
   $(document).on 'change', '#content_content_category_id', ->
     name = $(this).find("option:selected").text()
     if name == "Event" or name == "Sale Event"
       $("#add_new_publication").show()
-      $("label[for='content_source_id']").text("Organization")
+      $("label[for='content_publication_id']").text("Organization")
     else
       $("#add_new_publication").hide()
-      $("label[for='content_source_id']").text("Publication")
+      $("label[for='content_publication_id']").text("Publication")
   $("#content_content_category_id").trigger('change')
 
   # parent content search box
@@ -71,7 +71,7 @@ updateParentOptions = ->
       content_id: $("#content_parent_id").data("contentId"),
       search_query: $("#parent_search").val(),
       q:
-        publication_id: $("#content_source_id").val(),
+        publication_id: $("#content_publication_id").val(),
     beforeSend: ->
       $("#content_parent_id_chosen .chosen-single").spin({radius: 1})
     success: ->
@@ -82,6 +82,6 @@ updateParentOptions = ->
 updateIssueOptions = ->
   $.ajax $("#content_issue_id").data("optionsUrl"),
     data:
-      publication_id: $("#content_source_id").val(),
+      publication_id: $("#content_publication_id").val(),
       selected_id: $("#content_issue_id").data('selectedId')
     dataType: "script"

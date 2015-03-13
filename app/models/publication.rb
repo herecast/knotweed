@@ -32,7 +32,7 @@ class Publication < ActiveRecord::Base
   belongs_to :parent, class_name: "Publication"
   has_many :children, class_name: "Publication", foreign_key: "parent_id"
 
-  has_many :contents, inverse_of: :source, foreign_key: "source_id"
+  has_many :contents
 
   has_many :content_sets
 

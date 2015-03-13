@@ -23,7 +23,7 @@
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#annotation_reports" } do
             Annotation Reports
-      - if @content.source.present?
+      - if @content.publication.present?
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#promotions" } do
             %i.icon-eye-open
@@ -41,7 +41,7 @@
                 = f.association :content_category, label_method: :label
             .row-fluid
               .span12
-                = f.association :source, input_html: { class: "chosen-select span12" }, 
+                = f.association :publication, input_html: { class: "chosen-select span12" }, 
                   label: "Publication"
           .span3
             = f.input :category_reviewed, label: "Category Reviewed?"
@@ -85,7 +85,7 @@
             .controls
               = text_field_tag "parent_search", nil, class: "span12"
           = f.association :issue, 
-            collection: (@content.source.present? ? @content.source.issues.order("issue_edition ASC") : ["Select a Publication First"]), 
+            collection: (@content.publication.present? ? @content.publication.issues.order("issue_edition ASC") : ["Select a Publication First"]), 
             input_html: { class: "chosen-select span12", 
             data: { options_url: issue_select_options_path, selected_id: @content.issue.try(:id) } }, 
             wrapper_html: { class: "span6" }
@@ -126,7 +126,7 @@
       - if @content.published?
         .tab-pane#annotation_reports
           = render partial: 'contents/partials/annotation_reports_tab', locals: { content: @content }
-      - if @content.source.present?
+      - if @content.publication.present?
         .tab-pane#promotions
           = render "promotions/partials/promotions_tab", content: @content
     .form-actions

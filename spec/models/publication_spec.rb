@@ -37,8 +37,8 @@ describe Publication do
     end
 
     it "should return the most recent presentation content" do
-      c1 = FactoryGirl.create(:content, pubdate: 1.day.ago, source: @publication, category: "presentation")
-      c2 = FactoryGirl.create(:content, pubdate: 2.days.ago, source: @publication, category: "presentation")
+      c1 = FactoryGirl.create(:content, pubdate: 1.day.ago, publication: @publication, category: "presentation")
+      c2 = FactoryGirl.create(:content, pubdate: 2.days.ago, publication: @publication, category: "presentation")
       @publication.latest_presentation.should == c1
     end
   end

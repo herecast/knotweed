@@ -32,8 +32,8 @@
             = f.text_field :event_content_pubdate_lteq, type: :date, 
               value: event_search_field_value(:event_content_pubdate_lteq), class: "span12"
           .field.span2
-            = f.label :event_content_source_id_in, "Publications"
-            = f.collection_select :event_content_source_id_in, Publication.accessible_by(current_ability),
+            = f.label :event_content_publication_id_in, "Publications"
+            = f.collection_select :event_content_publication_id_in, Publication.accessible_by(current_ability),
               :id, :name, {}, { multiple: true, class: "chosen-select span12" }
         .controls.controls-row
           .field.span2
@@ -80,8 +80,8 @@
         %td= e.content.id
         %td= link_to e.title, edit_event_path(e.id, index: i, page: params[:page])
         %td
-          - if e.content.source.present?
-            = link_to e.source.name, events_path(q: { event_content_source_id_in: e.source.id })
+          - if e.content.publication.present?
+            = link_to e.content.publication.name, events_path(q: { event_content_publication_id_in: e.content.publication.id })
         %td
           - if e.authors.present?
             = link_to e.authors, events_path(q: { event_content_authors_cont: e.authors })

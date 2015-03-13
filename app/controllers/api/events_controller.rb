@@ -104,7 +104,7 @@ class Api::EventsController < Api::ApiController
     content_record['authoremail'] = params[:event].delete(:authoremail)
     content_record['images'] = [event_image] if event_image.present?
     content_record['content_category_id'] = cat.id
-    content_record['source_id'] = pub.id
+    content_record['publication_id'] = pub.id
     content_record['pubdate'] = content_record['timestamp'] = Time.zone.now
 
     # create the new event and the associated content record
