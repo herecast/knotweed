@@ -6,7 +6,7 @@ json.events [@event] do |e|
   json.content e.sanitized_content
 
   # include the attached content record's id so that it can be used to retrieve related content
-  json.content_id e.content_id
+  json.content_id e.content.id
 
   if e.images.present?
     json.image e.images.first.image.url

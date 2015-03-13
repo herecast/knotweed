@@ -8,15 +8,16 @@ json.events @event_instances do |e|
   # being provided by the instance model.
   event_attrs = []
   if params[:start_date_only] # calendar query
-    instance_attrs = [:id, :start_date, :subtitle]
+    instance_attrs = [:start_date]
   else
     # just make sure we don't include id here
     event_attrs = Event.truncated_event_fields - [:id]
     instance_attrs = [:id, :start_date, :subtitle, :description]
 
-    if e.event.images.present?
-      json.image e.event.images.first.image.url
+    if e.event.content.images.present?
+      json.image e.event.content.images[0].image.url
     end
+    json.content_id e.event.content.id
   end
 
   instance_attrs.each { |attr| json.set! attr, e.send(attr) }
