@@ -1,6 +1,6 @@
 json.events [@event] do |e|
   attrs = [:id, :title, :start_date, :end_date, :sponsor, :cost,
-           :featured, :links, :pubdate, :authors, :category, :parent_category, :source_name, :publication_id, :location, 
+           :featured, :links, :pubdate, :authors, :category, :parent_category, :publication_name, :publication_id, :location, 
            :parent_uri, :venue, :category_reviewed, :has_active_promotion, :authoremail,
            :event_url, :sponsor_url, :subtitle, :contact_phone, :contact_email, :contact_url]
   json.content e.sanitized_content

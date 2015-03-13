@@ -1,5 +1,5 @@
 attrs = [:id, :title, :start_date, :end_date, :event_type, :host_organization, :cost, :recurrence,
-         :featured, :links, :pubdate, :authors, :category, :source_name, :location, 
+         :featured, :links, :pubdate, :authors, :category, :publication_name, :location, 
          :parent_uri]
 
 json.page @page unless @page.nil?

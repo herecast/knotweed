@@ -1,8 +1,9 @@
 json.events [@event_instance] do |ei|
-  attrs = [:id, :title, :sponsor, :cost,
-           :featured, :links, :pubdate, :authors, :category, :parent_category, :source_name, :publication_id, :location, 
-           :parent_uri, :venue, :category_reviewed, :has_active_promotion, :authoremail,
-           :event_url, :sponsor_url, :subtitle, :contact_phone, :contact_email, :contact_url]
+  attrs = [:id, :sponsor, :cost, :featured, :links, :venue, :event_url, 
+          :sponsor_url, :subtitle, :contact_phone, :contact_email, :contact_url]
+  content_attrs = [:title, :pubdate, :authors, :category, :parent_category, :publication_name, 
+                  :publication_id, :parent_uri, :category_reviewed, :has_active_promotion, 
+                  :authoremail, :subtitle]
   json.event_id ei.event.id
   json.content_id ei.event.content.id
   json.content ei.event.content.raw_content

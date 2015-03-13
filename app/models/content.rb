@@ -198,7 +198,7 @@ class Content < ActiveRecord::Base
     "#{BASE_URI}/#{parent_id}" unless parent_id.nil?
   end
 
-  def source_name
+  def publication_name
     publication.try(:name)
   end
 
@@ -1076,7 +1076,7 @@ class Content < ActiveRecord::Base
 
   def self.truncated_content_fields
     [:id, :title,:featured, :links, :pubdate, :authors, :category, 
-     :parent_category, :source_name, :publication_id,
+     :parent_category, :publication_name, :publication_id,
      :parent_uri, :category_reviewed, :authoremail, :subtitle]
   end
 
