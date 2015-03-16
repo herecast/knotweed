@@ -19,4 +19,10 @@
 class MarketPost < ActiveRecord::Base
   attr_accessible :contact_email, :contact_phone, :contact_url, :cost, :latitude, 
     :locate_address, :locate_include_name, :locate_name, :longitude
+
+  has_one :content, as: :channel
+  accepts_nested_attributes_for :content
+  attr_accessible :content_attributes, :content
+  validates_associated :content
+
 end

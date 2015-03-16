@@ -29,5 +29,6 @@ FactoryGirl.define do
     latitude 1.5
     longitude 1.5
     locate_include_name false
+    content
   end
 end
