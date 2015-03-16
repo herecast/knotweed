@@ -73,8 +73,8 @@ class Api::EventsController < Api::ApiController
   # the source is also handled differently, and reverse publishing can be done to multiple sources
   # simultaneously to creating and publishing our original content
   def create
-    source = params[:event].delete :source
-    pub = Publication.find_by_name(source)
+    pub_name = params[:event].delete :publication
+    pub = Publication.find_by_name(pub_name)
 
     cat_name = params[:event].delete :category
     cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
