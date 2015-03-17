@@ -97,6 +97,8 @@ Knotweed::Application.routes.draw do
     resources :event_instances, path: "events", only: [:show, :index]
     resources :events, only: [:create, :update]
 
+    resources :market_posts, only: [:create, :update, :show, :index]
+
     resources :contents, only: [:index, :show, :update]
     resources :messages, only: [:index]
     resources :wufoo_forms, only: [:show, :index]
