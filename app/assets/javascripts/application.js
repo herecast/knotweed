@@ -46,3 +46,4 @@
 //= require select2
 //= require business_locations
 //= require events
+//= require market_posts
