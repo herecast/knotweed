@@ -20,12 +20,12 @@
 
 FactoryGirl.define do
   factory :market_post do
-    cost "MyString"
-    contact_phone "MyString"
-    contact_email "MyString"
-    contact_url "MyString"
-    locate_name "MyString"
-    locate_address "MyString"
+    cost "MP_cost"
+    contact_phone "MP_contact_phone"
+    contact_email "MP_contact_email"
+    contact_url "MP_contact_url"
+    locate_name "MP_locate_name"
+    locate_address "MP_locate_address"
     latitude 1.5
     longitude 1.5
     locate_include_name false

@@ -19,5 +19,29 @@
 require 'spec_helper'
 
 describe MarketPost do
-  pending "add some examples to (or delete) #{__FILE__}"
+  before do
+    @content = FactoryGirl.create :content
+    @market_post = FactoryGirl.create :market_post, content: @content
+  end
+
+  describe "method missing override" do
+    it "should allow access to content attributes directly" do
+      @market_post.title.should eq(@content.title)
+      @market_post.authors.should eq(@content.authors)
+      @market_post.pubdate.should eq(@content.pubdate)
+    end
+
+    it "should retain normal method_missing behavior if not a content attribute" do
+      expect { @market_post.asdfdas }.to raise_error(NoMethodError)
+    end
+  end
+
+  describe "after_save" do
+    it "should also save the associated content record" do
+      @content.title = "Changed Title"
+      @market_post.save # should trigger @content.save callback
+      @content.reload.title.should eq "Changed Title"
+    end
+  end
+
 end
