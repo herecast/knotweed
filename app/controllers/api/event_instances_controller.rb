@@ -59,8 +59,7 @@ class Api::EventInstancesController < Api::ApiController
   def show
     @event_instance = EventInstance.find(params[:id])
     if params[:repository].present? and @event_instance.present?
-      repo = Repository.find_by_dsp_endpoint params[:repository]
-      @event_instance = nil unless @event_instance.event.content.repositories.include? repo
+      @event_instance = nil unless @event_instance.event.content.published
     end
   end
 
