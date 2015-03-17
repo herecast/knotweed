@@ -67,6 +67,22 @@
           = link_to new_event_path do
             %i.icon-plus
             %span Create New
+- if can? :read, MarketPost
+  %li
+    = link_to market_posts_path do
+      %i.icon-shopping-cart
+      %span Market Posts
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "market_posts" ? "in" : "" }" }
+      %li{ class: current_page?(market_posts_path) ? "active" : "" }
+        = link_to market_posts_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, MarketPost
+        %li{ class: current_page?(new_content_path) ? "active" : "" }
+          = link_to new_market_post_path do
+            %i.icon-plus
+            %span Create New
 - if can? :read, ContentSet
   %li
     = link_to content_sets_path do
