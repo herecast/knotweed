@@ -68,24 +68,20 @@ class MarketPostsController < ApplicationController
   def create
     @market_post = MarketPost.new(params[:market_post])
     authorize! :create, @market_post
-    begin
-      if @market_post.save!
-        publish_success = false
-        if current_user.default_repository.present?
-          publish_success = @market_post.content.publish(Content::POST_TO_NEW_ONTOTEXT, current_user.default_repository)
-        end
-
-        flash[:notice] = "Created market post with id #{@market_post.id}"
-        if publish_success == true
-          flash[:notice] = flash[:notice] + ' and published successfully'
-        elsif publish_success == false
-          flash[:warning] = 'Publish failed'
-        end
-        redirect_to form_submit_redirect_path(@market_post.id)
-      else
-        render "new"
+    if @market_post.save
+      publish_success = false
+      if current_user.default_repository.present?
+        publish_success = @market_post.content.publish(Content::POST_TO_NEW_ONTOTEXT, current_user.default_repository)
       end
-    rescue
+
+      flash[:notice] = "Created market post with id #{@market_post.id}"
+      if publish_success == true
+        flash[:notice] = flash[:notice] + ' and published successfully'
+      elsif publish_success == false
+        flash[:warning] = 'Publish failed'
+      end
+      redirect_to form_submit_redirect_path(@market_post.id)
+    else
       flash[:notice] = 'Creating the new market post failed'
       render "new"
     end
