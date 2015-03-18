@@ -61,8 +61,8 @@
             =# link_to c.authors, content_path(q: { authors_cont: c.authors })
             = c.authors
         %td
-          - if c.authoremail.present?
-            = c.authoremail
+          - if c.contact_email.present?
+            = c.contact_email
         %td= c.pubdate.try(:strftime, "%Y-%m-%d")
         %td.actions
           = link_to "edit", edit_content_path(c), class: "btn btn-mini btn-warning"

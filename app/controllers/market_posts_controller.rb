@@ -5,9 +5,7 @@ class MarketPostsController < ApplicationController
     if params[:reset]
       session[:market_posts_search] = nil
     elsif params[:q].present?
-      if params[:q][:id_in].present?
-        params[:q][:id_in] = params[:q][:id_in].split(',').map{ |s| s.strip }
-      end
+      params[:q][:id_in] = params[:q][:id_in].split(',').map { |s| s.strip } if params[:q][:id_in].present?
       session[:market_posts_search] = params[:q]
     end
 
@@ -31,26 +29,9 @@ class MarketPostsController < ApplicationController
 
   def new
     @market_post = MarketPost.new
-    # if this is curating an existing piece of content, we get passed "unchannelized_content_id"
-    # and use that to construct our new content
-    if params[:unchannelized_content_id].present?
-      unchannelized_content = Content.find(params[:unchannelized_content_id])
-      @market_post.content = unchannelized_content.dup
-      # we pass in a placeholder for the image url so that we can display it
-      # (if the original content had an image),
-      # then in create we duplicate the original image and assign it to the new content.
-      @placeholder_image = unchannelized_content.images.first
-      @market_post.content.title = remove_list_from_title(unchannelized_content.title)
-    else
-      @market_post.content = Content.new(channel_type: 'MarketPost')
-    end
 
-    @market_post.content.images.build unless @market_post.content.images.present?
-
-    # set default fields for event channelized content here
-
-    # for the record, I hate this. That we're hard coding "event" which is represented by a database
-    # field *throughout* the codebase. It's done under protest.
+    @market_post.content = Content.new(channel_type: 'MarketPost')
+    @market_post.content.images.build
     @market_post.content.content_category_id = ContentCategory.find_or_create_by_name('market').id
 
     # hard coding some other things
@@ -75,15 +56,15 @@ class MarketPostsController < ApplicationController
       end
 
       flash[:notice] = "Created market post with id #{@market_post.id}"
-      if publish_success == true
+      if publish_success
         flash[:notice] = flash[:notice] + ' and published successfully'
-      elsif publish_success == false
+      else
         flash[:warning] = 'Publish failed'
       end
       redirect_to form_submit_redirect_path(@market_post.id)
     else
       flash[:notice] = 'Creating the new market post failed'
-      render "new"
+      render 'new'
     end
   end
 
@@ -104,9 +85,9 @@ class MarketPostsController < ApplicationController
         publish_success = @market_post.content.publish(Content::POST_TO_NEW_ONTOTEXT, current_user.default_repository)
       end
       flash[:notice] = "Successfully updated market post #{@market_post.id}"
-      if publish_success == true
+      if publish_success
         flash[:notice] = flash[:notice] + ' and re-published'
-      elsif publish_success == false
+      else
         flash[:warning] = 'Publish failed'
       end
       redirect_to form_submit_redirect_path(@market_post.id)
