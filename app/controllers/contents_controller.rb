@@ -94,7 +94,7 @@ class ContentsController < ApplicationController
     # in the future, we'll want to perhaps add a "is_channelized?" method
     # that returns the class of the channel so we can redirect more generically
     if @content.channel.present?
-      redirect_to url_for(controller: @content.channel_type.downcase.pluralize, action: "edit",
+      redirect_to url_for(controller: @content.channel_type.underscore.pluralize, action: "edit",
                           id: @content.channel_id)
     end
     authorize! :edit, @content
