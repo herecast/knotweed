@@ -3,6 +3,6 @@
     .box-header.blue-background
       .title
         %i.icon-pencil
-        Market Post ID #{@market_post.id} - #{@market_post.title}
+          Market Post ID #{@market_post.id} - #{@market_post.title}, Content ID #{@market_post.content.id}
     .box-content
       = render partial: "market_posts/partials/form"
