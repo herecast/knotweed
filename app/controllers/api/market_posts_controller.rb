@@ -56,8 +56,132 @@ class Api::MarketPostsController < Api::ApiController
   end
 
   def create
-  end
+    pub_name = params[:market_post].delete :publication
+    pub = Publication.find_by_name(pub_name)
+
+    cat_name = params[:market_post].delete :category
+    cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
+
+    # destinations for reverse publishing
+    destinations = params[:market_post].delete :destinations
+
+    venue_id = params[:market_post].delete(:business_location_id)
+
+    # TODO: there has got to be a better way! but I tried simply piping the image straight through
+    # and allowing mass assignment to upload it as you would a normal form submission and no dice, so using
+    # JS's solution until we think of something better.
+    if params[:market_post][:image].present?
+      img = params[:market_post].delete :image
+      image_temp_file = Tempfile.new('tmpImage')
+      image_temp_file.puts img[:image_content]
+      file_to_upload = ActionDispatch::Http::UploadedFile.new(tempfile: image_temp_file,
+                                                              filename: img[:image_name], type: img[:image_type])
+      market_post_image = Image.new image: file_to_upload
+    end
+
+    # create content record to associate with the new market_post record
+    content_record = {}
+    content_record['title'] = params[:market_post].delete(:title)
+    content_record['raw_content'] = params[:market_post].delete(:content)
+    content_record['authors'] = params[:market_post].delete(:authors)
+    content_record['authoremail'] = params[:market_post].delete(:authoremail)
+    content_record['images'] = [market_post_image] if market_post_image.present?
+    content_record['content_category_id'] = cat.id
+    content_record['publication_id'] = pub.id
+    content_record['pubdate'] = content_record['timestamp'] = Time.zone.now
+
+    # create the new market_post and the associated content record
+    @market_post = MarketPost.new(params[:market_post])
+    @market_post.content_attributes = content_record
+
+    if @market_post.save
+
+      # reverse publish to specified destinations
+      if destinations.present?
+        destinations.each do |d|
+          next if d.empty?
+          dest_pub = Publication.find_by_name(d)
+          # skip if it doesn't exist or if it can't reverse publish
+          next if dest_pub.nil? or !dest_pub.can_reverse_publish
+          ReversePublisher.send_market_post_to_listserv(@market_post, dest_pub, @requesting_app).deliver
+          logger.debug(dest_pub.name)
+        end
+      end
+
+      repo = Repository.find_by_dsp_endpoint(params[:repository])
+      if repo.present? and params[:publish] == "true"
+        if @market_post.publish(Content::POST_TO_NEW_ONTOTEXT, repo)
+          render text: "#{@market_post.id}"
+        else
+          render text: "Market Post #{@market_post.id} created but failed to publish", status: 500
+        end
+      end
+    else
+      render text: "Market Post could not be created", status: 500
+    end  end
 
   def update
+    @market_post = MarketPost.find(params[:id])
+
+    # legacy handling of event_description and event_title fields
+    params[:market_post][:id] = @market_post.id
+
+    # destinations for reverse publishing
+    destinations = params[:market_post].delete :destinations
+
+    # handle images
+    if params[:market_post][:image].present?
+      hImage = params[:market_post].delete :image
+      image_temp_file = Tempfile.new('tmpImage')
+      image_temp_file.puts hImage[:image_content]
+      file_to_upload = ActionDispatch::Http::UploadedFile.new(tempfile: image_temp_file,
+                                                              filename: hImage[:image_name], type: hImage[:image_type])
+      event_image = Image.new image: file_to_upload
+    end
+
+    # need to pass attributes for the content record through content_attributes
+    content_attributes = {}
+    content_attributes[:id] = @market_post.content.id
+    content_attributes[:title] = params[:market_post].delete :title if params[:market_post][:title].present?
+    content_attributes[:authors] = params[:market_post].delete :authors if params[:market_post][:authors].present?
+    content_attributes[:raw_content] = params[:market_post].delete :description if params[:market_post][:description].present?
+    params[:market_post][:content_attributes] = content_attributes
+
+    if @market_post.update_attributes(params[:market_post])
+      if event_image.present?
+        # would just do @market_post.images << @image, but despite the fact
+        # that we are set up to have more than one image per content,
+        # on the consumer side, we're assuming there's only one image.
+        # So to ensure we're displaying the right one, we have to do this.
+        @content = @market_post.content
+        @content.images = [event_image]
+        @content.save
+      end
+
+      # reverse publish to specified destinations
+      if destinations.present?
+        destinations.each do |d|
+          next if d.empty?
+          dest_pub = Publication.find_by_name(d)
+          # skip if it doesn't exist or if it can't reverse publish
+          next if dest_pub.nil? or !dest_pub.can_reverse_publish
+          ReversePublisher.send_market_post_to_listserv(@market_post, dest_pub, @requesting_app).deliver
+          logger.debug(dest_pub.name)
+        end
+      end
+
+      repo = Repository.find_by_dsp_endpoint(params[:repository])
+      if repo.present? and params[:publish] == "true"
+        if @market_post.publish(Content::POST_TO_NEW_ONTOTEXT, repo)
+          render text: "#{@market_post.id}"
+        else
+          render text: "Market Post #{@market_post.id} updated but failed to publish", status: 500
+        end
+      else
+        render text: "#{@market_post.id}"
+      end
+    else
+      render text: "update of market post #{@market_post.id} failed", status: 500
+    end
   end
 end
