@@ -58,7 +58,7 @@ module EventsHelper
     end
   end
 
-  def event_contact_display(event)
+  def contact_display(event)
     display_string = ''
     display_string += event.contact_phone + ', ' if event.contact_phone.present?
     display_string += event.contact_email + ', ' if event.contact_email.present?

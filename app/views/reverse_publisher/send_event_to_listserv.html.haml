@@ -21,7 +21,7 @@
   %p
     Cost: #{@event.cost}
 
-- contact_string = event_contact_display(@event)
+- contact_string = contact_display(@event)
 - if contact_string.present?
   %p
     Contact: #{contact_string}
