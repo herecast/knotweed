@@ -547,6 +547,16 @@ describe Content do
         expect(Nokogiri::XML(export) { |config| config.strict }).to_not be_nil
       end
     end
+
+    describe "during backup times" do
+      it "should return false and not do anything" do
+        Timecop.freeze(Chronic.parse("3:00 am")) do
+          @content.publish("post_to_ontotext", @repo).should == false
+          @repo.contents.include?(@content).should == false
+        end
+      end
+    end
+
   end
 
   describe "publish_category" do
