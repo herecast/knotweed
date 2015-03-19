@@ -140,14 +140,13 @@ class Content < ActiveRecord::Base
   # publish methods are string representations
   # of methods on the Content model
   # that are called via send on each piece of content
-  POST_TO_ONTOTEXT = "post_to_ontotext"
   EXPORT_TO_XML = "export_to_xml"
   REPROCESS = "reannotate_at_ontotext"
   EXPORT_PRE_PIPELINE = "export_pre_pipeline_xml"
   EXPORT_POST_PIPELINE = "export_post_pipeline_xml"
-  POST_TO_NEW_ONTOTEXT = "post_to_new_ontotext"
-  PUBLISH_METHODS = [POST_TO_ONTOTEXT, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE,
-                     EXPORT_POST_PIPELINE, POST_TO_NEW_ONTOTEXT]
+  PUBLISH_TO_DSP = "publish_to_dsp"
+  PUBLISH_METHODS = [PUBLISH_TO_DSP, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE,
+                     EXPORT_POST_PIPELINE]
 
   # features that can be overwritten when we reimport
   REIMPORT_FEATURES = %w(title subtitle authors raw_content pubdate source_category topics summary
@@ -568,7 +567,7 @@ class Content < ActiveRecord::Base
   # @todo investigate why we're passing opts
   # @param repo [Repo] the repo object
   # @param opts [Array] publish options e.g. :download_result 
-  def post_to_new_ontotext(repo, opts={})
+  def publish_to_dsp(repo, opts={})
     annotate_resp = JSON.parse(
       OntotextController.post(repo.annotate_endpoint + '/extract', 
         { body: to_new_xml,
@@ -601,33 +600,11 @@ class Content < ActiveRecord::Base
     return "failed to post doc: #{self.id}\nresponse:#{response.body}"
   end
 
-  # Publish content to the DSP (old) controller 
-  def post_to_ontotext(repo, opts={})
-    options = { body: to_new_xml(true),
-                headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8"}}
-                
-    response = OntotextController.post(repo.dsp_endpoint + '/processDocument?persist=true', options)
-    if response.body.include? document_uri
-      repo.contents << self unless repo.contents.include? self
-      # trigger updating hasActivePromotion if publish succeeded
-      if has_active_promotion?
-        # we only need this run on one promotion, not all of them
-        promotions.where(active: true).first.mark_active_promotion(repo)
-      end
-
-      # trigger feedback update from pipeline (updating DB with pipeline-processed fields)
-      update_from_repo(repo)
-      return true
-    else
-      return "failed to post doc: #{self.id}\nresponse:#{response.body}"
-    end
-  end
-
   def reannotate_at_ontotext(repo, opts = {})
     options = { :id => document_uri }
     response = OntotextController.post(repo.dsp_endpoint + '/reprocessDocument', options)
     if response.code != 200
-      post_to_ontotext(repo, opts)
+      publish_to_dsp(repo, opts)
     else
       return true
     end

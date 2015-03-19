@@ -140,7 +140,7 @@
       = submit_tag "Submit and add new", class: "btn btn-success", name: "create_new"
       - if @content.id.present? and !@content.quarantine
         - if current_user.default_repository.present?
-          = link_to "Publish", publish_content_path(@content, "post_to_new_ontotext", current_user.default_repository.id),
+          = link_to "Publish", publish_content_path(@content, "publish_to_dsp", current_user.default_repository.id),
             class: "btn btn-primary publish-action-button"
         - else
           .has-tooltip.btn{ disabled: "disabled", data: { toggle: "tooltip", 
