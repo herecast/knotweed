@@ -52,7 +52,7 @@ class MarketPostsController < ApplicationController
     if @market_post.save
       publish_success = false
       if current_user.default_repository.present?
-        publish_success = @market_post.content.publish(Content::PUBLISH_TO_DSP, current_user.default_repository)
+        publish_success = @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, current_user.default_repository)
       end
 
       flash[:notice] = "Created market post with id #{@market_post.id}"
@@ -82,7 +82,7 @@ class MarketPostsController < ApplicationController
       # re-publish updated content
       publish_success = false
       if current_user.default_repository.present?
-        publish_success = @market_post.content.publish(Content::PUBLISH_TO_DSP, current_user.default_repository)
+        publish_success = @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, current_user.default_repository)
       end
       flash[:notice] = "Successfully updated market post #{@market_post.id}"
       if publish_success

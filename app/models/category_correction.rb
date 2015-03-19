@@ -31,7 +31,7 @@ class CategoryCorrection < ActiveRecord::Base
     content.update_attribute :category_reviewed, true
     # update for all repos
     content.repositories.each do |r|
-      content.publish(Content::PUBLISH_TO_DSP, r)
+      content.publish(Content::DEFAULT_PUBLISH_METHOD, r)
     end
   end
   

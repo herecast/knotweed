@@ -81,7 +81,7 @@ describe PublishJobsController do
 
     context "with a job without a file_archive" do
       before do
-        @job = FactoryGirl.create(:publish_job, publish_method: Content::PUBLISH_TO_DSP)
+        @job = FactoryGirl.create(:publish_job, publish_method: Content::DEFAULT_PUBLISH_METHOD)
         Content.any_instance.stub(:publish_to_dsp).and_return(true)
         FactoryGirl.create_list(:content, 3)
         @job.before @job

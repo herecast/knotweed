@@ -135,8 +135,6 @@ class Content < ActiveRecord::Base
 
   BASE_URI = "http://www.subtext.org/Document"
 
-  DEFAULT_PUBLISH_METHOD = "export_to_xml"
-
   # publish methods are string representations
   # of methods on the Content model
   # that are called via send on each piece of content
@@ -147,6 +145,9 @@ class Content < ActiveRecord::Base
   PUBLISH_TO_DSP = "publish_to_dsp"
   PUBLISH_METHODS = [PUBLISH_TO_DSP, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE,
                      EXPORT_POST_PIPELINE]
+  # set a default here so if it changes, 
+  # we don't have to change the code in many different places
+  DEFAULT_PUBLISH_METHOD = PUBLISH_TO_DSP
 
   # features that can be overwritten when we reimport
   REIMPORT_FEATURES = %w(title subtitle authors raw_content pubdate source_category topics summary

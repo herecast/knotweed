@@ -54,7 +54,7 @@ class Api::EventsController < Api::ApiController
 
       repo = Repository.find_by_dsp_endpoint(params[:repository])
       if repo.present? and params[:publish] == "true"
-        if @event.publish(Content::PUBLISH_TO_DSP, repo)
+        if @event.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
           render text: "#{@event.id}"
         else
           render text: "Event #{@event.id} updated but failed to publish", status: 500
@@ -127,7 +127,7 @@ class Api::EventsController < Api::ApiController
 
       repo = Repository.find_by_dsp_endpoint(params[:repository])
       if repo.present? and params[:publish] == "true"
-        if @event.publish(Content::PUBLISH_TO_DSP, repo)
+        if @event.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
           render text: "#{@event.id}"
         else
           render text: "Event #{@event.id} created but failed to publish", status: 500
