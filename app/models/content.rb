@@ -139,11 +139,10 @@ class Content < ActiveRecord::Base
   # of methods on the Content model
   # that are called via send on each piece of content
   EXPORT_TO_XML = "export_to_xml"
-  REPROCESS = "reannotate_at_ontotext"
   EXPORT_PRE_PIPELINE = "export_pre_pipeline_xml"
   EXPORT_POST_PIPELINE = "export_post_pipeline_xml"
   PUBLISH_TO_DSP = "publish_to_dsp"
-  PUBLISH_METHODS = [PUBLISH_TO_DSP, EXPORT_TO_XML, REPROCESS, EXPORT_PRE_PIPELINE,
+  PUBLISH_METHODS = [PUBLISH_TO_DSP, EXPORT_TO_XML, EXPORT_PRE_PIPELINE,
                      EXPORT_POST_PIPELINE]
   # set a default here so if it changes, 
   # we don't have to change the code in many different places
@@ -599,16 +598,6 @@ class Content < ActiveRecord::Base
     end
 
     return "failed to post doc: #{self.id}\nresponse:#{response.body}"
-  end
-
-  def reannotate_at_ontotext(repo, opts = {})
-    options = { :id => document_uri }
-    response = OntotextController.post(repo.dsp_endpoint + '/reprocessDocument', options)
-    if response.code != 200
-      publish_to_dsp(repo, opts)
-    else
-      return true
-    end
   end
 
   def to_new_xml(include_tags=false)
