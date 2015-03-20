@@ -22,7 +22,7 @@ class MarketPost < ActiveRecord::Base
 
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
-  attr_accessible :content_attributes, :content
+  attr_accessible :content_attributes
   validates_associated :content
 
   has_one :source, through: :content, class_name: "Publication", foreign_key: "publication_id"
