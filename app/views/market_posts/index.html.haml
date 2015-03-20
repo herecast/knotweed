@@ -54,7 +54,7 @@
   %tbody
     - @market_posts.each_with_index do |c, i|
       %tr{ class: "content-#{c.id}" }
-        %td= c.id
+        %td= c.content.id
         %td= link_to c.title, edit_market_post_path(id: c.id, index: i, page: params[:page])
         %td
           - if c.authors.present?
