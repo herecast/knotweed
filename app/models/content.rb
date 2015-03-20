@@ -249,6 +249,15 @@ class Content < ActiveRecord::Base
       end
     end
 
+    # if this has our proprietary 'X-Original-Content-Id' key in the header, it means this was created on our site.
+    # if so, AND it's an event, it implies it's already been curated (i.e. 'has_event-calendar')
+    original_content_id = 0
+    original_content_id = data['X-Original-Content-Id'] if data.has_key? 'X-Original-Content-Id'
+    if original_content_id > 0
+      c = Content.find(original_content_id)
+      data['has_event_calendar'] = true if 'Event' == c.channel_type
+    end
+
     raw_content = data.delete 'content'
 
     data.keys.each do |k|
