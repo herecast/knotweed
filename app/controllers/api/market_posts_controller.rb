@@ -118,7 +118,8 @@ class Api::MarketPostsController < Api::ApiController
       end
     else
       render text: "Market Post could not be created", status: 500
-    end  end
+    end  
+  end
 
   def update
     @market_post = MarketPost.find(params[:id])
@@ -136,7 +137,7 @@ class Api::MarketPostsController < Api::ApiController
       image_temp_file.puts hImage[:image_content]
       file_to_upload = ActionDispatch::Http::UploadedFile.new(tempfile: image_temp_file,
                                                               filename: hImage[:image_name], type: hImage[:image_type])
-      event_image = Image.new image: file_to_upload
+      market_post_image = Image.new image: file_to_upload
     end
 
     # need to pass attributes for the content record through content_attributes
@@ -144,17 +145,17 @@ class Api::MarketPostsController < Api::ApiController
     content_attributes[:id] = @market_post.content.id
     content_attributes[:title] = params[:market_post].delete :title if params[:market_post][:title].present?
     content_attributes[:authors] = params[:market_post].delete :authors if params[:market_post][:authors].present?
-    content_attributes[:raw_content] = params[:market_post].delete :description if params[:market_post][:description].present?
+    content_attributes[:raw_content] = params[:market_post].delete :content if params[:market_post][:content].present?
     params[:market_post][:content_attributes] = content_attributes
 
     if @market_post.update_attributes(params[:market_post])
-      if event_image.present?
+      if market_post_image.present?
         # would just do @market_post.images << @image, but despite the fact
         # that we are set up to have more than one image per content,
         # on the consumer side, we're assuming there's only one image.
         # So to ensure we're displaying the right one, we have to do this.
         @content = @market_post.content
-        @content.images = [event_image]
+        @content.images = [market_post_image]
         @content.save
       end
 

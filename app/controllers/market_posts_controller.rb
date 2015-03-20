@@ -24,7 +24,7 @@ class MarketPostsController < ApplicationController
 
   def show
     flash.keep
-    redirect_to edit_content_path(params[:id])
+    redirect_to edit_market_post_path(params[:id])
   end
 
   def new

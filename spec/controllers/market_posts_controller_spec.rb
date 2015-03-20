@@ -3,20 +3,13 @@ require 'spec_helper'
 describe MarketPostsController do
   before do
     @user = FactoryGirl.create :admin
+    @market_post = FactoryGirl.create :market_post
     sign_in @user
   end
 
   describe "GET 'index'" do
     it "returns http success" do
       get 'index'
-      response.should be_success
-    end
-  end
-
-  describe "GET 'show'" do
-    it "returns http success" do
-      pending 'debugging show action'
-      get 'show'
       response.should be_success
     end
   end
@@ -28,16 +21,22 @@ describe MarketPostsController do
     end
   end
 
-  describe "GET 'create'" do
-    it "returns http success" do
-      get 'create'
-      response.should be_success
+  describe "POST 'create'" do
+    it "redirect to market_posts index on success" do
+      c = FactoryGirl.create :content
+      post 'create', market_post: {
+        content_attributes: {
+          title: "hello"
+        },
+        cost: "$5"
+      }
+      response.code.should eq("302")
     end
   end
 
   describe "GET 'edit'" do
     it "returns http success" do
-      get 'edit'
+      get 'edit', id: @market_post.id
       response.should be_success
     end
   end
@@ -85,7 +84,7 @@ describe MarketPostsController do
 
     it 'return all market_posts' do
       get :index, q: @q
-      assigns(:market_posts).length.should == 4
+      assigns(:market_posts).length.should == 5
     end
   end
 
