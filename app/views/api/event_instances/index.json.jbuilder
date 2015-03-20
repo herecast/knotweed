@@ -18,6 +18,8 @@ json.events @event_instances do |e|
       json.image e.event.content.images[0].image.url
     end
     json.content_id e.event.content.id
+    # needed for constructing appropriate URLs on consumer side
+    json.event_id e.event.id
   end
 
   instance_attrs.each { |attr| json.set! attr, e.send(attr) }

@@ -3,6 +3,6 @@
     .box-header.blue-background
       .title
         %i.icon-pencil
-        Event ID #{@event.id} #{@event.title}
+          Event ID #{@event.id} #{@event.title}, Content ID #{@event.content.id}
     .box-content
       = render partial: "events/partials/form"

@@ -9,5 +9,5 @@ ThinkingSphinx::Index.define :content, :with => :active_record do
   has pubdate
   has content_category.id, as: :cat_ids
   has repositories.id, as: :repo_ids
-  has source.id, as: :pub_id
+  has publication.id, as: :pub_id
 end
