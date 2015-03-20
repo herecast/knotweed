@@ -63,7 +63,7 @@ class EventsController < ApplicationController
         end
       end
       if current_user.default_repository.present?
-         publish_success = @event.content.publish(Content::POST_TO_NEW_ONTOTEXT, current_user.default_repository)
+         publish_success = @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, current_user.default_repository)
       end
 
       flash[:notice] = "Created event with id #{@event.id}"
@@ -102,7 +102,7 @@ class EventsController < ApplicationController
     if @event.update_attributes(params[:event])
       # re-publish updated content
       if current_user.default_repository.present?
-         publish_success = @event.content.publish(Content::POST_TO_NEW_ONTOTEXT, current_user.default_repository)
+         publish_success = @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, current_user.default_repository)
       end
       flash[:notice] = "Successfully updated event #{@event.id}"
       if publish_success == true
