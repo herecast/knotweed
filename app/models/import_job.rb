@@ -222,6 +222,7 @@ class ImportJob < ActiveRecord::Base
     import_record = last_import_record
     successes = 0
     failures = 0
+    filtered = 0
     log = import_record.log_file
     docs.each do |article|
       # trim all fields so we don't get any unnecessary whitespace
@@ -236,11 +237,17 @@ class ImportJob < ActiveRecord::Base
       end
         
       begin
-        c = Content.create_from_import_job(article, self)
-        log.info("content #{c.id} created")
-        successes += 1
-        if automatically_publish and repository.present?
-          c.publish(publish_method, repository)
+        # filter out emails that we sent
+        if import_filter(article)
+          log.info("content with X-Original-Content-Id #{article['X-Original-Content-Id']} filtered")
+          filtered += 1
+        else
+          c = Content.create_from_import_job(article, self)
+          log.info("content #{c.id} created")
+          successes += 1
+          if automatically_publish and repository.present?
+            c.publish(publish_method, repository)
+          end
         end
       rescue StandardError => bang
         log.error("failed to process content: #{bang}")
@@ -249,9 +256,22 @@ class ImportJob < ActiveRecord::Base
     end
     log.info("successes: #{successes}")
     log.info("failures: #{failures}")
+    log.info("filtered: #{filtered}")
     import_record.items_imported += successes
     import_record.failures += failures
+    import_record.filtered += filtered
     import_record.save
+  end
+
+  def import_filter(article)
+    filtered = false
+    original_content_id = 0
+    original_content_id = article['X-Original-Content-Id'] if article.has_key? 'X-Original-Content-Id'
+    if original_content_id > 0
+      c = Content.find(original_content_id)
+      filtered = ('MarketPost' == c.channel_type) if c.present?
+    end
+    filtered
   end
 
   def save_config(parameters)
