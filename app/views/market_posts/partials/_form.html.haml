@@ -68,7 +68,7 @@
         .row-fluid
           .span6
             = f.simple_fields_for :content do |g|
-              = g.input :title, input_html: { class: "input-block-level" }
+              = g.input :title, input_html: { class: "input-block-level" }, required: true
           .span6
             =f.input :cost, input_html: { class: "input-block-level" }
 
@@ -76,7 +76,7 @@
           .span6
             = f.simple_fields_for :content do |g|
               = g.input :raw_content, input_html: { class: "ckeditor input-block-level" },
-                label: "Description", as: :text, value: @market_post.remove_boilerplate
+                label: "Description", as: :text, value: @market_post.remove_boilerplate, required: true
 
           -# event specific fields
           .span6
@@ -125,14 +125,14 @@
           = render "promotions/partials/promotions_tab", content: @market_post.content
 
     .form-actions
-      = submit_tag nil, class: "btn btn-primary"
-      = submit_tag "Submit and continue with this record", class: "btn btn-success", name: "continue_editing"
+      = submit_tag nil, class: "btn btn-primary mp_submit"
+      = submit_tag "Submit and continue with this record", class: "btn btn-success mp_submit_continue", name: "continue_editing"
       - if @next_content_id.present?
         = hidden_field_tag :next_record_id, @next_content_id
         = hidden_field_tag :index, @next_index
         = hidden_field_tag :page, params[:page]
-        = submit_tag "Submit and go to next record", class: "btn btn-success", name: "next_record"
-      = submit_tag "Submit and add new", class: "btn btn-success", name: "create_new"
+        = submit_tag "Submit and go to next record", class: "btn btn-success mp_submit_next", name: "next_record"
+      = submit_tag "Submit and add new", class: "btn btn-success mp_submit_new", name: "create_new"
       = link_to "Cancel", :back, class: "btn cancel"
 
 - if @market_post.published?
