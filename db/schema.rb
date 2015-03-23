@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150312233432) do
+ActiveRecord::Schema.define(:version => 20150323204815) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -36,9 +36,9 @@ ActiveRecord::Schema.define(:version => 20150312233432) do
     t.date    "DATE_EDITED"
   end
 
-  add_index "usgs_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "usgs_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "usgs_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
+  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
+  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -407,7 +407,6 @@ ActiveRecord::Schema.define(:version => 20150312233432) do
   end
 
   add_index "events", ["featured"], :name => "index_events_on_featured"
-  add_index "events", ["venue_id"], :name => "events_on_venue_id_index"
   add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 
   create_table "images", :force => true do |t|
@@ -471,7 +470,7 @@ ActiveRecord::Schema.define(:version => 20150312233432) do
     t.integer  "failures",       :default => 0
     t.datetime "created_at",                    :null => false
     t.datetime "updated_at",                    :null => false
-    t.integer  "filtered"
+    t.integer  "filtered",       :default => 0
   end
 
   create_table "issues", :force => true do |t|
