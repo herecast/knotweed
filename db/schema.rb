@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150312233432) do
+ActiveRecord::Schema.define(:version => 20150323204815) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -471,7 +471,7 @@ ActiveRecord::Schema.define(:version => 20150312233432) do
     t.integer  "failures",       :default => 0
     t.datetime "created_at",                    :null => false
     t.datetime "updated_at",                    :null => false
-    t.integer  "filtered"
+    t.integer  "filtered",       :default => 0
   end
 
   create_table "issues", :force => true do |t|
@@ -492,6 +492,18 @@ ActiveRecord::Schema.define(:version => 20150312233432) do
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
     t.string   "copyright"
+  end
+
+  create_table "jgs_event", :id => false, :force => true do |t|
+    t.integer  "id",                :default => 0, :null => false
+    t.string   "title"
+    t.integer  "event_id"
+    t.integer  "venue_id"
+    t.string   "name"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.string   "subtitle_override"
+    t.integer  "image_id",          :default => 0, :null => false
   end
 
   create_table "locations", :force => true do |t|
