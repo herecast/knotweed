@@ -36,8 +36,9 @@ class Event < ActiveRecord::Base
   attr_accessible :venue_attributes, :venue_id
 
   # event instances represent individual datetimes for events that might occur more than once
-  # they can also have a subtitle and description that "override" the master 
-  has_many :event_instances
+  # they can also have a subtitle and description that "override" the master
+  # always want the instances sorted by start_date
+  has_many :event_instances, order: 'start_date ASC'
   validates_associated :event_instances # at least one must exist
 
   accepts_nested_attributes_for :event_instances, allow_destroy: true
