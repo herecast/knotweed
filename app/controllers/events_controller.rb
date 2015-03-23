@@ -164,7 +164,7 @@ class EventsController < ApplicationController
     # hard coding some other things
     @event.content.category_reviewed = true
     # again with the under protest...
-    @event.content.publication_id = Publication.find_or_create_by_name("Subtext Events").id
+    @event.content.publication_id = Publication.find_or_create_by_name('All Lists').id
 
     # for users that can only access certain specific attribute events
     current_ability.attributes_for(:new, Event).each do |key,value|
