@@ -173,7 +173,7 @@ class Api::MarketPostsController < Api::ApiController
 
       repo = Repository.find_by_dsp_endpoint(params[:repository])
       if repo.present? and params[:publish] == "true"
-        if @market_post.publish(Content::POST_TO_NEW_ONTOTEXT, repo)
+        if @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
           render text: "#{@market_post.id}"
         else
           render text: "Market Post #{@market_post.id} updated but failed to publish", status: 500
