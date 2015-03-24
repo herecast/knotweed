@@ -26,7 +26,8 @@ describe MarketPostsController do
       c = FactoryGirl.create :content
       post 'create', market_post: {
         content_attributes: {
-          title: "hello"
+          title: "hello",
+          raw_content: "not blank"
         },
         cost: "$5"
       }

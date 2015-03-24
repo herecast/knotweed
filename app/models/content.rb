@@ -110,6 +110,8 @@ class Content < ActiveRecord::Base
 
   validates_presence_of :raw_content, :title, if: :is_event?
 
+  validates_presence_of :raw_content, :title, if: :is_market_post?
+
   # check if it should be marked quarantined
   before_save :mark_quarantined
   before_save :set_guid
@@ -1049,6 +1051,11 @@ class Content < ActiveRecord::Base
   def is_event?
     channel_type.present? and channel_type == "Event"
   end
+
+  def is_market_post?
+    channel_type.present? and channel_type == "MarketPost"
+  end
+
 
   def self.truncated_content_fields
     [:id, :title,:featured, :links, :pubdate, :authors, :category, 

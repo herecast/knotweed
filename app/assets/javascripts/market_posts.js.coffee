@@ -11,3 +11,4 @@ jQuery ->
     new_src = base_src_url.replace(/q=.*/, "q=" + loc_string)
     console.log new_src
     $("#confirm_location_map").attr("src", new_src)
+
