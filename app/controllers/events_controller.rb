@@ -73,6 +73,7 @@ class EventsController < ApplicationController
       end
       redirect_to form_submit_redirect_path(@event.id)
     else
+      @event.content.images.build unless @event.content.images.present?
       render "new"
     end
   end
@@ -144,7 +145,7 @@ class EventsController < ApplicationController
       @placeholder_image = unchannelized_content.images.first
       @event.content.title = remove_list_from_title(unchannelized_content.title)
     else
-      @event.content = Content.new
+      @event.build_content
     end
 
     @event.content.images.build unless @event.content.images.present?

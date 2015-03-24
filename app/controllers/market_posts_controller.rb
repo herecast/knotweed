@@ -30,9 +30,9 @@ class MarketPostsController < ApplicationController
   def new
     @market_post = MarketPost.new
 
-    @market_post.content = Content.new(channel_type: 'MarketPost')
-    @market_post.content.images.build
+    @market_post.build_content
     @market_post.content.content_category_id = ContentCategory.find_or_create_by_name('market').id
+    @market_post.content.images.build
 
     # hard coding some other things
     @market_post.content.category_reviewed = true
@@ -40,7 +40,7 @@ class MarketPostsController < ApplicationController
     @market_post.content.publication_id = Publication.find_or_create_by_name('All Lists').id
 
     # for users that can only access certain specific attribute contents
-    current_ability.attributes_for(:new, Content).each do |key,value|
+    current_ability.attributes_for(:new, MarketPost).each do |key,value|
       @market_post.send("#{key}=", value)
     end
     authorize! :new, @market_post
@@ -63,6 +63,7 @@ class MarketPostsController < ApplicationController
       end
       redirect_to form_submit_redirect_path(@market_post.id)
     else
+      @market_post.content.images.build unless @market_post.content.images.present?
       render 'new'
     end
   end
