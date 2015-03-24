@@ -47,10 +47,9 @@ class MarketPostsController < ApplicationController
   end
 
   def create
-    begin
     @market_post = MarketPost.new(params[:market_post])
     authorize! :create, @market_post
-    if @market_post.save!
+    if @market_post.save
       publish_success = false
       if current_user.default_repository.present?
         publish_success = @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, current_user.default_repository)
@@ -64,12 +63,8 @@ class MarketPostsController < ApplicationController
       end
       redirect_to form_submit_redirect_path(@market_post.id)
     else
-      flash[:notice] = 'Creating the new market post failed'
+      flash[:notice] = 'Creating the new market post failed - Check that you have a title and description'
       render 'new'
-    end
-    rescue
-      flash[:notice] = "Creating the market post failed - Check that you have a title and description"
-      render "new"
     end
   end
 
