@@ -63,7 +63,6 @@ class MarketPostsController < ApplicationController
       end
       redirect_to form_submit_redirect_path(@market_post.id)
     else
-      flash[:notice] = 'Creating the new market post failed - Check that you have a title and description'
       render 'new'
     end
   end
