@@ -32,7 +32,7 @@ class Api::EventInstancesController < Api::ApiController
     if params[:max_results].present? 
       @event_instances = @event_instances.limit(params[:max_results])
     else
-      @event_instances = @event_instances.limit(10)
+      @event_instances = @event_instances.limit(1000)
     end
 
     if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
