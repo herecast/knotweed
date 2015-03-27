@@ -421,11 +421,11 @@ class Content < ActiveRecord::Base
       if result == true
         record.items_published += 1 if record.present?
       else
-        log.error("#{Time.now} Export of #{self.id} failed (returned: #{result})")
+        log.error("#{Time.now}: Export of #{self.id} failed (returned: #{result})")
         record.failures += 1 if record.present?
       end
     rescue => e
-      log.error("#{Time.now} Error exporting #{self.id}: #{e}")
+      log.error("#{Time.now}: Error exporting #{self.id}: #{e}")
       record.failures += 1 if record.present?
     end
     record.save if record.present?
