@@ -126,13 +126,13 @@ class ImportJob < ActiveRecord::Base
 
   def error(job, exception)
     log = last_import_record.log_file
-    log.info "input: #{self.source_path}"
-    log.info "parser: #{PARSER_PATH}/#{parser.filename}"
-    log.error "error: #{exception}"
+    log.info "#{Time.now}: input: #{self.source_path}"
+    log.info "#{Time.now}: parser: #{PARSER_PATH}/#{parser.filename}"
+    log.error "#{Time.now}: error: #{exception}"
     if notifyees.present?
       JobMailer.error_email(last_import_record, exception).deliver
     end
-    log.error "backtrace: #{exception.backtrace.join("\n")}"   
+    log.error "#{Time.now}: backtrace: #{exception.backtrace.join("\n")}"
     update_attribute(:status, "failed")
     log.info "#{self.inspect}"
   end
@@ -155,13 +155,12 @@ class ImportJob < ActiveRecord::Base
     # just pass the source_path directly to
     # the parser
     log = last_import_record.log_file
-    log.info("#{Time.now}")
-    log.info("source path: #{source_path}")
+    log.info("#{Time.now}: source path: #{source_path}")
     # this is where we loop continuous jobs
     # continuous jobs are automatically set to have stop_loop set to false
     # other jobs have stop_loop set to true (by an after_create callback).
     while true
-      log.info("Running parser at #{Time.now}")
+      log.info("#{Time.now}: Running parser at #{Time.now}")
       if source_path =~ /^#{URI::regexp}$/
         data = run_parser(source_path) || nil
       else
@@ -170,11 +169,11 @@ class ImportJob < ActiveRecord::Base
           if FileTest.directory?(path)
             next
           else
-            log.debug("running parser on path: #{path}")
+            log.debug("#{Time.now}: running parser on path: #{path}")
             begin
               data += run_parser(path)
             rescue StandardError => bang
-              log.error("failed to parse #{path}: #{bang}")
+              log.error("#{Time.now}: failed to parse #{path}: #{bang}")
             end
           end
         end
@@ -239,24 +238,24 @@ class ImportJob < ActiveRecord::Base
       begin
         # filter out emails that we sent
         if import_filter(article)
-          log.info("content with X-Original-Content-Id #{article['X-Original-Content-Id']} filtered")
+          log.info("#{Time.now}: content with X-Original-Content-Id #{article['X-Original-Content-Id']} filtered")
           filtered += 1
         else
           c = Content.create_from_import_job(article, self)
-          log.info("content #{c.id} created")
+          log.info("#{Time.now}: content #{c.id} created")
           successes += 1
           if automatically_publish and repository.present?
             c.publish(publish_method, repository)
           end
         end
       rescue StandardError => bang
-        log.error("failed to process content: #{bang}")
+        log.error("#{Time.now}: failed to process content: #{bang}")
         failures += 1
       end
     end
-    log.info("successes: #{successes}")
-    log.info("failures: #{failures}")
-    log.info("filtered: #{filtered}")
+    log.info("#{Time.now}: successes: #{successes}")
+    log.info("#{Time.now}: failures: #{failures}")
+    log.info("#{Time.now}: filtered: #{filtered}")
     import_record.items_imported += successes
     import_record.failures += failures
     import_record.filtered += filtered
