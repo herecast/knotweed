@@ -32,6 +32,7 @@ gem "capistrano-rvm"
 gem "capistrano-rails", "~> 1.1"
 
 gem 'net-http-persistent', '~> 2.9'
+gem 'rinku', "~> 1.7.3"
 
 group :test do
   gem "webmock"

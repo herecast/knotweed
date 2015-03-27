@@ -9,13 +9,21 @@
   %p
     = @venue.name if @venue.name.present?
     = @venue.address if @venue.address.present?
-    = @venue.phone if @venue.phone.present?
-    = @venue.email if @venue.email.present?
+    - if @venue.phone.present?
+      %br
+      Phone:
+      = @venue.phone
+    - if @venue.email.present?
+      %br
+      Email:
+      = Rinku.auto_link(@venue.email).html_safe
 
-%p= @event.event_url if @event.event_url.present?
+- if @event.event_url.present?
+  %p
+    = link_to @event.event_url.to_s, @event.event_url
 
 
-= (@event.raw_content).html_safe
+= Rinku.auto_link(@event.raw_content).html_safe
 
 - if @event.cost.present?
   %p
@@ -24,17 +32,19 @@
 - contact_string = contact_display(@event)
 - if contact_string.present?
   %p
-    Contact: #{contact_string}
+    Contact:
+    = Rinku.auto_link(contact_string).html_safe
 
 
 - if @event.sponsor_url.present?
   %p
-    Sponsor: #{@event.sponsor_url}
+    Sponsor:
+    = link_to @event.sponsor_url.to_s, @event.sponsor_url
 
 - if @event.links.present?
   %p
     - @event.links.each do |k,v| 
-      #{k}: #{v}
+      =link_to k, v
       %br
 
 %p
