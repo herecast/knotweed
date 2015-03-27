@@ -1,37 +1,39 @@
-=# @event.event_title || @event.title
 = @event.title
-
+\
 - @event.event_instances.each do |instance|
   = event_instance_display(instance)
-
+\
 - if @venue.present?
   = @venue.name if @venue.name.present?
   = @venue.address if @venue.address.present?
-  = @venue.phone if @venue.phone.present?
-  = @venue.email if @venue.email.present?
-
+  - if @venue.phone.present?
+    Phone: #{@venue.phone}
+  - if @venue.email.present?
+    Email: #{@venue.email}
+\
 = @event.event_url if @event.event_url.present?
-
-= strip_tags(@event.raw_content)
-
+\
+- clean_content = @event.raw_content.gsub("\u{a0}",'').gsub('&nbsp;', '')
+= strip_tags(clean_content)
+\
 - if @event.cost.present?
   Cost: #{@event.cost}
-
+\
 - contact_string = contact_display(@event)
 - if contact_string.present?
   Contact: #{contact_string}
-
+\
 - if @event.sponsor_url.present?
   Sponsor: #{@event.sponsor_url}
-
+\
 - if @event.links.present?
   - @event.links.each do |k,v| 
     #{k}: #{v}
-
+\
 - if @base_uri.present?
   - url = "#{@base_uri}/events/#{@event.content.id}/#{@event.event_instances.first.id}"
 - else
   - url = "http://www.dailyuv.com/events"
-
+\
 = 'View map and discover more on '
 = link_to 'dailyUV.com', url
