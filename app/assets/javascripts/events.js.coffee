@@ -14,7 +14,6 @@ jQuery ->
     $(this).before($(this).data('fields').replace(regexp, time))
     event.preventDefault()
 
-#  $('#event_content_attributes_raw_content').wysihtml5();
   $("#event_content_attributes_raw_content").cleditor({
     height: 450
   })
