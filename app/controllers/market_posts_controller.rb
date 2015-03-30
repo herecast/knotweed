@@ -9,8 +9,6 @@ class MarketPostsController < ApplicationController
       session[:market_posts_search] = params[:q]
     end
 
-    session[:market_posts_search][:channelized_false] = true if session[:market_posts_search].present?
-
     @search = MarketPost.ransack(session[:market_posts_search])
 
     if session[:market_posts_search].present?
