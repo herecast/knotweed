@@ -13,3 +13,8 @@ jQuery ->
     regexp = new RegExp($(this).data('id'), 'g')
     $(this).before($(this).data('fields').replace(regexp, time))
     event.preventDefault()
+
+  $("#event_content_attributes_raw_content").cleditor({
+    height: 450
+  })
+  

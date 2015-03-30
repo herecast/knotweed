@@ -1,3 +1,4 @@
+
 = simple_form_for @event, html: { class: "event-form form" } do |f|
   = f.error_notification
   .tabbable
@@ -67,7 +68,7 @@
         .row-fluid
           .span6
             = f.simple_fields_for :content do |g|
-              = g.input :raw_content, input_html: { class: "ckeditor input-block-level" }, 
+              = g.input :raw_content, input_html: {  },
                 label: "Event Description", as: :text, value: @event.remove_boilerplate
 
           -# event specific fields

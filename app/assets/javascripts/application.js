@@ -47,3 +47,5 @@
 //= require business_locations
 //= require events
 //= require market_posts
+//= require cleditor/jquery.cleditor
+
