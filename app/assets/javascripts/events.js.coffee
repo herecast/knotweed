@@ -17,3 +17,4 @@ jQuery ->
   $("#event_content_attributes_raw_content").cleditor({
     height: 450
   })
+  
