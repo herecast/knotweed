@@ -11,6 +11,11 @@
   %p 
     .strong Contact: #{Rinku.auto_link(contact_string).html_safe}
 
+
+- if @market_post.locate_address.present?
+  %p
+    .strong Where: #{@market_post.locate_address}
+
 - url = 'http://www.dailyuv.com/uvmarket'
 - if @base_uri.present?
   - url = "#{@base_uri}/contents/#{@market_post.content.id}/market_posts/#{@market_post.id}"
