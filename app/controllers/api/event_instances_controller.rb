@@ -63,4 +63,20 @@ class Api::EventInstancesController < Api::ApiController
     end
   end
 
+  def search
+    query = Riddle::Query.escape(params[:query])
+
+    params[:page] ||= 1
+    params[:per_page] ||= 30
+
+    opts = { select: '*, weight()', excerpts: { limit: 350, around: 5, html_strip_mode: "strip" } }
+    opts[:order] = 'start_date DESC'
+    opts[:per_page] = params[:per_page]
+    opts[:page] = params[:page]
+
+    opts[:with] = {}
+
+    @event_instances = EventInstance.search query, opts
+  end
+
 end

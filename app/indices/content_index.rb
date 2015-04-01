@@ -11,3 +11,5 @@ ThinkingSphinx::Index.define :content, :with => :active_record do
   has repositories.id, as: :repo_ids
   has publication.id, as: :pub_id
 end
+
+
