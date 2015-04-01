@@ -5,11 +5,14 @@
 \
 - if @market_post.cost.present?
   Cost: #{@market_post.cost}
-\
+  \
 - contact_string = contact_display(@market_post)
 - if contact_string.present?
   Contact: #{contact_string}
-\
+  \
+- if @market_post.locate_address.present?
+  Where: #{@market_post.locate_address}
+  \
 - if @base_uri.present?
   - url = "#{@base_uri}/contents/#{@market_post.content.id}/market_posts/#{@market_post.id}"
 - else
