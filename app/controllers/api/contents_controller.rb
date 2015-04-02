@@ -57,6 +57,9 @@ class Api::ContentsController < Api::ApiController
     # we're only introducing this condition when a repository parameter is provided.
     @contents = @contents.published if params[:repository].present?
 
+    # for the dashboard, if there's an author email, just return their content records.
+    @contents = @contents.where(authoremail: params[:authoremail]) if params[:authoremail].present?
+
     params[:page] ||= 1
     params[:per_page] ||= 30
     @contents = @contents.page(params[:page].to_i).per(params[:per_page].to_i)

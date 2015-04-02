@@ -21,8 +21,10 @@ class Api::EventInstancesController < Api::ApiController
         @event_instances = @event_instances.joins(event: [:content]).where("contents.published = 1")
       end
     else
+      # TODO make image include conditional on view
       @event_instances = EventInstance.includes(event: [{content: :images}, :venue])
-      @event_instances = @event_instances.where("contents.published = 1") if params[:repository].present?
+      #@event_instances = EventInstance.includes(event: [:venue])
+      @event_instances = @event_instances.joins(event: [:content]).where("contents.published = 1") if params[:repository].present?
       # don't return featured events unless they're requested
       unless params[:request_featured].present?
         @event_instances = @event_instances.where(events: { featured: false })
@@ -53,6 +55,9 @@ class Api::EventInstancesController < Api::ApiController
       end
       @event_instances = @event_instances.where('event_instances.start_date <= ?', end_date)
     end
+
+    # for the dashboard, if there's an author email, just return their content records.
+    @event_instances = @event_instances.joins(event:[:content]).where('contents.authoremail = ?', params[:authoremail]) if params[:authoremail].present?
 
   end
 

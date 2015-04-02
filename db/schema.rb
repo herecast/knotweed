@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150323204815) do
+ActiveRecord::Schema.define(:version => 20150331134549) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -36,9 +36,9 @@ ActiveRecord::Schema.define(:version => 20150323204815) do
     t.date    "DATE_EDITED"
   end
 
-  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+  add_index "usgs_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
+  add_index "usgs_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
+  add_index "usgs_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -271,6 +271,7 @@ ActiveRecord::Schema.define(:version => 20150323204815) do
     t.integer  "channel_id"
   end
 
+  add_index "contents", ["authoremail"], :name => "index_contents_on_authoremail"
   add_index "contents", ["authors"], :name => "authors"
   add_index "contents", ["channel_id"], :name => "index_contents_on_channel_id"
   add_index "contents", ["channel_type"], :name => "index_contents_on_channel_type"
@@ -407,6 +408,7 @@ ActiveRecord::Schema.define(:version => 20150323204815) do
   end
 
   add_index "events", ["featured"], :name => "index_events_on_featured"
+  add_index "events", ["venue_id"], :name => "events_on_venue_id_index"
   add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 
   create_table "images", :force => true do |t|
