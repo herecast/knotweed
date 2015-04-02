@@ -495,18 +495,6 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.string   "copyright"
   end
 
-  create_table "jgs_event", :id => false, :force => true do |t|
-    t.integer  "id",                :default => 0, :null => false
-    t.string   "title"
-    t.integer  "event_id"
-    t.integer  "venue_id"
-    t.string   "name"
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.string   "subtitle_override"
-    t.integer  "image_id",          :default => 0, :null => false
-  end
-
   create_table "locations", :force => true do |t|
     t.string   "zip"
     t.string   "city"
