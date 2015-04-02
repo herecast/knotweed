@@ -12,7 +12,9 @@ class Api::MarketPostsController < Api::ApiController
       @contents = Content.limit(1000) #default limit
     end
 
+    #TODO make include images conditional on view
     @contents = @contents.includes(:publication).includes(:content_category).includes(:images)
+    #@contents = @contents.includes(:publication).includes(:content_category)
 
     if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
       sort_order = params[:sort_order]
@@ -38,6 +40,9 @@ class Api::MarketPostsController < Api::ApiController
     # doing this left join
     @contents = @contents.joins("LEFT JOIN content_categories_publications ccp ON ccp.content_category_id = contents.content_category_id AND ccp.publication_id = contents.publication_id")
       .where("ccp.content_category_id IS NOT NULL OR contents.channel_type = 'MarketPost'")
+
+    # for the dashboard, if there's an author email, just return their content records.
+    @contents = @contents.where(authoremail: params[:authoremail]) if params[:authoremail].present?
 
     params[:page] ||= 1
     params[:per_page] ||= 30
