@@ -84,11 +84,11 @@ class Api::ContentsController < Api::ApiController
     # hack to identify beta_talk category contents
     # and automatically set the publication based on category
     category = params[:content][:category]
-    source = params[:content].delete :source
+    pubname = params[:content].delete :publication
     if category == "beta_talk"
       pub = Publication.find_or_create_by_name "Beta Talk"
     else
-      pub = Publication.find_by_name(source)
+      pub = Publication.find_by_name(pubname)
     end
 
     # create content here so we can pass it to mailer OR create it
