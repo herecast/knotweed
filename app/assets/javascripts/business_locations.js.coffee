@@ -32,6 +32,12 @@ jQuery ->
     $.ajax $(this).data("submitUrl"),
       type: $(this).data("submitMethod")
       data: $("#embedded_business_location_form input[type!='submit']").serialize()
+      beforeSend: ->
+        $('#embedded_business_location_form input[type="submit"]').attr('disabled', 'disabled')
+        $('#embedded_business_location_form').spin()
+      error: ->
+        $('#embedded_business_location_form input[type="submit"]').attr('disabled', '')
+        $('#embedded_business_location_form').spin(false)
       success: ->
         $("#embedded_business_location_form").html("").hide()
 
