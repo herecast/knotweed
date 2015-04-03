@@ -25,8 +25,8 @@ class Message < ActiveRecord::Base
   validates_presence_of :controller, :content, :start_date
   validate :end_date_greater_than_start_date
 
-  CONTROLLER_OPTIONS = %w(contents events users home)
-  ACTION_OPTIONS = %w(index show edit uvmarket)
+  CONTROLLER_OPTIONS = %w(contents events users home market_posts)
+  ACTION_OPTIONS = %w(index show edit)
 
   def active?
     if start_date < Time.zone.now and (end_date.nil? or end_date > Time.zone.now)
