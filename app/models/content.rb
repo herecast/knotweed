@@ -71,6 +71,7 @@ class Content < ActiveRecord::Base
 
   has_and_belongs_to_many :publish_records
   has_and_belongs_to_many :repositories, :uniq => true, after_add: :mark_published
+  has_and_belongs_to_many :locations
   
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
   belongs_to :publication
