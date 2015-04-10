@@ -1,0 +1,16 @@
+The following content was flagged as  #{@params[:classification]}:
+%br
+Flagger: #{@params[:flagger_name]}  #{@params[:flagger_email]}
+%br
+Time:
+= Time.now.to_s
+%br
+Title: #{@content.title}
+%br
+Author: #{@content.authors} #{@content.authoremail}
+%br
+Pubdate: #{@content.pubdate.to_s}
+%br
+Consumer URL: #{@params[:baseURI]}
+%br
+= @content.raw_content.html_safe
