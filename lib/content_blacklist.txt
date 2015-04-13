@@ -12,3 +12,6 @@
 /There\ are\ over\ [0-9,]*\ Bradford\ listserv.*________________________________/m
 You received this message as a subscriber to the Woodstock Community Crier.
 /For\ complete\ instructions\ on\ posting\ on\ the\ Woodstock\ Community\ Crier.*go\ to\ www\.vitalcommunities\.org(?:\.)?/m
+Here Is Today's Edition of the Woodstock Community Crier!
+To view or post your organization's events on the Woodstock Community Calendar, visit www.aroundwoodstockvermont.com/calendar/
+/(?:-----------------------------------------------------------------)?[\s]*(?:(?:\n)?<br(?:\ \/)?>)?[\s]*?You\ received\ this\ because\ you\ are\ subscribed\ to\ .*(?:\.)?/m
