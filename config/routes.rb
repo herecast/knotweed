@@ -104,6 +104,8 @@ Knotweed::Application.routes.draw do
     resources :contents, only: [:index, :show, :update]
     resources :messages, only: [:index]
     resources :wufoo_forms, only: [:show, :index]
+
+    resources :locations, only: [:index, :show]
   end
 
 end

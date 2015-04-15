@@ -7,6 +7,9 @@ class Api::ContentsController < Api::ApiController
       @contents = Content
     end
 
+    # exclude channelized content from all content api queries
+    @contents = @contents.where("channelized_content_id IS NULL")
+
     @contents = @contents.includes(:publication).includes(:content_category).includes(:images)
 
     if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
@@ -22,10 +25,6 @@ class Api::ContentsController < Api::ApiController
     # for the incoming consumer app
     if @requesting_app.present?
       allowed_pubs = @requesting_app.publications
-      if params[:publications].present? # allows the My List / All Lists filter to work
-        filter_pubs = Publication.where(name: params[:publications])
-        allowed_pubs.select! { |p| filter_pubs.include? p }
-      end
       # if viewing just the home list
       @contents = @contents.where(publication_id: allowed_pubs)
     end
@@ -46,9 +45,10 @@ class Api::ContentsController < Api::ApiController
       end
     end
 
-    # external contents (used for UVMarket)
-    if params[:external_only].present?
-      @contents = @contents.externally_visible
+    # filter by location
+    if params[:locations].present?
+      @contents = @contents.joins('inner join contents_locations on contents.id = contents_locations.content_id')
+        .where('contents_locations.location_id in (?)', params[:locations])
     end
 
     # workaround to avoid the extremely costly contents_repositories inner join

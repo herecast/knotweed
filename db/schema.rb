@@ -36,9 +36,9 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.date    "DATE_EDITED"
   end
 
-  add_index "usgs_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "usgs_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "usgs_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
+  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
+  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -290,6 +290,21 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
   add_index "contents", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents", ["title"], :name => "title"
 
+  create_table "contents_NT", :force => true do |t|
+    t.string   "title"
+    t.string   "subtitle"
+    t.string   "authors"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "issue_id"
+    t.integer  "location_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.boolean  "reviewed",       :default => false
+    t.integer  "lupdate_by"
+    t.integer  "publication_id"
+  end
+
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
     t.string   "title"
@@ -313,6 +328,22 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
+
+  create_table "contents_id", :force => true do |t|
+    t.string "category", :limit => 128
+  end
+
+  create_table "contents_locations", :force => true do |t|
+    t.integer  "content_id"
+    t.integer  "location_id"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "contents_locations", ["content_id", "location_id"], :name => "index_contents_locations_on_content_id_and_location_id"
+  add_index "contents_locations", ["content_id"], :name => "index_contents_locations_on_content_id"
+  add_index "contents_locations", ["location_id", "content_id"], :name => "index_contents_locations_on_location_id_and_content_id"
+  add_index "contents_locations", ["location_id"], :name => "index_contents_locations_on_location_id"
 
   create_table "contents_publish_records", :id => false, :force => true do |t|
     t.integer "content_id"
@@ -517,6 +548,18 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
 
   add_index "locations_bad", ["city"], :name => "city"
 
+  create_table "locations_locations", :force => true do |t|
+    t.integer  "parent_id"
+    t.integer  "child_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "locations_locations", ["child_id", "parent_id"], :name => "index_locations_locations_on_child_id_and_parent_id"
+  add_index "locations_locations", ["child_id"], :name => "index_locations_locations_on_child_id"
+  add_index "locations_locations", ["parent_id", "child_id"], :name => "index_locations_locations_on_parent_id_and_child_id"
+  add_index "locations_locations", ["parent_id"], :name => "index_locations_locations_on_parent_id"
+
   create_table "locations_old", :force => true do |t|
     t.string   "city"
     t.string   "state"
@@ -544,6 +587,11 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
   end
+
+  add_index "locations_publications", ["location_id", "publication_id"], :name => "index_locations_publications_on_location_id_and_publication_id"
+  add_index "locations_publications", ["location_id"], :name => "index_locations_publications_on_location_id"
+  add_index "locations_publications", ["publication_id", "location_id"], :name => "index_locations_publications_on_publication_id_and_location_id"
+  add_index "locations_publications", ["publication_id"], :name => "index_locations_publications_on_publication_id"
 
   create_table "locations_sav", :force => true do |t|
     t.string   "city"
@@ -616,6 +664,13 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.text     "description"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
+  end
+
+  create_table "promote_options", :force => true do |t|
+    t.string  "promo_type",            :limit => 128
+    t.string  "name",                  :limit => 128
+    t.string  "reverse_publish_email", :limit => 128
+    t.boolean "active",                               :default => true
   end
 
   create_table "promotions", :force => true do |t|
