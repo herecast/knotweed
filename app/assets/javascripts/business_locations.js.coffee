@@ -21,19 +21,31 @@ jQuery ->
   $(".venue-link").on 'click', ->
     $("#embedded_business_location_form").load $(this).data('formUrl'), ->
       $("#embedded_business_location_form").show(200)
+      # so, the original form view that we're loading here uses "remote: true" rails UJS
+      # the catch is that since this form is rendered inside another form element,
+      # the browser removes the actual form tag, and then things get really wonky.
+      # the solution I'm going with is to unbind all click events from the submit button
+      # once we're done loading the form (which removes rails UJS bindings),
+      # then rebind the custom submit method we want on this particular incarnation.
+      $('#embedded_business_location_form input[type="submit"]').unbind('click')
+      # rather than write an extra view for this embedded form, we're overriding
+      # the submit button's default action and submitting the fields via jQuery
+      $('#embedded_business_location_form input[type="submit"]').on 'click', (e) ->
+        e.preventDefault()
+        $.ajax $(this).data("submitUrl"),
+          type: $(this).data("submitMethod")
+          data: $("#embedded_business_location_form input[type!='submit']").serialize()
+          beforeSend: ->
+            $('#embedded_business_location_form input[type="submit"]').attr('disabled', 'disabled')
+            $('#embedded_business_location_form').spin()
+          error: ->
+            $('#embedded_business_location_form input[type="submit"]').attr('disabled', '')
+            $('#embedded_business_location_form').spin(false)
+          success: ->
+            $("#embedded_business_location_form").html("").hide()
       $("#embedded_business_location_form").find("span.close").show()
         .on 'click', ->
           $("#embedded_business_location_form").html("").hide()
-
-  # rather than write an extra view for this embedded form, we're overriding
-  # the submit button's default action and submitting the fields via jQuery
-  $(document).on 'click', '#embedded_business_location_form input[type="submit"]', (e) ->
-    e.preventDefault()
-    $.ajax $(this).data("submitUrl"),
-      type: $(this).data("submitMethod")
-      data: $("#embedded_business_location_form input[type!='submit']").serialize()
-      success: ->
-        $("#embedded_business_location_form").html("").hide()
 
   $(document).on 'click', '#locate_on_map_button', ->
     base_src_url = $("#confirm_location_map").data("baseSrcUrl")

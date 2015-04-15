@@ -73,13 +73,13 @@ class Api::EventInstancesController < Api::ApiController
 
     params[:page] ||= 1
     params[:per_page] ||= 30
-
-    opts = { select: '*, weight()', excerpts: { limit: 350, around: 5, html_strip_mode: "strip" } }
-    opts[:order] = 'start_date DESC'
+    opts = {}
+    opts = { select: '*, weight()' }
+    opts[:order] = 'start_date ASC'
     opts[:per_page] = params[:per_page]
     opts[:page] = params[:page]
 
-    opts[:with] = {}
+    opts[:with] = {:start_date => Time.now..60.days.from_now}
 
     @event_instances = EventInstance.search query, opts
   end
