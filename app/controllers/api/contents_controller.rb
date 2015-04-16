@@ -18,9 +18,6 @@ class Api::ContentsController < Api::ApiController
 
     sort_order ||= "DESC"
     @contents = @contents.order("pubdate #{sort_order}")
-    if params[:home_list].present?
-      home_list = Publication.find_by_name(params[:home_list])
-    end
     # filter contents by publication based on what publications are allowed
     # for the incoming consumer app
     if @requesting_app.present?
@@ -35,14 +32,6 @@ class Api::ContentsController < Api::ApiController
     if params[:categories].present?
       allowed_cats = ContentCategory.find_with_children(name: params[:categories])
       @contents = @contents.where(content_category_id: allowed_cats)
-      # unfortunate hack for talk of the town query
-      # in the scenario where they are looking just at talk of the town,
-      # we can add a home_list parameter to the sql query.
-      if home_list.present? and (params[:admin].nil? or !(params[:admin]=="true"))
-        talk_of_the_town_cat = ContentCategory.find_by_name("talk_of_the_town")
-        tot_cat_list = talk_of_the_town_cat.children + [talk_of_the_town_cat]
-        @contents = @contents.where("(content_category_id not in (?) OR publication_id = ?)", tot_cat_list, home_list.id)
-      end
     end
 
     # filter by location
