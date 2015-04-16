@@ -16,4 +16,7 @@ Consumer URL: #{@params[:baseURI]}
 %br
 Admin URL: #{@admin_uri}
 %br
+%br
+%strong Content
+%br
 = @content.remove_boilerplate.html_safe

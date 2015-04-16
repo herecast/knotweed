@@ -9,7 +9,7 @@ class ModerationMailer < ActionMailer::Base
     @params = params
     @admin_uri = params[:adminURL] + get_admin_uri(params[:baseURI])
     uri = params[:baseURI]
-    mail(from: "flags@dailyuv.com",
+    mail(from: MODERATION_EMAIL_SENDER,
          to: MODERATION_EMAIL_RECIPIENT,
          subject: subject)
   end
