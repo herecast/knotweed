@@ -223,6 +223,7 @@ class Api::ContentsController < Api::ApiController
     begin
     content = Content.find(params[:id])
     subject = 'dailyUV Flagged as ' + params[:classification] + ': ' +  content.title
+    params[:adminURL] = request.base_url
 
     ModerationMailer.send_moderation_flag(content, params, subject).deliver
 

@@ -1,5 +1,6 @@
 The following content was flagged as  #{@params[:classification]}:
 %br
+%br
 Flagger: #{@params[:flagger_name]}  #{@params[:flagger_email]}
 %br
 Time:
@@ -13,4 +14,6 @@ Pubdate: #{@content.pubdate.to_s}
 %br
 Consumer URL: #{@params[:baseURI]}
 %br
-= @content.raw_content.html_safe
+Admin URL: #{@admin_uri}
+%br
+= @content.remove_boilerplate.html_safe
