@@ -94,7 +94,6 @@ Knotweed::Application.routes.draw do
     # has its own URL on the consumer side, it makes sense to route the SHOW action
     # through the event_instance controller as well, even though showing an event
     # instance will show the entire event and all its instances on the consumer side.
-    get 'events/featured', to: 'event_instances#featured_events', as: :featured_events
     resources :event_instances, path: "events", only: [:show, :index]
     resources :events, only: [:create, :update]
     post 'event_instances/search', to: 'event_instances#search', as: :event_instances_search

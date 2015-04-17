@@ -1,18 +1,5 @@
 class Api::EventInstancesController < Api::ApiController
 
-  def featured_events
-    # pull all events that are featured and upcoming ordered by start_date (of the event instances)
-    @event_instances = EventInstance.where("event_instances.start_date >= ?", DateTime.now)
-      .includes(event: [{content: :images}, :venue]).where("events.featured = true").limit(5)
-
-    # filter by repository
-    if params[:repository].present?
-      @event_instances = @event_instances.where("contents.published = 1")
-    end
-    @event_instances = @event_instances.order("event_instances.start_date ASC").limit(5)
-    render "index"
-  end
-
   def index
     # need to make the "start_date_only" (calendar query) as efficient as possible:
     if params[:start_date_only]
@@ -26,9 +13,25 @@ class Api::EventInstancesController < Api::ApiController
       #@event_instances = EventInstance.includes(event: [:venue])
       @event_instances = @event_instances.joins(event: [:content]).where("contents.published = 1") if params[:repository].present?
       # don't return featured events unless they're requested
-      unless params[:request_featured].present?
+      if params[:featured].present?
+        @event_instances = @event_instances.where('events.featured = true')
+      elsif !params[:include_featured].present?
         @event_instances = @event_instances.where(events: { featured: false })
       end
+    end
+
+    # removing the "featured_events" api call because it doesn't make sense
+    if params[:featured].present?
+      @event_instances = @event_instances.where('events.featured = true')
+    end
+
+    # location filtering
+    if params[:locations].present?
+      # avoid SQL injection
+      locations = params[:locations].map{ |l| l.to_i }
+      @event_instances = @event_instances.joins('inner join contents_locations on contents.id ' +
+        '= contents_locations.content_id')
+        .where('contents_locations.location_id in (?)', locations)
     end
 
     if params[:max_results].present? 

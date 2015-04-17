@@ -14,25 +14,6 @@ require 'spec_helper'
 # then your instance wouldn't have a start date.
 describe Api::EventInstancesController do
 
-  describe "GET featured_events" do
-    before do
-      @featured_events = FactoryGirl.create_list(:event, 3, featured: true)
-      @unfeatured_events = FactoryGirl.create_list(:event, 2, featured: false)
-    end
-
-    subject { get :featured_events, format: :json }
-
-    it "has a 200 status code" do
-      subject
-      response.code.should eq("200")
-    end
-
-    it "responds with only upcoming featured events" do
-      subject
-      assigns(:event_instances).should == @featured_events.map{ |e| e.event_instances }.flatten
-    end
-  end
-
   describe "GET show" do
     # the json response here is quite complex, so we're rendering the view
     render_views

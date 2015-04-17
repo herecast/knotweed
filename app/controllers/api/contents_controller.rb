@@ -36,8 +36,9 @@ class Api::ContentsController < Api::ApiController
 
     # filter by location
     if params[:locations].present?
+      locations = params[:locations].map{ |l| l.to_i } # avoid SQL injection
       @contents = @contents.joins('inner join contents_locations on contents.id = contents_locations.content_id')
-        .where('contents_locations.location_id in (?)', params[:locations])
+        .where('contents_locations.location_id in (?)', locations)
     end
 
     # workaround to avoid the extremely costly contents_repositories inner join
