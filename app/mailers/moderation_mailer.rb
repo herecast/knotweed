@@ -7,7 +7,7 @@ class ModerationMailer < ActionMailer::Base
   def send_moderation_flag(content, params, subject)
     @content = content
     @params = params
-    @admin_uri = params[:adminURL] + get_admin_uri(params[:baseURI])
+    @admin_uri = params[:adminURL] + get_admin_uri(params[:baseURI], params[:id])
     uri = params[:baseURI]
     mail(from: MODERATION_EMAIL_SENDER,
          to: MODERATION_EMAIL_RECIPIENT,
@@ -18,13 +18,11 @@ class ModerationMailer < ActionMailer::Base
 
   MPFRAG = 'market_posts'
   EVFRAG = 'events'
-  CONTENTFRAG = 'contents'
 
-  def get_admin_uri(baseURI)
+  def get_admin_uri(baseURI, contentID)
 
     mpstart = baseURI.index(MPFRAG)
     evstart = baseURI.index(EVFRAG)
-    contentstart = baseURI.index(CONTENTFRAG)
     if mpstart
       admin_url = edit_market_post_path(baseURI[mpstart+MPFRAG.length+1..-1])
     elsif evstart
@@ -32,7 +30,7 @@ class ModerationMailer < ActionMailer::Base
       event_id = url_end[0..url_end.index('/')-1]
       admin_url = edit_event_path(event_id)
     else
-      admin_url = edit_content_path(baseURI[contentstart+CONTENTFRAG.length+1..-1])
+      admin_url = edit_content_path(contentID)
     end
 
   end
