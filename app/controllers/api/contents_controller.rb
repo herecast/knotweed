@@ -221,11 +221,10 @@ class Api::ContentsController < Api::ApiController
     @message = 'success'
 
     begin
-    content = Content.find(params[:id])
-    subject = 'dailyUV Flagged as ' + params[:classification] + ': ' +  content.title
-    params[:adminURL] = request.base_url
+      content = Content.find(params[:id])
+      subject = 'dailyUV Flagged as ' + params[:classification] + ': ' +  content.title
 
-    ModerationMailer.send_moderation_flag(content, params, subject).deliver
+      ModerationMailer.send_moderation_flag(content, params, subject).deliver
 
     rescue Exception => e
       @message = e.message
