@@ -85,6 +85,7 @@ Knotweed::Application.routes.draw do
     get 'wufoo_forms/find', to: "wufoo_forms#show", as: :find_wufoo_form
     resources 'publications', only: [:show, :index]
     resources 'business_locations', only: [:show, :index]
+    get 'contents/moderate', to: 'contents#moderate', as: :moderate
 
     # with the multi-event instances model, it makes sense for our
     # index related actions to route through an event_instances controller,
