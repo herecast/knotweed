@@ -207,4 +207,19 @@ class Api::ContentsController < Api::ApiController
     end
   end
 
+  def moderate
+    @message = 'success'
+
+    begin
+      content = Content.find(params[:id])
+      subject = 'dailyUV Flagged as ' + params[:classification] + ': ' +  content.title
+
+      ModerationMailer.send_moderation_flag(content, params, subject).deliver
+
+    rescue Exception => e
+      @message = e.message
+    end
+  end
+
+
 end
