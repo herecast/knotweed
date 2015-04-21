@@ -1,57 +1,100 @@
 class Api::ContentsController < Api::ApiController
 
   def index
-    if params[:max_results].present? 
-      @contents = Content.limit(params[:max_results])
-    else
-      @contents = Content
-    end
-
-    # exclude channelized content from all content api queries
-    @contents = @contents.where("channelized_content_id IS NULL")
-
-    @contents = @contents.includes(:publication).includes(:content_category).includes(:images)
-
-    if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
-      sort_order = params[:sort_order]
-    end
-
-    sort_order ||= "DESC"
-    @contents = @contents.order("pubdate #{sort_order}")
-    # filter contents by publication based on what publications are allowed
-    # for the incoming consumer app
-    if @requesting_app.present?
-      allowed_pubs = @requesting_app.publications
-      # if viewing just the home list
-      @contents = @contents.where(publication_id: allowed_pubs)
-    end
-    if params[:start_date].present?
-      start_date = Chronic.parse(params[:start_date])
-      @contents = @contents.where("pubdate >= :start_date", { start_date: start_date}) unless start_date.nil?
-    end
-    if params[:categories].present?
-      allowed_cats = ContentCategory.find_with_children(name: params[:categories])
-      @contents = @contents.where(content_category_id: allowed_cats)
-    end
-
-    # filter by location
-    if params[:locations].present?
-      locations = params[:locations].map{ |l| l.to_i } # avoid SQL injection
-      @contents = @contents.joins('inner join contents_locations on contents.id = contents_locations.content_id')
-        .where('contents_locations.location_id in (?)', locations)
-    end
-
-    # workaround to avoid the extremely costly contents_repositories inner join
-    # using the new "published" boolean on the content model
-    # to avoid breaking specs and more accurately replicate the old behavior,
-    # we're only introducing this condition when a repository parameter is provided.
-    @contents = @contents.published if params[:repository].present?
-
-    # for the dashboard, if there's an author email, just return their content records.
-    @contents = @contents.where(authoremail: params[:authoremail]) if params[:authoremail].present?
-
     params[:page] ||= 1
     params[:per_page] ||= 30
+    if params[:query].present?
+      query = Riddle::Query.escape(params[:query])
+
+      opts = { select: '*, weight()', excerpts: { limit: 350, around: 5, html_strip_mode: "strip" } }
+      opts[:order] = 'pubdate DESC' if params[:order] == 'pubdate'
+      opts[:per_page] = params[:per_page]
+      opts[:page] = params[:page]
+
+      opts[:with] = {}
+      opts[:conditions] = {}
+
+      # have to duplicate a lot of the non-search logic here because Sphinx doesn't
+      # allow us to use activerecord scopes
+      #
+      opts[:conditions].merge!({published: 1}) if params[:repository].present?
+
+      if @requesting_app.present?
+        allowed_pubs = @requesting_app.publications
+        if params[:publications].present? # allows the My List / All Lists filter to work
+          filter_pubs = Publication.where(name: params[:publications])
+          allowed_pubs.select! { |p| filter_pubs.include? p }
+        end
+        opts[:with].merge!({pub_id: allowed_pubs.collect{|c| c.id} })
+      end
+
+      if params[:categories].present?
+        allowed_cats = ContentCategory.find_with_children(name: params[:categories]).collect{|c| c.id}
+        opts[:with].merge!({:cat_ids => allowed_cats})
+      end
+
+      opts[:conditions].merge!({channelized_content_id: nil}) # note, that's how sphinx stores NULL
+
+      if params[:locations].present?
+        locations = params[:locations].map{ |l| l.to_i } # avoid SQL injection
+        opts[:with].merge!({loc_ids: locations})
+      end
+
+      @contents = Content.search query, opts
+      @contents.context[:panes] << ThinkingSphinx::Panes::WeightPane
+      @contents.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
+      @page = @contents.current_page 
+      @pages = @contents.total_pages
+    else
+      if params[:max_results].present? 
+        @contents = Content.limit(params[:max_results])
+      else
+        @contents = Content
+      end
+      # exclude channelized content from all content api queries
+      @contents = @contents.where("channelized_content_id IS NULL")
+
+      @contents = @contents.includes(:publication).includes(:content_category).includes(:images)
+
+      if params[:sort_order].present? and ['DESC', 'ASC'].include? params[:sort_order] 
+        sort_order = params[:sort_order]
+      end
+
+      sort_order ||= "DESC"
+      @contents = @contents.order("pubdate #{sort_order}")
+      # filter contents by publication based on what publications are allowed
+      # for the incoming consumer app
+      if @requesting_app.present?
+        allowed_pubs = @requesting_app.publications
+        # if viewing just the home list
+        @contents = @contents.where(publication_id: allowed_pubs)
+      end
+      if params[:start_date].present?
+        start_date = Chronic.parse(params[:start_date])
+        @contents = @contents.where("pubdate >= :start_date", { start_date: start_date}) unless start_date.nil?
+      end
+      if params[:categories].present?
+        allowed_cats = ContentCategory.find_with_children(name: params[:categories])
+        @contents = @contents.where(content_category_id: allowed_cats)
+      end
+
+      # filter by location
+      if params[:locations].present?
+        locations = params[:locations].map{ |l| l.to_i } # avoid SQL injection
+        @contents = @contents.joins('inner join contents_locations on contents.id = contents_locations.content_id')
+          .where('contents_locations.location_id in (?)', locations)
+      end
+
+      # workaround to avoid the extremely costly contents_repositories inner join
+      # using the new "published" boolean on the content model
+      # to avoid breaking specs and more accurately replicate the old behavior,
+      # we're only introducing this condition when a repository parameter is provided.
+      @contents = @contents.published if params[:repository].present?
+
+      # for the dashboard, if there's an author email, just return their content records.
+      @contents = @contents.where(authoremail: params[:authoremail]) if params[:authoremail].present?
+    end
+
     @contents = @contents.page(params[:page].to_i).per(params[:per_page].to_i)
     @page = params[:page]
     @pages = @contents.total_pages unless @contents.empty?
@@ -154,47 +197,6 @@ class Api::ContentsController < Api::ApiController
                      target_url: promo.target_url, content_id: new_content.id }
     end
   end
-
-  def search
-    query = Riddle::Query.escape(params[:query])
-
-    params[:page] ||= 1
-    params[:per_page] ||= 30
-
-    opts = { select: '*, weight()', excerpts: { limit: 350, around: 5, html_strip_mode: "strip" } }
-    opts[:order] = 'pubdate DESC' if params[:order] == 'pubdate'
-    opts[:per_page] = params[:per_page]
-    opts[:page] = params[:page]
-
-    opts[:with] = {}
-
-    if params[:repository].present?
-      repo = Repository.find_by_dsp_endpoint(params[:repository])
-      return if repo.nil?
-      opts[:with].merge!({repo_ids: repo.id})
-    end
-
-    if @requesting_app.present?
-      allowed_pubs = @requesting_app.publications
-      if params[:publications].present? # allows the My List / All Lists filter to work
-        filter_pubs = Publication.where(name: params[:publications])
-        allowed_pubs.select! { |p| filter_pubs.include? p }
-      end
-      opts[:with].merge!({pub_id: allowed_pubs.collect{|c| c.id} })
-    end
-
-    if params[:categories].present?
-      allowed_cats = ContentCategory.find_with_children(name: params[:categories]).collect{|c| c.id}
-      opts[:with].merge!({:cat_ids => allowed_cats})
-    end
-
-    @contents = Content.search query, opts
-    @contents.context[:panes] << ThinkingSphinx::Panes::WeightPane
-    @contents.context[:panes] << ThinkingSphinx::Panes::ExcerptsPane
-    @page = @contents.current_page 
-    @pages = @contents.total_pages
-  end
-
 
   def update
     @content = Content.find(params[:id])

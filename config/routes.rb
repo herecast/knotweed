@@ -79,7 +79,7 @@ Knotweed::Application.routes.draw do
     post 'contents/create_and_publish', to: 'contents#create_and_publish', as: :create_and_publish_content
     get 'contents/:id/get_tree', to: 'contents#get_tree', as: :get_tree
     get 'contents/:id/related_promotion', to: 'contents#banner', as: :related_promotion
-    post 'contents/search', to: 'contents#search', as: :contents_search
+    post 'contents/search', to: 'contents#index', as: :contents_search
     post 'category_corrections', to: 'category_corrections#create'
     get 'publications/find', to: "publications#show", as: :find_publication
     get 'wufoo_forms/find', to: "wufoo_forms#show", as: :find_wufoo_form
