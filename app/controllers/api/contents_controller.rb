@@ -36,7 +36,7 @@ class Api::ContentsController < Api::ApiController
       opts[:conditions].merge!({channelized_content_id: nil}) # note, that's how sphinx stores NULL
 
       if params[:locations].present?
-        locations = params[:locations].map{ |l| l.to_i } # avoid SQL injection
+        locations = params[:locations].map{ |l| l.to_i } 
         opts[:with].merge!({loc_ids: locations})
       end
 

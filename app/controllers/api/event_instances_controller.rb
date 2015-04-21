@@ -83,6 +83,10 @@ class Api::EventInstancesController < Api::ApiController
     opts[:page] = params[:page]
 
     opts[:with] = {:start_date => Time.now..60.days.from_now}
+    if params[:locations].present?
+      locations = params[:locations].map{ |l| l.to_i } 
+      opts[:with].merge!({ loc_ids: params[:locations] })
+    end
 
     @event_instances = EventInstance.search query, opts
   end
