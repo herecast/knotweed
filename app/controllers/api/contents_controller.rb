@@ -33,6 +33,11 @@ class Api::ContentsController < Api::ApiController
         opts[:with].merge!({:cat_ids => allowed_cats})
       end
 
+      if params[:publication_locations].present?
+        pub_locs = params[:publication_locations].map{ |l| l.to_i }
+        opts[:with].merge!({ pub_loc_ids: pub_locs })
+      end
+
       opts[:conditions].merge!({channelized_content_id: nil}) # note, that's how sphinx stores NULL
 
       if params[:locations].present?
@@ -83,6 +88,13 @@ class Api::ContentsController < Api::ApiController
         locations = params[:locations].map{ |l| l.to_i } # avoid SQL injection
         @contents = @contents.joins('inner join contents_locations on contents.id = contents_locations.content_id')
           .where('contents_locations.location_id in (?)', locations)
+      end
+
+      if params[:publication_locations].present?
+        pub_locs = params[:publication_locations].map{ |l| l.to_i }
+        @contents = @contents.joins('LEFT JOIN locations_publications on ' + 
+                    'contents.publication_id = locations_publications.publication_id ')
+                    .where('locations_publications.location_id in (?)', pub_locs)
       end
 
       # workaround to avoid the extremely costly contents_repositories inner join
