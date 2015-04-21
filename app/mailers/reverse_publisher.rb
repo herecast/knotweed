@@ -22,7 +22,7 @@ class ReversePublisher < ActionMailer::Base
     # that already exist in our system as "curated" when they come back through
     headers['X-Original-Content-Id'] = event.content.id
     @event = event
-    @venue = BusinessLocation.find(@event.venue_id)
+    @venue = BusinessLocation.find(@event.venue_id) if @event.venue_id.present?
     if consumer_app.present?
       @base_uri = consumer_app.uri
     end
