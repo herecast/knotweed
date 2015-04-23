@@ -16,7 +16,7 @@
           Contacts
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#locations" } do
-          Service Areas
+          Promote Locations
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#properties" } do 
           Links
@@ -128,7 +128,7 @@
           .span8
             = text_field_tag :search_locations, nil, class: "span12", placeholder: "search available locations"
           .span4
-            = link_to "+ Add New Location", "#", class: "btn btn-success", data: { toggle: "modal", target: "#location_form", form_url: new_location_path }, id: "new_location_button"
+            = link_to "+ Add New Promote Location", "#", class: "btn btn-success", data: { toggle: "modal", target: "#location_form", form_url: new_location_path }, id: "new_location_button"
           .row-fluid
             .span8
               = f.association :locations, label: false, input_html: { class: "locations-select multi-select" }

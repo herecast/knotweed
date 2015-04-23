@@ -35,6 +35,10 @@
             = f.label :event_content_publication_id_in, "Publications"
             = f.collection_select :event_content_publication_id_in, Publication.accessible_by(current_ability),
               :id, :name, {}, { multiple: true, class: "chosen-select span12" }
+          .field.span2
+            = f.label :event_content_locations_id_in, "Locations"
+            = f.collection_select :event_content_locations_id_in, Location.accessible_by(current_ability),
+              :id, :name, {}, { multiple: true, class: 'chosen-select span12' }
         .controls.controls-row
           .field.span2
             = f.label :event_content_authors_cont, "Authors"
@@ -65,6 +69,7 @@
       %th Content ID
       %th Title
       %th Source
+      %th Location
       %th Authors
       %th Pubdate
       %th Start Date
@@ -79,9 +84,13 @@
       %tr{ class: "content-#{ei.id}" }
         %td= e.content.id
         %td= link_to e.title, edit_event_path(e.id, index: i, page: params[:page])
+        %td= link_to e.content.publication.name, 
+          events_path(q: { event_content_publication_id_in: [e.content.publication.id] })
         %td
-          - if e.content.publication.present?
-            = link_to e.content.publication.name, events_path(q: { event_content_publication_id_in: e.content.publication.id })
+          - e.content.locations.each_with_index do |loc, i|
+            = link_to loc.name, events_path(q: { event_content_locations_id_in: [loc.id] })
+            - unless i == (e.content.locations.count - 1)
+              |
         %td
           - if e.authors.present?
             = link_to e.authors, events_path(q: { event_content_authors_cont: e.authors })

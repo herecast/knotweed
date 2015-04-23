@@ -26,6 +26,10 @@
           .field.span2
             = f.label :pubdate_lteq, "To"
             = f.text_field :pubdate_lteq, type: :date, value: search_field_value(:pubdate_lteq), class: "span12"
+          .field.span2
+            = f.label :content_locations_id_in, 'Locations'
+            = f.collection_select :content_locations_id_in, Location.accessible_by(current_ability),
+              :id, :name, {}, { multiple: true, class: 'chosen-select span12' }
         .controls.controls-row
           .field.span2
             = f.label :content_title_cont, "Title"
@@ -42,9 +46,10 @@
 %table.table.table-striped.table-hover.table-condensed#market_posts_index
   %thead
     %tr
-      %th ID
+      %th Content ID
       %th Title
       %th Authors
+      %th Locations
       %th Email
       %th Pubdate
       %th
@@ -60,6 +65,11 @@
           - if c.authors.present?
             =# link_to c.authors, content_path(q: { authors_cont: c.authors })
             = c.authors
+        %td
+          - c.content.locations.each_with_index do |loc, i|
+            = link_to loc.name, market_posts_path(q: { content_locations_id_in: [loc.id] })
+            - unless i == (c.content.locations.count - 1)
+              |
         %td
           - if c.contact_email.present?
             = c.contact_email
