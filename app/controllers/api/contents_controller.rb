@@ -71,6 +71,10 @@ class Api::ContentsController < Api::ApiController
       # for the incoming consumer app
       if @requesting_app.present?
         allowed_pubs = @requesting_app.publications
+        if params[:publications].present? # allows the My List / All Lists filter to work
+          filter_pubs = Publication.where(name: params[:publications])
+          allowed_pubs.select! { |p| filter_pubs.include? p }
+        end
         # if viewing just the home list
         @contents = @contents.where(publication_id: allowed_pubs)
       end
