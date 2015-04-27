@@ -1,0 +1,140 @@
+Return-Path: <hanover-owner+townlists=stagsmtp.subtextdev.org@lists.valley.net>
+Delivered-To: townlists@stagsmtp.subtextdev.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by stagsmtp.subtextdev.org (Postfix) with ESMTPS id 5B53BA540AB
+	for <townlists@stagsmtp.subtextdev.org>; Tue, 21 Apr 2015 07:15:42 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id B80D327B59; Tue, 21 Apr 2015 04:15:16 -0700 (PDT)
+X-Original-To: hanover@lists.valley.net
+Delivered-To: lists.valley.net-hanover@groups.electricembers.net
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id 4479C2768C; Tue, 21 Apr 2015 04:11:24 -0700 (PDT)
+Date: Tue, 21 Apr 2015 04:11:23 -0700
+To: hanover@lists.valley.net
+Message-ID: <sympa.1429614654.14615.635@lists.valley.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="===NPOGroups==="
+Content-Transfer-Encoding: 8bit
+From: <jtemple@amcommwireless.com>
+X-Mailer: Sympa 6.1.22
+Subject: [Hanover Discussion] Amcomm Wireless Hanover
+Reply-To: <jtemple@amcommwireless.com>
+X-Loop: hanover@lists.valley.net
+X-Sequence: 285
+Errors-to: hanover-owner@lists.valley.net
+Precedence: list
+Precedence: bulk
+Sender: hanover@lists.valley.net
+X-no-archive: yes
+List-Id: <hanover.lists.valley.net>
+List-Archive: <http://lists.valley.net/lists/arc/hanover>
+List-Help: <mailto:sympa@lists.valley.net?subject=help>
+List-Owner: <mailto:hanover-request@lists.valley.net>
+List-Post: <mailto:hanover@lists.valley.net>
+List-Subscribe: <mailto:sympa@lists.valley.net?subject=subscribe%20hanover>
+List-Unsubscribe: <mailto:sympa@lists.valley.net?subject=unsubscribe%20hanover>
+
+--===NPOGroups===
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7BIT
+Content-length: 3053
+
+
+
+Come down and visit our NEW location. Amcomm Wireless is your friendly neighborhood Verizon Wireless retailer. As the only locally owned and operated Verizon Wireless Retailer in the Upper Valley we are committed to customer satisfaction. We carry Apple, Samsung, HTC, LG and more! Come down and let us show you how you could be saving while still staying connected!
+
+Now through April 30th
+
+iPad Mini 3 for $250 *
+
+FREE Verizon Ellipsis Tablet *
+
+Anytime Deals and Services
+
+Wireless Home Phone Service, only $20 ** a month!
+
+Add a tablet to your MORE Everything Plan, only $10 ** a month!
+
+FREE Verizon Wireless Account Analysis- Find out if you could be saving money!
+
+Purchase any screen protector and we install it for FREE!
+
+FREE data transfers with any device purchase!
+
+Having trouble angry with your device? Let one of our experienced professionals troubleshoot your device for you!
+
+Visit our store @ 5 South Street in Hanover, NH 03755
+
+Call us @ (603) 262-1806
+
+*After mail in rebates and all applicable discounts. Requires activation with a 2 year contract. $40 Activation fee applies. Service must remain active for 181 days to retain discounts. Promotion not limited to available store supply, orders will be accepted for all customers. See store for details.
+
+**Monthly service fees are subject to change at Verizon Wireless's discretion. See store for details.
+
+---------------------------
+You received this message as a subscriber on the hanover@lists.valley.net discussion list.
+
+When posting, keep it specific to the town - please sign your posts - limit commercial postings to once a month - keep your tone civil and respectful.
+
+When replying to a posting, if you receive the list digest, use the "Reply to sender" or "Reply to list" links at the end of the individual message. If you receive each posting as a separate email, use your mail program's Reply or Reply-To-All function, as appropriate. Please edit your reply to include only the relevant portions of the original posting, not the entire email.
+
+For Upper Valley-wide posts, please subscribe to and post ONLY to uppervalley@lists.valley.net.
+
+Anyone can SUBSCRIBE to this group by sending a blank message to hanover-subscribe@lists.valley.net. To be REMOVED from this list, send a blank message to hanover-unsubscribe@lists.valley.net. You can contact the list manager at hanover-request@lists.valley.net. To POST a message to this list, simply email your message to hanover@lists.valley.net.
+
+For the list homepage with posting guidelines and instructions for changing your subscription options, visit http://lists.valley.net/lists/info/hanover. The archives with all previous messages posted to this list can be found at http://lists.valley.net/lists/arc/hanover.
+
+This discussion list is provided at no cost by Vital Communities, a regional nonprofit organization based in White River Junction, Vermont, working to engage citizens, organizations, and communities in creating solutions to our region's challenges. To learn more, go to www.vitalcommunities.org.
+
+
+
+
+
+--===NPOGroups===
+Content-Type: text/html; charset="US-ASCII"
+Content-Transfer-Encoding: 7BIT
+Content-length: 6280
+
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+<h2 style="text-align: center;"><span style="font-size:18px;"><img alt="" src="http://s1.postimg.org/y4m9pnf67/Amcomm_Primary_Logo.png" /></span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:14px;">Come down and visit our&nbsp;<strong><span style="color:#FF0000;">NEW</span></strong>&nbsp;location. Amcomm Wireless is&nbsp;your friendly neighborhood Verizon Wireless retailer. As the only locally owned and operated Verizon Wireless Retailer in the Upper Valley we are committed to customer satisfaction. We carry Apple, Samsung, HTC, LG and more!&nbsp;Come down and let us show you how you could be saving while still staying connected!</span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:22px;"><u><em><strong><span style="color: rgb(255, 0, 0);">Now through April 30th</span></strong></em></u></span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:14px;">iPad Mini 3 for $<u><span style="color:#FF0000;">250</span></u> <span style="color:#FF0000;">*</span></span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:14px;"><u><span style="color:#FF0000;">FREE</span></u> Verizon Ellipsis Tablet&nbsp;<span style="color:#FF0000;">*</span></span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:22px;"><u><em><strong><span style="color: rgb(255, 0, 0);">Anytime Deals and Services</span></strong></em></u></span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:14px;">Wireless Home Phone Service, only $<strong><u><span style="color:#FF0000;">20</span></u></strong>&nbsp;** a month!</span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:14px;">Add a tablet to your MORE Everything Plan, only $<u><span style="color:#FF0000;">10</span></u>&nbsp;** a month!</span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:14px;"><u><span style="color:#FF0000;"><strong>FREE</strong></span></u>&nbsp;Verizon Wireless Account Analysis- Find out if you could be saving <u><strong><span style="color:#00FF00;">money</span></strong></u>!</span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:14px;">Purchase any screen protector and we install it for <u><strong><span style="color:#FF0000;">FREE</span></strong></u>!</span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:14px;"><u><strong><span style="color:#FF0000;">FREE</span></strong></u> data transfers with any&nbsp;device purchase!</span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:14px;">Having <span style="color:#FF0000;"><span style="font-family:comic sans ms,cursive;"><strong>trouble</strong>&nbsp;</span></span><span style="font-family:comic sans ms,cursive;"><img alt="angry" height="23" src="http://www.html.am/html-editors/ckeditor/ckeditor_4.4.1_full/plugins/smiley/images/angry_smile.png" title="angry" width="23" /></span> with your device? Let one of our experienced professionals troubleshoot your device <em>for</em> you!</span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:14px;">Visit our store @ <a href="https://www.google.com/maps/place/5+E+South+St,+Hanover,+NH+03755/@43.6999594,-72.2884536,21z/data=!4m2!3m1!1s0x4cb4c9e64e5c6631:0x1635639322549646">5 South Street in Hanover, NH 03755</a></span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:14px;">Call us @ (603) 262-1806</span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:10px;">*After mail in rebates and all applicable discounts. Requires activation with a&nbsp;2 year contract. $40 Activation fee applies. Service must remain active for 181 days to retain discounts. Promotion not limited to available store supply, orders will be accepted for all customers. See store for details.</span></h2>
+
+<h2 style="text-align: center;"><span style="font-size:10px;">**Monthly service fees are subject to change at Verizon Wireless&#39;s discretion. See store for details.</span></h2>
+</body>
+</html>
+
+<div style="background: transparent; border: none; clear: both; display: block; float: none; position: static"><br/>---------------------------<br/>You received this message as a subscriber on the <a href="mailto:hanover@lists.valley.net">hanover@lists.valley.net</a> discussion list.<br/><br/>When posting, keep it specific to the town - please sign your posts - limit commercial postings to once a month - keep your tone civil and respectful.<br/><br/>When replying to a posting, if you receive the list digest, use the &quot;Reply to sender&quot; or &quot;Reply to list&quot; links at the end of the individual message. If you receive each posting as a separate email, use your mail program's Reply or Reply-To-All function, as appropriate. Please edit your reply to include only the relevant portions of the original posting, not the entire email.<br/><br/>For Upper Valley-wide posts, please subscribe to and post ONLY to <a href="mailto:uppervalley@lists.valley.net.">uppervalley@lists.valley
+ .net.</a><br/><br/>Anyone can SUBSCRIBE to this group by sending a blank message to <a href="mailto:hanover-subscribe@lists.valley.net.">hanover-subscribe@lists.valley.net.</a> To be REMOVED from this list, send a blank message to <a href="mailto:hanover-unsubscribe@lists.valley.net.">hanover-unsubscribe@lists.valley.net.</a> You can contact the list manager at <a href="mailto:hanover-request@lists.valley.net.">hanover-request@lists.valley.net.</a> To POST a message to this list, simply email your message to <a href="mailto:hanover@lists.valley.net.">hanover@lists.valley.net.</a><br/><br/>For the list homepage with posting guidelines and instructions for changing your subscription options, visit <a href="http://lists.valley.net/lists/info/hanover.">http://lists.valley.net/lists/info/hanover.</a> The archives with all previous messages posted to this list can be found at <a href="http://lists.valley.net/lists/arc/hanover.">http://lists.valley.net/lists/arc/hanover.</a><br/><br/>This 
+ discussion list is provided at no cost by Vital Communities, a regional nonprofit organization based in White River Junction, Vermont, working to engage citizens, organizations, and communities in creating solutions to our region's challenges. To learn more, go to www.vitalcommunities.org.<br/><br/><br/><br/></div></body>
+--===NPOGroups===--

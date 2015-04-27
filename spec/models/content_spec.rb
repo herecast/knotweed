@@ -1,5 +1,5 @@
 # == Schema Information
-#
+#r
 # Table name: contents
 #
 #  id                     :integer          not null, primary key
@@ -207,7 +207,7 @@ describe Content do
 
     it "should mark non-valid corpus entries as quarantined" do
       content = Content.create_from_import_job(@base_data)
-      content.quarantine.should be_true
+      content.quarantine.should == true
     end
 
     it "should leave valid corpus entries as unquarantined" do
@@ -249,6 +249,8 @@ describe Content do
       db_content = Content.all.first
       db_content.title.should== "Different Title"
     end
+
+
 
     it "should overwrite any existing content with the same guid" do
       p = FactoryGirl.create(:publication)
@@ -362,7 +364,7 @@ describe Content do
       c = Content.create_from_import_job(@base_data)
       c.images.count.should == 1
       image = c.images.first
-      image.image.url.present?.should be_true
+      image.image.url.present?.should == true
       image.source_url.should== "https://www.google.com/images/srpr/logo11w.png"
     end
 
@@ -715,5 +717,74 @@ describe Content do
       subject.should eq([@c])
     end
   end
+
+  describe "checking listserv locations on import" do
+    before do
+      @config = Hash.new
+      @config["username"] = 'subtextuvltest@gmail.com'
+      @config["password"] = 'RailRoad202'
+      parser_path = Dir.pwd + "/lib/parsers/"
+      @test_files_path = Dir.pwd + "/spec/fixtures/listserv_test_files"
+
+      require parser_path + "mail_extractor.rb"
+
+      # Stub out image requests
+      raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
+      stub_request(:get, "https://www.google.com/images/srpr/logo11w.png").
+          with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+          to_return(raw_resp.read)
+      ImageUploader.storage = :file
+
+      @norwich = FactoryGirl.create :location
+      @norwich.city = "Norwich"
+      @norwich.state = "VT"
+      @norwich.save
+
+      @corinth = FactoryGirl.create :location
+      @corinth.city = "Corinth"
+      @corinth.state = "VT"
+      @corinth.save
+
+      @topsham = FactoryGirl.create :location
+      @topsham.city = "Topsham"
+      @topsham.state = "VT"
+      @topsham.save
+    end
+
+    it "should create content with Norwich as location" do
+      eml = Mail.read(@test_files_path+"/norwich.txt")
+      parsed_emails = convert_eml_to_hasharray(eml, @config)
+
+      parsed_emails[0]['source'].include?('VC Listserv') == true
+      parsed_emails[0]['listserv_locations'].length.should == 1
+      parsed_emails[0]['listserv_locations'].include?('Norwich,VT') == true
+
+      content = Content.create_from_import_job(parsed_emails[0])
+      Content.count.should== 1
+
+      ContentsLocationsHelper.content_location_exists?(content.id, @norwich.id).should == true
+      ContentsLocationsHelper.count_instances(content.id, @norwich.id).should == 1
+    end
+
+    it "should create lrn locations" do
+      eml = Mail.read(@test_files_path+"/lrn.txt")
+      parsed_emails = convert_eml_to_hasharray(eml, @config)
+
+      parsed_emails[0]['source'].include?('VC Listserv') == true
+      parsed_emails[0]['listserv_locations'].length.should == 2
+
+      content = Content.create_from_import_job(parsed_emails[0])
+      Content.count.should== 1
+
+      ContentsLocationsHelper.content_location_exists?(content.id, @corinth.id).should == true
+      ContentsLocationsHelper.count_instances(content.id, @corinth.id).should == 1
+
+      ContentsLocationsHelper.content_location_exists?(content.id, @topsham.id).should == true
+      ContentsLocationsHelper.count_instances(content.id, @topsham.id).should == 1
+
+    end
+
+  end
+
 
 end

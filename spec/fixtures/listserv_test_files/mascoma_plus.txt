@@ -1,0 +1,115 @@
+Return-Path: <lebanon-owner+townlists=stagsmtp.subtextdev.org@lists.valley.net>
+Delivered-To: townlists@stagsmtp.subtextdev.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by stagsmtp.subtextdev.org (Postfix) with ESMTPS id BCBBAA54258
+	for <townlists@stagsmtp.subtextdev.org>; Mon, 20 Apr 2015 16:51:02 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id 2D59F28726; Mon, 20 Apr 2015 13:44:16 -0700 (PDT)
+X-Original-To: lebanon@lists.valley.net
+Delivered-To: lists.valley.net-lebanon@groups.electricembers.net
+Received: from smtp2.electricembers.net (smtp2 [208.90.215.68])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by groups.electricembers.net (Postfix) with ESMTPS id 2B647288B7
+	for <lebanon@lists.valley.net>; Mon, 20 Apr 2015 13:44:09 -0700 (PDT)
+X-Envelope-From: domer79@comcast.net
+X-Spam-Status: not spam, SpamAssassin (score=-0.099, required 5, AWL 0.03,
+	BAYES_20 -0.00, DKIM_SIGNED 0.10, DKIM_VALID -0.10,
+	DKIM_VALID_AU -0.10, FREEMAIL_ENVFROM_END_DIGIT 0.25,
+	FREEMAIL_FROM 0.00, RCVD_IN_DNSWL_NONE -0.00,
+	RCVD_IN_MSPIKE_H2 -0.27, SPF_PASS -0.00, T_RP_MATCHES_RCVD -0.01)
+X-MailScanner: Found to be clean
+X-MailScanner-Information: See http://electricembers.coop/support/shield/users
+Received: from resqmta-ch2-09v.sys.comcast.net (resqmta-ch2-09v.sys.comcast.net [69.252.207.41])
+	(using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
+	(No client certificate requested)
+	by smtp2.electricembers.net (Postfix) with ESMTPS id DE5A232AC99
+	for <lebanon@lists.valley.net>; Mon, 20 Apr 2015 13:43:32 -0700 (PDT)
+Received: from resomta-ch2-11v.sys.comcast.net ([69.252.207.107])
+	by resqmta-ch2-09v.sys.comcast.net with comcast
+	id JLjF1q0022Ka2Q501LjY9u; Mon, 20 Apr 2015 20:43:32 +0000
+Received: from [10.0.1.12] ([73.219.254.228])
+	by resomta-ch2-11v.sys.comcast.net with comcast
+	id JLjX1q0024wScY901LjXaR; Mon, 20 Apr 2015 20:43:32 +0000
+From: Mike Guay <domer79@comcast.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 20 Apr 2015 16:43:30 -0400
+Message-Id: <ED778CDD-AC70-4BEA-BB31-26BE43011D9C@comcast.net>
+To: mascoma@lists.valley.net,
+ thetford@lists.valley.net,
+ uppervalley@lists.valley.net,
+ norwich@lists.valley.net,
+ hanover@lists.valley.net,
+ lebanon@lists.valley.net,
+ hartford@lists.valley.net
+Mime-Version: 1.0 (Apple Message framework v1085)
+X-Mailer: Apple Mail (2.1085)
+X-Original-DMARC-Record: domain=comcast.net; _dmarc.comcast.net.	6920	IN	TXT	"v=DMARC1; p=none; rua=mailto:dmarc-rua@dmarctest.comcast.net;"
+Subject: [Lebanon] for sale: 32" HD tv , Kenmore washer and dryer
+Reply-To: Mike Guay <domer79@comcast.net>
+X-Loop: lebanon@lists.valley.net
+X-Sequence: 160
+Errors-to: lebanon-owner@lists.valley.net
+Precedence: list
+Precedence: bulk
+Sender: lebanon@lists.valley.net
+X-no-archive: yes
+List-Id: <lebanon.lists.valley.net>
+List-Archive: <http://lists.valley.net/lists/arc/lebanon>
+List-Help: <mailto:sympa@lists.valley.net?subject=help>
+List-Owner: <mailto:lebanon-request@lists.valley.net>
+List-Post: <mailto:lebanon@lists.valley.net>
+List-Subscribe: <mailto:sympa@lists.valley.net?subject=subscribe%20lebanon>
+List-Unsubscribe: <mailto:sympa@lists.valley.net?subject=unsubscribe%20lebanon>
+
+For sale I have:
+
+A 32" lcd tv HD 1080p in very good condition for $125.=20
+
+and a used Kenmore washer and electric dryer for $225 or will sell separate=
+ly. I don't know how old they are but they are guaranteed to work properly.=
+ These are white although they look yellowish in the photos.
+
+Click the following links to see photos and more complete descriptions. htt=
+p://nh.craigslist.org/ele/4987265989.html
+and http://nh.craigslist.org/app/4984398047.html
+
+If you are interested please contact me by phone: 802-369-0314.
+
+Mike
+
+Mike Guay
+domer79@comcast.net
+
+
+
+---------------------------
+To POST a message to this list, email your message to lebanon@lists.valley.=
+net=20=20
+
+When posting, keep it specific to Lebanon. Residents are encouraged to subs=
+cribe and post; non-residents may subscribe, but are asked not to post.=20
+
+All Upper Valley-wide posts should be sent ONLY to uppervalley@lists.valley=
+.net
+
+Please sign your posts.  Limit commercial postings to once a month.  Keep y=
+our tone civil and respectful.
+
+To be REMOVED from this list, send a blank message to lebanon-unsubscribe@l=
+ists.valley.net   More details including Archives at http://lists.valley.ne=
+t/lists/info/lebanon
+
+This discussion list is provided at no cost by Vital Communities. To learn =
+more, go to www.vitalcommunities.org
+
+
+
+
+
+
+
+
+
+
