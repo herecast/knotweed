@@ -1,0 +1,242 @@
+Return-Path: <norwich-owner+townlists=stagsmtp.subtextdev.org@lists.valley.net>
+Delivered-To: townlists@stagsmtp.subtextdev.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by stagsmtp.subtextdev.org (Postfix) with ESMTPS id B7DD3A54042
+	for <townlists@stagsmtp.subtextdev.org>; Tue, 21 Apr 2015 11:39:11 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id 27A972743A; Tue, 21 Apr 2015 08:39:11 -0700 (PDT)
+X-Original-To: norwich@lists.valley.net
+Delivered-To: lists.valley.net-norwich@groups.electricembers.net
+Received: from smtp1.electricembers.net (smtp1 [208.90.215.67])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by groups.electricembers.net (Postfix) with ESMTPS id 573FE27410
+	for <norwich@lists.valley.net>; Tue, 21 Apr 2015 08:39:00 -0700 (PDT)
+X-Envelope-From: melanie.m.michel@hitchcock.org
+X-Spam-Status: not spam, SpamAssassin (score=-4.166, required 5, AWL 0.04,
+	BAYES_00 -1.90, HTML_MESSAGE 0.00, RCVD_IN_DNSWL_MED -2.30,
+	SPF_HELO_PASS -0.00, SPF_PASS -0.00, T_RP_MATCHES_RCVD -0.01)
+X-MailScanner: Found to be clean
+X-MailScanner-Information: See http://electricembers.coop/support/shield/users
+Received: from mailgate3.hitchcock.org (Mailgate3.hitchcock.org [130.189.128.62])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp1.electricembers.net (Postfix) with ESMTPS id 9AB8450864
+	for <norwich@lists.valley.net>; Tue, 21 Apr 2015 08:38:41 -0700 (PDT)
+Received: from DH224.DHMCMaster.DH.Hitchcock.org (DH224.DHMCMaster.DH.Hitchcock.org [130.189.160.254]) by mailgate3.hitchcock.org with smtp
+	(TLS: TLSv1/SSLv3,128bits,AES128-SHA)
+	 id 7027_1d40_295bbba7_e942_4849_8ebf_1d1aa1262f49;
+	Tue, 21 Apr 2015 11:39:17 -0400
+Received: from DH205.dhmcmaster.dh.hitchcock.org ([fe80::7954:a1a0:b1fd:8da3])
+ by DH224.DHMCMaster.DH.Hitchcock.org ([fe80::5eb:8cec:7be0:c2bb%13]) with
+ mapi id 14.03.0224.002; Tue, 21 Apr 2015 11:38:37 -0400
+From: "Melanie M. Michel" <Melanie.M.Michel@hitchcock.org>
+To: "Norwich Listserv (norwich@lists.valley.net)" <norwich@lists.valley.net>,
+	"uppervalleyparents@yahoogroups.com" <uppervalleyparents@yahoogroups.com>
+Thread-Topic: 2 free Britax car seats available
+Thread-Index: AdB8STGdpo0Koj/4TQaCrEGgx4SJow==
+Date: Tue, 21 Apr 2015 15:38:38 +0000
+Message-ID: <3041292DB3F8554089D5D180F2E1F32E7C11D867@DH205.DHMCMaster.DH.Hitchcock.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [130.189.160.70]
+x-c2processedorg: f6df239c-50a9-45ab-8ff4-cdd6dccb8384
+Content-Type: multipart/alternative;
+	boundary="_000_3041292DB3F8554089D5D180F2E1F32E7C11D867DH205DHMCMaster_"
+MIME-Version: 1.0
+Subject: [Norwich] 2 free Britax car seats available
+Reply-To: "Melanie M. Michel" <Melanie.M.Michel@hitchcock.org>
+X-Loop: norwich@lists.valley.net
+X-Sequence: 628
+Errors-to: norwich-owner@lists.valley.net
+Precedence: list
+Precedence: bulk
+Sender: norwich@lists.valley.net
+X-no-archive: yes
+List-Id: <norwich.lists.valley.net>
+List-Archive: <http://lists.valley.net/lists/arc/norwich>
+List-Help: <mailto:sympa@lists.valley.net?subject=help>
+List-Owner: <mailto:norwich-request@lists.valley.net>
+List-Post: <mailto:norwich@lists.valley.net>
+List-Subscribe: <mailto:sympa@lists.valley.net?subject=subscribe%20norwich>
+List-Unsubscribe: <mailto:sympa@lists.valley.net?subject=unsubscribe%20norwich>
+
+--_000_3041292DB3F8554089D5D180F2E1F32E7C11D867DH205DHMCMaster_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+We are transitioning to booster seats and want to pass our Britax car seats=
+ along.  One is a Britax Marathon (black and gray pattern).  It is in excel=
+lent shape and has seen little use.  The other car seat may also be a Marat=
+hon model (I can't remember), is older, smaller and has a beige swirl patte=
+rn on the cover.  Neither car seat is expired nor has it been in an acciden=
+t.  From a smoke free, pet free home.  First come, first served!
+Thanks,
+Melanie
+11 Brookside Drive
+Norwich
+
+
+
+IMPORTANT NOTICE REGARDING THIS ELECTRONIC MESSAGE:
+
+This message is intended for the use of the person to whom it is addressed =
+and may contain information that is privileged, confidential, and protected=
+ from disclosure under applicable law. If you are not the intended recipien=
+t, your use of this message for any purpose is strictly prohibited. If you =
+have received this communication in error, please delete the message and no=
+tify the sender so that we may correct our records.
+---------------------------
+You received this message as a subscriber on the norwich@lists.valley.net d=
+iscussion list.
+
+When replying to a posting, if you receive the list digest, use the "Reply =
+to sender" or "Reply to list" links at the end of the individual message. I=
+f you receive each posting as a separate email, use your mail program's Rep=
+ly or Reply-To-All function, as appropriate. Please edit your reply to incl=
+ude only the relevant portions of the original posting, not the entire emai=
+l.
+
+All Upper Valley-wide posts should be sent ONLY to uppervalley@lists.valley=
+.net.
+
+Anyone can subscribe to this group by sending a blank message to
+norwich-subscribe@lists.valley.net.
+To be removed from this list, send a blank message to
+norwich-unsubscribe@lists.valley.net.
+
+For the list homepage with posting guidelines and instructions for changing=
+ your subscription options, visit http://lists.valley.net/lists/info/norwic=
+h. The archives with all previous messages posted to this list can be found=
+ at http://lists.valley.net/lists/arc/norwich.
+
+This discussion list is provided at no cost by Vital Communities, a regiona=
+l nonprofit organization based in White River Junction, Vermont, working to=
+ engage citizens, organizations, and communities in creating solutions to o=
+ur region's challenges. To learn more, go to www.vitalcommunities.org.
+
+
+--_000_3041292DB3F8554089D5D180F2E1F32E7C11D867DH205DHMCMaster_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii">
+<meta name=3D"Generator" content=3D"Microsoft Word 14 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-priority:99;
+	mso-style-link:"Balloon Text Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+span.BalloonTextChar
+	{mso-style-name:"Balloon Text Char";
+	mso-style-priority:99;
+	mso-style-link:"Balloon Text";
+	font-family:"Tahoma","sans-serif";}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri","sans-serif";}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"blue" vlink=3D"purple">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal">We are transitioning to booster seats and want to pa=
+ss our Britax car seats along.&nbsp; One is a Britax Marathon (black and gr=
+ay pattern).&nbsp; It is in excellent shape and has seen little use.&nbsp; =
+The other car seat may also be a Marathon model (I
+ can&#8217;t remember), is older, smaller and has a beige swirl pattern on =
+the cover.&nbsp; Neither car seat is expired nor has it been in an accident=
+.&nbsp; From a smoke free, pet free home.&nbsp; First come, first served!<o=
+:p></o:p></p>
+<p class=3D"MsoNormal">Thanks,<o:p></o:p></p>
+<p class=3D"MsoNormal">Melanie<o:p></o:p></p>
+<p class=3D"MsoNormal">11 Brookside Drive<o:p></o:p></p>
+<p class=3D"MsoNormal">Norwich<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+</div>
+<br>
+<font face=3D"Verdana" color=3D"Black" size=3D"1"><br>
+IMPORTANT NOTICE REGARDING THIS ELECTRONIC MESSAGE:<br>
+<br>
+This message is intended for the use of the person to whom it is addressed =
+and may contain information that is privileged, confidential, and protected=
+ from disclosure under applicable law. If you are not the intended recipien=
+t, your use of this message for
+ any purpose is strictly prohibited. If you have received this communicatio=
+n in error, please delete the message and notify the sender so that we may =
+correct our records.<br>
+</font>
+</body>
+</html>
+<div style=3D"background: transparent; border: none; clear: both; display: =
+block; float: none; position: static">---------------------------<br/>You r=
+eceived this message as a subscriber on the <a href=3D"mailto:norwich@lists=
+.valley.net">norwich@lists.valley.net</a> discussion list.<br/><br/>When re=
+plying to a posting, if you receive the list digest, use the &quot;Reply to=
+ sender&quot; or &quot;Reply to list&quot; links at the end of the individu=
+al message. If you receive each posting as a separate email, use your mail =
+program's Reply or Reply-To-All function, as appropriate. Please edit your =
+reply to include only the relevant portions of the original posting, not th=
+e entire email.<br/><br/>All Upper Valley-wide posts should be sent ONLY to=
+ <a href=3D"mailto:uppervalley@lists.valley.net.">uppervalley@lists.valley.=
+net.</a><br/><br/>Anyone can subscribe to this group by sending a blank mes=
+sage to<br/><a href=3D"mailto:norwich-subscribe@lists.valley.net.">norwich-=
+subscribe@lists.valley.net.</a><br/>To be removed from this list, send a bl=
+ank message to<br/><a href=3D"mailto:norwich-unsubscribe@lists.valley.net."=
+>norwich-unsubscribe@lists.valley.net.</a><br/><br/>For the list homepage w=
+ith posting guidelines and instructions for changing your subscription opti=
+ons, visit <a href=3D"http://lists.valley.net/lists/info/norwich.">http://l=
+ists.valley.net/lists/info/norwich.</a> The archives with all previous mess=
+ages posted to this list can be found at <a href=3D"http://lists.valley.net=
+/lists/arc/norwich.">http://lists.valley.net/lists/arc/norwich.</a><br/><br=
+/>This discussion list is provided at no cost by Vital Communities, a regio=
+nal nonprofit organization based in White River Junction, Vermont, working =
+to engage citizens, organizations, and communities in creating solutions to=
+ our region's challenges. To learn more, go to www.vitalcommunities.org.<br=
+/></div></body>=
+
+--_000_3041292DB3F8554089D5D180F2E1F32E7C11D867DH205DHMCMaster_--

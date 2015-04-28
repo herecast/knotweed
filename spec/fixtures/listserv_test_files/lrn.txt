@@ -1,0 +1,130 @@
+Return-Path: <lrn-owner+townlists=stagsmtp.subtextdev.org@lists.valley.net>
+Delivered-To: townlists@stagsmtp.subtextdev.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by stagsmtp.subtextdev.org (Postfix) with ESMTPS id 138E8A54042
+	for <townlists@stagsmtp.subtextdev.org>; Tue, 21 Apr 2015 11:38:45 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id 4A4AD27404; Tue, 21 Apr 2015 08:38:44 -0700 (PDT)
+X-Original-To: lrn@lists.valley.net
+Delivered-To: lists.valley.net-lrn@groups.electricembers.net
+Received: from smtp2.electricembers.net (smtp2 [208.90.215.68])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by groups.electricembers.net (Postfix) with ESMTPS id 5AC3D2742C
+	for <lrn@lists.valley.net>; Tue, 21 Apr 2015 08:38:39 -0700 (PDT)
+X-Envelope-From: blythedalecheese@gmail.com
+X-Spam-Status: not spam, SpamAssassin (score=-2.369, required 5,
+	BAYES_00 -1.90, DKIM_SIGNED 0.10, DKIM_VALID -0.10,
+	FREEMAIL_FORGED_FROMDOMAIN 0.25, FREEMAIL_FROM 0.00,
+	HEADER_FROM_DIFFERENT_DOMAINS 0.00, HTML_MESSAGE 0.00,
+	RCVD_IN_DNSWL_LOW -0.70, RCVD_IN_MSPIKE_H3 -0.01,
+	RCVD_IN_MSPIKE_WL -0.01, SPF_PASS -0.00)
+X-MailScanner: Found to be clean
+X-MailScanner-Information: See http://electricembers.coop/support/shield/users
+Received: from mail-ob0-f178.google.com (mail-ob0-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp2.electricembers.net (Postfix) with ESMTPS id 8D9CE32AC9D
+	for <lrn@lists.valley.net>; Tue, 21 Apr 2015 08:38:00 -0700 (PDT)
+Received: by obfe9 with SMTP id e9so147243931obf.1
+        for <lrn@lists.valley.net>; Tue, 21 Apr 2015 08:38:00 -0700 (PDT)
+MIME-Version: 1.0
+X-Received: by 10.202.67.10 with SMTP id q10mr1737070oia.124.1429630679959;
+ Tue, 21 Apr 2015 08:37:59 -0700 (PDT)
+Received: by 10.202.175.79 with HTTP; Tue, 21 Apr 2015 08:37:59 -0700 (PDT)
+Date: Tue, 21 Apr 2015 11:37:59 -0400
+X-Google-Sender-Auth: 5HmSjFUhIlS5DPY312tCeiWMgnc
+Message-ID: <CADOebtQ5doVb8gsiWqpbs+QgmUa4VEr8rQHe9WZy9+EyTUqfpw@mail.gmail.com>
+From: Becky Loftus <blythedalefarm@valley.net>
+To: lrn@lists.valley.net
+Content-Type: multipart/alternative; boundary=001a113dd5dad6cf7105143dd4c7
+Subject: [Local Resource Network] Wrapped Round Bales for Sale
+Reply-To: Becky Loftus <blythedalefarm@valley.net>
+X-Loop: lrn@lists.valley.net
+X-Sequence: 83
+Errors-to: lrn-owner@lists.valley.net
+Precedence: list
+Precedence: bulk
+Sender: lrn@lists.valley.net
+X-no-archive: yes
+List-Id: <lrn.lists.valley.net>
+List-Archive: <http://lists.valley.net/lists/arc/lrn>
+List-Help: <mailto:sympa@lists.valley.net?subject=help>
+List-Owner: <mailto:lrn-request@lists.valley.net>
+List-Post: <mailto:lrn@lists.valley.net>
+List-Subscribe: <mailto:sympa@lists.valley.net?subject=subscribe%20lrn>
+List-Unsubscribe: <mailto:sympa@lists.valley.net?subject=unsubscribe%20lrn>
+
+--001a113dd5dad6cf7105143dd4c7
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7BIT
+
+2014 wrapped bales. 52 inch, big nice bales. First cut. Net wrapped. $40
+loaded on your truck/trailer.  Call 439-6756
+---------------------------
+You received this message as a subscriber on the Lrn@lists.valley.net discussion list. There are OVER 500 subscribers to the LRN list!!
+
+When replying to a posting, if you receive the list digest, use the "Reply to sender" or "Reply to list" links at the end of the individual message. If you receive each posting as a separate email, use your mail program's Reply or Reply-To-All function, as appropriate. Please edit your reply to include only the relevant portions of the original posting, not the entire email.
+
+All Upper Valley-wide posts should be sent ONLY to uppervalley@lists.valley.net.
+
+Anyone can subscribe to this group by sending a blank message to
+Lrn-subscribe@lists.valley.net.
+To be removed from this list, send a blank message to
+Lrn-unsubscribe@lists.valley.net.
+
+You can contact the list manager at lrn-request@lists.valley.net.
+To POST a message to this list, simply email your message to:
+lrn@lists.valley.net
+
+For the list homepage with posting guidelines and instructions for changing your subscription options, visit http://lists.valley.net/lists/info/Lrn. The archives with all previous messages posted to this list can be found at http://lists.valley.net/lists/arc/Lrn.
+
+Miscellaneous questions or comments may be forwarded directly to the moderator of this ListServe at: lrn-request@lists.valley.net 
+
+This discussion list is provided at no cost by Vital Communities, a regional nonprofit organization based in White River Junction, Vermont, working to engage citizens, organizations, and communities in creating solutions to our region's challenges. To learn more, go to www.vitalcommunities.org.
+
+
+
+
+
+
+--001a113dd5dad6cf7105143dd4c7
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">2014 wrapped bales. 52 inch, big nice bales. First cut. Ne=
+t wrapped. $40 loaded on your truck/trailer.=C2=A0 Call 439-6756<br></div>
+<div style=3D"background: transparent; border: none; clear: both; display: =
+block; float: none; position: static">---------------------------<br/>You r=
+eceived this message as a subscriber on the <a href=3D"mailto:Lrn@lists.val=
+ley.net">Lrn@lists.valley.net</a> discussion list. There are OVER 500 subsc=
+ribers to the LRN list!!<br/><br/>When replying to a posting, if you receiv=
+e the list digest, use the &quot;Reply to sender&quot; or &quot;Reply to li=
+st&quot; links at the end of the individual message. If you receive each po=
+sting as a separate email, use your mail program's Reply or Reply-To-All fu=
+nction, as appropriate. Please edit your reply to include only the relevant=
+ portions of the original posting, not the entire email.<br/><br/>All Upper=
+ Valley-wide posts should be sent ONLY to <a href=3D"mailto:uppervalley@lis=
+ts.valley.net.">uppervalley@lists.valley.net.</a><br/><br/>Anyone can subsc=
+ribe to this group by sending a blank message to<br/><a href=3D"mailto:Lrn-=
+subscribe@lists.valley.net.">Lrn-subscribe@lists.valley.net.</a><br/>To be =
+removed from this list, send a blank message to<br/><a href=3D"mailto:Lrn-u=
+nsubscribe@lists.valley.net.">Lrn-unsubscribe@lists.valley.net.</a><br/><br=
+/>You can contact the list manager at <a href=3D"mailto:lrn-request@lists.v=
+alley.net.">lrn-request@lists.valley.net.</a><br/>To POST a message to this=
+ list, simply email your message to:<br/><a href=3D"mailto:lrn@lists.valley=
+.net">lrn@lists.valley.net</a><br/><br/>For the list homepage with posting =
+guidelines and instructions for changing your subscription options, visit <=
+a href=3D"http://lists.valley.net/lists/info/Lrn.">http://lists.valley.net/=
+lists/info/Lrn.</a> The archives with all previous messages posted to this =
+list can be found at <a href=3D"http://lists.valley.net/lists/arc/Lrn.">htt=
+p://lists.valley.net/lists/arc/Lrn.</a><br/><br/>Miscellaneous questions or=
+ comments may be forwarded directly to the moderator of this ListServe at: =
+<a href=3D"mailto:lrn-request@lists.valley.net">lrn-request@lists.valley.ne=
+t</a> <br/><br/>This discussion list is provided at no cost by Vital Commun=
+ities, a regional nonprofit organization based in White River Junction, Ver=
+mont, working to engage citizens, organizations, and communities in creatin=
+g solutions to our region's challenges. To learn more, go to www.vitalcommu=
+nities.org.<br/><br/><br/><br/><br/></div></body>=
+
+--001a113dd5dad6cf7105143dd4c7--
