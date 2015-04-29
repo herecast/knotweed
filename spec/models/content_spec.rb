@@ -622,13 +622,15 @@ describe Content do
       @content.has_active_promotion?.should == false
     end
 
-    it "should return false if there is a promotion but it is inactive" do
-      promotion = FactoryGirl.create(:promotion, active: false, content: @content)
+    it "should return false if there is a promotion banner but it is inactive" do
+      p = FactoryGirl.create :promotion, active: false, content: @content
+      promotion_banner = FactoryGirl.create :promotion_banner, promotion: p
       @content.has_active_promotion?.should == false
     end
 
-    it "should return true if there is an active promotion attached" do
-      promotion = FactoryGirl.create(:promotion, active: true, content: @content)
+    it "should return true if there is an active promotion banner attached" do
+      p = FactoryGirl.create :promotion, active: true, content: @content
+      promotion_banner = FactoryGirl.create :promotion_banner, promotion: p
       @content.has_active_promotion?.should == true
     end
 

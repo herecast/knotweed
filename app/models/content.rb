@@ -601,8 +601,7 @@ class Content < ActiveRecord::Base
 
         # trigger updating hasActivePromotion if publish succeeded
         if has_active_promotion?
-          # we only need this run on one promotion, not all of them
-          promotions.where(active: true).first.mark_active_promotion(repo)
+          PromotionBanner.mark_active_promotion(self, repo)
         end
 
         return true
@@ -847,8 +846,9 @@ class Content < ActiveRecord::Base
     end
   end
 
+  # used for the DSP to determine whether there is a promotion banner
   def has_active_promotion?
-    promotions.where(active: true).count > 0
+    promotions.where(active: true, promotable_type: 'PromotionBanner').count > 0
   end
 
   def has_active_promotion

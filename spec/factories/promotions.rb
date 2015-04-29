@@ -18,8 +18,6 @@
 FactoryGirl.define do
   factory :promotion do
     active true
-    banner File.open("spec/fixtures/photo.jpg", "r")
-    publication 
     content 
     description "What a terrible promotion"
   end

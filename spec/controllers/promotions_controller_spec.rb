@@ -43,8 +43,7 @@ describe PromotionsController do
 
   describe "POST create" do
     let (:options) do 
-      { banner: File.open("spec/fixtures/photo.jpg"),
-        description: "Another bad promotion" }
+      { description: "Another bad promotion" }
     end
     subject { post :create, { promotion: options, publication_id: @pub } }
     describe "with valid params" do
@@ -56,7 +55,6 @@ describe PromotionsController do
         subject
         expect(assigns(:promotion)).to be_a(Promotion)
         expect(assigns(:promotion)).to be_persisted
-        expect(assigns(:promotion).banner).to_not be_nil
       end
 
       it "redirects to the created promotion" do
@@ -71,8 +69,7 @@ describe PromotionsController do
     describe "with valid params" do
       let(:params) do
         { active: false,
-          description: 'Another description',
-          banner: File.open('spec/fixtures/photo.jpg', "r")
+          description: 'Another description'
         } 
       end
       it "updates the requested promotion" do
