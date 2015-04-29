@@ -10,16 +10,16 @@ namespace :users do
     end
     class AdminUsers < ActiveRecord::Base
     end
-    puts Rails.env
+    puts "Using admin database defined in database.yml for environment: #{Rails.env.to_sym}"
 
     # get ready to access users table for admin (see database.yml for config)
-    AdminUsers.establish_connection(:development)
-    AdminUsers.set_table_name('users')
+    AdminUsers.establish_connection(Rails.env.to_sym)
+    AdminUsers.table_name = 'users'
     AdminUsers.record_timestamps = false
 
     # get ready to access users table for consumer (see database.yml for config)
     ConsumerUsers.establish_connection(:consumer)
-    ConsumerUsers.set_table_name('users')
+    ConsumerUsers.table_name = 'users'
     ConsumerUsers.record_timestamps = false
 
     # now merge in data from consumer users table for existing admin users
@@ -38,6 +38,7 @@ namespace :users do
         auser.contact_url = cuser.contact_url
         auser.test_group = cuser.test_group
         auser.discussion_listserve = cuser.discussion_listserve
+        auser.location_id = Publication.find_by_name(auser.discussion_listserve).locations.first.id
         auser.view_style = cuser.view_style
         auser.save
       end
@@ -48,7 +49,7 @@ namespace :users do
     # then copy over any records from consumer for which there does not exist a record on admin
     ConsumerUsers.all.each do |cuser|
       unless AdminUsers.find_by_email(cuser.email)
-        auser = AdminUsers.new()
+        auser = AdminUsers.new
         puts '  ' + cuser.email + ' ' + cuser.id.to_s
 
         auser.email = cuser.email
@@ -67,6 +68,7 @@ namespace :users do
         #auser.color_scheme = cuser.color_scheme
         #auser.event_service = cuser.event_service
         auser.discussion_listserve = cuser.discussion_listserve
+        auser.location_id = Publication.find_by_name(auser.discussion_listserve).locations.first.id
         auser.view_style = cuser.view_style
         auser.confirmation_token = cuser.confirmation_token
         auser.confirmed_at = cuser.confirmed_at
