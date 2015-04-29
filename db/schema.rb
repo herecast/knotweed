@@ -116,9 +116,9 @@ ActiveRecord::Schema.define(:version => 20150423175055) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer  "channel_id"
-    t.text     "category"
-    t.datetime "created_at", :null => false
+    t.integer   "channel_id"
+    t.text      "category"
+    t.timestamp "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -234,10 +234,15 @@ ActiveRecord::Schema.define(:version => 20150423175055) do
     t.text     "summary"
     t.string   "url"
     t.string   "origin"
+    t.string   "mimetype"
     t.string   "language"
+    t.string   "page"
+    t.string   "wordcount"
     t.string   "authoremail"
     t.integer  "publication_id"
+    t.string   "file"
     t.boolean  "quarantine",             :default => false
+    t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
@@ -434,6 +439,7 @@ ActiveRecord::Schema.define(:version => 20150423175055) do
   end
 
   add_index "events", ["featured"], :name => "index_events_on_featured"
+  add_index "events", ["venue_id"], :name => "events_on_venue_id_index"
   add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 
   create_table "images", :force => true do |t|
@@ -660,6 +666,13 @@ ActiveRecord::Schema.define(:version => 20150423175055) do
     t.datetime "updated_at",      :null => false
   end
 
+  create_table "promote_options", :force => true do |t|
+    t.string  "promo_type",            :limit => 128
+    t.string  "name",                  :limit => 128
+    t.string  "reverse_publish_email", :limit => 128
+    t.boolean "active",                               :default => true
+  end
+
   create_table "promotion_banners", :force => true do |t|
     t.string   "banner_image"
     t.string   "redirect_url"
@@ -795,8 +808,8 @@ ActiveRecord::Schema.define(:version => 20150423175055) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "email",                  :default => "", :null => false
-    t.string   "encrypted_password",     :default => "", :null => false
+    t.string   "email",                  :default => "",    :null => false
+    t.string   "encrypted_password",     :default => "",    :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
@@ -805,8 +818,8 @@ ActiveRecord::Schema.define(:version => 20150423175055) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                             :null => false
-    t.datetime "updated_at",                             :null => false
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
     t.string   "name"
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
@@ -814,6 +827,18 @@ ActiveRecord::Schema.define(:version => 20150423175055) do
     t.string   "unconfirmed_email"
     t.integer  "organization_id"
     t.integer  "default_repository_id"
+    t.datetime "nda_agreed_at"
+    t.boolean  "agreed_to_nda",          :default => false
+    t.boolean  "admin",                  :default => false
+    t.boolean  "event_poster",           :default => false
+    t.string   "contact_phone"
+    t.string   "contact_email"
+    t.string   "contact_url"
+    t.integer  "location_id"
+    t.string   "test_group"
+    t.boolean  "muted",                  :default => false
+    t.string   "discussion_listserve"
+    t.integer  "view_style"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

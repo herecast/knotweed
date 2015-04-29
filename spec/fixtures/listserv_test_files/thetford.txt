@@ -1,0 +1,103 @@
+Return-Path: <thetford-owner+townlists=stagsmtp.subtextdev.org@lists.valley.net>
+Delivered-To: townlists@stagsmtp.subtextdev.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by stagsmtp.subtextdev.org (Postfix) with ESMTPS id 50584A54042
+	for <townlists@stagsmtp.subtextdev.org>; Tue, 21 Apr 2015 11:28:46 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id A84442742C; Tue, 21 Apr 2015 08:28:45 -0700 (PDT)
+X-Original-To: thetford@lists.valley.net
+Delivered-To: lists.valley.net-thetford@groups.electricembers.net
+Received: from smtp2.electricembers.net (smtp2 [208.90.215.68])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by groups.electricembers.net (Postfix) with ESMTPS id 902EF27335
+	for <thetford@lists.valley.net>; Tue, 21 Apr 2015 08:28:39 -0700 (PDT)
+X-Envelope-From: pninvt@gmail.com
+X-Spam-Status: not spam, SpamAssassin (score=-2.228, required 5,
+	autolearn=not spam, AWL 0.75, BAYES_00 -1.90, DKIM_SIGNED 0.10,
+	DKIM_VALID -0.10, DKIM_VALID_AU -0.10, FREEMAIL_FROM 0.00,
+	HTML_MESSAGE 0.00, RCVD_IN_DNSWL_LOW -0.70, RCVD_IN_MSPIKE_H2 -0.28,
+	SPF_PASS -0.00)
+X-MailScanner: Found to be clean
+X-MailScanner-Information: See http://electricembers.coop/support/shield/users
+Received: from mail-ob0-f176.google.com (mail-ob0-f176.google.com [209.85.214.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp2.electricembers.net (Postfix) with ESMTPS id E75C632AC84
+	for <thetford@lists.valley.net>; Tue, 21 Apr 2015 08:28:15 -0700 (PDT)
+Received: by obcux3 with SMTP id ux3so43229545obc.2
+        for <thetford@lists.valley.net>; Tue, 21 Apr 2015 08:28:15 -0700 (PDT)
+X-Received: by 10.202.83.202 with SMTP id h193mr18477905oib.56.1429630095406;
+ Tue, 21 Apr 2015 08:28:15 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 10.60.11.39 with HTTP; Tue, 21 Apr 2015 08:27:54 -0700 (PDT)
+From: Patricia Norton <pninvt@gmail.com>
+Date: Tue, 21 Apr 2015 11:27:54 -0400
+Message-ID: <CAM_kQR_mnM__Mnynrkd4Fo96g7g5kmMDh7Fy9qkZOz0iR8iLOw@mail.gmail.com>
+To: Thetford List Serve <thetford@lists.valley.net>
+Content-Type: multipart/alternative; boundary=001a113deff2ff3cc205143db18d
+X-Original-DMARC-Record: domain=gmail.com; _dmarc.gmail.com.	515	IN	TXT	"v=DMARC1; p=none; rua=mailto:mailauth-reports@google.com"
+Subject: [Thetford] cassette recorder is taken
+Reply-To: Patricia Norton <pninvt@gmail.com>
+X-Loop: thetford@lists.valley.net
+X-Sequence: 432
+Errors-to: thetford-owner@lists.valley.net
+Precedence: list
+Precedence: bulk
+Sender: thetford@lists.valley.net
+X-no-archive: yes
+List-Id: <thetford.lists.valley.net>
+List-Archive: <http://lists.valley.net/lists/arc/thetford>
+List-Help: <mailto:sympa@lists.valley.net?subject=help>
+List-Owner: <mailto:thetford-request@lists.valley.net>
+List-Post: <mailto:thetford@lists.valley.net>
+List-Subscribe: <mailto:sympa@lists.valley.net?subject=subscribe%20thetford>
+List-Unsubscribe: <mailto:sympa@lists.valley.net?subject=unsubscribe%20thetford>
+
+--001a113deff2ff3cc205143db18d
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7BIT
+
+Greetings from the Thetford Community Discussion List
+POSTING RULES: Keep it specific to the town - please sign your posts - limit commercial postings to once a month - keep your tone civil and respectful. Here is the address to post to: thetford@lists.valley.net
+More details here: http://lists.valley.net/lists/info/Thetford
+---------------------------------
+
+
+Thank you list serve, from the bottom of our basement! :)
+
+-- 
+*Patricia*
+
+Patricia Norton
+802.785.4740
+*juneberrymusic.com <http://juneberrymusic.com>*
+---------------------------
+You received this message as a subscriber on the Thetford@lists.valley.net discussion list.
+
+When replying to a posting, if you receive the list digest, use the "Reply to sender" or "Reply to list" links at the end of the individual message. If you receive each posting as a separate email, use your mail program's Reply or Reply-To-All function, as appropriate. Please edit your reply to include only the relevant portions of the original posting, not the entire email.
+
+All Upper Valley-wide posts should be sent ONLY to uppervalley@lists.valley.net.
+
+Anyone can subscribe to this group by sending a blank message to
+Thetford-subscribe@lists.valley.net.
+To be removed from this list, send a blank message to
+Thetford-unsubscribe@lists.valley.net.
+Miscellaneous questions or comments may be forwarded directly to the moderator of this ListServe at: Thetford-request@lists.valley.net
+
+For the list homepage with posting guidelines and instructions for changing your subscription options, visit http://lists.valley.net/lists/info/Thetford. The archives with all previous messages posted to this list can be found at http://lists.valley.net/lists/arc/Thetford.
+
+This discussion list is provided at no cost by Vital Communities, a regional nonprofit organization based in White River Junction, Vermont, working to engage citizens, organizations, and communities in creating solutions to our region's challenges. To learn more, go to www.vitalcommunities.org.
+
+
+--001a113deff2ff3cc205143db18d
+Content-Type: text/html; charset="US-ASCII"
+Content-Transfer-Encoding: 7BIT
+
+<div style="background: transparent; border: none; clear: both; display: block; float: none; position: static">Greetings from the Thetford Community Discussion List<br/>POSTING RULES: Keep it specific to the town - please sign your posts - limit commercial postings to once a month - keep your tone civil and respectful. Here is the address to post to: thetford@lists.valley.net<br/>More details here: http://lists.valley.net/lists/info/Thetford<br/>---------------------------------<br/><br/></div><div dir="ltr"><div class="gmail_default" style="font-family:trebuchet ms,sans-serif;color:#274e13">Thank you list serve, from the bottom of our basement! :)</div><div><br></div>-- <br><div class="gmail_signature"><div dir="ltr"><font face="georgia, serif" color="#073763"><i>Patricia</i></font><div><font color="#073763" face="georgia, serif"><i><br></i></font><div><font face="georgia, serif" color="#073763">Patricia Norton</font></div><div><font face="georgia, serif" color="#073763">802.785.474
+ 0</font></div><div><font face="georgia, serif"><u><a href="http://juneberrymusic.com" target="_blank">juneberrymusic.com</a></u></font></div></div><div><font face="georgia, serif"><u><br></u></font></div></div></div>
+</div>
+<div style="background: transparent; border: none; clear: both; display: block; float: none; position: static">---------------------------<br/>You received this message as a subscriber on the <a href="mailto:Thetford@lists.valley.net">Thetford@lists.valley.net</a> discussion list.<br/><br/>When replying to a posting, if you receive the list digest, use the &quot;Reply to sender&quot; or &quot;Reply to list&quot; links at the end of the individual message. If you receive each posting as a separate email, use your mail program's Reply or Reply-To-All function, as appropriate. Please edit your reply to include only the relevant portions of the original posting, not the entire email.<br/><br/>All Upper Valley-wide posts should be sent ONLY to <a href="mailto:uppervalley@lists.valley.net.">uppervalley@lists.valley.net.</a><br/><br/>Anyone can subscribe to this group by sending a blank message to<br/><a href="mailto:Thetford-subscribe@lists.valley.net.">Thetford-subscribe@lists.valley.net.
+ </a><br/>To be removed from this list, send a blank message to<br/><a href="mailto:Thetford-unsubscribe@lists.valley.net.">Thetford-unsubscribe@lists.valley.net.</a><br/>Miscellaneous questions or comments may be forwarded directly to the moderator of this ListServe at: <a href="mailto:Thetford-request@lists.valley.net">Thetford-request@lists.valley.net</a><br/><br/>For the list homepage with posting guidelines and instructions for changing your subscription options, visit <a href="http://lists.valley.net/lists/info/Thetford.">http://lists.valley.net/lists/info/Thetford.</a> The archives with all previous messages posted to this list can be found at <a href="http://lists.valley.net/lists/arc/Thetford.">http://lists.valley.net/lists/arc/Thetford.</a><br/><br/>This discussion list is provided at no cost by Vital Communities, a regional nonprofit organization based in White River Junction, Vermont, working to engage citizens, organizations, and communities in creating solutions to our 
+ region's challenges. To learn more, go to www.vitalcommunities.org.<br/></div></body>
+--001a113deff2ff3cc205143db18d--
