@@ -1,0 +1,385 @@
+Return-Path: <lebanon-owner+townlists=stagsmtp.subtextdev.org@lists.valley.net>
+Delivered-To: townlists@stagsmtp.subtextdev.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by stagsmtp.subtextdev.org (Postfix) with ESMTPS id C1AE0A54042
+	for <townlists@stagsmtp.subtextdev.org>; Tue, 21 Apr 2015 11:22:22 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id 303C627465; Tue, 21 Apr 2015 08:22:22 -0700 (PDT)
+X-Original-To: lebanon@lists.valley.net
+Delivered-To: lists.valley.net-lebanon@groups.electricembers.net
+Received: from smtp2.electricembers.net (smtp2 [208.90.215.68])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by groups.electricembers.net (Postfix) with ESMTPS id 9A5312769B
+	for <lebanon@lists.valley.net>; Tue, 21 Apr 2015 08:22:09 -0700 (PDT)
+X-Envelope-From: angie.m.raymond.leduc@hitchcock.org
+X-Spam-Status: not spam, SpamAssassin (score=-3.131, required 5,
+	autolearn=not spam, AWL 1.08, BAYES_00 -1.90, HTML_MESSAGE 0.00,
+	RCVD_IN_DNSWL_MED -2.30, SPF_HELO_PASS -0.00, SPF_PASS -0.00,
+	T_RP_MATCHES_RCVD -0.01)
+X-MailScanner: Found to be clean
+X-MailScanner-Information: See http://electricembers.coop/support/shield/users
+Received: from mailgate3.hitchcock.org (Mailgate3.hitchcock.org [130.189.128.62])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp2.electricembers.net (Postfix) with ESMTPS id 709B932AC99
+	for <lebanon@lists.valley.net>; Tue, 21 Apr 2015 08:21:02 -0700 (PDT)
+Received: from DH224.DHMCMaster.DH.Hitchcock.org (DH224.DHMCMaster.DH.Hitchcock.org [130.189.160.254]) by mailgate3.hitchcock.org with smtp
+	(TLS: TLSv1/SSLv3,128bits,AES128-SHA)
+	 id 3ecb_b64d_a4a1595d_b5d1_4bba_8d1e_b8d79cf92ce5;
+	Tue, 21 Apr 2015 11:21:37 -0400
+Received: from DH206.dhmcmaster.dh.hitchcock.org ([fe80::35bc:8a31:d41c:5106])
+ by DH224.DHMCMaster.DH.Hitchcock.org ([fe80::5eb:8cec:7be0:c2bb%13]) with
+ mapi id 14.03.0224.002; Tue, 21 Apr 2015 11:20:59 -0400
+From: "Angie M. Raymond Leduc" <Angie.M.Raymond.Leduc@hitchcock.org>
+To: "lebanon@lists.valley.net" <lebanon@lists.valley.net>
+Thread-Topic: Working link - Community Survey 
+Thread-Index: AdB8RqV1ZlKkQomXSdSxl2EsEebgLQ==
+Date: Tue, 21 Apr 2015 15:20:59 +0000
+Message-ID: <8F117A49E1FC2F439390829074E674CA14ECC545@DH206.DHMCMaster.DH.Hitchcock.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [130.189.160.70]
+x-c2processedorg: f6df239c-50a9-45ab-8ff4-cdd6dccb8384
+Content-Type: multipart/alternative;
+	boundary="_000_8F117A49E1FC2F439390829074E674CA14ECC545DH206DHMCMaster_"
+MIME-Version: 1.0
+Subject: [Lebanon] Working link - Community Survey
+Reply-To: "Angie M. Raymond Leduc" <Angie.M.Raymond.Leduc@hitchcock.org>
+X-Loop: lebanon@lists.valley.net
+X-Sequence: 170
+Errors-to: lebanon-owner@lists.valley.net
+Precedence: list
+Precedence: bulk
+Sender: lebanon@lists.valley.net
+X-no-archive: yes
+List-Id: <lebanon.lists.valley.net>
+List-Archive: <http://lists.valley.net/lists/arc/lebanon>
+List-Help: <mailto:sympa@lists.valley.net?subject=help>
+List-Owner: <mailto:lebanon-request@lists.valley.net>
+List-Post: <mailto:lebanon@lists.valley.net>
+List-Subscribe: <mailto:sympa@lists.valley.net?subject=subscribe%20lebanon>
+List-Unsubscribe: <mailto:sympa@lists.valley.net?subject=unsubscribe%20lebanon>
+
+--_000_8F117A49E1FC2F439390829074E674CA14ECC545DH206DHMCMaster_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+Good afternoon Lebanon Residents,
+
+Folks were unable to connect to the survey via yesterday's post, as there w=
+as an error in the link.  Below is the letter about the survey and the link=
+ that should work.  Please let me know if you have trouble accessing the su=
+rvey.
+
+ALL Together, formerly the Upper Valley Substance Misuse Prevention Partner=
+ship is a regional coalition that takes action to reduce the impact of alco=
+hol and drug misuse in support of the development of healthy, safe, and res=
+ilient youth.
+
+The Lebanon community has been identified as an Upper Valley community to b=
+e a part of the substance misuse conversation and prevention efforts in our=
+ region.
+
+ALL Together wants to know what you (as Lebanon Residents) see and how you =
+feel about substance use in your community. Participation in this survey wi=
+ll help us do this and will inform our work going forward.
+
+Click on the link for the survey: https://www.surveymonkey.com/s/2015UpperV=
+alleyCommunitySurvey
+
+Please answer as honestly as possible. Your answers are confidential.  This=
+ survey will take approximately 15 minutes to complete.  The survey will be=
+ open until June 30, 2015.
+
+You only need to complete this survey once. Thank you in advance for taking=
+ the time to complete this survey and for being part of the substance misus=
+e prevention conversation!
+
+Respectfully,
+
+Angie M. Leduc
+
+Drug Free Communities Partnership Coordinator
+All Together, the Upper Valley Substance Misuse Prevention Partnership
+Community Health Improvement
+Dartmouth-Hitchcock Medical Center
+Phone: (603) 653-6863
+Facebook: https://www.facebook.com/TwinStateSafeMeds
+Facebook: https://www.facebook.com/UVAllTogether
+
+All Together is a coalition that takes action to reduce the impact of alcoh=
+ol and drug misuse in support of the development of healthy, safe, and resi=
+lient youth.
+
+AT is part of the Upper Valley Public Health Network and is  supported by D=
+rug Free Communities, the NH Bureau of Drug and Alcohol Services and the Ne=
+w Hampshire Charitable Foundation.  Additional resources are provided by Da=
+rtmouth-Hitchcock.
+
+TWIN STATE SAFE MEDS is a multi-organization collaboration to support the d=
+evelopment of healthy, safe, and resilient communities that take action to =
+reduce the impact of alcohol and drug misuse.
+
+
+
+IMPORTANT NOTICE REGARDING THIS ELECTRONIC MESSAGE:
+
+This message is intended for the use of the person to whom it is addressed =
+and may contain information that is privileged, confidential, and protected=
+ from disclosure under applicable law. If you are not the intended recipien=
+t, your use of this message for any purpose is strictly prohibited. If you =
+have received this communication in error, please delete the message and no=
+tify the sender so that we may correct our records.
+---------------------------
+To POST a message to this list, email your message to lebanon@lists.valley.=
+net=20=20
+
+When posting, keep it specific to Lebanon. Residents are encouraged to subs=
+cribe and post; non-residents may subscribe, but are asked not to post.=20
+
+All Upper Valley-wide posts should be sent ONLY to uppervalley@lists.valley=
+.net
+
+Please sign your posts.  Limit commercial postings to once a month.  Keep y=
+our tone civil and respectful.
+
+To be REMOVED from this list, send a blank message to lebanon-unsubscribe@l=
+ists.valley.net   More details including Archives at http://lists.valley.ne=
+t/lists/info/lebanon
+
+This discussion list is provided at no cost by Vital Communities. To learn =
+more, go to www.vitalcommunities.org
+
+
+
+
+
+
+
+
+
+
+
+--_000_8F117A49E1FC2F439390829074E674CA14ECC545DH206DHMCMaster_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii">
+<meta name=3D"Generator" content=3D"Microsoft Word 14 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Cambria;
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-priority:99;
+	mso-style-link:"Balloon Text Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Cambria","serif";
+	color:#1F497D;
+	font-weight:normal;
+	font-style:normal;}
+span.BalloonTextChar
+	{mso-style-name:"Balloon Text Char";
+	mso-style-priority:99;
+	mso-style-link:"Balloon Text";
+	font-family:"Tahoma","sans-serif";}
+span.apple-converted-space
+	{mso-style-name:apple-converted-space;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri","sans-serif";}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"blue" vlink=3D"purple">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Tahoma&quot;,&quot;=
+sans-serif&quot;;color:black">Good afternoon Lebanon Residents,<o:p></o:p><=
+/span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Ta=
+homa&quot;,&quot;sans-serif&quot;;color:black"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Ta=
+homa&quot;,&quot;sans-serif&quot;;color:black">Folks were unable to connect=
+ to the survey via yesterday&#8217;s post, as there was an error in the lin=
+k.&nbsp; Below is the letter about the survey and the link that should
+ work.&nbsp; Please let me know if you have trouble accessing the survey. <=
+o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Ta=
+homa&quot;,&quot;sans-serif&quot;;color:black"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Tahoma&quot;,&quot;=
+sans-serif&quot;;color:black">ALL Together,<span class=3D"apple-converted-s=
+pace">&nbsp;</span>formerly the Upper Valley Substance Misuse Prevention Pa=
+rtnership<span class=3D"apple-converted-space">&nbsp;</span>is a regional
+ coalition that takes action to reduce the impact of alcohol and drug misus=
+e in support of the development of healthy, safe, and resilient youth.&nbsp=
+;<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Ta=
+homa&quot;,&quot;sans-serif&quot;;color:black"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Tahoma&quot;,&quot;=
+sans-serif&quot;;color:black">The&nbsp;Lebanon&nbsp;community has been iden=
+tified as an Upper Valley community to be<span class=3D"apple-converted-spa=
+ce">&nbsp;</span>a part of the substance misuse conversation and prevention
+ efforts in our region.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Ta=
+homa&quot;,&quot;sans-serif&quot;;color:black"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Tahoma&quot;,&quot;=
+sans-serif&quot;;color:black">ALL Together wants to know what you<span clas=
+s=3D"apple-converted-space">&nbsp;</span>(as Lebanon Residents)<span class=
+=3D"apple-converted-space">&nbsp;</span>see and how you feel about substance
+ use in your community. Participation in this survey will help us do this a=
+nd will inform our work going forward.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Ta=
+homa&quot;,&quot;sans-serif&quot;;color:black"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal">Click on the link for the survey<span style=3D"font-=
+size:12.0pt">:
+</span><a href=3D"https://www.surveymonkey.com/s/2015UpperValleyCommunitySu=
+rvey">https://www.surveymonkey.com/s/2015UpperValleyCommunitySurvey</a><o:p=
+></o:p></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt"><o:p>&nbsp;</o:p></=
+span></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Tahoma&quot;,&quot;=
+sans-serif&quot;;color:black">Please answer as honestly as possible. Your a=
+nswers are confidential.&nbsp;<span class=3D"apple-converted-space">&nbsp;<=
+/span>This survey will take approximately 15 minutes to complete.&nbsp;<spa=
+n class=3D"apple-converted-space">&nbsp;</span>The
+ survey will be open until June 30, 2015.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt"><o:p>&nbsp;</o:p></=
+span></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Tahoma&quot;,&quot;=
+sans-serif&quot;;color:black">You only need to complete this survey once. T=
+hank you in advance for taking the time to complete this survey and for bei=
+ng part of the substance misuse prevention conversation!<o:p></o:p></span><=
+/p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Ta=
+homa&quot;,&quot;sans-serif&quot;;color:black"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Tahoma&quot;,&quot;=
+sans-serif&quot;;color:black">Respectfully,</span><span style=3D"font-size:=
+10.0pt;font-family:&quot;Tahoma&quot;,&quot;sans-serif&quot;;color:black"><=
+o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Cambria&quot;,&quot=
+;serif&quot;;color:#1F497D"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Cambria&quot;,&quot=
+;serif&quot;">Angie M. Leduc<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><b><span style=3D"font-family:&quot;Cambria&quot;,&q=
+uot;serif&quot;;color:#1F497D"><o:p>&nbsp;</o:p></span></b></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Cambria&quot;,&quot=
+;serif&quot;;color:#1F497D">Drug Free Communities Partnership Coordinator
+<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Cambria&quot;,&quot=
+;serif&quot;;color:#1F497D">All Together, the Upper Valley Substance Misuse=
+ Prevention Partnership<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Cambria&quot;,&quot=
+;serif&quot;;color:#1F497D">Community Health Improvement<o:p></o:p></span><=
+/p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Cambria&quot;,&quot=
+;serif&quot;;color:#1F497D">Dartmouth-Hitchcock Medical Center<o:p></o:p></=
+span></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Cambria&quot;,&quot=
+;serif&quot;;color:#1F497D">Phone: (603)
+</span><span style=3D"color:#1F497D">653-6863</span><span style=3D"color:#1=
+F497D"><o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-family:&quot;Cambria&quot;,&quot=
+;serif&quot;;color:#1F497D">Facebook: https://www.facebook.com/TwinStateSaf=
+eMeds</span><span style=3D"font-family:&quot;Cambria&quot;,&quot;serif&quot=
+;;color:#1F497D"><o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">Facebook: https://www.=
+facebook.com/UVAllTogether</span><span style=3D"font-size:14.0pt;color:#1F4=
+97D"><o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><i><span style=3D"font-size:10.0pt;color:#1F497D">Al=
+l Together is a coalition that takes action to reduce the impact of alcohol=
+ and drug misuse in support of the development of healthy, safe, and resili=
+ent youth.
+<o:p></o:p></span></i></p>
+<p class=3D"MsoNormal"><i><span style=3D"font-size:10.0pt;color:#1F497D"><o=
+:p>&nbsp;</o:p></span></i></p>
+<p class=3D"MsoNormal"><i><span style=3D"font-size:10.0pt;color:black">AT i=
+s&nbsp;part of the Upper Valley Public Health Network and is&nbsp; supporte=
+d by Drug Free Communities, the NH Bureau of Drug and Alcohol Services and =
+the New Hampshire Charitable Foundation.&nbsp; Additional
+ resources are provided by Dartmouth-Hitchcock.</span></i><i><span style=3D=
+"font-size:10.0pt;color:#1F497D"><o:p></o:p></span></i></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">TWIN STATE SAFE MEDS i=
+s a multi-organization collaboration to support the development of healthy,=
+ safe, and resilient communities that take action to reduce the impact of a=
+lcohol and drug misuse.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+</div>
+<br>
+<font face=3D"Verdana" color=3D"Black" size=3D"1"><br>
+IMPORTANT NOTICE REGARDING THIS ELECTRONIC MESSAGE:<br>
+<br>
+This message is intended for the use of the person to whom it is addressed =
+and may contain information that is privileged, confidential, and protected=
+ from disclosure under applicable law. If you are not the intended recipien=
+t, your use of this message for
+ any purpose is strictly prohibited. If you have received this communicatio=
+n in error, please delete the message and notify the sender so that we may =
+correct our records.<br>
+</font>
+</body>
+</html>
+<div style=3D"background: transparent; border: none; clear: both; display: =
+block; float: none; position: static">---------------------------<br/>To PO=
+ST a message to this list, email your message to <a href=3D"mailto:lebanon@=
+lists.valley.net">lebanon@lists.valley.net</a>  <br/><br/>When posting, kee=
+p it specific to Lebanon. Residents are encouraged to subscribe and post; n=
+on-residents may subscribe, but are asked not to post. <br/><br/>All Upper =
+Valley-wide posts should be sent ONLY to <a href=3D"mailto:uppervalley@list=
+s.valley.net">uppervalley@lists.valley.net</a><br/><br/>Please sign your po=
+sts.  Limit commercial postings to once a month.  Keep your tone civil and =
+respectful.<br/><br/>To be REMOVED from this list, send a blank message to =
+<a href=3D"mailto:lebanon-unsubscribe@lists.valley.net">lebanon-unsubscribe=
+@lists.valley.net</a>   More details including Archives at <a href=3D"http:=
+//lists.valley.net/lists/info/lebanon">http://lists.valley.net/lists/info/l=
+ebanon</a><br/><br/>This discussion list is provided at no cost by Vital Co=
+mmunities. To learn more, go to www.vitalcommunities.org<br/><br/><br/><br/=
+><br/><br/><br/><br/><br/><br/></div></body>=
+
+--_000_8F117A49E1FC2F439390829074E674CA14ECC545DH206DHMCMaster_--
