@@ -106,6 +106,7 @@ Knotweed::Application.routes.draw do
     resources :wufoo_forms, only: [:show, :index]
 
     resources :locations, only: [:index, :show]
+    resources :listservs, only: [:index]
   end
 
 end
