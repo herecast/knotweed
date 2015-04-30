@@ -2,15 +2,15 @@
 #
 # Table name: promotions
 #
-#  id             :integer          not null, primary key
-#  active         :boolean
-#  banner         :string(255)
-#  publication_id :integer
-#  content_id     :integer
-#  description    :text
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  target_url     :string(255)
+#  id              :integer          not null, primary key
+#  active          :boolean
+#  publication_id  :integer
+#  content_id      :integer
+#  description     :text
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  promotable_id   :integer
+#  promotable_type :string(255)
 #
 
 class Promotion < ActiveRecord::Base
@@ -21,7 +21,7 @@ class Promotion < ActiveRecord::Base
 
   # TODO: At some point we probably want to lock this down a bit more so it's not so easy to attach 
   # promotions to any content/publication
-  attr_accessible :active, :banner, :banner_cache, :remove_banner, :description, :content, :publication,
+  attr_accessible :active, :description, :content, :publication,
                   :publication_id, :content_id, :target_url
   after_initialize :init
 

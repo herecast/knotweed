@@ -1,7 +1,18 @@
+# == Schema Information
+#
+# Table name: promotion_banners
+#
+#  id           :integer          not null, primary key
+#  banner_image :string(255)
+#  redirect_url :string(255)
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+
 class PromotionBanner < ActiveRecord::Base
   has_one :promotion, as: :promotable
 
-  attr_accessible :banner_image, :promotion_id, :redirect_url, :remove_banner, :banner_cache
+  attr_accessible :banner_image, :redirect_url, :remove_banner, :banner_cache
 
   mount_uploader :banner_image, ImageUploader
 

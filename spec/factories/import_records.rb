@@ -8,6 +8,7 @@
 #  failures       :integer          default(0)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  filtered       :integer          default(0)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

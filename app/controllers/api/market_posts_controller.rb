@@ -68,7 +68,7 @@ class Api::MarketPostsController < Api::ApiController
     cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
 
     # destinations for reverse publishing
-    destinations = params[:market_post].delete :destinations
+    listservs = params[:market_post].delete :listservs
 
     venue_id = params[:market_post].delete(:business_location_id)
 
@@ -101,15 +101,12 @@ class Api::MarketPostsController < Api::ApiController
 
     if @market_post.save
 
-      # reverse publish to specified destinations
-      if destinations.present?
-        destinations.each do |d|
+      # reverse publish to specified listservs
+      if listservs.present?
+        listservs.each do |d|
           next if d.empty?
-          dest_pub = Publication.find_by_name(d)
-          # skip if it doesn't exist or if it can't reverse publish
-          next if dest_pub.nil? or !dest_pub.can_reverse_publish
-          ReversePublisher.send_market_post_to_listserv(@market_post, dest_pub, @requesting_app).deliver
-          logger.debug(dest_pub.name)
+          list = Listserv.find(d.to_i)
+          PromotionListserv.create_from_content(@market_post.content, list) if list.present? and list.active
         end
       end
 

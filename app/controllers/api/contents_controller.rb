@@ -126,55 +126,41 @@ class Api::ContentsController < Api::ApiController
 
   # for now, this doesn't need to handle images
   def create_and_publish
-    # REVERSE PUBLISHING
-    # PHASE 1
-    # First we establish whether or not something is supposed to be reverse published.
-    # If YES, we construct an email to the reverse_publishing_email of the publication
-    # and send it from the user email provided.
-    # If NO, we follow our normal create-and-publish mechanism.
-
-    # hack to identify beta_talk category contents
-    # and automatically set the publication based on category
     category = params[:content][:category]
     pubname = params[:content].delete :publication
-    if category == "beta_talk"
-      pub = Publication.find_or_create_by_name "Beta Talk"
-    else
-      pub = Publication.find_by_name(pubname)
-    end
 
-    # create content here so we can pass it to mailer OR create it
-    # in PHASE 2 we will be doing both
+    # destinations for reverse publishing
+    listservs = params[:content].delete :listservs
+
     cat_name = params[:content].delete :category
     cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
     if params[:content][:content].present?
       params[:content][:raw_content] = params[:content].delete :content
     end
     @content = Content.new(params[:content])
-    @content.publication = pub
+    @content.publication = Publicatin.find_by_name(pubname)
     @content.content_category = cat unless cat.nil?
     @content.pubdate = @content.timestamp = Time.zone.now
 		@content.images=[@image] unless @image.nil?
 
-    # this is where we branch for reverse publishing
-    if pub.present? and pub.reverse_publish_email.present?
-      ReversePublisher.send_content_to_reverse_publishing_email(@content, pub).deliver
-      # need to send separate email to user rather than CC because their spam filter would catch
-      # us spoofing emails "from" them
-      ReversePublisher.send_copy_to_sender_from_dailyuv(@content, pub).deliver
-      render text: "Post sent to listserve, it should appear momentarily", status: 200
-    else
-      repo = Repository.find_by_dsp_endpoint(params[:repository])
-
-      if @content.save
-        if @content.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
-          render text: "#{@content.id}"
-        else
-          render text: "Content #{@content.id} was created, but not published", status: 500
+    if @content.save
+      # do reverse publishing if applicable
+      if listservs.present?
+        listservs.each do |d|
+          next if d.empty?
+          list = Listserv.find(d.to_i)
+          PromotionListserv.create_from_content(@content, list) if list.present? and list.active
         end
-      else
-        render text: "Content could not be created", status: 500
       end
+      # regular publishing to DSP
+      repo = Repository.find_by_dsp_endpoint(params[:repository])
+      if repo.present? and @content.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
+        render text: "#{@content.id}"
+      else
+        render text: "Content #{@content.id} was created, but not published", status: 500
+      end
+    else # if saving fails
+      render text: "Content could not be created", status: 500
     end
   end
 

@@ -16,6 +16,7 @@
 class Location < ActiveRecord::Base
 
   has_and_belongs_to_many :publications
+  has_and_belongs_to_many :listservs
   has_and_belongs_to_many :contents
 
   has_and_belongs_to_many :parents, class_name: "Location", foreign_key: :child_id, association_foreign_key: :parent_id

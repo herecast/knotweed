@@ -22,6 +22,18 @@
 #  unconfirmed_email      :string(255)
 #  organization_id        :integer
 #  default_repository_id  :integer
+#  nda_agreed_at          :datetime
+#  agreed_to_nda          :boolean          default(FALSE)
+#  admin                  :boolean          default(FALSE)
+#  event_poster           :boolean          default(FALSE)
+#  contact_phone          :string(255)
+#  contact_email          :string(255)
+#  contact_url            :string(255)
+#  location_id            :integer
+#  test_group             :string(255)
+#  muted                  :boolean          default(FALSE)
+#  discussion_listserve   :string(255)
+#  view_style             :integer
 #
 
 require 'spec_helper'
