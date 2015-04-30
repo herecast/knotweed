@@ -195,7 +195,7 @@ describe Content do
       Content.count.should== 1
     end
 
-    it "should match publication based on 'source_field' entry if provided" do
+    it "should match publication based on 'source'" do
       publication = FactoryGirl.create(:publication, reverse_publish_email: "test@test.com")
       data = @base_data.merge({
         source: publication.reverse_publish_email,
@@ -784,7 +784,50 @@ describe Content do
 
     end
 
+
   end
 
+  describe 'checking upper valley locations on import' do
 
+    before do
+      parser_path = Dir.pwd + "/lib/parsers/"
+      @test_files_path = Dir.pwd + "/spec/fixtures/upper_valley_list_test_files"
+
+      require parser_path + "upper_valley_list_parser.rb"
+
+      @upper_valley = FactoryGirl.create :location
+      @upper_valley.city = "Upper Valley"
+      @upper_valley.state = nil
+      @upper_valley.save
+
+    end
+
+
+    it 'should create Upper Valley location' do
+
+      body = get_body_from_file("/TwoEntries.html")
+      results = []
+      all_posts = find_posts(body)
+      parse_posts(all_posts, results)
+
+      content = Content.create_from_import_job(results[0])
+      Content.count.should== 1
+      ContentsLocationsHelper.content_location_exists?(content.id, @upper_valley.id).should == true
+      ContentsLocationsHelper.count_instances(content.id, @upper_valley.id).should == 1
+    end
+
+  end
+
+  def get_body_from_file(filename)
+
+    f = File.open(@test_files_path + filename)
+    body = ""
+
+    f.each_line do |line|
+      body << line
+    end
+    f.close
+
+    body
+  end
 end
