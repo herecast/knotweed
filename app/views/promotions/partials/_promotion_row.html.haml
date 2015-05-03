@@ -4,7 +4,7 @@
     %td= "None"
   - else
     %td= link_to promotion.content.title, edit_content_path(promotion.content)
-  %td= link_to promotion.banner, promotion.banner.url
+  %td= promotion.promotable_type
   %td= promotion.description
   %td= promotion.active
   %td

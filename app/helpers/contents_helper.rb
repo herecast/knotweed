@@ -24,4 +24,10 @@ module ContentsHelper
     end
   end
 
+  # confirms that a piece of content has authors, authoremail,
+  # and title populated -- returns false if not
+  def can_be_listserv_promoted(content)
+    content.authors.present? and content.authoremail.present? and content.title.present?
+  end
+
 end

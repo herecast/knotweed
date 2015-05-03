@@ -44,7 +44,7 @@ class PromotionListserv < ActiveRecord::Base
     content = promotion.content
     ReversePublisher.send_content_to_reverse_publishing_email(content, listserv).deliver
     ReversePublisher.send_copy_to_sender_from_dailyuv(content, listserv).deliver
-    self.update_attribute :sent_at, DateTime.now
+    update_attribute :sent_at, DateTime.now
     if listserv.locations.present?
       listserv.locations.each do |l|
         content.locations << l unless content.locations.include? l

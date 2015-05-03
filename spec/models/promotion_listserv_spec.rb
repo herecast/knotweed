@@ -52,13 +52,13 @@ describe PromotionListserv do
     end
 
     it 'should update sent_at with the current time' do
+      @pl.reload
       @pl.sent_at.present?.should be_true
     end
 
     it 'should update the locations of the content record' do
       @content.locations.include?(@loc1).should be_true
     end
-
 
   end
   

@@ -16,6 +16,8 @@ class PromotionBanner < ActiveRecord::Base
 
   mount_uploader :banner_image, ImageUploader
 
+  UPLOAD_ENDPOINT = "/statements"
+
   after_save :update_active_promotions
   before_destroy { |record| record.active = false; true }
   after_destroy :update_active_promotions
