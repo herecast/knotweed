@@ -138,7 +138,7 @@ class Api::ContentsController < Api::ApiController
       params[:content][:raw_content] = params[:content].delete :content
     end
     @content = Content.new(params[:content])
-    @content.publication = Publicatin.find_by_name(pubname)
+    @content.publication = Publication.find_by_name(pubname)
     @content.content_category = cat unless cat.nil?
     @content.pubdate = @content.timestamp = Time.zone.now
 		@content.images=[@image] unless @image.nil?

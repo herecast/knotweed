@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150430202606) do
+ActiveRecord::Schema.define(:version => 20150504182843) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -36,9 +36,9 @@ ActiveRecord::Schema.define(:version => 20150430202606) do
     t.date    "DATE_EDITED"
   end
 
-  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+  add_index "usgs_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
+  add_index "usgs_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
+  add_index "usgs_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -116,15 +116,20 @@ ActiveRecord::Schema.define(:version => 20150430202606) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer  "channel_id"
-    t.text     "category"
-    t.datetime "created_at", :null => false
+    t.integer   "channel_id"
+    t.text      "category"
+    t.timestamp "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
 
   create_table "channels", :force => true do |t|
     t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "comments", :force => true do |t|
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
@@ -234,10 +239,15 @@ ActiveRecord::Schema.define(:version => 20150430202606) do
     t.text     "summary"
     t.string   "url"
     t.string   "origin"
+    t.string   "mimetype"
     t.string   "language"
+    t.string   "page"
+    t.string   "wordcount"
     t.string   "authoremail"
     t.integer  "publication_id"
+    t.string   "file"
     t.boolean  "quarantine",             :default => false
+    t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
@@ -285,21 +295,6 @@ ActiveRecord::Schema.define(:version => 20150430202606) do
   add_index "contents", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents", ["title"], :name => "title"
 
-  create_table "contents_NT", :force => true do |t|
-    t.string   "title"
-    t.string   "subtitle"
-    t.string   "authors"
-    t.string   "subject"
-    t.text     "content"
-    t.integer  "issue_id"
-    t.integer  "location_id"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
-    t.boolean  "reviewed",       :default => false
-    t.integer  "lupdate_by"
-    t.integer  "publication_id"
-  end
-
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
     t.string   "title"
@@ -323,10 +318,6 @@ ActiveRecord::Schema.define(:version => 20150430202606) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
-
-  create_table "contents_id", :force => true do |t|
-    t.string "category", :limit => 128
-  end
 
   create_table "contents_locations", :force => true do |t|
     t.integer  "content_id"
@@ -434,6 +425,7 @@ ActiveRecord::Schema.define(:version => 20150430202606) do
   end
 
   add_index "events", ["featured"], :name => "index_events_on_featured"
+  add_index "events", ["venue_id"], :name => "events_on_venue_id_index"
   add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 
   create_table "images", :force => true do |t|
