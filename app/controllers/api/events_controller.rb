@@ -80,7 +80,9 @@ class Api::EventsController < Api::ApiController
     cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
 
     # listservs for reverse publishing
-    listservs = params[:event].delete :listservs
+    listservs = params[:event].delete :listserv_ids
+
+    location_ids = params[:event].delete(:location_ids).select{ |id| id.present? }.map{ |id| id.to_i }
 
     venue_id = params[:event].delete(:business_location_id)
 
@@ -106,6 +108,7 @@ class Api::EventsController < Api::ApiController
     content_record['content_category_id'] = cat.id
     content_record['publication_id'] = pub.id
     content_record['pubdate'] = content_record['timestamp'] = Time.zone.now
+    content_record['location_ids'] = location_ids if location_ids.present?
 
     # create the new event and the associated content record
     @event = Event.new(params[:event], featured: 0)

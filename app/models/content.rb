@@ -107,7 +107,8 @@ class Content < ActiveRecord::Base
                 :image_ids, :parent_id, :source_uri, :category,
                 :content_category_id, :category_reviewed, :raw_content, :processed_content,
                 :sanitized_content, :channelized_content_id,
-                :has_event_calendar, :channel_type, :channel_id, :channel
+                :has_event_calendar, :channel_type, :channel_id, :channel,
+                :location_ids
 
   validates_presence_of :raw_content, :title, if: :is_event?
 

@@ -131,6 +131,7 @@ class Api::ContentsController < Api::ApiController
 
     # destinations for reverse publishing
     listservs = params[:content].delete :listservs
+    locations = params[:content].delete :locations
 
     cat_name = params[:content].delete :category
     cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
@@ -138,7 +139,7 @@ class Api::ContentsController < Api::ApiController
       params[:content][:raw_content] = params[:content].delete :content
     end
     @content = Content.new(params[:content])
-    @content.publication = Publicatin.find_by_name(pubname)
+    @content.publication = Publication.find_by_name(pubname)
     @content.content_category = cat unless cat.nil?
     @content.pubdate = @content.timestamp = Time.zone.now
 		@content.images=[@image] unless @image.nil?
@@ -150,6 +151,12 @@ class Api::ContentsController < Api::ApiController
           next if d.empty?
           list = Listserv.find(d.to_i)
           PromotionListserv.create_from_content(@content, list) if list.present? and list.active
+        end
+      end
+      if locations.present?
+        locations.each do |l|
+          loc = Location.find(l.to_i)
+          @content.locations << loc unless @content.locations.include? loc
         end
       end
       # regular publishing to DSP
