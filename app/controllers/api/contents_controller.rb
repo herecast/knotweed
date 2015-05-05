@@ -130,8 +130,13 @@ class Api::ContentsController < Api::ApiController
     pubname = params[:content].delete :publication
 
     # destinations for reverse publishing
-    listservs = params[:content].delete :listservs
-    locations = params[:content].delete :locations
+    listserv_ids = params[:content].delete :listserv_ids
+
+    location_ids = params[:content].delete :location_ids
+    if location_ids.present?
+      location_ids.select!{ |l| l.present? }
+      params[:content][:location_ids] = location_ids.map{ |l| l.to_i } if location_ids.present?
+    end
 
     cat_name = params[:content].delete :category
     cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
@@ -146,17 +151,11 @@ class Api::ContentsController < Api::ApiController
 
     if @content.save
       # do reverse publishing if applicable
-      if listservs.present?
-        listservs.each do |d|
+      if listserv_ids.present?
+        listserv_ids.each do |d|
           next if d.empty?
           list = Listserv.find(d.to_i)
           PromotionListserv.create_from_content(@content, list) if list.present? and list.active
-        end
-      end
-      if locations.present?
-        locations.each do |l|
-          loc = Location.find(l.to_i)
-          @content.locations << loc unless @content.locations.include? loc
         end
       end
       # regular publishing to DSP
