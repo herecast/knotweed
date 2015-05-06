@@ -245,8 +245,10 @@ class Content < ActiveRecord::Base
       else
         key = k
       end
-      if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories', 'source_field', 'listserv_locations'].include? key
+      if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories', 'source_field'].include? key
         special_attrs[key] = v if v.present?
+      elsif key == 'listserv_locations'
+        data['location_ids'] = Location.get_ids_from_location_strings(v)
       elsif v.present?
         data[key] = v
       end
@@ -368,37 +370,7 @@ class Content < ActiveRecord::Base
       content.images.create(image_attrs)
     end
 
-    if special_attrs.has_key? "listserv_locations"
-      insert_contents_locations(content.id, special_attrs["listserv_locations"])
-    end
-
     content
-
-  end
-
-  def self.insert_contents_locations(content_id, locations)
-    location_ids = []
-
-    # get the ids of all the locations
-    locations.each do |location_string|
-      city_state = location_string.split(",")
-
-      if city_state.present?
-        if city_state[1].present?
-          location = Location.where(city: city_state[0], state: city_state[1]).first
-        else
-          location = Location.where(city: city_state[0]).first
-        end
-
-        location_ids.push(location.id)
-      end
-    end
-
-    location_ids.each do |id|
-      if !ContentsLocationsHelper.content_location_exists?(content_id, id)
-        ContentsLocationsHelper.do_insert_ids(content_id, id)
-      end
-    end
   end
 
   # check that doc validates our xml requirements

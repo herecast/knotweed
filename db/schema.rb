@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150430202606) do
+ActiveRecord::Schema.define(:version => 20150504182843) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -125,6 +125,11 @@ ActiveRecord::Schema.define(:version => 20150430202606) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "comments", :force => true do |t|
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
@@ -697,6 +702,7 @@ ActiveRecord::Schema.define(:version => 20150430202606) do
     t.datetime "updated_at",      :null => false
     t.integer  "promotable_id"
     t.string   "promotable_type"
+    t.string   "banner"
   end
 
   add_index "promotions", ["content_id"], :name => "index_promotions_on_content_id"
