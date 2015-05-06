@@ -13,7 +13,7 @@ describe 'parse upper valley list files' do
 
   end
 
-  it 'source should be VC Listserv, and location Upper Valley' do
+  it 'source should be Listserv, and location Upper Valley' do
 
     body = get_body_from_file("/TwoEntries.html")
     results = []
@@ -23,8 +23,8 @@ describe 'parse upper valley list files' do
 
     results.should_not == nil
     results.each do |post|
-        post['source'].should == 'VC Listserv'
-        post['listserv_locations'].should == 'Upper Valley,'
+        post['source'].should == 'Listserv'
+        post['listserv_locations'][0].should == 'Upper Valley,'
     end
 
   end

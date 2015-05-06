@@ -18,7 +18,7 @@ describe 'localize listserve imports' do
     eml = Mail.read(@test_files_path+"/norwich.txt")
     parsed_emails = convert_eml_to_hasharray(eml, @config)
 
-    parsed_emails[0]['source'].include?('VC Listserv').should == true
+    parsed_emails[0]['source'].include?('Listserv').should == true
     parsed_emails[0]['listserv_locations'].length.should == 1
     parsed_emails[0]['listserv_locations'].include?('Norwich,VT') == true
 
