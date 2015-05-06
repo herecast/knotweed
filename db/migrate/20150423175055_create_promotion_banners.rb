@@ -33,7 +33,6 @@ class CreatePromotionBanners < ActiveRecord::Migration
       end
     end
 
-    remove_column :promotions, :banner
     remove_column :promotions, :target_url
 
   end

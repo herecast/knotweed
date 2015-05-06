@@ -23,7 +23,13 @@ class Promotion < ActiveRecord::Base
   # promotions to any content/publication
   attr_accessible :active, :description, :content, :publication,
                   :publication_id, :content_id, :target_url,
-                  :promotable_attributes, :promotable_type
+                  :promotable_attributes, :promotable_type,
+                  :banner # note this attribute no longer exists, but needs to be
+                  # in our code until afer the migration is run
+  mount_uploader :banner, ImageUploader # same with this ^^
+  # we are actually retaining the database column for now as well. At some point down the road,
+  # we can remove these two lines of code and the database column
+
   accepts_nested_attributes_for :promotable
   after_initialize :init
 
