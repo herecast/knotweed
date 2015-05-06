@@ -68,9 +68,9 @@ class Api::MarketPostsController < Api::ApiController
     cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
 
     # destinations for reverse publishing
-    listservs = params[:market_post].delete :listservs
-
-    venue_id = params[:market_post].delete(:business_location_id)
+    listserv_ids = params[:market_post].delete :listserv_ids
+    
+    location_ids = params[:market_post].delete(:location_ids).select{ |id| id.present? }.map{ |id| id.to_i }
 
     # TODO: there has got to be a better way! but I tried simply piping the image straight through
     # and allowing mass assignment to upload it as you would a normal form submission and no dice, so using
@@ -94,6 +94,7 @@ class Api::MarketPostsController < Api::ApiController
     content_record['content_category_id'] = cat.id
     content_record['publication_id'] = pub.id
     content_record['pubdate'] = content_record['timestamp'] = Time.zone.now
+    content_record['location_ids'] = location_ids if location_ids.present?
 
     # create the new market_post and the associated content record
     @market_post = MarketPost.new(params[:market_post])
@@ -102,8 +103,8 @@ class Api::MarketPostsController < Api::ApiController
     if @market_post.save
 
       # reverse publish to specified listservs
-      if listservs.present?
-        listservs.each do |d|
+      if listserv_ids.present?
+        listserv_ids.each do |d|
           next if d.empty?
           list = Listserv.find(d.to_i)
           PromotionListserv.create_from_content(@market_post.content, list) if list.present? and list.active
