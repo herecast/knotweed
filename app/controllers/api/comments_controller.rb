@@ -6,7 +6,13 @@ class Api::CommentsController < Api::ApiController
     pub = Publication.find_by_name(pub_name)
 
     # destinations for reverse publishing
-    listservs = params[:content].delete :listservs
+    listserv_ids = params[:content].delete :listserv_ids
+
+    location_ids = params[:content].delete :location_ids
+    if location_ids.present?
+      location_ids.select!{ |l| l.present? }
+      params[:content][:location_ids] = location_ids.map{ |l| l.to_i } if location_ids.present?
+    end
 
     cat_name = params[:content].delete :category
     cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
@@ -40,15 +46,9 @@ class Api::CommentsController < Api::ApiController
     @comment.content_attributes = content_record
 
     if @comment.save
-      # update content_locations
-      locations = params[:content].delete :locations
-      locations.each do |location_id|
-        ContentsLocationsHelper.do_insert_ids(@comment.content.id, location_id)
-      end
-
       # do reverse publishing if applicable
-      if listservs.present?
-        listservs.each do |d|
+      if listserv_ids.present?
+        listserv_ids.each do |d|
           next if d.empty?
           list = Listserv.find(d.to_i)
           PromotionListserv.create_from_content(@comment.content, list) if list.present? and list.active

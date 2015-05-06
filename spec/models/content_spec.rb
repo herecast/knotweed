@@ -737,20 +737,11 @@ describe Content do
           to_return(raw_resp.read)
       ImageUploader.storage = :file
 
-      @norwich = FactoryGirl.create :location
-      @norwich.city = "Norwich"
-      @norwich.state = "VT"
-      @norwich.save
+      @norwich = FactoryGirl.create :location, city: 'Norwich', state: 'VT'
 
-      @corinth = FactoryGirl.create :location
-      @corinth.city = "Corinth"
-      @corinth.state = "VT"
-      @corinth.save
+      @corinth = FactoryGirl.create :location, city: 'Corinth', state: 'VT'
 
-      @topsham = FactoryGirl.create :location
-      @topsham.city = "Topsham"
-      @topsham.state = "VT"
-      @topsham.save
+      @topsham = FactoryGirl.create :location, city: 'Topsham', state: 'VT'
     end
 
     it "should create content with Norwich as location" do
@@ -764,8 +755,7 @@ describe Content do
       content = Content.create_from_import_job(parsed_emails[0])
       Content.count.should== 1
 
-      ContentsLocationsHelper.content_location_exists?(content.id, @norwich.id).should == true
-      ContentsLocationsHelper.count_instances(content.id, @norwich.id).should == 1
+      content.locations.include?(@norwich).should eq(true)
     end
 
     it "should create lrn locations" do
@@ -778,11 +768,9 @@ describe Content do
       content = Content.create_from_import_job(parsed_emails[0])
       Content.count.should== 1
 
-      ContentsLocationsHelper.content_location_exists?(content.id, @corinth.id).should == true
-      ContentsLocationsHelper.count_instances(content.id, @corinth.id).should == 1
+      content.locations.include?(@corinth).should eq(true)
 
-      ContentsLocationsHelper.content_location_exists?(content.id, @topsham.id).should == true
-      ContentsLocationsHelper.count_instances(content.id, @topsham.id).should == 1
+      content.locations.include?(@topsham).should eq(true)
 
     end
 
@@ -814,8 +802,7 @@ describe Content do
 
       content = Content.create_from_import_job(results[0])
       Content.count.should== 1
-      ContentsLocationsHelper.content_location_exists?(content.id, @upper_valley.id).should == true
-      ContentsLocationsHelper.count_instances(content.id, @upper_valley.id).should == 1
+      content.locations.include?(@upper_valley).should eq(true)
     end
 
   end
