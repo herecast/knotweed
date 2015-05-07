@@ -35,6 +35,9 @@ class EventsController < ApplicationController
     end
     params[:event][:event_instances_attributes] = instances
 
+    # for now all events have location Upper Valley
+    params[:event]['content_attributes']['location_ids'] = [77]
+
     @event = Event.new(params[:event])
     authorize! :create, @event
     if @event.save
