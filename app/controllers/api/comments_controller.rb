@@ -39,6 +39,7 @@ class Api::CommentsController < Api::ApiController
     content_record['publication_id'] = pub.id
     content_record['pubdate'] = content_record['timestamp'] = Time.zone.now
     content_record['location_ids'] = location_ids if location_ids.present?
+    content_record['parent_id'] = params[:content].delete :parent_id if params[:content][:parent_id].present?
 
     # create the new comment and the associated content record
     @comment = Comment.new
