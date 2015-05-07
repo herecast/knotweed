@@ -10,8 +10,7 @@ class Api::CommentsController < Api::ApiController
 
     location_ids = params[:content].delete :location_ids
     if location_ids.present?
-      location_ids.select!{ |l| l.present? }
-      params[:content][:location_ids] = location_ids.map{ |l| l.to_i } if location_ids.present?
+      location_ids.select!{ |l| l.present? }.map!{ |l| l.to_i }
     end
 
     cat_name = params[:content].delete :category
@@ -40,6 +39,7 @@ class Api::CommentsController < Api::ApiController
     content_record['content_category_id'] = cat.id
     content_record['publication_id'] = pub.id
     content_record['pubdate'] = content_record['timestamp'] = Time.zone.now
+    content_record['location_ids'] = location_ids if location_ids.present?
 
     # create the new comment and the associated content record
     @comment = Comment.new
