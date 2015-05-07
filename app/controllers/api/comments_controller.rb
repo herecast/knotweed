@@ -9,9 +9,8 @@ class Api::CommentsController < Api::ApiController
     listserv_ids = params[:content].delete :listserv_ids
 
     location_ids = params[:content].delete :location_ids
-    if location_ids.present?
-      location_ids.select!{ |l| l.present? }.map!{ |l| l.to_i }
-    end
+    location_ids.select!{ |l| l.present? } if location_ids.present?
+    location_ids.map!{ |l| l.to_i } if location_ids.present?
 
     cat_name = params[:content].delete :category
     cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
