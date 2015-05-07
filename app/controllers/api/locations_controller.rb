@@ -1,6 +1,6 @@
 class Api::LocationsController < Api::ApiController
   def index
-    @locations = Location.all
+    @locations = Location.where(consumer_active: true)
     render json: @locations
   end
 
