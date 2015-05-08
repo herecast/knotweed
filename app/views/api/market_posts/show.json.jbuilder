@@ -7,7 +7,9 @@ json.market_posts [@market_post] do |mp|
   json.content_id mp.content.id
   json.content mp.content.raw_content
 
-  json.comments @comments
+  json.comments @comments do |comment|
+    json.partial! 'api/comments/partials/comment', comment: comment unless comment.nil?
+  end
 
   if mp.content.images.present?
     json.image mp.content.images.first.image.url

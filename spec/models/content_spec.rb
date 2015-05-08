@@ -807,6 +807,51 @@ describe Content do
 
   end
 
+  describe 'get_comment_thread' do
+    before do
+      @root = FactoryGirl.create :content
+    end
+
+    subject { @root.get_comment_thread }
+
+    it 'should return an empty list if content has no children' do
+      subject.should eq([])
+    end
+
+    it 'should not include any children that are not comment channel' do
+      FactoryGirl.create :content, parent_id: @root.id
+      subject.should eq([])
+    end
+
+    it 'should return content with the transient attribute "tier" set' do
+      tier0 = FactoryGirl.create :comment
+      tier0.content.update_attribute :parent_id, @root.id
+      subject.should eq([tier0.content])
+      subject[0].tier.should eq(0)
+    end
+
+    it 'correctly assigns tiers to the whole tree' do
+      tier0 = FactoryGirl.create :comment
+      tier0.content.update_attribute :parent_id, @root.id
+      tier0_2 = FactoryGirl.create :comment
+      tier0_2.content.update_attribute :parent_id, @root.id
+      tier1 = FactoryGirl.create :comment
+      tier1.content.update_attribute :parent_id, tier0.content.id
+      tier2 = FactoryGirl.create :comment
+      tier2.content.update_attribute :parent_id, tier1.content.id
+      subject.count.should eq(4)
+      tier_counts = []
+      subject.each do |com|
+        tier_counts[com.tier] ||=0
+        tier_counts[com.tier] +=1
+      end
+      tier_counts[0].should eq(2)
+      tier_counts[1].should eq(1)
+      tier_counts[2].should eq(1)
+    end
+
+  end
+
   def get_body_from_file(filename)
 
     f = File.open(@test_files_path + filename)
@@ -819,4 +864,5 @@ describe Content do
 
     body
   end
+
 end

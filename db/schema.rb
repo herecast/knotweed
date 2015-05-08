@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150506200655) do
+ActiveRecord::Schema.define(:version => 20150507160251) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -116,9 +116,9 @@ ActiveRecord::Schema.define(:version => 20150506200655) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer   "channel_id"
-    t.text      "category"
-    t.timestamp "created_at", :null => false
+    t.integer  "channel_id"
+    t.text     "category"
+    t.datetime "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -239,15 +239,10 @@ ActiveRecord::Schema.define(:version => 20150506200655) do
     t.text     "summary"
     t.string   "url"
     t.string   "origin"
-    t.string   "mimetype"
     t.string   "language"
-    t.string   "page"
-    t.string   "wordcount"
     t.string   "authoremail"
     t.integer  "publication_id"
-    t.string   "file"
     t.boolean  "quarantine",             :default => false
-    t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
@@ -444,7 +439,6 @@ ActiveRecord::Schema.define(:version => 20150506200655) do
   end
 
   add_index "events", ["featured"], :name => "index_events_on_featured"
-  add_index "events", ["venue_id"], :name => "events_on_venue_id_index"
   add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 
   create_table "images", :force => true do |t|
@@ -552,8 +546,9 @@ ActiveRecord::Schema.define(:version => 20150506200655) do
     t.string   "county"
     t.string   "lat"
     t.string   "long"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+    t.boolean  "consumer_active", :default => false
   end
 
   create_table "locations_bad", :force => true do |t|
@@ -683,13 +678,6 @@ ActiveRecord::Schema.define(:version => 20150506200655) do
     t.text     "description"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
-  end
-
-  create_table "promote_options", :force => true do |t|
-    t.string  "promo_type",            :limit => 128
-    t.string  "name",                  :limit => 128
-    t.string  "reverse_publish_email", :limit => 128
-    t.boolean "active",                               :default => true
   end
 
   create_table "promotion_banners", :force => true do |t|

@@ -110,6 +110,9 @@ class Content < ActiveRecord::Base
                 :has_event_calendar, :channel_type, :channel_id, :channel,
                 :location_ids
 
+  attr_accessor :tier # this is not stored on the database, but is used to generate a tiered tree
+  # for the API
+
   validates_presence_of :raw_content, :title, if: :is_event?
 
   validates_presence_of :raw_content, :title, if: :is_market_post?
@@ -807,12 +810,15 @@ class Content < ActiveRecord::Base
   # return thread of comment-type objects associated with self
   # NOTE: for simplicity, I'm ignoring tiers of comments here. We'll still return them...
   # but until told otherwise, this is the way we're doing it because it's much easier.
-  def get_comment_thread
+  def get_comment_thread(tier=0)
     if children.present?
       comments = []
-      children.each do |c|
-        comments += [c] if c.channel_type == 'Comment'
-        comments += c.get_comment_thread
+      children.order('pubdate ASC').each do |c|
+        if c.channel_type == 'Comment'
+          c.tier = tier
+          comments += [c]
+          comments += c.get_comment_thread(tier+1)
+        end
       end
       comments
     else

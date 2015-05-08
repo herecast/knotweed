@@ -10,6 +10,8 @@ class Comment < ActiveRecord::Base
   has_many :repositories, through: :content
   has_one :import_location, through: :content
 
+  attr_accessible :tier # this is not stored on the database, but is used to generate a tiered tree
+  # for the API
 
   after_save do |comment|
     comment.content.save
@@ -26,4 +28,5 @@ class Comment < ActiveRecord::Base
       end
     end
   end
+
 end

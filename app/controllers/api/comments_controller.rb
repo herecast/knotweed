@@ -1,6 +1,17 @@
 class Api::CommentsController < Api::ApiController
 
-  def create_and_publish
+  # this call is used to return a tiered list of comments associated with a root 
+  # content ID (passed as a param)
+  def index
+    if params[:root_id].present?
+      root = Content.find(params[:root_id])
+      @comments = root.get_comment_thread
+    else
+      render json: { comments: [] }
+    end
+  end
+
+  def create
     category = params[:content][:category]
     pub_name = params[:content].delete :publication
     pub = Publication.find_by_name(pub_name)

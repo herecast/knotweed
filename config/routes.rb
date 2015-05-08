@@ -76,7 +76,7 @@ Knotweed::Application.routes.draw do
 
   # API
   namespace :api do
-    post 'comments/create_and_publish', to: 'comments#create_and_publish', as: :create_and_publish_comment
+    resources 'comments', only: [:index, :create]
     get 'contents/:id/get_tree', to: 'contents#get_tree', as: :get_tree
     get 'contents/:id/related_promotion', to: 'contents#banner', as: :related_promotion
     post 'contents/search', to: 'contents#index', as: :contents_search
