@@ -8,7 +8,7 @@
   = f.input :page_url_field
   = f.input :controller, collection: Message::CONTROLLER_OPTIONS + ["application"], include_blank: true
   = f.input :action, collection: Message::ACTION_OPTIONS, include_blank: true,
-    hint: "'weekender', 'wellness' and 'family' actions only apply to the events controller."
+    hint: "'local_content', 'subserve', 'tott', 'weekender', 'wellness' and 'family' actions only apply to the events controller."
   = f.input :call_to_action, input_html: { class: "input-block-level", rows: 5 },
     hint: "The text that displays in the alert notifying the user about the form. This text is automatically linked to the form."
   .form-actions
