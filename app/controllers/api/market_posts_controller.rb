@@ -55,6 +55,9 @@ class Api::MarketPostsController < Api::ApiController
 
   def show
     @market_post = MarketPost.find(params[:id])
+    # get threaded comments
+    @comments = @market_post.content.get_comment_thread
+
     if params[:repository].present?
       @market_post = nil unless @market_post.content.published
     end

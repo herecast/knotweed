@@ -7,6 +7,8 @@ json.market_posts [@market_post] do |mp|
   json.content_id mp.content.id
   json.content mp.content.raw_content
 
+  json.comments @comments
+
   if mp.content.images.present?
     json.image mp.content.images.first.image.url
   end

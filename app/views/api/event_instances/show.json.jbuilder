@@ -7,6 +7,7 @@ json.events [@event_instance] do |ei|
   json.event_id ei.event.id
   json.content_id ei.event.content.id
   json.content ei.event.content.raw_content
+  json.comments @comments
 
   if ei.event.content.images.present?
     json.image ei.event.content.images.first.image.url

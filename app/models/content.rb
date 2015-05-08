@@ -804,6 +804,22 @@ class Content < ActiveRecord::Base
     end
   end
 
+  # return thread of comment-type objects associated with self
+  # NOTE: for simplicity, I'm ignoring tiers of comments here. We'll still return them...
+  # but until told otherwise, this is the way we're doing it because it's much easier.
+  def get_comment_thread
+    if children.present?
+      comments = []
+      children.each do |c|
+        comments += [c] if c.channel_type == 'Comment'
+        comments += c.get_comment_thread
+      end
+      comments
+    else
+      []
+    end
+  end
+
   def get_ordered_downstream_thread(tier=0)
     downstream_thread = []
     if children.present?
