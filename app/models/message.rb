@@ -26,7 +26,7 @@ class Message < ActiveRecord::Base
   validate :end_date_greater_than_start_date
 
   CONTROLLER_OPTIONS = %w(contents events users home market_posts)
-  ACTION_OPTIONS = %w(index show edit weekender wellness family subserve)
+  ACTION_OPTIONS = %w(index show edit family local_content subserve tott weekender wellness)
 
   def active?
     if start_date < Time.zone.now and (end_date.nil? or end_date > Time.zone.now)
