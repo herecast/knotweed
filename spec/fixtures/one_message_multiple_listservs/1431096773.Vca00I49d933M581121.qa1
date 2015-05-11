@@ -1,0 +1,193 @@
+Return-Path: <thetford-owner+townlists=qasmtp.subtextdev.org@lists.valley.net>
+Delivered-To: townlists@qasmtp.subtextdev.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by qasmtp.subtextdev.org (Postfix) with ESMTPS id 7B4871C0117
+	for <townlists@qasmtp.subtextdev.org>; Fri,  8 May 2015 10:52:53 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id DDE7027871; Fri,  8 May 2015 07:52:52 -0700 (PDT)
+X-Original-To: thetford@lists.valley.net
+Delivered-To: lists.valley.net-thetford@groups.electricembers.net
+Received: from smtp3.electricembers.net (smtp3 [208.90.215.69])
+	(using TLSv1 with cipher DHE-RSA-CAMELLIA256-SHA (256/256 bits))
+	(No client certificate requested)
+	by groups.electricembers.net (Postfix) with ESMTPS id B9942273CE
+	for <thetford@lists.valley.net>; Fri,  8 May 2015 07:52:35 -0700 (PDT)
+X-Envelope-From: bmarshall@uvei.org
+X-Spam-Status: not spam, SpamAssassin (score=-0.266, required 5, AWL -1.57,
+	BAYES_80 2.00, HEADER_FROM_DIFFERENT_DOMAINS 0.00,
+	HTML_FONT_SIZE_LARGE 0.00, HTML_MESSAGE 0.00,
+	RCVD_IN_DNSWL_LOW -0.70, RCVD_IN_MSPIKE_H2 -0.00)
+X-MailScanner: Found to be clean
+X-MailScanner-Information: See http://electricembers.coop/support/shield/users
+Received: from mail-ob0-f176.google.com (mail-ob0-f176.google.com [209.85.214.176])
+	(using TLSv1 with cipher RC4-SHA (128/128 bits))
+	(No client certificate requested)
+	by smtp3.electricembers.net (Postfix) with ESMTPS id 29F013364A0
+	for <thetford@lists.valley.net>; Fri,  8 May 2015 07:52:02 -0700 (PDT)
+Received: by obblk2 with SMTP id lk2so57112497obb.0
+        for <thetford@lists.valley.net>; Fri, 08 May 2015 07:52:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to
+         :content-type;
+        bh=1meUJP5jfZMUumCtmSi14xj5s3yQctA1/7HqYWYgMiQ=;
+        b=T4nquRXEec1tQlZ2w69odnAT7dQVvbJvn5IAs7XJBYVljwCsJfbX7Rwq/vVx2/X07H
+         9TR4HfeKV4Fs2/N7RgwPvgG06S/kgHNiC8wB7eAdIyxFIGFHByhXUi+DmBqfE1sfU/ze
+         ZFYVq/JQN3P542XCX2laChs9u73BsaSiD+44wdSWNmrBL6Sag7SoM12WP3GnvJVNqafO
+         Cczd0XiumcEkMDtC50nhrXJz3wfuQMAinTX2+frBmSUS9waaumSIHlgAGDPjfR/4/FuF
+         vjwGvGeFdjE7optNFkpFoGwyiDlPY5my7P7DPXuYJWpwpnKExKI/sfLUWL5Q5A3afJvt
+         FYEA==
+X-Gm-Message-State: ALoCoQkmBtN3Yz7PovR8JQDtr5hl128e6gfTvnVvznSMJIjKr7k5N9AsvWNemqKRwSmIYO8QMrXD
+MIME-Version: 1.0
+X-Received: by 10.202.0.75 with SMTP id 72mr3252329oia.131.1431096721500; Fri,
+ 08 May 2015 07:52:01 -0700 (PDT)
+Received: by 10.60.92.225 with HTTP; Fri, 8 May 2015 07:52:01 -0700 (PDT)
+Date: Fri, 8 May 2015 10:52:01 -0400
+Message-ID: <CAED4MkfNJdZbLhTRHCpYjcuCAnpqaEfmTE5vcWr+Dd7x0Du7Nw@mail.gmail.com>
+From: Beverly Marshall <bmarshall@uvei.edu>
+To: Beverly Marshall <bmarshall@uvei.edu>
+Content-Type: multipart/alternative; boundary=001a1137a504b97ec70515932be2
+Subject: [Thetford] Interested in a Career in Education?
+Reply-To: Beverly Marshall <bmarshall@uvei.edu>
+X-Loop: thetford@lists.valley.net
+X-Sequence: 171
+Errors-to: thetford-owner@lists.valley.net
+Precedence: list
+Precedence: bulk
+Sender: thetford@lists.valley.net
+X-no-archive: yes
+List-Id: <thetford.lists.valley.net>
+List-Archive: <http://lists.valley.net/lists/arc/thetford>
+List-Help: <mailto:sympa@lists.valley.net?subject=help>
+List-Owner: <mailto:thetford-request@lists.valley.net>
+List-Post: <mailto:thetford@lists.valley.net>
+List-Subscribe: <mailto:sympa@lists.valley.net?subject=subscribe%20thetford>
+List-Unsubscribe: <mailto:sympa@lists.valley.net?subject=unsubscribe%20thetford>
+
+--001a1137a504b97ec70515932be2
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7BIT
+
+Greetings from the Thetford Community Discussion List
+POSTING RULES: Keep it specific to the town - please sign your posts - limit commercial postings to once a month - keep your tone civil and respectful. Here is the address to post to: thetford@lists.valley.net
+More details here: http://lists.valley.net/lists/info/Thetford
+---------------------------------
+
+
+UVEI is hosting its May Information Session on Monday, May 11 at 5 PM.
+Meet our faculty, have your questions answered and find out if this is the
+right educator preparation program for you.  Phone:   603 678-4888/Web:
+www.uvei.edu/email:  staff@uvei.edu
+
+*Beverly*
+
+Beverly Marshall
+Associate Director for Institutional Advancement
+Upper Valley Educators Institute
+194 Dartmouth College Highway
+Lebanon, NH 03766
+Phone: 603 678-4888
+Fax:     603 678-4899
+Web:    www.uvei.edu
+Twitter:  @UVEIMarshall
+
+*Growing Great Teachers, Great Leaders and Great Schools*
+---------------------------
+You received this message as a subscriber on the Thetford@lists.valley.net discussion list.
+
+When replying to a posting, if you receive the list digest, use the "Reply to sender" or "Reply to list" links at the end of the individual message. If you receive each posting as a separate email, use your mail program's Reply or Reply-To-All function, as appropriate. Please edit your reply to include only the relevant portions of the original posting, not the entire email.
+
+All Upper Valley-wide posts should be sent ONLY to uppervalley@lists.valley.net.
+
+Anyone can subscribe to this group by sending a blank message to
+Thetford-subscribe@lists.valley.net.
+To be removed from this list, send a blank message to
+Thetford-unsubscribe@lists.valley.net.
+Miscellaneous questions or comments may be forwarded directly to the moderator of this ListServe at: Thetford-request@lists.valley.net
+
+For the list homepage with posting guidelines and instructions for changing your subscription options, visit http://lists.valley.net/lists/info/Thetford. The archives with all previous messages posted to this list can be found at http://lists.valley.net/lists/arc/Thetford.
+
+This discussion list is provided at no cost by Vital Communities, a regional nonprofit organization based in White River Junction, Vermont, working to engage citizens, organizations, and communities in creating solutions to our region's challenges. To learn more, go to www.vitalcommunities.org.
+
+
+--001a1137a504b97ec70515932be2
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div style=3D"background: transparent; border: none; clear: both; display: =
+block; float: none; position: static">Greetings from the Thetford Community=
+ Discussion List<br/>POSTING RULES: Keep it specific to the town - please s=
+ign your posts - limit commercial postings to once a month - keep your tone=
+ civil and respectful. Here is the address to post to: thetford@lists.valle=
+y.net<br/>More details here: http://lists.valley.net/lists/info/Thetford<br=
+/>---------------------------------<br/><br/></div><div dir=3D"ltr"><div cl=
+ass=3D"gmail_default" style=3D"font-family:arial,helvetica,sans-serif;color=
+:rgb(0,0,153)"><p class=3D"MsoNormal"><span style=3D"font-size:14pt;line-he=
+ight:115%">UVEI is hosting its May Information Session on Monday, May 11 at=
+ 5
+PM.=C2=A0 Meet our faculty, have your
+questions answered and find out if this is the right educator preparation p=
+rogram
+for you.=C2=A0 Phone:=C2=A0=C2=A0 603 678-4888/Web:=C2=A0 </span><a href=3D=
+"http://www.uvei.edu/email"><span style=3D"font-size:14pt;line-height:115%"=
+>www.uvei.edu/email</span></a><span style=3D"font-size:14pt;line-height:115=
+%">:=C2=A0
+<a href=3D"mailto:staff@uvei.edu">staff@uvei.edu</a></span><br></p></div><d=
+iv><div class=3D"gmail_signature"><div dir=3D"ltr"><div><div dir=3D"ltr"><d=
+iv><div dir=3D"ltr"><div dir=3D"ltr"><div><font color=3D"#20124d" size=3D"6=
+" face=3D"garamond, serif"><i><br></i></font></div><div><font color=3D"#201=
+24d" size=3D"6" face=3D"garamond, serif"><i>Beverly</i></font></div><div><d=
+iv><font face=3D"verdana, sans-serif" size=3D"1" color=3D"#20124d">=C2=A0</=
+font></div><div><font color=3D"#20124d"><font size=3D"1" face=3D"verdana,sa=
+ns-serif">Beverly Marshall<br></font><font size=3D"1" face=3D"verdana,sans-=
+serif">Associate Director for Institutional Advancement<br></font><font fac=
+e=3D"verdana,sans-serif"><font size=3D"1">Upper Valley Educators Institute<=
+br>194 Dartmouth College Highway<br>Lebanon, NH 03766<br>Phone: 603 678-488=
+8<br>Fax:=C2=A0=C2=A0=C2=A0=C2=A0 603 678-4899<br></font></font><font size=
+=3D"1" face=3D"verdana,sans-serif">Web:=C2=A0=C2=A0=C2=A0=C2=A0</font><font=
+ size=3D"1" face=3D"verdana,sans-serif"><a title=3D"blocked::http://www.uve=
+i.org/" href=3D"http://www.uvei.edu/" target=3D"_blank">www.uvei.edu</a></f=
+ont></font></div><div><font color=3D"#20124d"><span style=3D"font-family:ve=
+rdana,sans-serif;font-size:x-small">Twitter: =C2=A0@UVEIMarshall</span><br>=
+</font></div><div><font size=3D"1" face=3D"verdana,sans-serif" color=3D"#20=
+124d"><span style=3D"font-family:&#39;Times New Roman&#39;;font-size:12pt">=
+<span style=3D"font-size:12pt"></span></span></font></div><div><font size=
+=3D"1" face=3D"verdana,sans-serif" color=3D"#20124d"><span style=3D"font-fa=
+mily:&#39;Times New Roman&#39;;font-size:12pt"><span style=3D"font-size:12p=
+t"></span></span></font></div><div><font color=3D"#20124d"><font size=3D"1"=
+ face=3D"verdana,sans-serif"><span style=3D"font-family:&#39;Times New Roma=
+n&#39;;font-size:12pt"><span style=3D"font-size:12pt"></span></span></font>=
+=C2=A0</font></div><div><font color=3D"#000080" face=3D"verdana, sans-serif=
+" size=3D"1"><i>Growing Great Teachers, Great Leaders and Great Schools</i>=
+</font></div></div></div></div></div></div></div></div></div></div>
+</div>
+<div style=3D"background: transparent; border: none; clear: both; display: =
+block; float: none; position: static">---------------------------<br/>You r=
+eceived this message as a subscriber on the <a href=3D"mailto:Thetford@list=
+s.valley.net">Thetford@lists.valley.net</a> discussion list.<br/><br/>When =
+replying to a posting, if you receive the list digest, use the &quot;Reply =
+to sender&quot; or &quot;Reply to list&quot; links at the end of the indivi=
+dual message. If you receive each posting as a separate email, use your mai=
+l program's Reply or Reply-To-All function, as appropriate. Please edit you=
+r reply to include only the relevant portions of the original posting, not =
+the entire email.<br/><br/>All Upper Valley-wide posts should be sent ONLY =
+to <a href=3D"mailto:uppervalley@lists.valley.net.">uppervalley@lists.valle=
+y.net.</a><br/><br/>Anyone can subscribe to this group by sending a blank m=
+essage to<br/><a href=3D"mailto:Thetford-subscribe@lists.valley.net.">Thetf=
+ord-subscribe@lists.valley.net.</a><br/>To be removed from this list, send =
+a blank message to<br/><a href=3D"mailto:Thetford-unsubscribe@lists.valley.=
+net.">Thetford-unsubscribe@lists.valley.net.</a><br/>Miscellaneous question=
+s or comments may be forwarded directly to the moderator of this ListServe =
+at: <a href=3D"mailto:Thetford-request@lists.valley.net">Thetford-request@l=
+ists.valley.net</a><br/><br/>For the list homepage with posting guidelines =
+and instructions for changing your subscription options, visit <a href=3D"h=
+ttp://lists.valley.net/lists/info/Thetford.">http://lists.valley.net/lists/=
+info/Thetford.</a> The archives with all previous messages posted to this l=
+ist can be found at <a href=3D"http://lists.valley.net/lists/arc/Thetford."=
+>http://lists.valley.net/lists/arc/Thetford.</a><br/><br/>This discussion l=
+ist is provided at no cost by Vital Communities, a regional nonprofit organ=
+ization based in White River Junction, Vermont, working to engage citizens,=
+ organizations, and communities in creating solutions to our region's chall=
+enges. To learn more, go to www.vitalcommunities.org.<br/></div></body>=
+
+--001a1137a504b97ec70515932be2--

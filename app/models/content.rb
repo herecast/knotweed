@@ -353,6 +353,8 @@ class Content < ActiveRecord::Base
       REIMPORT_FEATURES.each do |f|
         existing_content.send "#{f}=", content.send(f.to_sym) if content.send(f.to_sym).present?
       end
+
+      existing_content.locations += content.locations
       content = existing_content
     end
 

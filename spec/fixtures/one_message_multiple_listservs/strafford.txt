@@ -1,0 +1,175 @@
+Return-Path: <strafford-owner+townlists=qasmtp.subtextdev.org@lists.valley.net>
+Delivered-To: townlists@qasmtp.subtextdev.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by qasmtp.subtextdev.org (Postfix) with ESMTPS id 8928A1C0117
+	for <townlists@qasmtp.subtextdev.org>; Fri,  8 May 2015 10:58:45 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id EB5B82752C; Fri,  8 May 2015 07:58:44 -0700 (PDT)
+X-Original-To: strafford@lists.valley.net
+Delivered-To: lists.valley.net-strafford@groups.electricembers.net
+Received: from smtp3.electricembers.net (smtp3 [208.90.215.69])
+	(using TLSv1 with cipher DHE-RSA-CAMELLIA256-SHA (256/256 bits))
+	(No client certificate requested)
+	by groups.electricembers.net (Postfix) with ESMTPS id 4C5A02738B
+	for <strafford@lists.valley.net>; Fri,  8 May 2015 07:58:35 -0700 (PDT)
+X-Envelope-From: bmarshall@uvei.org
+X-Spam-Status: not spam, SpamAssassin (score=-0.156, required 5, AWL -1.46,
+	BAYES_80 2.00, HEADER_FROM_DIFFERENT_DOMAINS 0.00,
+	HTML_FONT_SIZE_LARGE 0.00, HTML_MESSAGE 0.00,
+	RCVD_IN_DNSWL_LOW -0.70, RCVD_IN_MSPIKE_H2 -0.00)
+X-MailScanner: Found to be clean
+X-MailScanner-Information: See http://electricembers.coop/support/shield/users
+Received: from mail-oi0-f47.google.com (mail-oi0-f47.google.com [209.85.218.47])
+	(using TLSv1 with cipher RC4-SHA (128/128 bits))
+	(No client certificate requested)
+	by smtp3.electricembers.net (Postfix) with ESMTPS id 4E0083364AA
+	for <strafford@lists.valley.net>; Fri,  8 May 2015 07:58:20 -0700 (PDT)
+Received: by oign205 with SMTP id n205so60334517oig.2
+        for <strafford@lists.valley.net>; Fri, 08 May 2015 07:58:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to
+         :content-type;
+        bh=1meUJP5jfZMUumCtmSi14xj5s3yQctA1/7HqYWYgMiQ=;
+        b=me1M/wjsR5k50D5rv9hUxF7ipfQtkLr0Vj9MsoIr40tQrMue17SXm/Kym/3FJtiSFc
+         ZVAZRm2Hrq7njncO81rSWblgMT49OTUIPx8kxU9MDj0XT4rv4GG5Yrld4sODM2Idtzxd
+         VJ2oLW7DQTYFAZoNRg86HuwL/xxMJe9XevPmm9DvTPDKj8Yfk69n7q0xswvnWtkTRa4A
+         COkcXIy9D1uF/0FjC0k8isciag/ix/hq1c1UcKN/F1dXG+iJQo8OvZUa8UkEoYr9g2hm
+         uddm3VhqqNgPwV5IfN6d8e4IZo1QHA+q8FKu48W/bU6giAlznihVweU/1g88oPS/35Qq
+         A8PA==
+X-Gm-Message-State: ALoCoQmPYd51WV2vNR62CLBJQTGyAmGFECMaNeSaC84N4BERw+Y8SvaaY7LRRAKC4vRbPkO0Ofmi
+MIME-Version: 1.0
+X-Received: by 10.202.0.75 with SMTP id 72mr3252329oia.131.1431096721500; Fri,
+ 08 May 2015 07:52:01 -0700 (PDT)
+Received: by 10.60.92.225 with HTTP; Fri, 8 May 2015 07:52:01 -0700 (PDT)
+Date: Fri, 8 May 2015 10:52:01 -0400
+Message-ID: <CAED4MkfNJdZbLhTRHCpYjcuCAnpqaEfmTE5vcWr+Dd7x0Du7Nw@mail.gmail.com>
+From: Beverly Marshall <bmarshall@uvei.edu>
+To: Beverly Marshall <bmarshall@uvei.edu>
+Content-Type: multipart/alternative; boundary=001a1137a504b97ec70515932be2
+Subject: [strafford] Interested in a Career in Education?
+Reply-To: Beverly Marshall <bmarshall@uvei.edu>
+X-Loop: strafford@lists.valley.net
+X-Sequence: 84
+Errors-to: strafford-owner@lists.valley.net
+Precedence: list
+Precedence: bulk
+Sender: strafford@lists.valley.net
+X-no-archive: yes
+List-Id: <strafford.lists.valley.net>
+List-Archive: <http://lists.valley.net/lists/arc/strafford>
+List-Help: <mailto:sympa@lists.valley.net?subject=help>
+List-Owner: <mailto:strafford-request@lists.valley.net>
+List-Post: <mailto:strafford@lists.valley.net>
+List-Subscribe: <mailto:sympa@lists.valley.net?subject=subscribe%20strafford>
+List-Unsubscribe: <mailto:sympa@lists.valley.net?subject=unsubscribe%20strafford>
+
+--001a1137a504b97ec70515932be2
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7BIT
+
+UVEI is hosting its May Information Session on Monday, May 11 at 5 PM.
+Meet our faculty, have your questions answered and find out if this is the
+right educator preparation program for you.  Phone:   603 678-4888/Web:
+www.uvei.edu/email:  staff@uvei.edu
+
+*Beverly*
+
+Beverly Marshall
+Associate Director for Institutional Advancement
+Upper Valley Educators Institute
+194 Dartmouth College Highway
+Lebanon, NH 03766
+Phone: 603 678-4888
+Fax:     603 678-4899
+Web:    www.uvei.edu
+Twitter:  @UVEIMarshall
+
+*Growing Great Teachers, Great Leaders and Great Schools*
+--------------------------- 
+You received this message as a subscriber on the strafford@lists.valley.net discussion list.
+
+When replying to a posting, if you receive the list digest, use the "Reply to sender" or "Reply to list" links at the end of the individual message. If you receive each posting as a separate email, use your mail program's Reply or Reply-To-All function, as appropriate. Please edit your reply to include only the relevant portions of the original posting, not the entire email.
+
+All Upper Valley-wide posts should be sent ONLY to uppervalley@lists.valley.net.
+
+Anyone can subscribe to this group by sending a blank message to
+strafford-subscribe@lists.valley.net.
+To be removed from this list, send a blank message to
+strafford-unsubscribe@lists.valley.net.
+
+For the list homepage with posting guidelines and instructions for changing your subscription options, visit http://lists.valley.net/lists/info/strafford. The archives with all previous messages posted to this list can be found at http://lists.valley.net/lists/arc/strafford.
+
+This discussion list is provided at no cost by Vital Communities, a regional nonprofit organization based in White River Junction, Vermont, working to engage citizens, organizations, and communities in creating solutions to our region's challenges. To learn more, go to www.vitalcommunities.org.
+--001a1137a504b97ec70515932be2
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:arial,he=
+lvetica,sans-serif;color:rgb(0,0,153)"><p class=3D"MsoNormal"><span style=
+=3D"font-size:14pt;line-height:115%">UVEI is hosting its May Information Se=
+ssion on Monday, May 11 at 5
+PM.=C2=A0 Meet our faculty, have your
+questions answered and find out if this is the right educator preparation p=
+rogram
+for you.=C2=A0 Phone:=C2=A0=C2=A0 603 678-4888/Web:=C2=A0 </span><a href=3D=
+"http://www.uvei.edu/email"><span style=3D"font-size:14pt;line-height:115%"=
+>www.uvei.edu/email</span></a><span style=3D"font-size:14pt;line-height:115=
+%">:=C2=A0
+<a href=3D"mailto:staff@uvei.edu">staff@uvei.edu</a></span><br></p></div><d=
+iv><div class=3D"gmail_signature"><div dir=3D"ltr"><div><div dir=3D"ltr"><d=
+iv><div dir=3D"ltr"><div dir=3D"ltr"><div><font color=3D"#20124d" size=3D"6=
+" face=3D"garamond, serif"><i><br></i></font></div><div><font color=3D"#201=
+24d" size=3D"6" face=3D"garamond, serif"><i>Beverly</i></font></div><div><d=
+iv><font face=3D"verdana, sans-serif" size=3D"1" color=3D"#20124d">=C2=A0</=
+font></div><div><font color=3D"#20124d"><font size=3D"1" face=3D"verdana,sa=
+ns-serif">Beverly Marshall<br></font><font size=3D"1" face=3D"verdana,sans-=
+serif">Associate Director for Institutional Advancement<br></font><font fac=
+e=3D"verdana,sans-serif"><font size=3D"1">Upper Valley Educators Institute<=
+br>194 Dartmouth College Highway<br>Lebanon, NH 03766<br>Phone: 603 678-488=
+8<br>Fax:=C2=A0=C2=A0=C2=A0=C2=A0 603 678-4899<br></font></font><font size=
+=3D"1" face=3D"verdana,sans-serif">Web:=C2=A0=C2=A0=C2=A0=C2=A0</font><font=
+ size=3D"1" face=3D"verdana,sans-serif"><a title=3D"blocked::http://www.uve=
+i.org/" href=3D"http://www.uvei.edu/" target=3D"_blank">www.uvei.edu</a></f=
+ont></font></div><div><font color=3D"#20124d"><span style=3D"font-family:ve=
+rdana,sans-serif;font-size:x-small">Twitter: =C2=A0@UVEIMarshall</span><br>=
+</font></div><div><font size=3D"1" face=3D"verdana,sans-serif" color=3D"#20=
+124d"><span style=3D"font-family:&#39;Times New Roman&#39;;font-size:12pt">=
+<span style=3D"font-size:12pt"></span></span></font></div><div><font size=
+=3D"1" face=3D"verdana,sans-serif" color=3D"#20124d"><span style=3D"font-fa=
+mily:&#39;Times New Roman&#39;;font-size:12pt"><span style=3D"font-size:12p=
+t"></span></span></font></div><div><font color=3D"#20124d"><font size=3D"1"=
+ face=3D"verdana,sans-serif"><span style=3D"font-family:&#39;Times New Roma=
+n&#39;;font-size:12pt"><span style=3D"font-size:12pt"></span></span></font>=
+=C2=A0</font></div><div><font color=3D"#000080" face=3D"verdana, sans-serif=
+" size=3D"1"><i>Growing Great Teachers, Great Leaders and Great Schools</i>=
+</font></div></div></div></div></div></div></div></div></div></div>
+</div>
+<div style=3D"background: transparent; border: none; clear: both; display: =
+block; float: none; position: static">--------------------------- <br/>You =
+received this message as a subscriber on the <a href=3D"mailto:strafford@li=
+sts.valley.net">strafford@lists.valley.net</a> discussion list.<br/><br/>Wh=
+en replying to a posting, if you receive the list digest, use the &quot;Rep=
+ly to sender&quot; or &quot;Reply to list&quot; links at the end of the ind=
+ividual message. If you receive each posting as a separate email, use your =
+mail program's Reply or Reply-To-All function, as appropriate. Please edit =
+your reply to include only the relevant portions of the original posting, n=
+ot the entire email.<br/><br/>All Upper Valley-wide posts should be sent ON=
+LY to <a href=3D"mailto:uppervalley@lists.valley.net.">uppervalley@lists.va=
+lley.net.</a><br/><br/>Anyone can subscribe to this group by sending a blan=
+k message to<br/><a href=3D"mailto:strafford-subscribe@lists.valley.net.">s=
+trafford-subscribe@lists.valley.net.</a><br/>To be removed from this list, =
+send a blank message to<br/><a href=3D"mailto:strafford-unsubscribe@lists.v=
+alley.net.">strafford-unsubscribe@lists.valley.net.</a><br/><br/>For the li=
+st homepage with posting guidelines and instructions for changing your subs=
+cription options, visit <a href=3D"http://lists.valley.net/lists/info/straf=
+ford.">http://lists.valley.net/lists/info/strafford.</a> The archives with =
+all previous messages posted to this list can be found at <a href=3D"http:/=
+/lists.valley.net/lists/arc/strafford.">http://lists.valley.net/lists/arc/s=
+trafford.</a><br/><br/>This discussion list is provided at no cost by Vital=
+ Communities, a regional nonprofit organization based in White River Juncti=
+on, Vermont, working to engage citizens, organizations, and communities in =
+creating solutions to our region's challenges. To learn more, go to www.vit=
+alcommunities.org.</div></body>=
+
+--001a1137a504b97ec70515932be2--

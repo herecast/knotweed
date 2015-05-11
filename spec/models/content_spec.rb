@@ -852,6 +852,46 @@ describe Content do
 
   end
 
+  describe 'one post to multiple listservs' do
+
+    before do
+      @config = Hash.new
+      @config["username"] = 'subtextuvltest@gmail.com'
+      @config["password"] = 'RailRoad202'
+      parser_path = Dir.pwd + "/lib/parsers/"
+      @test_files_path = Dir.pwd + "/spec/fixtures/one_message_multiple_listservs"
+
+      require parser_path + "mail_extractor.rb"
+
+      @strafford = FactoryGirl.create :location, city: 'Strafford', state: 'VT'
+      @new_london = FactoryGirl.create :location, city: 'New London', state: 'NH'
+
+    end
+
+    it 'should be one post and two entries in contents_location for each listserv' do
+
+      eml = Mail.read(@test_files_path+"/strafford.txt")
+      parsed_emails = convert_eml_to_hasharray(eml, @config)
+      content = Content.create_from_import_job(parsed_emails[0])
+      Content.count.should== 1
+      content.locations.include?(@strafford).should eq(true)
+      id_1 = content.id
+
+      eml = Mail.read(@test_files_path+"/new_london.txt")
+      parsed_emails = convert_eml_to_hasharray(eml, @config)
+      content = Content.create_from_import_job(parsed_emails[0])
+      Content.count.should== 1
+      content.locations.include?(@new_london).should eq(true)
+      id_2 = content.id
+
+      id_1.should == id_2
+      content.locations.length.should == 2
+      content.locations.include?(@new_london).should eq(true)
+      content.locations.include?(@strafford).should eq(true)
+
+    end
+  end
+
   def get_body_from_file(filename)
 
     f = File.open(@test_files_path + filename)
