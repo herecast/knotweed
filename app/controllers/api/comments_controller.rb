@@ -14,7 +14,7 @@ class Api::CommentsController < Api::ApiController
   def create
     category = params[:content][:category]
     pub_name = params[:content].delete :publication
-    pub = Publication.find_by_name(pub_name)
+    pub = Publication.find_or_create_by_name(pub_name)
 
     # destinations for reverse publishing
     listserv_ids = params[:content].delete :listserv_ids
