@@ -200,9 +200,9 @@ class Api::ContentsController < Api::ApiController
     if new_content.nil?
       render json: {}
     else
-      promo = new_content.promotions.where(active: true).first
-      render json: { banner: promo.banner.url, 
-                     target_url: promo.target_url, content_id: new_content.id }
+      promo = new_content.promotions.where(active: true, promotable_type: 'PromotionBanner').first
+      render json: { banner: promo.promotable.banner_image.url, 
+                     target_url: promo.promotable.redirect_url, content_id: new_content.id }
     end
   end
 
