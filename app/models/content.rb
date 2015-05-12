@@ -882,15 +882,18 @@ class Content < ActiveRecord::Base
   end
 
   def get_related_promotion(repo)
+
     results = query_promo_similarity_index(content, repo)
-    results = query_promo_similarity_index(summary, repo) if results.empty?
     results = query_promo_similarity_index(title, repo) if results.empty?
+    results = query_promo_random(repo) if results.empty?
+
+    #logger.debug "Get Promo: #{results.inspect}"
 
     unless results.empty?
       uri = results[0][:uid].to_s
       idx = uri.rindex("/")
       id = uri[idx+1..uri.length]
-    end
+    end 
   end
 
   # callback function to update fields with repo info
@@ -1104,11 +1107,23 @@ class Content < ActiveRecord::Base
   private
 
   def query_promo_similarity_index(query_term, repo)
+
     sparql = ::SPARQL::Client.new repo.sesame_endpoint
     clean_content = SparqlUtilities.sanitize_input(SparqlUtilities.clean_lucene_query(
                     ActionView::Base.full_sanitizer.sanitize(query_term)))
     query = File.read(Rails.root.join("lib", "queries", "query_promo_similarity_index.rq")) % 
             { content: clean_content, content_id: id }
+    begin
+      sparql.query(query)
+    rescue
+      return []
+    end
+  end
+
+  def query_promo_random(repo)
+    sparql = ::SPARQL::Client.new repo.sesame_endpoint
+    query = File.read(Rails.root.join("lib", "queries", "query_promo_random.rq")) %
+            { content_id: id }
     sparql.query(query)
   end
 
