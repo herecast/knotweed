@@ -13,7 +13,7 @@ class ContentsController < ApplicationController
       session[:contents_search] = params[:q]
     end
 
-    session[:contents_search][:channel_type_null] = 1 if session[:contents_search].present?
+    session[:contents_search][:channel_type_in_or_channel_type_null] = ['Comment'] if session[:contents_search].present?
     
     @search = Content.ransack(session[:contents_search])
 
@@ -93,7 +93,7 @@ class ContentsController < ApplicationController
     # if content is a channelized event
     # in the future, we'll want to perhaps add a "is_channelized?" method
     # that returns the class of the channel so we can redirect more generically
-    if @content.channel.present?
+    if @content.channel.present? and @content.channel_type != 'Comment'
       redirect_to url_for(controller: @content.channel_type.underscore.pluralize, action: "edit",
                           id: @content.channel_id)
     end
