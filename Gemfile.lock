@@ -28,6 +28,14 @@ GIT
       activesupport (>= 3.0, < 4.1)
 
 GIT
+  remote: git@github.com:rails-api/active_model_serializers.git
+  revision: dc08f0ec80ce53825dc9bcba878660b13e99e310
+  branch: 0-9-stable
+  specs:
+    active_model_serializers (0.9.3)
+      activemodel (>= 3.2)
+
+GIT
   remote: git@github.com:ruby-rdf/sparql-client.git
   revision: 7028605ae5a0122443bd1f057657ddf1b9a0321b
   branch: develop
@@ -52,8 +60,6 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
-    active_model_serializers (0.9.0.alpha1)
-      activemodel (>= 3.2)
     activemodel (3.2.13)
       activesupport (= 3.2.13)
       builder (~> 3.0.0)
@@ -471,7 +477,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_model_serializers (~> 0.9.0.alpha1)
+  active_model_serializers!
   american_date
   annotate
   better_errors

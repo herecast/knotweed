@@ -16,7 +16,7 @@
 FactoryGirl.define do
   factory :listserv do
     name "My Listserv"
-    reverse_publish_email "mylistserv@vclab.net"
+    sequence(:reverse_publish_email) { |n| "mylistserv#{n}@vclab.net" }
     active true
   end
 end
