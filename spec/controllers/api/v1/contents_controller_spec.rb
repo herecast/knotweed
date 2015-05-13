@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::ContentsController do
+describe Api::V1::ContentsController do
 
   describe "GET get_tree" do
     before do

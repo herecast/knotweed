@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::PublicationsController do
+describe Api::V1::PublicationsController do
 
   describe "index" do
     before do

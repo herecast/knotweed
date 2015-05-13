@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::MarketPostsController do
+describe Api::V1::MarketPostsController do
 
   describe "GET 'show'" do
     before do
