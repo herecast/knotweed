@@ -47,7 +47,7 @@ describe Api::V2::EventInstancesController do
         @e3 = FactoryGirl.create :event, start_date: 1.week.from_now
       end
 
-      subject { get :index, format: :json, starts_at: 2.days.ago.to_s, ends_at: 2.days.from_now.to_s }
+      subject { get :index, format: :json, date_start: 2.days.ago.to_s, date_end: 2.days.from_now.to_s }
 
       it "should only return events with start_date within that range" do
         subject
@@ -65,6 +65,21 @@ describe Api::V2::EventInstancesController do
         end
       end
     end
+  end
+
+  describe 'GET show' do
+    before do
+      @event = FactoryGirl.create :event
+      @inst = @event.event_instances.first
+    end
+
+    subject { get :show, format: :json, id: @inst.id }
+
+    it 'should return the instance' do
+      subject
+      assigns(:event_instance).should eq(@inst)
+    end
+
   end
 
 end
