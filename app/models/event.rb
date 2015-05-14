@@ -19,6 +19,8 @@
 #
 
 class Event < ActiveRecord::Base
+  extend Enumerize 
+
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
   attr_accessible :content_attributes
@@ -50,7 +52,11 @@ class Event < ActiveRecord::Base
   # validates_presence_of :content_id
 
   attr_accessible :content, :cost, :event_type, :event_url, :featured,
-    :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, :contact_url
+    :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, :contact_url,
+    :cost_type, :event_category
+
+  enumerize :cost_type, in: [:free, :paid, :donation]
+  enumerize :event_category, in: [:family, :movies, :music, :wellness, :yard_sales]
 
   serialize :links, Hash
 

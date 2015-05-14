@@ -5,7 +5,7 @@ class EventInstanceSerializer < ActiveModel::Serializer
     :venue_city, :venue_state, :venue_id, :venue_latitude, :venue_longitude,
     :event_url
 
-  SHARED_EVENT_ATTRIBUTES = [:cost, :contact_phone, :contact_email, :title, :event_url]
+  SHARED_EVENT_ATTRIBUTES = [:cost, :contact_phone, :contact_email, :title, :event_url, :cost_type]
 
   SHARED_EVENT_ATTRIBUTES.each do |w|
     define_method(w) do
