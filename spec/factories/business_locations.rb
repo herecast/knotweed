@@ -15,6 +15,9 @@
 #  longitude           :float
 #  venue_url           :string(255)
 #  locate_include_name :boolean          default(FALSE)
+#  city                :string(255)
+#  state               :string(255)
+#  zip                 :string(255)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

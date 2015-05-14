@@ -52,7 +52,11 @@ jQuery ->
     loc_string = ""
     if ($("#business_location_locate_include_name").prop('checked'))
       loc_string = loc_string + $("#business_location_name").val() + " "
-    loc_string = loc_string +  $("#business_location_address").val()
+    loc_string += $("#business_location_address").val()
+    loc_string += ' ' + $("#business_location_city").val()
+    loc_string += ' ' + $("#business_location_state").val()
+    loc_string += ' ' + $("#business_location_zip").val()
+
     new_src = base_src_url.replace(/q=.*/, "q=" + loc_string)
     console.log new_src
     $("#confirm_location_map").attr("src", new_src)

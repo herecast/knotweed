@@ -11,6 +11,7 @@
 #  updated_at      :datetime         not null
 #  promotable_id   :integer
 #  promotable_type :string(255)
+#  banner          :string(255)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

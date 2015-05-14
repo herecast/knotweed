@@ -1,1 +1,1 @@
-json.partial! 'api/contents/partials/content', content: @content
+json.partial! 'api/v1/contents/partials/content', content: @content

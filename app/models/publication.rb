@@ -94,6 +94,6 @@ class Publication < ActiveRecord::Base
   end
 
   def business_location_options
-    business_locations.map{ |bl| ["#{bl.name} - #{bl.address}", bl.id] }
+    business_locations.map{ |bl| [bl.select_option_label, bl.id] }
   end
 end

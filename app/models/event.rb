@@ -101,7 +101,7 @@ class Event < ActiveRecord::Base
 
   # field sets for API responses
   def self.truncated_event_fields
-    [:id, :title, :event_type, :sponsor, :venue,
+    [:id, :title, :event_type, :sponsor,
              :featured]
   end
 

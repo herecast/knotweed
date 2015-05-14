@@ -14,6 +14,8 @@ json.events @event_instances do |e|
     event_attrs = Event.truncated_event_fields - [:id]
     instance_attrs = [:id, :start_date, :subtitle, :description]
 
+    json.partial! 'api/v1/business_locations/show', venue: e.event.venue if e.event.venue.present?
+
     if e.event.content.images.present?
       json.image e.event.content.images[0].image.url
     end
