@@ -79,6 +79,7 @@ Knotweed::Application.routes.draw do
     namespace :v2 do
       resources 'events', only: []
       resources 'event_instances', only: [:index, :show]
+      resources 'comments', only: [:index]
       resources 'listservs', only: [:index]
       get 'venues', to: 'business_locations#index', as: :venues
     end
