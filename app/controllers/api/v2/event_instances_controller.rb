@@ -18,9 +18,15 @@ module Api
           @event_instances = @event_instances.where('event_instances.start_date <= ?', end_date)
         end
 
-        if params[:category].present? and Event::EVENT_CATEGORIES.include?(params[:category].to_sym)
-          @event_instances = @event_instances.joins(:event)
-            .where('events.event_category = ? ', params[:category])
+        if params[:category].present?
+          # .to_s below just helps our tests run -- if it alreayd is a symbol, then the rest
+          # of the line does nothing. But params will typically come in as strings, so we need
+          # to convert them to symbols here.
+          sym_cat = params[:category].to_s.downcase.gsub(' ', '_').to_sym
+          if Event::EVENT_CATEGORIES.include?(sym_cat)
+            @event_instances = @event_instances.joins(:event)
+              .where('events.event_category = ? ', sym_cat)
+          end
         end
 
         render json: @event_instances, root: 'events'

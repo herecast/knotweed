@@ -55,6 +55,11 @@ describe Api::V2::EventInstancesController do
         assigns(:event_instances).count.should == 2
       end
 
+      it 'should match string parameter to symbol value' do
+        yardsales = FactoryGirl.create :event, event_category: :yard_sales # note if event categories change, we may need to change this
+        get :index, format: :json, category: 'Yard sales'
+        assigns(:event_instances).should eq([yardsales.event_instances.first])
+      end
     end
 
     describe "if params specifies a date range" do
