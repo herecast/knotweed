@@ -2,20 +2,22 @@
 #
 # Table name: events
 #
-#  id            :integer          not null, primary key
-#  event_type    :string(255)
-#  venue_id      :integer
-#  cost          :string(255)
-#  event_url     :string(255)
-#  sponsor       :string(255)
-#  sponsor_url   :string(255)
-#  links         :text
-#  featured      :boolean
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  contact_phone :string(255)
-#  contact_email :string(255)
-#  contact_url   :string(255)
+#  id             :integer          not null, primary key
+#  event_type     :string(255)
+#  venue_id       :integer
+#  cost           :string(255)
+#  event_url      :string(255)
+#  sponsor        :string(255)
+#  sponsor_url    :string(255)
+#  links          :text
+#  featured       :boolean
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  contact_phone  :string(255)
+#  contact_email  :string(255)
+#  contact_url    :string(255)
+#  cost_type      :string(255)
+#  event_category :string(255)
 #
 
 class Event < ActiveRecord::Base
@@ -55,8 +57,11 @@ class Event < ActiveRecord::Base
     :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, :contact_url,
     :cost_type, :event_category
 
+  EVENT_CATEGORIES = [:family, :movies, :music, :wellness, :yard_sales]
+
   enumerize :cost_type, in: [:free, :paid, :donation]
-  enumerize :event_category, in: [:family, :movies, :music, :wellness, :yard_sales]
+  enumerize :event_category, in: EVENT_CATEGORIES
+
 
   serialize :links, Hash
 

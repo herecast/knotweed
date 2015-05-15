@@ -38,7 +38,24 @@ describe Api::V2::EventInstancesController do
       # the ".first" below is because we just created these and know they only have one event instance.
       assigns(:event_instances).should == [e1,e3,e2].map{ |e| e.event_instances.first }
     end
+    
+    describe 'if params specifies a category' do
+      before do
+        FactoryGirl.create_list :event, 2, event_category: Event::EVENT_CATEGORIES[0]
+        FactoryGirl.create_list :event, 3, event_category: Event::EVENT_CATEGORIES[1]
+      end
 
+      it 'should not filter by category if the param is not an enumerated value' do
+        get :index, format: :json, category: 'woof woof'
+        assigns(:event_instances).count.should == 5
+      end
+
+      it 'should filter by category if a valid category is specified' do
+        get :index, format: :json, category: Event::EVENT_CATEGORIES[0]
+        assigns(:event_instances).count.should == 2
+      end
+
+    end
 
     describe "if params specifies a date range" do
       before do

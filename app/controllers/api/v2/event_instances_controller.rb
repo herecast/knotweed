@@ -3,7 +3,7 @@ module Api
     class EventInstancesController < ApiController
 
       def index
-        @event_instances = EventInstance.limit(100).order('start_date ASC')
+        @event_instances = EventInstance.limit(500).order('start_date ASC')
           .includes(event: [{content: :images}, :venue])
 
         if params[:date_start].present?
@@ -16,6 +16,11 @@ module Api
             end_date = start_date.end_of_day
           end
           @event_instances = @event_instances.where('event_instances.start_date <= ?', end_date)
+        end
+
+        if params[:category].present? and Event::EVENT_CATEGORIES.include?(params[:category].to_sym)
+          @event_instances = @event_instances.joins(:event)
+            .where('events.event_category = ? ', params[:category])
         end
 
         render json: @event_instances, root: 'events'
