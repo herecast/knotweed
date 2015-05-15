@@ -29,7 +29,7 @@ module Api
           end
         end
 
-        render json: @event_instances, root: 'events'
+        render json: @event_instances, root: 'events', meta: { total: EventInstance.count }
       end
 
       def show
