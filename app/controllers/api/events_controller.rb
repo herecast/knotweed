@@ -111,7 +111,8 @@ class Api::EventsController < Api::ApiController
     content_record['location_ids'] = location_ids if location_ids.present?
 
     # create the new event and the associated content record
-    @event = Event.new(params[:event], featured: 0)
+    params[:event][:featured] = false
+    @event = Event.new(params[:event])
     @event.content_attributes = content_record
 
     if @event.save
