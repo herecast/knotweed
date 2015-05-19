@@ -29,8 +29,7 @@ module Api
           render json: 
             { 
               banner: promo.promotable.banner_image.url, 
-              target_url: promo.promotable.redirect_url, 
-              content_id: new_content.id 
+              target_url: promo.promotable.redirect_url
             }
         end
 
