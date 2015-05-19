@@ -1,6 +1,6 @@
 class DetailedEventInstanceSerializer < EventInstanceSerializer
 
-  attributes :event_instances, :content_id
+  attributes :event_instances, :content_id, :event_id
 
   def event_instances
     object.event.event_instances.map do |inst|

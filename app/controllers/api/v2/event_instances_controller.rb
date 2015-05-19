@@ -26,6 +26,9 @@ module Api
           if Event::EVENT_CATEGORIES.include?(sym_cat)
             @event_instances = @event_instances.joins(:event)
               .where('events.event_category = ? ', sym_cat)
+          elsif sym_cat == :everything
+            # return everything...which we already do if they don't specify a category.
+            # so nothing needs to happen here.
           end
         end
 
