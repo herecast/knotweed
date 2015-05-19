@@ -82,6 +82,7 @@ Knotweed::Application.routes.draw do
       resources 'comments', only: [:index]
       resources 'listservs', only: [:index]
       get 'venues', to: 'business_locations#index', as: :venues
+      get '/related_promotion', to: 'contents#related_promotion', as: :related_promotion
     end
 
     namespace :v1 do
