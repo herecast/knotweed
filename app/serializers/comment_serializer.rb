@@ -4,7 +4,8 @@ class CommentSerializer < ActiveModel::Serializer
   # BUT since the comment model does basically nothing, this actually serializes Content
   # (associated with comments) in the desired comment struture
 
-  attributes :id, :content, :comments, :event_id
+  attributes :id, :content, :comments, :event_id, :user_name,
+    :pubdate
 
   def id
     object.channel.id
@@ -23,11 +24,14 @@ class CommentSerializer < ActiveModel::Serializer
       object.children.map do |child|
         # only include Comments in thread
         if child.channel.is_a? Comment
-          options = { event_id: self.event_id }
-          CommentSerializer.new(child, options).serializable_hash
+          CommentSerializer.new(child).serializable_hash
         end
       end
     end
+  end
+
+  def user_name
+    object.authors
   end
 
 end
