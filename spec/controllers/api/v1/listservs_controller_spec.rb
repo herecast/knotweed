@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::LocationsController do
+describe Api::V1::ListservsController do
 
   describe "GET 'index'" do
     it "returns http success" do

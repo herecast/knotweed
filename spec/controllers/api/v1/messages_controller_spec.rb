@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::MessagesController do
+describe Api::V1::MessagesController do
 
   describe "GET 'index'" do
 

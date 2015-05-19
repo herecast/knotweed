@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::EventsController, :type => :controller do
+describe Api::V1::EventsController, :type => :controller do
 
   describe "POST update" do
     before do

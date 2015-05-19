@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::WufooFormsController do
+describe Api::V1::LocationsController do
 
   describe "GET 'index'" do
     it "returns http success" do

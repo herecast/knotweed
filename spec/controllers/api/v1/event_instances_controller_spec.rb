@@ -12,7 +12,7 @@ require 'spec_helper'
 # one important thing to note is that if you override just one entry of instance_attributes, 
 # we lose the whole default hash -- which is currently just start date. So if you passed { subtitle: "Hello" },
 # then your instance wouldn't have a start date.
-describe Api::EventInstancesController do
+describe Api::V1::EventInstancesController do
 
   describe "GET show" do
     # the json response here is quite complex, so we're rendering the view
