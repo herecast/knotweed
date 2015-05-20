@@ -13,7 +13,29 @@ module Api
           @venues = BusinessLocation.all
         end
 
-        render json: @venues, root: 'venues'
+        if params[:autocomplete]
+          render json: {
+            locations: @venues.map{|v| "#{v.name} #{v.city} #{v.state}".strip }
+          }
+        else
+          render json: @venues, root: 'venues'
+        end
+      end
+
+      # this is the /locations endpoint
+      # that is used to autocomplete the locations search
+      def autocomplete
+        query = Riddle::Query.escape(params[:query]) if params[:query].present?
+        if query.present?
+          opts = {}
+          opts = { select: '*, weight()' }
+          opts[:per_page] = params[:max_results] || 1000
+          @venues = BusinessLocation.search query, opts
+        else
+          @venues = BusinessLocation.all
+        end
+
+        
       end
 
     end
