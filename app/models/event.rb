@@ -55,7 +55,7 @@ class Event < ActiveRecord::Base
 
   attr_accessible :content, :cost, :event_type, :event_url, :featured,
     :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, :contact_url,
-    :cost_type, :event_category
+    :cost_type, :event_category, :social_enabled
 
   EVENT_CATEGORIES = [:family, :movies, :music, :wellness, :yard_sales]
 
