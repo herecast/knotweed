@@ -8,16 +8,16 @@ module Api
       def related_promotion
         if params[:event_instance_id].present?
           ei = EventInstance.find params[:event_instance_id]
-          root = ei.event.content
+          @content = ei.event.content
         elsif params[:event_id].present?
           e = Event.find params[:event_id]
-          root = e.content
+          @content = e.content
         end
 
         @repo = Repository.find params[:repository_id]
 
         begin
-          promoted_content_id = root.get_related_promotion(@repo)
+          promoted_content_id = @content.get_related_promotion(@repo)
           new_content = Content.find promoted_content_id
         rescue
           new_content = nil
@@ -32,6 +32,23 @@ module Api
               target_url: promo.promotable.redirect_url
             }
         end
+
+      end
+
+      def similar_content
+        if params[:event_instance_id].present?
+          ei = EventInstance.find params[:event_instance_id]
+          @content = ei.event.content
+        elsif params[:event_id].present?
+          e = Event.find params[:event_id]
+          @content = e.content
+        end
+
+        @repo = Repository.find params[:repository_id]
+
+        @contents = @content.similar_content(@repo)
+        render json: @contents, each_serializer: SimilarContentSerializer,
+          root: 'similar_content'
 
       end
 
