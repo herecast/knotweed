@@ -3,7 +3,7 @@ class EventInstanceSerializer < ActiveModel::Serializer
   attributes :id, :subtitle, :starts_at, :ends_at, :image_url, :content,
     :venue_name, :venue_address, :venue_locate_name, :venue_url,
     :venue_city, :venue_state, :venue_id, :venue_latitude, :venue_longitude,
-    :event_url
+    :event_url, :venue_locate_name
 
   SHARED_EVENT_ATTRIBUTES = [:cost, :contact_phone, :contact_email, :title, :event_url, :cost_type]
 
@@ -69,6 +69,7 @@ class EventInstanceSerializer < ActiveModel::Serializer
   end
 
   def venue_locate_name
+    object.event.venue.try(:geocoding_address)
   end
 
   def venue_url
@@ -76,4 +77,3 @@ class EventInstanceSerializer < ActiveModel::Serializer
   end
 
 end
-
