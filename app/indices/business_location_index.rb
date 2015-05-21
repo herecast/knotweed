@@ -1,6 +1,4 @@
 ThinkingSphinx::Index.define :business_location, :with => :active_record do
   # attributes
-  indexes name
-  indexes city
-  indexes state
+  indexes [name, city, state]
 end

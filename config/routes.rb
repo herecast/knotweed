@@ -82,7 +82,8 @@ Knotweed::Application.routes.draw do
       resources 'comments', only: [:index]
       resources 'listservs', only: [:index]
       get '/venues', to: 'business_locations#index', as: :venues
-      get '/locations', to: 'business_locations#index', as: :locations, defaults: { autocomplete: true }
+      get '/locations', to: 'business_locations#index', as: :locations, 
+        defaults: { autocomplete: true, max_results: 5 }
       get '/related_promotion', to: 'contents#related_promotion', as: :related_promotion
       get '/similar_content', to: 'contents#similar_content', as: :similar_content
     end
