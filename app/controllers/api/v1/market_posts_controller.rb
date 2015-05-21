@@ -101,16 +101,6 @@ module Api
         content_record['pubdate'] = content_record['timestamp'] = Time.zone.now
         content_record['location_ids'] = location_ids if location_ids.present?
 
-        # add parent regions
-        if location_ids.present?
-          location = Location.joins("LEFT JOIN locations_locations ON locations.id = locations_locations.child_id").where("locations.id = ?", location_ids[0])
-           if location[0].parents.present?
-            location[0].parents.each do |parent|
-              content_record['location_ids'].push(parent.id)
-            end
-           end
-        end
-
         # create the new market_post and the associated content record
         @market_post = MarketPost.new(params[:market_post])
         @market_post.content_attributes = content_record
