@@ -205,6 +205,7 @@ GEM
       nokogiri (~> 1.5)
       ruby-hmac
     formatador (0.2.4)
+    front_end_builds (0.1.3)
     fssm (0.2.10)
     geocoder (1.2.4)
     google-api-client (0.7.1)
@@ -509,6 +510,7 @@ DEPENDENCIES
   factory_girl_rails (~> 4.3.0)
   figaro
   fog
+  front_end_builds
   geocoder
   google-api-client
   guard-bundler (>= 1.0.0)

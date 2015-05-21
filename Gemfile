@@ -106,3 +106,4 @@ gem 'oauth2'
 gem "rdf"
 
 gem 'enumerize'
+gem 'front_end_builds'
