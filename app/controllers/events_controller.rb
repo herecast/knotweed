@@ -36,7 +36,23 @@ class EventsController < ApplicationController
     params[:event][:event_instances_attributes] = instances
 
     # for now all events have location Upper Valley
-    params[:event]['content_attributes']['location_ids'] = [77]
+    location_ids = [77]
+
+    # add location where content originated from
+    if params[:unchannelized_content_id].present?
+      contents = Content.find(params[:unchannelized_content_id])
+      locations = Location.joins('LEFT JOIN locations_publications on ' +
+                               'locations.id = locations_publications.location_id ').where('locations_publications.publication_id = ?', contents.publication_id)
+      if locations.present?
+        locations.each do |location|
+          if !location_ids.include?(location.id)
+            location_ids.push(location.id)
+          end
+        end
+      end
+    end
+
+    params[:event]['content_attributes']['location_ids'] = location_ids
 
     @event = Event.new(params[:event])
     authorize! :create, @event
