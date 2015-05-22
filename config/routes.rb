@@ -77,7 +77,7 @@ Knotweed::Application.routes.draw do
   # API
   namespace :api do
     namespace :v2 do
-      resources 'events', only: []
+      resources 'events', only: [:create, :show]
       resources 'event_instances', only: [:index, :show]
       resources 'comments', only: [:index]
       resources 'listservs', only: [:index]

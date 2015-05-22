@@ -15,10 +15,14 @@
 #
 
 class Location < ActiveRecord::Base
+  # defaults to 77, the current production ID for "Upper Valley" location
+  REGION_LOCATION_ID = Figaro.env.has_key?(:region_location_id) ? Figaro.env.region_location_id : 77
 
   has_and_belongs_to_many :publications
   has_and_belongs_to_many :listservs
   has_and_belongs_to_many :contents
+
+  has_many :users
 
   has_and_belongs_to_many :parents, class_name: "Location", foreign_key: :child_id, association_foreign_key: :parent_id
   has_and_belongs_to_many :children, class_name: "Location", foreign_key: :parent_id, association_foreign_key: :child_id
@@ -49,3 +53,4 @@ class Location < ActiveRecord::Base
   end
 
 end
+ 

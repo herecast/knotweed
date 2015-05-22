@@ -33,6 +33,10 @@ FactoryGirl.define do
     content
     featured false
     association :venue, factory: :business_location
+    contact_phone "888-888-8888"
+    contact_email "hello@fake.com"
+    cost "$5"
+    cost_type :free
 
     after(:build) do |e, evaluator|
       ei = FactoryGirl.create :event_instance, start_date: evaluator.start_date,

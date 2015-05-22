@@ -6,8 +6,23 @@ module Api
       #http_basic_authenticate_with name: Figaro.env.api_username, password: Figaro.env.api_password
 
       before_filter :set_requesting_app
+      before_filter :set_current_api_user
 
       protected
+
+      def check_logged_in!
+        unless @current_api_user.present? or params[:current_user_id].present?
+          render json: { errors: 'You must be logged.' }, status: 401
+        end
+      end
+
+      def set_current_api_user
+        if params[:current_user_id].present?
+          @current_api_user = User.find params[:current_user_id] 
+        else
+          @current_api_user = nil
+        end
+      end
 
       def set_requesting_app
         @requesting_app = ConsumerApp.where(uri: params[:consumer_app_uri]).first_or_create if params[:consumer_app_uri].present?

@@ -61,3 +61,7 @@ BACKUP_END: "3:45 am"
 # to true when content is published to a repository. It defaults to 3, which is our
 # "production repository" on prod, but can be overridden by specifying it in application.yml
 PRODUCTION_REPOSITORY_ID: 3
+
+# hard coding the "region" for extended reach...Upper Valley for the foreseeable future.
+# It defaults to 77 if not specified here, which is the current production ID for "Upper Valley"
+REGION_LOCATION_ID: 77

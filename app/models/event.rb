@@ -44,6 +44,7 @@ class Event < ActiveRecord::Base
   # always want the instances sorted by start_date
   has_many :event_instances, order: 'start_date ASC'
   validates_associated :event_instances # at least one must exist
+  validates_presence_of :event_instances
 
   accepts_nested_attributes_for :event_instances, allow_destroy: true
   attr_accessible :event_instances_attributes
