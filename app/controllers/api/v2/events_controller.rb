@@ -15,6 +15,7 @@ module Api
           raw_content: params[:event].delete(:content),
           title: params[:event].delete(:title),
           location_ids: location_ids,
+          authoremail: @current_api_user.try(:email),
           #image: params[:event].delete(:image),
           #created_by: params[:current_user_id]
         }

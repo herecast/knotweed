@@ -12,7 +12,7 @@ module Api
 
       def check_logged_in!
         unless @current_api_user.present? or params[:current_user_id].present?
-          render json: { errors: 'You must be logged.' }, status: 401
+          render json: { errors: 'You must be logged in.' }, status: 401
         end
       end
 
