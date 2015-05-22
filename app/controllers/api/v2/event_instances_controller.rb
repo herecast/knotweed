@@ -39,12 +39,12 @@ module Api
 
         @event_instances = EventInstance.search query, opts
 
-        render json: @event_instances, root: 'events', meta: { total: EventInstance.count }
+        render json: @event_instances, meta: { total: EventInstance.count }
       end
 
       def show
         @event_instance = EventInstance.find(params[:id])
-        render json: @event_instance, root: 'event', serializer: DetailedEventInstanceSerializer
+        render json: @event_instance, serializer: DetailedEventInstanceSerializer
       end
 
     end

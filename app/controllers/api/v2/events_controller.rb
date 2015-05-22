@@ -2,7 +2,7 @@ module Api
   module V2
     class EventsController < ApiController
 
-      before_filter :check_logged_in!
+      before_filter :check_logged_in!, only: [:create] 
 
       def create
         image_data = params[:event].delete :image
@@ -51,6 +51,11 @@ module Api
         else
           head :unprocessable_entity
         end
+      end
+
+      def show
+        @event = Event.find(params[:id])
+        render json: @event
       end
 
       protected

@@ -2,6 +2,19 @@ require 'spec_helper'
 
 describe Api::V2::EventsController do
 
+  describe 'GET show' do
+    before do
+      @event = FactoryGirl.create :event
+    end
+
+    it 'should respond with the event' do
+      get :show, format: :json, id: @event.id
+      response.code.should eq('200')
+      assigns(:event).should eq @event
+    end
+
+  end
+
   describe 'POST create' do
     before do
       @venue = FactoryGirl.create :business_location
