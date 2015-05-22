@@ -14,8 +14,8 @@ module Api
         opts[:conditions] = {}
         opts[:sql] = { include: {event: [{content: :images}, :venue]}}
 
-        start_date = Chronic.parse(params[:date_start]) if params[:date_start].present?
-        end_date = Chronic.parse(params[:date_end]) if params[:date_end].present?
+        start_date = Chronic.parse(params[:date_start]).beginning_of_day if params[:date_start].present?
+        end_date = Chronic.parse(params[:date_end]).end_of_day if params[:date_end].present?
 
         if start_date.present?
           if end_date.present?
@@ -44,7 +44,7 @@ module Api
 
       def show
         @event_instance = EventInstance.find(params[:id])
-        render json: @event_instance, serializer: DetailedEventInstanceSerializer
+        render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer
       end
 
     end
