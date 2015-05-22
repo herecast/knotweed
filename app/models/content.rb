@@ -71,6 +71,7 @@ class Content < ActiveRecord::Base
 
   has_and_belongs_to_many :publish_records
   has_and_belongs_to_many :repositories, :uniq => true, after_add: :mark_published
+  has_and_belongs_to_many :locations
   
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
   belongs_to :publication
@@ -106,7 +107,11 @@ class Content < ActiveRecord::Base
                 :image_ids, :parent_id, :source_uri, :category,
                 :content_category_id, :category_reviewed, :raw_content, :processed_content,
                 :sanitized_content, :channelized_content_id,
-                :has_event_calendar, :channel_type, :channel_id, :channel
+                :has_event_calendar, :channel_type, :channel_id, :channel,
+                :location_ids
+
+  attr_accessor :tier # this is not stored on the database, but is used to generate a tiered tree
+  # for the API
 
   validates_presence_of :raw_content, :title, if: :is_event?
 
@@ -245,6 +250,8 @@ class Content < ActiveRecord::Base
       end
       if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories', 'source_field'].include? key
         special_attrs[key] = v if v.present?
+      elsif key == 'listserv_locations'
+        data['location_ids'] = Location.get_ids_from_location_strings(v)
       elsif v.present?
         data[key] = v
       end
@@ -346,6 +353,8 @@ class Content < ActiveRecord::Base
       REIMPORT_FEATURES.each do |f|
         existing_content.send "#{f}=", content.send(f.to_sym) if content.send(f.to_sym).present?
       end
+
+      existing_content.locations += content.locations
       content = existing_content
     end
 
@@ -367,7 +376,6 @@ class Content < ActiveRecord::Base
     end
 
     content
-
   end
 
   # check that doc validates our xml requirements
@@ -600,8 +608,7 @@ class Content < ActiveRecord::Base
 
         # trigger updating hasActivePromotion if publish succeeded
         if has_active_promotion?
-          # we only need this run on one promotion, not all of them
-          promotions.where(active: true).first.mark_active_promotion(repo)
+          PromotionBanner.mark_active_promotion(self, repo)
         end
 
         return true
@@ -802,6 +809,25 @@ class Content < ActiveRecord::Base
     end
   end
 
+  # return thread of comment-type objects associated with self
+  # NOTE: for simplicity, I'm ignoring tiers of comments here. We'll still return them...
+  # but until told otherwise, this is the way we're doing it because it's much easier.
+  def get_comment_thread(tier=0)
+    if children.present?
+      comments = []
+      children.order('pubdate ASC').each do |c|
+        if c.channel_type == 'Comment'
+          c.tier = tier
+          comments += [c]
+          comments += c.get_comment_thread(tier+1)
+        end
+      end
+      comments
+    else
+      []
+    end
+  end
+
   def get_ordered_downstream_thread(tier=0)
     downstream_thread = []
     if children.present?
@@ -846,8 +872,9 @@ class Content < ActiveRecord::Base
     end
   end
 
+  # used for the DSP to determine whether there is a promotion banner
   def has_active_promotion?
-    promotions.where(active: true).count > 0
+    promotions.where(active: true, promotable_type: 'PromotionBanner').count > 0
   end
 
   def has_active_promotion
@@ -855,15 +882,18 @@ class Content < ActiveRecord::Base
   end
 
   def get_related_promotion(repo)
+
     results = query_promo_similarity_index(content, repo)
-    results = query_promo_similarity_index(summary, repo) if results.empty?
     results = query_promo_similarity_index(title, repo) if results.empty?
+    results = query_promo_random(repo) if results.empty?
+
+    #logger.debug "Get Promo: #{results.inspect}"
 
     unless results.empty?
       uri = results[0][:uid].to_s
       idx = uri.rindex("/")
       id = uri[idx+1..uri.length]
-    end
+    end 
   end
 
   # callback function to update fields with repo info
@@ -1077,11 +1107,23 @@ class Content < ActiveRecord::Base
   private
 
   def query_promo_similarity_index(query_term, repo)
+
     sparql = ::SPARQL::Client.new repo.sesame_endpoint
     clean_content = SparqlUtilities.sanitize_input(SparqlUtilities.clean_lucene_query(
                     ActionView::Base.full_sanitizer.sanitize(query_term)))
     query = File.read(Rails.root.join("lib", "queries", "query_promo_similarity_index.rq")) % 
             { content: clean_content, content_id: id }
+    begin
+      sparql.query(query)
+    rescue
+      return []
+    end
+  end
+
+  def query_promo_random(repo)
+    sparql = ::SPARQL::Client.new repo.sesame_endpoint
+    query = File.read(Rails.root.join("lib", "queries", "query_promo_random.rq")) %
+            { content_id: id }
     sparql.query(query)
   end
 

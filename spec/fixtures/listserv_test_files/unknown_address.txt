@@ -1,0 +1,161 @@
+Return-Path: <thetford-owner+townlists=stagsmtp.subtextdev.org@lists.valley.net>
+Delivered-To: townlists@stagsmtp.subtextdev.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by stagsmtp.subtextdev.org (Postfix) with ESMTPS id 67F4EA54117
+	for <townlists@stagsmtp.subtextdev.org>; Tue, 21 Apr 2015 09:52:23 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id CCDA727476; Tue, 21 Apr 2015 06:52:22 -0700 (PDT)
+X-Original-To: thetford@lists.valley.net
+Delivered-To: lists.valley.net-thetford@groups.electricembers.net
+Received: from smtp3.electricembers.net (smtp3 [208.90.215.69])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by groups.electricembers.net (Postfix) with ESMTPS id BD1E027335
+	for <thetford@lists.valley.net>; Tue, 21 Apr 2015 06:52:13 -0700 (PDT)
+X-Envelope-From: ridgevt@gmail.com
+X-Spam-Level: -
+X-Spam-Status: not spam, SpamAssassin (score=1.333, required 5, AWL -0.35,
+	BAYES_60 1.50, DKIM_SIGNED 0.10, DKIM_VALID -0.10,
+	DKIM_VALID_AU -0.10, FREEMAIL_FROM 0.00, FREEMAIL_REPLY 1.00,
+	HTML_MESSAGE 0.00, RCVD_IN_DNSWL_LOW -0.70, RCVD_IN_MSPIKE_H3 -0.01,
+	RCVD_IN_MSPIKE_WL -0.01, SPF_PASS -0.00)
+X-MailScanner: Found to be clean
+X-MailScanner-Information: See http://electricembers.coop/support/shield/users
+Received: from mail-vn0-f48.google.com (mail-vn0-f48.google.com [209.85.216.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp3.electricembers.net (Postfix) with ESMTPS id D4C9D336458
+	for <thetford@lists.valley.net>; Tue, 21 Apr 2015 06:51:54 -0700 (PDT)
+Received: by vnbg190 with SMTP id g190so32909956vnb.8
+        for <thetford@lists.valley.net>; Tue, 21 Apr 2015 06:51:54 -0700 (PDT)
+MIME-Version: 1.0
+X-Received: by 10.52.47.212 with SMTP id f20mr11308750vdn.61.1429624313856;
+ Tue, 21 Apr 2015 06:51:53 -0700 (PDT)
+Received: by 10.52.113.200 with HTTP; Tue, 21 Apr 2015 06:51:53 -0700 (PDT)
+Date: Tue, 21 Apr 2015 09:51:53 -0400
+Message-ID: <CAG2UBYJuxpSB_AA436jAhv3p_1-5uN2MCjE6THHEU0b3zDKDBg@mail.gmail.com>
+From: Ridge Satterthwaite <ridgevt@gmail.com>
+To: thetford_xxx@lists.valley.net
+Content-Type: multipart/alternative; boundary=047d7bf1868463c62405143c591f
+X-Original-DMARC-Record: domain=gmail.com; _dmarc.gmail.com.	356	IN	TXT	"v=DMARC1; p=none; rua=mailto:mailauth-reports@google.com"
+Subject: [Thetford] Lake Fairlee Association jobs opportunity
+Reply-To: Ridge Satterthwaite <ridgevt@gmail.com>
+X-Loop: thetford@lists.valley.net
+X-Sequence: 428
+Errors-to: thetford-owner@lists.valley.net
+Precedence: list
+Precedence: bulk
+Sender: thetford@lists.valley.net
+X-no-archive: yes
+List-Id: <thetford.lists.valley.net>
+List-Archive: <http://lists.valley.net/lists/arc/thetford>
+List-Help: <mailto:sympa@lists.valley.net?subject=help>
+List-Owner: <mailto:thetford-request@lists.valley.net>
+List-Post: <mailto:thetford@lists.valley.net>
+List-Subscribe: <mailto:sympa@lists.valley.net?subject=subscribe%20thetford>
+List-Unsubscribe: <mailto:sympa@lists.valley.net?subject=unsubscribe%20thetford>
+
+--047d7bf1868463c62405143c591f
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7BIT
+
+Greetings from the Thetford Community Discussion List
+POSTING RULES: Keep it specific to the town - please sign your posts - limit commercial postings to once a month - keep your tone civil and respectful. Here is the address to post to: thetford@lists.valley.net
+More details here: http://lists.valley.net/lists/info/Thetford
+---------------------------------
+
+
+Lake Shore Greeters: Lake Fairlee
+The Lake Fairlee Association is interviewing persons interested in being
+Greeters at the State Boat Ramp on Lake Fairlee. Greeters' job includes
+welcoming boaters to the lake, informing them about invasive plants and
+animals, about sensible rules of lake use, and about the Lake Fairlee
+Association. Greeters inspect all water craft entering and leaving the lake
+looking for invasives. Careful record keeping is required. Attendance to a
+State-run training program for Greeters in late May is required. The time
+commitment is between 17 and 23 hours per week for 15 weeks beginning in
+late May. $12/hour.  Applicants should be 18 or over. Please send your
+statement of interest and a resume to Renee Snow  reneelsnow@gmail.com
+
+Ridge Satterthwaite
+255 W. Fairlee Road
+Fairlee, VT 05045
+   office (802) 333 3629  cell (802) 522 7441
+   ridgevt@gmail.com
+---------------------------
+You received this message as a subscriber on the Thetford@lists.valley.net discussion list.
+
+When replying to a posting, if you receive the list digest, use the "Reply to sender" or "Reply to list" links at the end of the individual message. If you receive each posting as a separate email, use your mail program's Reply or Reply-To-All function, as appropriate. Please edit your reply to include only the relevant portions of the original posting, not the entire email.
+
+All Upper Valley-wide posts should be sent ONLY to uppervalley@lists.valley.net.
+
+Anyone can subscribe to this group by sending a blank message to
+Thetford-subscribe@lists.valley.net.
+To be removed from this list, send a blank message to
+Thetford-unsubscribe@lists.valley.net.
+Miscellaneous questions or comments may be forwarded directly to the moderator of this ListServe at: Thetford-request@lists.valley.net
+
+For the list homepage with posting guidelines and instructions for changing your subscription options, visit http://lists.valley.net/lists/info/Thetford. The archives with all previous messages posted to this list can be found at http://lists.valley.net/lists/arc/Thetford.
+
+This discussion list is provided at no cost by Vital Communities, a regional nonprofit organization based in White River Junction, Vermont, working to engage citizens, organizations, and communities in creating solutions to our region's challenges. To learn more, go to www.vitalcommunities.org.
+
+
+--047d7bf1868463c62405143c591f
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div style=3D"background: transparent; border: none; clear: both; display: =
+block; float: none; position: static">Greetings from the Thetford Community=
+ Discussion List<br/>POSTING RULES: Keep it specific to the town - please s=
+ign your posts - limit commercial postings to once a month - keep your tone=
+ civil and respectful. Here is the address to post to: thetford@lists.valle=
+y.net<br/>More details here: http://lists.valley.net/lists/info/Thetford<br=
+/>---------------------------------<br/><br/></div><div dir=3D"ltr"><span s=
+tyle=3D"font-size:13px">Lake Shore Greeters: Lake Fairlee</span><div style=
+=3D"font-size:13px">The Lake Fairlee Association is interviewing persons in=
+terested in being Greeters at the State Boat Ramp on Lake Fairlee. Greeters=
+&#39; job includes welcoming boaters to the lake, informing them about inva=
+sive plants and animals, about sensible rules of lake use, and about the La=
+ke Fairlee Association. Greeters inspect all water craft entering and leavi=
+ng the lake looking for invasives. Careful record keeping is required. Atte=
+ndance to a State-run training program for Greeters in late May is required=
+. The time commitment is between 17 and 23 hours per week for 15 weeks begi=
+nning in late May. $12/hour.=C2=A0 Applicants should be 18 or over. Please =
+send your statement of interest and a resume to Renee Snow =C2=A0<a href=3D=
+"mailto:reneelsnow@gmail.com" target=3D"_blank"><span class=3D"">reneelsnow=
+@gmail.com</span></a></div><div>=C2=A0<br></div><div class=3D"gmail_signatu=
+re">Ridge Satterthwaite=C2=A0 <br>255 W. Fairlee Road<br>Fairlee, VT 05045<=
+br>=C2=A0=C2=A0 office (802) 333 3629=C2=A0 cell (802) 522 7441<br>=C2=A0=
+=C2=A0 <a href=3D"mailto:ridgevt@gmail.com" target=3D"_blank">ridgevt@gmail=
+.com</a></div>
+</div>
+<div style=3D"background: transparent; border: none; clear: both; display: =
+block; float: none; position: static">---------------------------<br/>You r=
+eceived this message as a subscriber on the <a href=3D"mailto:Thetford@list=
+s.valley.net">Thetford@lists.valley.net</a> discussion list.<br/><br/>When =
+replying to a posting, if you receive the list digest, use the &quot;Reply =
+to sender&quot; or &quot;Reply to list&quot; links at the end of the indivi=
+dual message. If you receive each posting as a separate email, use your mai=
+l program's Reply or Reply-To-All function, as appropriate. Please edit you=
+r reply to include only the relevant portions of the original posting, not =
+the entire email.<br/><br/>All Upper Valley-wide posts should be sent ONLY =
+to <a href=3D"mailto:uppervalley@lists.valley.net.">uppervalley@lists.valle=
+y.net.</a><br/><br/>Anyone can subscribe to this group by sending a blank m=
+essage to<br/><a href=3D"mailto:Thetford-subscribe@lists.valley.net.">Thetf=
+ord-subscribe@lists.valley.net.</a><br/>To be removed from this list, send =
+a blank message to<br/><a href=3D"mailto:Thetford-unsubscribe@lists.valley.=
+net.">Thetford-unsubscribe@lists.valley.net.</a><br/>Miscellaneous question=
+s or comments may be forwarded directly to the moderator of this ListServe =
+at: <a href=3D"mailto:Thetford-request@lists.valley.net">Thetford-request@l=
+ists.valley.net</a><br/><br/>For the list homepage with posting guidelines =
+and instructions for changing your subscription options, visit <a href=3D"h=
+ttp://lists.valley.net/lists/info/Thetford.">http://lists.valley.net/lists/=
+info/Thetford.</a> The archives with all previous messages posted to this l=
+ist can be found at <a href=3D"http://lists.valley.net/lists/arc/Thetford."=
+>http://lists.valley.net/lists/arc/Thetford.</a><br/><br/>This discussion l=
+ist is provided at no cost by Vital Communities, a regional nonprofit organ=
+ization based in White River Junction, Vermont, working to engage citizens,=
+ organizations, and communities in creating solutions to our region's chall=
+enges. To learn more, go to www.vitalcommunities.org.<br/></div></body>=
+
+--047d7bf1868463c62405143c591f--

@@ -1,19 +1,26 @@
 - promotion ||= @promotion
 - publication ||= promotion.publication unless promotion.nil?
 - ajax_submit ||= false
-%p Promotion for: #{link_to publication.name, edit_publication_path(publication)}
+- if publication.present?
+  %p Promotion for: #{link_to publication.name, edit_publication_path(publication)}
 = simple_form_for (promotion.id ? promotion : [publication, promotion]) do |f|
   = f.error_notification
 
   .form-inputs
+    = f.input :description, input_html: { class: "input-block-level", rows: 5 }
     = f.input :active
-    = image_tag promotion.banner.url if promotion.banner?
-    = f.input :banner
+    - if promotion.promotable.present?
+      = f.input :promotable_type, as: :hidden
+    = f.simple_fields_for :promotable do |g|
+      - if promotion.promotable.is_a? PromotionListserv
+        = g.association :listserv
+      - elsif promotion.promotable.is_a? PromotionBanner
+        = image_tag promotion.promotable.banner_image.url if promotion.promotable.banner_image?
+        = g.input :banner_image
+        = g.input :redirect_url, input_html: { class: "input-block-level" }
     = f.label :content
     %label= promotion.content.try(:title)
     = f.input :content_id, as: :hidden
-    = f.input :target_url, input_html: { class: "input-block-level" }
-    = f.input :description, input_html: { class: "input-block-level", rows: 5 }
 
   .form-actions
     - if ajax_submit

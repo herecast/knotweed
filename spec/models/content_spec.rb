@@ -1,5 +1,5 @@
 # == Schema Information
-#
+#r
 # Table name: contents
 #
 #  id                     :integer          not null, primary key
@@ -195,7 +195,7 @@ describe Content do
       Content.count.should== 1
     end
 
-    it "should match publication based on 'source_field' entry if provided" do
+    it "should match publication based on 'source'" do
       publication = FactoryGirl.create(:publication, reverse_publish_email: "test@test.com")
       data = @base_data.merge({
         source: publication.reverse_publish_email,
@@ -207,7 +207,7 @@ describe Content do
 
     it "should mark non-valid corpus entries as quarantined" do
       content = Content.create_from_import_job(@base_data)
-      content.quarantine.should be_true
+      content.quarantine.should == true
     end
 
     it "should leave valid corpus entries as unquarantined" do
@@ -249,6 +249,8 @@ describe Content do
       db_content = Content.all.first
       db_content.title.should== "Different Title"
     end
+
+
 
     it "should overwrite any existing content with the same guid" do
       p = FactoryGirl.create(:publication)
@@ -362,7 +364,7 @@ describe Content do
       c = Content.create_from_import_job(@base_data)
       c.images.count.should == 1
       image = c.images.first
-      image.image.url.present?.should be_true
+      image.image.url.present?.should == true
       image.source_url.should== "https://www.google.com/images/srpr/logo11w.png"
     end
 
@@ -622,13 +624,15 @@ describe Content do
       @content.has_active_promotion?.should == false
     end
 
-    it "should return false if there is a promotion but it is inactive" do
-      promotion = FactoryGirl.create(:promotion, active: false, content: @content)
+    it "should return false if there is a promotion banner but it is inactive" do
+      p = FactoryGirl.create :promotion, active: false, content: @content
+      promotion_banner = FactoryGirl.create :promotion_banner, promotion: p
       @content.has_active_promotion?.should == false
     end
 
-    it "should return true if there is an active promotion attached" do
-      promotion = FactoryGirl.create(:promotion, active: true, content: @content)
+    it "should return true if there is an active promotion banner attached" do
+      p = FactoryGirl.create :promotion, active: true, content: @content
+      promotion_banner = FactoryGirl.create :promotion_banner, promotion: p
       @content.has_active_promotion?.should == true
     end
 
@@ -714,6 +718,191 @@ describe Content do
       subject.count.should eq(1)
       subject.should eq([@c])
     end
+  end
+
+  describe "checking listserv locations on import" do
+    before do
+      @config = Hash.new
+      @config["username"] = 'subtextuvltest@gmail.com'
+      @config["password"] = 'RailRoad202'
+      parser_path = Dir.pwd + "/lib/parsers/"
+      @test_files_path = Dir.pwd + "/spec/fixtures/listserv_test_files"
+
+      require parser_path + "mail_extractor.rb"
+
+      # Stub out image requests
+      raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
+      stub_request(:get, "https://www.google.com/images/srpr/logo11w.png").
+          with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+          to_return(raw_resp.read)
+      ImageUploader.storage = :file
+
+      @norwich = FactoryGirl.create :location, city: 'Norwich', state: 'VT'
+
+      @corinth = FactoryGirl.create :location, city: 'Corinth', state: 'VT'
+
+      @topsham = FactoryGirl.create :location, city: 'Topsham', state: 'VT'
+    end
+
+    it "should create content with Norwich as location" do
+      eml = Mail.read(@test_files_path+"/norwich.txt")
+      parsed_emails = convert_eml_to_hasharray(eml, @config)
+
+      parsed_emails[0]['source'].include?('Listserv').should == true
+      parsed_emails[0]['listserv_locations'].length.should == 1
+      parsed_emails[0]['listserv_locations'].include?('Norwich,VT').should == true
+
+      content = Content.create_from_import_job(parsed_emails[0])
+      Content.count.should== 1
+
+      content.locations.include?(@norwich).should eq(true)
+    end
+
+    it "should create lrn locations" do
+      eml = Mail.read(@test_files_path+"/lrn.txt")
+      parsed_emails = convert_eml_to_hasharray(eml, @config)
+
+      parsed_emails[0]['source'].include?('Listserv').should == true
+      parsed_emails[0]['listserv_locations'].length.should == 2
+
+      content = Content.create_from_import_job(parsed_emails[0])
+      Content.count.should== 1
+
+      content.locations.include?(@corinth).should eq(true)
+
+      content.locations.include?(@topsham).should eq(true)
+
+    end
+
+
+  end
+
+  describe 'checking upper valley locations on import' do
+
+    before do
+      parser_path = Dir.pwd + "/lib/parsers/"
+      @test_files_path = Dir.pwd + "/spec/fixtures/upper_valley_list_test_files"
+
+      require parser_path + "upper_valley_list_parser.rb"
+
+      @upper_valley = FactoryGirl.create :location
+      @upper_valley.city = "Upper Valley"
+      @upper_valley.state = nil
+      @upper_valley.save
+
+    end
+
+
+    it 'should create Upper Valley location' do
+
+      body = get_body_from_file("/TwoEntries.html")
+      results = []
+      all_posts = find_posts(body)
+      parse_posts(all_posts, results)
+
+      content = Content.create_from_import_job(results[0])
+      Content.count.should== 1
+      content.locations.include?(@upper_valley).should eq(true)
+    end
+
+  end
+
+  describe 'get_comment_thread' do
+    before do
+      @root = FactoryGirl.create :content
+    end
+
+    subject { @root.get_comment_thread }
+
+    it 'should return an empty list if content has no children' do
+      subject.should eq([])
+    end
+
+    it 'should not include any children that are not comment channel' do
+      FactoryGirl.create :content, parent_id: @root.id
+      subject.should eq([])
+    end
+
+    it 'should return content with the transient attribute "tier" set' do
+      tier0 = FactoryGirl.create :comment
+      tier0.content.update_attribute :parent_id, @root.id
+      subject.should eq([tier0.content])
+      subject[0].tier.should eq(0)
+    end
+
+    it 'correctly assigns tiers to the whole tree' do
+      tier0 = FactoryGirl.create :comment
+      tier0.content.update_attribute :parent_id, @root.id
+      tier0_2 = FactoryGirl.create :comment
+      tier0_2.content.update_attribute :parent_id, @root.id
+      tier1 = FactoryGirl.create :comment
+      tier1.content.update_attribute :parent_id, tier0.content.id
+      tier2 = FactoryGirl.create :comment
+      tier2.content.update_attribute :parent_id, tier1.content.id
+      subject.count.should eq(4)
+      tier_counts = []
+      subject.each do |com|
+        tier_counts[com.tier] ||=0
+        tier_counts[com.tier] +=1
+      end
+      tier_counts[0].should eq(2)
+      tier_counts[1].should eq(1)
+      tier_counts[2].should eq(1)
+    end
+
+  end
+
+  describe 'one post to multiple listservs' do
+
+    before do
+      @config = Hash.new
+      @config["username"] = 'subtextuvltest@gmail.com'
+      @config["password"] = 'RailRoad202'
+      parser_path = Dir.pwd + "/lib/parsers/"
+      @test_files_path = Dir.pwd + "/spec/fixtures/one_message_multiple_listservs"
+
+      require parser_path + "mail_extractor.rb"
+
+      @strafford = FactoryGirl.create :location, city: 'Strafford', state: 'VT'
+      @new_london = FactoryGirl.create :location, city: 'New London', state: 'NH'
+
+    end
+
+    it 'should be one post and two entries in contents_location for each listserv' do
+
+      eml = Mail.read(@test_files_path+"/strafford.txt")
+      parsed_emails = convert_eml_to_hasharray(eml, @config)
+      content = Content.create_from_import_job(parsed_emails[0])
+      Content.count.should== 1
+      content.locations.include?(@strafford).should eq(true)
+      id_1 = content.id
+
+      eml = Mail.read(@test_files_path+"/new_london.txt")
+      parsed_emails = convert_eml_to_hasharray(eml, @config)
+      content = Content.create_from_import_job(parsed_emails[0])
+      Content.count.should== 1
+      content.locations.include?(@new_london).should eq(true)
+      id_2 = content.id
+
+      id_1.should == id_2
+      content.locations.length.should == 2
+      content.locations.include?(@new_london).should eq(true)
+      content.locations.include?(@strafford).should eq(true)
+
+    end
+  end
+
+  def get_body_from_file(filename)
+
+    f = File.open(@test_files_path + filename)
+    body = ""
+
+    f.each_line do |line|
+      body << line
+    end
+    f.close
+
+    body
   end
 
 end

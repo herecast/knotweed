@@ -70,5 +70,6 @@ FactoryGirl.define do
     pubdate Time.now
     source_category "Category"
     content_category
+    authoremail 'fake@email.com'
   end
 end

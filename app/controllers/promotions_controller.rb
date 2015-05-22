@@ -33,6 +33,13 @@ class PromotionsController < ApplicationController
       content = Content.find(params[:content_id]) unless params[:content_id].nil?
       @promotion = Promotion.new publication: publication
       @promotion.content = content unless content.nil?
+      if params[:promotable_type].present?
+        if params[:promotable_type] == 'PromotionBanner'
+          @promotion.promotable = PromotionBanner.new
+        elsif params[:promotable_type] == 'PromotionListserv'
+          @promotion.promotable = PromotionListserv.new
+        end
+      end
 
       respond_to do |format|
         format.html # new.html.erb

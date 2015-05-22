@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150331134549) do
+ActiveRecord::Schema.define(:version => 20150507160251) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -36,9 +36,9 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.date    "DATE_EDITED"
   end
 
-  add_index "usgs_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "usgs_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "usgs_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
+  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
+  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -116,15 +116,20 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer   "channel_id"
-    t.text      "category"
-    t.timestamp "created_at", :null => false
+    t.integer  "channel_id"
+    t.text     "category"
+    t.datetime "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
 
   create_table "channels", :force => true do |t|
     t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "comments", :force => true do |t|
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
@@ -234,15 +239,10 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.text     "summary"
     t.string   "url"
     t.string   "origin"
-    t.string   "mimetype"
     t.string   "language"
-    t.string   "page"
-    t.string   "wordcount"
     t.string   "authoremail"
     t.integer  "publication_id"
-    t.string   "file"
     t.boolean  "quarantine",             :default => false
-    t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
@@ -290,6 +290,21 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
   add_index "contents", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents", ["title"], :name => "title"
 
+  create_table "contents_NT", :force => true do |t|
+    t.string   "title"
+    t.string   "subtitle"
+    t.string   "authors"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "issue_id"
+    t.integer  "location_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.boolean  "reviewed",       :default => false
+    t.integer  "lupdate_by"
+    t.integer  "publication_id"
+  end
+
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
     t.string   "title"
@@ -313,6 +328,22 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
+
+  create_table "contents_id", :force => true do |t|
+    t.string "category", :limit => 128
+  end
+
+  create_table "contents_locations", :force => true do |t|
+    t.integer  "content_id"
+    t.integer  "location_id"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "contents_locations", ["content_id", "location_id"], :name => "index_contents_locations_on_content_id_and_location_id"
+  add_index "contents_locations", ["content_id"], :name => "index_contents_locations_on_content_id"
+  add_index "contents_locations", ["location_id", "content_id"], :name => "index_contents_locations_on_location_id_and_content_id"
+  add_index "contents_locations", ["location_id"], :name => "index_contents_locations_on_location_id"
 
   create_table "contents_publish_records", :id => false, :force => true do |t|
     t.integer "content_id"
@@ -408,7 +439,6 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
   end
 
   add_index "events", ["featured"], :name => "index_events_on_featured"
-  add_index "events", ["venue_id"], :name => "events_on_venue_id_index"
   add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 
   create_table "images", :force => true do |t|
@@ -495,6 +525,20 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.string   "copyright"
   end
 
+  create_table "listservs", :force => true do |t|
+    t.string   "name"
+    t.string   "reverse_publish_email"
+    t.string   "import_name"
+    t.boolean  "active"
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
+  end
+
+  create_table "listservs_locations", :id => false, :force => true do |t|
+    t.integer "listserv_id"
+    t.integer "location_id"
+  end
+
   create_table "locations", :force => true do |t|
     t.string   "zip"
     t.string   "city"
@@ -502,8 +546,9 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.string   "county"
     t.string   "lat"
     t.string   "long"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+    t.boolean  "consumer_active", :default => false
   end
 
   create_table "locations_bad", :force => true do |t|
@@ -516,6 +561,18 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
   end
 
   add_index "locations_bad", ["city"], :name => "city"
+
+  create_table "locations_locations", :force => true do |t|
+    t.integer  "parent_id"
+    t.integer  "child_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "locations_locations", ["child_id", "parent_id"], :name => "index_locations_locations_on_child_id_and_parent_id"
+  add_index "locations_locations", ["child_id"], :name => "index_locations_locations_on_child_id"
+  add_index "locations_locations", ["parent_id", "child_id"], :name => "index_locations_locations_on_parent_id_and_child_id"
+  add_index "locations_locations", ["parent_id"], :name => "index_locations_locations_on_parent_id"
 
   create_table "locations_old", :force => true do |t|
     t.string   "city"
@@ -544,6 +601,11 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
   end
+
+  add_index "locations_publications", ["location_id", "publication_id"], :name => "index_locations_publications_on_location_id_and_publication_id"
+  add_index "locations_publications", ["location_id"], :name => "index_locations_publications_on_location_id"
+  add_index "locations_publications", ["publication_id", "location_id"], :name => "index_locations_publications_on_publication_id_and_location_id"
+  add_index "locations_publications", ["publication_id"], :name => "index_locations_publications_on_publication_id"
 
   create_table "locations_sav", :force => true do |t|
     t.string   "city"
@@ -618,15 +680,30 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.datetime "updated_at",      :null => false
   end
 
+  create_table "promotion_banners", :force => true do |t|
+    t.string   "banner_image"
+    t.string   "redirect_url"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  create_table "promotion_listservs", :force => true do |t|
+    t.integer  "listserv_id"
+    t.datetime "sent_at"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
   create_table "promotions", :force => true do |t|
     t.boolean  "active"
-    t.string   "banner"
     t.integer  "publication_id"
     t.integer  "content_id"
     t.text     "description"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
-    t.string   "target_url"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+    t.integer  "promotable_id"
+    t.string   "promotable_type"
+    t.string   "banner"
   end
 
   add_index "promotions", ["content_id"], :name => "index_promotions_on_content_id"
@@ -745,9 +822,16 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.datetime "updated_at",           :null => false
   end
 
+  create_table "user_wufoo_forms", :id => false, :force => true do |t|
+    t.integer "user_id"
+    t.integer "wufoo_form_id"
+  end
+
+  add_index "user_wufoo_forms", ["user_id", "wufoo_form_id"], :name => "index_user_wufoo_forms_on_user_id_and_wufoo_form_id", :unique => true
+
   create_table "users", :force => true do |t|
-    t.string   "email",                  :default => "", :null => false
-    t.string   "encrypted_password",     :default => "", :null => false
+    t.string   "email",                  :default => "",    :null => false
+    t.string   "encrypted_password",     :default => "",    :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
@@ -756,8 +840,8 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                             :null => false
-    t.datetime "updated_at",                             :null => false
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
     t.string   "name"
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
@@ -765,6 +849,18 @@ ActiveRecord::Schema.define(:version => 20150331134549) do
     t.string   "unconfirmed_email"
     t.integer  "organization_id"
     t.integer  "default_repository_id"
+    t.datetime "nda_agreed_at"
+    t.boolean  "agreed_to_nda",          :default => false
+    t.boolean  "admin",                  :default => false
+    t.boolean  "event_poster",           :default => false
+    t.string   "contact_phone"
+    t.string   "contact_email"
+    t.string   "contact_url"
+    t.integer  "location_id"
+    t.string   "test_group"
+    t.boolean  "muted",                  :default => false
+    t.string   "discussion_listserve"
+    t.integer  "view_style"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

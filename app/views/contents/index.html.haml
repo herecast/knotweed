@@ -25,16 +25,15 @@
             = f.collection_select :publication_id_in, Publication.accessible_by(current_ability), 
               :id, :name, {}, { multiple: true, class: "chosen-select span12" }
           .field.span2
+            = f.label :locations_id_in, 'Locations'
+            = f.collection_select :locations_id_in, Location.accessible_by(current_ability),
+              :id, :name, {}, { multiple: true, class: 'chosen-select span12' }
+          .field.span2
             = f.label :pubdate_gteq, "From"
             = f.text_field :pubdate_gteq, type: :date, value: search_field_value(:pubdate_gteq), class: "span12"
           .field.span2
             = f.label :pubdate_lteq, "To"
             = f.text_field :pubdate_lteq, type: :date, value: search_field_value(:pubdate_lteq), class: "span12"
-          .field.span2
-            = f.label :content_category_id_in, "Category"
-            = f.collection_select :content_category_id_in, ContentCategory.accessible_by(current_ability),
-              :id, :label, { include_blank: true },
-              { multiple: true, class: "chosen-select span12" }
         .controls.controls-row
           .field.span2
             = f.label :title_cont, "Title"
@@ -42,6 +41,11 @@
           .field.span2
             = f.label :authors_cont, "Authors"
             = f.text_field :authors_cont, class: "span12"
+          .field.span2
+            = f.label :content_category_id_in, "Category"
+            = f.collection_select :content_category_id_in, ContentCategory.accessible_by(current_ability),
+              :id, :label, { include_blank: true },
+              { multiple: true, class: "chosen-select span12" }
           .field.span2
             = f.label :repositories_id_eq, "Published in Repository?"
             = f.collection_select :repositories_id_eq, Repository.all, :id, :name, { include_blank: true }, class: "span12"
@@ -55,9 +59,9 @@
 %table.table.table-striped.table-hover.table-condensed#contents_index
   %thead
     %tr
-      %th ID
+      %th Content ID
       %th Category
-      %th Source
+      %th Publication
       %th Title
       %th Authors
       %th Location
@@ -80,8 +84,10 @@
           - if c.authors.present?
             = link_to c.authors, contents_path(q: { authors_cont: c.authors })
         %td
-          - if c.import_location.present?
-            = link_to c.import_location.city, contents_path(q: { import_location_id_in: c.import_location.id })
+          - c.locations.each_with_index do |loc, i|
+            = link_to loc.name, contents_path(q: { locations_id_in: [loc.id] })
+            - unless i == (c.locations.count - 1)
+              |
         %td= c.pubdate.try(:strftime, "%Y-%m-%d")
         %td
           = check_box_tag :has_event_calendar, true, c.has_event_calendar, 

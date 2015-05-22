@@ -1,0 +1,111 @@
+Return-Path: <woodstock-owner+townlists=stagsmtp.subtextdev.org@lists.valley.net>
+Delivered-To: townlists@stagsmtp.subtextdev.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by stagsmtp.subtextdev.org (Postfix) with ESMTPS id EBC37A540F9
+	for <townlists@stagsmtp.subtextdev.org>; Tue, 21 Apr 2015 08:23:02 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id 5DD8B2768C; Tue, 21 Apr 2015 05:22:42 -0700 (PDT)
+X-Original-To: woodstock@lists.valley.net
+Delivered-To: lists.valley.net-woodstock@groups.electricembers.net
+Received: from smtp1.electricembers.net (smtp1 [208.90.215.67])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by groups.electricembers.net (Postfix) with ESMTPS id 2FEFB277F3;
+	Tue, 21 Apr 2015 05:22:30 -0700 (PDT)
+X-Envelope-From: communications@pentanglearts.org
+X-Spam-Status: not spam, SpamAssassin (score=-0.261, required 5, AWL 0.64,
+	BAYES_00 -1.90, HTML_MESSAGE 0.00, MISSING_HEADERS 1.02,
+	RCVD_IN_DNSWL_NONE -0.00, RCVD_IN_MSPIKE_H3 -0.01,
+	RCVD_IN_MSPIKE_WL -0.01)
+X-MailScanner: Found to be clean
+X-MailScanner-Information: See http://electricembers.coop/support/shield/users
+Received: from SNT004-OMC4S46.hotmail.com (snt004-omc4s46.hotmail.com [65.54.51.97])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp1.electricembers.net (Postfix) with ESMTPS id 19B1A5086F;
+	Tue, 21 Apr 2015 05:22:12 -0700 (PDT)
+Received: from SNT148-W35 ([65.55.90.199]) by SNT004-OMC4S46.hotmail.com over TLS secured channel with Microsoft SMTPSVC(7.5.7601.22751);
+	 Tue, 21 Apr 2015 05:22:11 -0700
+X-TMN: [jG/QrP7LrHAyldcEIqGHGKcdZlr0dWMZ]
+X-Originating-Email: [communications@pentanglearts.org]
+Message-ID: <SNT148-W355F9B245FFB6D9EB3B33CC7EF0@phx.gbl>
+From: Wendy Seiple <communications@pentanglearts.org>
+Date: Tue, 21 Apr 2015 12:22:11 +0000
+Importance: Normal
+MIME-Version: 1.0
+X-OriginalArrivalTime: 21 Apr 2015 12:22:11.0923 (UTC) FILETIME=[CB423230:01D07C2D]
+Subject: [Woodstock Community Crier] "Bostonian of the Year", HAYLEY REARDON
+ sings at ArtisTree, Fri. 4/24
+Reply-To: Wendy Seiple <communications@pentanglearts.org>
+X-Loop: woodstock@lists.valley.net
+X-Sequence: 115
+Errors-to: woodstock-owner@lists.valley.net
+Precedence: list
+Precedence: bulk
+Sender: woodstock@lists.valley.net
+X-no-archive: yes
+List-Id: <woodstock.lists.valley.net>
+List-Archive: <http://lists.valley.net/lists/arc/woodstock>
+List-Help: <mailto:sympa@lists.valley.net?subject=help>
+List-Owner: <mailto:woodstock-request@lists.valley.net>
+List-Post: <mailto:woodstock@lists.valley.net>
+List-Subscribe: <mailto:sympa@lists.valley.net?subject=subscribe%20woodstock>
+List-Unsubscribe: <mailto:sympa@lists.valley.net?subject=unsubscribe%20woodstock>
+Content-Type: text/html; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+<div style=3D"background: transparent; border: none; clear: both; display: =
+block; float: none; position: static"><br/>Here Is Today's Edition of the W=
+oodstock Community Crier!<br/><br/>To view or post your organization's even=
+ts on the Woodstock Community Calendar, visit www.aroundwoodstockvermont.co=
+m/calendar/<br/><br/><br/><br/><br/><br/><br/></div><html>
+<head>
+<style><!--
+.hmmessage P
+{
+margin:0px;
+padding:0px
+}
+body.hmmessage
+{
+font-size: 12pt;
+font-family:Calibri
+}
+--></style></head>
+<body class=3D'hmmessage'><div dir=3D'ltr'>PENTANGLE ARTS presents...<br>si=
+nger/songwriter<br>Hayley Reardon<br>Friday, April 24th <br>7:00 pm<br>Arti=
+sTree<strong></strong><br>Free.&nbsp; Suggested donation ($10) gratefully a=
+ccepted.<BR><br><BR>
+<strong><a href=3D"http://www.hayleyreardon.com/" target=3D"_blank">Hayley =
+Reardon</a></strong>&nbsp; is noted for her thoughtful, vivid songwriting a=
+nd engaging stage=20
+performance. She has spent the past five years sharing the stage with
+ acts like Tom Rush, Peter Yarrow, Buskin &amp; Batteau, Christine=20
+Lavin, and opening for the likes of Lori McKenna, Mark Erelli, and Catie
+ Curtis. <br><BR><br><BR>In 2012, The Boston Globe Magazine named her a "Bo=
+stonian of the Year"=20
+for both her music and her message of teen=20
+empowerment. The feature article characterized her as =93a confident,=20
+radiant teenage singer/songwriter who is helping to pen the next chapter
+ of the Boston folk scene=85.while Reardon is rapidly making a name for=20
+herself under the stage lights, it could be said that she=92s having a=20
+bigger impact on her peers across the country as an effective=20
+teen-to-teen ambassador, sought after by schools nationwide.=94<BR><br><fon=
+t style=3D"" face=3D"Calibri"><i>---<br>Pentangle Arts Council<br>31 The Gr=
+een<br>Woodstock, VT 05091<br>802-457-3981</i></font><font style=3D"" face=
+=3D"Calibri"><br></font><font style=3D"" color=3D"#2672EC"><i><u><font styl=
+e=3D"" face=3D"Calibri">communications@pentanglearts.org</font></u></i></fo=
+nt><br> 		 	   		  </div></body>
+</html><div style=3D"background: transparent; border: none; clear: both; di=
+splay: block; float: none; position: static">You received this message as a=
+ subscriber to the Woodstock Community Crier.<br/><br/>To view the Woodstoc=
+k Community Calendar, visit www.aroundwoodstockvermont.com/calendar/index.p=
+hp<br/><br/>To view the Woodstock Community Blog, visit www.around05091.blo=
+gspot.com/<br/><br/>For complete instructions on posting on the Woodstock C=
+ommunity Crier, the Woodstock Community Blog, or the Woodstock Community Ca=
+lendar visit www.aroundwoodstockvermont.com/. <br/><br/>This service is pro=
+vided at no cost by Vital Communities, a regional nonprofit organization ba=
+sed in White River Junction, Vermont, working to engage citizens, organizat=
+ions, and communities in creating solutions to our region's challenges. To =
+learn more, go to www.vitalcommunities.org.<br/><br/><br/><br/></div></body=
+>=

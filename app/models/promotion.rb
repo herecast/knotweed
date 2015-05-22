@@ -2,84 +2,46 @@
 #
 # Table name: promotions
 #
-#  id             :integer          not null, primary key
-#  active         :boolean
-#  banner         :string(255)
-#  publication_id :integer
-#  content_id     :integer
-#  description    :text
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  target_url     :string(255)
+#  id              :integer          not null, primary key
+#  active          :boolean
+#  publication_id  :integer
+#  content_id      :integer
+#  description     :text
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  promotable_id   :integer
+#  promotable_type :string(255)
 #
 
 class Promotion < ActiveRecord::Base
   belongs_to :publication
   belongs_to :content
+
+  belongs_to :promotable, polymorphic: true, inverse_of: :promotion
+
   # TODO: At some point we probably want to lock this down a bit more so it's not so easy to attach 
   # promotions to any content/publication
-  attr_accessible :active, :banner, :banner_cache, :remove_banner, :description, :content, :publication,
-                  :publication_id, :content_id, :target_url
+  attr_accessible :active, :description, :content, :publication,
+                  :publication_id, :content_id, :target_url,
+                  :promotable_attributes, :promotable_type,
+                  :banner # note this attribute no longer exists, but needs to be
+                  # in our code until afer the migration is run
+  mount_uploader :banner, ImageUploader # same with this ^^
+  # we are actually retaining the database column for now as well. At some point down the road,
+  # we can remove these two lines of code and the database column
+
+  accepts_nested_attributes_for :promotable
   after_initialize :init
 
-  after_save :update_active_promotions
-  before_destroy { |record| record.active = false; true }
-  after_destroy :update_active_promotions
-
   UPLOAD_ENDPOINT = "/statements"
-
-  mount_uploader :banner, ImageUploader
-
-  #TODO: figure out this validation
-  #validates_presence_of :banner
-  validates_presence_of :publication
 
   def init
     self.active = true if self.active.nil?
   end
 
-  def update_active_promotions
-    if content.present?
-      if active 
-        has_active_promo = true
-      else
-        # Not totally atomic, but we'll live with that for now...
-        has_active_promo = content.has_active_promotion?
-      end
+  protected
 
-      content.repositories.each do |r|
-        if has_active_promo
-          mark_active_promotion(r)
-        else
-          remove_promotion(r)
-        end
-      end
-    end
-  end
-
-  # NOTE: NG made this a public method so that it could be calld directly
-  # on contents#post_to_ontotext, as we don't want the publish method to 
-  # update every single repo a doc is published to -- just the one we're
-  # actively publishing to
-  def mark_active_promotion(repo)
-    query = File.read('./lib/queries/add_active_promo.rq') % {content_id: content.id}
-    if repo.graphdb_endpoint.present?
-      sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-      sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
-    else
-      sparql = ::SPARQL::Client.new repo.sesame_endpoint
-      sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
-    end
-  end
-
-  def remove_promotion(repo)
-    query = File.read('./lib/queries/remove_active_promo.rq') % {content_id: content.id}
-    if repo.graphdb_endpoint.present?
-      sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-      sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
-    else
-      sparql = ::SPARQL::Client.new repo.sesame_endpoint
-      sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
-    end
+  def build_promotable(params, assignment_options)
+    self.promotable = promotable_type.constantize.new(params)
   end
 end

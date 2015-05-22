@@ -8,4 +8,5 @@ ThinkingSphinx::Index.define :event_instance, :with => :active_record do
 
   has event.content.pubdate
   has start_date
+  has event.content.locations.id, as: :loc_ids
 end

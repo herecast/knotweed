@@ -1,0 +1,174 @@
+Return-Path: <lebanon-owner+townlists=qasmtp.subtextdev.org@lists.valley.net>
+Delivered-To: townlists@qasmtp.subtextdev.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by qasmtp.subtextdev.org (Postfix) with ESMTPS id E75331C0117
+	for <townlists@qasmtp.subtextdev.org>; Fri,  8 May 2015 10:53:12 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id 57E4C274F5; Fri,  8 May 2015 07:53:12 -0700 (PDT)
+X-Original-To: lebanon@lists.valley.net
+Delivered-To: lists.valley.net-lebanon@groups.electricembers.net
+Received: from smtp1.electricembers.net (smtp1 [208.90.215.67])
+	(using TLSv1 with cipher DHE-RSA-CAMELLIA256-SHA (256/256 bits))
+	(No client certificate requested)
+	by groups.electricembers.net (Postfix) with ESMTPS id 32268278A5
+	for <lebanon@lists.valley.net>; Fri,  8 May 2015 07:53:06 -0700 (PDT)
+X-Envelope-From: bmarshall@uvei.org
+X-Spam-Status: not spam, SpamAssassin (score=-0.769, required 5, AWL -0.85,
+	BAYES_50 0.80, HEADER_FROM_DIFFERENT_DOMAINS 0.00,
+	HTML_FONT_SIZE_LARGE 0.00, HTML_MESSAGE 0.00,
+	RCVD_IN_DNSWL_LOW -0.70, RCVD_IN_MSPIKE_H3 -0.01,
+	RCVD_IN_MSPIKE_WL -0.01)
+X-MailScanner: Found to be clean
+X-MailScanner-Information: See http://electricembers.coop/support/shield/users
+Received: from mail-ob0-f169.google.com (mail-ob0-f169.google.com [209.85.214.169])
+	(using TLSv1 with cipher RC4-SHA (128/128 bits))
+	(No client certificate requested)
+	by smtp1.electricembers.net (Postfix) with ESMTPS id 20A55508B7
+	for <lebanon@lists.valley.net>; Fri,  8 May 2015 07:52:02 -0700 (PDT)
+Received: by obcus9 with SMTP id us9so27401292obc.2
+        for <lebanon@lists.valley.net>; Fri, 08 May 2015 07:52:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to
+         :content-type;
+        bh=1meUJP5jfZMUumCtmSi14xj5s3yQctA1/7HqYWYgMiQ=;
+        b=J4GbWBXOPnU+0KKC9eAtrkQM5REQlTLX7wsgp1wOt0K7UDqK/9tpQ4J7Dcuu7KOL+1
+         vrvPv85Hk30C7Hn5tLwmTMYlX+iDeZ+9tpGlZZjMRVCI8V8S+/1m5TkNZjCXwu1j9xTQ
+         KmP/VQsPOuQVQhnLZdQ5p2qg66aaczfU5/QjnFZvtHe9IAGU1ymkqkhsBe6jjJYxUkoY
+         CGj5MmOa77G8NPQUTdgfkNlDSYchx3lh1yLieO0HAts5MqBcU0P14jX+Z/1nbhROAwKv
+         RUG7k86pLouCA9tmGQLdNrIZdlypvET8KSjXiIziVDxTWX4xGgaObhp2HizRAlv5VeOw
+         vLiQ==
+X-Gm-Message-State: ALoCoQnmMpEaT7h1Kk6/N9qg5bfjp8/c6ju4XSvJSsX7eOF4PjicihSmb8dZiXvke4R4Z0CQlfDJ
+MIME-Version: 1.0
+X-Received: by 10.202.0.75 with SMTP id 72mr3252329oia.131.1431096721500; Fri,
+ 08 May 2015 07:52:01 -0700 (PDT)
+Received: by 10.60.92.225 with HTTP; Fri, 8 May 2015 07:52:01 -0700 (PDT)
+Date: Fri, 8 May 2015 10:52:01 -0400
+Message-ID: <CAED4MkfNJdZbLhTRHCpYjcuCAnpqaEfmTE5vcWr+Dd7x0Du7Nw@mail.gmail.com>
+From: Beverly Marshall <bmarshall@uvei.edu>
+To: Beverly Marshall <bmarshall@uvei.edu>
+Content-Type: multipart/alternative; boundary=001a1137a504b97ec70515932be2
+Subject: [Lebanon] Interested in a Career in Education?
+Reply-To: Beverly Marshall <bmarshall@uvei.edu>
+X-Loop: lebanon@lists.valley.net
+X-Sequence: 73
+Errors-to: lebanon-owner@lists.valley.net
+Precedence: list
+Precedence: bulk
+Sender: lebanon@lists.valley.net
+X-no-archive: yes
+List-Id: <lebanon.lists.valley.net>
+List-Archive: <http://lists.valley.net/lists/arc/lebanon>
+List-Help: <mailto:sympa@lists.valley.net?subject=help>
+List-Owner: <mailto:lebanon-request@lists.valley.net>
+List-Post: <mailto:lebanon@lists.valley.net>
+List-Subscribe: <mailto:sympa@lists.valley.net?subject=subscribe%20lebanon>
+List-Unsubscribe: <mailto:sympa@lists.valley.net?subject=unsubscribe%20lebanon>
+
+--001a1137a504b97ec70515932be2
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7BIT
+
+UVEI is hosting its May Information Session on Monday, May 11 at 5 PM.
+Meet our faculty, have your questions answered and find out if this is the
+right educator preparation program for you.  Phone:   603 678-4888/Web:
+www.uvei.edu/email:  staff@uvei.edu
+
+*Beverly*
+
+Beverly Marshall
+Associate Director for Institutional Advancement
+Upper Valley Educators Institute
+194 Dartmouth College Highway
+Lebanon, NH 03766
+Phone: 603 678-4888
+Fax:     603 678-4899
+Web:    www.uvei.edu
+Twitter:  @UVEIMarshall
+
+*Growing Great Teachers, Great Leaders and Great Schools*
+---------------------------
+To POST a message to this list, email your message to lebanon@lists.valley.net  
+
+When posting, keep it specific to Lebanon. Residents are encouraged to subscribe and post; non-residents may subscribe, but are asked not to post. 
+
+All Upper Valley-wide posts should be sent ONLY to uppervalley@lists.valley.net
+
+Please sign your posts.  Limit commercial postings to once a month.  Keep your tone civil and respectful.
+
+To be REMOVED from this list, send a blank message to lebanon-unsubscribe@lists.valley.net   More details including Archives at http://lists.valley.net/lists/info/lebanon
+
+This discussion list is provided at no cost by Vital Communities. To learn more, go to www.vitalcommunities.org
+
+
+
+
+
+
+
+
+
+
+
+--001a1137a504b97ec70515932be2
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:arial,he=
+lvetica,sans-serif;color:rgb(0,0,153)"><p class=3D"MsoNormal"><span style=
+=3D"font-size:14pt;line-height:115%">UVEI is hosting its May Information Se=
+ssion on Monday, May 11 at 5
+PM.=C2=A0 Meet our faculty, have your
+questions answered and find out if this is the right educator preparation p=
+rogram
+for you.=C2=A0 Phone:=C2=A0=C2=A0 603 678-4888/Web:=C2=A0 </span><a href=3D=
+"http://www.uvei.edu/email"><span style=3D"font-size:14pt;line-height:115%"=
+>www.uvei.edu/email</span></a><span style=3D"font-size:14pt;line-height:115=
+%">:=C2=A0
+<a href=3D"mailto:staff@uvei.edu">staff@uvei.edu</a></span><br></p></div><d=
+iv><div class=3D"gmail_signature"><div dir=3D"ltr"><div><div dir=3D"ltr"><d=
+iv><div dir=3D"ltr"><div dir=3D"ltr"><div><font color=3D"#20124d" size=3D"6=
+" face=3D"garamond, serif"><i><br></i></font></div><div><font color=3D"#201=
+24d" size=3D"6" face=3D"garamond, serif"><i>Beverly</i></font></div><div><d=
+iv><font face=3D"verdana, sans-serif" size=3D"1" color=3D"#20124d">=C2=A0</=
+font></div><div><font color=3D"#20124d"><font size=3D"1" face=3D"verdana,sa=
+ns-serif">Beverly Marshall<br></font><font size=3D"1" face=3D"verdana,sans-=
+serif">Associate Director for Institutional Advancement<br></font><font fac=
+e=3D"verdana,sans-serif"><font size=3D"1">Upper Valley Educators Institute<=
+br>194 Dartmouth College Highway<br>Lebanon, NH 03766<br>Phone: 603 678-488=
+8<br>Fax:=C2=A0=C2=A0=C2=A0=C2=A0 603 678-4899<br></font></font><font size=
+=3D"1" face=3D"verdana,sans-serif">Web:=C2=A0=C2=A0=C2=A0=C2=A0</font><font=
+ size=3D"1" face=3D"verdana,sans-serif"><a title=3D"blocked::http://www.uve=
+i.org/" href=3D"http://www.uvei.edu/" target=3D"_blank">www.uvei.edu</a></f=
+ont></font></div><div><font color=3D"#20124d"><span style=3D"font-family:ve=
+rdana,sans-serif;font-size:x-small">Twitter: =C2=A0@UVEIMarshall</span><br>=
+</font></div><div><font size=3D"1" face=3D"verdana,sans-serif" color=3D"#20=
+124d"><span style=3D"font-family:&#39;Times New Roman&#39;;font-size:12pt">=
+<span style=3D"font-size:12pt"></span></span></font></div><div><font size=
+=3D"1" face=3D"verdana,sans-serif" color=3D"#20124d"><span style=3D"font-fa=
+mily:&#39;Times New Roman&#39;;font-size:12pt"><span style=3D"font-size:12p=
+t"></span></span></font></div><div><font color=3D"#20124d"><font size=3D"1"=
+ face=3D"verdana,sans-serif"><span style=3D"font-family:&#39;Times New Roma=
+n&#39;;font-size:12pt"><span style=3D"font-size:12pt"></span></span></font>=
+=C2=A0</font></div><div><font color=3D"#000080" face=3D"verdana, sans-serif=
+" size=3D"1"><i>Growing Great Teachers, Great Leaders and Great Schools</i>=
+</font></div></div></div></div></div></div></div></div></div></div>
+</div>
+<div style=3D"background: transparent; border: none; clear: both; display: =
+block; float: none; position: static">---------------------------<br/>To PO=
+ST a message to this list, email your message to <a href=3D"mailto:lebanon@=
+lists.valley.net">lebanon@lists.valley.net</a>  <br/><br/>When posting, kee=
+p it specific to Lebanon. Residents are encouraged to subscribe and post; n=
+on-residents may subscribe, but are asked not to post. <br/><br/>All Upper =
+Valley-wide posts should be sent ONLY to <a href=3D"mailto:uppervalley@list=
+s.valley.net">uppervalley@lists.valley.net</a><br/><br/>Please sign your po=
+sts.  Limit commercial postings to once a month.  Keep your tone civil and =
+respectful.<br/><br/>To be REMOVED from this list, send a blank message to =
+<a href=3D"mailto:lebanon-unsubscribe@lists.valley.net">lebanon-unsubscribe=
+@lists.valley.net</a>   More details including Archives at <a href=3D"http:=
+//lists.valley.net/lists/info/lebanon">http://lists.valley.net/lists/info/l=
+ebanon</a><br/><br/>This discussion list is provided at no cost by Vital Co=
+mmunities. To learn more, go to www.vitalcommunities.org<br/><br/><br/><br/=
+><br/><br/><br/><br/><br/><br/></div></body>=
+
+--001a1137a504b97ec70515932be2--

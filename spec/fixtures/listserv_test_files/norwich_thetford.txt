@@ -1,0 +1,206 @@
+Return-Path: <norwich-owner+townlists=stagsmtp.subtextdev.org@lists.valley.net>
+Delivered-To: townlists@stagsmtp.subtextdev.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by stagsmtp.subtextdev.org (Postfix) with ESMTPS id 06D88A54B33
+	for <townlists@stagsmtp.subtextdev.org>; Mon, 20 Apr 2015 20:16:57 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id 4ACB02776B; Mon, 20 Apr 2015 17:16:50 -0700 (PDT)
+X-Original-To: norwich@lists.valley.net
+Delivered-To: lists.valley.net-norwich@groups.electricembers.net
+Received: from smtp2.electricembers.net (smtp2 [208.90.215.68])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by groups.electricembers.net (Postfix) with ESMTPS id 35EE627536;
+	Mon, 20 Apr 2015 17:16:39 -0700 (PDT)
+X-Envelope-From: dangoldberg2@gmail.com
+X-Spam-Status: not spam, SpamAssassin (score=-2.469, required 5,
+	BAYES_00 -1.90, DKIM_SIGNED 0.10, DKIM_VALID -0.10,
+	DKIM_VALID_AU -0.10, FREEMAIL_ENVFROM_END_DIGIT 0.25,
+	FREEMAIL_FROM 0.00, HTML_MESSAGE 0.00, RCVD_IN_DNSWL_LOW -0.70,
+	RCVD_IN_MSPIKE_H3 -0.01, RCVD_IN_MSPIKE_WL -0.01, SPF_PASS -0.00)
+X-MailScanner: Found to be clean
+X-MailScanner-Information: See http://electricembers.coop/support/shield/users
+Received: from mail-pa0-f42.google.com (mail-pa0-f42.google.com [209.85.220.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp2.electricembers.net (Postfix) with ESMTPS id B11B632ACA3;
+	Mon, 20 Apr 2015 17:16:07 -0700 (PDT)
+Received: by pacyx8 with SMTP id yx8so222795933pac.1;
+        Mon, 20 Apr 2015 17:16:07 -0700 (PDT)
+MIME-Version: 1.0
+X-Received: by 10.68.244.233 with SMTP id xj9mr32670267pbc.35.1429575367279;
+ Mon, 20 Apr 2015 17:16:07 -0700 (PDT)
+Received: by 10.70.60.67 with HTTP; Mon, 20 Apr 2015 17:16:07 -0700 (PDT)
+Date: Mon, 20 Apr 2015 20:16:07 -0400
+Message-ID: <CAN9Y=__RBq0FwPgPEPSViKA3-aPP0aZrqnGTmSevpXFgS=T9Rg@mail.gmail.com>
+From: Dan Goldberg <dangoldberg2@gmail.com>
+To: TO Norwich Listserve <norwich@lists.valley.net>, 
+	TO Thetford Listserv <thetford@lists.valley.net>
+Content-Type: multipart/alternative; boundary=047d7b162c27f24996051430f32c
+X-Original-DMARC-Record: domain=gmail.com; _dmarc.gmail.com.	600	IN	TXT	"v=DMARC1; p=none; rua=mailto:mailauth-reports@google.com"
+Subject: [Norwich] Fender guitar, Nerf arsenal and deluxe Brio builder sets
+ for sale
+Reply-To: Dan Goldberg <dangoldberg2@gmail.com>
+X-Loop: norwich@lists.valley.net
+X-Sequence: 609
+Errors-to: norwich-owner@lists.valley.net
+Precedence: list
+Precedence: bulk
+Sender: norwich@lists.valley.net
+X-no-archive: yes
+List-Id: <norwich.lists.valley.net>
+List-Archive: <http://lists.valley.net/lists/arc/norwich>
+List-Help: <mailto:sympa@lists.valley.net?subject=help>
+List-Owner: <mailto:norwich-request@lists.valley.net>
+List-Post: <mailto:norwich@lists.valley.net>
+List-Subscribe: <mailto:sympa@lists.valley.net?subject=subscribe%20norwich>
+List-Unsubscribe: <mailto:sympa@lists.valley.net?subject=unsubscribe%20norwich>
+
+--047d7b162c27f24996051430f32c
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+=E2=80=8B=E2=80=8B*Fender Squier mini Strat electric guitar* with small amp=
+ and new extra
+strings -- great guitar, classic shiny black, 7/8-size, excellent
+condition. Includes cables and shoulder strap also.
+$75 for all three
+Photo: https://farm8.staticflickr.com/7670/17216412301_9000181ae7_o.jpg
+
+*Brio Builder sets*
+Kids can make construction vehicles, a space station, cars, buildings, etc
+-- $60
+Photo: https://farm8.staticflickr.com/7637/17216970155_f8c1268f39_b.jpg
+
+*An entire arsenal of Nerf guns:*
+*the Vulcan* -- $150
+http://www.amazon.com/Nerf-N-Strike-Vulcan-EBF-25-Blaster/dp/B003H9MTJ6
+<http://www.amazon.com/Nerf-N-Strike-Vulcan-EBF-25-Blaster/dp/B003H9MTJ6/re=
+f=3Dsr_1_1?s=3Dtoys-and-games&ie=3DUTF8&qid=3D1429570023&sr=3D1-1&keywords=
+=3Dnerf+vulcan>
+*Longshot* -- $100
+http://www.amazon.com/Hasbro-61983-Nerf-N-Strike-Longshot/dp/B000ETQR3Q
+*Raider* -- $100
+http://www.amazon.com/N-Strike-Raider-Rapid-CS-35-Blaster/dp/B001RBWY14
+*Deploy*=E2=80=8B -- $50
+http://www.amazon.com/Nerf-N-Strike-Deploy-CS-6-Blaster/dp/B003H9MSOC
+*Recon* -- $100
+http://www.amazon.com/Nerf-N-Strike-Recon-CS-6-Blaster/dp/B001KOTPHY
+*Nite Finder* -- $7
+http://www.amazon.com/Hasbro-Nerf-N-Strike-Nite-Finder/dp/B000WTWZC0
+*Buzzbee Double Shot* -- $20
+*=E2=80=8B...or ALL of them for $450 OBO*
+Includes extra clips, many many darts, scopes, lights, etc. These rare,
+classic Nerf guns are no longer being made. All are in mint condition and
+work perfectly!
+
+=E2=80=8BEmail: dangoldberg2@gmail.com=E2=80=8B
+=E2=80=8B=E2=80=8B
+=E2=80=8B=E2=80=8B
+---------------------------
+You received this message as a subscriber on the norwich@lists.valley.net d=
+iscussion list.
+
+When replying to a posting, if you receive the list digest, use the "Reply =
+to sender" or "Reply to list" links at the end of the individual message. I=
+f you receive each posting as a separate email, use your mail program's Rep=
+ly or Reply-To-All function, as appropriate. Please edit your reply to incl=
+ude only the relevant portions of the original posting, not the entire emai=
+l.
+
+All Upper Valley-wide posts should be sent ONLY to uppervalley@lists.valley=
+.net.
+
+Anyone can subscribe to this group by sending a blank message to
+norwich-subscribe@lists.valley.net.
+To be removed from this list, send a blank message to
+norwich-unsubscribe@lists.valley.net.
+
+For the list homepage with posting guidelines and instructions for changing=
+ your subscription options, visit http://lists.valley.net/lists/info/norwic=
+h. The archives with all previous messages posted to this list can be found=
+ at http://lists.valley.net/lists/arc/norwich.
+
+This discussion list is provided at no cost by Vital Communities, a regiona=
+l nonprofit organization based in White River Junction, Vermont, working to=
+ engage citizens, organizations, and communities in creating solutions to o=
+ur region's challenges. To learn more, go to www.vitalcommunities.org.
+
+
+--047d7b162c27f24996051430f32c
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:verdana,=
+sans-serif">=E2=80=8B=E2=80=8B<b>Fender Squier mini Strat electric guitar</=
+b> with small amp and new extra strings -- great guitar, classic shiny blac=
+k, 7/8-size, excellent condition. Includes cables and shoulder strap also.<=
+br>$75 for all three<br>Photo: <a href=3D"https://farm8.staticflickr.com/76=
+70/17216412301_9000181ae7_o.jpg" target=3D"_blank">https://farm8.staticflic=
+kr.com/7670/17216412301_9000181ae7_o.jpg</a><br><br><div class=3D"gmail_def=
+ault" style=3D"font-family:verdana,sans-serif"><b>Brio Builder sets</b><br>=
+</div>Kids can make construction vehicles, a space station, cars, buildings=
+, etc -- $60<br>Photo: <a href=3D"https://farm8.staticflickr.com/7637/17216=
+970155_f8c1268f39_b.jpg">https://farm8.staticflickr.com/7637/17216970155_f8=
+c1268f39_b.jpg</a><br><br></div><div class=3D"gmail_default" style=3D"font-=
+family:verdana,sans-serif"><b>An entire arsenal of Nerf guns:</b> <br><b>th=
+e Vulcan</b> -- $150 <br><a href=3D"http://www.amazon.com/Nerf-N-Strike-Vul=
+can-EBF-25-Blaster/dp/B003H9MTJ6/ref=3Dsr_1_1?s=3Dtoys-and-games&amp;ie=3DU=
+TF8&amp;qid=3D1429570023&amp;sr=3D1-1&amp;keywords=3Dnerf+vulcan">http://ww=
+w.amazon.com/Nerf-N-Strike-Vulcan-EBF-25-Blaster/dp/B003H9MTJ6</a><br><b>Lo=
+ngshot</b> -- $100<br><a href=3D"http://www.amazon.com/Hasbro-61983-Nerf-N-=
+Strike-Longshot/dp/B000ETQR3Q">http://www.amazon.com/Hasbro-61983-Nerf-N-St=
+rike-Longshot/dp/B000ETQR3Q</a><br><b>Raider</b> -- $100<br><a href=3D"http=
+://www.amazon.com/N-Strike-Raider-Rapid-CS-35-Blaster/dp/B001RBWY14">http:/=
+/www.amazon.com/N-Strike-Raider-Rapid-CS-35-Blaster/dp/B001RBWY14</a><br><b=
+>Deploy</b>=E2=80=8B -- $50<br><a href=3D"http://www.amazon.com/Nerf-N-Stri=
+ke-Deploy-CS-6-Blaster/dp/B003H9MSOC">http://www.amazon.com/Nerf-N-Strike-D=
+eploy-CS-6-Blaster/dp/B003H9MSOC</a><br><b>Recon</b> -- $100<br><a href=3D"=
+http://www.amazon.com/Nerf-N-Strike-Recon-CS-6-Blaster/dp/B001KOTPHY">http:=
+//www.amazon.com/Nerf-N-Strike-Recon-CS-6-Blaster/dp/B001KOTPHY</a><br><b>N=
+ite Finder</b> -- $7<br><a href=3D"http://www.amazon.com/Hasbro-Nerf-N-Stri=
+ke-Nite-Finder/dp/B000WTWZC0">http://www.amazon.com/Hasbro-Nerf-N-Strike-Ni=
+te-Finder/dp/B000WTWZC0</a><br><b>Buzzbee Double Shot</b> -- $20<br></div><=
+div class=3D"gmail_default" style=3D"font-family:verdana,sans-serif"><b>=E2=
+=80=8B...or ALL of them for $450 OBO</b><br></div><div dir=3D"ltr">Includes=
+ extra clips, many many darts, scopes, lights, etc. These rare, classic Ner=
+f guns are no longer being made. All are in mint condition and work perfect=
+ly!<span style=3D"color:rgb(0,0,0)"><span style=3D"font-family:verdana,sans=
+-serif"><font size=3D"2"><span style=3D"background-color:rgb(255,255,255)">=
+<br><br><div class=3D"gmail_default" style=3D"font-family:verdana,sans-seri=
+f;display:inline">=E2=80=8BEmail: <a href=3D"http://dangoldberg2@gmail.com=
+=E2=80=8B">dangoldberg2@gmail.com=E2=80=8B</a></div><div class=3D"gmail_def=
+ault" style=3D"font-family:verdana,sans-serif;display:inline">=E2=80=8B=E2=
+=80=8B</div><div class=3D"gmail_default" style=3D"font-family:verdana,sans-=
+serif;display:inline">=E2=80=8B=E2=80=8B</div><br></span></font></span></sp=
+an></div><div><div dir=3D"ltr"><div style=3D"text-align:left"><div dir=3D"l=
+tr"><div><div dir=3D"ltr"><span></span></div></div></div></div></div></div>
+</div>
+<div style=3D"background: transparent; border: none; clear: both; display: =
+block; float: none; position: static">---------------------------<br/>You r=
+eceived this message as a subscriber on the <a href=3D"mailto:norwich@lists=
+.valley.net">norwich@lists.valley.net</a> discussion list.<br/><br/>When re=
+plying to a posting, if you receive the list digest, use the &quot;Reply to=
+ sender&quot; or &quot;Reply to list&quot; links at the end of the individu=
+al message. If you receive each posting as a separate email, use your mail =
+program's Reply or Reply-To-All function, as appropriate. Please edit your =
+reply to include only the relevant portions of the original posting, not th=
+e entire email.<br/><br/>All Upper Valley-wide posts should be sent ONLY to=
+ <a href=3D"mailto:uppervalley@lists.valley.net.">uppervalley@lists.valley.=
+net.</a><br/><br/>Anyone can subscribe to this group by sending a blank mes=
+sage to<br/><a href=3D"mailto:norwich-subscribe@lists.valley.net.">norwich-=
+subscribe@lists.valley.net.</a><br/>To be removed from this list, send a bl=
+ank message to<br/><a href=3D"mailto:norwich-unsubscribe@lists.valley.net."=
+>norwich-unsubscribe@lists.valley.net.</a><br/><br/>For the list homepage w=
+ith posting guidelines and instructions for changing your subscription opti=
+ons, visit <a href=3D"http://lists.valley.net/lists/info/norwich.">http://l=
+ists.valley.net/lists/info/norwich.</a> The archives with all previous mess=
+ages posted to this list can be found at <a href=3D"http://lists.valley.net=
+/lists/arc/norwich.">http://lists.valley.net/lists/arc/norwich.</a><br/><br=
+/>This discussion list is provided at no cost by Vital Communities, a regio=
+nal nonprofit organization based in White River Junction, Vermont, working =
+to engage citizens, organizations, and communities in creating solutions to=
+ our region's challenges. To learn more, go to www.vitalcommunities.org.<br=
+/></div></body>=
+
+--047d7b162c27f24996051430f32c--

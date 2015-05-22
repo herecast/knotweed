@@ -22,8 +22,9 @@
             = f.label :organization_id_in, "Organization"
             = f.collection_select :organization_id_in, Organization.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
-            = f.label :locations_id_in, "Service Area"
-            = f.collection_select :locations_id_in, Location.accessible_by(current_ability), :id, :city, {}, { multiple: true, class: "chosen-select" }
+            = f.label :locations_id_in, 'Promote Locations'
+            = f.collection_select :locations_id_in, Location.accessible_by(current_ability), :id, :name, 
+              {}, { multiple: true, class: "chosen-select" }
         .controls.controls-row
           .field.span3
             = f.label :consumer_apps_id_in, "Consumer Apps"
@@ -37,6 +38,7 @@
       %th ID
       %th Publication
       %th Organization
+      %th Promote Locations
       %th Parent
       %th # Imported
       %th 
@@ -46,6 +48,11 @@
         %td= publication.id
         %td= link_to publication.name, edit_publication_path(publication)
         %td= link_to publication.organization.try(:name), "#"
+        %td
+          - publication.locations.each_with_index do |loc, i|
+            = link_to loc.name, publications_path(q: { locations_id_in: [loc.id] })
+            - unless i == (publication.locations.count - 1)
+              |
         %td
           - if publication.parent.present?
             = link_to publication.parent.try(:name), edit_publication_path(publication.parent)
