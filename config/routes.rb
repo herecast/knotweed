@@ -80,7 +80,7 @@ Knotweed::Application.routes.draw do
       resources 'events', only: [:create, :show]
       post '/events/:id/moderate', to: 'events#moderate', as: :moderate
       resources 'event_instances', only: [:index, :show]
-      resources 'comments', only: [:index]
+      resources 'comments', only: [:index, :create]
       resources 'listservs', only: [:index]
       get '/venues', to: 'business_locations#index', as: :venues
       get '/locations', to: 'business_locations#index', as: :locations, 

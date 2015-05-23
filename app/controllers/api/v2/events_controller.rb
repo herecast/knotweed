@@ -2,7 +2,7 @@ module Api
   module V2
     class EventsController < ApiController
 
-      before_filter :check_logged_in!, only: [:create] 
+      before_filter :check_logged_in!, only: [:create, :moderate] 
 
       def create
         image_data = params[:event].delete :image

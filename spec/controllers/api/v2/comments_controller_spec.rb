@@ -26,4 +26,34 @@ describe Api::V2::CommentsController do
 
   end
 
+  describe 'POST create' do
+    before do
+      @event = FactoryGirl.create :event
+      content = FactoryGirl.create :content, parent_id: @event.content.id
+      @comment1 = FactoryGirl.create :comment, content: content
+      @user = FactoryGirl.create :user
+    end
+
+    it 'should not allow creation without current user specified' do
+      post :create, format: :json, comment: { content: 'fake', parent_comment_id: @comment1.id }
+      response.code.should eq('401')
+      Comment.count.should eq(1)
+    end
+
+    it 'should create a comment given a parent_comment_id' do
+      post :create, format: :json, 
+        comment: { content: 'fake', parent_comment_id: @comment1.id },
+        current_user_id: @user.id
+      response.code.should eq('201')
+      assigns(:comment).content.parent.should eq(@comment1.content)
+    end
+
+    it 'should create a comment given an event_instance_id' do
+      post :create, format: :json, current_user_id: @user.id,
+        comment: { content: 'fake', event_instance_id: @event.event_instances.first.id }
+      response.code.should eq('201')
+      assigns(:comment).content.parent.should eq(@event.content)
+    end
+  end
+
 end
