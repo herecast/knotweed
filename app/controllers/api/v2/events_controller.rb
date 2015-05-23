@@ -59,6 +59,13 @@ module Api
         render json: @event
       end
 
+      def moderate
+        event = Event.find(params[:id])
+
+        ModerationMailer.send_moderation_flag_v2(event.content, params[:flag_type], @current_api_user).deliver
+        render text: 'moderated'
+      end
+
       protected
       # this is an unfortunate consequence of the fact that our ember app is using different keys
       # for certain things than we are...

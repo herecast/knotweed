@@ -101,5 +101,19 @@ describe Api::V2::EventsController do
     end
 
   end
+ 
+  describe 'POST moderate' do
+    before do
+      @event = FactoryGirl.create :event
+      @user = FactoryGirl.create :user
+    end
+
+    it 'should queue flag notification email' do
+      post :moderate, id: @event.id, current_user_id: @user.id,
+        flag_type: 'Inappropriate'
+      expect(ActionMailer::Base.deliveries.count).to eq(1)
+    end
+
+  end
 
 end
