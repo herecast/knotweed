@@ -2,6 +2,35 @@ require 'spec_helper'
 
 describe Api::V2::EventsController do
 
+  before do
+    @venue = FactoryGirl.create :business_location
+    @current_user = FactoryGirl.create :user
+    @listserv = FactoryGirl.create :listserv
+    @event_attrs = {
+      category: Event::EVENT_CATEGORIES[0],
+      contact_email: 'test@test.com',
+      contact_phone: '888-888-8888',
+      content: 'Hello this is test.',
+      cost: '$25',
+      cost_type: 'free',
+      event_instances: [
+        {
+          subtitle: 'fake subtitle',
+          starts_at: '2015-05-28T13:00:00-04:00',
+          ends_at: '2015-05-28T20:00:00-04:00'
+        }, {
+          subtitle: 'different fake subtitle',
+          starts_at: '2015-05-29T13:00:00-04:00'
+        }
+      ],
+      event_url: 'http://www.google.com',
+      social_enabled: true,
+      title: 'This is the title',
+      venue_id: @venue.id,
+      listserv_ids: [@listserv.id]
+    }
+  end
+
   describe 'GET show' do
     before do
       @event = FactoryGirl.create :event
@@ -15,35 +44,58 @@ describe Api::V2::EventsController do
 
   end
 
-  describe 'POST create' do
+  describe 'PUT update' do
     before do
-      @venue = FactoryGirl.create :business_location
-      @current_user = FactoryGirl.create :user
-      @listserv = FactoryGirl.create :listserv
-      @event_attrs = {
-        category: Event::EVENT_CATEGORIES[0],
-        contact_email: 'test@test.com',
-        contact_phone: '888-888-8888',
-        content: 'Hello this is test.',
-        cost: '$25',
-        cost_type: 'free',
-        event_instances: [
-          {
-            subtitle: 'fake subtitle',
-            starts_at: '2015-05-28T13:00:00-04:00',
-            ends_at: '2015-05-28T20:00:00-04:00'
-          }, {
-            subtitle: 'different fake subtitle',
-            starts_at: '2015-05-29T13:00:00-04:00'
-          }
-        ],
-        event_url: 'http://www.google.com',
-        social_enabled: true,
-        title: 'This is the title',
-        venue_id: @venue.id,
-        listserv_ids: [@listserv.id]
-      }
+      @event = FactoryGirl.create :event
+      @event.content.update_attribute :authoremail, @current_user.email
+      @attrs_for_update = @event.attributes.select do |k,v|
+        ![:links, :sponsor, :sponsor_url, :featured, :id, 
+         :created_at, :updated_at].include? k.to_sym
+      end
+      @attrs_for_update[:event_instances] = @event.event_instances.map do |ei|
+        { id: ei.id, starts_at: ei.start_date.to_s, ends_at: ei.end_date,
+          subtitle: ei.subtitle_override }
+      end
+      @attrs_for_update[:title] = 'Changed the title!'
+      @attrs_for_update[:content] = @event.content.raw_content
+      @attrs_for_update[:event_instances][0][:subtitle] = 'changed subtitle!'
+      @attrs_for_update[:cost] = '$100'
+
+      @different_user = FactoryGirl.create :user
     end
+
+    subject { put :update, event: @attrs_for_update, 
+              current_user_id: @current_user.id, id: @event.id }
+
+    it 'should not allow update if current_api_user does not match authoremail' do
+      put :update, event: @attrs_for_update, current_user_id: @different_user.id,
+        id: @event.id
+      response.code.should eq('401')
+    end
+
+    it 'should update the event attributes' do
+      subject
+      response.code.should eq('200')
+      @event.reload
+      @event.cost.should eq(@attrs_for_update[:cost])
+    end
+
+    it 'should update the associated content attributes' do
+      subject
+      @event.reload
+      @event.content.title.should eq(@attrs_for_update[:title])
+    end
+
+    it 'should update the associated event instance attributes' do
+      subject
+      @event.reload
+      @event.event_instances.first.subtitle_override
+        .should eq(@attrs_for_update[:event_instances][0][:subtitle])
+    end
+      
+  end
+
+  describe 'POST create' do
 
     subject { post :create, format: :json, event: @event_attrs, current_user_id: @current_user.id }
 
