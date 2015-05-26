@@ -24,11 +24,12 @@ module Api
           render json: {}
         else
           promo = new_content.promotions.where(active: true, promotable_type: 'PromotionBanner').first
-          render json: 
+          render json:  { related_promotion:
             { 
-              banner: promo.promotable.banner_image.url, 
-              target_url: promo.promotable.redirect_url
+              image_url: promo.promotable.banner_image.url, 
+              redirect_url: promo.promotable.redirect_url
             }
+          }
         end
 
       end
