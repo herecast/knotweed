@@ -30,7 +30,7 @@ describe Api::V2::ContentsController do
     end
 
     subject { get :similar_content, format: :json,
-        event_id: @event.id, repository_id: @repo.id }
+        event_id: @event.id, repository: @repo.dsp_endpoint }
 
     it 'has 200 status code' do
       subject

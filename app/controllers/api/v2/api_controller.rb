@@ -5,7 +5,7 @@ module Api
       # already handled by nginx
       #http_basic_authenticate_with name: Figaro.env.api_username, password: Figaro.env.api_password
 
-      before_filter :set_requesting_app
+      before_filter :set_requesting_app_and_repository
       before_filter :set_current_api_user
 
       protected
@@ -24,8 +24,9 @@ module Api
         end
       end
 
-      def set_requesting_app
+      def set_requesting_app_and_repository
         @requesting_app = ConsumerApp.where(uri: params[:consumer_app_uri]).first_or_create if params[:consumer_app_uri].present?
+        @repository = Repository.find_by_dsp_endpoint(params[:repository]) if params[:repository].present?
       end
 
       # generic method that, if requesting app is present, updates

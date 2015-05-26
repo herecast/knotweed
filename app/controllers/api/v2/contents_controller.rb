@@ -14,10 +14,8 @@ module Api
           @content = e.content
         end
 
-        @repo = Repository.find params[:repository_id]
-
         begin
-          promoted_content_id = @content.get_related_promotion(@repo)
+          promoted_content_id = @content.get_related_promotion(@repository)
           new_content = Content.find promoted_content_id
         rescue
           new_content = nil
@@ -44,9 +42,7 @@ module Api
           @content = e.content
         end
 
-        @repo = Repository.find params[:repository_id]
-
-        @contents = @content.similar_content(@repo)
+        @contents = @content.similar_content(@repository)
         render json: @contents, each_serializer: SimilarContentSerializer,
           root: 'similar_content'
 
