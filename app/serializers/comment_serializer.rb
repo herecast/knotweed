@@ -12,7 +12,7 @@ class CommentSerializer < ActiveModel::Serializer
   end
 
   def content
-    object.raw_content
+    object.sanitized_content
   end
 
   def event_id

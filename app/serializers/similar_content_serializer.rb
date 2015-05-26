@@ -4,7 +4,7 @@ class SimilarContentSerializer < ActiveModel::Serializer
     :event_instance_id
 
   def content
-    object.raw_content
+    object.sanitized_content
   end
 
   def content_id

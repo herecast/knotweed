@@ -17,7 +17,7 @@ class EventSerializer < ActiveModel::Serializer
   end
 
   def content
-    object.content.raw_content
+    object.content.sanitized_content
   end
 
   def image_url
