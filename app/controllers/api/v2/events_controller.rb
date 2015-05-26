@@ -46,6 +46,10 @@ module Api
             end
           end
 
+          if @repository.present?
+            @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
+          end
+
           render json: @event, status: 201
         else
           head :unprocessable_entity

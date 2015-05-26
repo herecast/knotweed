@@ -37,10 +37,17 @@ module Api
           parent_id: parent_id,
           location_ids: location_ids,
           authoremail: @current_api_user.try(:email),
-          raw_content: params[:comment].delete(:content)
+          authors: @current_api_user.try(:name),
+          raw_content: params[:comment].delete(:content),
+          pubdate: Time.zone.now
         }
         @comment = Comment.new(params[:comment])
         if @comment.save
+
+          if @repository.present?
+            @comment.content.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
+          end
+
           render json: @comment.content, serializer: SingleCommentSerializer,
             status: 201
         else
