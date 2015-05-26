@@ -41,7 +41,7 @@ module Api
         }
         @comment = Comment.new(params[:comment])
         if @comment.save
-          render json: @comment.content, serializer: CommentSerializer,
+          render json: @comment.content, serializer: SingleCommentSerializer,
             status: 201
         else
           head :unprocessable_entity
