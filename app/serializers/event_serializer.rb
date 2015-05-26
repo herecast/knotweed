@@ -3,7 +3,7 @@ class EventSerializer < ActiveModel::Serializer
     :image_url, :social_enabled,
     :venue_name, :venue_address, :venue_locate_name, :venue_url,
     :venue_city, :venue_state, :venue_id, :venue_latitude, :venue_longitude,
-    :venue_locate_name, 
+    :venue_locate_name, :venue_zip,
     :event_instances, :event_url
 
   # this is funky but without it, active model serializer tries to use the URL helper
@@ -46,6 +46,10 @@ class EventSerializer < ActiveModel::Serializer
 
   def venue_state
     object.venue.state
+  end
+
+  def venue_zip
+    object.venue.zip
   end
 
   def venue_id
