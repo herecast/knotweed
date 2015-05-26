@@ -44,7 +44,10 @@ module Api
 
       def show
         @event_instance = EventInstance.find(params[:id])
-        render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer
+        url = edit_event_url(@event_instance.event)
+        can_edit = @event_instance.event.content.authoremail == @current_api_user.try(:email)
+        render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
+          can_edit: can_edit, admin_content_url: url
       end
 
     end
