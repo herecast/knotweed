@@ -79,6 +79,7 @@ Knotweed::Application.routes.draw do
     namespace :v2 do
       resources 'events', only: [:create, :show, :update]
       post '/events/:id/moderate', to: 'events#moderate', as: :moderate
+      post '/comments/:id/moderate', to: 'comments#moderate', as: :moderate
       resources 'event_instances', only: [:index, :show]
       resources 'comments', only: [:index, :create]
       resources 'listservs', only: [:index]
