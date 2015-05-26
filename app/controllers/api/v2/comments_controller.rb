@@ -30,10 +30,10 @@ module Api
         else
           parent_id = nil
         end
-        title = Content.find(parent_id).title if parent_id.present?
+        
         # parse out content attributes
         params[:comment][:content_attributes] = {
-          title: title,
+          title: params[:comment].delete(:title),
           parent_id: parent_id,
           location_ids: location_ids,
           authoremail: @current_api_user.try(:email),

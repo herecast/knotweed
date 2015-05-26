@@ -5,7 +5,7 @@ class CommentSerializer < ActiveModel::Serializer
   # (associated with comments) in the desired comment struture
 
   attributes :id, :content, :comments, :event_id, :user_name,
-    :pubdate
+    :pubdate, :title
 
   def id
     object.channel.id
