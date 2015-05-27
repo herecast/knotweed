@@ -57,5 +57,5 @@ class EventInstance < ActiveRecord::Base
       errors.add(:end_time, "End date cannot be before start date.")
     end
   end
-  
+
 end

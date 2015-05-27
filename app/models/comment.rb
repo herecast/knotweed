@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: comments
+#
+#  id         :integer          not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 class Comment < ActiveRecord::Base
   has_one :content, as: :channel
   accepts_nested_attributes_for :content

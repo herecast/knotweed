@@ -1104,6 +1104,38 @@ class Content < ActiveRecord::Base
     end
   end
 
+  # pings a repository to retrieve similar content
+  # and returns array of related content objects
+  #
+  # @param repo [Repository] repository to query
+  # @param num_similar [Integer] number of results to return
+  # @return [Array<Content>] list of similar content
+  def similar_content(repo, num_similar=6)
+    # some logic in here that I don't truly know the purpose of...
+    # note -- the "category" method being called on self here
+    # returns the text label of the associated content_category
+    unless ["lost_and_found", "recommendation", "discussion", "talk_of_the_town"].include? category
+      extra_param = "&mlt.boostexpr=recip(ms(NOW/HOUR,published),2.63e-10,1,1)"
+    else
+      extra_param = ''
+    end
+
+    similar_url = repo.recommendation_endpoint + '/recommend/contextual?contentid=' +
+      uri + "&key=#{Figaro.env.ontotext_recommend_key}" +
+      "&count=#{num_similar}" + extra_param
+
+    response = HTTParty.get(similar_url)
+    similar_ids = response['articles'].map do |art|
+      art['id'].split('/')[-1].to_i
+    end
+
+    Content.where(id: similar_ids)
+  end
+
+  def uri
+    CGI.escape(BASE_URI + "/#{id}")
+  end
+
   private
 
   def query_promo_similarity_index(query_term, repo)

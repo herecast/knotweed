@@ -15,7 +15,8 @@
 #
 
 class Repository < ActiveRecord::Base
-  attr_accessible :dsp_endpoint, :name, :sesame_endpoint
+  attr_accessible :dsp_endpoint, :name, :sesame_endpoint,
+    :recommendation_endpoint
 
   validates_presence_of :dsp_endpoint, :sesame_endpoint, :name
 
@@ -31,4 +32,5 @@ class Repository < ActiveRecord::Base
   def self.production_repo
     Repository.find(PRODUCTION_REPOSITORY_ID)
   end
+
 end

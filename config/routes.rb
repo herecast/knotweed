@@ -76,6 +76,20 @@ Knotweed::Application.routes.draw do
 
   # API
   namespace :api do
+    namespace :v2 do
+      resources 'events', only: [:create, :show, :update]
+      post '/events/:id/moderate', to: 'events#moderate', as: :moderate
+      post '/comments/:id/moderate', to: 'comments#moderate', as: :moderate
+      resources 'event_instances', only: [:index, :show]
+      resources 'comments', only: [:index, :create]
+      resources 'listservs', only: [:index]
+      get '/venues', to: 'business_locations#index', as: :venues
+      get '/locations', to: 'business_locations#index', as: :locations, 
+        defaults: { autocomplete: true, max_results: 5 }
+      get '/related_promotion', to: 'contents#related_promotion', as: :related_promotion
+      get '/similar_content', to: 'contents#similar_content', as: :similar_content
+    end
+
     namespace :v1 do
       resources 'comments', only: [:index, :create]
       get 'contents/:id/get_tree', to: 'contents#get_tree', as: :get_tree

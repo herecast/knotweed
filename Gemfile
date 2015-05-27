@@ -90,7 +90,7 @@ gem "rubyzip", "~> 1.1.4"
 
 gem "ckeditor_rails"
 gem 'hpricot'
-gem 'active_model_serializers', '~> 0.9.0.alpha1'
+gem 'active_model_serializers', git: 'git@github.com:rails-api/active_model_serializers.git', branch: '0-9-stable'
 gem 'sparql-client', git: "git@github.com:ruby-rdf/sparql-client.git", branch: "develop"
 
 gem 'chronic'
@@ -104,3 +104,6 @@ gem "legato"
 gem "google-api-client"
 gem 'oauth2'
 gem "rdf"
+
+gem 'enumerize'
+gem 'front_end_builds'

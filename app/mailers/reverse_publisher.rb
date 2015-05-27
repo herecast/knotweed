@@ -4,7 +4,7 @@ class ReversePublisher < ActionMailer::Base
   def send_content_to_reverse_publishing_email(content, listserv, consumer_app=nil)
     # these are the same regardless of channel
     to = listserv.reverse_publish_email
-    from = '"'+content.authors+'" <'+content.authoremail+'>'
+    from = "\"#{content.authors}\" <#{content.authoremail}>"
     subject = content.title
     if content.channel.nil? # if unchannelized
       headers['In-Reply-To'] = content.parent.try(:guid)

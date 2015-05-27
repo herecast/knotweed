@@ -2,23 +2,27 @@
 #
 # Table name: events
 #
-#  id            :integer          not null, primary key
-#  event_type    :string(255)
-#  venue_id      :integer
-#  cost          :string(255)
-#  event_url     :string(255)
-#  sponsor       :string(255)
-#  sponsor_url   :string(255)
-#  links         :text
-#  featured      :boolean
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  contact_phone :string(255)
-#  contact_email :string(255)
-#  contact_url   :string(255)
+#  id             :integer          not null, primary key
+#  event_type     :string(255)
+#  venue_id       :integer
+#  cost           :string(255)
+#  event_url      :string(255)
+#  sponsor        :string(255)
+#  sponsor_url    :string(255)
+#  links          :text
+#  featured       :boolean
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  contact_phone  :string(255)
+#  contact_email  :string(255)
+#  contact_url    :string(255)
+#  cost_type      :string(255)
+#  event_category :string(255)
 #
 
 class Event < ActiveRecord::Base
+  extend Enumerize 
+
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
   attr_accessible :content_attributes
@@ -40,6 +44,7 @@ class Event < ActiveRecord::Base
   # always want the instances sorted by start_date
   has_many :event_instances, order: 'start_date ASC'
   validates_associated :event_instances # at least one must exist
+  validates_presence_of :event_instances
 
   accepts_nested_attributes_for :event_instances, allow_destroy: true
   attr_accessible :event_instances_attributes
@@ -50,7 +55,14 @@ class Event < ActiveRecord::Base
   # validates_presence_of :content_id
 
   attr_accessible :content, :cost, :event_type, :event_url, :featured,
-    :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, :contact_url
+    :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, :contact_url,
+    :cost_type, :event_category, :social_enabled
+
+  EVENT_CATEGORIES = [:family, :movies, :music, :wellness, :yard_sales]
+
+  enumerize :cost_type, in: [:free, :paid, :donation]
+  enumerize :event_category, in: EVENT_CATEGORIES
+
 
   serialize :links, Hash
 
@@ -101,7 +113,7 @@ class Event < ActiveRecord::Base
 
   # field sets for API responses
   def self.truncated_event_fields
-    [:id, :title, :event_type, :sponsor, :venue,
+    [:id, :title, :event_type, :sponsor,
              :featured]
   end
 

@@ -41,6 +41,7 @@ class User < ActiveRecord::Base
   belongs_to :organization # for organization admin
   has_many :notifiers
   belongs_to :default_repository, class_name: "Repository"
+  belongs_to :location
 
   rolify
   # Include default devise modules. Others available are:
@@ -52,6 +53,6 @@ class User < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :role_ids, :as => :admin
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :organization_id, :role_ids,
-    :default_repository_id
+    :default_repository_id, :location, :location_id
   
 end

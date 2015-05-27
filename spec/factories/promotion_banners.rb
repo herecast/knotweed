@@ -14,7 +14,6 @@
 FactoryGirl.define do
   factory :promotion_banner do
     promotion
-    banner_image File.open("spec/fixtures/photo.jpg", "r")
     redirect_url "http://www.google.com"
   end
 end

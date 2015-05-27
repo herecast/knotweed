@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150507160251) do
+ActiveRecord::Schema.define(:version => 20150521215357) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -83,6 +83,9 @@ ActiveRecord::Schema.define(:version => 20150507160251) do
     t.float    "longitude"
     t.string   "venue_url"
     t.boolean  "locate_include_name", :default => false
+    t.string   "city"
+    t.string   "state"
+    t.string   "zip"
   end
 
   add_index "business_locations", ["name"], :name => "index_business_locations_on_name"
@@ -116,9 +119,9 @@ ActiveRecord::Schema.define(:version => 20150507160251) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer  "channel_id"
-    t.text     "category"
-    t.datetime "created_at", :null => false
+    t.integer   "channel_id"
+    t.text      "category"
+    t.timestamp "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -239,10 +242,15 @@ ActiveRecord::Schema.define(:version => 20150507160251) do
     t.text     "summary"
     t.string   "url"
     t.string   "origin"
+    t.string   "mimetype"
     t.string   "language"
+    t.string   "page"
+    t.string   "wordcount"
     t.string   "authoremail"
     t.integer  "publication_id"
+    t.string   "file"
     t.boolean  "quarantine",             :default => false
+    t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
@@ -414,8 +422,9 @@ ActiveRecord::Schema.define(:version => 20150507160251) do
     t.datetime "end_date"
     t.string   "subtitle_override"
     t.text     "description_override"
-    t.datetime "created_at",           :null => false
-    t.datetime "updated_at",           :null => false
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
+    t.boolean  "delta",                :default => true, :null => false
   end
 
   add_index "event_instances", ["end_date"], :name => "index_event_instances_on_end_date"
@@ -431,15 +440,58 @@ ActiveRecord::Schema.define(:version => 20150507160251) do
     t.string   "sponsor_url"
     t.text     "links"
     t.boolean  "featured"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
     t.string   "contact_phone"
     t.string   "contact_email"
     t.string   "contact_url"
+    t.string   "cost_type"
+    t.string   "event_category"
+    t.boolean  "social_enabled", :default => false
   end
 
   add_index "events", ["featured"], :name => "index_events_on_featured"
+  add_index "events", ["venue_id"], :name => "events_on_venue_id_index"
   add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
+
+  create_table "front_end_builds_apps", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
+    t.boolean  "require_manual_activation", :default => false
+    t.integer  "live_build_id"
+  end
+
+  add_index "front_end_builds_apps", ["name"], :name => "index_front_end_builds_apps_on_name"
+
+  create_table "front_end_builds_builds", :force => true do |t|
+    t.integer  "app_id"
+    t.string   "sha"
+    t.string   "job"
+    t.string   "branch"
+    t.text     "html"
+    t.boolean  "fetched",                    :default => false
+    t.boolean  "active",                     :default => false
+    t.datetime "created_at",                                    :null => false
+    t.datetime "updated_at",                                    :null => false
+    t.string   "endpoint",   :limit => 2038
+    t.integer  "pubkey_id"
+    t.text     "signature"
+  end
+
+  add_index "front_end_builds_builds", ["active"], :name => "index_front_end_builds_builds_on_active"
+  add_index "front_end_builds_builds", ["app_id", "branch"], :name => "index_front_end_builds_builds_on_app_id_and_branch"
+  add_index "front_end_builds_builds", ["app_id", "job"], :name => "index_front_end_builds_builds_on_app_id_and_job"
+  add_index "front_end_builds_builds", ["app_id", "sha"], :name => "index_front_end_builds_builds_on_app_id_and_sha"
+  add_index "front_end_builds_builds", ["created_at"], :name => "index_front_end_builds_builds_on_created_at"
+  add_index "front_end_builds_builds", ["fetched"], :name => "index_front_end_builds_builds_on_fetched"
+
+  create_table "front_end_builds_pubkeys", :force => true do |t|
+    t.string   "name",       :null => false
+    t.text     "pubkey",     :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "images", :force => true do |t|
     t.string   "caption"
@@ -678,6 +730,13 @@ ActiveRecord::Schema.define(:version => 20150507160251) do
     t.text     "description"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
+  end
+
+  create_table "promote_options", :force => true do |t|
+    t.string  "promo_type",            :limit => 128
+    t.string  "name",                  :limit => 128
+    t.string  "reverse_publish_email", :limit => 128
+    t.boolean "active",                               :default => true
   end
 
   create_table "promotion_banners", :force => true do |t|

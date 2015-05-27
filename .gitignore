@@ -85,6 +85,7 @@ pickle-email-*.html
 
 # Ignore application configuration
 /config/application.yml
+/config/thinking_sphinx.yml
 
 # ignore parsers folder, but not test folder within it
 /lib/parsers/*
