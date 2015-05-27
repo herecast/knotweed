@@ -47,7 +47,7 @@ module Api
           end
 
           if @repository.present?
-            @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
+            @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
 
           render json: @event, status: 201
