@@ -1,6 +1,6 @@
 class EventSerializer < ActiveModel::Serializer
   attributes :cost, :contact_phone, :contact_email, :title, :cost_type, :content,
-    :image_url, :social_enabled,
+    :image_url, :social_enabled, :id,
     :venue_name, :venue_address, :venue_locate_name, :venue_url,
     :venue_city, :venue_state, :venue_id, :venue_latitude, :venue_longitude,
     :venue_locate_name, :venue_zip,
