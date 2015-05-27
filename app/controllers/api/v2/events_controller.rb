@@ -99,7 +99,7 @@ module Api
         end
 
         # translate params that have the wrong name
-        params[:event][:event_category] = params[:event].delete :category
+        params[:event][:event_category] = params[:event].delete(:category).to_s.downcase.gsub(' ','_')
         params[:event][:event_instances_attributes] = params[:event].delete :event_instances
         if params[:event][:event_instances_attributes].present?
           params[:event][:event_instances_attributes].map! do |ei|

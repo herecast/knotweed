@@ -28,7 +28,7 @@ module Api
         end
 
         if params[:category].present?
-          cat = params[:category].to_s.downcase.gsub(' ', '_')
+          cat = params[:category].to_s.downcase.gsub(' ','_')
           if Event::EVENT_CATEGORIES.include?(cat.to_sym)
             # NOTE: this conditional also handles the scenario where we are passed 'everything'
             # because 'everything' just means don't filter by category, and since 'everything'
