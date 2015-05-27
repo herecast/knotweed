@@ -45,7 +45,7 @@ module Api
 
         @contents = @content.similar_content(@repository)
         render json: @contents, each_serializer: SimilarContentSerializer,
-          root: 'similar_content'
+          root: 'similar_content', consumer_app_base_uri: @requesting_app.try(:uri)
 
       end
 
