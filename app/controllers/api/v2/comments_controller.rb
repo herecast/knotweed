@@ -8,7 +8,7 @@ module Api
         comment = Comment.find(params[:id])
         ModerationMailer.send_moderation_flag_v2(comment.content, params[:flag_type],
                                                  @current_api_user).deliver
-        head :ok
+        head :no_content
       end
 
       def index

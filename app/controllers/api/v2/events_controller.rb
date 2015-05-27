@@ -69,7 +69,7 @@ module Api
         event = Event.find(params[:id])
 
         ModerationMailer.send_moderation_flag_v2(event.content, params[:flag_type], @current_api_user).deliver
-        head :ok
+        head :no_content
       end
 
       protected
