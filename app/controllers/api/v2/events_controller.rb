@@ -19,7 +19,9 @@ module Api
             @event.content.save
             render json: @event, status: 200
           else
-            head :unprocessable_entity
+            render json: {
+              errors: map_error_keys(@event.errors.messages)
+            }, status: :unprocessable_entity
           end
 
         end
@@ -52,7 +54,9 @@ module Api
 
           render json: @event, status: 201
         else
-          head :unprocessable_entity
+          render json: {
+            errors: map_error_keys(@event.errors.messages)
+          }, status: :unprocessable_entity
         end
       end
 
@@ -107,6 +111,14 @@ module Api
           end
         end
       end
+
+      # converts the actual model keys that active record labels errors with
+      # to the keys used by our vendor application...kind of sucks but it is what it is.
+      def map_error_keys(errors)
+        errors[:category] = errors.delete :event_category
+        errors[:event_instances] = errors.delete :event_instances_attributes
+      end
+
 
     end
   end
