@@ -41,15 +41,15 @@ class EventSerializer < ActiveModel::Serializer
   end
 
   def venue_city
-    object.venue.city
+    object.venue.try(:city)
   end
 
   def venue_state
-    object.venue.state
+    object.venue.try(:state)
   end
 
   def venue_zip
-    object.venue.zip
+    object.venue.try(:zip)
   end
 
   def venue_id
