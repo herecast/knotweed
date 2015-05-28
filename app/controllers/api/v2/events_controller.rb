@@ -19,7 +19,14 @@ module Api
 
           process_event_params!
           
-          if @event.update_attributes(params[:event])
+          if params[:event].empty? #they are only submitting an image which we already removed
+            @event.content.image = Image.create(image_data) if image_data.present?
+            if @event.content.save
+              render json: @event, status: 200
+            else
+              render json: { errors: map_error_keys(@event.errors.messages) }, status: :unprocessable_entity
+            end
+          elsif @event.update_attributes(params[:event])
             # reverse publish to specified listservs
             if listservs.present?
               listservs.each do |d|
@@ -29,8 +36,6 @@ module Api
               end
             end
 
-            @event.content.image = Image.create(image_data) if image_data.present?
-            @event.content.save
             render json: @event, status: 200
           else
             render json: {
