@@ -11,33 +11,39 @@ module Api
           render json: { errors: ['You do not have permission to edit this event.'] }, 
             status: 401
         else
+          # for now, we EITHER get the image OR the event in this update logic. So 
+          # if image is present here, we branch:
           image_data = params[:event].delete :image
-
-          # listservs for reverse publishing -- not included in process_event_params!
-          # because update doesn't include listserv publishing
-          listservs = params[:event].delete :listserv_ids
-
-          process_event_params!
-          
-          if @event.update_attributes(params[:event])
-            # reverse publish to specified listservs
-            if listservs.present?
-              listservs.each do |d|
-                next unless d.present?
-                list = Listserv.find(d.to_i)
-                PromotionListserv.create_from_content(@event.content, list) if list.present? and list.active
-              end
+          if image_data.present?
+            if Image.create(image: image_data, imageable: @event.content)
+              render json: @event, status: 200
+            else
+              render json: { errors: map_error_keys(@event.errors.messages) }, status: :unprocessable_entity
             end
-
-            @event.content.image = Image.create(image_data) if image_data.present?
-            @event.content.save
-            render json: @event, status: 200
           else
-            render json: {
-              errors: map_error_keys(@event.errors.messages)
-            }, status: :unprocessable_entity
-          end
+            # listservs for reverse publishing -- not included in process_event_params!
+            # because update doesn't include listserv publishing
+            listservs = params[:event].delete :listserv_ids
 
+            process_event_params!
+            
+            if @event.update_attributes(params[:event])
+              # reverse publish to specified listservs
+              if listservs.present?
+                listservs.each do |d|
+                  next unless d.present?
+                  list = Listserv.find(d.to_i)
+                  PromotionListserv.create_from_content(@event.content, list) if list.present? and list.active
+                end
+              end
+
+              render json: @event, status: 200
+            else
+              render json: {
+                errors: map_error_keys(@event.errors.messages)
+              }, status: :unprocessable_entity
+            end
+          end
         end
       end
 
@@ -51,7 +57,7 @@ module Api
         process_event_params!
 
         @event = Event.new(params[:event])
-        @event.content.image = Image.create(image_data) if image_data.present?
+        @event.content.images = [Image.create(image: image_data)] if image_data.present?
         if @event.save
           # reverse publish to specified listservs
           if listservs.present?
