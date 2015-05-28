@@ -15,7 +15,7 @@ module Api
           # if image is present here, we branch:
           image_data = params[:event].delete :image
           if image_data.present?
-            @event.content.image = Image.create(image: image_data) if image_data.present?
+            @event.content.images = [Image.create(image: image_data)] if image_data.present?
             if @event.content.save
               render json: @event, status: 200
             else
@@ -58,7 +58,7 @@ module Api
         process_event_params!
 
         @event = Event.new(params[:event])
-        @event.content.image = Image.create(image: image_data) if image_data.present?
+        @event.content.images = [Image.create(image: image_data)] if image_data.present?
         if @event.save
           # reverse publish to specified listservs
           if listservs.present?
