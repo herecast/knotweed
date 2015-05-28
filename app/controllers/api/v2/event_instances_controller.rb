@@ -1,6 +1,22 @@
 module Api
   module V2
     class EventInstancesController < ApiController
+      
+      before_filter :check_logged_in!, only: [:destroy]
+
+      def destroy
+        @event_instance = EventInstance.find(params[:id])
+        if @current_api_user.email != @event_instance.event.content.authoremail
+          render json: { errors: ['You do not have permission to edit this event.'] }, 
+            status: 401
+        else
+          if @event_instance.destroy
+            head :no_content
+          else
+            render json: { errors: @event_instance.errors }
+          end
+        end
+      end
 
       def index
         #if params[:query].present? or params[:location].present?
