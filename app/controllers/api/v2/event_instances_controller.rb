@@ -27,7 +27,7 @@ module Api
         opts[:order] = 'start_date ASC'
         opts[:per_page] = params[:max_results] || 1000
         opts[:with] = {}
-        opts[:conditions] = {}
+        opts[:conditions] = {published: 1}
         opts[:sql] = { include: {event: [{content: :images}, :venue]}}
 
         start_date = Chronic.parse(params[:date_start]).beginning_of_day if params[:date_start].present?
