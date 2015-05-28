@@ -57,7 +57,14 @@ namespace :deploy do
 
   after :publishing, :restart
 
-  after :publishing, 'thinking_sphinx:rebuild'
+  task :rebuild_sphinx_indices do
+    skip_rebuild = fetch(:skip_sphinx_rebuild, false)
+    unless skip_rebuild
+      invoke 'thinking_sphinx:rebuild'
+    end
+  end
+
+  after :publishing, :rebuild_sphinx_indices
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
