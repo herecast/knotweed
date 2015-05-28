@@ -12,9 +12,23 @@ module Api
             status: 401
         else
           image_data = params[:event].delete :image
+
+          # listservs for reverse publishing -- not included in process_event_params!
+          # because update doesn't include listserv publishing
+          listservs = params[:event].delete :listserv_ids
+
           process_event_params!
           
           if @event.update_attributes(params[:event])
+            # reverse publish to specified listservs
+            if listservs.present?
+              listservs.each do |d|
+                next unless d.present?
+                list = Listserv.find(d.to_i)
+                PromotionListserv.create_from_content(@event.content, list) if list.present? and list.active
+              end
+            end
+
             @event.content.image = Image.create(image_data) if image_data.present?
             @event.content.save
             render json: @event, status: 200
