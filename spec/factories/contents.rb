@@ -71,5 +71,6 @@ FactoryGirl.define do
     source_category "Category"
     content_category
     authoremail 'fake@email.com'
+    published true
   end
 end
