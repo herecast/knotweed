@@ -55,7 +55,7 @@ module Api
         if @comment.save
 
           if @repository.present?
-            @comment.content.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
+            @comment.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
 
           render json: @comment.content, serializer: SingleCommentSerializer,
