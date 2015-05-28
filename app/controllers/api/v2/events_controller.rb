@@ -15,8 +15,7 @@ module Api
           # if image is present here, we branch:
           image_data = params[:event].delete :image
           if image_data.present?
-            @event.content.images = [Image.create(image: image_data)] if image_data.present?
-            if @event.content.save
+            if Image.create(image: image_data, imageable: @event.content)
               render json: @event, status: 200
             else
               render json: { errors: map_error_keys(@event.errors.messages) }, status: :unprocessable_entity
