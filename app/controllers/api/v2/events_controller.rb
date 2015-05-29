@@ -122,6 +122,7 @@ module Api
           title: params[:event].delete(:title),
           location_ids: location_ids,
           authoremail: @current_api_user.try(:email),
+          authors: @current_api_user.try(:name),
           pubdate: Time.zone.now,
           content_category_id: ContentCategory.find_or_create_by_name('event').id,
         }
