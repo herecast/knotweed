@@ -122,9 +122,13 @@ module Api
           title: params[:event].delete(:title),
           location_ids: location_ids,
           authoremail: @current_api_user.try(:email),
-          #image: params[:event].delete(:image),
-          #created_by: params[:current_user_id]
+          pubdate: Time.zone.now,
+          content_category_id: ContentCategory.find_or_create_by_name('event').id,
         }
+        if @event.present? and @event.id # event already exists and this is an update so we need to include
+          #the content ID to avoid overwriting it
+          params[:event][:content_attributes][:id] = @event.content.id
+        end
 
         if params[:event][:venue].present? and !params[:event][:venue_id].present?
           params[:event][:venue_attributes] = params[:event].delete :venue
