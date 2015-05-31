@@ -1125,11 +1125,14 @@ class Content < ActiveRecord::Base
       "&count=#{num_similar}" + extra_param
 
     response = HTTParty.get(similar_url)
-    similar_ids = response['articles'].map do |art|
-      art['id'].split('/')[-1].to_i
+    if response.fetch('articles', nil)
+      similar_ids = response['articles'].map do |art|
+        art['id'].split('/')[-1].to_i
+      end
+      Content.where(id: similar_ids)
+    else
+      []
     end
-
-    Content.where(id: similar_ids)
   end
 
   def uri
