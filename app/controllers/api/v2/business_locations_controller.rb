@@ -8,6 +8,7 @@ module Api
           opts = {}
           opts = { select: '*, weight()' }
           opts[:per_page] = params[:max_results] || 1000
+          opts[:star] = true
           @venues = BusinessLocation.search query, opts
         else
           @venues = BusinessLocation.all
