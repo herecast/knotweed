@@ -35,6 +35,7 @@ namespace :wellness do
         # so capture the content record information including any image
         cr[:title] = row[:name]
         cr[:raw_content] = row[:description]
+        cr[:content_category_id] = 1
         cr[:publication_id] = Publication.find_by_name('DailyUV').id
         cr[:pubdate] = Time.now
         cr[:location_ids] = [77]
