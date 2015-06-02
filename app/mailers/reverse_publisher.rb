@@ -6,9 +6,9 @@ class ReversePublisher < ActionMailer::Base
     to = listserv.reverse_publish_email
     from = "\"#{content.authors}\" <#{content.authoremail}>"
     subject = content.title
-    if content.channel.nil? # if unchannelized
+    @body = content.raw_content
+    if content.channel.nil? or content.channel.is_a? Comment # if unchannelized or comment
       headers['In-Reply-To'] = content.parent.try(:guid)
-      @body = content.raw_content
       template_name = 'content'
     else # if channelized
       if consumer_app.present?

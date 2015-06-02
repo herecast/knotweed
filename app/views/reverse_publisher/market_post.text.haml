@@ -1,6 +1,6 @@
 = @market_post.title
 \
-- clean_content = @market_post.raw_content.gsub("\u{a0}",'').gsub('&nbsp;', '')
+- clean_content = @body.gsub("\u{a0}",'').gsub('&nbsp;', '')
 = strip_tags(clean_content)
 \
 - if @market_post.cost.present?

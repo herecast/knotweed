@@ -4,7 +4,7 @@
 - if @market_post.cost.present?
   .strong Cost: #{@market_post.cost}
 
-= Rinku.auto_link(@market_post.raw_content).html_safe
+= Rinku.auto_link(@body).html_safe
 
 - contact_string = contact_display(@market_post)
 - if contact_string.present?
