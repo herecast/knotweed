@@ -35,17 +35,26 @@ module Api
             opts[:with].merge!({:cat_ids => allowed_cats})
           end
 
-          if params[:publication_locations].present?
-            pub_locs = params[:publication_locations].map{ |l| l.to_i }
-            opts[:with].merge!({ pub_loc_ids: pub_locs })
+          # this is another query param that allows API users to search for entries
+          # in publication_locations OR locations
+          # at least as of now, it's safe to assume if we're querying by this, we're not querying
+          # by the others.
+          if params[:all_locations].present?
+            all_locs = params[:all_locations].map{ |l| l.to_i }
+            opts[:with].merge!({all_loc_ids: all_locs})
+          else
+            if params[:publication_locations].present?
+              pub_locs = params[:publication_locations].map{ |l| l.to_i }
+              opts[:with].merge!({ pub_loc_ids: pub_locs })
+            end
+
+            if params[:locations].present?
+              locations = params[:locations].map{ |l| l.to_i } 
+              opts[:with].merge!({loc_ids: locations})
+            end
           end
 
           opts[:conditions].merge!({channelized_content_id: nil}) # note, that's how sphinx stores NULL
-
-          if params[:locations].present?
-            locations = params[:locations].map{ |l| l.to_i } 
-            opts[:with].merge!({loc_ids: locations})
-          end
 
           @contents = Content.search query, opts
           @contents.context[:panes] << ThinkingSphinx::Panes::WeightPane
@@ -90,17 +99,24 @@ module Api
           end
 
           # filter by location
-          if params[:locations].present?
-            locations = params[:locations].map{ |l| l.to_i } # avoid SQL injection
-            @contents = @contents.joins('inner join contents_locations on contents.id = contents_locations.content_id')
-              .where('contents_locations.location_id in (?)', locations)
-          end
+          if params[:all_locations].present?
+            locs = params[:all_locations].map{ |l| l.to_i }
+            @contents = @contents.joins('left join contents_locations on contents.id = contents_locations.content_id')
+              .joins('left join locations_publications on locations_publications.publication_id = contents.publication_id')
+              .where('contents_locations.location_id in (?) OR locations_publications.location_id in (?)', locs, locs) 
+          else
+            if params[:locations].present?
+              locations = params[:locations].map{ |l| l.to_i } # avoid SQL injection
+              @contents = @contents.joins('inner join contents_locations on contents.id = contents_locations.content_id')
+                .where('contents_locations.location_id in (?)', locations)
+            end
 
-          if params[:publication_locations].present?
-            pub_locs = params[:publication_locations].map{ |l| l.to_i }
-            @contents = @contents.joins('LEFT JOIN locations_publications on ' + 
-                        'contents.publication_id = locations_publications.publication_id ')
-                        .where('locations_publications.location_id in (?)', pub_locs)
+            if params[:publication_locations].present?
+              pub_locs = params[:publication_locations].map{ |l| l.to_i }
+              @contents = @contents.joins('LEFT JOIN locations_publications on ' + 
+                          'contents.publication_id = locations_publications.publication_id ')
+                          .where('locations_publications.location_id in (?)', pub_locs)
+            end
           end
 
           # workaround to avoid the extremely costly contents_repositories inner join
