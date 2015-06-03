@@ -14,4 +14,5 @@ ThinkingSphinx::Index.define :content, :with => :active_record do
   has publication.id, as: :pub_id
   has locations.id, as: :loc_ids
   has publication.locations.id, as: :pub_loc_ids
+  has [locations.id, publication.locations.id], as: :all_loc_ids, multi: true
 end
