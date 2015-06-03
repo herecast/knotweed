@@ -61,4 +61,22 @@ describe Event do
     end
   end
 
+  describe 'before_save' do
+    it 'should ensure that all URL fields start with http://' do
+      @event.sponsor_url = @event.contact_url = @event.event_url = 'www.google.com'
+      @event.save
+      @event.reload
+      @event.sponsor_url.should eq('http://www.google.com')
+      @event.contact_url.should eq('http://www.google.com')
+      @event.event_url.should eq('http://www.google.com')
+    end
+
+    it 'should not affect URL fields that already have http' do
+      @event.sponsor_url = 'http://www.google.com'
+      @event.save
+      @event.reload
+      @event.sponsor_url.should eq('http://www.google.com')
+    end
+  end
+
 end

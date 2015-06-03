@@ -76,6 +76,15 @@ class Event < ActiveRecord::Base
     event.content.save
   end
 
+  # normalize all "URL" fields to be well-formed url's (have an http at beginning)
+  before_save do |event|
+    [:sponsor_url, :event_url, :contact_url].each do |method|
+      if event.send(method).present?
+        event.send("#{method}=", "http://#{event.send(method)}") unless event.send(method).match(/^http:\/\/.*/)
+      end
+    end
+  end
+
   # override default method_missing to pipe through any attribute calls that aren't on the
   # event model directly through to the attached content record.
   #
