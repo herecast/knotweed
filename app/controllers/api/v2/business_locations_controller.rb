@@ -6,8 +6,9 @@ module Api
         query = Riddle::Query.escape(params[:query]) if params[:query].present?
         if query.present?
           opts = {}
-          opts = { select: '*, weight()' }
+          opts = { select: '*, weight() as w', order: 'w DESC, name DESC' }
           opts[:per_page] = params[:max_results] || 1000
+          opts[:star] = true
           @venues = BusinessLocation.search query, opts
         else
           @venues = BusinessLocation.all
