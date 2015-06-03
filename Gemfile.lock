@@ -365,6 +365,7 @@ GEM
     rdoc (3.12.2)
       json (~> 1.4)
     retriable (1.4.1)
+    retryable-rb (1.1.0)
     riddle (1.5.11)
     rinku (1.7.3)
     rolify (3.2.0)
@@ -388,6 +389,8 @@ GEM
       mime (>= 0.1)
       shared-mime-info
     ruby-hmac (0.4.0)
+    rubypress (1.1.0)
+      retryable-rb
     rubyzip (1.1.4)
     safe_yaml (0.9.7)
     sass (3.2.13)
@@ -545,6 +548,7 @@ DEPENDENCIES
   rolify (>= 3.2.0)
   rspec-rails (>= 2.12.2)
   ruby-gmail
+  rubypress
   rubyzip (~> 1.1.4)
   sass-rails (~> 3.2.3)
   select2-rails

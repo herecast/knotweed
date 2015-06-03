@@ -30,7 +30,7 @@ gem "capistrano", git: 'git@github.com:capistrano/capistrano.git'
 gem "capistrano-bundler", ">= 1.1.0"
 gem "capistrano-rvm"
 gem "capistrano-rails", "~> 1.1"
-
+gem "rubypress"
 gem 'net-http-persistent', '~> 2.9'
 gem 'rinku', "~> 1.7.3"
 
