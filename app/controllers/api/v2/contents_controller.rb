@@ -44,6 +44,15 @@ module Api
         end
 
         @contents = @content.similar_content(@repository)
+
+        # This is a Bad temporary hack to allow filtering the sim stack provided by apiv2
+        # the same way that the consumer app filters it. 
+        if Figaro.env.respond_to? :sim_stack_categories
+          @contents.select! do |c|
+            Figaro.env.sim_stack_categories.include? c.content_category.name
+          end
+        end
+
         render json: @contents, each_serializer: SimilarContentSerializer,
           root: 'similar_content', consumer_app_base_uri: @requesting_app.try(:uri)
 
