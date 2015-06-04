@@ -88,10 +88,10 @@ describe Api::V1::EventInstancesController do
     end
 
     it "should filter by contents.published if repository is specified" do
-      events = FactoryGirl.create_list(:event, 3)
+      events = FactoryGirl.create_list(:event, 3, published: false)
       events[0].content.update_attribute :published, true
       get :index, format: :json, repository: "http://fake-repo-endpoint.com"
-      assigns(:event_instances).should == [events[0].event_instances.first]
+      assigns(:event_instances).should eq([events[0].event_instances.first])
     end
 
     describe "if params specifies a date range" do

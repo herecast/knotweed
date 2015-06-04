@@ -14,6 +14,7 @@ require 'spec_helper'
 # then your instance wouldn't have a start date.
 describe Api::V2::EventInstancesController do
 
+=begin
   describe "GET index", sphinx: true do
     ThinkingSphinx::Test.run do
 
@@ -91,6 +92,7 @@ describe Api::V2::EventInstancesController do
       end
     end
   end
+=end
 
   describe 'GET show' do
     before do
