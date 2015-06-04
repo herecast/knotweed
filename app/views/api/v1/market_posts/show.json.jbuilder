@@ -13,6 +13,8 @@ json.market_posts [@market_post] do |mp|
 
   if mp.content.images.present?
     json.image mp.content.images.first.image.url
+    json.image_caption mp.content.images.first.caption
+    json.image_credit mp.content.images.first.credit
   end
 
   attrs.each{|attr| json.set! attr, mp.send(attr) }
