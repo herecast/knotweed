@@ -953,6 +953,15 @@ class Content < ActiveRecord::Base
     c = raw_content.gsub(/[[:alpha:]]\.[[:alpha:]]\./) {|s| s.upcase }
     pre_sanitize_filters.each {|f| c.send f[0], *f[1]}
     doc = Nokogiri::HTML.parse(c)
+
+    # this line is designed to handle content imported from Wordpress that had an image at the top of the content
+    # and potentially other images.  The first image would duplicate our only (currently-supported) image,
+    # which is also needed for tile view.  This line pulls the first <a ...><img ...></a> set and leaves the second and
+    # subsequent so those images actually display as intended and built in Wordpress.  Note that they pull the images
+    # from the Wordpress media library, not our AWS store.  Leaving the links in raw_content and post-processing
+    # here allows us to go back in the near future and implement a better solution for multiple images JGS 20150605
+    doc.css('a img').first{|a| a.parent.remove()}
+
     doc.search("style").each {|t| t.remove() }
     doc.search('//text()').each {|t| t.content = t.content.sub(/^[^>\n]*>\p{Space}*\z/, "") } # kill tag fragments
     is_newline = Proc.new do |t|
