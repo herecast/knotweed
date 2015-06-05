@@ -12,6 +12,8 @@ end
 
 if content.images.present?
   json.image content.images.first.image.url
+  json.image_caption content.images.first.caption
+  json.image_credit content.images.first.credit
 end
 
 attrs.reject!{|a| without_attributes.include? a } if defined? without_attributes
