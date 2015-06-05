@@ -58,7 +58,7 @@ class Event < ActiveRecord::Base
     :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, :contact_url,
     :cost_type, :event_category, :social_enabled
 
-  EVENT_CATEGORIES = [:family, :movies, :music, :wellness, :yard_sales]
+  EVENT_CATEGORIES = [:movies, :performing_arts, :wellness, :yard_sales]
 
   enumerize :cost_type, in: [:free, :paid, :donation]
   enumerize :event_category, in: EVENT_CATEGORIES
