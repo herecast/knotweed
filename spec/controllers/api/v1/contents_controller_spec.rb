@@ -86,7 +86,7 @@ describe Api::V1::ContentsController do
 
         it "should filter by consumer_app.publications AND specified publications" do
           get :index, format: :json, consumer_app_uri: @consumer_app.uri, events: false,
-            publications: [@pub1.name]
+            publication_ids: [@pub1.id]
           assigns(:contents).count.should == 1
         end
       end
