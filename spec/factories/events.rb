@@ -30,7 +30,7 @@ FactoryGirl.define do
       description_override nil
     end
 
-    association :content, factory: :content, published: true
+    association :content, factory: :content, published: false
     featured false
     association :venue, factory: :business_location
     contact_phone "888-888-8888"
