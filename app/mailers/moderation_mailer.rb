@@ -1,6 +1,6 @@
 class ModerationMailer < ActionMailer::Base
 
-  MODERATION_EMAIL_RECIPIENT = 'flags@subtext.org'
+  MODERATION_EMAIL_RECIPIENT = 'ngottlieb@gmail.com'
   MODERATION_EMAIL_SENDER = 'noreply@subtext.org'
 
 
