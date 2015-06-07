@@ -15,6 +15,8 @@ module Api
           # if image is present here, we branch:
           image_data = params[:event].delete :image
           if image_data.present?
+            # clear out existing images since we are only set up to have one right now
+            @event.content.images.destroy_all
             if Image.create(image: image_data, imageable: @event.content)
               render json: @event, status: 200
             else

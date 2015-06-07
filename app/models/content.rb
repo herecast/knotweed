@@ -1129,7 +1129,7 @@ class Content < ActiveRecord::Base
       similar_ids = response['articles'].map do |art|
         art['id'].split('/')[-1].to_i
       end
-      Content.where(id: similar_ids)
+      Content.where(id: similar_ids).includes(:content_category)
     else
       []
     end

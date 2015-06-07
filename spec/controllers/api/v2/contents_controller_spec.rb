@@ -26,7 +26,7 @@ describe Api::V2::ContentsController do
     before do
       @event = FactoryGirl.create :event
       @sim_content = FactoryGirl.create :content
-      Content.any_instance.stub(:similar_content).with(@repo).and_return([@sim_content])
+      Content.any_instance.stub(:similar_content).with(@repo, 20).and_return([@sim_content])
     end
 
     subject { get :similar_content, format: :json,
