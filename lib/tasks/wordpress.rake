@@ -4,15 +4,17 @@ require 'optparse'
 namespace :wordpress do
 
   desc "Import all published posts in a Wordpress blog"
-  task import: :environment do
+  task :import, [:blogTitle] => :environment do |t, args|
 
-    blogTitle = 'The Lebanon Beacon'
+    blogTitle = args[:blogTitle]
+
     unless blogTitle.present?
-      puts "no blogTitle passed: use rake wordpress:import -- -b 'My BlogTitle'"
+      puts "no blogTitle passed: use rake wordpress:import['My BlogTitle']"
       exit 1
     end
-    pub_id = Publication.find_by_name(blogTitle).id
-    unless pub_id.present?
+
+    pub = Publication.find_by_name("#{blogTitle}")
+    unless pub.present?
       puts "#{blogTitle} does not exist in Publications table"
       exit 1
     end
@@ -21,7 +23,6 @@ namespace :wordpress do
     USERNAME = 'jgstephe'
     PASSWORD = 'jgs4sbtx'
     USESSL = false
-
 
     # set up a client to the multisite root to get the list of blogs (for the specified user)
     wpcl = Rubypress::Client.new(host: HOST, username: USERNAME, password: PASSWORD, use_ssl: USESSL)
@@ -55,8 +56,13 @@ namespace :wordpress do
         next
       end
 
+      if wp_post['post_date'].to_time > Time.now
+        puts "'#{wp_post['post_title']}' (#{wp_post['guid']}) is scheduled for the future (#{wp_post['post_date']})."
+        next
+      end
+
       # parse the WP post hash into a Content object
-      wp = newContentFromWP(blogTitle, wp_post, pub_id, content_category_id)
+      wp = newContentFromWP(blogTitle, wp_post, pub, content_category_id)
 
       output = ''
       if wp.save
@@ -81,14 +87,14 @@ namespace :wordpress do
     exit 0
   end
 
-  def newContentFromWP(blogTitle, wp_post, pub_id, content_category_id)
+  def newContentFromWP(blogTitle, wp_post, pub, content_category_id)
     wp = Content.new
 
     wp.contentsource = blogTitle
 
     post_tag = wp_post['terms'].select{|t| 'post_tag' == t['taxonomy']}
     tag_pub = Publication.find_by_name(post_tag[0]['name']) if post_tag.present?
-    wp.publication_id = tag_pub ? tag_pub.id : pub_id
+    wp.publication = tag_pub ? tag_pub : pub
 
     wp.title = wp_post['post_title']
     wp.guid = wp_post['guid']
@@ -130,6 +136,34 @@ namespace :wordpress do
     wp
   end
 
+  desc "Set up publications"
+  task setup_pubs: :environment do
+    lebpubs = ["The Lebanon Beacon", "Lebanon City Council", "Lebanon Conservation Commission", "Lebanon School District", "Mt. Lebanon School", "Lebanon High School", "City of Lebanon NH", "Mascoma River Greenway", "dailyUV-Lebanon"]
+    norpubs = ["The Norwich Harbinger", "Norwich Historical Society", "Norwich Women's Club", "Montshire Museum of Science", "Town of Norwich VT", "Dresden School Board", "King Arthur Flour", "Norwich School Board", "Marion Cross School", "Book Jam", "Hanover High School", "Norwich Public Library", "Richmond Middle School", "Norwich Bookstore", "dailyUV-Norwich", "Jim and Tim Report", "dailyUV-UV"]
+    hartpubs = ["The Hartford Observer", "Ottauquechee School", "Hartford High School", "Hartford Memorial Middle School", "dailyUV-Hartford", "Hartford Police Department", "Quechee and Wilder Libraries", "Hartford Area Career and Technical Center", "Town of Hartford VT", "dailyUV-UV"]
+
+    lebloc = Location.find_by_city("Lebanon")
+    lebpubs.each do |pub|
+      newpub = Publication.find_or_create_by_name(pub) do | p |
+        p.locations = [lebloc]
+      end
+    end
+
+    norloc = Location.find_by_city("Norwich")
+    norpubs.each do |pub|
+      newpub = Publication.find_or_create_by_name(pub) do | p |
+        p.locations = [norloc]
+      end
+    end
+
+    hartloc = Location.find_by_city("Hartford")
+    hartpubs.each do |pub|
+      newpub = Publication.find_or_create_by_name(pub) do | p |
+        p.locations = [hartloc]
+      end
+    end
+
+  end
 
   desc "Import a Wordpress post"
   task importone: :environment do
@@ -141,8 +175,8 @@ namespace :wordpress do
       puts "no blogTitle passed: use rake wordpress:import -- -b 'My BlogTitle'"
       exit 1
     end
-    pub_id = Publication.find_by_name(blogTitle).id
-    unless pub_id.present?
+    pub = Publication.find_by_name(blogTitle).id
+    unless pub.present?
       puts "#{blogTitle} does not exist in Publications table"
       exit 1
     end
@@ -173,7 +207,7 @@ namespace :wordpress do
     p_opts = options.merge(post_id: POST_ID)
     wp_post = wpcl.getPost(p_opts)
 
-    wp = newContentFromWP(blogTitle, wp_post, pub_id, content_category_id)
+    wp = newContentFromWP(blogTitle, wp_post, pub, content_category_id)
 
     output = ''
     if wp.save
@@ -195,29 +229,3 @@ namespace :wordpress do
   end
 
 end
-
-
-=begin
-    # testing passing args to allow for changing blogTitle
-    puts ARGV
-    puts ARGV.class, ARGV.length
-    puts "first"
-    puts ARGV[0].class
-    puts ARGV[0][2..-1]
-    #ARGV.shift
-    #puts '2: ' + ARGV
-    puts ENV
-
-    options = {}
-
-    parser = OptionParser.new
-    parser.banner = "Usage: rake wordpress:import [options]"
-    parser.on("-b", "--blog {blogname}", "Blog Title (enclosed in quotes)", String) do |blog|
-      options[:blog] = blog
-    end
-    myArgs = parser.order!(ARGV) {}
-    parser.parse!(myArgs)
-
-    puts "blogTitle: #{options[:blog]}"
-    exit 0
-=end
