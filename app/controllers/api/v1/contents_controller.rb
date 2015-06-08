@@ -23,8 +23,8 @@ module Api
 
           if @requesting_app.present?
             allowed_pubs = @requesting_app.publications
-            if params[:publications].present? # allows the My List / All Lists filter to work
-              filter_pubs = Publication.where(name: params[:publications])
+            if params[:publication_ids].present? # allows the My List / All Lists filter to work
+              filter_pubs = Publication.where(name: params[:publication_ids])
               allowed_pubs.select! { |p| filter_pubs.include? p }
             end
             opts[:with].merge!({pub_id: allowed_pubs.collect{|c| c.id} })
@@ -82,8 +82,8 @@ module Api
           # for the incoming consumer app
           if @requesting_app.present?
             allowed_pubs = @requesting_app.publications
-            if params[:publications].present? # allows the My List / All Lists filter to work
-              filter_pubs = Publication.where(name: params[:publications])
+            if params[:publication_ids].present? # allows the My List / All Lists filter to work
+              filter_pubs = Publication.where(id: params[:publication_ids])
               allowed_pubs.select! { |p| filter_pubs.include? p }
             end
             # if viewing just the home list
