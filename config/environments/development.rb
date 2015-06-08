@@ -14,7 +14,7 @@ Knotweed::Application.configure do
   config.action_controller.perform_caching = false
 
   # ActionMailer Config
-  config.action_mailer.default_url_options = { :host => '198.74.61.63:8002' }
+  config.action_mailer.default_url_options = { :host => Figaro.env.default_host }
 
   # change to true to allow email to be sent during development
   config.action_mailer.perform_deliveries = true

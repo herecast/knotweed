@@ -66,6 +66,10 @@ PRODUCTION_REPOSITORY_ID: 3
 # It defaults to 77 if not specified here, which is the current production ID for "Upper Valley"
 REGION_LOCATION_ID: 77
 
+# HOST to base url's in app emails off -- e.g. "admin url" in moderate emails
+# begins with this.
+DEFAULT_HOST: nick-admin.subtextdev.org
+
 # This is a Bad temporary hack to allow filtering the sim stack provided by apiv2
 # the same way that the consumer app filters it. 
 SIM_STACK_CATEGORIES: market,talk_of_the_town,offered,wanted,for_free,recommendation,event,sale_event,discussion,local_news,business,sports,lifestyle,miscellaneous,beta_talk,lost_and_found 
