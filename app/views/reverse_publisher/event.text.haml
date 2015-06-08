@@ -17,10 +17,8 @@
 = strip_tags(clean_content)
 \
 - cost_label = cost_label(@event)
-
 - if cost_label
-  %p
-    Cost: #{cost_label}
+  Cost: #{cost_label}
 \
 - contact_string = contact_display(@event)
 - if contact_string.present?
