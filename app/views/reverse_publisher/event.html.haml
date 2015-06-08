@@ -25,9 +25,11 @@
 
 = Rinku.auto_link(@body).html_safe
 
-- if @event.cost.present?
+- cost_label = cost_label(@event)
+
+- if cost_label
   %p
-    Cost: #{@event.cost}
+    Cost: #{cost_label}
 
 - contact_string = contact_display(@event)
 - if contact_string.present?
