@@ -1,5 +1,17 @@
 module EventsHelper
 
+  def  cost_label(event_instance)
+    if event_instance.cost.present? && event_instance.cost_type.present?
+      "#{event_instance.cost_type} - #{event_instance.cost}"
+    elsif event_instance.cost.present? && !event_instance.cost_type.present?
+      "#{event_instance.cost}"
+    elsif !event_instance.cost.present? && event_instance.cost_type.present?
+      "#{event_instance.cost_type}"
+    else
+      nil
+    end
+  end
+
   def event_instance_display(event_instance)
     time_range = event_instance.start_date.strftime("%-l:%M %P")
     if event_instance.end_date.present?
