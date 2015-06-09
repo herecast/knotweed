@@ -960,7 +960,8 @@ class Content < ActiveRecord::Base
     # subsequent so those images actually display as intended and built in Wordpress.  Note that they pull the images
     # from the Wordpress media library, not our AWS store.  Leaving the links in raw_content and post-processing
     # here allows us to go back in the near future and implement a better solution for multiple images JGS 20150605
-    doc.css('a img').first.parent.remove()
+    wp_image = doc.css('a img[class*=wp-image]')
+    wp_image.first.parent.remove() if wp_image.present?
 
     doc.search("style").each {|t| t.remove() }
     doc.search('//text()').each {|t| t.content = t.content.sub(/^[^>\n]*>\p{Space}*\z/, "") } # kill tag fragments
