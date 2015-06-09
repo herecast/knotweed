@@ -48,6 +48,15 @@ describe Api::V2::CommentsController do
       assigns(:comment).content.parent.should eq(@comment1.content)
     end
 
+    it 'should automatically set publication to DailyUV' do
+      post :create, format: :json, 
+        comment: { content: 'fake', parent_comment_id: @comment1.id },
+        current_user_id: @user.id
+      response.code.should eq('201')
+      assigns(:comment).content.parent.should eq(@comment1.content)
+      assigns(:comment).publication.name.should eq('DailyUV')
+    end
+
     it 'should create a comment given an event_instance_id' do
       post :create, format: :json, current_user_id: @user.id,
         comment: { content: 'fake', event_instance_id: @event.event_instances.first.id }

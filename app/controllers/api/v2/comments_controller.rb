@@ -40,6 +40,9 @@ module Api
         # avoid mass assignment errors
         params[:comment].delete :parent_comment_id
         params[:comment].delete :event_instance_id
+
+        # hard coded publication...
+        pub = Publication.find_or_create_by_name 'DailyUV'
         
         # parse out content attributes
         params[:comment][:content_attributes] = {
@@ -49,7 +52,8 @@ module Api
           authoremail: @current_api_user.try(:email),
           authors: @current_api_user.try(:name),
           raw_content: params[:comment].delete(:content),
-          pubdate: Time.zone.now
+          pubdate: Time.zone.now,
+          publication_id: pub.id
         }
         @comment = Comment.new(params[:comment])
         if @comment.save
