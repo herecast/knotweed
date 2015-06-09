@@ -11,10 +11,10 @@
   - if @venue.email.present?
     Email: #{@venue.email}
 \
-= @event.event_url if @event.event_url.present?
-\
 - clean_content = @body.gsub("\u{a0}",'').gsub('&nbsp;', '')
 = strip_tags(clean_content)
+\
+= @event.event_url if @event.event_url.present?
 \
 - cost_label = cost_label(@event)
 - if cost_label

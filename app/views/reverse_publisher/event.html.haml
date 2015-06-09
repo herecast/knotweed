@@ -18,12 +18,13 @@
       Email:
       = Rinku.auto_link(@venue.email).html_safe
 
+%p
+  = Rinku.auto_link(@body).html_safe
+
+
 - if @event.event_url.present?
   %p
     = link_to @event.event_url.to_s, @event.event_url
-
-
-= Rinku.auto_link(@body).html_safe
 
 - cost_label = cost_label(@event)
 
