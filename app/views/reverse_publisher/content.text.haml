@@ -1,1 +1,1 @@
-= @body.html_safe
+= strip_tags(@body).gsub("&nbsp;", "").gsub("&#39;", "'").gsub("&amp;", "&").gsub("&lt;", "<").gsub("&gt;", ">")
