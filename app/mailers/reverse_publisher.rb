@@ -7,6 +7,8 @@ class ReversePublisher < ActionMailer::Base
     from = "\"#{content.authors}\" <#{content.authoremail}>"
     subject = content.title
     @body = content.raw_content
+    # custom header so that we can identify any content that already exists in our system
+    headers['X-Original-Content-Id'] = content.id
     if content.channel.nil? or content.channel.is_a? Comment # if unchannelized or comment
       headers['In-Reply-To'] = content.parent.try(:guid)
       template_name = 'content'
@@ -14,9 +16,6 @@ class ReversePublisher < ActionMailer::Base
       if consumer_app.present?
         @base_uri = consumer_app.uri
       end
-      # custom header so that we can identify events
-      # that already exist in our system as "curated" when they come back through
-      headers['X-Original-Content-Id'] = content.id
       if content.channel.is_a? Event
         @event = content.channel
         @venue = @event.venue
