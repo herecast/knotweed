@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150521215357) do
+ActiveRecord::Schema.define(:version => 20150611204541) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -119,9 +119,9 @@ ActiveRecord::Schema.define(:version => 20150521215357) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer   "channel_id"
-    t.text      "category"
-    t.timestamp "created_at", :null => false
+    t.integer  "channel_id"
+    t.text     "category"
+    t.datetime "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -239,39 +239,19 @@ ActiveRecord::Schema.define(:version => 20150521215357) do
     t.datetime "pubdate"
     t.string   "source_category"
     t.string   "topics"
-    t.text     "summary"
     t.string   "url"
     t.string   "origin"
-    t.string   "mimetype"
     t.string   "language"
-    t.string   "page"
-    t.string   "wordcount"
     t.string   "authoremail"
     t.integer  "publication_id"
-    t.string   "file"
     t.boolean  "quarantine",             :default => false
-    t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
     t.integer  "import_record_id"
     t.string   "source_content_id"
     t.integer  "parent_id"
-    t.string   "event_type"
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.string   "cost"
-    t.string   "recurrence"
-    t.text     "links"
-    t.string   "host_organization"
-    t.integer  "business_location_id"
-    t.boolean  "featured",               :default => false
     t.integer  "content_category_id"
     t.boolean  "category_reviewed",      :default => false
-    t.text     "processed_content"
-    t.string   "event_title"
-    t.text     "event_description"
-    t.string   "event_url"
-    t.string   "sponsor_url"
     t.boolean  "has_event_calendar",     :default => false
     t.integer  "channelized_content_id"
     t.boolean  "published",              :default => false
@@ -285,8 +265,6 @@ ActiveRecord::Schema.define(:version => 20150521215357) do
   add_index "contents", ["channel_type"], :name => "index_contents_on_channel_type"
   add_index "contents", ["channelized_content_id"], :name => "index_contents_on_channelized_content_id"
   add_index "contents", ["content_category_id"], :name => "content_category_id"
-  add_index "contents", ["end_date"], :name => "index_contents_on_end_date"
-  add_index "contents", ["featured"], :name => "featured"
   add_index "contents", ["guid"], :name => "guid"
   add_index "contents", ["import_location_id"], :name => "location_id"
   add_index "contents", ["import_record_id"], :name => "import_record_id"
@@ -295,7 +273,6 @@ ActiveRecord::Schema.define(:version => 20150521215357) do
   add_index "contents", ["publication_id"], :name => "source_id"
   add_index "contents", ["published"], :name => "index_contents_on_published"
   add_index "contents", ["source_category"], :name => "categories"
-  add_index "contents", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents", ["title"], :name => "title"
 
   create_table "contents_NT", :force => true do |t|
@@ -444,14 +421,12 @@ ActiveRecord::Schema.define(:version => 20150521215357) do
     t.datetime "updated_at",                        :null => false
     t.string   "contact_phone"
     t.string   "contact_email"
-    t.string   "contact_url"
     t.string   "cost_type"
     t.string   "event_category"
     t.boolean  "social_enabled", :default => false
   end
 
   add_index "events", ["featured"], :name => "index_events_on_featured"
-  add_index "events", ["venue_id"], :name => "events_on_venue_id_index"
   add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 
   create_table "front_end_builds_apps", :force => true do |t|
@@ -732,13 +707,6 @@ ActiveRecord::Schema.define(:version => 20150521215357) do
     t.datetime "updated_at",      :null => false
   end
 
-  create_table "promote_options", :force => true do |t|
-    t.string  "promo_type",            :limit => 128
-    t.string  "name",                  :limit => 128
-    t.string  "reverse_publish_email", :limit => 128
-    t.boolean "active",                               :default => true
-  end
-
   create_table "promotion_banners", :force => true do |t|
     t.string   "banner_image"
     t.string   "redirect_url"
@@ -911,15 +879,12 @@ ActiveRecord::Schema.define(:version => 20150521215357) do
     t.datetime "nda_agreed_at"
     t.boolean  "agreed_to_nda",          :default => false
     t.boolean  "admin",                  :default => false
-    t.boolean  "event_poster",           :default => false
     t.string   "contact_phone"
     t.string   "contact_email"
     t.string   "contact_url"
     t.integer  "location_id"
     t.string   "test_group"
     t.boolean  "muted",                  :default => false
-    t.string   "discussion_listserve"
-    t.integer  "view_style"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

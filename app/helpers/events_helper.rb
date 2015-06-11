@@ -74,7 +74,6 @@ module EventsHelper
     display_string = ''
     display_string += event.contact_phone + ', ' if event.contact_phone.present?
     display_string += event.contact_email + ', ' if event.contact_email.present?
-    display_string += event.contact_url + ', ' if event.contact_url.present?
     display_string.chomp!(', ')
   end
 

@@ -15,9 +15,9 @@
 #  updated_at     :datetime         not null
 #  contact_phone  :string(255)
 #  contact_email  :string(255)
-#  contact_url    :string(255)
 #  cost_type      :string(255)
 #  event_category :string(255)
+#  social_enabled :boolean          default(FALSE)
 #
 
 class Event < ActiveRecord::Base
@@ -55,7 +55,7 @@ class Event < ActiveRecord::Base
   # validates_presence_of :content_id
 
   attr_accessible :content, :cost, :event_type, :event_url, :featured,
-    :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, :contact_url,
+    :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, 
     :cost_type, :event_category, :social_enabled
 
   EVENT_CATEGORIES = [:movies, :performing_arts, :wellness, :yard_sales]
@@ -78,7 +78,7 @@ class Event < ActiveRecord::Base
 
   # normalize all "URL" fields to be well-formed url's (have an http at beginning)
   before_save do |event|
-    [:sponsor_url, :event_url, :contact_url].each do |method|
+    [:sponsor_url, :event_url].each do |method|
       if event.send(method).present?
         event.send("#{method}=", "http://#{event.send(method)}") unless event.send(method).match(/^http:\/\/.*/)
       end

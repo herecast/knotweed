@@ -17,16 +17,12 @@
 #  pubdate                :datetime
 #  source_category        :string(255)
 #  topics                 :string(255)
-#  summary                :text
 #  url                    :string(255)
 #  origin                 :string(255)
-#  mimetype               :string(255)
 #  language               :string(255)
 #  page                   :string(255)
-#  wordcount              :string(255)
 #  authoremail            :string(255)
 #  publication_id         :integer
-#  file                   :string(255)
 #  quarantine             :boolean          default(FALSE)
 #  doctype                :string(255)
 #  timestamp              :datetime
@@ -34,22 +30,8 @@
 #  import_record_id       :integer
 #  source_content_id      :string(255)
 #  parent_id              :integer
-#  event_type             :string(255)
-#  start_date             :datetime
-#  end_date               :datetime
-#  cost                   :string(255)
-#  recurrence             :string(255)
-#  links                  :text
-#  host_organization      :string(255)
-#  business_location_id   :integer
-#  featured               :boolean          default(FALSE)
 #  content_category_id    :integer
 #  category_reviewed      :boolean          default(FALSE)
-#  processed_content      :text
-#  event_title            :string(255)
-#  event_description      :text
-#  event_url              :string(255)
-#  sponsor_url            :string(255)
 #  has_event_calendar     :boolean          default(FALSE)
 #  channelized_content_id :integer
 #  published              :boolean          default(FALSE)
@@ -89,23 +71,12 @@ class Content < ActiveRecord::Base
   belongs_to :channelized_content, class_name: "Content"
   has_one :unchannelized_original, class_name: "Content", foreign_key: "channelized_content_id"
 
-  # NOTE: the code immediately below this comment IS DEPRECATED
-  # however, it cannot be removed until after the data migration
-  # moving contents to events has happened. Because of the way migrations
-  # are typically run, this code needs to stay until after the migration
-  # is deployed to production (unless we come up with a SQL-based workaround for
-  # that migration.
-  belongs_to :business_location
-  attr_accessible :cost, :start_date, :end_date, :featured, :host_organization,
-    :sponsor_url, :event_url, :recurrence, :links
-  serialize :links, Hash
-
   attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
-                :guid, :pubdate, :source_category, :topics, :summary, :url, :origin, :mimetype,
+                :guid, :pubdate, :source_category, :topics, :url, :origin, 
                 :language, :authoremail, :publication_id,
                 :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
                 :image_ids, :parent_id, :source_uri, :category,
-                :content_category_id, :category_reviewed, :raw_content, :processed_content,
+                :content_category_id, :category_reviewed, :raw_content, 
                 :sanitized_content, :channelized_content_id,
                 :has_event_calendar, :channel_type, :channel_id, :channel,
                 :location_ids
@@ -156,7 +127,7 @@ class Content < ActiveRecord::Base
   DEFAULT_PUBLISH_METHOD = PUBLISH_TO_DSP
 
   # features that can be overwritten when we reimport
-  REIMPORT_FEATURES = %w(title subtitle authors raw_content pubdate source_category topics summary
+  REIMPORT_FEATURES = %w(title subtitle authors raw_content pubdate source_category topics 
                          url authoremail import_record)
 
   CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle 
@@ -463,7 +434,6 @@ class Content < ActiveRecord::Base
   def create_recommendation_doc_from_annotations(annotations)
     rec_doc = { id: annotations['id'],
                 title: title,
-                summary: summary,
                 content: sanitized_content,
                 published: pubdate.utc.iso8601,
                 url: url,
@@ -519,7 +489,6 @@ class Content < ActiveRecord::Base
 
     graph << [RDF::URI(annotations['id']), RDF.type, pub['Document']]
     graph << [id_uri, pub['title'], title]
-    graph << [id_uri, pub['summary'], summary.nil? ? "" : summary]
     graph << [id_uri, pub['creationDate'], pubdate.utc.iso8601]
     graph << [id_uri, pub['content'], sanitized_content]
     graph << [id_uri, pub['hasCategory'], category[publish_category]]
@@ -695,9 +664,8 @@ class Content < ActiveRecord::Base
     # until after the migrations are done, so we need to exclude these nonexistent fields here
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
                "import_record_id", "published",
-               "category_reviewed", "raw_content", "processed_content",
-               "has_event_calendar").except(:cost, :start_date, :end_date, :featured, :host_organization,
-               :sponsor_url, :event_url, :recurrence, :links)
+               "category_reviewed", "raw_content",
+               "has_event_calendar")
   end
 
   # Export Gate Document directly before/after Pipeline processing
@@ -910,9 +878,8 @@ class Content < ActiveRecord::Base
     prefix pub: <http://ontology.ontotext.com/publishing#>
     PREFIX sbtxd: <#{BASE_URI}/>
 
-    select ?category ?processed_content
+    select ?category 
     where {
-      sbtxd:#{id} pub:content ?processed_content .
       OPTIONAL { sbtxd:#{id} pub:hasCategory ?category . }
     }")
     unless response[0].nil?
@@ -922,7 +889,7 @@ class Content < ActiveRecord::Base
 	    # not necessary for now.
 	    cat = response_hash[:category].to_s.split("/")[-1]
 	    cat = ContentCategory.find_or_create_by_name(cat).id unless cat.nil?
-	    update_attributes(content_category_id: cat, processed_content: response_hash[:processed_content].to_s)
+	    update_attributes(content_category_id: cat)
 		end
   end
 
@@ -1098,7 +1065,7 @@ class Content < ActiveRecord::Base
 
 
   def self.truncated_content_fields
-    [:id, :title,:featured, :links, :pubdate, :authors, :category, 
+    [:id, :title,:pubdate, :authors, :category, 
      :parent_category, :publication_name, :publication_id,
      :parent_uri, :category_reviewed, :authoremail, :subtitle]
   end

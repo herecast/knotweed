@@ -15,9 +15,9 @@
 #  updated_at     :datetime         not null
 #  contact_phone  :string(255)
 #  contact_email  :string(255)
-#  contact_url    :string(255)
 #  cost_type      :string(255)
 #  event_category :string(255)
+#  social_enabled :boolean          default(FALSE)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

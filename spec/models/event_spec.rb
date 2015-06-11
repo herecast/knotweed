@@ -15,9 +15,9 @@
 #  updated_at     :datetime         not null
 #  contact_phone  :string(255)
 #  contact_email  :string(255)
-#  contact_url    :string(255)
 #  cost_type      :string(255)
 #  event_category :string(255)
+#  social_enabled :boolean          default(FALSE)
 #
 
 require 'spec_helper'
@@ -63,11 +63,10 @@ describe Event do
 
   describe 'before_save' do
     it 'should ensure that all URL fields start with http://' do
-      @event.sponsor_url = @event.contact_url = @event.event_url = 'www.google.com'
+      @event.sponsor_url = @event.event_url = 'www.google.com'
       @event.save
       @event.reload
       @event.sponsor_url.should eq('http://www.google.com')
-      @event.contact_url.should eq('http://www.google.com')
       @event.event_url.should eq('http://www.google.com')
     end
 

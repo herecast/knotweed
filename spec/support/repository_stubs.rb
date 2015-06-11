@@ -6,17 +6,11 @@ def stub_retrieve_update_fields_from_repo(content, repo)
     <sparql xmlns='http://www.w3.org/2005/sparql-results#'>
       <head>
         <variable name='category'/>
-        <variable name='processed_content' />
       </head>
       <results>
         <result>
           <binding name='category'>
             <uri>http://data.ontotext.com/watt/Category/#{test_cat}</uri>
-          </binding>
-          <binding name='processed_content'>
-            <literal>
-              Hello
-            </literal>
           </binding>
         </result>
       </results>
