@@ -55,4 +55,13 @@ class BusinessLocation < ActiveRecord::Base
     addr
   end
 
+  def full_address
+    addr = ""
+    addr += address + ',' if address.present?
+    addr += ' ' + city if city.present?
+    addr += ' ' + state if state.present?
+    addr += ' ' + zip if zip.present?
+
+    addr
+  end
 end
