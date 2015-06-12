@@ -122,7 +122,7 @@ module Api
         params[:event][:content_attributes] = {
           raw_content: params[:event].delete(:content),
           title: params[:event].delete(:title),
-          location_ids: location_ids,
+          location_ids: location_ids.uniq,
           authoremail: @current_api_user.try(:email),
           authors: @current_api_user.try(:name),
           pubdate: Time.zone.now,
