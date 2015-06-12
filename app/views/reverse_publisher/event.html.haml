@@ -8,7 +8,7 @@
 - if @venue.present?
   %p
     = @venue.name if @venue.name.present?
-    = @venue.address if @venue.address.present?
+    = @venue.full_address if @venue.full_address.present?
     - if @venue.phone.present?
       %br
       Phone:
