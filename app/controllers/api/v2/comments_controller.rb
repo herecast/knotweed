@@ -48,7 +48,7 @@ module Api
         params[:comment][:content_attributes] = {
           title: params[:comment].delete(:title),
           parent_id: parent_id,
-          location_ids: location_ids,
+          location_ids: location_ids.uniq,
           authoremail: @current_api_user.try(:email),
           authors: @current_api_user.try(:name),
           raw_content: params[:comment].delete(:content),
@@ -57,6 +57,11 @@ module Api
         }
         @comment = Comment.new(params[:comment])
         if @comment.save
+
+          # As of Release 1.8 (first UX2 release, early June 2015), users don't have the option of
+          # publishing their comments to a list, hence no list processing here in api/v2.  But, if and
+          # when they do, this is where the processing would happen.  See api/v1/comments_controller.rb
+          # for example.
 
           if @repository.present?
             @comment.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)

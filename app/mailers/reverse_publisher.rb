@@ -9,13 +9,14 @@ class ReversePublisher < ActionMailer::Base
     @body = content.raw_content
     # custom header so that we can identify any content that already exists in our system
     headers['X-Original-Content-Id'] = content.id
+    if consumer_app.present?
+      @base_uri = consumer_app.uri
+    end
     if content.channel.nil? or content.channel.is_a? Comment # if unchannelized or comment
       headers['In-Reply-To'] = content.parent.try(:guid)
       template_name = 'content'
+      @content = content
     else # if channelized
-      if consumer_app.present?
-        @base_uri = consumer_app.uri
-      end
       if content.channel.is_a? Event
         @event = content.channel
         @venue = @event.venue

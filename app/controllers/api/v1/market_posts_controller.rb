@@ -72,9 +72,10 @@ module Api
         cat_name = params[:market_post].delete :category
         cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
 
-        # destinations for reverse publishing
+        # listservs and consumer_app for reverse publishing
         listserv_ids = params[:market_post].delete :listserv_ids
-        
+        consumer_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
+
         location_ids = params[:market_post].delete(:location_ids).select{ |id| id.present? }.map{ |id| id.to_i }
 
         # TODO: there has got to be a better way! but I tried simply piping the image straight through
@@ -112,7 +113,7 @@ module Api
             listserv_ids.each do |d|
               next if d.empty?
               list = Listserv.find(d.to_i)
-              PromotionListserv.create_from_content(@market_post.content, list) if list.present? and list.active
+              PromotionListserv.create_from_content(@market_post.content, list, consumer_app) if list.present? and list.active
             end
           end
 

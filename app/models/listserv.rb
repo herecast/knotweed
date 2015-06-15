@@ -20,4 +20,18 @@ class Listserv < ActiveRecord::Base
   validates_uniqueness_of :reverse_publish_email
   
   default_scope { where active: true }
+
+  # Sends the content to this listserv using ReversePublishMailer,
+  # and adds a content_location record for the content using
+  # the listserv's location
+  def send_content_to_listserv(content, consumer_app=nil)
+    ReversePublisher.send_content_to_reverse_publishing_email(content, self, consumer_app).deliver
+    ReversePublisher.send_copy_to_sender_from_dailyuv(content, self).deliver
+    if self.locations.present?
+      self.locations.each do |l|
+        content.locations << l unless content.locations.include? l
+      end
+    end
+  end
+
 end

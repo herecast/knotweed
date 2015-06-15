@@ -149,6 +149,7 @@ module Api
 
         # destinations for reverse publishing
         listserv_ids = params[:content].delete :listserv_ids
+        consumer_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
 
         location_ids = params[:content].delete :location_ids
         if location_ids.present?
@@ -173,7 +174,7 @@ module Api
             listserv_ids.each do |d|
               next if d.empty?
               list = Listserv.find(d.to_i)
-              PromotionListserv.create_from_content(@content, list) if list.present? and list.active
+              PromotionListserv.create_from_content(@content, list, consumer_app) if list.present? and list.active
             end
           end
           # regular publishing to DSP

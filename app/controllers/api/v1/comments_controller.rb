@@ -20,6 +20,7 @@ module Api
 
         # destinations for reverse publishing
         listserv_ids = params[:content].delete :listserv_ids
+        consumer_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
 
         location_ids = params[:content].delete :location_ids
         location_ids.select!{ |l| l.present? } if location_ids.present?
@@ -51,7 +52,7 @@ module Api
         content_record['content_category_id'] = cat.id
         content_record['publication_id'] = pub.id
         content_record['pubdate'] = content_record['timestamp'] = Time.zone.now
-        content_record['location_ids'] = location_ids if location_ids.present?
+        content_record['location_ids'] = location_ids.uniq if location_ids.present?
         content_record['parent_id'] = params[:content].delete :parent_id if params[:content][:parent_id].present?
 
         # create the new comment and the associated content record
@@ -64,7 +65,7 @@ module Api
             listserv_ids.each do |d|
               next if d.empty?
               list = Listserv.find(d.to_i)
-              PromotionListserv.create_from_content(@comment.content, list) if list.present? and list.active
+              PromotionListserv.create_from_content(@comment.content, list, consumer_app) if list.present? and list.active
             end
           end
 
