@@ -7,7 +7,7 @@
   = f.input :controller, collection: Message::CONTROLLER_OPTIONS, include_blank: false,
     hint: "Specify which module of the consumer app the message should display in."
   = f.input :action, collection: Message::ACTION_OPTIONS, include_blank: true,
-    hint: "Specify which action it should display on. 'Edit' only corresponds to user accounts at this point. 'weekender', 'wellness' and 'family' actions only apply to the events controller. 'local_content', 'subserve', 'tott', correspond to the contents controller. Leaving this blank will make the message show on all pages belonging to that module -- e.g. the events calendar AND event detail pages."
+    hint: "Specify which action it should display on. 'Edit' only corresponds to user accounts at this point. 'local_content', 'subserve' and 'tott' correspond to the contents controller. NOTE: use 'local_content' for News and 'subserve' for landing page.  Leaving this blank will make the message show on all pages belonging to that module -- e.g. the market listing AND market detail pages."
   = f.input :content, input_html: { class: "input-block-level", rows: 5 },
     hint: "The actual message to display to users. This can include HTML."
   .form-actions
