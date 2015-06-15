@@ -18,7 +18,6 @@ module Api
 
           # have to duplicate a lot of the non-search logic here because Sphinx doesn't
           # allow us to use activerecord scopes
-          #
           opts[:conditions].merge!({published: 1}) if params[:repository].present?
 
           if @requesting_app.present?
@@ -34,6 +33,8 @@ module Api
             allowed_cats = ContentCategory.find_with_children(name: params[:categories]).collect{|c| c.id}
             opts[:with].merge!({:cat_ids => allowed_cats})
           end
+
+          opts[:conditions].merge!({channelized_content_id: nil}) # note, that's how sphinx stores NULL
 
           # this is another query param that allows API users to search for entries
           # in publication_locations OR locations
@@ -54,7 +55,6 @@ module Api
             end
           end
 
-          opts[:conditions].merge!({channelized_content_id: nil}) # note, that's how sphinx stores NULL
 
           @contents = Content.search query, opts
           @contents.context[:panes] << ThinkingSphinx::Panes::WeightPane
@@ -67,8 +67,8 @@ module Api
           else
             @contents = Content
           end
-          # exclude channelized content from all content api queries
-          @contents = @contents.where("channelized_content_id IS NULL")
+          # exclude event content
+          @contents = @contents.where("channel_type != 'Event' or channel_type IS NULL")
 
           @contents = @contents.includes(:publication).includes(:content_category).includes(:images)
 
