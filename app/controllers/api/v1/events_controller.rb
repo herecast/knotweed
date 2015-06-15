@@ -83,7 +83,6 @@ module Api
 
         # listservs and consumer_app for reverse publishing
         listservs = params[:event].delete :listserv_ids
-        consumer_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
 
         location_ids = params[:event].delete(:location_ids).select{ |id| id.present? }.map{ |id| id.to_i }
 
@@ -125,7 +124,7 @@ module Api
             listservs.each do |d|
               next if d.empty?
               list = Listserv.find(d.to_i)
-              PromotionListserv.create_from_content(@event.content, list, consumer_app) if list.present? and list.active
+              PromotionListserv.create_from_content(@event.content, list, @requesting_app) if list.present? and list.active
             end
           end
 

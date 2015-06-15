@@ -26,7 +26,6 @@ module Api
             # listservs for reverse publishing -- not included in process_event_params!
             # because update doesn't include listserv publishing
             listservs = params[:event].delete :listserv_ids
-            consumer_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
 
             process_event_params!
             
@@ -36,7 +35,7 @@ module Api
                 listservs.each do |d|
                   next unless d.present?
                   list = Listserv.find(d.to_i)
-                  PromotionListserv.create_from_content(@event.content, list, consumer_app) if list.present? and list.active
+                  PromotionListserv.create_from_content(@event.content, list, @requesting_app) if list.present? and list.active
                 end
               end
 
@@ -60,7 +59,6 @@ module Api
         # listservs for reverse publishing -- not included in process_event_params!
         # because update doesn't include listserv publishing
         listservs = params[:event].delete :listserv_ids
-        consumer_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
 
         # hard coded publication...
         pub = Publication.find_or_create_by_name 'DailyUV'
@@ -76,7 +74,7 @@ module Api
             listservs.each do |d|
               next unless d.present?
               list = Listserv.find(d.to_i)
-              PromotionListserv.create_from_content(@event.content, list, consumer_app) if list.present? and list.active
+              PromotionListserv.create_from_content(@event.content, list, @requesting_app) if list.present? and list.active
             end
           end
 

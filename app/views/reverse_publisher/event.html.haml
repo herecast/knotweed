@@ -52,7 +52,7 @@
 
 %p
   - if @base_uri.present?
-    - url = "#{@base_uri}/events/#{@event.content.id}/#{@event.event_instances.first.id}"
+    - url = "#{@base_uri}/events/#{@event.event_instances.first.id}"
   - else
     - url = "http://www.dailyuv.com/events"
 
