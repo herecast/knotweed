@@ -35,7 +35,7 @@ module Api
                 listservs.each do |d|
                   next unless d.present?
                   list = Listserv.find(d.to_i)
-                  PromotionListserv.create_from_content(@event.content, list) if list.present? and list.active
+                  PromotionListserv.create_from_content(@event.content, list, @requesting_app) if list.present? and list.active
                 end
               end
 
@@ -74,7 +74,7 @@ module Api
             listservs.each do |d|
               next unless d.present?
               list = Listserv.find(d.to_i)
-              PromotionListserv.create_from_content(@event.content, list) if list.present? and list.active
+              PromotionListserv.create_from_content(@event.content, list, @requesting_app) if list.present? and list.active
             end
           end
 

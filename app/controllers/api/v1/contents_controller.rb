@@ -173,7 +173,7 @@ module Api
             listserv_ids.each do |d|
               next if d.empty?
               list = Listserv.find(d.to_i)
-              PromotionListserv.create_from_content(@content, list) if list.present? and list.active
+              PromotionListserv.create_from_content(@content, list, @requesting_app) if list.present? and list.active
             end
           end
           # regular publishing to DSP

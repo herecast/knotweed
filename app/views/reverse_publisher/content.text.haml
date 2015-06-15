@@ -1,1 +1,8 @@
 = strip_tags(@body).gsub("&nbsp;", "").gsub("&#39;", "'").gsub("&amp;", "&").gsub("&lt;", "<").gsub("&gt;", ">")
+\
+- if @base_uri.present?
+  - url = "#{@base_uri}/contents/#{@content.id}"
+- else
+  - url = "http://www.dailyuv.com/contents/#{@content.id}"
+\
+= 'See a full threaded discussion on ' + url
