@@ -81,7 +81,7 @@ module Api
         cat_name = params[:event].delete :category
         cat = ContentCategory.find_or_create_by_name(cat_name) unless cat_name.nil?
 
-        # listservs and consumer_app for reverse publishing
+        # listservs for reverse publishing
         listservs = params[:event].delete :listserv_ids
 
         location_ids = params[:event].delete(:location_ids).select{ |id| id.present? }.map{ |id| id.to_i }
