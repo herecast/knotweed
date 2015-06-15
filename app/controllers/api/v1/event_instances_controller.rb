@@ -14,17 +14,6 @@ module Api
           @event_instances = EventInstance.includes(event: [{content: :images}, :venue])
           #@event_instances = EventInstance.includes(event: [:venue])
           @event_instances = @event_instances.joins(event: [:content]).where("contents.published = 1") if params[:repository].present?
-          # don't return featured events unless they're requested
-          if params[:featured].present?
-            @event_instances = @event_instances.where('events.featured = true')
-          elsif !params[:include_featured].present?
-            @event_instances = @event_instances.where(events: { featured: false })
-          end
-        end
-
-        # removing the "featured_events" api call because it doesn't make sense
-        if params[:featured].present?
-          @event_instances = @event_instances.where('events.featured = true')
         end
 
         # location filtering
