@@ -45,6 +45,11 @@ module Api
 
         @contents = @content.similar_content(@repository, 20)
 
+        # filter by publication
+        if @requesting_app.present?
+          @contents.select!{ |c| @requesting_app.publications.include? c.publication }
+        end
+
         # This is a Bad temporary hack to allow filtering the sim stack provided by apiv2
         # the same way that the consumer app filters it. 
         if Figaro.env.respond_to? :sim_stack_categories
