@@ -219,10 +219,16 @@ module Api
           render json: {}
         else
           @banner = PromotionBanner.for_content(promoted_content.id).active.first
-          @banner.impression_count += 1
-          @banner.save
-          render json: { banner: @banner.banner_image.url, 
-                         target_url: @banner.redirect_url, content_id: promoted_content.id }
+          unless @banner.present? # banner must've expired or been used up since repo last updated
+            # so we need to trigger repo update
+            PromotionBanner.remove_promotion(@repo, promoted_content.id)
+            render json: {}
+          else
+            @banner.impression_count += 1
+            @banner.save
+            render json: { banner: @banner.banner_image.url, 
+                           target_url: @banner.redirect_url, content_id: promoted_content.id }
+          end
         end
       end
 

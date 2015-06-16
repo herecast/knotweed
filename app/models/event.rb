@@ -18,6 +18,7 @@
 #  contact_url    :string(255)
 #  cost_type      :string(255)
 #  event_category :string(255)
+#  social_enabled :boolean          default(FALSE)
 #
 
 class Event < ActiveRecord::Base

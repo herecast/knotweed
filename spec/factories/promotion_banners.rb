@@ -2,11 +2,16 @@
 #
 # Table name: promotion_banners
 #
-#  id           :integer          not null, primary key
-#  banner_image :string(255)
-#  redirect_url :string(255)
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
+#  id               :integer          not null, primary key
+#  banner_image     :string(255)
+#  redirect_url     :string(255)
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  campaign_start   :datetime
+#  campaign_end     :datetime
+#  max_impressions  :integer
+#  impression_count :integer          default(0)
+#  click_count      :integer          default(0)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

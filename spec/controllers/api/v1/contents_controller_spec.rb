@@ -25,6 +25,16 @@ describe Api::V1::ContentsController do
       @pb.reload.impression_count.should eq(count+1)
     end
 
+    describe 'with an expired banner' do
+      before do
+        PromotionBanner.stub(:remove_promotion).with(@repo, @promoted_content.id)
+      end
+      it 'should render an empty response' do
+        @pb.update_attribute :campaign_end, 5.minutes.ago
+        subject
+        assigns(:banner).should eq(nil)
+      end
+    end
 
   end
 

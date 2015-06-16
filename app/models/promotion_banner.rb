@@ -2,11 +2,16 @@
 #
 # Table name: promotion_banners
 #
-#  id           :integer          not null, primary key
-#  banner_image :string(255)
-#  redirect_url :string(255)
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
+#  id               :integer          not null, primary key
+#  banner_image     :string(255)
+#  redirect_url     :string(255)
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  campaign_start   :datetime
+#  campaign_end     :datetime
+#  max_impressions  :integer
+#  impression_count :integer          default(0)
+#  click_count      :integer          default(0)
 #
 
 class PromotionBanner < ActiveRecord::Base
@@ -69,6 +74,18 @@ class PromotionBanner < ActiveRecord::Base
 
   def remove_promotion(repo)
     query = File.read('./lib/queries/remove_active_promo.rq') % {content_id: promotion.content.id}
+    if repo.graphdb_endpoint.present?
+      sparql = ::SPARQL::Client.new repo.graphdb_endpoint
+      sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
+    else
+      sparql = ::SPARQL::Client.new repo.sesame_endpoint
+      sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
+    end
+  end
+
+  # same as above method but called without a promotion
+  def self.remove_promotion(repo, content_id)
+    query = File.read('./lib/queries/remove_active_promo.rq') % {content_id: content_id}
     if repo.graphdb_endpoint.present?
       sparql = ::SPARQL::Client.new repo.graphdb_endpoint
       sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })

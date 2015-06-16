@@ -10,6 +10,7 @@
 #  description_override :text
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
+#  delta                :boolean          default(TRUE), not null
 #
 
 require 'spec_helper'
