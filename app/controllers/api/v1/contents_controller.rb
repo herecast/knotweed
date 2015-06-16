@@ -227,7 +227,9 @@ module Api
             @banner.impression_count += 1
             @banner.save
             render json: { banner: @banner.banner_image.url, 
-                           target_url: @banner.redirect_url, content_id: promoted_content.id }
+                           target_url: @banner.redirect_url, 
+                           content_id: promoted_content.id,
+                           banner_id: @banner.id }
           end
         end
       end

@@ -34,7 +34,8 @@ module Api
             render json:  { related_promotion:
               { 
                 image_url: @banner.banner_image.url, 
-                redirect_url: @banner.redirect_url
+                redirect_url: @banner.redirect_url,
+                banner_id: @banner.id
               }
             }
           end
