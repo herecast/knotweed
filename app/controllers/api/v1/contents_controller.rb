@@ -210,17 +210,19 @@ module Api
         @repo = Repository.find_by_dsp_endpoint(params[:repository])
         begin
           promoted_content_id = @content.get_related_promotion(@repo)
-          new_content = Content.find promoted_content_id
+          promoted_content = Content.find promoted_content_id
         rescue
-          new_content = nil
+          promoted_content = nil
         end
 
-        if new_content.nil?
+        if promoted_content.nil?
           render json: {}
         else
-          promo = new_content.promotions.where(active: true, promotable_type: 'PromotionBanner').first
-          render json: { banner: promo.promotable.banner_image.url, 
-                         target_url: promo.promotable.redirect_url, content_id: new_content.id }
+          @banner = PromotionBanner.for_content(promoted_content.id).active.first
+          @banner.impression_count += 1
+          @banner.save
+          render json: { banner: @banner.banner_image.url, 
+                         target_url: @banner.redirect_url, content_id: promoted_content.id }
         end
       end
 

@@ -15,5 +15,9 @@ FactoryGirl.define do
   factory :promotion_banner do
     promotion
     redirect_url "http://www.google.com"
+    campaign_start 1.day.ago
+    campaign_end 1.day.from_now
+    max_impressions 100
+    impression_count 0
   end
 end

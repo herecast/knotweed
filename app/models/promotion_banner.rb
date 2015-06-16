@@ -12,17 +12,31 @@
 class PromotionBanner < ActiveRecord::Base
   has_one :promotion, as: :promotable
 
-  attr_accessible :banner_image, :redirect_url, :remove_banner, :banner_cache
+  attr_accessible :banner_image, :redirect_url, :remove_banner, :banner_cache,
+    :campaign_start, :campaign_end, :max_impressions, :impression_count,
+    :click_count
 
   mount_uploader :banner_image, ImageUploader
 
   UPLOAD_ENDPOINT = "/statements"
 
   after_save :update_active_promotions
-  before_destroy { |record| record.active = false; true }
+  before_destroy { |record| record.promotion.update_attribute :active, false; true }
   after_destroy :update_active_promotions
 
   validates_presence_of :promotion
+
+  # this scope combines all conditions to determine whether a promotion banner is active
+  # NOTE: we need the select clause or else the "joins" causes the scope to return 
+  # readonly records.
+  scope :active, includes(:promotion)
+    .where('promotions.active = ?', true)
+    .where('campaign_start <= ? OR campaign_start IS NULL', DateTime.now)
+    .where('campaign_end >= ? OR campaign_end IS NULL', DateTime.now)
+    .where('(impression_count < max_impressions OR max_impressions IS NULL)')
+
+  # query promotion banners by content
+  scope :for_content, lambda { |content_id| joins(:promotion).where('promotions.content_id = ?', content_id) }
 
   def update_active_promotions
     if promotion.content.present?
@@ -52,7 +66,6 @@ class PromotionBanner < ActiveRecord::Base
       sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
     end
   end
-
 
   def remove_promotion(repo)
     query = File.read('./lib/queries/remove_active_promo.rq') % {content_id: promotion.content.id}
