@@ -16,20 +16,29 @@ module Api
 
         begin
           promoted_content_id = @content.get_related_promotion(@repository)
-          new_content = Content.find promoted_content_id
+          promoted_content = Content.find promoted_content_id
         rescue
-          new_content = nil
+          promoted_content = nil
         end
-        if new_content.nil?
+        if promoted_content.nil?
           render json: {}
         else
-          promo = new_content.promotions.where(active: true, promotable_type: 'PromotionBanner').first
-          render json:  { related_promotion:
-            { 
-              image_url: promo.promotable.banner_image.url, 
-              redirect_url: promo.promotable.redirect_url
+          @banner = PromotionBanner.for_content(promoted_content.id).active.first
+          unless @banner.present? # banner must've expired or been used up since repo last updated
+            # so we need to trigger repo update
+            PromotionBanner.remove_promotion(@repo, promoted_content.id)
+            render json: {}
+          else
+            @banner.impression_count += 1
+            @banner.save
+            render json:  { related_promotion:
+              { 
+                image_url: @banner.banner_image.url, 
+                redirect_url: @banner.redirect_url,
+                banner_id: @banner.id
+              }
             }
-          }
+          end
         end
 
       end
