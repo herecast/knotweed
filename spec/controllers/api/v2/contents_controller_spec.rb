@@ -8,6 +8,7 @@ describe Api::V2::ContentsController do
   describe 'GET related_promotion' do
     before do
       @event = FactoryGirl.create :event
+      @content = @event.content
       @related_content = FactoryGirl.create(:content)
       Promotion.any_instance.stub(:update_active_promotions).and_return(true)
       @promo = FactoryGirl.create :promotion, content: @related_content
@@ -26,6 +27,23 @@ describe Api::V2::ContentsController do
       count = @pb.impression_count
       subject
       @pb.reload.impression_count.should eq(count+1)
+    end
+
+    describe 'logging content displayed with' do
+
+      it 'should create a ContentPromotionBannerImpression record if none exists' do
+        subject
+        ContentPromotionBannerImpression.count.should eq(1)
+        ContentPromotionBannerImpression.first.content_id.should eq(@content.id)
+        ContentPromotionBannerImpression.first.promotion_banner_id.should eq(@pb.id)
+      end
+
+      it 'should increment the ContentPromotionBannerImpression display count if a record exists' do
+        cpbi = FactoryGirl.create :content_promotion_banner_impression, content_id: @content.id, promotion_banner_id: @pb.id
+        subject
+        cpbi.reload.display_count.should eq(2)
+      end
+      
     end
 
   end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150616160313) do
+ActiveRecord::Schema.define(:version => 20150617190900) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -204,6 +204,16 @@ ActiveRecord::Schema.define(:version => 20150616160313) do
   end
 
   add_index "content_categories_publications", ["content_category_id", "publication_id"], :name => "index_on_content_category_id_and_publication_id"
+
+  create_table "content_promotion_banner_impressions", :force => true do |t|
+    t.integer  "content_id"
+    t.integer  "promotion_banner_id"
+    t.integer  "display_count",       :default => 1
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+  end
+
+  add_index "content_promotion_banner_impressions", ["content_id", "promotion_banner_id"], :name => "content_promotion_banner_impression", :unique => true
 
   create_table "content_sets", :force => true do |t|
     t.string   "import_method"

@@ -224,6 +224,7 @@ module Api
             PromotionBanner.remove_promotion(@repo, promoted_content.id)
             render json: {}
           else
+            ContentPromotionBannerImpression.log_impression(@content.id, @banner.id)
             @banner.impression_count += 1
             @banner.save
             render json: { banner: @banner.banner_image.url, 
