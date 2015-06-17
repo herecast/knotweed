@@ -22,7 +22,7 @@ describe Api::V2::ContentsController do
       response.code.should eq('200')
     end
 
-    it 'should iterate the impression count of the banner' do
+    it 'should increment the impression count of the banner' do
       count = @pb.impression_count
       subject
       @pb.reload.impression_count.should eq(count+1)
