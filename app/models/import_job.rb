@@ -268,7 +268,7 @@ class ImportJob < ActiveRecord::Base
     original_content_id = article['X-Original-Content-Id'] if article.has_key? 'X-Original-Content-Id'
     if original_content_id > 0
       c = Content.find(original_content_id)
-      filtered = ('MarketPost' == c.channel_type) if c.present?
+      filtered = c.present?
     end
     filtered
   end
