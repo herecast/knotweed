@@ -1,4 +1,4 @@
-= strip_tags(@body).gsub("&nbsp;", "").gsub("&#39;", "'").gsub("&amp;", "&").gsub("&lt;", "<").gsub("&gt;", ">")
+= raw strip_tags(@body)
 \
 - if @base_uri.present?
   - url = "#{@base_uri}/contents/#{@content.id}"

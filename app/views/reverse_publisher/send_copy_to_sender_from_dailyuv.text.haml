@@ -1,4 +1,4 @@
 Here’s what you just posted from DailyUV.com:
 = ""
 
-= strip_tags(@body).gsub("&nbsp;", "").gsub("&#39;", "'").gsub("&amp;", "&").gsub("&lt;", "<").gsub("&gt;", ">")
+= raw strip_tags(@body)
