@@ -4,7 +4,7 @@ attrs = [:id, :title, :pubdate, :authors, :category, :parent_category, :publicat
 json.content content.sanitized_content
 
 if content.channel_type == "Event"
-  # this is a shitty hack to allow us to redirect to events
+  # this is an awkward  hack to allow us to redirect to events
   # from the similarity stack on consumer side,
   # where we have no knowledge of instances
   json.first_instance_id content.channel.event_instances.first.id
