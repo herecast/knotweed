@@ -11,15 +11,23 @@ describe Api::V2::ContentsController do
       @related_content = FactoryGirl.create(:content)
       Promotion.any_instance.stub(:update_active_promotions).and_return(true)
       @promo = FactoryGirl.create :promotion, content: @related_content
-      @banner = FactoryGirl.create :promotion_banner, promotion: @promo
+      @pb = FactoryGirl.create :promotion_banner, promotion: @promo
       Content.any_instance.stub(:get_related_promotion).and_return(@related_content.id)
     end
 
+    subject { get :related_promotion, format: :json, event_id: @event.id, repository_id: @repo.id }
+
     it 'has 200 status code' do
-      get :related_promotion, format: :json, 
-        event_id: @event.id, repository_id: @repo.id
+      subject
       response.code.should eq('200')
     end
+
+    it 'should increment the impression count of the banner' do
+      count = @pb.impression_count
+      subject
+      @pb.reload.impression_count.should eq(count+1)
+    end
+
   end
 
   describe 'GET similar_content' do

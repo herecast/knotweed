@@ -80,13 +80,6 @@ describe Api::V1::EventInstancesController do
       assigns(:event_instances).should == [e1,e3,e2].map{ |e| e.event_instances.first }
     end
 
-    it "should not return featured events unless specified" do
-      e1 = FactoryGirl.create :event, featured: true
-      e2 = FactoryGirl.create :event, featured: false
-      subject
-      assigns(:event_instances).should == [e2.event_instances.first]
-    end
-
     it "should filter by contents.published if repository is specified" do
       events = FactoryGirl.create_list(:event, 3, published: false)
       events[0].content.update_attribute :published, true

@@ -842,7 +842,7 @@ class Content < ActiveRecord::Base
 
   # used for the DSP to determine whether there is a promotion banner
   def has_active_promotion?
-    promotions.where(active: true, promotable_type: 'PromotionBanner').count > 0
+    PromotionBanner.for_content(id).active.count > 0
   end
 
   def has_active_promotion

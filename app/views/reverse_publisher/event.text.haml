@@ -5,14 +5,13 @@
 \
 - if @venue.present?
   = @venue.name if @venue.name.present?
-  = @venue.address if @venue.address.present?
+  = @venue.full_address if @venue.full_address.present?
   - if @venue.phone.present?
     Phone: #{@venue.phone}
   - if @venue.email.present?
     Email: #{@venue.email}
 \
-- clean_content = @body.gsub("\u{a0}",'').gsub('&nbsp;', '')
-= strip_tags(clean_content)
+= raw strip_tags(@body)
 \
 = @event.event_url if @event.event_url.present?
 \
@@ -32,7 +31,7 @@
     #{k}: #{v}
 \
 - if @base_uri.present?
-  - url = "#{@base_uri}/events/#{@event.content.id}/#{@event.event_instances.first.id}"
+  - url = "#{@base_uri}/events/#{@event.event_instances.first.id}"
 - else
   - url = "http://www.dailyuv.com/events"
 \

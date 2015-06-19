@@ -18,7 +18,6 @@ module Api
 
           # have to duplicate a lot of the non-search logic here because Sphinx doesn't
           # allow us to use activerecord scopes
-          #
           opts[:conditions].merge!({published: 1}) if params[:repository].present?
 
           if @requesting_app.present?
@@ -34,6 +33,8 @@ module Api
             allowed_cats = ContentCategory.find_with_children(name: params[:categories]).collect{|c| c.id}
             opts[:with].merge!({:cat_ids => allowed_cats})
           end
+
+          opts[:conditions].merge!({channelized_content_id: nil}) # note, that's how sphinx stores NULL
 
           # this is another query param that allows API users to search for entries
           # in publication_locations OR locations
@@ -54,7 +55,6 @@ module Api
             end
           end
 
-          opts[:conditions].merge!({channelized_content_id: nil}) # note, that's how sphinx stores NULL
 
           @contents = Content.search query, opts
           @contents.context[:panes] << ThinkingSphinx::Panes::WeightPane
@@ -67,8 +67,8 @@ module Api
           else
             @contents = Content
           end
-          # exclude channelized content from all content api queries
-          @contents = @contents.where("channelized_content_id IS NULL")
+          # exclude event content
+          @contents = @contents.where("channel_type != 'Event' or channel_type IS NULL")
 
           @contents = @contents.includes(:publication).includes(:content_category).includes(:images)
 
@@ -173,7 +173,7 @@ module Api
             listserv_ids.each do |d|
               next if d.empty?
               list = Listserv.find(d.to_i)
-              PromotionListserv.create_from_content(@content, list) if list.present? and list.active
+              PromotionListserv.create_from_content(@content, list, @requesting_app) if list.present? and list.active
             end
           end
           # regular publishing to DSP
@@ -210,17 +210,27 @@ module Api
         @repo = Repository.find_by_dsp_endpoint(params[:repository])
         begin
           promoted_content_id = @content.get_related_promotion(@repo)
-          new_content = Content.find promoted_content_id
+          promoted_content = Content.find promoted_content_id
         rescue
-          new_content = nil
+          promoted_content = nil
         end
 
-        if new_content.nil?
+        if promoted_content.nil?
           render json: {}
         else
-          promo = new_content.promotions.where(active: true, promotable_type: 'PromotionBanner').first
-          render json: { banner: promo.promotable.banner_image.url, 
-                         target_url: promo.promotable.redirect_url, content_id: new_content.id }
+          @banner = PromotionBanner.for_content(promoted_content.id).active.first
+          unless @banner.present? # banner must've expired or been used up since repo last updated
+            # so we need to trigger repo update
+            PromotionBanner.remove_promotion(@repo, promoted_content.id)
+            render json: {}
+          else
+            @banner.impression_count += 1
+            @banner.save
+            render json: { banner: @banner.banner_image.url, 
+                           target_url: @banner.redirect_url, 
+                           content_id: promoted_content.id,
+                           banner_id: @banner.id }
+          end
         end
       end
 

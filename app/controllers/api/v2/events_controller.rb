@@ -35,7 +35,7 @@ module Api
                 listservs.each do |d|
                   next unless d.present?
                   list = Listserv.find(d.to_i)
-                  PromotionListserv.create_from_content(@event.content, list) if list.present? and list.active
+                  PromotionListserv.create_from_content(@event.content, list, @requesting_app) if list.present? and list.active
                 end
               end
 
@@ -74,7 +74,7 @@ module Api
             listservs.each do |d|
               next unless d.present?
               list = Listserv.find(d.to_i)
-              PromotionListserv.create_from_content(@event.content, list) if list.present? and list.active
+              PromotionListserv.create_from_content(@event.content, list, @requesting_app) if list.present? and list.active
             end
           end
 
@@ -122,7 +122,7 @@ module Api
         params[:event][:content_attributes] = {
           raw_content: params[:event].delete(:content),
           title: params[:event].delete(:title),
-          location_ids: location_ids,
+          location_ids: location_ids.uniq,
           authoremail: @current_api_user.try(:email),
           authors: @current_api_user.try(:name),
           pubdate: Time.zone.now,
