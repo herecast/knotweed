@@ -219,7 +219,7 @@ class Content < ActiveRecord::Base
       else
         key = k
       end
-      if ['image', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories', 'source_field'].include? key
+      if ['image', 'images', 'content_category', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories', 'source_field'].include? key
         special_attrs[key] = v if v.present?
       elsif key == 'listserv_locations'
         data['location_ids'] = Location.get_ids_from_location_strings(v)
@@ -295,6 +295,9 @@ class Content < ActiveRecord::Base
     if special_attrs.has_key? "categories"
       content.source_category = special_attrs['categories']
     end
+    if special_attrs.has_key? 'content_category'
+      content.category = special_attrs['content_category']
+    end
     if special_attrs.has_key? "in_reply_to"
       content.parent = Content.find_by_guid(special_attrs["in_reply_to"])
     end
@@ -345,6 +348,22 @@ class Content < ActiveRecord::Base
       image_attrs[:credit] = special_attrs["imagecredit"] if special_attrs.has_key? "imagecredit"
       content.images.create(image_attrs)
     end
+
+    # handle multiple images (initially from Wordpress import parser)
+    if special_attrs.has_key? 'images'
+      # CarrierWave validation should take care of validating this for us
+      images = special_attrs['images']
+      images.each do | img |
+        image_attrs = {
+            remote_image_url: img['image'],
+            source_url: img['image']
+        }
+        image_attrs[:caption] = img['imagecaption'] if img.has_key? 'imagecaption'
+        image_attrs[:credit] = img['imagecredit'] if img.has_key? 'imagecredit'
+        content.images.create(image_attrs)
+      end
+    end
+
 
     content
   end
@@ -927,8 +946,7 @@ class Content < ActiveRecord::Base
     # subsequent so those images actually display as intended and built in Wordpress.  Note that they pull the images
     # from the Wordpress media library, not our AWS store.  Leaving the links in raw_content and post-processing
     # here allows us to go back in the near future and implement a better solution for multiple images JGS 20150605
-    wp_image = doc.css('a img[class*=wp-image]')
-    wp_image.first.parent.remove() if wp_image.present?
+    process_wp_content(doc)
 
     doc.search("style").each {|t| t.remove() }
     doc.search('//text()').each {|t| t.content = t.content.sub(/^[^>\n]*>\p{Space}*\z/, "") } # kill tag fragments
@@ -989,7 +1007,7 @@ class Content < ActiveRecord::Base
     doc.search("br").each {|e| remove_dup_newlines.call(e) }
     c = doc.search("body").first.to_html unless doc.search("body").first.nil?
     c ||= doc.to_html
-    c = sanitize(c, tags: %w(span img a p br h1 h2 h3 h4 h5 h6 strong table td tr th ul ol li))
+    c = sanitize(c, tags: %w(span img a p br h1 h2 h3 h4 h5 h6 strong em table td tr th ul ol li))
     c = simple_format c
     c.gsub!(/(<a href="http[^>]*)>/, '\1 target="_blank">')
 
@@ -1016,6 +1034,32 @@ class Content < ActiveRecord::Base
 
     c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "<br />")
     c.gsub(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
+  end
+
+  def process_wp_content(doc)
+
+    wp_images = doc.css('a img[class*=wp-image]')
+    return if wp_images.empty?
+
+    # our code already displays the first image, so just pull it from the content.
+    wp_images.first.parent.remove()
+
+    # get the remaining images
+    wp_images = doc.css('a img[class*=wp-image]')
+    return if wp_images.empty?
+
+    bucket = Figaro.env.aws_bucket_name
+
+    wp_images.each do |img|
+      # rewrite img src URL.  This has to be done here because we don't know the content_id when
+      # the parser is run by import_job#traverse_input_tree.
+      imgName = File.basename(img['src'])
+      img['src'] = "https://#{bucket}.s3.amazonaws.com/content/#{self.id}/" + imgName
+
+      # for now, remove the enclosing <a> </a> tags
+      img.parent.replace(img)
+    end
+
   end
 
   def sanitized_content= new_content
