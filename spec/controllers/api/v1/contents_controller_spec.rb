@@ -25,6 +25,24 @@ describe Api::V1::ContentsController do
       @pb.reload.impression_count.should eq(count+1)
     end
 
+    describe 'logging content displayed with' do
+
+      it 'should create a ContentPromotionBannerImpression record if none exists' do
+        subject
+        ContentPromotionBannerImpression.count.should eq(1)
+        ContentPromotionBannerImpression.first.content_id.should eq(@content.id)
+        ContentPromotionBannerImpression.first.promotion_banner_id.should eq(@pb.id)
+      end
+
+      it 'should increment the ContentPromotionBannerImpression display count if a record exists' do
+        cpbi = FactoryGirl.create :content_promotion_banner_impression, content_id: @content.id, promotion_banner_id: @pb.id
+        subject
+        cpbi.reload.display_count.should eq(2)
+      end
+      
+    end
+
+
     describe 'with an expired banner' do
       before do
         PromotionBanner.stub(:remove_promotion).with(@repo, @promoted_content.id)

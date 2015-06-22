@@ -20,6 +20,10 @@ class Promotion < ActiveRecord::Base
 
   belongs_to :promotable, polymorphic: true, inverse_of: :promotion
 
+  # NOTE: this relationship is not identifying contents that it promotes,
+  # but rather, contents that it is shown with on the consumer site.
+  has_many :contents, through: :content_promotion_banner_impressions
+
   # TODO: At some point we probably want to lock this down a bit more so it's not so easy to attach 
   # promotions to any content/publication
   attr_accessible :active, :description, :content, :publication,
