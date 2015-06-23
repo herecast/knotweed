@@ -13,12 +13,22 @@ class ContentsController < ApplicationController
       session[:contents_search] = params[:q]
     end
 
-    session[:contents_search][:channel_type_in_or_channel_type_null] = ['Comment'] if session[:contents_search].present?
-    
-    @search = Content.ransack(session[:contents_search])
+    shared_context = Ransack::Context.for(Content)
+    @search = Content.ransack(
+      { channel_type_null: 1 }.merge(session[:contents_search]), 
+      context: shared_context)
+    search_comments = Content.ransack(
+      { channel_type_eq: 'Comment' }.merge(session[:contents_search]), 
+      context: shared_context)
+
+    shared_conditions = [@search, search_comments].map { |search|
+      Ransack::Visitor.new.accept(search.base)
+    }
 
     if session[:contents_search].present?
-      @contents = @search.result(distinct: true).order("pubdate DESC").page(params[:page]).per(100)
+      @contents = Content.joins(shared_context.join_sources)
+        .where(shared_conditions.reduce(&:or))
+        .order("pubdate DESC").page(params[:page]).per(100)
       @contents = @contents.accessible_by(current_ability)
     else
       @contents = []
