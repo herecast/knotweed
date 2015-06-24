@@ -102,9 +102,9 @@ module Api
           if params[:all_locations].present?
             locs = params[:all_locations].map{ |l| l.to_i }
             loc_string = locs.map{ |l| l.to_s }.join(',')
-            @contents = @contents.joins('left join contents_locations cl on contents.id = cl.content_id')
+            @contents = @contents.joins("left join contents_locations cl on contents.id = cl.content_id and cl.location_id in (#{loc_string})")
               .joins("left join locations_publications lp on lp.publication_id = contents.publication_id and lp.location_id in (#{loc_string})")
-              .where('cl.location_id in (?) OR lp.location_id in (?)', locs, locs) 
+              #.where('cl.location_id in (?) OR lp.location_id in (?)', locs, locs)
           else
             if params[:locations].present?
               locations = params[:locations].map{ |l| l.to_i } # avoid SQL injection
