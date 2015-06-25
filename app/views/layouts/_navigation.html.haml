@@ -212,10 +212,21 @@
             %i.icon-plus
             %span Create New
 - if can? :read, Parser
-  %li{ class: "#{controller_name == "parsers" ? "active" : "" }" } 
+  %li
     = link_to parsers_path do
       %i.icon-book
       %span Parsers/Parameters
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == 'parsers' ? 'in' : '' }" }
+      %li{ class: current_page?(parsers_path) ? 'active' : ''}
+        = link_to parsers_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, Parser
+        %li{ class: current_page?(new_parser_path) ? "active" : "" }
+          = link_to new_parser_path do
+            %i.icon-plus
+            %span Create New
 - if can? :manage, User
   %li{ class: "#{controller_name == "users" ? "active" : "" }" }
     = link_to users_path do
