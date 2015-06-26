@@ -15,10 +15,10 @@ class ContentsController < ApplicationController
 
     shared_context = Ransack::Context.for(Content)
     @search = Content.ransack(
-      { channel_type_null: 1 }.merge(session[:contents_search]), 
+      { channel_type_null: 1 }.merge(session[:contents_search] || {}),
       context: shared_context)
     search_comments = Content.ransack(
-      { channel_type_eq: 'Comment' }.merge(session[:contents_search]), 
+      { channel_type_eq: 'Comment' }.merge(session[:contents_search] || {}),
       context: shared_context)
 
     shared_conditions = [@search, search_comments].map { |search|
