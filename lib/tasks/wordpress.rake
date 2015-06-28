@@ -42,7 +42,7 @@ namespace :wordpress do
 
     # get the posts
     options = {blog_id: BLOG_ID, username: USERNAME, password: PASSWORD}
-    p_opts = options.merge(filter: {post_status: 'publish', number: '150'})
+    p_opts = options.merge(filter: {post_status: 'publish', number: '300'})
     wp_posts = wpcl.getPosts(p_opts)
 
     retPosts = wp_posts.count
