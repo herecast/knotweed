@@ -99,7 +99,12 @@ class ImportJob < ActiveRecord::Base
     # we can include the logic for selecting what branch to descend (scrape, parse, etc.) here as it 
     # is defined
     if parser.present?
-      traverse_input_tree
+      log = last_import_record.log_file
+      if Time.now > ImportJob.backup_start and Time.now < ImportJob.backup_end
+        log.info("#{Time.now}: skipping #{job_type} job: #{name} during backup")
+      else
+        traverse_input_tree
+      end
     end
   end
   
@@ -186,10 +191,13 @@ class ImportJob < ActiveRecord::Base
       end
       # hacky trick to stop continuous jobs during backup time
       if Time.now > ImportJob.backup_start and Time.now < ImportJob.backup_end
-        # then update stop_loop attribute to break out of the cycle
-        update_attribute :stop_loop, true
-        # first, schedule the job to run again at 7:45 am.
-        enqueue_job(ImportJob.backup_end)
+        if job_type == CONTINUOUS
+          log.info("#{Time.now}: deferring continuous job: #{name} during backup")
+          # then update stop_loop attribute to break out of the cycle
+          update_attribute :stop_loop, true
+          # first, schedule the job to run again at 7:45 am.
+          enqueue_job(ImportJob.backup_end)
+        end
       end
       self.reload
       break if self.stop_loop
