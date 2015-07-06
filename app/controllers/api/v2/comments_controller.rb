@@ -43,6 +43,9 @@ module Api
 
         # hard coded publication...
         pub = Publication.find_or_create_by_name 'DailyUV'
+
+        # hard code category
+        cat = ContentCategory.find_or_create_by_name 'talk_of_the_town'
         
         # parse out content attributes
         params[:comment][:content_attributes] = {
@@ -54,6 +57,7 @@ module Api
           raw_content: params[:comment].delete(:content),
           pubdate: Time.zone.now,
           publication_id: pub.id
+          content_category_id: cat.id
         }
         @comment = Comment.new(params[:comment])
         if @comment.save
