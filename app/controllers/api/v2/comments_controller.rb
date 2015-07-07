@@ -56,7 +56,7 @@ module Api
           authors: @current_api_user.try(:name),
           raw_content: params[:comment].delete(:content),
           pubdate: Time.zone.now,
-          publication_id: pub.id
+          publication_id: pub.id,
           content_category_id: cat.id
         }
         @comment = Comment.new(params[:comment])
