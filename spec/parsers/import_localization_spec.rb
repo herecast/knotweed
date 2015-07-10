@@ -19,8 +19,8 @@ describe 'localize listserve imports' do
     parsed_emails = convert_eml_to_hasharray(eml, @config)
 
     parsed_emails[0]['source'].include?('Listserv').should == true
-    parsed_emails[0]['listserv_locations'].length.should == 1
-    parsed_emails[0]['listserv_locations'].include?('Norwich,VT') == true
+    parsed_emails[0]['content_locations'].length.should == 1
+    parsed_emails[0]['content_locations'].include?('Norwich,VT') == true
 
   end
 
@@ -29,9 +29,9 @@ describe 'localize listserve imports' do
     eml = Mail.read(@test_files_path+"/norwich_thetford.txt")
     parsed_emails = convert_eml_to_hasharray(eml, @config)
 
-    parsed_emails[0]['listserv_locations'].length.should == 2
-    parsed_emails[0]['listserv_locations'].include?('Norwich,VT').should == true
-    parsed_emails[0]['listserv_locations'].include?('Thetford,VT').should == true
+    parsed_emails[0]['content_locations'].length.should == 2
+    parsed_emails[0]['content_locations'].include?('Norwich,VT').should == true
+    parsed_emails[0]['content_locations'].include?('Thetford,VT').should == true
   end
 
   it 'read entry to hanover' do
@@ -39,8 +39,8 @@ describe 'localize listserve imports' do
     eml = Mail.read(@test_files_path+"/hanover.txt")
     parsed_emails = convert_eml_to_hasharray(eml, @config)
 
-    parsed_emails[0]['listserv_locations'].length.should == 1
-    parsed_emails[0]['listserv_locations'].include?('Hanover,NH').should == true
+    parsed_emails[0]['content_locations'].length.should == 1
+    parsed_emails[0]['content_locations'].include?('Hanover,NH').should == true
 
   end
 
@@ -49,8 +49,8 @@ describe 'localize listserve imports' do
     eml = Mail.read(@test_files_path+"/woodstock.txt")
     parsed_emails = convert_eml_to_hasharray(eml, @config)
 
-    parsed_emails[0]['listserv_locations'].length.should == 1
-    parsed_emails[0]['listserv_locations'].include?('Woodstock,VT').should == true
+    parsed_emails[0]['content_locations'].length.should == 1
+    parsed_emails[0]['content_locations'].include?('Woodstock,VT').should == true
 
   end
 
@@ -59,8 +59,8 @@ describe 'localize listserve imports' do
     eml = Mail.read(@test_files_path+"/lebanon.txt")
     parsed_emails = convert_eml_to_hasharray(eml, @config)
 
-    parsed_emails[0]['listserv_locations'].length.should == 1
-    parsed_emails[0]['listserv_locations'].include?('Lebanon,NH').should == true
+    parsed_emails[0]['content_locations'].length.should == 1
+    parsed_emails[0]['content_locations'].include?('Lebanon,NH').should == true
 
   end
 
@@ -69,8 +69,8 @@ describe 'localize listserve imports' do
     eml = Mail.read(@test_files_path+"/thetford.txt")
     parsed_emails = convert_eml_to_hasharray(eml, @config)
 
-    parsed_emails[0]['listserv_locations'].length.should == 1
-    parsed_emails[0]['listserv_locations'].include?('Thetford,VT').should == true
+    parsed_emails[0]['content_locations'].length.should == 1
+    parsed_emails[0]['content_locations'].include?('Thetford,VT').should == true
 
   end
 
@@ -79,9 +79,9 @@ describe 'localize listserve imports' do
     eml = Mail.read(@test_files_path+"/lrn.txt")
     parsed_emails = convert_eml_to_hasharray(eml, @config)
 
-    parsed_emails[0]['listserv_locations'].length.should == 2
-    parsed_emails[0]['listserv_locations'].include?('Corinth,VT').should == true
-    parsed_emails[0]['listserv_locations'].include?('Topsham,VT').should == true
+    parsed_emails[0]['content_locations'].length.should == 2
+    parsed_emails[0]['content_locations'].include?('Corinth,VT').should == true
+    parsed_emails[0]['content_locations'].include?('Topsham,VT').should == true
   end
 
   it 'read entry to mascoma and others' do
@@ -89,18 +89,18 @@ describe 'localize listserve imports' do
     eml = Mail.read(@test_files_path+"/mascoma_plus.txt")
     parsed_emails = convert_eml_to_hasharray(eml, @config)
 
-    parsed_emails[0]['listserv_locations'].length.should == 10
-    parsed_emails[0]['listserv_locations'].include?('Enfield,NH').should == true
-    parsed_emails[0]['listserv_locations'].include?('Canaan,NH').should == true
-    parsed_emails[0]['listserv_locations'].include?('Dorchester,NH').should == true
-    parsed_emails[0]['listserv_locations'].include?('Grafton,NH').should == true
-    parsed_emails[0]['listserv_locations'].include?('Orange,NH').should == true
-    parsed_emails[0]['listserv_locations'].include?('Thetford,VT').should == true
-    parsed_emails[0]['listserv_locations'].include?('Norwich,VT').should == true
-    parsed_emails[0]['listserv_locations'].include?('Hanover,NH').should == true
-    parsed_emails[0]['listserv_locations'].include?('Lebanon,NH').should == true
-    parsed_emails[0]['listserv_locations'].include?('Hartford,VT').should == true
-    parsed_emails[0]['listserv_locations'].include?('Upper Valley,').should == false
+    parsed_emails[0]['content_locations'].length.should == 10
+    parsed_emails[0]['content_locations'].include?('Enfield,NH').should == true
+    parsed_emails[0]['content_locations'].include?('Canaan,NH').should == true
+    parsed_emails[0]['content_locations'].include?('Dorchester,NH').should == true
+    parsed_emails[0]['content_locations'].include?('Grafton,NH').should == true
+    parsed_emails[0]['content_locations'].include?('Orange,NH').should == true
+    parsed_emails[0]['content_locations'].include?('Thetford,VT').should == true
+    parsed_emails[0]['content_locations'].include?('Norwich,VT').should == true
+    parsed_emails[0]['content_locations'].include?('Hanover,NH').should == true
+    parsed_emails[0]['content_locations'].include?('Lebanon,NH').should == true
+    parsed_emails[0]['content_locations'].include?('Hartford,VT').should == true
+    parsed_emails[0]['content_locations'].include?('Upper Valley,').should == false
 
   end
 
@@ -109,8 +109,8 @@ describe 'localize listserve imports' do
     eml = Mail.read(@test_files_path+"/strafford.txt")
     parsed_emails = convert_eml_to_hasharray(eml, @config)
 
-    parsed_emails[0]['listserv_locations'].length.should == 1
-    parsed_emails[0]['listserv_locations'].include?('Strafford,VT').should == true
+    parsed_emails[0]['content_locations'].length.should == 1
+    parsed_emails[0]['content_locations'].include?('Strafford,VT').should == true
 
   end
 
@@ -119,7 +119,7 @@ describe 'localize listserve imports' do
     eml = Mail.read(@test_files_path+"/unknown_address.txt")
     parsed_emails = convert_eml_to_hasharray(eml, @config)
 
-    parsed_emails[0]['listserv_locations'].length.should == 0
+    parsed_emails[0]['content_locations'].length.should == 0
   end
 
 

@@ -727,8 +727,8 @@ describe Content do
       parsed_emails = convert_eml_to_hasharray(eml, @config)
 
       parsed_emails[0]['source'].include?('Listserv').should == true
-      parsed_emails[0]['listserv_locations'].length.should == 1
-      parsed_emails[0]['listserv_locations'].include?('Norwich,VT').should == true
+      parsed_emails[0]['content_locations'].length.should == 1
+      parsed_emails[0]['content_locations'].include?('Norwich,VT').should == true
 
       content = Content.create_from_import_job(parsed_emails[0])
       Content.count.should== 1
@@ -741,7 +741,7 @@ describe Content do
       parsed_emails = convert_eml_to_hasharray(eml, @config)
 
       parsed_emails[0]['source'].include?('Listserv').should == true
-      parsed_emails[0]['listserv_locations'].length.should == 2
+      parsed_emails[0]['content_locations'].length.should == 2
 
       content = Content.create_from_import_job(parsed_emails[0])
       Content.count.should== 1

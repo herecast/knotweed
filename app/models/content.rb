@@ -225,7 +225,7 @@ class Content < ActiveRecord::Base
       end
       if ['image', 'images', 'content_category', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories', 'source_field'].include? key
         special_attrs[key] = v if v.present?
-      elsif key == 'listserv_locations'
+      elsif key == 'content_locations'
         data['location_ids'] = Location.get_ids_from_location_strings(v)
       elsif v.present?
         data[key] = v
@@ -344,6 +344,8 @@ class Content < ActiveRecord::Base
     # because we don't want to create the images if the content doesn't save.
     if special_attrs.has_key? "image"
       # CarrierWave validation should take care of validating this for us
+      content.create_or_update_image(special_attrs['image'], special_attrs['imagecaption'], special_attrs['imagecredit'])
+=begin
       image_attrs = {
         remote_image_url: special_attrs["image"],
         source_url: special_attrs["image"]
@@ -351,6 +353,7 @@ class Content < ActiveRecord::Base
       image_attrs[:caption] = special_attrs["imagecaption"] if special_attrs.has_key? "imagecaption"
       image_attrs[:credit] = special_attrs["imagecredit"] if special_attrs.has_key? "imagecredit"
       content.images.create(image_attrs)
+=end
     end
 
     # handle multiple images (initially from Wordpress import parser)
@@ -358,18 +361,27 @@ class Content < ActiveRecord::Base
       # CarrierWave validation should take care of validating this for us
       images = special_attrs['images']
       images.each do | img |
-        image_attrs = {
-            remote_image_url: img['image'],
-            source_url: img['image']
-        }
-        image_attrs[:caption] = img['imagecaption'] if img.has_key? 'imagecaption'
-        image_attrs[:credit] = img['imagecredit'] if img.has_key? 'imagecredit'
-        content.images.create(image_attrs)
+        content.create_or_update_image(img['image'], img['imagecaption'], img['imagecredit'])
       end
     end
 
-
     content
+  end
+
+  def create_or_update_image(url, caption, credit)
+    # do we already have this image?
+    current_image = Image.find_by_imageable_id_and_source_url(id, url)
+    image_attrs = {
+        remote_image_url: url,
+        source_url: url
+    }
+    image_attrs[:caption] = caption if caption.present?
+    image_attrs[:credit] = credit if credit.present?
+    if current_image.present?
+      images.update(current_image.id, image_attrs)
+    else
+      images.create(image_attrs)
+    end
   end
 
   # check that doc validates our xml requirements
@@ -1011,11 +1023,11 @@ class Content < ActiveRecord::Base
     doc.search("br").each {|e| remove_dup_newlines.call(e) }
     c = doc.search("body").first.to_html unless doc.search("body").first.nil?
     c ||= doc.to_html
-    c = sanitize(c, tags: %w(span img a p br h1 h2 h3 h4 h5 h6 strong em table td tr th ul ol li))
+    c = sanitize(c, tags: %w(span div img a p br h1 h2 h3 h4 h5 h6 strong em table td tr th ul ol li))
     c = simple_format c
     c.gsub!(/(<a href="http[^>]*)>/, '\1 target="_blank">')
 
-    BLACKLIST_BLOCKS.each do |b| 
+    BLACKLIST_BLOCKS.each do |b|
       if /^\/(.*)\/([a-z]*)$/ =~ b.strip
         match = $~
         opts = 0
@@ -1030,7 +1042,7 @@ class Content < ActiveRecord::Base
           end
         end
         b = Regexp.new match[1], opts
-      else 
+      else
         b = b.strip
       end
       c.gsub!(b, "")
@@ -1040,30 +1052,36 @@ class Content < ActiveRecord::Base
     c.gsub(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
   end
 
+
   def process_wp_content(doc)
 
-    wp_images = doc.css('a img[class*=wp-image]')
+    # if record hasn't been saved yet, no point in doing this processing because we need the id.
+    return if self.id.nil?
+
+    #wp_images = doc.css('a img[class*=wp-image]')
+    wp_images = doc.css('img')
     return if wp_images.empty?
 
     # our code already displays the first image, so just pull it from the content.
-    wp_images.first.parent.remove()
+    wp_images.first.remove()
 
     # get the remaining images
-    wp_images = doc.css('a img[class*=wp-image]')
+    wp_images = doc.css('img')
     return if wp_images.empty?
 
     bucket = Figaro.env.aws_bucket_name
 
-    wp_images.each do |img|
+    doc.css('img').each do |img|
       # rewrite img src URL.  This has to be done here because we don't know the content_id when
       # the parser is run by import_job#traverse_input_tree.
       imgName = File.basename(img['src'])
       img['src'] = "https://#{bucket}.s3.amazonaws.com/content/#{self.id}/" + imgName
 
-      # for now, remove the enclosing <a> </a> tags
-      img.parent.replace(img)
+      img_caption = Image.find_by_imageable_id_and_image(self.id, imgName).caption
+      if img_caption
+        img.add_next_sibling("<div class=\"image-caption\"><p>#{img_caption}</p></div>")
+      end
     end
-
   end
 
   def sanitized_content= new_content
