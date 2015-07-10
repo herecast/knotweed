@@ -24,7 +24,7 @@ describe 'parse upper valley list files' do
     results.should_not == nil
     results.each do |post|
         post['source'].should == 'Listserv'
-        post['listserv_locations'][0].should == 'Upper Valley,'
+        post['content_locations'][0].should == 'Upper Valley,'
     end
 
   end
