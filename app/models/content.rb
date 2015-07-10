@@ -345,15 +345,6 @@ class Content < ActiveRecord::Base
     if special_attrs.has_key? "image"
       # CarrierWave validation should take care of validating this for us
       content.create_or_update_image(special_attrs['image'], special_attrs['imagecaption'], special_attrs['imagecredit'])
-=begin
-      image_attrs = {
-        remote_image_url: special_attrs["image"],
-        source_url: special_attrs["image"]
-      }
-      image_attrs[:caption] = special_attrs["imagecaption"] if special_attrs.has_key? "imagecaption"
-      image_attrs[:credit] = special_attrs["imagecredit"] if special_attrs.has_key? "imagecredit"
-      content.images.create(image_attrs)
-=end
     end
 
     # handle multiple images (initially from Wordpress import parser)
