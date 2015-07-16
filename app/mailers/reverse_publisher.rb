@@ -6,7 +6,7 @@ class ReversePublisher < ActionMailer::Base
     to = listserv.reverse_publish_email
     from = "\"#{content.authors}\" <#{content.authoremail}>"
     subject = content.title
-    @body = content.raw_content
+    @body = content.raw_content_for_text_email
     # custom header so that we can identify any content that already exists in our system
     headers['X-Original-Content-Id'] = content.id
     if consumer_app.present?
@@ -31,7 +31,7 @@ class ReversePublisher < ActionMailer::Base
 
   def send_copy_to_sender_from_dailyuv(content, publication)
     headers['In-Reply-To'] = content.parent.try(:guid)
-    @body = content.raw_content
+    @body = content.raw_content_for_text_email
     mail(from: "noreply@dailyuv.com",
          to: content.authoremail,
          subject: content.title)

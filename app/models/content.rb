@@ -926,7 +926,16 @@ class Content < ActiveRecord::Base
     end
   end
 
-
+  # cleans raw_content for text emails
+  #
+  # @return string with HTML tags and escaped spaces (&nbsp;) removed and hyperlinks changed to text surrounded by ()
+  def raw_content_for_text_email
+    return raw_content if raw_content.nil?
+    # strip all tags but <a> and their href attributes and translate &nbsp; to space
+    text = sanitize(raw_content, {tags: %w(a), attributes: %w(href)}).gsub(/&nbsp;/, ' ')
+    # now rewrite <a href=http://...>xxx</a> to xxx (http://xxx)
+    text.gsub(/\<a.*?href\=['"](?<href>.*?)['"]\>(?<target>.*?)\<\/a\>/, '\k<target> (\k<href>)')
+  end
 
   # Creates HTML-annotated, sanitized version of the raw_content that should be
   # as display-ready as possible
