@@ -42,9 +42,9 @@ class Location < ActiveRecord::Base
       city_state = location_string.split(",")
       if city_state.present?
         if city_state[1].present?
-          location = Location.where(city: city_state[0], state: city_state[1]).first
+          location = Location.where(city: city_state[0].strip, state: city_state[1].strip).first
         else
-          location = Location.where(city: city_state[0]).first
+          location = Location.where(city: city_state[0].strip).first
         end
         location_ids.push(location.id)
       end
