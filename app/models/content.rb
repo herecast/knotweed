@@ -225,7 +225,7 @@ class Content < ActiveRecord::Base
       end
       if ['image', 'images', 'content_category', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories', 'source_field'].include? key
         special_attrs[key] = v if v.present?
-      elsif key == 'content_locations'
+      elsif key == 'listserv_locations' || key == 'content_locations'
         data['location_ids'] = Location.get_ids_from_location_strings(v)
       elsif v.present?
         data[key] = v
@@ -1018,7 +1018,7 @@ class Content < ActiveRecord::Base
     c = simple_format c
     c.gsub!(/(<a href="http[^>]*)>/, '\1 target="_blank">')
 
-    BLACKLIST_BLOCKS.each do |b|
+    BLACKLIST_BLOCKS.each do |b| 
       if /^\/(.*)\/([a-z]*)$/ =~ b.strip
         match = $~
         opts = 0
@@ -1033,7 +1033,7 @@ class Content < ActiveRecord::Base
           end
         end
         b = Regexp.new match[1], opts
-      else
+      else 
         b = b.strip
       end
       c.gsub!(b, "")
@@ -1056,10 +1056,6 @@ class Content < ActiveRecord::Base
     # our code already displays the first image, so just pull it from the content.
     wp_images.first.remove()
 
-    # get the remaining images
-    wp_images = doc.css('img')
-    return if wp_images.empty?
-
     bucket = Figaro.env.aws_bucket_name
 
     doc.css('img').each do |img|
@@ -1068,11 +1064,11 @@ class Content < ActiveRecord::Base
       imgName = File.basename(img['src'])
       img['src'] = "https://#{bucket}.s3.amazonaws.com/content/#{self.id}/" + imgName
 
-      img_caption = Image.find_by_imageable_id_and_image(self.id, imgName).caption
-      if img_caption
-        img.add_next_sibling("<div class=\"image-caption\"><p>#{img_caption}</p></div>")
-      end
+      image = Image.find_by_imageable_id_and_image(self.id, imgName)
+      img_caption = image.caption if image.present?
+      img.add_next_sibling("<div class=\"image-caption\"><p>#{img_caption}</p></div>") if img_caption.present?
     end
+
   end
 
   def sanitized_content= new_content
