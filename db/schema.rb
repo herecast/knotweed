@@ -11,8 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-
-ActiveRecord::Schema.define(:version => 20150619204541) do
+ActiveRecord::Schema.define(:version => 20150717120351) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -727,10 +726,11 @@ ActiveRecord::Schema.define(:version => 20150619204541) do
     t.integer  "publication_id"
     t.integer  "content_id"
     t.text     "description"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
     t.integer  "promotable_id"
     t.string   "promotable_type"
+    t.boolean  "paid",            :default => false
   end
 
   add_index "promotions", ["content_id"], :name => "index_promotions_on_content_id"

@@ -32,6 +32,9 @@
         %p
           %b Target URL:
           = link_to nil, @promotion.promotable.redirect_url
+        %p
+          %b Paid:
+          = @promotion.paid
       - elsif @promotion.promotable.is_a? PromotionListserv
         %p
           %b Listserv:
