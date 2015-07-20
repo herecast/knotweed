@@ -20,7 +20,7 @@ namespace :wordpress do
     end
 
     HOST = 'dailyuv.net'
-    USERNAME = 'jgstephe'
+    USERNAME = 'testuser'
     PASSWORD = 'jgs4sbtx'
     USESSL = false
 
@@ -30,6 +30,7 @@ namespace :wordpress do
 
     # find the blog_id and the path to the xmlrpc file
     blogEntry = blogs.select{|b| b['blogName'] == blogTitle}[0]
+    blog_url = blogEntry['url']
     BLOG_ID = blogEntry['blogid']
     hostLen = blogEntry['xmlrpc'].index(HOST)+HOST.length
     PATH = blogEntry['xmlrpc'][hostLen..-1]
@@ -37,7 +38,7 @@ namespace :wordpress do
     # reset the client to the correct path
     wpcl = Rubypress::Client.new(host: HOST, path: PATH, username: USERNAME, password: PASSWORD, use_ssl: USESSL)
 
-    numProcessed = 0
+    num_processed = 0
     content_category_id = ContentCategory.find_by_name('local_news').id
 
     # get the posts
@@ -62,7 +63,7 @@ namespace :wordpress do
       end
 
       # parse the WP post hash into a Content object
-      wp = newContentFromWP(blogTitle, wp_post, pub, content_category_id)
+      wp = newContentFromWP(blogTitle, wp_post, pub, content_category_id, blog_url)
 
       output = ''
       if wp.save
@@ -80,14 +81,14 @@ namespace :wordpress do
       end
 
       puts output
-      numProcessed += 1
+      num_processed += 1
     end
-    puts "Retrieved #{retPosts} posts, processed #{numProcessed}."
+    puts "Retrieved #{retPosts} posts, processed #{num_processed}."
 
     exit 0
   end
 
-  def newContentFromWP(blogTitle, wp_post, pub, content_category_id)
+  def newContentFromWP(blogTitle, wp_post, pub, content_category_id, blog_url)
     wp = Content.new
 
     wp.contentsource = blogTitle
@@ -98,6 +99,7 @@ namespace :wordpress do
 
     wp.title = wp_post['post_title']
     wp.guid = wp_post['guid']
+    wp.url = blog_url + "?p=#{wp_post['post_id']}"
     wp.raw_content = wp_post['post_content']
     wp.pubdate = wp_post['post_date'].to_time
 
@@ -165,6 +167,106 @@ namespace :wordpress do
 
   end
 
+  desc "Reimport dailyUV"
+  task reimport: :environment do
+    blogTitle = 'dailyUV'
+
+    HOST = 'dailyuv.net'
+    USERNAME = 'jgstephe'
+    PASSWORD = 'jgs4sbtx'
+    USESSL = false
+    # set up a client to the multisite root to get the list of blogs (for the specified user)
+    wpcl = Rubypress::Client.new(host: HOST, username: USERNAME, password: PASSWORD, use_ssl: USESSL)
+    blogs = wpcl.getUsersBlogs
+
+    # find the blog_id and the path to the xmlrpc file
+    blogEntry = blogs.select{|b| b['blogName'] == blogTitle}[0]
+    blog_url = blogEntry['url']
+    BLOG_ID = blogEntry['blogid']
+    hostLen = blogEntry['xmlrpc'].index(HOST)+HOST.length
+    PATH = blogEntry['xmlrpc'][hostLen..-1]
+
+    # reset the client to the correct path
+    wpcl = Rubypress::Client.new(host: HOST, path: PATH, username: USERNAME, password: PASSWORD, use_ssl: USESSL)
+
+    num_processed = 0
+    content_category_id = ContentCategory.find_by_name('local_news').id
+
+    # get the posts
+    options = {blog_id: BLOG_ID, username: USERNAME, password: PASSWORD}
+    p_opts = options.merge(filter: {post_status: 'publish', number: '500'})
+    wp_posts = wpcl.getPosts(p_opts)
+
+    retPosts = wp_posts.count
+    found = updated = failed = norwich = lebanon = hartford = 0
+
+    loc_norwich = Location.find_by_city('Norwich')
+    loc_lebanon = Location.find_by_city('Lebanon')
+    loc_hartford = Location.find_by_city('Hartford')
+
+    unrecognized_posts = []
+
+    # process all the posts
+    wp_posts.each do |wp_post|
+
+      # do we already have this entry?
+      existing_content = Content.find_by_title_and_pubdate(wp_post['post_title'], wp_post['post_date'].to_time)
+      if existing_content
+        puts "'#{wp_post['post_title']}' (#{wp_post['guid']}) already in database at #{existing_content.id}"
+        found += 1
+        existing_content.guid = wp_post['guid']
+        existing_content.url = blog_url + "?p=#{wp_post['post_id']}"
+        existing_content.origin = 'Wordpress Parser'
+        # reset the publication if it's dailyUV-Norwich
+        if existing_content.publication_id == 469 # 469 -> dailyUV-Norwich
+          existing_content.publication_id = 398 # dailyUV
+          existing_content.locations = [loc_norwich]
+          puts "  changed dailyUV-Norwich to dailyUV"
+          norwich += 1
+        end
+        if existing_content.publication_id == 456 # 456 -> dailyUV-Lebanon
+          existing_content.publication_id = 398 # dailyUV
+          existing_content.locations = [loc_lebanon]
+          puts "  changed dailyUV-Lebanon to dailyUV"
+          lebanon += 1
+        end
+        if existing_content.publication_id == 476 # 476 -> dailyUV-Norwich
+          existing_content.publication_id = 398 # dailyUV
+          existing_content.locations = [loc_hartford]
+          puts "  changed dailyUV-Hartford to dailyUV"
+          hartford += 1
+        end
+        if existing_content.save
+          puts "  updated record"
+          updated += 1
+        else
+          puts "  SAVE FAILED for #{wp_post['post_title']}"
+          failed += 1
+        end
+
+        next
+      else
+        # not found, record info
+        unrecognized_posts << wp_post
+      end
+
+      if wp_post['post_date'].to_time > Time.now
+        puts "'#{wp_post['post_title']}' (#{wp_post['guid']}) is scheduled for the future (#{wp_post['post_date']})."
+        next
+      end
+
+      num_processed += 1
+
+    end
+    puts "Retrieved #{retPosts} posts, found #{found}, updated #{updated}, failed #{failed}."
+    puts "Changed #{norwich} Norwich, #{lebanon} Lebanon, #{hartford} Hartford"
+    puts "\nUnpublished Posts\n\n"
+    pp unrecognized_posts.map{|p| p['post_id'] + ':' + p['post_title'] + ' ' + p['post_date'].to_time.to_s + ' ' + p['guid']}
+
+    exit 0
+
+  end
+
   desc "Import a Wordpress post"
   task importone: :environment do
 
@@ -192,6 +294,7 @@ namespace :wordpress do
 
     # find the blog_id and the path to the xmlrpc file
     blogEntry = blogs.select{|b| b['blogName'] == blogTitle}[0]
+    blog_url = blogEntry['url']
     BLOG_ID = blogEntry['blogid']
     hostLen = blogEntry['xmlrpc'].index(HOST)+HOST.length
     PATH = blogEntry['xmlrpc'][hostLen..-1]
@@ -207,7 +310,7 @@ namespace :wordpress do
     p_opts = options.merge(post_id: POST_ID)
     wp_post = wpcl.getPost(p_opts)
 
-    wp = newContentFromWP(blogTitle, wp_post, pub, content_category_id)
+    wp = newContentFromWP(blogTitle, wp_post, pub, content_category_id, blog_url)
 
     output = ''
     if wp.save
