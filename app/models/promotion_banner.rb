@@ -40,6 +40,13 @@ class PromotionBanner < ActiveRecord::Base
     .where('campaign_end >= ? OR campaign_end IS NULL', DateTime.now)
     .where('(impression_count < max_impressions OR max_impressions IS NULL)')
 
+  # this scope combines all conditions to determine whether a promotion banner is paid
+  # NOTE: for now, we're just concerned with 'paid' and 'active' being true - will eventually
+  # other conditions (campaign start/end, inventory)
+  scope :paid, includes(:promotion)
+    .where('promotions.paid = ?', true)
+    .where('promotions.active = ?', true)
+
   # query promotion banners by content
   scope :for_content, lambda { |content_id| joins(:promotion).where('promotions.content_id = ?', content_id) }
 
@@ -49,8 +56,11 @@ class PromotionBanner < ActiveRecord::Base
       # only to go back to the content's promotions...but in the interest
       # of code continuity, this allows us to change the logic in just once place
       # (Content.has_active_promotion?) that determines this.
+      # Extended this to include updating 'paid' promos.
       has_active_promo = promotion.content.has_active_promotion?
+      has_paid_promo = promotion.content.has_paid_promotion?
 
+      # update each repo storing content
       promotion.content.repositories.each do |r|
         if has_active_promo
           PromotionBanner.mark_active_promotion(promotion.content, r)
@@ -58,41 +68,53 @@ class PromotionBanner < ActiveRecord::Base
           remove_promotion(r)
         end
       end
+      # update 'hasPaidPromotion' flag
+      promotion.content.repositories.each do |r|
+        if has_paid_promo
+          PromotionBanner.mark_paid_promotion(promotion.content, r)
+        else
+          remove_paid_promotion(r)
+        end
+      end
     end
   end
 
   def self.mark_active_promotion(content, repo)
     query = File.read('./lib/queries/add_active_promo.rq') % {content_id: content.id}
-    if repo.graphdb_endpoint.present?
-      sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-      sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
-    else
-      sparql = ::SPARQL::Client.new repo.sesame_endpoint
-      sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
-    end
+    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
+    sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
   end
 
   def remove_promotion(repo)
     query = File.read('./lib/queries/remove_active_promo.rq') % {content_id: promotion.content.id}
-    if repo.graphdb_endpoint.present?
-      sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-      sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
-    else
-      sparql = ::SPARQL::Client.new repo.sesame_endpoint
-      sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
-    end
+    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
+    sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
   end
 
   # same as above method but called without a promotion
   def self.remove_promotion(repo, content_id)
     query = File.read('./lib/queries/remove_active_promo.rq') % {content_id: content_id}
-    if repo.graphdb_endpoint.present?
-      sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-      sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
-    else
-      sparql = ::SPARQL::Client.new repo.sesame_endpoint
-      sparql.update(query, { endpoint: repo.sesame_endpoint + UPLOAD_ENDPOINT })
-    end
+    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
+    sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
   end
-  
+
+  def self.mark_paid_promotion(content, repo)
+    query = File.read('./lib/queries/add_paid_promo.rq') % {content_id: content.id}
+    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
+    sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
+  end
+
+  def remove_paid_promotion(repo)
+    query = File.read('./lib/queries/remove_paid_promo.rq') % {content_id: promotion.content.id}
+    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
+    sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
+  end
+
+  # same as above method but called without a promotion
+  def self.remove_paid_promotion(repo, content_id)
+    query = File.read('./lib/queries/remove_paid_promo.rq') % {content_id: content_id}
+    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
+    sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
+  end
+
 end

@@ -606,6 +606,11 @@ class Content < ActiveRecord::Base
           PromotionBanner.mark_active_promotion(self, repo)
         end
 
+        # trigger updating hasPaidPromotion if publish succeeded
+        if has_paid_promotion?
+          PromotionBanner.mark_paid_promotion(self, repo)
+        end
+
         return true
       end
     end
@@ -875,10 +880,19 @@ class Content < ActiveRecord::Base
     has_active_promotion?
   end
 
+  def has_paid_promotion?
+    PromotionBanner.for_content(id).paid.count > 0
+  end
+
+  def has_paid_promotion
+    has_paid_promotion?
+  end
+
   def get_related_promotion(repo)
 
     results = query_promo_similarity_index(content, repo)
     results = query_promo_similarity_index(title, repo) if results.empty?
+    results = query_promo_random_paid(repo) if results.empty?
     results = query_promo_random(repo) if results.empty?
 
     #logger.debug "Get Promo: #{results.inspect}"
@@ -1187,6 +1201,13 @@ class Content < ActiveRecord::Base
     rescue
       return []
     end
+  end
+
+  def query_promo_random_paid(repo)
+    sparql = ::SPARQL::Client.new repo.sesame_endpoint
+    query = File.read(Rails.root.join("lib", "queries", "query_promo_random_paid.rq")) %
+            { content_id: id }
+    sparql.query(query)
   end
 
   def query_promo_random(repo)

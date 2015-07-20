@@ -12,6 +12,7 @@
 #  promotable_id   :integer
 #  promotable_type :string(255)
 #  banner          :string(255)
+#  paid            :boolean
 #
 
 class Promotion < ActiveRecord::Base
@@ -28,7 +29,7 @@ class Promotion < ActiveRecord::Base
   # promotions to any content/publication
   attr_accessible :active, :description, :content, :publication,
                   :publication_id, :content_id, :target_url,
-                  :promotable_attributes, :promotable_type,
+                  :promotable_attributes, :promotable_type, :paid,
                   :banner # note this attribute no longer exists, but needs to be
                   # in our code until afer the migration is run
   mount_uploader :banner, ImageUploader # same with this ^^
@@ -37,12 +38,19 @@ class Promotion < ActiveRecord::Base
 
   accepts_nested_attributes_for :promotable
   after_initialize :init
+  # after_save :update_active_promotions
 
   UPLOAD_ENDPOINT = "/statements"
 
   def init
     self.active = true if self.active.nil?
   end
+
+  # def update_active_promotions
+  #   if promotable_type == "PromotionBanner"
+  #     PromotionBanner::update_active_promotions
+  #   end
+  # end
 
   protected
 
