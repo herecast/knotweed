@@ -9,14 +9,6 @@
   %p
     = @venue.name if @venue.name.present?
     = @venue.full_address if @venue.full_address.present?
-    - if @venue.phone.present?
-      %br
-      Phone:
-      = @venue.phone
-    - if @venue.email.present?
-      %br
-      Email:
-      = Rinku.auto_link(@venue.email).html_safe
 
 %p
   = Rinku.auto_link(@body).html_safe

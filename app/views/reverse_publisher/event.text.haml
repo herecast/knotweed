@@ -6,10 +6,6 @@
 - if @venue.present?
   = @venue.name if @venue.name.present?
   = @venue.full_address if @venue.full_address.present?
-  - if @venue.phone.present?
-    Phone: #{@venue.phone}
-  - if @venue.email.present?
-    Email: #{@venue.email}
 \
 = raw strip_tags(@body)
 \
