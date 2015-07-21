@@ -136,7 +136,7 @@ module Api
       end
 
       def show
-        @content = Content.find(params[:id])
+        @content = Content.find_by_id_and_published(params[:id], 1)
         if params[:repository].present? and @content.present?
           repo = @content.repositories.find_by_dsp_endpoint params[:repository]
           @content = nil if repo.nil?
