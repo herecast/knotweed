@@ -79,7 +79,13 @@
         %td
           - if c.publication.present?
             = link_to c.publication.name, contents_path(q: { publication_id_in: c.publication_id })
-        %td= link_to c.title, edit_content_path(id: c.id, index: i, page: params[:page])
+        %td
+          = link_to c.title, edit_content_path(id: c.id, index: i, page: params[:page])
+          - if c.raw_content.present?
+            %br
+            .index_content
+              - stripped = strip_tags(c.sanitized_content.gsub('<',' <')).gsub(/[[:space:]]{2,}/, ' ')
+              = stripped.truncate(250).html_safe
         %td
           - if c.authors.present?
             = link_to c.authors, contents_path(q: { authors_cont: c.authors })
