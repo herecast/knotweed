@@ -19,7 +19,7 @@ class ContentCategory < ActiveRecord::Base
 
   CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle 
                   local_news nation_world offered presentation recommendation
-                  sale_event sports wanted)
+                  sale_event sports wanted help)
 
   def label
     name.try :titlecase
