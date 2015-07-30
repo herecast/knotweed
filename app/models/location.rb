@@ -24,8 +24,8 @@ class Location < ActiveRecord::Base
 
   has_many :users
 
-  has_and_belongs_to_many :parents, class_name: "Location", foreign_key: :child_id, association_foreign_key: :parent_id
-  has_and_belongs_to_many :children, class_name: "Location", foreign_key: :parent_id, association_foreign_key: :child_id
+  has_and_belongs_to_many :parents, class_name: 'Location', foreign_key: :child_id, association_foreign_key: :parent_id
+  has_and_belongs_to_many :children, class_name: 'Location', foreign_key: :parent_id, association_foreign_key: :child_id
  
   attr_accessible :city, :county, :lat, :long, :state, :zip, :publication_ids, :consumer_active
 
@@ -39,18 +39,30 @@ class Location < ActiveRecord::Base
     location_ids = []
     # get the ids of all the locations
     loc_array.each do |location_string|
-      city_state = location_string.split(",")
-      if city_state.present?
-        if city_state[1].present?
-          location = Location.where(city: city_state[0].strip, state: city_state[1].strip).first
-        else
-          location = Location.where(city: city_state[0].strip).first
-        end
-        location_ids.push(location.id)
-      end
+      # city_state = location_string.split(",")
+      # if city_state.present?
+      #   if city_state[1].present?
+      #     location = Location.where(city: city_state[0].strip, state: city_state[1].strip).first
+      #   else
+      #     location = Location.where(city: city_state[0].strip).first
+      #   end
+      location = find_by_city_state(location_string)
+      location_ids |= [location.id] if location.present?
+#      end
     end
     location_ids
   end
 
+  def self.find_by_city_state(city_state)
+    location = nil
+    cs = city_state.split(',')
+    if cs.present?
+      if cs[1].present?
+        location = Location.where(city: cs[0].strip, state: cs[1].strip).first
+      else
+        location = Location.where(city: cs[0].strip).first
+      end
+    end
+    location
+  end
 end
- 
