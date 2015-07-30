@@ -19,15 +19,13 @@ module Api
       end
 
       def index
-        #if params[:query].present? or params[:location].present?
-        query = Riddle::Query.escape("#{params[:query]} #{params[:location]}")
 
         opts = {}
         opts = { select: '*, weight()' }
         opts[:order] = 'start_date ASC'
         opts[:per_page] = params[:max_results] || 1000
         opts[:with] = {}
-        opts[:conditions] = {}  
+        opts[:conditions] = {}
         opts[:conditions][:published] = 1 if @repository.present?
         opts[:sql] = { include: {event: [{content: :images}, :venue]}}
 
@@ -52,6 +50,20 @@ module Api
             # is not inside that constant, we're good.
             opts[:conditions].merge!({ event_category: cat })
           end
+        end
+
+        # if the location is a city or (city, state) pair that matches one of our local towns,
+        # check if there are any villages (aka children) and include them in the search using the name
+        # field of the sphinx EventInstance index.
+        # Otherwise, just search for the location
+        query_location = Location.find_by_city_state(params[:location])
+        if query_location.present?
+          loc_array = ["(#{query_location.city})"] + query_location.children.map{|l| "(#{l.city})"}
+          locations = loc_array.join('|')
+          query = Riddle::Query.escape("#{params[:query]}")
+          opts[:conditions][:name] = locations
+        else
+          query = Riddle::Query.escape("#{params[:query]} #{params[:location]}")
         end
 
         @event_instances = EventInstance.search query, opts
