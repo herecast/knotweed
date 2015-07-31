@@ -1167,7 +1167,7 @@ class Content < ActiveRecord::Base
     # some logic in here that I don't truly know the purpose of...
     # note -- the "category" method being called on self here
     # returns the text label of the associated content_category
-    unless ["lost_and_found", "recommendation", "discussion", "talk_of_the_town"].include? category
+    if ["event", "market", "offered", "wanted", "for_free", "sale_event"].include? category
       extra_param = "&mlt.boostexpr=recip(ms(NOW/HOUR,published),2.63e-10,1,1)"
     else
       extra_param = ''
@@ -1175,7 +1175,7 @@ class Content < ActiveRecord::Base
 
     similar_url = repo.recommendation_endpoint + '/recommend/contextual?contentid=' +
       uri + "&key=#{Figaro.env.ontotext_recommend_key}" +
-      "&count=#{num_similar}" + extra_param
+      "&count=#{num_similar}" + "&sort=rel" + extra_param
 
     response = HTTParty.get(similar_url)
     if response.fetch('articles', nil)
