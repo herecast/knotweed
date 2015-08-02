@@ -10,7 +10,7 @@ namespace :villages do
     last_city = ''
     loc_city = nil
 
-    CSV.foreach(source_path, {:headers => true, :header_converters => :symbol, :converters => :all}) do |row|
+    CSV.foreach(source_path, {:headers => true, :header_converters => :symbol}) do |row|
       if row[:city] != last_city
         puts "Town of #{row[:city]}, #{row[:state]}"
         loc_city = Location.find_by_city_and_state(row[:city], row[:state])
