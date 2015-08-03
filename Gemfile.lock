@@ -311,6 +311,9 @@ GEM
     polyamorous (1.1.0)
       activerecord (>= 3.0)
     polyglot (0.3.3)
+    prerender_rails (1.1.2)
+      activesupport
+      rack
     pry (0.9.12.4)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -534,6 +537,7 @@ DEPENDENCIES
   net-http-persistent (~> 2.9)
   nokogiri
   oauth2
+  prerender_rails
   pry
   pry-debugger
   pry-rails
@@ -566,3 +570,6 @@ DEPENDENCIES
   whenever
   yard
   yomu
+
+BUNDLED WITH
+   1.10.5
