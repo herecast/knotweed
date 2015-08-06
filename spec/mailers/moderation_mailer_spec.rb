@@ -14,7 +14,7 @@ describe ModerationMailer do
 
     it "should send an email" do
 
-      email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver
+      email = ModerationMailer.send_moderation_flag_v2(@content, @params, @subject).deliver
       ModerationMailer.deliveries.present?.should== true
       email.body.include?(@flagger_name).should == true
       email.body.include?(@flagger_email).should == true

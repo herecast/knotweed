@@ -254,7 +254,7 @@ module Api
           content = Content.find(params[:id])
           subject = 'dailyUV Flagged as ' + params[:classification] + ': ' +  content.title
 
-          ModerationMailer.send_moderation_flag(content, params, subject).deliver
+          ModerationMailer.send_moderation_flag_v2(content, params, subject).deliver
 
         rescue Exception => e
           @message = e.message
