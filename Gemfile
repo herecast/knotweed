@@ -39,7 +39,7 @@ group :test do
   gem "vcr"
   gem "timecop"
 end
-group :rubymine do
+group :rubymine,:development do
  	gem "thin"
 end
 gem "carrierwave"
