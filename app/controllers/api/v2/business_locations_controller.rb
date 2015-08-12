@@ -7,7 +7,12 @@ module Api
         if query.present?
           opts = {}
           opts = { select: '*, weight() as w', order: 'w DESC, name DESC' }
-          opts[:per_page] = params[:max_results] || 1000
+          if params[:autocomplete]
+            per_page = [params[:max_results], 25].max if params[:max_results].present?
+          else
+            per_page = params[:max_results]
+          end
+          opts[:per_page] = per_page || 1000
           opts[:star] = true
           @venues = BusinessLocation.search query, opts
         else

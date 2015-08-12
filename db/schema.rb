@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150717120351) do
+ActiveRecord::Schema.define(:version => 20150811181104) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -885,6 +885,7 @@ ActiveRecord::Schema.define(:version => 20150717120351) do
     t.integer  "location_id"
     t.string   "test_group"
     t.boolean  "muted",                  :default => false
+    t.string   "authentication_token"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

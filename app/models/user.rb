@@ -40,6 +40,8 @@ class User < ActiveRecord::Base
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
 
+  before_save :ensure_authentication_token
+
   rolify
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -52,4 +54,18 @@ class User < ActiveRecord::Base
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :organization_id, :role_ids,
     :default_repository_id, :location, :location_id
   
+  def ensure_authentication_token
+    if authentication_token.blank?
+      self.authentication_token = generate_authentication_token
+    end
+  end
+
+  private
+
+    def generate_authentication_token
+      loop do
+        token = Devise.friendly_token
+        break token unless User.where(authentication_token: token).first
+      end
+    end
 end
