@@ -14,17 +14,13 @@ module Api
       protected
 
       def check_logged_in!
-        unless @current_api_user.present? or params[:current_user_id].present?
+        unless current_user.present?
           render json: { errors: 'You must be logged in.' }, status: 401
         end
       end
 
       def set_current_api_user
-        if params[:current_user_id].present?
-          @current_api_user = User.find params[:current_user_id] 
-        else
-          @current_api_user = nil
-        end
+	current_user
       end
 
       def set_requesting_app_and_repository
