@@ -108,3 +108,4 @@ gem "rdf"
 gem 'enumerize'
 gem 'front_end_builds'
 gem 'prerender_rails'
+gem 'debugger', :group => [:development, :test]
