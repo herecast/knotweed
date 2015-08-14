@@ -20,7 +20,7 @@ module Api
       end
 
       def set_current_api_user
-	current_user
+	@current_api_user = current_user
       end
 
       def set_requesting_app_and_repository
