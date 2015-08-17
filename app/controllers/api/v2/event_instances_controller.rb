@@ -68,7 +68,7 @@ module Api
 
         @event_instances = EventInstance.search query, opts
 
-        render json: @event_instances, arrayserializer: V2::EventInstanceSerializer,
+        render json: @event_instances, arrayserializer: EventInstanceSerializer,
           meta: { total: EventInstance.count }
       end
 

@@ -1,5 +1,9 @@
-class ListservSerializer < ActiveModel::Serializer
+module Api
+  module V2
+    class ListservSerializer < ActiveModel::Serializer
 
-  attributes :id, :name
+      attributes :id, :name
 
+    end
+  end
 end
