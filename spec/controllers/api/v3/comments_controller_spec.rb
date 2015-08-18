@@ -32,12 +32,17 @@ describe Api::V3::CommentsController do
       content = FactoryGirl.create :content, parent_id: @event.content.id
       @comment1 = FactoryGirl.create :comment, content: content
       @user = FactoryGirl.create :user
+      
+      request.env['HTTP_AUTHORIZATION'] = "Token token=#{@user.authentication_token}, email=#{@user.email}"
     end
 
-    it 'should not allow creation without current user specified' do
-      post :create, format: :json, comment: { content: 'fake', parent_comment_id: @comment1.id }
-      response.code.should eq('401')
-      Comment.count.should eq(1)
+    context 'should not allow creation without current user specified' do
+      before { request.env['HTTP_AUTHORIZATION'] =  '' }
+      it do
+        post :create, format: :json, comment: { content: 'fake', parent_comment_id: @comment1.id }
+        response.code.should eq('401')
+        Comment.count.should eq(1)
+      end
     end
 
     it 'should create a comment given a parent_comment_id' do
@@ -69,6 +74,7 @@ describe Api::V3::CommentsController do
     before do
       @comment = FactoryGirl.create :comment
       @user = FactoryGirl.create :user
+      request.env['HTTP_AUTHORIZATION'] = "Token token=#{@user.authentication_token}, email=#{@user.email}"
     end
 
     it 'should queue flag notification email' do

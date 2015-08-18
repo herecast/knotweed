@@ -6,6 +6,7 @@ describe Api::V3::EventsController do
     @venue = FactoryGirl.create :business_location
     @current_user = FactoryGirl.create :user
     @listserv = FactoryGirl.create :listserv
+    request.env['HTTP_AUTHORIZATION'] = "Token token=#{@current_user.authentication_token}, email=#{@current_user.email}"
     @event_attrs = {
       category: Event::EVENT_CATEGORIES[0],
       contact_email: 'test@test.com',
@@ -67,10 +68,13 @@ describe Api::V3::EventsController do
     subject { put :update, event: @attrs_for_update, 
               current_user_id: @current_user.id, id: @event.id }
 
-    it 'should not allow update if current_api_user does not match authoremail' do
-      put :update, event: @attrs_for_update, current_user_id: @different_user.id,
-        id: @event.id
-      response.code.should eq('401')
+    context 'should not allow update if current_api_user does not match authoremail' do
+      before { request.env['HTTP_AUTHORIZATION'] = '' }
+      it do
+      	put :update, event: @attrs_for_update, current_user_id: @different_user.id,
+          id: @event.id
+      	response.code.should eq('401')
+      end
     end
 
     it 'should update the event attributes' do
@@ -115,10 +119,13 @@ describe Api::V3::EventsController do
       response.code.should eq('422')
     end
 
-    it 'should respond with a 401 if no current_user_id is provided' do
-      post :create, format: :json, event: @event_attrs
-      response.code.should eq('401')
-      Event.count.should eq(0)
+    context 'should respond with a 401 if no current_user_id is provided' do
+      before { request.env['HTTP_AUTHORIZATION'] = '' }
+      it do
+      	post :create, format: :json, event: @event_attrs
+      	response.code.should eq('401')
+      	Event.count.should eq(0)
+      end
     end
 
     it 'should assign the event to the current api user\'s location' do
