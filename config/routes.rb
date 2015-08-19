@@ -36,7 +36,9 @@ Knotweed::Application.routes.draw do
   resources :contacts, only: [:create, :update, :edit, :destroy]
   resources :issues, only: [:new, :create, :update, :edit, :destroy, :show]
   resources :locations, only: [:create, :update, :new, :edit, :destroy]
-  resources :business_locations, only: [:create, :update, :new, :edit, :destroy]
+  get 'business_locations/:id/edit_venue', to: 'business_locations#edit_venue', as: :edit_venue
+  get 'business_locations/add_venue', to: 'business_locations#add_venue', as: :add_venue
+  resources :business_locations
   resources :events, except: [:show, :destroy]
 
   resources :data_contexts

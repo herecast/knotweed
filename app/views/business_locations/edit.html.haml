@@ -1,2 +1,14 @@
-%h1 BusinessLocations#edit
-%p Find me in app/views/business_locations/edit.html.haml
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-pencil
+        Venue ID #{@business_location.id}
+    .box-content
+      = render partial: 'business_locations/partials/form'
+
+      .row-fluid#nearbys
+        = render partial: 'business_locations/partials/nearbys'
+
+      .row_fluid#venue-events
+        = render partial: 'business_locations/partials/venue_events'

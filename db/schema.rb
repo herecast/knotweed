@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150717120351) do
+ActiveRecord::Schema.define(:version => 20150817134219) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -36,9 +36,9 @@ ActiveRecord::Schema.define(:version => 20150717120351) do
     t.date    "DATE_EDITED"
   end
 
-  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+  add_index "usgs_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
+  add_index "usgs_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
+  add_index "usgs_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -86,6 +86,9 @@ ActiveRecord::Schema.define(:version => 20150717120351) do
     t.string   "city"
     t.string   "state"
     t.string   "zip"
+    t.string   "status"
+    t.integer  "created_by"
+    t.integer  "updated_by"
   end
 
   add_index "business_locations", ["name"], :name => "index_business_locations_on_name"

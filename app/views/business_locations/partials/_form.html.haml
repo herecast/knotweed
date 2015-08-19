@@ -21,6 +21,7 @@
     .span6
       = f.input :email, input_html: { class: "input-block-level" }
       = f.input :phone, input_html: { data: { mask: "(999) 999-9999" }, class: "input-block-level" }
+      = f.input :status, selected: BusinessLocation::STATUS_CATEGORIES[0], input_html: { class: "input-block-level" }
     .span6
       %span.pull-right.btn.btn-primary#locate_on_map_button Locate on Map
       - if @business_location.address.present?

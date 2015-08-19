@@ -21,12 +21,21 @@
 #
 
 class BusinessLocation < ActiveRecord::Base
+  extend Enumerize
+
   belongs_to :publication
   has_many :contents
+  has_many :events, foreign_key: 'venue_id'
+  belongs_to :created_by, class_name: 'User', foreign_key: 'created_by'
+  belongs_to :updated_by, class_name: 'User', foreign_key: 'updated_by'
 
   attr_accessible :address, :email, :hours, :name, :publication_id, :phone, 
     :latitude, :longitude, :venue_url, :locate_include_name, :city, :state,
-    :zip
+    :zip, :created_by, :updated_by, :status
+
+  STATUS_CATEGORIES = [:approved, :new, :private]
+
+  enumerize :status, in: STATUS_CATEGORIES
 
   geocoded_by :geocoding_address
 

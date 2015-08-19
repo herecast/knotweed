@@ -1,0 +1,20 @@
+- if @events.present?
+  %h4 #{@events.count.to_s} Events at #{@business_location.name} #{@business_location.full_address}
+  %table.table.table-striped.table-bordered.table-condensed
+    %th Name
+    %th Start Date
+    %th Instances
+    %th
+    - @events.each do |event|
+      %tr
+        %td= event.title
+        - if event.event_instances.count > 0
+          %td= event.event_instances.first.start_date
+          %td= event.event_instances.count
+        - else
+          %td
+          %td 0
+        %td.action
+          = link_to 'Edit', edit_event_path(event), class: 'btn btn-mini btn-warning'
+- else
+  %h4 There are no events scheduled at #{@business_location.name} #{@business_location.full_address}

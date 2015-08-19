@@ -39,6 +39,7 @@ class User < ActiveRecord::Base
   has_many :notifiers
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
+  has_many :business_locations, foreign_key: 'created_by'
 
   rolify
   # Include default devise modules. Others available are:
