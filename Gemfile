@@ -39,7 +39,7 @@ group :test do
   gem "vcr"
   gem "timecop"
 end
-group :rubymine do
+group :rubymine,:development do
  	gem "thin"
 end
 gem "carrierwave"
@@ -108,3 +108,4 @@ gem "rdf"
 gem 'enumerize'
 gem 'front_end_builds'
 gem 'prerender_rails'
+gem 'debugger', :group => [:development, :test]

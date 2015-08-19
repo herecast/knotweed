@@ -80,7 +80,7 @@ class Event < ActiveRecord::Base
   before_save do |event|
     [:sponsor_url, :event_url].each do |method|
       if event.send(method).present?
-        event.send("#{method}=", "http://#{event.send(method)}") unless event.send(method).match(/^http:\/\/.*/)
+        event.send("#{method}=", "http://#{event.send(method)}") unless event.send(method).match(/^https?:\/\/.*/)
       end
     end
   end

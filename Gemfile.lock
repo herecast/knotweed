@@ -508,6 +508,7 @@ DEPENDENCIES
   daemons
   database_cleaner (>= 1.0.0.RC1)
   datetimepicker-rails!
+  debugger
   delayed_job!
   delayed_job_active_record
   devise (>= 2.2.3)
