@@ -65,14 +65,15 @@ describe Api::V3::EventsController do
       @different_user = FactoryGirl.create :user
     end
 
-    subject { put :update, event: @attrs_for_update, 
-              current_user_id: @current_user.id, id: @event.id }
+    subject { put :update, event: @attrs_for_update, id: @event.id }
 
     context 'should not allow update if current_api_user does not match authoremail' do
-      before { request.env['HTTP_AUTHORIZATION'] = '' }
+      before do  
+    	request.env['HTTP_AUTHORIZATION'] = "Token token=#{@different_user.authentication_token}, \
+	  email=#{@different_user.email}"
+      end
       it do
-      	put :update, event: @attrs_for_update, current_user_id: @different_user.id,
-          id: @event.id
+      	put :update, event: @attrs_for_update, id: @event.id
       	response.code.should eq('401')
       end
     end
