@@ -4,7 +4,7 @@ module Api
 
       def index
         @listservs = Listserv.all
-        render json: @listservs
+        render json: @listservs, arrayserializer: ListservSerializer
       end
 
     end

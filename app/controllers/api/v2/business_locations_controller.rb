@@ -33,7 +33,7 @@ module Api
             locations: response_data
           }
         else
-          render json: @venues, root: 'venues'
+          render json: @venues, arrayserializer: BusinessLocationSerializer, root: 'venues'
         end
       end
 

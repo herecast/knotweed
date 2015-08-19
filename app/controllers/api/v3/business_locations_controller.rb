@@ -26,9 +26,9 @@ module Api
           response_data.prepend "#{cs}" if cs.present?
           render json: {
             locations: response_data
-          }
+          }, arrayserializer: BusinessLocationSerializer
         else
-          render json: @venues, root: 'venues'
+          render json: @venues, root: 'venues', arrayserializer: BusinessLocationSerializer
         end
       end
 
