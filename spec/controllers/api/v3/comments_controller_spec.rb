@@ -17,7 +17,7 @@ describe Api::V3::CommentsController do
 
       subject { get :index, format: :json, event_instance_id: @event_instance.id }
 
-      it 'should return the comments associaetd' do
+      it 'should return the comments associated' do
         subject
         assigns(:comments).should eq([@comment.content])
       end
