@@ -6,13 +6,7 @@ module Api
       # pings the DSP to retrieve a related banner ad for a generic
       # content type.
       def related_promotion
-        if params[:event_instance_id].present?
-          ei = EventInstance.find params[:event_instance_id]
-          @content = ei.event.content
-        elsif params[:event_id].present?
-          e = Event.find params[:event_id]
-          @content = e.content
-        end
+        @content = Content.find params[:id]
 
         begin
           promoted_content_id = @content.get_related_promotion(@repository)
@@ -45,13 +39,7 @@ module Api
       end
 
       def similar_content
-        if params[:event_instance_id].present?
-          ei = EventInstance.find params[:event_instance_id]
-          @content = ei.event.content
-        elsif params[:event_id].present?
-          e = Event.find params[:event_id]
-          @content = e.content
-        end
+        @content = Content.find params[:id]
 
         @contents = @content.similar_content(@repository, 20)
 
