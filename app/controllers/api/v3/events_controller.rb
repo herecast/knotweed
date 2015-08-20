@@ -2,7 +2,7 @@ module Api
   module V3
     class EventsController < ApiController
 
-      before_filter :check_logged_in!, only: [:create, :moderate, :update]
+      before_filter :check_logged_in!, only: [:create, :update]
 
       def update
         @event = Event.find(params[:id])
@@ -93,13 +93,6 @@ module Api
       def show
         @event = Event.find(params[:id])
         render json: @event, serializer: EventSerializer
-      end
-
-      def moderate
-        event = Event.find(params[:id])
-
-        ModerationMailer.send_moderation_flag_v2(event.content, params[:flag_type], @current_api_user).deliver
-        head :no_content
       end
 
       protected

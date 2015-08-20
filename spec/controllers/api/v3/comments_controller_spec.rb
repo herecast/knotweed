@@ -70,20 +70,4 @@ describe Api::V3::CommentsController do
     end
   end
 
-  describe 'POST moderate' do
-    before do
-      @comment = FactoryGirl.create :comment
-      @user = FactoryGirl.create :user
-      request.env['HTTP_AUTHORIZATION'] = "Token token=#{@user.authentication_token}, email=#{@user.email}"
-    end
-
-    it 'should queue flag notification email' do
-      mailer_count = ActionMailer::Base.deliveries.count
-      post :moderate, id: @comment.id, current_user_id: @user.id,
-        flag_type: 'Inappropriate'
-      expect(ActionMailer::Base.deliveries.count).to eq(mailer_count + 1)
-    end
-
-  end
-
 end
