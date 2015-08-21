@@ -32,11 +32,11 @@ describe Api::V3::CommentsController do
       content = FactoryGirl.create :content, parent_id: @event.content.id
       @comment1 = FactoryGirl.create :comment, content: content
       @user = FactoryGirl.create :user
-      api_authenticate @user
+      api_authenticate user: @user
     end
 
     context 'should not allow creation if user unauthorized' do
-      before { api_authenticate @user, success: false }
+      before { api_authenticate success: false }
       it do
         post :create, format: :json, comment: { content: 'fake', parent_comment_id: @comment1.id }
         response.code.should eq('401')
@@ -73,7 +73,7 @@ describe Api::V3::CommentsController do
     before do
       @comment = FactoryGirl.create :comment
       @user = FactoryGirl.create :user
-      api_authenticate @user
+      api_authenticate user: @user
     end
 
     it 'should queue flag notification email' do
