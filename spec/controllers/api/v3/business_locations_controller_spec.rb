@@ -20,5 +20,3 @@ describe Api::V3::BusinessLocationsController do
     end
   end
 end
-
-
