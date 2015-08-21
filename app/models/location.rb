@@ -31,6 +31,8 @@ class Location < ActiveRecord::Base
 
   default_scope order: :city
 
+  scope :consumer_active, where(consumer_active: true)
+
   def name
     "#{try(:city)} #{try(:state)}"
   end

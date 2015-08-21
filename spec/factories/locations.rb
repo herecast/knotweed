@@ -24,5 +24,6 @@ FactoryGirl.define do
     county "MyString"
     lat "MyString"
     long "MyString"
+    consumer_active false
   end
 end
