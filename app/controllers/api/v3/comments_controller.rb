@@ -2,14 +2,7 @@ module Api
   module V3
     class CommentsController < ApiController
 
-      before_filter :check_logged_in!, only: [:create, :moderate] 
-
-      def moderate
-        comment = Comment.find(params[:id])
-        ModerationMailer.send_moderation_flag_v2(comment.content, params[:flag_type],
-                                                 @current_api_user).deliver
-        head :no_content
-      end
+      before_filter :check_logged_in!, only: [:create] 
 
       def index
         if params[:event_instance_id].present?

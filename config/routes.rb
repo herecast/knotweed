@@ -79,8 +79,7 @@ Knotweed::Application.routes.draw do
     namespace :v3 do
       get '/current_user', to: 'users#get_current_user'
       resources 'events', only: [:create, :show, :update]
-      post '/events/:id/moderate', to: 'events#moderate', as: :moderate
-      post '/comments/:id/moderate', to: 'comments#moderate', as: :moderate
+      post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
       get 'promotion_banners/:id/track_click', to: 'promotion_banners#track_click', as: :track_click
       resources 'event_instances', only: [:index, :show, :destroy]
       resources 'comments', only: [:index, :create]

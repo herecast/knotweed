@@ -21,7 +21,7 @@ module Api
           # The following two lines search extract the (city,state) pair from the search results,
           # then sets cs to the most frequently occurring (city,state) pair
           cities = BusinessLocation.search(cs_query, cs_opts).map{|c| c.city.strip + ', ' + c.state.strip}
-          cs = cities.group_by{|n| n }.values.max_by(&:size).first
+          cs = cities.group_by{|n| n }.values.max_by(&:size)
 
           # reorganize the responses from the search so the locations that begin with the query
           # string appear first, then follow with whatever is left and params[:max_results] results
@@ -31,7 +31,7 @@ module Api
           response_data = response_data.slice(0..params[:max_results]-1) if params[:max_results].present?
 
           # stick in the matched city at the top of the returned data
-          response_data.prepend "#{cs}" if cs.present?
+          response_data.prepend "#{cs.first}" if cs.present?
           render json: {
             locations: response_data
           }

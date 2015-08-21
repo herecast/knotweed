@@ -17,7 +17,7 @@ describe Api::V3::CommentsController do
 
       subject { get :index, format: :json, event_instance_id: @event_instance.id }
 
-      it 'should return the comments associaetd' do
+      it 'should return the comments associated' do
         subject
         assigns(:comments).should eq([@comment.content])
       end
@@ -68,22 +68,6 @@ describe Api::V3::CommentsController do
       response.code.should eq('201')
       assigns(:comment).content.parent.should eq(@event.content)
     end
-  end
-
-  describe 'POST moderate' do
-    before do
-      @comment = FactoryGirl.create :comment
-      @user = FactoryGirl.create :user
-      request.env['HTTP_AUTHORIZATION'] = "Token token=#{@user.authentication_token}, email=#{@user.email}"
-    end
-
-    it 'should queue flag notification email' do
-      mailer_count = ActionMailer::Base.deliveries.count
-      post :moderate, id: @comment.id, current_user_id: @user.id,
-        flag_type: 'Inappropriate'
-      expect(ActionMailer::Base.deliveries.count).to eq(mailer_count + 1)
-    end
-
   end
 
 end

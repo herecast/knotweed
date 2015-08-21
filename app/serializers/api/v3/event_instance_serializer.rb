@@ -3,7 +3,7 @@ module Api
     class EventInstanceSerializer < ActiveModel::Serializer
 
       attributes :id, :subtitle, :starts_at, :ends_at, :image_url,
-        #:venue_name, :venue_address, :venue_city, :venue_state, 
+        :venue_name, :venue_address, :venue_city, :venue_state, 
         :venue_zip
 
       SHARED_EVENT_ATTRIBUTES = [:title]

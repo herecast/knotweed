@@ -1,8 +1,7 @@
 module Api
   module V3
-
     class ContentsController < ApiController
-
+      before_filter :check_logged_in!, only:  [:moderate]
       # pings the DSP to retrieve a related banner ad for a generic
       # content type.
       def related_promotion
@@ -75,7 +74,12 @@ module Api
 
       end
 
+      def moderate
+        content = Content.find(params[:id])
+        ModerationMailer.send_moderation_flag_v2(content, params[:flag_type], \
+          @current_api_user).deliver
+        head :no_content
+      end
     end
-
   end
 end
