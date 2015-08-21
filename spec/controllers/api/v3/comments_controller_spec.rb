@@ -39,31 +39,29 @@ describe Api::V3::CommentsController do
     context 'should not allow creation without current user specified' do
       before { request.env['HTTP_AUTHORIZATION'] =  '' }
       it do
-        post :create, format: :json, comment: { content: 'fake', parent_comment_id: @comment1.id }
+        post :create, format: :json, comment: { content: 'fake', parent_id: @comment1.id }
         response.code.should eq('401')
         Comment.count.should eq(1)
       end
     end
 
-    it 'should create a comment given a parent_comment_id' do
+    it 'should create a comment given a parent_id' do
       post :create, format: :json, 
-        comment: { content: 'fake', parent_comment_id: @comment1.id },
-        current_user_id: @user.id
+        comment: { content: 'fake', parent_id: @comment1.id }
       response.code.should eq('201')
       assigns(:comment).content.parent.should eq(@comment1.content)
     end
 
     it 'should automatically set publication to DailyUV' do
       post :create, format: :json, 
-        comment: { content: 'fake', parent_comment_id: @comment1.id },
-        current_user_id: @user.id
+        comment: { content: 'fake', parent_id: @comment1.id }
       response.code.should eq('201')
       assigns(:comment).content.parent.should eq(@comment1.content)
       assigns(:comment).publication.name.should eq('DailyUV')
     end
 
     it 'should create a comment given an event_instance_id' do
-      post :create, format: :json, current_user_id: @user.id,
+      post :create, format: :json, 
         comment: { content: 'fake', event_instance_id: @event.event_instances.first.id }
       response.code.should eq('201')
       assigns(:comment).content.parent.should eq(@event.content)
