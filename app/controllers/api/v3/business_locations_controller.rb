@@ -1,5 +1,5 @@
 module Api
-  module V2
+  module V3
     class BusinessLocationsController < ApiController
 
       def index
@@ -7,12 +7,7 @@ module Api
         if query.present?
           opts = {}
           opts = { select: '*, weight() as w', order: 'w DESC, name DESC' }
-          if params[:autocomplete]
-            per_page = [params[:max_results], 25].max if params[:max_results].present?
-          else
-            per_page = params[:max_results]
-          end
-          opts[:per_page] = per_page || 1000
+          opts[:per_page] = params[:max_results] || 1000
           opts[:star] = true
           @venues = BusinessLocation.search query, opts
         else
@@ -41,7 +36,7 @@ module Api
             locations: response_data
           }
         else
-          render json: @venues, arrayserializer: BusinessLocationSerializer, root: 'venues'
+          render json: @venues, root: 'venues', arrayserializer: BusinessLocationSerializer
         end
       end
 

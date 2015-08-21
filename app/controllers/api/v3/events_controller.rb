@@ -1,5 +1,5 @@
 module Api
-  module V2
+  module V3
     class EventsController < ApiController
 
       before_filter :check_logged_in!, only: [:create, :moderate, :update]
@@ -18,7 +18,7 @@ module Api
             # clear out existing images since we are only set up to have one right now
             @event.content.images.destroy_all
             if Image.create(image: image_data, imageable: @event.content)
-              render json: @event, status: 200, serializer: EventSerializer
+              render json: @event, serializer: EventSerializer, status: 200
             else
               render json: { errors: map_error_keys(@event.errors.messages) }, status: :unprocessable_entity
             end
@@ -43,7 +43,7 @@ module Api
                 @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
               end
 
-              render json: @event, status: 200, serializer: EventSerializer
+              render json: @event, serializer: EventSerializer,  status: 200
             else
               render json: {
                 errors: map_error_keys(@event.errors.messages)
@@ -82,7 +82,7 @@ module Api
             @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
 
-          render json: @event, status: 201, serializer: EventSerializer
+          render json: @event, status: 201
         else
           render json: {
             errors: map_error_keys(@event.errors.messages)

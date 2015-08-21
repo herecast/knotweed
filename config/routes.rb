@@ -3,8 +3,8 @@ Knotweed::Application.routes.draw do
   authenticated :user do
     root :to => "dashboard#index"
   end
-  devise_for :users, path_prefix: "my"
-  root :to => redirect("#{"#{ENV['RAILS_RELATIVE_URL_ROOT']}" unless ENV['RAILS_RELATIVE_URL_ROOT'].nil?}/my/users/sign_in")
+  devise_for :users, controllers: { sessions: 'sessions' }
+  root :to => redirect("#{"#{ENV['RAILS_RELATIVE_URL_ROOT']}" unless ENV['RAILS_RELATIVE_URL_ROOT'].nil?}/users/sign_in")
   resources :users
   
   get "/", to: "dashboard#index", as: :dashboard
@@ -76,6 +76,22 @@ Knotweed::Application.routes.draw do
 
   # API
   namespace :api do
+    namespace :v3 do
+      get '/current_user', to: 'users#get_current_user'
+      resources 'events', only: [:create, :show, :update]
+      post '/events/:id/moderate', to: 'events#moderate', as: :moderate
+      post '/comments/:id/moderate', to: 'comments#moderate', as: :moderate
+      get 'promotion_banners/:id/track_click', to: 'promotion_banners#track_click', as: :track_click
+      resources 'event_instances', only: [:index, :show, :destroy]
+      resources 'comments', only: [:index, :create]
+      resources 'listservs', only: [:index]
+      get '/venues', to: 'business_locations#index', as: :venues
+      get '/venue_locations', to: 'business_locations#index', as: :locations,
+        defaults: { autocomplete: true, max_results: 5 }
+      get '/contents/:id/related_promotion', to: 'contents#related_promotion', as: :related_promotion
+      get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
+    end
+
     namespace :v2 do
       resources 'events', only: [:create, :show, :update]
       post '/events/:id/moderate', to: 'events#moderate', as: :moderate

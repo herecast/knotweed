@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
 
+  #normal Devise authentication
   before_filter :authorize_access!
 
   rescue_from CanCan::AccessDenied do |exception|

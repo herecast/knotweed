@@ -1,5 +1,5 @@
 module Api
-  module V2
+  module V3
     class EventInstancesController < ApiController
       
       before_filter :check_logged_in!, only: [:destroy]
