@@ -70,6 +70,7 @@ class Content < ActiveRecord::Base
   has_many :promotions
 
   belongs_to :content_category
+  belongs_to :root_content_category, class_name: 'ContentCategory'
 
   # mapping to content record that represents the channelized content
   belongs_to :channelized_content, class_name: "Content"
@@ -83,7 +84,7 @@ class Content < ActiveRecord::Base
                 :content_category_id, :category_reviewed, :raw_content, 
                 :sanitized_content, :channelized_content_id,
                 :has_event_calendar, :channel_type, :channel_id, :channel,
-                :location_ids
+                :location_ids, :root_content_category_id
 
   attr_accessor :tier # this is not stored on the database, but is used to generate a tiered tree
   # for the API
@@ -95,6 +96,7 @@ class Content < ActiveRecord::Base
   # check if it should be marked quarantined
   before_save :mark_quarantined
   before_save :set_guid
+  before_save :set_root_content_category_id
 
   # channel relationships
   belongs_to :channel, polymorphic: true, inverse_of: :content
@@ -397,6 +399,14 @@ class Content < ActiveRecord::Base
       end
       self.guid << "-" << pubdate.strftime("%Y-%m-%d") if pubdate.present?
       self.guid = CGI::escape guid
+    end
+  end
+
+  def set_root_content_category_id
+    if content_category.present?
+      self.root_content_category_id = content_category.parent_id || content_category.id
+    else
+      self.root_content_category_id = nil
     end
   end
 

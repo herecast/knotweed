@@ -80,6 +80,59 @@ module Api
           @current_api_user).deliver
         head :no_content
       end
+
+      def index
+        opts = {}
+        opts = { select: '*, weight()', 
+                 excerpts: { limit: 350, around: 5, html_strip_mode: "strip" } }
+        opts[:order] = 'pubdate DESC'
+        opts[:with] = {}
+        opts[:conditions] = {}
+        opts[:page] = params[:page] || 1
+        opts[:conditions][:published] = 1 if @repository.present?
+        opts[:sql] = { include: [:images, :publication, :root_content_category] }
+
+        default_location_id = Location.find_by_city(Location::DEFAULT_LOCATION).id
+        location_condition = @current_api_user.try(:location_id) || default_location_id
+
+        root_news_cat = ContentCategory.find_by_name 'news'
+        news_opts = opts.merge({ 
+          with: { 
+            root_content_category_id: root_news_cat.id,
+            all_loc_ids: [location_condition]
+          },
+          per_page: 2
+        })
+
+        # is this slower than a single query that retrieves all 4 using 'name IN (...)'?
+        # I doubt it.
+        reg_cat_ids = [ContentCategory.find_by_name('market').id,
+                       ContentCategory.find_by_name('event').id]
+        # if signed in, include talk.
+        if @current_api_user.present?
+          reg_cat_ids += [ContentCategory.find_by_name('talk_of_the_town').id]
+        end
+
+        reg_opts = opts.merge({
+          with: { 
+            loc_ids: [location_condition],
+            root_content_category_id: reg_cat_ids
+          },
+          per_page: 12
+        })
+
+
+        news_contents = Content.search news_opts
+        reg_contents = Content.search reg_opts
+
+        # note: can't combine these two relations without converting them to arrays
+        # because thinking sphinx
+        @contents = news_contents.to_a + reg_contents.to_a
+
+        render json: @contents, arrayserializer: ContentSerializer
+
+      end
+
     end
   end
 end
