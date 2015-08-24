@@ -3,21 +3,20 @@ require 'spec_helper'
 describe Api::V3::CommentsController do
 
   describe 'GET index' do
-    it 'should respond with 200 code' do
-      get :index, format: :json
-      response.code.should eq('200')
+    it 'should fail without content_id' do
+      expect { get :index, format: :json}.to raise_error
     end
 
-    describe 'given event_instance_id' do
+    describe 'given content_id' do
       before do
-        @event_instance = FactoryGirl.create(:event).event_instances.first
+        @content = FactoryGirl.create(:content)
         @comment = FactoryGirl.create(:comment)
-        @comment.content.update_attribute :parent_id, @event_instance.event.content.id
+        @comment.content.update_attribute :parent_id, @content.id
       end
 
-      subject { get :index, format: :json, event_instance_id: @event_instance.id }
+      subject { get :index, format: :json, content_id: @content.id }
 
-      it 'should return the comments associated' do
+      it 'should return the coments associated' do
         subject
         assigns(:comments).should eq([@comment.content])
       end

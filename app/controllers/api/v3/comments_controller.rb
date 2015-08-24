@@ -5,13 +5,7 @@ module Api
       before_filter :check_logged_in!, only: [:create] 
 
       def index
-        if params[:event_instance_id].present?
-          ei = EventInstance.find params[:event_instance_id]
-          root = ei.event.content
-        elsif params[:event_id].present?
-          e = Event.find params[:event_id]
-          root = e.content
-        end
+        root = Content.find params[:content_id]
 
         if root.present?
           @comments = root.children.where(channel_type: 'Comment')
