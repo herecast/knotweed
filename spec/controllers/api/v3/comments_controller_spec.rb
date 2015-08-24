@@ -22,6 +22,27 @@ describe Api::V3::CommentsController do
       end
 
     end
+    
+    describe 'nested comments' do
+      before do
+        @event = FactoryGirl.create :event
+        @comment1 = FactoryGirl.create :comment
+        @comment1.content.update_attribute :parent, @event.content
+        @comment2 = FactoryGirl.create :comment
+        @comment2.content.update_attribute :parent, @comment1.content
+        @comment3 = FactoryGirl.create :comment
+        @comment3.content.update_attribute :parent, @comment2.content
+      end
+    
+      subject { get :index, format: :json, content_id: @event.content.id }
+
+      it 'should return the results flattened' do
+        subject
+        expected = {comments: [comment_format(@comment1), comment_format(@comment2), comment_format(@comment3)]}.to_json
+        debugger
+        response.body.should eq(expected)
+      end
+    end
 
   end
 
@@ -64,6 +85,18 @@ describe Api::V3::CommentsController do
           event_instance_id: @event.event_instances.first.id } 
       }.to raise_error
     end
+  end
+
+  def comment_format(comment)
+    r = {}
+    r[:id] = comment.channel.id
+    r[:content] = comment.sanitized_content
+    #r[:user_id] 
+    #r[:user_name]
+    #r[:user_image_url]
+    r[:pubdate] = comment.content.pubdate
+    r[:parent_content_id] = comment.content.parent_id
+    r 
   end
 
 end
