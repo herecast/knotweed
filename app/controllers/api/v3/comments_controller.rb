@@ -23,16 +23,13 @@ module Api
 
       def create
         location_ids = [@current_api_user.try(:location_id)]
-        if params[:comment][:parent_comment_id].present?
-          parent_id = Comment.find(params[:comment][:parent_comment_id]).content.id
-        elsif params[:comment][:event_instance_id].present?
-          parent_id = EventInstance.find(params[:comment][:event_instance_id]).event.content.id
+        if params[:comment][:parent_id].present?
+          parent_id = params[:comment][:parent_id]
         else
           parent_id = nil
         end
         # avoid mass assignment errors
-        params[:comment].delete :parent_comment_id
-        params[:comment].delete :event_instance_id
+        params[:comment].delete :parent_id
 
         # hard coded publication...
         pub = Publication.find_or_create_by_name 'DailyUV'
