@@ -55,8 +55,7 @@ describe Api::V3::ContentsController do
 
   describe 'GET related_promotion' do
     before do
-      @event = FactoryGirl.create :event
-      @content = @event.content
+      @content = FactoryGirl.create :content
       @related_content = FactoryGirl.create(:content)
       Promotion.any_instance.stub(:update_active_promotions).and_return(true)
       @promo = FactoryGirl.create :promotion, content: @related_content
@@ -64,8 +63,8 @@ describe Api::V3::ContentsController do
       Content.any_instance.stub(:get_related_promotion).and_return(@related_content.id)
     end
 
-    subject { get :related_promotion, format: :json, event_id: @event.id, 
-              repository_id: @repo.id }
+    subject { get :related_promotion, format: :json, 
+              id: @content.id, repository_id: @repo.id }
 
     it 'has 200 status code' do
       subject
@@ -99,13 +98,13 @@ describe Api::V3::ContentsController do
 
   describe 'GET similar_content' do
     before do
-      @event = FactoryGirl.create :event
+      @content_id = FactoryGirl.create(:content).id
       @sim_content = FactoryGirl.create :content
       Content.any_instance.stub(:similar_content).with(@repo, 20).and_return([@sim_content])
     end
 
     subject { get :similar_content, format: :json,
-        event_id: @event.id, repository: @repo.dsp_endpoint }
+        id: @content_id, repository: @repo.dsp_endpoint }
 
     it 'has 200 status code' do
       subject
