@@ -89,11 +89,11 @@ module Api
 
         root_news_cat = ContentCategory.find_by_name 'news'
         news_opts = opts.merge({ 
-          with: { 
-            root_content_category_id: root_news_cat.id,
-            all_loc_ids: [location_condition]
-          },
           per_page: 2
+        })
+        news_opts[:with] = news_opts[:with].merge({
+          root_content_category_id: root_news_cat.id,
+          all_loc_ids: [location_condition]
         })
 
         # is this slower than a single query that retrieves all 4 using 'name IN (...)'?
@@ -106,13 +106,14 @@ module Api
         end
 
         reg_opts = opts.merge({
-          with: { 
-            loc_ids: [location_condition],
-            root_content_category_id: reg_cat_ids
-          },
           per_page: 12
         })
+        reg_opts[:with] = reg_opts[:with].merge({
+          loc_ids: [location_condition],
+          root_content_category_id: reg_cat_ids
+        })
 
+        debugger
 
         news_contents = Content.search news_opts
         reg_contents = Content.search reg_opts
