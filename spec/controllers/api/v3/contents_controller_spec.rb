@@ -5,6 +5,54 @@ describe Api::V3::ContentsController do
     @repo = FactoryGirl.create :repository
   end
 
+  describe 'GET index' do
+    before do
+      @news_cat = FactoryGirl.create :content_category, name: 'news'
+      @tott_cat = FactoryGirl.create :content_category, name: 'talk_of_the_town'
+      @market_cat = FactoryGirl.create :content_category, name: 'market'
+      @event_cat = FactoryGirl.create :content_category, name: 'event'
+      @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
+      @other_location = FactoryGirl.create :location, city: 'Another City'
+      @user = FactoryGirl.create :user, location: @other_location
+      FactoryGirl.create_list :content, 3, content_category: @news_cat, 
+        locations: [@default_location], published: true
+      FactoryGirl.create_list :content, 15, content_category: @market_cat, 
+        locations: [@default_location], published: true
+      FactoryGirl.create_list :content, 5, content_category: @tott_cat,
+        locations: [@default_location], published: true
+      FactoryGirl.create_list :content, 5, content_category: @event_cat,
+        locations: [@default_location], published: true
+      FactoryGirl.create_list :content, 3, content_category: @market_cat, 
+        locations: [@other_location]
+    end
+
+    subject { get :index, format: :json }
+
+    context 'not signed in' do
+      it 'has 200 status code' do
+        subject
+        response.code.should eq('200')
+      end
+
+      it 'should respond with 2 news items' do
+        subject
+        assigns(:contents).select{|c| c.content_category_id == @news_cat.id }.count.should eq(2)
+      end
+
+      it 'should not include any talk items' do
+        subject
+        assigns(:contents).select{|c| c.content_category_id == @tott_cat.id }.count.should eq(0)
+      end
+
+      it 'should only return items in the default location' do
+        subject
+        assigns(:contents).select{|c| c.locations.include? @other_location }.count.should eq(0)
+      end
+
+    end
+
+  end
+
   describe 'GET related_promotion' do
     before do
       @content = FactoryGirl.create :content
