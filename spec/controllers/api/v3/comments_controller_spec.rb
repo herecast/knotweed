@@ -42,6 +42,25 @@ describe Api::V3::CommentsController do
         JSON.parse(response.body).should eq(expected)
       end
     end
+    
+    describe 'ordered by pubdate DESC' do
+      before do
+        @event = FactoryGirl.create :event
+        @comment1 = FactoryGirl.create :comment, pubdate: Time.parse('2014-01-01')  
+        @comment1.content.update_attribute :parent, @event.content
+        @comment2 = FactoryGirl.create :comment, pubdate: Time.parse('2014-02-01')
+        @comment2.content.update_attribute :parent, @comment1.content
+        @comment3 = FactoryGirl.create :comment, pubdate: Time.parse('2014-03-01')
+        @comment3.content.update_attribute :parent, @comment2.content
+      end
+
+      subject! { get :index, format: :json, content_id: @event.content.id }
+
+      it 'should return ordered results' do
+        expected = {comments: [comment_format(@comment3), comment_format(@comment2), comment_format(@comment1)]}.stringify_keys
+        JSON.parse(response.body).should eq(expected)
+      end
+    end
 
   end
 

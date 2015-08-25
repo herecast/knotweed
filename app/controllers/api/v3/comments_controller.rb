@@ -13,6 +13,7 @@ module Api
           @comments << result_list
           get_all_comments result_list
           @comments.flatten!
+          @comments.sort! { |a,b| b.pubdate <=> a.pubdate }
         end
         render json: @comments, each_serializer: CommentSerializer
       end
