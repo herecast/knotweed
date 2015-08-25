@@ -63,7 +63,6 @@ class Event < ActiveRecord::Base
   enumerize :cost_type, in: [:free, :paid, :donation]
   enumerize :event_category, in: EVENT_CATEGORIES
 
-
   serialize :links, Hash
 
   # this callback allows us to essentially forget that the associated content
@@ -124,6 +123,11 @@ class Event < ActiveRecord::Base
   def self.truncated_event_fields
     [:id, :title, :event_type, :sponsor,
              :featured]
+  end
+
+  # returns first upcoming event instance
+  def next_instance
+    event_instances.where('start_date > ?', Time.zone.now).order('start_date ASC').first
   end
 
 end

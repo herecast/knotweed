@@ -79,17 +79,20 @@ Knotweed::Application.routes.draw do
     namespace :v3 do
       get '/current_user', to: 'users#get_current_user'
       resources 'events', only: [:create, :show, :update]
-      post '/events/:id/moderate', to: 'events#moderate', as: :moderate
-      post '/comments/:id/moderate', to: 'comments#moderate', as: :moderate
+      post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
       get 'promotion_banners/:id/track_click', to: 'promotion_banners#track_click', as: :track_click
       resources 'event_instances', only: [:index, :show, :destroy]
       resources 'comments', only: [:index, :create]
       resources 'listservs', only: [:index]
       get '/venues', to: 'business_locations#index', as: :venues
-      get '/venue_locations', to: 'business_locations#index', as: :locations,
+      get '/venue_locations', to: 'business_locations#index', as: :venue_locations,
         defaults: { autocomplete: true, max_results: 5 }
+      get '/locations', to: 'locations#index', as: :locations
       get '/related_promotion', to: 'contents#related_promotion', as: :related_promotion
       get '/similar_content', to: 'contents#similar_content', as: :similar_content
+      resources 'contents', only: [:index]
+      get '/contents/:id/related_promotion', to: 'contents#related_promotion', as: :related_promotion
+      get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
     end
 
     namespace :v2 do
