@@ -113,8 +113,6 @@ module Api
           root_content_category_id: reg_cat_ids
         })
 
-        debugger
-
         news_contents = Content.search news_opts
         reg_contents = Content.search reg_opts
 
