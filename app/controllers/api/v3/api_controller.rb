@@ -25,7 +25,7 @@ module Api
 
       def set_requesting_app_and_repository
         @requesting_app = ConsumerApp.where(uri: params[:consumer_app_uri]).first_or_create if params[:consumer_app_uri].present?
-        @repository = Repository.find_by_dsp_endpoint(params[:repository]) if params[:repository].present?
+        @repository = @requesting_app.repository if @requesting_app.present?
       end
 
       # generic method that, if requesting app is present, updates
