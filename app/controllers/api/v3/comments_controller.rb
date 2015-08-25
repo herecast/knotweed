@@ -6,11 +6,13 @@ module Api
 
       def index
         root = Content.find params[:content_id]
+        @comments = []
 
         if root.present?
-          @comments = root.children.where(channel_type: 'Comment')
-        else
-          @comments = []
+          result_list = root.children.where(channel_type: 'Comment')
+          @comments << result_list
+          get_all_comments result_list
+          @comments.flatten!
         end
         render json: @comments, each_serializer: CommentSerializer
       end
@@ -62,6 +64,17 @@ module Api
         end
       end
 
+      private
+        
+        # populates @comments with all nested child comments in the tree
+        def get_all_comments(result_list)
+          result_list.each do |comment|
+            if comment.children.present?
+              @comments << comment.children
+            end
+            get_all_comments comment.children
+          end
+        end
     end
   end
 end

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'json'
 
 describe Api::V3::CommentsController do
 
@@ -34,13 +35,11 @@ describe Api::V3::CommentsController do
         @comment3.content.update_attribute :parent, @comment2.content
       end
     
-      subject { get :index, format: :json, content_id: @event.content.id }
+      subject! { get :index, format: :json, content_id: @event.content.id }
 
       it 'should return the results flattened' do
-        subject
-        expected = {comments: [comment_format(@comment1), comment_format(@comment2), comment_format(@comment3)]}.to_json
-        debugger
-        response.body.should eq(expected)
+        expected = {comments: [comment_format(@comment1), comment_format(@comment2), comment_format(@comment3)]}.stringify_keys
+        JSON.parse(response.body).should eq(expected)
       end
     end
 
@@ -88,15 +87,16 @@ describe Api::V3::CommentsController do
   end
 
   def comment_format(comment)
+    # r means results
     r = {}
     r[:id] = comment.channel.id
     r[:content] = comment.sanitized_content
     #r[:user_id] 
     #r[:user_name]
     #r[:user_image_url]
-    r[:pubdate] = comment.content.pubdate
-    r[:parent_content_id] = comment.content.parent_id
-    r 
+    r[:pubdate] = comment.pubdate.strftime("%Y-%m-%dT%H:%M:%S%:z")
+    r[:parent_content_id] = comment.parent_id
+    r.stringify_keys
   end
 
 end
