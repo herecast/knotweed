@@ -6,7 +6,7 @@ describe Api::V3::EventsController do
     @venue = FactoryGirl.create :business_location
     @current_user = FactoryGirl.create :user
     @listserv = FactoryGirl.create :listserv
-    request.env['HTTP_AUTHORIZATION'] = "Token token=#{@current_user.authentication_token}, email=#{@current_user.email}"
+    api_authenticate user:  @current_user
     @event_attrs = {
       category: Event::EVENT_CATEGORIES[0],
       contact_email: 'test@test.com',
@@ -69,8 +69,7 @@ describe Api::V3::EventsController do
 
     context 'should not allow update if current_api_user does not match authoremail' do
       before do  
-    	request.env['HTTP_AUTHORIZATION'] = "Token token=#{@different_user.authentication_token}, \
-	  email=#{@different_user.email}"
+    	api_authenticate user: @different_user 
       end
       it do
       	put :update, event: @attrs_for_update, id: @event.id
@@ -120,8 +119,8 @@ describe Api::V3::EventsController do
       response.code.should eq('422')
     end
 
-    context 'should respond with a 401 if no current_user_id is provided' do
-      before { request.env['HTTP_AUTHORIZATION'] = '' }
+    context 'should respond with a 401 if user is not authenticated' do
+      before { api_authenticate success: false }
       it do
       	post :create, format: :json, event: @event_attrs
       	response.code.should eq('401')
