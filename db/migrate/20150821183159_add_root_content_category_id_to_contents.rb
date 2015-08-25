@@ -1,6 +1,7 @@
 class AddRootContentCategoryIdToContents < ActiveRecord::Migration
   def up
     add_column :contents, :root_content_category_id, :integer
+    add_index :contents, :root_content_category_id
 
     # set it retroactively
     execute <<-SQL
@@ -11,6 +12,7 @@ class AddRootContentCategoryIdToContents < ActiveRecord::Migration
   end
 
   def down
+    remove_index :contents, :root_content_category_id
     remove_column :contents, :root_content_category_id
   end
 end

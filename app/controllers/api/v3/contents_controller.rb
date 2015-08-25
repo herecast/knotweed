@@ -71,14 +71,18 @@ module Api
 
       def index
         opts = {}
-        opts = { select: '*, weight()', 
-                 excerpts: { limit: 350, around: 5, html_strip_mode: "strip" } }
+        opts = { select: '*, weight()' }
         opts[:order] = 'pubdate DESC'
         opts[:with] = {}
         opts[:conditions] = {}
         opts[:page] = params[:page] || 1
         opts[:conditions][:published] = 1 if @repository.present?
         opts[:sql] = { include: [:images, :publication, :root_content_category] }
+
+        if @requesting_app.present?
+          allowed_pubs = @requesting_app.publications
+          opts[:with].merge!({pub_id: allowed_pubs.collect{|c| c.id} })
+        end
 
         default_location_id = Location.find_by_city(Location::DEFAULT_LOCATION).id
         location_condition = @current_api_user.try(:location_id) || default_location_id

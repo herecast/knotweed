@@ -286,6 +286,7 @@ ActiveRecord::Schema.define(:version => 20150824192402) do
   add_index "contents", ["pubdate"], :name => "pubdate"
   add_index "contents", ["publication_id"], :name => "source_id"
   add_index "contents", ["published"], :name => "index_contents_on_published"
+  add_index "contents", ["root_content_category_id"], :name => "index_contents_on_root_content_category_id"
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["title"], :name => "title"
 
