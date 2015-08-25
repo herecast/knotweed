@@ -69,7 +69,7 @@ describe Api::V3::EventsController do
 
     context 'should not allow update if current_api_user does not match authoremail' do
       before do  
-    	api_authenticate  success: false
+    	api_authenticate user: @different_user 
       end
       it do
       	put :update, event: @attrs_for_update, id: @event.id
