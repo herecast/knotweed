@@ -53,7 +53,8 @@ class User < ActiveRecord::Base
   attr_accessible :role_ids, :as => :admin
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :organization_id, :role_ids,
     :default_repository_id, :location, :location_id
-  
+  validates_presence_of :location
+
   def ensure_authentication_token
     if authentication_token.blank?
       self.authentication_token = generate_authentication_token

@@ -135,4 +135,12 @@ describe User do
 
   end
 
+  describe 'required fields' do
+    before do 
+      @user = FactoryGirl.build :user, location: nil
+    end
+    subject { @user }
+    it { should_not be_valid }
+  end
+
 end
