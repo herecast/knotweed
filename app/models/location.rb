@@ -70,4 +70,10 @@ class Location < ActiveRecord::Base
     end
     location
   end
+
+  #though the HABTM relationship allows for many listservs, in reality
+  #each location will only have one listserv
+  def listserv
+    self.listservs.first
+  end
 end

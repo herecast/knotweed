@@ -77,7 +77,8 @@ Knotweed::Application.routes.draw do
   # API
   namespace :api do
     namespace :v3 do
-      get '/current_user', to: 'users#get_current_user'
+      get '/current_user', to: 'users#show'
+      put '/current_user', to: 'users#update'
       resources 'events', only: [:create, :show, :update]
       post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
       get 'promotion_banners/:id/track_click', to: 'promotion_banners#track_click', as: :track_click
