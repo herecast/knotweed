@@ -143,4 +143,11 @@ describe User do
     it { should_not be_valid }
   end
 
+  describe 'relationships' do
+    before { @user = FactoryGirl.build :user }
+    subject { @user }
+    it { should respond_to :avatar }
+  end
+
+
 end

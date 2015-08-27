@@ -14,10 +14,18 @@ describe Api::V3::UsersController do
 
     describe 'when api user signed in' do
       before do
+    
+        # Stub out image requests
+        raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
+        stub_request(:get, "https://www.google.com/images/srpr/logo11w.png").       with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+        to_return(raw_resp.read)
+        ImageUploader.storage = :file
+
         listserv = FactoryGirl.create :listserv
         location = FactoryGirl.create :location, listservs: [listserv], \
           consumer_active: true
-        @user = FactoryGirl.create :user, location: location
+        image = FactoryGirl.create :image, remote_image_url: "https://www.google.com/images/srpr/logo11w.png", imageable: @user
+        @user = FactoryGirl.create :user, location: location, avatar: image
         api_authenticate user: @user
       end
 
@@ -37,9 +45,9 @@ describe Api::V3::UsersController do
           listserv_name: @user.location.listserv.name, 
           listserv_id: @user.location.listserv.id,
           test_group: @user.test_group || "",
-          user_image_url: "" }.stringify_keys
+          user_image_url: @user.avatar.image.url }.stringify_keys
         }.stringify_keys
-        desired.should eq JSON.parse(response.body)
+          JSON.parse(response.body).should eq desired
       end
     end
 

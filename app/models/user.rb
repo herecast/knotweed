@@ -39,6 +39,7 @@ class User < ActiveRecord::Base
   has_many :notifiers
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
+  has_one :avatar, class_name: "Image", as: :imageable, inverse_of: :imageable, dependent: :destroy
 
   before_save :ensure_authentication_token
 
@@ -52,7 +53,7 @@ class User < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :role_ids, :as => :admin
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :organization_id, :role_ids,
-    :default_repository_id, :location, :location_id
+    :default_repository_id, :location, :location_id, :avatar
   validates_presence_of :location
 
   def ensure_authentication_token

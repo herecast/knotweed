@@ -15,8 +15,8 @@ module Api
               location: @current_api_user.location.name,
               listserv_id: listserv_id,
               listserv_name: listserv.name,
-              test_group: @current_api_user.test_group.to_s,
-              user_image_url: "TODO"
+              test_group: @current_api_user.test_group || "",
+              user_image_url: @current_api_user.avatar.image.url 
             }
           }, status: 200
         else
