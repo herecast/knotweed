@@ -3,6 +3,9 @@ require 'spec_helper'
 describe Api::V3::ContentsController do
   before do
     @repo = FactoryGirl.create :repository
+    @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+    @pub = FactoryGirl.create :publication
+    @consumer_app.publications = [@pub]
   end
 
   describe 'GET index' do
@@ -16,13 +19,15 @@ describe Api::V3::ContentsController do
       @user = FactoryGirl.create :user, location: @other_location
       FactoryGirl.create_list :content, 3, content_category: @news_cat, 
         locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 15, content_category: @market_cat, 
+      FactoryGirl.create_list :content, 5, content_category: @market_cat, 
         locations: [@default_location], published: true
       FactoryGirl.create_list :content, 5, content_category: @tott_cat,
         locations: [@default_location], published: true
       FactoryGirl.create_list :content, 5, content_category: @event_cat,
         locations: [@default_location], published: true
       FactoryGirl.create_list :content, 3, content_category: @market_cat, 
+        locations: [@other_location]
+      FactoryGirl.create_list :content, 3, content_category: @tott_cat, 
         locations: [@other_location]
     end
 
@@ -48,6 +53,27 @@ describe Api::V3::ContentsController do
         subject
         assigns(:contents).select{|c| c.locations.include? @other_location }.count.should eq(0)
       end
+    end
+
+    context 'signed in' do
+      before do
+        api_authenticate user: @user
+      end
+
+      it 'has 200 status code' do
+        subject
+        response.code.should eq('200')
+      end
+
+      it 'should include talk items' do
+        subject
+        assigns(:contents).select{|c| c.content_category_id == @tott_cat.id }.count.should >0
+      end
+
+      it 'should return items in the user\'s location' do
+        subject
+        assigns(:contents).select{|c| c.locations.include? @other_location}.count.should eq(assigns(:contents).count)
+      end
 
     end
 
@@ -64,7 +90,7 @@ describe Api::V3::ContentsController do
     end
 
     subject { get :related_promotion, format: :json, 
-              id: @content.id, repository_id: @repo.id }
+              id: @content.id, consumer_app_uri: @consumer_app.uri }
 
     it 'has 200 status code' do
       subject
@@ -99,12 +125,14 @@ describe Api::V3::ContentsController do
   describe 'GET similar_content' do
     before do
       @content_id = FactoryGirl.create(:content).id
-      @sim_content = FactoryGirl.create :content
+      # note, similar content is filtered by publication so we need to ensure this has
+      # a publication that exists in the consumer app's list.
+      @sim_content = FactoryGirl.create :content, publication: @pub
       Content.any_instance.stub(:similar_content).with(@repo, 20).and_return([@sim_content])
     end
 
     subject { get :similar_content, format: :json,
-        id: @content_id, repository: @repo.dsp_endpoint }
+        id: @content_id, consumer_app_uri: @consumer_app.uri }
 
     it 'has 200 status code' do
       subject
@@ -123,7 +151,7 @@ describe Api::V3::ContentsController do
       @content = FactoryGirl.create :content
       @user = FactoryGirl.create :user
       
-      request.env['HTTP_AUTHORIZATION'] = "Token token=#{@user.authentication_token}, email=#{@user.email}"
+      api_authenticate user: @user
     end
 
     it 'should queue flag notification email' do
