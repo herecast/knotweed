@@ -38,11 +38,13 @@ require 'spec_helper'
 describe User do
 
   before(:each) do
+    location = FactoryGirl.create :location
     @attr = {
       :name => "Example User",
       :email => "user@example.com",
       :password => "changeme",
-      :password_confirmation => "changeme"
+      :password_confirmation => "changeme",
+      :location => location
     }
   end
 
@@ -142,12 +144,4 @@ describe User do
     subject { @user }
     it { should_not be_valid }
   end
-
-  describe 'relationships' do
-    before { @user = FactoryGirl.build :user }
-    subject { @user }
-    it { should respond_to :avatar }
-  end
-
-
 end
