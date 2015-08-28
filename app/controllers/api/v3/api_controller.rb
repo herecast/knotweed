@@ -20,11 +20,15 @@ module Api
       end
 
       def set_current_api_user
-	@current_api_user = current_user
+        @current_api_user = current_user
       end
 
       def set_requesting_app_and_repository
-        @requesting_app = ConsumerApp.where(uri: params[:consumer_app_uri]).first_or_create if params[:consumer_app_uri].present?
+        if request.headers['Consumer-App-Uri'].present?
+          @requesting_app = ConsumerApp.find_by_uri(request.headers['Consumer-App-Uri'])
+        elsif params[:consumer_app_uri].present?
+          @requesting_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
+        end
         @repository = @requesting_app.repository if @requesting_app.present?
       end
 
@@ -43,7 +47,7 @@ module Api
       end
       
       def authenticate_user_from_token!
-    	authenticate_with_http_token do |token, options|
+        authenticate_with_http_token do |token, options|
       	  user_email = options[:email].presence
       	  user = user_email && User.find_by_email(user_email)
 

@@ -95,6 +95,8 @@ Knotweed::Application.routes.draw do
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       resources 'news', only: [:index, :show]
       resources 'talk', only: [:index, :show]
+      resources 'market_posts', only: [:index, :show]
+      get '/market_posts/:id/contact', to: 'market_posts#contact', as: :market_post_contact
     end
 
     namespace :v2 do
