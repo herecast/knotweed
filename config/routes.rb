@@ -94,6 +94,7 @@ Knotweed::Application.routes.draw do
       get '/contents/:id/related_promotion', to: 'contents#related_promotion', as: :related_promotion
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       resources 'news', only: [:index, :show]
+      resources 'talk', only: [:index, :show]
     end
 
     namespace :v2 do
