@@ -39,7 +39,6 @@ class User < ActiveRecord::Base
   has_many :notifiers
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
-  has_one :avatar, class_name: "Image", as: :imageable, inverse_of: :imageable, dependent: :destroy
 
   before_save :ensure_authentication_token
 
