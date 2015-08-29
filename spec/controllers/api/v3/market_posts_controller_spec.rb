@@ -87,4 +87,48 @@ describe Api::V3::MarketPostsController do
     end
   end
 
+  describe 'POST create' do
+    before do
+      @user = FactoryGirl.create :user
+    end
+
+    context 'not signed in' do
+      it 'should respond with 401' do
+        post :create
+        response.code.should eq('401')
+      end
+    end
+
+    context 'signed in' do
+      before do
+        api_authenticate user: @user
+        @basic_attrs = {
+          title: 'Fake title',
+          content: 'This is a test',
+          price: '$99',
+          contact_phone: '888-888-8888',
+          contact_email: 'fake@email.com',
+          locate_address: '300 Main Street Norwich VT 05055'
+        }
+      end
+
+      subject { post :create, market_post: @basic_attrs }
+
+      it 'should respond with 201' do
+        subject
+        response.code.should eq('201')
+      end
+
+      it 'should create a market post' do
+        expect{subject}.to change{MarketPost.count}.by(1)
+      end
+
+      it 'should create an associated content' do
+        expect{subject}.to change{Content.count}.by(1)
+        (assigns(:market_post).content.present?).should be true
+      end
+    end
+
+  end
+
 end

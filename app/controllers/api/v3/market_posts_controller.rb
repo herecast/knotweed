@@ -2,6 +2,8 @@ module Api
   module V3
     class MarketPostsController < ApiController
 
+      before_filter :check_logged_in!, only: [:create] 
+
       def index
         opts = {}
         opts = { select: '*, weight()' }
@@ -41,6 +43,41 @@ module Api
         render json: @market_posts, each_serializer: MarketPostSerializer
       end
 
+      def create
+        market_cat = ContentCategory.find_by_name 'market'
+        content_attributes = {
+          title: params[:market_post].delete(:title),
+          raw_content: params[:market_post].delete(:content),
+          content_category_id: market_cat.id,
+          pubdate: Time.zone.now,
+          timestamp: Time.zone.now
+        }
+        listserv_ids = params[:market_post].delete :listserv_ids
+        map_parameter_names!
+        params[:market_post][:content_attributes] = content_attributes
+
+        @market_post = MarketPost.new(params[:market_post])
+
+        if @market_post.save
+          # reverse publish to specified listservs
+          if listserv_ids.present?
+            listserv_ids.each do |d|
+              next if d.empty?
+              list = Listserv.find(d.to_i)
+              PromotionListserv.create_from_content(@market_post.content, list, @requesting_app) if list.present? and list.active
+            end
+          end
+          if @repository.present?
+            @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
+          end
+
+          render json: @market_post, serializer: DetailedMarketPostSerializer, can_edit: true,
+            status: 201
+        else
+          render json: { errors: "Market Post could not be created" }, status: 500
+        end
+      end
+
       def show
         @market_post = Content.find params[:id]
 
@@ -69,6 +106,13 @@ module Api
             }
           }
         end
+      end
+
+      private
+
+      # maps Ember app parameter names to our actual field names
+      def map_parameter_names!
+        params[:market_post][:cost] = params[:market_post].delete :price
       end
 
     end
