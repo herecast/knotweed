@@ -6,8 +6,8 @@ module Api
       # BUT since the comment model does basically nothing, this actually serializes Content
       # (associated with comments) in the desired comment struture
 
-      attributes :id, :content, :comments, :event_id, :user_name,
-        :pubdate, :title
+      attributes :id, :content, :pubdate, :parent_content_id
+        #TODO user_id, user_name, user_image_url
 
       def id
         object.channel.id
@@ -17,23 +17,16 @@ module Api
         object.sanitized_content
       end
 
-      def event_id
-        serialization_options[:event_id] if serialization_options.has_key? :event_id
-      end
-
-      def comments
-        if object.children.present?
-          object.children.map do |child|
-            # only include Comments in thread
-            if child.channel.is_a? Comment
-              CommentSerializer.new(child).serializable_hash
-            end
-          end
-        end
-      end
-
       def user_name
-        object.authors
+        #TODO
+      end
+      
+      def parent_content_id
+        object.parent_id
+      end
+      
+      def pubdate
+        object.pubdate
       end
 
     end

@@ -5,34 +5,28 @@ module Api
       before_filter :check_logged_in!, only: [:create] 
 
       def index
-        if params[:event_instance_id].present?
-          ei = EventInstance.find params[:event_instance_id]
-          root = ei.event.content
-        elsif params[:event_id].present?
-          e = Event.find params[:event_id]
-          root = e.content
-        end
+        root = Content.find params[:content_id]
+        @comments = []
 
         if root.present?
-          @comments = root.children.where(channel_type: 'Comment')
-        else
-          @comments = []
+          result_list = root.children.where(channel_type: 'Comment')
+          @comments << result_list
+          get_all_comments result_list
+          @comments.flatten!
+          @comments.sort! { |a,b| b.pubdate <=> a.pubdate }
         end
         render json: @comments, each_serializer: CommentSerializer
       end
 
       def create
         location_ids = [@current_api_user.try(:location_id)]
-        if params[:comment][:parent_comment_id].present?
-          parent_id = Comment.find(params[:comment][:parent_comment_id]).content.id
-        elsif params[:comment][:event_instance_id].present?
-          parent_id = EventInstance.find(params[:comment][:event_instance_id]).event.content.id
+        if params[:comment][:parent_id].present?
+          parent_id = params[:comment][:parent_id]
         else
           parent_id = nil
         end
         # avoid mass assignment errors
-        params[:comment].delete :parent_comment_id
-        params[:comment].delete :event_instance_id
+        params[:comment].delete :parent_id
 
         # hard coded publication...
         pub = Publication.find_or_create_by_name 'DailyUV'
@@ -71,6 +65,17 @@ module Api
         end
       end
 
+      private
+        
+        # populates @comments with all nested child comments in the tree
+        def get_all_comments(result_list)
+          result_list.each do |comment|
+            if comment.children.present?
+              @comments << comment.children
+            end
+            get_all_comments comment.children
+          end
+        end
     end
   end
 end
