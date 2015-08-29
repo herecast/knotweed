@@ -67,4 +67,81 @@ describe Api::V3::TalkController do
 
   end
 
+  describe 'PUT update' do
+    before do
+      @talk = FactoryGirl.create :comment
+    end
+
+    context 'not signed in' do
+      it 'should respond with 401' do
+        put :update, id: @talk.content.id
+        response.code.should eq('401')
+      end
+    end
+
+    context 'signed in' do
+      before do
+        api_authenticate user: @user
+        @file = fixture_file_upload('/photo.jpg', 'image/jpg')
+        ImageUploader.storage = :file
+      end
+
+      subject { put :update, id: @talk.content.id, talk: { image: @file } }
+
+      it 'should respond with 200' do
+        subject
+        response.code.should eq('200')
+      end
+
+      it 'should create a new Image' do
+        expect{subject}.to change{Image.count}.by(1)
+      end
+
+      it 'should associate a new Image with the Content record' do
+        subject
+        (assigns(:content).reload.images.present?).should eq(true)
+      end
+
+    end
+
+  end
+
+  describe 'POST create' do
+    before do
+      @basic_attrs = {
+        title: 'Some Title Here',
+        content: 'Hello this is the body'
+      }
+    end
+
+    subject { post :create, talk: @basic_attrs }
+
+    context 'not signed in' do
+      it 'should respond with 401' do
+        subject
+        response.code.should eq('401')
+      end
+    end
+
+    context 'signed in' do
+      before do
+        api_authenticate user: @user
+      end
+
+      it 'should respond with 201' do
+        subject
+        response.code.should eq('201')
+      end
+
+      it 'should create a comment' do
+        expect{subject}.to change{Comment.count}.by(1)
+      end
+
+      it 'should create an associated content object' do
+        expect{subject}.to change{Content.count}.by(1)
+        (assigns(:talk).content.present?).should be true
+      end
+    end
+  end
+
 end
