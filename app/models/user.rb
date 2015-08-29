@@ -31,6 +31,7 @@
 #  location_id            :integer
 #  test_group             :string(255)
 #  muted                  :boolean          default(FALSE)
+#  authentication_token   :string(255)
 #
 
 class User < ActiveRecord::Base

@@ -108,7 +108,9 @@ describe Api::V3::MarketPostsController do
           price: '$99',
           contact_phone: '888-888-8888',
           contact_email: 'fake@email.com',
-          locate_address: '300 Main Street Norwich VT 05055'
+          locate_address: '300 Main Street Norwich VT 05055',
+          preferred_contact_method: 'phone',
+          status: 'selling'
         }
       end
 
