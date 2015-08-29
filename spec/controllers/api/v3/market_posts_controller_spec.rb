@@ -87,6 +87,43 @@ describe Api::V3::MarketPostsController do
     end
   end
 
+  describe 'PUT update' do
+    before do
+      @user = FactoryGirl.create :user
+      @market_post = FactoryGirl.create :market_post
+      @attrs_for_update = { 
+        title: 'This is a changed title',
+        price: 'New low price'
+      }
+    end
+
+    subject { put :update, id: @market_post.content.id, market_post: @attrs_for_update }
+
+    context 'not signed in' do
+      it 'should respond with 401' do
+        subject
+        response.code.should eq('401')
+      end
+    end
+
+    context 'signed in' do
+      # TODO: once we have created_by, add specs to ensure that only the user who 
+      # created the object can update it.
+      before do
+        api_authenticate user: @user
+      end
+
+      it 'should update the market post\'s attributes' do
+        expect{subject}.to change{@market_post.reload.cost}.to @attrs_for_update[:price]
+      end
+
+      it 'should update the associated content\'s attributes' do
+        expect{subject}.to change{@market_post.content.reload.title}.to @attrs_for_update[:title]
+      end
+    end
+
+  end
+
   describe 'POST create' do
     before do
       @user = FactoryGirl.create :user

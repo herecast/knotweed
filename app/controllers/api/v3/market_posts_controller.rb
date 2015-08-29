@@ -2,7 +2,7 @@ module Api
   module V3
     class MarketPostsController < ApiController
 
-      before_filter :check_logged_in!, only: [:create] 
+      before_filter :check_logged_in!, only: [:create, :update]
 
       def index
         opts = {}
@@ -45,12 +45,14 @@ module Api
 
       def create
         market_cat = ContentCategory.find_by_name 'market'
+        pub = Publication.find_or_create_by_name 'DailyUV'
         content_attributes = {
           title: params[:market_post].delete(:title),
           raw_content: params[:market_post].delete(:content),
           content_category_id: market_cat.id,
           pubdate: Time.zone.now,
-          timestamp: Time.zone.now
+          timestamp: Time.zone.now,
+          publication_id: pub.id
         }
         listserv_ids = params[:market_post].delete :listserv_ids
         map_parameter_names!
@@ -71,10 +73,60 @@ module Api
             @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
           end
 
-          render json: @market_post, serializer: DetailedMarketPostSerializer, can_edit: true,
+          render json: @market_post.content, serializer: DetailedMarketPostSerializer, can_edit: true,
             status: 201
         else
-          render json: { errors: "Market Post could not be created" }, status: 500
+          render json: { errors: ["Market Post could not be created"] }, status: 500
+        end
+      end
+
+      def update
+        @market_post = Content.find(params[:id]).channel
+
+        # TODO: once we have created_by, confirm that the user can edit this market post
+        
+        # TODO: add updated_by processing here
+        content_attrs = {}
+        content_attrs[:id] = @market_post.content.id
+        content_attrs[:title] = params[:market_post].delete(:title) if params[:market_post][:title].present?
+        content_attrs[:raw_content] = params[:market_post].delete(:content) if params[:market_post][:content].present?
+        listserv_ids = params[:market_post].delete :listserv_ids
+        map_parameter_names!
+        params[:market_post][:content_attributes] = content_attrs
+        image_data = params[:market_post].delete :image
+        
+        # FOR NOW, coding this the same way that events apiv2 were coded.
+        # Meaning, the UPDATE call can take EITHER an image OR updated attributes
+        # but not both! and if an image is provided, it ignores everything else.
+        if image_data.present?
+          # clear out existing images since we are only set up to have one right now
+          @market_post.content.images.destroy_all
+          if Image.create(image: image_data, imageable: @market_post.content)
+            render json: @market_post.content, status: 200, 
+              serializer: DetailedMarketPostSerializer, can_edit: true
+          else
+            render json: { errors: @market_post.errors.messages }, 
+              status: :unprocessable_entity
+          end
+        else # do the normal update of attributes
+          if @market_post.update_attributes!(params[:market_post])
+            # reverse publish to specified listservs
+            if listserv_ids.present?
+              listserv_ids.each do |d|
+                next if d.empty?
+                list = Listserv.find(d.to_i)
+                PromotionListserv.create_from_content(@market_post.content, list, @requesting_app) if list.present? and list.active
+              end
+            end
+            if @repository.present?
+              @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
+            end
+            render json: @market_post.content, status: 200, 
+              serializer: DetailedMarketPostSerializer, can_edit: true
+          else
+            render json: { errors: @market_post.errors.messages },
+              status: :unprocessable_entity
+          end
         end
       end
 
