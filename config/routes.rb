@@ -4,6 +4,10 @@ Knotweed::Application.routes.draw do
     root :to => "dashboard#index"
   end
   devise_for :users, controllers: { sessions: 'sessions' }
+  #custom devise routing
+  devise_scope :user  do
+    post '/api/v3/users/sign_in', to: 'sessions#create'
+  end
   root :to => redirect("#{"#{ENV['RAILS_RELATIVE_URL_ROOT']}" unless ENV['RAILS_RELATIVE_URL_ROOT'].nil?}/users/sign_in")
   resources :users
   
