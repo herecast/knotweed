@@ -8,6 +8,7 @@ module Api
         opts[:with] = {}
         opts[:conditions] = {}
         opts[:page] = params[:page] || 1
+        opts[:star] = true
 
         if @requesting_app.present?
           opts[:with][:consumer_app_ids] = @requesting_app.id
