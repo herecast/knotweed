@@ -236,10 +236,17 @@ class Content < ActiveRecord::Base
 
     # if this has our proprietary 'X-Original-Content-Id' key in the header, it means this was created on our site.
     # if so, AND it's an event, it implies it's already been curated (i.e. 'has_event-calendar')
-    original_content_id = 0
+    original_content_id = original_event_instance_id = 0
     original_content_id = data['X-Original-Content-Id'] if data.has_key? 'X-Original-Content-Id'
     if original_content_id > 0
       c = Content.find(original_content_id)
+      data['has_event_calendar'] = true if 'Event' == c.channel_type
+    end
+    # if this has our proprietary 'X-Original-Event-Instance-Id' key in the header, it means this was created on
+    # our site so don't create new content. If so, AND it's an event, it implies it's already been curated (i.e. 'has_event-calendar')
+    original_event_instance_id = data['X-Original-Event-Instance-Id'] if data.has_key? 'X-Original-Event-Instance-Id'
+    if original_event_instance_id > 0
+      c = EventInstance.find(original_event_instance_id).event.content
       data['has_event_calendar'] = true if 'Event' == c.channel_type
     end
 
@@ -706,7 +713,7 @@ class Content < ActiveRecord::Base
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
                "import_record_id", "published",
                "category_reviewed", "raw_content",
-               "has_event_calendar")
+               "has_event_calendar", 'root_content_category_id', 'delta')
   end
 
   # Export Gate Document directly before/after Pipeline processing

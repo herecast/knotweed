@@ -4,6 +4,10 @@ Knotweed::Application.routes.draw do
     root :to => "dashboard#index"
   end
   devise_for :users, controllers: { sessions: 'sessions' }
+  #custom devise routing
+  devise_scope :user  do
+    post '/api/v3/users/sign_in', to: 'sessions#create'
+  end
   root :to => redirect("#{"#{ENV['RAILS_RELATIVE_URL_ROOT']}" unless ENV['RAILS_RELATIVE_URL_ROOT'].nil?}/users/sign_in")
   resources :users
   
@@ -94,6 +98,10 @@ Knotweed::Application.routes.draw do
       get '/contents/:id/related_promotion', to: 'contents#related_promotion', as: :related_promotion
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       resources 'publications', only: [:index]
+      resources 'news', only: [:index, :show]
+      resources 'talk', only: [:index, :show]
+      resources 'market_posts', only: [:index, :show]
+      get '/market_posts/:id/contact', to: 'market_posts#contact', as: :market_post_contact
     end
 
     namespace :v2 do

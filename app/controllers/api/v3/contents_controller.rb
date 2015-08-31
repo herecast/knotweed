@@ -120,7 +120,7 @@ module Api
         # because thinking sphinx
         @contents = news_contents.to_a + reg_contents.to_a
 
-        render json: @contents, arrayserializer: ContentSerializer
+        render json: @contents, each_serializer: ContentSerializer
 
       end
 
