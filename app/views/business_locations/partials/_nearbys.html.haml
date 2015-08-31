@@ -1,9 +1,6 @@
 - if @nearbys.present?
   %h4 #{@nearbys.count.to_s} Nearby Venues
   .row-fluid
-    -#.span4#venues-container
-      #venues-canvas
-    -# .span8
     %table.table.table-striped.table-bordered.data-table.table-condensed
       %th Name
       %th Address
@@ -16,10 +13,10 @@
           %td= venue.full_address
           %td= @events_per_venue[venue.id]
           %td.actions
-            = link_to 'Edit', venue_info_path(venue), class: 'btn btn-mini btn-warning'
+            = link_to 'Edit', edit_business_location_path(venue), class: 'btn btn-mini btn-warning'
           %td.actions
             - if 0 == @events_per_venue[venue.id]
-              = link_to 'X', business_location_path(venue), remote: true, method: :delete,
+              = link_to 'X', business_location_path(venue), method: :delete,
                 class: 'btn btn-mini btn-danger',
                 confirm: "Are you sure you want to delete the venue #{venue.name} at #{venue.full_address}?"
 - else

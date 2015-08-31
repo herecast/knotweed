@@ -33,6 +33,8 @@ class BusinessLocation < ActiveRecord::Base
     :latitude, :longitude, :venue_url, :locate_include_name, :city, :state,
     :zip, :created_by, :updated_by, :status
 
+  validates_presence_of :address, :city, :state
+
   STATUS_CATEGORIES = [:approved, :new, :private]
 
   enumerize :status, in: STATUS_CATEGORIES

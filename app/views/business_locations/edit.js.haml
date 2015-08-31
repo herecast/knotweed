@@ -1,0 +1,6 @@
+/ logic for event
+if ($("#event_venue_id").length > 0) {
+/ find option tag for @business_location and update it
+$('#event_venue_id option[value="#{@business_location.id}"]').text("#{ @business_location.select_option_label }");
+$("#event_venue_id").change();
+}

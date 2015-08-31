@@ -27,6 +27,8 @@ FactoryGirl.define do
     name "MyString"
     publication
     address "MyString"
+    city "MyTown"
+    state "MyState"
     phone "MyString"
     email "MyString"
     hours "MyString"

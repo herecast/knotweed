@@ -96,7 +96,7 @@
           %span Search
       - if can? :create, BusinessLocation
         %li{ class: current_page?(new_business_location_path) ? "active" : "" }
-          = link_to new_business_location_path(test: 'html') do
+          = link_to new_business_location_path do
             %i.icon-plus
             %span Create New
 - if can? :read, ContentSet

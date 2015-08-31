@@ -423,7 +423,6 @@ ActiveRecord::Schema.define(:version => 20150817134219) do
   end
 
   add_index "events", ["featured"], :name => "index_events_on_featured"
-  add_index "events", ["venue_id"], :name => "events_on_venue_id_index"
   add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 
   create_table "front_end_builds_apps", :force => true do |t|
