@@ -15,7 +15,7 @@ module Api
               location_id: @current_api_user.location.id,
               location: @current_api_user.location.name,
               listserv_id: listserv_id,
-              listserv_name: listserv.name,
+              listserv_name: listserv.try(:name).to_s,
               test_group: @current_api_user.test_group || "",
               user_image_url: "" 
             }
@@ -29,15 +29,14 @@ module Api
         if @current_api_user.present?
           
           @current_api_user.name = 
-            params[:current_user][:name] if params[:current_user][:name]
-          if params[:current_user][:location_id]
+            params[:current_user][:name] if params[:current_user][:name].present?
+          if params[:current_user][:location_id].present?
             location = Location.find(params[:current_user][:location_id])
             @current_api_user.location = location
           end
-          @current_api_user.email =  params[:current_user][:email] if params[:current_user][:email]
-
-          if params[:current_user][:password] && 
-            params[:current_user][:password_confirmation]
+          @current_api_user.email =  params[:current_user][:email] if params[:current_user][:email].present?
+          if params[:current_user][:password].present? && 
+            params[:current_user][:password_confirmation].present?
             @current_api_user.password = params[:current_user][:password]
             @current_api_user.password_confirmation =
               params[:current_user][:password_confirmation]
