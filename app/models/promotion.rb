@@ -4,6 +4,7 @@
 #
 #  id              :integer          not null, primary key
 #  active          :boolean
+#  banner          :string(255)
 #  publication_id  :integer
 #  content_id      :integer
 #  description     :text
@@ -11,8 +12,7 @@
 #  updated_at      :datetime         not null
 #  promotable_id   :integer
 #  promotable_type :string(255)
-#  banner          :string(255)
-#  paid            :boolean
+#  paid            :boolean          default(FALSE)
 #
 
 class Promotion < ActiveRecord::Base
