@@ -51,6 +51,7 @@ module Api
           raw_content: params[:market_post].delete(:content),
           authoremail: @current_api_user.try(:email),
           authors: @current_api_user.try(:name),
+          location_ids: [@current_api_user.location_id],
           content_category_id: market_cat.id,
           pubdate: Time.zone.now,
           timestamp: Time.zone.now,
