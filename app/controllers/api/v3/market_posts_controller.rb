@@ -61,7 +61,6 @@ module Api
         params[:market_post][:content_attributes] = content_attributes
 
         @market_post = MarketPost.new(params[:market_post])
-        logger.debug "NEW MARKET POST #{@market_post.content.inspect}"
         if @market_post.save
           # reverse publish to specified listservs
           if listserv_ids.present?
