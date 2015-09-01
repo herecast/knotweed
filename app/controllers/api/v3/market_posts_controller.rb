@@ -49,6 +49,8 @@ module Api
         content_attributes = {
           title: params[:market_post].delete(:title),
           raw_content: params[:market_post].delete(:content),
+          authoremail: @current_api_user.try(:email),
+          authors: @current_api_user.try(:name),
           content_category_id: market_cat.id,
           pubdate: Time.zone.now,
           timestamp: Time.zone.now,
@@ -59,18 +61,18 @@ module Api
         params[:market_post][:content_attributes] = content_attributes
 
         @market_post = MarketPost.new(params[:market_post])
-
+        logger.debug "NEW MARKET POST #{@market_post.content.inspect}"
         if @market_post.save
           # reverse publish to specified listservs
           if listserv_ids.present?
             listserv_ids.each do |d|
-              next if d.empty?
+              next unless d.present?
               list = Listserv.find(d.to_i)
               PromotionListserv.create_from_content(@market_post.content, list, @requesting_app) if list.present? and list.active
             end
           end
           if @repository.present?
-            @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
+            @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
 
           render json: @market_post.content, serializer: DetailedMarketPostSerializer, can_edit: true,
@@ -113,13 +115,13 @@ module Api
             # reverse publish to specified listservs
             if listserv_ids.present?
               listserv_ids.each do |d|
-                next if d.empty?
+                next unless d.present?
                 list = Listserv.find(d.to_i)
                 PromotionListserv.create_from_content(@market_post.content, list, @requesting_app) if list.present? and list.active
               end
             end
             if @repository.present?
-              @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, repo)
+              @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
             end
             render json: @market_post.content, status: 200, 
               serializer: DetailedMarketPostSerializer, can_edit: true
