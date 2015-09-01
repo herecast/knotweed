@@ -103,6 +103,7 @@ Knotweed::Application.routes.draw do
       resources 'talk', only: [:index, :show, :create, :update]
       resources 'market_posts', only: [:index, :show, :create, :update]
       get '/market_posts/:id/contact', to: 'market_posts#contact', as: :market_post_contact
+      get '/weather', to: 'users#weather', as: :weather
     end
 
     namespace :v2 do
