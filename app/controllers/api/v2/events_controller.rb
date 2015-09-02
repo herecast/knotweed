@@ -135,8 +135,6 @@ module Api
 
         if params[:event][:venue].present? and !params[:event][:venue_id].present?
           params[:event][:venue_attributes] = params[:event].delete :venue
-          # TODO take this out before PR, just for testing
-          params[:event][:venue_attributes][:status] = 'New'
         end
 
         # translate params that have the wrong name
