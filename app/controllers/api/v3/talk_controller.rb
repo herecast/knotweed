@@ -57,18 +57,18 @@ module Api
         listserv_id = params[:talk].delete :listserv_id
         
         # parse out content attributes
-        params[:talk][:content_attributes] = {
-          title: params[:talk].delete(:title),
+        content_attributes = {
+          title: params[:talk][:title],
           location_ids: [@current_api_user.location_id],
           authoremail: @current_api_user.try(:email),
           authors: @current_api_user.try(:name),
-          raw_content: params[:talk].delete(:content),
+          raw_content: params[:talk][:content],
           pubdate: Time.zone.now,
           publication_id: pub.id,
           content_category_id: cat.id
         }
 
-        @talk = Comment.new(params[:talk])
+        @talk = Comment.new({ content_attributes: content_attributes })
 
         if @talk.save
           if listserv_id.present?
