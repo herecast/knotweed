@@ -3,10 +3,11 @@ Knotweed::Application.routes.draw do
   authenticated :user do
     root :to => "dashboard#index"
   end
-  devise_for :users, controllers: { sessions: 'sessions' }
+  devise_for :users, controllers: { sessions: 'sessions', registrations: 'registrations' }
   #custom devise routing
   devise_scope :user  do
     post '/api/v3/users/sign_in', to: 'sessions#create'
+    post '/api/v3/users/sign_up', to: 'registrations#create'
   end
   root :to => redirect("#{"#{ENV['RAILS_RELATIVE_URL_ROOT']}" unless ENV['RAILS_RELATIVE_URL_ROOT'].nil?}/users/sign_in")
   resources :users
