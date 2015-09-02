@@ -18,6 +18,9 @@ class Location < ActiveRecord::Base
   # defaults to 77, the current production ID for "Upper Valley" location
   REGION_LOCATION_ID = Figaro.env.has_key?(:region_location_id) ? Figaro.env.region_location_id : 77
 
+  DEFAULT_LOCATION = Figaro.env.has_key?(:default_location) ? Figaro.env.default_location \
+    : 'Hartford'
+
   has_and_belongs_to_many :publications
   has_and_belongs_to_many :listservs
   has_and_belongs_to_many :contents
@@ -30,6 +33,8 @@ class Location < ActiveRecord::Base
   attr_accessible :city, :county, :lat, :long, :state, :zip, :publication_ids, :consumer_active
 
   default_scope order: :city
+
+  scope :consumer_active, where(consumer_active: true)
 
   def name
     "#{try(:city)} #{try(:state)}"
@@ -64,5 +69,11 @@ class Location < ActiveRecord::Base
       end
     end
     location
+  end
+
+  #though the HABTM relationship allows for many listservs, in reality
+  #each location will only have one listserv
+  def listserv
+    self.listservs.first
   end
 end

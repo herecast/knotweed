@@ -3,40 +3,42 @@
 #
 # Table name: contents
 #
-#  id                     :integer          not null, primary key
-#  title                  :string(255)
-#  subtitle               :string(255)
-#  authors                :string(255)
-#  raw_content            :text
-#  issue_id               :integer
-#  import_location_id     :integer
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  copyright              :string(255)
-#  guid                   :string(255)
-#  pubdate                :datetime
-#  source_category        :string(255)
-#  topics                 :string(255)
-#  url                    :string(255)
-#  origin                 :string(255)
-#  language               :string(255)
-#  page                   :string(255)
-#  authoremail            :string(255)
-#  publication_id         :integer
-#  quarantine             :boolean          default(FALSE)
-#  doctype                :string(255)
-#  timestamp              :datetime
-#  contentsource          :string(255)
-#  import_record_id       :integer
-#  source_content_id      :string(255)
-#  parent_id              :integer
-#  content_category_id    :integer
-#  category_reviewed      :boolean          default(FALSE)
-#  has_event_calendar     :boolean          default(FALSE)
-#  channelized_content_id :integer
-#  published              :boolean          default(FALSE)
-#  channel_type           :string(255)
-#  channel_id             :integer
+#  id                       :integer          not null, primary key
+#  title                    :string(255)
+#  subtitle                 :string(255)
+#  authors                  :string(255)
+#  raw_content              :text
+#  issue_id                 :integer
+#  import_location_id       :integer
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  copyright                :string(255)
+#  guid                     :string(255)
+#  pubdate                  :datetime
+#  source_category          :string(255)
+#  topics                   :string(255)
+#  url                      :string(255)
+#  origin                   :string(255)
+#  language                 :string(255)
+#  page                     :string(255)
+#  authoremail              :string(255)
+#  publication_id           :integer
+#  quarantine               :boolean          default(FALSE)
+#  doctype                  :string(255)
+#  timestamp                :datetime
+#  contentsource            :string(255)
+#  import_record_id         :integer
+#  source_content_id        :string(255)
+#  parent_id                :integer
+#  content_category_id      :integer
+#  category_reviewed        :boolean          default(FALSE)
+#  has_event_calendar       :boolean          default(FALSE)
+#  channelized_content_id   :integer
+#  published                :boolean          default(FALSE)
+#  channel_type             :string(255)
+#  channel_id               :integer
+#  root_content_category_id :integer
+#  delta                    :boolean          default(TRUE), not null
 #
 
 require 'fileutils'
@@ -70,6 +72,7 @@ class Content < ActiveRecord::Base
   has_many :promotions
 
   belongs_to :content_category
+  belongs_to :root_content_category, class_name: 'ContentCategory'
 
   # mapping to content record that represents the channelized content
   belongs_to :channelized_content, class_name: "Content"
@@ -83,7 +86,7 @@ class Content < ActiveRecord::Base
                 :content_category_id, :category_reviewed, :raw_content, 
                 :sanitized_content, :channelized_content_id,
                 :has_event_calendar, :channel_type, :channel_id, :channel,
-                :location_ids
+                :location_ids, :root_content_category_id
 
   attr_accessor :tier # this is not stored on the database, but is used to generate a tiered tree
   # for the API
@@ -95,6 +98,7 @@ class Content < ActiveRecord::Base
   # check if it should be marked quarantined
   before_save :mark_quarantined
   before_save :set_guid
+  before_save :set_root_content_category_id
 
   # channel relationships
   belongs_to :channel, polymorphic: true, inverse_of: :content
@@ -234,10 +238,17 @@ class Content < ActiveRecord::Base
 
     # if this has our proprietary 'X-Original-Content-Id' key in the header, it means this was created on our site.
     # if so, AND it's an event, it implies it's already been curated (i.e. 'has_event-calendar')
-    original_content_id = 0
+    original_content_id = original_event_instance_id = 0
     original_content_id = data['X-Original-Content-Id'] if data.has_key? 'X-Original-Content-Id'
     if original_content_id > 0
       c = Content.find(original_content_id)
+      data['has_event_calendar'] = true if 'Event' == c.channel_type
+    end
+    # if this has our proprietary 'X-Original-Event-Instance-Id' key in the header, it means this was created on
+    # our site so don't create new content. If so, AND it's an event, it implies it's already been curated (i.e. 'has_event-calendar')
+    original_event_instance_id = data['X-Original-Event-Instance-Id'] if data.has_key? 'X-Original-Event-Instance-Id'
+    if original_event_instance_id > 0
+      c = EventInstance.find(original_event_instance_id).event.content
       data['has_event_calendar'] = true if 'Event' == c.channel_type
     end
 
@@ -397,6 +408,14 @@ class Content < ActiveRecord::Base
       end
       self.guid << "-" << pubdate.strftime("%Y-%m-%d") if pubdate.present?
       self.guid = CGI::escape guid
+    end
+  end
+
+  def set_root_content_category_id
+    if content_category.present?
+      self.root_content_category_id = content_category.parent_id || content_category.id
+    else
+      self.root_content_category_id = nil
     end
   end
 
@@ -696,7 +715,7 @@ class Content < ActiveRecord::Base
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
                "import_record_id", "published",
                "category_reviewed", "raw_content",
-               "has_event_calendar")
+               "has_event_calendar", 'root_content_category_id', 'delta')
   end
 
   # Export Gate Document directly before/after Pipeline processing

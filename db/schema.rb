@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150817134219) do
+ActiveRecord::Schema.define(:version => 20150829145819) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -245,8 +245,8 @@ ActiveRecord::Schema.define(:version => 20150817134219) do
     t.text     "raw_content"
     t.integer  "issue_id"
     t.integer  "import_location_id"
-    t.datetime "created_at",                                :null => false
-    t.datetime "updated_at",                                :null => false
+    t.datetime "created_at",                                  :null => false
+    t.datetime "updated_at",                                  :null => false
     t.string   "copyright"
     t.string   "guid"
     t.datetime "pubdate"
@@ -258,7 +258,7 @@ ActiveRecord::Schema.define(:version => 20150817134219) do
     t.string   "page"
     t.string   "authoremail"
     t.integer  "publication_id"
-    t.boolean  "quarantine",             :default => false
+    t.boolean  "quarantine",               :default => false
     t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
@@ -266,12 +266,14 @@ ActiveRecord::Schema.define(:version => 20150817134219) do
     t.string   "source_content_id"
     t.integer  "parent_id"
     t.integer  "content_category_id"
-    t.boolean  "category_reviewed",      :default => false
-    t.boolean  "has_event_calendar",     :default => false
+    t.boolean  "category_reviewed",        :default => false
+    t.boolean  "has_event_calendar",       :default => false
     t.integer  "channelized_content_id"
-    t.boolean  "published",              :default => false
+    t.boolean  "published",                :default => false
     t.string   "channel_type"
     t.integer  "channel_id"
+    t.integer  "root_content_category_id"
+    t.boolean  "delta",                    :default => true,  :null => false
   end
 
   add_index "contents", ["authoremail"], :name => "index_contents_on_authoremail"
@@ -287,6 +289,7 @@ ActiveRecord::Schema.define(:version => 20150817134219) do
   add_index "contents", ["pubdate"], :name => "pubdate"
   add_index "contents", ["publication_id"], :name => "source_id"
   add_index "contents", ["published"], :name => "index_contents_on_published"
+  add_index "contents", ["root_content_category_id"], :name => "index_contents_on_root_content_category_id"
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["title"], :name => "title"
 
@@ -423,6 +426,7 @@ ActiveRecord::Schema.define(:version => 20150817134219) do
   end
 
   add_index "events", ["featured"], :name => "index_events_on_featured"
+  add_index "events", ["venue_id"], :name => "events_on_venue_id_index"
   add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 
   create_table "front_end_builds_apps", :force => true do |t|
@@ -650,8 +654,10 @@ ActiveRecord::Schema.define(:version => 20150817134219) do
     t.float    "latitude"
     t.float    "longitude"
     t.boolean  "locate_include_name"
-    t.datetime "created_at",          :null => false
-    t.datetime "updated_at",          :null => false
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
+    t.string   "status"
+    t.string   "preferred_contact_method"
   end
 
   create_table "messages", :force => true do |t|
@@ -887,6 +893,7 @@ ActiveRecord::Schema.define(:version => 20150817134219) do
     t.integer  "location_id"
     t.string   "test_group"
     t.boolean  "muted",                  :default => false
+    t.string   "authentication_token"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

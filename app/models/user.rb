@@ -31,6 +31,7 @@
 #  location_id            :integer
 #  test_group             :string(255)
 #  muted                  :boolean          default(FALSE)
+#  authentication_token   :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -40,6 +41,8 @@ class User < ActiveRecord::Base
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
   has_many :business_locations, foreign_key: 'created_by'
+
+  before_save :ensure_authentication_token
 
   rolify
   # Include default devise modules. Others available are:
@@ -51,6 +54,21 @@ class User < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :role_ids, :as => :admin
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :organization_id, :role_ids,
-    :default_repository_id, :location, :location_id
-  
+    :default_repository_id, :location, :location_id, :avatar
+  validates_presence_of :location
+
+  def ensure_authentication_token
+    if authentication_token.blank?
+      self.authentication_token = generate_authentication_token
+    end
+  end
+
+  private
+
+    def generate_authentication_token
+      loop do
+        token = Devise.friendly_token
+        break token unless User.where(authentication_token: token).first
+      end
+    end
 end

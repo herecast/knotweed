@@ -31,6 +31,7 @@
 #  location_id            :integer
 #  test_group             :string(255)
 #  muted                  :boolean          default(FALSE)
+#  authentication_token   :string(255)
 #
 
 require 'spec_helper'
@@ -38,11 +39,13 @@ require 'spec_helper'
 describe User do
 
   before(:each) do
+    location = FactoryGirl.create :location
     @attr = {
       :name => "Example User",
       :email => "user@example.com",
       :password => "changeme",
-      :password_confirmation => "changeme"
+      :password_confirmation => "changeme",
+      :location => location
     }
   end
 
@@ -135,4 +138,11 @@ describe User do
 
   end
 
+  describe 'required fields' do
+    before do 
+      @user = FactoryGirl.build :user, location: nil
+    end
+    subject { @user }
+    it { should_not be_valid }
+  end
 end
