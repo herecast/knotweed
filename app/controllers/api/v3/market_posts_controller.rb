@@ -142,7 +142,7 @@ module Api
           # the line after it
           #can_edit = (@market_post.created_by == @current_api_user)
           can_edit = false
-          render json: @market_post, serializer: DetailedMarketPostSerializer,
+          render json: @market_post, root: 'market_post', serializer: DetailedMarketPostSerializer,
             can_edit: can_edit
         end
       end
