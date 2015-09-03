@@ -1,4 +1,5 @@
 class RegistrationsController < Devise::RegistrationsController
+  respond_to :html, :json
 
   def create 
     super do |user|
