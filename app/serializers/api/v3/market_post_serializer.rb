@@ -1,9 +1,13 @@
 module Api
-	module V3
+  module V3
     # note, this serializer actually takes content objects, not market post objects
-		class MarketPostSerializer < ActiveModel::Serializer
+    class MarketPostSerializer < ActiveModel::Serializer
 
-		  attributes :id, :title, :published_at, :image_url
+      attributes :id, :title, :published_at, :image_url
+
+      def title
+        object.sanitized_title
+      end
 
       def published_at
         object.pubdate
@@ -15,6 +19,6 @@ module Api
         end
       end
 
-		end
-	end
+    end
+  end
 end

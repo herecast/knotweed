@@ -15,6 +15,10 @@ module Api
         serialization_options[:admin_content_url]
       end
 
+      def title
+        object.sanitized_title
+      end
+
       def content
         object.sanitized_content
       end
