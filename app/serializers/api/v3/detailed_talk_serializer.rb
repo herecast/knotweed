@@ -5,6 +5,10 @@ module Api
       attributes :id, :title, :content, :content_id, :image_url, :user_count,
         :pageviews_count, :author_name, :author_image_url, :published_at
 
+      def title
+        object.sanitized_title
+      end
+
       def content
         object.sanitized_content
       end

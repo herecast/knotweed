@@ -973,6 +973,15 @@ class Content < ActiveRecord::Base
     text.gsub(/\<a.*?href\=['"](?<href>.*?)['"]\>(?<target>.*?)\<\/a\>/, '\k<target> (\k<href>)')
   end
 
+  # Creates sanitized version of title - at this point, just stripping out listerv towns
+  def sanitized_title
+    if title.present?
+      title.gsub(/\[[^\]]+\]/, "").strip
+    else
+      nil
+    end
+  end
+
   # Creates HTML-annotated, sanitized version of the raw_content that should be
   # as display-ready as possible
   def sanitized_content

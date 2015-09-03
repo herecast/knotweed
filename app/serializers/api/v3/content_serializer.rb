@@ -61,6 +61,11 @@ module Api
         object.sanitized_content
       end
 
+      def title
+        object.sanitized_title
+      end
+
+
     end
   end
 end

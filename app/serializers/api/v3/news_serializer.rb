@@ -28,6 +28,10 @@ module Api
         object.pubdate
       end
 
+      def title
+        object.sanitized_title
+      end
+
       def content
         object.sanitized_content
       end
