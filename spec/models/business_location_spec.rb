@@ -18,10 +18,12 @@
 #  city                :string(255)
 #  state               :string(255)
 #  zip                 :string(255)
+#  created_by          :integer
+#  updated_by          :integer
 #
 
 require 'spec_helper'
 
 describe BusinessLocation do
-  pending "add some examples to (or delete) #{__FILE__}"
+  include_examples 'Auditable', BusinessLocation
 end

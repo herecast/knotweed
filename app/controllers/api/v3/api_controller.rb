@@ -8,8 +8,8 @@ module Api
       #token authentication for ember app
       before_filter :authenticate_user_from_token!
 
-      before_filter :set_requesting_app_and_repository
-      before_filter :set_current_api_user
+      before_filter :set_requesting_app_and_repository, :set_current_api_user,
+        :set_current_thread_user
 
       protected
 
@@ -56,6 +56,11 @@ module Api
       	  end
         end
       end
+
+      def set_current_thread_user
+        User.current = current_user
+      end
+
     end
   end
 end

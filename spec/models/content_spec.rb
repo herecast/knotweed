@@ -38,6 +38,8 @@
 #  channel_id               :integer
 #  root_content_category_id :integer
 #  delta                    :boolean          default(TRUE), not null
+#  created_by               :integer
+#  updated_by               :integer
 #
 
 require 'spec_helper'
@@ -45,6 +47,8 @@ require 'spec_helper'
 describe Content do
 
   before { Promotion.any_instance.stub(:update_active_promotions).and_return(true) }
+
+  include_examples 'Auditable', Content
 
   # I wasn't sure where else to put this test...
   # the content index (app/indices/content_index) uses a

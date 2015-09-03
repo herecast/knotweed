@@ -13,9 +13,12 @@
 #  promotable_id   :integer
 #  promotable_type :string(255)
 #  paid            :boolean          default(FALSE)
+#  created_by      :integer
+#  updated_by      :integer
 #
 
 class Promotion < ActiveRecord::Base
+  include Auditable
   belongs_to :publication
   belongs_to :content
 

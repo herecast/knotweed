@@ -39,12 +39,15 @@
 #  channel_id               :integer
 #  root_content_category_id :integer
 #  delta                    :boolean          default(TRUE), not null
+#  created_by               :integer
+#  updated_by               :integer
 #
 
 require 'fileutils'
 require 'builder'
 include ActionView::Helpers::TextHelper
 class Content < ActiveRecord::Base
+  include Auditable
 
   belongs_to :issue
   belongs_to :import_location
@@ -715,7 +718,8 @@ class Content < ActiveRecord::Base
     set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
                "import_record_id", "published",
                "category_reviewed", "raw_content",
-               "has_event_calendar", 'root_content_category_id', 'delta')
+               "has_event_calendar", 'root_content_category_id', 'delta',
+              'created_by', 'updated_by')
   end
 
   # Export Gate Document directly before/after Pipeline processing
