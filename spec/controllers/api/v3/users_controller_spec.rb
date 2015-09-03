@@ -144,5 +144,35 @@ describe Api::V3::UsersController do
 
   end
 
+  describe 'GET weather' do
+    before do
+      @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
+      # we're not really testing whether ForecastIO or the gem works here, so just stub
+      # this method completely to avoid it making HTTP requests
+      ForecastIO.stub(:forecast).and_return({})
+    end
+
+    subject { get :weather }
+
+    context 'not signed in' do
+      it 'should set location to default location' do
+        subject
+        assigns(:location).should eq(@default_location)
+      end
+    end
+
+    context 'signed in' do
+      before do
+        @other_loc = FactoryGirl.create :location
+        @user = FactoryGirl.create :user, location: @other_loc
+        api_authenticate user: @user
+      end
+
+      it 'should set location to the user\'s location' do
+        subject
+        assigns(:location).should eq(@other_loc)
+      end
+    end
+  end
 
 end
