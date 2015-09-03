@@ -62,6 +62,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def reset_authentication_token
+    self.authentication_token = generate_authentication_token
+  end
+
   protected
     # We are allowing new registration without email confirmation with this method.
     # To turn email confirmation back on, just delete this method.
