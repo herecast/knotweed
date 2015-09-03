@@ -33,7 +33,7 @@ module Api
           # stick in the matched city at the top of the returned data
           response_data.prepend "#{cs.first}" if cs.present?
           render json: {
-            locations: response_data
+            venue_locations: response_data
           }
         else
           render json: @venues, root: 'venues', arrayserializer: BusinessLocationSerializer
