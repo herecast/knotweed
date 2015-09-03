@@ -162,4 +162,46 @@ describe Api::V3::ContentsController do
 
   end
 
+  describe 'GET dashboard' do
+    subject { get :dashboard }
+
+    context 'not signed in' do
+      it 'has 401 status code' do
+        subject
+        response.code.should eq('401')
+      end
+    end
+
+    context 'signed in' do
+      before do
+        @user = FactoryGirl.create :user
+        api_authenticate user: @user
+      end
+
+      it 'has 200 status code' do
+        subject
+        response.code.should eq('200')
+      end
+
+      context 'with the user owning some content' do
+        before do
+          # because we're authenticated as the @user, created_by is actually set automatically here,
+          # so we don't need to set it manually.
+          FactoryGirl.create :event
+          FactoryGirl.create_list :market_post, 3
+          FactoryGirl.create_list :comment, 2
+        end
+
+        it 'responds with the user\'s content' do
+          subject
+          expect(assigns(:contents)).to eq(Content.all)
+        end
+
+        it 'allows sorting by specified parameters' do
+          get :dashboard, sort: 'pubdate DESC'
+          expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)
+        end
+      end
+    end
+  end
 end

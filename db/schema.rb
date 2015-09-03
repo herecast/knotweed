@@ -276,6 +276,9 @@ ActiveRecord::Schema.define(:version => 20150903170512) do
     t.boolean  "delta",                    :default => true,  :null => false
     t.integer  "created_by"
     t.integer  "updated_by"
+    t.integer  "view_count",               :default => 0
+    t.integer  "comment_count",            :default => 0
+    t.integer  "commenter_count",          :default => 0
   end
 
   add_index "contents", ["authoremail"], :name => "index_contents_on_authoremail"
