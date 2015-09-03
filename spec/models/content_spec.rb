@@ -46,6 +46,30 @@ describe Content do
 
   before { Promotion.any_instance.stub(:update_active_promotions).and_return(true) }
 
+  # I wasn't sure where else to put this test...
+  # the content index (app/indices/content_index) uses a
+  # condition that needs to be tested to confirm it's working.
+  describe 'sphinx index' do
+    before do
+      @event_cat = FactoryGirl.create :content_category, name: 'event'
+      @news_cat = FactoryGirl.create :content_category, name: 'news'
+      @in_index_event = FactoryGirl.create :event
+      # ensure in_index_event has the event category
+      @in_index_event.content.content_category_id = @event_cat.id
+      @in_index_event.content.save
+      @not_in_index_event = FactoryGirl.create :content, content_category_id: @event_cat.id
+    end
+
+    it 'should not include unchannelized event category content' do
+      expect(Content.search).to_not include(@not_in_index_event)
+    end
+    
+    it 'should not include unchannelized event category content' do
+      expect(Content.search).to include(@in_index_event.content)
+    end
+
+  end
+
   # for ease of querying, our polymorphic channel relationship
   # is redundantly specified using the content_id attribute
   # from each channel submodel. Rails doesn't provide an easy way to
