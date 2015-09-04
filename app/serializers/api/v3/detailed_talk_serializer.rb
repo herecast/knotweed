@@ -40,7 +40,11 @@ module Api
       end
 
       def author_name
-        object.authors
+        if object.created_by.present?
+          object.created_by.name
+        else
+          object.authors
+        end
       end
 
       def author_image_url
