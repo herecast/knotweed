@@ -3,7 +3,6 @@ module Api
     class NewsController < ApiController
 
       def index
-        opts = {}
         opts = { select: '*, weight()' }
         opts[:order] = 'pubdate DESC'
         opts[:with] = {}
