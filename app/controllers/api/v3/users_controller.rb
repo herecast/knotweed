@@ -1,7 +1,8 @@
 module Api
   module V3
     class UsersController < ApiController
-
+      
+      before_filter :check_logged_in!, only: [:show, :update, :logout] 
       def show
         if @current_api_user.present? 
           listserv = @current_api_user.location.listserv
