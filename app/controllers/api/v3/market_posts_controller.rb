@@ -46,12 +46,18 @@ module Api
       def create
         market_cat = ContentCategory.find_by_name 'market'
         pub = Publication.find_or_create_by_name 'DailyUV'
+
+        location_ids = [@current_api_user.location_id]
+        if params[:extended_reach_enabled]
+          location_ids.push Location::REGION_LOCATION_ID
+        end
+
         content_attributes = {
           title: params[:market_post][:title],
           raw_content: params[:market_post][:content],
           authoremail: @current_api_user.try(:email),
           authors: @current_api_user.try(:name),
-          location_ids: [@current_api_user.location_id],
+          location_ids: location_ids,
           content_category_id: market_cat.id,
           pubdate: Time.zone.now,
           timestamp: Time.zone.now,
@@ -110,6 +116,13 @@ module Api
           end
         else # do the normal update of attributes
           listserv_ids = params[:market_post][:listserv_ids]
+
+          location_ids = [@current_api_user.location_id]
+          if params[:extended_reach_enabled]
+            location_ids.push Location::REGION_LOCATION_ID
+          end
+
+          @market_post.content.location_ids = location_ids
           @market_post.content.title = params[:market_post][:title] if params[:market_post][:title].present?
           @market_post.content.raw_content = params[:market_post][:content] if params[:market_post][:content].present?
           @market_post.cost = params[:market_post][:price] if params[:market_post][:price].present?
