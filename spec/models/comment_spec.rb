@@ -34,4 +34,45 @@ describe Comment do
       @content.reload.title.should eq "Changed Title"
     end
   end
+
+  describe "after_create" do
+    before do
+      @parent = FactoryGirl.create :content
+      @user = FactoryGirl.create :admin
+    end
+
+    it "should increase the counter comments" do
+      @content.parent = @parent
+      @content.save
+      count = @parent.comment_count
+      FactoryGirl.create :comment, content: @content
+      @parent.reload
+      @parent.comment_count.should == count + 1
+    end
+
+    it "should increase the counter commenters" do
+      User.current = @user
+      count = @parent.commenter_count
+      @content = FactoryGirl.create :content
+      @content.parent = @parent
+      @content.save
+      FactoryGirl.create :comment, content: @content
+      @parent.reload
+      @parent.commenter_count.should == count + 1
+    end
+
+    it "should not increase the counter commenters" do
+      User.current=@user
+      count = @parent.commenter_count
+      @content = FactoryGirl.create :content
+      @content.parent = @parent
+      @content.save
+      @content = FactoryGirl.create :content
+      @content.parent = @parent
+      @content.save
+      FactoryGirl.create :comment, content: @content
+      @parent.reload
+      @parent.commenter_count.should == count
+    end
+  end
 end
