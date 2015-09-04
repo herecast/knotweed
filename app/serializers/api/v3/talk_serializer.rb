@@ -19,11 +19,14 @@ module Api
         0
       end
 
-      # NOTE: this may change to created_by.name instead of authors,
-      # although we won't have a "created_by" in content that is imported,
-      # so most likely the answer is use created_by but fall back to authors.
+      # NOTE: we won't have a "created_by" in content that is imported,
+      # use created_by when availble else fall back to authors.
       def author_name
-        object.authors
+        if object.created_by.present?
+          object.created_by.name
+        else
+          object.authors
+        end
       end
 
       def author_image_url
