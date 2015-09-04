@@ -38,6 +38,8 @@
 #  channel_id               :integer
 #  root_content_category_id :integer
 #  delta                    :boolean          default(TRUE), not null
+#  created_by               :integer
+#  updated_by               :integer
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150829145819) do
+ActiveRecord::Schema.define(:version => 20150903170512) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -86,8 +86,11 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
     t.string   "city"
     t.string   "state"
     t.string   "zip"
+    t.integer  "created_by"
+    t.integer  "updated_by"
   end
 
+  add_index "business_locations", ["created_by"], :name => "index_business_locations_on_created_by"
   add_index "business_locations", ["name"], :name => "index_business_locations_on_name"
 
   create_table "categories", :force => true do |t|
@@ -119,9 +122,9 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer   "channel_id"
-    t.text      "category"
-    t.timestamp "created_at", :null => false
+    t.integer  "channel_id"
+    t.text     "category"
+    t.datetime "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -271,6 +274,11 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
     t.integer  "channel_id"
     t.integer  "root_content_category_id"
     t.boolean  "delta",                    :default => true,  :null => false
+    t.integer  "created_by"
+    t.integer  "updated_by"
+    t.integer  "view_count",               :default => 0
+    t.integer  "comment_count",            :default => 0
+    t.integer  "commenter_count",          :default => 0
   end
 
   add_index "contents", ["authoremail"], :name => "index_contents_on_authoremail"
@@ -279,6 +287,7 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
   add_index "contents", ["channel_type"], :name => "index_contents_on_channel_type"
   add_index "contents", ["channelized_content_id"], :name => "index_contents_on_channelized_content_id"
   add_index "contents", ["content_category_id"], :name => "content_category_id"
+  add_index "contents", ["created_by"], :name => "index_contents_on_created_by"
   add_index "contents", ["guid"], :name => "guid"
   add_index "contents", ["import_location_id"], :name => "location_id"
   add_index "contents", ["import_record_id"], :name => "import_record_id"
@@ -762,9 +771,12 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
     t.integer  "promotable_id"
     t.string   "promotable_type"
     t.boolean  "paid",            :default => false
+    t.integer  "created_by"
+    t.integer  "updated_by"
   end
 
   add_index "promotions", ["content_id"], :name => "index_promotions_on_content_id"
+  add_index "promotions", ["created_by"], :name => "index_promotions_on_created_by"
   add_index "promotions", ["publication_id"], :name => "index_promotions_on_publication_id"
 
   create_table "publications", :force => true do |t|

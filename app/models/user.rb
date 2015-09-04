@@ -66,6 +66,14 @@ class User < ActiveRecord::Base
     self.authentication_token = generate_authentication_token
   end
 
+  def self.current
+    Thread.current[:user]
+  end
+
+  def self.current=(user)
+    Thread.current[:user] = user
+  end
+
   protected
     # We are allowing new registration without email confirmation with this method.
     # To turn email confirmation back on, just delete this method.
