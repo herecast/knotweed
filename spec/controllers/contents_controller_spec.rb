@@ -23,4 +23,5 @@ describe ContentsController do
       CategoryCorrection.where(content_id: @content.id).count.should == 0
     end
   end
+
 end
