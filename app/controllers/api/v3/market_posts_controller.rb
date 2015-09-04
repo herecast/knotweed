@@ -157,10 +157,7 @@ module Api
         if @market_post.try(:root_content_category).try(:name) != 'market'
           head :no_content
         else
-          # NOTE: need to uncomment this line when created_by is available and delete
-          # the line after it
-          #can_edit = (@market_post.created_by == @current_api_user)
-          can_edit = false
+          can_edit = (@market_post.created_by == @current_api_user)
           render json: @market_post, root: 'market_post', serializer: DetailedMarketPostSerializer,
             can_edit: can_edit
         end
