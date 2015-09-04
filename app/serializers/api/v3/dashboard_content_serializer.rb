@@ -10,7 +10,7 @@ module Api
       end
 
       def content_type
-        object.root_content_category.name
+        object.channel_type
       end
 
       def published_at
