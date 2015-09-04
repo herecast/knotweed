@@ -155,8 +155,8 @@ class Content < ActiveRecord::Base
       update_attribute :published, true
     end
   end
-  
-  
+
+
   # holdover from when we used to use processed_content by preference.
   # Seemed easier to keep this method, but just make it point directly to raw content 
   # than to remove references to the method altogether
