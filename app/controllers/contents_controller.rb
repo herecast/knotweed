@@ -80,8 +80,6 @@ class ContentsController < ApplicationController
   end
 
   def show
-    content = Content.new
-    content.increment_view_count(params[:id])
     flash.keep
     redirect_to edit_content_path(params[:id])
   end

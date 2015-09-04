@@ -156,17 +156,6 @@ class Content < ActiveRecord::Base
     end
   end
 
-  def increment_view_count(id)
-    content = Content.find(id)
-    unless content.blank?
-      content.increment(:view_count)
-      content.save
-    end
-  end
-
-  
-
-
   # holdover from when we used to use processed_content by preference.
   # Seemed easier to keep this method, but just make it point directly to raw content 
   # than to remove references to the method altogether

@@ -23,17 +23,4 @@ describe ContentsController do
       CategoryCorrection.where(content_id: @content.id).count.should == 0
     end
   end
-
-  describe "SHOW" do
-    before do
-      @content = FactoryGirl.create(:content)
-    end
-
-    it "should increment the views counter content" do
-      count = @content.view_count
-      get :show, id: @content
-      @content.reload
-      @content.view_count.should == count + 1
-    end
-  end
 end

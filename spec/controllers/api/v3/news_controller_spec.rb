@@ -81,6 +81,10 @@ describe Api::V3::NewsController do
       assigns(:news).should eq(@news)
     end
 
+    it 'should increment view count' do
+      expect{subject}.to change{Content.find(@news.id).view_count}.from(0).to(1)
+    end
+
   end
 
 end

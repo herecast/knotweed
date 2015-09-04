@@ -27,13 +27,12 @@ class Comment < ActiveRecord::Base
   end
 
   after_create do |comment|
-    unless self.content.parent.blank?
-      self.content.parent.increment(:comment_count)
-      count = Content.where('parent_id=? and created_by=? and id!=?', self.content.parent, self.content.created_by, self.content.id).count
-      if count == 0
-        self.content.parent.increment(:commenter_count) 
+    unless content.parent.blank?
+      content.parent.increment(:comment_count)
+      unless Content.where('parent_id=? and created_by=? and id!= ?', content.parent, content.created_by, content.id).exists?
+        content.parent.increment(:commenter_count) 
       end
-      self.content.parent.save
+      content.parent.save
     end
   end
 

@@ -78,6 +78,7 @@ module Api
           url = edit_event_url(@event_instance.event) if @current_api_user.has_role? :admin
           can_edit = @event_instance.event.content.authoremail == @current_api_user.try(:email)
         end
+        @event_instance.event.content.increment!(:view_count)
         render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
           can_edit: can_edit, admin_content_url: url
       end

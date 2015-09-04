@@ -65,6 +65,9 @@ describe Api::V3::TalkController do
       assigns(:talk).should eq(@talk)
     end
 
+    it 'should increment view count' do
+      expect{subject}.to change{Content.find(@talk.id).view_count}.from(0).to(1)
+    end
   end
 
   describe 'PUT update' do
