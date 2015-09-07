@@ -109,4 +109,24 @@ describe Api::V3::EventInstancesController do
 
   end
 
+  describe 'GET index' do
+    before do
+      @count = 3
+      FactoryGirl.create_list :event, @count
+    end
+
+    subject { get :index, format: :json }
+
+    it 'should return all event instances' do
+      subject
+      assigns(:event_instances).count.should eq(@count)
+    end
+  
+    context 'pagination' do
+      before { get :index, format: :json, per_page: @count - 1 }
+      it 'should return paginated results' do
+        assigns(:event_instances).per_page.should eq(@count -1)
+      end
+    end
+  end
 end
