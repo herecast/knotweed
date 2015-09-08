@@ -14,13 +14,7 @@ describe Api::V3::UsersController do
 
     describe 'when api user signed in' do
       before do
-    
-        # Stub out image requests
-        raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
-        stub_request(:get, "https://www.google.com/images/srpr/logo11w.png"). \
-          with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-          to_return(raw_resp.read)
-        ImageUploader.storage = :file
+        image_stub 
 
         listserv = FactoryGirl.create :listserv
         location = FactoryGirl.create :location, listservs: [listserv], \
@@ -144,6 +138,25 @@ describe Api::V3::UsersController do
 
       end
 
+      context 'POST user avatar' do
+        before do
+          image_stub
+          @user = FactoryGirl.create :user
+          # just in case this gets set in the factory in the future
+          @user.avatar = nil
+          @user.save
+
+          @file = fixture_file_upload('/photo.jpg', 'image/jpg')
+          api_authenticate user: @user
+        end
+
+        subject! { put :update, current_user: {user_id: @user.id, image: @file} }
+
+        it 'should set new image' do
+          assigns(:current_api_user).avatar_identifier.should eq @file.original_filename
+        end
+      end
+
   end
 
   describe 'GET weather' do
@@ -207,5 +220,16 @@ describe Api::V3::UsersController do
       end
     end
   end
+  
+
+  private
+    def image_stub
+      # Stub out image requests
+      raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
+      stub_request(:get, "https://www.google.com/images/srpr/logo11w.png"). \
+        with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+        to_return(raw_resp.read)
+      ImageUploader.storage = :file
+    end
 
 end

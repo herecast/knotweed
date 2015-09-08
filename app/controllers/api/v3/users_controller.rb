@@ -44,6 +44,8 @@ module Api
               params[:current_user][:password_confirmation]
           end
 
+          @current_api_user.avatar = params[:current_user][:image] if params[:current_user][:image].present?
+
           if @current_api_user.save 
             render json: {}, status: 200
           else
