@@ -28,7 +28,14 @@ module Api
       end
 
       def update
+
         if @current_api_user.present?
+          
+          #security check in case the user token is stolen, the user id must be
+          #stolen as well
+          if params[:current_user][:user_id] != @current_api_user.id
+            head :unprocessable_entity and return
+          end
           
           @current_api_user.name = 
             params[:current_user][:name] if params[:current_user][:name].present?

@@ -60,6 +60,27 @@ describe Api::V3::UsersController do
         end
       end
 
+      context 'when user_id does not match current_user.id' do
+        before do
+          @user = FactoryGirl.create :user
+          api_authenticate user: @user
+          @new_data = { format: :json,
+                        current_user: {
+                          user_id: @user.id + 11,
+                          name: 'Jane Jones III'
+                        }
+                      }
+        end
+        
+        subject! { put :update, @new_data }
+
+        it 'should not update user' do
+          response.code.should eq '422'
+          assigns(:current_api_user).name.should eq @user.name
+          assigns(:current_api_user).name.should_not eq @new_data[:current_user][:name]
+        end
+      end 
+
       describe 'change user attributes' do
         before do
           location = FactoryGirl.create :location
@@ -67,6 +88,7 @@ describe Api::V3::UsersController do
           api_authenticate user: @user
           @new_data = { format: :json,
                         current_user: {
+                          user_id: @user.id,
                           name: 'Skye Bill',
                           location_id: location.id ,
                           email: 'skye@bill.com',
@@ -98,7 +120,8 @@ describe Api::V3::UsersController do
           @new_data = { format: :json,
                         current_user: {
                           name: 'Skye2 Bill',
-                          location_id: location.id
+                          location_id: location.id,
+                          user_id: @user.id
                           }
                       }
         end
@@ -124,7 +147,8 @@ describe Api::V3::UsersController do
           @new_data = { format: :json,
                         current_user: {
                           password: 'p1',
-                          password_confirmation: 'we'
+                          password_confirmation: 'we',
+                          user_id: @user.id
                           }
                       }
         end
@@ -138,7 +162,7 @@ describe Api::V3::UsersController do
 
       end
 
-      context 'POST user avatar' do
+      context 'set user avatar' do
         before do
           image_stub
           @user = FactoryGirl.create :user
@@ -150,7 +174,7 @@ describe Api::V3::UsersController do
           api_authenticate user: @user
         end
 
-        subject! { put :update, current_user: {user_id: @user.id, image: @file} }
+        subject! { put :update, format: :json, current_user: {user_id: @user.id, image: @file} }
 
         it 'should set new image' do
           assigns(:current_api_user).avatar_identifier.should eq @file.original_filename
