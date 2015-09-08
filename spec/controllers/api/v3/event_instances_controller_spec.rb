@@ -107,6 +107,13 @@ describe Api::V3::EventInstancesController do
       assigns(:event_instance).should eq(@inst)
     end
 
+    it 'check comment_count' do
+      comment_count = @inst.event.comment_count
+      subject
+      inst=JSON.parse(@response.body)
+      inst["event_instance"]["comment_count"].should == comment_count+1
+    end
+
   end
 
 end

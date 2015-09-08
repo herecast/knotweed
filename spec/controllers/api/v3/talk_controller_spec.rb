@@ -65,6 +65,32 @@ describe Api::V3::TalkController do
       assigns(:talk).should eq(@talk)
     end
 
+    it 'check parent field' do
+      @talk.parent = FactoryGirl.create :content
+      @talk.save
+      subject
+      talk=JSON.parse(@response.body)
+      talk["talk"]["parent_id"].should == @talk.parent.id
+    end
+    it 'check view_count' do
+      view_count = @talk.view_count
+      subject
+      talk=JSON.parse(@response.body)
+      talk["talk"]["view_count"].should == view_count+1
+    end
+    it 'check comment_count' do
+      comment_count = @talk.comment_count
+      subject
+      talk=JSON.parse(@response.body)
+      talk["talk"]["comment_count"].should == comment_count+1
+    end
+    it 'check commenter_count' do
+      commenter_count = @talk.commenter_count
+      subject
+      talk=JSON.parse(@response.body)
+      talk["talk"]["commenter_count"].should == commenter_count+1
+    end
+
   end
 
   describe 'PUT update' do

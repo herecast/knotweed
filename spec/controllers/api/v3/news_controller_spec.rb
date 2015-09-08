@@ -81,6 +81,13 @@ describe Api::V3::NewsController do
       assigns(:news).should eq(@news)
     end
 
+    it 'check comment_count' do
+      comment_count = @news.comment_count
+      subject
+      news=JSON.parse(@response.body)
+      news["news"]["comment_count"].should == comment_count+1
+    end
+
   end
 
 end
