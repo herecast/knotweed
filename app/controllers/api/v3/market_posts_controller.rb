@@ -82,7 +82,7 @@ module Api
             end
           end
           if @repository.present?
-            @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+            @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
 
           render json: @market_post.content, serializer: DetailedMarketPostSerializer, can_edit: true,
@@ -140,7 +140,7 @@ module Api
               end
             end
             if @repository.present?
-              @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+              @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
             end
             render json: @market_post.content, status: 200, 
               serializer: DetailedMarketPostSerializer, can_edit: true
