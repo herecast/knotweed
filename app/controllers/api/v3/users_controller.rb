@@ -7,6 +7,7 @@ module Api
         if @current_api_user.present? 
           listserv = @current_api_user.location.listserv
           listserv_id = listserv ? listserv.id : ""
+          avatar_url = @current_api_user.avatar ? @current_api_user.avatar.url : ""
           render json: {
             current_user: {
               id: @current_api_user.id,
@@ -18,7 +19,7 @@ module Api
               listserv_id: listserv_id,
               listserv_name: listserv.try(:name).to_s,
               test_group: @current_api_user.test_group || "",
-              user_image_url: "" 
+              user_image_url: avatar_url 
             }
           }, status: 200
         else
