@@ -32,19 +32,8 @@ describe Api::V3::UsersController do
       end
 
       it 'should return expected fields' do
-       desired = { current_user: {
-          id: @user.id,
-          name: @user.name,
-          email: @user.email,
-          created_at: @user.created_at.strftime("%Y-%m-%dT%H:%M:%S%:z"),
-          location_id: @user.location.id,
-          location: @user.location.name,
-          listserv_name: @user.location.listserv.name, 
-          listserv_id: @user.location.listserv.id,
-          test_group: @user.test_group || "",
-          user_image_url: @user.avatar.url }.stringify_keys
-        }.stringify_keys
-          JSON.parse(response.body).should eq desired
+       desired = expected_user_response @user 
+       JSON.parse(response.body).should eq desired
       end
     end
 
@@ -83,8 +72,10 @@ describe Api::V3::UsersController do
 
       describe 'change user attributes' do
         before do
-          location = FactoryGirl.create :location
-          @user = FactoryGirl.create :user
+          listserv = FactoryGirl.create :listserv
+          location = FactoryGirl.create :location, listservs: [listserv], \
+            consumer_active: true
+          @user = FactoryGirl.create :user, location: location
           api_authenticate user: @user
           @new_data = { format: :json,
                         current_user: {
@@ -108,6 +99,10 @@ describe Api::V3::UsersController do
           updated_user.unconfirmed_email.should eq @new_data[:current_user][:email]
           updated_user.encrypted_password.should_not eq @new_data[:current_user][:encrypted_password]
           response.code.should eq '200'
+        end
+
+        it 'should respond with current_user GET data' do
+          JSON.parse(response.body).should eq expected_user_response @user
         end
 
       end
@@ -255,5 +250,19 @@ describe Api::V3::UsersController do
         to_return(raw_resp.read)
       ImageUploader.storage = :file
     end
-
+    
+    def expected_user_response(user)
+       { current_user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          created_at: user.created_at.strftime("%Y-%m-%dT%H:%M:%S%:z"),
+          location_id: user.location.id,
+          location: user.location.name,
+          listserv_name: user.location.listserv.name, 
+          listserv_id: user.location.listserv.id,
+          test_group: user.test_group || "",
+          user_image_url: user.avatar.url }.stringify_keys
+        }.stringify_keys
+    end
 end
