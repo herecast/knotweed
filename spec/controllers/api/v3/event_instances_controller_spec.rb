@@ -114,6 +114,10 @@ describe Api::V3::EventInstancesController do
       inst["event_instance"]["comment_count"].should == comment_count
     end
 
+    it 'should increment view count' do
+      expect{subject}.to change{Content.find(@inst.event.content.id).view_count}.from(0).to(1)
+    end
+
   end
 
 end

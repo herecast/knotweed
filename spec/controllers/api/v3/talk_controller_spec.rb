@@ -91,6 +91,9 @@ describe Api::V3::TalkController do
       talk["talk"]["commenter_count"].should == commenter_count
     end
 
+    it 'should increment view count' do
+      expect{subject}.to change{Content.find(@talk.id).view_count}.from(0).to(1)
+    end
   end
 
   describe 'PUT update' do

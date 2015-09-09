@@ -88,6 +88,10 @@ describe Api::V3::NewsController do
       news["news"]["comment_count"].should == comment_count
     end
 
+    it 'should increment view count' do
+      expect{subject}.to change{Content.find(@news.id).view_count}.from(0).to(1)
+    end
+
   end
 
 end
