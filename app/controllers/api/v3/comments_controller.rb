@@ -3,7 +3,9 @@ module Api
     class CommentsController < ApiController
 
       before_filter :check_logged_in!, only: [:create] 
-
+      
+      # @param the parent content id
+      # @return all child comments
       def index
         root = Content.find params[:content_id]
         @comments = []

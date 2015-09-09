@@ -76,7 +76,7 @@ module Api
         @event_instance = EventInstance.find(params[:id])
         if @current_api_user.present?
           url = edit_event_url(@event_instance.event) if @current_api_user.has_role? :admin
-          can_edit = @event_instance.event.content.authoremail == @current_api_user.try(:email)
+          can_edit = (@event_instance.event.content.created_by == @current_api_user)
         end
         @event_instance.event.content.increment!(:view_count)
         render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,

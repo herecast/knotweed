@@ -46,12 +46,18 @@ module Api
       def create
         market_cat = ContentCategory.find_by_name 'market'
         pub = Publication.find_or_create_by_name 'DailyUV'
+
+        location_ids = [@current_api_user.location_id]
+        if params[:extended_reach_enabled]
+          location_ids.push Location::REGION_LOCATION_ID
+        end
+
         content_attributes = {
           title: params[:market_post][:title],
           raw_content: params[:market_post][:content],
           authoremail: @current_api_user.try(:email),
           authors: @current_api_user.try(:name),
-          location_ids: [@current_api_user.location_id],
+          location_ids: location_ids,
           content_category_id: market_cat.id,
           pubdate: Time.zone.now,
           timestamp: Time.zone.now,
@@ -76,7 +82,7 @@ module Api
             end
           end
           if @repository.present?
-            @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+            @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
 
           render json: @market_post.content, serializer: DetailedMarketPostSerializer, can_edit: true,
@@ -110,6 +116,13 @@ module Api
           end
         else # do the normal update of attributes
           listserv_ids = params[:market_post][:listserv_ids]
+
+          location_ids = [@current_api_user.location_id]
+          if params[:extended_reach_enabled]
+            location_ids.push Location::REGION_LOCATION_ID
+          end
+
+          @market_post.content.location_ids = location_ids
           @market_post.content.title = params[:market_post][:title] if params[:market_post][:title].present?
           @market_post.content.raw_content = params[:market_post][:content] if params[:market_post][:content].present?
           @market_post.cost = params[:market_post][:price] if params[:market_post][:price].present?
@@ -127,7 +140,7 @@ module Api
               end
             end
             if @repository.present?
-              @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+              @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
             end
             render json: @market_post.content, status: 200, 
               serializer: DetailedMarketPostSerializer, can_edit: true
@@ -144,11 +157,8 @@ module Api
         if @market_post.try(:root_content_category).try(:name) != 'market'
           head :no_content
         else
-          # NOTE: need to uncomment this line when created_by is available and delete
-          # the line after it
-          #can_edit = (@market_post.created_by == @current_api_user)
-          can_edit = false
           @market_post.increment!(:view_count)
+          can_edit = (@market_post.created_by == @current_api_user)
           render json: @market_post, root: 'market_post', serializer: DetailedMarketPostSerializer,
             can_edit: can_edit
         end
