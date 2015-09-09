@@ -94,8 +94,6 @@ module Api
         @market_post = Content.find(params[:id]).channel
 
         # TODO: once we have created_by, confirm that the user can edit this market post
-        
-        # TODO: add updated_by processing here if necessary
 
         image_data = params[:market_post][:image]
 
@@ -157,7 +155,7 @@ module Api
         else
           @market_post.increment!(:view_count)
           can_edit = (@market_post.created_by == @current_api_user)
-          render json: @market_post, root: 'market_post', serializer: DetailedMarketPostSerializer,
+          render json: @market_post, serializer: DetailedMarketPostSerializer,
             can_edit: can_edit
         end
       end

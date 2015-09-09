@@ -5,6 +5,8 @@ module Api
       attributes :id, :title, :price, :content, :content_id, :published_at, :locate_address,
         :can_edit, :has_contact_info, :images, :extended_reach_enabled
 
+      root 'market_post'
+
       def price
         object.try(:channel).try(:cost)
       end
