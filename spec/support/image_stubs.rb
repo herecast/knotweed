@@ -1,4 +1,4 @@
-def image_stub
+def google_logo_stub
   # Stub out image requests
   raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
   stub_request(:get, "https://www.google.com/images/srpr/logo11w.png"). \

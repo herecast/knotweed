@@ -14,7 +14,7 @@ describe Api::V3::UsersController do
 
     describe 'when api user signed in' do
       before do
-        image_stub 
+        google_logo_stub 
 
         listserv = FactoryGirl.create :listserv
         location = FactoryGirl.create :location, listservs: [listserv], \

@@ -188,13 +188,7 @@ describe Content do
         "page" => "a3",
         "source_content_id" => "1234567"
       }
-
-      # Stub out image requests
-      raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
-      stub_request(:get, "https://www.google.com/images/srpr/logo11w.png").
-        with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-        to_return(raw_resp.read)
-      ImageUploader.storage = :file
+      google_logo_stub
     end
 
     after do
@@ -626,7 +620,6 @@ describe Content do
 
   describe "has_active_promotion?" do
     before do
-      ImageUploader.storage = :file
       @content = FactoryGirl.create(:content)
     end
     after do
@@ -738,18 +731,11 @@ describe Content do
       @test_files_path = Dir.pwd + "/spec/fixtures/listserv_test_files"
 
       require parser_path + "mail_extractor.rb"
-
-      # Stub out image requests
-      raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
-      stub_request(:get, "https://www.google.com/images/srpr/logo11w.png").
-          with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-          to_return(raw_resp.read)
-      ImageUploader.storage = :file
+  
+      google_logo_stub     
 
       @norwich = FactoryGirl.create :location, city: 'Norwich', state: 'VT'
-
       @corinth = FactoryGirl.create :location, city: 'Corinth', state: 'VT'
-
       @topsham = FactoryGirl.create :location, city: 'Topsham', state: 'VT'
     end
 
