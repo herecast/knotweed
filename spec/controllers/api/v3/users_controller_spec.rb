@@ -102,6 +102,8 @@ describe Api::V3::UsersController do
         end
 
         it 'should respond with current_user GET data' do
+          #change the test user name to editted name before comparison
+          @user.name = @new_data[:current_user][:name]  
           JSON.parse(response.body).should eq expected_user_response @user
         end
 
@@ -261,7 +263,7 @@ describe Api::V3::UsersController do
           location: user.location.name,
           listserv_name: user.location.listserv.name, 
           listserv_id: user.location.listserv.id,
-          test_group: user.test_group || "",
+          test_group: user.test_group,
           user_image_url: user.avatar.url }.stringify_keys
         }.stringify_keys
     end

@@ -5,23 +5,7 @@ module Api
       before_filter :check_logged_in!, only: [:show, :update, :logout] 
       def show
         if @current_api_user.present? 
-          listserv = @current_api_user.location.listserv
-          listserv_id = listserv ? listserv.id : ""
-          avatar_url = @current_api_user.avatar ? @current_api_user.avatar.url : ""
-          render json: {
-            current_user: {
-              id: @current_api_user.id,
-              name: @current_api_user.name,
-              email: @current_api_user.email,
-              created_at: @current_api_user.created_at,
-              location_id: @current_api_user.location.id,
-              location: @current_api_user.location.name,
-              listserv_id: listserv_id,
-              listserv_name: listserv.try(:name).to_s,
-              test_group: @current_api_user.test_group || "",
-              user_image_url: avatar_url 
-            }
-          }, status: 200
+          render json: @current_api_user, serializer: UserSerializer, root: 'current_user',  status: 200
         else
           render json: { errors: 'User not logged in' }, status: 401
         end
@@ -54,7 +38,7 @@ module Api
           @current_api_user.avatar = params[:current_user][:image] if params[:current_user][:image].present?
 
           if @current_api_user.save 
-            render json: {}, status: 200
+            render json: @current_api_user, serializer: UserSerializer, root: 'current_user', status: 200
           else
             render json: { error: "Current User update failed", messages:  @current_api_user.errors.full_messages }, status: 422
           end
