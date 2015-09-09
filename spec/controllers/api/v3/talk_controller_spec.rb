@@ -82,13 +82,13 @@ describe Api::V3::TalkController do
       comment_count = @talk.comment_count
       subject
       talk=JSON.parse(@response.body)
-      talk["talk"]["comment_count"].should == comment_count+1
+      talk["talk"]["comment_count"].should == comment_count
     end
     it 'check commenter_count' do
       commenter_count = @talk.commenter_count
       subject
       talk=JSON.parse(@response.body)
-      talk["talk"]["commenter_count"].should == commenter_count+1
+      talk["talk"]["commenter_count"].should == commenter_count
     end
 
   end

@@ -85,7 +85,7 @@ describe Api::V3::NewsController do
       comment_count = @news.comment_count
       subject
       news=JSON.parse(@response.body)
-      news["news"]["comment_count"].should == comment_count+1
+      news["news"]["comment_count"].should == comment_count
     end
 
   end
