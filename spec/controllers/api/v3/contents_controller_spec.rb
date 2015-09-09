@@ -143,6 +143,7 @@ describe Api::V3::ContentsController do
       subject
       assigns(:contents).should eq([@sim_content])
     end
+
   end
 
   describe 'POST /contents/:id/moderate' do

@@ -91,6 +91,13 @@ describe Api::V3::NewsController do
       assigns(:news).should eq(@news)
     end
 
+    it 'check comment_count' do
+      comment_count = @news.comment_count
+      subject
+      news=JSON.parse(@response.body)
+      news["news"]["comment_count"].should == comment_count
+    end
+
     it 'should increment view count' do
       expect{subject}.to change{Content.find(@news.id).view_count}.from(0).to(1)
     end
