@@ -161,7 +161,6 @@ describe Api::V3::UsersController do
 
       context 'set user avatar' do
         before do
-          image_stub
           @user = FactoryGirl.create :user
           # just in case this gets set in the factory in the future
           @user.avatar = nil
@@ -244,14 +243,6 @@ describe Api::V3::UsersController do
   
 
   private
-    def image_stub
-      # Stub out image requests
-      raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
-      stub_request(:get, "https://www.google.com/images/srpr/logo11w.png"). \
-        with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-        to_return(raw_resp.read)
-      ImageUploader.storage = :file
-    end
     
     def expected_user_response(user)
        { current_user: {
