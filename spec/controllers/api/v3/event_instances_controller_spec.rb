@@ -107,6 +107,10 @@ describe Api::V3::EventInstancesController do
       assigns(:event_instance).should eq(@inst)
     end
 
+    it 'should increment view count' do
+      expect{subject}.to change{Content.find(@inst.event.content.id).view_count}.from(0).to(1)
+    end
+
   end
 
 end

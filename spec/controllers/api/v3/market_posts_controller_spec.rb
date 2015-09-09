@@ -72,6 +72,10 @@ describe Api::V3::MarketPostsController do
       subject
       assigns(:market_post).should eq(@market_post)
     end
+
+    it 'should increment view count' do
+      expect{subject}.to change{Content.find(@market_post.id).view_count}.from(0).to(1)
+    end
   end
 
   describe 'GET contact' do
