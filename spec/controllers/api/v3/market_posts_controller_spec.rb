@@ -48,9 +48,19 @@ describe Api::V3::MarketPostsController do
         api_authenticate user: @user
       end
 
-      it 'should respond with market_posts items in the user\'s location' do
+      it 'should not automatically query based on signed in user\'s location' do
         subject
+        assigns(:market_posts).select{|c| c.locations.include? @user.location }.count.should eq(0) 
+      end
+
+      it 'should allow querying by any passed in location_id' do
+        get :index, format: :json, location_id: @user.location.id
         assigns(:market_posts).select{|c| c.locations.include? @user.location }.count.should eq(assigns(:market_posts).count)
+      end
+
+      it 'should return market_posts items in the default location when no location_id passed in' do
+        subject
+        assigns(:market_posts).select{|c| c.locations.include? @default_location }.count.should eq(assigns(:market_posts).count)
       end
     end
 

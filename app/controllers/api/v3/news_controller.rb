@@ -18,8 +18,6 @@ module Api
 
         if params[:location_id].present?
           location_condition = params[:location_id].to_i
-        elsif @current_api_user.present? and @current_api_user.location_id.present?
-          location_condition = @current_api_user.location_id
         else
           location_condition = Location.find_by_city(Location::DEFAULT_LOCATION).id
         end
