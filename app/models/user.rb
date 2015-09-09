@@ -32,6 +32,7 @@
 #  test_group             :string(255)
 #  muted                  :boolean          default(FALSE)
 #  authentication_token   :string(255)
+#  avatar                 :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -40,6 +41,7 @@ class User < ActiveRecord::Base
   has_many :notifiers
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
+  mount_uploader :avatar, ImageUploader
 
   before_save :ensure_authentication_token
 

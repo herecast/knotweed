@@ -14,18 +14,14 @@ describe Api::V3::UsersController do
 
     describe 'when api user signed in' do
       before do
-    
-        # Stub out image requests
-        #raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
-        #stub_request(:get, "https://www.google.com/images/srpr/logo11w.png").       with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-        #to_return(raw_resp.read)
-        #ImageUploader.storage = :file
+        image_stub 
 
         listserv = FactoryGirl.create :listserv
         location = FactoryGirl.create :location, listservs: [listserv], \
           consumer_active: true
         @user = FactoryGirl.create :user, location: location
-        #@user.avatar = FactoryGirl.create :image, remote_image_url: "https://www.google.com/images/srpr/logo11w.png", imageable_id: @user.id, imageable_type: 'User'
+        @user.remote_avatar_url = "https://www.google.com/images/srpr/logo11w.png"
+        @user.save
         api_authenticate user: @user
       end
 
@@ -36,19 +32,8 @@ describe Api::V3::UsersController do
       end
 
       it 'should return expected fields' do
-       desired = { current_user: {
-          id: @user.id,
-          name: @user.name,
-          email: @user.email,
-          created_at: @user.created_at.strftime("%Y-%m-%dT%H:%M:%S%:z"),
-          location_id: @user.location.id,
-          location: @user.location.name,
-          listserv_name: @user.location.listserv.name, 
-          listserv_id: @user.location.listserv.id,
-          test_group: @user.test_group || "",
-          user_image_url: "" }.stringify_keys
-        }.stringify_keys
-          JSON.parse(response.body).should eq desired
+       desired = expected_user_response @user 
+       JSON.parse(response.body).should eq desired
       end
     end
 
@@ -64,13 +49,37 @@ describe Api::V3::UsersController do
         end
       end
 
-      describe 'change user attributes' do
+      context 'when user_id does not match current_user.id' do
         before do
-          location = FactoryGirl.create :location
           @user = FactoryGirl.create :user
           api_authenticate user: @user
           @new_data = { format: :json,
                         current_user: {
+                          user_id: @user.id + 11,
+                          name: 'Jane Jones III'
+                        }
+                      }
+        end
+        
+        subject! { put :update, @new_data }
+
+        it 'should not update user' do
+          response.code.should eq '422'
+          assigns(:current_api_user).name.should eq @user.name
+          assigns(:current_api_user).name.should_not eq @new_data[:current_user][:name]
+        end
+      end 
+
+      describe 'change user attributes' do
+        before do
+          listserv = FactoryGirl.create :listserv
+          location = FactoryGirl.create :location, listservs: [listserv], \
+            consumer_active: true
+          @user = FactoryGirl.create :user, location: location
+          api_authenticate user: @user
+          @new_data = { format: :json,
+                        current_user: {
+                          user_id: @user.id,
                           name: 'Skye Bill',
                           location_id: location.id ,
                           email: 'skye@bill.com',
@@ -92,6 +101,12 @@ describe Api::V3::UsersController do
           response.code.should eq '200'
         end
 
+        it 'should respond with current_user GET data' do
+          #change the test user name to editted name before comparison
+          @user.name = @new_data[:current_user][:name]  
+          JSON.parse(response.body).should eq expected_user_response @user
+        end
+
       end
 
       describe 'change only some attributes' do
@@ -102,7 +117,8 @@ describe Api::V3::UsersController do
           @new_data = { format: :json,
                         current_user: {
                           name: 'Skye2 Bill',
-                          location_id: location.id
+                          location_id: location.id,
+                          user_id: @user.id
                           }
                       }
         end
@@ -128,7 +144,8 @@ describe Api::V3::UsersController do
           @new_data = { format: :json,
                         current_user: {
                           password: 'p1',
-                          password_confirmation: 'we'
+                          password_confirmation: 'we',
+                          user_id: @user.id
                           }
                       }
         end
@@ -140,6 +157,24 @@ describe Api::V3::UsersController do
           response.code.should eq '422'
         end
 
+      end
+
+      context 'set user avatar' do
+        before do
+          @user = FactoryGirl.create :user
+          # just in case this gets set in the factory in the future
+          @user.avatar = nil
+          @user.save
+
+          @file = fixture_file_upload('/photo.jpg', 'image/jpg')
+          api_authenticate user: @user
+        end
+
+        subject! { put :update, format: :json, current_user: {user_id: @user.id, image: @file} }
+
+        it 'should set new image' do
+          assigns(:current_api_user).avatar_identifier.should eq @file.original_filename
+        end
       end
 
   end
@@ -205,5 +240,22 @@ describe Api::V3::UsersController do
       end
     end
   end
+  
 
+  private
+    
+    def expected_user_response(user)
+       { current_user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          created_at: user.created_at.strftime("%Y-%m-%dT%H:%M:%S%:z"),
+          location_id: user.location.id,
+          location: user.location.name,
+          listserv_name: user.location.listserv.name, 
+          listserv_id: user.location.listserv.id,
+          test_group: user.test_group,
+          user_image_url: user.avatar.url }.stringify_keys
+        }.stringify_keys
+    end
 end

@@ -5,29 +5,21 @@ module Api
       before_filter :check_logged_in!, only: [:show, :update, :logout] 
       def show
         if @current_api_user.present? 
-          listserv = @current_api_user.location.listserv
-          listserv_id = listserv ? listserv.id : ""
-          render json: {
-            current_user: {
-              id: @current_api_user.id,
-              name: @current_api_user.name,
-              email: @current_api_user.email,
-              created_at: @current_api_user.created_at,
-              location_id: @current_api_user.location.id,
-              location: @current_api_user.location.name,
-              listserv_id: listserv_id,
-              listserv_name: listserv.try(:name).to_s,
-              test_group: @current_api_user.test_group || "",
-              user_image_url: "" 
-            }
-          }, status: 200
+          render json: @current_api_user, serializer: UserSerializer, root: 'current_user',  status: 200
         else
           render json: { errors: 'User not logged in' }, status: 401
         end
       end
 
       def update
+
         if @current_api_user.present?
+          
+          #security check in case the user token is stolen, the user id must be
+          #stolen as well
+          if params[:current_user][:user_id] != @current_api_user.id
+            head :unprocessable_entity and return
+          end
           
           @current_api_user.name = 
             params[:current_user][:name] if params[:current_user][:name].present?
@@ -43,8 +35,10 @@ module Api
               params[:current_user][:password_confirmation]
           end
 
+          @current_api_user.avatar = params[:current_user][:image] if params[:current_user][:image].present?
+
           if @current_api_user.save 
-            render json: {}, status: 200
+            render json: @current_api_user, serializer: UserSerializer, root: 'current_user', status: 200
           else
             render json: { error: "Current User update failed", messages:  @current_api_user.errors.full_messages }, status: 422
           end

@@ -32,6 +32,7 @@
 #  test_group             :string(255)
 #  muted                  :boolean          default(FALSE)
 #  authentication_token   :string(255)
+#  avatar                 :string(255)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
