@@ -112,7 +112,6 @@ describe Api::V3::TalkController do
       before do
         api_authenticate user: @user
         @file = fixture_file_upload('/photo.jpg', 'image/jpg')
-        ImageUploader.storage = :file
       end
 
       subject { put :update, id: @talk.content.id, talk: { image: @file } }
