@@ -23,7 +23,8 @@ module Api
         opts = {}
         opts = { select: '*, weight()' }
         opts[:order] = 'start_date ASC'
-        opts[:per_page] = params[:per_page] || 1000
+        opts[:per_page] = params[:per_page] || 25
+        opts[:page] = params[:page] || 1
         opts[:with] = {}
         opts[:conditions] = {}
         opts[:conditions][:published] = 1 if @repository.present?
