@@ -62,6 +62,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def reset_authentication_token
+    self.authentication_token = generate_authentication_token
+  end
+
   def self.current
     Thread.current[:user]
   end

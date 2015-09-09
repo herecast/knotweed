@@ -175,4 +175,35 @@ describe Api::V3::UsersController do
     end
   end
 
+  describe 'POST logout' do
+    context do 
+      before do
+        @user = FactoryGirl.create :user
+        api_authenticate user: @user
+      end
+
+      subject! { post :logout , format: :json}
+
+      it 'should logout user' do
+        assigns(:current_user).should be_nil
+        assigns(:current_api_user).should be_nil
+        response.code.should eq '200'
+      end
+    end
+
+    context do
+      before do
+        @user = FactoryGirl.create :user
+        @orig_token = @user.authentication_token
+        api_authenticate user: @user
+      end
+
+      subject! { post :logout , format: :json}
+
+      it 'should change authentication token' do
+        @user.reload.authentication_token.should_not eq @orig_token 
+      end
+    end
+  end
+
 end

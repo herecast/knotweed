@@ -1,7 +1,8 @@
 module Api
   module V3
     class UsersController < ApiController
-
+      
+      before_filter :check_logged_in!, only: [:show, :update, :logout] 
       def show
         if @current_api_user.present? 
           listserv = @current_api_user.location.listserv
@@ -64,6 +65,18 @@ module Api
         end
 
         render 'api/v3/users/forecast', layout: false
+      end
+
+      def logout
+        sign_out @current_api_user
+        @current_api_user.reset_authentication_token
+        if @current_api_user.save
+           res =  :ok 
+        else
+           res = :unprocessable_entity
+        end
+        @current_api_user = nil
+        render json: {}, status: res
       end
 
     end
