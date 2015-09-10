@@ -3,7 +3,12 @@ module Api
     class TalkSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :user_count, :pageviews_count, :author_name,
-        :author_image_url, :published_at, :view_count, :commenter_count, :comment_count, :parent_id
+        :author_image_url, :published_at, :view_count, :commenter_count, :comment_count, :parent_id,
+        :content_id
+
+      def content_id
+        object.id
+      end
 
       def title
         object.sanitized_title
