@@ -79,7 +79,7 @@ describe Api::V3::UsersController do
           api_authenticate user: @user
           @new_data = { format: :json,
                         current_user: {
-                          user_id: @user.id,
+                          user_id: @user.id.to_s,
                           name: 'Skye Bill',
                           location_id: location.id ,
                           email: 'skye@bill.com',
@@ -118,7 +118,7 @@ describe Api::V3::UsersController do
                         current_user: {
                           name: 'Skye2 Bill',
                           location_id: location.id,
-                          user_id: @user.id
+                          user_id: @user.id.to_s
                           }
                       }
         end
@@ -145,7 +145,7 @@ describe Api::V3::UsersController do
                         current_user: {
                           password: 'p1',
                           password_confirmation: 'we',
-                          user_id: @user.id
+                          user_id: @user.id.to_s
                           }
                       }
         end
@@ -170,7 +170,7 @@ describe Api::V3::UsersController do
           api_authenticate user: @user
         end
 
-        subject! { put :update, format: :json, current_user: {user_id: @user.id, image: @file} }
+        subject! { put :update, format: :json, current_user: {user_id: @user.id.to_s, image: @file} }
 
         it 'should set new image' do
           assigns(:current_api_user).avatar_identifier.should eq @file.original_filename
