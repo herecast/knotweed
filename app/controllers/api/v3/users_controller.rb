@@ -17,7 +17,7 @@ module Api
           
           #security check in case the user token is stolen, the user id must be
           #stolen as well
-          if params[:current_user][:user_id] != @current_api_user.id
+          if params[:current_user][:user_id].to_i != @current_api_user.id
             head :unprocessable_entity and return
           end
           
