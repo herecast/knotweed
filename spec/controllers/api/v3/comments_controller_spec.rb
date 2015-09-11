@@ -105,6 +105,8 @@ describe Api::V3::CommentsController do
 
   end
 
+  private
+
   def comment_format(comment)
     # r means results
     r = {}
@@ -115,6 +117,7 @@ describe Api::V3::CommentsController do
     #r[:user_image_url]
     r[:pubdate] = comment.pubdate.strftime("%Y-%m-%dT%H:%M:%S%:z")
     r[:parent_content_id] = comment.parent_id
+    r[:content_id] = comment.content.id
     r.stringify_keys
   end
 

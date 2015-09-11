@@ -7,7 +7,7 @@ module Api
       # (associated with comments) in the desired comment struture
 
       attributes :id, :content, :pubdate, :parent_content_id,
-        :user_id, :user_name
+        :user_id, :user_name, :content_id
         #TODO user_image_url
 
       def id
@@ -32,6 +32,10 @@ module Api
       
       def pubdate
         object.pubdate
+      end
+
+      def content_id
+        object.id
       end
 
     end
