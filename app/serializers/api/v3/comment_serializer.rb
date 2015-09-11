@@ -7,8 +7,7 @@ module Api
       # (associated with comments) in the desired comment struture
 
       attributes :id, :content, :pubdate, :parent_content_id,
-        :user_id, :user_name
-        #TODO user_image_url
+        :user_id, :user_name, :user_image_url
 
       def id
         object.channel.id
@@ -30,10 +29,9 @@ module Api
         object.parent_id
       end
       
-      def pubdate
-        object.pubdate
+      def user_image_url
+        object.created_by.try(:avatar).try(:url)
       end
-
     end
   end
 end
