@@ -82,7 +82,7 @@ describe Api::V3::CommentsController do
       subject! { get :index, format: :json, content_id: @content.id }
 
       it 'should include avatar url in the response' do
-        JSON.parse(response.body).should eq(comment_format(@comment))
+        JSON.parse(response.body).should eq({comments: [comment_format(@comment)]}.stringify_keys)
       end
     end
 
