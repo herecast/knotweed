@@ -188,7 +188,7 @@ describe Api::V3::ContentsController do
         before do
           # because we're authenticated as the @user, created_by is actually set automatically here,
           # so we don't need to set it manually.
-          FactoryGirl.create :event
+          @event = FactoryGirl.create :event
           FactoryGirl.create_list :market_post, 3
           FactoryGirl.create_list :comment, 2
         end
@@ -201,6 +201,25 @@ describe Api::V3::ContentsController do
         it 'allows sorting by specified parameters' do
           get :dashboard, sort: 'pubdate DESC'
           expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)
+        end
+
+        describe 'serializer response' do
+          before do
+            subject
+            @resp_arr = JSON.parse(response.body)['contents']
+          end
+
+          # NOTE: as of now the serializer uses the first event instance id
+          # as the ID of the response.
+          it 'should include event_id for events' do
+            event = @resp_arr.select{|c| c['id'] == @event.event_instances.first.id && c['content_type'] == 'Event' }[0]
+            event['event_id'].should eq(@event.id)
+          end
+
+          it 'should include event_instance_id as id for events' do
+            event = @resp_arr.select{|c| c['event_id'] == @event.id}[0]
+            event['id'].should eq(@event.event_instances.first.id)
+          end
         end
       end
     end
