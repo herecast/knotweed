@@ -120,6 +120,35 @@ describe Api::V3::EventInstancesController do
 
   end
 
+  describe 'can edit' do
+    before do
+      @location = FactoryGirl.create :location, city: 'Another City'
+      @user = FactoryGirl.create :user, location: @location
+      @event = FactoryGirl.create :event
+      @event.content.update_attribute(:created_by, @user)
+      @inst = @event.event_instances.first
+    end
+
+    subject { get :show, id: @inst.id, format: :json }
+
+    it 'should true' do
+      api_authenticate user: @user
+      subject 
+      JSON.parse(response.body)["event_instance"]["can_edit"].should == true
+    end
+    it 'should false' do
+      @location = FactoryGirl.create :location, city: 'Another City'
+      @user = FactoryGirl.create :user, location: @location
+      api_authenticate user: @user
+      subject 
+      JSON.parse(response.body)["event_instance"]["can_edit"].should == false
+    end
+    it 'should false' do
+      subject 
+      JSON.parse(response.body)["event_instance"]["can_edit"].should == false
+    end
+  end
+
   describe 'GET index' do
     before do
       @count = 3

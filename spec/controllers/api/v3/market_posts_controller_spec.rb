@@ -66,6 +66,32 @@ describe Api::V3::MarketPostsController do
 
   end
 
+  describe 'can edit' do
+    before do
+      @location = FactoryGirl.create :location, city: 'Another City'
+      @user = FactoryGirl.create :user, location: @location
+      @market_post = FactoryGirl.create :content, content_category: @market_cat
+      @market_post.update_attribute(:created_by, @user)
+    end
+    subject { get :show, id: @market_post.id, format: :json }
+    it 'should true' do
+      api_authenticate user: @user
+      subject 
+      JSON.parse(response.body)["market_post"]["can_edit"].should == true
+    end
+    it 'should false' do
+      @location = FactoryGirl.create :location, city: 'Another City'
+      @user = FactoryGirl.create :user, location: @location
+      api_authenticate user: @user
+      subject 
+      JSON.parse(response.body)["market_post"]["can_edit"].should == false
+    end
+    it 'should false' do
+      subject 
+      JSON.parse(response.body)["market_post"]["can_edit"].should == false
+    end
+  end
+
   describe 'GET show' do
     before do
       @market_post = FactoryGirl.create :content, content_category: @market_cat
