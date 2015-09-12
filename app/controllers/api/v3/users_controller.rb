@@ -70,6 +70,7 @@ module Api
            res = :unprocessable_entity
         end
         @current_api_user = nil
+        reset_session
         render json: {}, status: res
       end
 
