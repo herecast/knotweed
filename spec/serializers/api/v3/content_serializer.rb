@@ -1,0 +1,27 @@
+require 'spec_helper'
+
+describe Api::V3::ContentSerializer do
+  before do
+    @content = FactoryGirl.create :content
+  end
+
+  let (:serialized_object) { JSON.parse(Api::V3::ContentSerializer.new(@content, root: false).to_json) }
+
+  context 'with a parent object' do
+    before do
+      @market_cat = FactoryGirl.create :content_category, name: 'market'
+      @parent = FactoryGirl.create :content, content_category: @market_cat
+      @content.update_attribute :parent_id, @parent.id
+    end
+
+
+    it 'should include the parent ID' do
+      serialized_object['parent_id'].should eq(@parent.id)
+    end
+
+    it 'should include parent_type' do
+      serialized_object['parent_type'].should eq(@parent.root_content_category.name)
+    end
+
+  end
+end
