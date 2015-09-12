@@ -5,7 +5,7 @@ module Api
       attributes :id, :title, :image_url, :author_id, :author_name, :content_type,
         :publication_id, :publication_name, :venue_name, :venue_address,
         :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count, :parent_id,
-        :content_id
+        :content_id, :parent_type
 
       def content_id
         object.id
@@ -81,6 +81,12 @@ module Api
       def parent_id
         if object.parent.present?
           object.parent.id
+        end
+      end
+
+      def parent_type
+        if object.parent.present?
+          object.parent.root_content_category.name
         end
       end
 
