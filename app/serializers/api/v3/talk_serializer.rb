@@ -35,7 +35,7 @@ module Api
       end
 
       def author_image_url
-        # PENDING avatar implementation
+        object.created_by.try(:avatar).try(:url)
       end
 
       def published_at
