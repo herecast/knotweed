@@ -180,6 +180,18 @@ describe Api::V3::MarketPostsController do
         expect{subject}.to change{Content.count}.by(1)
         (assigns(:market_post).content.present?).should be true
       end
+
+      context 'with extended_reach_enabled true' do
+        before do
+          @basic_attrs[:extended_reach_enabled] = true
+          @region_location = FactoryGirl.create :location, id: Location::REGION_LOCATION_ID
+        end
+
+        it 'should create a market post with locations including REGION_LOCATION_ID' do
+          subject
+          expect(assigns(:market_post).content.location_ids).to include(Location::REGION_LOCATION_ID)
+        end
+      end
     end
 
   end

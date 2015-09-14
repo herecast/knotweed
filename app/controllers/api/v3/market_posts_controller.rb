@@ -46,7 +46,7 @@ module Api
         pub = Publication.find_or_create_by_name 'DailyUV'
 
         location_ids = [@current_api_user.location_id]
-        if params[:extended_reach_enabled]
+        if params[:market_post][:extended_reach_enabled]
           location_ids.push Location::REGION_LOCATION_ID
         end
 
