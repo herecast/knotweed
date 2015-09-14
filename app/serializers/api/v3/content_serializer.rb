@@ -71,11 +71,19 @@ module Api
       end
 
       def view_count
-        object.view_count
+        if object.parent.present?
+          object.parent.view_count
+        else
+          object.view_count
+        end
       end
 
       def commenter_count
-        object.commenter_count
+        if object.parent.present?
+          object.parent.commenter_count
+        else
+          object.commenter_count
+        end
       end
 
       def parent_content_id
