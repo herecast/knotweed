@@ -60,7 +60,9 @@ class Location < ActiveRecord::Base
 
   def self.find_by_city_state(city_state)
     location = nil
-    cs = city_state.split(',')
+    # using try here to avoid crashing in the scenario
+    # where it's called on an empty string.
+    cs = city_state.try(:split,',')
     if cs.present?
       if cs[1].present?
         location = Location.where(city: cs[0].strip, state: cs[1].strip).first
