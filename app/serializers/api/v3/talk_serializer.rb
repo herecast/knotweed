@@ -3,8 +3,8 @@ module Api
     class TalkSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :user_count, :author_name,
-        :author_image_url, :published_at, :view_count, :commenter_count, :comment_count, :parent_id,
-        :content_id, :parent_type
+        :author_image_url, :published_at, :view_count, :commenter_count, :comment_count, 
+        :parent_content_id, :content_id, :parent_content_type
 
       def content_id
         object.id
@@ -49,13 +49,13 @@ module Api
         object.comment_count
       end
 
-      def parent_id
+      def parent_content_id
         if object.parent.present?
           object.parent.id
         end
       end
 
-      def parent_type
+      def parent_content_type
         if object.parent.present?
           object.parent.root_content_category.name
         end

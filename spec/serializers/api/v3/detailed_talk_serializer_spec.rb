@@ -17,11 +17,11 @@ describe Api::V3::DetailedTalkSerializer do
 
 
     it 'should include the parent ID' do
-      serialized_object['parent_id'].should eq(@parent.id)
+      serialized_object['parent_content_id'].should eq(@parent.id)
     end
 
-    it 'should include parent_type' do
-      serialized_object['parent_type'].should eq(@parent.root_content_category.name)
+    it 'should include parent_content_type' do
+      serialized_object['parent_content_type'].should eq(@parent.root_content_category.name)
     end
 
   end
