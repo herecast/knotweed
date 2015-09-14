@@ -103,6 +103,9 @@ class Content < ActiveRecord::Base
   before_save :set_guid
   before_save :set_root_content_category_id
 
+  # handle event_instance delta index updating
+  after_save :set_event_instance_delta, if: Proc.new { |c| c.channel_type == 'Event' }
+
   # channel relationships
   belongs_to :channel, polymorphic: true, inverse_of: :content
 
@@ -1260,6 +1263,13 @@ class Content < ActiveRecord::Base
     query = File.read(Rails.root.join("lib", "queries", "query_promo_random.rq")) %
             { content_id: id }
     sparql.query(query)
+  end
+
+  def set_event_instance_delta
+    channel.event_instances.each do |ei|
+      ei.delta = true
+      ei.save
+    end
   end
 
 end
