@@ -52,47 +52,54 @@ describe Api::V3::TalkController do
       @talk = FactoryGirl.create :content, content_category: @talk_cat
       api_authenticate user: @user
     end
-
     subject { get :show, id: @talk.id, format: :json }
+    context do
+      it 'has 200 status code' do
+        subject
+        response.code.should eq('200')
+      end
 
-    it 'has 200 status code' do
-      subject
-      response.code.should eq('200')
-    end
+      it 'appropriately loads the talk object' do
+        subject
+        assigns(:talk).should eq(@talk)
+      end
 
-    it 'appropriately loads the talk object' do
-      subject
-      assigns(:talk).should eq(@talk)
-    end
+      it 'check view_count' do
+        view_count = @talk.view_count
+        subject
+        talk=JSON.parse(@response.body)
+        talk["talk"]["view_count"].should == view_count+1
+      end
+      it 'check comment_count' do
+        comment_count = @talk.comment_count
+        subject
+        talk=JSON.parse(@response.body)
+        talk["talk"]["comment_count"].should == comment_count
+      end
+      it 'check commenter_count' do
+        commenter_count = @talk.commenter_count
+        subject
+        talk=JSON.parse(@response.body)
+        talk["talk"]["commenter_count"].should == commenter_count
+      end
 
-    it 'check parent field' do
-      @talk.parent = FactoryGirl.create :content
-      @talk.save
-      subject
-      talk=JSON.parse(@response.body)
-      talk["talk"]["parent_id"].should == @talk.parent.id
+      it 'should increment view count' do
+        expect{subject}.to change{Content.find(@talk.id).view_count}.from(0).to(1)
+      end
     end
-    it 'check view_count' do
-      view_count = @talk.view_count
-      subject
-      talk=JSON.parse(@response.body)
-      talk["talk"]["view_count"].should == view_count+1
-    end
-    it 'check comment_count' do
-      comment_count = @talk.comment_count
-      subject
-      talk=JSON.parse(@response.body)
-      talk["talk"]["comment_count"].should == comment_count
-    end
-    it 'check commenter_count' do
-      commenter_count = @talk.commenter_count
-      subject
-      talk=JSON.parse(@response.body)
-      talk["talk"]["commenter_count"].should == commenter_count
-    end
-
-    it 'should increment view count' do
-      expect{subject}.to change{Content.find(@talk.id).view_count}.from(0).to(1)
+    context 'when user has an avatar' do
+      before do
+        google_logo_stub
+        @user.remote_avatar_url='https://www.google.com/images/srpr/logo11w.png'
+        @user.save
+        @talk.created_by = @user
+        @talk.save
+      end
+      
+      it 'serializer should return author_image_url' do
+        subject
+        JSON.parse(response.body)['talk']['author_image_url'].should == @user.avatar.url
+      end
     end
   end
 

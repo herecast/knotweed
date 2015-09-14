@@ -23,7 +23,6 @@ describe Api::V3::CommentsController do
         subject
         assigns(:comments).should eq([@comment.content])
       end
-
     end
     
     describe 'nested comments' do
@@ -67,6 +66,23 @@ describe Api::V3::CommentsController do
       it 'should return ordered results' do
         expected = {comments: [comment_format(@comment3), comment_format(@comment2), comment_format(@comment1)]}.stringify_keys
         JSON.parse(response.body).should eq(expected)
+      end
+    end
+
+    describe 'when avatar is present' do
+      before do
+        google_logo_stub
+        user = FactoryGirl.create :user, remote_avatar_url:  "https://www.google.com/images/srpr/logo11w.png"
+        @content = FactoryGirl.create :content
+        @comment = FactoryGirl.create :comment 
+        @comment.content.update_attribute :parent_id, @content.id 
+        @comment.content.update_attribute :created_by, user
+      end
+
+      subject! { get :index, format: :json, content_id: @content.id }
+
+      it 'should include avatar url in the response' do
+        JSON.parse(response.body).should eq({comments: [comment_format(@comment)]}.stringify_keys)
       end
     end
 
@@ -114,7 +130,7 @@ describe Api::V3::CommentsController do
     r[:content] = comment.sanitized_content
     r[:user_id] = comment.created_by.id
     r[:user_name] = comment.created_by.name
-    #r[:user_image_url]
+    r[:user_image_url] = comment.created_by.try(:avatar).try(:url)
     r[:pubdate] = comment.pubdate.strftime("%Y-%m-%dT%H:%M:%S%:z")
     r[:parent_content_id] = comment.parent_id
     r[:content_id] = comment.content.id

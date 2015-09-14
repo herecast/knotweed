@@ -3,7 +3,8 @@ module Api
     class DetailedTalkSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :content, :content_id, :image_url, :user_count,
-        :pageviews_count, :author_name, :author_image_url, :published_at, :view_count, :commenter_count, :comment_count, :parent_id
+        :author_name, :author_image_url, :published_at, :view_count, :commenter_count, :comment_count, 
+        :parent_content_id, :parent_content_type
 
       def title
         object.sanitized_title
@@ -35,10 +36,6 @@ module Api
         # PENDING
       end
 
-      def pageviews_count
-        # PENDING
-      end
-
       def author_name
         if object.created_by.present?
           object.created_by.name
@@ -48,7 +45,7 @@ module Api
       end
 
       def author_image_url
-        # PENDING
+        object.created_by.try(:avatar).try(:url)
       end
 
       def published_at
@@ -67,12 +64,19 @@ module Api
         object.comment_count
       end
 
-      def parent_id
+      def parent_content_id
         if object.parent.present?
           object.parent.id
         end
       end
 
+      def parent_content_type
+        if object.parent.present?
+          object.parent.root_content_category.name
+        end
+      end
+
     end
+
   end
 end
