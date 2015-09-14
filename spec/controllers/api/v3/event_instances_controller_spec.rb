@@ -136,7 +136,7 @@ describe Api::V3::EventInstancesController do
     context 'pagination' do
       before { get :index, format: :json, per_page: @count - 1 }
       it 'should return paginated results' do
-        assigns(:event_instances).per_page.should eq(@count -1)
+        assigns(:event_instances).count.should eq(@count -1)
       end
     end
   end
