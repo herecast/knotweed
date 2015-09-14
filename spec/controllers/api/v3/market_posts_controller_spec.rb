@@ -66,27 +66,29 @@ describe Api::V3::MarketPostsController do
 
   end
 
-  describe 'can edit' do
+  describe 'when user edits the content' do
     before do
       @location = FactoryGirl.create :location, city: 'Another City'
       @user = FactoryGirl.create :user, location: @location
       @market_post = FactoryGirl.create :content, content_category: @market_cat
       @market_post.update_attribute(:created_by, @user)
     end
+
     subject { get :show, id: @market_post.id, format: :json }
-    it 'should true' do
+
+    it 'can_edit should be true for the content author' do
       api_authenticate user: @user
       subject 
       JSON.parse(response.body)["market_post"]["can_edit"].should == true
     end
-    it 'should false' do
+    it 'can_edit should false for a different user' do
       @location = FactoryGirl.create :location, city: 'Another City'
-      @user = FactoryGirl.create :user, location: @location
-      api_authenticate user: @user
+      @different_user = FactoryGirl.create :user, location: @location
+      api_authenticate user: @different_user
       subject 
       JSON.parse(response.body)["market_post"]["can_edit"].should == false
     end
-    it 'should false' do
+    it 'can_edit should false when a user is not logged in' do
       subject 
       JSON.parse(response.body)["market_post"]["can_edit"].should == false
     end

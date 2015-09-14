@@ -120,7 +120,7 @@ describe Api::V3::EventInstancesController do
 
   end
 
-  describe 'can edit' do
+  describe 'when user edits the content' do
     before do
       @location = FactoryGirl.create :location, city: 'Another City'
       @user = FactoryGirl.create :user, location: @location
@@ -131,19 +131,19 @@ describe Api::V3::EventInstancesController do
 
     subject { get :show, id: @inst.id, format: :json }
 
-    it 'should true' do
+    it 'can_edit should be true for content author' do
       api_authenticate user: @user
       subject 
       JSON.parse(response.body)["event_instance"]["can_edit"].should == true
     end
-    it 'should false' do
+    it 'can edit should be false for a different user' do
       @location = FactoryGirl.create :location, city: 'Another City'
-      @user = FactoryGirl.create :user, location: @location
-      api_authenticate user: @user
+      @different_user = FactoryGirl.create :user, location: @location
+      api_authenticate user: @different_user
       subject 
       JSON.parse(response.body)["event_instance"]["can_edit"].should == false
     end
-    it 'should false' do
+    it 'can_edit should be false when a user is not logged in' do
       subject 
       JSON.parse(response.body)["event_instance"]["can_edit"].should == false
     end
