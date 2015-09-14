@@ -64,13 +64,6 @@ describe Api::V3::TalkController do
         assigns(:talk).should eq(@talk)
       end
 
-      it 'check parent field' do
-        @talk.parent = FactoryGirl.create :content
-        @talk.save
-        subject
-        talk=JSON.parse(@response.body)
-        talk["talk"]["parent_id"].should == @talk.parent.id
-      end
       it 'check view_count' do
         view_count = @talk.view_count
         subject

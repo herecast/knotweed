@@ -1,7 +1,8 @@
 module Api
   module V3
     class UserSerializer < ActiveModel::Serializer
-      attributes :id, :name, :email, :created_at, :location_id, :location, :listserv_id, :listserv_name, :test_group, :user_image_url
+      attributes :id, :name, :email, :created_at, :location_id, :location, 
+        :listserv_id, :listserv_name, :test_group, :user_image_url
 
       def location_id
         object.location.id
