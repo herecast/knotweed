@@ -49,6 +49,8 @@ class Event < ActiveRecord::Base
   accepts_nested_attributes_for :event_instances, allow_destroy: true
   attr_accessible :event_instances_attributes
 
+  after_save :set_event_instance_delta
+
   # we can either remove this validation (the path I chose) OR
   # make the events#create action a lot more complex in that it would have
   # to first save and create the content, then save the event.
@@ -128,6 +130,15 @@ class Event < ActiveRecord::Base
   # returns first upcoming event instance
   def next_instance
     event_instances.where('start_date > ?', Time.zone.now).order('start_date ASC').first
+  end
+
+  private
+
+  def set_event_instance_delta
+    event_instances.each do |ei|
+      ei.delta = true
+      ei.save
+    end
   end
 
 end

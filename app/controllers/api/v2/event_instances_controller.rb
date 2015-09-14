@@ -26,11 +26,12 @@ module Api
         opts[:per_page] = params[:max_results] || 1000
         opts[:with] = {}
         opts[:conditions] = {}
-        opts[:conditions][:published] = 1 if @repository.present?
         opts[:sql] = { include: {event: [{content: :images}, :venue]}}
 
         start_date = Chronic.parse(params[:date_start]).beginning_of_day if params[:date_start].present?
         end_date = Chronic.parse(params[:date_end]).end_of_day if params[:date_end].present?
+
+        opts[:with][:published] = 1 if @repository.present?
 
         if start_date.present?
           if end_date.present?
