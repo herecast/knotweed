@@ -893,7 +893,7 @@ describe Content do
     raise 'unable to find any input files for this test!' if input_files.blank?  
 
     input_files.each do |input_file|
-      it "with raw content from #{input_file}" do
+      it "from #{input_file}" do
         output_file = input_file.gsub '_input', '_output'
         raise 'expected sanitized output file not found' unless output_files.include? output_file
         raw_content = File.read input_file
