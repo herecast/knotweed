@@ -887,17 +887,35 @@ describe Content do
     end
   end
 
-  def get_body_from_file(filename)
+  describe 'when user sends raw content' do
+    input_files = Dir['spec/fixtures/sanitized_content/*_input']
+    output_files = Dir['spec/fixtures/sanitized_content/*_output']
 
-    f = File.open(@test_files_path + filename)
-    body = ""
-
-    f.each_line do |line|
-      body << line
+    input_files.each do |input_file|
+      it "with raw content from #{input_file}" do
+        output_file = input_file.gsub '_input', '_output'
+        raise 'expected sanitized output file not found' unless output_files.include? output_file
+        raw_content = File.read input_file
+        content = FactoryGirl.create :content , raw_content: raw_content
+        debugger
+        content.sanitized_content.should eq File.read(output_files.delete(output_file))  
+      end
     end
-    f.close
-
-    body
   end
+
+  private
+
+    def get_body_from_file(filename)
+
+      f = File.open(@test_files_path + filename)
+      body = ""
+
+      f.each_line do |line|
+        body << line
+      end
+      f.close
+
+      body
+    end
 
 end
