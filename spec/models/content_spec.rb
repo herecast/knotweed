@@ -897,7 +897,6 @@ describe Content do
         raise 'expected sanitized output file not found' unless output_files.include? output_file
         raw_content = File.read input_file
         content = FactoryGirl.create :content , raw_content: raw_content
-        debugger
         content.sanitized_content.should eq File.read(output_files.delete(output_file))  
       end
     end
