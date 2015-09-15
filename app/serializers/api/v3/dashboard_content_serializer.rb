@@ -3,7 +3,8 @@ module Api
     class DashboardContentSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :parent_content_id, :content_type, :comment_count,
-        :view_count, :published_at, :event_id, :parent_content_type
+        :view_count, :published_at, :event_id, :parent_content_type,
+        :parent_event_instance_id
 
       def id
         # if object is an event, Ember app needs an event instance ID
@@ -25,6 +26,12 @@ module Api
 
       def parent_content_id
         object.try(:parent).try(:id)
+      end
+
+      def parent_event_instance_id
+        if object.parent.present? and object.parent.channel_type == 'Event'
+          object.parent.channel.event_instances.first.id
+        end
       end
 
       def content_type
