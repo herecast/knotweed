@@ -890,6 +890,7 @@ describe Content do
   describe 'when user sends raw content' do
     input_files = Dir['spec/fixtures/sanitized_content/*_input']
     output_files = Dir['spec/fixtures/sanitized_content/*_output']
+    raise 'unable to find any input files for this test!' if input_files.blank?  
 
     input_files.each do |input_file|
       it "with raw content from #{input_file}" do
@@ -897,7 +898,7 @@ describe Content do
         raise 'expected sanitized output file not found' unless output_files.include? output_file
         raw_content = File.read input_file
         content = FactoryGirl.create :content , raw_content: raw_content
-        content.sanitized_content.should eq File.read(output_files.delete(output_file))  
+        content.sanitized_content.should eq File.read(output_files.delete(output_file)).chomp  
       end
     end
   end
