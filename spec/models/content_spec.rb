@@ -887,6 +887,8 @@ describe Content do
     end
   end
 
+  # the test input and expected output is kept outside the test in spec/fixtures/sanitized_content
+  # each _input file must have a matching named file ending with _output.
   describe 'when user sends raw content' do
     input_files = Dir['spec/fixtures/sanitized_content/*_input']
     output_files = Dir['spec/fixtures/sanitized_content/*_output']
@@ -898,7 +900,7 @@ describe Content do
         raise 'expected sanitized output file not found' unless output_files.include? output_file
         raw_content = File.read input_file
         content = FactoryGirl.create :content , raw_content: raw_content
-        content.sanitized_content.should eq File.read(output_files.delete(output_file)).chomp  
+        content.sanitized_content.should eq File.read(output_file).chomp  
       end
     end
   end
