@@ -46,6 +46,7 @@
 require 'fileutils'
 require 'builder'
 include ActionView::Helpers::TextHelper
+include ActionView::Helpers::SanitizeHelper
 class Content < ActiveRecord::Base
   include Auditable
 
@@ -1013,6 +1014,10 @@ class Content < ActiveRecord::Base
     # here allows us to go back in the near future and implement a better solution for multiple images JGS 20150605
     process_wp_content(doc)
 
+    scrubber = Loofah::Scrubber.new do |node|
+        node.remove if node.name == 'br'
+    end
+
     doc.search("style").each {|t| t.remove() }
     doc.search('//text()').each {|t| t.content = t.content.sub(/^[^>\n]*>\p{Space}*\z/, "") } # kill tag fragments
     is_newline = Proc.new do |t|
@@ -1033,10 +1038,10 @@ class Content < ActiveRecord::Base
       # remove excess whitespace in that and consolidate into 1 or more <p> blocks.
       elsif e.children.length == 1
         next_e = e.next()
-        text = [e.content]
+        text = [sanitize(e.inner_html, scrubber: scrubber)]
         until next_e.nil? do
           if next_e.text?
-            text[-1] += next_e.text
+            text[-1] += sanitize next_e.inner_html, scrubber: scrubber
           elsif is_newline.call(next_e)
             remove_dup_newlines.call(next_e)
           elsif next_e.matches? "strong"

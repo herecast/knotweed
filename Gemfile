@@ -112,3 +112,4 @@ gem 'debugger', :group => [:development, :test]
 gem 'newrelic_rpm'
 
 gem 'forecast_io'
+gem 'loofah'
