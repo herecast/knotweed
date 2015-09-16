@@ -36,5 +36,17 @@ describe Api::V3::ContentSerializer do
       end
     end
 
+    context 'that is an event' do
+      before do
+        @parent = FactoryGirl.create :event
+        @content.update_attribute :parent_id, @parent.content.id
+      end
+      
+      it 'should include parent_event_instance_id' do
+        serialized_object['parent_event_instance_id'].should eq(@parent.event_instances.first.id)
+      end
+
+    end
+
   end
 end
