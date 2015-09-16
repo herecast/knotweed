@@ -8,6 +8,8 @@ Knotweed::Application.routes.draw do
   devise_scope :user  do
     post '/api/v3/users/sign_in', to: 'sessions#create'
     post '/api/v3/users/sign_up', to: 'registrations#create'
+    post '/api/v3/password_resets', to: 'api/v3/passwords#create'
+    put '/api/v3/password_resets', to: 'api/v3/passwords#update'
   end
   root :to => redirect("#{"#{ENV['RAILS_RELATIVE_URL_ROOT']}" unless ENV['RAILS_RELATIVE_URL_ROOT'].nil?}/users/sign_in")
   resources :users
