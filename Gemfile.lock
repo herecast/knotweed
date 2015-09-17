@@ -282,8 +282,6 @@ GEM
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
-    loofah (2.0.3)
-      nokogiri (>= 1.5.9)
     lumberjack (1.0.4)
     mail (2.5.4)
       mime-types (~> 1.16)
@@ -541,7 +539,6 @@ DEPENDENCIES
   jquery-turbolinks
   kaminari
   legato
-  loofah
   mail
   mixpanel_client
   mysql2
