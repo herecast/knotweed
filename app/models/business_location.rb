@@ -22,6 +22,7 @@
 
 class BusinessLocation < ActiveRecord::Base
   extend Enumerize
+  include Auditable
 
   belongs_to :publication
   has_many :contents
@@ -31,7 +32,7 @@ class BusinessLocation < ActiveRecord::Base
 
   attr_accessible :address, :email, :hours, :name, :publication_id, :phone, 
     :latitude, :longitude, :venue_url, :locate_include_name, :city, :state,
-    :zip, :created_by, :updated_by, :status
+    :zip, :status
 
   validates_presence_of :address, :city, :state
 
