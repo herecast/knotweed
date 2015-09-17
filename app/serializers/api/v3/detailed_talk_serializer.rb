@@ -4,7 +4,7 @@ module Api
 
       attributes :id, :title, :content, :content_id, :image_url, :user_count,
         :author_name, :author_image_url, :published_at, :view_count, :commenter_count, :comment_count, 
-        :parent_content_id, :parent_content_type
+        :parent_content_id, :parent_content_type, :author_email
 
       def title
         object.sanitized_title
@@ -46,6 +46,14 @@ module Api
 
       def author_image_url
         object.created_by.try(:avatar).try(:url)
+      end
+
+      def author_email
+        if object.created_by.present?
+          object.created_by.email
+        else
+          object.authoremail
+        end
       end
 
       def published_at
