@@ -95,16 +95,12 @@ class Content < ActiveRecord::Base
   # for the API
 
   validates_presence_of :raw_content, :title, if: :is_event?
-
   validates_presence_of :raw_content, :title, if: :is_market_post?
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
   before_save :set_guid
   before_save :set_root_content_category_id
-
-  # handle event_instance delta index updating
-  after_save :set_event_instance_delta, if: Proc.new { |c| c.channel_type == 'Event' }
 
   # channel relationships
   belongs_to :channel, polymorphic: true, inverse_of: :content
@@ -462,6 +458,11 @@ class Content < ActiveRecord::Base
     if opts[:download_result].present? and not file_list.nil? and file_list.length > 0
       opts[:download_result] = file_list[0]
     end
+
+    if channel_type == 'Event'
+      channel.set_event_instance_deltas
+    end
+
     result
   end
 
@@ -1263,13 +1264,6 @@ class Content < ActiveRecord::Base
     query = File.read(Rails.root.join("lib", "queries", "query_promo_random.rq")) %
             { content_id: id }
     sparql.query(query)
-  end
-
-  def set_event_instance_delta
-    channel.event_instances.each do |ei|
-      ei.delta = true
-      ei.save
-    end
   end
 
 end
