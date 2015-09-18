@@ -1026,7 +1026,7 @@ class Content < ActiveRecord::Base
 
     #for removing br tags at specific places
     remove_br_tags = Proc.new do |node|
-      node.gsub /\A<\s?br\s?\/?\s?>\z/i, ''
+      node.gsub /<\s?br\s?\/?\s?>/i, ''
     end
 
     doc.traverse do |node|
@@ -1041,8 +1041,8 @@ class Content < ActiveRecord::Base
       # tags "really" should have been part of that initial text fragment. This logic attempts to
       # remove excess whitespace in that and consolidate into 1 or more <p> blocks.
       else
-        next_e = e.next()
         text = [remove_br_tags.call(sanitize(e.inner_html))]
+        next_e = e.next()
         until next_e.nil? do
           if next_e.text?
             text[-1] += remove_br_tags.call(sanitize(next_e.inner_html))
