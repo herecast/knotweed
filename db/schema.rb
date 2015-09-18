@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150908113810) do
+ActiveRecord::Schema.define(:version => 20150918174717) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
