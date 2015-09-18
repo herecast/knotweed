@@ -713,17 +713,18 @@ class Content < ActiveRecord::Base
   # the "attributes" hash no longer contains everything we want to push as a feature to DSP
   # so this method returns the full feature list (attributes hash + whatever else)
   def feature_set
-    set = attributes.merge({
-      "source_uri" => source_uri,
-      "categories" => publish_category
-    })
-    # note: the second except here is temporary, because we can't remove the attr_accessors for these
-    # until after the migrations are done, so we need to exclude these nonexistent fields here
-    set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
-               "import_record_id", "published",
-               "category_reviewed", "raw_content",
-               "has_event_calendar", 'root_content_category_id', 'delta',
-              'created_by', 'updated_by')
+    { "title"=>title, "subtitle"=>subtitle,"authors"=>authors,"issue_id"=>issue_id,
+      "import_location_id"=>import_location_id,"copyright"=>copyright,
+      "guid"=>guid,"pubdate"=>pubdate,"topics"=>topics,"url"=>url,
+      "origin"=>origin,"language"=>language,"page"=>page,
+      "authoremail"=>authoremail,"publication_id"=>publication_id,
+      "doctype"=>doctype,"timestamp"=>timestamp,"contentsource"=>contentsource,
+      "source_content_id"=>source_content_id,"parent_id"=>parent_id,
+      "content_category_id"=>content_category_id,
+      "channelized_content_id"=>channelized_content_id,
+      "channel_type"=>channel_type,"channel_id"=>channel_id,
+      "source_uri"=>source_uri,"categories"=>publish_category
+    }
   end
 
   # Export Gate Document directly before/after Pipeline processing
