@@ -32,6 +32,7 @@
 #  test_group             :string(255)
 #  muted                  :boolean          default(FALSE)
 #  authentication_token   :string(255)
+#  avatar                 :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -40,6 +41,7 @@ class User < ActiveRecord::Base
   has_many :notifiers
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
+  mount_uploader :avatar, ImageUploader
 
   before_save :ensure_authentication_token
 
@@ -61,6 +63,25 @@ class User < ActiveRecord::Base
       self.authentication_token = generate_authentication_token
     end
   end
+
+  def reset_authentication_token
+    self.authentication_token = generate_authentication_token
+  end
+
+  def self.current
+    Thread.current[:user]
+  end
+
+  def self.current=(user)
+    Thread.current[:user] = user
+  end
+
+  protected
+    # We are allowing new registration without email confirmation with this method.
+    # To turn email confirmation back on, just delete this method.
+    def confirmation_required?
+      false
+    end
 
   private
 

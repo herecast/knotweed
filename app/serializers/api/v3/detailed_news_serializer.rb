@@ -3,7 +3,7 @@ module Api
     class DetailedNewsSerializer < ActiveModel::Serializer
 
       attributes :id, :content_id, :admin_content_url, :content, :title, :subtitle,
-        :author_name, :author_id, :publication_name, :publication_id, :published_at
+        :author_name, :author_id, :publication_name, :publication_id, :published_at, :comment_count
 
       has_many :images
 
@@ -13,6 +13,10 @@ module Api
 
       def admin_content_url
         serialization_options[:admin_content_url]
+      end
+
+      def title
+        object.sanitized_title
       end
 
       def content
@@ -32,6 +36,10 @@ module Api
 
       def published_at
         object.pubdate
+      end
+
+      def comment_count
+        object.comment_count
       end
 
     end

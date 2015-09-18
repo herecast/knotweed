@@ -56,9 +56,19 @@ describe Api::V3::NewsController do
         api_authenticate user: @user
       end
 
-      it 'should respond with news items in the user\'s location' do
+      it 'should not automatically respond with news items in the signed in user\'s location' do
         subject
+        assigns(:news).select{|c| c.locations.include? @user.location }.count.should eq(0)
+      end
+
+      it 'should return news item that match any passed in location_id' do
+        get :index, format: :json, location_id: @user.location.id
         assigns(:news).select{|c| c.locations.include? @user.location }.count.should eq(assigns(:news).count)
+      end
+
+      it 'should return news item in the default location when location_id is not sent' do
+        subject
+        assigns(:news).select{|c| c.locations.include? @default_location }.count.should eq(assigns(:news).count)
       end
     end
 
@@ -79,6 +89,17 @@ describe Api::V3::NewsController do
     it 'appropriately loads the news object' do
       subject
       assigns(:news).should eq(@news)
+    end
+
+    it 'check comment_count' do
+      comment_count = @news.comment_count
+      subject
+      news=JSON.parse(@response.body)
+      news["news"]["comment_count"].should == comment_count
+    end
+
+    it 'should increment view count' do
+      expect{subject}.to change{Content.find(@news.id).view_count}.from(0).to(1)
     end
 
   end

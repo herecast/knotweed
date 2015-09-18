@@ -4,6 +4,7 @@ describe MarketPostsController do
   before do
     @user = FactoryGirl.create :admin
     @market_post = FactoryGirl.create :market_post
+    @region_location = FactoryGirl.create :location, id: Location::REGION_LOCATION_ID
     sign_in @user
   end
 

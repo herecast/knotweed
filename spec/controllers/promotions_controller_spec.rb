@@ -4,7 +4,6 @@ describe PromotionsController do
   include Devise::TestHelpers
 
   before do
-    ImageUploader.storage = :file
     user = FactoryGirl.create(:admin)
     sign_in user
     @pub = FactoryGirl.create(:publication)

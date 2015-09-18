@@ -21,8 +21,6 @@ module Api
 
         if params[:location_id].present?
           location_condition = params[:location_id].to_i
-        elsif @current_api_user.present? and @current_api_user.location_id.present?
-          location_condition = @current_api_user.location_id
         else
           location_condition = Location.find_by_city(Location::DEFAULT_LOCATION).id
         end
@@ -46,22 +44,32 @@ module Api
       def create
         market_cat = ContentCategory.find_by_name 'market'
         pub = Publication.find_or_create_by_name 'DailyUV'
+
+        location_ids = [@current_api_user.location_id]
+        if params[:market_post][:extended_reach_enabled]
+          location_ids.push Location::REGION_LOCATION_ID
+        end
+
         content_attributes = {
-          title: params[:market_post].delete(:title),
-          raw_content: params[:market_post].delete(:content),
+          title: params[:market_post][:title],
+          raw_content: params[:market_post][:content],
           authoremail: @current_api_user.try(:email),
           authors: @current_api_user.try(:name),
-          location_ids: [@current_api_user.location_id],
+          location_ids: location_ids,
           content_category_id: market_cat.id,
           pubdate: Time.zone.now,
           timestamp: Time.zone.now,
           publication_id: pub.id
         }
-        listserv_ids = params[:market_post].delete :listserv_ids
-        map_parameter_names!
-        params[:market_post][:content_attributes] = content_attributes
+        listserv_ids = params[:market_post][:listserv_ids]
 
-        @market_post = MarketPost.new(params[:market_post])
+        market_hash = { content_attributes: content_attributes }
+        market_hash[:cost] = params[:market_post][:price]
+        market_hash[:contact_phone] = params[:market_post][:contact_phone]
+        market_hash[:contact_email] = params[:market_post][:contact_email]
+        market_hash[:locate_address] = params[:market_post][:locate_address]
+
+        @market_post = MarketPost.new(market_hash)
         if @market_post.save
           # reverse publish to specified listservs
           if listserv_ids.present?
@@ -72,7 +80,7 @@ module Api
             end
           end
           if @repository.present?
-            @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+            @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
 
           render json: @market_post.content, serializer: DetailedMarketPostSerializer, can_edit: true,
@@ -86,17 +94,9 @@ module Api
         @market_post = Content.find(params[:id]).channel
 
         # TODO: once we have created_by, confirm that the user can edit this market post
-        
-        # TODO: add updated_by processing here
-        content_attrs = {}
-        content_attrs[:id] = @market_post.content.id
-        content_attrs[:title] = params[:market_post].delete(:title) if params[:market_post][:title].present?
-        content_attrs[:raw_content] = params[:market_post].delete(:content) if params[:market_post][:content].present?
-        listserv_ids = params[:market_post].delete :listserv_ids
-        map_parameter_names!
-        params[:market_post][:content_attributes] = content_attrs
-        image_data = params[:market_post].delete :image
-        
+
+        image_data = params[:market_post][:image]
+
         # FOR NOW, coding this the same way that events apiv2 were coded.
         # Meaning, the UPDATE call can take EITHER an image OR updated attributes
         # but not both! and if an image is provided, it ignores everything else.
@@ -111,7 +111,22 @@ module Api
               status: :unprocessable_entity
           end
         else # do the normal update of attributes
-          if @market_post.update_attributes!(params[:market_post])
+          listserv_ids = params[:market_post][:listserv_ids]
+
+          location_ids = [@current_api_user.location_id]
+          if params[:extended_reach_enabled]
+            location_ids.push Location::REGION_LOCATION_ID
+          end
+
+          @market_post.content.location_ids = location_ids
+          @market_post.content.title = params[:market_post][:title] if params[:market_post][:title].present?
+          @market_post.content.raw_content = params[:market_post][:content] if params[:market_post][:content].present?
+          @market_post.cost = params[:market_post][:price] if params[:market_post][:price].present?
+          @market_post.contact_phone = params[:market_post][:contact_phone] if params[:market_post][:contact_phone].present?
+          @market_post.contact_email = params[:market_post][:contact_email] if params[:market_post][:contact_email].present?
+          @market_post.locate_address = params[:market_post][:locate_address] if params[:market_post][:locate_address].present?
+
+          if @market_post.save # NOTE: triggers @market_post.content.save via after_save callback as well
             # reverse publish to specified listservs
             if listserv_ids.present?
               listserv_ids.each do |d|
@@ -121,7 +136,7 @@ module Api
               end
             end
             if @repository.present?
-              @market_post.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+              @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
             end
             render json: @market_post.content, status: 200, 
               serializer: DetailedMarketPostSerializer, can_edit: true
@@ -138,10 +153,8 @@ module Api
         if @market_post.try(:root_content_category).try(:name) != 'market'
           head :no_content
         else
-          # NOTE: need to uncomment this line when created_by is available and delete
-          # the line after it
-          #can_edit = (@market_post.created_by == @current_api_user)
-          can_edit = false
+          @market_post.increment_count_attr!(:view_count)
+          can_edit = (@current_api_user.present? && (@market_post.created_by == @current_api_user))
           render json: @market_post, serializer: DetailedMarketPostSerializer,
             can_edit: can_edit
         end
@@ -160,13 +173,6 @@ module Api
             }
           }
         end
-      end
-
-      private
-
-      # maps Ember app parameter names to our actual field names
-      def map_parameter_names!
-        params[:market_post][:cost] = params[:market_post].delete :price
       end
 
     end

@@ -3,10 +3,13 @@ Knotweed::Application.routes.draw do
   authenticated :user do
     root :to => "dashboard#index"
   end
-  devise_for :users, controllers: { sessions: 'sessions' }
+  devise_for :users, controllers: { sessions: 'sessions', registrations: 'registrations' }
   #custom devise routing
   devise_scope :user  do
     post '/api/v3/users/sign_in', to: 'sessions#create'
+    post '/api/v3/users/sign_up', to: 'registrations#create'
+    post '/api/v3/password_resets', to: 'api/v3/passwords#create'
+    put '/api/v3/password_resets', to: 'api/v3/passwords#update'
   end
   root :to => redirect("#{"#{ENV['RAILS_RELATIVE_URL_ROOT']}" unless ENV['RAILS_RELATIVE_URL_ROOT'].nil?}/users/sign_in")
   resources :users
@@ -105,6 +108,9 @@ Knotweed::Application.routes.draw do
       resources 'talk', only: [:index, :show, :create, :update]
       resources 'market_posts', only: [:index, :show, :create, :update]
       get '/market_posts/:id/contact', to: 'market_posts#contact', as: :market_post_contact
+      get '/weather', to: 'users#weather', as: :weather
+      post '/users/logout', to: 'users#logout', as: :logout
+      get '/dashboard', to: 'contents#dashboard', as: :dashboard
     end
 
     namespace :v2 do

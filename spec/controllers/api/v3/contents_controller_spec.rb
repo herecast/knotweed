@@ -143,6 +143,7 @@ describe Api::V3::ContentsController do
       subject
       assigns(:contents).should eq([@sim_content])
     end
+
   end
 
   describe 'POST /contents/:id/moderate' do
@@ -162,4 +163,65 @@ describe Api::V3::ContentsController do
 
   end
 
+  describe 'GET dashboard' do
+    subject { get :dashboard }
+
+    context 'not signed in' do
+      it 'has 401 status code' do
+        subject
+        response.code.should eq('401')
+      end
+    end
+
+    context 'signed in' do
+      before do
+        @user = FactoryGirl.create :user
+        api_authenticate user: @user
+      end
+
+      it 'has 200 status code' do
+        subject
+        response.code.should eq('200')
+      end
+
+      context 'with the user owning some content' do
+        before do
+          # because we're authenticated as the @user, created_by is actually set automatically here,
+          # so we don't need to set it manually.
+          @event = FactoryGirl.create :event
+          FactoryGirl.create_list :market_post, 3
+          FactoryGirl.create_list :comment, 2
+        end
+
+        it 'responds with the user\'s content' do
+          subject
+          expect(assigns(:contents)).to eq(Content.all)
+        end
+
+        it 'allows sorting by specified parameters' do
+          get :dashboard, sort: 'pubdate DESC'
+          expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)
+        end
+
+        describe 'serializer response' do
+          before do
+            subject
+            @resp_arr = JSON.parse(response.body)['contents']
+          end
+
+          # NOTE: as of now the serializer uses the first event instance id
+          # as the ID of the response.
+          it 'should include event_id for events' do
+            event = @resp_arr.select{|c| c['id'] == @event.event_instances.first.id && c['content_type'] == 'Event' }[0]
+            event['event_id'].should eq(@event.id)
+          end
+
+          it 'should include event_instance_id as id for events' do
+            event = @resp_arr.select{|c| c['event_id'] == @event.id}[0]
+            event['id'].should eq(@event.event_instances.first.id)
+          end
+        end
+      end
+    end
+  end
 end

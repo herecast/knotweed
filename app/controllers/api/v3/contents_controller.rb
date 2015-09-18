@@ -1,7 +1,7 @@
 module Api
   module V3
     class ContentsController < ApiController
-      before_filter :check_logged_in!, only:  [:moderate]
+      before_filter :check_logged_in!, only:  [:moderate, :dashboard]
       # pings the DSP to retrieve a related banner ad for a generic
       # content type.
       def related_promotion
@@ -57,7 +57,7 @@ module Api
 
         @contents = @contents.slice(0,6)
 
-        render json: @contents, each_serializer: SimilarContentSerializer,
+        render json: @contents, each_serializer: ContentSerializer,
           root: 'similar_content', consumer_app_base_uri: @requesting_app.try(:uri)
 
       end
@@ -122,6 +122,28 @@ module Api
 
         render json: @contents, each_serializer: ContentSerializer
 
+      end
+
+      def dashboard
+        params[:sort] ||= 'pubdate DESC'
+        params[:page] ||= 1
+        params[:per_page] ||= 12
+        @contents = Content.where(created_by: @current_api_user, channel_type: ["Event", "MarketPost", "Comment"]).
+          order(sanitize_sort_parameter(params[:sort])).
+          page(params[:page].to_i).per(params[:per_page].to_i)
+
+        render json: @contents, each_serializer: DashboardContentSerializer
+
+      end
+
+      protected
+
+      def sanitize_sort_parameter(sort)
+        sort_parts = sort.split(',')
+        sort_parts.select! do |pt|
+          pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
+        end
+        sort_parts.join(',')
       end
 
     end

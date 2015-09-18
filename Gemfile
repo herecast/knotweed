@@ -110,3 +110,5 @@ gem 'front_end_builds'
 gem 'prerender_rails'
 gem 'debugger', :group => [:development, :test]
 gem 'newrelic_rpm'
+
+gem 'forecast_io'

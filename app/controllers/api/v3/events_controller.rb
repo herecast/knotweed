@@ -23,13 +23,11 @@ module Api
               render json: { errors: map_error_keys(@event.errors.messages) }, status: :unprocessable_entity
             end
           else
-            # listservs for reverse publishing -- not included in process_event_params!
-            # because update doesn't include listserv publishing
             listservs = params[:event].delete :listserv_ids
 
-            process_event_params!
+            event_hash = process_event_params(params[:event])
             
-            if @event.update_attributes(params[:event])
+            if @event.update_attributes(event_hash)
               # reverse publish to specified listservs
               if listservs.present?
                 listservs.each do |d|
@@ -63,9 +61,9 @@ module Api
         # hard coded publication...
         pub = Publication.find_or_create_by_name 'DailyUV'
         
-        process_event_params!
+        event_hash = process_event_params(params[:event])
 
-        @event = Event.new(params[:event])
+        @event = Event.new(event_hash)
         @event.content.publication = pub
         @event.content.images = [Image.create(image: image_data)] if image_data.present?
         if @event.save
@@ -107,37 +105,53 @@ module Api
         new_ei
       end
 
-      def process_event_params!
-        include_upper_valley = params[:event].delete :extended_reach_enabled
+      # accepts incoming params hash and returns a sanitized (only specified attributes accepted)
+      # and translated hash of event data
+      def process_event_params(e)
+        include_upper_valley = e[:extended_reach_enabled]
         location_ids = [@current_api_user.try(:location_id)]
         location_ids.push Location::REGION_LOCATION_ID if include_upper_valley
         # have to parse out event.content parameters into the appropriate place
-        params[:event][:content_attributes] = {
-          raw_content: params[:event].delete(:content),
-          title: params[:event].delete(:title),
-          location_ids: location_ids.uniq,
-          authoremail: @current_api_user.try(:email),
-          authors: @current_api_user.try(:name),
-          pubdate: Time.zone.now,
-          content_category_id: ContentCategory.find_or_create_by_name('event').id,
-        }
+        new_e = { content_attributes: {} }
+        new_e[:content_attributes][:raw_content] = e[:content] if e[:content].present?
+        new_e[:content_attributes][:title] = e[:title] if e[:title].present?
+        new_e[:content_attributes][:location_ids] = location_ids.uniq
+
+        new_e[:cost] = e[:cost] if e[:cost].present?
+        new_e[:cost_type] = e[:cost_type] if e[:cost_type].present?
+        new_e[:contact_email] = e[:contact_email] if e[:contact_email].present?
+        new_e[:contact_phone] = e[:contact_phone] if e[:contact_phone].present?
+        new_e[:event_url] = e[:event_url] if e[:event_url].present?
+
         if @event.present? and @event.id # event already exists and this is an update so we need to include
           #the content ID to avoid overwriting it
-          params[:event][:content_attributes][:id] = @event.content.id
+          new_e[:content_attributes][:id] = @event.content.id
+        else
+          new_e[:content_attributes][:pubdate] = Time.zone.now
+          # NOTE: these attributes are here because they can't change on update
+          new_e[:content_attributes].merge!({
+            pubdate: Time.zone.now,
+            content_category_id: ContentCategory.find_or_create_by_name('event').id,
+            authoremail: @current_api_user.try(:email),
+            authors: @current_api_user.try(:name)
+          })
         end
 
-        if params[:event][:venue].present? and !params[:event][:venue_id].present?
-          params[:event][:venue_attributes] = params[:event].delete :venue
+        if e[:venue_id].present?
+          new_e[:venue_id] = e[:venue_id]
+        elsif e[:venue].present?
+          new_e[:venue_attributes] = e[:venue]
         end
 
         # translate params that have the wrong name
-        params[:event][:event_category] = params[:event].delete(:category).to_s.downcase.gsub(' ','_')
-        params[:event][:event_instances_attributes] = params[:event].delete :event_instances
-        if params[:event][:event_instances_attributes].present?
-          params[:event][:event_instances_attributes].map! do |ei|
+        new_e[:event_category] = e[:category].to_s.downcase.gsub(' ','_')
+        new_e[:event_instances_attributes] = e[:event_instances]
+        if new_e[:event_instances_attributes].present?
+          new_e[:event_instances_attributes].map! do |ei|
             process_ei_params(ei)
           end
         end
+        new_e
       end
 
       # converts the actual model keys that active record labels errors with

@@ -4,7 +4,7 @@ module Api
 
       attributes :event_instances, :content_id, :event_id, :social_enabled, :venue_id, 
         :venue_url, :venue_latitude, :venue_longitude, :event_url, :venue_locate_name, 
-        :admin_content_url, :content, :can_edit, :title
+        :admin_content_url, :content, :can_edit, :title, :comment_count
 
       SHARED_EVENT_ATTRIBUTES = [:cost, :cost_type, :contact_phone, :contact_email, :event_url]
 
@@ -39,6 +39,10 @@ module Api
 
       def social_enabled
         object.event.social_enabled
+      end
+
+      def comment_count
+        object.event.comment_count
       end
 
     end

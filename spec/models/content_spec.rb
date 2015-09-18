@@ -38,6 +38,8 @@
 #  channel_id               :integer
 #  root_content_category_id :integer
 #  delta                    :boolean          default(TRUE), not null
+#  created_by               :integer
+#  updated_by               :integer
 #
 
 require 'spec_helper'
@@ -45,6 +47,32 @@ require 'spec_helper'
 describe Content do
 
   before { Promotion.any_instance.stub(:update_active_promotions).and_return(true) }
+
+  include_examples 'Auditable', Content
+
+  # I wasn't sure where else to put this test...
+  # the content index (app/indices/content_index) uses a
+  # condition that needs to be tested to confirm it's working.
+  describe 'sphinx index' do
+    before do
+      @event_cat = FactoryGirl.create :content_category, name: 'event'
+      @news_cat = FactoryGirl.create :content_category, name: 'news'
+      @in_index_event = FactoryGirl.create :event
+      # ensure in_index_event has the event category
+      @in_index_event.content.content_category_id = @event_cat.id
+      @in_index_event.content.save
+      @not_in_index_event = FactoryGirl.create :content, content_category_id: @event_cat.id
+    end
+
+    it 'should not include unchannelized event category content' do
+      expect(Content.search).to_not include(@not_in_index_event)
+    end
+    
+    it 'should not include unchannelized event category content' do
+      expect(Content.search).to include(@in_index_event.content)
+    end
+
+  end
 
   # for ease of querying, our polymorphic channel relationship
   # is redundantly specified using the content_id attribute
@@ -160,13 +188,7 @@ describe Content do
         "page" => "a3",
         "source_content_id" => "1234567"
       }
-
-      # Stub out image requests
-      raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
-      stub_request(:get, "https://www.google.com/images/srpr/logo11w.png").
-        with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-        to_return(raw_resp.read)
-      ImageUploader.storage = :file
+      google_logo_stub
     end
 
     after do
@@ -598,7 +620,6 @@ describe Content do
 
   describe "has_active_promotion?" do
     before do
-      ImageUploader.storage = :file
       @content = FactoryGirl.create(:content)
     end
     after do
@@ -710,18 +731,11 @@ describe Content do
       @test_files_path = Dir.pwd + "/spec/fixtures/listserv_test_files"
 
       require parser_path + "mail_extractor.rb"
-
-      # Stub out image requests
-      raw_resp = File.new("spec/fixtures/google_logo_resp.txt")
-      stub_request(:get, "https://www.google.com/images/srpr/logo11w.png").
-          with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-          to_return(raw_resp.read)
-      ImageUploader.storage = :file
+  
+      google_logo_stub     
 
       @norwich = FactoryGirl.create :location, city: 'Norwich', state: 'VT'
-
       @corinth = FactoryGirl.create :location, city: 'Corinth', state: 'VT'
-
       @topsham = FactoryGirl.create :location, city: 'Topsham', state: 'VT'
     end
 

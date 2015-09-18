@@ -39,12 +39,15 @@
 #  channel_id               :integer
 #  root_content_category_id :integer
 #  delta                    :boolean          default(TRUE), not null
+#  created_by               :integer
+#  updated_by               :integer
 #
 
 require 'fileutils'
 require 'builder'
 include ActionView::Helpers::TextHelper
 class Content < ActiveRecord::Base
+  include Auditable
 
   belongs_to :issue
   belongs_to :import_location
@@ -92,7 +95,6 @@ class Content < ActiveRecord::Base
   # for the API
 
   validates_presence_of :raw_content, :title, if: :is_event?
-
   validates_presence_of :raw_content, :title, if: :is_market_post?
 
   # check if it should be marked quarantined
@@ -456,6 +458,11 @@ class Content < ActiveRecord::Base
     if opts[:download_result].present? and not file_list.nil? and file_list.length > 0
       opts[:download_result] = file_list[0]
     end
+
+    if channel_type == 'Event'
+      channel.set_event_instance_deltas
+    end
+
     result
   end
 
@@ -706,16 +713,18 @@ class Content < ActiveRecord::Base
   # the "attributes" hash no longer contains everything we want to push as a feature to DSP
   # so this method returns the full feature list (attributes hash + whatever else)
   def feature_set
-    set = attributes.merge({
-      "source_uri" => source_uri,
-      "categories" => publish_category
-    })
-    # note: the second except here is temporary, because we can't remove the attr_accessors for these
-    # until after the migrations are done, so we need to exclude these nonexistent fields here
-    set.except("source_category", "category", "id", "created_at", "updated_at", "quarantine",
-               "import_record_id", "published",
-               "category_reviewed", "raw_content",
-               "has_event_calendar", 'root_content_category_id', 'delta')
+    { "title"=>title, "subtitle"=>subtitle,"authors"=>authors,"issue_id"=>issue_id,
+      "import_location_id"=>import_location_id,"copyright"=>copyright,
+      "guid"=>guid,"pubdate"=>pubdate,"topics"=>topics,"url"=>url,
+      "origin"=>origin,"language"=>language,"page"=>page,
+      "authoremail"=>authoremail,"publication_id"=>publication_id,
+      "doctype"=>doctype,"timestamp"=>timestamp,"contentsource"=>contentsource,
+      "source_content_id"=>source_content_id,"parent_id"=>parent_id,
+      "content_category_id"=>content_category_id,
+      "channelized_content_id"=>channelized_content_id,
+      "channel_type"=>channel_type,"channel_id"=>channel_id,
+      "source_uri"=>source_uri,"categories"=>publish_category
+    }
   end
 
   # Export Gate Document directly before/after Pipeline processing
@@ -973,6 +982,15 @@ class Content < ActiveRecord::Base
     text.gsub(/\<a.*?href\=['"](?<href>.*?)['"]\>(?<target>.*?)\<\/a\>/, '\k<target> (\k<href>)')
   end
 
+  # Creates sanitized version of title - at this point, just stripping out listerv towns
+  def sanitized_title
+    if title.present?
+      title.gsub(/\[[^\]]+\]/, "").strip
+    else
+      nil
+    end
+  end
+
   # Creates HTML-annotated, sanitized version of the raw_content that should be
   # as display-ready as possible
   def sanitized_content
@@ -1082,7 +1100,8 @@ class Content < ActiveRecord::Base
     end
 
     c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "<br />")
-    c.gsub(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
+    c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
+    Rinku.auto_link c
   end
 
 
@@ -1209,6 +1228,14 @@ class Content < ActiveRecord::Base
 
   def uri
     CGI.escape(BASE_URI + "/#{id}")
+  end
+
+  # accepts symbol reference to a count field that needs to be 
+  # incremented and needs to skip callbacks
+  #
+  # @param attr_name [Symbol] the attribute to iterate; `:view_count`, `:comment_count`, `:commenter_count`
+  def increment_count_attr!(attr_name)
+    update_column attr_name, send(attr_name)+1
   end
 
   private

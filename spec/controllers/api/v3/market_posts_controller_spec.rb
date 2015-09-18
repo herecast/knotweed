@@ -48,12 +48,50 @@ describe Api::V3::MarketPostsController do
         api_authenticate user: @user
       end
 
-      it 'should respond with market_posts items in the user\'s location' do
+      it 'should not automatically query based on signed in user\'s location' do
         subject
+        assigns(:market_posts).select{|c| c.locations.include? @user.location }.count.should eq(0) 
+      end
+
+      it 'should allow querying by any passed in location_id' do
+        get :index, format: :json, location_id: @user.location.id
         assigns(:market_posts).select{|c| c.locations.include? @user.location }.count.should eq(assigns(:market_posts).count)
+      end
+
+      it 'should return market_posts items in the default location when no location_id passed in' do
+        subject
+        assigns(:market_posts).select{|c| c.locations.include? @default_location }.count.should eq(assigns(:market_posts).count)
       end
     end
 
+  end
+
+  describe 'when user edits the content' do
+    before do
+      @location = FactoryGirl.create :location, city: 'Another City'
+      @user = FactoryGirl.create :user, location: @location
+      @market_post = FactoryGirl.create :content, content_category: @market_cat
+      @market_post.update_attribute(:created_by, @user)
+    end
+
+    subject { get :show, id: @market_post.id, format: :json }
+
+    it 'can_edit should be true for the content author' do
+      api_authenticate user: @user
+      subject 
+      JSON.parse(response.body)["market_post"]["can_edit"].should == true
+    end
+    it 'can_edit should false for a different user' do
+      @location = FactoryGirl.create :location, city: 'Another City'
+      @different_user = FactoryGirl.create :user, location: @location
+      api_authenticate user: @different_user
+      subject 
+      JSON.parse(response.body)["market_post"]["can_edit"].should == false
+    end
+    it 'can_edit should false when a user is not logged in' do
+      subject 
+      JSON.parse(response.body)["market_post"]["can_edit"].should == false
+    end
   end
 
   describe 'GET show' do
@@ -71,6 +109,10 @@ describe Api::V3::MarketPostsController do
     it 'appropriately loads the market_posts object' do
       subject
       assigns(:market_post).should eq(@market_post)
+    end
+
+    it 'should increment view count' do
+      expect{subject}.to change{Content.find(@market_post.id).view_count}.from(0).to(1)
     end
   end
 
@@ -165,6 +207,18 @@ describe Api::V3::MarketPostsController do
       it 'should create an associated content' do
         expect{subject}.to change{Content.count}.by(1)
         (assigns(:market_post).content.present?).should be true
+      end
+
+      context 'with extended_reach_enabled true' do
+        before do
+          @basic_attrs[:extended_reach_enabled] = true
+          @region_location = FactoryGirl.create :location, id: Location::REGION_LOCATION_ID
+        end
+
+        it 'should create a market post with locations including REGION_LOCATION_ID' do
+          subject
+          expect(assigns(:market_post).content.location_ids).to include(Location::REGION_LOCATION_ID)
+        end
       end
     end
 
