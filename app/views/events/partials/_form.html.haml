@@ -80,9 +80,9 @@
                   = f.label :venue_id, label: "Venue", class: "span6"
                   .span6.venue-links.text-right
                     %span.text-right.venue-link#edit_venue_link{ style: "#{ @event.venue.present? ? "" : "display: none;" }",
-                      data: {form_url: edit_venue_js_path(@event.venue.present? ? @event.venue.id : 1) } }
+                      data: {form_url: edit_business_location_path(@event.venue.present? ? @event.venue.id : 1) } }
                       Edit
-                    %span.text-right.venue-link#new_venue_link{ data: { form_url: new_venue_js_path } }
+                    %span.text-right.venue-link#new_venue_link{ data: { form_url: new_business_location_path } }
                       Create Venue
                 .row-fluid
                   .span10offset1#embedded_business_location_form{ style: "display: none;" }
