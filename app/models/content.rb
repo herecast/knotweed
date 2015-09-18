@@ -1029,8 +1029,8 @@ class Content < ActiveRecord::Base
       node.gsub /<\s?br\s?\/?\s?>/i, ''
     end
 
+    #replace all span elements with their content
     doc.traverse do |node|
-      #replace all span elements with their content
       node.replace node.inner_html if node.name == 'span'
     end
     doc.search("p").each do |e|
