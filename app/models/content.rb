@@ -46,7 +46,6 @@
 require 'fileutils'
 require 'builder'
 include ActionView::Helpers::TextHelper
-include ActionView::Helpers::SanitizeHelper
 class Content < ActiveRecord::Base
   include Auditable
 
@@ -1004,8 +1003,7 @@ class Content < ActiveRecord::Base
 
     c = raw_content.gsub(/[[:alpha:]]\.[[:alpha:]]\./) {|s| s.upcase }
     pre_sanitize_filters.each {|f| c.send f[0], *f[1]}
-    doc = Nokogiri::HTML.parse(c)
-
+    doc =  Nokogiri::HTML.parse(c)
     # this line is designed to handle content imported from Wordpress that had an image at the top of the content
     # and potentially other images.  The first image would duplicate our only (currently-supported) image,
     # which is also needed for tile view.  This line pulls the first <a ...><img ...></a> set and leaves the second and
@@ -1013,10 +1011,6 @@ class Content < ActiveRecord::Base
     # from the Wordpress media library, not our AWS store.  Leaving the links in raw_content and post-processing
     # here allows us to go back in the near future and implement a better solution for multiple images JGS 20150605
     process_wp_content(doc)
-
-    scrubber = Loofah::Scrubber.new do |node|
-        node.remove if node.name == 'br'
-    end
 
     doc.search("style").each {|t| t.remove() }
     doc.search('//text()').each {|t| t.content = t.content.sub(/^[^>\n]*>\p{Space}*\z/, "") } # kill tag fragments
@@ -1029,6 +1023,16 @@ class Content < ActiveRecord::Base
         this_e.next().remove()
       end
     end
+
+    #for removing br tags at specific places
+    remove_br_tags = Proc.new do |node|
+      node.gsub /\A<\s?br\s?\/?\s?>\z/i, ''
+    end
+
+    doc.traverse do |node|
+      #replace all span elements with their content
+      node.replace node.inner_html if node.name == 'span'
+    end
     doc.search("p").each do |e|
       # This removes completely empty <p> tags... hopefully helps with excess whitespace issues
       if e.children.empty?
@@ -1036,12 +1040,12 @@ class Content < ActiveRecord::Base
       # We saw content where only a text fragment was inside a "<p>" block, but then the following
       # tags "really" should have been part of that initial text fragment. This logic attempts to
       # remove excess whitespace in that and consolidate into 1 or more <p> blocks.
-      elsif e.children.length == 1
+      else
         next_e = e.next()
-        text = [sanitize(e.inner_html, scrubber: scrubber)]
+        text = [remove_br_tags.call(sanitize(e.inner_html))]
         until next_e.nil? do
           if next_e.text?
-            text[-1] += sanitize next_e.inner_html, scrubber: scrubber
+            text[-1] += remove_br_tags.call(sanitize(next_e.inner_html))
           elsif is_newline.call(next_e)
             remove_dup_newlines.call(next_e)
           elsif next_e.matches? "strong"
