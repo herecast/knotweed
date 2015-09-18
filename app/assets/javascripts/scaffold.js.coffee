@@ -11,3 +11,7 @@ jQuery ->
   # any form submit button inside a modal should close the modal
   $(document).on "ajax:success", "form", ->
     $(this).parents(".modal").modal("hide")
+  
+  $('.chosen-select').chosen();
+  $('.chosen-select-single-deselect').chosen
+    allow_single_deselect: true

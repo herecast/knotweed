@@ -48,7 +48,6 @@ class ImportJob < ActiveRecord::Base
   has_many :notifiers, as: :notifyable
   has_many :notifyees, through: :notifiers, class_name: "User", source: "user"
   
-  validates_presence_of :organization
   
   attr_accessible :config, :name, :parser_id, :source_path, :job_type, 
                   :organization_id, :frequency, :archive, :content_set_id,
@@ -56,7 +55,7 @@ class ImportJob < ActiveRecord::Base
                   :publish_method, :job_type
   
   validates :status, inclusion: { in: %w(failed running success scheduled) }, allow_nil: true
-  validate :parser_belongs_to_same_organization, unless: "parser.nil?"
+  validate :parser_belongs_to_same_organization, if: 'parser.present? and organization.present?'
 
   after_destroy :cancel_scheduled_runs
 
