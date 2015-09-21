@@ -38,6 +38,7 @@ group :test do
   gem "webmock"
   gem "vcr"
   gem "timecop"
+  gem 'simplecov'
 end
 group :rubymine,:development do
  	gem "thin"
