@@ -4,7 +4,7 @@ module Api
 
       attributes :id, :title, :user_count, :author_name,
         :author_image_url, :published_at, :view_count, :commenter_count, :comment_count, 
-        :parent_content_id, :content_id, :parent_content_type
+        :parent_content_id, :content_id, :parent_content_type, :parent_event_instance_id
 
       def content_id
         object.id
@@ -60,6 +60,12 @@ module Api
       def parent_content_id
         if object.parent.present?
           object.parent.id
+        end
+      end
+
+      def parent_event_instance_id
+        if object.parent.present? and object.parent.channel_type == 'Event'
+          object.parent.channel.event_instances.first.id
         end
       end
 

@@ -20,4 +20,12 @@ class ConsumerApp < ActiveRecord::Base
 
   validates_presence_of :uri
   validates_uniqueness_of :uri
+
+  def self.current
+    Thread.current[:consumer_app]
+  end
+
+  def self.current=(app)
+    Thread.current[:consumer_app] = app
+  end
 end

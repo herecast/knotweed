@@ -13,7 +13,7 @@
       %tr{ class: "job-#{job.id}" }
         %td= link_to job.name, edit_import_job_path(job)
         %td= link_to job.parser.name, edit_parser_path(job.parser) if job.parser
-        %td= job.organization.name
+        %td= job.organization.try(:name)
         %td= job.last_run_at.strftime("%m/%d/%Y %I:%M%p") if job.last_run_at.present?
         %td.next-run
           = job.next_scheduled_run.strftime("%m/%d/%Y %I:%M%p") if job.next_scheduled_run.present?

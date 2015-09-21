@@ -1,6 +1,4 @@
 jQuery ->
-  $('.chosen-select').chosen();
-
   # hide published select box if no repo is selected
   if $("#repository_id").length > 0 and $("#repository_id").val().length == 0
     $("#published_selector").hide()
