@@ -13,7 +13,7 @@
         %td= link_to parser.name, edit_parser_path(parser)
         %td= parser.filename
         %td= parser.description
-        %td= parser.organization.name
+        %td= parser.organization.try(:name)
         %td.create-import-job
           = link_to "Create Import Job", new_import_job_for_parser_path(parser.id), class: "btn btn-success"
         %td.delete-parser
