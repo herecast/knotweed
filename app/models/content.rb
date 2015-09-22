@@ -1005,8 +1005,7 @@ class Content < ActiveRecord::Base
 
     c = raw_content.gsub(/[[:alpha:]]\.[[:alpha:]]\./) {|s| s.upcase }
     pre_sanitize_filters.each {|f| c.send f[0], *f[1]}
-    doc = Nokogiri::HTML.parse(c)
-
+    doc =  Nokogiri::HTML.parse(c)
     # this line is designed to handle content imported from Wordpress that had an image at the top of the content
     # and potentially other images.  The first image would duplicate our only (currently-supported) image,
     # which is also needed for tile view.  This line pulls the first <a ...><img ...></a> set and leaves the second and
@@ -1026,6 +1025,16 @@ class Content < ActiveRecord::Base
         this_e.next().remove()
       end
     end
+
+    #for removing br tags at specific places
+    remove_br_tags = Proc.new do |node|
+      node.gsub /<\s?br\s?\/?\s?>/i, ''
+    end
+
+    #replace all span elements with their content
+    doc.traverse do |node|
+      node.replace node.inner_html if node.name == 'span'
+    end
     doc.search("p").each do |e|
       # This removes completely empty <p> tags... hopefully helps with excess whitespace issues
       if e.children.empty?
@@ -1033,12 +1042,12 @@ class Content < ActiveRecord::Base
       # We saw content where only a text fragment was inside a "<p>" block, but then the following
       # tags "really" should have been part of that initial text fragment. This logic attempts to
       # remove excess whitespace in that and consolidate into 1 or more <p> blocks.
-      elsif e.children.length == 1
+      else
+        text = [remove_br_tags.call(sanitize(e.inner_html))]
         next_e = e.next()
-        text = [e.content]
         until next_e.nil? do
           if next_e.text?
-            text[-1] += next_e.text
+            text[-1] += remove_br_tags.call(sanitize(next_e.inner_html))
           elsif is_newline.call(next_e)
             remove_dup_newlines.call(next_e)
           elsif next_e.matches? "strong"

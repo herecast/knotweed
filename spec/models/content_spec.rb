@@ -887,17 +887,37 @@ describe Content do
     end
   end
 
-  def get_body_from_file(filename)
+  # the test input and expected output is kept outside the test in spec/fixtures/sanitized_content
+  # each _input file must have a matching named file ending with _output.
+  describe 'when user sends raw content' do
+    input_files = Dir['spec/fixtures/sanitized_content/*_input']
+    output_files = Dir['spec/fixtures/sanitized_content/*_output']
+    raise 'unable to find any input files for this test!' if input_files.blank?  
 
-    f = File.open(@test_files_path + filename)
-    body = ""
-
-    f.each_line do |line|
-      body << line
+    input_files.each do |input_file|
+      it "from #{input_file}" do
+        output_file = input_file.gsub '_input', '_output'
+        raise 'expected sanitized output file not found' unless output_files.include? output_file
+        raw_content = File.read input_file
+        content = FactoryGirl.create :content , raw_content: raw_content
+        content.sanitized_content.should eq File.read(output_file).chomp  
+      end
     end
-    f.close
-
-    body
   end
+
+  private
+
+    def get_body_from_file(filename)
+
+      f = File.open(@test_files_path + filename)
+      body = ""
+
+      f.each_line do |line|
+        body << line
+      end
+      f.close
+
+      body
+    end
 
 end
