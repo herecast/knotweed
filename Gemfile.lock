@@ -169,6 +169,7 @@ GEM
       thread_safe (~> 0.1)
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
+    docile (1.1.5)
     email_spec (1.5.0)
       launchy (~> 2.1)
       mail (~> 2.2)
@@ -418,6 +419,11 @@ GEM
     simple_form (2.1.1)
       actionpack (~> 3.0)
       activemodel (~> 3.0)
+    simplecov (0.10.0)
+      docile (~> 1.1.0)
+      json (~> 1.8)
+      simplecov-html (~> 0.10.0)
+    simplecov-html (0.10.0)
     slop (3.4.7)
     spoon (0.0.4)
       ffi
@@ -566,6 +572,7 @@ DEPENDENCIES
   sass-rails (~> 3.2.3)
   select2-rails
   simple_form (>= 2.1.0)
+  simplecov
   sparql-client!
   thin
   thinking-sphinx
