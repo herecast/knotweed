@@ -35,7 +35,7 @@ class Location < ActiveRecord::Base
   default_scope order: :city
 
   scope :consumer_active, where(consumer_active: true)
-  scope :not_upper_valley, where("city != 'Upper Valley' AND state != 'VT'")
+  scope :not_upper_valley, where("city != 'Upper Valley'")
 
   def name
     "#{try(:city)} #{try(:state)}"

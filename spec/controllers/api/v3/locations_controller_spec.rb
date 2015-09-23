@@ -24,11 +24,12 @@ describe Api::V3::LocationsController do
     context do
       before do 
         FactoryGirl.create :location, city: 'Upper Valley', state: 'VT', consumer_active: true
+        FactoryGirl.create :location, city: 'Upper Valley', consumer_active: true
       end
 
-      it "does not include the location named 'Upper Valley VT' "do 
+      it "does not include the location named 'Upper Valley' "do 
         subject
-        assigns(:locations).select { |l| l.name == 'Upper Valley VT' }.should have(0).things
+        assigns(:locations).select { |l| l.name.match 'Upper Valley' }.should have(0).things
       end
     end
 
