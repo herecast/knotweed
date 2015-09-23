@@ -24,7 +24,7 @@ describe Api::V3::LocationsController do
     context do
       before do 
         FactoryGirl.create :location, city: 'Upper Valley', state: 'VT', consumer_active: true
-        FactoryGirl.create :location, city: 'Upper Valley', consumer_active: true
+        FactoryGirl.create :location, city: 'Upper Valley', state: nil,  consumer_active: true
       end
 
       it "does not include the location named 'Upper Valley' "do 
