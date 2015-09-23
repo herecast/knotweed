@@ -1,2 +1,9 @@
-%h1 BusinessLocations#new
-%p Find me in app/views/business_locations/new.html.haml
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-plus
+        Add a Venue
+    .box-content
+      = simple_form_for @business_location do |f|
+        = render partial: 'business_locations/partials/form_fields', locals: { f: f }

@@ -1,0 +1,24 @@
+%table.table.table-striped.table-bordered.data-table.table-condensed.display#business_locations_table
+  %thead
+    %tr
+      %th Name
+      %th Address
+      %th Status
+      %th ID
+      %th
+  %tfoot
+    %tr
+      %th Name
+      %th Address
+      %th Status
+      %th ID
+      %th
+  %tbody
+    - @business_locations.each do |venue|
+      %tr{ class: "venue-#{venue.id}" }
+        %td= venue.name
+        %td= venue.full_address
+        %td= venue.status
+        %td= venue.id
+        %td.actions
+          = link_to "edit", edit_business_location_path(venue), class: "btn btn-mini btn-warning"

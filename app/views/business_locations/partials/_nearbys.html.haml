@@ -1,0 +1,23 @@
+- if @nearbys.present?
+  %h4 #{@nearbys.count.to_s} Nearby Venues
+  .row-fluid
+    %table.table.table-striped.table-bordered.data-table.table-condensed
+      %th Name
+      %th Address
+      %th Events
+      %th
+      %th
+      - @nearbys.each do |venue|
+        %tr
+          %td= venue.name
+          %td= venue.full_address
+          %td= @events_per_venue[venue.id]
+          %td.actions
+            = link_to 'Edit', edit_business_location_path(venue), class: 'btn btn-mini btn-warning'
+          %td.actions
+            - if 0 == @events_per_venue[venue.id]
+              = link_to 'X', business_location_path(venue), method: :delete,
+                class: 'btn btn-mini btn-danger',
+                confirm: "Are you sure you want to delete the venue #{venue.name} at #{venue.full_address}?"
+- else
+  %h4 There are no nearby venues.

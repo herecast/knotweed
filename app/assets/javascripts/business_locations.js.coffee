@@ -34,7 +34,7 @@ jQuery ->
         e.preventDefault()
         $.ajax $(this).data("submitUrl"),
           type: $(this).data("submitMethod")
-          data: $("#embedded_business_location_form input[type!='submit']").serialize()
+          data: $("#embedded_business_location_form").find("input, select").serialize()
           beforeSend: ->
             $('#embedded_business_location_form input[type="submit"]').attr('disabled', 'disabled')
             $('#embedded_business_location_form').spin()
