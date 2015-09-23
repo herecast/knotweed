@@ -3,7 +3,7 @@ module Api
     class DetailedMarketPostSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :price, :content, :content_id, :published_at, :locate_address,
-        :can_edit, :has_contact_info, :images, :extended_reach_enabled, :author_name, :author_email
+        :can_edit, :has_contact_info, :images, :extended_reach_enabled, :author_name
 
       root 'market_post'
 
@@ -41,9 +41,12 @@ module Api
         serialization_options[:can_edit]
       end
 
+      # if user-generated, contact_phone and/or contact_email should be present, else if not user generated
+      #  authoremail should be available.  has_contact_info should almost always be true
       def has_contact_info
         object.try(:channel).try(:contact_phone).present? or \
-          object.try(:channel).try(:contact_email).present?
+          object.try(:channel).try(:contact_email).present? or \
+            object.try(:authoremail).present?
       end
 
       def images
@@ -63,14 +66,6 @@ module Api
           object.created_by.name
         else
           object.authors
-        end
-      end
-
-      def author_email
-        if object.created_by.present?
-          object.created_by.email
-        else
-          object.authoremail
         end
       end
 
