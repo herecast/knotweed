@@ -976,9 +976,28 @@ class Content < ActiveRecord::Base
   # @return string with HTML tags and escaped spaces (&nbsp;) removed and hyperlinks changed to text surrounded by ()
   def raw_content_for_text_email
     return raw_content if raw_content.nil?
-    # strip all tags but <a> and their href attributes and translate &nbsp; to space
-    text = sanitize(raw_content, {tags: %w(a), attributes: %w(href)}).gsub(/&nbsp;/, ' ')
-    # now rewrite <a href=http://...>xxx</a> to xxx (http://xxx)
+
+    # strip HTML comments. meta, style and cdata tags (this is where Microsoft puts a whole bunch of crud that
+    # users cut and paste)
+    #
+    # Test data:
+    #
+    # 20150923 test content IDS: 784073 784727 784766 784934 786634 787513 788246 788798 788801 791517 792174 793240
+    #                            793719 793994
+    # MySQL query: SELECT * FROM contents WHERE DATE(pubdate) > DATE("2015-08-01") AND raw_content LIKE "%gte mso 9%" AND channel_type IS NOT NULL;
+    doc = Nokogiri::HTML::fragment(CGI::unescapeHTML(raw_content))
+    doc.traverse do |node|
+      node.remove if %w(comment meta style #cdata-section).include? node.name
+    end
+    clean_content = doc.to_html
+
+    # strip all tags but <p>, <br> and <a> and their href attributes and clean up &nbsp; and &amp;
+    text = sanitize(clean_content, {tags: %w(a p br), attributes: %w(href)}).gsub(/&nbsp;/, ' ').gsub(/&amp;/,'&')
+
+    # now convert all the p and br tags to newlines, then squeeze big sets (>3) of contiguous newlines down to just two.
+    text = text.gsub(/\<\/p\>\<p\>/,"\n").gsub(/\<p\>/,"\n").gsub(/\<br\>/,' ').gsub(/\<\/p\>/,"\n").squeeze("\n") #.gsub(/^\n{2,}/m,"\n\n") #.squeeze("\n")
+
+    # now rewrite <a href=http://...>xxx</a> to xxx (http://xxx) since otherwise we may lose the links.
     text.gsub(/\<a.*?href\=['"](?<href>.*?)['"]\>(?<target>.*?)\<\/a\>/, '\k<target> (\k<href>)')
   end
 
