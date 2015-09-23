@@ -11,7 +11,7 @@ module Api
           query = Riddle::Query.escape(params[:query]) 
           @locations = Location.search query, opts
         else
-          @locations = Location.consumer_active
+          @locations = Location.consumer_active.not_upper_valley
         end
 
         render json: @locations, arrayserializer: LocationSerializer

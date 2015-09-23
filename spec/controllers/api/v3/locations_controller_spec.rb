@@ -21,6 +21,17 @@ describe Api::V3::LocationsController do
       assigns(:locations).count.should eq(@num_consumer_active)
     end
 
+    context do
+      before do 
+        FactoryGirl.create :location, city: 'Upper Valley', state: 'VT', consumer_active: true
+      end
+
+      it "does not include the location named 'Upper Valley VT' "do 
+        subject
+        assigns(:locations).select { |l| l.name == 'Upper Valley VT' }.should have(0).things
+      end
+    end
+
     context 'with a query parameter' do
       before do
         @loc1 = FactoryGirl.create :location, consumer_active: true, city: 'search for me'
