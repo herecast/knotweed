@@ -1,5 +1,5 @@
 %p
-  .strong= @market_post.title
+  .strong= @market_post.content.title
 %br
 - if @market_post.cost.present?
   .strong Cost: #{@market_post.cost}

@@ -26,6 +26,16 @@ class Comment < ActiveRecord::Base
     comment.content.save
   end
 
+  after_create do |comment|
+    unless content.parent.blank?
+      content.parent.increment_count_attr!(:comment_count)
+      unless Content.where('parent_id=? and created_by=? and id!= ?', content.parent, content.created_by, content.id).exists?
+        content.parent.increment_count_attr!(:commenter_count) 
+      end
+      content.parent.save
+    end
+  end
+
   def method_missing(method, *args, &block)
     if respond_to_without_attributes?(method)
       send(method, *args, &block)

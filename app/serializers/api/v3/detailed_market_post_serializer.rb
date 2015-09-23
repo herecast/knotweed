@@ -3,10 +3,16 @@ module Api
     class DetailedMarketPostSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :price, :content, :content_id, :published_at, :locate_address,
-        :can_edit, :has_contact_info, :images
+        :can_edit, :has_contact_info, :images, :extended_reach_enabled, :author_name, :author_email
+
+      root 'market_post'
 
       def price
         object.try(:channel).try(:cost)
+      end
+
+      def title
+        object.sanitized_title
       end
 
       def content
@@ -45,6 +51,26 @@ module Api
           object.images.map do |img|
             img.image.url
           end
+        end
+      end
+
+      def extended_reach_enabled
+        object.location_ids.include? Location::REGION_LOCATION_ID
+      end
+
+      def author_name
+        if object.created_by.present?
+          object.created_by.name
+        else
+          object.authors
+        end
+      end
+
+      def author_email
+        if object.created_by.present?
+          object.created_by.email
+        else
+          object.authoremail
         end
       end
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150829145819) do
+ActiveRecord::Schema.define(:version => 20150908113810) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -36,9 +36,9 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
     t.date    "DATE_EDITED"
   end
 
-  add_index "usgs_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "usgs_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "usgs_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
+  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
+  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -86,11 +86,12 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
     t.string   "city"
     t.string   "state"
     t.string   "zip"
-    t.string   "status"
     t.integer  "created_by"
     t.integer  "updated_by"
+    t.string   "status"
   end
 
+  add_index "business_locations", ["created_by"], :name => "index_business_locations_on_created_by"
   add_index "business_locations", ["name"], :name => "index_business_locations_on_name"
 
   create_table "categories", :force => true do |t|
@@ -274,6 +275,11 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
     t.integer  "channel_id"
     t.integer  "root_content_category_id"
     t.boolean  "delta",                    :default => true,  :null => false
+    t.integer  "view_count",               :default => 0
+    t.integer  "comment_count",            :default => 0
+    t.integer  "commenter_count",          :default => 0
+    t.integer  "created_by"
+    t.integer  "updated_by"
   end
 
   add_index "contents", ["authoremail"], :name => "index_contents_on_authoremail"
@@ -282,6 +288,7 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
   add_index "contents", ["channel_type"], :name => "index_contents_on_channel_type"
   add_index "contents", ["channelized_content_id"], :name => "index_contents_on_channelized_content_id"
   add_index "contents", ["content_category_id"], :name => "content_category_id"
+  add_index "contents", ["created_by"], :name => "index_contents_on_created_by"
   add_index "contents", ["guid"], :name => "guid"
   add_index "contents", ["import_location_id"], :name => "location_id"
   add_index "contents", ["import_record_id"], :name => "import_record_id"
@@ -292,6 +299,21 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
   add_index "contents", ["root_content_category_id"], :name => "index_contents_on_root_content_category_id"
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["title"], :name => "title"
+
+  create_table "contents_NT", :force => true do |t|
+    t.string   "title"
+    t.string   "subtitle"
+    t.string   "authors"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "issue_id"
+    t.integer  "location_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.boolean  "reviewed",       :default => false
+    t.integer  "lupdate_by"
+    t.integer  "publication_id"
+  end
 
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
@@ -316,6 +338,10 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
+
+  create_table "contents_id", :force => true do |t|
+    t.string "category", :limit => 128
+  end
 
   create_table "contents_locations", :force => true do |t|
     t.integer  "content_id"
@@ -709,6 +735,13 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
     t.datetime "updated_at",      :null => false
   end
 
+  create_table "promote_options", :force => true do |t|
+    t.string  "promo_type",            :limit => 128
+    t.string  "name",                  :limit => 128
+    t.string  "reverse_publish_email", :limit => 128
+    t.boolean "active",                               :default => true
+  end
+
   create_table "promotion_banners", :force => true do |t|
     t.string   "banner_image"
     t.string   "redirect_url"
@@ -739,9 +772,12 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
     t.integer  "promotable_id"
     t.string   "promotable_type"
     t.boolean  "paid",            :default => false
+    t.integer  "created_by"
+    t.integer  "updated_by"
   end
 
   add_index "promotions", ["content_id"], :name => "index_promotions_on_content_id"
+  add_index "promotions", ["created_by"], :name => "index_promotions_on_created_by"
   add_index "promotions", ["publication_id"], :name => "index_promotions_on_publication_id"
 
   create_table "publications", :force => true do |t|
@@ -894,6 +930,7 @@ ActiveRecord::Schema.define(:version => 20150829145819) do
     t.string   "test_group"
     t.boolean  "muted",                  :default => false
     t.string   "authentication_token"
+    t.string   "avatar"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

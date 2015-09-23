@@ -3,7 +3,6 @@ module Api
     class NewsController < ApiController
 
       def index
-        opts = {}
         opts = { select: '*, weight()' }
         opts[:order] = 'pubdate DESC'
         opts[:with] = {}
@@ -19,8 +18,6 @@ module Api
 
         if params[:location_id].present?
           location_condition = params[:location_id].to_i
-        elsif @current_api_user.present? and @current_api_user.location_id.present?
-          location_condition = @current_api_user.location_id
         else
           location_condition = Location.find_by_city(Location::DEFAULT_LOCATION).id
         end
@@ -58,6 +55,7 @@ module Api
         if @news.try(:root_content_category).try(:name) != 'news'
           head :no_content
         else
+          @news.increment_count_attr!(:view_count)
           render json: @news, serializer: DetailedNewsSerializer, 
             admin_content_url: url, root: 'news'
         end

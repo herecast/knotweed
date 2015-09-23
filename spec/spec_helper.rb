@@ -53,6 +53,7 @@ RSpec.configure do |config|
     DatabaseCleaner.strategy = :truncation
     # Disable VCR for the test-suite, unless a test explicitely asks for it
     VCR.turn_off!
+    ImageUploader.storage = :file
   end
   config.before(:each) do
     DatabaseCleaner.start

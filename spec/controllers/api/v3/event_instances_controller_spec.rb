@@ -107,6 +107,66 @@ describe Api::V3::EventInstancesController do
       assigns(:event_instance).should eq(@inst)
     end
 
+    it 'check comment_count' do
+      comment_count = @inst.event.comment_count
+      subject
+      inst=JSON.parse(@response.body)
+      inst["event_instance"]["comment_count"].should == comment_count
+    end
+
+    it 'should increment view count' do
+      expect{subject}.to change{Content.find(@inst.event.content.id).view_count}.from(0).to(1)
+    end
+
   end
 
+  describe 'when user edits the content' do
+    before do
+      @location = FactoryGirl.create :location, city: 'Another City'
+      @user = FactoryGirl.create :user, location: @location
+      @event = FactoryGirl.create :event
+      @event.content.update_attribute(:created_by, @user)
+      @inst = @event.event_instances.first
+    end
+
+    subject { get :show, id: @inst.id, format: :json }
+
+    it 'can_edit should be true for content author' do
+      api_authenticate user: @user
+      subject 
+      JSON.parse(response.body)["event_instance"]["can_edit"].should == true
+    end
+    it 'can edit should be false for a different user' do
+      @location = FactoryGirl.create :location, city: 'Another City'
+      @different_user = FactoryGirl.create :user, location: @location
+      api_authenticate user: @different_user
+      subject 
+      JSON.parse(response.body)["event_instance"]["can_edit"].should == false
+    end
+    it 'can_edit should be false when a user is not logged in' do
+      subject 
+      JSON.parse(response.body)["event_instance"]["can_edit"].should == false
+    end
+  end
+
+  describe 'GET index' do
+    before do
+      @count = 3
+      FactoryGirl.create_list :event, @count
+    end
+
+    subject { get :index, format: :json }
+
+    it 'should return all event instances' do
+      subject
+      assigns(:event_instances).count.should eq(@count)
+    end
+  
+    context 'pagination' do
+      before { get :index, format: :json, per_page: @count - 1 }
+      it 'should return paginated results' do
+        assigns(:event_instances).count.should eq(@count -1)
+      end
+    end
+  end
 end

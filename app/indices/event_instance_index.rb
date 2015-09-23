@@ -5,9 +5,9 @@ ThinkingSphinx::Index.define :event_instance, :with => :active_record, delta: tr
   indexes [event.venue.name, event.venue.city, event.venue.state]
   indexes event.event_category, as: :event_category
   indexes subtitle_override
-  indexes event.content.published, as: :published
 
   has event.content.pubdate
   has start_date
   has event.content.locations.id, as: :loc_ids
+  has event.content.published, as: :published
 end

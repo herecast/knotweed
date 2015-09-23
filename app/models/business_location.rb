@@ -18,6 +18,8 @@
 #  city                :string(255)
 #  state               :string(255)
 #  zip                 :string(255)
+#  created_by          :integer
+#  updated_by          :integer
 #
 
 class BusinessLocation < ActiveRecord::Base

@@ -3,7 +3,9 @@ module Api
     class CommentsController < ApiController
 
       before_filter :check_logged_in!, only: [:create] 
-
+      
+      # @param the parent content id
+      # @return all child comments
       def index
         root = Content.find params[:content_id]
         @comments = []
@@ -20,24 +22,22 @@ module Api
 
       def create
         location_ids = [@current_api_user.try(:location_id)]
-        if params[:comment][:parent_id].present?
-          parent_id = params[:comment][:parent_id]
-        else
-          parent_id = nil
-        end
-        # avoid mass assignment errors
-        params[:comment].delete :parent_id
 
         # hard coded publication...
         pub = Publication.find_or_create_by_name 'DailyUV'
 
         # hard code category
         cat = ContentCategory.find_or_create_by_name 'talk_of_the_town'
+
+        # using this hash to select the parameters we need from the params hash
+        # rather than directly trying to mass assign the params hash (which might
+        # contain attributes we don't want, or that aren't allowed)
+        comment_hash = {}
         
         # parse out content attributes
-        params[:comment][:content_attributes] = {
+        comment_hash[:content_attributes] = {
           title: params[:comment].delete(:title),
-          parent_id: parent_id,
+          parent_id: params[:comment].delete(:parent_content_id),
           location_ids: location_ids.uniq,
           authoremail: @current_api_user.try(:email),
           authors: @current_api_user.try(:name),
@@ -46,14 +46,13 @@ module Api
           publication_id: pub.id,
           content_category_id: cat.id
         }
-        @comment = Comment.new(params[:comment])
+        @comment = Comment.new(comment_hash)
+        
         if @comment.save
-
           # As of Release 1.8 (first UX2 release, early June 2015), users don't have the option of
           # publishing their comments to a list, hence no list processing here in api/v2.  But, if and
           # when they do, this is where the processing would happen.  See api/v1/comments_controller.rb
           # for example.
-
           if @repository.present?
             @comment.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end

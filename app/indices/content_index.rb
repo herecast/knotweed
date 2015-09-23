@@ -20,5 +20,5 @@ ThinkingSphinx::Index.define :content, :with => :active_record, delta: true do
   has root_content_category_id
 
   # conditions
-  where "IF(root_content_category_id = 1, channel_type = 'Event', true)"
+  where "IF(root_content_category_id = (select id from content_categories where name = 'event'), channel_type = 'Event', true)"
 end

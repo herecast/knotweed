@@ -9,7 +9,9 @@
     include_blank: false
   = f.input :frequency, hint: "Repeat every x minutes", wrapper_html: { class: "frequency" }
   = f.association :parser, collection: Parser.accessible_by(current_ability, :read), input_html: { class: "chosen-select span4" }
-  = f.association :organization, input_html: { class: "chosen-select span4", id: "organizations_select", data: { update_content_sets_url: update_content_sets_path } }
+  = f.association :organization, input_html: { allow_single_deselect: true,
+    class: "chosen-select-single-deselect span4", id: "organizations_select", data: { update_content_sets_url: update_content_sets_path } },
+    include_blank: true
   = f.association :content_set, collection: @content_sets, input_html: { class: "chosen-select span4", id: "content_sets_select" }
   = f.input :automatically_publish, label: "Automatically Publish Content?"
   .control-group.auto-publish

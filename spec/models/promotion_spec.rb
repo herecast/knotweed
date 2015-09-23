@@ -13,13 +13,14 @@
 #  promotable_id   :integer
 #  promotable_type :string(255)
 #  paid            :boolean          default(FALSE)
+#  created_by      :integer
+#  updated_by      :integer
 #
 
 require 'spec_helper'
 
 describe Promotion do
   before do
-    ImageUploader.storage = :file
     @pub = FactoryGirl.create(:publication)
     @content = FactoryGirl.create(:content)
     Promotion.any_instance.stub(:update_active_promotions).and_return(true)
@@ -28,6 +29,8 @@ describe Promotion do
   after do
     FileUtils.rm_rf('./public/promotion')
   end
+
+  include_examples 'Auditable', Promotion
 
   let(:valid_params) do
     { 

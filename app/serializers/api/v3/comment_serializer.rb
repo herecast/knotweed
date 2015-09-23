@@ -6,8 +6,8 @@ module Api
       # BUT since the comment model does basically nothing, this actually serializes Content
       # (associated with comments) in the desired comment struture
 
-      attributes :id, :content, :pubdate, :parent_content_id
-        #TODO user_id, user_name, user_image_url
+      attributes :id, :content, :pubdate, :parent_content_id,
+        :user_id, :user_name, :content_id, :user_image_url
 
       def id
         object.channel.id
@@ -18,15 +18,23 @@ module Api
       end
 
       def user_name
-        #TODO
+        object.created_by.try(:name)
+      end
+
+      def user_id
+        object.created_by.try(:id)
       end
       
       def parent_content_id
         object.parent_id
       end
       
-      def pubdate
-        object.pubdate
+      def user_image_url
+        object.created_by.try(:avatar).try(:url)
+      end
+
+      def content_id
+        object.id
       end
 
     end
