@@ -23,16 +23,18 @@ describe Api::V3::TalkSerializer do
       serialized_object['parent_content_type'].should eq(@parent.root_content_category.name)
     end
 
-    describe 'view_count and commenter_count' do
+    describe 'view_count, comment_count and commenter_count' do
       before do
         # stub out these numbers to check they're returned
         @parent.view_count = 5
         @parent.commenter_count = 6
+        @parent.comment_count = 7
         @parent.save
       end
 
       it 'should be the parent object\'s values' do
         serialized_object['view_count'].should eq(@parent.view_count)
+        serialized_object['comment_count'].should eq(@parent.comment_count)
         serialized_object['commenter_count'].should eq(@parent.commenter_count)
       end
     end
