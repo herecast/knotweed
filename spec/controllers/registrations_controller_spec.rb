@@ -44,6 +44,15 @@ describe RegistrationsController do
         })
       end
 
+      it 'should respond with message text' do
+        subject
+        expect(JSON.parse(response.body)).to eq({
+          'message' => <<-MSG.strip_heredoc
+            Thank you! For security purposes, a message with a confirmation link has been sent to your email address. Please check your email and click on the link to activate your account. If the message hasn't appeared in a few minutes, please check your spam folder.
+          MSG
+        })
+      end
+
       it 'should generate confirmation email' do
         expect{subject}.to change{ActionMailer::Base.deliveries.count}.by(1)
       end
