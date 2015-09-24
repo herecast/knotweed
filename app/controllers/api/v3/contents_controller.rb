@@ -132,6 +132,14 @@ module Api
           order(sanitize_sort_parameter(params[:sort])).
           page(params[:page].to_i).per(params[:per_page].to_i)
 
+        @contents.select! do |c|
+          if c.channel_type == 'Event'
+            c.channel.event_instances.count > 0
+          else
+            true
+          end
+        end
+
         render json: @contents, each_serializer: DashboardContentSerializer
 
       end
