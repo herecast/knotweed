@@ -54,7 +54,11 @@ module Api
       end
 
       def comment_count
-        object.comment_count
+        if object.parent.present?
+          object.parent.comment_count
+        else
+          object.comment_count
+        end
       end
 
       def parent_content_id
