@@ -11,35 +11,48 @@ describe RegistrationsController do
 
     context 'with format JSON' do
       before(:each) do
+        user = FactoryGirl.build :user
         @user_attributes = {
-          name: 'My Name',
-          location_id: FactoryGirl.create(:location).id,
-          email: 'test@testing.com',
-          password: 'password',
-          password_confirmation: 'password'
+          name: user.name,
+          location_id: user.location.id,
+          email: user.email,
+          password: user.password,
+          password_confirmation: user.password
         }
       end
 
-      subject!{ post :create, format: :json, user: @user_attributes }
+      subject{ post :create, format: :json, user: @user_attributes }
 
-      let(:user) { User.find_by_email(JSON.parse(response.body)['email']) }
+      let(:user) { User.find_by_email(@user_attributes[:email]) }
 
       it 'should respond with success' do
+        subject
         expect(response).to be_success
       end
 
       it 'should set NDA fields' do
+        subject
         expect(user.nda_agreed_at.present?).to be true
         expect(user.agreed_to_nda).to be true
       end
         
-      it 'should respond with token' do
-        expect(JSON.parse(response.body)).to eq({
+      it 'should not respond with authentication token' do
+        subject
+        expect(JSON.parse(response.body)).to_not eq({
           'token' => user.authentication_token,
           'email' => user.email
         })
       end
 
+      it 'should generate confirmation email' do
+        expect{subject}.to change{ActionMailer::Base.deliveries.count}.by(1)
+      end
+
+      it 'should generate an email confirmation token' do
+        subject
+        expect(user.confirmation_token).to_not be_nil
+        expect(user.confirmation_sent_at).to_not be_nil
+      end
     end
   end
 end
