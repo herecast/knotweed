@@ -1,5 +1,6 @@
 class RegistrationsController < Devise::RegistrationsController
   respond_to :html, :json
+  before_filter :set_consumer_app_in_thread
 
   def create 
     super do |user|
@@ -19,4 +20,11 @@ class RegistrationsController < Devise::RegistrationsController
     end
   end
 
+  private
+
+     def set_consumer_app_in_thread
+       if request.headers['Consumer-App-Uri'].present?
+         ConsumerApp.current = ConsumerApp.find_by_uri(request.headers['Consumer-App-Uri'])
+       end
+     end
 end
