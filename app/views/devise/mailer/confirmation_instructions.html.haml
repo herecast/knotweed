@@ -1,7 +1,7 @@
 %p
   Welcome #{@email}!
   - if Thread.current[:consumer_app].present?
-    - url = Thread.current[:consumer_app].uri + '/sign_up/confirm/token/' + @token
+    - url = Thread.current[:consumer_app].uri + '/sign_up/confirm/' + @token
   - else
     - url = confirmation_url(@resource, confirmation_token: @token)
 %p You can confirm your account email through the link below:

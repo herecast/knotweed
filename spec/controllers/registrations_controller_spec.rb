@@ -93,7 +93,7 @@ describe RegistrationsController do
       end
 
       it 'should contain correct url' do
-        if mail.body.encoded =~ %r{<a href=\"#{@consumer_app.uri}/sign_up/confirm/token/([^"]+)">}
+        if mail.body.encoded =~ %r{<a href=\"#{@consumer_app.uri}/sign_up/confirm/([^"]+)">}
           User.confirm_by_token($1).email.should eq @user_attributes[:email]
         else
           raise 'expected consumer app URI to match email body'
