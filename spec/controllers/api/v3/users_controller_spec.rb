@@ -241,6 +241,28 @@ describe Api::V3::UsersController do
     end
   end
   
+  describe 'POST email_confirmation' do
+    before do
+      @user = FactoryGirl.create :user
+    end
+    context 'with valid confirmation token' do
+      subject! { post :email_confirmation, confirmation_token: @user.confirmation_token, format: :json}
+      
+      it 'should respond with auth token' do
+        JSON.parse(response.body).should eq({token: @user.authentication_token,
+                                             email: @user.email
+                                         }.stringify_keys)
+      end
+    end
+
+    context 'with invalid confirmation token' do
+      subject! { post :email_confirmation, confirmation_token: 'fake', format: :json }
+      
+      it 'should respond with 404' do
+        response.status.should eq 404
+      end
+    end
+  end
 
   private
     

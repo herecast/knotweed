@@ -74,6 +74,19 @@ module Api
         render json: {}, status: res
       end
 
+      def email_confirmation
+        user = User.confirm_by_token params[:confirmation_token]
+        if user.errors.blank?
+          res = { token: user.authentication_token,
+                  email: user.email
+                }
+        else
+          head :not_found and return
+        end
+
+        render json: res
+      end
+
     end
   end
 end
