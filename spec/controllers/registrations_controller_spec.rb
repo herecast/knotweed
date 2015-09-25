@@ -63,5 +63,44 @@ describe RegistrationsController do
         expect(user.confirmation_sent_at).to_not be_nil
       end
     end
+
+    context 'mailer tests' do
+      before do
+        user = FactoryGirl.build :user
+        @user_attributes = {
+          name: user.name,
+          location_id: user.location.id,
+          email: user.email,
+          password: user.password,
+          password_confirmation: user.password
+        }
+        @consumer_app = FactoryGirl.create :consumer_app
+      end
+      
+      subject! do 
+        request.env['Consumer-App-Uri'] = @consumer_app.uri
+        post :create, format: :json, user: @user_attributes
+      end
+      
+      def mail
+        @mail ||= ActionMailer::Base.deliveries.last
+      end
+      
+      it 'should be sent to the correct user' do
+        mail.to.should eq [@user_attributes[:email]]
+      end
+
+      it 'should be sent from the correct account' do
+        mail.from.should eq ['noreply@subtext.org']
+      end
+
+      it 'should contain correct url' do
+        if mail.body.encoded =~ %r{<a href=\"#{@consumer_app.uri}/sign_up/confirm/token/([^"]+)">}
+          User.confirm_by_token($1).email.should eq @user_attributes[:email]
+        else
+          raise 'expected consumer app URI to match email body'
+        end
+      end
+    end
   end
 end

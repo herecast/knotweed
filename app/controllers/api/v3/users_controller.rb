@@ -75,7 +75,7 @@ module Api
       end
 
       def email_confirmation
-        user = User.find_by_confirmation_token params[:confirmation_token]
+        user = User.confirm_by_token params[:confirmation_token]
         if user.present?
           res = { token: user.authentication_token,
                   email: user.email
