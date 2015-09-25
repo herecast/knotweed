@@ -6,13 +6,15 @@ module Api
     class PromotionBannersController < ApiController
 
       def track_click
-        @banner = PromotionBanner.find params[:id]
-        @banner.click_count += 1
-        if @banner.save
-          render json: @banner
+        @content = Content.find params[:id] 
+        if @content.present?
+          @content.increment :banner_click_count
+          @content.save
         else
-          render json: {}, status: 404
+          head :unprocessable_entity and return
         end
+
+        render json: @content, serializer: ContentSerializer
       end
 
     end

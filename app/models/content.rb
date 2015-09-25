@@ -58,6 +58,7 @@ class Content < ActiveRecord::Base
 
   # NOTE: this relationship is tracking display of promotion banners with
   # contents, not the promotion of contents (which is handled through the promotion model).
+  has_many :content_promotion_banner_impressions
   has_many :promotion_banners, through: :content_promotion_banner_impressions
 
   has_and_belongs_to_many :publish_records
