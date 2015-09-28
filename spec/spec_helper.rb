@@ -7,7 +7,6 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'email_spec'
-require 'rspec/autorun'
 require 'webmock/rspec'
 require 'pry-debugger' unless ENV['RM_INFO']
 require 'vcr'
