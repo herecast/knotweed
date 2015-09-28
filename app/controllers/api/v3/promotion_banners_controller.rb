@@ -6,7 +6,9 @@ module Api
     class PromotionBannersController < ApiController
 
       def track_click
-        @content = Content.find params[:id] 
+        # use find_by_id because we want a return of nil instead
+        # of causing an exception with find
+        @content = Content.find_by_id params[:id] 
         if @content.present?
           @content.increment :banner_click_count
           @content.save
