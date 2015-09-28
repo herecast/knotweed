@@ -118,7 +118,8 @@ describe Api::V3::MarketPostsController do
 
   describe 'GET contact' do
     before do
-      @market_post = FactoryGirl.create :market_post
+      post_content = FactoryGirl.create :content, content_category: @market_cat
+      @market_post = FactoryGirl.create :market_post, content: post_content
     end
 
     subject { get :contact, id: @market_post.content.id, format: :json }
