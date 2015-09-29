@@ -136,7 +136,8 @@ module Api
         params[:market_post][:id] = @market_post.id
 
         # destinations for reverse publishing
-        destinations = params[:market_post].delete :destinations
+        destinations = params[:market_post].delete :listserv_ids
+        location_ids = params[:market_post].delete(:location_ids).select{ |id| id.present? }.map{ |id| id.to_i }
 
         # handle images
         if params[:market_post][:image].present?
@@ -154,6 +155,7 @@ module Api
         content_attributes[:title] = params[:market_post].delete :title if params[:market_post][:title].present?
         content_attributes[:authors] = params[:market_post].delete :authors if params[:market_post][:authors].present?
         content_attributes[:raw_content] = params[:market_post].delete :content if params[:market_post][:content].present?
+        content_attributes[:location_ids] = location_ids if location_ids.present?
         params[:market_post][:content_attributes] = content_attributes
 
         if @market_post.update_attributes(params[:market_post])
