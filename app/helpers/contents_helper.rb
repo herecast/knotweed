@@ -30,4 +30,10 @@ module ContentsHelper
     content.authors.present? and content.authoremail.present? and content.title.present?
   end
 
+  def ux2_content_path(content)
+    prefix = content.root_content_category.name
+    # convert talk_of_the_town to talk
+    prefix = 'talk' if prefix == 'talk_of_the_town'
+    "/#{prefix}/#{content.id}"
+  end
 end

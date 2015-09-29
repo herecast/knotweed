@@ -1,6 +1,8 @@
 = raw @body
 \
-- if @base_uri.present?
+- if Thread.current[:consumer_app].present?
+  - url = "#{Thread.current[:consumer_app].uri}#{ux2_content_path(@content)}"
+- elsif @base_uri.present?
   - url = "#{@base_uri}/contents/#{@content.id}"
 - else
   - url = "http://www.dailyuv.com/contents/#{@content.id}"

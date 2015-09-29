@@ -43,7 +43,9 @@
       %br
 
 %p
-  - if @base_uri.present?
+  - if Thread.current[:consumer_app].present?
+    - url = "#{Thread.current[:consumer_app].uri}#{ux2_event_path(@event)}"
+  - elsif @base_uri.present?
     - url = "#{@base_uri}/events/#{@event.event_instances.first.id}"
   - else
     - url = "http://www.dailyuv.com/events"
