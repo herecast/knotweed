@@ -8,15 +8,17 @@ module Api
       def track_click
         # use find_by_id because we want a return of nil instead
         # of causing an exception with find
-        @content = Content.find_by_id params[:id] 
-        if @content.present?
+        @content = Content.find_by_id params[:content_id] 
+        @banner = PromotionBanner.find_by_id params[:promotion_banner_id]
+        if @content.present? && @banner.present?
           @content.increment :banner_click_count
           @content.save
+          @banner.increment :banner_click_count
+          @banner.save
         else
           head :unprocessable_entity and return
         end
-
-        render json: @content, serializer: ContentSerializer
+        head :ok
       end
 
     end
