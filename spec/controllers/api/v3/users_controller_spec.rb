@@ -243,7 +243,7 @@ describe Api::V3::UsersController do
   
   describe 'POST email_confirmation' do
     before do
-      @user = FactoryGirl.build :user
+      @user = FactoryGirl.build :user, confirmed_at: nil
       #generate a raw and db confirmation token, and update the user with the db confirmation token
       #devise will send the raw confirmation token in the email, which is what we will send in the test
       @raw_token, db_token = Devise.token_generator.generate(User, :confirmation_token)
