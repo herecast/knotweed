@@ -1,8 +1,20 @@
+- if Thread.current[:consumer_app].present?
+  - url = Thread.current[:consumer_app].uri + '/sign_up/confirm/' + @token
+- else
+  - url = confirmation_url(@resource, confirmation_token: @token)
 %p
-  Welcome #{@email}!
-  - if Thread.current[:consumer_app].present?
-    - url = Thread.current[:consumer_app].uri + '/sign_up/confirm/' + @token
-  - else
-    - url = confirmation_url(@resource, confirmation_token: @token)
-%p You can confirm your account email through the link below:
+  Dear #{@email},
+%p
+  Thank you for registering at dailyUV.com. Before we can activate your account, you need to take one last step to complete your registration.
+%p
+  Please note: You must complete this last step to become a registered user of our website. You will only need to visit this URL once to activate your account.
+%p
+  To complete your registration, please click on the link below:
 %p= link_to 'Confirm my account', url
+%p
+  If you are having difficulties completing the registration process, please contact a member of our support staff at
+  %a{:href => "mailto:dailyuv@subtext.org"} dailyuv@subtext.org
+%p
+  With thanks for your interest,
+  %br/
+  The team at dailyUV.com
