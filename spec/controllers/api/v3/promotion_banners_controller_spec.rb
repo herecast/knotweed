@@ -15,8 +15,12 @@ describe Api::V3::PromotionBannersController do
       response.status.should eq 200
     end
 
-    it 'should increment click_count' do
+    it 'should increment content.banner_click_count' do
       assigns(:content).banner_click_count.should eq 1
+    end
+
+    it 'should increment banner.click_count' do
+      assigns(:banner).click_count.should eq 1
     end
 
     context 'with invalid content id' do
