@@ -15,6 +15,8 @@
 #
 
 class PromotionBanner < ActiveRecord::Base
+  include Incrementable
+
   has_one :promotion, as: :promotable
   has_many :content_promotion_banner_impressions
   has_many :contents, through: :content_promotion_banner_impressions

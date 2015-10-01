@@ -48,6 +48,7 @@ require 'builder'
 include ActionView::Helpers::TextHelper
 class Content < ActiveRecord::Base
   include Auditable
+  include Incrementable
 
   belongs_to :issue
   belongs_to :import_location
@@ -1257,14 +1258,6 @@ class Content < ActiveRecord::Base
 
   def uri
     CGI.escape(BASE_URI + "/#{id}")
-  end
-
-  # accepts symbol reference to a count field that needs to be 
-  # incremented and needs to skip callbacks
-  #
-  # @param attr_name [Symbol] the attribute to iterate; `:view_count`, `:comment_count`, `:commenter_count`
-  def increment_count_attr!(attr_name)
-    update_column attr_name, send(attr_name)+1
   end
 
   private
