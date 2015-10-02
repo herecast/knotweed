@@ -5,8 +5,8 @@ module Api
       # already handled by nginx
       #http_basic_authenticate_with name: Figaro.env.api_username, password: Figaro.env.api_password
 
-      before_filter :set_requesting_app_and_repository
-      before_filter :set_current_api_user
+      before_filter :set_requesting_app_and_repository, :set_current_api_user,
+        :set_thread_consumer_app_nil
 
       protected
 
@@ -22,6 +22,11 @@ module Api
         else
           @current_api_user = nil
         end
+        set_current_thread_user
+      end
+      
+      def set_current_thread_user
+        User.current = @current_api_user
       end
 
       def set_requesting_app_and_repository
@@ -41,6 +46,15 @@ module Api
         else
           relation
         end
+      end
+
+      # I realize this is a little counterintuitive, but here's why it exists:
+      # the reverse publish emails needed to have a separate URL for Ux2. To determine that,
+      # we're relying on having Thread.current[:consumer_app] set -- that only 
+      # needs to be set for UX2. So in order to make the reverse publish email logic
+      # work properly, we need to ensure that's nil here.
+      def set_thread_consumer_app_nil
+        ConsumerApp.current = nil
       end
 
     end

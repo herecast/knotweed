@@ -31,12 +31,15 @@ describe Api::V3::NewsController do
       assigns(:news).select{|c| c.locations.include? @third_location }.count.should eq(assigns(:news).count)
     end
 
-    it 'should allow querying by publication name' do
-      pub = FactoryGirl.create :publication
-      pub_and_loc_content = FactoryGirl.create :content, content_category: @news_cat,
-        locations: [@default_location], publication: pub
-      get :index, format: :json, publication: pub.name
-      assigns(:news).should eq([pub_and_loc_content])
+    context 'should allow querying by publication name' do
+      before do
+        @pub = FactoryGirl.create :publication
+        @pub_and_loc_content = FactoryGirl.create :content, content_category: @news_cat,
+        locations: [@default_location], publication: @pub
+      end
+
+      subject! { get :index, format: :json, publication: @pub.name }
+      it { assigns(:news).should eq([@pub_and_loc_content]) }
     end
 
     context 'not signed in' do

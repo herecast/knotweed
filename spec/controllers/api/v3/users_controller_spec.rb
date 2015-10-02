@@ -243,10 +243,11 @@ describe Api::V3::UsersController do
   
   describe 'POST email_confirmation' do
     before do
-      @user = FactoryGirl.create :user
+      @user = FactoryGirl.create :user, confirmed_at: nil
     end
     context 'with valid confirmation token' do
-      subject! { post :email_confirmation, confirmation_token: @user.confirmation_token, format: :json}
+      # we have to call instance_variable_get to pull the raw token that's included in the email. confirmation_token in the DB is the encrypted version.
+      subject! { post :email_confirmation, confirmation_token: @user.instance_variable_get(:@raw_confirmation_token), format: :json}
       
       it 'should respond with auth token' do
         JSON.parse(response.body).should eq({token: @user.authentication_token,

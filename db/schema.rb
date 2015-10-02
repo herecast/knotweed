@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150925153727) do
+ActiveRecord::Schema.define(:version => 20150925204937) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -275,11 +275,12 @@ ActiveRecord::Schema.define(:version => 20150925153727) do
     t.integer  "channel_id"
     t.integer  "root_content_category_id"
     t.boolean  "delta",                    :default => true,  :null => false
-    t.integer  "created_by"
-    t.integer  "updated_by"
     t.integer  "view_count",               :default => 0
     t.integer  "comment_count",            :default => 0
     t.integer  "commenter_count",          :default => 0
+    t.integer  "created_by"
+    t.integer  "updated_by"
+    t.integer  "banner_click_count",       :default => 0
   end
 
   add_index "contents", ["authoremail"], :name => "index_contents_on_authoremail"

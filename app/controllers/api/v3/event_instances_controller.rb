@@ -80,7 +80,7 @@ module Api
           url = edit_event_url(@event_instance.event) if @current_api_user.has_role? :admin
         end
         can_edit = (@current_api_user.present? && (@event_instance.event.content.created_by == @current_api_user))
-        @event_instance.event.content.increment_count_attr!(:view_count)
+        @event_instance.event.content.increment_integer_attr!(:view_count)
         render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
           can_edit: can_edit, admin_content_url: url
       end

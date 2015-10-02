@@ -394,6 +394,9 @@ GEM
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
       rspec-mocks (~> 2.14.0)
+    rspec_junit_formatter (0.2.3)
+      builder (< 4)
+      rspec-core (>= 2, < 4, != 2.12.0)
     ruby-gmail (0.3.0)
       mail (>= 2.2.1)
       mime (>= 0.1)
@@ -566,6 +569,7 @@ DEPENDENCIES
   rinku (~> 1.7.3)
   rolify (>= 3.2.0)
   rspec-rails (>= 2.12.2)
+  rspec_junit_formatter
   ruby-gmail
   rubypress
   rubyzip (~> 1.1.4)
@@ -586,3 +590,6 @@ DEPENDENCIES
   whenever
   yard
   yomu
+
+BUNDLED WITH
+   1.10.6
