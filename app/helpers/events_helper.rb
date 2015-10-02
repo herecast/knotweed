@@ -77,4 +77,8 @@ module EventsHelper
     display_string.chomp!(', ')
   end
 
+  def ux2_event_path(event)
+    "/events/#{event.event_instances.first.id}"
+  end
+
 end

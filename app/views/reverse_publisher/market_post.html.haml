@@ -17,7 +17,9 @@
     .strong Where: #{@market_post.locate_address}
 
 - url = 'http://www.dailyuv.com/uvmarket'
-- if @base_uri.present?
+- if Thread.current[:consumer_app].present?
+  - url = "#{Thread.current[:consumer_app].uri}#{ux2_content_path(@market_post.content)}"
+- elsif @base_uri.present?
   - url = "#{@base_uri}/contents/#{@market_post.content.id}/market_posts/#{@market_post.id}"
 
 See details and discover more in

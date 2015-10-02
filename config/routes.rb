@@ -88,7 +88,7 @@ Knotweed::Application.routes.draw do
       put '/current_user', to: 'users#update'
       resources 'events', only: [:create, :show, :update]
       post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
-      get 'promotion_banners/:id/track_click', to: 'promotion_banners#track_click', as: :track_click
+      get 'promotion_banners/:promotion_banner_id/track_click', to: 'promotion_banners#track_click', as: :track_click
       resources 'event_instances', only: [:index, :show, :destroy]
       resources 'comments', only: [:index, :create]
       resources 'listservs', only: [:index]

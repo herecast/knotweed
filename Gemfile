@@ -39,6 +39,8 @@ group :test do
   gem "vcr"
   gem "timecop"
   gem 'simplecov'
+  # this is for circleci to properly read & ormat our test results
+  gem 'rspec_junit_formatter'
 end
 group :rubymine,:development do
  	gem "thin"
