@@ -1,5 +1,5 @@
 class ReversePublisher < ActionMailer::Base
-  helper :events
+  helper :events, :contents
 
   def send_content_to_reverse_publishing_email(content, listserv, consumer_app=nil)
     # these are the same regardless of channel
