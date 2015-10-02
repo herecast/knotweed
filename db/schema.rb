@@ -902,8 +902,8 @@ ActiveRecord::Schema.define(:version => 20150925204937) do
   add_index "user_wufoo_forms", ["user_id", "wufoo_form_id"], :name => "index_user_wufoo_forms_on_user_id_and_wufoo_form_id", :unique => true
 
   create_table "users", :force => true do |t|
-    t.string   "email",                  :default => "",    :null => false
-    t.string   "encrypted_password",     :default => "",    :null => false
+    t.string   "email",                  :default => "",         :null => false
+    t.string   "encrypted_password",     :default => "",         :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
@@ -912,8 +912,8 @@ ActiveRecord::Schema.define(:version => 20150925204937) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                                :null => false
-    t.datetime "updated_at",                                :null => false
+    t.datetime "created_at",                                     :null => false
+    t.datetime "updated_at",                                     :null => false
     t.string   "name"
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
@@ -928,7 +928,7 @@ ActiveRecord::Schema.define(:version => 20150925204937) do
     t.string   "contact_email"
     t.string   "contact_url"
     t.integer  "location_id"
-    t.string   "test_group"
+    t.string   "test_group",             :default => "consumer"
     t.boolean  "muted",                  :default => false
     t.string   "authentication_token"
     t.string   "avatar"
