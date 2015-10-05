@@ -376,7 +376,7 @@ GEM
       json (~> 1.4)
     retriable (1.4.1)
     retryable-rb (1.1.0)
-    riddle (1.5.11)
+    riddle (1.5.12)
     rinku (1.7.3)
     rolify (3.2.0)
     rspec (2.14.1)
@@ -445,7 +445,7 @@ GEM
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0)
       rack (~> 1.0)
-    thinking-sphinx (3.1.1)
+    thinking-sphinx (3.1.4)
       activerecord (>= 3.1.0)
       builder (>= 2.1.2)
       innertube (>= 1.0.2)
@@ -579,7 +579,7 @@ DEPENDENCIES
   simplecov
   sparql-client!
   thin
-  thinking-sphinx
+  thinking-sphinx (~> 3.1.4)
   timecop
   turbo-sprockets-rails3
   turbolinks
@@ -590,6 +590,3 @@ DEPENDENCIES
   whenever
   yard
   yomu
-
-BUNDLED WITH
-   1.10.6
