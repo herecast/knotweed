@@ -31,15 +31,22 @@ describe Api::V3::NewsController do
       assigns(:news).select{|c| c.locations.include? @third_location }.count.should eq(assigns(:news).count)
     end
 
-    context 'should allow querying by publication name' do
+    context 'querying by publication name' do
       before do
         @pub = FactoryGirl.create :publication
         @pub_and_loc_content = FactoryGirl.create :content, content_category: @news_cat,
-        locations: [@default_location], publication: @pub
+          locations: [@default_location], publication: @pub
+        # this spec were causing a timing issue when run as part of the whole suite.
+        # There may be a more holistic approach to solving this problem, but I'm not sure what it would be,
+        # so I'm solving the problem for this spec by forcing an index.
+        ThinkingSphinx::Test.index 'content_core', 'content_delta'
       end
 
       subject! { get :index, format: :json, publication: @pub.name }
-      it { assigns(:news).should eq([@pub_and_loc_content]) }
+
+      it 'should return content specific to that publication' do
+        assigns(:news).should eq([@pub_and_loc_content])
+      end
     end
 
     context 'not signed in' do
