@@ -1,6 +1,7 @@
 module Api
   module V3
     class NewsController < ApiController
+      after_filter :track, only: :index
 
       def index
         opts = { select: '*, weight()' }
@@ -59,6 +60,23 @@ module Api
           render json: @news, serializer: DetailedNewsSerializer, 
             admin_content_url: url, root: 'news'
         end
+      end
+
+      private 
+
+      def track
+        props = {}
+        props['channelName'] = 'News'
+        props['pageName'] = 'news.index'
+        props['url'] = url_for
+        
+        props['query'] = params[:query]
+        props['publication'] =  params[:publication]
+        if params[:location_id].present?
+          props['location'] = Location.find(params[:location_id]).name
+        end
+
+        @tracker.trail(@current_api_user.try(:id), 'searchContent', @current_api_user, props)
       end
 
     end

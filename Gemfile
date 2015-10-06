@@ -101,6 +101,7 @@ gem 'geocoder'
 gem 'thinking-sphinx', "~> 3.1.4"
 gem 'jbuilder'
 gem 'mixpanel_client'
+gem 'mixpanel-ruby', '1.4.0' # official ruby mixpanel client. later versions need ruby > 2.0
 
 gem "select2-rails"
 gem "legato"

@@ -293,6 +293,7 @@ GEM
     mime-types (1.25.1)
     mimetype-fu (0.1.2)
     mini_portile (0.5.2)
+    mixpanel-ruby (1.4.0)
     mixpanel_client (4.1.1)
       typhoeus (~> 0.6.7)
     multi_json (1.11.0)
@@ -549,6 +550,7 @@ DEPENDENCIES
   kaminari
   legato
   mail
+  mixpanel-ruby (= 1.4.0)
   mixpanel_client
   mysql2
   net-http-persistent (~> 2.9)
@@ -590,3 +592,6 @@ DEPENDENCIES
   whenever
   yard
   yomu
+
+BUNDLED WITH
+   1.10.6
