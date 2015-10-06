@@ -76,7 +76,7 @@ module Api
           props['location'] = Location.find(params[:location_id]).name
         end
 
-        @tracker.trail(@current_api_user.try(:id), 'searchContent', @current_api_user, props)
+        @tracker.track(@current_api_user.try(:id), 'searchContent', @current_api_user, props)
       end
 
     end
