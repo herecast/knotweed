@@ -5,5 +5,4 @@ ThinkingSphinx::Index.define :publication, :with => :active_record do
   has contents.root_content_category_id, as: :content_category_ids
 
   set_property :min_prefix_len => 1
-  set_property :enable_star   => true
 end

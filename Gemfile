@@ -98,7 +98,7 @@ gem 'sparql-client', git: "git@github.com:ruby-rdf/sparql-client.git", branch: "
 
 gem 'chronic'
 gem 'geocoder'
-gem 'thinking-sphinx'
+gem 'thinking-sphinx', "~> 3.1.4"
 gem 'jbuilder'
 gem 'mixpanel_client'
 
