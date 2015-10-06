@@ -10,7 +10,9 @@ module Api
         else
           @publications = Publication.all
         end
-        render json: @publications
+        render json: {
+          publications: @publications
+        }
       end
 
       def show
@@ -20,7 +22,7 @@ module Api
           @publication = Publication.find_by_name(params[:name])
         end
         if @publication.present?
-          render :json => @publication
+          render json: @publication.to_json
         else
           render text: "No publication found.", status: 500
         end
