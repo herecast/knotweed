@@ -1,7 +1,7 @@
 module Api
   module V3
     class CommentsController < ApiController
-
+      after_filter :track, only: :create
       before_filter :check_logged_in!, only: [:create] 
       
       # @param the parent content id
@@ -74,6 +74,25 @@ module Api
             end
             get_all_comments comment.children
           end
+        end
+
+        def track
+          props = {}
+          #nav props
+          props['channelName'] = @comment.try(:channel_name)
+          props['url'] = url_for
+
+          #content
+          props['contentId'] = @comment.try(:id)
+          props['contentChannel'] = @comment.try(:channel_type)
+          props['contentLocation'] = @comment.try(:location)
+          props['contentPubdate'] = @comment.try(:pubdate)
+          props['contentTitle'] = @comment.try(:title)
+          props['contentPublication'] = @comment.try(:publication).try(:name)
+
+          #content creation
+          props['submitType'] = 'create'
+          props['inReplyTo'] = @comment.try(:parent).try(:id)
         end
     end
   end
