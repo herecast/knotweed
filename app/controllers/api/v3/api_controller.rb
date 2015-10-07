@@ -1,3 +1,5 @@
+require 'subtext_tracker'
+
 module Api
   module V3
     class ApiController < ActionController::Base
@@ -62,8 +64,6 @@ module Api
       end
 
       def init_mixpanel
-        require 'subtext_tracker'
-
         @tracker = SubtextTracker.new(Figaro.env.mixpanel_api_key)
       end
 
