@@ -41,6 +41,7 @@ describe Api::V3::NewsController do
         # so I'm solving the problem for this spec by forcing an index.
         ThinkingSphinx::Test.index 'content_core', 'content_delta'
         ThinkingSphinx::Test.index 'publication_core'
+        ThinkingSphinx::Test.index 'location_core'
       end
 
       subject! { get :index, format: :json, publication: @pub.name }
