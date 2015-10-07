@@ -4,6 +4,7 @@
 module Api
   module V3
     class PromotionBannersController < ApiController
+      after_filter :event_track
 
       def track_click
         # use find_by_id because we want a return of nil instead
@@ -17,6 +18,29 @@ module Api
           head :unprocessable_entity and return
         end
         head :ok
+      end
+
+      private
+
+      def event_track
+        props = {}
+        #nav props
+        props['channelName'] = @content.try(:channel_type)
+        props['url'] = url_for
+
+        #content props
+        props['contentId'] = @content.try(:id)
+        props['contentChannel'] = @content.try(:channel_type)
+        props['contentLocation'] = @content.try(:location)
+        props['contentPubdate'] = @content.try(:pubdate)
+        props['contentTitle'] = @content.try(:title)
+        props['contentPublication'] = @content.try(:publication).try(:name)
+        
+        #banner props
+        props['bannerAdId'] = @banner.try(:id)
+        props['bannerUrl'] = @banner.try(:redirect_url)
+        
+        @tracker.track(@current_api_user.try(:id), 'clickBannerAd', @current_api_user, props)
       end
 
     end

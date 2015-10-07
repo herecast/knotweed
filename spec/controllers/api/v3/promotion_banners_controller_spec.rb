@@ -4,6 +4,7 @@ describe Api::V3::PromotionBannersController do
 
   describe 'post track_click' do
     before do
+      mixpanel_track_stub
       @banner = FactoryGirl.create :promotion_banner
       @content = FactoryGirl.create :content
       @content.promotion_banners = [@banner]
