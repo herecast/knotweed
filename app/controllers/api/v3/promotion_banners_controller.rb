@@ -34,7 +34,7 @@ module Api
         props['contentLocation'] = @content.try(:location)
         props['contentPubdate'] = @content.try(:pubdate)
         props['contentTitle'] = @content.try(:title)
-        props['contentPublicatio'] = @content.try(:publication).try(:name)
+        props['contentPublication'] = @content.try(:publication).try(:name)
         
         #banner props
         props['bannerAdId'] = @banner.try(:id)
