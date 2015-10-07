@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Api::V3::NewsController do
   before do
+    mixpanel_track_stub
     @news_cat = FactoryGirl.create :content_category, name: 'news'
   end
 

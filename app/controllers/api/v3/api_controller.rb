@@ -1,3 +1,5 @@
+require 'subtext_tracker'
+
 module Api
   module V3
     class ApiController < ActionController::Base
@@ -9,7 +11,7 @@ module Api
       before_filter :authenticate_user_from_token!
 
       before_filter :set_requesting_app_and_repository, :set_current_api_user,
-        :set_current_thread_user
+        :set_current_thread_user, :init_mixpanel
 
       protected
 
@@ -59,6 +61,10 @@ module Api
 
       def set_current_thread_user
         User.current = current_user
+      end
+
+      def init_mixpanel
+        @tracker ||= SubtextTracker.new(Figaro.env.mixpanel_api_key)
       end
 
     end
