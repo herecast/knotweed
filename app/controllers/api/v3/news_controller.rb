@@ -66,10 +66,14 @@ module Api
 
       def track
         props = {}
+
+        #nav props
         props['channelName'] = 'News'
         props['pageName'] = 'news.index'
         props['url'] = url_for
-        
+        props['page'] = params[:page] || 1
+
+        #search props
         props['query'] = params[:query]
         props['publication'] =  params[:publication]
         if params[:location_id].present?
