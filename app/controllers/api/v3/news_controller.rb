@@ -81,7 +81,7 @@ module Api
 
       def add_nav_props(hash)
         props = {}
-        props['channelName'] = 'news'
+        props['channelName'] = 'News'
         props['pageName'] = 'news.index'
         props['url'] = url_for
         props['page'] = params[:page] || 1
@@ -101,7 +101,7 @@ module Api
       def add_content_props(hash)
         props = {}
         props['contentId'] = @news.id
-        props['contentChannel'] = 'news'
+        props['contentChannel'] = 'News'
         props['contentLocation'] = @news.location
         props['contentPubdate'] = @news.pubdate
         props['contentTitle'] = @news.title
