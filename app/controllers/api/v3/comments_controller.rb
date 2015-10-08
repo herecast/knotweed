@@ -79,7 +79,7 @@ module Api
         def track
           props = {}
           #nav props
-          props['channelName'] = @comment.try(:channel_name)
+          props['channelName'] = @comment.try(:channel_type)
           props['url'] = url_for
 
           #content
