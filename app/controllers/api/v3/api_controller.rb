@@ -64,7 +64,7 @@ module Api
       end
 
       def init_mixpanel
-        @tracker ||= SubtextTracker.new(Figaro.env.mixpanel_api_key)
+        @tracker ||= SubtextTracker.new(Figaro.env.mixpanel_api_token)
       end
 
     end
