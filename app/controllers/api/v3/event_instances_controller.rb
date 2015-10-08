@@ -3,6 +3,7 @@ module Api
     class EventInstancesController < ApiController
       
       before_filter :check_logged_in!, only: [:destroy]
+      after_filter :track_index, only: :index
 
       def destroy
         @event_instance = EventInstance.find(params[:id])
@@ -83,6 +84,17 @@ module Api
         @event_instance.event.content.increment_integer_attr!(:view_count)
         render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
           can_edit: can_edit, admin_content_url: url
+      end
+
+      private
+
+      def track_index
+        props = {}
+        props.merge! @tracker.navigation_properties('Event','event.index', url_for, params[:page])
+
+        props.merge! @tracker.search_properties(params[:category], params[:start_date], params[:end_date], params[:location], params[:query], nil)
+
+        @tracker.track(@current_api_user.try(:id), 'searchContent', @current_api_user, props)
       end
 
     end
