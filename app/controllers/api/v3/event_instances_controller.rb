@@ -90,9 +90,9 @@ module Api
 
       def track_index
         props = {}
-        props.merge! @tracker.navigation_properties('Event','event.index', url_for, params[:page])
+        props.merge! @tracker.navigation_properties('Event','event.index', url_for, params)
 
-        props.merge! @tracker.search_properties(params[:category], params[:start_date], params[:end_date], params[:location], params[:query], nil)
+        props.merge! @tracker.search_properties(params)
 
         @tracker.track(@current_api_user.try(:id), 'searchContent', @current_api_user, props)
       end

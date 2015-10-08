@@ -67,14 +67,14 @@ module Api
 
       def track_index
         props = {}
-        props.merge! @tracker.navigation_properties('News','news.index', url_for, params[:page])
-        props.merge! @tracker.search_properties(nil, nil, nil, params[:location_id], params[:query], params[:publication])
+        props.merge! @tracker.navigation_properties('News','news.index', url_for, params)
+        props.merge! @tracker.search_properties(params)
         @tracker.track(@current_api_user.try(:id), 'searchContent', @current_api_user, props)
       end
 
       def track_show
         props = {}
-        props.merge! @tracker.navigation_properties('News','news.index', url_for, params[:page])
+        props.merge! @tracker.navigation_properties('News','news.index', url_for, params)
         props.merge! @tracker.content_properties(@news)
         @tracker.track(@current_api_user.try(:id), 'selectContent', @current_api_user, props)
       end

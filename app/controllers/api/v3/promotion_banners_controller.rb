@@ -24,7 +24,7 @@ module Api
 
       def event_track
         props = {}
-        props.merge! @tracker.navigation_properties(@content.try(:channel_type), nil, url_for, nil)
+        props.merge! @tracker.navigation_properties(@content.try(:channel_type), nil, url_for, params)
 
         props.merge! @tracker.content_properties(@content)
 

@@ -18,25 +18,25 @@ class SubtextTracker < Mixpanel::Tracker
     orig_track(distinct_id, event, properties)
   end
 
-  def navigation_properties(channelName,pageName,url,pageNumber)
+  def navigation_properties(channelName,pageName=nil,url,params)
     props = {}
     props['channelName'] = channelName
     props['pageName'] = pageName
     props['url'] = url
-    props['pageNumber'] = pageNumber || 1
+    props['pageNumber'] = params[:page] ||  1
     props
   end
 
-  def search_properties(category, start_date, end_date, location, query, publication)
+  def search_properties(params)
     props = {}
-    props['category'] = category
-    props['start_date'] = start_date
-    props['end_date'] = end_date
-    if location.present?
-      props['location'] = Location.find(location).name
+    props['category'] = params[:category] 
+    props['start_date'] = params[:start_date]
+    props['end_date'] = params[:end_date]
+    if params[:location]
+      props['location'] = Location.find(params[:location]).name
     end
-    props['query'] = query
-    props['publication'] = publication
+    props['query'] = params[:query]
+    props['publication'] = params[:publication]
     props
   end
 
