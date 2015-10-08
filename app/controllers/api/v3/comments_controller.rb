@@ -93,6 +93,7 @@ module Api
           #content creation
           props['submitType'] = 'create'
           props['inReplyTo'] = @comment.try(:parent).try(:id)
+          @tracker.track(@current_api_user.try(:id), 'submitContent', @current_api_user, props)
         end
     end
   end
