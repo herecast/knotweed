@@ -85,7 +85,6 @@ group :pry do
   gem "pry"
   gem "pry-rails"
   gem "pry-debugger"
-  #gem 'debugger', :group => [:development, :test]
   gem 'debugger'
 end
 
