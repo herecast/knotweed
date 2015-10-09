@@ -4,6 +4,7 @@ module Api
       
       before_filter :check_logged_in!, only: [:index, :show, :create, :update]
       after_filter :track_index, only: :index
+      after_filter :track_show, only: :show
 
       def index
         opts = {}
@@ -112,6 +113,12 @@ module Api
         @tracker.track(@current_api_user.try(:id), 'searchContent', @current_api_user, props)
       end
 
+      def track_show
+        props = {}
+        props.merge! @tracker.navigation_properties('Talk', 'talk.show', url_for, params)
+        props.merge! @tracker.content_properties(@talks)
+        @tracker.track(@current_api_user.try(:id), 'selectContent', @current_api_user, props)
+      end
     end
   end
 end
