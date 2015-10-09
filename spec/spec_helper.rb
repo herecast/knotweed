@@ -64,6 +64,7 @@ RSpec.configure do |config|
     # Disable VCR for the test-suite, unless a test explicitely asks for it
     VCR.turn_off!
     ImageUploader.storage = :file
+    mixpanel_track_stub
   end
   config.before(:each) do
     DatabaseCleaner.start
