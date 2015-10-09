@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Api::V3::TalkController do
   before do
+    mixpanel_track_stub
     @talk_cat = FactoryGirl.create :content_category, name: 'talk_of_the_town'
     @other_location = FactoryGirl.create :location, city: 'Another City'
     @user = FactoryGirl.create :user, location: @other_location

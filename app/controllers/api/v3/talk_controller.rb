@@ -3,6 +3,7 @@ module Api
     class TalkController < ApiController
       
       before_filter :check_logged_in!, only: [:index, :show, :create, :update]
+      after_filter :track_index, only: :index
 
       def index
         opts = {}
@@ -100,6 +101,15 @@ module Api
           render json: { errors: @content.errors.messages },
             status: :unprocessable_entity
         end
+      end
+
+      private
+
+      def track_index
+        props = {}
+        props.merge! @tracker.navigation_properties('Talk', 'talk.index', url_for, params)
+        props.merge! @tracker.search_properties(params)
+        @tracker.track(@current_api_user.try(:id), 'searchContent', @current_api_user, props)
       end
 
     end
