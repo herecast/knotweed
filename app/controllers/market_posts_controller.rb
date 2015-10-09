@@ -1,4 +1,5 @@
 class MarketPostsController < ApplicationController
+  after_filter :track_index, only: :index
 
   def index
     # if posted, save to session
@@ -110,4 +111,12 @@ class MarketPostsController < ApplicationController
       market_posts_path
     end
   end
+
+  def track_index
+    props = {}
+    props.merge! @tracker.navigation_properties('Market', 'market.index', url_for, params)
+    props.merge! @tracker.search_properties(params)
+    @tracker.track(@current_api_user.try(:id), 'searchContent', @current_api_user, props)
+  end
+
 end
