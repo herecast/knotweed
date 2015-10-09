@@ -25,9 +25,7 @@ module Api
       def event_track
         props = {}
         props.merge! @tracker.navigation_properties(@content.try(:channel_type), nil, url_for, params)
-
         props.merge! @tracker.content_properties(@content)
-
         props.merge! @tracker.banner_properties(@banner)
 
         @tracker.track(@current_api_user.try(:id), 'clickBannerAd', @current_api_user, props)
