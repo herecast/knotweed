@@ -20,7 +20,7 @@ class Image < ActiveRecord::Base
   
   attr_accessible :caption, :credit, :image, :image_cache, :remove_image, 
                   :imageable_id, :imageable_type, :remote_image_url,
-                  :source_url, :imageable
+                  :source_url, :imageable, :primary
   
   mount_uploader :image, ImageUploader
   

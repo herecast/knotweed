@@ -66,7 +66,7 @@ class EventsController < ApplicationController
         # make a copy of the original image if it exists and if
         # the new event/content was created without uploading a new image
         if unchan_content.images.present? and @event.images.empty?
-          original_image = unchan_content.images.first
+          original_image = unchan_content.primary_image
           @event.content.images << Image.create(image: original_image.image, source_url: original_image.source_url,
                                                caption: original_image.caption, credit: original_image.credit)
           # we need to make a copy of the image in its new path
@@ -76,7 +76,7 @@ class EventsController < ApplicationController
             aws_secret_access_key: Figaro.env.aws_secret_access_key
           })
           old_path = original_image.image.path.to_s
-          new_path = @event.content.images.first.image.path.to_s
+          new_path = @event.content.primary_image.image.path.to_s
           connection.copy_object(Figaro.env.aws_bucket_name, old_path, Figaro.env.aws_bucket_name, new_path)
         end
       end
@@ -161,7 +161,7 @@ class EventsController < ApplicationController
       # we pass in a placeholder for the image url so that we can display it
       # (if the original content had an image),
       # then in create we duplicate the original image and assign it to the new content.
-      @placeholder_image = unchannelized_content.images.first
+      @placeholder_image = unchannelized_content.primary_image
       @event.content.title = remove_list_from_title(unchannelized_content.title)
     else
       @event.build_content

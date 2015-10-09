@@ -231,6 +231,8 @@ class ImportJob < ActiveRecord::Base
     filtered = 0
     log = import_record.log_file
     docs.each do |article|
+      next if article.empty?
+
       # trim all fields so we don't get any unnecessary whitespace
       article.each_value { |v| v.strip! if v.is_a? String and v.frozen? == false }
       # remove leading empty <p> tags from content

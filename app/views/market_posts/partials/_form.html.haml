@@ -94,8 +94,8 @@
                   = g.simple_fields_for :images do |i|
                     = i.input :image, as: :file
               .span6
-                - if @market_post.content.images.present? and @market_post.content.images.first.id
-                  = image_tag @market_post.content.images.first.image.url
+                - if @market_post.content.images.present? and @market_post.content.primary_image.id
+                  = image_tag @market_post.content.primary_image.image.url
                 - elsif @placeholder_image.present?
                   = image_tag @placeholder_image.image.url
 

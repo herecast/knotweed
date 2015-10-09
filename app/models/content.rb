@@ -157,6 +157,14 @@ class Content < ActiveRecord::Base
     end
   end
 
+  def primary_image
+    image = images.where(primary: true).first
+    if image.nil?
+      image = images.first
+    end
+    image
+  end
+
 
   # holdover from when we used to use processed_content by preference.
   # Seemed easier to keep this method, but just make it point directly to raw content 
@@ -359,7 +367,8 @@ class Content < ActiveRecord::Base
     # because we don't want to create the images if the content doesn't save.
     if special_attrs.has_key? "image"
       # CarrierWave validation should take care of validating this for us
-      content.create_or_update_image(special_attrs['image'], special_attrs['imagecaption'], special_attrs['imagecredit'])
+      content.create_or_update_image(special_attrs['image'], special_attrs['imagecaption'], special_attrs['imagecredit'], special_attrs['primary'])
+      new_content_images = File.basename(special_attrs['image'])
     end
 
     # handle multiple images (initially from Wordpress import parser)
@@ -367,22 +376,33 @@ class Content < ActiveRecord::Base
       # CarrierWave validation should take care of validating this for us
       images = special_attrs['images']
       images.each do | img |
-        content.create_or_update_image(img['image'], img['imagecaption'], img['imagecredit'])
+        content.create_or_update_image(img['image'], img['imagecaption'], img['imagecredit'], img['primary'])
       end
+      new_content_images = images.map{|i| File.basename(i['image'])}
+    end
+
+    # delete any now-unused images
+    db_images = content.images.map{|i| i[:image]}
+    #new_content_images = special_attrs['images'].map{|i| File.basename(i['image'])}
+    unused_images = db_images - new_content_images
+    unused_images.each do |img|
+      content.images.where(image: img).first.destroy
     end
 
     content
   end
 
-  def create_or_update_image(url, caption, credit)
-    # do we already have this image?
-    current_image = Image.find_by_imageable_id_and_source_url(id, url)
+  def create_or_update_image(url, caption, credit, primary)
     image_attrs = {
         remote_image_url: url,
         source_url: url
     }
     image_attrs[:caption] = caption if caption.present?
     image_attrs[:credit] = credit if credit.present?
+    image_attrs[:primary] = primary if primary.present?
+
+    # do we already have this image?
+    current_image = Image.find_by_imageable_id_and_source_url(id, url)
     if current_image.present?
       images.update(current_image.id, image_attrs)
     else
@@ -693,7 +713,7 @@ class Content < ActiveRecord::Base
             g.tag!("tns:feature") do |h|
               h.tag!("tns:name", "IMAGE", "type"=>"xs:string")
               if images.present?
-                g.tag!("tns:value", images.first.image.url, "type"=>"xs:string")
+                g.tag!("tns:value", primary_image.image.url, "type"=>"xs:string")
               elsif publication.images.present?
                 g.tag!("tns:value", publication.images.first.image.url, "type"=>"xs:string")
               end
@@ -1024,6 +1044,7 @@ class Content < ActiveRecord::Base
       [:gsub!, [/<\/div><div[^>]*>/, "\n\n"]], # replace divs with new lines
     ]
 
+    # fix state abbreviations from N.y. to N.Y.
     c = raw_content.gsub(/[[:alpha:]]\.[[:alpha:]]\./) {|s| s.upcase }
     pre_sanitize_filters.each {|f| c.send f[0], *f[1]}
     doc =  Nokogiri::HTML.parse(c)
@@ -1131,7 +1152,10 @@ class Content < ActiveRecord::Base
 
     c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "<br />")
     c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
-    Rinku.auto_link c
+
+    # remove non-UTF-8 content - in Rails 3 you have to transcode to some other then recode to UTF-8
+    # in Rails 4, use ActiveSupport's scrub()
+    Rinku.auto_link c.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
   end
 
 
@@ -1145,6 +1169,7 @@ class Content < ActiveRecord::Base
     return if wp_images.empty?
 
     # our code already displays the first image, so just pull it from the content.
+    #TODO should there be some sync with primary_image here?
     wp_images.first.remove()
 
     bucket = Figaro.env.aws_bucket_name
