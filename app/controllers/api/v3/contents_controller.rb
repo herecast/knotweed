@@ -2,6 +2,7 @@ module Api
   module V3
     class ContentsController < ApiController
       before_filter :check_logged_in!, only:  [:moderate, :dashboard]
+      after_filter :track_moderate, only: :moderate
       # pings the DSP to retrieve a related banner ad for a generic
       # content type.
       def related_promotion
@@ -152,6 +153,12 @@ module Api
           pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
         end
         sort_parts.join(',')
+      end
+
+      private
+
+      def track_moderate
+        @tracker.track(nil, 'moderateContent', nil, Hash.new)
       end
 
     end
