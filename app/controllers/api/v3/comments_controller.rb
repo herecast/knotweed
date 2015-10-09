@@ -78,21 +78,12 @@ module Api
 
         def track
           props = {}
-          #nav props
-          props['channelName'] = @comment.try(:channel_type)
-          props['url'] = url_for
+          props.merge! @tracker.navigation_properties(@comment.try(:channel_type),nil,url_for, params)
 
-          #content
-          props['contentId'] = @comment.try(:id)
-          props['contentChannel'] = @comment.try(:channel_type)
-          props['contentLocation'] = @comment.try(:location)
-          props['contentPubdate'] = @comment.try(:pubdate)
-          props['contentTitle'] = @comment.try(:title)
-          props['contentPublication'] = @comment.try(:publication).try(:name)
+          props.merge! @tracker.content_properties(@comment)
 
-          #content creation
-          props['submitType'] = 'create'
-          props['inReplyTo'] = @comment.try(:parent).try(:id)
+          props.merge! @tracker.content_creation_properties('create', @comment.try(:parent).try(:id))
+
           @tracker.track(@current_api_user.try(:id), 'submitContent', @current_api_user, props)
         end
     end
