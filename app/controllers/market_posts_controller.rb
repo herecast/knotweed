@@ -1,5 +1,6 @@
 class MarketPostsController < ApplicationController
   after_filter :track_index, only: :index
+  after_filter :track_show, only: :show
 
   def index
     # if posted, save to session
@@ -24,6 +25,8 @@ class MarketPostsController < ApplicationController
   def show
     flash.keep
     redirect_to edit_market_post_path(params[:id])
+    #instance variable needed at least for track_show
+    @market = MarketPost.find(params[:id])
   end
 
   def new
@@ -117,6 +120,12 @@ class MarketPostsController < ApplicationController
     props.merge! @tracker.navigation_properties('Market', 'market.index', url_for, params)
     props.merge! @tracker.search_properties(params)
     @tracker.track(@current_api_user.try(:id), 'searchContent', @current_api_user, props)
+  end
+
+  def track_show
+    props = {}
+    props.merge! @tracker.navigation_properties('Market', 'market.show', url_for, params) 
+    props.merge! @tracker.content_properties(@market)
   end
 
 end
