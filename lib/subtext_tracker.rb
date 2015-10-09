@@ -32,7 +32,7 @@ class SubtextTracker < Mixpanel::Tracker
     props['category'] = params[:category] 
     props['start_date'] = params[:start_date]
     props['end_date'] = params[:end_date]
-    if params[:location]
+    if params[:location].present?
       props['location'] = Location.find(params[:location]).name
     end
     props['query'] = params[:query]
