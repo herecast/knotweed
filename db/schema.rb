@@ -36,9 +36,9 @@ ActiveRecord::Schema.define(:version => 20151008182256) do
     t.date    "DATE_EDITED"
   end
 
-  add_index "usgs_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
-  add_index "usgs_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
-  add_index "usgs_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
+  add_index "USGS_pop", ["FEATURE_ID"], :name => "FEATURE_ID"
+  add_index "USGS_pop", ["FEATURE_NAME"], :name => "FEATURE_NAME"
+  add_index "USGS_pop", ["STATE_ALPHA"], :name => "STATE_ALPHA"
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"

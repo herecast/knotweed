@@ -165,6 +165,14 @@ class Content < ActiveRecord::Base
     image
   end
 
+  def primary_image=(image)
+    # make sure all other images are secondary
+    self.images.each do |i|
+      i.update_attribute(:primary, false) unless i == image
+    end
+    # set up primary image
+    image.update_attribute(:primary, true)
+  end
 
   # holdover from when we used to use processed_content by preference.
   # Seemed easier to keep this method, but just make it point directly to raw content 
@@ -383,7 +391,6 @@ class Content < ActiveRecord::Base
 
     # delete any now-unused images
     db_images = content.images.map{|i| i[:image]}
-    #new_content_images = special_attrs['images'].map{|i| File.basename(i['image'])}
     unused_images = db_images - new_content_images
     unused_images.each do |img|
       content.images.where(image: img).first.destroy
@@ -392,22 +399,27 @@ class Content < ActiveRecord::Base
     content
   end
 
-  def create_or_update_image(url, caption, credit, primary)
+  def create_or_update_image(url, caption, credit, primary=nil)
     image_attrs = {
         remote_image_url: url,
         source_url: url
     }
     image_attrs[:caption] = caption if caption.present?
     image_attrs[:credit] = credit if credit.present?
-    image_attrs[:primary] = primary if primary.present?
+    #image_attrs[:primary] = primary if primary.present?
 
     # do we already have this image?
     current_image = Image.find_by_imageable_id_and_source_url(id, url)
     if current_image.present?
-      images.update(current_image.id, image_attrs)
+      new_image = images.update(current_image.id, image_attrs)
     else
-      images.create(image_attrs)
+      new_image = images.create(image_attrs)
     end
+
+    if primary.present?
+      self.primary_image = new_image
+    end
+    new_image
   end
 
   # check that doc validates our xml requirements
