@@ -30,8 +30,8 @@ class SubtextTracker < Mixpanel::Tracker
   def search_properties(params)
     props = {}
     props['category'] = params[:category] 
-    props['start_date'] = params[:start_date]
-    props['end_date'] = params[:end_date]
+    props['searchStartDate'] = params[:start_date]
+    props['searchEndDate'] = params[:end_date]
     if params[:location].present?
       props['location'] = Location.find(params[:location]).name
     end
@@ -57,6 +57,13 @@ class SubtextTracker < Mixpanel::Tracker
     props = {}
     props['bannerAdId'] = banner.try(:id)
     props['bannerUrl'] = banner.try(:redirect_url)
+    props
+  end
+
+  def content_creation_properties(submitType, inReplyTo)
+    props = {}
+    props['submitType'] = submitType
+    props['inReplyTo'] = inReplyTo
     props
   end
 end
