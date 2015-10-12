@@ -90,6 +90,7 @@ describe Api::V3::CommentsController do
 
   describe 'POST create' do
     before do
+      mixpanel_track_stub
       @event = FactoryGirl.create :event
       @user = FactoryGirl.create :user
       api_authenticate user: @user

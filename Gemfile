@@ -85,6 +85,7 @@ group :pry do
   gem "pry"
   gem "pry-rails"
   gem "pry-debugger"
+  gem 'debugger'
 end
 
 gem "turbolinks"
@@ -112,7 +113,6 @@ gem "rdf"
 gem 'enumerize'
 gem 'front_end_builds'
 gem 'prerender_rails'
-gem 'debugger', :group => [:development, :test]
 gem 'newrelic_rpm'
 
 gem 'forecast_io'
