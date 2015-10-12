@@ -201,22 +201,22 @@ module Api
         props.merge! @tracker.navigation_properties('Market', 'market.show', url_for, params) 
         props.merge! @tracker.content_properties(@market)
       end
-    end
 
-    def track_create
-      props = {}
-      props.merge! @tracker.content_properties(@market_post)
-      props.merge! @tracker.content_creation('create')
-      @tracker.track(@current_api_user.try(:id), 'submitContent', @current_api_user, props)
-    end
+      def track_create
+        props = {}
+        props.merge! @tracker.content_properties(@market_post)
+        props.merge! @tracker.content_creation_properties('create')
+        @tracker.track(@current_api_user.try(:id), 'submitContent', @current_api_user, props)
+      end
 
-    def track_udpate
-      props = {}
-      props.merge! @tracker.navigation_properties('Market', 'market.index', url_for, params)
-      props.merge! @tracker.content_properties(@market_post)
-      props.merge! @tracker.content_creation_properties('edit')
-      @tracker.track(@current_api_user.try(:id), 'submitContent', @current_api_user, props)
-    end
+      def track_update
+        props = {}
+        props.merge! @tracker.navigation_properties('Market', 'market.index', url_for, params)
+        props.merge! @tracker.content_properties(@market_post)
+        props.merge! @tracker.content_creation_properties('edit')
+        @tracker.track(@current_api_user.try(:id), 'submitContent', @current_api_user, props)
+      end
 
+    end
   end
 end
