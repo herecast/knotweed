@@ -1169,7 +1169,7 @@ class Content < ActiveRecord::Base
 
     # remove non-UTF-8 content - in Rails 3 you have to transcode to some other then recode to UTF-8
     # in Rails 4, use ActiveSupport's scrub()
-    Rinku.auto_link c.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+    Rinku.auto_link c #.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
   end
 
 
