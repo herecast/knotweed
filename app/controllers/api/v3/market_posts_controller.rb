@@ -5,7 +5,7 @@ module Api
       after_filter :track_index, only: :index
       after_filter :track_show, only: :show
       after_filter :track_create, only: :create
-      after_fitler :track_update, only: :update
+      after_filter :track_update, only: :update
 
       def index
         opts = {}
