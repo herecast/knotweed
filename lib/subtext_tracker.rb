@@ -60,7 +60,7 @@ class SubtextTracker < Mixpanel::Tracker
     props
   end
 
-  def content_creation_properties(submitType, inReplyTo)
+  def content_creation_properties(submitType, inReplyTo=nil)
     props = {}
     props['submitType'] = submitType
     props['inReplyTo'] = inReplyTo

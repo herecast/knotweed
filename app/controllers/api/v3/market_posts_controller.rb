@@ -4,6 +4,8 @@ module Api
       before_filter :check_logged_in!, only: [:create, :update]
       after_filter :track_index, only: :index
       after_filter :track_show, only: :show
+      after_filter :track_create, only: :create
+      after_fitler :track_update, only: :update
 
       def index
         opts = {}
@@ -200,5 +202,21 @@ module Api
         props.merge! @tracker.content_properties(@market)
       end
     end
+
+    def track_create
+      props = {}
+      props.merge! @tracker.content_properties(@market_post)
+      props.merge! @tracker.content_creation('create')
+      @tracker.track(@current_api_user.try(:id), 'submitContent', @current_api_user, props)
+    end
+
+    def track_udpate
+      props = {}
+      props.merge! @tracker.navigation_properties('Market', 'market.index', url_for, params)
+      props.merge! @tracker.content_properties(@market_post)
+      props.merge! @tracker.content_creation_properties('edit')
+      @tracker.track(@current_api_user.try(:id), 'submitContent', @current_api_user, props)
+    end
+
   end
 end
