@@ -200,6 +200,7 @@ module Api
         props = {}
         props.merge! @tracker.navigation_properties('Market', 'market.show', url_for, params) 
         props.merge! @tracker.content_properties(@market)
+        @tracker.track(@current_api_user.try(:id),'selectContent', @current_api_user, props)
       end
 
       def track_create
