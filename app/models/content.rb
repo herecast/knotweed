@@ -1182,8 +1182,7 @@ class Content < ActiveRecord::Base
     wp_images = doc.css('img')
     return if wp_images.empty?
 
-    # our code already displays the first image, so just pull it from the content.
-    #TODO should there be some sync with primary_image here?
+    # our code already displays the primary image, so just pull it from the content.
     wp_images.first.remove()
 
     bucket = Figaro.env.aws_bucket_name

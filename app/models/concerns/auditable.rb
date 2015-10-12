@@ -10,8 +10,6 @@
 #   include Auditable
 module Auditable
 
-  attr_accessor :created_by, :updated_by
-
   def self.included(base)
     base.extend ClassMethods
     base.class_eval do
