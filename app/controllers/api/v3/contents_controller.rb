@@ -158,7 +158,7 @@ module Api
       private
 
       def track_moderate
-        @tracker.track(nil, 'moderateContent', nil, Hash.new)
+        @tracker.track(@current_api_user, 'moderateContent', @current_api_user, Hash.new)
       end
 
     end
