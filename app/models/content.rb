@@ -376,7 +376,7 @@ class Content < ActiveRecord::Base
     if special_attrs.has_key? "image"
       # CarrierWave validation should take care of validating this for us
       content.create_or_update_image(special_attrs['image'], special_attrs['imagecaption'], special_attrs['imagecredit'], special_attrs['primary'])
-      new_content_images = File.basename(special_attrs['image'])
+      new_content_images = [File.basename(special_attrs['image'])]
     end
 
     # handle multiple images (initially from Wordpress import parser)
@@ -391,9 +391,11 @@ class Content < ActiveRecord::Base
 
     # delete any now-unused images
     db_images = content.images.map{|i| i[:image]}
-    unused_images = db_images - new_content_images
-    unused_images.each do |img|
-      content.images.where(image: img).first.destroy
+    unless db_images.empty?
+      unused_images = db_images - new_content_images
+      unused_images.each do |img|
+        content.images.where(image: img).first.destroy
+      end
     end
 
     content
