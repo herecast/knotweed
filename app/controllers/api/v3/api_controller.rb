@@ -65,6 +65,7 @@ module Api
 
       def init_mixpanel
         @tracker ||= SubtextTracker.new(Figaro.env.mixpanel_api_token)
+        @mixpanel_distinct_id = current_user.try(:id) || request.headers['Mixpanel-Distinct-Id']
       end
 
     end

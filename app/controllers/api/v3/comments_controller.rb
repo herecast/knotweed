@@ -84,7 +84,7 @@ module Api
 
           props.merge! @tracker.content_creation_properties('create', @comment.try(:parent).try(:id))
 
-          @tracker.track(@current_api_user.try(:id), 'submitContent', @current_api_user, props)
+          @tracker.track(@mixpanel_distinct_id, 'submitContent', @current_api_user, props)
         end
     end
   end

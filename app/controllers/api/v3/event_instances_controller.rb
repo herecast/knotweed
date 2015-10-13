@@ -94,7 +94,7 @@ module Api
         props.merge! @tracker.navigation_properties('Event','event.index', url_for, params)
         props.merge! @tracker.search_properties(params)
 
-        @tracker.track(@current_api_user.try(:id), 'searchContent', @current_api_user, props)
+        @tracker.track(@mixpanel_distinct_id, 'searchContent', @current_api_user, props)
       end
 
       def track_show
@@ -102,7 +102,7 @@ module Api
         props.merge! @tracker.navigation_properties('Event','event.index', url_for, params)
         props.merge! @tracker.content_properties(@event_instance.event.content)
 
-        @tracker.track(@current_api_user.try(:id), 'selectContent', @current_api_user, props)
+        @tracker.track(@mixpanel_distinct_id, 'selectContent', @current_api_user, props)
       end
 
     end
