@@ -18,7 +18,8 @@ class SessionsController < Devise::SessionsController
 
   def track
     @tracker ||= SubtextTracker.new(Figaro.env.mixpanel_api_token)
-    @tracker.track(current_user.try(:id), 'signIn', current_user, Hash.new)
+    @mixpanel_distinct_id = current_user.try(:id) || request.headers['Mixpanel-Distinct-Id']
+    @tracker.track(@mixpanel_distinct_id, 'signIn', current_user, Hash.new)
   end
 
 end

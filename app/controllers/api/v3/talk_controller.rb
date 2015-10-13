@@ -111,21 +111,21 @@ module Api
         props = {}
         props.merge! @tracker.navigation_properties('Talk', 'talk.index', url_for, params)
         props.merge! @tracker.search_properties(params)
-        @tracker.track(@current_api_user.try(:id), 'searchContent', @current_api_user, props)
+        @tracker.track(@mixpanel_distinct_id, 'searchContent', @current_api_user, props)
       end
 
       def track_show
         props = {}
         props.merge! @tracker.navigation_properties('Talk', 'talk.show', url_for, params)
         props.merge! @tracker.content_properties(@talk)
-        @tracker.track(@current_api_user.try(:id), 'selectContent', @current_api_user, props)
+        @tracker.track(@mixpanel_distinct_id, 'selectContent', @current_api_user, props)
       end
 
       def track_create
         props = {}
         props.merge! @tracker.content_properties(@talk)
         props.merge! @tracker.content_creation_properties('create',nil)
-        @tracker.track(@current_api_user.try(:id), 'submitContent', @current_api_user, props)
+        @tracker.track(@mixpanel_distinct_id, 'submitContent', @current_api_user, props)
       end
     end
 

@@ -158,7 +158,7 @@ module Api
       private
 
       def track_moderate
-        @tracker.track(@current_api_user, 'moderateContent', @current_api_user, Hash.new)
+        @tracker.track(@mixpanel_distinct_id, 'moderateContent', @current_api_user, Hash.new)
       end
 
     end
