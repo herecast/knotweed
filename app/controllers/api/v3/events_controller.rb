@@ -169,7 +169,7 @@ module Api
         props.merge! @tracker.navigation_properties('Event', 'event.create', url_for, params)
         props.merge! @tracker.content_properties(@event.content)
         props.merge! @tracker.content_creation_properties('create', nil)
-        @tracker.track(@current_api_user.try(:id), 'submitContent', @current_api_user, props)
+        @tracker.track(@mixpanel_distinct_id, 'submitContent', @current_api_user, props)
       end
 
     end

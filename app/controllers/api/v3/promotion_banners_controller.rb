@@ -28,7 +28,7 @@ module Api
         props.merge! @tracker.content_properties(@content)
         props.merge! @tracker.banner_properties(@banner)
 
-        @tracker.track(@current_api_user.try(:id), 'clickBannerAd', @current_api_user, props)
+        @tracker.track(@mixpanel_distinct_id, 'clickBannerAd', @current_api_user, props)
       end
 
     end
