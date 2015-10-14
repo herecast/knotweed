@@ -153,6 +153,7 @@ describe Api::V3::EventInstancesController do
     before do
       @count = 3
       FactoryGirl.create_list :event, @count
+      index
     end
 
     subject { get :index, format: :json }
