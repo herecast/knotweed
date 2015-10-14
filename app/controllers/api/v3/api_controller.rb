@@ -31,6 +31,7 @@ module Api
         elsif params[:consumer_app_uri].present?
           @requesting_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
         end
+        ConsumerApp.current = @requesting_app if @requesting_app.present?
         @repository = @requesting_app.repository if @requesting_app.present?
       end
 
