@@ -1,5 +1,10 @@
 production:
-  pid_file: /var/www/knotweed-admin-stresstest/shared/tmp/pids/searchd.pid
-  indices_location: /var/www/knotweed-admin-stresstest/shared/db/sphinx
-  configuration_file: /var/www/knotweed-admin-stresstest/shared/config/production.sphinx.conf
-  binlog_path: /var/www/knotweed-admin-stresstest/shared/binlog
+  pid_file: /var/www/knotweed-admin/shared/tmp/pids/searchd.pid
+  indices_location: /var/www/knotweed-admin/shared/db/sphinx
+  configuration_file: /var/www/knotweed-admin/shared/config/production.sphinx.conf
+  binlog_path: ""
+  query_log_format: sphinxql # stage/qa only
+  dist_threads: 2
+  mem_limit: 1024M
+  morphology: stem_en
+  mysql41: 9608 # port of choice
