@@ -15,7 +15,6 @@ class RegistrationsController < Devise::RegistrationsController
         user.save
         # mixpanel aliasing
         if request.headers['Mixpanel-Distinct-Id'].present?
-          logger.debug "aliasing #{user.id} to #{request.headers['Mixpanel-Distinct-Id']}"
           tracker = SubtextTracker.new(Figaro.env.mixpanel_api_token)
           tracker.alias(user.id, request.headers['Mixpanel-Distinct-Id'])
           tracker.people.set(user.id, {
