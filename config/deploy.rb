@@ -11,7 +11,6 @@ ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 set :rvm_ruby_version, '1.9.3-p545@knotweed'
 
 set :delayed_job_args, "-n 4"
-set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
 
 # for parsers submodule
 set :git_strategy, SubmoduleStrategy

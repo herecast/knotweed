@@ -56,7 +56,6 @@ gem 'delayed_job_active_record'
 gem 'daemons'
 gem 'american_date'
 gem 'ruby-gmail' 
-gem 'whenever'
 
 #gem 'bullet', group: :development
 gem 'mail'
