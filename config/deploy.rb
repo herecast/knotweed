@@ -11,7 +11,6 @@ ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 set :rvm_ruby_version, '1.9.3-p545@knotweed'
 
 set :delayed_job_args, "-n 4"
-set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
 
 # for parsers submodule
 set :git_strategy, SubmoduleStrategy
@@ -57,14 +56,11 @@ namespace :deploy do
 
   after :publishing, :restart
 
-  task :rebuild_sphinx_indices do
-    skip_rebuild = fetch(:skip_sphinx_rebuild, false)
-    unless skip_rebuild
-      invoke 'thinking_sphinx:rebuild'
-    end
+  task :reconfigure_sphinx do
+    invoke 'thinking_sphinx:configure'
   end
 
-  after :publishing, :rebuild_sphinx_indices
+  after :publishing, :reconfigure_sphinx
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do

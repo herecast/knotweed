@@ -56,7 +56,6 @@ gem 'delayed_job_active_record'
 gem 'daemons'
 gem 'american_date'
 gem 'ruby-gmail' 
-gem 'whenever'
 
 #gem 'bullet', group: :development
 gem 'mail'
@@ -100,6 +99,7 @@ gem 'sparql-client', git: "git@github.com:ruby-rdf/sparql-client.git", branch: "
 gem 'chronic'
 gem 'geocoder'
 gem 'thinking-sphinx', "~> 3.1.4"
+gem 'ts-datetime-delta', '~> 2.0.2', require: 'thinking_sphinx/deltas/datetime_delta'
 gem 'jbuilder'
 gem 'mixpanel_client'
 gem 'mixpanel-ruby', '1.4.0' # official ruby mixpanel client. later versions need ruby > 2.0

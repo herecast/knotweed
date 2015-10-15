@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151001175542) do
+ActiveRecord::Schema.define(:version => 20151014184754) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -274,12 +274,11 @@ ActiveRecord::Schema.define(:version => 20151001175542) do
     t.string   "channel_type"
     t.integer  "channel_id"
     t.integer  "root_content_category_id"
-    t.boolean  "delta",                    :default => true,  :null => false
+    t.integer  "created_by"
+    t.integer  "updated_by"
     t.integer  "view_count",               :default => 0
     t.integer  "comment_count",            :default => 0
     t.integer  "commenter_count",          :default => 0
-    t.integer  "created_by"
-    t.integer  "updated_by"
     t.integer  "banner_click_count",       :default => 0
   end
 
@@ -300,6 +299,21 @@ ActiveRecord::Schema.define(:version => 20151001175542) do
   add_index "contents", ["root_content_category_id"], :name => "index_contents_on_root_content_category_id"
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["title"], :name => "title"
+
+  create_table "contents_NT", :force => true do |t|
+    t.string   "title"
+    t.string   "subtitle"
+    t.string   "authors"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "issue_id"
+    t.integer  "location_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.boolean  "reviewed",       :default => false
+    t.integer  "lupdate_by"
+    t.integer  "publication_id"
+  end
 
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
@@ -324,6 +338,10 @@ ActiveRecord::Schema.define(:version => 20151001175542) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
+
+  create_table "contents_id", :force => true do |t|
+    t.string "category", :limit => 128
+  end
 
   create_table "contents_locations", :force => true do |t|
     t.integer  "content_id"
@@ -406,9 +424,8 @@ ActiveRecord::Schema.define(:version => 20151001175542) do
     t.datetime "end_date"
     t.string   "subtitle_override"
     t.text     "description_override"
-    t.datetime "created_at",                             :null => false
-    t.datetime "updated_at",                             :null => false
-    t.boolean  "delta",                :default => true, :null => false
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
   end
 
   add_index "event_instances", ["end_date"], :name => "index_event_instances_on_end_date"
@@ -715,6 +732,13 @@ ActiveRecord::Schema.define(:version => 20151001175542) do
     t.text     "description"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
+  end
+
+  create_table "promote_options", :force => true do |t|
+    t.string  "promo_type",            :limit => 128
+    t.string  "name",                  :limit => 128
+    t.string  "reverse_publish_email", :limit => 128
+    t.boolean "active",                               :default => true
   end
 
   create_table "promotion_banners", :force => true do |t|
