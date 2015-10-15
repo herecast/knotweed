@@ -33,6 +33,12 @@ describe Api::V3::DashboardContentSerializer do
       end
 
     end
-
   end
+
+  context 'this is news' do
+    it 'should return content_type of "News"' do
+      serialized_object['content_type'].should eq('News')
+    end
+  end
+
 end
