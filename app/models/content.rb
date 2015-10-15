@@ -247,7 +247,8 @@ class Content < ActiveRecord::Base
       else
         key = k
       end
-      if ['image', 'images', 'content_category', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories', 'source_field'].include? key
+      if ['image', 'images', 'content_category', 'location', 'source', 'edition', 'imagecaption', 'imagecredit',
+          'in_reply_to', 'categories', 'source_field', 'user_id'].include? key
         special_attrs[key] = v if v.present?
       elsif key == 'listserv_locations' || key == 'content_locations'
         data['location_ids'] = Location.get_ids_from_location_strings(v)
@@ -365,7 +366,10 @@ class Content < ActiveRecord::Base
 
       existing_content.locations += content.locations
       content = existing_content
+    else
+      content.created_by = User.find_by_id(special_attrs['user_id']) if special_attrs.has_key? 'user_id'
     end
+    content.updated_by = User.find_by_id(special_attrs['user_id']) if special_attrs.has_key? 'user_id'
 
     content.save!
 

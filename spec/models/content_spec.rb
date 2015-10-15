@@ -189,6 +189,8 @@ describe Content do
         "source_content_id" => "1234567"
       }
       google_logo_stub
+      google_logo2_stub
+      google_logo3_stub
     end
 
     after do
@@ -374,6 +376,50 @@ describe Content do
       image.source_url.should== "https://www.google.com/images/srpr/logo11w.png"
     end
 
+    describe 'should handle created_by and updated_by correctly' do
+
+      it 'should set created_by and updated_by correctly for new imported content' do
+        # @user created in auditable_shared_examples.rb included using include_examples 'Auditable', Content
+        @base_data['user_id'] = @user.id
+        c = Content.create_from_import_job(@base_data)
+        c.created_by.should == @user
+        c.updated_by.should == @user
+      end
+
+    end
+    # check primary image handling
+    describe 'should handle primary image correctly' do
+      before do
+        @base_data['images'] = [{'image' => 'https://www.google.com/images/srpr/logo11w.png'},
+                                {'image' => 'https://www.google.com/images/srpr/logo9w.png'},
+                                {'image' => 'https://www.google.com/images/srpr/logo7w.png'}]
+      end
+
+      it 'should have a primary image' do
+        c = Content.create_from_import_job(@base_data)
+        c.images.length.should == @base_data['images'].count
+        image = c.primary_image
+        image.image.url.present?.should == true
+        image.source_url.should== 'https://www.google.com/images/srpr/logo11w.png'
+      end
+
+      it 'should have the correct primary image' do #not necessarily the first
+        c = Content.create_from_import_job(@base_data)
+        c.images.length.should == @base_data['images'].count
+        c.primary_image = c.images.last
+        c.reload
+        image = c.primary_image
+        image.image.url.present?.should == true
+        image.source_url.should== 'https://www.google.com/images/srpr/logo7w.png'
+      end
+
+      it 'should have only one primary image' do
+        c = Content.create_from_import_job(@base_data)
+        c.images.length.should == @base_data['images'].count
+        c.primary_image = c.images.last
+        c.images.where(primary: true).count.should == 1
+      end
+    end
   end
 
   describe "set guid if not present" do

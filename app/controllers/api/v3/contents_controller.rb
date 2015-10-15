@@ -128,7 +128,8 @@ module Api
         params[:sort] ||= 'pubdate DESC'
         params[:page] ||= 1
         params[:per_page] ||= 12
-        @contents = Content.where(created_by: @current_api_user, channel_type: ["Event", "MarketPost", "Comment"]).
+
+        @contents = Content.where(created_by: @current_api_user). #, channel_type: ["Event", "MarketPost", "Comment"]).
           order(sanitize_sort_parameter(params[:sort])).
           page(params[:page].to_i).per(params[:per_page].to_i)
 
