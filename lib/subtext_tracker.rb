@@ -11,10 +11,10 @@ class SubtextTracker < Mixpanel::Tracker
       user_props['userEmail'] = user.try(:email)
       user_props['userCommunity'] = user.try(:location).try(:name)
       user_props['testGroup'] = user.try(:test_group)
-      #TODO  user_props['un_registered_id'] = ''
 
       properties.merge! user_props
     end
+
     orig_track(distinct_id, event, properties)
   end
 
@@ -60,7 +60,7 @@ class SubtextTracker < Mixpanel::Tracker
     props
   end
 
-  def content_creation_properties(submitType, inReplyTo)
+  def content_creation_properties(submitType, inReplyTo=nil)
     props = {}
     props['submitType'] = submitType
     props['inReplyTo'] = inReplyTo

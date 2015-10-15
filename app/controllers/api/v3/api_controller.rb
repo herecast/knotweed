@@ -31,6 +31,7 @@ module Api
         elsif params[:consumer_app_uri].present?
           @requesting_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
         end
+        ConsumerApp.current = @requesting_app if @requesting_app.present?
         @repository = @requesting_app.repository if @requesting_app.present?
       end
 
@@ -65,6 +66,7 @@ module Api
 
       def init_mixpanel
         @tracker ||= SubtextTracker.new(Figaro.env.mixpanel_api_token)
+        @mixpanel_distinct_id = current_user.try(:id) || request.headers['Mixpanel-Distinct-Id']
       end
 
     end

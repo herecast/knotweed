@@ -86,9 +86,9 @@ ActiveRecord::Schema.define(:version => 20151008182256) do
     t.string   "city"
     t.string   "state"
     t.string   "zip"
-    t.string   "status"
     t.integer  "created_by"
     t.integer  "updated_by"
+    t.string   "status"
   end
 
   add_index "business_locations", ["created_by"], :name => "index_business_locations_on_created_by"
@@ -123,9 +123,9 @@ ActiveRecord::Schema.define(:version => 20151008182256) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer   "channel_id"
-    t.text      "category"
-    t.timestamp "created_at", :null => false
+    t.integer  "channel_id"
+    t.text     "category"
+    t.datetime "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"

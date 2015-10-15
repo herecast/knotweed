@@ -93,7 +93,6 @@ describe Api::V3::EventInstancesController do
     end
   end
 =end
-  before { mixpanel_track_stub }
 
   describe 'GET show' do
     before do

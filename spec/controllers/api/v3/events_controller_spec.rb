@@ -3,7 +3,6 @@ require 'spec_helper'
 describe Api::V3::EventsController do
 
   before do
-    mixpanel_track_stub
     @venue = FactoryGirl.create :business_location
     @current_user = FactoryGirl.create :user
     @listserv = FactoryGirl.create :listserv

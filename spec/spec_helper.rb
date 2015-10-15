@@ -67,6 +67,7 @@ RSpec.configure do |config|
   end
   config.before(:each) do
     DatabaseCleaner.start
+    mixpanel_track_stub
   end
   config.after(:each) do
     DatabaseCleaner.clean
