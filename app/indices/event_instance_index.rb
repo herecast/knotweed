@@ -1,7 +1,7 @@
 ThinkingSphinx::Index.define(:event_instance, 
   with: :active_record,
   delta: ThinkingSphinx::Deltas::DatetimeDelta,
-  delta_options: { threshold: 80.seconds }
+  delta_options: { threshold: 1.hour } 
 ) do
   # fields
   indexes event.content.raw_content, as: :content
