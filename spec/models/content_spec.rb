@@ -418,6 +418,18 @@ describe Content do
         @c.primary_image = @c.images.last
         @c.images.where(primary: true).count.should eq 1
       end
+
+      it 'should delete unused images' do
+        @c.images.length.should eq @base_data['images'].count
+        @c.images.find_by_image('logo11w.png').should_not be_nil
+        @base_data['images'] = [{'image' => 'https://www.google.com/images/srpr/logo7w.png'},
+                                {'image' => 'https://www.google.com/images/srpr/logo9w.png'}]
+        @c = Content.create_from_import_job(@base_data)
+        @c.primary_image = @c.images.last
+        @c.images.length.should eq 2
+        @c.primary_image.source_url.should eq 'https://www.google.com/images/srpr/logo9w.png'
+        @c.images.find_by_image('logo11w.png').should be_nil
+      end
     end
   end
 

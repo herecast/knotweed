@@ -168,7 +168,7 @@ class Content < ActiveRecord::Base
   def primary_image=(image)
     # make sure all other images are secondary
     images.where(primary: true).each do |i|
-      i.update_attribute(:primary, false)
+      i.update_attribute(:primary, false) unless i == image
     end
     image.update_attribute(:primary, true)
   end
@@ -387,22 +387,16 @@ class Content < ActiveRecord::Base
     # handle multiple images (initially from Wordpress import parser)
     if special_attrs.has_key? 'images'
       # CarrierWave validation should take care of validating this for us
-      images = special_attrs['images']
-      images.each do | img |
+      imgs = special_attrs['images']
+      imgs.each do | img |
         content.create_or_update_image(img['image'], img['imagecaption'], img['imagecredit'], img['primary'])
       end
-      new_content_images = images.map{|i| File.basename(i['image'])}
+      new_content_images = imgs.map{|i| File.basename(i['image'])}
     end
 
-    # delete any now-unused images by getting the list of all the images that the database has
-    # associated with this content record (db_images), removing the ones that are currently in use
-    # new_content_images, and destroying the rest.
-    db_images = content.images.map{|i| i[:image]}
-    unless db_images.empty?
-      unused_images = db_images - new_content_images
-      unused_images.each do |img|
-        content.images.where(image: img).first.destroy
-      end
+    # delete any now-unused images
+    content.images.each do |i|
+      i.destroy unless new_content_images.include? i.image.filename
     end
 
     content
