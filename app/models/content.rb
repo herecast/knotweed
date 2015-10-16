@@ -167,11 +167,11 @@ class Content < ActiveRecord::Base
 
   def primary_image=(image)
     # make sure all other images are secondary
-    self.images.each do |i|
-      i.update_attribute(:primary, false) unless i == image
+    old_primary = primary_image
+    unless old_primary == image
+      old_primary.update_attribute(:primary, false)
+      image.update_attribute(:primary, true)
     end
-    # set up primary image
-    image.update_attribute(:primary, true)
   end
 
   # holdover from when we used to use processed_content by preference.
