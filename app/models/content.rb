@@ -367,12 +367,14 @@ class Content < ActiveRecord::Base
       existing_content.locations += content.locations
       content = existing_content
     else
-      content.created_by = User.find_by_id(special_attrs['user_id']) if special_attrs.has_key? 'user_id'
+      content.created_by = User.find_by_id(special_attrs['user_id'])
     end
-    content.updated_by = User.find_by_id(special_attrs['user_id']) if special_attrs.has_key? 'user_id'
+    content.updated_by = User.find_by_id(special_attrs['user_id'])
 
     content.save!
 
+    # this new_content_images array will contain a list of the images used in this content record
+    new_content_images = []
 
     # if the content saves, add any images that came in
     # this has to be down here, not in the special_attributes CASE statement
@@ -393,7 +395,9 @@ class Content < ActiveRecord::Base
       new_content_images = images.map{|i| File.basename(i['image'])}
     end
 
-    # delete any now-unused images
+    # delete any now-unused images by getting the list of all the images that the database has
+    # associated with this content record (db_images), removing the ones that are currently in use
+    # new_content_images, and destroying the rest.
     db_images = content.images.map{|i| i[:image]}
     unless db_images.empty?
       unused_images = db_images - new_content_images
@@ -412,7 +416,6 @@ class Content < ActiveRecord::Base
     }
     image_attrs[:caption] = caption if caption.present?
     image_attrs[:credit] = credit if credit.present?
-    #image_attrs[:primary] = primary if primary.present?
 
     # do we already have this image?
     current_image = Image.find_by_imageable_id_and_source_url(id, url)
