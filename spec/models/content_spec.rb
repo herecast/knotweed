@@ -393,31 +393,30 @@ describe Content do
         @base_data['images'] = [{'image' => 'https://www.google.com/images/srpr/logo11w.png'},
                                 {'image' => 'https://www.google.com/images/srpr/logo9w.png'},
                                 {'image' => 'https://www.google.com/images/srpr/logo7w.png'}]
+        @c = Content.create_from_import_job(@base_data)
+      end
+
+      it 'should have the right number of images' do
+        @c.images.length.should eq @base_data['images'].count
       end
 
       it 'should have a primary image' do
-        c = Content.create_from_import_job(@base_data)
-        c.images.length.should == @base_data['images'].count
-        image = c.primary_image
-        image.image.url.present?.should == true
-        image.source_url.should== 'https://www.google.com/images/srpr/logo11w.png'
+        image = @c.primary_image
+        image.image.url.present?.should be_true
+        image.source_url.should eq 'https://www.google.com/images/srpr/logo11w.png'
       end
 
       it 'should have the correct primary image' do #not necessarily the first
-        c = Content.create_from_import_job(@base_data)
-        c.images.length.should == @base_data['images'].count
-        c.primary_image = c.images.last
-        c.reload
-        image = c.primary_image
-        image.image.url.present?.should == true
-        image.source_url.should== 'https://www.google.com/images/srpr/logo7w.png'
+        @c.primary_image = @c.images.last
+        @c.reload
+        image = @c.primary_image
+        image.image.url.present?.should eq true
+        image.source_url.should eq 'https://www.google.com/images/srpr/logo7w.png'
       end
 
       it 'should have only one primary image' do
-        c = Content.create_from_import_job(@base_data)
-        c.images.length.should == @base_data['images'].count
-        c.primary_image = c.images.last
-        c.images.where(primary: true).count.should == 1
+        @c.primary_image = @c.images.last
+        @c.images.where(primary: true).count.should eq 1
       end
     end
   end
