@@ -8,5 +8,5 @@ RAILS_ROOT="$( cd ../.. && pwd)"
 LOG_FILE="$RAILS_ROOT/log/cron.log"
 
 echo "$(date): indexing delta indices" >> $LOG_FILE
-exec /usr/bin/indexer -c $RAILS_ROOT/config/production.sphinx.conf content_delta event_instance_delta --rotate >> $LOG_FILE
+/usr/bin/indexer -c $RAILS_ROOT/config/production.sphinx.conf content_delta event_instance_delta --rotate >> $LOG_FILE
 exit 0
