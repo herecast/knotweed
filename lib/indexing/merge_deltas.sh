@@ -5,7 +5,7 @@
 # is a mark that a full index is ongoing.
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-RAILS_ROOT="$( cd ../.. && pwd)"
+RAILS_ROOT="$SCRIPT_DIR/../.."
 LOG_FILE="$RAILS_ROOT/log/cron.log"
 
 if [ -f $RAILS_ROOT/tmp/indexing ]; then

@@ -4,7 +4,7 @@
 # Outputs to #{Rails.root}/log/cron.log.
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-RAILS_ROOT="$( cd ../.. && pwd)"
+RAILS_ROOT="$SCRIPT_DIR/../.."
 LOG_FILE="$RAILS_ROOT/log/cron.log"
 
 touch $RAILS_ROOT/tmp/indexing
