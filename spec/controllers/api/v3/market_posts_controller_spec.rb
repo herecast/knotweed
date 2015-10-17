@@ -17,6 +17,8 @@ describe Api::V3::MarketPostsController do
         locations: [@other_location], published: true
       FactoryGirl.create_list :content, 4, content_category: @market_cat, 
         locations: [@third_location], published: true
+      @old_post = FactoryGirl.create :content, content_category: @market_cat,
+        locations: [@default_location], published: true, pubdate: 40.days.ago
     end
 
     subject { get :index, format: :json }
@@ -24,6 +26,11 @@ describe Api::V3::MarketPostsController do
     it 'has 200 status code' do
       subject
       response.code.should eq('200')
+    end
+
+    it 'should not include market posts older than 30 days' do
+      subject
+      assigns(:market_posts).should_not include(@old_post)
     end
 
     it 'should allow querying by location_id' do

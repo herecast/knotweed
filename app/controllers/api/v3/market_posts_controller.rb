@@ -11,7 +11,9 @@ module Api
         opts = {}
         opts = { select: '*, weight()' }
         opts[:order] = 'pubdate DESC'
-        opts[:with] = {}
+        opts[:with] = {
+          pubdate: 30.days.ago
+        }
         opts[:conditions] = {}
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
