@@ -388,7 +388,17 @@ describe Content do
 
     end
     # check primary image handling
-    describe 'should handle primary image correctly' do
+    describe 'should handle primary images with NO images present' do
+      before do
+        @c = Content.create_from_import_job(@base_data)
+      end
+
+      it 'should not have a primary image' do
+        @c.primary_image.should be_nil
+      end
+    end
+
+    describe 'should handle primary image correctly with images present' do
       before do
         @base_data['images'] = [{'image' => 'https://www.google.com/images/srpr/logo11w.png'},
                                 {'image' => 'https://www.google.com/images/srpr/logo9w.png'},
