@@ -33,7 +33,9 @@ class SubtextTracker < Mixpanel::Tracker
     props['searchStartDate'] = params[:start_date]
     props['searchEndDate'] = params[:end_date]
     if params[:location].present?
-      props['location'] = Location.find(params[:location]).name
+      props['location'] = params[:location]
+    else
+      props['location'] = 'All Communities'
     end
     props['query'] = params[:query]
     props['publication'] = params[:publication]

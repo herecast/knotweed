@@ -1,4 +1,8 @@
-ThinkingSphinx::Index.define :content, :with => :active_record, delta: true do
+ThinkingSphinx::Index.define(:content, 
+  with: :active_record,
+  delta: ThinkingSphinx::Deltas::DatetimeDelta,
+  delta_options: { threshold: 1.hour }
+) do
   # fields
   indexes raw_content, as: :content
   indexes title

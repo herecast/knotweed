@@ -1,4 +1,8 @@
-ThinkingSphinx::Index.define :event_instance, :with => :active_record, delta: true do
+ThinkingSphinx::Index.define(:event_instance, 
+  with: :active_record,
+  delta: ThinkingSphinx::Deltas::DatetimeDelta,
+  delta_options: { threshold: 1.hour } 
+) do
   # fields
   indexes event.content.raw_content, as: :content
   indexes event.content.title, as: :title

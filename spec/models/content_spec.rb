@@ -62,6 +62,7 @@ describe Content do
       @in_index_event.content.content_category_id = @event_cat.id
       @in_index_event.content.save
       @not_in_index_event = FactoryGirl.create :content, content_category_id: @event_cat.id
+      index
     end
 
     it 'should not include unchannelized event category content' do

@@ -29,6 +29,7 @@ describe Api::V3::ContentsController do
         locations: [@other_location]
       FactoryGirl.create_list :content, 3, content_category: @tott_cat, 
         locations: [@other_location]
+      index
     end
 
     subject { get :index, format: :json }
