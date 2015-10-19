@@ -30,6 +30,7 @@ class ContentsController < ApplicationController
         .where(shared_conditions.reduce(&:or))
         .order("pubdate DESC").page(params[:page]).per(100)
       @contents = @contents.accessible_by(current_ability)
+      @content_categories = ContentCategory.accessible_by(current_ability)
     else
       @contents = []
     end
