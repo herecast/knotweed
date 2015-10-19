@@ -502,6 +502,7 @@ ActiveRecord::Schema.define(:version => 20151014184754) do
     t.datetime "created_at",                    :null => false
     t.datetime "updated_at",                    :null => false
     t.string   "source_url",     :limit => 400
+    t.boolean  "primary"
   end
 
   add_index "images", ["imageable_type", "imageable_id"], :name => "index_images_on_imageable_type_and_imageable_id"

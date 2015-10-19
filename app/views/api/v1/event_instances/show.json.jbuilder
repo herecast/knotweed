@@ -15,7 +15,7 @@ json.events [@event_instance] do |ei|
   json.partial! 'api/v1/business_locations/show', venue: ei.event.venue
 
   if ei.event.content.images.present?
-    json.image ei.event.content.images.first.image.url
+    json.image ei.event.content.primary_image.image.url
   end
 
   attrs.each{|attr| json.set! attr, ei.event.send(attr) }

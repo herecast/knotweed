@@ -6,7 +6,7 @@ json.contents @contents do |c|
   json.content c.sanitized_content
 
   if c.images.present?
-    json.image c.images.first.image.url
+    json.image c.primary_image.image.url
   end
   
   attrs.each{|attr| json.set! attr, c.send(attr) }

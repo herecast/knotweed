@@ -190,6 +190,8 @@ describe Content do
         "source_content_id" => "1234567"
       }
       google_logo_stub
+      google_logo2_stub
+      google_logo3_stub
     end
 
     after do
@@ -375,6 +377,69 @@ describe Content do
       image.source_url.should== "https://www.google.com/images/srpr/logo11w.png"
     end
 
+    describe 'should handle created_by and updated_by correctly' do
+
+      it 'should set created_by and updated_by correctly for new imported content' do
+        # @user created in auditable_shared_examples.rb included using include_examples 'Auditable', Content
+        @base_data['user_id'] = @user.id
+        c = Content.create_from_import_job(@base_data)
+        c.created_by.should == @user
+        c.updated_by.should == @user
+      end
+
+    end
+    # check primary image handling
+    describe 'should handle primary images with NO images present' do
+      before do
+        @c = Content.create_from_import_job(@base_data)
+      end
+
+      it 'should not have a primary image' do
+        @c.primary_image.should be_nil
+      end
+    end
+
+    describe 'should handle primary image correctly with images present' do
+      before do
+        @base_data['images'] = [{'image' => 'https://www.google.com/images/srpr/logo11w.png'},
+                                {'image' => 'https://www.google.com/images/srpr/logo9w.png'},
+                                {'image' => 'https://www.google.com/images/srpr/logo7w.png'}]
+        @c = Content.create_from_import_job(@base_data)
+      end
+
+      it 'should have the right number of images' do
+        @c.images.length.should eq @base_data['images'].count
+      end
+
+      it 'should have a primary image' do
+        image = @c.primary_image
+        image.image.url.present?.should be_true
+        image.source_url.should eq 'https://www.google.com/images/srpr/logo11w.png'
+      end
+
+      it 'should have the correct primary image' do #not necessarily the first
+        @c.primary_image = @c.images.last
+        @c.reload
+        image = @c.primary_image
+        image.image.url.present?.should eq true
+        image.source_url.should eq 'https://www.google.com/images/srpr/logo7w.png'
+      end
+
+      it 'should have only one primary image' do
+        @c.primary_image = @c.images.last
+        @c.images.where(primary: true).count.should eq 1
+      end
+
+      it 'should delete unused images' do
+        @c.images.length.should eq @base_data['images'].count
+        @c.images.find_by_image('logo11w.png').should_not be_nil
+        @base_data['images'] = [{'image' => 'https://www.google.com/images/srpr/logo7w.png'},
+                                {'image' => 'https://www.google.com/images/srpr/logo9w.png'}]
+        @c = Content.create_from_import_job(@base_data)
+        @c.images.length.should eq 2
+        @c.images.find_by_image('logo11w.png').should be_nil
+      end
+    end
   end
 
   describe "set guid if not present" do

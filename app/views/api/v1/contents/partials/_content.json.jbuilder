@@ -11,9 +11,9 @@ if content.channel_type == "Event"
 end
 
 if content.images.present?
-  json.image content.images.first.image.url
-  json.image_caption content.images.first.caption
-  json.image_credit content.images.first.credit
+  json.image content.primary_image.image.url
+  json.image_caption content.primary_image.caption
+  json.image_credit content.primary_image.credit
 end
 
 attrs.reject!{|a| without_attributes.include? a } if defined? without_attributes

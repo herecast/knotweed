@@ -157,6 +157,21 @@ class Content < ActiveRecord::Base
     end
   end
 
+  def primary_image
+    image = images.where(primary: true).first
+    if image.nil?
+      image = images.first
+    end
+    image
+  end
+
+  def primary_image=(image)
+    # make sure all other images are secondary
+    images.where(primary: true).each do |i|
+      i.update_attribute(:primary, false) unless i == image
+    end
+    image.update_attribute(:primary, true)
+  end
 
   # holdover from when we used to use processed_content by preference.
   # Seemed easier to keep this method, but just make it point directly to raw content 
@@ -231,7 +246,8 @@ class Content < ActiveRecord::Base
       else
         key = k
       end
-      if ['image', 'images', 'content_category', 'location', 'source', 'edition', 'imagecaption', 'imagecredit', 'in_reply_to', 'categories', 'source_field'].include? key
+      if ['image', 'images', 'content_category', 'location', 'source', 'edition', 'imagecaption', 'imagecredit',
+          'in_reply_to', 'categories', 'source_field', 'user_id'].include? key
         special_attrs[key] = v if v.present?
       elsif key == 'listserv_locations' || key == 'content_locations'
         data['location_ids'] = Location.get_ids_from_location_strings(v)
@@ -349,45 +365,63 @@ class Content < ActiveRecord::Base
 
       existing_content.locations += content.locations
       content = existing_content
+    else
+      content.created_by = User.find_by_id(special_attrs['user_id'])
     end
+    content.updated_by = User.find_by_id(special_attrs['user_id'])
 
     content.save!
 
+    # this new_content_images array will contain a list of the images used in this content record
+    new_content_images = []
 
     # if the content saves, add any images that came in
     # this has to be down here, not in the special_attributes CASE statement
     # because we don't want to create the images if the content doesn't save.
     if special_attrs.has_key? "image"
       # CarrierWave validation should take care of validating this for us
-      content.create_or_update_image(special_attrs['image'], special_attrs['imagecaption'], special_attrs['imagecredit'])
+      content.create_or_update_image(special_attrs['image'], special_attrs['imagecaption'], special_attrs['imagecredit'], special_attrs['primary'])
+      new_content_images = [File.basename(special_attrs['image'])]
     end
 
     # handle multiple images (initially from Wordpress import parser)
     if special_attrs.has_key? 'images'
       # CarrierWave validation should take care of validating this for us
-      images = special_attrs['images']
-      images.each do | img |
-        content.create_or_update_image(img['image'], img['imagecaption'], img['imagecredit'])
+      imgs = special_attrs['images']
+      imgs.each do | img |
+        content.create_or_update_image(img['image'], img['imagecaption'], img['imagecredit'], img['primary'])
       end
+      new_content_images = imgs.map{|i| File.basename(i['image'])}
+    end
+
+    # delete any now-unused images
+    content.images.each do |i|
+      i.destroy unless new_content_images.include? i.image.filename
     end
 
     content
   end
 
-  def create_or_update_image(url, caption, credit)
-    # do we already have this image?
-    current_image = Image.find_by_imageable_id_and_source_url(id, url)
+  def create_or_update_image(url, caption, credit, primary=nil)
     image_attrs = {
         remote_image_url: url,
         source_url: url
     }
     image_attrs[:caption] = caption if caption.present?
     image_attrs[:credit] = credit if credit.present?
+
+    # do we already have this image?
+    current_image = Image.find_by_imageable_id_and_source_url(id, url)
     if current_image.present?
-      images.update(current_image.id, image_attrs)
+      new_image = images.update(current_image.id, image_attrs)
     else
-      images.create(image_attrs)
+      new_image = images.create(image_attrs)
     end
+
+    if primary.present?
+      self.primary_image = new_image
+    end
+    new_image
   end
 
   # check that doc validates our xml requirements
@@ -693,7 +727,7 @@ class Content < ActiveRecord::Base
             g.tag!("tns:feature") do |h|
               h.tag!("tns:name", "IMAGE", "type"=>"xs:string")
               if images.present?
-                g.tag!("tns:value", images.first.image.url, "type"=>"xs:string")
+                g.tag!("tns:value", primary_image.image.url, "type"=>"xs:string")
               elsif publication.images.present?
                 g.tag!("tns:value", publication.images.first.image.url, "type"=>"xs:string")
               end
@@ -1024,6 +1058,7 @@ class Content < ActiveRecord::Base
       [:gsub!, [/<\/div><div[^>]*>/, "\n\n"]], # replace divs with new lines
     ]
 
+    # fix state abbreviations from N.y. to N.Y.
     c = raw_content.gsub(/[[:alpha:]]\.[[:alpha:]]\./) {|s| s.upcase }
     pre_sanitize_filters.each {|f| c.send f[0], *f[1]}
     doc =  Nokogiri::HTML.parse(c)
@@ -1131,7 +1166,10 @@ class Content < ActiveRecord::Base
 
     c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "<br />")
     c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
-    Rinku.auto_link c
+
+    # remove non-UTF-8 content - in Rails 3 you have to transcode to some other then recode to UTF-8
+    # in Rails 4, use ActiveSupport's scrub()
+    Rinku.auto_link c #.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
   end
 
 
@@ -1144,7 +1182,7 @@ class Content < ActiveRecord::Base
     wp_images = doc.css('img')
     return if wp_images.empty?
 
-    # our code already displays the first image, so just pull it from the content.
+    # our code already displays the primary image, so just pull it from the content.
     wp_images.first.remove()
 
     bucket = Figaro.env.aws_bucket_name

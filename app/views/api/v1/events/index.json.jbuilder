@@ -7,7 +7,7 @@ json.events @events do |e|
     json.content e.raw_content
 
     if e.images.present?
-      json.image e.images.first.image.url
+      json.image e.primary_image.image.url
     end
   end
 

@@ -35,7 +35,11 @@ module Api
       end
 
       def content_type
-        object.channel_type
+        if object.channel_type.nil?
+          'News'
+        else
+          object.channel_type
+        end
       end
 
       def published_at
