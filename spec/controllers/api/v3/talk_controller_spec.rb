@@ -17,6 +17,7 @@ describe Api::V3::TalkController do
         locations: [@other_location], published: true
       FactoryGirl.create_list :content, 4, content_category: @talk_cat, 
         locations: [@third_location], published: true
+      ThinkingSphinx::Test.index 'content_core', 'content_delta', 'location_core'
     end
 
     subject { get :index, format: :json }
