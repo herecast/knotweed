@@ -107,8 +107,6 @@
 
 :javascript
   $('.select_category').change(function() {
-    //alert(($this).siblings('#category_reviewed'));
-    var box = $(this).closest('#category_reviewed');
-    $(this).closest('#category_reviewed').prop('checked', true);
+    $(this).parent().next().find('input').prop('checked', true);
   });
   
