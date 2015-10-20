@@ -80,6 +80,7 @@ Knotweed::Application.routes.draw do
   get 'publish_jobs/:id/archive', to: 'publish_jobs#archive', as: :archive_publish_job
   
   match 'parsers/:id/parameters', to: "parsers#parameters"
+  post '/category_correction', to: 'contents#category_correction'
 
   # API
   namespace :api do
