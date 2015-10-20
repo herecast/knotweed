@@ -130,11 +130,4 @@ class Event < ActiveRecord::Base
     event_instances.where('start_date > ?', Time.zone.now).order('start_date ASC').first
   end
 
-  def set_event_instance_deltas
-    event_instances.each do |ei|
-      ei.delta = true
-      ei.save
-    end
-  end
-
 end
