@@ -204,9 +204,15 @@ class ContentsController < ApplicationController
   end
 
   def category_correction
+    debugger
     content = Content.find params.delete :content_id
-    @category_correction = CategoryCorrection.new(params)
+    old_cat = params.delete :old_category
+    new_cat = params.delete :new_category
+
+    @category_correction = CategoryCorrection.new
     @category_correction.content = content
+    @category_correction.old_category = old_cat 
+    @category_correction.new_category = new_cat
     # expect old category to be passed as a param but if not,
     # assign it the content's original category
     @category_correction.old_category = content.category unless @category_correction.old_category.present?

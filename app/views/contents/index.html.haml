@@ -104,24 +104,3 @@
           = link_to "edit", edit_content_path(c), class: "btn btn-mini btn-warning"
           - unless c.published?
             = link_to "delete", content_path(c), method: :delete, remote: true, confirm: "Are you sure?", class: "btn btn-mini btn-danger"
-
-:javascript
-  var old_category;
-
-  $('.select_category').on('focus', function() {
-    old_category = $(this).value;
-  }).change(function() {
-    var $this = $(this);
-    var id = $this.parent().prev().text();
-    var new_category = this.value;
-
-    $.ajax({
-      method: 'POST',
-      url: 'category_correction',
-      data: {content_id: id, old_category: old_category, new_category: new_category}
-    }).done(function(msg){
-      $this.parent().next().find('input').prop('checked', true);
-    });
-
-  });
-  
