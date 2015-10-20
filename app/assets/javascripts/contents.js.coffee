@@ -76,13 +76,24 @@ jQuery ->
     new_category = $this.find('option:selected').text()
     $.ajax(
       method: 'POST'
-      url: 'category_correction'
+      url: 'contents/category_correction'
       data:
         content_id: id
         old_category: old_category
         new_category: new_category).done (msg) ->
       $this.parent().next().find('input').prop 'checked', true
       return
+    return
+  
+  $('.category_reviewed_box').click ->
+    id = $(this).parent().prev().prev().text()
+    checked = $(this).is(':checked')
+    $.ajax
+      method: 'POST'
+      url: 'contents/category_correction_reviewed'
+      data:
+        content_id: id
+        checked: checked
     return
 
 updateParentOptions = ->

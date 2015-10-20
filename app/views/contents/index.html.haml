@@ -77,7 +77,7 @@
       %tr{ class: "content-#{c.id}" }
         %td= c.id
         %td= select_tag 'category_selection', options_from_collection_for_select(@content_categories, 'id', 'name', c.content_category_id), class: 'select_category'
-        %td= check_box_tag 'category_reviewed', '1', c.category_reviewed
+        %td= check_box_tag 'category_reviewed', '1', c.category_reviewed, class: 'category_reviewed_box'
         %td
           - if c.publication.present?
             = link_to c.publication.name, contents_path(q: { publication_id_in: c.publication_id })

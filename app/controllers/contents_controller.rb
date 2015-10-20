@@ -204,7 +204,6 @@ class ContentsController < ApplicationController
   end
 
   def category_correction
-    debugger
     content = Content.find params.delete :content_id
     old_cat = params.delete :old_category
     new_cat = params.delete :new_category
@@ -220,6 +219,21 @@ class ContentsController < ApplicationController
       render text: "#{@category_correction.content.id} updated"
     else
       render text: "There was an error creating the category correction.", status: 500
+    end
+  end
+
+  def category_correction_reviwed
+    content = Content.find params[:content_id]
+    checked = params[:checked]
+    if checked == 'true' 
+      content.category_reviewed = true
+    else
+      content.category_reviewed = false
+    end
+    if content.save
+      render text: "#{content.id} review state updated"
+    else
+      render text: 'There was an error updating content category reviwed.', status: 500
     end
   end
 
