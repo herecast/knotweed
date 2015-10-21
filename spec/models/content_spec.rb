@@ -189,9 +189,12 @@ describe Content do
         "page" => "a3",
         "source_content_id" => "1234567"
       }
+      #stub some images
       google_logo_stub
       google_logo2_stub
       google_logo3_stub
+      google_logo4_stub
+      google_logo5_stub
     end
 
     after do
@@ -439,6 +442,32 @@ describe Content do
         @c.images.length.should eq 2
         @c.images.find_by_image('logo11w.png').should be_nil
       end
+
+      it 'should correctly handle rearranged images' do
+        #first, verify the image array before making a change
+        @c.images.length.should eq @base_data['images'].count
+        @c.images.find_by_image('logo11w.png').should_not be_nil
+        @c.images.find_by_image('logo9w.png').should_not be_nil
+        @c.images.find_by_image('logo7w.png').should_not be_nil
+        @c.images.find_by_image('logo6w.png').should be_nil
+        @c.images.find_by_image('logo5w.png').should be_nil
+
+        # add some images, remove some others
+        @base_data['images'] = [{'image' => 'https://www.google.com/images/srpr/logo5w.png'},
+                                {'image' => 'https://www.google.com/images/srpr/logo6w.png'},
+                                {'image' => 'https://www.google.com/images/srpr/logo7w.png'}]
+        @c = Content.create_from_import_job(@base_data)
+
+        # verify the resulting image array
+        @c.images.length.should eq 3
+        @c.images.find_by_image('logo11w.png').should be_nil
+        @c.images.find_by_image('logo9w.png').should be_nil
+        @c.images.find_by_image('logo5w.png').should_not be_nil
+        @c.images.find_by_image('logo6w.png').should_not be_nil
+        @c.images.find_by_image('logo7w.png').should_not be_nil
+        @c.primary_image.name.should eq('logo5w.png')
+      end
+
     end
   end
 

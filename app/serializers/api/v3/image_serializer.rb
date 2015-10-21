@@ -3,8 +3,9 @@ module Api
     class ImageSerializer < ActiveModel::Serializer
       attributes :caption, :credit, :url, :primary
 
-      # attribute does not exist yet
+
       def primary
+        object.primary
       end
 
       def url

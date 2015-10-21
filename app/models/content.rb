@@ -69,7 +69,7 @@ class Content < ActiveRecord::Base
   has_and_belongs_to_many :repositories, :uniq => true, after_add: :mark_published
   has_and_belongs_to_many :locations
   
-  has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
+  has_many :images, order: "`primary` DESC", as: :imageable, inverse_of: :imageable, dependent: :destroy
   belongs_to :publication
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes, :images
@@ -399,7 +399,7 @@ class Content < ActiveRecord::Base
 
     # delete any now-unused images
     content.images.each do |i|
-      i.destroy unless new_content_images.include? i.image.filename
+      i.destroy unless new_content_images.include? i.name
     end
 
     content
