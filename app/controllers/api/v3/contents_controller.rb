@@ -24,8 +24,7 @@ module Api
             render json: {}
           else
             ContentPromotionBannerImpression.log_impression(@content.id, @banner.id)
-            @banner.impression_count += 1
-            @banner.save
+            @banner.increment_integer_attr! :impression_count
             render json:  { related_promotion:
               { 
                 image_url: @banner.banner_image.url, 
