@@ -399,7 +399,7 @@ class Content < ActiveRecord::Base
 
     # delete any now-unused images
     content.images.each do |i|
-      i.destroy unless new_content_images.include? i.image.filename
+      i.destroy unless new_content_images.include? i.name
     end
 
     content
