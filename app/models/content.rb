@@ -69,7 +69,7 @@ class Content < ActiveRecord::Base
   has_and_belongs_to_many :repositories, :uniq => true, after_add: :mark_published
   has_and_belongs_to_many :locations
   
-  has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
+  has_many :images, order: "`primary` DESC", as: :imageable, inverse_of: :imageable, dependent: :destroy
   belongs_to :publication
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes, :images
