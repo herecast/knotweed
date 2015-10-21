@@ -25,6 +25,7 @@ class ContentsController < ApplicationController
       Ransack::Visitor.new.accept(search.base)
     }
 
+    @content_categories = ContentCategory.accessible_by(current_ability)
     if session[:contents_search].present?
       @contents = Content.joins(shared_context.join_sources)
         .where(shared_conditions.reduce(&:or))
@@ -199,6 +200,38 @@ class ContentsController < ApplicationController
     @contents = conts.map{ |c| [c.title, c.id] }.insert(0,nil)
     respond_to do |format|
       format.js
+    end
+  end
+
+  def category_correction
+    content = Content.find params.delete :content_id
+    old_cat = params.delete :old_category
+    new_cat = params.delete :new_category
+
+    @category_correction = CategoryCorrection.new
+    @category_correction.content = content
+    @category_correction.old_category = old_cat 
+    @category_correction.new_category = new_cat
+
+    if @category_correction.save
+      render text: "#{@category_correction.content.id} updated"
+    else
+      render text: "There was an error creating the category correction.", status: 500
+    end
+  end
+
+  def category_correction_reviwed
+    content = Content.find params[:content_id]
+    checked = params[:checked]
+    if checked == 'true' 
+      content.category_reviewed = true
+    else
+      content.category_reviewed = false
+    end
+    if content.save
+      render text: "#{content.id} review state updated"
+    else
+      render text: 'There was an error updating content category reviwed.', status: 500
     end
   end
 

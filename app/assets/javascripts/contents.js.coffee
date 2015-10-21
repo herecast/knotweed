@@ -64,6 +64,37 @@ jQuery ->
       split_href[split_href.length-1] = new_repo_id
       new_href = split_href.join("/")
       $(this).attr("href", new_href)
+  
+  # handle category correction when user changes category on index page
+  old_category = undefined
+  $('.select_category').click(->
+    old_category = $(this).find('option:selected').text()
+    return
+  ).change ->
+    $this = $(this)
+    id = $this.parent().prev().text()
+    new_category = $this.find('option:selected').text()
+    $.ajax(
+      method: 'POST'
+      url: 'contents/category_correction'
+      data:
+        content_id: id
+        old_category: old_category
+        new_category: new_category).done (msg) ->
+      $this.parent().next().find('input').prop 'checked', true
+      return
+    return
+  
+  $('.category_reviewed_box').click ->
+    id = $(this).parent().prev().prev().text()
+    checked = $(this).is(':checked')
+    $.ajax
+      method: 'POST'
+      url: 'contents/category_correction_reviewed'
+      data:
+        content_id: id
+        checked: checked
+    return
 
 updateParentOptions = ->
   $.ajax $("#content_parent_id").data("optionsUrl"),

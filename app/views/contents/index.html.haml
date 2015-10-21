@@ -43,7 +43,7 @@
             = f.text_field :authors_cont, class: "span12"
           .field.span2
             = f.label :content_category_id_in, "Category"
-            = f.collection_select :content_category_id_in, ContentCategory.accessible_by(current_ability),
+            = f.collection_select :content_category_id_in, @content_categories,
               :id, :label, { include_blank: true },
               { multiple: true, class: "chosen-select span12" }
           .field.span2
@@ -61,6 +61,7 @@
     %tr
       %th Content ID
       %th Category
+      %th Reviewed?
       %th Publication
       %th Title
       %th Authors
@@ -75,7 +76,8 @@
     - @contents.each_with_index do |c, i|
       %tr{ class: "content-#{c.id}" }
         %td= c.id
-        %td= c.category.try(:titlecase)
+        %td= select_tag 'category_selection', options_from_collection_for_select(@content_categories, 'id', 'name', c.content_category_id), class: 'select_category'
+        %td= check_box_tag 'category_reviewed', '1', c.category_reviewed, class: 'category_reviewed_box'
         %td
           - if c.publication.present?
             = link_to c.publication.name, contents_path(q: { publication_id_in: c.publication_id })
