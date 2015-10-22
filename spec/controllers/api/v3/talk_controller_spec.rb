@@ -17,6 +17,7 @@ describe Api::V3::TalkController do
         locations: [@other_location], published: true
       FactoryGirl.create_list :content, 4, content_category: @talk_cat, 
         locations: [@third_location], published: true
+      ThinkingSphinx::Test.index 'content_core', 'location_core'
     end
 
     subject { get :index, format: :json }
@@ -50,6 +51,7 @@ describe Api::V3::TalkController do
   describe 'GET show' do
     before do
       @talk = FactoryGirl.create :content, content_category: @talk_cat
+      ThinkingSphinx::Test.index 'content_core'
       api_authenticate user: @user
     end
     subject { get :show, id: @talk.id, format: :json }
