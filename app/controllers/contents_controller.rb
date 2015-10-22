@@ -205,12 +205,11 @@ class ContentsController < ApplicationController
 
   def category_correction
     content = Content.find params.delete :content_id
-    old_cat = params.delete :old_category
     new_cat = params.delete :new_category
 
     @category_correction = CategoryCorrection.new
     @category_correction.content = content
-    @category_correction.old_category = old_cat 
+    @category_correction.old_category = content.category
     @category_correction.new_category = new_cat
 
     if @category_correction.save
