@@ -51,6 +51,7 @@ describe Api::V3::TalkController do
   describe 'GET show' do
     before do
       @talk = FactoryGirl.create :content, content_category: @talk_cat
+      ThinkingSphinx::Test.index 'content_core'
       api_authenticate user: @user
     end
     subject { get :show, id: @talk.id, format: :json }

@@ -66,11 +66,7 @@ jQuery ->
       $(this).attr("href", new_href)
   
   # handle category correction when user changes category on index page
-  old_category = undefined
-  $('.select_category').click(->
-    old_category = $(this).find('option:selected').text()
-    return
-  ).change ->
+  $('.select_category').change ->
     $this = $(this)
     id = $this.parent().prev().text()
     new_category = $this.find('option:selected').text()
@@ -79,7 +75,6 @@ jQuery ->
       url: 'contents/category_correction'
       data:
         content_id: id
-        old_category: old_category
         new_category: new_category).done (msg) ->
       $this.parent().next().find('input').prop 'checked', true
       return
