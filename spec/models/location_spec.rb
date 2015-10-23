@@ -65,6 +65,12 @@ describe Location do
       it { should_not be_nil }
     end
 
+    context 'args: find by city multi word' do
+      before { @location = Location.find_by_city_state("white river junction") }
+      subject { @location }
+      it { should_not be_nil }
+    end
+
     context 'args_with_space: find by city' do
       before { @location = Location.find_by_city_state("  Hartford  ") }
       subject { @location }
@@ -85,6 +91,12 @@ describe Location do
 
     context 'args: empty' do
       before { @location = Location.find_by_city_state("") }
+      subject { @location }
+      it { should be_nil }
+    end
+
+    context 'args: nil' do
+      before { @location = Location.find_by_city_state(nil) }
       subject { @location }
       it { should be_nil }
     end
