@@ -25,12 +25,12 @@ class ContentsController < ApplicationController
       Ransack::Visitor.new.accept(search.base)
     }
 
+    @content_categories = ContentCategory.accessible_by(current_ability)
     if session[:contents_search].present?
       @contents = Content.joins(shared_context.join_sources)
         .where(shared_conditions.reduce(&:or))
         .order("pubdate DESC").page(params[:page]).per(100)
       @contents = @contents.accessible_by(current_ability)
-      @content_categories = ContentCategory.accessible_by(current_ability)
     else
       @contents = []
     end

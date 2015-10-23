@@ -21,3 +21,19 @@ def google_logo3_stub
     with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
       to_return(raw_resp.read)
 end
+
+def google_logo4_stub
+  # Stub out image requests
+  raw_resp = File.new('spec/fixtures/google_logo_resp.txt')
+  stub_request(:get, 'https://www.google.com/images/srpr/logo6w.png'). \
+    with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+      to_return(raw_resp.read)
+end
+
+def google_logo5_stub
+  # Stub out image requests
+  raw_resp = File.new('spec/fixtures/google_logo_resp.txt')
+  stub_request(:get, 'https://www.google.com/images/srpr/logo5w.png'). \
+    with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+      to_return(raw_resp.read)
+end

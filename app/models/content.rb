@@ -38,9 +38,12 @@
 #  channel_type             :string(255)
 #  channel_id               :integer
 #  root_content_category_id :integer
-#  delta                    :boolean          default(TRUE), not null
+#  view_count               :integer          default(0)
+#  comment_count            :integer          default(0)
+#  commenter_count          :integer          default(0)
 #  created_by               :integer
 #  updated_by               :integer
+#  banner_click_count       :integer          default(0)
 #
 
 require 'fileutils'
@@ -66,7 +69,7 @@ class Content < ActiveRecord::Base
   has_and_belongs_to_many :repositories, :uniq => true, after_add: :mark_published
   has_and_belongs_to_many :locations
   
-  has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
+  has_many :images, order: "`primary` DESC", as: :imageable, inverse_of: :imageable, dependent: :destroy
   belongs_to :publication
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes, :images
@@ -396,7 +399,7 @@ class Content < ActiveRecord::Base
 
     # delete any now-unused images
     content.images.each do |i|
-      i.destroy unless new_content_images.include? i.image.filename
+      i.destroy unless new_content_images.include? i.name
     end
 
     content
@@ -493,10 +496,6 @@ class Content < ActiveRecord::Base
     record.save if record.present?
     if opts[:download_result].present? and not file_list.nil? and file_list.length > 0
       opts[:download_result] = file_list[0]
-    end
-
-    if channel_type == 'Event'
-      channel.set_event_instance_deltas
     end
 
     result

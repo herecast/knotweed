@@ -58,7 +58,7 @@ class Event < ActiveRecord::Base
     :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, 
     :cost_type, :event_category, :social_enabled
 
-  EVENT_CATEGORIES = [:first_friday, :movies, :performing_arts, :wellness, :yard_sales]
+  EVENT_CATEGORIES = [:first_friday, :movies, :performing_arts, :wellness, :holidays]
 
   enumerize :cost_type, in: [:free, :paid, :donation]
   enumerize :event_category, in: EVENT_CATEGORIES
@@ -128,13 +128,6 @@ class Event < ActiveRecord::Base
   # returns first upcoming event instance
   def next_instance
     event_instances.where('start_date > ?', Time.zone.now).order('start_date ASC').first
-  end
-
-  def set_event_instance_deltas
-    event_instances.each do |ei|
-      ei.delta = true
-      ei.save
-    end
   end
 
 end
