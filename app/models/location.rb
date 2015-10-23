@@ -60,18 +60,19 @@ class Location < ActiveRecord::Base
   end
 
   def self.find_by_city_state(city_state)
-    location = nil
-    # using try here to avoid crashing in the scenario
-    # where it's called on an empty string.
-    cs = city_state.try(:split,',')
-    if cs.present?
-      if cs[1].present?
-        location = Location.where(city: cs[0].strip, state: cs[1].strip).first
-      else
-        location = Location.where(city: cs[0].strip).first
-      end
+    match = city_state.strip.match('(.*)((\s|,)[a-zA-z][a-zA-Z]$)')
+    args = {}
+    if match
+      city,state,sep = match.captures
+      state = state.strip.sub(',' , '')
+      args[:state] = state
+    else
+      city = city_state
     end
-    location
+
+    city = city.strip.sub(',', '') if city.present?
+    args[:city] = city
+    Location.where(args).first
   end
 
   #though the HABTM relationship allows for many listservs, in reality
