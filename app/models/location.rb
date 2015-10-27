@@ -60,7 +60,7 @@ class Location < ActiveRecord::Base
   end
 
   def self.find_by_city_state(city_state)
-    match = city_state.try(:strip).try(:match, '(.*)((\s|,)[a-zA-z][a-zA-Z]$)')
+    match = city_state.try(:strip).try(:match, '(.*)((\s|,)[a-zA-Z][a-zA-Z]$)')
     args = {}
     if match
       city,state,sep = match.captures
