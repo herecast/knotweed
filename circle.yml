@@ -1,3 +1,5 @@
+machine:
+  - sudo pkill searchd
 checkout:
   post:
     - git submodule sync
