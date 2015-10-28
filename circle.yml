@@ -1,5 +1,6 @@
 machine:
-  - sudo pkill searchd
+  pre:
+    - sudo pkill searchd
 
 checkout:
   post:
