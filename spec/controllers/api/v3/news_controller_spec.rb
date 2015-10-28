@@ -17,6 +17,7 @@ describe Api::V3::NewsController do
         locations: [@other_location], published: true
       FactoryGirl.create_list :content, 4, content_category: @news_cat, 
         locations: [@third_location], published: true
+      ThinkingSphinx::Test.index 'content_core', 'location_core'
     end
 
     subject { get :index, format: :json }
@@ -89,6 +90,7 @@ describe Api::V3::NewsController do
   describe 'GET show' do
     before do
       @news = FactoryGirl.create :content, content_category: @news_cat
+      ThinkingSphinx::Test.index 'content_core'
     end
 
     subject { get :show, id: @news.id, format: :json }
