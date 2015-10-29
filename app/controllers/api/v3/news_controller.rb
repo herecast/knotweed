@@ -49,7 +49,7 @@ module Api
         @news = Content.find params[:id]
         
         if @requesting_app.present?
-          head :no_content and return unless @requesting_app.try(:publications).try(:include?, @news.publication)
+          head :no_content and return unless @requesting_app.try(:publications).try(:include?, @news.content.publication)
         end
 
         if @current_api_user.present?
