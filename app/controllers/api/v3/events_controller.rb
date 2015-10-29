@@ -91,7 +91,11 @@ module Api
 
       def show
         @event = Event.find(params[:id])
-        render json: @event, serializer: EventSerializer
+        unless @requesting_app.try(:publications).try(:include?, @event.publication)
+          head :no_content
+        else
+          render json: @event, serializer: EventSerializer
+        end
       end
 
       protected

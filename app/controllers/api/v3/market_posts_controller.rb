@@ -155,7 +155,8 @@ module Api
       def show
         @market_post = Content.find params[:id]
 
-        if @market_post.try(:root_content_category).try(:name) != 'market'
+        unless @market_post.try(:root_content_category).try(:name) == 'market' &&
+            @requesting_app.try(:publications).try(:include?, @market_post.publication)
           head :no_content
         else
           @market_post.increment_integer_attr!(:view_count)

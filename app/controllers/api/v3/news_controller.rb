@@ -48,6 +48,10 @@ module Api
       def show
         @news = Content.find params[:id]
         
+        unless @requesting_app.try(:publications).try(:include?, @news.publication)
+          head :no_content and return
+        end
+        
         if @current_api_user.present?
           url = edit_content_url(@news) if @current_api_user.has_role? :admin
         else
