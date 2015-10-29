@@ -16,5 +16,7 @@ else
   /usr/bin/indexer -c $RAILS_ROOT/config/production.sphinx.conf --merge event_instance_core event_instance_delta --rotate >> $LOG_FILE
   echo "$(date): Merging content delta index." >> $LOG_FILE
   /usr/bin/indexer -c $RAILS_ROOT/config/production.sphinx.conf --merge content_core content_delta --rotate >> $LOG_FILE
+  echo "$(date): Merging business_location delta index." >> $LOG_FILE
+  /usr/bin/indexer -c $RAILS_ROOT/config/production.sphinx.conf --merge business_location_core business_location_delta --rotate >> $LOG_FILE
   exit 0
 fi
