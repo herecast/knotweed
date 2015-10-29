@@ -48,14 +48,17 @@ module Api
       def show
         @news = Content.find params[:id]
         
+        if @requesting_app.present?
+          head :no_content and return unless @requesting_app.try(:publications).try(:include?, @news.publication)
+        end
+
         if @current_api_user.present?
           url = edit_content_url(@news) if @current_api_user.has_role? :admin
         else
           url = nil
         end
 
-        if @news.try(:root_content_category).try(:name) != 'news' && 
-            @requesting_app.try(:publications).try(:include?, @news.publication)
+        if @news.try(:root_content_category).try(:name) != 'news'
           head :no_content
         else
           @news.increment_integer_attr!(:view_count)
