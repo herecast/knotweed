@@ -44,7 +44,7 @@ module Api
       def show
         @talk = Content.find params[:id]
         unless @talk.try(:root_content_category).try(:name) == 'talk_of_the_town' &&
-            @requesting_app.try(:publications).try(include?, @talk.publication)
+            @requesting_app.try(:publications).try(:include?, @talk.publication)
           head :no_content
         else
           @talk.increment_integer_attr!(:view_count)
