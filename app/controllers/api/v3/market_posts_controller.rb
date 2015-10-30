@@ -156,7 +156,7 @@ module Api
         @market_post = Content.find params[:id]
 
         if @requesting_app.present?
-          head :no_content and return unless @requesting_app.try(:publications).try(:include?, @market_post.content.publication)
+          head :no_content and return unless @requesting_app.publications.include?(@market_post.publication)
         end
 
         if @market_post.try(:root_content_category).try(:name) != 'market'

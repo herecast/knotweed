@@ -92,7 +92,7 @@ module Api
       def show
         @event = Event.find(params[:id])
         if @requesting_app.present?
-          head :no_content and return unless @requesting_app.try(:publications).try(:include?, @event.content.publication)
+          head :no_content and return unless @requesting_app.publications.include?(@event.content.publication)
         end
         render json: @event, serializer: EventSerializer
       end

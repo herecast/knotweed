@@ -44,7 +44,7 @@ module Api
       def show
         @talk = Content.find params[:id]
         if @requesting_app.present?
-          head :no_content and return unless @requesting_app.try(:publications).try(:include?, @talk.content.publication)
+          head :no_content and return unless @requesting_app.publications.include?(@talk.publication)
         end
 
         if @talk.try(:root_content_category).try(:name) != 'talk_of_the_town'
