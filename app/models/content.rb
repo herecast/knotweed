@@ -1098,11 +1098,11 @@ class Content < ActiveRecord::Base
       # tags "really" should have been part of that initial text fragment. This logic attempts to
       # remove excess whitespace in that and consolidate into 1 or more <p> blocks.
       else
-        text = [remove_br_tags.call(sanitize(e.inner_html))]
+        text = [remove_br_tags.call(e.inner_html)]
         next_e = e.next()
         until next_e.nil? do
           if next_e.text?
-            text[-1] += remove_br_tags.call(sanitize(next_e.inner_html))
+            text[-1] += remove_br_tags.call(next_e.inner_html)
           elsif is_newline.call(next_e)
             remove_dup_newlines.call(next_e)
           elsif next_e.matches? "strong"
@@ -1122,7 +1122,6 @@ class Content < ActiveRecord::Base
         text.reverse_each { |t| e.after("<p>#{t}</p>") }
       end
     end
-
     # try to remove any lingering inline CSS or bad text
     e_iter = doc.search("body").first.children.first unless doc.search("body").first.nil?
     until e_iter.nil? do
@@ -1138,8 +1137,8 @@ class Content < ActiveRecord::Base
     doc.search("br").each {|e| remove_dup_newlines.call(e) }
     c = doc.search("body").first.to_html unless doc.search("body").first.nil?
     c ||= doc.to_html
-    c = sanitize(c, tags: %w(span div img a p br h1 h2 h3 h4 h5 h6 strong em table td tr th ul ol li))
-    c = simple_format c
+    c = sanitize(c, tags: %w(span div img a p br h1 h2 h3 h4 h5 h6 strong em table td tr th ul ol li b i u))
+    c = simple_format c, {},  sanitize: false
     c.gsub!(/(<a href="http[^>]*)>/, '\1 target="_blank">')
 
     BLACKLIST_BLOCKS.each do |b| 
