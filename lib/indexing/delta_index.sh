@@ -12,6 +12,6 @@ if [ -f $RAILS_ROOT/tmp/merging.lock ]; then
   exit 1
 else
   echo "$(date): indexing delta indices" >> $LOG_FILE
-  /usr/bin/indexer -c $RAILS_ROOT/config/production.sphinx.conf content_delta event_instance_delta --rotate >> $LOG_FILE
+  /usr/bin/indexer -c $RAILS_ROOT/config/production.sphinx.conf content_delta event_instance_delta business_location_delta --rotate >> $LOG_FILE
   exit 0
 fi
