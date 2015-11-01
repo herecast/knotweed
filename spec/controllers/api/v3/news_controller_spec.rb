@@ -115,7 +115,30 @@ describe Api::V3::NewsController do
     it 'should increment view count' do
       expect{subject}.to change{Content.find(@news.id).view_count}.from(0).to(1)
     end
-
+    context 'when requesting app has matching publications' do
+      before do
+        publication = FactoryGirl.create :publication
+        @news.publication = publication
+        @news.save
+        @consumer_app = FactoryGirl.create :consumer_app, publications: [publication]
+        api_authenticate consumer_app: @consumer_app
+      end
+      it do
+        subject
+        response.status.should eq 200
+        JSON.parse(response.body)['news']['id'].should == @news.id
+      end
+    end
+    context 'when requesting app DOES NOT HAVE matching publications' do
+      before do
+        publication = FactoryGirl.create :publication
+        @news.publication = publication
+        @news.save
+        @consumer_app = FactoryGirl.create :consumer_app, publications: []
+        api_authenticate consumer_app: @consumer_app
+      end
+      it { subject; response.status.should eq 204 }
+    end
   end
 
 end

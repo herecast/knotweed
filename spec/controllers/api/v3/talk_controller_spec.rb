@@ -103,6 +103,31 @@ describe Api::V3::TalkController do
         JSON.parse(response.body)['talk']['author_image_url'].should == @user.avatar.url
       end
     end
+    context 'when requesting app has matching publications' do
+      before do
+        publication = FactoryGirl.create :publication
+        @talk.publication = publication
+        @talk.save
+        @consumer_app = FactoryGirl.create :consumer_app, publications: [publication]
+        api_authenticate user: @user, consumer_app: @consumer_app
+      end
+      it do
+        subject
+        response.status.should eq 200
+        JSON.parse(response.body)['talk']['id'].should == @talk.id
+      end
+    end
+    context 'when requesting app DOES NOT HAVE matching publications' do
+      before do
+        publication = FactoryGirl.create :publication
+        @talk.publication = publication
+        @talk.save
+        @consumer_app = FactoryGirl.create :consumer_app, publications: []
+        api_authenticate user: @user, consumer_app: @consumer_app
+        subject
+      end
+      it { response.status.should eq 204 }
+    end
   end
 
   describe 'PUT update' do
