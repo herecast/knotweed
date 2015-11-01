@@ -51,7 +51,7 @@ module Api
 
         # listservs for reverse publishing -- not included in process_event_params!
         # because update doesn't include listserv publishing
-        listserv_ids = params[:event].delete(:listserv_ids)
+        listserv_ids = params[:event].delete(:listserv_ids) || []
 
         # hard coded publication...
         pub = Publication.find_or_create_by_name 'DailyUV'

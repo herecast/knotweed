@@ -111,7 +111,7 @@ module Api
               status: :unprocessable_entity
           end
         else # do the normal update of attributes
-          listserv_ids = params[:market_post].delete :listserv_ids
+          listserv_ids = params[:market_post].delete :listserv_ids || []
 
           location_ids = [@current_api_user.location_id]
           if params[:extended_reach_enabled]
