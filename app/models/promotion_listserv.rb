@@ -49,7 +49,7 @@ class PromotionListserv < ActiveRecord::Base
   # @return [Array<PromotionListserv>] the created PromotionListserv objects
   def self.create_multiple_from_content(content, listserv_ids, consumer_app=nil)
     return false unless content.authoremail.present? and listserv_ids.present? # need authoremail to send to lists
-    listservs = listserv_ids.map{ |lid| Listserv.find(lid) }.select{ |l| l.active }
+    listservs = Listserv.where(id: listserv_ids, active: true)
 
     ReversePublisher.mail_content_to_listservs(content, listservs, consumer_app).deliver
     sent_time = DateTime.now
