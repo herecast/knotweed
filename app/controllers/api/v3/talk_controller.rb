@@ -80,8 +80,7 @@ module Api
 
         if @talk.save
           if listserv_id.present?
-            list = Listserv.find(listserv_id)
-            PromotionListserv.create_from_content(@talk.content, list, @requesting_app) if list.present? and list.active
+            PromotionListserv.create_from_content(@talk.content, Listserv.find(listserv_id), @requesting_app)
           end
 
           if @repository.present?

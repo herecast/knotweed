@@ -1,9 +1,9 @@
 class ReversePublisher < ActionMailer::Base
   helper :events, :contents
 
-  def send_content_to_reverse_publishing_email(content, listserv, consumer_app=nil)
+  def mail_content_to_listservs(content, listservs, consumer_app=nil)
     # these are the same regardless of channel
-    to = listserv.reverse_publish_email
+    to = listservs.map{ |l| l.reverse_publish_email }
     from = "\"#{content.authors}\" <#{content.authoremail}>"
     subject = content.title
     @body = content.raw_content_for_text_email
@@ -29,7 +29,7 @@ class ReversePublisher < ActionMailer::Base
     mail(from: from, to: to, subject: subject, template_name: template_name)
   end
 
-  def send_copy_to_sender_from_dailyuv(content, publication)
+  def send_copy_to_sender_from_dailyuv(content)
     headers['In-Reply-To'] = content.parent.try(:guid)
     @body = content.raw_content_for_text_email
     mail(from: "noreply@dailyuv.com",
