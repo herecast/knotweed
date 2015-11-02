@@ -5,7 +5,9 @@ module SphinxHelpers
   end
 
   def index_finished?
-    Dir[Rails.root.join(ThinkingSphinx::Test.config.indices_location, '*.{new,tmp}*')].empty?
+    state = Dir[Rails.root.join(ThinkingSphinx::Test.config.indices_location, '*.{new,tmp}*')].empty?
+    Rails.logger.info 'Waiting for ThinkingSphinx to complete indexing, remove tmp indices files if this message prints indefinitely' unless state
+    state
   end
 end
 
