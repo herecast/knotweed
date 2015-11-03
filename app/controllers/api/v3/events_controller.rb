@@ -24,19 +24,13 @@ module Api
               render json: { errors: map_error_keys(@event.errors.messages) }, status: :unprocessable_entity
             end
           else
-            listservs = params[:event].delete :listserv_ids
+            listserv_ids = params[:event].delete(:listserv_ids) || []
 
             event_hash = process_event_params(params[:event])
             
             if @event.update_attributes(event_hash)
               # reverse publish to specified listservs
-              if listservs.present?
-                listservs.each do |d|
-                  next unless d.present?
-                  list = Listserv.find(d.to_i)
-                  PromotionListserv.create_from_content(@event.content, list, @requesting_app) if list.present? and list.active
-                end
-              end
+              PromotionListserv.create_multiple_from_content(@event.content, listserv_ids, @requesting_app)
 
               if @repository.present?
                 @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
@@ -57,7 +51,7 @@ module Api
 
         # listservs for reverse publishing -- not included in process_event_params!
         # because update doesn't include listserv publishing
-        listservs = params[:event].delete :listserv_ids
+        listserv_ids = params[:event].delete(:listserv_ids) || []
 
         # hard coded publication...
         pub = Publication.find_or_create_by_name 'DailyUV'
@@ -69,13 +63,7 @@ module Api
         @event.content.images = [Image.create(image: image_data)] if image_data.present?
         if @event.save
           # reverse publish to specified listservs
-          if listservs.present?
-            listservs.each do |d|
-              next unless d.present?
-              list = Listserv.find(d.to_i)
-              PromotionListserv.create_from_content(@event.content, list, @requesting_app) if list.present? and list.active
-            end
-          end
+          PromotionListserv.create_multiple_from_content(@event.content, listserv_ids, @requesting_app)
 
           if @repository.present?
             @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)

@@ -25,7 +25,7 @@ class PromotionListserv < ActiveRecord::Base
   # @param listserv [Listserv] listserv object to associate the PromotionListserv with
   # @return [PromotionListserv] the new PromotionListserv object
   def self.create_from_content(content, listserv, consumer_app=nil)
-    if listserv.active and content.authoremail.present?
+    if listserv.present? and listserv.active and content.authoremail.present?
       p = Promotion.create content: content
       p.promotable = PromotionListserv.new listserv_id: listserv.id
       p.save
@@ -39,6 +39,34 @@ class PromotionListserv < ActiveRecord::Base
     else
       false
     end
+  end
+
+  # Handles promotion of one piece of content to multiple listservs. Sends one email to 
+  # all the listservs and creates promotion_listserv records for each.
+  #
+  # @param content [Content] the content object
+  # @param listserv_ids [Array<Integer>] listserv IDs to use to lookup listservs
+  # @return [Array<PromotionListserv>] the created PromotionListserv objects
+  def self.create_multiple_from_content(content, listserv_ids, consumer_app=nil)
+    return false unless content.authoremail.present? and listserv_ids.present? # need authoremail to send to lists
+    listservs = Listserv.where(id: listserv_ids, active: true)
+
+    ReversePublisher.mail_content_to_listservs(content, listservs, consumer_app).deliver
+    sent_time = DateTime.now
+
+    promotion_listservs = []
+
+    listservs.each do |l|
+      l.add_listserv_location_to_content(content) 
+      # create PromotionListserv records
+      p = Promotion.create content: content
+      p.promotable = PromotionListserv.create listserv_id: l.id, sent_at: sent_time
+      promotion_listservs << p
+    end
+
+    ReversePublisher.send_copy_to_sender_from_dailyuv(content).deliver
+
+    promotion_listservs
   end
 
 end

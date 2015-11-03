@@ -25,8 +25,12 @@ class Listserv < ActiveRecord::Base
   # and adds a content_location record for the content using
   # the listserv's location
   def send_content_to_listserv(content, consumer_app=nil)
-    ReversePublisher.send_content_to_reverse_publishing_email(content, self, consumer_app).deliver
-    ReversePublisher.send_copy_to_sender_from_dailyuv(content, self).deliver
+    ReversePublisher.mail_content_to_listservs(content, [self], consumer_app).deliver
+    ReversePublisher.send_copy_to_sender_from_dailyuv(content).deliver
+    add_listserv_location_to_content(content)
+  end
+
+  def add_listserv_location_to_content(content)
     if self.locations.present?
       self.locations.each do |l|
         content.locations << l unless content.locations.include? l

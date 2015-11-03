@@ -32,6 +32,20 @@ describe ReversePublisher do
     end
   end
 
+  describe 'when sending to multiple listservs' do
+    before do
+      @listserv2 = FactoryGirl.create :listserv
+      PromotionListserv.create_multiple_from_content(@content, [@listserv.id, @listserv2.id])
+      @rp_email = ReversePublisher.deliveries.select{ |eml| eml['X-Original-Content-Id'].present? }.first
+    end
+
+    it 'should only generate one reverse publish email' do
+      ReversePublisher.deliveries.count.should == 2
+      expect(@rp_email.to).to include(@listserv.reverse_publish_email)
+      expect(@rp_email.to).to include(@listserv2.reverse_publish_email)
+    end
+  end
+
   # this is testing the special construction of the consumer app URL 
   # for the content based on whether or not Thread.current[:consumer_app] is set
   describe 'ux2 content links' do

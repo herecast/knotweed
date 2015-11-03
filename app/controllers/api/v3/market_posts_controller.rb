@@ -66,7 +66,7 @@ module Api
           timestamp: Time.zone.now,
           publication_id: pub.id
         }
-        listserv_ids = params[:market_post][:listserv_ids]
+        listserv_ids = params[:market_post].delete :listserv_ids || []
 
         market_hash = { content_attributes: content_attributes }
         market_hash[:cost] = params[:market_post][:price]
@@ -77,13 +77,8 @@ module Api
         @market_post = MarketPost.new(market_hash)
         if @market_post.save
           # reverse publish to specified listservs
-          if listserv_ids.present?
-            listserv_ids.each do |d|
-              next unless d.present?
-              list = Listserv.find(d.to_i)
-              PromotionListserv.create_from_content(@market_post.content, list, @requesting_app) if list.present? and list.active
-            end
-          end
+          PromotionListserv.create_multiple_from_content(@market_post.content, listserv_ids, @requesting_app)
+
           if @repository.present?
             @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
@@ -116,7 +111,7 @@ module Api
               status: :unprocessable_entity
           end
         else # do the normal update of attributes
-          listserv_ids = params[:market_post][:listserv_ids]
+          listserv_ids = params[:market_post].delete :listserv_ids || []
 
           location_ids = [@current_api_user.location_id]
           if params[:extended_reach_enabled]
@@ -133,13 +128,8 @@ module Api
 
           if @market_post.save # NOTE: triggers @market_post.content.save via after_save callback as well
             # reverse publish to specified listservs
-            if listserv_ids.present?
-              listserv_ids.each do |d|
-                next unless d.present?
-                list = Listserv.find(d.to_i)
-                PromotionListserv.create_from_content(@market_post.content, list, @requesting_app) if list.present? and list.active
-              end
-            end
+            PromotionListserv.create_multiple_from_content(@market_post.content, listserv_ids, @requesting_app)
+
             if @repository.present?
               @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
             end
