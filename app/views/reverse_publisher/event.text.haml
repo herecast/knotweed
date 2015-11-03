@@ -9,8 +9,6 @@
 \
 = raw strip_tags(@body)
 \
-= @event.event_url if @event.event_url.present?
-\
 - cost_label = cost_label(@event)
 - if cost_label
   Cost: #{cost_label}
@@ -33,5 +31,5 @@
 - else
   - url = "http://www.dailyuv.com/events"
 \
-= 'View map and discover more on ' + url
+= 'See all the colorful details on ' + url
 

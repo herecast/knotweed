@@ -1,26 +1,19 @@
-%p
-  .strong= @market_post.content.title
+%p= @market_post.content.title
 %br
+
+%p= Rinku.auto_link(@body).html_safe
+
 - if @market_post.cost.present?
-  .strong Cost: #{@market_post.cost}
+  %p Cost: #{@market_post.cost}
 
-= Rinku.auto_link(@body).html_safe
-
-- contact_string = contact_display(@market_post)
+- contact_string = market_contact_display(@market_post)
 - if contact_string.present?
-  %p 
-    .strong Contact: #{Rinku.auto_link(contact_string).html_safe}
+  %p Contact: #{Rinku.auto_link(contact_string).html_safe}
 
 
 - if @market_post.locate_address.present?
-  %p
-    .strong Where: #{@market_post.locate_address}
+  %p Where: #{@market_post.locate_address}
 
-- url = 'http://www.dailyuv.com/uvmarket'
-- if Thread.current[:consumer_app].present?
-  - url = "#{Thread.current[:consumer_app].uri}#{ux2_content_path(@market_post.content)}"
-- elsif @base_uri.present?
-  - url = "#{@base_uri}/contents/#{@market_post.content.id}/market_posts/#{@market_post.id}"
-
-See details and discover more in
-= link_to 'dailyUV\'s UVMarket', url
+%p
+  See photos and details in
+  = link_to 'dailyUV\'s UVMarket', market_post_url(@market_post)

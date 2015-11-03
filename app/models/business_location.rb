@@ -51,7 +51,7 @@ class BusinessLocation < ActiveRecord::Base
     label += ' - ' if address.present? or city.present? or state.present? or zip.present?
     label += address if address.present?
     label += ' ' + city if city.present?
-    label += ' ' + state if state.present?
+    label += ', ' + state if state.present?
     label += ' ' + zip if zip.present?
     label
   end
@@ -73,7 +73,7 @@ class BusinessLocation < ActiveRecord::Base
     addr = ""
     addr += address + ',' if address.present?
     addr += ' ' + city if city.present?
-    addr += ' ' + state if state.present?
+    addr += ', ' + state if state.present?
     addr += ' ' + zip if zip.present?
 
     addr

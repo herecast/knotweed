@@ -8,18 +8,14 @@
 - if @venue.present?
   %p
     = @venue.name if @venue.name.present?
+    - if @venue.name.present? and @venue.full_address.present?
+      %br
     = @venue.full_address if @venue.full_address.present?
 
 %p
   = Rinku.auto_link(@body).html_safe
 
-
-- if @event.event_url.present?
-  %p
-    = link_to @event.event_url.to_s, @event.event_url
-
 - cost_label = cost_label(@event)
-
 - if cost_label
   %p
     Cost: #{cost_label}
@@ -50,5 +46,5 @@
   - else
     - url = "http://www.dailyuv.com/events"
 
-  = 'View map and discover more on '
+  See all the colorful details on
   = link_to 'dailyUV.com', url

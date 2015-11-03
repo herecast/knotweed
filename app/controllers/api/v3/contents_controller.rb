@@ -20,7 +20,7 @@ module Api
           @banner = PromotionBanner.for_content(promoted_content.id).active.first
           unless @banner.present? # banner must've expired or been used up since repo last updated
             # so we need to trigger repo update
-            PromotionBanner.remove_promotion(@repo, promoted_content.id)
+            PromotionBanner.remove_promotion(@repository, promoted_content.id)
             render json: {}
           else
             ContentPromotionBannerImpression.log_impression(@content.id, @banner.id)
