@@ -37,12 +37,37 @@ describe Api::V3::EventsController do
       @event = FactoryGirl.create :event
     end
 
+    subject { get :show, format: :json, id: @event.id }
+
     it 'should respond with the event' do
-      get :show, format: :json, id: @event.id
+      subject
       response.code.should eq('200')
       assigns(:event).should eq @event
     end
-
+    context 'when requesting app has matching publications' do
+      before do
+        publication = FactoryGirl.create :publication
+        @event.content.publication = publication
+        @event.save
+        @consumer_app = FactoryGirl.create :consumer_app, publications: [publication]
+        api_authenticate consumer_app: @consumer_app
+      end
+      it do
+        subject
+        response.status.should eq 200
+        JSON.parse(response.body)['event']['id'].should == @event.id
+      end
+    end
+    context 'when requesting app DOES NOT HAVE matching publications' do
+      before do
+        publication = FactoryGirl.create :publication
+        @event.content.publication = publication
+        @event.save
+        @consumer_app = FactoryGirl.create :consumer_app, publications: []
+        api_authenticate consumer_app: @consumer_app
+      end
+      it { subject; response.status.should eq 204 }
+    end
   end
 
   describe 'PUT update' do
