@@ -1,14 +1,6 @@
 %p
   = Rinku.auto_link(@body).html_safe
 
-- if Thread.current[:consumer_app].present?
-  - url = "#{Thread.current[:consumer_app].uri}#{ux2_content_path(@content)}"
-- elsif @base_uri.present?
-  - url = "#{@base_uri}/contents/#{@content.id}"
-- else
-  - url = "http://www.dailyuv.com/contents/#{@content.id}"
-
 %p
   See a full threaded discussion on
-  = link_to 'dailyUV.com', url
-  -# content_url(@content)
+  = link_to 'dailyUV.com', content_url(@content)
