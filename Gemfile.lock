@@ -46,9 +46,9 @@ GIT
 
 GIT
   remote: git@github.com:waleo/mail-logger.git
-  revision: ba3a0c8e372cec639ca6cf9ad9f1107e80f7cc8d
+  revision: 335f39f7a70f9c6a246c70dc4dd1b91be82843a3
   specs:
-    mail-logger (0.0.5)
+    mail-logger (0.0.6)
       mail
 
 GEM
