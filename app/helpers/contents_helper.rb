@@ -36,4 +36,16 @@ module ContentsHelper
     prefix = 'talk' if prefix == 'talk_of_the_town'
     "/#{prefix}/#{content.id}"
   end
+
+  def content_url_for_email(content)
+    if Thread.current[:consumer_app].present?
+      url = "#{Thread.current[:consumer_app].uri}#{ux2_content_path(content)}"
+    elsif @base_uri.present?
+      url = "#{@base_uri}/contents/#{content.id}"
+    else
+      url = "http://www.dailyuv.com/contents/#{content.id}"
+    end
+
+    url
+  end
 end

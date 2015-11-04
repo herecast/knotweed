@@ -58,7 +58,7 @@ describe ReversePublisher do
     end
 
     it 'should include the ux2 content path for @content' do
-      expect(@rp_email.body).to include("#{Thread.current[:consumer_app].uri}/news/#{@content.id}")
+      expect(@rp_email.body.encoded).to include("#{Thread.current[:consumer_app].uri}/news/#{@content.id}")
     end
   end
 
