@@ -82,7 +82,7 @@ module EventsHelper
     "/events/#{event.event_instances.first.id}"
   end
 
-  def event_url(event)
+  def event_url_for_email(event)
     if Thread.current[:consumer_app].present?
       url = "#{Thread.current[:consumer_app].uri}#{ux2_event_path(event)}"
     elsif @base_uri.present?

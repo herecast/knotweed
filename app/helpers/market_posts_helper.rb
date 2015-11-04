@@ -7,7 +7,7 @@ module MarketPostsHelper
     display_string.chomp!(', ')
   end
 
-  def market_post_url(market_post)
+  def market_post_url_for_email(market_post)
     url = 'http://www.dailyuv.com/uvmarket'
     if Thread.current[:consumer_app].present?
       url = "#{Thread.current[:consumer_app].uri}#{ux2_content_path(market_post.content)}"

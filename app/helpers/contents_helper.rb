@@ -37,7 +37,7 @@ module ContentsHelper
     "/#{prefix}/#{content.id}"
   end
 
-  def content_url(content)
+  def content_url_for_email(content)
     if Thread.current[:consumer_app].present?
       url = "#{Thread.current[:consumer_app].uri}#{ux2_content_path(content)}"
     elsif @base_uri.present?
