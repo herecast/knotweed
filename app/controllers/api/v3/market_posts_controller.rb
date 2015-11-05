@@ -95,15 +95,19 @@ module Api
 
         # TODO: once we have created_by, confirm that the user can edit this market post
 
-        image_data = params[:market_post][:image]
+        images_data = params[:market_post][:images]
 
         # FOR NOW, coding this the same way that events apiv2 were coded.
         # Meaning, the UPDATE call can take EITHER an image OR updated attributes
         # but not both! and if an image is provided, it ignores everything else.
-        if image_data.present?
-          # clear out existing images since we are only set up to have one right now
+        if images_data.present?
+          # clear out existing images since anything coming in is what should
+          # be attached to the MP
           @market_post.content.images.destroy_all
-          if Image.create(image: image_data, imageable: @market_post.content)
+          images_data.each do |img|
+            Image.create(image: img[:image], primary: img[:primary], imageable: @market_post.content)
+          end
+          if @market_post.content.images.present? # then adding the new images worked
             render json: @market_post.content, status: 200, 
               serializer: DetailedMarketPostSerializer, can_edit: true
           else
