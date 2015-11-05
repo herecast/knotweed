@@ -198,6 +198,34 @@ describe Api::V3::MarketPostsController do
       it 'should update the associated content\'s attributes' do
         expect{subject}.to change{@market_post.content.reload.title}.to @attrs_for_update[:title]
       end
+
+      describe 'uploading multiple images' do
+        before do
+          @file1 = fixture_file_upload('/photo.jpg', 'image/jpg')
+          @file2 = fixture_file_upload('/photo2.jpg', 'image/jpg')
+          @attrs_for_update[:images] = [{
+            image: @file1,
+            primary: false
+          }, {
+            image: @file2,
+            primary: true
+          }]
+        end
+
+        it 'should create Image records for each' do
+          expect{subject}.to change{Image.count}.by 2
+        end
+
+        it 'should associate the images with the market post\'s content record' do
+          expect{subject}.to change{@market_post.content.images.count}.to 2 # from 0 to 2
+        end
+
+        it 'should assign the primary attribute appropriately' do
+          subject
+          expect(@market_post.content.primary_image).to be_present
+          expect(@market_post.content.primary_image.image_identifier).to eq(@file2.original_filename)
+        end
+      end
     end
 
   end

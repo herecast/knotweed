@@ -50,10 +50,11 @@ module Api
       end
 
       def images
-        if object.images.present?
-          object.images.map do |img|
-            img.image.url
-          end
+        object.images.map do |img|
+          {
+            image: img.image.url,
+            primary: img.primary
+          }
         end
       end
 
