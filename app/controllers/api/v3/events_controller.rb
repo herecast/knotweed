@@ -94,6 +94,7 @@ module Api
         new_ei[:subtitle_override] = ei[:subtitle] if ei[:subtitle].present?
         new_ei[:start_date] = ei[:starts_at] if ei[:starts_at].present?
         new_ei[:end_date] = ei[:ends_at] if ei[:ends_at].present?
+        new_ei[:presenter_name] = ei[:presenter_name] if ei[:presenter_name].present?
         new_ei
       end
 

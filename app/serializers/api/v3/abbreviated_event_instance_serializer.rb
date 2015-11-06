@@ -1,7 +1,7 @@
 module Api
   module V3
     class AbbreviatedEventInstanceSerializer < ActiveModel::Serializer
-      attributes :id, :subtitle, :starts_at, :ends_at
+      attributes :id, :subtitle, :starts_at, :ends_at, :presenter_name
 
       def starts_at
         object.start_date
