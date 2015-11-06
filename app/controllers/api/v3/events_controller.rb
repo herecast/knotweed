@@ -114,6 +114,11 @@ module Api
         new_e[:contact_email] = e[:contact_email] if e[:contact_email].present?
         new_e[:contact_phone] = e[:contact_phone] if e[:contact_phone].present?
         new_e[:event_url] = e[:event_url] if e[:event_url].present?
+        
+        new_e[:registration_deadline] = e[:registration_deadline] if e[:registration_deadline].present?
+        new_e[:registration_url] = e[:registration_url] if e[:registration_url].present?
+        new_e[:registration_phone] = e[:registration_phone] if e[:registration_phone].present?
+        new_e[:registration_email] = e[:registration_email] if e[:registration_email].present?
 
         if @event.present? and @event.id # event already exists and this is an update so we need to include
           #the content ID to avoid overwriting it

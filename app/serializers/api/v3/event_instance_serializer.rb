@@ -4,7 +4,7 @@ module Api
 
       attributes :id, :subtitle, :starts_at, :ends_at, :image_url,
         :venue_name, :venue_address, :venue_city, :venue_state, 
-        :venue_zip
+        :venue_zip, :registration_deadline
 
       SHARED_EVENT_ATTRIBUTES = [:title]
 
@@ -79,6 +79,10 @@ module Api
 
       def venue_url
         object.event.venue.try(:venue_url)
+      end
+
+      def registration_deadline
+        object.event.registration_deadline
       end
 
     end
