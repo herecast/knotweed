@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151014184754) do
+ActiveRecord::Schema.define(:version => 20151106032426) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -441,13 +441,17 @@ ActiveRecord::Schema.define(:version => 20151014184754) do
     t.string   "sponsor_url"
     t.text     "links"
     t.boolean  "featured"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
+    t.datetime "created_at",                               :null => false
+    t.datetime "updated_at",                               :null => false
     t.string   "contact_phone"
     t.string   "contact_email"
     t.string   "cost_type"
     t.string   "event_category"
-    t.boolean  "social_enabled", :default => false
+    t.boolean  "social_enabled",        :default => false
+    t.datetime "registration_deadline"
+    t.string   "registration_url"
+    t.string   "registration_phone"
+    t.string   "registration_email"
   end
 
   add_index "events", ["featured"], :name => "index_events_on_featured"
@@ -499,10 +503,10 @@ ActiveRecord::Schema.define(:version => 20151014184754) do
     t.string   "image"
     t.string   "imageable_type"
     t.integer  "imageable_id"
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
+    t.datetime "created_at",                                       :null => false
+    t.datetime "updated_at",                                       :null => false
     t.string   "source_url",     :limit => 400
-    t.boolean  "primary"
+    t.boolean  "primary",                       :default => false
   end
 
   add_index "images", ["imageable_type", "imageable_id"], :name => "index_images_on_imageable_type_and_imageable_id"

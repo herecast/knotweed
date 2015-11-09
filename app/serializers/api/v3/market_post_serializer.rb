@@ -18,9 +18,9 @@ module Api
       end
 
       def image_url
-        if object.images.present?
-          object.images[0].image.url
-        end
+        # NOTE: this works because the primary_image method returns images.first
+        # if no primary image exists (or nil if no image exists at all)
+        object.primary_image.try(:image).try(:url)
       end
 
     end

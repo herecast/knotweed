@@ -74,6 +74,7 @@ module EventsHelper
     display_string = ''
     display_string += event.contact_phone + ', ' if event.contact_phone.present?
     display_string += event.contact_email + ', ' if event.contact_email.present?
+    display_string += event.event_url + ', ' if event.event_url.present?
     display_string.chomp!(', ')
   end
 
@@ -81,4 +82,15 @@ module EventsHelper
     "/events/#{event.event_instances.first.id}"
   end
 
+  def event_url_for_email(event)
+    if Thread.current[:consumer_app].present?
+      url = "#{Thread.current[:consumer_app].uri}#{ux2_event_path(event)}"
+    elsif @base_uri.present?
+      url = "#{@base_uri}/events/#{event.event_instances.first.id}"
+    else
+      url = "http://www.dailyuv.com/events"
+    end
+
+    url
+  end
 end

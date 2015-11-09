@@ -1032,8 +1032,6 @@ class Content < ActiveRecord::Base
     # now convert all the p and br tags to newlines, then squeeze big sets (>3) of contiguous newlines down to just two.
     text = text.gsub(/\<\/p\>\<p\>/,"\n").gsub(/\<p\>/,"\n").gsub(/\<br\>/,' ').gsub(/\<\/p\>/,"\n").squeeze("\n") #.gsub(/^\n{2,}/m,"\n\n") #.squeeze("\n")
 
-    # now rewrite <a href=http://...>xxx</a> to xxx (http://xxx) since otherwise we may lose the links.
-    text.gsub(/\<a.*?href\=['"](?<href>.*?)['"]\>(?<target>.*?)\<\/a\>/, '\k<target> (\k<href>)')
   end
 
   # Creates sanitized version of title - at this point, just stripping out listerv towns
