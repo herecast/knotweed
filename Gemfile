@@ -116,3 +116,4 @@ gem 'prerender_rails'
 gem 'newrelic_rpm'
 
 gem 'forecast_io'
+gem 'mail-logger', :git => 'git@github.com:waleo/mail-logger.git'

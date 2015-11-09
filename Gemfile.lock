@@ -44,6 +44,13 @@ GIT
       net-http-persistent (~> 2.9)
       rdf (~> 1.1)
 
+GIT
+  remote: git@github.com:waleo/mail-logger.git
+  revision: 335f39f7a70f9c6a246c70dc4dd1b91be82843a3
+  specs:
+    mail-logger (0.0.6)
+      mail
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -318,7 +325,7 @@ GEM
     orm_adapter (0.5.0)
     polyamorous (1.1.0)
       activerecord (>= 3.0)
-    polyglot (0.3.3)
+    polyglot (0.3.5)
     prerender_rails (1.1.2)
       activesupport
       rack
@@ -549,6 +556,7 @@ DEPENDENCIES
   kaminari
   legato
   mail
+  mail-logger!
   mixpanel-ruby (= 1.4.0)
   mixpanel_client
   mysql2
@@ -591,3 +599,6 @@ DEPENDENCIES
   webmock
   yard
   yomu
+
+BUNDLED WITH
+   1.10.6
