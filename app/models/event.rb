@@ -56,7 +56,8 @@ class Event < ActiveRecord::Base
 
   attr_accessible :content, :cost, :event_type, :event_url, :featured,
     :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, 
-    :cost_type, :event_category, :social_enabled
+    :cost_type, :event_category, :social_enabled, :registration_deadline,
+    :registration_url, :registration_phone, :registration_email
 
   EVENT_CATEGORIES = [:first_friday, :movies, :performing_arts, :wellness, :holidays]
 
