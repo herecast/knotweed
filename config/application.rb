@@ -71,7 +71,8 @@ module Knotweed
     # parameters by using an attr_accessible or attr_protected declaration.
     config.active_record.whitelist_attributes = true
 
-    config.action_mailer.delivery_method = :sendmail
+    config.action_mailer.delivery_method = :postmark
+    config.action_mailer.postmark_settings = { api_token: Figaro.env.postmark_api_token }
 
     # Enable the asset pipeline
     config.assets.enabled = true

@@ -26,17 +26,18 @@ class ReversePublisher < ActionMailer::Base
         template_name = 'market_post'
       end
     end
-    mail(from: from, to: to, subject: subject, template_name: template_name)
+    mail(from: from, to: to, subject: subject, 
+         template_name: template_name, 
+         delivery_method: Rails.env == 'test' ? :test : :sendmail)
   end
 
   def send_copy_to_sender_from_dailyuv(content, outbound_email)
     headers['In-Reply-To'] = content.parent.try(:guid)
-    body = outbound_email.body.encoded.gsub("Content-Transfer-Encoding: 7bit\r\n\r\n", "Content-Transfer-Encoding: 7bit\r\n\r\nHere's what you just posted to dailyUV.com:\r\n\r\n")
+    @text_body = outbound_email.text_part.body.to_s
+    @html_body = outbound_email.html_part.body.to_s
     mail(from: "noreply@dailyuv.com",
          to: content.authoremail,
-         subject: content.title,
-         body: body,
-         content_type: outbound_email.content_type
+         subject: content.title
     )
   end
 

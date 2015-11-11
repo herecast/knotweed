@@ -89,7 +89,7 @@ describe RegistrationsController do
       end
 
       it 'should be sent from the correct account' do
-        mail.from.should eq ['noreply@subtext.org']
+        mail.from.should eq ['noreply@dailyuv.com']
       end
 
       it 'should contain correct url' do
