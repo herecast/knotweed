@@ -52,8 +52,9 @@ module Api
       def images
         object.images.map do |img|
           {
-            image: img.image.url,
-            primary: img.primary
+            id: img.id,
+            image_url: img.image.url,
+            primary: img.primary ? 1 : 0
           }
         end
       end

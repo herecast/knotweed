@@ -95,54 +95,33 @@ module Api
 
         # TODO: once we have created_by, confirm that the user can edit this market post
 
-        images_data = params[:market_post][:images]
+        listserv_ids = params[:market_post].delete :listserv_ids || []
 
-        # FOR NOW, coding this the same way that events apiv2 were coded.
-        # Meaning, the UPDATE call can take EITHER an image OR updated attributes
-        # but not both! and if an image is provided, it ignores everything else.
-        if images_data.present?
-          # clear out existing images since anything coming in is what should
-          # be attached to the MP
-          @market_post.content.images.destroy_all
-          images_data.each do |img|
-            Image.create(image: img[:image], primary: img[:primary], imageable: @market_post.content)
+        location_ids = [@current_api_user.location_id]
+        if params[:market_post][:extended_reach_enabled]
+          location_ids.push Location::REGION_LOCATION_ID
+        end
+
+        @market_post.content.location_ids = location_ids
+        @market_post.content.title = params[:market_post][:title] if params[:market_post][:title].present?
+        @market_post.content.raw_content = params[:market_post][:content] if params[:market_post][:content].present?
+        @market_post.cost = params[:market_post][:price] if params[:market_post][:price].present?
+        @market_post.contact_phone = params[:market_post][:contact_phone] if params[:market_post][:contact_phone].present?
+        @market_post.contact_email = params[:market_post][:contact_email] if params[:market_post][:contact_email].present?
+        @market_post.locate_address = params[:market_post][:locate_address] if params[:market_post][:locate_address].present?
+
+        if @market_post.save # NOTE: triggers @market_post.content.save via after_save callback as well
+          # reverse publish to specified listservs
+          PromotionListserv.create_multiple_from_content(@market_post.content, listserv_ids, @requesting_app)
+
+          if @repository.present?
+            @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
-          if @market_post.content.images.present? # then adding the new images worked
-            render json: @market_post.content, status: 200, 
-              serializer: DetailedMarketPostSerializer, can_edit: true
-          else
-            render json: { errors: @market_post.errors.messages }, 
-              status: :unprocessable_entity
-          end
-        else # do the normal update of attributes
-          listserv_ids = params[:market_post].delete :listserv_ids || []
-
-          location_ids = [@current_api_user.location_id]
-          if params[:market_post][:extended_reach_enabled]
-            location_ids.push Location::REGION_LOCATION_ID
-          end
-
-          @market_post.content.location_ids = location_ids
-          @market_post.content.title = params[:market_post][:title] if params[:market_post][:title].present?
-          @market_post.content.raw_content = params[:market_post][:content] if params[:market_post][:content].present?
-          @market_post.cost = params[:market_post][:price] if params[:market_post][:price].present?
-          @market_post.contact_phone = params[:market_post][:contact_phone] if params[:market_post][:contact_phone].present?
-          @market_post.contact_email = params[:market_post][:contact_email] if params[:market_post][:contact_email].present?
-          @market_post.locate_address = params[:market_post][:locate_address] if params[:market_post][:locate_address].present?
-
-          if @market_post.save # NOTE: triggers @market_post.content.save via after_save callback as well
-            # reverse publish to specified listservs
-            PromotionListserv.create_multiple_from_content(@market_post.content, listserv_ids, @requesting_app)
-
-            if @repository.present?
-              @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
-            end
-            render json: @market_post.content, status: 200, 
-              serializer: DetailedMarketPostSerializer, can_edit: true
-          else
-            render json: { errors: @market_post.errors.messages },
-              status: :unprocessable_entity
-          end
+          render json: @market_post.content, status: 200, 
+            serializer: DetailedMarketPostSerializer, can_edit: true
+        else
+          render json: { errors: @market_post.errors.messages },
+            status: :unprocessable_entity
         end
       end
 
