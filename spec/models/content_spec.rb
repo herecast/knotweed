@@ -69,7 +69,7 @@ describe Content do
       expect(Content.search).to_not include(@not_in_index_event)
     end
 
-    it 'should not include unchannelized event category content' do
+    it 'should include channelized event category content' do
       expect(Content.search).to include(@in_index_event.content)
     end
 

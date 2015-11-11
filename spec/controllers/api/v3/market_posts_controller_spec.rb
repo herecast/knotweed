@@ -199,6 +199,18 @@ describe Api::V3::MarketPostsController do
         expect{subject}.to change{@market_post.content.reload.title}.to @attrs_for_update[:title]
       end
 
+      context 'with extended_reach_enabled true' do
+        before do
+          @attrs_for_update[:extended_reach_enabled] = true
+          @region_location = FactoryGirl.create :location, id: Location::REGION_LOCATION_ID
+        end
+
+        it 'should update the market post with locations including REGION_LOCATION_ID' do
+          subject
+          expect(assigns(:market_post).content.location_ids).to include(Location::REGION_LOCATION_ID)
+        end
+      end
+
       describe 'uploading multiple images' do
         before do
           @file1 = fixture_file_upload('/photo.jpg', 'image/jpg')
@@ -284,6 +296,7 @@ describe Api::V3::MarketPostsController do
           expect(assigns(:market_post).content.location_ids).to include(Location::REGION_LOCATION_ID)
         end
       end
+
     end
 
   end

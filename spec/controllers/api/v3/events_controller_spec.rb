@@ -29,7 +29,11 @@ describe Api::V3::EventsController do
       social_enabled: true,
       title: 'This is the title',
       venue_id: @venue.id,
-      listserv_ids: [@listserv.id]
+      listserv_ids: [@listserv.id],
+      registration_deadline: 1.day.from_now,
+      registration_url: 'http://www.google.com',
+      registration_phone: '888-888-8888',
+      registration_email: 'test@fake.com'
     }
   end
 
@@ -88,6 +92,7 @@ describe Api::V3::EventsController do
       @attrs_for_update[:event_instances][0][:subtitle] = 'changed subtitle!'
       @attrs_for_update[:event_instances][0][:presenter_name] = 'bob loblaw'
       @attrs_for_update[:cost] = '$100'
+      @attrs_for_update[:registration_url] = 'http://boogle.com'
 
       @different_user = FactoryGirl.create :user
     end
@@ -109,6 +114,7 @@ describe Api::V3::EventsController do
       response.code.should eq('200')
       @event.reload
       @event.cost.should eq(@attrs_for_update[:cost])
+      @event.registration_url.should eq(@attrs_for_update[:registration_url])
     end
 
     it 'should update the associated content attributes' do

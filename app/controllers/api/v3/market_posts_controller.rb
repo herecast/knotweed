@@ -118,7 +118,7 @@ module Api
           listserv_ids = params[:market_post].delete :listserv_ids || []
 
           location_ids = [@current_api_user.location_id]
-          if params[:extended_reach_enabled]
+          if params[:market_post][:extended_reach_enabled]
             location_ids.push Location::REGION_LOCATION_ID
           end
 

@@ -33,5 +33,8 @@ class RegistrationsController < Devise::RegistrationsController
        if request.headers['Consumer-App-Uri'].present?
          ConsumerApp.current = ConsumerApp.find_by_uri(request.headers['Consumer-App-Uri'])
        end
+       #TODO FOR REMOVAL LATER
+       @consumer_app = ConsumerApp.find_by_uri(request.headers['Consumer-App-Uri'])
+       Rails.logger.info "Consumer-App-Registration-Controller: #{@consumer_app}" 
      end
 end
