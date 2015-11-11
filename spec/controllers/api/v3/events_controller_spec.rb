@@ -18,7 +18,8 @@ describe Api::V3::EventsController do
         {
           subtitle: 'fake subtitle',
           starts_at: '2015-05-28T13:00:00-04:00',
-          ends_at: '2015-05-28T20:00:00-04:00'
+          ends_at: '2015-05-28T20:00:00-04:00',
+          presenter_name: 'Bob Jones'
         }, {
           subtitle: 'different fake subtitle',
           starts_at: '2015-05-29T13:00:00-04:00'
@@ -89,6 +90,7 @@ describe Api::V3::EventsController do
       @attrs_for_update[:title] = 'Changed the title!'
       @attrs_for_update[:content] = @event.content.raw_content
       @attrs_for_update[:event_instances][0][:subtitle] = 'changed subtitle!'
+      @attrs_for_update[:event_instances][0][:presenter_name] = 'bob loblaw'
       @attrs_for_update[:cost] = '$100'
       @attrs_for_update[:registration_url] = 'http://boogle.com'
 
@@ -126,6 +128,8 @@ describe Api::V3::EventsController do
       @event.reload
       @event.event_instances.first.subtitle_override
         .should eq(@attrs_for_update[:event_instances][0][:subtitle])
+      @event.event_instances.first.presenter_name
+        .should eq(@attrs_for_update[:event_instances][0][:presenter_name])
     end
       
   end

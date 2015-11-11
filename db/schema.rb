@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151106032426) do
+ActiveRecord::Schema.define(:version => 20151106152743) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -426,6 +426,7 @@ ActiveRecord::Schema.define(:version => 20151106032426) do
     t.text     "description_override"
     t.datetime "created_at",           :null => false
     t.datetime "updated_at",           :null => false
+    t.string   "presenter_name"
   end
 
   add_index "event_instances", ["end_date"], :name => "index_event_instances_on_end_date"

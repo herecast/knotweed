@@ -4,7 +4,7 @@ module Api
 
       attributes :id, :subtitle, :starts_at, :ends_at, :image_url,
         :venue_name, :venue_address, :venue_city, :venue_state, 
-        :venue_zip, :registration_deadline
+        :venue_zip, :presenter_name, :registration_deadline
 
       SHARED_EVENT_ATTRIBUTES = [:title]
 
