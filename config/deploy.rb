@@ -75,7 +75,9 @@ namespace :deploy do
   task :copy_robots_txt do
     on roles(:web), in: :parallel do
       source_file = fetch(:robots_txt_file, 'config/private_robots.txt')
-      execute :cp, source_file, 'public/robots.txt'
+      within(:release_path) {
+        execute :cp, source_file, 'public/robots.txt'
+      }
     end
   end
   after :updated, :copy_robots_txt
