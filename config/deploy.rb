@@ -71,4 +71,13 @@ namespace :deploy do
     end
   end
 
+  desc 'Copy robots.txt file'
+  task :copy_robots_txt do
+    on roles(:web), in: :parallel do
+      source_file = fetch(:robots_txt_file, 'config/private_robots.txt')
+      execute :cp, source_file, 'public/robots.txt'
+    end
+  end
+  after :updated, :copy_robots_txt
+
 end
