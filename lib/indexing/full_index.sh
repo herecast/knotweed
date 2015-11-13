@@ -12,4 +12,5 @@ touch $RAILS_ROOT/tmp/indexing.lock
 echo "$(date): beginning full index" >> $LOG_FILE
 /usr/bin/indexer -c $CONFIG_FILE content_core business_location_core event_instance_core location_core publication_core --sighup-each --rotate >> $LOG_FILE
 rm $RAILS_ROOT/tmp/indexing.lock
+echo "$(date):  finished full index" >> $LOG_FILE
 exit 0
