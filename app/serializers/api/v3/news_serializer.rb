@@ -11,9 +11,8 @@ module Api
         end
       end
 
-      # we don't have this field yet. Returning authoremail for now
       def author_id
-        object.authoremail
+        object.created_by.id
       end
 
       def author_name
