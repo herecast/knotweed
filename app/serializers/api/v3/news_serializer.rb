@@ -12,7 +12,7 @@ module Api
       end
 
       def author_id
-        object.created_by.id
+        object.created_by.try(:id)
       end
 
       def author_name
