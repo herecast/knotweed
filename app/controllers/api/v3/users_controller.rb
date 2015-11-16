@@ -87,6 +87,21 @@ module Api
         render json: res
       end
 
+      def resend_confirmation
+        user = User.find_by_email(params[:user][:email])
+        if user.present?
+          if user.confirmed?
+            render json: { message: 'User already confirmed.' }, status: 200
+          else
+            user.resend_confirmation_instructions
+            render json: { message: "We've sent an email to #{params[:user][:email]} containing a confirmation link" },
+              status: 200
+          end
+        else
+          render json: { errors: "#{params[:user][:email]} not found" }, status: 404
+        end
+      end
+
     end
   end
 end
