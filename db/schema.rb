@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151120001418) do
+ActiveRecord::Schema.define(:version => 20151113163149) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -421,6 +421,7 @@ ActiveRecord::Schema.define(:version => 20151120001418) do
     t.datetime "created_at",           :null => false
     t.datetime "updated_at",           :null => false
     t.string   "presenter_name"
+    t.integer  "schedule_id"
   end
 
   add_index "event_instances", ["end_date"], :name => "index_event_instances_on_end_date"
@@ -867,6 +868,16 @@ ActiveRecord::Schema.define(:version => 20151120001418) do
 
   add_index "roles", ["name", "resource_type", "resource_id"], :name => "index_roles_on_name_and_resource_type_and_resource_id"
   add_index "roles", ["name"], :name => "index_roles_on_name"
+
+  create_table "schedules", :force => true do |t|
+    t.text     "recurrence"
+    t.integer  "event_id"
+    t.text     "description_override"
+    t.string   "subtitle_override"
+    t.string   "presenter_name"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+  end
 
   create_table "states", :force => true do |t|
     t.string "statename", :limit => 128

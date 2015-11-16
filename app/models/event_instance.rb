@@ -14,8 +14,9 @@
 
 class EventInstance < ActiveRecord::Base
   belongs_to :event
+  belongs_to :schedule
   attr_accessible :description_override, :end_date, :event_id, :start_date, :subtitle_override,
-    :presenter_name
+    :presenter_name, :schedule_id
 
   # it was requested to only have end time, not end date.
   # Rather than change the field, I've just turned it into a time picker
