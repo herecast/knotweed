@@ -15,7 +15,7 @@ module Api
         opts[:conditions] = {}
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
-        opts[:conditions][:published] = 1 if @repository.present?
+        opts[:with][:published] = 1 if @repository.present?
         opts[:sql] = { include: [:images, :publication, :root_content_category] }
         if @requesting_app.present?
           allowed_pubs = @requesting_app.publications
