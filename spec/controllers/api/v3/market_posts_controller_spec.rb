@@ -5,7 +5,7 @@ describe Api::V3::MarketPostsController do
     @market_cat = FactoryGirl.create :content_category, name: 'market'
   end
 
-  describe 'GET index', sphinx: true do
+  describe 'GET index' do
     before do
       @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
       @other_location = FactoryGirl.create :location, city: 'Another City'
@@ -19,6 +19,7 @@ describe Api::V3::MarketPostsController do
         locations: [@third_location], published: true
       @old_post = FactoryGirl.create :content, content_category: @market_cat,
         locations: [@default_location], published: true, pubdate: 40.days.ago
+      index
     end
 
     subject { get :index, format: :json }
