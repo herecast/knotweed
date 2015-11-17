@@ -12,6 +12,5 @@ ThinkingSphinx::Index.define(:event_instance,
 
   has event.content.pubdate
   has start_date
-  has event.content.locations.id, as: :loc_ids
   has event.content.published, as: :published
 end

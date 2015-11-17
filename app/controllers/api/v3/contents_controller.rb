@@ -76,7 +76,7 @@ module Api
         opts[:with] = {}
         opts[:conditions] = {}
         opts[:page] = params[:page] || 1
-        opts[:conditions][:published] = 1 if @repository.present?
+        opts[:with][:published] = 1 if @repository.present?
         opts[:sql] = { include: [:images, :publication, :root_content_category] }
 
         if @requesting_app.present?
@@ -109,7 +109,7 @@ module Api
           per_page: 12
         })
         reg_opts[:with] = reg_opts[:with].merge({
-          loc_ids: [location_condition],
+          all_loc_ids: [location_condition],
           root_content_category_id: reg_cat_ids
         })
 
