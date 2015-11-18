@@ -265,6 +265,41 @@ describe Api::V3::UsersController do
     end
   end
 
+  describe 'POST resend_confirmation' do
+    before do
+      @user = FactoryGirl.create :user, confirmed_at: nil
+    end
+    
+    context 'with a valid unconfirmed account' do
+      subject { post :resend_confirmation, user: { email: @user.email } }
+
+      it 'should trigger sending an email' do
+        expect{subject}.to change{ActionMailer::Base.deliveries.count}.by 1
+      end
+    end
+
+    context 'with an email not associated with any accounts' do
+      subject! { post :resend_confirmation, user: { email: 'does_not_exist@indatabase.com' } }
+
+      it 'should respond with 404 status' do
+        expect(response.code).to eq('404')
+      end
+    end
+
+    context 'with an already confirmed account' do
+      before do
+        @user.confirm!
+      end
+
+      subject! { post :resend_confirmation, user: { email: @user.email } }
+
+      it 'should respond with a message saying the user is already confirmed' do
+        expect(response.body).to include('already confirmed')
+      end
+    end
+
+  end
+
   private
     
     def expected_user_response(user)
