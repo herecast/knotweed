@@ -1,6 +1,6 @@
 namespace :reporting do
   desc 'creates a content report'
-  task :content_report => :environment do
+  task :create_content_report => :environment do
     logger = Logger.new("#{Rails.root}/log/rake_content_report_#{Rails.env}.log")
     begin
       @bloggers = User.with_role(:blogger)

@@ -41,6 +41,7 @@ set :keep_releases, 3
 # Hack for a bug in Thinking Sphinx, will be fixed with next release
 # (https://github.com/pat/thinking-sphinx/issues/787)
 set :thinking_sphinx_rails_env, fetch(:rails_env, 'production')
+set :whenever_roles, [:web, :db]
 
 namespace :deploy do
 

@@ -117,3 +117,4 @@ gem 'newrelic_rpm'
 
 gem 'forecast_io'
 gem 'postmark-rails', '~> 0.12.0'
+gem 'whenever', :require => false
