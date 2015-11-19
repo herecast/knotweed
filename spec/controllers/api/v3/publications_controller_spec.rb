@@ -13,8 +13,7 @@ describe Api::V3::PublicationsController do
       FactoryGirl.create(:content, publication: @difft_app_pub,
         content_category: @news_cat)
       @consumer_app.publications += [@publication, @non_news_pub]
-      ThinkingSphinx::Test.index 'publication_core'
-      ThinkingSphinx::Test.index 'content_core', 'content_delta'
+      index
     end
 
     subject { get :index, format: :json }

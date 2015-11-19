@@ -22,9 +22,13 @@ RSpec.configure do |config|
     ThinkingSphinx::Test.start_with_autostop
   end
 
+  # this is not super valuable because it gets registered
+  # as the FIRST before action...so if your other before action
+  # creates content that you need indexed, you have to do that manually,
+  # you can't use this metadata-based shortcut.
   config.before(:each) do
     # Index data when running specs that require sphinx
-    index if example.metadata[:sphinx]
+    index if @example.metadata[:sphinx]
   end
 
 end

@@ -17,7 +17,7 @@ describe Api::V3::NewsController do
         locations: [@other_location], published: true
       FactoryGirl.create_list :content, 4, content_category: @news_cat, 
         locations: [@third_location], published: true
-      ThinkingSphinx::Test.index 'content_core', 'location_core'
+      index
     end
 
     subject { get :index, format: :json }
@@ -37,12 +37,7 @@ describe Api::V3::NewsController do
         @pub = FactoryGirl.create :publication
         @pub_and_loc_content = FactoryGirl.create :content, content_category: @news_cat,
           locations: [@default_location], publication: @pub
-        # this spec were causing a timing issue when run as part of the whole suite.
-        # There may be a more holistic approach to solving this problem, but I'm not sure what it would be,
-        # so I'm solving the problem for this spec by forcing an index.
-        ThinkingSphinx::Test.index 'content_core', 'content_delta'
-        ThinkingSphinx::Test.index 'publication_core'
-        ThinkingSphinx::Test.index 'location_core'
+        index
       end
 
       subject! { get :index, format: :json, publication: @pub.name }
@@ -90,7 +85,6 @@ describe Api::V3::NewsController do
   describe 'GET show' do
     before do
       @news = FactoryGirl.create :content, content_category: @news_cat
-      ThinkingSphinx::Test.index 'content_core'
     end
 
     subject { get :show, id: @news.id, format: :json }

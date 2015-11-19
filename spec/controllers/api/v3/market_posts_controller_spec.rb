@@ -19,7 +19,7 @@ describe Api::V3::MarketPostsController do
         locations: [@third_location], published: true
       @old_post = FactoryGirl.create :content, content_category: @market_cat,
         locations: [@default_location], published: true, pubdate: 40.days.ago
-      ThinkingSphinx::Test.index 'location_core','content_core' 
+      index
     end
 
     subject { get :index, format: :json }
@@ -80,7 +80,6 @@ describe Api::V3::MarketPostsController do
       @user = FactoryGirl.create :user, location: @location
       @market_post = FactoryGirl.create :content, content_category: @market_cat
       @market_post.update_attribute(:created_by, @user)
-      ThinkingSphinx::Test.index 'location_core','content_core' 
     end
 
     subject { get :show, id: @market_post.id, format: :json }
@@ -90,6 +89,7 @@ describe Api::V3::MarketPostsController do
       subject 
       JSON.parse(response.body)["market_post"]["can_edit"].should == true
     end
+
     it 'can_edit should false for a different user' do
       @location = FactoryGirl.create :location, city: 'Another City'
       @different_user = FactoryGirl.create :user, location: @location
@@ -97,6 +97,7 @@ describe Api::V3::MarketPostsController do
       subject 
       JSON.parse(response.body)["market_post"]["can_edit"].should == false
     end
+
     it 'can_edit should false when a user is not logged in' do
       subject 
       JSON.parse(response.body)["market_post"]["can_edit"].should == false
@@ -106,7 +107,6 @@ describe Api::V3::MarketPostsController do
   describe 'GET show' do
     before do
       @market_post = FactoryGirl.create :content, content_category: @market_cat
-      ThinkingSphinx::Test.index 'content_core' 
     end
 
     subject { get :show, id: @market_post.id, format: :json }
@@ -154,7 +154,6 @@ describe Api::V3::MarketPostsController do
     before do
       post_content = FactoryGirl.create :content, content_category: @market_cat
       @market_post = FactoryGirl.create :market_post, content: post_content
-      ThinkingSphinx::Test.index 'content_core' 
     end
 
     subject { get :contact, id: @market_post.content.id, format: :json }
