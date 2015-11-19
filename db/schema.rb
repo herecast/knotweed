@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151106152743) do
+ActiveRecord::Schema.define(:version => 20151119193138) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -218,6 +218,19 @@ ActiveRecord::Schema.define(:version => 20151106152743) do
   end
 
   add_index "content_promotion_banner_impressions", ["content_id", "promotion_banner_id"], :name => "content_promotion_banner_impression", :unique => true
+
+  create_table "content_reports", :force => true do |t|
+    t.integer  "content_id"
+    t.datetime "report_date"
+    t.integer  "view_count"
+    t.integer  "banner_click_count"
+    t.integer  "comment_count"
+    t.integer  "total_view_count"
+    t.integer  "total_banner_click_count"
+    t.integer  "total_comment_count"
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
+  end
 
   create_table "content_sets", :force => true do |t|
     t.string   "import_method"
@@ -504,10 +517,10 @@ ActiveRecord::Schema.define(:version => 20151106152743) do
     t.string   "image"
     t.string   "imageable_type"
     t.integer  "imageable_id"
-    t.datetime "created_at",                                       :null => false
-    t.datetime "updated_at",                                       :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
     t.string   "source_url",     :limit => 400
-    t.boolean  "primary",                       :default => false
+    t.boolean  "primary"
   end
 
   add_index "images", ["imageable_type", "imageable_id"], :name => "index_images_on_imageable_type_and_imageable_id"
@@ -747,16 +760,29 @@ ActiveRecord::Schema.define(:version => 20151106152743) do
     t.boolean "active",                               :default => true
   end
 
+  create_table "promotion_banner_reports", :force => true do |t|
+    t.integer  "promotion_banner_id"
+    t.datetime "report_date"
+    t.integer  "impression_count"
+    t.integer  "click_count"
+    t.integer  "total_impression_count"
+    t.integer  "total_click_count"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+  end
+
   create_table "promotion_banners", :force => true do |t|
     t.string   "banner_image"
     t.string   "redirect_url"
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
+    t.datetime "created_at",                               :null => false
+    t.datetime "updated_at",                               :null => false
     t.datetime "campaign_start"
     t.datetime "campaign_end"
     t.integer  "max_impressions"
-    t.integer  "impression_count", :default => 0
-    t.integer  "click_count",      :default => 0
+    t.integer  "impression_count",      :default => 0
+    t.integer  "click_count",           :default => 0
+    t.integer  "daily_max_impressions"
+    t.boolean  "boost",                 :default => false
   end
 
   create_table "promotion_listservs", :force => true do |t|
