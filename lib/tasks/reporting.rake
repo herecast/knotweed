@@ -12,7 +12,6 @@ namespace :reporting do
           past_report_view = old_content_reports.max_by(&:total_view_count)
           if past_report_view
             view_count = content.view_count - past_report_view.total_view_count
-            comment_count = content.comment_count - past_report_view.total_comment_count
           else
             view_count = content.view_count
           end
@@ -26,7 +25,7 @@ namespace :reporting do
 
           past_report_comment = old_content_reports.max_by(&:total_comment_count)
           if past_report_comment 
-            comment_count = content.comment_count - past_report_comment.total_banner_click_count
+            comment_count = content.comment_count - past_report_comment.total_comment_count
           else
             comment_count = content.comment_count
           end

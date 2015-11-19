@@ -19,7 +19,7 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every 1.day, at: '11:59 pm' do
+every 1.day, at: '11:50 pm' do
   rake 'reporting:create_content_report'
   rake 'reporting:create_promotion_banner_report'
 end
