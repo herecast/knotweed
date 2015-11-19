@@ -52,7 +52,9 @@ saveImageAttributes = (updateButton) ->
     $('.primary-checkbox:checked').each ->
       if $(this).attr('id') !=  ('image_' + imageId + '_primary')
         $(this).attr('checked', false)
-        saveImageAttributes($(this).closest('.image').find('a.update-image'))
+        # don't need to trigger an ajax call here because the actual data update
+        # is handled automatically by the Image model, so we're just changing
+        # the UX to reflect the updated database
 
   $.ajax($(updateButton).data("url"), {
     type: "PUT",
