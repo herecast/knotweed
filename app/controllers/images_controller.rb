@@ -9,7 +9,11 @@ class ImagesController < ApplicationController
   end
 
   def create
+    
     @image = Image.create(params[:image])
+    # if it's the only image for a given imageable item,
+    # set it to 'primary'
+    @image.update_attribute :primary, true if @image.try(:imageable).try(:images) == [@image]
   end
 
   def destroy
