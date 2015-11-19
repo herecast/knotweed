@@ -26,7 +26,7 @@ module Api
       def destroy
         @image = Image.find(params[:id])
         if @image.destroy
-          head 200
+          head :no_content
         else
           head :unprocessable_entity
         end
