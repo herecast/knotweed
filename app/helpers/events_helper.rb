@@ -83,10 +83,11 @@ module EventsHelper
   end
 
   def event_url_for_email(event)
+    utm_string = "?utm_medium=email&utm_source=rev-pub&utm_campaign=20151201&utm_content=#{ux2_event_path(event)}"
     if Thread.current[:consumer_app].present?
-      url = "#{Thread.current[:consumer_app].uri}#{ux2_event_path(event)}"
+      url = "#{Thread.current[:consumer_app].uri}#{ux2_event_path(event)}#{utm_string}"
     elsif @base_uri.present?
-      url = "#{@base_uri}/events/#{event.event_instances.first.id}"
+      url = "#{@base_uri}/events/#{event.event_instances.first.id}#{utm_string}"
     else
       url = "http://www.dailyuv.com/events"
     end

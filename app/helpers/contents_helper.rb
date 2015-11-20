@@ -38,10 +38,11 @@ module ContentsHelper
   end
 
   def content_url_for_email(content)
+    utm_string = "?utm_medium=email&utm_source=rev-pub&utm_campaign=20151201&utm_content=#{ux2_content_path(content)}"
     if Thread.current[:consumer_app].present?
-      url = "#{Thread.current[:consumer_app].uri}#{ux2_content_path(content)}"
+      url = "#{Thread.current[:consumer_app].uri}#{ux2_content_path(content)}#{utm_string}"
     elsif @base_uri.present?
-      url = "#{@base_uri}/contents/#{content.id}"
+      url = "#{@base_uri}/contents/#{content.id}#{utm_string}"
     else
       url = "http://www.dailyuv.com/contents/#{content.id}"
     end
