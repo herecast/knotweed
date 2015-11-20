@@ -35,6 +35,7 @@ class PromotionBanner < ActiveRecord::Base
 
   validates_presence_of :promotion
 
+  # @deprecated as of release 3.0.3
   # this scope combines all conditions to determine whether a promotion banner is active
   # NOTE: we need the select clause or else the "joins" causes the scope to return 
   # readonly records.
