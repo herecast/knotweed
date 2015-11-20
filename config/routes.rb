@@ -111,6 +111,7 @@ Knotweed::Application.routes.draw do
       get '/weather', to: 'users#weather', as: :weather
       post '/users/logout', to: 'users#logout', as: :logout
       get '/dashboard', to: 'contents#dashboard', as: :dashboard
+      get '/ad_dashboard', to: 'contents#ad_dashboard', as: :ad_dashboard
       post '/users/email_confirmation', to: 'users#email_confirmation', as: :email_confirmation
       post '/users/resend_confirmation', to: 'users#resend_confirmation', as: :resend_confirmation
       resources 'images', only: [:create, :update, :destroy]

@@ -1,7 +1,7 @@
 module Api
   module V3
     class ContentsController < ApiController
-      before_filter :check_logged_in!, only:  [:moderate, :dashboard]
+      before_filter :check_logged_in!, only:  [:moderate, :dashboard, :ad_dashboard]
       after_filter :track_moderate, only: :moderate
       # pings the DSP to retrieve a related banner ad for a generic
       # content type.
@@ -143,6 +143,18 @@ module Api
 
         render json: @contents, each_serializer: DashboardContentSerializer
 
+      end
+
+      # returns all types of content
+      def ad_dashboard
+        params[:sort] ||= 'pubdate DESC'
+        params[:page] ||= 1
+        params[:per_page] ||= 12
+
+        @contents = Content.where(created_by: @current_api_user).
+          order(sanitize_sort_parameter(params[:sort])).
+          page(params[:page].to_i).per(params[:per_page].to_i)
+        render json: @contents, each_serializer: DashboardContentSerializer
       end
 
       protected
