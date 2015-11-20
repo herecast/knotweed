@@ -23,7 +23,7 @@ class PromotionBanner < ActiveRecord::Base
 
   attr_accessible :banner_image, :redirect_url, :remove_banner, :banner_cache,
     :campaign_start, :campaign_end, :max_impressions, :impression_count,
-    :click_count
+    :click_count, :boost, :daily_max_impressions
 
   mount_uploader :banner_image, ImageUploader
 

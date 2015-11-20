@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151106152743) do
+ActiveRecord::Schema.define(:version => 20151120001418) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -86,9 +86,9 @@ ActiveRecord::Schema.define(:version => 20151106152743) do
     t.string   "city"
     t.string   "state"
     t.string   "zip"
+    t.string   "status"
     t.integer  "created_by"
     t.integer  "updated_by"
-    t.string   "status"
   end
 
   add_index "business_locations", ["created_by"], :name => "index_business_locations_on_created_by"
@@ -123,9 +123,9 @@ ActiveRecord::Schema.define(:version => 20151106152743) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer  "channel_id"
-    t.text     "category"
-    t.datetime "created_at", :null => false
+    t.integer   "channel_id"
+    t.text      "category"
+    t.timestamp "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -219,6 +219,19 @@ ActiveRecord::Schema.define(:version => 20151106152743) do
 
   add_index "content_promotion_banner_impressions", ["content_id", "promotion_banner_id"], :name => "content_promotion_banner_impression", :unique => true
 
+  create_table "content_reports", :force => true do |t|
+    t.integer  "content_id"
+    t.datetime "report_date"
+    t.integer  "view_count"
+    t.integer  "banner_click_count"
+    t.integer  "comment_count"
+    t.integer  "total_view_count"
+    t.integer  "total_banner_click_count"
+    t.integer  "total_comment_count"
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
+  end
+
   create_table "content_sets", :force => true do |t|
     t.string   "import_method"
     t.text     "import_method_details"
@@ -274,11 +287,11 @@ ActiveRecord::Schema.define(:version => 20151106152743) do
     t.string   "channel_type"
     t.integer  "channel_id"
     t.integer  "root_content_category_id"
-    t.integer  "created_by"
-    t.integer  "updated_by"
     t.integer  "view_count",               :default => 0
     t.integer  "comment_count",            :default => 0
     t.integer  "commenter_count",          :default => 0
+    t.integer  "created_by"
+    t.integer  "updated_by"
     t.integer  "banner_click_count",       :default => 0
   end
 
@@ -299,21 +312,6 @@ ActiveRecord::Schema.define(:version => 20151106152743) do
   add_index "contents", ["root_content_category_id"], :name => "index_contents_on_root_content_category_id"
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["title"], :name => "title"
-
-  create_table "contents_NT", :force => true do |t|
-    t.string   "title"
-    t.string   "subtitle"
-    t.string   "authors"
-    t.string   "subject"
-    t.text     "content"
-    t.integer  "issue_id"
-    t.integer  "location_id"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
-    t.boolean  "reviewed",       :default => false
-    t.integer  "lupdate_by"
-    t.integer  "publication_id"
-  end
 
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
@@ -338,10 +336,6 @@ ActiveRecord::Schema.define(:version => 20151106152743) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
-
-  create_table "contents_id", :force => true do |t|
-    t.string "category", :limit => 128
-  end
 
   create_table "contents_locations", :force => true do |t|
     t.integer  "content_id"
@@ -740,23 +734,29 @@ ActiveRecord::Schema.define(:version => 20151106152743) do
     t.datetime "updated_at",      :null => false
   end
 
-  create_table "promote_options", :force => true do |t|
-    t.string  "promo_type",            :limit => 128
-    t.string  "name",                  :limit => 128
-    t.string  "reverse_publish_email", :limit => 128
-    t.boolean "active",                               :default => true
+  create_table "promotion_banner_reports", :force => true do |t|
+    t.integer  "promotion_banner_id"
+    t.datetime "report_date"
+    t.integer  "impression_count"
+    t.integer  "click_count"
+    t.integer  "total_impression_count"
+    t.integer  "total_click_count"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
   end
 
   create_table "promotion_banners", :force => true do |t|
     t.string   "banner_image"
     t.string   "redirect_url"
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
-    t.datetime "campaign_start"
-    t.datetime "campaign_end"
+    t.datetime "created_at",                               :null => false
+    t.datetime "updated_at",                               :null => false
+    t.date     "campaign_start"
+    t.date     "campaign_end"
     t.integer  "max_impressions"
-    t.integer  "impression_count", :default => 0
-    t.integer  "click_count",      :default => 0
+    t.integer  "impression_count",      :default => 0
+    t.integer  "click_count",           :default => 0
+    t.integer  "daily_max_impressions"
+    t.boolean  "boost",                 :default => false
   end
 
   create_table "promotion_listservs", :force => true do |t|
