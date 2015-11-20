@@ -46,13 +46,24 @@ jQuery ->
 # called when "update" is pressed or when the text fields are changed
 saveImageAttributes = (updateButton) ->
   imageId = $(updateButton).data('imageId')
+  primary = $('#image_' + imageId + '_primary:checked').length > 0;
+  if primary
+    # uncheck and update any other images marked primary
+    $('.primary-checkbox:checked').each ->
+      if $(this).attr('id') !=  ('image_' + imageId + '_primary')
+        $(this).attr('checked', false)
+        # don't need to trigger an ajax call here because the actual data update
+        # is handled automatically by the Image model, so we're just changing
+        # the UX to reflect the updated database
+
   $.ajax($(updateButton).data("url"), {
     type: "PUT",
     dataType: "script",
     data: { 
       "image": { 
         "caption": $("#image_" + imageId + "_caption").val(),
-        "credit": $("#image_" + imageId + "_credit").val()
+        "credit": $("#image_" + imageId + "_credit").val(),
+        "primary": $('#image_' + imageId + '_primary').is(':checked')
       }
     }
   })
