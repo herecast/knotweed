@@ -103,6 +103,7 @@ Knotweed::Application.routes.draw do
       resources 'contents', only: [:index]
       get '/contents/:id/related_promotion', to: 'contents#related_promotion', as: :related_promotion
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
+      get '/contents/:id/metrics', to: 'contents#metrics', as: :metrics
       resources 'publications', only: [:index]
       resources 'news', only: [:index, :show]
       resources 'talk', only: [:index, :show, :create, :update]

@@ -251,4 +251,30 @@ describe Api::V3::ContentsController do
       end
     end
   end
+
+  describe 'GET /contents/:id/metrics' do
+    before do
+      @content = FactoryGirl.create :content
+      @user = FactoryGirl.create :user
+      api_authenticate user: @user
+    end
+
+    subject! { get :metrics, id: @content.id }
+
+    context 'without owning the content' do
+      it 'should respond with 401' do
+        expect(response.code).to eq('401')
+      end
+    end
+
+    context 'as content owner' do
+      before do
+        @content.update_attribute :created_by, @user
+      end
+
+      it 'should respond with the content' do
+        expect(assigns(:content)).to eq(@content)
+      end
+    end
+  end
 end

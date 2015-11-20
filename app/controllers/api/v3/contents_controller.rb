@@ -1,7 +1,7 @@
 module Api
   module V3
     class ContentsController < ApiController
-      before_filter :check_logged_in!, only:  [:moderate, :dashboard, :ad_dashboard]
+      before_filter :check_logged_in!, only:  [:moderate, :dashboard, :ad_dashboard, :metrics]
       after_filter :track_moderate, only: :moderate
       # pings the DSP to retrieve a related banner ad for a generic
       # content type.
@@ -155,6 +155,17 @@ module Api
           order(sanitize_sort_parameter(params[:sort])).
           page(params[:page].to_i).per(params[:per_page].to_i)
         render json: @contents, each_serializer: DashboardContentSerializer
+      end
+
+      def metrics
+        @content = Content.find(params[:id])
+        # confirm user owns content first
+        if @current_api_user != @content.created_by 
+          render json: { errors: ['You do not have permission to access these metrics.'] }, 
+            status: 401
+        else
+          render json: @content, serializer: ContentMetricsSerializer
+        end
       end
 
       protected

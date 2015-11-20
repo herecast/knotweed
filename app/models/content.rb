@@ -1294,6 +1294,11 @@ class Content < ActiveRecord::Base
     CGI.escape(BASE_URI + "/#{id}")
   end
 
+  # NOTE: returns the content records of child comments, NOT the comment records.
+  def comments
+    children.where('channel_type = "Comment"')
+  end
+
   private
 
   def query_promo_similarity_index(query_term, repo)
