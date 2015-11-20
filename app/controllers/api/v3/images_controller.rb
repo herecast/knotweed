@@ -17,7 +17,11 @@ module Api
         @image = Image.find(params[:id])
         @image.primary = params[:image][:primary]
         if @image.save
-          head 200
+          render json: {
+            id: @image.id,
+            image_url: @image.image.url,
+            primary: @image.primary ? 1 : 0
+          }, status: 200
         else
           head :unprocessable_entity
         end
