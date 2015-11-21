@@ -259,10 +259,14 @@ describe Api::V3::ContentsController do
       api_authenticate user: @user
     end
 
-    subject! { get :metrics, id: @content.id }
+    subject { get :metrics, id: @content.id }
 
     context 'without owning the content' do
+      before do
+        @content.update_attribute :created_by, nil
+      end
       it 'should respond with 401' do
+        subject
         expect(response.code).to eq('401')
       end
     end
@@ -273,6 +277,7 @@ describe Api::V3::ContentsController do
       end
 
       it 'should respond with the content' do
+        subject
         expect(assigns(:content)).to eq(@content)
       end
     end
