@@ -20,6 +20,17 @@ module Api
         head :ok
       end
 
+      def metrics
+        @promotion_banner = PromotionBanner.find(params[:id])
+        # confirm user owns content first
+        if @current_api_user != @promotion_banner.promotion.created_by 
+          render json: { errors: ['You do not have permission to access these metrics.'] }, 
+            status: 401
+        else
+          render json: @promotion_banner, serializer: PromotionBannerMetricsSerializer
+        end
+      end
+
       private
 
       def event_track

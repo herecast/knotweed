@@ -38,4 +38,31 @@ describe Api::V3::PromotionBannersController do
     end
   end
 
+  describe 'GET /promotion_banners/:id/metrics' do
+    before do
+      @banner = FactoryGirl.create :promotion_banner
+      @user = FactoryGirl.create :user
+      api_authenticate user: @user
+      @content = FactoryGirl.create :content
+      @content.promotion_banners = [@banner]
+    end
+
+    subject! { get :metrics, id: @banner.id }
+
+    context 'without owning the content' do
+      it 'should respond with 401' do
+        expect(response.code).to eq('401')
+      end
+    end
+
+    context 'as content owner' do
+      before do
+        @banner.promotion.update_attribute :created_by, @user
+      end
+
+      it 'should respond with the content' do
+        expect(assigns(:promotion_banner)).to eq(@banner)
+      end
+    end
+  end
 end
