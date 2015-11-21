@@ -148,13 +148,17 @@ module Api
       # returns all types of content
       def ad_dashboard
         params[:sort] ||= 'pubdate DESC'
-        params[:page] ||= 1
-        params[:per_page] ||= 12
 
-        @contents = Content.where(created_by: @current_api_user).
-          order(sanitize_sort_parameter(params[:sort])).
-          page(params[:page].to_i).per(params[:per_page].to_i)
-        render json: @contents, each_serializer: DashboardContentSerializer
+        reg_conts = Content.where(created_by: @current_api_user).
+          order(sanitize_sort_parameter(params[:sort]))
+
+        banners = PromotionBanner.joins(:promotion).
+          where('promotions.created_by = ? and promotable_type = "PromotionBanner"',
+                @current_api_user.id)
+
+        @contents = reg_conts + banners
+
+        render json: @contents, serializer: AdDashboardArraySerializer
       end
 
       def metrics
