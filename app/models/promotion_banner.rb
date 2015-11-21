@@ -34,6 +34,8 @@ class PromotionBanner < ActiveRecord::Base
   after_destroy :update_active_promotions
 
   validates_presence_of :promotion
+  validates :max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'max_impressions.present?'
+  validates :daily_max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'daily_max_impressions.present?'
 
   # this scope combines all conditions to determine whether a promotion banner is active
   # NOTE: we need the select clause or else the "joins" causes the scope to return 
