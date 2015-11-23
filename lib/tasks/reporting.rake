@@ -8,7 +8,7 @@ namespace :reporting do
       @bloggers.each do |blogger|
         my_contents = Content.joins(:publication).where(created_by: blogger, root_content_category_id: root_news_cat.id)
         my_contents.each do |content|
-          old_content_report = ContentReports.where(content_id: content.id).order(:id).last
+          old_content_report = ContentReport.where(content_id: content.id).order(:id).last
 
           if old_content_report
             view_count = content.view_count - old_content_report.total_view_count
@@ -20,7 +20,7 @@ namespace :reporting do
             comment_count = content.comment_count
           end
 
-          ContentReports.create! content_id: content.id,
+          ContentReport.create! content_id: content.id,
                                 report_date: Time.now,
                                 view_count: view_count,
                                 banner_click_count: banner_click_count,
