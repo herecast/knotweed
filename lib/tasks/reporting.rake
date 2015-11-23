@@ -43,7 +43,7 @@ namespace :reporting do
     begin
       @active_promos = PromotionBanner.where("? >= campaign_start AND ? <= campaign_end", Date.today, Date.today)
       @active_promos.each do |promotion_banner|
-        old_promotion_report = PromotionBannerReports.where(promotion_banner_id: promotion_banner.id).order(:id).last
+        old_promotion_report = PromotionBannerReport.where(promotion_banner_id: promotion_banner.id).order(:id).last
 
         if old_promotion_report
           impression_count = promotion_banner.impression_count - old_promotion_report.total_impression_count
@@ -53,7 +53,7 @@ namespace :reporting do
           click_count = promotion_banner.click_count
         end
 
-        PromotionBannerReports.create! promotion_banner_id: promotion_banner.id,
+        PromotionBannerReport.create! promotion_banner_id: promotion_banner.id,
                                        report_date: Time.now,
                                        impression_count: impression_count,
                                        click_count: click_count,
