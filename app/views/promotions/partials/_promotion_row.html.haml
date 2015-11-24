@@ -6,6 +6,8 @@
     %td= link_to promotion.content.title, edit_content_path(promotion.content)
   %td= promotion.promotable_type
   %td= promotion.description
+  - if promotion.promotable_type == 'PromotionBanner'
+    %td= promotion.promotable.boost
   %td= promotion.paid
   %td= promotion.active
   %td

@@ -57,6 +57,18 @@ namespace :deploy do
 
   after :publishing, :restart
 
+  desc 'Create job logging directories'
+  task :create_log_record_folders do
+    on roles(:web) do
+      within shared_path do
+        execute :mkdir, "-pv", "log/import_records"
+        execute :mkdir, "-pv", "log/publish_records"
+      end
+    end
+  end
+
+  after :starting, :create_log_record_folders
+
   task :reconfigure_sphinx do
     invoke 'thinking_sphinx:configure'
   end

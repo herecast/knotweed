@@ -23,7 +23,7 @@ class PromotionBanner < ActiveRecord::Base
 
   attr_accessible :banner_image, :redirect_url, :remove_banner, :banner_cache,
     :campaign_start, :campaign_end, :max_impressions, :impression_count,
-    :click_count
+    :click_count, :boost, :daily_max_impressions
 
   mount_uploader :banner_image, ImageUploader
 
@@ -34,6 +34,8 @@ class PromotionBanner < ActiveRecord::Base
   after_destroy :update_active_promotions
 
   validates_presence_of :promotion
+  validates :max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'max_impressions.present?'
+  validates :daily_max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'daily_max_impressions.present?'
 
   # @deprecated as of release 3.0.3
   # this scope combines all conditions to determine whether a promotion banner is active

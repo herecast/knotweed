@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151117205503) do
+ActiveRecord::Schema.define(:version => 20151120001418) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -748,13 +748,15 @@ ActiveRecord::Schema.define(:version => 20151117205503) do
   create_table "promotion_banners", :force => true do |t|
     t.string   "banner_image"
     t.string   "redirect_url"
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
-    t.datetime "campaign_start"
-    t.datetime "campaign_end"
+    t.datetime "created_at",                               :null => false
+    t.datetime "updated_at",                               :null => false
+    t.date     "campaign_start"
+    t.date     "campaign_end"
     t.integer  "max_impressions"
-    t.integer  "impression_count", :default => 0
-    t.integer  "click_count",      :default => 0
+    t.integer  "impression_count",      :default => 0
+    t.integer  "click_count",           :default => 0
+    t.integer  "daily_max_impressions"
+    t.boolean  "boost",                 :default => false
   end
 
   create_table "promotion_listservs", :force => true do |t|

@@ -24,11 +24,26 @@ class Image < ActiveRecord::Base
   
   mount_uploader :image, ImageUploader
   
-#  validates_presence_of :image
+  # validates_presence_of :image
+  
+  after_save :ensure_only_one_primary
   
   # alias for rails_admin to find label method
   def name
     image_identifier
+  end
+
+  # if the image is primary, be sure to set other images belonging to the same
+  # imageable as not primary
+  def ensure_only_one_primary
+    if imageable.present?
+      other_images = imageable.images.where('id != ?', id)
+      if !other_images.present? # then this is the only image
+        update_attribute :primary, true unless primary
+      elsif primary
+        other_images.update_all primary: false
+      end
+    end
   end
   
 end

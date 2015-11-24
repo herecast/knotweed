@@ -19,7 +19,7 @@ describe Api::V3::MarketPostsController do
         locations: [@third_location], published: true
       @old_post = FactoryGirl.create :content, content_category: @market_cat,
         locations: [@default_location], published: true, pubdate: 40.days.ago
-      ThinkingSphinx::Test.index 'location_core','content_core' 
+      index
     end
 
     subject { get :index, format: :json }
@@ -80,7 +80,6 @@ describe Api::V3::MarketPostsController do
       @user = FactoryGirl.create :user, location: @location
       @market_post = FactoryGirl.create :content, content_category: @market_cat
       @market_post.update_attribute(:created_by, @user)
-      ThinkingSphinx::Test.index 'location_core','content_core' 
     end
 
     subject { get :show, id: @market_post.id, format: :json }
@@ -90,6 +89,7 @@ describe Api::V3::MarketPostsController do
       subject 
       JSON.parse(response.body)["market_post"]["can_edit"].should == true
     end
+
     it 'can_edit should false for a different user' do
       @location = FactoryGirl.create :location, city: 'Another City'
       @different_user = FactoryGirl.create :user, location: @location
@@ -97,6 +97,7 @@ describe Api::V3::MarketPostsController do
       subject 
       JSON.parse(response.body)["market_post"]["can_edit"].should == false
     end
+
     it 'can_edit should false when a user is not logged in' do
       subject 
       JSON.parse(response.body)["market_post"]["can_edit"].should == false
@@ -106,7 +107,6 @@ describe Api::V3::MarketPostsController do
   describe 'GET show' do
     before do
       @market_post = FactoryGirl.create :content, content_category: @market_cat
-      ThinkingSphinx::Test.index 'content_core' 
     end
 
     subject { get :show, id: @market_post.id, format: :json }
@@ -154,7 +154,6 @@ describe Api::V3::MarketPostsController do
     before do
       post_content = FactoryGirl.create :content, content_category: @market_cat
       @market_post = FactoryGirl.create :market_post, content: post_content
-      ThinkingSphinx::Test.index 'content_core' 
     end
 
     subject { get :contact, id: @market_post.content.id, format: :json }
@@ -211,33 +210,6 @@ describe Api::V3::MarketPostsController do
         end
       end
 
-      describe 'uploading multiple images' do
-        before do
-          @file1 = fixture_file_upload('/photo.jpg', 'image/jpg')
-          @file2 = fixture_file_upload('/photo2.jpg', 'image/jpg')
-          @attrs_for_update[:images] = [{
-            image: @file1,
-            primary: false
-          }, {
-            image: @file2,
-            primary: true
-          }]
-        end
-
-        it 'should create Image records for each' do
-          expect{subject}.to change{Image.count}.by 2
-        end
-
-        it 'should associate the images with the market post\'s content record' do
-          expect{subject}.to change{@market_post.content.images.count}.to 2 # from 0 to 2
-        end
-
-        it 'should assign the primary attribute appropriately' do
-          subject
-          expect(@market_post.content.primary_image).to be_present
-          expect(@market_post.content.primary_image.image_identifier).to eq(@file2.original_filename)
-        end
-      end
     end
 
   end
