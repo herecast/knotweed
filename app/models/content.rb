@@ -60,6 +60,8 @@ class Content < ActiveRecord::Base
   has_many :annotation_reports
   has_many :category_corrections
 
+  has_many :content_reports
+
   # NOTE: this relationship is tracking display of promotion banners with
   # contents, not the promotion of contents (which is handled through the promotion model).
   has_many :content_promotion_banner_impressions

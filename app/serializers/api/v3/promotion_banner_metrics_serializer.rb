@@ -12,9 +12,23 @@ module Api
 
       def image_url; object.banner_image.url; end
 
-      # PENDING REPORTS CODE
-      def daily_impression_counts; []; end
-      def daily_click_counts; []; end
+      def daily_impression_counts
+        object.promotion_banner_reports.map do |report|
+          {
+            report_date: report.report_date,
+            impression_count: report.impression_count
+          }
+        end
+      end
+
+      def daily_click_counts
+        object.promotion_banner_reports.map do |report|
+          {
+            report_date: report.report_date,
+            click_count: report.click_count
+          }
+        end
+      end
 
     end
   end

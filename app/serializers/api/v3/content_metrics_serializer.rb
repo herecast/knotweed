@@ -21,9 +21,23 @@ module Api
         object.banner_click_count
       end
 
-      # PENDING REPORTS CODE
-      def daily_view_counts; []; end
-      def daily_promo_click_thru_counts; []; end
+      def daily_view_counts
+        object.content_reports.map do |report|
+          {
+            report_date: report.report_date,
+            view_count: report.view_count
+          }
+        end
+      end
+
+      def daily_promo_click_thru_counts
+        object.content_reports.map do |report|
+          {
+            report_date: report.report_date,
+            banner_click_count: report.banner_click_count
+          }
+        end
+      end
 
     end
   end
