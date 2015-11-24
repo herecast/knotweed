@@ -30,7 +30,7 @@ set :git_strategy, SubmoduleStrategy
 set :linked_files, %w{config/database.yml config/application.yml config/production.sphinx.conf config/thinking_sphinx.yml}
 
 # Default value for linked_dirs is []
-set :linked_dirs, %w{bin log/import_records log/publish_records tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/exports binlog db/sphinx}
+set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/exports binlog db/sphinx}
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
@@ -55,6 +55,18 @@ namespace :deploy do
   end
 
   after :publishing, :restart
+
+  desc 'Create job logging directories'
+  task :create_log_record_folders do
+    on roles(:web) do
+      within shared_path do
+        execute :mkdir, "-pv", "log/import_records"
+        execute :mkdir, "-pv", "log/publish_records"
+      end
+    end
+  end
+
+  after :starting, :create_log_record_folders
 
   task :reconfigure_sphinx do
     invoke 'thinking_sphinx:configure'
