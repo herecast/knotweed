@@ -91,6 +91,8 @@ Knotweed::Application.routes.draw do
       resources 'events', only: [:create, :show, :update]
       post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
       post 'promotion_banners/:promotion_banner_id/track_click', to: 'promotion_banners#track_click', as: :track_click
+      get '/promotion_banners/:id/metrics', to: 'promotion_banners#metrics',
+        as: :promotion_banner_metrics
       resources 'event_instances', only: [:index, :show, :destroy]
       resources 'comments', only: [:index, :create]
       resources 'listservs', only: [:index]
@@ -103,6 +105,7 @@ Knotweed::Application.routes.draw do
       resources 'contents', only: [:index]
       get '/contents/:id/related_promotion', to: 'contents#related_promotion', as: :related_promotion
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
+      get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
       resources 'publications', only: [:index]
       resources 'news', only: [:index, :show]
       resources 'talk', only: [:index, :show, :create, :update]
@@ -111,6 +114,7 @@ Knotweed::Application.routes.draw do
       get '/weather', to: 'users#weather', as: :weather
       post '/users/logout', to: 'users#logout', as: :logout
       get '/dashboard', to: 'contents#dashboard', as: :dashboard
+      get '/ad_dashboard', to: 'contents#ad_dashboard', as: :ad_dashboard
       post '/users/email_confirmation', to: 'users#email_confirmation', as: :email_confirmation
       post '/users/resend_confirmation', to: 'users#resend_confirmation', as: :resend_confirmation
       resources 'images', only: [:create, :update, :destroy]

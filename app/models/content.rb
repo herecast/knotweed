@@ -60,6 +60,8 @@ class Content < ActiveRecord::Base
   has_many :annotation_reports
   has_many :category_corrections
 
+  has_many :content_reports
+
   # NOTE: this relationship is tracking display of promotion banners with
   # contents, not the promotion of contents (which is handled through the promotion model).
   has_many :content_promotion_banner_impressions
@@ -1293,6 +1295,11 @@ class Content < ActiveRecord::Base
 
   def uri
     CGI.escape(BASE_URI + "/#{id}")
+  end
+
+  # NOTE: returns the content records of child comments, NOT the comment records.
+  def comments
+    children.where('channel_type = "Comment"')
   end
 
   private

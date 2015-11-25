@@ -35,9 +35,25 @@ describe Api::V3::DashboardContentSerializer do
     end
   end
 
-  context 'this is news' do
+  context 'news' do
     it 'should return content_type of "News"' do
       serialized_object['content_type'].should eq('News')
+    end
+  end
+
+  context 'events' do
+    before do
+      @event = FactoryGirl.create :event, content: @content
+    end
+
+    it 'should include event_instance_id as id' do
+      serialized_object['id'].should eq(@event.event_instances.first.id)
+    end
+
+    # NOTE: as of now the serializer uses the first event instance id
+    # as the ID of the response.
+    it 'should include event_id for events' do
+      serialized_object['event_id'].should eq(@event.id)
     end
   end
 

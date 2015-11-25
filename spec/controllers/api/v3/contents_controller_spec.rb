@@ -204,24 +204,81 @@ describe Api::V3::ContentsController do
           expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)
         end
 
-        describe 'serializer response' do
-          before do
-            subject
-            @resp_arr = JSON.parse(response.body)['contents']
-          end
+      end
+    end
+  end
 
-          # NOTE: as of now the serializer uses the first event instance id
-          # as the ID of the response.
-          it 'should include event_id for events' do
-            event = @resp_arr.select{|c| c['id'] == @event.event_instances.first.id && c['content_type'] == 'Event' }[0]
-            event['event_id'].should eq(@event.id)
-          end
+  describe 'GET ad_dashboard' do
+    subject { get :ad_dashboard }
+    
+    context 'not signed in' do
+      it 'has 401 status code' do
+        subject
+        response.code.should eq('401')
+      end
+    end
 
-          it 'should include event_instance_id as id for events' do
-            event = @resp_arr.select{|c| c['event_id'] == @event.id}[0]
-            event['id'].should eq(@event.event_instances.first.id)
-          end
+    context 'signed in' do
+      before do
+        @user = FactoryGirl.create :user
+        api_authenticate user: @user
+      end
+
+      it 'has 200 status code' do
+        subject
+        response.code.should eq('200')
+      end
+
+      context 'with the user owning some content' do
+        before do
+          # because we're authenticated as the @user, created_by is actually set automatically here,
+          # so we don't need to set it manually.
+          @event = FactoryGirl.create :event
+          FactoryGirl.create_list :market_post, 3
+          FactoryGirl.create_list :comment, 2
+          FactoryGirl.create :content # differs from regular dashboard here
         end
+
+        it 'responds with the user\'s content' do
+          subject
+          expect(assigns(:contents)).to eq(Content.all)
+        end
+
+        it 'allows sorting by specified parameters' do
+          get :dashboard, sort: 'pubdate DESC'
+          expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)
+        end
+      end
+    end
+  end
+
+  describe 'GET /contents/:id/metrics' do
+    before do
+      @content = FactoryGirl.create :content
+      @user = FactoryGirl.create :user
+      api_authenticate user: @user
+    end
+
+    subject { get :metrics, id: @content.id }
+
+    context 'without owning the content' do
+      before do
+        @content.update_attribute :created_by, nil
+      end
+      it 'should respond with 401' do
+        subject
+        expect(response.code).to eq('401')
+      end
+    end
+
+    context 'as content owner' do
+      before do
+        @content.update_attribute :created_by, @user
+      end
+
+      it 'should respond with the content' do
+        subject
+        expect(assigns(:content)).to eq(@content)
       end
     end
   end

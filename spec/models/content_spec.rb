@@ -1000,6 +1000,18 @@ describe Content do
     end
   end
 
+  describe 'comments' do
+    before do
+      @content = FactoryGirl.create :content
+      @comment1 = FactoryGirl.create :comment
+      @comment1.content.update_attribute :parent_id, @content.id
+    end
+    
+    it 'should return the content records of comments associated with it' do
+      @content.comments.should eq([@comment1.content])
+    end
+  end
+
   private
 
     def get_body_from_file(filename)
