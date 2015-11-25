@@ -23,3 +23,19 @@ every 1.day, at: '11:50 pm' do
   rake 'reporting:create_content_report'
   rake 'reporting:create_promotion_banner_report'
 end
+
+# Sphinx Indexing
+
+job_type :sphinx_script, "cd :path && ./lib/indexing/:task"
+
+every '1-59 * * * *' do
+  sphinx_script "delta_index.sh"
+end
+
+every '0 1-23 * * *' do
+  sphinx_script "merge_deltas.sh"
+end
+
+every '0 0 * * *' do
+  sphinx_script "full_index.sh"
+end
