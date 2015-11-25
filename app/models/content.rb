@@ -399,7 +399,8 @@ class Content < ActiveRecord::Base
 
     # delete any now-unused images
     content.images.each do |i|
-      i.destroy unless new_content_images.include? i.name
+      # regexp removes the timestamp prefix from the filename for matching purposes
+      i.destroy unless new_content_images.include? i.name.match(/\d+-(.+)/)[1]
     end
 
     content

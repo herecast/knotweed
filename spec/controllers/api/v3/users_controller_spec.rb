@@ -173,7 +173,7 @@ describe Api::V3::UsersController do
         subject! { put :update, format: :json, current_user: {user_id: @user.id.to_s, image: @file} }
 
         it 'should set new image' do
-          assigns(:current_api_user).avatar_identifier.should eq @file.original_filename
+          assigns(:current_api_user).avatar_identifier.should include(@file.original_filename)
         end
       end
 
