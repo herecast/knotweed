@@ -400,7 +400,7 @@ class Content < ActiveRecord::Base
     # delete any now-unused images
     content.images.each do |i|
       # regexp removes the timestamp prefix from the filename for matching purposes
-      i.destroy unless new_content_images.include? i.name.match(/\d+-(.+)/)[1]
+      i.destroy unless new_content_images.include? i.name.match(/[0-9a-f]+-(.+)/)[1]
     end
 
     content
