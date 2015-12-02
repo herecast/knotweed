@@ -1017,6 +1017,8 @@ describe Content do
       raw_content = '<p>hello</p><img src="testing.jpg" /> <p>blargh</p><img src="photo.jpg" />'
       @content = FactoryGirl.create :content, raw_content: raw_content
       @image = FactoryGirl.create :image, imageable: @content, caption: 'This is a unique string'
+      img2 = FactoryGirl.create :image, imageable: @content, image: nil # need number of imgaes
+      # to match number of img tags or method does nothing
     end
 
     subject { @content.process_wp_content! }
