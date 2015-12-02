@@ -331,4 +331,14 @@ namespace :wordpress do
 
   end
 
+  desc "Update legacy raw_content image tags"
+  task update_image_sources: :environment do
+    contents = Content.where(origin: 'Wordpress Parser').where('raw_content LIKE "%img%"')
+    puts "running process_wp_content! on #{contents.count} records"
+
+    contents.each do |c|
+      c.process_wp_content!
+    end
+  end
+
 end
