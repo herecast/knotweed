@@ -1191,7 +1191,7 @@ class Content < ActiveRecord::Base
         end
 
         # our code already displays the primary image, so just pull it from the content
-        # conditional tries to pprotect against running this multiple times
+        # conditional protects against running this multiple times
         wp_images.first.remove() if images.count == wp_images.count
 
         doc.css('img').each do |img|
@@ -1199,7 +1199,6 @@ class Content < ActiveRecord::Base
           # the parser is run by import_job#traverse_input_tree.
           img_name = File.basename(img['src'])
           if image_map[img_name].present? and img_name != File.basename(image_map[img_name].image.path)
-            debugger
             img['src'] = image_map[img_name].image.url
             if image_map[img_name].caption.present?
               img.add_next_sibling("<div class=\"image-caption\"><p>#{image_map[img_name].caption}</p></div>")
