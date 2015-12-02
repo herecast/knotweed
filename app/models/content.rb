@@ -405,6 +405,14 @@ class Content < ActiveRecord::Base
       i.destroy unless new_content_images.include? i.name.match(/[0-9a-f]+-(.+)/)[1]
     end
 
+    # this line is designed to handle content imported from Wordpress that had an image at the top of the content
+    # and potentially other images.  The first image would duplicate our only (currently-supported) image,
+    # which is also needed for tile view.  This line pulls the first <a ...><img ...></a> set and leaves the second and
+    # subsequent so those images actually display as intended and built in Wordpress. 
+    # since those images have already been processed and pulled into to our AWS store, this method goes through
+    # and updates the remaining img tags to point to the correct URL.
+    content.process_wp_content!
+
     content
   end
 
@@ -1062,13 +1070,6 @@ class Content < ActiveRecord::Base
     c = raw_content.gsub(/[[:alpha:]]\.[[:alpha:]]\./) {|s| s.upcase }
     pre_sanitize_filters.each {|f| c.send f[0], *f[1]}
     doc =  Nokogiri::HTML.parse(c)
-    # this line is designed to handle content imported from Wordpress that had an image at the top of the content
-    # and potentially other images.  The first image would duplicate our only (currently-supported) image,
-    # which is also needed for tile view.  This line pulls the first <a ...><img ...></a> set and leaves the second and
-    # subsequent so those images actually display as intended and built in Wordpress.  Note that they pull the images
-    # from the Wordpress media library, not our AWS store.  Leaving the links in raw_content and post-processing
-    # here allows us to go back in the near future and implement a better solution for multiple images JGS 20150605
-    process_wp_content(doc)
 
     doc.search("style").each {|t| t.remove() }
     doc.search('//text()').each {|t| t.content = t.content.sub(/^[^>\n]*>\p{Space}*\z/, "") } # kill tag fragments
@@ -1171,32 +1172,46 @@ class Content < ActiveRecord::Base
     Rinku.auto_link c #.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
   end
 
+  # cycles through the associated image records for a piece of content
+  # and updates any references in raw_content to the image's original filename
+  # so that they point to our AWS stored images
+  def process_wp_content!
+    if !images.present?
+      self
+    else
+      doc =  Nokogiri::HTML.parse(raw_content)
+      wp_images = doc.css('img')
+      if wp_images.present?
+        bucket = Figaro.env.aws_bucket_name
 
-  def process_wp_content(doc)
+        # map content images from original filename to image object
+        image_map = {}
+        images.each do |img|
+          image_map[img.original_filename] = img if img.original_filename.present?
+        end
 
-    # if record hasn't been saved yet, no point in doing this processing because we need the id.
-    return if self.id.nil?
+        # our code already displays the primary image, so just pull it from the content
+        # conditional tries to pprotect against running this multiple times
+        wp_images.first.remove() if images.count == wp_images.count
 
-    #wp_images = doc.css('a img[class*=wp-image]')
-    wp_images = doc.css('img')
-    return if wp_images.empty?
-
-    # our code already displays the primary image, so just pull it from the content.
-    wp_images.first.remove()
-
-    bucket = Figaro.env.aws_bucket_name
-
-    doc.css('img').each do |img|
-      # rewrite img src URL.  This has to be done here because we don't know the content_id when
-      # the parser is run by import_job#traverse_input_tree.
-      imgName = File.basename(img['src'])
-      img['src'] = "https://#{bucket}.s3.amazonaws.com/content/#{self.id}/" + imgName
-
-      image = Image.find_by_imageable_id_and_image(self.id, imgName)
-      img_caption = image.caption if image.present?
-      img.add_next_sibling("<div class=\"image-caption\"><p>#{img_caption}</p></div>") if img_caption.present?
+        doc.css('img').each do |img|
+          # rewrite img src URL.  This has to be done here because we don't know the content_id when
+          # the parser is run by import_job#traverse_input_tree.
+          img_name = File.basename(img['src'])
+          if image_map[img_name].present? and img_name != File.basename(image_map[img_name].image.path)
+            debugger
+            img['src'] = image_map[img_name].image.url
+            if image_map[img_name].caption.present?
+              img.add_next_sibling("<div class=\"image-caption\"><p>#{image_map[img_name].caption}</p></div>")
+            end
+          end
+        end
+        update_attribute :raw_content, doc.to_html
+        self
+      else
+        self
+      end
     end
-
   end
 
   def sanitized_content= new_content

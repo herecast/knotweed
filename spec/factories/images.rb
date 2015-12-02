@@ -16,5 +16,6 @@
 FactoryGirl.define do
   factory :image do
     primary false
+    image File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
   end
 end

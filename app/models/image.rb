@@ -45,5 +45,11 @@ class Image < ActiveRecord::Base
       end
     end
   end
-  
+
+  # returns the original filename by using a regexp to remove the SecureRandom.hex
+  # we add to filenames (if present -- older filenames don't have that)
+  def original_filename
+    File.basename(image.path).match(/([0-9a-f]*-)?(.+)/)[2] if image.present?
+  end
+
 end

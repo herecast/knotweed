@@ -1012,6 +1012,30 @@ describe Content do
     end
   end
 
+  describe 'process_wp_content!' do
+    before do
+      raw_content = '<p>hello</p><img src="testing.jpg" /> <p>blargh</p><img src="photo.jpg" />'
+      @content = FactoryGirl.create :content, raw_content: raw_content
+      @image = FactoryGirl.create :image, imageable: @content, caption: 'This is a unique string'
+    end
+
+    subject { @content.process_wp_content! }
+
+    it 'should remove the first image tag from any content with images' do
+      expect{subject}.to change{@content.raw_content.scan('<img').length}.by -1
+    end
+
+    it 'should find and replace urls to match our copied images' do
+      subject
+      @content.reload.raw_content.should include(@image.image.url)
+    end
+
+    it 'should add a caption if a caption is present' do
+      subject
+      @content.reload.raw_content.should include(@image.caption)
+    end
+  end
+
   private
 
     def get_body_from_file(filename)
