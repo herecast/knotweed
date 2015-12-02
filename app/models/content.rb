@@ -52,6 +52,12 @@ include ActionView::Helpers::TextHelper
 class Content < ActiveRecord::Base
   include Auditable
   include Incrementable
+  include ThinkingSphinx::Scopes
+
+  sphinx_scope(:in_accepted_category) {
+    {conditions: { in_accepted_category: 1 } }
+  }
+  default_sphinx_scope :in_accepted_category
 
   belongs_to :issue
   belongs_to :import_location

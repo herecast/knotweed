@@ -50,10 +50,7 @@ describe Content do
 
   include_examples 'Auditable', Content
 
-  # I wasn't sure where else to put this test...
-  # the content index (app/indices/content_index) uses a
-  # condition that needs to be tested to confirm it's working.
-  describe 'sphinx index' do
+  describe ':in_accepted_category default sphinx scope' do
     before do
       @event_cat = FactoryGirl.create :content_category, name: 'event'
       @news_cat = FactoryGirl.create :content_category, name: 'news'
