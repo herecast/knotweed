@@ -1014,11 +1014,10 @@ describe Content do
 
   describe 'process_wp_content!' do
     before do
-      raw_content = '<p>hello</p><img src="testing.jpg" /> <p>blargh</p><img src="photo.jpg" />'
+      raw_content = '<p>hello</p><img src="testing.jpg" /> <p>blargh</p><img src="http://www.google.com/photo.jpg" />'
       @content = FactoryGirl.create :content, raw_content: raw_content
-      @image = FactoryGirl.create :image, imageable: @content, caption: 'This is a unique string'
-      img2 = FactoryGirl.create :image, imageable: @content, image: nil # need number of imgaes
-      # to match number of img tags or method does nothing
+      @image = FactoryGirl.create :image, imageable: @content, caption: 'This is a unique string',
+        source_url: 'http://www.google.com/photo.jpg'
     end
 
     subject { @content.process_wp_content! }

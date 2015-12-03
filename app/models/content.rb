@@ -1183,28 +1183,28 @@ class Content < ActiveRecord::Base
       wp_images = doc.css('img')
       if wp_images.present?
         bucket = Figaro.env.aws_bucket_name
-
-        # map content images from original filename to image object
-        image_map = {}
-        images.each do |img|
-          image_map[img.original_filename] = img if img.original_filename.present?
-        end
-
-        # our code already displays the primary image, so just pull it from the content
-        # conditional protects against running this multiple times
-        wp_images.first.remove() if images.count == wp_images.count
+        # boolean that tracks whether or not we need to remove the first image.
+        # Basically, if we overwrite any of the image sources, this is a new import,
+        # meaning we want to remove the first image.
+        already_processed = true
 
         doc.css('img').each do |img|
           # rewrite img src URL.  This has to be done here because we don't know the content_id when
           # the parser is run by import_job#traverse_input_tree.
-          img_name = File.basename(img['src'])
-          if image_map[img_name].present? and img_name != File.basename(image_map[img_name].image.path)
-            img['src'] = image_map[img_name].image.url
-            if image_map[img_name].caption.present?
-              img.add_next_sibling("<div class=\"image-caption\"><p>#{image_map[img_name].caption}</p></div>")
+          image_object = images.find_by_source_url(img['src'])
+          if image_object.present?
+            already_processed = false
+            img['src'] = image_object.image.url
+            if image_object.caption.present?
+              img.add_next_sibling("<div class=\"image-caption\"><p>#{image_object.caption}</p></div>")
             end
           end
         end
+
+        # our code already displays the primary image, so just pull it from the content
+        # conditional protects against running this multiple times
+        wp_images.first.remove() unless already_processed
+
         update_attribute :raw_content, doc.to_html
         self
       else
