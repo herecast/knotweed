@@ -82,6 +82,7 @@ Knotweed::Application.routes.draw do
   match 'parsers/:id/parameters', to: "parsers#parameters"
   post '/contents/category_correction', to: 'contents#category_correction'
   post '/contents/category_correction_reviewed', to: 'contents#category_correction_reviwed'
+  get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', :defaults => {:format => 'ics'}, as: :event_instances_ics
 
   # API
   namespace :api do

@@ -60,4 +60,17 @@ class EventInstance < ActiveRecord::Base
     end
   end
 
+  # returns ics format of this event
+  def to_ics
+    cal = Icalendar::Calendar.new
+    cal.event do |event|
+      event.dtstart = start_date
+      event.dtend = end_date
+      event.summary = self.event.title
+      event.description = description
+      event.location = self.event.try(:venue).try(:name)
+    end
+    cal.to_ical
+  end
+
 end

@@ -120,6 +120,22 @@ describe Api::V3::EventInstancesController do
 
   end
 
+  describe 'GET ics' do
+    before do
+      @event = FactoryGirl.create :event
+      @inst = @event.event_instances.first
+    end
+
+    subject! { get :show, format: :ics, id: @inst.id }
+
+    it 'should contain ics data' do
+      @response.body.should match /VCALENDAR/
+      @response.body.should match /DTSTART/
+      @response.body.should match /DTSTAMP/
+      @response.body.should match /VEVENT/
+    end
+  end
+
   describe 'when user edits the content' do
     before do
       @location = FactoryGirl.create :location, city: 'Another City'
