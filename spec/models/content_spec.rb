@@ -1014,11 +1014,12 @@ describe Content do
 
   describe 'process_wp_content!' do
     before do
-      raw_content = '<p>hello</p><img src="testing.jpg" /> <p>blargh</p><img src="photo.jpg" />'
+      raw_content = '<p>hello</p><img src="http://www.google.com/testing.jpg" /> <p>blargh</p><img src="http://www.google.com/photo.jpg" />'
       @content = FactoryGirl.create :content, raw_content: raw_content
-      @image = FactoryGirl.create :image, imageable: @content, caption: 'This is a unique string'
-      img2 = FactoryGirl.create :image, imageable: @content, image: nil # need number of imgaes
-      # to match number of img tags or method does nothing
+      @img = FactoryGirl.create :image, imageable: @content, caption: 'This is a unique string',
+        source_url: 'http://www.google.com/photo.jpg'
+      @img2 = FactoryGirl.create :image, imageable: @content, caption: 'SFDSFDS', image: nil,
+        source_url: 'http://www.google.com/testing.jpg', primary: true
     end
 
     subject { @content.process_wp_content! }
@@ -1029,13 +1030,43 @@ describe Content do
 
     it 'should find and replace urls to match our copied images' do
       subject
-      @content.reload.raw_content.should include(@image.image.url)
+      @content.reload.raw_content.should include(@img.image.url)
     end
 
     it 'should add a caption if a caption is present' do
       subject
-      @content.reload.raw_content.should include(@image.caption)
+      @content.reload.raw_content.should include(@img.caption)
     end
+
+    describe 'without the primary image' do
+      before do
+        @content.update_attribute :raw_content, '<p>hello</p><p>blargh</p><img src="http://www.google.com/photo.jpg" />'
+      end
+
+      it 'should not remove any image tags' do
+        expect{subject}.not_to change{@content.raw_content.scan('<img').length}
+      end
+    end
+
+    describe 'with some images already converted' do
+      before do
+        @content.process_wp_content! # process once
+        # add some new images
+        @content.raw_content += '<p><img src="http://www.google.com/photo2.jpg" /></p>'
+        @content.save
+        @img3 = FactoryGirl.create :image, imageable: @content, caption: 'Humdeedum',
+          source_url: 'http://www.google.com/photo2.jpg', image: File.open(File.join(Rails.root, '/spec/fixtures/photo2.jpg'))
+      end
+
+      it 'should have all images correctly handled' do
+        subject
+        @content.reload
+        @content.raw_content.should include(@img.image.url)
+        @content.raw_content.should include(@img3.image.url)
+        @content.raw_content.should_not include('testing.jpg') # since img2 is primary
+      end
+    end
+
   end
 
   private

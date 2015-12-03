@@ -1179,32 +1179,26 @@ class Content < ActiveRecord::Base
     if !images.present?
       self
     else
-      doc =  Nokogiri::HTML.parse(raw_content)
-      wp_images = doc.css('img')
-      if wp_images.present?
+      doc =  Nokogiri::HTML.fragment(raw_content)
+      if doc.css('img').present?
         bucket = Figaro.env.aws_bucket_name
-
-        # map content images from original filename to image object
-        image_map = {}
-        images.each do |img|
-          image_map[img.original_filename] = img if img.original_filename.present?
-        end
-
-        # our code already displays the primary image, so just pull it from the content
-        # conditional protects against running this multiple times
-        wp_images.first.remove() if images.count == wp_images.count
-
         doc.css('img').each do |img|
           # rewrite img src URL.  This has to be done here because we don't know the content_id when
           # the parser is run by import_job#traverse_input_tree.
-          img_name = File.basename(img['src'])
-          if image_map[img_name].present? and img_name != File.basename(image_map[img_name].image.path)
-            img['src'] = image_map[img_name].image.url
-            if image_map[img_name].caption.present?
-              img.add_next_sibling("<div class=\"image-caption\"><p>#{image_map[img_name].caption}</p></div>")
+          image_object = images.find_by_source_url(img['src'])
+          if image_object.present?
+            # remove primary image from html since it's shown as a banner
+            if image_object.primary
+              img.remove()
+            else
+              img['src'] = image_object.image.url
+              if image_object.caption.present?
+                img.add_next_sibling("<div class=\"image-caption\"><p>#{image_object.caption}</p></div>")
+              end
             end
           end
         end
+
         update_attribute :raw_content, doc.to_html
         self
       else
