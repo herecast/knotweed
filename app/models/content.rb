@@ -1179,7 +1179,7 @@ class Content < ActiveRecord::Base
     if !images.present?
       self
     else
-      doc =  Nokogiri::HTML.parse(raw_content)
+      doc =  Nokogiri::HTML.fragment(raw_content)
       if doc.css('img').present?
         bucket = Figaro.env.aws_bucket_name
         doc.css('img').each do |img|
