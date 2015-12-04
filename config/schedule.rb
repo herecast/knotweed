@@ -19,9 +19,12 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every 1.day, at: '11:50 pm' do
+# Report table population & banner daily count reset
+
+every 1.day, at: '11:55 pm' do
   rake 'reporting:create_content_report'
   rake 'reporting:create_promotion_banner_report'
+  rake 'promotion_banner:reset_daily_impression_count'
 end
 
 # Sphinx Indexing

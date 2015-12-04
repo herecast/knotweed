@@ -104,6 +104,12 @@ describe Api::V3::ContentsController do
       @pb.reload.impression_count.should eq(count+1)
     end
 
+    it 'should increment the daily impression count of the banner' do
+      count = @pb.daily_impression_count
+      subject
+      @pb.reload.daily_impression_count.should eq(count+1)
+    end
+
     describe 'logging content displayed with' do
 
       it 'should create a ContentPromotionBannerImpression record if none exists' do

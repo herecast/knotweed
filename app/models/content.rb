@@ -968,19 +968,41 @@ class Content < ActiveRecord::Base
     has_paid_promotion?
   end
 
+  def has_promotion_inventory?
+    PromotionBanner.for_content(id).has_inventory.count > 0
+  end
+
+  def has_promotion_inventory
+    has_promotion_inventory?
+  end
+
   def get_related_promotion(repo)
 
-    results = query_promo_similarity_index(content, repo)
-    results = query_promo_similarity_index(title, repo) if results.empty?
-    results = query_promo_random_paid(repo) if results.empty?
-    results = query_promo_random(repo) if results.empty?
+    # query graphdb for relevant active banner ads (pass title + content) 
+    results = query_promo_similarity_index(title + " " + content, repo)
 
-    #logger.debug "Get Promo: #{results.inspect}"
-
+    #return random promo with inventory (if exists)
     unless results.empty?
-      uri = results[0][:uid].to_s
-      idx = uri.rindex("/")
-      id = uri[idx+1..uri.length]
+      # remove array record if doesn't have a 'has_inventory' scoped promo
+      results.delete_if do |v|
+        # parse out the content_id and append it to record
+        uri = v.uid.to_s
+        idx = uri.rindex("/")
+        v[:content_id] = uri[idx+1..uri.length]
+        # if no inventory, remove record from array
+        unless PromotionBanner.for_content(v[:content_id].to_s).has_inventory.count > 0
+          true
+        end
+      end
+    end
+    # select one random record from remaining results
+    results = results.sample
+    # return content id, relevance score and select method
+    if results.present?
+      content_id = results[:content_id].to_s
+      score = results[:score].to_s
+      select_method = "relevance"
+      promoted_content = {id: content_id, score: score, select_method: select_method}
     end 
   end
 
@@ -1320,11 +1342,18 @@ class Content < ActiveRecord::Base
 
   def query_promo_similarity_index(query_term, repo)
 
+    # access endpoint
     sparql = ::SPARQL::Client.new repo.sesame_endpoint
+    # sanitize query_term
     clean_content = SparqlUtilities.sanitize_input(SparqlUtilities.clean_lucene_query(
                     ActionView::Base.full_sanitizer.sanitize(query_term)))
+
+    # logger.debug "MY CONTENT: #{clean_content.inspect}"
+
+    # get score threshold
+    score_threshold = Figaro.env.promo_relevance_score_threshold
     query = File.read(Rails.root.join("lib", "queries", "query_promo_similarity_index.rq")) % 
-            { content: clean_content, content_id: id }
+            { content: clean_content, content_id: id, score_threshold: score_threshold }
     begin
       sparql.query(query)
     rescue
