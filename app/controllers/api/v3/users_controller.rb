@@ -36,6 +36,7 @@ module Api
           end
 
           @current_api_user.avatar = params[:current_user][:image] if params[:current_user][:image].present?
+          @current_api_user.public_id = params[:current_user][:public_id] if params[:current_user][:public_id].present?
 
           if @current_api_user.save 
             render json: @current_api_user, serializer: UserSerializer, root: 'current_user', status: 200
@@ -99,6 +100,22 @@ module Api
           end
         else
           render json: { errors: "#{params[:user][:email]} not found" }, status: 404
+        end
+      end
+
+      def events 
+        user = User.find_by_public_id params[:public_id]
+        if user
+          contents = Content.where(created_by: user, channel_type: 'Event')
+          cal = Icalendar::Calendar.new
+          contents.each do |content|
+            content.channel.event_instances.each do |event_instance|
+              cal.add_event event_instance.send(:ics_event_attributes)
+            end
+          end
+          render text: cal.to_ical
+        else
+          head :no_content 
         end
       end
 

@@ -84,7 +84,8 @@ describe Api::V3::UsersController do
                           location_id: location.id ,
                           email: 'skye@bill.com',
                           password: 'snever4aet3',
-                          password_confirmation: 'snever4aet3'
+                          password_confirmation: 'snever4aet3',
+                          public_id: 'aleteatk-atjkata'
                           }
                       }
         end
@@ -95,6 +96,7 @@ describe Api::V3::UsersController do
           updated_user = assigns(:current_api_user)
           updated_user.name.should eq @new_data[:current_user][:name]
           updated_user.location.should eq Location.find @new_data[:current_user][:location_id]
+          updated_user.public_id.should eq @new_data[:current_user][:public_id]
           
           updated_user.unconfirmed_email.should eq @new_data[:current_user][:email]
           updated_user.encrypted_password.should_not eq @new_data[:current_user][:encrypted_password]
