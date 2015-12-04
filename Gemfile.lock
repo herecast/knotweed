@@ -12,15 +12,6 @@ GIT
     datetimepicker-rails (0.0.8)
 
 GIT
-  remote: git@github.com:capistrano/capistrano.git
-  revision: 1f86d32fd48d08311b92446e1db428613b180309
-  specs:
-    capistrano (3.1.0)
-      i18n
-      rake (>= 10.0.0)
-      sshkit (~> 1.3)
-
-GIT
   remote: git@github.com:collectiveidea/delayed_job.git
   revision: 885074f0affcbb6beee8b67055d6c325a68a80e9
   specs:
@@ -95,6 +86,10 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.0.4)
     cancan (1.6.10)
+    capistrano (3.1.0)
+      i18n
+      rake (>= 10.0.0)
+      sshkit (~> 1.3)
     capistrano-bundler (1.1.1)
       capistrano (~> 3.0)
       sshkit (>= 1.2.0)
@@ -516,7 +511,7 @@ DEPENDENCIES
   better_errors
   binding_of_caller
   cancan (>= 1.6.9)
-  capistrano!
+  capistrano (~> 3.1.0)
   capistrano-bundler (>= 1.1.0)
   capistrano-rails (~> 1.1)
   capistrano-rvm
