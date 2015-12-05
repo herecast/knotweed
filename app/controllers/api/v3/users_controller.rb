@@ -5,7 +5,10 @@ module Api
       before_filter :check_logged_in!, only: [:show, :update, :logout] 
       def show
         if @current_api_user.present? 
-          render json: @current_api_user, serializer: UserSerializer, root: 'current_user',  status: 200
+          if @requesting_app.present?
+            events_ical_url = @requesting_app.uri + user_event_instances_ics_path(@current_api_user.public_id.to_s)
+          end
+          render json: @current_api_user, serializer: UserSerializer, root: 'current_user',  status: 200, events_ical_url: events_ical_url
         else
           render json: { errors: 'User not logged in' }, status: 401
         end
@@ -115,7 +118,7 @@ module Api
           end
           render text: cal.to_ical
         else
-          head :no_content 
+          head :not_found
         end
       end
 

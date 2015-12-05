@@ -211,6 +211,69 @@ describe Api::V3::UsersController do
       end
     end
   end
+  
+  describe 'GET events' do
+    context 'with valid public id' do
+      before do
+        @public_id = 'slomo'
+        @user = FactoryGirl.build :user
+        @user.public_id = @public_id
+        @user.save
+        
+        @content = FactoryGirl.create :content, created_by: @user
+        @event = FactoryGirl.create :event, content: @content
+      end
+      
+      subject! { get :events, format: :ics, public_id: @public_id }
+
+      it 'should return ics data' do
+        @response.body.should match /VCALENDAR/
+        @response.body.should match /DTSTART/
+        @response.body.should match /DTSTAMP/
+        @response.body.should match /VEVENT/
+      end
+    end
+
+    context 'with invalid public id' do
+      before { @user = FactoryGirl.create :user }
+      subject! { get :events, format: :ics, public_id: 'fake-ekaf' }
+      it { @response.status.should eq 404 }
+    end
+  end
+   
+  describe 'ical url' do
+    context 'when user has public id'  do
+      before do 
+        @user = FactoryGirl.build :user
+        @user.public_id = 'sorlara'
+        @user.save
+        @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
+        api_authenticate user: @user, consumer_app: @consumer
+      end
+
+      subject! { get :show }
+
+      it 'should contain the ical url' do
+        JSON.parse(@response.body)['current_user']['events_ical_url'].should eq @consumer.uri + user_event_instances_ics_path(@user.public_id)
+      end
+    end
+
+    context 'when user has no public id'  do
+      before do 
+        @user = FactoryGirl.build :user
+        @user.public_id = ''
+        @user.save
+        @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
+        api_authenticate user: @user, consumer_app: @consumer
+      end
+
+      subject! { get :show }
+
+      it 'should contain the ical url' do
+        JSON.parse(@response.body)['current_user']['events_ical_url'].should be_nil
+      end
+    end
+  end
 
   describe 'POST logout' do
     context do 
@@ -315,7 +378,8 @@ describe Api::V3::UsersController do
           listserv_name: user.location.listserv.name, 
           listserv_id: user.location.listserv.id,
           test_group: user.test_group,
-          user_image_url: user.avatar.url }.stringify_keys
+          user_image_url: user.avatar.url,
+          events_ical_url: nil}.stringify_keys
         }.stringify_keys
     end
 end

@@ -76,7 +76,6 @@ class EventInstance < ActiveRecord::Base
       ev.summary = self.event.title
       ev.description = strip_tags(description).gsub('&nbsp;','')
       ev.location = self.event.try(:venue).try(:name)
-      debugger
       if ConsumerApp.current.present?
         ev.url = ConsumerApp.current.uri + "/events/#{id}"
       end

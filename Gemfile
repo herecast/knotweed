@@ -41,6 +41,7 @@ group :test do
   gem 'simplecov'
   # this is for circleci to properly read & ormat our test results
   gem 'rspec_junit_formatter'
+  gem 'faker'
 end
 group :rubymine,:development do
  	gem "thin"
