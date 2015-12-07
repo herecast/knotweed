@@ -132,26 +132,4 @@ class Event < ActiveRecord::Base
     event_instances.where('start_date > ?', Time.zone.now).order('start_date ASC').first
   end
 
-  # update event_instances from ice_cube schedule
-  def update_event_instances_from_schedule
-    if schedule_changed?
-      if instance_schedule.present?
-        # clear out existing instances that aren't in the new schedule
-        event_instances.each do |ei|
-          ei.destroy unless instance_schedule.occurrences.include? ei.start_date
-        end
-
-        existing_dates = event_instances.map{ |ei| ei.start_date }
-        instance_schedule.occurrences.each do |date|
-          unless existing_dates.include? date
-            EventInstance.create(event: self, start_date: date)
-          end
-        end
-      else
-        event_instances.destroy_all
-      end
-    end
-    event_instances
-  end
-
 end
