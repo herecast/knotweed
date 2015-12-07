@@ -109,15 +109,13 @@ module Api
       def events 
         user = User.find_by_public_id params[:public_id]
         if user
-          contents = Content.where(created_by: user, channel_type: 'Event')
           cal = Icalendar::Calendar.new
-          contents.each do |content|
-            content.channel.event_instances.each do |event_instance|
-              # intentionally keeping event_instance#ics_event_attributes as private,
-              # so it's not exposed to the instance, but we can still
-              # call it via send in special cases like here.
-              cal.add_event event_instance.send(:ics_event_attributes)
-            end
+          event_instances = EventInstance.joins(event: :content).where('contents.created_by = ?', user.id)
+          event_instances.each do |event_instance|
+            # intentionally keeping event_instance#ics_event_attributes as private,
+            # so it's not exposed to the instance, but we can still
+            # call it via send in special cases like here.
+            cal.add_event event_instance.send(:ics_event_attributes)
           end
           render text: cal.to_ical
         else
