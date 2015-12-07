@@ -68,7 +68,9 @@ class EventInstance < ActiveRecord::Base
   end
 
   private
-
+    
+    # private because this is a helper method for to_ics
+    # may be called with send if needed
     def ics_event_attributes
       ev = Icalendar::Event.new
       ev.dtstart = start_date

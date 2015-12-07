@@ -113,6 +113,9 @@ module Api
           cal = Icalendar::Calendar.new
           contents.each do |content|
             content.channel.event_instances.each do |event_instance|
+              # intentionally keeping event_instance#ics_event_attributes as private,
+              # so it's not exposed to the instance, but we can still
+              # call it via send in special cases like here.
               cal.add_event event_instance.send(:ics_event_attributes)
             end
           end
