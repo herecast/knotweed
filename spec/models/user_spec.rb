@@ -150,12 +150,8 @@ describe User do
   context 'do not allow duplicate public ids' do
     before do
       name = 'montegate'
-      @user = FactoryGirl.build :user
-      @user.public_id = name
-      @user.save
-
-      @user2 = FactoryGirl.build :user
-      @user2.public_id = name
+      @user = FactoryGirl.create :user, public_id: name
+      @user2 = FactoryGirl.build :user, public_id: name
     end
 
     subject { @user2 }

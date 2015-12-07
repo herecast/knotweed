@@ -216,9 +216,7 @@ describe Api::V3::UsersController do
     context 'with valid public id' do
       before do
         @public_id = 'slomo'
-        @user = FactoryGirl.build :user
-        @user.public_id = @public_id
-        @user.save
+        @user = FactoryGirl.create :user, public_id: @public_id
         
         @content = FactoryGirl.create :content, created_by: @user
         @event = FactoryGirl.create :event, content: @content
@@ -244,9 +242,7 @@ describe Api::V3::UsersController do
   describe 'ical url' do
     context 'when user has public id'  do
       before do 
-        @user = FactoryGirl.build :user
-        @user.public_id = 'sorlara'
-        @user.save
+        @user = FactoryGirl.create :user, public_id: 'sorlara'
         @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
         api_authenticate user: @user, consumer_app: @consumer
       end
@@ -260,9 +256,7 @@ describe Api::V3::UsersController do
 
     context 'when user has no public id'  do
       before do 
-        @user = FactoryGirl.build :user
-        @user.public_id = ''
-        @user.save
+        @user = FactoryGirl.create :user, public_id: ''
         @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
         api_authenticate user: @user, consumer_app: @consumer
       end
