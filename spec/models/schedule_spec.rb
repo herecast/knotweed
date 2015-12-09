@@ -88,10 +88,8 @@ describe Schedule do
     context 'with event instance duration' do
       before do
         @duration = 30.minutes
-        recurrence = IceCube::Schedule.new(Time.now, duration: @duration) do |s|
-          s.add_recurrence_rule IceCube::Rule.daily.until 1.week.from_now
-        end
-        @schedule = FactoryGirl.create :schedule, recurrence: recurrence.to_yaml
+        @schedule = FactoryGirl.create :schedule, recurrence: IceCube::Schedule.new(@time = Chronic.parse("today at noon"),
+                  duration: @duration){ |s| s.add_recurrence_rule IceCube::Rule.daily.until 1.week.from_now }.to_yaml
       end
 
       it 'should create event instances with the correct end_date based on duration parameter' do
@@ -103,7 +101,7 @@ describe Schedule do
       describe 'changing the duration' do
         before do
           @new_duration = @duration + 1.hour
-          @new_recurrence = IceCube::Schedule.new(Time.now, duration: @new_duration) do |s|
+          @new_recurrence = IceCube::Schedule.new(@time, duration: @new_duration) do |s|
             s.add_recurrence_rule IceCube::Rule.daily.until 1.week.from_now
           end
         end
@@ -132,49 +130,60 @@ describe Schedule do
         end
       end
     end
-  end
 
-  context 'with event instances with overlapping durations' do
-    before do
-      @schedule = FactoryGirl.create :schedule,
-        recurrence: IceCube::Schedule.new(Time.now, duration: 2.hours){ |s| s.add_recurrence_rule IceCube::Rule.hourly.until 2.days.from_now }.to_yaml
-    end
+    context 'with event instances with overlapping durations' do
+      before do
+        @schedule = FactoryGirl.create :schedule,
+          recurrence: IceCube::Schedule.new(Chronic.parse("today at 2pm"),
+            duration: 2.hours){ |s| s.add_recurrence_rule IceCube::Rule.hourly.until(Chronic.parse('tomorrow at 2pm')) }.to_yaml
+      end
 
-    subject { @schedule.reload.event_instances.count }
-    
+      it 'should start with the right number of event instances' do
+        @schedule.reload.event_instances.count.should eq(25)
+      end
 
-    it 'should start with the right number of event instances' do
-     subject.should eq(49)
-    end
-
-    it 'should remove an event_instance when an exception is added' do
-      expect{@schedule.add_exception_time!(3.hours.from_now)}.to change{subject}.by -1
+      it 'should remove an event_instance if an exception is added' do
+        @schedule.add_exception_time!(Chronic.parse('today at 4pm'))
+        @schedule.reload.event_instances.count.should eq 24
+      end
     end
   end
 
   describe 'add_recurrence_rule!(rule)' do 
     before do
-      @schedule = FactoryGirl.create :schedule
+      @schedule = FactoryGirl.create :schedule, recurrence: nil
       @rule = IceCube::Rule.daily.until(1.week.from_now)
     end
 
-    subject { @schedule.add_recurrence_rule!(@rule) }
+    subject! { @schedule.add_recurrence_rule!(@rule) }
 
     it 'should add and persist an IceCube recurrence rule' do
-      expect{subject}.to change{@schedule.schedule.recurrence_rules}.to include(@rule)
+      @schedule.reload.schedule.recurrence_rules.should include(@rule)
+    end
+
+    describe 'should trigger update_event_instances' do
+      it 'should create event_instances for the schedule' do
+        EventInstance.where(schedule_id: @schedule.id).count.should eq 7
+      end
     end
   end
 
   describe 'add_exception_time!(time)' do
     before do
       @schedule = FactoryGirl.create :schedule
-      @exception_time = 2.hours.from_now
+      @exception_time = @schedule.schedule.all_occurrences[3]
+      @original_count = EventInstance.where(schedule_id: @schedule.id).count
     end
 
-    subject { @schedule.add_exception_time!(@exception_time) }
+    subject! { @schedule.add_exception_time!(@exception_time) }
 
     it 'should add and persist an IceCube exception time' do
-      expect{subject}.to change{@schedule.schedule.exception_times}.to include(@exception_time)
+      @schedule.schedule.exception_times.should include(@exception_time)
+    end
+
+    it 'should remove the excepted event instance' do
+      EventInstance.where(schedule_id: @schedule.id).map{ |ei| ei.start_date.to_i}.should_not include(@exception_time.to_i)
+      EventInstance.where(schedule_id: @schedule.id).count.should eq(@original_count - 1)
     end
   end
 

@@ -120,4 +120,4 @@ gem 'forecast_io'
 gem 'postmark-rails', '~> 0.12.0'
 gem 'whenever', :require => false
 
-gem 'ice_cube', "~> 0.13.1"
+gem 'ice_cube', "0.13.0"

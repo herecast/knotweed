@@ -14,7 +14,8 @@ class Schedule < ActiveRecord::Base
   end
 
   def set_schedule!(sched)
-    update_attribute :recurrence, sched.to_yaml
+    self.recurrence = sched.to_yaml
+    self.save
   end
 
   # convenience methods that let us interact with IceCube schedule
@@ -23,10 +24,11 @@ class Schedule < ActiveRecord::Base
     if schedule.present?
       sched = schedule
       sched.add_recurrence_rule rule
-      set_schedule!(sched)
-    else
-      false
+    else # default to creating a new schedule starting now
+      sched = IceCube::Schedule.new(Time.now)
+      sched.add_recurrence_rule rule
     end
+    set_schedule!(sched)
   end
 
   def add_exception_time!(time)
@@ -34,32 +36,33 @@ class Schedule < ActiveRecord::Base
       sched = schedule
       sched.add_exception_time time
       set_schedule!(sched)
-    else
+    else # doesn't make sense to add exception time when you don't have a schedule yet
       false
     end
   end
 
-  # returns hash keyed by date objects for each event instance
-  def event_instances_by_date
+  # returns hash keyed by date integers for each event instance
+  def event_instance_ids_by_date
     hash = {}
-    event_instances.each do |ei| 
-      hash[ei.start_date] = ei
+    EventInstance.where(schedule_id: id).each do |ei| 
+      hash[ei.start_date.to_i] = ei.id
     end
     hash
   end
 
   # create or update event_instances for schedule
   def update_event_instances
-    if schedule.present?
+    if self.schedule.present?
       # remove no longer existent occurrences
-      event_instances.each do |ei|
-        ei.destroy unless schedule.all_occurrences.include? ei.start_date
+      all_occurrence_ints = self.schedule.all_occurrences.map{ |o| o.to_i }
+      EventInstance.where(schedule_id: id).each do |ei|
+        ei.destroy unless all_occurrence_ints.include? ei.start_date.to_i
       end
-      eis_by_date = event_instances_by_date
+      eis_by_date = event_instance_ids_by_date
 
       # add new occurrences
       schedule.each_occurrence do |occurrence|
-        if !eis_by_date.has_key? occurrence.start_time
+        if !eis_by_date.has_key? occurrence.start_time.to_i
           EventInstance.create(
             schedule_id: self.id, 
             event_id: event.id,
@@ -70,10 +73,12 @@ class Schedule < ActiveRecord::Base
             presenter_name: presenter_name
           )
         else
-          ei = eis_by_date[occurrence]
+          ei = event_instances.find eis_by_date[occurrence.start_time.to_i]
           # update end dates if need be -- unfortunately, since end_dates are all different
           # (even though duration is the same), these have to be updated by separate queries
-          ei.update_attribute :end_date, occurrence.end_time if ei.end_date != occurrence.end_time
+          if ei.end_date.to_i != occurrence.end_time.to_i
+            ei.update_attribute :end_date, occurrence.end_time 
+          end
         end
       end
       # do this in a single batch rather than in the above 'else' clause so that we can
