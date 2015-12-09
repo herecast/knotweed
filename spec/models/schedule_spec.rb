@@ -85,6 +85,97 @@ describe Schedule do
       end
     end
 
+    context 'with event instance duration' do
+      before do
+        @duration = 30.minutes
+        recurrence = IceCube::Schedule.new(Time.now, duration: @duration) do |s|
+          s.add_recurrence_rule IceCube::Rule.daily.until 1.week.from_now
+        end
+        @schedule = FactoryGirl.create :schedule, recurrence: recurrence.to_yaml
+      end
+
+      it 'should create event instances with the correct end_date based on duration parameter' do
+       @schedule.event_instances.each do |ei|
+         ei.end_date.should eq(ei.start_date + @duration)
+       end
+      end
+
+      describe 'changing the duration' do
+        before do
+          @new_duration = @duration + 1.hour
+          @new_recurrence = IceCube::Schedule.new(Time.now, duration: @new_duration) do |s|
+            s.add_recurrence_rule IceCube::Rule.daily.until 1.week.from_now
+          end
+        end
+
+        subject { @schedule.update_attribute :recurrence, @new_recurrence.to_yaml }
+
+        it 'should update the end_date of all associated event instances' do
+          subject
+          @schedule.event_instances.each do |ei|
+            ei.end_date.should eq (ei.start_date + @new_duration)
+          end
+        end
+      end
+
+      describe 'adding an exception' do
+        subject do
+          @schedule.recurrence = IceCube::Schedule.new(Time.now, duration: @duration) do |s|
+            s.add_recurrence_rule IceCube::Rule.daily.until 1.week.from_now
+            s.add_exception_time(Time.now + 2.days)
+          end.to_yaml
+          @schedule.save
+        end
+
+        it 'should remove an event_instance' do
+          expect{subject}.to change{@schedule.reload.event_instances.count}.by -1
+        end
+      end
+    end
+  end
+
+  context 'with event instances with overlapping durations' do
+    before do
+      @schedule = FactoryGirl.create :schedule,
+        recurrence: IceCube::Schedule.new(Time.now, duration: 2.hours){ |s| s.add_recurrence_rule IceCube::Rule.hourly.until 2.days.from_now }.to_yaml
+    end
+
+    subject { @schedule.reload.event_instances.count }
+    
+
+    it 'should start with the right number of event instances' do
+     subject.should eq(49)
+    end
+
+    it 'should remove an event_instance when an exception is added' do
+      expect{@schedule.add_exception_time!(3.hours.from_now)}.to change{subject}.by -1
+    end
+  end
+
+  describe 'add_recurrence_rule!(rule)' do 
+    before do
+      @schedule = FactoryGirl.create :schedule
+      @rule = IceCube::Rule.daily.until(1.week.from_now)
+    end
+
+    subject { @schedule.add_recurrence_rule!(@rule) }
+
+    it 'should add and persist an IceCube recurrence rule' do
+      expect{subject}.to change{@schedule.schedule.recurrence_rules}.to include(@rule)
+    end
+  end
+
+  describe 'add_exception_time!(time)' do
+    before do
+      @schedule = FactoryGirl.create :schedule
+      @exception_time = 2.hours.from_now
+    end
+
+    subject { @schedule.add_exception_time!(@exception_time) }
+
+    it 'should add and persist an IceCube exception time' do
+      expect{subject}.to change{@schedule.schedule.exception_times}.to include(@exception_time)
+    end
   end
 
 end

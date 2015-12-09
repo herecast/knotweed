@@ -13,8 +13,30 @@ class Schedule < ActiveRecord::Base
     end
   end
 
-  def schedule=(sched)
+  def set_schedule!(sched)
     update_attribute :recurrence, sched.to_yaml
+  end
+
+  # convenience methods that let us interact with IceCube schedule
+  # directly on the schedule model
+  def add_recurrence_rule!(rule)
+    if schedule.present?
+      sched = schedule
+      sched.add_recurrence_rule rule
+      set_schedule!(sched)
+    else
+      false
+    end
+  end
+
+  def add_exception_time!(time)
+    if schedule.present?
+      sched = schedule
+      sched.add_exception_time time
+      set_schedule!(sched)
+    else
+      false
+    end
   end
 
   # returns hash keyed by date objects for each event instance
@@ -34,26 +56,34 @@ class Schedule < ActiveRecord::Base
         ei.destroy unless schedule.all_occurrences.include? ei.start_date
       end
       eis_by_date = event_instances_by_date
+
       # add new occurrences
-      schedule.each_occurrence do |date|
-        unless eis_by_date.has_key? date
+      schedule.each_occurrence do |occurrence|
+        if !eis_by_date.has_key? occurrence.start_time
           EventInstance.create(
             schedule_id: self.id, 
             event_id: event.id,
-            start_date: date,
+            start_date: occurrence.start_time,
+            end_date: occurrence.end_time,
             description_override: description_override,
             subtitle_override: subtitle_override,
             presenter_name: presenter_name
           )
+        else
+          ei = eis_by_date[occurrence]
+          # update end dates if need be -- unfortunately, since end_dates are all different
+          # (even though duration is the same), these have to be updated by separate queries
+          ei.update_attribute :end_date, occurrence.end_time if ei.end_date != occurrence.end_time
         end
       end
-      if description_override_changed? or subtitle_override_changed? or presenter_name_changed?
-        event_instances.update_all({
-          presenter_name: presenter_name,
-          subtitle_override: subtitle_override,
-          description_override: description_override
-        })
-      end
+      # do this in a single batch rather than in the above 'else' clause so that we can
+      # update all the event instances with a single query. If any of these fields change,
+      # all the instances will need to be updated, so handle it here.
+      update_hash = {}
+      update_hash[:presenter_name] = presenter_name if presenter_name_changed?
+      update_hash[:subtitle_override] = subtitle_override if subtitle_override_changed?
+      update_hash[:description_override] = description_override if description_override_changed?
+      event_instances.update_all(update_hash) unless update_hash.empty?
     end
     event_instances
   end

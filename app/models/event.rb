@@ -42,8 +42,8 @@ class Event < ActiveRecord::Base
   # event instances represent individual datetimes for events that might occur more than once
   # they can also have a subtitle and description that "override" the master
   # always want the instances sorted by start_date
-  has_many :event_instances, order: 'start_date ASC'
-  has_many :schedules
+  has_many :event_instances, order: 'start_date ASC', dependent: :destroy
+  has_many :schedules, dependent: :destroy
   validates_associated :event_instances # at least one must exist
   validates_presence_of :event_instances
 
