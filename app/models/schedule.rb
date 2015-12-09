@@ -5,6 +5,31 @@ class Schedule < ActiveRecord::Base
 
   after_save :update_event_instances
 
+  validates_presence_of :event
+
+  def self.build_from_ux_for_event(hash, event_id)
+    model = Schedule.new({
+      subtitle_override: hash['subtitle'],
+      presenter_name: hash['presenter_name'],
+      description_override: hash['description']
+    })
+    model.event_id = event_id
+    sched = IceCube::Schedule.new(Chronic.parse(hash['starts_at']))
+    rule = Schedule.parse_repeat_info_to_rule(hash).until(Chronic.parse(hash['ends_at']))
+
+    sched.add_recurrence_rule rule
+
+    # parse exception times
+    hash['overrides'].each do |i|
+      if i['hidden'] # this data structure is to support instance specific data overrides in the future
+        sched.add_exception_time Chronic.parse(i['date'])
+      end
+    end
+
+    model.recurrence = sched.to_yaml
+    model
+  end
+
   def schedule
     if recurrence.present?
       IceCube::Schedule.from_yaml recurrence
@@ -90,5 +115,22 @@ class Schedule < ActiveRecord::Base
       event_instances.update_all(update_hash) unless update_hash.empty?
     end
     event_instances
+  end
+
+  protected
+
+  def self.parse_repeat_info_to_rule(hash)
+    repeats = hash['repeats']
+    if repeats == 'daily'
+      IceCube::Rule.daily
+    elsif repeats == 'weekly'
+      IceCube::Rule.weekly.day(hash['days_of_week'])
+    elsif repeats == 'bi-weekly'
+      IceCube::Rule.weekly(2).day(hash['days_of_week'])
+    elsif repeats == 'monthly'
+      IceCube::Rule.monthly
+    else
+      false
+    end
   end
 end
