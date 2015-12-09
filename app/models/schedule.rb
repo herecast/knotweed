@@ -42,10 +42,10 @@ class Schedule < ActiveRecord::Base
   end
 
   # returns hash keyed by date integers for each event instance
-  def event_instance_ids_by_date
+  def event_instances_by_date
     hash = {}
     EventInstance.where(schedule_id: id).each do |ei| 
-      hash[ei.start_date.to_i] = ei.id
+      hash[ei.start_date] = ei
     end
     hash
   end
@@ -54,15 +54,14 @@ class Schedule < ActiveRecord::Base
   def update_event_instances
     if self.schedule.present?
       # remove no longer existent occurrences
-      all_occurrence_ints = self.schedule.all_occurrences.map{ |o| o.to_i }
       EventInstance.where(schedule_id: id).each do |ei|
-        ei.destroy unless all_occurrence_ints.include? ei.start_date.to_i
+        ei.destroy unless self.schedule.all_occurrences.include? ei.start_date
       end
-      eis_by_date = event_instance_ids_by_date
+      eis_by_date = event_instances_by_date
 
       # add new occurrences
       schedule.each_occurrence do |occurrence|
-        if !eis_by_date.has_key? occurrence.start_time.to_i
+        if !eis_by_date.has_key? occurrence.start_time
           EventInstance.create(
             schedule_id: self.id, 
             event_id: event.id,
@@ -73,10 +72,10 @@ class Schedule < ActiveRecord::Base
             presenter_name: presenter_name
           )
         else
-          ei = event_instances.find eis_by_date[occurrence.start_time.to_i]
+          ei = eis_by_date[occurrence.start_time]
           # update end dates if need be -- unfortunately, since end_dates are all different
           # (even though duration is the same), these have to be updated by separate queries
-          if ei.end_date.to_i != occurrence.end_time.to_i
+          if ei.end_date != occurrence.end_time
             ei.update_attribute :end_date, occurrence.end_time 
           end
         end
