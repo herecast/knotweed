@@ -214,4 +214,24 @@ class Schedule < ActiveRecord::Base
       false
     end
   end
+
+  def to_ics
+    tz = Time.zone.tzinfo.name
+    event = Icalendar::Event.new
+    my_schedule = schedule
+    event.dtstart = Icalendar::Values::DateTime.new(my_schedule.start_time.to_datetime, tzid: tz)
+    if my_schedule.end_time.present?
+      event.dtend = Icalendar::Values::DateTime.new(my_schedule.end_time.to_datetime, tzid: tz)
+    end
+    my_schedule.recurrence_rules.each do |r|
+      event.rrule = Icalendar::Values::Recur.new(r.to_ical)
+    end
+    my_schedule.send(:recurrence_times_without_start_time).each do |rt|
+      event.rdate = Icalendar::Values::DateTime.new(rt.to_datetime)
+    end
+    my_schedule.exception_times.each do |ex|
+      event.exdate = Icalendar::Values::DateTime.new(ex.to_datetime) 
+    end
+    event
+  end
 end
