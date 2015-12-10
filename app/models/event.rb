@@ -44,8 +44,6 @@ class Event < ActiveRecord::Base
   # always want the instances sorted by start_date
   has_many :event_instances, order: 'start_date ASC', dependent: :destroy
   has_many :schedules, dependent: :destroy
-  validates_associated :event_instances # at least one must exist
-  validates_presence_of :event_instances
 
   accepts_nested_attributes_for :event_instances, allow_destroy: true
   attr_accessible :event_instances_attributes
@@ -130,6 +128,31 @@ class Event < ActiveRecord::Base
   # returns first upcoming event instance
   def next_instance
     event_instances.where('start_date > ?', Time.zone.now).order('start_date ASC').first
+  end
+
+  def save_with_schedules(schedules)
+    begin
+      Event.transaction do
+        self.save!
+        schedules.each do |s|
+          s.event_id = self.id
+          s.save!
+        end
+      end
+    rescue ActiveRecord::StatementInvalid
+      false
+    end
+  end
+
+  def update_with_schedules(event_hash, schedules)
+    begin
+      Event.transaction do
+        self.update_attributes!(event_hash)
+        schedules.each { |s| s.save! }
+      end
+    rescue ActiveRecord::StatementInvalid
+      false
+    end
   end
 
 end

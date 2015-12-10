@@ -13,13 +13,18 @@ class Schedule < ActiveRecord::Base
     else
       model = Schedule.new
     end
-    model.subtitle_override = hash['subtitle'],
-    model.presenter_name = hash['presenter_name'],
+    model.subtitle_override = hash['subtitle']
+    model.presenter_name = hash['presenter_name']
     model.description_override = hash['description']
     model.event_id = event_id
 
-    sched = IceCube::Schedule.new(Chronic.parse(hash['starts_at']))
-    rule = Schedule.parse_repeat_info_to_rule(hash).until(Chronic.parse(hash['ends_at']))
+    ends_at = Chronic.parse(hash['ends_at'])
+    sched = IceCube::Schedule.new(Chronic.parse(hash['starts_at']), end_time: ends_at.to_time)
+
+    rule = Schedule.parse_repeat_info_to_rule(hash)
+    unless rule.is_a? IceCube::SingleOccurrenceRule
+      rule = rule.until(Chronic.parse(hash['ends_at']))
+    end
 
     sched.add_recurrence_rule rule
 
@@ -129,14 +134,24 @@ class Schedule < ActiveRecord::Base
 
   def self.parse_repeat_info_to_rule(hash)
     repeats = hash['repeats']
+    if hash['days_of_week'].present?
+      d_o_w = hash['days_of_week'].map{ |d| d-1 } # ember app and IceCube are off by 1 day in their treatment
+      # of days of week
+    end
     if repeats == 'daily'
       IceCube::Rule.daily
     elsif repeats == 'weekly'
-      IceCube::Rule.weekly.day(hash['days_of_week'])
+      IceCube::Rule.weekly.day(d_o_w)
     elsif repeats == 'bi-weekly'
-      IceCube::Rule.weekly(2).day(hash['days_of_week'])
+      IceCube::Rule.weekly(2).day(d_o_w)
     elsif repeats == 'monthly'
-      IceCube::Rule.monthly
+      # note -- as of now, we only support recurring on one day of week during one week of month.
+      # This code could easily be modified to support more than that in the future by mapping
+      # the days_of_week to arrays of weeks_of_month
+      # Also, the UI has a 0 based week system while IceCube is 1-4
+      IceCube::Rule.monthly.day_of_week(d_o_w[0] => [hash['weeks_of_month'][0]+1])
+    elsif repeats == 'once'
+      IceCube::SingleOccurrenceRule.new(Chronic.parse(hash['starts_at']))
     else
       false
     end

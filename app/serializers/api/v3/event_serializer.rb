@@ -6,9 +6,10 @@ module Api
         :venue_name, :venue_address, :venue_locate_name, :venue_url,
         :venue_city, :venue_state, :venue_id, :venue_latitude, :venue_longitude,
         :venue_locate_name, :venue_zip,
-        :event_instances, :event_url,
+        :event_url,
         :registration_deadline, :registration_url,
-        :registration_phone, :registration_email
+        :registration_phone, :registration_email,
+        :first_instance_id
 
       # this is funky but without it, active model serializer tries to use the URL helper
       # event_url instead of the attribute.
@@ -30,10 +31,8 @@ module Api
         end
       end
 
-      def event_instances
-        object.event_instances.map do |inst|
-          AbbreviatedEventInstanceSerializer.new(inst).serializable_hash
-        end
+      def first_instance_id
+        object.event_instance_ids.first
       end
 
       def venue_name
