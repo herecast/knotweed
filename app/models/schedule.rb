@@ -9,7 +9,6 @@ class Schedule < ActiveRecord::Base
 
   def self.build_from_ux_for_event(hash, event_id=nil)
     if hash['id'].present?
-      debugger
       model = Schedule.find hash['id']
     else
       model = Schedule.new
@@ -25,9 +24,13 @@ class Schedule < ActiveRecord::Base
     sched.add_recurrence_rule rule
 
     # parse exception times
-    hash['overrides'].each do |i|
-      if i['hidden'] # this data structure is to support instance specific data overrides in the future
-        sched.add_exception_time Chronic.parse(i['date'])
+    # note, overrides can come in as a NIL thanks to rails parsing empty
+    # JSON arrays as nil.
+    if hash['overrides'].present?
+      hash['overrides'].each do |i|
+        if i['hidden'] # this data structure is to support instance specific data overrides in the future
+          sched.add_exception_time Chronic.parse(i['date'])
+        end
       end
     end
 
