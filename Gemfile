@@ -10,7 +10,6 @@ end
 gem 'jquery-rails'
 gem "mysql2"
 gem "haml-rails", ">= 0.4"
-gem "rspec-rails", ">= 2.12.2", :group => [:development, :test]
 gem "capybara", ">= 2.0.3", :group => :test
 gem "database_cleaner", ">= 1.0.0.RC1", :group => :test
 gem "email_spec", ">= 1.4.0", :group => :test
@@ -20,7 +19,6 @@ gem "guard-rspec", ">= 2.5.2", :group => :development
 gem "rb-inotify", ">= 0.9.0", :group => :development, :require => false
 gem "rb-fsevent", ">= 0.9.3", :group => :development, :require => false
 gem "rb-fchange", ">= 0.0.6", :group => :development, :require => false
-gem "factory_girl_rails", "~> 4.3.0", :group => [:development, :test]
 gem "devise", ">= 2.2.3"
 gem "cancan", ">= 1.6.9"
 gem "rolify", ">= 3.2.0"
@@ -34,6 +32,12 @@ gem "rubypress"
 gem 'net-http-persistent', '~> 2.9'
 gem 'rinku', "~> 1.7.3"
 
+group :development, :test do
+  gem "factory_girl_rails", "~> 4.3.0"
+  gem 'faker'
+  gem "rspec-rails", ">= 2.12.2"
+end
+
 group :test do
   gem "webmock"
   gem "vcr"
@@ -41,7 +45,6 @@ group :test do
   gem 'simplecov'
   # this is for circleci to properly read & ormat our test results
   gem 'rspec_junit_formatter'
-  gem 'faker'
 end
 group :rubymine,:development do
  	gem "thin"
