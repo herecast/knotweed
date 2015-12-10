@@ -69,6 +69,32 @@ class Schedule < ActiveRecord::Base
     self.recurrence = sched.to_yaml
   end
 
+  def to_icalendar_event
+    tz = Time.zone.tzinfo.name
+    event = Icalendar::Event.new
+    my_schedule = schedule
+    event.dtstart = Icalendar::Values::DateTime.new(my_schedule.start_time.to_datetime, tzid: tz)
+    if my_schedule.end_time.present?
+      event.dtend = Icalendar::Values::DateTime.new(my_schedule.end_time.to_datetime, tzid: tz)
+    end
+    my_schedule.recurrence_rules.each do |r|
+      event.rrule = Icalendar::Values::Recur.new(r.to_ical)
+    end
+    my_schedule.send(:recurrence_times_without_start_time).each do |rt|
+      event.rdate = Icalendar::Values::DateTime.new(rt.to_datetime)
+    end
+    my_schedule.exception_times.each do |ex|
+      event.exdate = Icalendar::Values::DateTime.new(ex.to_datetime) 
+    end
+    event.summary = self.event.title
+    event.description = strip_tags(description).gsub('&nbsp;','')
+    event.location = self.event.try(:venue).try(:name)
+    if ConsumerApp.current.present?
+      event.url = ConsumerApp.current.uri + "/events/#{id}"
+    end
+    event
+  end
+
   def set_schedule!(sched)
     self.schedule = sched
     self.save
@@ -186,6 +212,13 @@ class Schedule < ActiveRecord::Base
       end
     end
     hash
+
+  def subtitle
+    subtitle_override.present? ? subtitle_override : event.subtitle
+  end
+
+  def description
+    description_override.present? ? description_override : event.description
   end
 
   protected

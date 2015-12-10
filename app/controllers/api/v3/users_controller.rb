@@ -1,3 +1,4 @@
+require 'icalendar/tzinfo'
 module Api
   module V3
     class UsersController < ApiController
@@ -110,12 +111,14 @@ module Api
         user = User.find_by_public_id params[:public_id]
         if user
           cal = Icalendar::Calendar.new
-          event_instances = EventInstance.joins(event: :content).where('contents.created_by = ?', user.id)
-          event_instances.each do |event_instance|
-            # intentionally keeping event_instance#ics_event_attributes as private,
-            # so it's not exposed to the instance, but we can still
-            # call it via send in special cases like here.
-            cal.add_event event_instance.send(:ics_event_attributes)
+          tzid = Time.zone.tzinfo.name
+          tz = TZInfo::Timezone.get tzid
+          schedules = Schedule.joins(event: :content).where('contents.created_by = ?', user.id)
+          if schedules.present?
+            cal.add_timezone tz.ical_timezone schedules.first.schedule.start_time.to_datetime 
+          end
+          schedules.each do |schedule|
+            cal.add_event schedule.to_icalendar_event
           end
           render text: cal.to_ical
         else

@@ -216,10 +216,10 @@ describe Api::V3::UsersController do
     context 'with valid public id' do
       before do
         @public_id = 'slomo'
-        @user = FactoryGirl.create :user, public_id: @public_id
-        
-        @content = FactoryGirl.create :content, created_by: @user
-        @event = FactoryGirl.create :event, content: @content
+        user = FactoryGirl.create :user, public_id: @public_id
+        content = FactoryGirl.create :content, created_by: user
+        event = FactoryGirl.create :event, content: content
+        FactoryGirl.create :schedule, event: event
       end
       
       subject! { get :events, format: :ics, public_id: @public_id }
@@ -229,6 +229,8 @@ describe Api::V3::UsersController do
         @response.body.should match /DTSTART/
         @response.body.should match /DTSTAMP/
         @response.body.should match /VEVENT/
+        @response.body.should match /RRULE/
+        @response.body.should match /VTIMEZONE/
       end
     end
 

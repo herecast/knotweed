@@ -305,4 +305,44 @@ describe Schedule do
     end
   end
       
+  describe 'schedule converted to ics' do
+    context 'with text overrides' do
+      before do
+        @description_override = Faker::Lorem.sentence
+        @subtitle_override = Faker::Lorem.sentence
+        @schedule = FactoryGirl.create :schedule, description_override: @description_override, subtitle_override: @subtitle_override
+        @schedule.add_exception_time! @schedule.schedule.all_occurrences[1]
+        @schedule.add_recurrence_rule! IceCube::SingleOccurrenceRule.new(Time.now)
+        @ics = @schedule.to_icalendar_event.to_ical
+      end
+
+      it 'should have the expected fields' do
+        @ics.should match /VEVENT/
+        @ics.should match /DTSTART/
+        @ics.should match /DTEND/
+        @ics.should match "DESCRIPTION:#{@description_override}"
+        @ics.should match /RRULE/
+        @ics.should match /RDATE/
+        @ics.should match /EXDATE/
+      end
+    end
+
+    context 'without text override, with location' do
+      before do
+        @venue = FactoryGirl.create :business_location
+        event = FactoryGirl.create :event, venue: @venue
+        @schedule = FactoryGirl.create :schedule
+        @ics = @schedule.to_icalendar_event.to_ical
+      end
+
+      it 'should have the expected fields' do
+        @ics.should match /VEVENT/
+        @ics.should match /DTSTART/
+        @ics.should match /DTEND/
+        @ics.should match "DESCRIPTION:#{@schedule.event.description}"
+        @ics.should match /RRULE/
+        @ics.should match "LOCATION:#{@venue.name}"
+      end
+    end
+  end
 end
