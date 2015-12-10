@@ -329,7 +329,7 @@ describe Schedule do
 
     context 'without text override, with location' do
       before do
-        @venue = FactoryGirl.create :business_location
+        @venue = FactoryGirl.create :business_location, name: Faker::Lorem.words(2).join(' ')
         event = FactoryGirl.create :event, venue: @venue
         @schedule = FactoryGirl.create :schedule
         @ics = @schedule.to_icalendar_event.to_ical
