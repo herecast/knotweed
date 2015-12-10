@@ -7,13 +7,18 @@ class Schedule < ActiveRecord::Base
 
   validates_presence_of :event
 
-  def self.build_from_ux_for_event(hash, event_id)
-    model = Schedule.new({
-      subtitle_override: hash['subtitle'],
-      presenter_name: hash['presenter_name'],
-      description_override: hash['description']
-    })
+  def self.build_from_ux_for_event(hash, event_id=nil)
+    if hash['id'].present?
+      debugger
+      model = Schedule.find hash['id']
+    else
+      model = Schedule.new
+    end
+    model.subtitle_override = hash['subtitle'],
+    model.presenter_name = hash['presenter_name'],
+    model.description_override = hash['description']
     model.event_id = event_id
+
     sched = IceCube::Schedule.new(Chronic.parse(hash['starts_at']))
     rule = Schedule.parse_repeat_info_to_rule(hash).until(Chronic.parse(hash['ends_at']))
 

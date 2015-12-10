@@ -14,7 +14,7 @@ describe Api::V3::EventsController do
       content: 'Hello this is test.',
       cost: '$25',
       cost_type: 'free',
-      event_instances: [
+      schedules: [
         {
           subtitle: 'fake subtitle',
           starts_at: '2015-05-28T13:00:00-04:00',
@@ -78,6 +78,7 @@ describe Api::V3::EventsController do
   describe 'PUT update' do
     before do
       @event = FactoryGirl.create :event
+      @schedule = FactoryGirl.create :schedule, event: @event
       @event.content.update_attribute :created_by, @current_user
       @attrs_for_update = @event.attributes.select do |k,v|
         ![:links, :sponsor, :sponsor_url, :featured, :id, 
