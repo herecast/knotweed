@@ -6,7 +6,7 @@ module Api
         :venue_name, :venue_address, :venue_locate_name, :venue_url,
         :venue_city, :venue_state, :venue_id, :venue_latitude, :venue_longitude,
         :venue_locate_name, :venue_zip,
-        :event_url,
+        :event_url, :schedules,
         :registration_deadline, :registration_url,
         :registration_phone, :registration_email,
         :first_instance_id
@@ -73,6 +73,10 @@ module Api
 
       def venue_url
         object.venue.try(:venue_url)
+      end
+      
+      def schedules
+        object.schedules.map{ |s| s.to_ux_format }
       end
 
     end

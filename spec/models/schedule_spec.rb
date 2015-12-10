@@ -152,7 +152,7 @@ describe Schedule do
 
   describe 'add_recurrence_rule!(rule)' do 
     before do
-      @schedule = FactoryGirl.create :schedule, recurrence: nil
+      @schedule = FactoryGirl.create :schedule, recurrence: IceCube::Schedule.new().to_yaml
       @rule = IceCube::Rule.daily.until(1.week.from_now)
     end
 
@@ -215,6 +215,69 @@ describe Schedule do
     it 'should have the expected exception times' do
       times = [Chronic.parse('2015-12-14T14:00:00.000Z'), Chronic.parse('2015-12-28T14:00:00.000Z')]
       @schedule.schedule.exception_times.should eq times
+    end
+
+  end
+
+  describe 'to_ux_format' do
+    before do
+      @schedule = FactoryGirl.build :schedule, recurrence: nil
+      @basic_response = {
+        subtitle: @schedule.subtitle_override,
+        presenter_name: @schedule.presenter_name,
+        starts_at: @start_time=Time.local(2015),
+        ends_at: @end_time=Time.local(2015)+2.months
+      }
+    end
+
+    let(:output) { @schedule.to_ux_format }
+
+    rules_and_outputs = {
+      'daily' => {
+        rule: IceCube::Rule.daily,
+        repeats_fields: { repeats: 'daily', days_of_week: nil, weeks_of_month: nil }
+      },
+      'weekly' => {
+        rule: IceCube::Rule.weekly.day(3),
+        repeats_fields: { repeats: 'weekly', days_of_week: [4], weeks_of_month: nil }
+      },
+      'bi-weekly' => {
+        rule: IceCube::Rule.weekly(2).day(5),
+        repeats_fields: { repeats: 'bi-weekly', days_of_week: [6], weeks_of_month: nil }
+      },
+      'monthly' => {
+        rule: IceCube::Rule.monthly.day_of_week(3 => [2]),
+        repeats_fields: { repeats: 'monthly', days_of_week: [4], weeks_of_month: [1] }
+      },
+      'once' => {
+        rule: IceCube::SingleOccurrenceRule.new(Time.local(2015)),
+        repeats_fields: { repeats: 'once', days_of_week: nil, weeks_of_month: nil }
+      }
+    }
+
+    rules_and_outputs.each do |type, specifics|
+      it "should generate the correct hash response for a #{type} recurrence" do
+        @schedule.schedule = IceCube::Schedule.new(@start_time, end_time: @end_time){ |s| s.add_recurrence_rule specifics[:rule] }
+        output.should eq(specifics[:repeats_fields].merge(@basic_response))
+      end
+    end
+
+    describe 'with exceptions' do
+      before do
+        @schedule.schedule = IceCube::Schedule.new(@start_time, end_time: @end_time) do |s|
+          s.add_recurrence_rule IceCube::Rule.daily.until(@end_time)
+          s.add_exception_time @start_time + 3.days
+          s.add_exception_time @start_time + 5.days
+        end
+      end
+
+      it 'should include the appropriate array of overrides' do
+        output[:overrides].should be_present
+        output[:overrides].count.should eq 2
+        output[:overrides].each do |o|
+          o[:hidden].should be_true
+        end
+      end
     end
 
   end

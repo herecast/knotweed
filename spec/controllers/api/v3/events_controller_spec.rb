@@ -19,10 +19,8 @@ describe Api::V3::EventsController do
           subtitle: 'fake subtitle',
           starts_at: '2015-05-28T13:00:00-04:00',
           ends_at: '2015-05-28T20:00:00-04:00',
+          repeats: 'once',
           presenter_name: 'Bob Jones'
-        }, {
-          subtitle: 'different fake subtitle',
-          starts_at: '2015-05-29T13:00:00-04:00'
         }
       ],
       event_url: 'http://www.google.com',
@@ -84,14 +82,10 @@ describe Api::V3::EventsController do
         ![:links, :sponsor, :sponsor_url, :featured, :id, 
          :created_at, :updated_at].include? k.to_sym
       end
-      @attrs_for_update[:event_instances] = @event.event_instances.map do |ei|
-        { id: ei.id, starts_at: ei.start_date.to_s, ends_at: ei.end_date,
-          subtitle: ei.subtitle_override }
-      end
       @attrs_for_update[:title] = 'Changed the title!'
       @attrs_for_update[:content] = @event.content.raw_content
-      @attrs_for_update[:event_instances][0][:subtitle] = 'changed subtitle!'
-      @attrs_for_update[:event_instances][0][:presenter_name] = 'bob loblaw'
+      @attrs_for_update[:schedules][0][:subtitle] = 'changed subtitle!'
+      @attrs_for_update[:schedules][0][:presenter_name] = 'bob loblaw'
       @attrs_for_update[:cost] = '$100'
       @attrs_for_update[:registration_url] = 'http://boogle.com'
 
@@ -143,16 +137,8 @@ describe Api::V3::EventsController do
       subject
       response.code.should eq('201')
       Event.count.should eq(1)
-      assigns(:event).event_instances.count.should eq(2)
+      assigns(:event).event_instances.count.should eq(1)
       assigns(:event).content.title.should eq(@event_attrs[:title])
-    end
-
-    it 'should respond with 422 unprocessable entity if event creation fails due to validation' do
-      invalid_attrs = @event_attrs.dup
-      invalid_attrs[:event_instances] = []
-      post :create, format: :json, event: invalid_attrs, current_user_id: @current_user.id
-      Event.count.should eq(0)
-      response.code.should eq('422')
     end
 
     context 'should respond with a 401 if user is not authenticated' do

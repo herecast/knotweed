@@ -5,7 +5,7 @@ class Schedule < ActiveRecord::Base
 
   after_save :update_event_instances
 
-  validates_presence_of :event
+  validates_presence_of :event, :recurrence
 
   def self.build_from_ux_for_event(hash, event_id=nil)
     if hash['id'].present?
@@ -44,39 +44,30 @@ class Schedule < ActiveRecord::Base
   end
 
   def schedule
-    if recurrence.present?
-      IceCube::Schedule.from_yaml recurrence
-    else
-      nil
-    end
+    IceCube::Schedule.from_yaml recurrence
+  end
+
+  def schedule=(sched)
+    self.recurrence = sched.to_yaml
   end
 
   def set_schedule!(sched)
-    self.recurrence = sched.to_yaml
+    schedule = sched
     self.save
   end
 
   # convenience methods that let us interact with IceCube schedule
   # directly on the schedule model
   def add_recurrence_rule!(rule)
-    if schedule.present?
-      sched = schedule
-      sched.add_recurrence_rule rule
-    else # default to creating a new schedule starting now
-      sched = IceCube::Schedule.new(Time.now)
-      sched.add_recurrence_rule rule
-    end
+    sched = schedule
+    sched.add_recurrence_rule rule
     set_schedule!(sched)
   end
 
   def add_exception_time!(time)
-    if schedule.present?
-      sched = schedule
-      sched.add_exception_time time
-      set_schedule!(sched)
-    else # doesn't make sense to add exception time when you don't have a schedule yet
-      false
-    end
+    sched = schedule
+    sched.add_exception_time time
+    set_schedule!(sched)
   end
 
   # returns hash keyed by date integers for each event instance
@@ -128,6 +119,54 @@ class Schedule < ActiveRecord::Base
       event_instances.update_all(update_hash) unless update_hash.empty?
     end
     event_instances
+  end
+
+  def to_ux_format
+    hash = {
+      subtitle: subtitle_override,
+      presenter_name: presenter_name,
+      starts_at: schedule.start_time,
+      ends_at: schedule.end_time
+    }
+    # single recurrence rules work differently
+    if schedule.recurrence_rules.present?
+      # ice cube supports more than one rule per schedule, but our UX doesn't,
+      # so just take the first rule
+      rule = schedule.recurrence_rules.first
+      rule_hash = rule.to_hash
+      if rule.is_a? IceCube::DailyRule
+        repeats = 'daily'
+      elsif rule.is_a? IceCube::WeeklyRule
+        if rule_hash[:interval] == 2
+          repeats = 'bi-weekly'
+        else
+          repeats = 'weekly'
+        end
+        days_of_week = rule_hash[:validations][:day].map{|d| d+1}
+      elsif rule.is_a? IceCube::MonthlyRule
+        repeats = 'monthly'
+        # [:validations][:day_of_week] looks like this: { 3 => [1] }
+        # in current implementation, we only ever have one day of week here.
+        key_for_days_of_week = rule_hash[:validations][:day_of_week].keys.first
+        weeks_of_month = rule_hash[:validations][:day_of_week][key_for_days_of_week].map{|w| w-1 }
+        days_of_week = [key_for_days_of_week+1]
+      end
+    elsif schedule.recurrence_times.present?
+      repeats = 'once' # while technically, an IceCube schedule can support multiple SingleOccurrenceRules,
+      # our UX does not support including that in one schedule. So we don't need to worry about it here,
+      # and the schedule already contains all the data we need.
+    end
+    hash[:repeats] = repeats
+    hash[:days_of_week] = days_of_week
+    hash[:weeks_of_month] = weeks_of_month
+
+    if schedule.exception_times.present?
+      hash[:overrides] = []
+      schedule.exception_times.each do |et|
+        hash[:overrides] << { date: et, hidden: true }
+      end
+    end
+    hash
   end
 
   protected
