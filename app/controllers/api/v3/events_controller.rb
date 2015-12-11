@@ -26,9 +26,11 @@ module Api
           else
             listserv_ids = params[:event].delete(:listserv_ids) || []
 
+            schedule_data = params[:event].delete :schedules
+            schedules = schedule_data.map{ |s| Schedule.build_from_ux_for_event(s, @event.id) }
             event_hash = process_event_params(params[:event])
             
-            if @event.update_attributes(event_hash)
+            if @event.update_with_schedules(event_hash, schedules)
               # reverse publish to specified listservs
               PromotionListserv.create_multiple_from_content(@event.content, listserv_ids, @requesting_app)
 
@@ -55,13 +57,16 @@ module Api
 
         # hard coded publication...
         pub = Publication.find_or_create_by_name 'DailyUV'
+
+        schedule_data = params[:event].delete :schedules
+        schedules = schedule_data.map{ |s| Schedule.build_from_ux_for_event(s) }
         
         event_hash = process_event_params(params[:event])
 
         @event = Event.new(event_hash)
         @event.content.publication = pub
         @event.content.images = [Image.create(image: image_data)] if image_data.present?
-        if @event.save
+        if @event.save_with_schedules(schedules)
           # reverse publish to specified listservs
           PromotionListserv.create_multiple_from_content(@event.content, listserv_ids, @requesting_app)
 
@@ -86,17 +91,6 @@ module Api
       end
 
       protected
-      # this is an unfortunate consequence of the fact that our ember app is using different keys
-      # for certain things than we are...
-      def process_ei_params(ei)
-        new_ei = {}
-        new_ei[:id] = ei[:id] if ei[:id].present? # for updating
-        new_ei[:subtitle_override] = ei[:subtitle] if ei[:subtitle].present?
-        new_ei[:start_date] = ei[:starts_at] if ei[:starts_at].present?
-        new_ei[:end_date] = ei[:ends_at] if ei[:ends_at].present?
-        new_ei[:presenter_name] = ei[:presenter_name] if ei[:presenter_name].present?
-        new_ei
-      end
 
       # accepts incoming params hash and returns a sanitized (only specified attributes accepted)
       # and translated hash of event data
@@ -143,12 +137,6 @@ module Api
 
         # translate params that have the wrong name
         new_e[:event_category] = e[:category].to_s.downcase.gsub(' ','_')
-        new_e[:event_instances_attributes] = e[:event_instances]
-        if new_e[:event_instances_attributes].present?
-          new_e[:event_instances_attributes].map! do |ei|
-            process_ei_params(ei)
-          end
-        end
         new_e
       end
 
