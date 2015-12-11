@@ -20,4 +20,3 @@ FactoryGirl.define do
     start_date 1.week.from_now
   end
 end
-

@@ -107,14 +107,6 @@ describe Api::V2::EventsController do
       assigns(:event).content.title.should eq(@event_attrs[:title])
     end
 
-    it 'should respond with 422 unprocessable entity if event creation fails due to validation' do
-      invalid_attrs = @event_attrs.dup
-      invalid_attrs[:event_instances] = []
-      post :create, format: :json, event: invalid_attrs, current_user_id: @current_user.id
-      Event.count.should eq(0)
-      response.code.should eq('422')
-    end
-
     it 'should respond with a 401 if no current_user_id is provided' do
       post :create, format: :json, event: @event_attrs
       response.code.should eq('401')

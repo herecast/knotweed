@@ -28,6 +28,7 @@ FactoryGirl.define do
       start_date 1.week.from_now
       subtitle_override nil
       description_override nil
+      skip_event_instance false
     end
 
     association :content, factory: :content, published: false
@@ -39,9 +40,11 @@ FactoryGirl.define do
     cost_type :free
 
     after(:build) do |e, evaluator|
-      ei = FactoryGirl.create :event_instance, start_date: evaluator.start_date,
-        subtitle_override: evaluator.subtitle_override, description_override: evaluator.description_override
-      e.event_instances << ei
+      unless evaluator.skip_event_instance
+        ei = FactoryGirl.create :event_instance, start_date: evaluator.start_date,
+          subtitle_override: evaluator.subtitle_override, description_override: evaluator.description_override
+        e.event_instances << ei
+      end
     end
 
   end

@@ -152,19 +152,19 @@ describe Schedule do
 
   describe 'add_recurrence_rule!(rule)' do 
     before do
-      @schedule = FactoryGirl.create :schedule, recurrence: IceCube::Schedule.new().to_yaml
-      @rule = IceCube::Rule.daily.until(1.week.from_now)
+      @schedule = FactoryGirl.create :schedule, recurrence: IceCube::Schedule.new(Time.local(2015)).to_yaml
+      @rule = IceCube::Rule.daily.until(Time.local(2015) + 1.week)
     end
 
     subject! { @schedule.add_recurrence_rule!(@rule) }
 
     it 'should add and persist an IceCube recurrence rule' do
-      @schedule.reload.schedule.recurrence_rules.should include(@rule)
+      @schedule.schedule.recurrence_rules.should include(@rule)
     end
 
     describe 'should trigger update_event_instances' do
       it 'should create event_instances for the schedule' do
-        EventInstance.where(schedule_id: @schedule.id).count.should eq 7
+        EventInstance.where(schedule_id: @schedule.id).count.should eq 8
       end
     end
   end
@@ -208,7 +208,7 @@ describe Schedule do
     end
 
     it 'should have the expected recurrence rules' do
-      rule = IceCube::Rule.weekly.day(2,5).until(Chronic.parse('2015-12-31T15:00:00.000Z'))
+      rule = IceCube::Rule.weekly.day(1,4).until(Chronic.parse('2015-12-31T15:00:00.000Z'))
       @schedule.schedule.recurrence_rules.should eq [rule]
     end
 
@@ -226,7 +226,8 @@ describe Schedule do
         subtitle: @schedule.subtitle_override,
         presenter_name: @schedule.presenter_name,
         starts_at: @start_time=Time.local(2015),
-        ends_at: @end_time=Time.local(2015)+2.months
+        ends_at: @end_time=Time.local(2015)+2.months,
+        id: nil
       }
     end
 
@@ -281,4 +282,27 @@ describe Schedule do
     end
 
   end
+
+  describe 'Schedule.create_single_occurrence_from_event_instance(ei)' do
+    before do
+      @event = FactoryGirl.create :event, skip_event_instance: true
+      @ei = FactoryGirl.create :event_instance, event: @event
+      @schedule = Schedule.create_single_occurrence_from_event_instance(@ei)
+    end
+
+    it 'should create a new schedule associated with the same event' do
+      @event.schedules.should eq([@schedule])
+    end
+
+    it 'should correctly define the single occurrence of the schedule' do
+      @schedule.schedule.all_occurrences.should eq [@ei.start_date]
+    end
+
+    it 'should correctly associate the event instance with the new schedule' do
+      @schedule.event_instances.should eq [@ei]
+      @ei.schedule.should eq @schedule
+      EventInstance.where(event_id: @event.id).should eq [@ei]
+    end
+  end
+      
 end

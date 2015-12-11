@@ -84,8 +84,11 @@ describe Api::V3::EventsController do
       end
       @attrs_for_update[:title] = 'Changed the title!'
       @attrs_for_update[:content] = @event.content.raw_content
-      @attrs_for_update[:schedules][0][:subtitle] = 'changed subtitle!'
-      @attrs_for_update[:schedules][0][:presenter_name] = 'bob loblaw'
+      schedule_changes = @schedule.to_ux_format.merge({
+        subtitle: 'changed subtitle!',
+        presenter_name: 'Bob Loblaw'
+      })
+      @attrs_for_update[:schedules] = [schedule_changes]
       @attrs_for_update[:cost] = '$100'
       @attrs_for_update[:registration_url] = 'http://boogle.com'
 
@@ -96,7 +99,7 @@ describe Api::V3::EventsController do
 
     context 'should not allow update if current_api_user does not match authoremail' do
       before do  
-    	api_authenticate user: @different_user 
+        api_authenticate user: @different_user 
       end
       it do
       	put :update, event: @attrs_for_update, id: @event.id
@@ -122,9 +125,9 @@ describe Api::V3::EventsController do
       subject
       @event.reload
       @event.event_instances.first.subtitle_override
-        .should eq(@attrs_for_update[:event_instances][0][:subtitle])
+        .should eq(@attrs_for_update[:schedules][0][:subtitle])
       @event.event_instances.first.presenter_name
-        .should eq(@attrs_for_update[:event_instances][0][:presenter_name])
+        .should eq(@attrs_for_update[:schedules][0][:presenter_name])
     end
       
   end

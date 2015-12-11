@@ -17,4 +17,3 @@ namespace :event_category do
     end
   end
 end
-
