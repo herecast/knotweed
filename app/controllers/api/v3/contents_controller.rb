@@ -9,7 +9,6 @@ module Api
         @content = Content.find params[:id]
         # get related promo if exists
         results = @content.get_related_promotion(@repository)
-        # logger.debug "RESULTS: #{results.inspect}"
         # if exists, grab content_id, score and select method (for logging)
         if results.present?
           c_id = results[:id]

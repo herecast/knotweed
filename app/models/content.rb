@@ -1348,8 +1348,6 @@ class Content < ActiveRecord::Base
     clean_content = SparqlUtilities.sanitize_input(SparqlUtilities.clean_lucene_query(
                     ActionView::Base.full_sanitizer.sanitize(query_term)))
 
-    # logger.debug "MY CONTENT: #{clean_content.inspect}"
-
     # get score threshold
     score_threshold = Figaro.env.promo_relevance_score_threshold
     query = File.read(Rails.root.join("lib", "queries", "query_promo_similarity_index.rq")) % 

@@ -42,8 +42,6 @@ class PromotionBanner < ActiveRecord::Base
   # this scope combines all conditions to determine whether a promotion banner is active
   # NOTE: we need the select clause or else the "joins" causes the scope to return 
   # readonly records.
-    # .where('promotions.active = ?', true)
-    # .where('(impression_count < max_impressions OR max_impressions IS NULL)')
   scope :active, includes(:promotion)
     .where('campaign_start <= ?', DateTime.now)
     .where('campaign_end >= ?', DateTime.now)
