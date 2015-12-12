@@ -12,6 +12,7 @@
 #  max_impressions  :integer
 #  impression_count :integer          default(0)
 #  click_count      :integer          default(0)
+#  daily_max_impressions :integer
 #
 
 require 'spec_helper'

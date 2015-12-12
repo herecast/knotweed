@@ -12,6 +12,7 @@
 #  max_impressions  :integer
 #  impression_count :integer          default(0)
 #  click_count      :integer          default(0)
+#  daily_max_impressions :integer
 #
 
 class PromotionBanner < ActiveRecord::Base
@@ -36,7 +37,7 @@ class PromotionBanner < ActiveRecord::Base
 
   validates_presence_of :promotion
   validates :max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'max_impressions.present?'
-  validates :daily_max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'daily_max_impressions.present?'
+#  validates :daily_max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'daily_max_impressions.present?'
 
   # @deprecated as of release 3.0.3
   # this scope combines all conditions to determine whether a promotion banner is active
