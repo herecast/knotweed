@@ -26,8 +26,10 @@ class Schedule < ActiveRecord::Base
 
 
   def self.build_from_ux_for_event(hash, event_id=nil)
+    # handles all incoming UX data for schedules, including when we are removing them.
     if hash['id'].present?
       model = Schedule.find hash['id']
+      return model.destroy if hash['_remove']
     else
       model = Schedule.new
     end

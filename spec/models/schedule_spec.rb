@@ -217,6 +217,18 @@ describe Schedule do
       @schedule.schedule.exception_times.should eq times
     end
 
+    context 'when passed _remove for an existing schedule' do
+      before do
+        @schedule = FactoryGirl.create :schedule, event: @event
+        @remove_input = @input.merge({'_remove' => true, 'id' => @schedule.id})
+      end
+
+      subject { Schedule.build_from_ux_for_event(@remove_input, @event.id) }
+
+      it 'should destroy the schedule' do
+        expect{subject}.to change{Schedule.count}.by -1
+      end
+    end
   end
 
   describe 'to_ux_format' do
