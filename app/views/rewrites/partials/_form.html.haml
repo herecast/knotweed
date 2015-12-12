@@ -1,0 +1,7 @@
+= simple_form_for @rewrite do |f|
+  = f.error_notification
+  .form-column
+    = f.input :source
+    = f.input :destination
+  .form-actions
+    = f.submit class: "btn btn-primary"
