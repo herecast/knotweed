@@ -87,7 +87,8 @@ describe Api::V3::ContentsController do
       Promotion.any_instance.stub(:update_active_promotions).and_return(true)
       @promo = FactoryGirl.create :promotion, content: @related_content
       @pb = FactoryGirl.create :promotion_banner, promotion: @promo
-      Content.any_instance.stub(:get_related_promotion).and_return(@related_content.id)
+      # Content.any_instance.stub(:get_related_promotion).and_return(@related_content.id)
+      Content.any_instance.stub(:get_related_promotion).and_return({:id => @related_content.id, :score => 0.10, :select_method => "relevance"})
     end
 
     subject { get :related_promotion, format: :json, 

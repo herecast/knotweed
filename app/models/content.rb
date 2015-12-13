@@ -997,6 +997,7 @@ class Content < ActiveRecord::Base
     end
     # select one random record from remaining results
     results = results.sample
+    promoted_content = []
     # return content id, relevance score and select method
     if results.present?
       content_id = results[:content_id].to_s

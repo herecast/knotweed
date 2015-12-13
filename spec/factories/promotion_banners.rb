@@ -13,6 +13,7 @@
 #  impression_count :integer          default(0)
 #  click_count      :integer          default(0)
 #  daily_max_impressions :integer
+#  daily_impression_count :integer
 #
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
@@ -22,8 +23,9 @@ FactoryGirl.define do
     redirect_url "http://www.google.com"
     campaign_start 1.day.ago
     campaign_end 1.day.from_now
-    max_impressions 100
-    daily_max_impressions 5
+    max_impressions 1000
+    daily_max_impressions 100
     impression_count 0
+    daily_impression_count 0
   end
 end
