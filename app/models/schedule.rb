@@ -212,6 +212,7 @@ class Schedule < ActiveRecord::Base
       end
     end
     hash
+  end
 
   def subtitle
     subtitle_override.present? ? subtitle_override : event.subtitle
