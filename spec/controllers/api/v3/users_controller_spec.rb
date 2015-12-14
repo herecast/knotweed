@@ -84,7 +84,8 @@ describe Api::V3::UsersController do
                           location_id: location.id ,
                           email: 'skye@bill.com',
                           password: 'snever4aet3',
-                          password_confirmation: 'snever4aet3'
+                          password_confirmation: 'snever4aet3',
+                          public_id: 'aleteatk-atjkata'
                           }
                       }
         end
@@ -95,6 +96,7 @@ describe Api::V3::UsersController do
           updated_user = assigns(:current_api_user)
           updated_user.name.should eq @new_data[:current_user][:name]
           updated_user.location.should eq Location.find @new_data[:current_user][:location_id]
+          updated_user.public_id.should eq @new_data[:current_user][:public_id]
           
           updated_user.unconfirmed_email.should eq @new_data[:current_user][:email]
           updated_user.encrypted_password.should_not eq @new_data[:current_user][:encrypted_password]
@@ -209,6 +211,65 @@ describe Api::V3::UsersController do
       end
     end
   end
+  
+  describe 'GET events' do
+    context 'with valid public id' do
+      before do
+        @public_id = 'slomo'
+        user = FactoryGirl.create :user, public_id: @public_id
+        content = FactoryGirl.create :content, created_by: user
+        event = FactoryGirl.create :event, content: content
+        FactoryGirl.create :schedule, event: event
+      end
+      
+      subject! { get :events, format: :ics, public_id: @public_id }
+
+      it 'should return ics data' do
+        @response.body.should match /VCALENDAR/
+        @response.body.should match /DTSTART/
+        @response.body.should match /DTSTAMP/
+        @response.body.should match /VEVENT/
+        @response.body.should match /RRULE/
+        @response.body.should match /VTIMEZONE/
+      end
+    end
+
+    context 'with invalid public id' do
+      before { @user = FactoryGirl.create :user }
+      subject! { get :events, format: :ics, public_id: 'fake-ekaf' }
+      it { @response.status.should eq 404 }
+    end
+  end
+   
+  describe 'ical url' do
+    context 'when user has public id'  do
+      before do 
+        @user = FactoryGirl.create :user, public_id: 'sorlara'
+        @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
+        api_authenticate user: @user, consumer_app: @consumer
+      end
+
+      subject! { get :show }
+
+      it 'should contain the ical url' do
+        JSON.parse(@response.body)['current_user']['events_ical_url'].should eq @consumer.uri + user_event_instances_ics_path(@user.public_id)
+      end
+    end
+
+    context 'when user has no public id'  do
+      before do 
+        @user = FactoryGirl.create :user, public_id: ''
+        @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
+        api_authenticate user: @user, consumer_app: @consumer
+      end
+
+      subject! { get :show }
+
+      it 'should contain the ical url' do
+        JSON.parse(@response.body)['current_user']['events_ical_url'].should be_nil
+      end
+    end
+  end
 
   describe 'POST logout' do
     context do 
@@ -313,7 +374,8 @@ describe Api::V3::UsersController do
           listserv_name: user.location.listserv.name, 
           listserv_id: user.location.listserv.id,
           test_group: user.test_group,
-          user_image_url: user.avatar.url }.stringify_keys
+          user_image_url: user.avatar.url,
+          events_ical_url: nil}.stringify_keys
         }.stringify_keys
     end
 end

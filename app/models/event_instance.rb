@@ -60,4 +60,28 @@ class EventInstance < ActiveRecord::Base
     end
   end
 
+  # returns ics format of this event
+  def to_ics
+    cal = Icalendar::Calendar.new
+    cal.add_event ics_event_attributes
+    cal.to_ical
+  end
+
+  private
+    
+    # private because this is a helper method for to_ics
+    # may be called with send if needed
+    def ics_event_attributes
+      ev = Icalendar::Event.new
+      ev.dtstart = start_date
+      ev.dtend = end_date
+      ev.summary = self.event.title
+      ev.description = strip_tags(description).gsub('&nbsp;','')
+      ev.location = self.event.try(:venue).try(:name)
+      if ConsumerApp.current.present?
+        ev.url = ConsumerApp.current.uri + "/events/#{id}"
+      end
+      ev
+    end
+
 end

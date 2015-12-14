@@ -118,6 +118,34 @@ describe Api::V3::EventInstancesController do
       expect{subject}.to change{Content.find(@inst.event.content.id).view_count}.from(0).to(1)
     end
 
+    context 'ical url' do
+      before do
+        @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
+        api_authenticate consumer_app: @consumer
+        get :show, format: :json, id: @inst.id
+      end
+      
+      it 'response should include ical url' do
+        JSON.parse(@response.body)['event_instance']['ical_url'].should eq @consumer.uri + event_instances_ics_path(@inst.id)
+      end
+    end
+
+  end
+
+  describe 'GET ics' do
+    before do
+      @event = FactoryGirl.create :event
+      @inst = @event.event_instances.first
+    end
+
+    subject! { get :show, format: :ics, id: @inst.id }
+
+    it 'should contain ics data' do
+      @response.body.should match /VCALENDAR/
+      @response.body.should match /DTSTART/
+      @response.body.should match /DTSTAMP/
+      @response.body.should match /VEVENT/
+    end
   end
 
   describe 'when user edits the content' do

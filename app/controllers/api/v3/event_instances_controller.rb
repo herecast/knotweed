@@ -82,9 +82,15 @@ module Api
           url = edit_event_url(@event_instance.event) if @current_api_user.has_role? :admin
         end
         can_edit = (@current_api_user.present? && (@event_instance.event.content.created_by == @current_api_user))
+        if @requesting_app.present?
+          ical_url = @requesting_app.uri + event_instances_ics_path(params[:id]) 
+        end
         @event_instance.event.content.increment_integer_attr!(:view_count)
-        render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
-          can_edit: can_edit, admin_content_url: url
+        respond_to do |format|
+          format.json { render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
+            can_edit: can_edit, admin_content_url: url, ical_url: ical_url }
+          format.ics { render text: @event_instance.to_ics }
+        end
       end
 
       private

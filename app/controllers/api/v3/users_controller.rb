@@ -1,3 +1,4 @@
+require 'icalendar/tzinfo'
 module Api
   module V3
     class UsersController < ApiController
@@ -5,7 +6,10 @@ module Api
       before_filter :check_logged_in!, only: [:show, :update, :logout] 
       def show
         if @current_api_user.present? 
-          render json: @current_api_user, serializer: UserSerializer, root: 'current_user',  status: 200
+          if @requesting_app.present?
+            events_ical_url = @requesting_app.uri + user_event_instances_ics_path(@current_api_user.public_id.to_s)
+          end
+          render json: @current_api_user, serializer: UserSerializer, root: 'current_user',  status: 200, events_ical_url: events_ical_url
         else
           render json: { errors: 'User not logged in' }, status: 401
         end
@@ -36,6 +40,7 @@ module Api
           end
 
           @current_api_user.avatar = params[:current_user][:image] if params[:current_user][:image].present?
+          @current_api_user.public_id = params[:current_user][:public_id] if params[:current_user][:public_id].present?
 
           if @current_api_user.save 
             render json: @current_api_user, serializer: UserSerializer, root: 'current_user', status: 200
@@ -99,6 +104,25 @@ module Api
           end
         else
           render json: { errors: "#{params[:user][:email]} not found" }, status: 404
+        end
+      end
+
+      def events 
+        user = User.find_by_public_id params[:public_id]
+        if user
+          cal = Icalendar::Calendar.new
+          tzid = Time.zone.tzinfo.name
+          tz = TZInfo::Timezone.get tzid
+          schedules = Schedule.joins(event: :content).where('contents.created_by = ?', user.id)
+          if schedules.present?
+            cal.add_timezone tz.ical_timezone schedules.first.schedule.start_time.to_datetime 
+          end
+          schedules.each do |schedule|
+            cal.add_event schedule.to_icalendar_event
+          end
+          render text: cal.to_ical
+        else
+          head :not_found
         end
       end
 

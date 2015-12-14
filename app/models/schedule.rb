@@ -16,8 +16,8 @@ class Schedule < ActiveRecord::Base
     # doesn't end up replacing the instance
     ei.update_attribute :schedule_id, schedule.id
     args = {}
-    args[:end_time] = ei.end_date if ei.end_date.present?
-    schedule.schedule = IceCube::Schedule.new(ei.start_date, end_time: ei.end_date) do |s|
+    args[:end_time] = ei.end_date.to_time if ei.end_date.present?
+    schedule.schedule = IceCube::Schedule.new(ei.start_date, args) do |s|
       s.add_recurrence_rule IceCube::SingleOccurrenceRule.new(ei.start_date)
     end
     schedule.save!
@@ -26,8 +26,10 @@ class Schedule < ActiveRecord::Base
 
 
   def self.build_from_ux_for_event(hash, event_id=nil)
+    # handles all incoming UX data for schedules, including when we are removing them.
     if hash['id'].present?
       model = Schedule.find hash['id']
+      return model.destroy if hash['_remove']
     else
       model = Schedule.new
     end
@@ -67,6 +69,32 @@ class Schedule < ActiveRecord::Base
 
   def schedule=(sched)
     self.recurrence = sched.to_yaml
+  end
+
+  def to_icalendar_event
+    tz = Time.zone.tzinfo.name
+    event = Icalendar::Event.new
+    my_schedule = schedule
+    event.dtstart = Icalendar::Values::DateTime.new(my_schedule.start_time.to_datetime, tzid: tz)
+    if my_schedule.end_time.present?
+      event.dtend = Icalendar::Values::DateTime.new(my_schedule.end_time.to_datetime, tzid: tz)
+    end
+    my_schedule.recurrence_rules.each do |r|
+      event.rrule = Icalendar::Values::Recur.new(r.to_ical)
+    end
+    my_schedule.send(:recurrence_times_without_start_time).each do |rt|
+      event.rdate = Icalendar::Values::DateTime.new(rt.to_datetime)
+    end
+    my_schedule.exception_times.each do |ex|
+      event.exdate = Icalendar::Values::DateTime.new(ex.to_datetime) 
+    end
+    event.summary = self.event.title
+    event.description = strip_tags(description).gsub('&nbsp;','')
+    event.location = self.event.try(:venue).try(:name)
+    if ConsumerApp.current.present?
+      event.url = ConsumerApp.current.uri + "/events/#{id}"
+    end
+    event
   end
 
   def set_schedule!(sched)
@@ -188,6 +216,14 @@ class Schedule < ActiveRecord::Base
     hash
   end
 
+  def subtitle
+    subtitle_override.present? ? subtitle_override : event.subtitle
+  end
+
+  def description
+    description_override.present? ? description_override : event.description
+  end
+
   protected
 
   def self.parse_repeat_info_to_rule(hash)
@@ -213,5 +249,25 @@ class Schedule < ActiveRecord::Base
     else
       false
     end
+  end
+
+  def to_ics
+    tz = Time.zone.tzinfo.name
+    event = Icalendar::Event.new
+    my_schedule = schedule
+    event.dtstart = Icalendar::Values::DateTime.new(my_schedule.start_time.to_datetime, tzid: tz)
+    if my_schedule.end_time.present?
+      event.dtend = Icalendar::Values::DateTime.new(my_schedule.end_time.to_datetime, tzid: tz)
+    end
+    my_schedule.recurrence_rules.each do |r|
+      event.rrule = Icalendar::Values::Recur.new(r.to_ical)
+    end
+    my_schedule.send(:recurrence_times_without_start_time).each do |rt|
+      event.rdate = Icalendar::Values::DateTime.new(rt.to_datetime)
+    end
+    my_schedule.exception_times.each do |ex|
+      event.exdate = Icalendar::Values::DateTime.new(ex.to_datetime) 
+    end
+    event
   end
 end

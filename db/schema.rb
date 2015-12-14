@@ -499,10 +499,10 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
     t.string   "image"
     t.string   "imageable_type"
     t.integer  "imageable_id"
-    t.datetime "created_at",                                       :null => false
-    t.datetime "updated_at",                                       :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
     t.string   "source_url",     :limit => 400
-    t.boolean  "primary",                       :default => false
+    t.boolean  "primary"
   end
 
   add_index "images", ["imageable_type", "imageable_id"], :name => "index_images_on_imageable_type_and_imageable_id"
@@ -746,6 +746,17 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
     t.datetime "updated_at",             :null => false
   end
 
+  create_table "promotion_banner_reports", :force => true do |t|
+    t.integer  "promotion_banner_id"
+    t.datetime "report_date"
+    t.integer  "impression_count"
+    t.integer  "click_count"
+    t.integer  "total_impression_count"
+    t.integer  "total_click_count"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+  end
+
   create_table "promotion_banners", :force => true do |t|
     t.string   "banner_image"
     t.string   "redirect_url"
@@ -753,6 +764,8 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
     t.datetime "updated_at",                               :null => false
     t.date     "campaign_start"
     t.date     "campaign_end"
+    t.datetime "campaign_start"
+    t.datetime "campaign_end"
     t.integer  "max_impressions"
     t.integer  "impression_count",      :default => 0
     t.integer  "click_count",           :default => 0

@@ -10,7 +10,6 @@ end
 gem 'jquery-rails'
 gem "mysql2"
 gem "haml-rails", ">= 0.4"
-gem "rspec-rails", ">= 2.12.2", :group => [:development, :test]
 gem "capybara", ">= 2.0.3", :group => :test
 gem "database_cleaner", ">= 1.0.0.RC1", :group => :test
 gem "email_spec", ">= 1.4.0", :group => :test
@@ -20,7 +19,6 @@ gem "guard-rspec", ">= 2.5.2", :group => :development
 gem "rb-inotify", ">= 0.9.0", :group => :development, :require => false
 gem "rb-fsevent", ">= 0.9.3", :group => :development, :require => false
 gem "rb-fchange", ">= 0.0.6", :group => :development, :require => false
-gem "factory_girl_rails", "~> 4.3.0", :group => [:development, :test]
 gem "devise", ">= 2.2.3"
 gem "cancan", ">= 1.6.9"
 gem "rolify", ">= 3.2.0"
@@ -33,6 +31,12 @@ gem "capistrano-rails", "~> 1.1"
 gem "rubypress"
 gem 'net-http-persistent', '~> 2.9'
 gem 'rinku', "~> 1.7.3"
+
+group :development, :test do
+  gem "factory_girl_rails", "~> 4.3.0"
+  gem 'faker'
+  gem "rspec-rails", ">= 2.12.2"
+end
 
 group :test do
   gem "webmock"
@@ -121,3 +125,4 @@ gem 'postmark-rails', '~> 0.12.0'
 gem 'whenever', :require => false
 
 gem 'ice_cube', "0.13.0"
+gem 'icalendar', '~> 2.3'
