@@ -16,8 +16,8 @@ class Schedule < ActiveRecord::Base
     # doesn't end up replacing the instance
     ei.update_attribute :schedule_id, schedule.id
     args = {}
-    args[:end_time] = ei.end_date if ei.end_date.present?
-    schedule.schedule = IceCube::Schedule.new(ei.start_date, end_time: ei.end_date) do |s|
+    args[:end_time] = ei.end_date.to_time if ei.end_date.present?
+    schedule.schedule = IceCube::Schedule.new(ei.start_date, args) do |s|
       s.add_recurrence_rule IceCube::SingleOccurrenceRule.new(ei.start_date)
     end
     schedule.save!
@@ -26,8 +26,10 @@ class Schedule < ActiveRecord::Base
 
 
   def self.build_from_ux_for_event(hash, event_id=nil)
+    # handles all incoming UX data for schedules, including when we are removing them.
     if hash['id'].present?
       model = Schedule.find hash['id']
+      return model.destroy if hash['_remove']
     else
       model = Schedule.new
     end
