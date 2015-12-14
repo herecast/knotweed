@@ -57,6 +57,7 @@ class User < ActiveRecord::Base
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :organization_id, :role_ids,
     :default_repository_id, :location, :location_id, :avatar
   validates_presence_of :location
+  validates :public_id, uniqueness: true, allow_blank: true
 
   def ensure_authentication_token
     if authentication_token.blank?

@@ -26,13 +26,13 @@
 
 FactoryGirl.define do
   factory :business_location do
-    name "MyString"
+    name Faker::Company.name
     publication
-    address "MyString"
-    city "MyTown"
-    state "MyState"
-    phone "MyString"
-    email "MyString"
-    hours "MyString"
+    address Faker::Address.street_address
+    city Faker::Address.city
+    state Faker::Address.state
+    phone Faker::PhoneNumber.phone_number
+    email Faker::Internet.email
+    hours Faker::Lorem.sentence
   end
 end

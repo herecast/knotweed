@@ -146,4 +146,19 @@ describe User do
     subject { @user }
     it { should_not be_valid }
   end
+
+  context 'do not allow duplicate public ids' do
+    before do
+      name = 'montegate'
+      @user = FactoryGirl.create :user, public_id: name
+      @user2 = FactoryGirl.build :user, public_id: name
+    end
+
+    subject { @user2 }
+
+    it do
+      should_not be_valid
+      @user2.errors.added?(:public_id, :taken).should be_true
+    end
+  end
 end

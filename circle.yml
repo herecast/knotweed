@@ -1,6 +1,8 @@
 machine:
   pre:
     - sudo pkill searchd
+  timezone:
+    America/New_York
 
 checkout:
   post:
