@@ -724,7 +724,8 @@ describe Content do
 
     it "should return false if there is a promotion banner but it is inactive" do
       p = FactoryGirl.create :promotion, active: false, content: @content
-      promotion_banner = FactoryGirl.create :promotion_banner, promotion: p
+      promotion_banner_over = FactoryGirl.create :promotion_banner, promotion: p, campaign_start: 3.days.ago,
+        campaign_end: 2.days.ago
       @content.has_active_promotion?.should == false
     end
 

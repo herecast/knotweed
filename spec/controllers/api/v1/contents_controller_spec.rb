@@ -2,60 +2,6 @@ require 'spec_helper'
 
 describe Api::V1::ContentsController do
 
-  describe 'GET banner' do
-    before do
-      @content = FactoryGirl.create(:content)
-      @promoted_content = FactoryGirl.create(:content)
-      @repo = FactoryGirl.create :repository
-      @promotion = FactoryGirl.create :promotion, content: @promoted_content
-      @pb = FactoryGirl.create :promotion_banner, promotion: @promotion
-      Content.any_instance.stub(:get_related_promotion).with(@repo).and_return(@promoted_content.id)
-    end
-
-    subject { get :banner, id: @content.id, repository: @repo.dsp_endpoint }
-
-    it 'should assign the appropriate promo instance variable' do
-      subject
-      assigns(:banner).should eq(@pb)
-    end
-
-    it 'should increment the impression count of the banner' do
-      count = @pb.impression_count
-      subject
-      @pb.reload.impression_count.should eq(count+1)
-    end
-
-    describe 'logging content displayed with' do
-
-      it 'should create a ContentPromotionBannerImpression record if none exists' do
-        subject
-        ContentPromotionBannerImpression.count.should eq(1)
-        ContentPromotionBannerImpression.first.content_id.should eq(@content.id)
-        ContentPromotionBannerImpression.first.promotion_banner_id.should eq(@pb.id)
-      end
-
-      it 'should increment the ContentPromotionBannerImpression display count if a record exists' do
-        cpbi = FactoryGirl.create :content_promotion_banner_impression, content_id: @content.id, promotion_banner_id: @pb.id
-        subject
-        cpbi.reload.display_count.should eq(2)
-      end
-      
-    end
-
-
-    describe 'with an expired banner' do
-      before do
-        PromotionBanner.stub(:remove_promotion).with(@repo, @promoted_content.id)
-      end
-      it 'should render an empty response' do
-        @pb.update_attribute :campaign_end, 5.minutes.ago
-        subject
-        assigns(:banner).should eq(nil)
-      end
-    end
-
-  end
-
   describe "GET get_tree" do
     before do
       @content = FactoryGirl.create(:content)

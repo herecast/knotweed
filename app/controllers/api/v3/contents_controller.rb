@@ -3,36 +3,49 @@ module Api
     class ContentsController < ApiController
       before_filter :check_logged_in!, only:  [:moderate, :dashboard, :ad_dashboard, :metrics]
       after_filter :track_moderate, only: :moderate
-      # pings the DSP to retrieve a related banner ad for a generic
+      # pings the DSP to retrieve an active related banner ad (with inventory) for a generic
       # content type.
       def related_promotion
         @content = Content.find params[:id]
-
-        begin
-          promoted_content_id = @content.get_related_promotion(@repository)
-          promoted_content = Content.find promoted_content_id
-        rescue
-          promoted_content = nil
+        # get related promo if exists
+        results = @content.get_related_promotion(@repository)
+        # if exists, grab content_id, score and select method (for logging)
+        if results.present?
+          c_id = results[:id]
+          select_score = results[:score]
+          select_method = results[:select_method]
+          @banner = PromotionBanner.for_content(c_id).has_inventory.first(:order => "RAND()")
+        else
+          # if not, try to get a random active 'boosted' promo with inventory
+          select_score = nil
+          select_method = "boost"
+          @banner = PromotionBanner.active.boost.has_inventory.first(:order => "RAND()")
+          # if not, try to get a random active 'paid' promo with inventory
+          select_method = "paid" unless @banner.present?
+          @banner = PromotionBanner.active.paid.has_inventory.first(:order => "RAND()") unless @banner.present?
+          # if not, try to get a random active promo with inventory
+          select_method = "active" unless @banner.present?
+          @banner = PromotionBanner.active..has_inventory.first(:order => "RAND()") unless @banner.present?
+          # if not, try to get a random active promo
+          select_method = "active no inventory" unless @banner.present?
+          @banner = PromotionBanner.active.first(:order => "RAND()") unless @banner.present?
         end
-        if promoted_content.nil?
+
+        unless @banner.present? # banner must've expired or been used up since repo last updated
           render json: {}
         else
-          @banner = PromotionBanner.for_content(promoted_content.id).active.first
-          unless @banner.present? # banner must've expired or been used up since repo last updated
-            # so we need to trigger repo update
-            PromotionBanner.remove_promotion(@repository, promoted_content.id)
-            render json: {}
-          else
-            ContentPromotionBannerImpression.log_impression(@content.id, @banner.id)
-            @banner.increment_integer_attr! :impression_count
-            render json:  { related_promotion:
-              { 
-                image_url: @banner.banner_image.url, 
-                redirect_url: @banner.redirect_url,
-                banner_id: @banner.id
-              }
+          # log banner ad impression with associated details
+          ContentPromotionBannerImpression.log_impression(@content.id, @banner.id, select_method, select_score)
+          # increment promotion_banner counts for impressions and daily_impressions
+          @banner.increment_integer_attr! :impression_count
+          @banner.increment_integer_attr! :daily_impression_count
+          render json:  { related_promotion:
+            { 
+              image_url: @banner.banner_image.url, 
+              redirect_url: @banner.redirect_url,
+              banner_id: @banner.id
             }
-          end
+          }
         end
 
       end

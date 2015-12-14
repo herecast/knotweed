@@ -215,6 +215,8 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
     t.integer  "display_count",       :default => 1
     t.datetime "created_at",                         :null => false
     t.datetime "updated_at",                         :null => false
+    t.string   "select_method"
+    t.float    "select_score"
   end
 
   add_index "content_promotion_banner_impressions", ["content_id", "promotion_banner_id"], :name => "content_promotion_banner_impression", :unique => true
@@ -760,17 +762,18 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
   create_table "promotion_banners", :force => true do |t|
     t.string   "banner_image"
     t.string   "redirect_url"
-    t.datetime "created_at",                               :null => false
-    t.datetime "updated_at",                               :null => false
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
     t.date     "campaign_start"
     t.date     "campaign_end"
     t.datetime "campaign_start"
     t.datetime "campaign_end"
     t.integer  "max_impressions"
-    t.integer  "impression_count",      :default => 0
-    t.integer  "click_count",           :default => 0
+    t.integer  "impression_count",       :default => 0
+    t.integer  "click_count",            :default => 0
     t.integer  "daily_max_impressions"
-    t.boolean  "boost",                 :default => false
+    t.boolean  "boost",                  :default => false
+    t.integer  "daily_impression_count"
   end
 
   create_table "promotion_listservs", :force => true do |t|
