@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151203211930) do
+ActiveRecord::Schema.define(:version => 20151214145054) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -870,6 +870,19 @@ ActiveRecord::Schema.define(:version => 20151203211930) do
     t.string   "solr_endpoint"
     t.string   "recommendation_endpoint"
   end
+
+  create_table "rewrites", :force => true do |t|
+    t.string   "source"
+    t.string   "destination"
+    t.integer  "created_by"
+    t.integer  "updated_by"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "rewrites", ["created_by"], :name => "index_rewrites_on_created_by"
+  add_index "rewrites", ["source"], :name => "index_rewrites_on_source", :unique => true
+  add_index "rewrites", ["updated_at"], :name => "index_rewrites_on_updated_at"
 
   create_table "roles", :force => true do |t|
     t.string   "name"

@@ -46,6 +46,8 @@ Knotweed::Application.routes.draw do
   resources :business_locations
   resources :events, except: [:show, :destroy]
 
+  resources :rewrites, except: [:show]
+
   resources :data_contexts
   resources :repositories
   get "repositories/:id/clear_published_contents", to: "repositories#clear_published_contents", as: :clear_published_contents

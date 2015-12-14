@@ -1,0 +1,20 @@
+%table.table.table-striped.table-bordered.data-table.table-condensed
+  %thead
+    %tr
+      %th id
+      %th Source
+      %th Destination
+      %th Created By
+      %th Created At
+  %tbody
+    - @rewrites.each do |rewrite|
+      %tr{ class: "rewrite-#{rewrite.id}" }
+        %td= rewrite.id
+        %td= rewrite.source
+        %td= rewrite.destination
+        %td= rewrite.created_by.try(:name)
+        %td= rewrite.created_at.strftime("%m/%d/%Y")
+        %td
+          = link_to 'Edit', edit_rewrite_path(rewrite), class: 'btn-small btn-warning'
+          = link_to "Delete", rewrite_path(rewrite), class: "btn-small btn-danger", 
+            remote: true, method: :delete, data: { confirm: "Are you sure?" }

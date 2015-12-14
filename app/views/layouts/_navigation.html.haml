@@ -195,6 +195,17 @@
           = link_to new_consumer_app_path do
             %i.icon-plus
             %span Create New
+- if can? :read, Rewrite
+  %li
+    = link_to rewrites_path do
+      %i.icon-pencil
+      %span Rewrites
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == 'rewrites' ? 'in' : '' }" }
+      %li{ class: current_page?(new_rewrite_path) ? 'active' : '' }
+        = link_to new_rewrite_path do
+          %i.icon-plus
+          %span Create New
 - if can? :read, Message
   %li
     = link_to messages_path do
