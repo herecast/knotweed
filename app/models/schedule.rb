@@ -43,7 +43,7 @@ class Schedule < ActiveRecord::Base
 
     rule = Schedule.parse_repeat_info_to_rule(hash)
     unless rule.is_a? IceCube::SingleOccurrenceRule
-      rule = rule.until(Chronic.parse(hash['ends_at']))
+      rule = rule.until(Chronic.parse(hash['end_date']))
     end
 
     sched.add_recurrence_rule rule
@@ -180,6 +180,7 @@ class Schedule < ActiveRecord::Base
       # ice cube supports more than one rule per schedule, but our UX doesn't,
       # so just take the first rule
       rule = schedule.recurrence_rules.first
+      hash[:end_date] = rule.until_time if rule.until_time.present?
       rule_hash = rule.to_hash
       if rule.is_a? IceCube::DailyRule
         repeats = 'daily'
