@@ -38,12 +38,12 @@ class Schedule < ActiveRecord::Base
     model.description_override = hash['description']
     model.event_id = event_id
 
-    ends_at = Chronic.parse(hash['ends_at'])
-    sched = IceCube::Schedule.new(Chronic.parse(hash['starts_at']), end_time: ends_at.to_time)
+    ends_at = Chronic.parse(hash['ends_at']).try(:to_time)
+    sched = IceCube::Schedule.new(Chronic.parse(hash['starts_at']).to_time, end_time: ends_at)
 
     rule = Schedule.parse_repeat_info_to_rule(hash)
     unless rule.is_a? IceCube::SingleOccurrenceRule
-      rule = rule.until(Chronic.parse(hash['ends_at']))
+      rule = rule.until(Chronic.parse(hash['end_date']))
     end
 
     sched.add_recurrence_rule rule
@@ -137,20 +137,21 @@ class Schedule < ActiveRecord::Base
       # add new occurrences
       schedule.each_occurrence do |occurrence|
         if !eis_by_date.has_key? occurrence.start_time.to_i
-          EventInstance.create(
+          attrs = {
             schedule_id: self.id, 
             event_id: event.id,
             start_date: occurrence.start_time,
-            end_date: occurrence.end_time,
             description_override: description_override,
             subtitle_override: subtitle_override,
             presenter_name: presenter_name
-          )
+          }
+          attrs[:end_date] = occurrence.end_time unless occurrence.start_time.to_i == occurrence.end_time.to_i
+          EventInstance.create(attrs)
         else
           ei = eis_by_date[occurrence.start_time.to_i]
           # update end dates if need be -- unfortunately, since end_dates are all different
           # (even though duration is the same), these have to be updated by separate queries
-          if ei.end_date != occurrence.end_time
+          if ei.end_date.to_i != occurrence.end_time.to_i and occurrence.end_time.to_i != occurrence.start_time.to_i
             ei.update_attribute :end_date, occurrence.end_time 
           end
         end
@@ -180,6 +181,7 @@ class Schedule < ActiveRecord::Base
       # ice cube supports more than one rule per schedule, but our UX doesn't,
       # so just take the first rule
       rule = schedule.recurrence_rules.first
+      hash[:end_date] = rule.until_time if rule.until_time.present?
       rule_hash = rule.to_hash
       if rule.is_a? IceCube::DailyRule
         repeats = 'daily'
