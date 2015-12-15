@@ -141,7 +141,6 @@ class Schedule < ActiveRecord::Base
             schedule_id: self.id, 
             event_id: event.id,
             start_date: occurrence.start_time,
-            end_date: occurrence.end_time,
             description_override: description_override,
             subtitle_override: subtitle_override,
             presenter_name: presenter_name
