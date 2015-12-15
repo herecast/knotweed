@@ -7,5 +7,5 @@ SELECT ?uid ?title ?score WHERE {
     ?uid luc4:score ?score .
     ?uid pub:title ?title .
     ?uid subtext:hasActivePromo true .
-    FILTER(?uid != <http://www.subtext.org/Document/%{content_id}> && ?score >= %{score_threshold})
-}
+    FILTER(?uid != <http://www.subtext.org/Document/%{content_id}>)
+} LIMIT 3
