@@ -137,7 +137,7 @@ class Schedule < ActiveRecord::Base
       # add new occurrences
       schedule.each_occurrence do |occurrence|
         if !eis_by_date.has_key? occurrence.start_time.to_i
-          EventInstance.create(
+          attrs = {
             schedule_id: self.id, 
             event_id: event.id,
             start_date: occurrence.start_time,
@@ -145,7 +145,9 @@ class Schedule < ActiveRecord::Base
             description_override: description_override,
             subtitle_override: subtitle_override,
             presenter_name: presenter_name
-          )
+          }
+          attrs[:end_date] = occurrence.end_time unless occurrence.start_time == occurrence.end_time
+          EventInstance.create(attrs)
         else
           ei = eis_by_date[occurrence.start_time.to_i]
           # update end dates if need be -- unfortunately, since end_dates are all different
