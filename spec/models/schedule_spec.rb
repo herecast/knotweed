@@ -264,7 +264,7 @@ describe Schedule do
       },
       'once' => {
         rule: IceCube::SingleOccurrenceRule.new(Time.local(2015)),
-        repeats_fields: { repeats: 'once', days_of_week: nil, weeks_of_month: nil }
+        repeats_fields: { repeats: 'once', days_of_week: nil, weeks_of_month: nil, end_date: Time.local(2015)  }
       }
     }
 
