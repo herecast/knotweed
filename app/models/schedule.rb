@@ -37,9 +37,11 @@ class Schedule < ActiveRecord::Base
     model.description_override = hash['description']
     model.event_id = event_id
 
-    ends_at = hash['ends_at'].to_time
-    starts_at = hash['starts_at'].to_time
-    sched = IceCube::Schedule.new(starts_at, duration: (ends_at - starts_at).abs)
+    if hash['ends_at'].present?
+      ends_at = hash['ends_at'].to_time
+      duration = (ends_at - starts_at).abs
+    end
+    sched = IceCube::Schedule.new(starts_at, duration: duration)
 
     rule = Schedule.parse_repeat_info_to_rule(hash)
     unless rule.is_a? IceCube::SingleOccurrenceRule
