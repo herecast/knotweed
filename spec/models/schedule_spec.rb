@@ -322,7 +322,7 @@ describe Schedule do
       before do
         @description_override = Faker::Lorem.sentence
         @subtitle_override = Faker::Lorem.sentence
-        @schedule = FactoryGirl.create :schedule, description_override: @description_override, subtitle_override: @subtitle_override
+        @schedule = FactoryGirl.create :schedule, subtitle_override: @subtitle_override
         @schedule.add_exception_time! @schedule.schedule.all_occurrences[1]
         @schedule.add_recurrence_rule! IceCube::SingleOccurrenceRule.new(Time.now)
         @ics = @schedule.to_icalendar_event.to_ical
@@ -332,7 +332,7 @@ describe Schedule do
         @ics.should match /VEVENT/
         @ics.should match /DTSTART/
         @ics.should match /DTEND/
-        @ics.should match "DESCRIPTION:#{@description_override}"
+        @ics.should match "SUMMARY:#{@schedule.event.title}: #{@subtitle_override}"
         @ics.should match /RRULE/
         @ics.should match /RDATE/
         @ics.should match /EXDATE/

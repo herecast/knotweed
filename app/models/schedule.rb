@@ -75,9 +75,14 @@ class Schedule < ActiveRecord::Base
     tz = Time.zone.tzinfo.name
     event = Icalendar::Event.new
     my_schedule = schedule
-    event.dtstart = Icalendar::Values::DateTime.new(my_schedule.start_time.to_datetime, tzid: tz)
-    if my_schedule.end_time.present?
-      event.dtend = Icalendar::Values::DateTime.new(my_schedule.end_time.to_datetime, tzid: tz)
+    first_occurrence = my_schedule.all_occurrences.first
+    event.dtstart = Icalendar::Values::DateTime.new(first_occurrence.start_time.to_datetime, tzid: tz)
+    # ice-cube will automatically set the end_time to start_time if it's not supplied by the end user.
+    # if end_time is not given, set end_time to start_time + 1 hour
+    if first_occurrence.end_time.to_i == first_occurrence.start_time.to_i
+      event.dtend = Icalendar::Values::DateTime.new(first_occurrence.start_time.to_datetime + 1.hour, tzid: tz)
+    else
+      event.dtend = Icalendar::Values::DateTime.new(first_occurrence.end_time.to_datetime, tzid: tz)
     end
     my_schedule.recurrence_rules.each do |r|
       event.rrule = Icalendar::Values::Recur.new(r.to_ical)
@@ -88,11 +93,12 @@ class Schedule < ActiveRecord::Base
     my_schedule.exception_times.each do |ex|
       event.exdate = Icalendar::Values::DateTime.new(ex.to_datetime) 
     end
-    event.summary = self.event.title
-    event.description = strip_tags(description).gsub('&nbsp;','')
+    event.summary = subtitle_override.present? ? self.event.title + "\: #{subtitle_override}" : self.event.title
+    sane_description = strip_tags(self.event.description).gsub('&nbsp;','')
+    event.description = presenter_name.present? ? "PRESENTED BY\: #{presenter_name}\n\n" + sane_description : sane_description
     event.location = self.event.try(:venue).try(:name)
     if ConsumerApp.current.present?
-      event.url = ConsumerApp.current.uri + "/events/#{id}"
+      event.url = ConsumerApp.current.uri + "/events/#{self.event.event_instances.first.id}"
     end
     event
   end
@@ -218,14 +224,6 @@ class Schedule < ActiveRecord::Base
     hash
   end
 
-  def subtitle
-    subtitle_override.present? ? subtitle_override : event.subtitle
-  end
-
-  def description
-    description_override.present? ? description_override : event.description
-  end
-
   protected
 
   def self.parse_repeat_info_to_rule(hash)
@@ -251,25 +249,5 @@ class Schedule < ActiveRecord::Base
     else
       false
     end
-  end
-
-  def to_ics
-    tz = Time.zone.tzinfo.name
-    event = Icalendar::Event.new
-    my_schedule = schedule
-    event.dtstart = Icalendar::Values::DateTime.new(my_schedule.start_time.to_datetime, tzid: tz)
-    if my_schedule.end_time.present?
-      event.dtend = Icalendar::Values::DateTime.new(my_schedule.end_time.to_datetime, tzid: tz)
-    end
-    my_schedule.recurrence_rules.each do |r|
-      event.rrule = Icalendar::Values::Recur.new(r.to_ical)
-    end
-    my_schedule.send(:recurrence_times_without_start_time).each do |rt|
-      event.rdate = Icalendar::Values::DateTime.new(rt.to_datetime)
-    end
-    my_schedule.exception_times.each do |ex|
-      event.exdate = Icalendar::Values::DateTime.new(ex.to_datetime) 
-    end
-    event
   end
 end
