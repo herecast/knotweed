@@ -204,6 +204,7 @@ class Schedule < ActiveRecord::Base
       repeats = 'once' # while technically, an IceCube schedule can support multiple SingleOccurrenceRules,
       # our UX does not support including that in one schedule. So we don't need to worry about it here,
       # and the schedule already contains all the data we need.
+      hash[:end_date] = schedule.start_time
     end
     hash[:repeats] = repeats
     hash[:days_of_week] = days_of_week
