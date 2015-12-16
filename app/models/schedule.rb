@@ -24,7 +24,6 @@ class Schedule < ActiveRecord::Base
     schedule
   end
 
-
   def self.build_from_ux_for_event(hash, event_id=nil)
     # handles all incoming UX data for schedules, including when we are removing them.
     if hash['id'].present?
@@ -38,12 +37,13 @@ class Schedule < ActiveRecord::Base
     model.description_override = hash['description']
     model.event_id = event_id
 
-    ends_at = Chronic.parse(hash['ends_at']).try(:to_time)
-    sched = IceCube::Schedule.new(Chronic.parse(hash['starts_at']).to_time, end_time: ends_at)
+    ends_at = hash['ends_at'].to_time
+    starts_at = hash['starts_at'].to_time
+    sched = IceCube::Schedule.new(starts_at, duration: (ends_at - starts_at).abs)
 
     rule = Schedule.parse_repeat_info_to_rule(hash)
     unless rule.is_a? IceCube::SingleOccurrenceRule
-      rule = rule.until(Chronic.parse(hash['end_date']))
+      rule = rule.until(hash['end_date'].to_time)
     end
 
     sched.add_recurrence_rule rule
@@ -54,7 +54,7 @@ class Schedule < ActiveRecord::Base
     if hash['overrides'].present?
       hash['overrides'].each do |i|
         if i['hidden'] # this data structure is to support instance specific data overrides in the future
-          sched.add_exception_time Chronic.parse(i['date'])
+          sched.add_exception_time i['date'].to_time
         end
       end
     end
