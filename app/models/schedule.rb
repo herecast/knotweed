@@ -203,7 +203,7 @@ class Schedule < ActiveRecord::Base
       starts_at: schedule.start_time,
       id: id
     }
-    hash[:ends_at] = schedule.start_time + schedule.duration
+    hash[:ends_at] = schedule.start_time + schedule.duration if schedule.duration > 0
     # single recurrence rules work differently
     if schedule.recurrence_rules.present?
       # ice cube supports more than one rule per schedule, but our UX doesn't,
