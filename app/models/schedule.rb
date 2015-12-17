@@ -172,6 +172,9 @@ class Schedule < ActiveRecord::Base
       update_hash[:presenter_name] = presenter_name if presenter_name_changed?
       update_hash[:subtitle_override] = subtitle_override if subtitle_override_changed?
       update_hash[:description_override] = description_override if description_override_changed?
+      # have to do this manually since update_all skips callbacks but we don't want to make more than
+      # one sql query
+      update_hash[:updated_at] = Time.zone.now
       event_instances.update_all(update_hash) unless update_hash.empty?
     end
     event_instances
