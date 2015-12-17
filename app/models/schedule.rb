@@ -40,7 +40,19 @@ class Schedule < ActiveRecord::Base
     starts_at = Time.zone.at(hash['starts_at'].to_time)
     if hash['ends_at'].present?
       ends_at = Time.zone.at(hash['ends_at'].to_time)
-      duration = (ends_at - starts_at).abs
+      # this is annoyingly complex because ends_at can come in with any sort of date.
+      # Usually today's date. But we only care about the time...except if it's the next day,
+      # we care that it's on the next day.
+      if ends_at.hour >= starts_at.hour
+        end_time = Time.zone.local(starts_at.year, starts_at.month, starts_at.day, ends_at.hour, ends_at.min, ends_at.sec)
+      else
+        # just in case these are changing
+        next_day = starts_at + 1.day
+        new_year = next_day.year
+        new_month = next_day.month
+        end_time = Time.zone.local(new_year, new_month, next_day.day, ends_at.hour, ends_at.min, ends_at.sec)
+      end
+      duration = end_time - starts_at
     end
     sched = IceCube::Schedule.new(starts_at, duration: duration)
 
@@ -154,7 +166,7 @@ class Schedule < ActiveRecord::Base
           ei = eis_by_date[occurrence.start_time.to_i]
           # update end dates if need be -- unfortunately, since end_dates are all different
           # (even though duration is the same), these have to be updated by separate queries
-          if ei.end_date.to_i != occurrence.end_time.to_i and occurrence.end_time.to_i != occurrence.start_time.to_i
+          if ei.end_date.to_i != occurrence.end_time.to_i
             ei.update_attribute :end_date, occurrence.end_time 
           end
         end
