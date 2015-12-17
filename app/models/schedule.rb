@@ -170,14 +170,20 @@ class Schedule < ActiveRecord::Base
             subtitle_override: subtitle_override,
             presenter_name: presenter_name
           }
-          attrs[:end_date] = occurrence.end_time unless occurrence.start_time.to_i == occurrence.end_time.to_i
+          attrs[:end_date] = occurrence.end_time unless occurrence.start_time == occurrence.end_time
           EventInstance.create(attrs)
         else
           ei = eis_by_date[occurrence.start_time.to_i]
           # update end dates if need be -- unfortunately, since end_dates are all different
           # (even though duration is the same), these have to be updated by separate queries
-          if ei.end_date.to_i != occurrence.end_time.to_i
-            ei.update_attribute :end_date, occurrence.end_time 
+          if ei.end_date.to_i != occurrence.end_time.to_i and 
+            if occurrence.end_time == occurrence.start_time 
+              # support removing end times from schedules/instances
+              # if ei.end_date is already nil, we can skip the db call here
+              ei.update_attribute :end_date, nil unless ei.end_date.nil?
+            else
+              ei.update_attribute :end_date, occurrence.end_time 
+            end
           end
         end
       end
