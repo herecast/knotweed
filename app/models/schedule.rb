@@ -2,6 +2,7 @@ class Schedule < ActiveRecord::Base
   has_many :event_instances, dependent: :destroy
   belongs_to :event
   attr_accessible :recurrence, :description_override, :subtitle_override, :presenter_name
+  attr_accessor :_remove
 
   after_save :update_event_instances
 
@@ -29,7 +30,10 @@ class Schedule < ActiveRecord::Base
     # handles all incoming UX data for schedules, including when we are removing them.
     if hash['id'].present?
       model = Schedule.find hash['id']
-      return model.destroy if hash['_remove']
+      if hash['_remove']
+        model._remove = true
+        return model # skip all the other stuff since it's a waste of effort
+      end
     else
       model = Schedule.new
     end

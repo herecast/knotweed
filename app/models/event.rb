@@ -148,7 +148,13 @@ class Event < ActiveRecord::Base
     begin
       Event.transaction do
         self.update_attributes!(event_hash)
-        schedules.each { |s| s.save! }
+        schedules.each do |s| 
+          if s._remove
+            s.destroy
+          else
+            s.save!
+          end
+        end
       end
     rescue ActiveRecord::StatementInvalid
       false
