@@ -73,7 +73,11 @@ class Schedule < ActiveRecord::Base
     if hash['overrides'].present?
       hash['overrides'].each do |i|
         if i['hidden'] # this data structure is to support instance specific data overrides in the future
-          sched.add_exception_time Time.zone.at(i['date'].to_time)
+          # exceptions are passed just as dates, so we need to assign them the start time 
+          # for them to work consistently.
+          exc = Time.zone.at(i['date'].to_time)
+          exception_time = Time.zone.local(exc.year, exc.month, exc.day, starts_at.hour, starts_at.min, starts_at.sec)
+          sched.add_exception_time exception_time
         end
       end
     end
