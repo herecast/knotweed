@@ -62,7 +62,7 @@ class Schedule < ActiveRecord::Base
 
     rule = Schedule.parse_repeat_info_to_rule(hash)
     unless rule.is_a? IceCube::SingleOccurrenceRule
-      rule = rule.until(Time.zone.at(hash['end_date'].to_time))
+      rule = rule.until(Time.zone.at(hash['end_date'].to_time.end_of_day))
     end
 
     sched.add_recurrence_rule rule
