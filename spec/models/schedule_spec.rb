@@ -216,7 +216,7 @@ describe Schedule do
 
     it 'should have the expected recurrence rules' do
       # if you just pass the UTC time in, the rule is different because of the way IceCube handles timezone info
-      rule = IceCube::Rule.weekly.day(1,4).until(Time.zone.at('2015-12-31T15:00:00.000Z'.to_time))
+      rule = IceCube::Rule.weekly.day(1,4).until(Time.zone.at('2015-12-31T15:00:00.000Z'.to_time.end_of_day))
       @schedule.schedule.recurrence_rules.should eq [rule]
     end
 
