@@ -211,11 +211,12 @@ describe Schedule do
       # we take the time passed as "ends_at" and use that to calculate a duration 
       # with (ends_at - starts_at).abs, then create the schedule with that duration.
       # which should set the end_time to duration > start_time
-      @schedule.schedule.end_time.should eq @schedule.schedule.start_time.to_time + 1.hour
+      @schedule.schedule.end_time.should eq @schedule.schedule.start_time + 1.hour
     end
 
     it 'should have the expected recurrence rules' do
-      rule = IceCube::Rule.weekly.day(1,4).until(Chronic.parse('2015-12-31T15:00:00.000Z'))
+      # if you just pass the UTC time in, the rule is different because of the way IceCube handles timezone info
+      rule = IceCube::Rule.weekly.day(1,4).until(Time.zone.at('2015-12-31T15:00:00.000Z'.to_time))
       @schedule.schedule.recurrence_rules.should eq [rule]
     end
 

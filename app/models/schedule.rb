@@ -37,16 +37,16 @@ class Schedule < ActiveRecord::Base
     model.description_override = hash['description']
     model.event_id = event_id
 
-    starts_at = hash['starts_at'].to_time
+    starts_at = Time.zone.at(hash['starts_at'].to_time)
     if hash['ends_at'].present?
-      ends_at = hash['ends_at'].to_time
+      ends_at = Time.zone.at(hash['ends_at'].to_time)
       duration = (ends_at - starts_at).abs
     end
     sched = IceCube::Schedule.new(starts_at, duration: duration)
 
     rule = Schedule.parse_repeat_info_to_rule(hash)
     unless rule.is_a? IceCube::SingleOccurrenceRule
-      rule = rule.until(hash['end_date'].to_time)
+      rule = rule.until(Time.zone.at(hash['end_date'].to_time))
     end
 
     sched.add_recurrence_rule rule
@@ -57,7 +57,7 @@ class Schedule < ActiveRecord::Base
     if hash['overrides'].present?
       hash['overrides'].each do |i|
         if i['hidden'] # this data structure is to support instance specific data overrides in the future
-          sched.add_exception_time i['date'].to_time
+          sched.add_exception_time Time.zone.at(i['date'].to_time)
         end
       end
     end
@@ -176,9 +176,9 @@ class Schedule < ActiveRecord::Base
       subtitle: subtitle_override,
       presenter_name: presenter_name,
       starts_at: schedule.start_time,
-      ends_at: schedule.end_time,
       id: id
     }
+    hash[:ends_at] = schedule.start_time + schedule.duration
     # single recurrence rules work differently
     if schedule.recurrence_rules.present?
       # ice cube supports more than one rule per schedule, but our UX doesn't,
