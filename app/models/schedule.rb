@@ -98,7 +98,7 @@ class Schedule < ActiveRecord::Base
     event.description = presenter_name.present? ? "PRESENTED BY\: #{presenter_name}\n\n" + sane_description : sane_description
     event.location = self.event.try(:venue).try(:name)
     if ConsumerApp.current.present?
-      event.url = ConsumerApp.current.uri + "/events/#{self.event.event_instances.first.id}"
+      event.url = ConsumerApp.current.uri + "/events/#{self.event.event_instances.first.try(:id)}"
     end
     event
   end
