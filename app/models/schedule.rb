@@ -37,6 +37,7 @@ class Schedule < ActiveRecord::Base
     model.description_override = hash['description']
     model.event_id = event_id
 
+    starts_at = hash['starts_at'].to_time
     if hash['ends_at'].present?
       ends_at = hash['ends_at'].to_time
       duration = (ends_at - starts_at).abs
