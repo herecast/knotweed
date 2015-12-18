@@ -111,8 +111,9 @@ class Schedule < ActiveRecord::Base
     my_schedule.recurrence_rules.each do |r|
       event.rrule << Icalendar::Values::Recur.new(r.to_ical)
     end
+    event.rdate = Icalendar::Values::Array.new([], Icalendar::Values::DateTime) if my_schedule.send(:recurrence_times_without_start_time).present?
     my_schedule.send(:recurrence_times_without_start_time).each do |rt|
-      event.rdate = Icalendar::Values::DateTime.new(rt.to_datetime, tzid: tz)
+      event.rdate << Icalendar::Values::DateTime.new(rt.to_datetime, tzid: tz)
     end
     event.exdate = Icalendar::Values::Array.new([], Icalendar::Values::DateTime) if my_schedule.exception_times.present?
     my_schedule.exception_times.each do |ex|
