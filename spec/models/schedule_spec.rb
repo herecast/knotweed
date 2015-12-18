@@ -328,8 +328,7 @@ describe Schedule do
   describe 'schedule converted to ics' do
     context 'with text overrides' do
       before do
-        @description_override = Faker::Lorem.sentence
-        @subtitle_override = Faker::Lorem.sentence
+        @subtitle_override = Faker::Lorem.sentence(2,true,2)
         @schedule = FactoryGirl.create :schedule, subtitle_override: @subtitle_override
         @schedule.add_exception_time! @schedule.schedule.all_occurrences[1]
         @schedule.add_recurrence_rule! IceCube::SingleOccurrenceRule.new(Time.now)
