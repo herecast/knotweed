@@ -117,7 +117,7 @@ class Schedule < ActiveRecord::Base
     end
     event.exdate = Icalendar::Values::Array.new([], Icalendar::Values::DateTime) if my_schedule.exception_times.present?
     my_schedule.exception_times.each do |ex|
-      event.exdate << Icalendar::Values::DateTime.new(ex.to_datetime) 
+      event.exdate << Icalendar::Values::DateTime.new(ex.to_datetime, tzid: tz) 
     end
     event.summary = subtitle_override.present? ? self.event.title + "\: #{subtitle_override}" : self.event.title
     sane_description = strip_tags(self.event.description).gsub('&nbsp;','')
