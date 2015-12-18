@@ -107,14 +107,17 @@ class Schedule < ActiveRecord::Base
     else
       event.dtend = Icalendar::Values::DateTime.new(first_occurrence.end_time.to_datetime, tzid: tz)
     end
+    event.rrule = Icalendar::Values::Array.new([], Icalendar::Values::Recur) if my_schedule.recurrence_rules.present?
     my_schedule.recurrence_rules.each do |r|
-      event.rrule = Icalendar::Values::Recur.new(r.to_ical)
+      event.rrule << Icalendar::Values::Recur.new(r.to_ical)
     end
+    event.rdate = Icalendar::Values::Array.new([], Icalendar::Values::DateTime) if my_schedule.send(:recurrence_times_without_start_time).present?
     my_schedule.send(:recurrence_times_without_start_time).each do |rt|
-      event.rdate = Icalendar::Values::DateTime.new(rt.to_datetime)
+      event.rdate << Icalendar::Values::DateTime.new(rt.to_datetime, tzid: tz)
     end
+    event.exdate = Icalendar::Values::Array.new([], Icalendar::Values::DateTime) if my_schedule.exception_times.present?
     my_schedule.exception_times.each do |ex|
-      event.exdate = Icalendar::Values::DateTime.new(ex.to_datetime) 
+      event.exdate << Icalendar::Values::DateTime.new(ex.to_datetime, tzid: tz) 
     end
     event.summary = subtitle_override.present? ? self.event.title + "\: #{subtitle_override}" : self.event.title
     sane_description = strip_tags(self.event.description).gsub('&nbsp;','')
