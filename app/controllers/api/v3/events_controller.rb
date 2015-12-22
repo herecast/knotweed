@@ -105,7 +105,7 @@ module Api
         new_e[:content_attributes][:location_ids] = location_ids.uniq
 
         new_e[:cost] = e[:cost] if e[:cost].present?
-        new_e[:cost_type] = e[:cost_type] if e[:cost_type].present?
+        new_e[:cost_type] = e[:cost_type]
         new_e[:contact_email] = e[:contact_email] if e[:contact_email].present?
         new_e[:contact_phone] = e[:contact_phone] if e[:contact_phone].present?
         new_e[:event_url] = e[:event_url] if e[:event_url].present?
