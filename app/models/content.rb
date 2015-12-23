@@ -363,9 +363,16 @@ class Content < ActiveRecord::Base
     # TODO: this should probably be factored out into a before_save filter
     if content.publication.present? and content.source_content_id.present?
       existing_content = Content.where(publication_id: content.publication_id, source_content_id: content.source_content_id).try(:first)
-    end
-    if existing_content.nil? and content.publication.present?
+    else if content.publication.present?
       existing_content = Content.where(publication_id: content.publication_id, guid: content.guid).try(:first)
+      # some content may be missing the guid because they come in as a listserve digest, which strips the guid. 
+      # also sometimes the user posts the same message to multiple listservers, which will cause the message to have
+      # multiple guids even though it's the same content. the logic below allow us to detect existing content in these cases.
+      if existing_content.blank?
+        conditions = { authoremail: content.authoremail, title: content.title, channel_type: nil, pubdate: (content.pubdate.beginning_of_day..content.pudate.end_of_day) }
+        not_conditions = { root_content_category_id: ContentCategory.find_by_name('news').id }
+        existing_content = Content.where(conditions).where.not(not_conditions)
+      end
     end
     if existing_content.present?
       # if existing content is there, rather than saving, we update
