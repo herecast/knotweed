@@ -276,6 +276,45 @@ describe Content do
       Content.first.id.should== orig_id
     end
 
+    context 'when we import different content records with same title,email, on same date(not datetime), where root_content_category != news AND channel_type is null' do
+      before do
+        FactoryGirl.create :content_category, name: 'news'
+        pub = FactoryGirl.create :publication
+        @orig_data = {title: 'The Book of Worms', guid: '35q5j35jq3j53qj5kjq5', location: Faker::Address.street_name, publication_id: pub.id, authoremail: Faker::Internet.email, pubdate: DateTime.now, source_content_id: '3538538', source_category: 'Category', content_category: 'Category 422', content_locations: [FactoryGirl.create(:location).city] }
+        @c1 = Content.create_from_import_job(@orig_data)
+        @new_data = @orig_data.merge({source_content_id: @orig_data[:source_content_id] + '7',
+                                    location: @orig_data[:location] + ' different',
+                                    content_locations: [FactoryGirl.create(:location).city],
+                                    guid: "53939itqjg3q0353jt",
+                                    pubdate: DateTime.now + 1.hour})
+        @c2 = Content.create_from_import_job(@new_data)
+      end
+
+      it 'should update the existing content, appending a new location to it' do
+        Content.count.should eq 1
+        @c1.id.should eq @c2.id
+        @c1.locations.count.should eq 2
+        @c1.locations.include?(@c2.locations.first).should be_true
+      end
+
+      context 'when title starts with a listserve name' do
+        before do
+          @orig_data[:title] = '[Norwich ListServ] An amazing tale of muisical Genius'
+          @new_data[:title] = '[Bedford Queue] An amazing tale of muisical Genius'
+          @c3 = Content.create_from_import_job(@orig_data)
+          @c4 = Content.create_from_import_job(@new_data)
+        end
+
+        it 'should update the existing content, appending a  new location to it' do
+          @c3.id.should eq @c4.id
+          @c3.locations.count.should eq 2
+          @c3.locations.include?(@c4.locations.first).should be_true
+        end
+
+      end
+
+    end
+
     it "should overwrite any content but retain new category if category field is populated " do
       p = FactoryGirl.create(:publication)
       @base_data["publication_id"] = p.id

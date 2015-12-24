@@ -297,7 +297,7 @@ class Content < ActiveRecord::Base
 
     content = Content.new(data)
     content.raw_content = raw_content
-    
+
     # pull complex key/values out from data to use later
     if special_attrs.has_key? 'location'
       import_location = special_attrs['location']
@@ -363,15 +363,28 @@ class Content < ActiveRecord::Base
     # TODO: this should probably be factored out into a before_save filter
     if content.publication.present? and content.source_content_id.present?
       existing_content = Content.where(publication_id: content.publication_id, source_content_id: content.source_content_id).try(:first)
-    else if content.publication.present?
+    end
+    if existing_content.nil? and content.publication.present?
       existing_content = Content.where(publication_id: content.publication_id, guid: content.guid).try(:first)
       # some content may be missing the guid because they come in as a listserve digest, which strips the guid. 
       # also sometimes the user posts the same message to multiple listservers, which will cause the message to have
       # multiple guids even though it's the same content. the logic below allow us to detect existing content in these cases.
-      if existing_content.blank?
-        conditions = { authoremail: content.authoremail, title: content.title, channel_type: nil, pubdate: (content.pubdate.beginning_of_day..content.pudate.end_of_day) }
-        not_conditions = { root_content_category_id: ContentCategory.find_by_name('news').id }
-        existing_content = Content.where(conditions).where.not(not_conditions)
+      if existing_content.nil?
+        conditions = { authoremail: content.authoremail, channel_type: nil, pubdate: (content.pubdate.try(:beginning_of_day)..content.pubdate.try(:end_of_day)) }
+        # exclude the list serve name - the leading [TownName] from the title
+        partial_title = content.title.split(']')[1].try(:strip)
+        title_condition = []
+        if partial_title.present?
+          title_condition.push "title like ?", '%' + partial_title
+        else
+          conditions.merge!({title: content.title})
+        end
+        news_category = ContentCategory.find_by_name('news')
+        news_condition = []
+        if news_category.present?
+          news_condition.push "root_content_category_id <> ?", news_category.id
+        end
+        existing_content = Content.where(conditions).where(title_condition).where(news_condition).try(:first)
       end
     end
     if existing_content.present?
@@ -380,7 +393,6 @@ class Content < ActiveRecord::Base
       REIMPORT_FEATURES.each do |f|
         existing_content.send "#{f}=", content.send(f.to_sym) if content.send(f.to_sym).present?
       end
-
       existing_content.locations += content.locations
       content = existing_content
     else
