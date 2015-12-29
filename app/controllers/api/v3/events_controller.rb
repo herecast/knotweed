@@ -8,7 +8,7 @@ module Api
       def update
         @event = Event.find(params[:id])
         # "authenticate" this edit action
-        if @current_api_user != @event.content.created_by
+        unless @current_api_user == @event.content.created_by || @current_api_user.has_role?(:admin)
           render json: { errors: ['You do not have permission to edit this event.'] }, 
             status: 401
         else

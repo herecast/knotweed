@@ -81,7 +81,7 @@ module Api
         if @current_api_user.present?
           url = edit_event_url(@event_instance.event) if @current_api_user.has_role? :admin
         end
-        can_edit = (@current_api_user.present? && (@event_instance.event.content.created_by == @current_api_user))
+        can_edit = (@current_api_user.present? && (@event_instance.event.content.created_by == @current_api_user || @current_api_user.has_role?(:admin)))
         if @requesting_app.present?
           ical_url = @requesting_app.uri + event_instances_ics_path(params[:id]) 
         end

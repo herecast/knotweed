@@ -97,7 +97,7 @@ describe Api::V3::EventsController do
 
     subject { put :update, event: @attrs_for_update, id: @event.id }
 
-    context 'should not allow update if current_api_user does not match authoremail' do
+    context 'should not allow update if current_api_user does not match created_by' do
       before do  
         api_authenticate user: @different_user 
       end
@@ -130,6 +130,25 @@ describe Api::V3::EventsController do
         .should eq(@attrs_for_update[:schedules][0][:presenter_name])
     end
       
+  end
+
+  describe 'PUT by admin' do
+    before do
+      @admin = FactoryGirl.create :admin
+      @user = FactoryGirl.create :user
+      @event = FactoryGirl.create :event, created_by: @user, title: Faker::Book.title
+      @to_change = {title: Faker::Book.title, schedules: {}}
+      api_authenticate user: @admin
+    end
+    
+    subject { put :update, event: @to_change, id: @event.id }
+    
+    it 'should update changed fields' do
+      subject
+      assigns(:event).content.title.should eq @to_change[:title]
+      assigns(:event).content.updated_by.should eq @admin
+      assigns(:event).content.created_by.should eq @user
+    end
   end
 
   describe 'POST create' do

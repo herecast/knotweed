@@ -175,6 +175,17 @@ describe Api::V3::EventInstancesController do
       subject 
       JSON.parse(response.body)["event_instance"]["can_edit"].should == false
     end
+
+    context 'and user is admin' do
+      before do
+        @user = FactoryGirl.create :admin
+        api_authenticate user: @user
+      end
+      it 'can_edit should be true' do
+        subject
+        JSON.parse(response.body)['event_instance']['can_edit'].should be_true
+      end
+    end
   end
 
   describe 'GET index' do
