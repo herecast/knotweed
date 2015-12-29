@@ -152,6 +152,29 @@ describe Api::V3::ContentsController do
       assigns(:contents).should eq([@sim_content])
     end
 
+    context 'when similar content contains events with instances in the past or future' do
+      before do
+        @root_content = FactoryGirl.create :content, publication: @pub
+        @content = FactoryGirl.create :content, publication: @pub
+        other_content = FactoryGirl.create :content, publication: @pub
+        event = FactoryGirl.create :event, skip_event_instance: true, content: @content
+        other_event = FactoryGirl.create :event, skip_event_instance: true, content: other_content
+        FactoryGirl.create :event_instance, event: other_event, start_date: 1.week.ago
+        FactoryGirl.create :event_instance, event: event, start_date: 1.month.ago
+        FactoryGirl.create :event_instance, event: event, start_date: 1.week.from_now
+        FactoryGirl.create :event_instance, event: event, start_date: 1.month.from_now
+        @sim_content = [@content, other_content]
+        Content.any_instance.stub(:similar_content).with(@repo, 20).and_return(@sim_content)
+      end
+
+      subject { get :similar_content, format: :json, id: @root_content.id, consumer_app_uri: @consumer_app.uri }
+
+      it 'should response with events that have instances in the future' do
+        subject
+        assigns(:contents).should eq [@content]
+      end
+    end
+
   end
 
   describe 'POST /contents/:id/moderate' do
