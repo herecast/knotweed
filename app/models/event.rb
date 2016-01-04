@@ -58,7 +58,7 @@ class Event < ActiveRecord::Base
     :cost_type, :event_category, :social_enabled, :registration_deadline,
     :registration_url, :registration_phone, :registration_email
 
-  EVENT_CATEGORIES = [:first_friday, :movies, :performing_arts, :wellness, :holidays]
+  EVENT_CATEGORIES = [:first_friday, :movies, :wellness, :live_music]
 
   enumerize :cost_type, in: [:free, :paid, :donation]
   enumerize :event_category, in: EVENT_CATEGORIES
