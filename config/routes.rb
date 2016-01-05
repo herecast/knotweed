@@ -123,55 +123,6 @@ Knotweed::Application.routes.draw do
       post '/users/resend_confirmation', to: 'users#resend_confirmation', as: :resend_confirmation
       resources 'images', only: [:create, :update, :destroy]
     end
-
-    namespace :v2 do
-      resources 'events', only: [:create, :show, :update]
-      post '/events/:id/moderate', to: 'events#moderate', as: :moderate
-      post '/comments/:id/moderate', to: 'comments#moderate', as: :moderate
-      get 'promotion_banners/:id/track_click', to: 'promotion_banners#track_click', as: :track_click
-      resources 'event_instances', only: [:index, :show, :destroy]
-      resources 'comments', only: [:index, :create]
-      resources 'listservs', only: [:index]
-      get '/venues', to: 'business_locations#index', as: :venues
-      get '/locations', to: 'business_locations#index', as: :locations, 
-        defaults: { autocomplete: true, max_results: 5 }
-      get '/related_promotion', to: 'contents#related_promotion', as: :related_promotion
-      get '/similar_content', to: 'contents#similar_content', as: :similar_content
-    end
-
-    namespace :v1 do
-      resources 'comments', only: [:index, :create]
-      get 'contents/:id/get_tree', to: 'contents#get_tree', as: :get_tree
-      get 'contents/:id/related_promotion', to: 'contents#banner', as: :related_promotion
-      post 'contents/search', to: 'contents#index', as: :contents_search
-      post 'category_corrections', to: 'category_corrections#create'
-      get 'publications/find', to: "publications#show", as: :find_publication
-      get 'wufoo_forms/find', to: "wufoo_forms#show", as: :find_wufoo_form
-      resources 'publications', only: [:show, :index]
-      resources 'business_locations', only: [:show, :index]
-      get 'contents/moderate', to: 'contents#moderate', as: :moderate
-
-      # with the multi-event instances model, it makes sense for our
-      # index related actions to route through an event_instances controller,
-      # but create and update actions should still use an event controller
-      #
-      # additionally, because of the requirement that each separate event_instance
-      # has its own URL on the consumer side, it makes sense to route the SHOW action
-      # through the event_instance controller as well, even though showing an event
-      # instance will show the entire event and all its instances on the consumer side.
-      resources :event_instances, path: "events", only: [:show, :index]
-      resources :events, only: [:create, :update]
-      post 'event_instances/search', to: 'event_instances#search', as: :event_instances_search
-
-      resources :market_posts, only: [:create, :update, :show, :index]
-
-      resources :contents, only: [:index, :show, :update]
-      resources :messages, only: [:index]
-      resources :wufoo_forms, only: [:show, :index]
-
-      resources :locations, only: [:index, :show]
-      resources :listservs, only: [:index]
-    end
   end
 
 end
