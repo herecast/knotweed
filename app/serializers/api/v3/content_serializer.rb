@@ -65,11 +65,7 @@ module Api
       end
 
       def published_at
-        if object.channel_type == 'Event' && object.channel.next_instance.present?
-          object.channel.next_instance.start_date
-        else
-          object.pubdate
-        end
+        object.pubdate
       end
 
       def content
