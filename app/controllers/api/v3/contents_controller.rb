@@ -60,8 +60,8 @@ module Api
           @contents.select!{ |c| @requesting_app.publications.include? c.publication }
         end
 
-        #choose records that are events with instances in the future
-        @contents.select!{ |c| c.channel_type == 'Event' && c.channel.next_instance.present?}
+        #remove records that are events with instances in the past
+        @contents.reject!{ |c| c.channel_type == 'Event' && c.channel.next_instance.blank?}
 
         # This is a Bad temporary hack to allow filtering the sim stack provided by apiv2
         # the same way that the consumer app filters it. 
