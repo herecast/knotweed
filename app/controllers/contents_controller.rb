@@ -252,7 +252,9 @@ class ContentsController < ApplicationController
 
   def fix_array_input
     input = params[:content][:similar_content_overrides]
-    params[:content][:similar_content_overrides] = input.gsub('[','').gsub(']','').split(',').map{|str| str.strip.to_i }
+    if input.present?
+      params[:content][:similar_content_overrides] = input.gsub('[','').gsub(']','').split(',').map{|str| str.strip.to_i }
+    end
   end
 
 end
