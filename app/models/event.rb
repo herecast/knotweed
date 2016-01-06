@@ -127,7 +127,7 @@ class Event < ActiveRecord::Base
 
   # returns first upcoming event instance
   def next_instance
-    event_instances.where('start_date > ?', Time.zone.now).order('start_date ASC').first
+    event_instances.where('start_date >= ?', Time.zone.now).order('start_date ASC').first
   end
 
   def save_with_schedules(schedules)
