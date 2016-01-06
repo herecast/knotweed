@@ -25,7 +25,7 @@ module Api
           @banner = PromotionBanner.active.paid.has_inventory.first(:order => "RAND()") unless @banner.present?
           # if not, try to get a random active promo with inventory
           select_method = "active" unless @banner.present?
-          @banner = PromotionBanner.active..has_inventory.first(:order => "RAND()") unless @banner.present?
+          @banner = PromotionBanner.active.has_inventory.first(:order => "RAND()") unless @banner.present?
           # if not, try to get a random active promo
           select_method = "active no inventory" unless @banner.present?
           @banner = PromotionBanner.active.first(:order => "RAND()") unless @banner.present?
