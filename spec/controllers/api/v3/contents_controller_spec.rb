@@ -87,8 +87,8 @@ describe Api::V3::ContentsController do
       Promotion.any_instance.stub(:update_active_promotions).and_return(true)
       @promo = FactoryGirl.create :promotion, content: @related_content
       @pb = FactoryGirl.create :promotion_banner, promotion: @promo
-      # Content.any_instance.stub(:get_related_promotion).and_return(@related_content.id)
-      Content.any_instance.stub(:get_related_promotion).and_return({:id => @related_content.id, :score => 0.10, :select_method => "relevance"})
+      # avoid making calls to repo
+      Content.any_instance.stub(:query_promo_similarity_index).and_return([])
     end
 
     subject { get :related_promotion, format: :json, 
@@ -100,15 +100,11 @@ describe Api::V3::ContentsController do
     end
 
     it 'should increment the impression count of the banner' do
-      count = @pb.impression_count
-      subject
-      @pb.reload.impression_count.should eq(count+1)
+      expect{subject}.to change{@pb.reload.impression_count}.by(1)
     end
 
     it 'should increment the daily impression count of the banner' do
-      count = @pb.daily_impression_count
-      subject
-      @pb.reload.daily_impression_count.should eq(count+1)
+      expect{subject}.to change{@pb.reload.daily_impression_count}.by(1)
     end
 
     describe 'logging content displayed with' do
@@ -128,15 +124,32 @@ describe Api::V3::ContentsController do
       
     end
 
+    context 'with banner_ad_override' do
+      before do
+        @promo2 = FactoryGirl.create :promotion, content: FactoryGirl.create(:content)
+        @pb2 = FactoryGirl.create :promotion_banner, promotion: @promo2
+        @content.update_attribute :banner_ad_override, @promo2.id
+      end
+
+      it 'should respond with the banner specified by the banner_ad_override' do
+        subject
+        assigns(:banner).should eq @pb2
+      end
+    end
+
   end
 
   describe 'GET similar_content' do
     before do
-      @content_id = FactoryGirl.create(:content).id
+      @content = FactoryGirl.create(:content)
+      @content_id = @content.id
       # note, similar content is filtered by publication so we need to ensure this has
       # a publication that exists in the consumer app's list.
       @sim_content = FactoryGirl.create :content, publication: @pub
-      Content.any_instance.stub(:similar_content).with(@repo, 20).and_return([@sim_content])
+      stub_request(:get, /recommend\/contextual\?contentid=/).
+        to_return(:status => 200,
+          :body => {'articles'=>[{ 'id' => "#{Content::BASE_URI}/#{@sim_content.id}" }]}.to_json,
+          :headers => { 'Content-Type' => 'application/json;charset=UTF-8' })
     end
 
     subject { get :similar_content, format: :json,
@@ -175,6 +188,19 @@ describe Api::V3::ContentsController do
       end
     end
 
+    context 'for sponsored_content' do
+      before do
+        @content.content_category_id = FactoryGirl.create(:content_category, name: 'sponsored_content').id
+        @some_similar_contents = FactoryGirl.create_list(:content, 3, publication: @pub)
+        @content.similar_content_overrides = @some_similar_contents.map{|c| c.id}
+        @content.save
+      end
+
+      it 'should respond with the contents defined by similar_content_overrides' do
+        subject
+        assigns(:contents).should eq(@some_similar_contents)
+      end
+    end
   end
 
   describe 'POST /contents/:id/moderate' do
