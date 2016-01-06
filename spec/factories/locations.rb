@@ -18,12 +18,12 @@
 
 FactoryGirl.define do
   factory :location do
-    zip "MyString"
-    city "MyString"
-    state "MyString"
-    county "MyString"
-    lat "MyString"
-    long "MyString"
+    zip { Faker::Address.zip }
+    city { Faker::Address.city }
+    state { Faker::Address.state }
+    county { Faker::Address.city }
+    lat { Faker::Address.latitude }
+    long { Faker::Address.longitude }
     consumer_active false
   end
 end
