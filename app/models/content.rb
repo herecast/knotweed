@@ -998,7 +998,12 @@ class Content < ActiveRecord::Base
     has_promotion_inventory?
   end
 
-  # returns a tuple of 
+  # searches for and returns a related promotion for a given content and repository 
+  # using a variety of search strategies.
+  #
+  # @note Returns an ordered array of PromotionBanner, score, and select method -- in that order.
+  # @param repo [Repository] the repository to query
+  # @return [Array<PromotionBanner, String, String>]
   def get_related_promotion(repo)
     if banner_ad_override.present?
       # NOTE: banner_ad_override actually uses the Promotion id, not the PromotionBanner id
