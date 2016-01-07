@@ -11,7 +11,7 @@ require 'spec_helper'
 
 describe Comment do
   before do
-    @content = FactoryGirl.create :content
+    @content = FactoryGirl.create :content, pubdate: 1.day.ago
     @comment = FactoryGirl.create :comment, content: @content
   end
 
@@ -37,8 +37,16 @@ describe Comment do
 
   describe "after_create" do
     before do
-      @parent = FactoryGirl.create :content
+      @parent = FactoryGirl.create :content, pubdate: 1.week.ago
       @user = FactoryGirl.create :admin
+    end
+
+    it 'should update the parent\'s latest_comment_pubdate' do
+      @content.parent = @parent
+      @content.save
+      FactoryGirl.create :comment, content: @content
+      @parent.reload
+      @parent.latest_comment_pubdate.to_i.should eq @content.pubdate.to_i
     end
 
     it "should increase the counter comments" do

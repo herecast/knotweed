@@ -34,7 +34,7 @@ module Api
       end
 
       def published_at
-        object.pubdate
+        object.latest_comment_pubdate || object.pubdate
       end
 
       def view_count

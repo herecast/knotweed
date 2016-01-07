@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151214145054) do
+ActiveRecord::Schema.define(:version => 20160107125122) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -86,9 +86,9 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
     t.string   "city"
     t.string   "state"
     t.string   "zip"
-    t.string   "status"
     t.integer  "created_by"
     t.integer  "updated_by"
+    t.string   "status"
   end
 
   add_index "business_locations", ["created_by"], :name => "index_business_locations_on_created_by"
@@ -261,8 +261,8 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
     t.text     "raw_content"
     t.integer  "issue_id"
     t.integer  "import_location_id"
-    t.datetime "created_at",                                  :null => false
-    t.datetime "updated_at",                                  :null => false
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
     t.string   "copyright"
     t.string   "guid"
     t.datetime "pubdate"
@@ -274,7 +274,7 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
     t.string   "page"
     t.string   "authoremail"
     t.integer  "publication_id"
-    t.boolean  "quarantine",               :default => false
+    t.boolean  "quarantine",                :default => false
     t.string   "doctype"
     t.datetime "timestamp"
     t.string   "contentsource"
@@ -282,19 +282,22 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
     t.string   "source_content_id"
     t.integer  "parent_id"
     t.integer  "content_category_id"
-    t.boolean  "category_reviewed",        :default => false
-    t.boolean  "has_event_calendar",       :default => false
+    t.boolean  "category_reviewed",         :default => false
+    t.boolean  "has_event_calendar",        :default => false
     t.integer  "channelized_content_id"
-    t.boolean  "published",                :default => false
+    t.boolean  "published",                 :default => false
     t.string   "channel_type"
     t.integer  "channel_id"
     t.integer  "root_content_category_id"
-    t.integer  "view_count",               :default => 0
-    t.integer  "comment_count",            :default => 0
-    t.integer  "commenter_count",          :default => 0
+    t.integer  "view_count",                :default => 0
+    t.integer  "comment_count",             :default => 0
+    t.integer  "commenter_count",           :default => 0
     t.integer  "created_by"
     t.integer  "updated_by"
-    t.integer  "banner_click_count",       :default => 0
+    t.integer  "banner_click_count",        :default => 0
+    t.text     "similar_content_overrides"
+    t.integer  "banner_ad_override"
+    t.datetime "latest_comment_pubdate"
   end
 
   add_index "contents", ["authoremail"], :name => "index_contents_on_authoremail"
@@ -314,6 +317,21 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
   add_index "contents", ["root_content_category_id"], :name => "index_contents_on_root_content_category_id"
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["title"], :name => "title"
+
+  create_table "contents_NT", :force => true do |t|
+    t.string   "title"
+    t.string   "subtitle"
+    t.string   "authors"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "issue_id"
+    t.integer  "location_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.boolean  "reviewed",       :default => false
+    t.integer  "lupdate_by"
+    t.integer  "publication_id"
+  end
 
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
@@ -338,6 +356,10 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
+
+  create_table "contents_id", :force => true do |t|
+    t.string "category", :limit => 128
+  end
 
   create_table "contents_locations", :force => true do |t|
     t.integer  "content_id"
@@ -501,10 +523,10 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
     t.string   "image"
     t.string   "imageable_type"
     t.integer  "imageable_id"
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
+    t.datetime "created_at",                                       :null => false
+    t.datetime "updated_at",                                       :null => false
     t.string   "source_url",     :limit => 400
-    t.boolean  "primary"
+    t.boolean  "primary",                       :default => false
   end
 
   add_index "images", ["imageable_type", "imageable_id"], :name => "index_images_on_imageable_type_and_imageable_id"
@@ -737,15 +759,11 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
     t.datetime "updated_at",      :null => false
   end
 
-  create_table "promotion_banner_reports", :force => true do |t|
-    t.integer  "promotion_banner_id"
-    t.datetime "report_date"
-    t.integer  "impression_count"
-    t.integer  "click_count"
-    t.integer  "total_impression_count"
-    t.integer  "total_click_count"
-    t.datetime "created_at",             :null => false
-    t.datetime "updated_at",             :null => false
+  create_table "promote_options", :force => true do |t|
+    t.string  "promo_type",            :limit => 128
+    t.string  "name",                  :limit => 128
+    t.string  "reverse_publish_email", :limit => 128
+    t.boolean "active",                               :default => true
   end
 
   create_table "promotion_banner_reports", :force => true do |t|
@@ -766,14 +784,12 @@ ActiveRecord::Schema.define(:version => 20151214145054) do
     t.datetime "updated_at",                                :null => false
     t.date     "campaign_start"
     t.date     "campaign_end"
-    t.datetime "campaign_start"
-    t.datetime "campaign_end"
     t.integer  "max_impressions"
     t.integer  "impression_count",       :default => 0
     t.integer  "click_count",            :default => 0
     t.integer  "daily_max_impressions"
     t.boolean  "boost",                  :default => false
-    t.integer  "daily_impression_count"
+    t.integer  "daily_impression_count", :default => 0
   end
 
   create_table "promotion_listservs", :force => true do |t|

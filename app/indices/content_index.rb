@@ -11,12 +11,16 @@ ThinkingSphinx::Index.define(:content,
 
   # attributes
   has pubdate
+  has latest_comment_pubdate
   has publication.id, as: :pub_id
   has [locations.id, publication.locations.id], as: :all_loc_ids, multi: true
 
   has published
   has channel_type
   has root_content_category_id
+
+  has parent_id # note, this is used for the Talk index page to query
+  # root contents only
 
   indexes "IF(root_content_category_id = (select id from content_categories where name = 'event'), channel_type = 'Event', true)", as: :in_accepted_category
 

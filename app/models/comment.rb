@@ -33,6 +33,12 @@ class Comment < ActiveRecord::Base
         content.parent.increment_integer_attr!(:commenter_count) 
       end
       content.parent.save
+      # find the root parent and update its latest_comment_pubdate
+      # This relies on the assumption that at the time of creation, 
+      # a new comment is *always* the most recent comment for a given
+      # parent. That's true, and will remain true as long as comments
+      # are only creatable in real time (on the client app).
+      content.find_root_parent.update_attribute :latest_comment_pubdate, content.pubdate
     end
   end
 

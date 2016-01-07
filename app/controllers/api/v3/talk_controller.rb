@@ -10,12 +10,14 @@ module Api
       def index
         opts = {}
         opts = { select: '*, weight()' }
-        opts[:order] = 'pubdate DESC'
+        opts[:order] = 'latest_comment_pubdate DESC,pubdate DESC'
         opts[:with] = {}
         opts[:conditions] = {}
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
         opts[:with][:published] = 1 if @repository.present?
+        opts[:with][:parent_id] = 0
+        # so we can build the stack on top of that
         opts[:sql] = { include: [:images, :publication, :root_content_category] }
         if @requesting_app.present?
           allowed_pubs = @requesting_app.publications
