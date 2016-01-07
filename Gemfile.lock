@@ -93,7 +93,7 @@ GEM
       sass-rails (>= 3.2)
     chronic (0.10.2)
     chunky_png (1.3.5)
-    ckeditor_rails (4.5.3)
+    ckeditor_rails (4.3.4)
       railties (>= 3.0)
     coderay (1.1.0)
     coffee-rails (3.2.2)
@@ -420,7 +420,7 @@ GEM
     turbo-sprockets-rails3 (0.3.14)
       railties (> 3.2.8, < 4.0.0)
       sprockets (>= 2.2.0)
-    turbolinks (2.5.3)
+    turbolinks (2.2.3)
       coffee-rails
     typhoeus (0.8.0)
       ethon (>= 0.8.0)
@@ -450,7 +450,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_model_serializers (~> 0.9.0)
+  active_model_serializers (~> 0.9.3)
   american_date (~> 1.1.0)
   annotate (~> 2.6.5)
   better_errors (~> 0.9.0)
@@ -466,7 +466,7 @@ DEPENDENCIES
   carrierwave-mimetype-fu (~> 0.0.2)
   chosen-rails (~> 1.0.2)
   chronic (~> 0.10.2)
-  ckeditor_rails (~> 4.5.3)
+  ckeditor_rails (~> 4.3.1)
   coffee-rails (~> 3.2.1)
   compass-rails (~> 1.1.3)
   daemons (~> 1.1.9)
@@ -535,7 +535,7 @@ DEPENDENCIES
   tins (~> 0.13.1)
   ts-datetime-delta (~> 2.0.2)
   turbo-sprockets-rails3 (~> 0.3.11)
-  turbolinks (~> 2.5.3)
+  turbolinks (~> 2.2.0)
   uglifier (~> 2.4.0)
   unf (~> 0.1.3)
   vcr (~> 2.9.2)

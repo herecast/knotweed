@@ -90,13 +90,13 @@ group :pry do
   gem 'debugger', '~> 1.6.8'
 end
 
-gem "turbolinks", '~> 2.5.3'
+gem "turbolinks", '~> 2.2.0'
 gem "jquery-turbolinks", '~> 2.1.0'
 gem "rubyzip", "~> 1.1.4"
 
-gem "ckeditor_rails", '~> 4.5.3'
+gem "ckeditor_rails", '~> 4.3.1'
 gem 'hpricot', '~> 0.8.6'
-gem 'active_model_serializers', '~> 0.9.0'
+gem 'active_model_serializers', '~> 0.9.3'
 gem 'sparql-client', '~> 1.1.3'
 
 gem 'chronic', '~> 0.10.2'
