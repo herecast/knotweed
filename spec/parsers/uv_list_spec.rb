@@ -1,4 +1,4 @@
-require 'rspec'
+require 'spec_helper'
 
 describe 'parse upper valley list files' do
 

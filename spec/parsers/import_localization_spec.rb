@@ -1,4 +1,4 @@
-require 'rspec'
+require 'spec_helper'
 
 describe 'localize listserve imports' do
 
@@ -143,4 +143,3 @@ describe 'init mapping' do
 
   end
 end
-
