@@ -14,7 +14,7 @@ module Api
 
       def event_instance_id
         if object.channel_type == 'Event'
-          object.channel.event_instances.first.try(:id)
+          object.channel.next_or_first_instance.try(:id)
         end
       end
 
@@ -54,13 +54,13 @@ module Api
 
       def starts_at
         if object.channel_type == 'Event'
-          object.channel.event_instances.first.try(:start_date)
+          object.channel.next_or_first_instance.try(:start_date)
         end
       end
 
       def ends_at
         if object.channel_type == 'Event'
-          object.channel.event_instances.first.try(:end_date)
+          object.channel.next_or_first_instance.try(:end_date)
         end
       end
 

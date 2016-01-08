@@ -36,7 +36,7 @@ describe Api::V3::ContentSerializer do
       end
     end
 
-    context 'that is an event' do
+    context 'parent is an event' do
       before do
         @parent = FactoryGirl.create :event
         @content.update_attribute :parent_id, @parent.content.id
@@ -48,5 +48,33 @@ describe Api::V3::ContentSerializer do
 
     end
 
+    context 'content is an event with instances in the past' do
+      before do
+        @event = FactoryGirl.create :event, skip_event_instance: true
+        @event_instance =  FactoryGirl.create :event_instance, start_date: 1.month.ago, end_date: 1.week.ago, event: @event
+        @content = @event.content
+      end
+
+      it 'should include event instance id of first instance' do
+        serialized_object['event_instance_id'].should eq @event_instance.id
+        serialized_object['starts_at'].should eq @event_instance.start_date.strftime("%Y-%m-%dT%H:%M:%S%:z")
+        serialized_object['ends_at'].should eq @event_instance.end_date.strftime("%Y-%m-%dT%H:%M:%S%:z")
+      end
+    end
+
+    context 'content is an event with instances in the past and future' do
+      before do
+        @event = FactoryGirl.create :event, skip_event_instance: true
+        FactoryGirl.create :event_instance, start_date: 1.month.ago, end_date: 1.week.ago, event: @event
+        @next_instance =  FactoryGirl.create :event_instance, start_date: 1.week.from_now, end_date: 1.month.from_now, event: @event
+        @content = @event.content
+      end
+
+      it 'should include event instance id of next instance' do
+        serialized_object['event_instance_id'].should eq @next_instance.id
+        serialized_object['starts_at'].should eq @next_instance.start_date.strftime("%Y-%m-%dT%H:%M:%S%:z")
+        serialized_object['ends_at'].should eq @next_instance.end_date.strftime("%Y-%m-%dT%H:%M:%S%:z")
+      end
+    end
   end
 end
