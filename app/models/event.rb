@@ -130,6 +130,11 @@ class Event < ActiveRecord::Base
     event_instances.where('start_date >= ?', Time.zone.now).order('start_date ASC').first
   end
 
+  # returns either the next upcoming event instance if it exists, else the first event instance
+  def next_or_first_instance
+    next_instance || event_instances.first
+  end
+
   def save_with_schedules(schedules)
     begin
       Event.transaction do
