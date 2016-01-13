@@ -115,6 +115,10 @@ class Content < ActiveRecord::Base
   before_save :set_guid
   before_save :set_root_content_category_id
 
+  # this has to be after save to accomodate the situation
+  # where we are creating new content with no parent
+  after_save :set_root_parent_id
+
   # channel relationships
   belongs_to :channel, polymorphic: true, inverse_of: :content
 
@@ -494,6 +498,17 @@ class Content < ActiveRecord::Base
     else
       self.root_content_category_id = nil
     end
+  end
+
+  def set_root_parent_id
+    # we don't want to be calling find_root_parent every time because it's costly,
+    # so we rely on whether or not the parent_id changed as that's the only way -- within
+    # a single transaction -- that root_parent_id could've changed
+    if parent_id_changed? or parent_id.nil? # the latter part of this conditional covers creating
+      # new content that doesn't have a parent
+      self.update_column(:root_parent_id, find_root_parent.id)
+    end
+    true
   end
 
   # catchall publish method that handles interacting w/ the publish record
@@ -1356,6 +1371,41 @@ class Content < ActiveRecord::Base
   # NOTE: returns the content records of child comments, NOT the comment records.
   def comments
     children.where('channel_type = "Comment"')
+  end
+
+  # generates a Sphinx query for talk contents --
+  # logic abstracted from the ApiV3 Talk controller
+  #
+  # @param query [String] the search query string if present
+  # @param opts [Hash] options beyond the default Talk query options that need to be included
+  # @return [ActiveRecord::Relation] Sphinx normally returns an array of Content objects, not an ActiveRecord relation,
+  # but because we're mapping the Sphinx results to the parent records after the fact, we're able to return a relation here.
+  def self.talk_search(query=nil, opts={})
+    defaults = {
+      select: '*, weight()',
+      order: 'latest_activity DESC',
+      group_by: :root_parent_id,
+      with: {
+        root_content_category_id: ContentCategory.find_or_create_by_name('talk_of_the_town').id
+      },
+      sql: { include: [:images, :publication, :root_content_category] }
+    }
+    opts.merge!(defaults) do |key,oldval,newval|
+      if oldval.is_a? Hash and newval.is_a? Hash # deal with merging the with: sub-hash
+        oldval.merge newval
+      else
+        oldval
+      end
+    end
+    escaped_query = Riddle::Query.escape(query) if query.present?
+
+    initial_results = Content.search escaped_query, opts
+
+    # group_by :root_parent_id returns one result per root_parent_id,
+    # but doesn't necessarily return the parent objects. The way to do this with the fewest
+    # SQL queries possible is map our already retrieved objects to their root_parent_ids
+    # and select (in one query) all content with id = root_parent_ids
+    Content.where(id: initial_results.map{|c| c.root_parent_id})
   end
 
   private

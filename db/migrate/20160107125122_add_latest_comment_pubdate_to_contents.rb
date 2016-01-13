@@ -7,9 +7,11 @@ class AddLatestCommentPubdateToContents < ActiveRecord::Migration
     #
     #   rake backpopulate:latest_comment_updates
     #
+    add_column :contents, :root_parent_id, :integer
   end
 
   def down
     remove_column :contents, :latest_comment_pubdate
+    remove_column :contents, :root_parent_id
   end
 end

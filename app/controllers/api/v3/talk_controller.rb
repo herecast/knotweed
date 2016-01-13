@@ -8,38 +8,19 @@ module Api
       after_filter :track_create, only: :create
 
       def index
-        opts = {}
-        opts = { select: '*, weight()' }
-        opts[:order] = 'latest_comment_pubdate DESC,pubdate DESC'
-        opts[:with] = {}
-        opts[:conditions] = {}
+        opts = { with: {}, conditions: {}}
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
         opts[:with][:published] = 1 if @repository.present?
-        opts[:with][:parent_id] = 0
-        # so we can build the stack on top of that
-        opts[:sql] = { include: [:images, :publication, :root_content_category] }
         if @requesting_app.present?
           allowed_pubs = @requesting_app.publications
-          opts[:with].merge!({pub_id: allowed_pubs.collect{|c| c.id} })
+          opts[:with][:pub_id] = allowed_pubs.collect{|c| c.id}
         end
 
-        location_condition = @current_api_user.location_id
+        opts[:with][:all_loc_ids] = [@current_api_user.location_id]
 
-        root_talk_cat = ContentCategory.find_by_name 'talk_of_the_town'
-
-        opts[:with].merge!({
-          all_loc_ids: [location_condition], 
-          root_content_category_id: root_talk_cat.id
-        })
-
-        if params[:query].present?
-          query = Riddle::Query.escape(params[:query]) 
-        else
-          query = ''
-        end
-
-        @talk = Content.search query, opts
+        @talk = Content.talk_search params[:query], opts
+     
         render json: @talk, each_serializer: TalkSerializer
       end
 

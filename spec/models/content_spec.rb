@@ -1106,6 +1106,91 @@ describe Content do
 
   end
 
+  describe 'callbacks for denormalized attributes' do
+    before do
+      @parent = FactoryGirl.create :content
+      @cat = FactoryGirl.create :content_category
+      @content = FactoryGirl.build :content, parent: @parent, content_category: @cat
+    end
+
+    subject { @content.save }
+
+    describe 'set_root_content_category_id' do
+      it 'should set root_content_category_id' do
+        expect{subject}.to change{@content.root_content_category_id}.to @cat.id
+      end
+
+      it 'should set root_content_category_id appropriately if the categoryt is not the root' do
+        cat2 = FactoryGirl.create :content_category
+        @cat.update_attribute :parent_id, cat2.id
+        expect{subject}.to change{@content.root_content_category_id}.to cat2.id
+      end
+    end
+
+    describe 'set_root_parent_id' do
+      it 'should set root_parent_id' do
+        expect{subject}.to change{@content.root_parent_id}.to @parent.id
+      end
+
+      it 'should set root_parent_id appropriately if the parent is not the root' do
+        parent2 = FactoryGirl.create :content
+        @parent.update_attribute :parent_id, parent2.id
+        expect{subject}.to change{@content.root_parent_id}.to parent2.id
+      end
+
+      it 'should set root_parent_id to self.id when no parent exists' do
+        c = FactoryGirl.create :content
+        c.root_parent_id.should eq c.id
+      end
+
+      context 'for existing content' do
+        it 'should update the root_parent_id if parent_id changes' do
+          @content.save
+          @content.parent = nil
+          expect{@content.save}.to change{@content.root_parent_id}.to @content.id
+        end
+      end
+    end
+  end
+
+  describe 'Content.talk_search' do
+    before do
+      @talk = FactoryGirl.create :content_category, name: 'talk_of_the_town'
+      @p1 = FactoryGirl.create :content, content_category: @talk
+      @c1 = FactoryGirl.create :content, parent: @p1, content_category: @talk,
+        raw_content: 'VERY UNIQUE STRING @#$#%'
+      @c2 = FactoryGirl.create :content, parent: @c1, content_category: @talk,
+        raw_content: 'DIFFSTRING912387'
+      index
+    end
+
+    it 'should group search results by root_parent_id' do
+      [Content.talk_search(@c1.raw_content), Content.talk_search(@c2.raw_content)].each do |results|
+        results.should include(@p1)
+        results.length.should eq 1
+      end
+    end
+
+    it 'should group properly with no query' do
+      Content.talk_search.should eq([@p1])
+    end
+
+    describe 'result order' do
+      before do
+        @p2 = FactoryGirl.create :content, content_category: @talk, 
+          pubdate: @p1.pubdate + 2.days
+        @c2.update_attribute :pubdate, @p2.pubdate + 2.days
+        index
+      end
+
+      it 'should order by the latest activity' do
+        # @p1 has an earlier pubdate than @p2, but one of its comments has a later pubdate (@c2),
+        # so it should show up first in the results based on its 'latest_activity'
+        Content.talk_search.should eq([@p1, @p2])
+      end
+    end
+  end
+
   private
 
     def get_body_from_file(filename)
