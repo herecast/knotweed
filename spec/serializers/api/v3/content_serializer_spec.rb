@@ -10,7 +10,8 @@ describe Api::V3::ContentSerializer do
   context 'with a parent object' do
     before do
       @market_cat = FactoryGirl.create :content_category, name: 'market'
-      @parent = FactoryGirl.create :content, content_category: @market_cat
+      @parent = FactoryGirl.create :content, content_category: @market_cat,
+        view_count: 5, commenter_count: 6
       @content.update_attribute :parent_id, @parent.id
     end
 
@@ -23,13 +24,6 @@ describe Api::V3::ContentSerializer do
     end
 
     describe 'view_count and commenter_count' do
-      before do
-        # stub out these numbers to check they're returned
-        @parent.view_count = 5
-        @parent.commenter_count = 6
-        @parent.save
-      end
-
       it 'should be the parent object\'s values' do
         serialized_object['view_count'].should eq(@parent.view_count)
         serialized_object['commenter_count'].should eq(@parent.commenter_count)

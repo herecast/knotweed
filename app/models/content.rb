@@ -508,7 +508,6 @@ class Content < ActiveRecord::Base
       # new content that doesn't have a parent
       self.update_column(:root_parent_id, find_root_parent.id)
     end
-    true
   end
 
   # catchall publish method that handles interacting w/ the publish record
