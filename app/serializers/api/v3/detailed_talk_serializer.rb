@@ -73,9 +73,7 @@ module Api
       end
 
       def parent_content_id
-        if object.parent.present?
-          object.parent.id
-        end
+        object.parent_id
       end
 
       def parent_content_type
