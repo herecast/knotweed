@@ -89,7 +89,7 @@ end
 def import_posts(docs)
   ij = ImportJob.new(name: 'The Upper Valley.com - temp', job_type: 'ad_hoc',
                      stop_loop: true, automatically_publish: true,
-                     repository_id: 6, publish_method: 'publish_to_dsp')
+                     repository_id: 3, publish_method: 'publish_to_dsp')
   ij.before(self) # sets up logging
   ij.docs_to_contents(docs)
   ij.delete
