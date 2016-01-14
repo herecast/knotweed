@@ -8,4 +8,7 @@ ThinkingSphinx::Index.define(:business_location,
   indexes :state
 
   set_property :min_prefix_len => 1
+
+  has :created_by
+  has "CRC32(status)", as: :status, type: :integer
 end

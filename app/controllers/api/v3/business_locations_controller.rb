@@ -4,14 +4,23 @@ module Api
 
       def index
         query = Riddle::Query.escape(params[:query]) if params[:query].present?
+        opts = {}
+        opts = { select: '*, weight() as w', order: 'w DESC, name DESC' }
+        opts[:per_page] = params[:max_results] || 1000
+        opts[:star] = true
+        opts[:with] = {}
+        opts[:with][:status] = Zlib.crc32 'approved'
+        if @current_api_user.present?
+          opts[:with].delete :status
+          q = ", IF(created_by = #{@current_api_user.id} OR status = #{Zlib.crc32("approved")}, 1, 0) as user_loc_with_approved"
+          opts[:select] << q
+          opts[:with][:user_loc_with_approved] = 1
+        end
+
         if query.present?
-          opts = {}
-          opts = { select: '*, weight() as w', order: 'w DESC, name DESC' }
-          opts[:per_page] = params[:max_results] || 1000
-          opts[:star] = true
           @venues = BusinessLocation.search query, opts
         else
-          @venues = BusinessLocation.all
+          @venues = BusinessLocation.search opts
         end
 
         if params[:autocomplete]
