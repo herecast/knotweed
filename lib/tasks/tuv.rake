@@ -66,8 +66,10 @@ def process_posts(posts, users)
       post['custom_fields'] << {'key' => 'publication', 'value' => user[:publication]}
       post['custom_fields'] << {'key' => 'userid', 'value' => user[:duser_id]}
       post['contentsource'] = 'TheUpperValley.com'
-      image_link = post['post_thumbnail']['link']
-      post['post_content'] = "<img src=\"#{image_link}\"> " + post['post_content']
+      if post['post_thumbnail'].present?
+        image_link = post['post_thumbnail']['link']
+        post['post_content'] = "<img src=\"#{image_link}\"> " + post['post_content']
+      end
 
       # overwrite some of the config fields for a revshare blogger's entries
       config['copyright'] = user[:copyright]
