@@ -123,9 +123,9 @@ ActiveRecord::Schema.define(:version => 20160107125122) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer  "channel_id"
-    t.text     "category"
-    t.datetime "created_at", :null => false
+    t.integer   "channel_id"
+    t.text      "category"
+    t.timestamp "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -297,7 +297,6 @@ ActiveRecord::Schema.define(:version => 20160107125122) do
     t.integer  "banner_click_count",        :default => 0
     t.text     "similar_content_overrides"
     t.integer  "banner_ad_override"
-    t.datetime "latest_comment_pubdate"
     t.integer  "root_parent_id"
   end
 
@@ -316,6 +315,7 @@ ActiveRecord::Schema.define(:version => 20160107125122) do
   add_index "contents", ["publication_id"], :name => "source_id"
   add_index "contents", ["published"], :name => "index_contents_on_published"
   add_index "contents", ["root_content_category_id"], :name => "index_contents_on_root_content_category_id"
+  add_index "contents", ["root_parent_id"], :name => "index_contents_on_root_parent_id"
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["title"], :name => "title"
 

@@ -41,14 +41,6 @@ describe Comment do
       @user = FactoryGirl.create :admin
     end
 
-    it 'should update the parent\'s latest_comment_pubdate' do
-      @content.parent = @parent
-      @content.save
-      FactoryGirl.create :comment, content: @content
-      @parent.reload
-      @parent.latest_comment_pubdate.to_i.should eq @content.pubdate.to_i
-    end
-
     it "should increase the counter comments" do
       @content.parent = @parent
       @content.save

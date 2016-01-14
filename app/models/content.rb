@@ -1381,7 +1381,7 @@ class Content < ActiveRecord::Base
   # but because we're mapping the Sphinx results to the parent records after the fact, we're able to return a relation here.
   def self.talk_search(query=nil, opts={})
     defaults = {
-      select: '*, weight()',
+      select: '*, weight(), MAX(pubdate) as latest_activity',
       order: 'latest_activity DESC',
       group_by: :root_parent_id,
       with: {
@@ -1405,6 +1405,12 @@ class Content < ActiveRecord::Base
     # SQL queries possible is map our already retrieved objects to their root_parent_ids
     # and select (in one query) all content with id = root_parent_ids
     Content.where(id: initial_results.map{|c| c.root_parent_id})
+  end
+
+  # returns latest pubdate of a given thread
+  # @return [Datetime] latest pubdate in a given thread
+  def latest_activity
+    Content.where(root_parent_id: self.root_parent_id).maximum(:pubdate)
   end
 
   private
