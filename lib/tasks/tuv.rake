@@ -62,9 +62,9 @@ def process_posts(posts, users)
     user = get_user(users, post['post_author'])
     if user.present? and user[:publication].present?
       # prepare custom fields and other hashes for parse_post
-      post['custom_fields'] << {key: 'author', value: user[:displayname]}
-      post['custom_fields'] << {key: 'publication', value: user[:publication]}
-      post['custom_fields'] << {key: 'userid', value: user[:duser_id]}
+      post['custom_fields'] << {'key' => 'author', 'value' => user[:displayname]}
+      post['custom_fields'] << {'key' => 'publication', 'value' => user[:publication]}
+      post['custom_fields'] << {'key' => 'userid', 'value' => user[:duser_id]}
       post['contentsource'] = 'TheUpperValley.com'
       image_link = post['post_thumbnail']['link']
       post['post_content'] = "<img src=\"#{image_link}\"> " + post['post_content']
