@@ -38,6 +38,11 @@ jQuery ->
     else
       $("#add_new_publication").hide()
       $("label[for='content_publication_id']").text("Publication")
+    if name == 'Sponsored Content'
+      $('.sponsored-content').show()
+    else
+      $('.sponsored-content').hide()
+      $('.sponsored-content input').val('')
   $("#content_content_category_id").trigger('change')
 
   # parent content search box

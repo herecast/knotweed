@@ -2,6 +2,8 @@ class ContentsController < ApplicationController
 
   PUBLISH_METHODS_TO_DOWNLOAD = ["export_pre_pipeline_xml", "export_post_pipeline_xml", "export_to_xml"]
 
+  before_filter :fix_array_input, only: [:create, :update]
+
   def index
     # if posted, save to session
     if params[:reset]
@@ -245,6 +247,13 @@ class ContentsController < ApplicationController
       edit_content_path(params[:next_record_id], index: params[:index], page: params[:page])
     else
       contents_path
+    end
+  end
+
+  def fix_array_input
+    input = params[:content][:similar_content_overrides]
+    if input.present?
+      params[:content][:similar_content_overrides] = input.gsub('[','').gsub(']','').split(',').map{|str| str.strip.to_i }
     end
   end
 
