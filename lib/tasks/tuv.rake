@@ -6,7 +6,7 @@ require 'rake'
 # publication, copyright and duser_id (dailyUV user_id).  Rows from this table are selected
 # by the WP user id which is passed in post['post_author'] and then applied to customize the
 # information passed to the parse_post function in wordpress_blog_parser.rb
-$users_path = File.join(File.dirname(__FILE__),'tuv_users-20160111.csv')
+users_path = File.join(File.dirname(__FILE__),'tuv_users-20160111.csv')
 
 namespace :tuv_import do
 
@@ -14,8 +14,8 @@ namespace :tuv_import do
   task import: :environment do
 
     # get the user information
-    users = read_users_csv($users_path)
-    puts "Read #{users.count} users from #{$users_path}"
+    users = read_users_csv(users_path)
+    puts "Read #{users.count} users from #{users_path}"
 
     # setup the WP client
     wpcl = setup_client
