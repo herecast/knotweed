@@ -18,18 +18,15 @@ module Api
           opts[:with].merge!({pub_id: allowed_pubs.collect{|c| c.id} })
         end
 
-        if params[:location_id].present?
-          location_condition = params[:location_id].to_i
-        else
-          location_condition = Location.find_by_city(Location::DEFAULT_LOCATION).id
+        # Ember app passes location_id 0 for Upper Valley and an empty location_id
+        # for 'All Communities'
+        if params[:location_id] == 0
+          opts[:with][:all_loc_ids] = Location.find_by_city(Location::DEFAULT_LOCATION).id
+        elsif params[:location_id].present?
+          opts[:with][:all_loc_ids] = params[:location_id].to_i
         end
 
-        root_news_cat = ContentCategory.find_by_name 'news'
-
-        opts[:with].merge!({
-          all_loc_ids: [location_condition], 
-          root_content_category_id: root_news_cat.id
-        })
+        opts[:with][:root_content_category_id] = ContentCategory.find_by_name('news').id
 
         if params[:publication].present?
           pub = Publication.find_by_name params[:publication]

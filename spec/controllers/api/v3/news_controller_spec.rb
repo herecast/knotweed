@@ -53,9 +53,9 @@ describe Api::V3::NewsController do
         assigns(:news).select{|c| c.content_category_id == @news_cat.id }.count.should eq(assigns(:news).count)
       end
 
-      it 'should respond with news items in the default location' do
+      it 'should respond with news items in any location' do
         subject
-        assigns(:news).select{|c| c.locations.include? @default_location }.count.should eq(assigns(:news).count)
+        assigns(:news).count.should eq(Content.where(content_category_id: @news_cat.id).count)
       end
     end
 
@@ -64,19 +64,14 @@ describe Api::V3::NewsController do
         api_authenticate user: @user
       end
 
-      it 'should not automatically respond with news items in the signed in user\'s location' do
-        subject
-        assigns(:news).select{|c| c.locations.include? @user.location }.count.should eq(0)
-      end
-
       it 'should return news item that match any passed in location_id' do
         get :index, format: :json, location_id: @user.location.id
         assigns(:news).select{|c| c.locations.include? @user.location }.count.should eq(assigns(:news).count)
       end
 
-      it 'should return news item in the default location when location_id is not sent' do
+      it 'should return news item in any location when location_id is not sent' do
         subject
-        assigns(:news).select{|c| c.locations.include? @default_location }.count.should eq(assigns(:news).count)
+        assigns(:news).count.should eq(Content.where(content_category_id: @news_cat.id).count)
       end
     end
 
