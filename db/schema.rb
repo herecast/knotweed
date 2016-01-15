@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160105164603) do
+ActiveRecord::Schema.define(:version => 20160107125122) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -297,6 +297,10 @@ ActiveRecord::Schema.define(:version => 20160105164603) do
     t.integer  "banner_click_count",        :default => 0
     t.text     "similar_content_overrides"
     t.integer  "banner_ad_override"
+<<<<<<< HEAD
+    t.integer  "root_parent_id"
+=======
+>>>>>>> master
   end
 
   add_index "contents", ["authoremail"], :name => "index_contents_on_authoremail"
@@ -314,6 +318,7 @@ ActiveRecord::Schema.define(:version => 20160105164603) do
   add_index "contents", ["publication_id"], :name => "source_id"
   add_index "contents", ["published"], :name => "index_contents_on_published"
   add_index "contents", ["root_content_category_id"], :name => "index_contents_on_root_content_category_id"
+  add_index "contents", ["root_parent_id"], :name => "index_contents_on_root_parent_id"
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["title"], :name => "title"
 

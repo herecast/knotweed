@@ -11,7 +11,7 @@ require 'spec_helper'
 
 describe Comment do
   before do
-    @content = FactoryGirl.create :content
+    @content = FactoryGirl.create :content, pubdate: 1.day.ago
     @comment = FactoryGirl.create :comment, content: @content
   end
 
@@ -37,7 +37,7 @@ describe Comment do
 
   describe "after_create" do
     before do
-      @parent = FactoryGirl.create :content
+      @parent = FactoryGirl.create :content, pubdate: 1.week.ago
       @user = FactoryGirl.create :admin
     end
 

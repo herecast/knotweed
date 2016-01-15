@@ -18,6 +18,9 @@ ThinkingSphinx::Index.define(:content,
   has channel_type
   has root_content_category_id
 
-  indexes "IF(root_content_category_id = (select id from content_categories where name = 'event'), channel_type = 'Event', true)", as: :in_accepted_category
+  # note, this is used for the Talk index page to query
+  # root contents only
+  has root_parent_id
 
+  indexes "IF(root_content_category_id = (select id from content_categories where name = 'event'), channel_type = 'Event', true)", as: :in_accepted_category
 end

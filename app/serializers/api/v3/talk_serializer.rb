@@ -34,7 +34,7 @@ module Api
       end
 
       def published_at
-        object.pubdate
+        object.latest_activity
       end
 
       def view_count
@@ -62,9 +62,7 @@ module Api
       end
 
       def parent_content_id
-        if object.parent.present?
-          object.parent.id
-        end
+        object.parent_id
       end
 
       def parent_event_instance_id
