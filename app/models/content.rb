@@ -1227,7 +1227,7 @@ class Content < ActiveRecord::Base
     doc.search("br").each {|e| remove_dup_newlines.call(e) }
     c = doc.search("body").first.to_html unless doc.search("body").first.nil?
     c ||= doc.to_html
-    c = sanitize(c, tags: %w(span div img a p br h1 h2 h3 h4 h5 h6 strong em table td tr th ul ol li b i u))
+    c = sanitize(c, tags: %w(span div img a p br h1 h2 h3 h4 h5 h6 strong em table td tr th ul ol li b i u iframe))
     c = simple_format c, {},  sanitize: false
     c.gsub!(/(<a href="http[^>]*)>/, '\1 target="_blank">')
 
