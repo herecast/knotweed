@@ -297,7 +297,10 @@ ActiveRecord::Schema.define(:version => 20160107125122) do
     t.integer  "banner_click_count",        :default => 0
     t.text     "similar_content_overrides"
     t.integer  "banner_ad_override"
+<<<<<<< HEAD
     t.integer  "root_parent_id"
+=======
+>>>>>>> master
   end
 
   add_index "contents", ["authoremail"], :name => "index_contents_on_authoremail"

@@ -17,9 +17,7 @@ class ContentCategory < ActiveRecord::Base
   belongs_to :parent, class_name: "ContentCategory"
   has_many :children, class_name: "ContentCategory", foreign_key: "parent_id"
 
-  CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle 
-                  local_news nation_world offered presentation recommendation
-                  sale_event sports wanted help)
+  validates_uniqueness_of :name
 
   def label
     name.try :titlecase
@@ -35,4 +33,3 @@ class ContentCategory < ActiveRecord::Base
     ContentCategory.where(name: ["sale_event", "event"])
   end
 end
-

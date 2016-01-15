@@ -100,6 +100,14 @@
           = f.input :pubdate, as: :datetime_picker, input_html: { value: @content.pubdate || Date.today }, wrapper_html: { class: "span6" }
           = f.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }
           = f.input :url, input_html: { class: "input-block-level" }
+        .row-fluid.sponsored-content
+          = f.input :banner_ad_override, wrapper_html: { class: 'span6' },
+            hint: 'The id of the Promotion record that should show with this content.',
+            as: :string
+          = f.input :similar_content_overrides, wrapper_html: { class: 'span6' },
+            input_html: { value: @content.similar_content_overrides.map{|i| i.to_s }.join(',') },
+            hint: 'The ids of content to show in the relevance stack. Input as a comma separated list of numbers.',
+            as: :string
       .tab-pane#doc_content
         = f.input :sanitized_content, input_html: { class: "ckeditor input-block-level" }, label: "Content", as: :text
       .tab-pane#images

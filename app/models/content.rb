@@ -102,7 +102,10 @@ class Content < ActiveRecord::Base
                 :content_category_id, :category_reviewed, :raw_content, 
                 :sanitized_content, :channelized_content_id,
                 :has_event_calendar, :channel_type, :channel_id, :channel,
-                :location_ids, :root_content_category_id
+                :location_ids, :root_content_category_id, :similar_content_overrides,
+                :banner_ad_override
+
+  serialize :similar_content_overrides, Array
 
   attr_accessor :tier # this is not stored on the database, but is used to generate a tiered tree
   # for the API
@@ -1009,35 +1012,72 @@ class Content < ActiveRecord::Base
     has_promotion_inventory?
   end
 
+  # searches for and returns a related promotion for a given content and repository 
+  # using a variety of search strategies.
+  #
+  # @note Returns an ordered array of PromotionBanner, score, and select method -- in that order.
+  # @param repo [Repository] the repository to query
+  # @return [Array<PromotionBanner, String, String>]
   def get_related_promotion(repo)
+    if banner_ad_override.present?
+      # NOTE: banner_ad_override actually uses the Promotion id, not the PromotionBanner id
+      promo = Promotion.find(banner_ad_override)
+      if promo.promotable.is_a? PromotionBanner
+        banner = promo.promotable
+      else
+        banner = nil
+      end
+      select_score = nil
+      select_method = 'sponsored_content'
+    else
+      # query graphdb for relevant active banner ads (pass title + content) 
+      results = query_promo_similarity_index(title + " " + content, repo)
 
-    # query graphdb for relevant active banner ads (pass title + content) 
-    results = query_promo_similarity_index(title + " " + content, repo)
-
-    #return random promo with inventory (if exists)
-    unless results.empty?
-      # remove array record if doesn't have a 'has_inventory' scoped promo
-      results.delete_if do |v|
-        # parse out the content_id and append it to record
-        uri = v.uid.to_s
-        idx = uri.rindex("/")
-        v[:content_id] = uri[idx+1..uri.length]
-        # if no inventory, remove record from array
-        unless PromotionBanner.for_content(v[:content_id].to_s).has_inventory.count > 0
-          true
+      #return random promo with inventory (if exists)
+      unless results.empty?
+        # remove array record if doesn't have a 'has_inventory' scoped promo
+        results.delete_if do |v|
+          # parse out the content_id and append it to record
+          uri = v.uid.to_s
+          idx = uri.rindex("/")
+          v[:content_id] = uri[idx+1..uri.length]
+          # if no inventory, remove record from array
+          unless PromotionBanner.for_content(v[:content_id].to_s).has_inventory.count > 0
+            true
+          end
         end
       end
+      # select one random record from remaining results
+      results = results.sample
+      promoted_content = []
+      # return content id, relevance score and select method
+      if results.present?
+        content_id = results[:content_id].to_s
+        select_score = results[:score].to_s
+        select_method = "relevance"
+      end 
     end
-    # select one random record from remaining results
-    results = results.sample
-    promoted_content = []
-    # return content id, relevance score and select method
-    if results.present?
-      content_id = results[:content_id].to_s
-      score = results[:score].to_s
-      select_method = "relevance"
-      promoted_content = {id: content_id, score: score, select_method: select_method}
-    end 
+    if content_id.present?
+      banner = PromotionBanner.for_content(content_id).has_inventory.first(order: 'RAND()')
+    elsif banner.blank? # banner may already be populated from the first conitional
+      select_score = nil
+      # fall back to random ads
+      select_method = 'boost'
+      banner = PromotionBanner.boost.has_inventory.first(order: 'RAND()')
+      unless banner.present?
+        select_method = 'paid'
+        banner = PromotionBanner.active.paid.has_inventory.first(order: 'RAND()')
+      end
+      unless banner.present?
+        select_method = 'active'
+        banner = PromotionBanner.active.has_inventory.first(order: 'RAND()')
+      end
+      unless banner.present?
+        select_method = 'active no inventory'
+        banner = PromotionBanner.active.first(order: 'RAND()')
+      end
+    end
+    return [banner, select_score, select_method]
   end
 
   # callback function to update fields with repo info
@@ -1201,7 +1241,7 @@ class Content < ActiveRecord::Base
     doc.search("br").each {|e| remove_dup_newlines.call(e) }
     c = doc.search("body").first.to_html unless doc.search("body").first.nil?
     c ||= doc.to_html
-    c = sanitize(c, tags: %w(span div img a p br h1 h2 h3 h4 h5 h6 strong em table td tr th ul ol li b i u))
+    c = sanitize(c, tags: %w(span div img a p br h1 h2 h3 h4 h5 h6 strong em table td tr th ul ol li b i u iframe))
     c = simple_format c, {},  sanitize: false
     c.gsub!(/(<a href="http[^>]*)>/, '\1 target="_blank">')
 
@@ -1339,27 +1379,31 @@ class Content < ActiveRecord::Base
   # @param num_similar [Integer] number of results to return
   # @return [Array<Content>] list of similar content
   def similar_content(repo, num_similar=6)
-    # some logic in here that I don't truly know the purpose of...
-    # note -- the "category" method being called on self here
-    # returns the text label of the associated content_category
-    if ["event", "market", "offered", "wanted", "for_free", "sale_event"].include? category
-      extra_param = "&mlt.boostexpr=recip(ms(NOW/HOUR,published),2.63e-10,1,1)"
+    if similar_content_overrides.present?
+      Content.where(id: similar_content_overrides).includes(:content_category)
     else
-      extra_param = ''
-    end
-
-    similar_url = repo.recommendation_endpoint + '/recommend/contextual?contentid=' +
-      uri + "&key=#{Figaro.env.ontotext_recommend_key}" +
-      "&count=#{num_similar}" + "&sort=rel" + extra_param
-
-    response = HTTParty.get(similar_url)
-    if response.fetch('articles', nil)
-      similar_ids = response['articles'].map do |art|
-        art['id'].split('/')[-1].to_i
+      # some logic in here that I don't truly know the purpose of...
+      # note -- the "category" method being called on self here
+      # returns the text label of the associated content_category
+      if ["event", "market", "offered", "wanted", "for_free", "sale_event"].include? category
+        extra_param = "&mlt.boostexpr=recip(ms(NOW/HOUR,published),2.63e-10,1,1)"
+      else
+        extra_param = ''
       end
-      Content.where(id: similar_ids).includes(:content_category)
-    else
-      []
+
+      similar_url = repo.recommendation_endpoint + '/recommend/contextual?contentid=' +
+        uri + "&key=#{Figaro.env.ontotext_recommend_key}" +
+        "&count=#{num_similar}" + "&sort=rel" + extra_param
+
+      response = HTTParty.get(similar_url)
+      if response.fetch('articles', nil)
+        similar_ids = response['articles'].map do |art|
+          art['id'].split('/')[-1].to_i
+        end
+        Content.where(id: similar_ids).includes(:content_category)
+      else
+        []
+      end
     end
   end
 
@@ -1413,6 +1457,10 @@ class Content < ActiveRecord::Base
     Content.where(root_parent_id: self.root_parent_id).maximum(:pubdate)
   end
 
+  def is_sponsored_content?
+    content_category.name == 'sponsored_content'
+  end
+
   private
 
   def query_promo_similarity_index(query_term, repo)
@@ -1447,5 +1495,4 @@ class Content < ActiveRecord::Base
             { content_id: id }
     sparql.query(query)
   end
-
 end

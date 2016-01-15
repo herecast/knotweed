@@ -3,7 +3,8 @@ module Api
     class DetailedNewsSerializer < ActiveModel::Serializer
 
       attributes :id, :content_id, :admin_content_url, :content, :title, :subtitle,
-        :author_name, :author_id, :publication_name, :publication_id, :published_at, :comment_count
+        :author_name, :author_id, :publication_name, :publication_id, :published_at, :comment_count,
+        :is_sponsored_content
 
       has_many :images
 
@@ -40,6 +41,10 @@ module Api
 
       def comment_count
         object.comment_count
+      end
+
+      def is_sponsored_content
+        object.is_sponsored_content?
       end
 
     end
