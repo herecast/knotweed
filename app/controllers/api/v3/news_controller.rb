@@ -58,7 +58,7 @@ module Api
         if @news.try(:root_content_category).try(:name) != 'news'
           head :no_content
         else
-          @news.increment_integer_attr!(:view_count)
+          @news.increment_view_count!(@current_api_user)
           render json: @news, serializer: DetailedNewsSerializer, 
             admin_content_url: url, root: 'news'
         end

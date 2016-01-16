@@ -1461,6 +1461,10 @@ class Content < ActiveRecord::Base
     content_category.name == 'sponsored_content'
   end
 
+  def increment_view_count!(user=nil)
+    increment_integer_attr!(:view_count) unless user.try(:skip_analytics?) 
+  end
+
   private
 
   def query_promo_similarity_index(query_term, repo)

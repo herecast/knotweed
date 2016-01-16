@@ -132,7 +132,7 @@ module Api
         if @market_post.try(:root_content_category).try(:name) != 'market'
           head :no_content
         else
-          @market_post.increment_integer_attr!(:view_count)
+          @market_post.increment_view_count!(@current_api_user)
           can_edit = (@current_api_user.present? && (@market_post.created_by == @current_api_user))
           render json: @market_post, serializer: DetailedMarketPostSerializer,
             can_edit: can_edit
