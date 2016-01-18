@@ -33,7 +33,7 @@ module Api
         if @talk.try(:root_content_category).try(:name) != 'talk_of_the_town'
           head :no_content
         else
-          @talk.increment_view_count!(@current_api_user)
+          @talk.increment_view_count!
           render json: @talk, serializer: DetailedTalkSerializer, root: 'talk'
         end
       end

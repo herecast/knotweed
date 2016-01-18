@@ -1203,10 +1203,11 @@ describe Content do
     context 'for a user with skip_analytics = true' do
       before do
         @user = FactoryGirl.create :user, skip_analytics: true
+        User.current = @user
       end
 
       it 'should not increment the view count' do
-        expect{@content.increment_view_count!(@user)}.not_to change{@content.view_count}
+        expect{@content.increment_view_count!}.not_to change{@content.view_count}
       end
     end
   end

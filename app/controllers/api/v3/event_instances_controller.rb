@@ -85,7 +85,7 @@ module Api
         if @requesting_app.present?
           ical_url = @requesting_app.uri + event_instances_ics_path(params[:id]) 
         end
-        @event_instance.event.content.increment_view_count!(@current_api_user)
+        @event_instance.event.content.increment_view_count!
         respond_to do |format|
           format.json { render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
             can_edit: can_edit, admin_content_url: url, ical_url: ical_url }
