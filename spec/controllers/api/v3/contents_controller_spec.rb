@@ -260,6 +260,41 @@ describe Api::V3::ContentsController do
           expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)
         end
 
+        context 'allow filtering by news' do
+          before do
+            @news_cat = FactoryGirl.create :content_category, name: 'news'
+            @news_list = FactoryGirl.create_list :content, 2, content_category: @news_cat
+            get :dashboard, channel_type: 'news'
+          end
+
+          it 'should return only news content' do
+            assigns(:contents).should eq @news_list
+          end
+        end 
+
+        context 'allow filtering by events' do
+          before do
+            @event2 = FactoryGirl.create :event
+            get :dashboard, channel_type: 'events'
+          end
+
+          it 'should return only events content' do
+            assigns(:contents).should eq [@event.content, @event2.content]
+          end
+        end
+
+        context 'allow filtering by talk' do
+          before do
+            @talk_cat = FactoryGirl.create :content_category, name: 'talk_of_the_town'
+            @talk_list = FactoryGirl.create_list :content, 2, content_category: @talk_cat
+            get :dashboard, channel_type: 'talk'
+          end
+
+          it 'should return only talk content' do
+            assigns(:contents).should eq @talk_list
+          end
+        end
+
       end
     end
   end

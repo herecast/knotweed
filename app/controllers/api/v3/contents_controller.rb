@@ -125,7 +125,19 @@ module Api
         params[:page] ||= 1
         params[:per_page] ||= 12
 
-        @contents = Content.where(created_by: @current_api_user). #, channel_type: ["Event", "MarketPost", "Comment"]).
+        filters = {created_by: @current_api_user.id}
+        @news_cat = ContentCategory.find_by_name 'news'
+        @talk_cat = ContentCategory.find_by_name 'talk_of_the_town'
+
+        if params[:channel_type] == 'news' && @news_cat.present?
+          filters[:content_category_id] =  @news_cat.id
+        elsif params[:channel_type] == 'events'
+          filters[:channel_type] = 'Event'
+        elsif params[:channel_type] == 'talk' && @talk_cat.present?
+          filters[:content_category_id] = @talk_cat.id
+        end
+
+        @contents = Content.where(filters).
           order(sanitize_sort_parameter(params[:sort])).
           page(params[:page].to_i).per(params[:per_page].to_i)
 
