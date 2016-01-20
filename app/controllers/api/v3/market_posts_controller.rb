@@ -26,7 +26,7 @@ module Api
 
         # Ember app passes location_id 0 for Upper Valley and an empty location_id
         # for 'All Communities'
-        if params[:location_id] == 0
+        if params[:location_id].to_i == 0
           opts[:with][:all_loc_ids] = Location.find_by_city(Location::DEFAULT_LOCATION).id
         elsif params[:location_id].present?
           opts[:with][:all_loc_ids] = params[:location_id].to_i
