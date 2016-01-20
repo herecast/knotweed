@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: schedules
+#
+#  id                   :integer          not null, primary key
+#  recurrence           :text
+#  event_id             :integer
+#  description_override :text
+#  subtitle_override    :string(255)
+#  presenter_name       :string(255)
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#
+
 class Schedule < ActiveRecord::Base
   has_many :event_instances, dependent: :destroy
   belongs_to :event

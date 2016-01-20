@@ -5,7 +5,7 @@
 #  id              :integer          not null, primary key
 #  active          :boolean
 #  banner          :string(255)
-#  publication_id  :integer
+#  organization_id :integer
 #  content_id      :integer
 #  description     :text
 #  created_at      :datetime         not null

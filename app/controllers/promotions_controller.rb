@@ -2,8 +2,8 @@ class PromotionsController < ApplicationController
   # GET /promotions
   # GET /promotions.json
   def index
-    @publication = Publication.find(params[:publication_id])
-    @promotions = @publication.promotions
+    @organization = Organization.find(params[:organization_id])
+    @promotions = @organization.promotions
 
     respond_to do |format|
       format.html # index.html.erb
@@ -25,13 +25,13 @@ class PromotionsController < ApplicationController
   # GET /promotions/new
   # GET /promotions/new.json
   def new
-    publication = Publication.find(params[:publication_id])
+    organization = Organization.find(params[:organization_id])
     # as of now, we are not allowing creation of promotions without
     # pre-specifying the content, so if params[:content_id] is nil,
     # redirect back from whence they came
     if params[:content_id].present?
       content = Content.find(params[:content_id]) unless params[:content_id].nil?
-      @promotion = Promotion.new publication: publication
+      @promotion = Promotion.new organization: organization
       @promotion.content = content unless content.nil?
       if params[:promotable_type].present?
         if params[:promotable_type] == 'PromotionBanner'
@@ -47,7 +47,7 @@ class PromotionsController < ApplicationController
       end
     else
       flash[:notice] = "Can't create a promotion with no content"
-      redirect_to edit_publication_path(publication)
+      redirect_to edit_organization_path(organization)
     end
     end
 
@@ -60,15 +60,15 @@ class PromotionsController < ApplicationController
   # POST /promotions.json
   def create
     @promotion = Promotion.new(params[:promotion])
-    pub = Publication.find params[:publication_id]
-    @promotion.publication = pub
+    pub = Organization.find params[:organization_id]
+    @promotion.organization = pub
 
     respond_to do |format|
       if @promotion.save
         format.html { redirect_to @promotion, notice: 'Promotion was successfully created.' }
         format.json { render json: @promotion, status: :created, location: @promotion }
       else
-        format.html { redirect_to edit_publication_path(pub), error: @promotion.errors.messages }
+        format.html { redirect_to edit_organization_path(pub), error: @promotion.errors.messages }
         format.json { render json: @promotion.errors, status: :unprocessable_entity }
       end
     end
@@ -94,11 +94,11 @@ class PromotionsController < ApplicationController
   # DELETE /promotions/1.json
   def destroy
     @promotion = Promotion.find(params[:id])
-    pub = @promotion.publication
+    pub = @promotion.organization
     @promotion.destroy
 
     respond_to do |format|
-      format.html { redirect_to publication_promotions_path(pub), notice: 'Promotion successfully destroyed!' }
+      format.html { redirect_to organization_promotions_path(pub), notice: 'Promotion successfully destroyed!' }
       format.json { head :no_content }
     end
   end

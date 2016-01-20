@@ -10,7 +10,7 @@
 #  hours               :string(255)
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  publication_id      :integer
+#  organization_id     :integer
 #  latitude            :float
 #  longitude           :float
 #  venue_url           :string(255)
@@ -20,19 +20,20 @@
 #  zip                 :string(255)
 #  created_by          :integer
 #  updated_by          :integer
+#  status              :string(255)
 #
 
 class BusinessLocation < ActiveRecord::Base
   extend Enumerize
   include Auditable
 
-  belongs_to :publication
+  belongs_to :organization
   has_many :contents
   has_many :events, foreign_key: 'venue_id'
   belongs_to :created_by, class_name: 'User', foreign_key: 'created_by'
   belongs_to :updated_by, class_name: 'User', foreign_key: 'updated_by'
 
-  attr_accessible :address, :email, :hours, :name, :publication_id, :phone, 
+  attr_accessible :address, :email, :hours, :name, :organization_id, :phone, 
     :latitude, :longitude, :venue_url, :locate_include_name, :city, :state,
     :zip, :status
 

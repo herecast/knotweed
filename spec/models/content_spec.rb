@@ -2,44 +2,50 @@
 #
 # Table name: contents
 #
-#  id                       :integer          not null, primary key
-#  title                    :string(255)
-#  subtitle                 :string(255)
-#  authors                  :string(255)
-#  raw_content              :text
-#  issue_id                 :integer
-#  import_location_id       :integer
-#  created_at               :datetime         not null
-#  updated_at               :datetime         not null
-#  copyright                :string(255)
-#  guid                     :string(255)
-#  pubdate                  :datetime
-#  source_category          :string(255)
-#  topics                   :string(255)
-#  url                      :string(255)
-#  origin                   :string(255)
-#  language                 :string(255)
-#  page                     :string(255)
-#  authoremail              :string(255)
-#  publication_id           :integer
-#  quarantine               :boolean          default(FALSE)
-#  doctype                  :string(255)
-#  timestamp                :datetime
-#  contentsource            :string(255)
-#  import_record_id         :integer
-#  source_content_id        :string(255)
-#  parent_id                :integer
-#  content_category_id      :integer
-#  category_reviewed        :boolean          default(FALSE)
-#  has_event_calendar       :boolean          default(FALSE)
-#  channelized_content_id   :integer
-#  published                :boolean          default(FALSE)
-#  channel_type             :string(255)
-#  channel_id               :integer
-#  root_content_category_id :integer
-#  delta                    :boolean          default(TRUE), not null
-#  created_by               :integer
-#  updated_by               :integer
+#  id                        :integer          not null, primary key
+#  title                     :string(255)
+#  subtitle                  :string(255)
+#  authors                   :string(255)
+#  raw_content               :text
+#  issue_id                  :integer
+#  import_location_id        :integer
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  copyright                 :string(255)
+#  guid                      :string(255)
+#  pubdate                   :datetime
+#  source_category           :string(255)
+#  topics                    :string(255)
+#  url                       :string(255)
+#  origin                    :string(255)
+#  language                  :string(255)
+#  page                      :string(255)
+#  authoremail               :string(255)
+#  organization_id           :integer
+#  quarantine                :boolean          default(FALSE)
+#  doctype                   :string(255)
+#  timestamp                 :datetime
+#  contentsource             :string(255)
+#  import_record_id          :integer
+#  source_content_id         :string(255)
+#  parent_id                 :integer
+#  content_category_id       :integer
+#  category_reviewed         :boolean          default(FALSE)
+#  has_event_calendar        :boolean          default(FALSE)
+#  channelized_content_id    :integer
+#  published                 :boolean          default(FALSE)
+#  channel_type              :string(255)
+#  channel_id                :integer
+#  root_content_category_id  :integer
+#  view_count                :integer          default(0)
+#  comment_count             :integer          default(0)
+#  commenter_count           :integer          default(0)
+#  created_by                :integer
+#  updated_by                :integer
+#  banner_click_count        :integer          default(0)
+#  similar_content_overrides :text
+#  banner_ad_override        :integer
+#  root_parent_id            :integer
 #
 
 require 'spec_helper'

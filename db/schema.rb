@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160107125122) do
+ActiveRecord::Schema.define(:version => 20160116015847) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -188,11 +188,9 @@ ActiveRecord::Schema.define(:version => 20160107125122) do
     t.integer "organization_id"
   end
 
-  create_table "contacts_publications", :force => true do |t|
-    t.integer  "contact_id"
-    t.integer  "publication_id"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
+  create_table "contacts_publications", :id => false, :force => true do |t|
+    t.integer "publication_id"
+    t.integer "contact_id"
   end
 
   create_table "content_categories", :force => true do |t|
@@ -732,8 +730,6 @@ ActiveRecord::Schema.define(:version => 20160107125122) do
 
   create_table "organizations", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
     t.string   "org_type"
     t.text     "notes"
     t.string   "tagline"
@@ -742,6 +738,8 @@ ActiveRecord::Schema.define(:version => 20160107125122) do
     t.text     "general"
     t.string   "header"
     t.string   "logo"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
   create_table "parameters", :force => true do |t|
@@ -826,19 +824,19 @@ ActiveRecord::Schema.define(:version => 20160107125122) do
     t.string   "logo"
     t.integer  "organization_id"
     t.string   "website"
-    t.string   "publishing_frequency"
     t.text     "notes"
     t.integer  "parent_id"
     t.string   "category_override"
-    t.text     "tagline"
-    t.text     "links"
-    t.text     "social_media"
-    t.text     "general"
-    t.text     "header"
     t.string   "pub_type"
     t.boolean  "display_attributes",    :default => false
     t.string   "reverse_publish_email"
     t.boolean  "can_reverse_publish",   :default => false
+    t.string   "publishing_frequency"
+    t.string   "tagline"
+    t.text     "links"
+    t.text     "social_media"
+    t.text     "general"
+    t.string   "header"
   end
 
   add_index "publications", ["name"], :name => "index_publications_on_name", :unique => true
@@ -994,6 +992,7 @@ ActiveRecord::Schema.define(:version => 20160107125122) do
     t.string   "authentication_token"
     t.string   "avatar"
     t.string   "public_id"
+    t.boolean  "skip_analytics",         :default => false
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

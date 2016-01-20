@@ -30,11 +30,7 @@ class OrganizationsController < ApplicationController
     params[:organization][:general] = nil unless params[:organization].has_key? :general
     if @organization.update_attributes(params[:organization])
       flash[:notice] = "Successfully updated organization #{@organization.id}"
-      if params[:add_publication]
-        redirect_to new_publication_path(:publication => { :organization_id => @organization.id })
-      else
-        redirect_to organizations_path
-      end
+      redirect_to organizations_path
     else
       render "edit"
     end

@@ -29,10 +29,12 @@
 #  contact_email          :string(255)
 #  contact_url            :string(255)
 #  location_id            :integer
-#  test_group             :string(255)
+#  test_group             :string(255)      default("consumer")
 #  muted                  :boolean          default(FALSE)
 #  authentication_token   :string(255)
 #  avatar                 :string(255)
+#  public_id              :string(255)
+#  skip_analytics         :boolean          default(FALSE)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

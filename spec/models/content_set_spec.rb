@@ -5,7 +5,7 @@
 #  id                    :integer          not null, primary key
 #  import_method         :string(255)
 #  import_method_details :text
-#  publication_id        :integer
+#  organization_id       :integer
 #  name                  :string(255)
 #  description           :text
 #  notes                 :text

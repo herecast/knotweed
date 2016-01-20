@@ -21,7 +21,7 @@ class Location < ActiveRecord::Base
   DEFAULT_LOCATION = Figaro.env.has_key?(:default_location) ? Figaro.env.default_location \
     : 'Upper Valley'
 
-  has_and_belongs_to_many :publications
+  has_and_belongs_to_many :organization
   has_and_belongs_to_many :listservs
   has_and_belongs_to_many :contents
 
@@ -30,7 +30,7 @@ class Location < ActiveRecord::Base
   has_and_belongs_to_many :parents, class_name: 'Location', foreign_key: :child_id, association_foreign_key: :parent_id
   has_and_belongs_to_many :children, class_name: 'Location', foreign_key: :parent_id, association_foreign_key: :child_id
  
-  attr_accessible :city, :county, :lat, :long, :state, :zip, :publication_ids, :consumer_active
+  attr_accessible :city, :county, :lat, :long, :state, :zip, :organization_ids, :consumer_active
 
   default_scope order: :city
 

@@ -1,8 +1,6 @@
 class BusinessLocationsController < ApplicationController
   load_and_authorize_resource
 
-
-
   def index
     @business_locations = BusinessLocation.all # this line just here for debugger target
   end
@@ -27,8 +25,8 @@ class BusinessLocationsController < ApplicationController
   end
 
   def new
-    if params.has_key? :publication_id
-      @business_location.publication = Publication.find params[:publication_id]
+    if params.has_key? :organization_id
+      @business_location.organization = Organization.find params[:organization_id]
     end
     if request.xhr?
       render partial: 'business_locations/partials/form_js', layout: false

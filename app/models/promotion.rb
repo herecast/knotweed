@@ -5,7 +5,7 @@
 #  id              :integer          not null, primary key
 #  active          :boolean
 #  banner          :string(255)
-#  publication_id  :integer
+#  organization_id :integer
 #  content_id      :integer
 #  description     :text
 #  created_at      :datetime         not null
@@ -19,7 +19,7 @@
 
 class Promotion < ActiveRecord::Base
   include Auditable
-  belongs_to :publication
+  belongs_to :organization
   belongs_to :content
 
   belongs_to :promotable, polymorphic: true, inverse_of: :promotion
@@ -30,8 +30,8 @@ class Promotion < ActiveRecord::Base
 
   # TODO: At some point we probably want to lock this down a bit more so it's not so easy to attach 
   # promotions to any content/publication
-  attr_accessible :active, :description, :content, :publication,
-                  :publication_id, :content_id, :target_url,
+  attr_accessible :active, :description, :content, :organization,
+                  :organization_id, :content_id, :target_url,
                   :promotable_attributes, :promotable_type, :paid,
                   :banner # note this attribute no longer exists, but needs to be
                   # in our code until afer the migration is run

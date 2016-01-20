@@ -2,8 +2,8 @@ class IssuesController < ApplicationController
   load_and_authorize_resource
 
   def select_options
-    if params[:publication_id].present?
-      issues = Publication.find(params[:publication_id]).issues.order("issue_edition ASC")
+    if params[:organization_id].present?
+      issues = Organization.find(params[:organization_id]).issues.order("issue_edition ASC")
     else
       issues = Issue.order("issue_edition ASC")
     end
@@ -34,8 +34,8 @@ class IssuesController < ApplicationController
   end
 
   def new
-    if params[:publication_id]
-      @issue.publication = Publication.find(params[:publication_id])
+    if params[:organization_id]
+      @issue.organization = Organization.find(params[:organization_id])
     end
     render partial: "issues/form", layout:  false
   end
