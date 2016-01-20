@@ -67,13 +67,17 @@ module Api
 
       def parent_event_instance_id
         if object.parent.present? and object.parent.channel_type == 'Event'
-          object.parent.channel.event_instances.first.id
+          object.parent.channel.next_or_first_instance.id
+        elsif object.channel_type == 'Event'
+          object.channel.next_or_first_instance.id
         end
       end
 
       def parent_content_type
         if object.parent.present?
           object.parent.root_content_category.name
+        else
+          object.root_content_category.name
         end
       end
     end
