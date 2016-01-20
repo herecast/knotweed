@@ -128,6 +128,7 @@ module Api
         filters = {created_by: @current_api_user.id}
         @news_cat = ContentCategory.find_by_name 'news'
         @talk_cat = ContentCategory.find_by_name 'talk_of_the_town'
+        @market_cat = ContentCategory.find_by_name 'market'
 
         if params[:channel_type] == 'news' && @news_cat.present?
           filters[:content_category_id] =  @news_cat.id
@@ -135,6 +136,8 @@ module Api
           filters[:channel_type] = 'Event'
         elsif params[:channel_type] == 'talk' && @talk_cat.present?
           filters[:content_category_id] = @talk_cat.id
+        elsif params[:channel_type] == 'market' && @market_cat.present?
+          filters[:content_category_id] = @market_cat.id
         end
 
         @contents = Content.where(filters).

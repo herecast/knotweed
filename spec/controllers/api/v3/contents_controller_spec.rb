@@ -295,6 +295,18 @@ describe Api::V3::ContentsController do
           end
         end
 
+        context 'allow filtering by market' do
+          before do
+            @market_cat = FactoryGirl.create :content_category, name: 'market'
+            @market_list = FactoryGirl.create_list :content, 2, content_category: @market_cat
+            get :dashboard, channel_type: 'market'
+          end
+        
+          it 'should return only market content' do
+            assigns(:contents).should eq @market_list
+          end
+        end
+
       end
     end
   end
