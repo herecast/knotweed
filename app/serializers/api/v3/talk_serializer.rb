@@ -62,7 +62,7 @@ module Api
       end
 
       def parent_content_id
-        object.parent_id
+        object.parent_id || object.id # if parent is not present, we want the object's own ID
       end
 
       def parent_event_instance_id
