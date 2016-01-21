@@ -34,6 +34,12 @@ class Organization < ActiveRecord::Base
   has_many :import_jobs
 
   has_and_belongs_to_many :contacts
+  has_and_belongs_to_many :locations
+  has_and_belongs_to_many :consumer_apps
+  has_and_belongs_to_many :external_categories,
+        class_name: "ContentCategory"
+
+  has_many :promotions, inverse_of: :organization
 
   attr_accessible :name, :logo, :logo_cache, :remove_logo, :organization_id,
                   :admin_contact_id, :tech_contact_id, :website, :publishing_frequency,

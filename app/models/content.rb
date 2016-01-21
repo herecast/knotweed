@@ -302,9 +302,6 @@ class Content < ActiveRecord::Base
       end
     end
 
-    # if job is passed in, set organization
-    organization = job.try(:organization)
-
     content = Content.new(data)
     content.raw_content = raw_content
 
@@ -322,17 +319,11 @@ class Content < ActiveRecord::Base
       end
       source = special_attrs["source"]
       if source_field == :name
-        if organization
-          # try to match content name exactly
-          content.organization = Organization.find_by_name(source)
-          # if that doesn't work, try a "LIKE" query
-          content.organization = Organization.where("name LIKE ?", "%#{source}%").first if content.organization.nil?
-          # if that still doesn't work, create a new publication
-          content.organization = Organization.create(name: source, organization_id: organization.id) if content.organization.nil?
-        else
-          content.organization = Organization.where("name LIKE ?", "%#{source}%").first
-          content.organization = Organization.create(name: source) if content.organization.nil?
-        end
+        # try to match content name exactly
+        content.organization = Organization.find_by_name(source)
+        # if that doesn't work, try a "LIKE" query
+        content.organization = Organization.where("name LIKE ?", "%#{source}%").first if content.organization.nil?
+        content.organization = Organization.create(name: source) if content.organization.nil?
       else # deal with special source_fields
         content.organization = Organization.where(source_field => source).first
       end
@@ -362,7 +353,7 @@ class Content < ActiveRecord::Base
     content.set_guid unless content.guid.present? # otherwise it won't be set till save and we need it for overwriting
 
     # deal with existing content that needs to be overwritten
-    # starting with matching publication AND source_content_id
+    # starting with matching organization AND source_content_id
     # but need to add (our) guid matching as well
     #
     # logic here is: IF source exists and source_content_id exists, overwrite based on matching those two

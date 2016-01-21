@@ -12,10 +12,10 @@ module Api
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
         opts[:with][:published] = 1 if @repository.present?
-        opts[:sql] = { include: [:images, :publication, :root_content_category] }
+        opts[:sql] = { include: [:images, :organization, :root_content_category] }
         if @requesting_app.present?
-          allowed_pubs = @requesting_app.publications
-          opts[:with].merge!({pub_id: allowed_pubs.collect{|c| c.id} })
+          allowed_orgs = @requesting_app.organizations
+          opts[:with].merge!({org_id: allowed_orgs.collect{|c| c.id} })
         end
 
         if params[:location_id].present?
@@ -24,9 +24,9 @@ module Api
 
         opts[:with][:root_content_category_id] = ContentCategory.find_by_name('news').id
 
-        if params[:publication].present?
-          pub = Publication.find_by_name params[:publication]
-          opts[:with][:pub_id] = pub.id if pub.present?
+        if params[:organization].present?
+          org = Organization.find_by_name params[:organization]
+          opts[:with][:org_id] = org.id if org.present?
         end
         
         if params[:query].present?
@@ -42,7 +42,7 @@ module Api
         @news = Content.find params[:id]
         
         if @requesting_app.present?
-          head :no_content and return unless @requesting_app.publications.include?(@news.publication)
+          head :no_content and return unless @requesting_app.organizations.include?(@news.organization)
         end
 
         if @current_api_user.present?

@@ -13,8 +13,8 @@ module Api
         opts[:per_page] = params[:per_page] || 14
         opts[:with][:published] = 1 if @repository.present?
         if @requesting_app.present?
-          allowed_pubs = @requesting_app.publications
-          opts[:with][:pub_id] = allowed_pubs.collect{|c| c.id}
+          allowed_orgs = @requesting_app.organizations
+          opts[:with][:org_id] = allowed_orgs.collect{|c| c.id}
         end
 
         opts[:with][:all_loc_ids] = [@current_api_user.location_id]
@@ -27,7 +27,7 @@ module Api
       def show
         @talk = Content.find params[:id]
         if @requesting_app.present?
-          head :no_content and return unless @requesting_app.publications.include?(@talk.publication)
+          head :no_content and return unless @requesting_app.organizations.include?(@talk.organization)
         end
 
         if @talk.try(:root_content_category).try(:name) != 'talk_of_the_town'
@@ -39,8 +39,8 @@ module Api
       end
 
       def create
-        # hard coded publication...
-        pub = Publication.find_or_create_by_name 'DailyUV'
+        # hard coded organization...
+        org = Organization.find_or_create_by_name 'DailyUV'
 
         # hard code category
         cat = ContentCategory.find_or_create_by_name 'talk_of_the_town'
@@ -55,7 +55,7 @@ module Api
           authors: @current_api_user.try(:name),
           raw_content: params[:talk][:content],
           pubdate: Time.zone.now,
-          publication_id: pub.id,
+          organization_id: org.id,
           content_category_id: cat.id
         }
 

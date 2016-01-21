@@ -11,8 +11,8 @@ ThinkingSphinx::Index.define(:content,
 
   # attributes
   has pubdate
-  has publication.id, as: :pub_id
-  has [locations.id, publication.locations.id], as: :all_loc_ids, multi: true
+  has organization.id, as: :org_id
+  has [locations.id, organization.locations.id], as: :all_loc_ids, multi: true
 
   has published
   has channel_type

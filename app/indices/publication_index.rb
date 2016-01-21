@@ -1,4 +1,4 @@
-ThinkingSphinx::Index.define :publication, :with => :active_record do
+ThinkingSphinx::Index.define :organization, :with => :active_record do
   indexes :name, sortable: true
 
   has consumer_apps.id, as: :consumer_app_ids

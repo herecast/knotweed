@@ -19,22 +19,6 @@
           = link_to new_organization_path do
             %i.icon-plus
             %span Create New
-- if can? :read, Publication
-  %li
-    = link_to publications_path do
-      %i.icon-anchor
-      %span Publications
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "publications" ? "in" : "" }" }
-      %li{ class: current_page?(publications_path) ? "active" : "" }
-        = link_to publications_path do
-          %i.icon-search
-          %span Search
-      - if can? :create, Publication
-        %li{ class: current_page?(new_publication_path) ? "active" : "" }
-          = link_to new_publication_path do
-            %i.icon-plus
-            %span Create New
 - if can? :read, Content
   %li
     = link_to contents_path do

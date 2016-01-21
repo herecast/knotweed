@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160116015847) do
+ActiveRecord::Schema.define(:version => 20160118024030) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -78,7 +78,7 @@ ActiveRecord::Schema.define(:version => 20160116015847) do
     t.string   "hours"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
-    t.integer  "publication_id"
+    t.integer  "organization_id"
     t.float    "latitude"
     t.float    "longitude"
     t.string   "venue_url"
@@ -158,12 +158,12 @@ ActiveRecord::Schema.define(:version => 20160116015847) do
 
   add_index "consumer_apps_messages", ["consumer_app_id", "message_id"], :name => "consumer_apps_messages_joins_index", :unique => true
 
-  create_table "consumer_apps_publications", :id => false, :force => true do |t|
+  create_table "consumer_apps_organizations", :id => false, :force => true do |t|
     t.integer "consumer_app_id", :null => false
-    t.integer "publication_id",  :null => false
+    t.integer "organization_id", :null => false
   end
 
-  add_index "consumer_apps_publications", ["consumer_app_id", "publication_id"], :name => "consumer_app_publication_index"
+  add_index "consumer_apps_organizations", ["consumer_app_id", "organization_id"], :name => "consumer_app_publication_index"
 
   create_table "consumer_apps_wufoo_forms", :id => false, :force => true do |t|
     t.integer "consumer_app_id"
@@ -188,11 +188,6 @@ ActiveRecord::Schema.define(:version => 20160116015847) do
     t.integer "organization_id"
   end
 
-  create_table "contacts_publications", :id => false, :force => true do |t|
-    t.integer "publication_id"
-    t.integer "contact_id"
-  end
-
   create_table "content_categories", :force => true do |t|
     t.string   "name"
     t.datetime "created_at", :null => false
@@ -200,12 +195,12 @@ ActiveRecord::Schema.define(:version => 20160116015847) do
     t.integer  "parent_id"
   end
 
-  create_table "content_categories_publications", :id => false, :force => true do |t|
+  create_table "content_categories_organizations", :id => false, :force => true do |t|
     t.integer "content_category_id"
-    t.integer "publication_id"
+    t.integer "organization_id"
   end
 
-  add_index "content_categories_publications", ["content_category_id", "publication_id"], :name => "index_on_content_category_id_and_publication_id"
+  add_index "content_categories_organizations", ["content_category_id", "organization_id"], :name => "index_on_content_category_id_and_publication_id"
 
   create_table "content_promotion_banner_impressions", :force => true do |t|
     t.integer  "content_id"
@@ -235,7 +230,7 @@ ActiveRecord::Schema.define(:version => 20160116015847) do
   create_table "content_sets", :force => true do |t|
     t.string   "import_method"
     t.text     "import_method_details"
-    t.integer  "publication_id"
+    t.integer  "organization_id"
     t.string   "name"
     t.text     "description"
     t.text     "notes"
@@ -271,7 +266,7 @@ ActiveRecord::Schema.define(:version => 20160116015847) do
     t.string   "language"
     t.string   "page"
     t.string   "authoremail"
-    t.integer  "publication_id"
+    t.integer  "organization_id"
     t.boolean  "quarantine",                :default => false
     t.string   "doctype"
     t.datetime "timestamp"
@@ -308,9 +303,9 @@ ActiveRecord::Schema.define(:version => 20160116015847) do
   add_index "contents", ["guid"], :name => "guid"
   add_index "contents", ["import_location_id"], :name => "location_id"
   add_index "contents", ["import_record_id"], :name => "import_record_id"
+  add_index "contents", ["organization_id"], :name => "source_id"
   add_index "contents", ["parent_id"], :name => "index_contents_on_parent_id"
   add_index "contents", ["pubdate"], :name => "pubdate"
-  add_index "contents", ["publication_id"], :name => "source_id"
   add_index "contents", ["published"], :name => "index_contents_on_published"
   add_index "contents", ["root_content_category_id"], :name => "index_contents_on_root_content_category_id"
   add_index "contents", ["root_parent_id"], :name => "index_contents_on_root_parent_id"
@@ -583,7 +578,7 @@ ActiveRecord::Schema.define(:version => 20160116015847) do
 
   create_table "issues", :force => true do |t|
     t.string   "issue_edition"
-    t.integer  "publication_id"
+    t.integer  "organization_id"
     t.string   "copyright"
     t.datetime "created_at",         :null => false
     t.datetime "updated_at",         :null => false
@@ -671,17 +666,17 @@ ActiveRecord::Schema.define(:version => 20160116015847) do
   add_index "locations_old", ["status"], :name => "index_locations_on_status"
   add_index "locations_old", ["usgs_id"], :name => "index_locations_on_usgs_id"
 
-  create_table "locations_publications", :force => true do |t|
+  create_table "locations_organizations", :force => true do |t|
     t.integer  "location_id"
-    t.integer  "publication_id"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
+    t.integer  "organization_id"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
-  add_index "locations_publications", ["location_id", "publication_id"], :name => "index_locations_publications_on_location_id_and_publication_id"
-  add_index "locations_publications", ["location_id"], :name => "index_locations_publications_on_location_id"
-  add_index "locations_publications", ["publication_id", "location_id"], :name => "index_locations_publications_on_publication_id_and_location_id"
-  add_index "locations_publications", ["publication_id"], :name => "index_locations_publications_on_publication_id"
+  add_index "locations_organizations", ["location_id", "organization_id"], :name => "index_locations_publications_on_location_id_and_publication_id"
+  add_index "locations_organizations", ["location_id"], :name => "index_locations_publications_on_location_id"
+  add_index "locations_organizations", ["organization_id", "location_id"], :name => "index_locations_publications_on_publication_id_and_location_id"
+  add_index "locations_organizations", ["organization_id"], :name => "index_locations_publications_on_publication_id"
 
   create_table "locations_sav", :force => true do |t|
     t.string   "city"
@@ -730,17 +725,21 @@ ActiveRecord::Schema.define(:version => 20160116015847) do
 
   create_table "organizations", :force => true do |t|
     t.string   "name"
-    t.string   "org_type"
-    t.text     "notes"
-    t.string   "tagline"
-    t.text     "links"
-    t.text     "social_media"
-    t.text     "general"
-    t.string   "header"
+    t.datetime "created_at",                               :null => false
+    t.datetime "updated_at",                               :null => false
     t.string   "logo"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.integer  "organization_id"
+    t.string   "website"
+    t.text     "notes"
+    t.integer  "parent_id"
+    t.string   "category_override"
+    t.string   "org_type"
+    t.boolean  "display_attributes",    :default => false
+    t.string   "reverse_publish_email"
+    t.boolean  "can_reverse_publish",   :default => false
   end
+
+  add_index "organizations", ["name"], :name => "index_publications_on_name", :unique => true
 
   create_table "parameters", :force => true do |t|
     t.integer  "parser_id"
@@ -801,7 +800,7 @@ ActiveRecord::Schema.define(:version => 20160116015847) do
   create_table "promotions", :force => true do |t|
     t.boolean  "active"
     t.string   "banner"
-    t.integer  "publication_id"
+    t.integer  "organization_id"
     t.integer  "content_id"
     t.text     "description"
     t.datetime "created_at",                         :null => false
@@ -815,31 +814,7 @@ ActiveRecord::Schema.define(:version => 20160116015847) do
 
   add_index "promotions", ["content_id"], :name => "index_promotions_on_content_id"
   add_index "promotions", ["created_by"], :name => "index_promotions_on_created_by"
-  add_index "promotions", ["publication_id"], :name => "index_promotions_on_publication_id"
-
-  create_table "publications", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at",                               :null => false
-    t.datetime "updated_at",                               :null => false
-    t.string   "logo"
-    t.integer  "organization_id"
-    t.string   "website"
-    t.text     "notes"
-    t.integer  "parent_id"
-    t.string   "category_override"
-    t.string   "pub_type"
-    t.boolean  "display_attributes",    :default => false
-    t.string   "reverse_publish_email"
-    t.boolean  "can_reverse_publish",   :default => false
-    t.string   "publishing_frequency"
-    t.string   "tagline"
-    t.text     "links"
-    t.text     "social_media"
-    t.text     "general"
-    t.string   "header"
-  end
-
-  add_index "publications", ["name"], :name => "index_publications_on_name", :unique => true
+  add_index "promotions", ["organization_id"], :name => "index_promotions_on_publication_id"
 
   create_table "publish_jobs", :force => true do |t|
     t.text     "query_params"

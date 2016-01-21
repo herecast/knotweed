@@ -16,11 +16,16 @@
             = f.label :id_in, "Organization"
             = f.collection_select :id_in, Organization.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
-            = f.label :publications_id_in, "Publication"
-            = f.collection_select :publications_id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
+            = f.label :org_type_in, "Organization Type"
+            = f.select :org_type_in, Organization::PUB_TYPE_OPTIONS, {}, { multiple: true, class: "chosen-select" }
           .field.span3
-            = f.label :locations_id_in, "Location"
-            = f.collection_select :locations_id_in, Location.accessible_by(current_ability), :id, :city, {}, { multiple: true, class: "chosen-select" }
+            = f.label :locations_id_in, 'Promote Locations'
+            = f.collection_select :locations_id_in, Location.accessible_by(current_ability), :id, :name, 
+              {}, { multiple: true, class: "chosen-select" }
+        .controls.controls-row
+          .field.span3
+            = f.label :consumer_apps_id_in, "Consumer Apps"
+            = f.collection_select :consumer_apps_id_in, ConsumerApp.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
@@ -29,6 +34,9 @@
     %tr
       %th ID
       %th Organization
+      %th Promote Locations
+      %th Parent
+      %th # Imported
       %th 
   %tbody
     - @organizations.each do |organization|
@@ -36,4 +44,14 @@
         %td= organization.id
         %td= link_to organization.name, edit_organization_path(organization)
         %td
-          = link_to "publications", publications_path(q: { organization_id_in: organization.id }), class: "btn btn-mini btn-info"
+          - organization.locations.each_with_index do |loc, i|
+            = link_to loc.name, organizations_path(q: { locations_id_in: [loc.id] })
+            - unless i == (organization.locations.count - 1)
+              |
+        %td
+          - if organization.parent.present?
+            = link_to organization.parent.try(:name), edit_organization_path(organization.parent)
+        %td= organization.contents.count
+        %td
+          = link_to "content", contents_path(q: { organization_id_in: organization.id }), class: "btn btn-mini btn-info"
+          = link_to "content sets", content_sets_path(q: { organization_id_in: organization.id }), class: "btn btn-mini btn-success"

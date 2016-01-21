@@ -35,9 +35,9 @@ module Api
 
         @contents = @content.similar_content(@repository, 20)
 
-        # filter by publication
+        # filter by organization
         if @requesting_app.present?
-          @contents.select!{ |c| @requesting_app.publications.include? c.publication }
+          @contents.select!{ |c| @requesting_app.organizations.include? c.organization }
         end
 
         #remove records that are events with no future instances
@@ -73,10 +73,10 @@ module Api
         opts[:conditions] = {}
         opts[:page] = params[:page] || 1
         opts[:with][:published] = 1 if @repository.present?
-        opts[:sql] = { include: [:images, :publication, :root_content_category] }
+        opts[:sql] = { include: [:images, :organization, :root_content_category] }
 
         if @requesting_app.present?
-          allowed_pubs = @requesting_app.publications
+          allowed_pubs = @requesting_app.organizations
           opts[:with].merge!({pub_id: allowed_pubs.collect{|c| c.id} })
         end
 
