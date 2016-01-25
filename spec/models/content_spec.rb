@@ -305,12 +305,26 @@ describe Content do
           @c4 = Content.create_from_import_job(@new_data)
         end
 
-        it 'should update the existing content, appending a  new location to it' do
+        it 'should update the existing content, appending a new location to it' do
           @c3.id.should eq @c4.id
           @c3.locations.count.should eq 2
           @c3.locations.include?(@c4.locations.first).should be_true
         end
+      end
 
+      context 'if the first content has a listserv name and the next similar content does not, ' do
+        before do
+          @orig_data[:title] = '[Seagate] A gentle awakening'
+          @new_data[:title] = 'A gentle awakening'
+          @c5 = Content.create_from_import_job @orig_data
+          @c6 = Content.create_from_import_job @new_data
+        end
+
+        it 'we should update the existing content, appending a new location to it' do
+          @c5.id.should eq @c6.id
+          @c5.locations.count.should eq 2
+          @c5.locations.include?(@c6.locations.first).should be_true
+        end
       end
 
     end

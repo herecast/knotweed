@@ -384,7 +384,7 @@ class Content < ActiveRecord::Base
         if partial_title.present?
           title_condition.push "title like ?", '%' + partial_title
         else
-          conditions.merge!({title: content.title})
+          title_condition.push "title like ?", '%' + content.title
         end
         news_category = ContentCategory.find_by_name('news')
         news_condition = []
