@@ -1378,7 +1378,7 @@ class Content < ActiveRecord::Base
   # @param repo [Repository] repository to query
   # @param num_similar [Integer] number of results to return
   # @return [Array<Content>] list of similar content
-  def similar_content(repo, num_similar=6)
+  def similar_content(repo, num_similar=8)
     if similar_content_overrides.present?
       Content.where(id: similar_content_overrides).includes(:content_category)
     else
