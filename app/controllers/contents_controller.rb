@@ -254,6 +254,8 @@ class ContentsController < ApplicationController
     input = params[:content][:similar_content_overrides]
     if input.present?
       params[:content][:similar_content_overrides] = input.gsub('[','').gsub(']','').split(',').map{|str| str.strip.to_i }
+    else
+      params[:content].delete :similar_content_overrides
     end
   end
 
