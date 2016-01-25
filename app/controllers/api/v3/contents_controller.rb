@@ -17,8 +17,10 @@ module Api
           ContentPromotionBannerImpression.log_impression(@content.id, @banner.id,
                                                           select_method, select_score)
           # increment promotion_banner counts for impressions and daily_impressions
-          @banner.increment_integer_attr! :impression_count
-          @banner.increment_integer_attr! :daily_impression_count
+          unless @current_api_user.try(:skip_analytics?)
+            @banner.increment_integer_attr! :impression_count
+            @banner.increment_integer_attr! :daily_impression_count
+          end
           render json:  { related_promotion:
             { 
               image_url: @banner.banner_image.url, 

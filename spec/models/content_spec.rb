@@ -1191,6 +1191,27 @@ describe Content do
     end
   end
 
+  describe 'increment_view_count!' do
+    before do
+      @content = FactoryGirl.create :content
+    end
+
+    it 'should increment the view count' do
+      expect{@content.increment_view_count!}.to change{@content.view_count}.by 1
+    end
+
+    context 'for a user with skip_analytics = true' do
+      before do
+        @user = FactoryGirl.create :user, skip_analytics: true
+        User.current = @user
+      end
+
+      it 'should not increment the view count' do
+        expect{@content.increment_view_count!}.not_to change{@content.view_count}
+      end
+    end
+  end
+
   private
 
     def get_body_from_file(filename)

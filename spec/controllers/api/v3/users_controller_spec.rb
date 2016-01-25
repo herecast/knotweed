@@ -39,7 +39,6 @@ describe Api::V3::UsersController do
 
   end
 
-
   describe 'PUT current_user' do
       describe 'when user not signed in' do
         before { api_authenticate success: false }
@@ -375,6 +374,7 @@ describe Api::V3::UsersController do
           listserv_id: user.location.listserv.id,
           test_group: user.test_group,
           user_image_url: user.avatar.url,
+          skip_analytics: false,
           events_ical_url: nil}.stringify_keys
         }.stringify_keys
     end

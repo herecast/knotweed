@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160107125122) do
+ActiveRecord::Schema.define(:version => 20160116015847) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -123,9 +123,9 @@ ActiveRecord::Schema.define(:version => 20160107125122) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer   "channel_id"
-    t.text      "category"
-    t.timestamp "created_at", :null => false
+    t.integer  "channel_id"
+    t.text     "category"
+    t.datetime "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -994,6 +994,7 @@ ActiveRecord::Schema.define(:version => 20160107125122) do
     t.string   "authentication_token"
     t.string   "avatar"
     t.string   "public_id"
+    t.boolean  "skip_analytics",         :default => false
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

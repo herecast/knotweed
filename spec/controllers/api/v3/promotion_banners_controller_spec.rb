@@ -9,18 +9,35 @@ describe Api::V3::PromotionBannersController do
       @content.promotion_banners = [@banner]
     end
 
-    subject! { post :track_click, promotion_banner_id: @banner.id,  content_id: @content.id, format: :json }
+    subject { post :track_click, promotion_banner_id: @banner.id,
+               content_id: @content.id, format: :json }
 
     it 'should respond with 200' do
+      subject
       response.status.should eq 200
     end
 
     it 'should increment content.banner_click_count' do
-      assigns(:content).banner_click_count.should eq 1
+      expect{subject}.to change{@content.reload.banner_click_count}.by 1
     end
 
     it 'should increment banner.click_count' do
-      assigns(:banner).click_count.should eq 1
+      expect{subject}.to change{@banner.reload.click_count}.by 1
+    end
+
+    context 'as a user with skip_analytics = true' do
+      before do
+        @user = FactoryGirl.create :user, skip_analytics: true
+        api_authenticate user: @user
+      end
+
+      it 'should not increment content.banner_click_count' do
+        expect{subject}.not_to change{@content.reload.banner_click_count}
+      end
+
+      it 'should not increment banner.click_count' do
+        expect{subject}.not_to change{@banner.reload.click_count}
+      end
     end
 
     context 'with invalid content id' do
