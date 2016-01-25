@@ -377,7 +377,7 @@ class Content < ActiveRecord::Base
       # also sometimes the user posts the same message to multiple listservers, which will cause the message to have
       # multiple guids even though it's the same content. the logic below allow us to detect existing content in these cases.
       if existing_content.nil?
-        conditions = { authoremail: content.authoremail, channel_type: nil, pubdate: (content.pubdate.try(:-, 30.days)..content.pubdate.try(:+, 7.days)) }
+        conditions = { authoremail: content.authoremail, channel_type: nil, pubdate: (content.pubdate.try(:beginning_of_day)..content.pubdate.try(:end_of_day)) }
         # exclude the list serve name - the leading [TownName] from the title
         partial_title = content.title.split(']')[1].try(:strip)
         title_condition = []
