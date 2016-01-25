@@ -77,10 +77,6 @@ class User < ActiveRecord::Base
     Thread.current[:user] = user
   end
 
-  def skip_analytics?
-    skip_analytics
-  end
-
   private
 
     def generate_authentication_token
