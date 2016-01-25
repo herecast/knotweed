@@ -120,6 +120,7 @@ module Api
 
       end
 
+      # returns all types of content
       def dashboard
         params[:sort] ||= 'pubdate DESC'
         params[:page] ||= 1
@@ -140,11 +141,11 @@ module Api
           filters[:content_category_id] = @market_cat.id
         end
 
-        @contents = Content.where(filters).
+        reg_conts = Content.where(filters).
           order(sanitize_sort_parameter(params[:sort])).
           page(params[:page].to_i).per(params[:per_page].to_i)
 
-        @contents.select! do |c|
+        reg_conts.select! do |c|
           if c.channel_type == 'Event'
             c.channel.event_instances.count > 0
           else
@@ -152,24 +153,13 @@ module Api
           end
         end
 
-        render json: @contents, each_serializer: DashboardContentSerializer
-
-      end
-
-      # returns all types of content
-      def ad_dashboard
-        params[:sort] ||= 'pubdate DESC'
-
-        reg_conts = Content.where(created_by: @current_api_user).
-          order(sanitize_sort_parameter(params[:sort]))
-
         banners = PromotionBanner.joins(:promotion).
           where('promotions.created_by = ? and promotable_type = "PromotionBanner"',
                 @current_api_user.id)
 
         @contents = reg_conts + banners
 
-        render json: @contents, serializer: AdDashboardArraySerializer
+        render json: @contents, serializer: DashboardArraySerializer
       end
 
       def metrics

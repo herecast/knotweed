@@ -248,11 +248,23 @@ describe Api::V3::ContentsController do
           @event = FactoryGirl.create :event
           FactoryGirl.create_list :market_post, 3
           FactoryGirl.create_list :comment, 2
+          FactoryGirl.create :content
         end
 
         it 'responds with the user\'s content' do
           subject
           expect(assigns(:contents)).to eq(Content.all)
+        end
+
+        context 'when user creates promotion banners' do
+          before do
+            FactoryGirl.create_list :promotion_banner, 2
+          end
+
+          it 'should be returned to the dashboard' do
+            subject
+            expect(assigns(:contents)).to eq (Content.all + PromotionBanner.all)
+          end
         end
 
         it 'allows sorting by specified parameters' do
@@ -307,50 +319,6 @@ describe Api::V3::ContentsController do
           end
         end
 
-      end
-    end
-  end
-
-  describe 'GET ad_dashboard' do
-    subject { get :ad_dashboard }
-    
-    context 'not signed in' do
-      it 'has 401 status code' do
-        subject
-        response.code.should eq('401')
-      end
-    end
-
-    context 'signed in' do
-      before do
-        @user = FactoryGirl.create :user
-        api_authenticate user: @user
-      end
-
-      it 'has 200 status code' do
-        subject
-        response.code.should eq('200')
-      end
-
-      context 'with the user owning some content' do
-        before do
-          # because we're authenticated as the @user, created_by is actually set automatically here,
-          # so we don't need to set it manually.
-          @event = FactoryGirl.create :event
-          FactoryGirl.create_list :market_post, 3
-          FactoryGirl.create_list :comment, 2
-          FactoryGirl.create :content # differs from regular dashboard here
-        end
-
-        it 'responds with the user\'s content' do
-          subject
-          expect(assigns(:contents)).to eq(Content.all)
-        end
-
-        it 'allows sorting by specified parameters' do
-          get :dashboard, sort: 'pubdate DESC'
-          expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)
-        end
       end
     end
   end
