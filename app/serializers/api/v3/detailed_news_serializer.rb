@@ -3,7 +3,7 @@ module Api
     class DetailedNewsSerializer < ActiveModel::Serializer
 
       attributes :id, :content_id, :admin_content_url, :content, :title, :subtitle,
-        :author_name, :author_id, :publication_name, :publication_id, :published_at, :comment_count,
+        :author_name, :author_id, :organization_name, :organization_id, :published_at, :comment_count,
         :is_sponsored_content
 
       has_many :images
@@ -31,14 +31,8 @@ module Api
       def author_id
       end
 
-      # 'publication' is deprecated, but retaining the attribute name for the sake of
-      # API continuity
-      def publication_name
+      def organization_name
         object.organization.name
-      end
-
-      def publication_id
-        object.organization_id
       end
 
       def published_at
