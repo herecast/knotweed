@@ -13,8 +13,8 @@
       = search_form_for @search, url: content_sets_path do |f|
         .controls.controls-row
           .field.span3
-            = f.label :publication_id_in, "Publications"
-            = f.collection_select :publication_id_in, Publication.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
+            = f.label :organization_id_in, "Organizations"
+            = f.collection_select :organization_id_in, Organization.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
             = f.label :import_method_in, "Import Method"
             = f.select :import_method_in, ContentSet::IMPORT_METHODS, {}, { multiple: true, class: "chosen-select", include_blank: true }
@@ -32,7 +32,7 @@
     %tr
       %th ID
       %th Name
-      %th Publication
+      %th Organization
       %th Status
       %th Date Range
       %th Ongoing?
@@ -45,8 +45,8 @@
         %td= content_set.id
         %td= link_to content_set.name, edit_content_set_path(content_set)
         %td 
-          - if content_set.publication.present?
-            = link_to content_set.publication.try(:name), edit_publication_path(content_set.publication)
+          - if content_set.organization.present?
+            = link_to content_set.organization.try(:name), edit_organization_path(content_set.organization)
         %td= content_set.status
         %td= "#{content_set.start_date.try(:strftime, "%m/%d/%Y")} - #{content_set.end_date.try(:strftime, "%m/%d/%Y")}"
         %td

@@ -20,7 +20,7 @@ jQuery ->
   $("#new_location_button").on 'click', ->
     $(".modal#location_form .modal-body").load($(this).data("formUrl"))
 
-  $("#publication_location_ids").multiSelect
+  $("#organization_location_ids").multiSelect
     selectableHeader: "<div class='custom-header'>Available</div>"
     selectionHeader: "<div class='custom-header'>Selected</div>"
     afterInit: (ms) ->
@@ -38,9 +38,9 @@ jQuery ->
       this.qs1.cache()
 
   $("#select-all-locs").on 'click', ->
-    $("#publication_location_ids").multiSelect("select_all")
+    $("#organization_location_ids").multiSelect("select_all")
   $("#deselect-all-locs").on 'click', ->
-    $("#publication_location_ids").multiSelect("deselect_all")
+    $("#organization_location_ids").multiSelect("deselect_all")
 
   $(".add-new-field-link").on 'click', ->
     $('.serialized-field-header').show()

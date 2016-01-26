@@ -1,6 +1,6 @@
 - content ||= nil
-- publication ||= content.publication
-- promotions = PromotionsHelper.get_promotion_list(publication, content)
+- organization ||= content.organization
+- promotions = PromotionsHelper.get_promotion_list(organization, content)
 %table.table.table-striped.table-condensed#promotions_table
   %thead
     %tr
@@ -16,12 +16,12 @@
       = render "promotions/partials/promotion_row", promotion: promotion
 - if controller_name == "contents" or controller_name == "events"
   = link_to "+ Create New PromotionBanner", 
-    new_publication_promotion_path(publication_id: publication.id,
+    new_organization_promotion_path(organization_id: organization.id,
     content_id: content.id, promotable_type: 'PromotionBanner'),
     class: "btn btn-primary"
   = link_to "+ Create New PromotionListserv", 
-    new_publication_promotion_path(publication_id: publication.id,
+    new_organization_promotion_path(organization_id: organization.id,
     content_id: content.id, promotable_type: 'PromotionListserv'),
     class: "btn btn-primary", disabled: !can_be_listserv_promoted(content)
 -# If we can get ajax image uploading, render the form right here!
--# = render "promotions/partials/form", promotion: Promotion.new(publication: @publication), ajax_submit: true
+-# = render "promotions/partials/form", promotion: Promotion.new(organization: @organization), ajax_submit: true

@@ -10,8 +10,8 @@ jQuery ->
       data:
         has_event_calendar: $(this).prop("checked")
 
-  $("#add_new_publication").on 'click', ->
-    $(".modal#publication_form .modal-body").load($(this).data('formUrl'))
+  $("#add_new_organization").on 'click', ->
+    $(".modal#organization_form .modal-body").load($(this).data('formUrl'))
 
   $(".tab-traversal-link").on 'click', ->
     current = $(".nav-tabs-simple li.active")[0]
@@ -27,17 +27,17 @@ jQuery ->
     new_tab.tab('show')
 
   updateIssueOptions()
-  $(document).on 'change', '#content_publication_id', ->
+  $(document).on 'change', '#content_organization_id', ->
     updateIssueOptions()
 
   $(document).on 'change', '#content_content_category_id', ->
     name = $(this).find("option:selected").text()
     if name == "Event" or name == "Sale Event"
-      $("#add_new_publication").show()
-      $("label[for='content_publication_id']").text("Organization")
+      $("#add_new_organization").show()
+      $("label[for='content_organization_id']").text("Organization")
     else
-      $("#add_new_publication").hide()
-      $("label[for='content_publication_id']").text("Publication")
+      $("#add_new_organization").hide()
+      $("label[for='content_organization_id']").text("Organization")
     if name == 'Sponsored Content'
       $('.sponsored-content').show()
     else
@@ -58,7 +58,7 @@ jQuery ->
         if $("input#content_copyright").val().length == 0
           $("input#content_copyright").val(data.issue.copyright)
         if $("input#content_pubdate").val().length == 0
-          date = new Date(data.issue.publication_date)
+          date = new Date(data.issue.organization_date)
           $("input#content_pubdate").val(date.toLocaleString())
 
   # update publish links when user changes repository dropdown
@@ -102,7 +102,7 @@ updateParentOptions = ->
       content_id: $("#content_parent_id").data("contentId"),
       search_query: $("#parent_search").val(),
       q:
-        publication_id: $("#content_publication_id").val(),
+        organization_id: $("#content_organization_id").val(),
     beforeSend: ->
       $("#content_parent_id_chosen .chosen-single").spin({radius: 1})
     success: ->
@@ -113,6 +113,6 @@ updateParentOptions = ->
 updateIssueOptions = ->
   $.ajax $("#content_issue_id").data("optionsUrl"),
     data:
-      publication_id: $("#content_publication_id").val(),
+      organization_id: $("#content_organization_id").val(),
       selected_id: $("#content_issue_id").data('selectedId')
     dataType: "script"

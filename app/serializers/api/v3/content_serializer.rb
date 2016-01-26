@@ -36,8 +36,14 @@ module Api
         object.root_content_category.name
       end
 
+      # 'publication' is deprecated, but retaining this attribute name for the sake
+      # of API continuity (and continued UX functionality)
       def publication_name
-        object.publication.name
+        object.organization.name
+      end
+
+      def publication_id
+        object.organization_id
       end
 
       def venue_name

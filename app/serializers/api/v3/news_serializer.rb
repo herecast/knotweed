@@ -19,9 +19,10 @@ module Api
         object.authors
       end
 
-      def publication_name
-        object.publication.name
-      end
+      # 'publication' deprecated, api continuity, etc. etc.
+      def publication_name; object.organization.name; end
+
+      def publication_id; object.organization_id; end
 
       def published_at
         object.pubdate

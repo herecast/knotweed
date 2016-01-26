@@ -13,7 +13,7 @@ class Comment < ActiveRecord::Base
   attr_accessible :content_attributes
   validates_associated :content
 
-  has_one :source, through: :content, class_name: "Publication", foreign_key: "publication_id"
+  has_one :source, through: :content, class_name: "Organization", foreign_key: "organization_id"
   has_one :content_category, through: :content
   has_many :images, through: :content
   has_many :repositories, through: :content

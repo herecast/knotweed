@@ -31,8 +31,14 @@ module Api
       def author_id
       end
 
+      # 'publication' is deprecated, but retaining the attribute name for the sake of
+      # API continuity
       def publication_name
-        object.publication.name
+        object.organization.name
+      end
+
+      def publication_id
+        object.organization_id
       end
 
       def published_at
