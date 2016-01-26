@@ -21,6 +21,5 @@ describe SessionsController do
     it 'should return expected fields' do
       JSON.parse(response.body).should eq({ token: @user.authentication_token, email: @user.email }.stringify_keys)
     end
-
   end
 end

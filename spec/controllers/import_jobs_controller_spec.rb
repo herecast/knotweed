@@ -1,11 +1,13 @@
 require 'spec_helper'
 
 describe ImportJobsController do 
-  
+  before do
+    @user = FactoryGirl.create :admin
+    sign_in @user
+  end
+
   describe "POST 'create'" do 
     before do
-      @user = FactoryGirl.create(:admin)
-      sign_in @user
       @org = FactoryGirl.create(:organization)
       @parser = FactoryGirl.create(:parser, organization: @org)
       2.times do 
@@ -44,5 +46,35 @@ describe ImportJobsController do
       end
     end
     
+  end
+
+  describe 'GET index' do
+    before { @jobs = FactoryGirl.create_list :import_job, 3 }
+    subject! { get :index }
+
+    it 'should respond with a 200 status' do
+      response.code.should eq '200'
+    end
+
+    it 'should load the import jobs' do
+      assigns(:import_jobs).should eq @jobs
+    end
+  end
+
+  describe 'GET new' do
+    subject! { get :new }
+
+    it 'should respond with a 200 status' do
+      response.code.should eq '200'
+    end
+  end
+
+  describe 'GET edit' do
+    before { @job = FactoryGirl.create :import_job }
+    subject! { get :edit, id: @job.id }
+
+    it 'should respond with a 200 status' do
+      response.code.should eq '200'
+    end
   end
 end

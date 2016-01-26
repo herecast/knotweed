@@ -33,7 +33,7 @@ class PublishJobsController < ApplicationController
       redirect_to publish_jobs_path
     else
       flash.now[:error] = "Could not save publish job"
-      render action: "new"
+      render "new"
     end
   end
 
@@ -48,7 +48,7 @@ class PublishJobsController < ApplicationController
       redirect_to publish_jobs_path
     else
       flash.now[:error] = "Could not save publish job"
-      render action: "edit"
+      render "edit"
     end
   end
 
@@ -59,7 +59,6 @@ class PublishJobsController < ApplicationController
     else
       raise ActionController::RoutingError.new("Not Found")
     end
-
   end
 
 end

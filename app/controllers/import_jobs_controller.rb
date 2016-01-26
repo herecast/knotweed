@@ -18,7 +18,6 @@ class ImportJobsController < ApplicationController
   def edit
     @content_sets = ContentSet.accessible_by(current_ability)
   end
-
   
   def create
     @import_job = ImportJob.new(params[:import_job])
