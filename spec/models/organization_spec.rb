@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: publications
+# Table name: organizations
 #
 #  id                    :integer          not null, primary key
 #  name                  :string(255)
@@ -28,18 +28,18 @@ require 'spec_helper'
 
 describe Organization do
   before do
-    @publication = FactoryGirl.create(:publication)
+    @organization = FactoryGirl.create(:organization)
   end
 
   describe "latest_presentation" do
     it "should return nil if there are no presentation contents" do
-      @publication.latest_presentation.should == nil
+      @organization.latest_presentation.should == nil
     end
 
     it "should return the most recent presentation content" do
-      c1 = FactoryGirl.create(:content, pubdate: 1.day.ago, publication: @publication, category: "presentation")
-      c2 = FactoryGirl.create(:content, pubdate: 2.days.ago, publication: @publication, category: "presentation")
-      @publication.latest_presentation.should == c1
+      c1 = FactoryGirl.create(:content, pubdate: 1.day.ago, organization: @organization, category: "presentation")
+      c2 = FactoryGirl.create(:content, pubdate: 2.days.ago, organization: @organization, category: "presentation")
+      @organization.latest_presentation.should == c1
     end
   end
 

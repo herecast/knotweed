@@ -50,7 +50,7 @@ class SubtextTracker < Mixpanel::Tracker
       props['contentLocation'] = content.try(:location)
       props['contentPubdate'] = content.try(:pubdate)
       props['contentTitle'] = content.try(:title)
-      props['conentPublication'] = content.try(:publication).try(:name)
+      props['contentPublication'] = content.try(:organization).try(:name)
     end
     props
   end

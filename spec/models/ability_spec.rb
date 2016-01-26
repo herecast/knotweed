@@ -24,7 +24,6 @@ describe Ability do
       let(:user){ FactoryGirl.create(:organization_admin) }
 
       it{ should be_able_to(:access, :admin) }
-      it{ should_not be_able_to(:access, :rails_admin) }
       it{ should be_able_to(:update, user.organization) }
     end
 

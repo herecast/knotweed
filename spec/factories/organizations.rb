@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: publications
+# Table name: organizations
 #
 #  id                    :integer          not null, primary key
 #  name                  :string(255)

@@ -38,7 +38,7 @@ namespace :users do
         auser.contact_url = cuser.contact_url
         auser.test_group = cuser.test_group
         auser.discussion_listserve = cuser.discussion_listserve
-        auser.location_id = Publication.find_by_name(auser.discussion_listserve).locations.first.id
+        auser.location_id = Organization.find_by_name(auser.discussion_listserve).locations.first.id
         auser.view_style = cuser.view_style
         auser.save
       end
@@ -68,7 +68,7 @@ namespace :users do
         #auser.color_scheme = cuser.color_scheme
         #auser.event_service = cuser.event_service
         auser.discussion_listserve = cuser.discussion_listserve
-        auser.location_id = Publication.find_by_name(auser.discussion_listserve).locations.first.id
+        auser.location_id = Organization.find_by_name(auser.discussion_listserve).locations.first.id
         auser.view_style = cuser.view_style
         auser.confirmation_token = cuser.confirmation_token
         auser.confirmed_at = cuser.confirmed_at

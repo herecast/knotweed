@@ -21,7 +21,7 @@ require 'spec_helper'
 
 describe Promotion do
   before do
-    @pub = FactoryGirl.create(:publication)
+    @org = FactoryGirl.create(:organization)
     @content = FactoryGirl.create(:content)
     Promotion.any_instance.stub(:update_active_promotions).and_return(true)
   end
@@ -40,7 +40,7 @@ describe Promotion do
 
   subject do 
     p = Promotion.create params 
-    p.publication = @pub
+    p.organization = @org
     p.content = @content
     p.save
     p

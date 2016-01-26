@@ -13,9 +13,9 @@ namespace :wordpress do
       exit 1
     end
 
-    pub = Publication.find_by_name("#{blogTitle}")
-    unless pub.present?
-      puts "#{blogTitle} does not exist in Publications table"
+    org = Organization.find_by_name("#{blogTitle}")
+    unless org.present?
+      puts "#{blogTitle} does not exist in Organizations table"
       exit 1
     end
 
@@ -63,7 +63,7 @@ namespace :wordpress do
       end
 
       # parse the WP post hash into a Content object
-      wp = newContentFromWP(blogTitle, wp_post, pub, content_category_id, blog_url)
+      wp = newContentFromWP(blogTitle, wp_post, org, content_category_id, blog_url)
 
       output = ''
       if wp.save
@@ -88,14 +88,14 @@ namespace :wordpress do
     exit 0
   end
 
-  def newContentFromWP(blogTitle, wp_post, pub, content_category_id, blog_url)
+  def newContentFromWP(blogTitle, wp_post, org, content_category_id, blog_url)
     wp = Content.new
 
     wp.contentsource = blogTitle
 
     post_tag = wp_post['terms'].select{|t| 'post_tag' == t['taxonomy']}
-    tag_pub = Publication.find_by_name(post_tag[0]['name']) if post_tag.present?
-    wp.publication = tag_pub ? tag_pub : pub
+    tag_org = Organization.find_by_name(post_tag[0]['name']) if post_tag.present?
+    wp.organization = tag_org ? tag_org : org
 
     wp.title = wp_post['post_title']
     wp.guid = wp_post['guid']
@@ -138,29 +138,29 @@ namespace :wordpress do
     wp
   end
 
-  desc "Set up publications"
+  desc "Set up organizations"
   task setup_pubs: :environment do
     lebpubs = ["The Lebanon Beacon", "Lebanon City Council", "Lebanon Conservation Commission", "Lebanon School District", "Mt. Lebanon School", "Lebanon High School", "City of Lebanon NH", "Mascoma River Greenway", "dailyUV-Lebanon"]
     norpubs = ["The Norwich Harbinger", "Norwich Historical Society", "Norwich Women's Club", "Montshire Museum of Science", "Town of Norwich VT", "Dresden School Board", "King Arthur Flour", "Norwich School Board", "Marion Cross School", "Book Jam", "Hanover High School", "Norwich Public Library", "Richmond Middle School", "Norwich Bookstore", "dailyUV-Norwich", "Jim and Tim Report", "dailyUV-UV"]
     hartpubs = ["The Hartford Observer", "Ottauquechee School", "Hartford High School", "Hartford Memorial Middle School", "dailyUV-Hartford", "Hartford Police Department", "Quechee and Wilder Libraries", "Hartford Area Career and Technical Center", "Town of Hartford VT", "dailyUV-UV"]
 
     lebloc = Location.find_by_city("Lebanon")
-    lebpubs.each do |pub|
-      newpub = Publication.find_or_create_by_name(pub) do | p |
+    lebpubs.each do |org|
+      neworg = Organization.find_or_create_by_name(org) do | p |
         p.locations = [lebloc]
       end
     end
 
     norloc = Location.find_by_city("Norwich")
-    norpubs.each do |pub|
-      newpub = Publication.find_or_create_by_name(pub) do | p |
+    norpubs.each do |org|
+      neworg = Organization.find_or_create_by_name(org) do | p |
         p.locations = [norloc]
       end
     end
 
     hartloc = Location.find_by_city("Hartford")
-    hartpubs.each do |pub|
-      newpub = Publication.find_or_create_by_name(pub) do | p |
+    hartpubs.each do |org|
+      neworg = Organization.find_or_create_by_name(org) do | p |
         p.locations = [hartloc]
       end
     end
@@ -217,21 +217,21 @@ namespace :wordpress do
         existing_content.guid = wp_post['guid']
         existing_content.url = blog_url + "?p=#{wp_post['post_id']}"
         existing_content.origin = 'Wordpress Parser'
-        # reset the publication if it's dailyUV-Norwich
-        if existing_content.publication_id == 469 # 469 -> dailyUV-Norwich
-          existing_content.publication_id = 398 # dailyUV
+        # reset the organization if it's dailyUV-Norwich
+        if existing_content.organization_id == 469 # 469 -> dailyUV-Norwich
+          existing_content.organization_id = 398 # dailyUV
           existing_content.locations = [loc_norwich]
           puts "  changed dailyUV-Norwich to dailyUV"
           norwich += 1
         end
-        if existing_content.publication_id == 456 # 456 -> dailyUV-Lebanon
-          existing_content.publication_id = 398 # dailyUV
+        if existing_content.organization_id == 456 # 456 -> dailyUV-Lebanon
+          existing_content.organization_id = 398 # dailyUV
           existing_content.locations = [loc_lebanon]
           puts "  changed dailyUV-Lebanon to dailyUV"
           lebanon += 1
         end
-        if existing_content.publication_id == 476 # 476 -> dailyUV-Norwich
-          existing_content.publication_id = 398 # dailyUV
+        if existing_content.organization_id == 476 # 476 -> dailyUV-Norwich
+          existing_content.organization_id = 398 # dailyUV
           existing_content.locations = [loc_hartford]
           puts "  changed dailyUV-Hartford to dailyUV"
           hartford += 1
@@ -277,9 +277,9 @@ namespace :wordpress do
       puts "no blogTitle passed: use rake wordpress:import -- -b 'My BlogTitle'"
       exit 1
     end
-    pub = Publication.find_by_name(blogTitle).id
-    unless pub.present?
-      puts "#{blogTitle} does not exist in Publications table"
+    org = Organization.find_by_name(blogTitle).id
+    unless org.present?
+      puts "#{blogTitle} does not exist in Organizations table"
       exit 1
     end
 
@@ -310,7 +310,7 @@ namespace :wordpress do
     p_opts = options.merge(post_id: POST_ID)
     wp_post = wpcl.getPost(p_opts)
 
-    wp = newContentFromWP(blogTitle, wp_post, pub, content_category_id, blog_url)
+    wp = newContentFromWP(blogTitle, wp_post, org, content_category_id, blog_url)
 
     output = ''
     if wp.save

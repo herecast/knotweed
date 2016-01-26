@@ -47,12 +47,12 @@ describe Api::V3::EventsController do
       response.code.should eq('200')
       assigns(:event).should eq @event
     end
-    context 'when requesting app has matching publications' do
+    context 'when requesting app has matching organizations' do
       before do
-        publication = FactoryGirl.create :publication
-        @event.content.publication = publication
+        organization = FactoryGirl.create :organization
+        @event.content.organization = organization
         @event.save
-        @consumer_app = FactoryGirl.create :consumer_app, publications: [publication]
+        @consumer_app = FactoryGirl.create :consumer_app, organizations: [organization]
         api_authenticate consumer_app: @consumer_app
       end
       it do
@@ -61,12 +61,12 @@ describe Api::V3::EventsController do
         JSON.parse(response.body)['event']['id'].should == @event.id
       end
     end
-    context 'when requesting app DOES NOT HAVE matching publications' do
+    context 'when requesting app DOES NOT HAVE matching organizations' do
       before do
-        publication = FactoryGirl.create :publication
-        @event.content.publication = publication
+        organization = FactoryGirl.create :organization
+        @event.content.organization = organization
         @event.save
-        @consumer_app = FactoryGirl.create :consumer_app, publications: []
+        @consumer_app = FactoryGirl.create :consumer_app, organizations: []
         api_authenticate consumer_app: @consumer_app
       end
       it { subject; response.status.should eq 204 }

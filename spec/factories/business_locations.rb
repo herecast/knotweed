@@ -28,7 +28,7 @@
 FactoryGirl.define do
   factory :business_location do
     name { Faker::Company.name }
-    publication
+    organization
     address { Faker::Address.street_address }
     city { Faker::Address.city }
     state { Faker::Address.state }

@@ -48,20 +48,10 @@ class ContentSet < ActiveRecord::Base
   validates :import_priority, inclusion: { in: IMPORT_PRIORITIES }
   validates_presence_of :organization
   validates_presence_of :name
-  validates :publishing_frequency, inclusion: { in: Organization::FREQUENCY_OPTIONS }, allow_blank: true 
-
-  before_save :set_publishing_frequency
   
   # for rails admin enum field
   def import_method_enum
     IMPORT_METHODS
-  end
-
-  # have publishing frequency fall back to organization.publishing_frequency
-  def set_publishing_frequency
-    unless publishing_frequency.present?
-      update_attribute(:publishing_frequency, organization.publishing_frequency)
-    end
   end
 
 end

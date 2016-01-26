@@ -15,7 +15,7 @@ class Ability
       can :manage, BusinessLocation # for event venues
     elsif user.organization
       can [:update, :read], Organization, :id => user.organization_id
-      can :manage, Publication, :organization_id => user.organization_id
+      can :manage, Organization, :parent_id => user.organization_id
       can :manage, ImportJob, :organization_id => user.organization_id
       can :manage, Parser, :organization_id => user.organization_id
       can :access, :admin

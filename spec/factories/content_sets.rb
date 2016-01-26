@@ -26,7 +26,7 @@
 
 FactoryGirl.define do
   factory :content_set do
-    publication
+    organization
     name "MyString"
     description "MyText"
     notes "MyText"

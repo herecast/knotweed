@@ -56,7 +56,7 @@ FactoryGirl.define do
     subtitle "Subtitle"
     authors "John Smith"
     raw_content "Content goes here"
-    publication
+    organization
     issue
     import_location
     pubdate Time.now

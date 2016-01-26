@@ -10,7 +10,7 @@ describe EventsController, :type => :controller  do
     before do
       # setup the search query hash
       @q = {event_content_id_in:  "", event_content_title_cont: "", event_content_pubdate_gteq: "", event_content_pubdate_lteq: "",
-           event_content_publication_id_in: [""], event_content_authors_cont: "", start_date_gteq: "", start_date_lteq: "",
+           event_content_organization_id_in: [""], event_content_authors_cont: "", start_date_gteq: "", start_date_lteq: "",
            event_content_repositories_id_eq: "", event_featured_true: ""}
 
       # events to filter against

@@ -6,10 +6,10 @@ describe PromotionsController do
   before do
     user = FactoryGirl.create(:admin)
     sign_in user
-    @pub = FactoryGirl.create(:publication)
+    @org = FactoryGirl.create(:organization)
     @content = FactoryGirl.create(:content)
     Promotion.any_instance.stub(:update_active_promotions).and_return(true)
-    @promotion = FactoryGirl.create(:promotion, publication: @pub, content: @content)
+    @promotion = FactoryGirl.create(:promotion, organization: @org, content: @content)
   end
 
   after do
@@ -17,7 +17,7 @@ describe PromotionsController do
   end
 
   describe "GET index" do
-    subject { get :index, publication_id: @pub }
+    subject { get :index, organization_id: @org }
     it "assigns all promotions as @promotions" do
       subject
       assigns(:promotions).should eq([@promotion])
@@ -44,7 +44,7 @@ describe PromotionsController do
     let (:options) do 
       { description: "Another bad promotion" }
     end
-    subject { post :create, { promotion: options, publication_id: @pub } }
+    subject { post :create, { promotion: options, organization_id: @org } }
     describe "with valid params" do
       it "creates a new Promotion" do
         expect { subject }.to change(Promotion, :count).by(1)
@@ -97,7 +97,7 @@ describe PromotionsController do
     end
 
     it "redirects to the promotions list" do
-      expect(subject).to redirect_to(publication_promotions_path @pub)
+      expect(subject).to redirect_to(organization_promotions_path @org)
     end
   end
 
