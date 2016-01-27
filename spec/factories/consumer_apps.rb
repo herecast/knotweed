@@ -15,6 +15,6 @@
 FactoryGirl.define do
   factory :consumer_app do
     name "Test App"
-    uri "http://23.92.16.168:1234"
+    sequence(:uri) { |n| "http://23.92.16.#{n}" }
   end
 end
