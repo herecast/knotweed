@@ -1,7 +1,6 @@
 module Api
   module V3
     class NewsController < ApiController
-      after_filter :track_index, only: :index
       after_filter :track_show, only: :show
 
       def index
@@ -61,13 +60,6 @@ module Api
       end
 
       private 
-
-      def track_index
-        props = {}
-        props.merge! @tracker.navigation_properties('News','news.index', url_for, params)
-        props.merge! @tracker.search_properties(params)
-        @tracker.track(@mixpanel_distinct_id, 'searchContent', @current_api_user, props)
-      end
 
       def track_show
         props = {}
