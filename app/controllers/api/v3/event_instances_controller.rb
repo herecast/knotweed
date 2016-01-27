@@ -3,7 +3,6 @@ module Api
     class EventInstancesController < ApiController
       
       before_filter :check_logged_in!, only: [:destroy]
-      after_filter :track_show, only: :show
 
       def destroy
         @event_instance = EventInstance.find(params[:id])
@@ -90,16 +89,6 @@ module Api
             can_edit: can_edit, admin_content_url: url, ical_url: ical_url }
           format.ics { render text: @event_instance.to_ics }
         end
-      end
-
-      private
-
-      def track_show
-        props = {}
-        props.merge! @tracker.navigation_properties('Event','event.index', url_for, params)
-        props.merge! @tracker.content_properties(@event_instance.event.content)
-
-        @tracker.track(@mixpanel_distinct_id, 'selectContent', @current_api_user, props)
       end
 
     end

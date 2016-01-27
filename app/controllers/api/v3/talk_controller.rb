@@ -3,7 +3,6 @@ module Api
     class TalkController < ApiController
       
       before_filter :check_logged_in!, only: [:index, :show, :create, :update]
-      after_filter :track_show, only: :show
       after_filter :track_create, only: :create
 
       def index
@@ -91,13 +90,6 @@ module Api
       end
 
       private
-
-      def track_show
-        props = {}
-        props.merge! @tracker.navigation_properties('Talk', 'talk.show', url_for, params)
-        props.merge! @tracker.content_properties(@talk)
-        @tracker.track(@mixpanel_distinct_id, 'selectContent', @current_api_user, props)
-      end
 
       def track_create
         props = {}

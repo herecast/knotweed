@@ -1,7 +1,6 @@
 module Api
   module V3
     class NewsController < ApiController
-      after_filter :track_show, only: :show
 
       def index
         opts = { select: '*, weight()' }
@@ -57,15 +56,6 @@ module Api
           render json: @news, serializer: DetailedNewsSerializer, 
             admin_content_url: url, root: 'news'
         end
-      end
-
-      private 
-
-      def track_show
-        props = {}
-        props.merge! @tracker.navigation_properties('News','news.index', url_for, params)
-        props.merge! @tracker.content_properties(@news)
-        @tracker.track(@mixpanel_distinct_id, 'selectContent', @current_api_user, props)
       end
 
     end
