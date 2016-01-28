@@ -134,7 +134,7 @@ class Content < ActiveRecord::Base
                                                      "event", "sale_event") }
 
   scope :externally_visible, -> { Content.joins(:organization)
-        .joins("inner join content_categories_organizations ccp on organizations.id = ccp.organization_id AND contents.content_category_id = ccp.content_category_id")}
+        .joins("inner join content_categories_organizations cco on organizations.id = cco.organization_id AND contents.content_category_id = cco.content_category_id")}
 
   scope :published, -> { where(published: true) }
 
@@ -319,7 +319,7 @@ class Content < ActiveRecord::Base
       end
       source = special_attrs["source"]
       if source_field == :name
-        # try to match content name exactly
+        # try to match content source's name exactly
         content.organization = Organization.find_by_name(source)
         # if that doesn't work, try a "LIKE" query
         content.organization = Organization.where("name LIKE ?", "%#{source}%").first if content.organization.nil?

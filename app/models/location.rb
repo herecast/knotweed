@@ -21,7 +21,7 @@ class Location < ActiveRecord::Base
   DEFAULT_LOCATION = Figaro.env.has_key?(:default_location) ? Figaro.env.default_location \
     : 'Upper Valley'
 
-  has_and_belongs_to_many :organization
+  has_and_belongs_to_many :organizations
   has_and_belongs_to_many :listservs
   has_and_belongs_to_many :contents
 
