@@ -30,7 +30,6 @@ class Organization < ActiveRecord::Base
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
 
   has_many :users
-  has_many :parsers
   has_many :import_jobs
   has_many :issues
 

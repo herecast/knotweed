@@ -25,7 +25,6 @@ class ParsersController < ApplicationController
 
   def create
     @parser = Parser.new(params[:parser])
-    @parser.organization = current_user.organization unless @parser.organization.present?
     if @parser.save
       flash[:notice] = "Parser saved."
       redirect_to parsers_path

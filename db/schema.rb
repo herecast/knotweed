@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160118024030) do
+ActiveRecord::Schema.define(:version => 20160128165018) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -750,11 +750,10 @@ ActiveRecord::Schema.define(:version => 20160118024030) do
 
   create_table "parsers", :force => true do |t|
     t.string   "filename"
-    t.integer  "organization_id"
     t.string   "name"
     t.text     "description"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
   end
 
   create_table "promote_options", :force => true do |t|

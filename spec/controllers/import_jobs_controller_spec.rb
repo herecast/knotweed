@@ -9,7 +9,7 @@ describe ImportJobsController do
   describe "POST 'create'" do 
     before do
       @org = FactoryGirl.create(:organization)
-      @parser = FactoryGirl.create(:parser, organization: @org)
+      @parser = FactoryGirl.create(:parser)
       2.times do 
         FactoryGirl.create(:parameter, parser: @parser)
       end
@@ -25,7 +25,7 @@ describe ImportJobsController do
           name: "Test Job",
           source_path: "Test Path",
           parser_id: @parser.id,
-          organization_id: @parser.organization.id
+          organization_id: @org
         }
         post :create, import_job: @import_job_hash, parameters: @parameters
         @job = ImportJob.find_by_parser_id(@parser.id)

@@ -55,7 +55,6 @@ class ImportJob < ActiveRecord::Base
                   :publish_method, :job_type
   
   validates :status, inclusion: { in: %w(failed running success scheduled) }, allow_nil: true
-  validate :parser_belongs_to_same_organization, if: 'parser.present? and organization.present?'
 
   after_destroy :cancel_scheduled_runs
 
@@ -307,13 +306,4 @@ class ImportJob < ActiveRecord::Base
   def last_run_at
     last_import_record.try(:created_at)
   end
-
-  private
-
-  def parser_belongs_to_same_organization
-    if parser.organization and organization_id != parser.organization.id
-      errors.add(:parser_id, 'parser must belong to the same organization')
-    end
-  end
-
 end
