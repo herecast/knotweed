@@ -17,7 +17,7 @@
             = f.collection_select :id_in, Organization.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
             = f.label :org_type_in, "Organization Type"
-            = f.select :org_type_in, Organization::PUB_TYPE_OPTIONS, {}, { multiple: true, class: "chosen-select" }
+            = f.select :org_type_in, Organization::ORG_TYPE_OPTIONS, {}, { multiple: true, class: "chosen-select" }
           .field.span3
             = f.label :locations_id_in, 'Promote Locations'
             = f.collection_select :locations_id_in, Location.accessible_by(current_ability), :id, :name, 
