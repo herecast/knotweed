@@ -52,7 +52,7 @@ class RemoveOrganizationsRenamePublications < ActiveRecord::Migration
           logo: org.logo,
         })
         new_org.contacts = org.contacts
-        new_org.children = org.children
+        new_org.children = org.organizations
         new_org.users = org.users
         new_org.parsers = org.parsers
         new_org.import_jobs = org.import_jobs
