@@ -13,7 +13,7 @@
 #
 FactoryGirl.define do 
   factory :rewrite do
-    source { Faker::Company.name }
+    source "green-acre"
     destination { Faker::Internet.url }
   end
 end
