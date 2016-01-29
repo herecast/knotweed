@@ -1,6 +1,6 @@
 = simple_form_for @organization, remote: true, html: { class: "form" } do |f|
   = f.error_notification
   = f.input :name, input_html: { class: "input-block-level" }
-  = f.input :org_type, collection: Organization::PUB_TYPE_OPTIONS,
+  = f.input :org_type, collection: Organization::ORG_TYPE_OPTIONS,
             label: "Organization Type"
   = submit_tag nil, class: "btn btn-primary"

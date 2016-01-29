@@ -35,7 +35,7 @@
         .row-fluid
           .span5
             = f.input :name, input_html: { class: "input-block-level" }
-            = f.input :org_type, collection: Organization::PUB_TYPE_OPTIONS, label: "Organization Type"
+            = f.input :org_type, collection: Organization::ORG_TYPE_OPTIONS, label: "Organization Type"
             = f.association :consumer_apps, input_html: { class: "chosen-select input-block-level" }
             = f.association :organization, input_html: { class: "input-block-level select2" }
             = f.association :parent, collection: Organization.parent_pubs, label: "Parent Organization (Syndication)", input_html: { class: "input-block-level select2" }, include_blank: true
