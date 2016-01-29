@@ -10,12 +10,10 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
-
-class Rewrite < ActiveRecord::Base
-  include Auditable
-  attr_accessible :destination, :source
-  validates_presence_of :destination, :source
-  validates_uniqueness_of :source
-  
-  before_save { |rewrite| rewrite.source = rewrite.source.downcase }
+#
+FactoryGirl.define do 
+  factory :rewrite do
+    sequence(:source) { |n| "green-acre-#{n}" }
+    destination { Faker::Internet.url }
+  end
 end

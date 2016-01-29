@@ -378,7 +378,7 @@ class Content < ActiveRecord::Base
         if partial_title.present?
           title_condition.push "title like ?", '%' + partial_title
         else
-          conditions.merge!({title: content.title})
+          title_condition.push "title like ?", '%' + content.title
         end
         news_category = ContentCategory.find_by_name('news')
         news_condition = []
@@ -1372,7 +1372,7 @@ class Content < ActiveRecord::Base
   # @param repo [Repository] repository to query
   # @param num_similar [Integer] number of results to return
   # @return [Array<Content>] list of similar content
-  def similar_content(repo, num_similar=6)
+  def similar_content(repo, num_similar=8)
     if similar_content_overrides.present?
       Content.where(id: similar_content_overrides).includes(:content_category)
     else
@@ -1453,6 +1453,11 @@ class Content < ActiveRecord::Base
 
   def is_sponsored_content?
     content_category.name == 'sponsored_content'
+  end
+
+  def increment_view_count!
+    # check if Thread.current[:user] has skip_analytics? before incrementing
+    increment_integer_attr!(:view_count) unless User.current.try(:skip_analytics?)
   end
 
   private

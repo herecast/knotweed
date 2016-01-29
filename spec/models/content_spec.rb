@@ -311,12 +311,26 @@ describe Content do
           @c4 = Content.create_from_import_job(@new_data)
         end
 
-        it 'should update the existing content, appending a  new location to it' do
+        it 'should update the existing content, appending a new location to it' do
           @c3.id.should eq @c4.id
           @c3.locations.count.should eq 2
           @c3.locations.include?(@c4.locations.first).should be_true
         end
+      end
 
+      context 'if the first content has a listserv name and the next similar content does not, ' do
+        before do
+          @orig_data[:title] = '[Seagate] A gentle awakening'
+          @new_data[:title] = 'A gentle awakening'
+          @c5 = Content.create_from_import_job @orig_data
+          @c6 = Content.create_from_import_job @new_data
+        end
+
+        it 'we should update the existing content, appending a new location to it' do
+          @c5.id.should eq @c6.id
+          @c5.locations.count.should eq 2
+          @c5.locations.include?(@c6.locations.first).should be_true
+        end
       end
 
     end
@@ -1193,6 +1207,27 @@ describe Content do
         # @p1 has an earlier pubdate than @p2, but one of its comments has a later pubdate (@c2),
         # so it should show up first in the results based on its 'latest_activity'
         Content.talk_search.should eq([@p1, @p2])
+      end
+    end
+  end
+
+  describe 'increment_view_count!' do
+    before do
+      @content = FactoryGirl.create :content
+    end
+
+    it 'should increment the view count' do
+      expect{@content.increment_view_count!}.to change{@content.view_count}.by 1
+    end
+
+    context 'for a user with skip_analytics = true' do
+      before do
+        @user = FactoryGirl.create :user, skip_analytics: true
+        User.current = @user
+      end
+
+      it 'should not increment the view count' do
+        expect{@content.increment_view_count!}.not_to change{@content.view_count}
       end
     end
   end

@@ -248,6 +248,7 @@ describe Api::V3::ContentsController do
           @event = FactoryGirl.create :event
           FactoryGirl.create_list :market_post, 3
           FactoryGirl.create_list :comment, 2
+          FactoryGirl.create :content
         end
 
         it 'responds with the user\'s content' do
@@ -255,55 +256,69 @@ describe Api::V3::ContentsController do
           expect(assigns(:contents)).to eq(Content.all)
         end
 
-        it 'allows sorting by specified parameters' do
-          get :dashboard, sort: 'pubdate DESC'
-          expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)
-        end
+        context 'when user creates promotion banners' do
+          before do
+            FactoryGirl.create_list :promotion_banner, 2
+          end
 
-      end
-    end
-  end
-
-  describe 'GET ad_dashboard' do
-    subject { get :ad_dashboard }
-    
-    context 'not signed in' do
-      it 'has 401 status code' do
-        subject
-        response.code.should eq('401')
-      end
-    end
-
-    context 'signed in' do
-      before do
-        @user = FactoryGirl.create :user
-        api_authenticate user: @user
-      end
-
-      it 'has 200 status code' do
-        subject
-        response.code.should eq('200')
-      end
-
-      context 'with the user owning some content' do
-        before do
-          # because we're authenticated as the @user, created_by is actually set automatically here,
-          # so we don't need to set it manually.
-          @event = FactoryGirl.create :event
-          FactoryGirl.create_list :market_post, 3
-          FactoryGirl.create_list :comment, 2
-          FactoryGirl.create :content # differs from regular dashboard here
-        end
-
-        it 'responds with the user\'s content' do
-          subject
-          expect(assigns(:contents)).to eq(Content.all)
+          it 'should be returned to the dashboard' do
+            subject
+            expect(assigns(:contents)).to eq (Content.all + PromotionBanner.all)
+          end
         end
 
         it 'allows sorting by specified parameters' do
           get :dashboard, sort: 'pubdate DESC'
           expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)
         end
+
+        context 'allow filtering by news' do
+          before do
+            @news_cat = FactoryGirl.create :content_category, name: 'news'
+            @news_list = FactoryGirl.create_list :content, 2, content_category: @news_cat
+            get :dashboard, channel_type: 'news'
+          end
+
+          it 'should return only news content' do
+            assigns(:contents).should eq @news_list
+          end
+        end 
+
+        context 'allow filtering by events' do
+          before do
+            @event2 = FactoryGirl.create :event
+            get :dashboard, channel_type: 'events'
+          end
+
+          it 'should return only events content' do
+            assigns(:contents).should eq [@event.content, @event2.content]
+          end
+        end
+
+        context 'allow filtering by talk' do
+          before do
+            @talk_cat = FactoryGirl.create :content_category, name: 'talk_of_the_town'
+            @talk_list = FactoryGirl.create_list :content, 2, content_category: @talk_cat
+            get :dashboard, channel_type: 'talk'
+          end
+
+          it 'should return only talk content' do
+            assigns(:contents).should eq @talk_list
+          end
+        end
+
+        context 'allow filtering by market' do
+          before do
+            @market_cat = FactoryGirl.create :content_category, name: 'market'
+            @market_list = FactoryGirl.create_list :content, 2, content_category: @market_cat
+            get :dashboard, channel_type: 'market'
+          end
+        
+          it 'should return only market content' do
+            assigns(:contents).should eq @market_list
+          end
+        end
+
       end
     end
   end

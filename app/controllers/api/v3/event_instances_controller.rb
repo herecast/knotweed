@@ -3,8 +3,6 @@ module Api
     class EventInstancesController < ApiController
       
       before_filter :check_logged_in!, only: [:destroy]
-      after_filter :track_index, only: :index
-      after_filter :track_show, only: :show
 
       def destroy
         @event_instance = EventInstance.find(params[:id])
@@ -85,30 +83,12 @@ module Api
         if @requesting_app.present?
           ical_url = @requesting_app.uri + event_instances_ics_path(params[:id]) 
         end
-        @event_instance.event.content.increment_integer_attr!(:view_count)
+        @event_instance.event.content.increment_view_count!
         respond_to do |format|
           format.json { render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
             can_edit: can_edit, admin_content_url: url, ical_url: ical_url }
           format.ics { render text: @event_instance.to_ics }
         end
-      end
-
-      private
-
-      def track_index
-        props = {}
-        props.merge! @tracker.navigation_properties('Event','event.index', url_for, params)
-        props.merge! @tracker.search_properties(params)
-
-        @tracker.track(@mixpanel_distinct_id, 'searchContent', @current_api_user, props)
-      end
-
-      def track_show
-        props = {}
-        props.merge! @tracker.navigation_properties('Event','event.index', url_for, params)
-        props.merge! @tracker.content_properties(@event_instance.event.content)
-
-        @tracker.track(@mixpanel_distinct_id, 'selectContent', @current_api_user, props)
       end
 
     end
