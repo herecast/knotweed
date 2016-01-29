@@ -4,6 +4,7 @@ describe UsersController do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
+    request.env['HTTP_REFERER'] = 'where_i_came_from'
   end
 
   describe 'GET show' do
@@ -24,7 +25,7 @@ describe UsersController do
 
     it 'should respond with a 200 status' do
       response.code.should eq '200'
-    request.env['HTTP_REFERER'] = 'where_i_came_from'
+    end
   end
 
   describe 'GET index' do
