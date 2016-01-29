@@ -63,7 +63,7 @@ describe ContentsController do
       response.code.should eq '200'
     end
 
-    it 'should appropriately load teh content' do
+    it 'should appropriately load the content' do
       subject
       assigns(:content).should eq @content
     end
