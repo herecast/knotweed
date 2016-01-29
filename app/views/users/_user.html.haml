@@ -1,10 +1,15 @@
 .modal{:id => "role-options-#{user.id}", :style => "display: none;"}
-  = simple_form_for user, :url => user_path(user), :html => {:method => :put, :class => 'form-horizontal' } do |f|
+  = simple_form_for user, :url => user_path(user), :html => {:method => :put, :class => 'form-horizontal user-role-form' } do |f|
     .modal-header
       %a.close{"data-dismiss" => "modal"} ×
       %h3 Change Role
-    .modal-body
-      = f.input :role_ids, :collection => Role.all, :as => :radio_buttons, :label_method => lambda {|t| t.name.titleize}, :label => false, :item_wrapper_class => 'inline', checked: user.role_ids.first
+    .global-roles{ style: user.is_organization_manager? ? 'display:none;' : '' }
+      = f.input :role_ids, collection: Role.where(name: ['admin', 'event_manager']), as: :radio_buttons,
+        label_method: lambda { |t| t.name.titleize }, label: false, checked: user.role_ids.first,
+        hint: 'These are global (resourceless) roles. "Admin" here means full admin privileges over the site.'
+      %h1 -- OR --
+    = f.input :managed_organization_id, collection: Organization.all, as: :select,
+      input_html: { class: 'chosen-select-single-deselect' }, include_blank: true
     .modal-footer
       = f.submit "Change Role", :class => "btn btn-primary"
       %a.btn{"data-dismiss" => "modal", :href => "#"} Close
