@@ -29,8 +29,6 @@ class OrganizationsController < ApplicationController
   end
 
   def update
-    # ensure serialized values are set to empty if no fields are passed in via form
-    params[:organization][:links] = nil unless params[:organization].has_key? :links
     if @organization.update_attributes(params[:organization])
       flash[:notice] = "Successfully updated organization #{@organization.id}"
       if params[:add_content_set]

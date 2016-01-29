@@ -33,6 +33,7 @@ class Organization < ActiveRecord::Base
   has_many :users
   has_many :import_jobs
   has_many :issues
+  has_many :business_locations
 
   has_and_belongs_to_many :contacts
   has_and_belongs_to_many :locations
@@ -44,7 +45,7 @@ class Organization < ActiveRecord::Base
 
   attr_accessible :name, :logo, :logo_cache, :remove_logo, :organization_id,
                   :website, :notes, :images_attributes, :parent_id, :location_ids,
-                  :remote_logo_url, :contact_ids, :category_override, :links, 
+                  :remote_logo_url, :contact_ids, :category_override,
                   :org_type, :display_attributes, :reverse_publish_email,
                   :consumer_app_ids, :external_category_ids
   
