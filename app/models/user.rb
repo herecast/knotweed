@@ -58,13 +58,13 @@ class User < ActiveRecord::Base
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :role_ids,
     :default_repository_id, :location, :location_id, :avatar
 
+  validates_presence_of :location
+  validates :public_id, uniqueness: true, allow_blank: true
+
   # spoof attribute for simple form simplicity on role-changing form
   attr_accessible :managed_organization_id
   def managed_organization_id; Organization.with_role(:manager, self).first.try(:id); end
   def is_organization_manager?; managed_organization_id.present?; end
-
-  validates_presence_of :location
-  validates :public_id, uniqueness: true, allow_blank: true
 
   def ensure_authentication_token
     if authentication_token.blank?
