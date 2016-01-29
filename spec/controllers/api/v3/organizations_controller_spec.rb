@@ -25,8 +25,9 @@ describe Api::V3::OrganizationsController do
 
     it 'only responds with organizations associated with news content' do
       subject
-      assigns(:organizations).include?(@organization).should eq(true)
-      assigns(:organizations).include?(@difft_app_org).should eq(true)
+      assigns(:organizations).include?(@organization).should eq true
+      assigns(:organizations).include?(@non_news_org).should eq false
+      assigns(:organizations).include?(@difft_app_org).should eq true
     end
 
     it 'filters by consumer app if requesting app is available' do
