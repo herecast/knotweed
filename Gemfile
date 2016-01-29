@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+
 ruby '1.9.3'
 gem 'rails', '3.2.13'
 group :assets do
@@ -18,7 +19,7 @@ gem "rb-inotify", "~> 0.9.3", :group => :development, :require => false
 gem "rb-fsevent", "~> 0.9.3", :group => :development, :require => false
 gem "rb-fchange", "~> 0.0.6", :group => :development, :require => false
 gem "devise", "~> 3.2.2"
-gem "cancan", "~> 1.6.10"
+gem 'cancancan', '~> 1.10.0'
 gem "rolify", "~> 3.2.0"
 gem "simple_form", "~> 2.1.1"
 gem "quiet_assets", "~> 1.0.2", :group => :development

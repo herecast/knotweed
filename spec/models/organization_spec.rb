@@ -43,4 +43,18 @@ describe Organization do
     end
   end
 
+  describe 'get_all_children' do
+    before do
+      @s1 = FactoryGirl.create :organization, parent: @organization
+      @s2 = FactoryGirl.create :organization, parent: @organization
+      @c1 = FactoryGirl.create :organization, parent: @s1
+      @c2 = FactoryGirl.create :organization, parent: @s2
+    end
+
+    it 'should respond with the descended tree' do
+      @c1.get_all_children.should eq []
+      @s1.get_all_children.should eq [@c1]
+      @organization.get_all_children.should eq [@s1,@s2,@c1,@c2]
+    end
+  end
 end

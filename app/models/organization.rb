@@ -19,6 +19,7 @@
 #
 
 class Organization < ActiveRecord::Base
+  resourcify
   belongs_to :parent, class_name: "Organization"
   has_many :children, class_name: "Organization", foreign_key: "parent_id"
 
@@ -49,7 +50,7 @@ class Organization < ActiveRecord::Base
   
   mount_uploader :logo, ImageUploader
 
-  scope :alphabetical, order("name ASC")
+  scope :alphabetical, order("organizations.name ASC")
   default_scope alphabetical
 
   ORG_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher"]
@@ -72,5 +73,20 @@ class Organization < ActiveRecord::Base
 
   def business_location_options
     business_locations.map{ |bl| [bl.select_option_label, bl.id] }
+  end
+
+  # returns an array of all organization records descended from this one
+  #
+  # @return [Array<Organization>] the descendants of the organization
+  def get_all_children
+    if children.present?
+      response = children
+      children.each do |c|
+        response += c.get_all_children
+      end
+      response
+    else
+      []
+    end
   end
 end

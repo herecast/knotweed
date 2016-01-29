@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160128165018) do
+ActiveRecord::Schema.define(:version => 20160128200746) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -123,9 +123,9 @@ ActiveRecord::Schema.define(:version => 20160128165018) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer  "channel_id"
-    t.text     "category"
-    t.datetime "created_at", :null => false
+    t.integer   "channel_id"
+    t.text      "category"
+    t.timestamp "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -952,7 +952,6 @@ ActiveRecord::Schema.define(:version => 20160128165018) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string   "unconfirmed_email"
-    t.integer  "organization_id"
     t.integer  "default_repository_id"
     t.datetime "nda_agreed_at"
     t.boolean  "agreed_to_nda",          :default => false
