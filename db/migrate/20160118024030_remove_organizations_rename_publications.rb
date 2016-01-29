@@ -33,6 +33,8 @@ class RemoveOrganizationsRenamePublications < ActiveRecord::Migration
 
     rename_column :promotions, :publication_id, :organization_id
 
+    remove_column :parsers, :organization_id
+
     # converting pubs/bls to a habtm is going to be a new migration later as
     # it really isn't part of this functional change.
     rename_column :business_locations, :publication_id, :organization_id
@@ -50,11 +52,11 @@ class RemoveOrganizationsRenamePublications < ActiveRecord::Migration
           org_type: org.org_type,
           notes: org.notes,
           logo: org.logo,
+          name: org.name
         })
         new_org.contacts = org.contacts
-        new_org.children = org.organizations
+        new_org.children = org.old_publications
         new_org.users = org.users
-        new_org.parsers = org.parsers
         new_org.import_jobs = org.import_jobs
         new_org.save!
       end
@@ -86,8 +88,7 @@ class RemoveOrganizationsRenamePublications < ActiveRecord::Migration
       # called for removing them.
       org.contacts = o.contacts
       org.users = o.users
-      org.organizations = o.children
-      org.parsers = o.parsers
+      org.old_publications = o.children
       org.import_jobs = o.import_jobs
       org.save!
     end
@@ -102,6 +103,8 @@ class RemoveOrganizationsRenamePublications < ActiveRecord::Migration
     add_column :publications, :social_media, :text
     add_column :publications, :general, :text
     add_column :publications, :header, :string
+
+    add_column :parsers, :organization_id, :integer
 
     rename_column :consumer_apps_organizations, :organization_id, :publication_id
     rename_table :consumer_apps_organizations, :consumer_apps_publications
@@ -131,7 +134,7 @@ end
 
 class OldOrganization < ActiveRecord::Base
   has_and_belongs_to_many :contacts, join_table: 'contacts_organizations', foreign_key: 'organization_id'
-  has_many :organizations, foreign_key: 'organization_id' # this is the ownership relationship over publications
+  has_many :old_publications, foreign_key: 'organization_id', class_name: 'Organization' # this is the ownership relationship over publications
   has_many :users, foreign_key: 'organization_id'
   has_many :parsers, foreign_key: 'organization_id'
   has_many :import_jobs, foreign_key: 'organization_id'
