@@ -13,7 +13,7 @@
 #
 FactoryGirl.define do 
   factory :rewrite do
-    source "green-acre"
+    sequence(:source) { |n| "green-acre-#{n}" }
     destination { Faker::Internet.url }
   end
 end
