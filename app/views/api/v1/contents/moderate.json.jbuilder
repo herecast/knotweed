@@ -1,1 +1,0 @@
-json.content = @message

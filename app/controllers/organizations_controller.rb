@@ -1,5 +1,5 @@
 class OrganizationsController < ApplicationController
-  load_and_authorize_resource except: [:create, :update_content_sets]
+  load_and_authorize_resource except: [:create]
 
   def index
     # if posted, save to session
@@ -17,21 +17,22 @@ class OrganizationsController < ApplicationController
   end
 
   def new
-  end
-
-  def show
+    if params[:short_form]
+      render partial: "organizations/partials/short_form", layout: false
+    else
+      render 'new'
+    end
   end
 
   def edit
+    @contact = Contact.new
   end
 
   def update
-    # ensure serialized values are set to empty if no fields are passed in via form
-    params[:organization][:general] = nil unless params[:organization].has_key? :general
     if @organization.update_attributes(params[:organization])
       flash[:notice] = "Successfully updated organization #{@organization.id}"
-      if params[:add_publication]
-        redirect_to new_publication_path(:publication => { :organization_id => @organization.id })
+      if params[:add_content_set]
+        redirect_to new_content_set_path(:content_set => { :organization_id => @organization.id })
       else
         redirect_to organizations_path
       end
@@ -40,9 +41,16 @@ class OrganizationsController < ApplicationController
     end
   end
 
+  # have to put the CanCan authorization code in here directly
+  # as we're pulling a special param ("contact_list") from the params
+  # list before doing anything and load_and_authorize_resource uses
+  # a before filter.
   def create
     contact_list = params[:organization].delete("contact_list")
     contact_ids = contact_list.try(:split, ",")
+
+    business_loc_list = params[:organization].delete("business_location_list")
+    business_location_ids = business_loc_list.try(:split, ",")
 
     @organization = Organization.new
     current_ability.attributes_for(:create, Organization).each do |key, value|
@@ -52,27 +60,33 @@ class OrganizationsController < ApplicationController
     authorize! :create, @organization
     if @organization.save
       @organization.update_attribute(:contact_ids, contact_ids) unless contact_ids.nil?
-      flash[:notice] = "Created organization with id #{@organization.id}"
-      if params[:add_publication]
-        redirect_to new_publication_path(:publication => { :organization_id => @organization.id })
-      else
-        redirect_to organizations_path
+      @organization.update_attribute(:business_location_ids, business_location_ids) unless business_location_ids.nil?
+      respond_to do |format|
+        format.js
+        format.html do
+          flash[:notice] = "Created organization with id #{@organization.id}"
+          if params[:add_content_set]
+            redirect_to new_content_set_path(:content_set => { :organization_id => @organization.id })
+          else
+            redirect_to organizations_path
+          end
+        end
       end
     else
       render "new"
     end
   end
-  
 
   def destroy
     @organization.destroy
   end
 
-  # for dynamically updating content set select boxes
-  def update_content_sets
-    org = Organization.find(params[:organization_id])
-    @content_sets = org.content_sets.map{ |cs| [cs.name, cs.id]}.insert(0, nil)
+  def business_location_options
+    pub = Organization.find params[:organization_id]
+    @business_locations = pub.business_location_options.insert(0, [nil, nil])
+    respond_to do |format|
+      format.js
+    end
   end
-
 
 end

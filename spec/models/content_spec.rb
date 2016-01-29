@@ -2,44 +2,50 @@
 #
 # Table name: contents
 #
-#  id                       :integer          not null, primary key
-#  title                    :string(255)
-#  subtitle                 :string(255)
-#  authors                  :string(255)
-#  raw_content              :text
-#  issue_id                 :integer
-#  import_location_id       :integer
-#  created_at               :datetime         not null
-#  updated_at               :datetime         not null
-#  copyright                :string(255)
-#  guid                     :string(255)
-#  pubdate                  :datetime
-#  source_category          :string(255)
-#  topics                   :string(255)
-#  url                      :string(255)
-#  origin                   :string(255)
-#  language                 :string(255)
-#  page                     :string(255)
-#  authoremail              :string(255)
-#  publication_id           :integer
-#  quarantine               :boolean          default(FALSE)
-#  doctype                  :string(255)
-#  timestamp                :datetime
-#  contentsource            :string(255)
-#  import_record_id         :integer
-#  source_content_id        :string(255)
-#  parent_id                :integer
-#  content_category_id      :integer
-#  category_reviewed        :boolean          default(FALSE)
-#  has_event_calendar       :boolean          default(FALSE)
-#  channelized_content_id   :integer
-#  published                :boolean          default(FALSE)
-#  channel_type             :string(255)
-#  channel_id               :integer
-#  root_content_category_id :integer
-#  delta                    :boolean          default(TRUE), not null
-#  created_by               :integer
-#  updated_by               :integer
+#  id                        :integer          not null, primary key
+#  title                     :string(255)
+#  subtitle                  :string(255)
+#  authors                   :string(255)
+#  raw_content               :text
+#  issue_id                  :integer
+#  import_location_id        :integer
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  copyright                 :string(255)
+#  guid                      :string(255)
+#  pubdate                   :datetime
+#  source_category           :string(255)
+#  topics                    :string(255)
+#  url                       :string(255)
+#  origin                    :string(255)
+#  language                  :string(255)
+#  page                      :string(255)
+#  authoremail               :string(255)
+#  organization_id           :integer
+#  quarantine                :boolean          default(FALSE)
+#  doctype                   :string(255)
+#  timestamp                 :datetime
+#  contentsource             :string(255)
+#  import_record_id          :integer
+#  source_content_id         :string(255)
+#  parent_id                 :integer
+#  content_category_id       :integer
+#  category_reviewed         :boolean          default(FALSE)
+#  has_event_calendar        :boolean          default(FALSE)
+#  channelized_content_id    :integer
+#  published                 :boolean          default(FALSE)
+#  channel_type              :string(255)
+#  channel_id                :integer
+#  root_content_category_id  :integer
+#  view_count                :integer          default(0)
+#  comment_count             :integer          default(0)
+#  commenter_count           :integer          default(0)
+#  created_by                :integer
+#  updated_by                :integer
+#  banner_click_count        :integer          default(0)
+#  similar_content_overrides :text
+#  banner_ad_override        :integer
+#  root_parent_id            :integer
 #
 
 require 'spec_helper'
@@ -92,8 +98,8 @@ describe Content do
     end
     it "should return the root parent for content" do
       c1 = FactoryGirl.create(:content)
-      c2 = FactoryGirl.create(:content, publication: c1.publication, parent: c1)
-      c3 = FactoryGirl.create(:content, publication: c1.publication, parent: c2)
+      c2 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
+      c3 = FactoryGirl.create(:content, organization: c1.organization, parent: c2)
       c2.find_root_parent.should == c1
       c3.find_root_parent.should == c1
     end
@@ -107,9 +113,9 @@ describe Content do
 
     it "should return a hash representing the full thread below the content" do
       c1 = FactoryGirl.create(:content)
-      c2 = FactoryGirl.create(:content, publication: c1.publication, parent: c1)
-      c3 = FactoryGirl.create(:content, publication: c1.publication, parent: c1)
-      c4 = FactoryGirl.create(:content, publication: c1.publication, parent: c3)
+      c2 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
+      c3 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
+      c4 = FactoryGirl.create(:content, organization: c1.organization, parent: c3)
       c1.get_downstream_thread.should == {
         c2.id => nil, c3.id => { 
           c4.id => nil 
@@ -179,7 +185,7 @@ describe Content do
   describe "create from import job" do
     before do
       # base_data is not enough to pass quarantine
-      # need to add pubdate, publication to validate
+      # need to add pubdate, organization to validate
       @base_data = {
         "title" => "This is a Title",
         "subtitle" => "Subtitle",
@@ -204,14 +210,14 @@ describe Content do
       Content.count.should== 1
     end
 
-    it "should match publication based on 'source'" do
-      publication = FactoryGirl.create(:publication, reverse_publish_email: "test@test.com")
+    it "should match organization based on 'source'" do
+      organization = FactoryGirl.create(:organization, reverse_publish_email: "test@test.com")
       data = @base_data.merge({
-        source: publication.reverse_publish_email,
+        source: organization.reverse_publish_email,
         source_field: "reverse_publish_email"
       })
       content = Content.create_from_import_job(data)
-      content.publication.should == publication
+      content.organization.should == organization
     end
 
     it "should mark non-valid corpus entries as quarantined" do
@@ -220,11 +226,11 @@ describe Content do
     end
 
     it "should leave valid corpus entries as unquarantined" do
-      p = FactoryGirl.create(:publication)
+      p = FactoryGirl.create(:organization)
       extra_data = @base_data.merge({
         "pubdate" => Time.now,
         "content" => "hello",
-        "publication_id" => p.id
+        "organization_id" => p.id
       })
       content = Content.create_from_import_job(extra_data)
       content.quarantine.should== false
@@ -235,22 +241,22 @@ describe Content do
       extra_data = @base_data.merge({
         "pubdate" => Time.now,
         "content" => "hello",
-        "publication_id" => c.publication.id,
+        "organization_id" => c.organization.id,
         "in_reply_to" => c.guid
       })
       c2 = Content.create_from_import_job(extra_data)
       c2.parent.should== c
     end
 
-    it "should overwrite any existing content with the same publication and source_content_id" do
-      p = FactoryGirl.create(:publication)
-      @base_data["publication_id"] = p.id
+    it "should overwrite any existing content with the same organization and source_content_id" do
+      p = FactoryGirl.create(:organization)
+      @base_data["organization_id"] = p.id
       content_orig = Content.create_from_import_job(@base_data)
       orig_id = content_orig.id
       @new_data = {
         "title" => "Different Title",
         "source_content_id" => @base_data["source_content_id"],
-        "publication_id" => @base_data["publication_id"]
+        "organization_id" => @base_data["organization_id"]
       }
       new_content = Content.create_from_import_job(@new_data)
       new_content.id.should== orig_id
@@ -262,13 +268,13 @@ describe Content do
 
 
     it "should overwrite any existing content with the same guid" do
-      p = FactoryGirl.create(:publication)
-      @base_data["publication_id"] = p.id
+      p = FactoryGirl.create(:organization)
+      @base_data["organization_id"] = p.id
       c1 = Content.create_from_import_job(@base_data)
       orig_id = c1.id
       @new_data = {
         "title" => "Different Title",
-        "publication_id" => @base_data["publication_id"],
+        "organization_id" => @base_data["organization_id"],
         "guid" => c1.guid
       }
       c2 = Content.create_from_import_job(@new_data)
@@ -279,8 +285,8 @@ describe Content do
     context 'when we import different content records with same title,email, on same date(not datetime), where root_content_category != news AND channel_type is null' do
       before do
         FactoryGirl.create :content_category, name: 'news'
-        pub = FactoryGirl.create :publication
-        @orig_data = {title: 'The Book of Worms', guid: '35q5j35jq3j53qj5kjq5', location: Faker::Address.street_name, publication_id: pub.id, authoremail: Faker::Internet.email, pubdate: DateTime.now, source_content_id: '3538538', source_category: 'Category', content_category: 'Category 422', content_locations: [FactoryGirl.create(:location).city] }
+        org = FactoryGirl.create :organization
+        @orig_data = {title: 'The Book of Worms', guid: '35q5j35jq3j53qj5kjq5', location: Faker::Address.street_name, organization_id: org.id, authoremail: Faker::Internet.email, pubdate: DateTime.now, source_content_id: '3538538', source_category: 'Category', content_category: 'Category 422', content_locations: [FactoryGirl.create(:location).city] }
         @c1 = Content.create_from_import_job(@orig_data)
         @new_data = @orig_data.merge({source_content_id: @orig_data[:source_content_id] + '7',
                                     location: @orig_data[:location] + ' different',
@@ -330,14 +336,14 @@ describe Content do
     end
 
     it "should overwrite any content but retain new category if category field is populated " do
-      p = FactoryGirl.create(:publication)
-      @base_data["publication_id"] = p.id
+      p = FactoryGirl.create(:organization)
+      @base_data["organization_id"] = p.id
       c1 = Content.create_from_import_job(@base_data)
       c1.update_attribute :category, "Test Category"
       orig_id = c1.id
       @new_data = {
         "title" => "Different Title",
-        "publication_id" => @base_data["publication_id"],
+        "organization_id" => @base_data["organization_id"],
         "guid" => c1.guid
       }
       c2 = Content.create_from_import_job(@new_data)
@@ -347,13 +353,13 @@ describe Content do
     end
 
     it "should not overwrite any fields not in the REIMPORT_FEATURES whitelist" do
-      p = FactoryGirl.create(:publication)
-      @base_data["publication_id"] = p.id
+      p = FactoryGirl.create(:organization)
+      @base_data["organization_id"] = p.id
       c1 = Content.create_from_import_job(@base_data)
       c1.update_attribute :copyright, "ropycight" #an attribute that is not whitelisted for reimport
       @new_data = {
         "title" => "New Title",
-        "publication_id" => @base_data["publication_id"],
+        "organization_id" => @base_data["organization_id"],
         "guid" => c1.guid,
         "copyright" => "different" # an attribute that is not whitelisted
       }
@@ -364,16 +370,16 @@ describe Content do
     end
 
     # check source logic
-    it "should create publication if source is provided and it doesn't match existing publications" do
-      @base_data["source"] = "Test Publication"
+    it "should create organization if source is provided and it doesn't match existing organizations" do
+      @base_data["source"] = "Test Organization"
       content = Content.create_from_import_job(@base_data)
-      content.publication.name.should== "Test Publication"
+      content.organization.name.should== "Test Organization"
     end
-    it "should match an existing publication if source matches publication name and source_field not provided" do
-      pub = FactoryGirl.create(:publication)
-      @base_data["source"] = pub.name
+    it "should match an existing organization if source matches organization name and source_field not provided" do
+      org = FactoryGirl.create(:organization)
+      @base_data["source"] = org.name
       content = Content.create_from_import_job(@base_data)
-      content.publication.should== pub
+      content.organization.should== org
     end
 
     # check location logic
@@ -397,18 +403,18 @@ describe Content do
     end
     it "should assign the appropriate data to the newly created issue" do
       @base_data["edition"] = "Holiday Edition"
-      @base_data["source"] = "Test Pub"
+      @base_data["source"] = "Test org"
       content = Content.create_from_import_job(@base_data)
       content.issue.issue_edition.should== "Holiday Edition"
       content.issue.publication_date.should== content.pubdate
-      content.issue.publication.should== content.publication
+      content.issue.organization.should== content.organization
     end
-    it "should match existing issues by publication and name" do
+    it "should match existing issues by organization and name" do
       pubdate = Time.now
       issue_1 = FactoryGirl.create(:issue, publication_date: pubdate) # matching pub
       issue_2 = FactoryGirl.create(:issue, issue_edition: issue_1.issue_edition) #matching name, different pub
       @base_data["edition"] = issue_1.issue_edition
-      @base_data["source"] = issue_1.publication.name
+      @base_data["source"] = issue_1.organization.name
       @base_data["pubdate"] = pubdate
       
       content = Content.create_from_import_job(@base_data)
@@ -608,8 +614,8 @@ describe Content do
       end
     end
 
-    it "should use the publication's category_override if that is set" do
-      @content.publication.update_attribute :category_override, "Test Category"
+    it "should use the organization's category_override if that is set" do
+      @content.organization.update_attribute :category_override, "Test Category"
       @content.to_new_xml.include?("Test Category").should be_true
     end
 
@@ -620,8 +626,8 @@ describe Content do
       @content.to_new_xml.include?(cat.channel.name).should be_true
     end
 
-    it "should populate with a publication image if content doesnt have one" do
-      @content.publication.images << @image1
+    it "should populate with a organization image if content doesnt have one" do
+      @content.organization.images << @image1
       @content.to_new_xml.include?("IMAGE</tns:name").should be_true
     end
 
@@ -720,9 +726,9 @@ describe Content do
 
     subject { @content.publish_category }
 
-    describe "if publication.category_override is set" do
-      it "should return publication.category_override" do
-        @content.publication.update_attribute :category_override, "Test Override"
+    describe "if organization.category_override is set" do
+      it "should return organization.category_override" do
+        @content.organization.update_attribute :category_override, "Test Override"
         subject.should== "Test Override"
       end
     end
@@ -833,17 +839,17 @@ describe Content do
   describe "externally visible instance method" do
     before do
       @cat = FactoryGirl.create :content_category
-      @pub = FactoryGirl.create :publication
+      @org = FactoryGirl.create :organization
     end
 
-    it "should return false if the content category is not in the publication's external_categories" do
-      c = FactoryGirl.create :content, publication: @pub
+    it "should return false if the content category is not in the organization's external_categories" do
+      c = FactoryGirl.create :content, organization: @org
       c.externally_visible.should be_false
     end
 
-    it "should return true if the content's category is in the publication's external categories" do
-      c = FactoryGirl.create :content, publication: @pub, content_category: @cat
-      @pub.external_categories << @cat
+    it "should return true if the content's category is in the organization's external categories" do
+      c = FactoryGirl.create :content, organization: @org, content_category: @cat
+      @org.external_categories << @cat
       c.externally_visible.should be_true
     end
   end
@@ -852,17 +858,17 @@ describe Content do
     before do
       # create a bunch of random content
       FactoryGirl.create_list :content, 5
-      pub = FactoryGirl.create :publication
+      org = FactoryGirl.create :organization
       cat = FactoryGirl.create :content_category
-      pub.external_categories << cat
-      @c = FactoryGirl.create :content, content_category: cat, publication: pub
-      @c2 = FactoryGirl.create :content, publication: pub
+      org.external_categories << cat
+      @c = FactoryGirl.create :content, content_category: cat, organization: org
+      @c2 = FactoryGirl.create :content, organization: org
       @c3 = FactoryGirl.create :content, content_category: cat
     end
 
     subject { Content.externally_visible } 
 
-    it "should return only the content belonging to its publication's external categories" do
+    it "should return only the content belonging to its organization's external categories" do
       subject.count.should eq(1)
       subject.should eq([@c])
     end

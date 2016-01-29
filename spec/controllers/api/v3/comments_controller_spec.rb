@@ -111,12 +111,12 @@ describe Api::V3::CommentsController do
       assigns(:comment).content.parent.should eq(@event.content)
     end
 
-    it 'should automatically set publication to DailyUV' do
+    it 'should automatically set organization to DailyUV' do
       post :create, format: :json, 
         comment: { content: 'fake', parent_content_id: @event.content.id }
       response.code.should eq('201')
       assigns(:comment).content.parent.should eq(@event.content)
-      assigns(:comment).publication.name.should eq('DailyUV')
+      assigns(:comment).organization.name.should eq('DailyUV')
     end
 
   end

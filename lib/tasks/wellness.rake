@@ -13,7 +13,7 @@ namespace :wellness do
     num_events = 0
     num_instances = 0
 
-    pub_id = Publication.find_by_name('DailyUV').id
+    org_id = Organization.find_by_name('DailyUV').id
     category_id = ContentCategory.find_by_name('event').id
 
     CSV.foreach(source_path, {:headers => true, :header_converters => :symbol, :converters => :all}) do |row|
@@ -39,7 +39,7 @@ namespace :wellness do
         cr[:title] = row[:name]
         cr[:raw_content] = row[:description]
         cr[:content_category_id] = category_id
-        cr[:publication_id] = pub_id
+        cr[:organization_id] = org_id
         cr[:pubdate] = Time.now
         cr[:location_ids] = [77]
         if row[:media_url].present?

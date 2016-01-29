@@ -8,8 +8,6 @@
       = f.input :email
   = f.input :address, input_html: { class: "input-block-level", rows: 1 }
   = f.input :notes, input_html: { class: "input-block-level", rows: 2 }
-  - if @publication
-    = f.association :publications, as: :hidden, input_html: { value: @publication.id }
   - if @organization
     = f.association :organizations, as: :hidden, input_html: { value: @organization.id }
   = f.submit nil, class: "btn btn-success"

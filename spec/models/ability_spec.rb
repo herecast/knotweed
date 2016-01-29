@@ -21,13 +21,19 @@ describe Ability do
     end
 
     context "when is an organization admin" do
-      let(:user){ FactoryGirl.create(:organization_admin) }
+      before do
+        @user = FactoryGirl.create :user
+        @org = FactoryGirl.create :organization
+        @child = FactoryGirl.create :organization, parent: @org
+        @user.add_role :manager, @org
+      end
+
+      let(:user){ @user }
 
       it{ should be_able_to(:access, :admin) }
-      it{ should_not be_able_to(:access, :rails_admin) }
-      it{ should be_able_to(:update, user.organization) }
+      it{ should be_able_to(:manage, @org) }
+      it{ should be_able_to(:manage, @child) }
     end
 
   end
-
 end

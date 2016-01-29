@@ -1,3 +1,11 @@
-.controls .publication-list {
-  padding-top: 5px;
+// Place all the styles related to the admin/organizations controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.tab-pane#locations {
+  .organization_locations {
+    #ms-organization_location_ids {
+      width: auto;
+    }
+  }
 }

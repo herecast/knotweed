@@ -1,33 +1,78 @@
 = simple_form_for @organization, html: { class: "form" } do |f|
   = f.error_notification
   .tabbable
-    %ul.nav.nav-tabs.nav-tabs-simple#edit_orgtabs
+    %ul.nav.nav-tabs.nav-tabs-simple#edit_pubtabs
       %li.active
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#details" } do
           Details
       %li
+        = link_to '#', class: "green-border", data: { toggle: "tab", target: "#business_locations" } do
+          Locations
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#images" } do
+          Images
+      %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#contacts" } do
           Contacts
       %li
-        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#history" } do
-          History
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#locations" } do
+          Promote Locations
+      - if @organization.id
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#issues" } do
+            Issues
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#promotions" } do
+            Promotions
     .tab-content
       .tab-pane.active.form-horizontal#details
-        = f.input :name, input_html: { class: "span5" }
-        = f.input :org_type, collection: Organization::ORG_TYPE_OPTIONS, label: "Organization Type"
-        = f.input :tagline, input_html: { class: "span5" }
-        .offset1
-          = image_tag @organization.header.url if @organization.header?
-        - if @organization.header?
-          = f.input :remove_header, as: :boolean, label: "Remove header?"
-        = f.input :header
-        = f.input :notes, input_html: { class: "span5", rows: 10 }
-        .control-group.text.optional
-          = f.label "Publications"
-          .controls
-            .publication-list
-              - @organization.publications.each do |p|
-                = link_to p.name + (p == @organization.publications.last ? "" : ","), edit_publication_path(p)
+        .row-fluid
+          .span5
+            = f.input :name, input_html: { class: "input-block-level" }
+            = f.input :org_type, collection: Organization::ORG_TYPE_OPTIONS, label: "Organization Type"
+            = f.association :consumer_apps, input_html: { class: "chosen-select input-block-level" }
+            = f.association :parent, collection: Organization.parent_pubs, label: "Parent Organization (Syndication)", input_html: { class: "input-block-level select2" }, include_blank: true
+            = f.association :external_categories, input_html: { class: "chosen-select input-block-level" },
+              hint: "Categories to be displayed in UV Market"
+          .span7
+            = f.input :category_override, input_html: { class: "input-block-level" }, hint: "Set this option to force all content to publish with a specific category."
+            = f.input :website, input_html: { class: "input-block-level" }
+            = f.input :reverse_publish_email, input_html: { class: "input-block-level" }
+            = f.input :display_attributes
+            = f.input :notes, input_html: { class: "input-block-level", rows: 10 } 
+      .tab-pane#business_locations
+        .pull-right
+          = link_to "+ Add New Location", "#", class: "btn btn-success", 
+            data: { toggle: "modal", target: "#business_location_form", 
+            form_url: new_business_location_path({ organization_id: @organization.id }  )}, 
+            id: "new_business_location_button" 
+          / hidden field for creating business locations associated with a new organization record
+          - unless @organization.id
+            = f.association :business_locations, as: :hidden, input_html: { name: "organization[business_location_list]", value: "" }
+        %table.table.table-striped.table-condensed.sortable#business_locations_table
+          %thead
+            %tr
+              %th ID
+              %th Name
+              %th Address
+              %th Phone
+              %th Email
+              %th Hours
+              %th
+          %tbody#business_locations_list
+            - @organization.business_locations.each do |loc|
+              = render "business_locations/partials/row", business_location: loc
+      
+      .tab-pane#images
+        = label_tag "Logo"
+        = image_tag(@organization.logo.url) if @organization.logo?
+        - if @organization.logo?
+          = f.input :remove_logo, as: :boolean, label: "Remove logo?"
+        .row-fluid
+          .span1
+            = f.input :logo, label: false
+          .span3.form-horizontal
+            = f.input :remote_logo_url, label: "OR Upload from URL:"
       .tab-pane#contacts
         .pull-right
           = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { toggle: "modal", target: "#contact_form", form_url: new_contact_path(Organization, @organization.id) }, id: "new_contact_button"
@@ -47,9 +92,42 @@
           %tbody#contact_list
             - @organization.contacts.each do |contact|
               = render "contacts/contact_row", contact: contact
-      .tab-pane#history
+      .tab-pane#locations
+        .row-fluid
+          .span8
+            = text_field_tag :search_locations, nil, class: "span12", placeholder: "search available locations"
+          .span4
+            = link_to "+ Add New Promote Location", "#", class: "btn btn-success", data: { toggle: "modal", target: "#location_form", form_url: new_location_path }, id: "new_location_button"
+          .row-fluid
+            .span8
+              = f.association :locations, label: false, input_html: { class: "locations-select multi-select" }
+          .row-fluid
+            .span2.offset2.text-right
+              = link_to "select all", "#", id: "select-all-locs"
+            .span2.text-left
+              = link_to "deselect all", "#", id: "deselect-all-locs"
+      - if @organization.id
+        .tab-pane#issues
+          .pull-right
+            = link_to "+ Add New Issue", "#", class: "btn btn-success", data: { toggle: "modal", target: "#issue_form", form_url: new_issue_path({organization_id: @organization.id}) }, id: "new_issue_button"
+          %table.table.table-striped.table-condensed.sortable#issues_table
+            %thead
+              %tr
+                %th ID
+                %th Edition
+                %th Copyright
+                %th Publication Date
+                %th
+            %tbody#issue_list
+              - @organization.issues.each do |issue|
+                = render "issues/issue_row", issue: issue
+        .tab-pane#history
+          histry
+        .tab-pane#promotions
+          = render "promotions/partials/promotions_tab", organization: @organization
+          
       .form-actions
-        = submit_tag "Submit and Create New Publication", class: "btn btn-success", name: "add_publication"
+        = submit_tag "Submit and Create New Content Set", class: "btn btn-success", name: "add_content_set"
         = submit_tag nil, class: "btn btn-primary"
         = link_to "Cancel", :back, class: "btn"
 
@@ -58,5 +136,26 @@
     %button.close{ type: "button", data: { dismiss: "modal" } } x
     %h3 Organization Contact
   .modal-body
-    Loading...   
+    Loading...
 
+
+.modal.hide.fade#issue_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Issue
+  .modal-body
+    Loading...
+
+.modal.hide.fade#location_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Location
+  .modal-body
+    Loading...
+
+.modal.hide.fade#business_location_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Business Location
+  .modal-body
+    Loading...   

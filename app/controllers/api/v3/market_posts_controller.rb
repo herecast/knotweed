@@ -16,10 +16,10 @@ module Api
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
         opts[:with][:published] = 1 if @repository.present?
-        opts[:sql] = { include: [:images, :publication, :root_content_category] }
+        opts[:sql] = { include: [:images, :organization, :root_content_category] }
         if @requesting_app.present?
-          allowed_pubs = @requesting_app.publications
-          opts[:with].merge!({pub_id: allowed_pubs.collect{|c| c.id} })
+          allowed_orgs = @requesting_app.organizations
+          opts[:with].merge!({org_id: allowed_orgs.collect{|c| c.id} })
         end
 
         # Ember app passes location_id 0 for Upper Valley and an empty location_id
@@ -44,7 +44,7 @@ module Api
 
       def create
         market_cat = ContentCategory.find_by_name 'market'
-        pub = Publication.find_or_create_by_name 'DailyUV'
+        org = Organization.find_or_create_by_name 'DailyUV'
 
         location_ids = [@current_api_user.location_id]
         if params[:market_post][:extended_reach_enabled]
@@ -60,7 +60,7 @@ module Api
           content_category_id: market_cat.id,
           pubdate: Time.zone.now,
           timestamp: Time.zone.now,
-          publication_id: pub.id
+          organization_id: org.id
         }
         listserv_ids = params[:market_post].delete :listserv_ids || []
 
@@ -125,7 +125,7 @@ module Api
         @market_post = Content.find params[:id]
 
         if @requesting_app.present?
-          head :no_content and return unless @requesting_app.publications.include?(@market_post.publication)
+          head :no_content and return unless @requesting_app.organizations.include?(@market_post.organization)
         end
 
         if @market_post.try(:root_content_category).try(:name) != 'market'

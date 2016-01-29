@@ -24,7 +24,7 @@ Knotweed::Application.routes.draw do
   get "contents/parent_options", to: "contents#parent_select_options", as: :parent_select_options
   resources :contents
   get "issues/select_options", to: "issues#select_options", as: :issue_select_options
-  get "publications/business_location_options", to: "publications#business_location_options", as: :business_location_options
+  get "organizations/business_location_options", to: "organizations#business_location_options", as: :business_location_options
   resources :market_posts, except: [:destroy]
   resources :import_jobs
   resources :parsers
@@ -33,7 +33,7 @@ Knotweed::Application.routes.draw do
   resources :wufoo_forms, except: [:show]
   resources :consumer_apps, except: [:show]
   resources :images
-  resources :publications, except: [:show] do
+  resources :organizations, except: [:show] do
     resources :promotions, shallow: true
   end
 
@@ -110,7 +110,9 @@ Knotweed::Application.routes.draw do
       get '/contents/:id/related_promotion', to: 'contents#related_promotion', as: :related_promotion
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
-      resources 'publications', only: [:index]
+      # specifying path here to avoid deprecating the frontend even though we've changed
+      # the modeling
+      resources 'organizations', only: [:index], path: 'publications'
       resources 'news', only: [:index, :show]
       resources 'talk', only: [:index, :show, :create, :update]
       resources 'market_posts', only: [:index, :show, :create, :update]

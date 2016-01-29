@@ -49,6 +49,10 @@ def get_posts(wpcl, number)
   wpcl.getPosts(options)
 end
 
+# NG NOTE: all the references to 'publication' in this rake task are specific
+# to the context of the data being parsed. So, to avoid having to change a bunch of code
+# that is internally consistent, I'm leaving it 'publication' instead of changing to
+# 'organization'
 
 def process_posts(posts, users)
   contents = []

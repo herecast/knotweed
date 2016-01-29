@@ -4,7 +4,7 @@
 #
 #  id                 :integer          not null, primary key
 #  issue_edition      :string(255)
-#  publication_id     :integer
+#  organization_id    :integer
 #  copyright          :string(255)
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
@@ -18,7 +18,7 @@ FactoryGirl.define do
   factory :issue do
     issue_edition "MyString"
     publication_date Time.now
-    publication
+    organization
     copyright "MyString"
   end
 end

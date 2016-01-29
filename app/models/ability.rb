@@ -3,45 +3,25 @@ class Ability
 
   def initialize(user)
     user ||= User.new # guest user (not logged in)
-    if user.has_role? :admin
-      can :access, :dashboard
+    # cycle through the user's roles and apply appropriate permissions
+    
+    if user.has_role? :admin # super admin, unscoped to a resource
       can :manage, :all
-      # can :access, :admin
+      can :access, :dashboard
     elsif user.has_role? :event_manager
       can :access, :dashboard
       # give access only to event category contents
       event_category = ContentCategory.find_or_create_by_name("event")
       can :manage, Content, content_category_id: event_category.id
       can :manage, BusinessLocation # for event venues
-    elsif user.organization
-      can [:update, :read], Organization, :id => user.organization_id
-      can :manage, Publication, :organization_id => user.organization_id
-      can :manage, ImportJob, :organization_id => user.organization_id
-      can :manage, Parser, :organization_id => user.organization_id
-      can :access, :admin
+    else
+      managed_orgs = Organization.with_role(:manager, user)
+      # note: due to quirks in the way Rolify works, we *can't* use the same role name for this
+      # that we use for the unscoped admin. So instead I'm calling it manager.
+      can :manage, Organization, id: managed_orgs.pluck(:id)
+      # now we have to give access to ALL organizations descended from the one they are actually a manager of
+      can :manage, Organization, id: managed_orgs.map{|o|o.get_all_children}.flatten.map{|o|o.id}.uniq
+      can :access, :admin if managed_orgs.present? # allow basic access if they have some management position
     end
-      
-    # Define abilities for the passed in user here. For example:
-    #
-    #   user ||= User.new # guest user (not logged in)
-    #   if user.admin?
-    #     can :manage, :all
-    #   else
-    #     can :read, :all
-    #   end
-    #
-    # The first argument to `can` is the action you are giving the user permission to do.
-    # If you pass :manage it will apply to every action. Other common actions here are
-    # :read, :create, :update and :destroy.
-    #
-    # The second argument is the resource the user can perform the action on. If you pass
-    # :all it will apply to every resource. Otherwise pass a Ruby class of the resource.
-    #
-    # The third argument is an optional hash of conditions to further filter the objects.
-    # For example, here the user can only update published articles.
-    #
-    #   can :update, Article, :published => true
-    #
-    # See the wiki for details: https://github.com/ryanb/cancan/wiki/Defining-Abilities
   end
 end

@@ -16,7 +16,7 @@ describe PublishJobsController do
           publish_method: Content::EXPORT_TO_XML
         }
         @query_hash = {
-          publication_id: ["3"], import_location_id: ["4"],
+          organization_id: ["3"], import_location_id: ["4"],
           from: nil, to: nil, published: nil,
           ids: nil, content_category_id: nil,
           repository_id: FactoryGirl.create(:repository).id.to_s
@@ -39,6 +39,42 @@ describe PublishJobsController do
         @job.notifyees.include?(@user).should== true
       end
 
+    end
+  end
+
+  describe 'GET index' do
+    before do
+      @user = FactoryGirl.create(:admin)
+      sign_in @user
+      @jobs = FactoryGirl.create_list :publish_job, 3
+    end
+
+    subject! { get :index }
+
+    it 'should respond with 200 status' do
+      response.code.should eq '200'
+    end
+
+    it 'should load the publish jobs' do
+      assigns(:publish_jobs).should eq @jobs
+    end
+  end
+
+  describe ' GET edit' do
+    before do
+      @user = FactoryGirl.create :admin
+      sign_in @user
+      @job = FactoryGirl.create :publish_job
+    end
+
+    subject! { get :edit, id: @job.id }
+
+    it 'should respond with 200 status' do
+      response.code.should eq '200'
+    end
+
+    it 'should load the publish job' do
+      assigns(:publish_job).should eq @job
     end
   end
 

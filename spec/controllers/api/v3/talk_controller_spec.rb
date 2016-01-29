@@ -102,12 +102,12 @@ describe Api::V3::TalkController do
         JSON.parse(response.body)['talk']['author_image_url'].should == @user.avatar.url
       end
     end
-    context 'when requesting app has matching publications' do
+    context 'when requesting app has matching organizations' do
       before do
-        publication = FactoryGirl.create :publication
-        @talk.publication = publication
+        organization = FactoryGirl.create :organization
+        @talk.organization = organization
         @talk.save
-        @consumer_app = FactoryGirl.create :consumer_app, publications: [publication]
+        @consumer_app = FactoryGirl.create :consumer_app, organizations: [organization]
         api_authenticate user: @user, consumer_app: @consumer_app
       end
       it do
@@ -116,12 +116,12 @@ describe Api::V3::TalkController do
         JSON.parse(response.body)['talk']['id'].should == @talk.id
       end
     end
-    context 'when requesting app DOES NOT HAVE matching publications' do
+    context 'when requesting app DOES NOT HAVE matching organizations' do
       before do
-        publication = FactoryGirl.create :publication
-        @talk.publication = publication
+        organization = FactoryGirl.create :organization
+        @talk.organization = organization
         @talk.save
-        @consumer_app = FactoryGirl.create :consumer_app, publications: []
+        @consumer_app = FactoryGirl.create :consumer_app, organizations: []
         api_authenticate user: @user, consumer_app: @consumer_app
         subject
       end

@@ -23,8 +23,8 @@ module Api
       def create
         location_ids = [@current_api_user.try(:location_id)]
 
-        # hard coded publication...
-        pub = Publication.find_or_create_by_name 'DailyUV'
+        # hard coded organization...
+        org = Organization.find_or_create_by_name 'DailyUV'
 
         # hard code category
         cat = ContentCategory.find_or_create_by_name 'talk_of_the_town'
@@ -43,7 +43,7 @@ module Api
           authors: @current_api_user.try(:name),
           raw_content: params[:comment].delete(:content),
           pubdate: Time.zone.now,
-          publication_id: pub.id,
+          organization_id: org.id,
           content_category_id: cat.id
         }
         @comment = Comment.new(comment_hash)

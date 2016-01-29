@@ -24,4 +24,58 @@ describe ContentsController do
     end
   end
 
+  describe 'index' do
+    before do
+      FactoryGirl.create_list :content, 5
+    end
+
+    subject { get :index }
+
+    it 'should respond with 200 status code' do
+      subject
+      response.code.should eq '200'
+    end
+
+    context 'with an organization search param' do
+      before do
+        @org = FactoryGirl.create :organization
+        @contents = FactoryGirl.create_list :content, 3, organization: @org
+      end
+
+      subject { get :index, q: { organization_id_in: [@org.id] } }
+
+      it 'should respond with the content belonging to that organization' do
+        subject
+        assigns(:contents).should eq @contents
+      end
+    end
+  end
+
+  describe 'edit' do
+    before do
+      @content = FactoryGirl.create :content
+    end
+
+    subject { get :edit, id: @content.id }
+
+    it 'should respond with 200 status code' do
+      subject
+      response.code.should eq '200'
+    end
+
+    it 'should appropriately load the content' do
+      subject
+      assigns(:content).should eq @content
+    end
+  end
+
+  describe 'new' do
+    subject { get :new }
+
+    it 'should respond with 200 status code' do
+      subject
+      response.code.should eq '200'
+    end
+  end
+
 end

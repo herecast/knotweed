@@ -41,8 +41,8 @@ class EventsController < ApplicationController
     # add location where content originated from
     if params[:unchannelized_content_id].present?
       contents = Content.find(params[:unchannelized_content_id])
-      locations = Location.joins('LEFT JOIN locations_publications on ' +
-                               'locations.id = locations_publications.location_id ').where('locations_publications.publication_id = ?', contents.publication_id)
+      locations = Location.joins('LEFT JOIN locations_organizations on ' +
+                               'locations.id = locations_organizations.location_id ').where('locations_organizations.organization_id = ?', contents.organization_id)
       if locations.present?
         locations.each do |location|
           if !location_ids.include?(location.id)
@@ -179,7 +179,7 @@ class EventsController < ApplicationController
     # hard coding some other things
     @event.content.category_reviewed = true
     # again with the under protest...
-    @event.content.publication_id = Publication.find_or_create_by_name('DailyUV').id
+    @event.content.organization_id = Organization.find_or_create_by_name('DailyUV').id
 
     # for users that can only access certain specific attribute events
     current_ability.attributes_for(:new, Event).each do |key,value|

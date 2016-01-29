@@ -21,8 +21,8 @@
               - id_in_val = ""
             = f.text_field :id_in, value: id_in_val, class: "span12"
           .field.span2
-            = f.label :publication_id_in, "Publications"
-            = f.collection_select :publication_id_in, Publication.accessible_by(current_ability), 
+            = f.label :organization_id_in, "Organizations"
+            = f.collection_select :organization_id_in, Organization.accessible_by(current_ability), 
               :id, :name, {}, { multiple: true, class: "chosen-select span12" }
           .field.span2
             = f.label :locations_id_in, 'Locations'
@@ -62,7 +62,7 @@
       %th Content ID
       %th Category
       %th Reviewed?
-      %th Publication
+      %th Organization
       %th Title
       %th Authors
       %th Location
@@ -79,8 +79,8 @@
         %td= select_tag 'category_selection', options_from_collection_for_select(@content_categories, 'id', 'name', c.content_category_id), class: 'select_category'
         %td= check_box_tag 'category_reviewed', '1', c.category_reviewed, class: 'category_reviewed_box'
         %td
-          - if c.publication.present?
-            = link_to c.publication.name, contents_path(q: { publication_id_in: c.publication_id })
+          - if c.organization.present?
+            = link_to c.organization.name, contents_path(q: { organization_id_in: c.organization_id })
         %td
           = link_to c.title, edit_content_path(id: c.id, index: i, page: params[:page])
           - if c.raw_content.present?

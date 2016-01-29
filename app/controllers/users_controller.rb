@@ -12,10 +12,21 @@ class UsersController < ApplicationController
   def update
     @user = User.find(params[:id])
     authorize! :update, @user, :message => 'Not authorized as an administrator.'
-    if @user.update_attributes(params[:user], :as => :admin)
+    if (org_id=params[:user].delete(:managed_organization_id)).present?
+      # the logic for this is a little wonky, but as of now, I think we're happy
+      # having one role at a time for a given user. I.e. It doesn't make sense
+      # for someone to be a global admin *and* a manager of an organization.
+      # And that can't happen with the interface, but is possible based on legacy data.
+      # So to clear that up, we'll clear out old roles here
+      @user.roles.clear
+      @user.add_role :manager, Organization.find(org_id)
       redirect_to users_path, :notice => "User updated."
     else
-      redirect_to users_path, :alert => "Unable to update user."
+      if @user.update_attributes(params[:user], :as => :admin)
+        redirect_to users_path, :notice => "User updated."
+      else
+        redirect_to users_path, :alert => "Unable to update user."
+      end
     end
   end
     

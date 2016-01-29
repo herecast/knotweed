@@ -7,6 +7,27 @@ describe UsersController do
     request.env['HTTP_REFERER'] = 'where_i_came_from'
   end
 
+  describe 'GET show' do
+    before { @user = FactoryGirl.create :user }
+    subject! { get :show, id: @user.id }
+
+    it 'should respond with a 200 status' do
+      response.code.should eq '200'
+    end
+
+    it 'should load the user' do
+      assigns(:user).should eq @user
+    end
+  end
+
+  describe 'GET new' do
+    subject! { get :new }
+
+    it 'should respond with a 200 status' do
+      response.code.should eq '200'
+    end
+  end
+
   describe 'GET index' do
     it 'returns http success' do
       get 'index'

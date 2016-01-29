@@ -4,7 +4,6 @@
     = f.input :name
     = f.input :filename
     = f.input :description, input_html: { rows: 5 }
-    = f.association :organization, collection: Organization.accessible_by(current_ability, :read), input_html: { class: "span11 select2" }
   
   #parameters.form-column
     %button#add-to-parameters.btn Add Parameter

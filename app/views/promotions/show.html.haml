@@ -13,9 +13,9 @@
         %b Active:
         = @promotion.active
       %p
-        %b Publication:
-        - if @promotion.publication.present?
-          = link_to @promotion.publication.name, edit_publication_path(@promotion.publication)
+        %b Organization:
+        - if @promotion.organization.present?
+          = link_to @promotion.organization.name, edit_organization_path(@promotion.organization)
       %p
         %b Content:
         - if @promotion.content.nil?

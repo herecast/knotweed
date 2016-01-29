@@ -10,7 +10,8 @@
 #  description_override :text
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  delta                :boolean          default(TRUE), not null
+#  presenter_name       :string(255)
+#  schedule_id          :integer
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

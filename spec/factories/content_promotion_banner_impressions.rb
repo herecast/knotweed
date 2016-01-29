@@ -8,6 +8,8 @@
 #  display_count       :integer          default(1)
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  select_method       :string(255)
+#  select_score        :float
 #
 
 FactoryGirl.define do

@@ -1,9 +1,9 @@
 - promotion ||= @promotion
-- publication ||= promotion.publication unless promotion.nil?
+- organization ||= promotion.organization unless promotion.nil?
 - ajax_submit ||= false
-- if publication.present?
-  %p Promotion for: #{link_to publication.name, edit_publication_path(publication)}
-= simple_form_for (promotion.id ? promotion : [publication, promotion]) do |f|
+- if organization.present?
+  %p Promotion for: #{link_to organization.name, edit_organization_path(organization)}
+= simple_form_for (promotion.id ? promotion : [organization, promotion]) do |f|
   = f.error_notification
 
   .form-inputs
@@ -33,7 +33,7 @@
 
   .form-actions
     - if ajax_submit
-      %span.btn.btn-primary.create-new-promotion{ data: { submit_url: publication_promotions_path(publication) } } Create Promotion
+      %span.btn.btn-primary.create-new-promotion{ data: { submit_url: organization_promotions_path(organization) } } Create Promotion
     - else
       = f.button :submit, class: "btn-primary btn"
     = link_to "Cancel", 'javascript:history.back()', class: "btn"

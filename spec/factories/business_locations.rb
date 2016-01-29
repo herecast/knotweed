@@ -10,7 +10,7 @@
 #  hours               :string(255)
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  publication_id      :integer
+#  organization_id     :integer
 #  latitude            :float
 #  longitude           :float
 #  venue_url           :string(255)
@@ -20,6 +20,7 @@
 #  zip                 :string(255)
 #  created_by          :integer
 #  updated_by          :integer
+#  status              :string(255)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
@@ -27,7 +28,7 @@
 FactoryGirl.define do
   factory :business_location do
     name { Faker::Company.name }
-    publication
+    organization
     address { Faker::Address.street_address }
     city { Faker::Address.city }
     state { Faker::Address.state }

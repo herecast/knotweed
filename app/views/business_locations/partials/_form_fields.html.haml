@@ -29,7 +29,7 @@
     - else
       %iframe#confirm_location_map{ data: { base_src_url: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=" } }
 = f.input :hours, input_html: { class: 'input-block-level' }
-= f.association :publication, as: :hidden
+= f.association :organization, as: :hidden
 - if @business_location.id.present?
   - submit_url = business_location_path(@business_location.id)
   - submit_method = 'PUT'

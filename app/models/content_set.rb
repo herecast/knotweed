@@ -5,7 +5,7 @@
 #  id                    :integer          not null, primary key
 #  import_method         :string(255)
 #  import_method_details :text
-#  publication_id        :integer
+#  organization_id       :integer
 #  name                  :string(255)
 #  description           :text
 #  notes                 :text
@@ -23,12 +23,11 @@
 #
 
 class ContentSet < ActiveRecord::Base
-  belongs_to :publication
-  has_one :organization, through: :publication
+  belongs_to :organization
   has_many :import_jobs
 
   attr_accessible :description, :import_method, :import_method_details, 
-                  :name, :notes, :publication_id, :status, :import_jobs_attributes,
+                  :name, :notes, :organization_id, :status, :import_jobs_attributes,
                   :start_date, :end_date, :ongoing, :format, :publishing_frequency,
                   :developer_notes, :import_priority, :import_url_path
 
@@ -47,22 +46,12 @@ class ContentSet < ActiveRecord::Base
   validates :import_method, inclusion: { in: IMPORT_METHODS }, allow_blank: true
   validates :format, inclusion: { in: FORMATS }, allow_blank: true
   validates :import_priority, inclusion: { in: IMPORT_PRIORITIES }
-  validates_presence_of :publication
+  validates_presence_of :organization
   validates_presence_of :name
-  validates :publishing_frequency, inclusion: { in: Publication::FREQUENCY_OPTIONS }, allow_blank: true 
-
-  before_save :set_publishing_frequency
   
   # for rails admin enum field
   def import_method_enum
     IMPORT_METHODS
-  end
-
-  # have publishing frequency fall back to publication.publishing_frequency
-  def set_publishing_frequency
-    unless publishing_frequency.present?
-      update_attribute(:publishing_frequency, publication.publishing_frequency)
-    end
   end
 
 end

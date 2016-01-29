@@ -32,18 +32,18 @@ describe Api::V3::NewsController do
       assigns(:news).select{|c| c.locations.include? @third_location }.count.should eq(assigns(:news).count)
     end
 
-    context 'querying by publication name' do
+    context 'querying by organization name' do
       before do
-        @pub = FactoryGirl.create :publication
-        @pub_and_loc_content = FactoryGirl.create :content, content_category: @news_cat,
-          locations: [@default_location], publication: @pub
+        @org = FactoryGirl.create :organization
+        @org_and_loc_content = FactoryGirl.create :content, content_category: @news_cat,
+          locations: [@default_location], organization: @org
         index
       end
 
-      subject! { get :index, format: :json, publication: @pub.name }
+      subject! { get :index, format: :json, organization: @org.name }
 
-      it 'should return content specific to that publication' do
-        assigns(:news).should eq([@pub_and_loc_content])
+      it 'should return content specific to that organization' do
+        assigns(:news).should eq([@org_and_loc_content])
       end
     end
 
@@ -104,12 +104,12 @@ describe Api::V3::NewsController do
     it 'should increment view count' do
       expect{subject}.to change{Content.find(@news.id).view_count}.from(0).to(1)
     end
-    context 'when requesting app has matching publications' do
+    context 'when requesting app has matching organizations' do
       before do
-        publication = FactoryGirl.create :publication
-        @news.publication = publication
+        organization = FactoryGirl.create :organization
+        @news.organization = organization
         @news.save
-        @consumer_app = FactoryGirl.create :consumer_app, publications: [publication]
+        @consumer_app = FactoryGirl.create :consumer_app, organizations: [organization]
         api_authenticate consumer_app: @consumer_app
       end
       it do
@@ -118,12 +118,12 @@ describe Api::V3::NewsController do
         JSON.parse(response.body)['news']['id'].should == @news.id
       end
     end
-    context 'when requesting app DOES NOT HAVE matching publications' do
+    context 'when requesting app DOES NOT HAVE matching organizations' do
       before do
-        publication = FactoryGirl.create :publication
-        @news.publication = publication
+        organization = FactoryGirl.create :organization
+        @news.organization = organization
         @news.save
-        @consumer_app = FactoryGirl.create :consumer_app, publications: []
+        @consumer_app = FactoryGirl.create :consumer_app, organizations: []
         api_authenticate consumer_app: @consumer_app
       end
       it { subject; response.status.should eq 204 }

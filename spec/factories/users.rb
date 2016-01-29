@@ -29,10 +29,12 @@
 #  contact_email          :string(255)
 #  contact_url            :string(255)
 #  location_id            :integer
-#  test_group             :string(255)
+#  test_group             :string(255)      default("consumer")
 #  muted                  :boolean          default(FALSE)
 #  authentication_token   :string(255)
 #  avatar                 :string(255)
+#  public_id              :string(255)
+#  skip_analytics         :boolean          default(FALSE)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
@@ -56,7 +58,10 @@ FactoryGirl.define do
 
     factory :organization_admin do
       name 'Test Organization Admin'
-      organization
+      after(:create) do |user|
+        org = FactoryGirl.create :organization
+        user.add_role :manager, org
+      end
     end
 
   end

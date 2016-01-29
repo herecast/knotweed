@@ -32,7 +32,6 @@
 //= require images
 //= require scaffold
 //= require promotions
-//= require publications
 //= require organizations
 //= require jquery.multi-select
 //= require jquery.quicksearch
@@ -48,4 +47,4 @@
 //= require events
 //= require market_posts
 //= require cleditor/jquery.cleditor
-
+//= require users

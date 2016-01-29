@@ -4,8 +4,8 @@ describe Api::V3::ContentsController do
   before do
     @repo = FactoryGirl.create :repository
     @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
-    @pub = FactoryGirl.create :publication
-    @consumer_app.publications = [@pub]
+    @org = FactoryGirl.create :organization
+    @consumer_app.organizations = [@org]
   end
 
   describe 'GET index' do
@@ -143,9 +143,9 @@ describe Api::V3::ContentsController do
     before do
       @content = FactoryGirl.create(:content)
       @content_id = @content.id
-      # note, similar content is filtered by publication so we need to ensure this has
-      # a publication that exists in the consumer app's list.
-      @sim_content = FactoryGirl.create :content, publication: @pub
+      # note, similar content is filtered by organization so we need to ensure this has
+      # a organization that exists in the consumer app's list.
+      @sim_content = FactoryGirl.create :content, organization: @org
       stub_request(:get, /recommend\/contextual\?contentid=/).
         to_return(:status => 200,
           :body => {'articles'=>[{ 'id' => "#{Content::BASE_URI}/#{@sim_content.id}" }]}.to_json,
@@ -167,9 +167,9 @@ describe Api::V3::ContentsController do
 
     context 'when similar content contains events with instances in the past or future' do
       before do
-        @root_content = FactoryGirl.create :content, publication: @pub
-        @content = FactoryGirl.create :content, publication: @pub
-        other_content = FactoryGirl.create :content, publication: @pub
+        @root_content = FactoryGirl.create :content, organization: @org
+        @content = FactoryGirl.create :content, organization: @org
+        other_content = FactoryGirl.create :content, organization: @org
         event = FactoryGirl.create :event, skip_event_instance: true, content: @content
         other_event = FactoryGirl.create :event, skip_event_instance: true, content: other_content
         FactoryGirl.create :event_instance, event: other_event, start_date: 1.week.ago
@@ -191,7 +191,7 @@ describe Api::V3::ContentsController do
     context 'for sponsored_content' do
       before do
         @content.content_category_id = FactoryGirl.create(:content_category, name: 'sponsored_content').id
-        @some_similar_contents = FactoryGirl.create_list(:content, 3, publication: @pub)
+        @some_similar_contents = FactoryGirl.create_list(:content, 3, organization: @org)
         @content.similar_content_overrides = @some_similar_contents.map{|c| c.id}
         @content.save
       end

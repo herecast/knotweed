@@ -1,6 +1,6 @@
 module Api
   module V3
-    class PublicationSerializer < ActiveModel::Serializer
+    class OrganizationSerializer < ActiveModel::Serializer
 
       attributes :id, :name
 

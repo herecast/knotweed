@@ -11,6 +11,7 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  source_url     :string(400)
+#  primary        :boolean          default(FALSE)
 #
 
 FactoryGirl.define do

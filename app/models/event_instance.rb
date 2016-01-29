@@ -10,6 +10,8 @@
 #  description_override :text
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
+#  presenter_name       :string(255)
+#  schedule_id          :integer
 #
 
 class EventInstance < ActiveRecord::Base

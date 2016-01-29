@@ -4,9 +4,9 @@ namespace :cleanup do
   task :gmail_listserv_emails => :environment do
 
     begin
-      pub = Publication.find_by_name("ValleyNet Listserv")
+      org = Organization.find_by_name("ValleyNet Listserv")
     rescue ActiveRecord::RecordNotFound
-      puts "ValleyNet Listserv publication not found"
+      puts "ValleyNet Listserv organization not found"
       break
     end
 
@@ -35,7 +35,7 @@ namespace :cleanup do
       ]
 
 
-    Content.where(source_id: pub.id).find_each(batch_size: 1000) do |c|
+    Content.where(source_id: org.id).find_each(batch_size: 1000) do |c|
       # separate content into pieces based on our inserted
       # delimiter "\n\n"
       content_pieces = c.content.split("\n\n")

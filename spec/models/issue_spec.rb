@@ -4,7 +4,7 @@
 #
 #  id                 :integer          not null, primary key
 #  issue_edition      :string(255)
-#  publication_id     :integer
+#  organization_id    :integer
 #  copyright          :string(255)
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null

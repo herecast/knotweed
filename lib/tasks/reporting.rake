@@ -6,7 +6,7 @@ namespace :reporting do
       @bloggers = User.with_role(:blogger)
       root_news_cat = ContentCategory.find_by_name 'news'
       @bloggers.each do |blogger|
-        my_contents = Content.joins(:publication).where(created_by: blogger, root_content_category_id: root_news_cat.id)
+        my_contents = Content.joins(:organization).where(created_by: blogger, root_content_category_id: root_news_cat.id)
         my_contents.each do |content|
           old_content_report = ContentReport.where(content_id: content.id).order(:id).last
 

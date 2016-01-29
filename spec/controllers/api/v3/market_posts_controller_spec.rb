@@ -121,12 +121,12 @@ describe Api::V3::MarketPostsController do
     it 'should increment view count' do
       expect{subject}.to change{Content.find(@market_post.id).view_count}.from(0).to(1)
     end
-    context 'when requesting app has matching publications' do
+    context 'when requesting app has matching organizations' do
       before do
-        publication = FactoryGirl.create :publication
-        @market_post.publication = publication
+        organization = FactoryGirl.create :organization
+        @market_post.organization = organization
         @market_post.save
-        @consumer_app = FactoryGirl.create :consumer_app, publications: [publication]
+        @consumer_app = FactoryGirl.create :consumer_app, organizations: [organization]
         api_authenticate consumer_app: @consumer_app
       end
       it do
@@ -135,12 +135,12 @@ describe Api::V3::MarketPostsController do
         JSON.parse(response.body)['market_post']['id'].should == @market_post.id
       end
     end
-    context 'when requesting app DOES NOT HAVE matching publications' do
+    context 'when requesting app DOES NOT HAVE matching organizations' do
       before do
-        publication = FactoryGirl.create :publication
-        @market_post.publication = publication
+        organization = FactoryGirl.create :organization
+        @market_post.organization = organization
         @market_post.save
-        @consumer_app = FactoryGirl.create :consumer_app, publications: []
+        @consumer_app = FactoryGirl.create :consumer_app, organizations: []
         api_authenticate consumer_app: @consumer_app
       end
       it { subject; response.status.should eq 204 }
