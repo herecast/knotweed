@@ -7,11 +7,24 @@ describe Api::V3::ContentSerializer do
 
   let (:serialized_object) { JSON.parse(Api::V3::ContentSerializer.new(@content, root: false).to_json) }
 
+  context 'fields' do
+    [:id, :title, :image_url, :author_id, :author_name, :content_type,
+          :publication_id, :publication_name, :venue_name, :venue_address,
+          :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count, 
+          :comment_count,:parent_content_id, :content_id, :parent_content_type, 
+          :event_instance_id,:parent_event_instance_id
+    ].each do |k|
+      it "has field: #{k.to_s}" do
+        expect(serialized_object).to have_key(k.to_s)
+      end
+    end
+  end
+
   context 'with a parent object' do
     before do
       @market_cat = FactoryGirl.create :content_category, name: 'market'
       @parent = FactoryGirl.create :content, content_category: @market_cat,
-        view_count: 5, commenter_count: 6
+        view_count: 5, commenter_count: 6, comment_count: 8
       @content.update_attribute :parent_id, @parent.id
     end
 
@@ -23,10 +36,11 @@ describe Api::V3::ContentSerializer do
       serialized_object['parent_content_type'].should eq(@parent.root_content_category.name)
     end
 
-    describe 'view_count and commenter_count' do
+    describe 'view_count and commenter_count and comment_count' do
       it 'should be the parent object\'s values' do
         serialized_object['view_count'].should eq(@parent.view_count)
         serialized_object['commenter_count'].should eq(@parent.commenter_count)
+        serialized_object['comment_count'].should eq(@parent.comment_count)
       end
     end
 
