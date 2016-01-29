@@ -9,7 +9,7 @@ describe Api::V3::ContentSerializer do
 
   context 'fields' do
     [:id, :title, :image_url, :author_id, :author_name, :content_type,
-          :publication_id, :publication_name, :venue_name, :venue_address,
+          :organization_id, :organization_name, :venue_name, :venue_address,
           :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count, 
           :comment_count,:parent_content_id, :content_id, :parent_content_type, 
           :event_instance_id,:parent_event_instance_id
