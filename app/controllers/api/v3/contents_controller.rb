@@ -122,16 +122,32 @@ module Api
 
       end
 
+      # returns all types of content
       def dashboard
         params[:sort] ||= 'pubdate DESC'
         params[:page] ||= 1
         params[:per_page] ||= 12
 
-        @contents = Content.where(created_by: @current_api_user). #, channel_type: ["Event", "MarketPost", "Comment"]).
+        filters = {created_by: @current_api_user.id}
+        @news_cat = ContentCategory.find_by_name 'news'
+        @talk_cat = ContentCategory.find_by_name 'talk_of_the_town'
+        @market_cat = ContentCategory.find_by_name 'market'
+
+        if params[:channel_type] == 'news' && @news_cat.present?
+          filters[:content_category_id] =  @news_cat.id
+        elsif params[:channel_type] == 'events'
+          filters[:channel_type] = 'Event'
+        elsif params[:channel_type] == 'talk' && @talk_cat.present?
+          filters[:content_category_id] = @talk_cat.id
+        elsif params[:channel_type] == 'market' && @market_cat.present?
+          filters[:content_category_id] = @market_cat.id
+        end
+
+        reg_conts = Content.where(filters).
           order(sanitize_sort_parameter(params[:sort])).
           page(params[:page].to_i).per(params[:per_page].to_i)
 
-        @contents.select! do |c|
+        reg_conts.select! do |c|
           if c.channel_type == 'Event'
             c.channel.event_instances.count > 0
           else
@@ -139,24 +155,13 @@ module Api
           end
         end
 
-        render json: @contents, each_serializer: DashboardContentSerializer
-
-      end
-
-      # returns all types of content
-      def ad_dashboard
-        params[:sort] ||= 'pubdate DESC'
-
-        reg_conts = Content.where(created_by: @current_api_user).
-          order(sanitize_sort_parameter(params[:sort]))
-
         banners = PromotionBanner.joins(:promotion).
           where('promotions.created_by = ? and promotable_type = "PromotionBanner"',
                 @current_api_user.id)
 
         @contents = reg_conts + banners
 
-        render json: @contents, serializer: AdDashboardArraySerializer
+        render json: @contents, serializer: DashboardArraySerializer
       end
 
       def metrics

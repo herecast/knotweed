@@ -1,6 +1,6 @@
 module Api
   module V3
-    class AdDashboardArraySerializer < ActiveModel::ArraySerializer
+    class DashboardArraySerializer < ActiveModel::ArraySerializer
 
       def serializer_for(item)
         if item.is_a? PromotionBanner
