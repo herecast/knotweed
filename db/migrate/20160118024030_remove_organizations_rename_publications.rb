@@ -17,7 +17,7 @@ class RemoveOrganizationsRenamePublications < ActiveRecord::Migration
     remove_column :users, :organization_id
 
     # all 'organizations' came from publication model, so we want to set them appropriately.
-    Organization.update_all 'org_type = "publication"'
+    Organization.update_all 'org_type = "Publication"'
 
     rename_table :consumer_apps_publications, :consumer_apps_organizations
     rename_column :consumer_apps_organizations, :publication_id, :organization_id
@@ -81,7 +81,7 @@ class RemoveOrganizationsRenamePublications < ActiveRecord::Migration
       t.timestamps
     end
 
-    Organization.where('org_type != "publication"').each do |o|
+    Organization.where('org_type != "Publication"').each do |o|
       org = OldOrganization.new({
         name: o.name,
         org_type: o.org_type,

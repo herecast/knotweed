@@ -54,7 +54,7 @@ class Organization < ActiveRecord::Base
   scope :alphabetical, order("organizations.name ASC")
   default_scope alphabetical
 
-  ORG_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher"]
+  ORG_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher", 'Publication']
   #validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
 
   validates_uniqueness_of :name
