@@ -2,8 +2,6 @@ module Api
   module V3
     class MarketPostsController < ApiController
       before_filter :check_logged_in!, only: [:create, :update]
-      after_filter :track_index, only: :index
-      after_filter :track_show, only: :show
       after_filter :track_create, only: :create
       after_filter :track_update, only: :update
 
@@ -165,20 +163,6 @@ module Api
       end
 
       private
-
-      def track_index
-        props = {}
-        props.merge! @tracker.navigation_properties('Market', 'market.index', url_for, params)
-        props.merge! @tracker.search_properties(params)
-        @tracker.track(@mixpanel_distinct_id, 'searchContent', @current_api_user, props)
-      end
-
-      def track_show
-        props = {}
-        props.merge! @tracker.navigation_properties('Market', 'market.show', url_for, params) 
-        props.merge! @tracker.content_properties(@market)
-        @tracker.track(@mixpanel_distinct_id, 'selectContent', @current_api_user, props)
-      end
 
       def track_create
         props = {}
