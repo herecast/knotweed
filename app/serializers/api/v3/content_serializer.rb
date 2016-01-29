@@ -5,8 +5,8 @@ module Api
       attributes :id, :title, :image_url, :author_id, :author_name, :content_type,
         :organization_id, :organization_name, :venue_name, :venue_address,
         :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count, 
-        :parent_content_id, :content_id, :parent_content_type, :event_instance_id,
-        :parent_event_instance_id
+        :comment_count, :parent_content_id, :content_id, :parent_content_type, 
+        :event_instance_id, :parent_event_instance_id
 
       def content_id
         object.id
@@ -89,6 +89,14 @@ module Api
           object.parent.commenter_count
         else
           object.commenter_count
+        end
+      end
+
+      def comment_count
+        if object.parent.present?
+          object.parent.comment_count
+        else
+          object.comment_count
         end
       end
 
