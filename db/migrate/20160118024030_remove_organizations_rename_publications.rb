@@ -13,6 +13,9 @@ class RemoveOrganizationsRenamePublications < ActiveRecord::Migration
     remove_column :organizations, :general
     remove_column :organizations, :header
 
+    # this relationship is handled by Roles going forward
+    remove_column :users, :organization_id
+
     # all 'organizations' came from publication model, so we want to set them appropriately.
     Organization.update_all 'org_type = "publication"'
 
@@ -56,7 +59,6 @@ class RemoveOrganizationsRenamePublications < ActiveRecord::Migration
         })
         new_org.contacts = org.contacts
         new_org.children = org.old_publications
-        new_org.users = org.users
         new_org.import_jobs = org.import_jobs
         new_org.save!
       end
@@ -87,7 +89,6 @@ class RemoveOrganizationsRenamePublications < ActiveRecord::Migration
       }) # note, other fields are lost permanently as the task
       # called for removing them.
       org.contacts = o.contacts
-      org.users = o.users
       org.old_publications = o.children
       org.import_jobs = o.import_jobs
       org.save!
@@ -125,6 +126,8 @@ class RemoveOrganizationsRenamePublications < ActiveRecord::Migration
 
     rename_column :business_locations, :organization_id, :publication_id
 
+    add_column :users, :organization_id, :integer
+
     create_table :contacts_publications, id: false do |t|
       t.integer :publication_id
       t.integer :contact_id
@@ -135,8 +138,6 @@ end
 class OldOrganization < ActiveRecord::Base
   has_and_belongs_to_many :contacts, join_table: 'contacts_organizations', foreign_key: 'organization_id'
   has_many :old_publications, foreign_key: 'organization_id', class_name: 'Organization' # this is the ownership relationship over publications
-  has_many :users, foreign_key: 'organization_id'
-  has_many :parsers, foreign_key: 'organization_id'
   has_many :import_jobs, foreign_key: 'organization_id'
 
   attr_accessible :name, :org_type, :notes, :general, :tagline, :header, :header_cache,
