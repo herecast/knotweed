@@ -35,6 +35,9 @@ group :development, :test do
   gem "factory_girl_rails", "~> 4.3.0"
   gem 'faker', '~> 1.6.1'
   gem "rspec-rails", "~> 2.14.0"
+  gem 'guard-bundler', require:false
+  gem 'guard-rspec', require:false
+  gem 'guard-zeus', require: false
 end
 
 group :test do
@@ -45,6 +48,7 @@ group :test do
   # this is for circleci to properly read & ormat our test results
   gem 'rspec_junit_formatter', '~> 0.2.3'
 end
+
 group :rubymine,:development do
  	gem "thin", '~> 1.6.3'
 end
