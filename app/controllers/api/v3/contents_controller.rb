@@ -78,8 +78,8 @@ module Api
         opts[:sql] = { include: [:images, :organization, :root_content_category] }
 
         if @requesting_app.present?
-          allowed_pubs = @requesting_app.organizations
-          opts[:with].merge!({pub_id: allowed_pubs.collect{|c| c.id} })
+          allowed_orgs = @requesting_app.organizations
+          opts[:with].merge!({org_id: allowed_orgs.collect{|c| c.id} })
         end
 
         default_location_id = Location.find_by_city(Location::DEFAULT_LOCATION).id
