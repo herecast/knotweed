@@ -1,5 +1,6 @@
 # == Schema Information
 #
+#
 # Table name: contents
 #
 #  id                        :integer          not null, primary key
@@ -594,7 +595,7 @@ describe Content do
 
     it "should contain all the attributes as feature name/value pairs" do
       @content.feature_set.each do |k, v|
-        unless ["content", "publication_id", "import_location_id", "parent_id", 
+        unless ["content", "organization_id", "import_location_id", "parent_id", 
                 "issue_id", "content_category_id"].include? k
           # just checking with closing tags so we don't have to deal
           # with exact formatting of opening tag and attributes
