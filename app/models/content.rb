@@ -799,7 +799,7 @@ class Content < ActiveRecord::Base
       "import_location_id"=>import_location_id,"copyright"=>copyright,
       "guid"=>guid,"pubdate"=>pubdate,"topics"=>topics,"url"=>url,
       "origin"=>origin,"language"=>language,"page"=>page,
-      "authoremail"=>authoremail,"publication_id"=>organization_id,
+      "authoremail"=>authoremail,"organization_id"=>organization_id,
       "doctype"=>doctype,"timestamp"=>timestamp,"contentsource"=>contentsource,
       "source_content_id"=>source_content_id,"parent_id"=>parent_id,
       "content_category_id"=>content_category_id,
