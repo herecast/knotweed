@@ -4,7 +4,7 @@ module Api
 
       attributes :id, :title, :parent_content_id, :content_type, :comment_count,
         :view_count, :published_at, :event_id, :parent_content_type,
-        :parent_event_instance_id
+        :parent_event_instance_id, :content_id
 
       def id
         # if object is an event, Ember app needs an event instance ID
@@ -15,6 +15,13 @@ module Api
         else
           object.id
         end
+      end
+
+      # this is redundant for everything other than events,
+      # but we need it for events because `id` is returning
+      # an instance ID
+      def content_id
+        object.id
       end
 
       # only set for event type objects
