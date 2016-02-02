@@ -256,17 +256,6 @@ describe Api::V3::ContentsController do
           expect(assigns(:contents)).to eq(Content.all)
         end
 
-        context 'when user creates promotion banners' do
-          before do
-            FactoryGirl.create_list :promotion_banner, 2
-          end
-
-          it 'should be returned to the dashboard' do
-            subject
-            expect(assigns(:contents)).to eq (Content.all + PromotionBanner.all)
-          end
-        end
-
         it 'allows sorting by specified parameters' do
           get :dashboard, sort: 'pubdate DESC'
           expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)

@@ -1,8 +1,16 @@
 module Api
   module V3
     class PromotionBannersController < ApiController
+      before_filter :check_logged_in!, only: :index
       after_filter :event_track
 
+      def index
+        @promotion_banners = PromotionBanner.joins(:promotion).
+          where('promotions.created_by = ? and promotable_type = "PromotionBanner"', @current_api_user.id)
+
+        render json: @promotion_banners, each_serializer: PromotionBannerSerializer
+      end
+      
       def track_click
         # use find_by_id because we want a return of nil instead
         # of causing an exception with find

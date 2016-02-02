@@ -2,6 +2,26 @@ require 'spec_helper'
 
 describe Api::V3::PromotionBannersController do
 
+  describe 'GET index' do
+    before do
+      FactoryGirl.create_list :promotion_banner, 2
+      @user = FactoryGirl.create :user
+      api_authenticate user: @user
+    end
+
+    subject { get :index, format: :json }
+
+    it 'should respond with 200' do
+      subject
+      response.status.should eq 200
+    end
+
+    it 'should return all promtion banners' do
+      subject
+      assigns(:promotion_banners).should eq PromotionBanner.all
+    end
+  end
+
   describe 'post track_click' do
     before do
       @banner = FactoryGirl.create :promotion_banner
