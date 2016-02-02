@@ -143,8 +143,15 @@ module Api
           filters[:content_category_id] = @market_cat.id
         end
 
-        reg_conts = Content.where(filters).
-          order(sanitize_sort_parameter(params[:sort])).
+        sort_by = sanitize_sort_parameter(params[:sort])
+        scope = Content.where(filters)
+
+        if sort_by.include?('root_category')
+          scope = scope.joins('
+            join content_categories as root_category
+                on root_category.id = contents.root_content_category_id')
+        end
+        reg_conts = scope.order(sort_by).
           page(params[:page].to_i).per(params[:per_page].to_i)
 
         reg_conts.select! do |c|
@@ -182,7 +189,7 @@ module Api
         sort_parts.select! do |pt|
           pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
         end
-        sort_parts.join(',')
+        sort_parts.join(',').gsub('channel_type', 'root_category.name')
       end
 
       private
