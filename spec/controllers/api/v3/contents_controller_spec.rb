@@ -243,17 +243,37 @@ describe Api::V3::ContentsController do
 
       context 'with the user owning some content' do
         before do
-          # because we're authenticated as the @user, created_by is actually set automatically here,
-          # so we don't need to set it manually.
-          @event = FactoryGirl.create :event
-          FactoryGirl.create_list :market_post, 3
-          FactoryGirl.create_list :comment, 2
-          FactoryGirl.create :content
+          @news_cat = FactoryGirl.create :content_category, name: 'news'
+          @talk_cat = FactoryGirl.create :content_category, name: 'talk_of_the_town'
+          @market_cat = FactoryGirl.create :content_category, name: 'market'
+          @event_cat = FactoryGirl.create :content_category, name: 'event'
+
+          #@event = FactoryGirl.create :event, content_category: @event_cat
+          FactoryGirl.create_list :content, 5, 
+            content_category: @news_cat, 
+            published: true, created_by: @user
+          FactoryGirl.create_list :content, 5, 
+            content_category: @market_cat, 
+            published: true, created_by: @user
+          FactoryGirl.create_list :content, 5,
+            content_category: @talk_cat,
+            published: true, created_by: @user
+          event_conts = FactoryGirl.create_list :content, 5, 
+            content_category: @event_cat,
+            channel_type: 'Event',
+            published: true, created_by: @user
+          event_conts.each do |ec|
+            FactoryGirl.create :event, content: ec
+          end
         end
 
         it 'responds with the user\'s content' do
+          not_user_content = FactoryGirl.create :content, created_by: nil
           subject
-          expect(assigns(:contents)).to eq(Content.all)
+          all_content = assigns(:contents) 
+          user_content_only = all_content.select{|c| c.created_by == @user} 
+          expect(all_content).to_not include(not_user_content) 
+          expect(all_content.collect(&:id)).to eql user_content_only.collect(&:id)
         end
 
         context 'when user creates promotion banners' do
@@ -262,63 +282,80 @@ describe Api::V3::ContentsController do
           end
 
           it 'should be returned to the dashboard' do
+            pending 'Pending Removal'
             subject
             expect(assigns(:contents)).to eq (Content.all + PromotionBanner.all)
           end
         end
 
-        it 'allows sorting by specified parameters' do
-          get :dashboard, sort: 'pubdate DESC'
-          expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)
+        describe 'sorting' do
+          it 'allows sorting by specified parameters (pubdate)' do
+            get :dashboard, sort: 'pubdate DESC'
+            expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)
+          end
+
+          describe 'by channel_type ASC' do
+            it 'first item should be event' do
+              get :dashboard, format: :json, sort: 'channel_type ASC'
+              expect(assigns(:contents).first.root_content_category_id).to be @event_cat.id
+            end
+          end
+
+          describe 'by channel_type DESC' do
+            it 'first item should be talk' do
+              get :dashboard, format: :json, sort: 'channel_type DESC'
+              expect(assigns(:contents).first.root_content_category_id).to be @talk_cat.id
+            end
+          end
         end
+
 
         context 'allow filtering by news' do
           before do
-            @news_cat = FactoryGirl.create :content_category, name: 'news'
-            @news_list = FactoryGirl.create_list :content, 2, content_category: @news_cat
             get :dashboard, channel_type: 'news'
           end
 
-          it 'should return only news content' do
-            assigns(:contents).should eq @news_list
+          it 'should return only news content'  do
+            category_ids = assigns(:contents).collect(&:root_content_category_id)
+            expect(category_ids.uniq.count).to eq 1
+            expect(category_ids.uniq.first).to eq @news_cat.id 
           end
         end 
-
         context 'allow filtering by events' do
           before do
-            @event2 = FactoryGirl.create :event
             get :dashboard, channel_type: 'events'
           end
 
           it 'should return only events content' do
-            assigns(:contents).should eq [@event.content, @event2.content]
+            category_ids = assigns(:contents).collect(&:root_content_category_id)
+            expect(category_ids.uniq.count).to eq 1
+            expect(category_ids.uniq.first).to eq @event_cat.id 
           end
         end
 
         context 'allow filtering by talk' do
           before do
-            @talk_cat = FactoryGirl.create :content_category, name: 'talk_of_the_town'
-            @talk_list = FactoryGirl.create_list :content, 2, content_category: @talk_cat
             get :dashboard, channel_type: 'talk'
           end
 
           it 'should return only talk content' do
-            assigns(:contents).should eq @talk_list
+            category_ids = assigns(:contents).collect(&:root_content_category_id)
+            expect(category_ids.uniq.count).to eq 1
+            expect(category_ids.uniq.first).to eq @talk_cat.id 
           end
         end
 
         context 'allow filtering by market' do
           before do
-            @market_cat = FactoryGirl.create :content_category, name: 'market'
-            @market_list = FactoryGirl.create_list :content, 2, content_category: @market_cat
             get :dashboard, channel_type: 'market'
           end
-        
+
           it 'should return only market content' do
-            assigns(:contents).should eq @market_list
+            category_ids = assigns(:contents).collect(&:root_content_category_id)
+            expect(category_ids.uniq.count).to eq 1
+            expect(category_ids.uniq.first).to eq @market_cat.id 
           end
         end
-
       end
     end
   end
