@@ -23,7 +23,7 @@ class PromotionBanner < ActiveRecord::Base
   has_one :promotion, as: :promotable
   has_many :content_promotion_banner_impressions
   has_many :contents, through: :content_promotion_banner_impressions
-  has_many :promotion_banner_reports
+  has_many :promotion_banner_reports, order: 'report_date DESC'
 
   attr_accessible :banner_image, :redirect_url, :remove_banner, :banner_cache,
     :campaign_start, :campaign_end, :max_impressions, :impression_count,
