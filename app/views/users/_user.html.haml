@@ -4,7 +4,7 @@
       %a.close{"data-dismiss" => "modal"} ×
       %h3 Change Role
     .global-roles{ style: user.is_organization_manager? ? 'display:none;' : '' }
-      = f.input :role_ids, collection: Role.where(name: ['admin', 'event_manager']), as: :radio_buttons,
+      = f.input :role_ids, collection: Role.where(resource_id: nil), as: :radio_buttons,
         label_method: lambda { |t| t.name.titleize }, label: false, checked: user.role_ids.first,
         hint: 'These are global (resourceless) roles. "Admin" here means full admin privileges over the site.'
       %h1 -- OR --
