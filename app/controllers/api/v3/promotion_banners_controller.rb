@@ -1,7 +1,6 @@
 module Api
   module V3
     class PromotionBannersController < ApiController
-      after_filter :event_track
 
       def track_click
         # use find_by_id because we want a return of nil instead
@@ -26,17 +25,6 @@ module Api
         else
           render json: @promotion_banner, serializer: PromotionBannerMetricsSerializer
         end
-      end
-
-      private
-
-      def event_track
-        props = {}
-        props.merge! @tracker.navigation_properties(@content.try(:channel_type), nil, url_for, params)
-        props.merge! @tracker.content_properties(@content)
-        props.merge! @tracker.banner_properties(@banner)
-
-        @tracker.track(@mixpanel_distinct_id, 'clickBannerAd', @current_api_user, props)
       end
 
     end

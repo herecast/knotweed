@@ -1,7 +1,6 @@
 module Api
   module V3
     class CommentsController < ApiController
-      after_filter :track, only: :create
       before_filter :check_logged_in!, only: [:create] 
       
       # @param the parent content id
@@ -76,16 +75,6 @@ module Api
           end
         end
 
-        def track
-          props = {}
-          props.merge! @tracker.navigation_properties(@comment.try(:channel_type),nil,url_for, params)
-
-          props.merge! @tracker.content_properties(@comment)
-
-          props.merge! @tracker.content_creation_properties('create', @comment.try(:parent).try(:id))
-
-          @tracker.track(@mixpanel_distinct_id, 'submitContent', @current_api_user, props)
-        end
     end
   end
 end
