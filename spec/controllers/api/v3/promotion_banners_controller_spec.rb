@@ -16,9 +16,9 @@ describe Api::V3::PromotionBannersController do
       response.status.should eq 200
     end
 
-    it 'should return all promtion banners' do
+    it 'should return all promotion banners' do
       subject
-      assigns(:promotion_banners).should eq PromotionBanner.all
+      assigns(:promotion_banners).sort.should eq PromotionBanner.all.sort
     end
   end
 
