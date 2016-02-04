@@ -3,7 +3,6 @@ module Api
     class EventsController < ApiController
 
       before_filter :check_logged_in!, only: [:create, :update]
-      after_filter :track_create, only: :create
 
       def update
         @event = Event.find(params[:id])
@@ -145,16 +144,6 @@ module Api
       def map_error_keys(errors)
         errors[:category] = errors.delete :event_category
         errors[:event_instances] = errors.delete :event_instances_attributes
-      end
-
-      private
-
-      def track_create
-        props = {}
-        props.merge! @tracker.navigation_properties('Event', 'event.create', url_for, params)
-        props.merge! @tracker.content_properties(@event.content)
-        props.merge! @tracker.content_creation_properties('create', nil)
-        @tracker.track(@mixpanel_distinct_id, 'submitContent', @current_api_user, props)
       end
 
     end
