@@ -97,6 +97,7 @@ Knotweed::Application.routes.draw do
       post 'promotion_banners/:promotion_banner_id/track_click', to: 'promotion_banners#track_click', as: :track_click
       get '/promotion_banners/:id/metrics', to: 'promotion_banners#metrics',
         as: :promotion_banner_metrics
+      resources 'promotion_banners', only: [:index]
       resources 'event_instances', only: [:index, :show, :destroy]
       resources 'comments', only: [:index, :create]
       resources 'listservs', only: [:index]

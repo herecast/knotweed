@@ -161,13 +161,9 @@ module Api
           end
         end
 
-        banners = PromotionBanner.joins(:promotion).
-          where('promotions.created_by = ? and promotable_type = "PromotionBanner"',
-                @current_api_user.id)
+        @contents = reg_conts
 
-        @contents = reg_conts + banners
-
-        render json: @contents, serializer: DashboardArraySerializer
+        render json: @contents, each_serializer: DashboardContentSerializer
       end
 
       def metrics

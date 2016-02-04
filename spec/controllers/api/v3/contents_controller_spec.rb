@@ -276,17 +276,6 @@ describe Api::V3::ContentsController do
           expect(all_content.collect(&:id)).to eql user_content_only.collect(&:id)
         end
 
-        context 'when user creates promotion banners' do
-          before do
-            FactoryGirl.create_list :promotion_banner, 2
-          end
-
-          it 'should be returned to the dashboard' do
-            pending 'Pending Removal'
-            subject
-            expect(assigns(:contents)).to eq (Content.all + PromotionBanner.all)
-          end
-        end
 
         describe 'sorting' do
           it 'allows sorting by specified parameters (pubdate)' do

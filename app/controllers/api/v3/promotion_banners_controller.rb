@@ -1,7 +1,21 @@
 module Api
   module V3
     class PromotionBannersController < ApiController
+      before_filter :check_logged_in!, only: :index
 
+      def index
+        params[:sort] ||= 'click_count DESC'
+        params[:page] ||= 1
+        params[:per_page] ||= 12
+
+        @promotion_banners = PromotionBanner.joins(:promotion).
+          where('promotions.created_by = ? and promotable_type = "PromotionBanner"', @current_api_user.id).
+          order(sanitize_sort_parameter(params[:sort])).
+          page(params[:page].to_i).per(params[:per_page].to_i)
+
+        render json: @promotion_banners, each_serializer: PromotionBannerSerializer
+      end
+      
       def track_click
         # use find_by_id because we want a return of nil instead
         # of causing an exception with find
@@ -25,6 +39,16 @@ module Api
         else
           render json: @promotion_banner, serializer: PromotionBannerMetricsSerializer
         end
+      end
+
+      protected
+
+      def sanitize_sort_parameter(sort)
+        sort_parts = sort.split(',')
+        sort_parts.select! do |pt|
+          pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
+        end
+        sort_parts.join(',')
       end
 
     end
