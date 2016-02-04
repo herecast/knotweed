@@ -1,18 +1,22 @@
-.row-fluid
-  %fieldset
-    - start_date = f.object.start_date
-    - end_date = f.object.end_date
-    = f.input :start_day, wrapper_html: { class: 'span2' },
+%fieldset
+  - start_date = f.object.start_date
+  - end_date = f.object.end_date
+  .row-fluid
+    = f.input :start_day, wrapper_html: { class: 'span4' },
       input_html: { value: start_date.try(:strftime, '%m/%d/%Y'), class: 'span9' }, as: :date_picker, required: true
-    = f.input :start_time, label: 'Start Time', wrapper_html: { class: 'span2' },
+    = f.input :start_time, label: 'Start Time', wrapper_html: { class: 'span4' },
       input_html: { value: start_date.try(:strftime, '%l:%M %P'), class: 'span8' }
-    = f.input :end_time, label: 'End Time', wrapper_html: { class: 'span2' },
+    = f.input :end_time, label: 'End Time', wrapper_html: { class: 'span4' },
       input_html: { value: end_date.try(:strftime, '%l:%M %P'), class: 'span8' }
+  .row-fluid
     = f.input :subtitle_override, wrapper_html: { class: 'span4' }, label: "Subtitle (opt)",
       input_html: { class: 'span12' }
-    = f.hidden_field :id
-    = f.hidden_field :_destroy
+    = f.input :presenter_name, wrapper_html: { class: 'span4' },
+      input_html: { class: 'span12' }
     %span.btn.btn-danger.pull-right.remove_fields remove
+  = f.hidden_field :id
+  = f.hidden_field :_destroy
+%hr
 :javascript
   jQuery(function() {
   $(".datetimepicker").datetimepicker();
