@@ -268,7 +268,9 @@ describe Api::V3::ContentsController do
         end
 
         it 'responds with the user\'s content' do
-          not_user_content = FactoryGirl.create :content, created_by: nil
+          not_user_content = FactoryGirl.create :content
+          # created_by automatically set by auditable mixin
+          not_user_content.update_attribute(:created_by, nil)
           subject
           all_content = assigns(:contents) 
           user_content_only = all_content.select{|c| c.created_by == @user} 
