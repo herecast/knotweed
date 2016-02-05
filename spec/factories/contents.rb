@@ -59,7 +59,7 @@ FactoryGirl.define do
     organization
     issue
     import_location
-    pubdate Time.now
+    pubdate {Time.now}
     source_category "Category"
     content_category
     authoremail 'fake@email.com'

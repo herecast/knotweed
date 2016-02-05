@@ -20,6 +20,24 @@ describe Api::V3::PromotionBannersController do
       subject
       assigns(:promotion_banners).sort.should eq PromotionBanner.all.sort
     end
+
+    describe 'sorting'  do
+      it 'accepts pubdate for sort' do
+        PromotionBanner.first.promotion.content.update_attribute :pubdate, 1.day.ago
+        get :index, format: :json, sort: 'pubdate DESC'
+        expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.pubdate}.last
+
+        get :index, format: :json, sort: 'pubdate ASC'
+        expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.pubdate}.first
+      end
+      it 'accepts title for sort' do
+        get :index, format: :json, sort: 'title DESC'
+        expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.title}.last
+
+        get :index, format: :json, sort: 'title ASC'
+        expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.title}.first
+      end
+    end
   end
 
   describe 'post track_click' do

@@ -8,10 +8,11 @@ module Api
         params[:page] ||= 1
         params[:per_page] ||= 12
 
-        @promotion_banners = PromotionBanner.joins(:promotion).
+        @promotion_banners = PromotionBanner.joins(:promotion => :content).
           where('promotions.created_by = ? and promotable_type = "PromotionBanner"', @current_api_user.id).
           order(sanitize_sort_parameter(params[:sort])).
           page(params[:page].to_i).per(params[:per_page].to_i)
+
 
         render json: @promotion_banners, each_serializer: PromotionBannerSerializer
       end
@@ -48,7 +49,7 @@ module Api
         sort_parts.select! do |pt|
           pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
         end
-        sort_parts.join(',')
+        sort_parts.join(',').gsub(/(pubdate|title)/,'contents.\1')
       end
 
     end
