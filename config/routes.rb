@@ -113,7 +113,7 @@ Knotweed::Application.routes.draw do
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
       # specifying path here to avoid deprecating the frontend even though we've changed
       # the modeling
-      resources 'organizations', only: [:index], path: 'publications'
+      resources 'organizations', only: [:index]
       resources 'news', only: [:index, :show]
       resources 'talk', only: [:index, :show, :create, :update]
       resources 'market_posts', only: [:index, :show, :create, :update]
