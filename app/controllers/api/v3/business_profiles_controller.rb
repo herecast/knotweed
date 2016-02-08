@@ -5,7 +5,9 @@ module Api
       before_filter :check_logged_in!, :parse_params!, only: [:create, :update]
 
       def index
-        @business_profiles = BusinessProfile.all
+        page = params[:page] || 1
+        per_page = params[:per_page] || 14
+        @business_profiles = BusinessProfile.page(page).per(per_page)
         render json: @business_profiles, each_serializer: BusinessProfileSerializer
       end
 
