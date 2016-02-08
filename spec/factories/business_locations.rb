@@ -34,6 +34,6 @@ FactoryGirl.define do
     state { Faker::Address.state }
     phone { Faker::PhoneNumber.phone_number }
     email { Faker::Internet.email }
-    hours { Faker::Lorem.sentence }
+    hours ['Mo-Fr 08:00-17:00']
   end
 end

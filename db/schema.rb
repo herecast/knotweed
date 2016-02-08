@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160118024030) do
+ActiveRecord::Schema.define(:version => 20160203233907) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -75,24 +75,32 @@ ActiveRecord::Schema.define(:version => 20160118024030) do
     t.string   "address"
     t.string   "phone"
     t.string   "email"
-    t.string   "hours"
-    t.datetime "created_at",                             :null => false
-    t.datetime "updated_at",                             :null => false
+    t.text     "hours"
+    t.datetime "created_at",                                                            :null => false
+    t.datetime "updated_at",                                                            :null => false
     t.integer  "organization_id"
     t.float    "latitude"
     t.float    "longitude"
     t.string   "venue_url"
-    t.boolean  "locate_include_name", :default => false
+    t.boolean  "locate_include_name",                                :default => false
     t.string   "city"
     t.string   "state"
     t.string   "zip"
-    t.string   "status"
     t.integer  "created_by"
     t.integer  "updated_by"
+    t.string   "status"
+    t.decimal  "service_radius",      :precision => 10, :scale => 0
   end
 
   add_index "business_locations", ["created_by"], :name => "index_business_locations_on_created_by"
   add_index "business_locations", ["name"], :name => "index_business_locations_on_name"
+
+  create_table "business_profiles", :force => true do |t|
+    t.integer  "business_location_id"
+    t.string   "biz_type"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+  end
 
   create_table "categories", :force => true do |t|
     t.string   "name"
@@ -312,6 +320,21 @@ ActiveRecord::Schema.define(:version => 20160118024030) do
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["title"], :name => "title"
 
+  create_table "contents_NT", :force => true do |t|
+    t.string   "title"
+    t.string   "subtitle"
+    t.string   "authors"
+    t.string   "subject"
+    t.text     "content"
+    t.integer  "issue_id"
+    t.integer  "location_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.boolean  "reviewed",       :default => false
+    t.integer  "lupdate_by"
+    t.integer  "publication_id"
+  end
+
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
     t.string   "title"
@@ -335,6 +358,10 @@ ActiveRecord::Schema.define(:version => 20160118024030) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
+
+  create_table "contents_id", :force => true do |t|
+    t.string "category", :limit => 128
+  end
 
   create_table "contents_locations", :force => true do |t|
     t.integer  "content_id"
@@ -735,6 +762,13 @@ ActiveRecord::Schema.define(:version => 20160118024030) do
     t.text     "description"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+  end
+
+  create_table "promote_options", :force => true do |t|
+    t.string  "promo_type",            :limit => 128
+    t.string  "name",                  :limit => 128
+    t.string  "reverse_publish_email", :limit => 128
+    t.boolean "active",                               :default => true
   end
 
   create_table "promotion_banner_reports", :force => true do |t|
