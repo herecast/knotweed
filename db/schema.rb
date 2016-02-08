@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160209234223) do
+ActiveRecord::Schema.define(:version => 20160203233907) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -75,24 +75,32 @@ ActiveRecord::Schema.define(:version => 20160209234223) do
     t.string   "address"
     t.string   "phone"
     t.string   "email"
-    t.string   "hours"
-    t.datetime "created_at",                             :null => false
-    t.datetime "updated_at",                             :null => false
+    t.text     "hours"
+    t.datetime "created_at",                                                            :null => false
+    t.datetime "updated_at",                                                            :null => false
     t.integer  "organization_id"
     t.float    "latitude"
     t.float    "longitude"
     t.string   "venue_url"
-    t.boolean  "locate_include_name", :default => false
+    t.boolean  "locate_include_name",                                :default => false
     t.string   "city"
     t.string   "state"
     t.string   "zip"
     t.integer  "created_by"
     t.integer  "updated_by"
     t.string   "status"
+    t.decimal  "service_radius",      :precision => 10, :scale => 0
   end
 
   add_index "business_locations", ["created_by"], :name => "index_business_locations_on_created_by"
   add_index "business_locations", ["name"], :name => "index_business_locations_on_name"
+
+  create_table "business_profiles", :force => true do |t|
+    t.integer  "business_location_id"
+    t.string   "biz_type"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+  end
 
   create_table "categories", :force => true do |t|
     t.string   "name"

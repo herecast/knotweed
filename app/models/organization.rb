@@ -24,6 +24,7 @@ class Organization < ActiveRecord::Base
   has_many :children, class_name: "Organization", foreign_key: "parent_id"
 
   has_many :contents
+  has_many :business_profiles, through: :contents
 
   has_many :content_sets
 
