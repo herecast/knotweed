@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160203233907) do
+ActiveRecord::Schema.define(:version => 20160208193704) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -68,6 +68,20 @@ ActiveRecord::Schema.define(:version => 20160203233907) do
     t.text     "edges"
     t.boolean  "is_trusted"
     t.string   "rule"
+  end
+
+  create_table "business_categories", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.string   "icon_class"
+    t.integer  "parent_id"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  create_table "business_categories_business_profiles", :id => false, :force => true do |t|
+    t.integer "business_category_id"
+    t.integer "business_profile_id"
   end
 
   create_table "business_locations", :force => true do |t|

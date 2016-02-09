@@ -126,6 +126,7 @@ Knotweed::Application.routes.draw do
       resources 'images', only: [:create, :update, :destroy]
 
       resources 'business_profiles', only: [:index, :show, :create, :update], path: 'businesses'
+      get '/businesses/categories', to: 'business_categories#index', as: :business_categories
     end
   end
 

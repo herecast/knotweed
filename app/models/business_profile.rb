@@ -8,5 +8,7 @@ class BusinessProfile < ActiveRecord::Base
   belongs_to :business_location
   accepts_nested_attributes_for :business_location
 
+  has_and_belongs_to_many :business_categories
+
   attr_accessible :content_attributes, :business_location_attributes, :biz_type
 end
