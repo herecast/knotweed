@@ -12,12 +12,9 @@
 #
 
 require 'spec_helper'
-#require 'lib/parsers/wordpress_blog_parser.rb'
+require 'parsers/wordpress_blog_parser.rb'
 
 describe Parser do
-  pending 'Commented out YouTube test because of CircleCI failure to load parser'
-
-=begin
   # the test input and expected output is kept outside the test in spec/fixtures/wp_import
   # each _input file must have a matching named file ending with _output.
   describe 'when content includes YouTube URLs' do
@@ -45,6 +42,5 @@ describe Parser do
       end
     end
   end
-=end
 
 end
