@@ -2,7 +2,10 @@
 
 FactoryGirl.define do
   factory :business_feedback do
-    created_by
     business_profile
+    satisfaction true
+    cleanliness true
+    price true
+    recommend true
   end
 end
