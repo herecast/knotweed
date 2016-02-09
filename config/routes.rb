@@ -127,6 +127,7 @@ Knotweed::Application.routes.draw do
 
       resources 'business_profiles', only: [:index, :show, :create, :update], path: 'businesses'
       get '/businesses/categories', to: 'business_categories#index', as: :business_categories
+      post '/businesses/:id/feedback', to: 'business_feedbacks#create', as: :leave_feedback
     end
   end
 
