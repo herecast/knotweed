@@ -38,10 +38,20 @@ More specific logging for imports and publishing is found in log/import_records 
 Development
 =========================
 
-Using Zeus
+Using Zeus Standalone
 --------------------------
 Zeus (https://github.com/burke/zeus) is a gem that preloads your rails application to make running specs, console, and other commands quicker. The gem recommends that you not include it in your Gemfile because it's much faster if it's not run via bundler. Each developer is responsible for installing and using zeus on their own.
 
     gem install zeus
 
 To use zeus, simply run `zeus start` from your application directory. That will give you a list of commands you can run, but the short and sweet of it is that `zeus console` will spin up a Rails console almost instantly and `zeus test` or `zeus test spec/models/model_spec.rb` will run your specs.
+
+Using Guard
+-------------------------------
+Guard will watch your code as you make changes to it, and run any rspec files that match what you're working on after you save the file. (https://github.com/guard/guard) It helps keep the test feedback loop short because you don't have to manually trigger your test.
+
+To have guard automatically watch changes, simple run the following command in another terminal window:
+
+    bundle exec guard
+
+The App has both Guard and Zeus in the Gemfile, and they're setup to work together.  Guard will automatically start/stop Zeus as needed. No separate Zeus install or commands are needed.
