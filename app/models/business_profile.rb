@@ -13,4 +13,18 @@ class BusinessProfile < ActiveRecord::Base
   has_many :business_feedbacks
 
   attr_accessible :content_attributes, :business_location_attributes, :biz_type
+
+  # returns hash of aggregated feedbacks
+  #
+  # @return [Hash] average feedback values
+  def feedback
+    averages = business_feedbacks.select('AVG(satisfaction) sat, AVG(cleanliness) cle,' +
+                                         'AVG(price) pri, AVG(recommend) rec').first
+    {
+      satisfaction: averages.sat,
+      cleanliness: averages.cle,
+      price: averages.pri,
+      recommend: averages.rec
+    }
+  end
 end

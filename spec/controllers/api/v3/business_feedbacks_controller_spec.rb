@@ -11,7 +11,14 @@ describe Api::V3::BusinessFeedbacksController do
       @profile = FactoryGirl.create :business_profile
     end
 
-    subject { post :create, id: @profile.id, feedback: {} }
+    subject do
+      post :create, id: @profile.id, feedback: {
+        satisfaction: 0,
+        cleanliness: 0,
+        price: 1,
+        recommend: 1
+      }
+    end
 
     it 'should create a business feedback object' do
       expect{subject}.to change{ BusinessFeedback.count }.by 1
