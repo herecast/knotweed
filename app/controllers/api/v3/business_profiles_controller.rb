@@ -24,7 +24,6 @@ module Api
         else
           render json: { errors: @business_profile.errors.messages },
             status: :unprocessable_entity
-          render json: { errors: 'blargh' }
         end
       end
 

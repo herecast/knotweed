@@ -10,5 +10,7 @@ class BusinessProfile < ActiveRecord::Base
 
   has_and_belongs_to_many :business_categories
 
+  has_many :business_feedbacks
+
   attr_accessible :content_attributes, :business_location_attributes, :biz_type
 end
