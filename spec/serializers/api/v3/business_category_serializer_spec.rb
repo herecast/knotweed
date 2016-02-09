@@ -8,10 +8,10 @@ describe Api::V3::BusinessCategorySerializer do
 
   let (:serialized_object) { JSON.parse(Api::V3::BusinessCategorySerializer.new(@business_category, root: false).to_json) }
 
-  describe 'children' do
+  describe 'child_categories' do
     it 'should serialize child records' do
-      serialized_object['children'].length.should eq 1
-      serialized_object['children'][0].should eq JSON.parse(Api::V3::BusinessCategorySerializer.new(@child, root: false).to_json)
+      serialized_object['child_categories'].length.should eq 1
+      serialized_object['child_categories'][0].should eq JSON.parse(Api::V3::BusinessCategorySerializer.new(@child, root: false).to_json)
     end
   end
 
