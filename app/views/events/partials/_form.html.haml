@@ -98,9 +98,12 @@
               = f.input :contact_email, input_html: { class: "input-block-level" }, wrapper_html: { class: 'span6' }
             .row-fluid
               = f.input :event_category, input_html: { class: 'input-block-level' }, wrapper_html: { class: 'span6' }
+              .span6
             .row-fluid
               = f.input :cost_type, input_html: { class: "input-block-level" }, wrapper_html: { class: 'span6' }
               = f.input :cost, input_html: { class: "input-block-level" }, wrapper_html: { class: 'span6' }
+
+            = f.input :registration_deadline, as: :date_picker, input_html: { class: "input-block-level" }
 
         %hr
         %h3 Event Instances
