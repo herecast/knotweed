@@ -6,14 +6,32 @@ describe Api::V3::BusinessProfilesController do
       @bps = FactoryGirl.create_list :business_profile, 3
     end
 
-    subject! { get :index, format: :json }
+    subject { get :index, format: :json }
 
     it 'has 200 status code' do
+      subject
       response.code.should eq '200'
     end
 
     it 'loads the business profiles' do
+      subject
       assigns(:business_profiles).should eq @bps
+    end
+
+    describe 'searching' do
+      before do
+        @search = 'AZSXDCFB123543'
+      end
+
+      subject { get :index, format: :json, query: @search }
+
+      it 'should return matches', focus: true do
+        sr_content = FactoryGirl.create :content, title: @search
+        @search_result = FactoryGirl.create :business_profile, content: sr_content
+        index
+        subject
+        assigns(:business_profiles).should eq [@search_result]
+      end
     end
   end
 
@@ -102,5 +120,4 @@ describe Api::V3::BusinessProfilesController do
       expect{subject}.to change { @business_profile.business_location.reload.phone }.to @update_params[:phone]
     end
   end
-
 end

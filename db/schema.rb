@@ -74,10 +74,16 @@ ActiveRecord::Schema.define(:version => 20160209044521) do
     t.string   "name"
     t.string   "description"
     t.string   "icon_class"
-    t.integer  "parent_id"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
+
+  create_table "business_categories_business_categories", :id => false, :force => true do |t|
+    t.integer "parent_id"
+    t.integer "child_id"
+  end
+
+  add_index "business_categories_business_categories", ["parent_id", "child_id"], :name => "business_categories_index", :unique => true
 
   create_table "business_categories_business_profiles", :id => false, :force => true do |t|
     t.integer "business_category_id"
@@ -736,20 +742,6 @@ ActiveRecord::Schema.define(:version => 20160209044521) do
     t.string   "notifyable_type"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
-  end
-
-  create_table "old_organizations", :force => true do |t|
-    t.string   "name"
-    t.string   "org_type"
-    t.text     "notes"
-    t.string   "tagline"
-    t.text     "links"
-    t.text     "social_media"
-    t.text     "general"
-    t.string   "header"
-    t.string   "logo"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
   end
 
   create_table "organizations", :force => true do |t|

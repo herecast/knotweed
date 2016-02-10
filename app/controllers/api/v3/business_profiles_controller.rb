@@ -7,7 +7,12 @@ module Api
       def index
         page = params[:page] || 1
         per_page = params[:per_page] || 14
-        @business_profiles = BusinessProfile.page(page).per(per_page)
+        if params[:query].present?
+          opts = { select: '*, weight()', page: page, per_page: per_page }
+          @business_profiles = BusinessProfile.search(params[:query], opts)
+        else
+          @business_profiles = BusinessProfile.page(page).per(per_page)
+        end
         render json: @business_profiles, each_serializer: BusinessProfileSerializer
       end
 
