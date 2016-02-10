@@ -13,19 +13,21 @@ module Api
         else
           @business_profiles = BusinessProfile.page(page).per(per_page)
         end
-        render json: @business_profiles, each_serializer: BusinessProfileSerializer
+        render json: @business_profiles, each_serializer: BusinessProfileSerializer,
+          root: 'businesses'
       end
 
       def show
         @business_profile = Content.find(params[:id]).channel
-        render json: @business_profile, serializer: BusinessProfileSerializer
+        render json: @business_profile, serializer: BusinessProfileSerializer,
+          root: 'business'
       end
 
       def create
         @business_profile = BusinessProfile.new(params[:business_profile])
         if @business_profile.save
           render json: @business_profile, serializer: BusinessProfileSerializer,
-            status: 201
+            status: 201, root: 'business'
         else
           render json: { errors: @business_profile.errors.messages },
             status: :unprocessable_entity

@@ -6,10 +6,10 @@ describe Api::V3::BusinessCategorySerializer do
     @child = FactoryGirl.create :business_category, parent_ids: [@parent.id]
   end
 
-  describe 'child_category_ids' do
+  describe 'child_ids' do
     it 'should list child IDs' do
       serialized_object = JSON.parse(Api::V3::BusinessCategorySerializer.new(@parent, root: false).to_json)
-      serialized_object['child_category_ids'].should eq [@child.id]
+      serialized_object['child_ids'].should eq [@child.id]
     end
   end
 

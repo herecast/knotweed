@@ -2,10 +2,10 @@ module Api
   module V3
     class BusinessCategorySerializer < ActiveModel::Serializer
 
-      attributes :id, :name, :description, :icon_class, :child_category_ids,
+      attributes :id, :name, :description, :icon_class, :child_ids,
         :parent_ids
 
-      def child_category_ids
+      def child_ids
         object.child_ids
       end
 
