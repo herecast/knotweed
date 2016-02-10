@@ -67,7 +67,6 @@ module Api
       end
 
       def index
-        opts = {}
         opts = { select: '*, weight()' }
         opts[:order] = 'pubdate DESC'
         opts[:with] = {}
