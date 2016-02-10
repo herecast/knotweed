@@ -3,7 +3,7 @@ module Api
     class BusinessProfileSerializer < ActiveModel::Serializer
 
       attributes :id, :organization_id, :name, :phone, :email, :website,
-        :address, :city, :state, :zip, :biz_type, :lat, :lng, :service_radius,
+        :address, :city, :state, :zip, :biz_type, :coords, :service_radius,
         :hours, :details, :logo, :images, :category_ids, :feedback
 
       def id; object.content.id; end
@@ -21,10 +21,16 @@ module Api
       def city; object.business_location.city; end
       def state; object.business_location.state; end
       def zip; object.business_location.zip; end
-      def lat; object.business_location.latitude; end
-      def lng; object.business_location.longitude; end
       def service_radius; object.business_location.service_radius; end
       def hours; object.business_location.hours; end
+
+      def coords
+        {
+          lat: object.business_location.latitude,
+          lng: object.business_location.longitude
+        }
+      end
+
 
       def category_ids; object.business_category_ids; end
       def feedback; object.feedback; end
