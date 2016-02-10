@@ -88,5 +88,4 @@ POSTMARK_API_TOKEN: postmark-token
 
 PROMO_RELEVANCE_SCORE_THRESHOLD: .10
 
-production:
-  PRERENDER_TOKEN: prerender-token
+PRERENDER_TOKEN: prerender-token
