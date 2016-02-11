@@ -1233,6 +1233,44 @@ describe Content do
     end
   end
 
+  describe '.if_event_only_when_instances scope;' do
+    subject { Content.if_event_only_when_instances.to_a }
+
+    context 'when event exists with instances' do
+      let!(:event) { FactoryGirl.create :event }
+
+      it 'includes the event content' do
+        expect( subject ).to include(event.content)
+      end
+    end
+
+    context 'When event exists containing no instances' do
+      let!(:event_no_instances) { FactoryGirl.create :event, skip_event_instance: true }
+
+      it 'does not include the event content' do
+        expect( subject ).to_not include(event_no_instances.content)
+      end
+    end
+
+    context "When non-event content exists" do
+      let!(:other_content) { FactoryGirl.create :content }
+
+      it 'includes content' do
+        expect( subject ).to include(other_content)
+      end
+    end
+
+    context 'When mixed event ( with no instances ), and other content exist' do
+      let!(:event_no_instances) { FactoryGirl.create :event, skip_event_instance: true }
+      let!(:other_content) { FactoryGirl.create :content }
+
+      it 'includes other content, but not events with no instances' do
+        expect( subject ).to include(other_content)
+        expect( subject ).to_not include(event_no_instances)
+      end
+    end
+  end
+
   private
 
     def get_body_from_file(filename)
