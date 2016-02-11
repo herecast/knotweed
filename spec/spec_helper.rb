@@ -13,7 +13,6 @@ end if ENV["COVERAGE"] || ENV["CI"]
 ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
-require 'email_spec'
 require 'webmock/rspec'
 require 'pry-debugger' unless ENV['RM_INFO']
 require 'vcr'
@@ -29,8 +28,6 @@ VCR.configure do |c|
 end
 
 RSpec.configure do |config|
-  config.include(EmailSpec::Helpers)
-  config.include(EmailSpec::Matchers)
   config.include AuthenticationHelpers, type: :controller
   # ## Mock Framework
   #
