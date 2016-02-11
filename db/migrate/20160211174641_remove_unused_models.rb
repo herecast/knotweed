@@ -23,5 +23,6 @@ class RemoveUnusedModels < ActiveRecord::Migration
       t.string :object_resource_text
       t.string :realm
       t.timestamps
+    end
   end
 end
