@@ -6,7 +6,7 @@ module Api
         :venue_url, :venue_latitude, :venue_longitude, :event_url, :venue_locate_name, 
         :admin_content_url, :content, :can_edit, :title, :comment_count,:presenter_name,
         :registration_deadline, :registration_url, :registration_phone,
-        :registration_email, :ical_url
+        :registration_email, :ical_url, :category
 
       SHARED_EVENT_ATTRIBUTES = [:cost, :cost_type, :contact_phone, :contact_email, :event_url]
 
@@ -54,6 +54,10 @@ module Api
 
       def ical_url
         serialization_options[:ical_url]
+      end
+
+      def category
+        object.event.event_category
       end
 
     end
