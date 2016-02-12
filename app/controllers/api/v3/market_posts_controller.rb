@@ -134,6 +134,10 @@ module Api
           render json: @market_post, serializer: DetailedMarketPostSerializer,
             can_edit: can_edit
         end
+
+        if @current_api_user.present?
+          @market_post.record_user_visit(@repository, @current_api_user.email)
+        end
       end
 
       def contact

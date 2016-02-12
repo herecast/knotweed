@@ -33,6 +33,9 @@ module Api
           @talk.increment_view_count!
           render json: @talk, serializer: DetailedTalkSerializer, root: 'talk'
         end
+        if @current_api_user.present?
+          @talk.record_user_visit(@repository, @current_api_user.email)
+        end
       end
 
       def create

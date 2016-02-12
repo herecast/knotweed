@@ -1401,6 +1401,24 @@ class Content < ActiveRecord::Base
     end
   end
 
+  # update DSP (recommendation api) with content_id, user identifier (email address) and timestamp for each
+  # visit to a content detail page
+  #
+  # @param repo [Repository] repository to post to
+  # @param email - the user identifier we are currently using
+  # @return - response from recommendation api
+  def record_user_visit(repo, email)
+    logger.debug "REPO = #{repo.inspect}"
+    response = HTTParty.post(repo.recommendation_endpoint + '/user', {
+      body: {
+        key: Figaro.env.ontotext_recommend_key,
+        userid: email,
+        contentid: BASE_URI + "/#{id}"
+      },
+    })
+    logger.debug "RESPONSE= #{response.inspect}"
+  end
+
   def uri
     CGI.escape(BASE_URI + "/#{id}")
   end
