@@ -76,6 +76,7 @@ module Api
 
       def show
         @event_instance = EventInstance.find(params[:id])
+        @content = @event_instance.event.content
         if @current_api_user.present?
           url = edit_event_url(@event_instance.event) if @current_api_user.has_role? :admin
         end
@@ -84,6 +85,9 @@ module Api
           ical_url = @requesting_app.uri + event_instances_ics_path(params[:id]) 
         end
         @event_instance.event.content.increment_view_count!
+        if @current_api_user.present? and @repository.present?
+          @content.record_user_visit(@repository, @current_api_user.email)
+        end
         respond_to do |format|
           format.json { render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
             can_edit: can_edit, admin_content_url: url, ical_url: ical_url }

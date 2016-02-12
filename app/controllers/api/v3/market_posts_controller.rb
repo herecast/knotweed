@@ -130,6 +130,9 @@ module Api
           head :no_content
         else
           @market_post.increment_view_count!
+          if @current_api_user.present? and @repository.present?
+            @market_post.record_user_visit(@repository, @current_api_user.email)
+          end
           can_edit = (@current_api_user.present? && (@market_post.created_by == @current_api_user))
           render json: @market_post, serializer: DetailedMarketPostSerializer,
             can_edit: can_edit

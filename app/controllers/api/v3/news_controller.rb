@@ -45,6 +45,7 @@ module Api
 
         if @current_api_user.present?
           url = edit_content_url(@news) if @current_api_user.has_role? :admin
+          @news.record_user_visit(@repository, @current_api_user.email) if @repository.present?
         else
           url = nil
         end

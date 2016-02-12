@@ -31,6 +31,9 @@ module Api
           head :no_content
         else
           @talk.increment_view_count!
+          if @current_api_user.present? and @repository.present?
+            @talk.record_user_visit(@repository, @current_api_user.email)
+          end
           render json: @talk, serializer: DetailedTalkSerializer, root: 'talk'
         end
       end
