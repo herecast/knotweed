@@ -11,11 +11,12 @@
 #
 
 class ConsumerApp < ActiveRecord::Base
-  attr_accessible :name, :repository_id, :uri, :organization_ids
+  attr_accessible :name, :repository_id, :uri, :organization_ids, :import_job_ids
 
   has_and_belongs_to_many :wufoo_forms
   has_and_belongs_to_many :messages
   has_and_belongs_to_many :organizations
+  has_and_belongs_to_many :import_jobs
   belongs_to :repository
 
   validates_presence_of :uri

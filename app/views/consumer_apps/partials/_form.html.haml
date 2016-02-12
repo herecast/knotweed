@@ -4,5 +4,6 @@
   = f.input :uri, input_html: { class: "input-block-level" }
   = f.association :repository, input_html: { class: "input-block-level" }
   = f.association :organizations, input_html: { class: "chosen-select input-block-level" }
+  = f.association :import_jobs, as: :check_boxes
   .form-actions
     = submit_tag nil, class: "btn btn-primary"

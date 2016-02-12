@@ -1470,6 +1470,15 @@ class Content < ActiveRecord::Base
     increment_integer_attr!(:view_count) unless User.current.try(:skip_analytics?)
   end
 
+  #returns the URI path that matches UX2 for this content record
+  def ux2_uri
+    return "" unless root_content_category.present?
+    prefix = root_content_category.try(:name)
+    # convert talk_of_the_town to talk
+    prefix = 'talk' if prefix == 'talk_of_the_town'
+    "/#{prefix}/#{id}"
+  end
+
   private
 
   def query_promo_similarity_index(query_term, repo)

@@ -28,13 +28,15 @@ describe ImportJob do
 
   describe "perform job" do
     before do
+      prerender_cache_stub
       # note we need sufficient entries in the config hash here for the 
       # output to validate.
       @config = { "timestamp" => "2011-06-07T12:25:00", "guid" => "100", "other_param" => "hello", "pubdate" => "2011-06-07T12:25:00",
                   "source" => "not empty", "title" => "      not empty and with whitespace  ",
                   "content" => "<p> </p> <p> </p> Content begins here" }
       @parser = FactoryGirl.create(:parser, filename: "test/parser_that_outputs_config.rb")
-      @job = FactoryGirl.create(:import_job, parser: @parser, config: @config)
+      @consumer_apps = FactoryGirl.create_list :consumer_app, 2
+      @job = FactoryGirl.create(:import_job, parser: @parser, config: @config, consumer_apps: @consumer_apps)
       # run job via delayed_job hooks (even though delayed_job doesnt run in tests)
       @job.enqueue_job
       # another job whose output fails validation
@@ -73,6 +75,10 @@ describe ImportJob do
     it "should strip empty p tags from the beginning of content" do
       c = Content.where(title: @config["title"].strip).first
       c.content.include?("<p> </p>").should == false
+    end
+
+    it "should send a request to prerender recache" do 
+      expect(WebMock).to have_requested(:post, "http://api.prerender.io/recache").twice
     end
 
   end
