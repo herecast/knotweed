@@ -41,8 +41,11 @@ describe Api::V3::CommentsController do
     
       subject! { get :index, format: :json, content_id: @event.content.id }
 
-      it 'should return the results flattened' do
-        expected = {comments: [comment_format(@comment1), comment_format(@comment2), comment_format(@comment3)]}.stringify_keys
+      it 'should return the results flattened and ordered' do
+        # pubdate time varies based on when the Factory creates them, so need to order first
+        # to match what the controller does
+        comments = [@comment1, @comment2, @comment3].sort{ |a,b| b.pubdate <=> a.pubdate }.map{ |c| comment_format(c) }
+        expected = {comments: comments}.stringify_keys
         JSON.parse(response.body).should eq(expected)
       end
     end
