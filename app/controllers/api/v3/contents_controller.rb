@@ -150,18 +150,11 @@ module Api
             join content_categories as root_category
                 on root_category.id = contents.root_content_category_id')
         end
-        reg_conts = scope.order(sort_by).
-          page(params[:page].to_i).per(params[:per_page].to_i)
 
-        reg_conts.select! do |c|
-          if c.channel_type == 'Event'
-            c.channel.event_instances.count > 0
-          else
-            true
-          end
-        end
-
-        @contents = reg_conts
+        @contents = scope.if_event_only_when_instances
+                         .order(sort_by)
+                         .page(params[:page].to_i)
+                         .per(params[:per_page].to_i)
 
         render json: @contents, each_serializer: DashboardContentSerializer
       end

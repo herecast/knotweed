@@ -138,6 +138,16 @@ class Content < ActiveRecord::Base
 
   scope :published, -> { where(published: true) }
 
+  scope :if_event_only_when_instances, -> {
+    where("(IF( #{table_name}.channel_type = 'Event',
+              (select count(*)
+               from event_instances ei
+               join events e on ei.event_id = e.id
+               where e.id = #{table_name}.channel_id),
+              1) > 0
+           )")
+  }
+
   NEW_FORMAT = "New"
   EXPORT_FORMATS = [NEW_FORMAT]
   DEFAULT_FORMAT = NEW_FORMAT
