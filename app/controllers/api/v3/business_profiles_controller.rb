@@ -75,13 +75,9 @@ module Api
           end
         end
 
-        # type is a reserved keyword so backend is biz_type
-        params[:business_profile][:biz_type] = params[:business_profile].delete :type if params[:business_profile].has_key? :type
-
-        params[:business_profile].delete :categories
+        params[:business_profile][:business_category_ids] = params[:business_profile].delete :category_ids
       end
 
-      
     end
   end
 end

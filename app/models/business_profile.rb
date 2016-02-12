@@ -12,7 +12,8 @@ class BusinessProfile < ActiveRecord::Base
 
   has_many :business_feedbacks
 
-  attr_accessible :content_attributes, :business_location_attributes, :biz_type
+  attr_accessible :content_attributes, :business_location_attributes, :has_retail_location,
+    :business_category_ids
 
   # returns hash of aggregated feedbacks
   #

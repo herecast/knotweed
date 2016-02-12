@@ -25,7 +25,7 @@ describe Api::V3::BusinessProfilesController do
 
       subject { get :index, format: :json, query: @search }
 
-      it 'should return matches', focus: true do
+      it 'should return matches' do
         sr_content = FactoryGirl.create :content, title: @search
         @search_result = FactoryGirl.create :business_profile, content: sr_content
         index
@@ -53,6 +53,7 @@ describe Api::V3::BusinessProfilesController do
     before do
       @user = FactoryGirl.create :user
       api_authenticate user: @user
+      @biz_cat = FactoryGirl.create :business_category
       @create_params = {
         name: Faker::Company.name,
         phone: Faker::PhoneNumber.phone_number,
@@ -62,10 +63,10 @@ describe Api::V3::BusinessProfilesController do
         city: Faker::Address.city,
         state: Faker::Address.state_abbr,
         zip: Faker::Address.zip,
-        type: 'goes_to',
+        has_retail_location: true,
         hours: ['Mo,Tu 13:00-17:00'],
         details: Faker::Hipster.sentence,
-        categories: []
+        category_ids: [@biz_cat.id]
       }
     end
 
@@ -85,6 +86,11 @@ describe Api::V3::BusinessProfilesController do
       subject
       BusinessProfile.last.business_location.should eq BusinessLocation.last
     end
+
+    it 'should associate the new profile with the business category' do
+      subject
+      BusinessProfile.last.business_categories.should eq [@biz_cat]
+    end
   end
 
   describe 'PUT update' do
@@ -98,7 +104,7 @@ describe Api::V3::BusinessProfilesController do
         website: Faker::Internet.url,
         phone: Faker::PhoneNumber.phone_number,
         details: Faker::Hipster.sentence,
-        type: 'comes_to'
+        has_retail_location: false
       }
     end
 
@@ -113,7 +119,7 @@ describe Api::V3::BusinessProfilesController do
     end
 
     it 'should update the business_profile' do
-      expect{subject}.to change { @business_profile.reload.biz_type }.to @update_params[:type]
+      expect{subject}.to change { @business_profile.reload.has_retail_location? }.to @update_params[:has_retail_location]
     end
 
     it 'should update the business_location' do

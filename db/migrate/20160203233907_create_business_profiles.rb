@@ -2,7 +2,7 @@ class CreateBusinessProfiles < ActiveRecord::Migration
   def up
     create_table :business_profiles do |t|
       t.integer :business_location_id
-      t.string :biz_type
+      t.boolean :has_retail_location, default: true
 
       t.timestamps
     end
