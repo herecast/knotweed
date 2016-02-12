@@ -47,12 +47,13 @@ class ImportJob < ActiveRecord::Base
 
   has_many :notifiers, as: :notifyable
   has_many :notifyees, through: :notifiers, class_name: "User", source: "user"
+  has_and_belongs_to_many :consumer_apps
   
   
   attr_accessible :config, :name, :parser_id, :source_path, :job_type, 
                   :organization_id, :frequency, :archive, :content_set_id,
                   :run_at, :stop_loop, :automatically_publish, :repository_id,
-                  :publish_method, :job_type
+                  :publish_method, :job_type, :consumer_app_ids
   
   validates :status, inclusion: { in: %w(failed running success scheduled) }, allow_nil: true
 
@@ -181,8 +182,10 @@ class ImportJob < ActiveRecord::Base
           end
         end
       end
+
       if data.present?
-        docs_to_contents(data)
+        records = docs_to_contents(data)
+        update_prerender(records)
       else
         # sleep for a bit if there is no new contents to import and we're supposed to keep looping
         sleep(5.0) unless self.stop_loop
@@ -229,6 +232,7 @@ class ImportJob < ActiveRecord::Base
     failures = 0
     filtered = 0
     log = import_record.log_file
+    created_contents = []
     docs.each do |article|
       next if article.empty?
 
@@ -252,6 +256,7 @@ class ImportJob < ActiveRecord::Base
           filtered += 1
         else
           c = Content.create_from_import_job(article, self)
+          created_contents.push(c)
           log.info("#{Time.now}: content #{c.id} created")
           successes += 1
           if automatically_publish and repository.present?
@@ -270,6 +275,7 @@ class ImportJob < ActiveRecord::Base
     import_record.failures += failures
     import_record.filtered += filtered
     import_record.save
+    created_contents
   end
 
   def import_filter(article)
@@ -306,4 +312,18 @@ class ImportJob < ActiveRecord::Base
   def last_run_at
     last_import_record.try(:created_at)
   end
+
+  private
+    
+    def update_prerender(records)
+      # no need to prerender talk items since they are not sharable
+      records.reject { |r| r.root_content_category.try(:name) == 'talk_of_the_town' }
+      consumer_apps.each do |consumer_app|
+        records.each do |content|
+          HTTParty.post("http://api.prerender.io/recache", body: {prerenderToken: Figaro.env.prerender_token, 
+                        url: consumer_app.uri + content.ux2_uri }.to_json,
+                        :headers => {'Content-Type' => 'application/json'})
+        end
+      end
+    end
 end

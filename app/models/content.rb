@@ -138,6 +138,16 @@ class Content < ActiveRecord::Base
 
   scope :published, -> { where(published: true) }
 
+  scope :if_event_only_when_instances, -> {
+    where("(IF( #{table_name}.channel_type = 'Event',
+              (select count(*)
+               from event_instances ei
+               join events e on ei.event_id = e.id
+               where e.id = #{table_name}.channel_id),
+              1) > 0
+           )")
+  }
+
   NEW_FORMAT = "New"
   EXPORT_FORMATS = [NEW_FORMAT]
   DEFAULT_FORMAT = NEW_FORMAT
@@ -1458,6 +1468,15 @@ class Content < ActiveRecord::Base
   def increment_view_count!
     # check if Thread.current[:user] has skip_analytics? before incrementing
     increment_integer_attr!(:view_count) unless User.current.try(:skip_analytics?)
+  end
+
+  #returns the URI path that matches UX2 for this content record
+  def ux2_uri
+    return "" unless root_content_category.present?
+    prefix = root_content_category.try(:name)
+    # convert talk_of_the_town to talk
+    prefix = 'talk' if prefix == 'talk_of_the_town'
+    "/#{prefix}/#{id}"
   end
 
   private
