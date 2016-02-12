@@ -17,7 +17,7 @@ require 'parsers/wordpress_blog_parser.rb'
 describe Parser do
   # the test input and expected output is kept outside the test in spec/fixtures/wp_import
   # each _input file must have a matching named file ending with _output.
-  describe 'when content includes YouTube URLs' do
+  describe 'when content includes YouTube or Vimeo URLs' do
     input_files = Dir['spec/fixtures/wp_import/*_input']
     output_files = Dir['spec/fixtures/wp_import/*_output']
     config = {'host' => 'example.com', "username"=>"testuser",
