@@ -13,9 +13,6 @@ gem 'jquery-rails', '~> 3.1.2'
 gem "mysql2", '~> 0.3.14'
 gem "haml-rails", "~> 0.4"
 gem "database_cleaner", "~> 1.2.0", :group => :test
-gem "rb-inotify", "~> 0.9.3", :group => :development, :require => false
-gem "rb-fsevent", "~> 0.9.3", :group => :development, :require => false
-gem "rb-fchange", "~> 0.0.6", :group => :development, :require => false
 gem "devise", "~> 3.2.2"
 gem 'cancancan', '~> 1.10.0'
 gem "rolify", "~> 3.2.0"
