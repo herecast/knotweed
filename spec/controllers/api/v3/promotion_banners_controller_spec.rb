@@ -4,9 +4,14 @@ describe Api::V3::PromotionBannersController do
 
   describe 'GET index' do
     before do
-      FactoryGirl.create_list :promotion_banner, 2
       @user = FactoryGirl.create :user
       api_authenticate user: @user
+      pbs = FactoryGirl.create_list :promotion_banner, 2
+      # need to set this manually to ensure that it's set in time
+      # for the example to run
+      pbs.each do |pb|
+        pb.promotion.update_column :created_by, @user.id
+      end
     end
 
     subject { get :index, format: :json }

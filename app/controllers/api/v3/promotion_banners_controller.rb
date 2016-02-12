@@ -13,7 +13,6 @@ module Api
           order(sanitize_sort_parameter(params[:sort])).
           page(params[:page].to_i).per(params[:per_page].to_i)
 
-
         render json: @promotion_banners, each_serializer: PromotionBannerSerializer
       end
       
