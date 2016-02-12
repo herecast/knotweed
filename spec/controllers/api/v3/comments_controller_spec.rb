@@ -29,20 +29,26 @@ describe Api::V3::CommentsController do
       before do
         @event = FactoryGirl.create :event
         @comment1 = FactoryGirl.create :comment
-        @comment1.content.update_attribute :parent, @event.content
+        @comment1.content.update_attributes(parent_id: @event.content.id,
+                                            pubdate: 2.hours.ago)
         @comment1.content.update_attribute :created_by, FactoryGirl.create(:user)
         @comment2 = FactoryGirl.create :comment
-        @comment2.content.update_attribute :parent, @comment1.content
+        @comment2.content.update_attributes(parent_id: @comment1.content.id,
+                                            pubdate: 1.hour.ago)
         @comment2.content.update_attribute :created_by, FactoryGirl.create(:user)
         @comment3 = FactoryGirl.create :comment
-        @comment3.content.update_attribute :parent, @comment2.content
+        @comment3.content.update_attributes(parent_id: @comment1.content.id,
+                                            pubdate: Time.now)
         @comment3.content.update_attribute :created_by, FactoryGirl.create(:user)
       end
     
       subject! { get :index, format: :json, content_id: @event.content.id }
 
-      it 'should return the results flattened' do
-        expected = {comments: [comment_format(@comment1), comment_format(@comment2), comment_format(@comment3)]}.stringify_keys
+      it 'should return the results flattened and ordered' do
+        # pubdate time varies based on when the Factory creates them, so need to order first
+        # to match what the controller does
+        comments = [@comment3, @comment2, @comment1].map{ |c| comment_format(c) }
+        expected = {comments: comments}.stringify_keys
         JSON.parse(response.body).should eq(expected)
       end
     end
