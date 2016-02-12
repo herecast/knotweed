@@ -15,5 +15,5 @@ $("#organization_business_location_ids").val(new_val);
 / otherwise, if a business_location select box is on the page, we need to add the new one to it.
 if ($("#event_venue_id").length > 0) {
 $("#event_venue_id").append("#{ j options_from_collection_for_select([@business_location], 'id', 'select_option_label') }");
-$("#event_venue_id").select2("val", "#{@business_location.id}").trigger('change');
+$("#event_venue_id").val("#{@business_location.id}").trigger("chosen:updated");
 }

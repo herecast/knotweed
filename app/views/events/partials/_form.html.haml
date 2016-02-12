@@ -88,7 +88,7 @@
                   .span10offset1#embedded_business_location_form{ style: "display: none;" }
                 .row-fluid
                   .controls.span12
-                    = f.input_field :venue_id, class: "span12 select2", 
+                    = f.input_field :venue_id, class: "span12 chosen-select-single-deselect", 
                       collection: BusinessLocation.all, label_method: :select_option_label,
                       include_blank: true, placeholder: "Select a venue"
             = f.input :event_url, input_html: { class: "input-block-level" }

@@ -3,13 +3,9 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 jQuery ->
-  # content form logic
-  # edit venue link logic
-  $("#event_venue_id").select2
-    allowClear: true
   # hide and show based on whether a venue is selected
   $("#event_venue_id").on 'change', ->
-    val = $(this).select2('val')
+    val = $(this).val()
     if val.length > 0
       $("#edit_venue_link").show()
       form_url = $("#edit_venue_link").data("formUrl")
