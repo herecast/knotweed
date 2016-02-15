@@ -34,7 +34,7 @@ class BusinessLocation < ActiveRecord::Base
 
   attr_accessible :address, :email, :hours, :name, :organization_id, :phone, 
     :latitude, :longitude, :venue_url, :locate_include_name, :city, :state,
-    :zip, :status
+    :zip, :status, :service_radius
 
   serialize :hours, Array
 
