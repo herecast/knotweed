@@ -69,7 +69,7 @@ module Api
         
         params[:business_profile][:content_attributes][:raw_content] = params[:business_profile].delete :details if params[:business_profile].has_key? :details
 
-        [:phone, :email, :address, :city, :state, :zip, :hours].each do |attr|
+        [:phone, :email, :address, :city, :state, :zip, :hours, :service_radius].each do |attr|
           if params[:business_profile].has_key? attr
             params[:business_profile][:business_location_attributes][attr] = params[:business_profile].delete attr
           end
