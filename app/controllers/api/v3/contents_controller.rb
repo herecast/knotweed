@@ -127,23 +127,24 @@ module Api
         params[:page] ||= 1
         params[:per_page] ||= 12
 
-        filters = {created_by: @current_api_user.id}
-        @news_cat = ContentCategory.find_by_name 'news'
-        @talk_cat = ContentCategory.find_by_name 'talk_of_the_town'
-        @market_cat = ContentCategory.find_by_name 'market'
+        scope = Content.where(created_by: @current_api_user)
+        @news_cat = ContentCategory.find_or_create_by_name 'news'
+        @talk_cat = ContentCategory.find_or_create_by_name 'talk_of_the_town'
+        @market_cat = ContentCategory.find_or_create_by_name 'market'
 
-        if params[:channel_type] == 'news' && @news_cat.present?
-          filters[:content_category_id] =  @news_cat.id
+        if params[:channel_type] == 'news'
+          scope = scope.where(content_category_id: @news_cat.id)
         elsif params[:channel_type] == 'events'
-          filters[:channel_type] = 'Event'
-        elsif params[:channel_type] == 'talk' && @talk_cat.present?
-          filters[:content_category_id] = @talk_cat.id
-        elsif params[:channel_type] == 'market' && @market_cat.present?
-          filters[:content_category_id] = @market_cat.id
+          scope = scope.where(channel_type: 'Event')
+        elsif params[:channel_type] == 'talk'
+          scope = scope.where(content_category_id: @talk_cat.id)
+        elsif params[:channel_type] == 'market'
+          scope = scope.where(content_category_id: @market_cat.id)
+        else # default -- include any of the above
+          scope = scope.where("content_category_id IN (?) OR channel_type = 'Event'", [@news_cat.id, @talk_cat.id, @market_cat.id])
         end
 
         sort_by = sanitize_sort_parameter(params[:sort])
-        scope = Content.where(filters)
 
         if sort_by.include?('root_category')
           scope = scope.joins('
