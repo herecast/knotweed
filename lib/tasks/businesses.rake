@@ -9,6 +9,7 @@ namespace :businesses do
     # create business profiles for each record
     businesses.each do |b|
       content_attrs = {
+        pubdate: Time.zone.now,
         raw_content: b['details'],
         title: b['name']
       }
