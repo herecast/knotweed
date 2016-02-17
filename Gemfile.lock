@@ -455,11 +455,8 @@ GEM
     whenever (0.9.4)
       chronic (>= 0.6.3)
     yard (0.8.7.6)
-<<<<<<< HEAD
-=======
     yomu (0.1.10)
       mime-types (~> 1.23)
->>>>>>> import-bsd-data
     zeus (0.15.4)
       method_source (>= 0.6.7)
 
