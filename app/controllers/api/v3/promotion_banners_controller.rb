@@ -48,7 +48,7 @@ module Api
         sort_parts.select! do |pt|
           pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
         end
-        sort_parts.join(',').gsub(/(pubdate|title)/,'contents.\1')
+        sort_parts.join(',').gsub(/(pubdate|title)/,'contents.\1').gsub('view_count','impression_count')
       end
 
     end
