@@ -15,7 +15,7 @@ module Api
       def daily_impression_counts
         # NOTE, I don't love performing the `limit` here but it's just temporary.
         # We want to implement sorting, paging through the API down the road.
-        object.promotion_banner_reports.limit(30).map do |report|
+        object.promotion_banner_reports.order('report_date DESC').limit(30).map do |report|
           {
             report_date: report.report_date,
             impression_count: report.impression_count
@@ -24,7 +24,7 @@ module Api
       end
 
       def daily_click_counts
-        object.promotion_banner_reports.limit(30).map do |report|
+        object.promotion_banner_reports.order('report_date DESC').limit(30).map do |report|
           {
             report_date: report.report_date,
             click_count: report.click_count
