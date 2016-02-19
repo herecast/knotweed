@@ -81,9 +81,11 @@ class Content < ActiveRecord::Base
   has_and_belongs_to_many :locations
   
   has_many :images, order: "`primary` DESC", as: :imageable, inverse_of: :imageable, dependent: :destroy
-  belongs_to :organization
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes, :images
+
+  belongs_to :organization
+  delegate :name, to: :organization, prefix: true
 
   belongs_to :parent, class_name: "Content"
   has_many :children, class_name: "Content", foreign_key: "parent_id"
@@ -132,9 +134,6 @@ class Content < ActiveRecord::Base
 
   scope :events, -> { joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",
                                                      "event", "sale_event") }
-
-  scope :externally_visible, -> { Content.joins(:organization)
-        .joins("inner join content_categories_organizations cco on organizations.id = cco.organization_id AND contents.content_category_id = cco.content_category_id")}
 
   scope :published, -> { where(published: true) }
 
@@ -229,14 +228,6 @@ class Content < ActiveRecord::Base
     "<http://www.subtext.org/#{organization.class.to_s}/#{organization.id}>"
   end
 
-  def parent_uri
-    "#{BASE_URI}/#{parent_id}" unless parent_id.nil?
-  end
-
-  def organization_name
-    organization.try(:name)
-  end
-
   def location
     unless import_location.nil?
       import_location.city if import_location.status == ImportLocation::STATUS_GOOD
@@ -246,12 +237,6 @@ class Content < ActiveRecord::Base
   def category
     return content_category.name unless content_category.nil?
   end
-
-  # return parent category name if it exists
-  def parent_category
-    return self.try(:content_category).try(:parent).try(:name)
-  end
-
 
   def category= new_cat
     cat = ContentCategory.find_or_create_by_name new_cat unless new_cat.nil?
@@ -963,18 +948,6 @@ class Content < ActiveRecord::Base
     end
   end
 
-  # returns full conversation regardless of where in the conversation this doc is
-  def get_full_ordered_thread
-    p = find_root_parent
-    thread = [[p.id, 0]]
-    downstream = p.get_ordered_downstream_thread
-    if downstream.nil?
-      thread
-    else
-      thread + p.get_ordered_downstream_thread
-    end
-  end
-
   # helper to retrieve the category that the content should be published with
   def publish_category
     if organization.present? and organization.category_override.present?
@@ -1356,24 +1329,6 @@ class Content < ActiveRecord::Base
 
   def is_market_post?
     channel_type.present? and channel_type == "MarketPost"
-  end
-
-
-  def self.truncated_content_fields
-    [:id, :title,:pubdate, :authors, :category, 
-     :parent_category, :organization_name, :organization_id,
-     :parent_uri, :category_reviewed, :authoremail, :subtitle]
-  end
-
-  # Checks if a content is within its source's external_categories
-  #
-  # @return [Boolean]
-  def externally_visible
-    if organization.try(:external_categories).include? try(:content_category)
-      true
-    else
-      false
-    end
   end
 
   # pings a repository to retrieve similar content

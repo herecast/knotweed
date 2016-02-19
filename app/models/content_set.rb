@@ -49,9 +49,4 @@ class ContentSet < ActiveRecord::Base
   validates_presence_of :organization
   validates_presence_of :name
   
-  # for rails admin enum field
-  def import_method_enum
-    IMPORT_METHODS
-  end
-
 end

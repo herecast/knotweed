@@ -20,9 +20,11 @@
 class Promotion < ActiveRecord::Base
   include Auditable
   belongs_to :organization
+  delegate :name, to: :organization, prefix: true
   belongs_to :content
 
   belongs_to :promotable, polymorphic: true, inverse_of: :promotion
+  delegate :banner_image, :redirect_url, :listserv, :sent_at, to: :promotable, prefix: true
 
   # NOTE: this relationship is not identifying contents that it promotes,
   # but rather, contents that it is shown with on the consumer site.
@@ -48,12 +50,6 @@ class Promotion < ActiveRecord::Base
   def init
     self.active = true if self.active.nil?
   end
-
-  # def update_active_promotions
-  #   if promotable_type == "PromotionBanner"
-  #     PromotionBanner::update_active_promotions
-  #   end
-  # end
 
   protected
 

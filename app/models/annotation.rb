@@ -46,13 +46,6 @@ class Annotation < ActiveRecord::Base
     end
   end
 
-  def cached_http_get(url, params)
-    Rails.cache.fetch([url, params], :expires => 1.hour) do
-      response = HTTParty.get(url, params)
-      {:code => response.code, :body => response.body}
-    end
-  end
-
   def set_edges
     unless self.edges.present?
       self.edges = self.find_edges

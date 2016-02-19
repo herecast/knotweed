@@ -36,10 +36,6 @@ module Api
         object.root_content_category.name
       end
 
-      def organization_name
-        object.organization.name
-      end
-
       def venue_name
         if object.channel_type == 'Event'
           object.channel.try(:venue).try(:name)
