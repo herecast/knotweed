@@ -24,7 +24,8 @@ class Promotion < ActiveRecord::Base
   belongs_to :content
 
   belongs_to :promotable, polymorphic: true, inverse_of: :promotion
-  delegate :banner_image, :redirect_url, :listserv, :sent_at, to: :promotable, prefix: true
+  delegate :banner_image, :redirect_url, :listserv, :sent_at, :banner_image?,
+    :boost, to: :promotable, prefix: true
 
   # NOTE: this relationship is not identifying contents that it promotes,
   # but rather, contents that it is shown with on the consumer site.

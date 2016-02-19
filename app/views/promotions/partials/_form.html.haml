@@ -24,7 +24,7 @@
       - if promotion.promotable.is_a? PromotionListserv
         = g.association :listserv
       - elsif promotion.promotable.is_a? PromotionBanner
-        = image_tag promotion.promotable.banner_image.url if promotion.promotable.banner_image?
+        = image_tag promotion.promotable_banner_image.url if promotion.promotable_banner_image?
         = g.input :banner_image
         = g.input :redirect_url, input_html: { class: "input-block-level" }
     = f.label :content
