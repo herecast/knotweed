@@ -86,6 +86,7 @@ class Content < ActiveRecord::Base
   attr_accessible :images_attributes, :images
 
   belongs_to :parent, class_name: "Content"
+  delegate :view_count, :comment_count, :commenter_count, to: :parent, prefix: true
   has_many :children, class_name: "Content", foreign_key: "parent_id"
 
   has_many :promotions
