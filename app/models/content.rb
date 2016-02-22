@@ -1384,7 +1384,7 @@ class Content < ActiveRecord::Base
   # @return [Array<Content>] list of similar content
   def similar_content(repo, num_similar=8)
     if similar_content_overrides.present?
-      Content.where(id: similar_content_overrides).includes(:content_category)
+      Content.where(id: similar_content_overrides).order('pubdate DESC').limit(num_similar).includes(:content_category)
     else
       # some logic in here that I don't truly know the purpose of...
       # note -- the "category" method being called on self here
