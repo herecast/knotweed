@@ -1271,6 +1271,28 @@ describe Content do
     end
   end
 
+  describe 'similar_content' do
+    context 'with similar_content_overrides present' do
+      before do
+        @override3 = FactoryGirl.create :content, pubdate: 1.week.ago
+        @override1 = FactoryGirl.create :content, pubdate: 1.day.ago
+        @override2 = FactoryGirl.create :content, pubdate: 3.days.ago
+        @ids = [@override1, @override2, @override3].map{ |o| o.id }
+        @content = FactoryGirl.create(:content, similar_content_overrides: @ids)
+        @repo = FactoryGirl.create :repository
+      end
+
+      it 'should return the contents specified as overrides' do
+        result_ids = @content.similar_content(@repo).map{ |c| c.id }
+        @ids.each {|id| result_ids.should include id }
+      end
+
+      it 'should return the contents in pubdate DESC order' do
+        @content.similar_content(@repo).should eq [@override1, @override2, @override3]
+      end
+    end
+  end
+
   private
 
     def get_body_from_file(filename)

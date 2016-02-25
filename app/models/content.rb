@@ -1376,15 +1376,15 @@ class Content < ActiveRecord::Base
     end
   end
 
-  # pings a repository to retrieve similar content
-  # and returns array of related content objects
+  # Retrieves similar content (as configured in similar_content_overrides for sponsored content or determined by
+  # DSP via relevance for 'normal' content) and returns array of related content objects
   #
   # @param repo [Repository] repository to query
   # @param num_similar [Integer] number of results to return
   # @return [Array<Content>] list of similar content
   def similar_content(repo, num_similar=8)
     if similar_content_overrides.present?
-      Content.where(id: similar_content_overrides).includes(:content_category)
+      Content.where(id: similar_content_overrides).order('pubdate DESC').limit(num_similar).includes(:content_category)
     else
       # some logic in here that I don't truly know the purpose of...
       # note -- the "category" method being called on self here
