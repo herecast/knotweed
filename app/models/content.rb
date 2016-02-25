@@ -1376,8 +1376,8 @@ class Content < ActiveRecord::Base
     end
   end
 
-  # pings a repository to retrieve similar content
-  # and returns array of related content objects
+  # Retrieves similar content (as configured in similar_content_overrides for sponsored content or determined by
+  # DSP via relevance for 'normal' content) and returns array of related content objects
   #
   # @param repo [Repository] repository to query
   # @param num_similar [Integer] number of results to return
