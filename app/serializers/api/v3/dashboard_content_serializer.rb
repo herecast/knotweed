@@ -59,6 +59,22 @@ module Api
         end
       end
 
+      def view_count
+        if object.parent.present?
+          object.parent_view_count
+        else
+          object.view_count
+        end
+      end
+
+      def comment_count
+        if object.parent.present?
+          object.parent_comment_count
+        else
+          object.comment_count
+        end
+      end
+
     end
   end
 end
