@@ -21,6 +21,9 @@ class Location < ActiveRecord::Base
   DEFAULT_LOCATION = Figaro.env.has_key?(:default_location) ? Figaro.env.default_location \
     : 'Upper Valley'
 
+  # coordinates for the center of the upper valley
+  DEFAULT_LOCATION_COORDS = [43.645, -72.243]
+
   has_and_belongs_to_many :organizations
   has_and_belongs_to_many :listservs
   has_and_belongs_to_many :contents

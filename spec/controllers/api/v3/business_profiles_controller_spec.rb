@@ -4,10 +4,18 @@ describe Api::V3::BusinessProfilesController do
   describe 'GET index' do
     before do
       @bps = FactoryGirl.create_list :business_profile, 3
+      # set all the BP.business_locations to be in the upper valley
+      # so they return with the default search options
+      @bps.each do |bp|
+        bp.business_location.update_attributes(
+          latitude: Location::DEFAULT_LOCATION_COORDS[0],
+          longitude: Location::DEFAULT_LOCATION_COORDS[1]
+        )
+      end
       index
     end
 
-    subject { get :index, format: :json }
+    subject { get :index }
 
     it 'has 200 status code' do
       subject
@@ -22,16 +30,16 @@ describe Api::V3::BusinessProfilesController do
     describe 'searching' do
       before do
         @search = 'AZSXDCFB123543'
+        @result = BusinessProfile.first
+        @result.content.update_attribute :title, @search
+        index
       end
 
-      subject { get :index, format: :json, query: @search }
+      subject { get :index, query: @search }
 
       it 'should return matches' do
-        sr_content = FactoryGirl.create :content, title: @search
-        @search_result = FactoryGirl.create :business_profile, content: sr_content
-        index
         subject
-        assigns(:business_profiles).should eq [@search_result]
+        assigns(:business_profiles).should eq [@result]
       end
 
       describe 'by category_id' do

@@ -12,15 +12,19 @@ module Api
         opts = { select: '*, weight()', page: page, per_page: per_page, with: {} }
 
         if params[:lat].present? and params[:lng].present?
-          # convert to radians
-          lat = Math::PI * params[:lat].to_f / 180
-          lng = Math::PI * params[:lng].to_f / 180
-          opts[:geo] = [lat,lng]
-          radius = params[:radius]
-          # sphinx takes kilometers, but assumption is we are dealing with miles
-          opts[:with][:geodist] = 0.0..(radius.to_f*MI_TO_KM) if radius.present?
-          opts[:order] = "geodist ASC"
+          lat = params[:lat]
+          lng = params[:lng]
+        else # default to center of Upper Valley
+          lat,lng = Location::DEFAULT_LOCATION_COORDS
         end
+
+        # convert to radians
+        opts[:geo] = [lat,lng].map{ |coord| coord.to_f * Math::PI / 180 }
+        radius = params[:radius] || 15 # default 15 miles
+        # sphinx takes meters, but assumption is we are dealing with miles,
+        # so need to convert
+        opts[:with][:geodist] = 0.0..(radius.to_f*MI_TO_KM*1000)
+        opts[:order] = "geodist ASC"
         
         if params[:category_id].present?
           opts[:with][:category_ids] = [params[:category_id]]
