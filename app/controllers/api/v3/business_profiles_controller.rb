@@ -2,6 +2,8 @@ module Api
   module V3
     class BusinessProfilesController < ApiController
 
+      MI_TO_KM = 1.60934
+
       before_filter :check_logged_in!, :parse_params!, only: [:create, :update]
 
       def index
@@ -15,7 +17,8 @@ module Api
           lng = Math::PI * params[:lng].to_f / 180
           opts[:geo] = [lat,lng]
           radius = params[:radius]
-          opts[:with][:geodist] = 0.0..radius.to_f if radius.present?
+          # sphinx takes kilometers, but assumption is we are dealing with miles
+          opts[:with][:geodist] = 0.0..(radius.to_f*MI_TO_KM) if radius.present?
           opts[:order] = "geodist ASC"
         end
         
