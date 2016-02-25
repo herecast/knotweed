@@ -29,6 +29,7 @@ end
 
 RSpec.configure do |config|
   config.include AuthenticationHelpers, type: :controller
+  config.include RequestHelpers, type: :request
   # ## Mock Framework
   #
   # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:
