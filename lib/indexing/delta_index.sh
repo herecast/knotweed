@@ -18,12 +18,13 @@ elif [ -f $RAILS_ROOT/tmp/delta_indexing.lock ]; then
 else
   echo "$(date): indexing delta indices" >> $LOG_FILE
   touch $RAILS_ROOT/tmp/delta_indexing.lock
-  /usr/bin/indexer -c $CONFIG_FILE content_delta event_instance_delta business_location_delta --rotate >> $LOG_FILE
+  /usr/bin/indexer -c $CONFIG_FILE content_delta event_instance_delta business_location_delta business_profile_delta --rotate >> $LOG_FILE
   sleep 2
   echo "$(date): checking delta indices" >> $INDEXTOOL_LOG
   /usr/bin/indextool -c $CONFIG_FILE --check content_delta >> $INDEXTOOL_LOG
   /usr/bin/indextool -c $CONFIG_FILE --check event_instance_delta >> $INDEXTOOL_LOG
   /usr/bin/indextool -c $CONFIG_FILE --check business_location_delta >> $INDEXTOOL_LOG
+  /usr/bin/indextool -c $CONFIG_FILE --check business_profile_delta >> $INDEXTOOL_LOG
   rm $RAILS_ROOT/tmp/delta_indexing.lock
   exit 0
 fi

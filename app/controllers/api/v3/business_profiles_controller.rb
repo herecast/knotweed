@@ -7,12 +7,23 @@ module Api
       def index
         page = params[:page] || 1
         per_page = params[:per_page] || 14
-        if params[:query].present?
-          opts = { select: '*, weight()', page: page, per_page: per_page }
-          @business_profiles = BusinessProfile.search(params[:query], opts)
-        else
-          @business_profiles = BusinessProfile.page(page).per(per_page)
+        opts = { select: '*, weight()', page: page, per_page: per_page, with: {} }
+
+        if params[:lat].present? and params[:lng].present?
+          # convert to radians
+          lat = Math::PI * params[:lat].to_f / 180
+          lng = Math::PI * params[:lng].to_f / 180
+          opts[:geo] = [lat,lng]
+          radius = params[:radius]
+          opts[:with][:geodist] = 0.0..radius.to_f if radius.present?
+          opts[:order] = "geodist ASC"
         end
+        
+        if params[:category_id].present?
+          opts[:with][:category_ids] = [params[:category_id]]
+        end
+
+        @business_profiles = BusinessProfile.search(params[:query], opts)
         render json: @business_profiles, each_serializer: BusinessProfileSerializer,
           root: 'businesses'
       end

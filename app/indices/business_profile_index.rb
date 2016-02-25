@@ -8,4 +8,8 @@ ThinkingSphinx::Index.define(:business_profile,
   indexes content.raw_content, as: :content
   indexes business_location.city
   indexes business_location.state
+
+  has "RADIANS(business_locations.latitude)",  :as => :latitude,  :type => :float
+  has "RADIANS(business_locations.longitude)", :as => :longitude, :type => :float
+  has business_categories.id, as: :category_ids, multi: true
 end

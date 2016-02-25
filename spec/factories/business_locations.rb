@@ -32,6 +32,7 @@ FactoryGirl.define do
     address { Faker::Address.street_address }
     city { Faker::Address.city }
     state { Faker::Address.state }
+    zip { Faker::Address.zip }
     phone { Faker::PhoneNumber.phone_number }
     email { Faker::Internet.email }
     hours ['Mo-Fr 08:00-17:00']

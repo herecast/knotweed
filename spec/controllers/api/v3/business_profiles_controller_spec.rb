@@ -4,6 +4,7 @@ describe Api::V3::BusinessProfilesController do
   describe 'GET index' do
     before do
       @bps = FactoryGirl.create_list :business_profile, 3
+      index
     end
 
     subject { get :index, format: :json }
@@ -32,6 +33,54 @@ describe Api::V3::BusinessProfilesController do
         subject
         assigns(:business_profiles).should eq [@search_result]
       end
+
+      describe 'by category_id' do
+        before do
+          @cat = FactoryGirl.create :business_category
+          @bps.first.business_categories << @cat
+          index
+        end
+
+        it 'should return filtered results' do
+          get :index, category_id: @cat.id
+          assigns(:business_profiles).should eq [@bps.first]
+        end
+      end
+
+      describe 'given lat/lng' do
+        before do
+          # have to set the lat/lngs of the business locations manually
+          # as geocoder just uses the same coords for everything in test environments
+          BusinessLocation.all.each do |bl|
+            bl.update_attributes(
+              latitude: Faker::Address.latitude,
+              longitude: Faker::Address.longitude
+            )
+          end
+          index
+        end
+
+        it 'should return results within radius if specified' do
+          bp = BusinessProfile.first
+          get :index, lat: bp.business_location.latitude, lng: bp.business_location.longitude,
+            radius: 100 # note -- because of a lack of precision in the generated lat/lngs (and because
+            # radius is measured in meters) we can't just set this to 0.1 or something. 100 seems to work.
+            # It's theoretically possible that this could return another randomly located result, but the odds
+            # of that are very very low.
+          assigns(:business_profiles).should eq [bp]
+        end
+
+        it 'should order results by distance' do
+          get :index, lat: Faker::Address.latitude, lng: Faker::Address.longitude
+          bps = assigns(:business_profiles)
+          bps.each_index do |i|
+            if i < bps.count-1
+              bps[i].distance.should be < bps[i+1].distance
+            end
+          end
+        end
+      end
+
     end
   end
 
