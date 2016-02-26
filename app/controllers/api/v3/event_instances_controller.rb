@@ -29,19 +29,22 @@ module Api
         opts[:conditions] = {}
         opts[:sql] = { include: {event: [{content: :images}, :venue]}}
 
-        start_date = Chronic.parse(params[:date_start]).beginning_of_day if params[:date_start].present?
+        if params[:date_start].present?
+          start_date = Chronic.parse(params[:date_start]).beginning_of_day
+        else
+          start_date = Date.today.beginning_of_day
+        end
         end_date = Chronic.parse(params[:date_end]).end_of_day if params[:date_end].present?
 
         opts[:with][:published] = 1 if @repository.present?
 
-        if start_date.present?
-          if end_date.present?
-            opts[:with][:start_date] = start_date..end_date
-          else
-            opts[:with][:start_date] = start_date..60.days.from_now
-          end
-        elsif end_date.present?
-          opts[:with][:start_date] = Time.now..end_date 
+        if end_date.present?
+          opts[:with][:start_date] = start_date..end_date
+        else
+          # NOTE: we can't do a `greater than` search with a Sphinx attribute filter
+          # without some funny business that involves changing the index,
+          # so instead we're just setting this to 1 year in advance.
+          opts[:with][:start_date] = start_date..1.year.from_now
         end
 
         if params[:category].present?
