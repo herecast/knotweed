@@ -1293,6 +1293,13 @@ describe Content do
     end
   end
 
+  describe 'title=t' do
+    it 'should automatically strip the title attribute' do
+      c = FactoryGirl.create :content, title: '   This has Whitespace at Beginning And End  '
+      c.title.should eq c.title.strip
+    end
+  end
+
   private
 
     def get_body_from_file(filename)

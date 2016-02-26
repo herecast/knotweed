@@ -180,6 +180,11 @@ class Content < ActiveRecord::Base
 
   BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt')) 
 
+  # ensure that we never save titles with leading/trailing whitespace
+  def title=t
+    write_attribute(:title, t.to_s.strip)
+  end
+
   # callback that is run after a contents_repositories entry is added
   # sets content.published = true IF the repository is the "production"
   # repository
