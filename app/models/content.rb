@@ -182,6 +182,11 @@ class Content < ActiveRecord::Base
 
   BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt')) 
 
+  # ensure that we never save titles with leading/trailing whitespace
+  def title=t
+    write_attribute(:title, t.to_s.strip)
+  end
+
   # callback that is run after a contents_repositories entry is added
   # sets content.published = true IF the repository is the "production"
   # repository
@@ -385,8 +390,8 @@ class Content < ActiveRecord::Base
       # multiple guids even though it's the same content. the logic below allow us to detect existing content in these cases.
       if existing_content.nil?
         conditions = { authoremail: content.authoremail, channel_type: nil, pubdate: (content.pubdate.try(:beginning_of_day)..content.pubdate.try(:end_of_day)) }
-        # exclude the list serve name - the leading [TownName] from the title
-        partial_title = content.title.split(']')[1].try(:strip)
+        # exclude the list serve name [TownName] from the title
+        partial_title = content.title.gsub(/\[.*\] /, '').try(:strip)
         title_condition = []
         if partial_title.present?
           title_condition.push "title like ?", '%' + partial_title
