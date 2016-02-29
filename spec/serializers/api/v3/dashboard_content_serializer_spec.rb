@@ -10,7 +10,8 @@ describe Api::V3::DashboardContentSerializer do
   context 'with a parent object' do
     before do
       @market_cat = FactoryGirl.create :content_category, name: 'market'
-      @parent = FactoryGirl.create :content, content_category: @market_cat
+      @parent = FactoryGirl.create :content, content_category: @market_cat,
+        view_count: 25, comment_count: 19
       @content.update_attribute :parent_id, @parent.id
     end
 
@@ -22,6 +23,14 @@ describe Api::V3::DashboardContentSerializer do
       serialized_object['parent_content_type'].should eq(@parent.root_content_category.name)
     end
 
+    it 'should use the parent\'s view_count' do
+      serialized_object['view_count'].should eq(@parent.view_count)
+    end
+
+    it 'should use the parent\'s comment_count' do
+      serialized_object['comment_count'].should eq(@parent.comment_count)
+    end
+
     context 'that is an event' do
       before do
         @parent = FactoryGirl.create :event
@@ -31,7 +40,6 @@ describe Api::V3::DashboardContentSerializer do
       it 'should include parent_event_instance_id' do
         serialized_object['parent_event_instance_id'].should eq(@parent.event_instances.first.id)
       end
-
     end
   end
 
