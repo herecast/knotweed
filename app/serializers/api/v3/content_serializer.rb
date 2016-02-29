@@ -74,7 +74,7 @@ module Api
 
       def view_count
         if object.parent.present?
-          object.parent.view_count
+          object.parent_view_count
         else
           object.view_count
         end
@@ -82,7 +82,7 @@ module Api
 
       def commenter_count
         if object.parent.present?
-          object.parent.commenter_count
+          object.parent_commenter_count
         else
           object.commenter_count
         end
@@ -90,7 +90,7 @@ module Api
 
       def comment_count
         if object.parent.present?
-          object.parent.comment_count
+          object.parent_comment_count
         else
           object.comment_count
         end

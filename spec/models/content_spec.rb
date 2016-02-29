@@ -287,12 +287,21 @@ describe Content do
       before do
         FactoryGirl.create :content_category, name: 'news'
         org = FactoryGirl.create :organization
-        @orig_data = {title: 'The Book of Worms', guid: '35q5j35jq3j53qj5kjq5', location: Faker::Address.street_name, organization_id: org.id, authoremail: Faker::Internet.email, pubdate: DateTime.now, source_content_id: '3538538', source_category: 'Category', content_category: 'Category 422', content_locations: [FactoryGirl.create(:location).city] }
+        @orig_data = {title: 'The Book of Worms',
+                      guid: '35q5j35jq3j53qj5kjq5',
+                      location: Faker::Address.street_name,
+                      organization_id: org.id,
+                      authoremail: Faker::Internet.email,
+                      pubdate: DateTime.now,
+                      source_content_id: '3538538',
+                      source_category: 'Category',
+                      content_category: 'Category 422',
+                      content_locations: [FactoryGirl.create(:location).city] }
         @c1 = Content.create_from_import_job(@orig_data)
         @new_data = @orig_data.merge({source_content_id: @orig_data[:source_content_id] + '7',
                                     location: @orig_data[:location] + ' different',
                                     content_locations: [FactoryGirl.create(:location).city],
-                                    guid: "53939itqjg3q0353jt",
+                                    guid: '53939itqjg3q0353jt',
                                     pubdate: DateTime.now + 1.hour})
         @c2 = Content.create_from_import_job(@new_data)
       end
@@ -331,6 +340,21 @@ describe Content do
           @c5.id.should eq @c6.id
           @c5.locations.count.should eq 2
           @c5.locations.include?(@c6.locations.first).should be_true
+        end
+      end
+
+      context 'when post is in response to a reply to an original post by the same author' do
+        before do
+          @orig_data[:title] = '[Norwich ListServ] Town Audit'
+          @new_data[:title] = 'Re: [Norwich ListServ] Town Audit'
+          @c7 = Content.create_from_import_job(@orig_data)
+          @c8 = Content.create_from_import_job(@new_data)
+        end
+
+        it 'should not update the existing content' do
+          @c7.id.should_not eq @c8.id
+          @c7.locations.count.should eq 2
+          @c8.locations.count.should eq 1
         end
       end
 
@@ -1219,6 +1243,35 @@ describe Content do
         expect( subject ).to include(other_content)
         expect( subject ).to_not include(event_no_instances)
       end
+    end
+  end
+
+  describe 'similar_content' do
+    context 'with similar_content_overrides present' do
+      before do
+        @override3 = FactoryGirl.create :content, pubdate: 1.week.ago
+        @override1 = FactoryGirl.create :content, pubdate: 1.day.ago
+        @override2 = FactoryGirl.create :content, pubdate: 3.days.ago
+        @ids = [@override1, @override2, @override3].map{ |o| o.id }
+        @content = FactoryGirl.create(:content, similar_content_overrides: @ids)
+        @repo = FactoryGirl.create :repository
+      end
+
+      it 'should return the contents specified as overrides' do
+        result_ids = @content.similar_content(@repo).map{ |c| c.id }
+        @ids.each {|id| result_ids.should include id }
+      end
+
+      it 'should return the contents in pubdate DESC order' do
+        @content.similar_content(@repo).should eq [@override1, @override2, @override3]
+      end
+    end
+  end
+
+  describe 'title=t' do
+    it 'should automatically strip the title attribute' do
+      c = FactoryGirl.create :content, title: '   This has Whitespace at Beginning And End  '
+      c.title.should eq c.title.strip
     end
   end
 

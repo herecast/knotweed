@@ -88,6 +88,7 @@ class Content < ActiveRecord::Base
   delegate :name, to: :organization, prefix: true
 
   belongs_to :parent, class_name: "Content"
+  delegate :view_count, :comment_count, :commenter_count, to: :parent, prefix: true
   has_many :children, class_name: "Content", foreign_key: "parent_id"
 
   has_many :promotions
@@ -177,6 +178,11 @@ class Content < ActiveRecord::Base
                   sale_event sports wanted)
 
   BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt')) 
+
+  # ensure that we never save titles with leading/trailing whitespace
+  def title=t
+    write_attribute(:title, t.to_s.strip)
+  end
 
   # callback that is run after a contents_repositories entry is added
   # sets content.published = true IF the repository is the "production"
@@ -367,8 +373,8 @@ class Content < ActiveRecord::Base
       # multiple guids even though it's the same content. the logic below allow us to detect existing content in these cases.
       if existing_content.nil?
         conditions = { authoremail: content.authoremail, channel_type: nil, pubdate: (content.pubdate.try(:beginning_of_day)..content.pubdate.try(:end_of_day)) }
-        # exclude the list serve name - the leading [TownName] from the title
-        partial_title = content.title.split(']')[1].try(:strip)
+        # exclude the list serve name [TownName] from the title
+        partial_title = content.title.gsub(/\[.*\] /, '').try(:strip)
         title_condition = []
         if partial_title.present?
           title_condition.push "title like ?", '%' + partial_title
@@ -1331,15 +1337,15 @@ class Content < ActiveRecord::Base
     channel_type.present? and channel_type == "MarketPost"
   end
 
-  # pings a repository to retrieve similar content
-  # and returns array of related content objects
+  # Retrieves similar content (as configured in similar_content_overrides for sponsored content or determined by
+  # DSP via relevance for 'normal' content) and returns array of related content objects
   #
   # @param repo [Repository] repository to query
   # @param num_similar [Integer] number of results to return
   # @return [Array<Content>] list of similar content
   def similar_content(repo, num_similar=8)
     if similar_content_overrides.present?
-      Content.where(id: similar_content_overrides).includes(:content_category)
+      Content.where(id: similar_content_overrides).order('pubdate DESC').limit(num_similar).includes(:content_category)
     else
       # some logic in here that I don't truly know the purpose of...
       # note -- the "category" method being called on self here

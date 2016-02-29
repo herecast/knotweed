@@ -21,10 +21,21 @@ module Api
         object.banner_click_count
       end
 
+      def content_reports
+        scope = object.content_reports.order('report_date DESC')
+        if context.present? && context[:start_date]
+          scope = scope.where('report_date >= ?', context[:start_date])
+          if context[:end_date]
+            scope = scope.where('report_date <= ?', context[:end_date])
+          end
+        else
+          scope = scope.limit(30)
+        end
+        return scope.reverse
+      end
+
       def daily_view_counts
-        # NOTE, I don't love performing the `limit` here but it's just temporary.
-        # We want to implement sorting, paging through the API down the road.
-        object.content_reports.order('report_date DESC').limit(30).reverse.map do |report|
+        content_reports.map do |report|
           {
             report_date: report.report_date,
             view_count: report.view_count
@@ -33,7 +44,7 @@ module Api
       end
 
       def daily_promo_click_thru_counts
-        object.content_reports.order('report_date DESC').limit(30).reverse.map do |report|
+        content_reports.map do |report|
           {
             report_date: report.report_date,
             banner_click_count: report.banner_click_count

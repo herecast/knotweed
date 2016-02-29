@@ -189,22 +189,33 @@ describe Api::V3::EventInstancesController do
   end
 
   describe 'GET index' do
-    before do
-      @count = 3
-      FactoryGirl.create_list :event, @count
-      index
-    end
+    describe 'start_date' do
+      before do
+        @e_past = FactoryGirl.create(:event, start_date: 3.days.ago).next_or_first_instance
+        @e_future = FactoryGirl.create(:event, start_date: 1.week.from_now).next_or_first_instance
+        index
+      end
 
-    subject { get :index, format: :json }
+      it 'should search with start_date=today if no date_start is passed' do
+        get :index
+        assigns(:event_instances).should eq([@e_future])
+      end
 
-    it 'should return all event instances' do
-      subject
-      assigns(:event_instances).count.should eq(@count)
+      it 'should search by start date if it is passed' do
+        get :index, date_start: 1.week.ago
+        assigns(:event_instances).should eq([@e_past, @e_future])
+      end
     end
   
-    context 'pagination' do
+    describe 'pagination' do
+      before do
+        @count = 5
+        FactoryGirl.create_list :event, @count
+        index
+      end
+
       it 'should return paginated results' do
-        get :index, format: :json, per_page: @count - 1
+        get :index, per_page: @count - 1
         assigns(:event_instances).count.should eq(@count -1)
       end
     end

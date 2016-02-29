@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160209234223) do
+ActiveRecord::Schema.define(:version => 20160226163352) do
 
   create_table "USGS_pop", :force => true do |t|
     t.integer "FEATURE_ID"
@@ -86,9 +86,9 @@ ActiveRecord::Schema.define(:version => 20160209234223) do
     t.string   "city"
     t.string   "state"
     t.string   "zip"
+    t.string   "status"
     t.integer  "created_by"
     t.integer  "updated_by"
-    t.string   "status"
   end
 
   add_index "business_locations", ["created_by"], :name => "index_business_locations_on_created_by"
@@ -114,6 +114,8 @@ ActiveRecord::Schema.define(:version => 20160209234223) do
     t.datetime "updated_at",   :null => false
   end
 
+  add_index "category_corrections", ["content_id"], :name => "index_category_corrections_on_content_id"
+
   create_table "category_tmp", :id => false, :force => true do |t|
     t.integer "content_id"
     t.string  "cat_name"
@@ -123,9 +125,9 @@ ActiveRecord::Schema.define(:version => 20160209234223) do
   add_index "category_tmp", ["content_id"], :name => "content_id"
 
   create_table "channel_map", :force => true do |t|
-    t.integer  "channel_id"
-    t.text     "category"
-    t.datetime "created_at", :null => false
+    t.integer   "channel_id"
+    t.text      "category"
+    t.timestamp "created_at", :null => false
   end
 
   add_index "channel_map", ["channel_id"], :name => "channel_id"
@@ -287,11 +289,11 @@ ActiveRecord::Schema.define(:version => 20160209234223) do
     t.string   "channel_type"
     t.integer  "channel_id"
     t.integer  "root_content_category_id"
-    t.integer  "created_by"
-    t.integer  "updated_by"
     t.integer  "view_count",                :default => 0
     t.integer  "comment_count",             :default => 0
     t.integer  "commenter_count",           :default => 0
+    t.integer  "created_by"
+    t.integer  "updated_by"
     t.integer  "banner_click_count",        :default => 0
     t.text     "similar_content_overrides"
     t.integer  "banner_ad_override"
@@ -317,21 +319,6 @@ ActiveRecord::Schema.define(:version => 20160209234223) do
   add_index "contents", ["source_category"], :name => "categories"
   add_index "contents", ["title"], :name => "title"
 
-  create_table "contents_NT", :force => true do |t|
-    t.string   "title"
-    t.string   "subtitle"
-    t.string   "authors"
-    t.string   "subject"
-    t.text     "content"
-    t.integer  "issue_id"
-    t.integer  "location_id"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
-    t.boolean  "reviewed",       :default => false
-    t.integer  "lupdate_by"
-    t.integer  "publication_id"
-  end
-
   create_table "contents_events", :id => false, :force => true do |t|
     t.integer  "id",                                      :null => false
     t.string   "title"
@@ -355,10 +342,6 @@ ActiveRecord::Schema.define(:version => 20160209234223) do
   add_index "contents_events", ["source_id"], :name => "source_id"
   add_index "contents_events", ["start_date"], :name => "index_contents_on_start_date"
   add_index "contents_events", ["title"], :name => "title"
-
-  create_table "contents_id", :force => true do |t|
-    t.string "category", :limit => 128
-  end
 
   create_table "contents_locations", :force => true do |t|
     t.integer  "content_id"
@@ -477,55 +460,16 @@ ActiveRecord::Schema.define(:version => 20160209234223) do
   add_index "events", ["venue_id"], :name => "events_on_venue_id_index"
   add_index "events", ["venue_id"], :name => "index_events_on_venue_id"
 
-  create_table "front_end_builds_apps", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at",                                   :null => false
-    t.datetime "updated_at",                                   :null => false
-    t.boolean  "require_manual_activation", :default => false
-    t.integer  "live_build_id"
-  end
-
-  add_index "front_end_builds_apps", ["name"], :name => "index_front_end_builds_apps_on_name"
-
-  create_table "front_end_builds_builds", :force => true do |t|
-    t.integer  "app_id"
-    t.string   "sha"
-    t.string   "job"
-    t.string   "branch"
-    t.text     "html"
-    t.boolean  "fetched",                    :default => false
-    t.boolean  "active",                     :default => false
-    t.datetime "created_at",                                    :null => false
-    t.datetime "updated_at",                                    :null => false
-    t.string   "endpoint",   :limit => 2038
-    t.integer  "pubkey_id"
-    t.text     "signature"
-  end
-
-  add_index "front_end_builds_builds", ["active"], :name => "index_front_end_builds_builds_on_active"
-  add_index "front_end_builds_builds", ["app_id", "branch"], :name => "index_front_end_builds_builds_on_app_id_and_branch"
-  add_index "front_end_builds_builds", ["app_id", "job"], :name => "index_front_end_builds_builds_on_app_id_and_job"
-  add_index "front_end_builds_builds", ["app_id", "sha"], :name => "index_front_end_builds_builds_on_app_id_and_sha"
-  add_index "front_end_builds_builds", ["created_at"], :name => "index_front_end_builds_builds_on_created_at"
-  add_index "front_end_builds_builds", ["fetched"], :name => "index_front_end_builds_builds_on_fetched"
-
-  create_table "front_end_builds_pubkeys", :force => true do |t|
-    t.string   "name",       :null => false
-    t.text     "pubkey",     :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
   create_table "images", :force => true do |t|
     t.string   "caption"
     t.string   "credit"
     t.string   "image"
     t.string   "imageable_type"
     t.integer  "imageable_id"
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
+    t.datetime "created_at",                                       :null => false
+    t.datetime "updated_at",                                       :null => false
     t.string   "source_url",     :limit => 400
-    t.boolean  "primary"
+    t.boolean  "primary",                       :default => false
   end
 
   add_index "images", ["imageable_type", "imageable_id"], :name => "index_images_on_imageable_type_and_imageable_id"
@@ -761,13 +705,6 @@ ActiveRecord::Schema.define(:version => 20160209234223) do
     t.datetime "updated_at",  :null => false
   end
 
-  create_table "promote_options", :force => true do |t|
-    t.string  "promo_type",            :limit => 128
-    t.string  "name",                  :limit => 128
-    t.string  "reverse_publish_email", :limit => 128
-    t.boolean "active",                               :default => true
-  end
-
   create_table "promotion_banner_reports", :force => true do |t|
     t.integer  "promotion_banner_id"
     t.datetime "report_date"
@@ -915,21 +852,6 @@ ActiveRecord::Schema.define(:version => 20160209234223) do
 
   create_table "temp_1", :id => false, :force => true do |t|
     t.integer "id", :default => 0
-  end
-
-  create_table "triples", :force => true do |t|
-    t.integer  "dataset_id"
-    t.string   "resource_class"
-    t.integer  "resource_id"
-    t.string   "resource_text"
-    t.string   "predicate"
-    t.string   "object_type"
-    t.string   "object_class"
-    t.integer  "object_resource_id"
-    t.string   "object_resource_text"
-    t.string   "realm"
-    t.datetime "created_at",           :null => false
-    t.datetime "updated_at",           :null => false
   end
 
   create_table "user_wufoo_forms", :id => false, :force => true do |t|
