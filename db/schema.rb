@@ -70,29 +70,70 @@ ActiveRecord::Schema.define(:version => 20160226163352) do
     t.string   "rule"
   end
 
+  create_table "business_categories", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.string   "icon_class"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  create_table "business_categories_business_categories", :id => false, :force => true do |t|
+    t.integer "parent_id"
+    t.integer "child_id"
+  end
+
+  add_index "business_categories_business_categories", ["parent_id", "child_id"], :name => "business_categories_index", :unique => true
+
+  create_table "business_categories_business_profiles", :id => false, :force => true do |t|
+    t.integer "business_category_id"
+    t.integer "business_profile_id"
+  end
+
+  create_table "business_feedbacks", :force => true do |t|
+    t.integer  "created_by"
+    t.integer  "updated_by"
+    t.integer  "business_profile_id"
+    t.boolean  "satisfaction"
+    t.boolean  "cleanliness"
+    t.boolean  "price"
+    t.boolean  "recommend"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
+  end
+
   create_table "business_locations", :force => true do |t|
     t.string   "name"
     t.string   "address"
     t.string   "phone"
     t.string   "email"
-    t.string   "hours"
-    t.datetime "created_at",                             :null => false
-    t.datetime "updated_at",                             :null => false
+    t.text     "hours"
+    t.datetime "created_at",                                                            :null => false
+    t.datetime "updated_at",                                                            :null => false
     t.integer  "organization_id"
     t.float    "latitude"
     t.float    "longitude"
     t.string   "venue_url"
-    t.boolean  "locate_include_name", :default => false
+    t.boolean  "locate_include_name",                                :default => false
     t.string   "city"
     t.string   "state"
     t.string   "zip"
     t.string   "status"
     t.integer  "created_by"
     t.integer  "updated_by"
+    t.string   "status"
+    t.decimal  "service_radius",      :precision => 10, :scale => 0
   end
 
   add_index "business_locations", ["created_by"], :name => "index_business_locations_on_created_by"
   add_index "business_locations", ["name"], :name => "index_business_locations_on_name"
+
+  create_table "business_profiles", :force => true do |t|
+    t.integer  "business_location_id"
+    t.boolean  "has_retail_location",  :default => true
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
+  end
 
   create_table "categories", :force => true do |t|
     t.string   "name"

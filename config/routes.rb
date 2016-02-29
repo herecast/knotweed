@@ -124,6 +124,10 @@ Knotweed::Application.routes.draw do
       post '/users/email_confirmation', to: 'users#email_confirmation', as: :email_confirmation
       post '/users/resend_confirmation', to: 'users#resend_confirmation', as: :resend_confirmation
       resources 'images', only: [:create, :update, :destroy]
+
+      resources 'business_profiles', only: [:index, :show, :create, :update], path: 'businesses'
+      resources 'business_categories', only: [:index]
+      post '/businesses/:id/feedback', to: 'business_feedbacks#create', as: :leave_feedback
     end
   end
 

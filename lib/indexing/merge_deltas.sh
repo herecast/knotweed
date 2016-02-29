@@ -36,13 +36,17 @@ else
     echo "$(date): Checking event_instance_core" >> $INDEXTOOL_LOG
     /usr/bin/indextool -c $CONFIG_FILE --check event_instance_core >> $INDEXTOOL_LOG
     echo "$(date): Merging content delta index." >> $LOG_FILE
-    /usr/bin/indexer -c $RAILS_ROOT/config/production.sphinx.conf --merge content_core content_delta --rotate >> $LOG_FILE
+    /usr/bin/indexer -c $CONFIG_FILE --merge content_core content_delta --rotate >> $LOG_FILE
     echo "$(date): Checking content_core" >> $INDEXTOOL_LOG
     /usr/bin/indextool -c $CONFIG_FILE --check content_core  >> $INDEXTOOL_LOG
     echo "$(date): Merging business_location delta index." >> $LOG_FILE
-    /usr/bin/indexer -c $RAILS_ROOT/config/production.sphinx.conf --merge business_location_core business_location_delta --rotate >> $LOG_FILE
+    /usr/bin/indexer -c $CONFIG_FILE --merge business_location_core business_location_delta --rotate >> $LOG_FILE
     echo "$(date): Checking business_location_core" >> $INDEXTOOL_LOG
     /usr/bin/indextool -c $CONFIG_FILE --check business_location_core >> $INDEXTOOL_LOG
+    echo "$(date): Merging business_profile delta index." >> $LOG_FILE
+    /usr/bin/indexer -c $CONFIG_FILE --merge business_profile_core business_profile_delta --rotate >> $LOG_FILE
+    echo "$(date): Checking business_profile_core" >> $INDEXTOOL_LOG
+    /usr/bin/indextool -c $CONFIG_FILE --check business_profile_core >> $INDEXTOOL_LOG
     rm $RAILS_ROOT/tmp/merging.lock
     exit 0
   fi

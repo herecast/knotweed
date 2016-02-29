@@ -99,4 +99,3 @@ namespace :wellness do
   end
 
 end
-

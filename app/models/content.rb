@@ -85,6 +85,8 @@ class Content < ActiveRecord::Base
   attr_accessible :images_attributes, :images
 
   belongs_to :organization
+  accepts_nested_attributes_for :organization
+  attr_accessible :organization_attributes
   delegate :name, to: :organization, prefix: true
 
   belongs_to :parent, class_name: "Content"
