@@ -23,13 +23,4 @@ class ContentCategory < ActiveRecord::Base
     name.try :titlecase
   end
 
-  def self.find_with_children(conditions)
-    allowed_cats = ContentCategory.where(conditions)
-    children = ContentCategory.where(parent_id: allowed_cats)
-    allowed_cats + children
-  end
-
-  def self.event_categories
-    ContentCategory.where(name: ["sale_event", "event"])
-  end
 end

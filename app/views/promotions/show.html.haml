@@ -15,7 +15,7 @@
       %p
         %b Organization:
         - if @promotion.organization.present?
-          = link_to @promotion.organization.name, edit_organization_path(@promotion.organization)
+          = link_to @promotion.organization_name, edit_organization_path(@promotion.organization)
       %p
         %b Content:
         - if @promotion.content.nil?
@@ -28,18 +28,18 @@
       - if @promotion.promotable.is_a? PromotionBanner
         %p
           %b Banner:
-          = link_to @promotion.promotable.banner_image, @promotion.promotable.banner_image.url
+          = link_to @promotion.promotable_banner_image, @promotion.promotable_banner_image.url
         %p
           %b Target URL:
-          = link_to nil, @promotion.promotable.redirect_url
+          = link_to nil, @promotion.promotable_redirect_url
         %p
           %b Paid:
           = @promotion.paid
       - elsif @promotion.promotable.is_a? PromotionListserv
         %p
           %b Listserv:
-          = @promotion.promotable.listserv.name
+          = @promotion.promotable_listserv.name
         %p
           %b Sent at:
-          = @promotion.promotable.sent_at
+          = @promotion.promotable_sent_at
 

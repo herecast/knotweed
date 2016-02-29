@@ -19,8 +19,6 @@ module Api
         object.authors
       end
 
-      def organization_name; object.organization.name; end
-
       def published_at
         object.pubdate
       end

@@ -66,12 +66,6 @@ class Organization < ActiveRecord::Base
     self.find(ids)
   end
 
-  # returns the latest content owned by this publication that has category "presentation"
-  # purpose: on consumer app, publication#show uses this content
-  def latest_presentation
-    contents.joins(:content_category).where(content_categories: { name: "presentation"}).order("pubdate DESC").first
-  end
-
   def business_location_options
     business_locations.map{ |bl| [bl.select_option_label, bl.id] }
   end

@@ -31,10 +31,6 @@ module Api
       def author_id
       end
 
-      def organization_name
-        object.organization.name
-      end
-
       def published_at
         object.pubdate
       end

@@ -850,55 +850,6 @@ describe Content do
 
   end
 
-  describe "parent_category" do
-    before do
-      @parent_cat = FactoryGirl.create :content_category
-      @cat = FactoryGirl.create :content_category, parent_id: @parent_cat.id
-      @content = FactoryGirl.create :content, content_category: @cat
-    end
-    it "should return the parent category's name" do
-      @content.parent_category.should == @parent_cat.name
-    end
-  end
-
-  describe "externally visible instance method" do
-    before do
-      @cat = FactoryGirl.create :content_category
-      @org = FactoryGirl.create :organization
-    end
-
-    it "should return false if the content category is not in the organization's external_categories" do
-      c = FactoryGirl.create :content, organization: @org
-      c.externally_visible.should be_false
-    end
-
-    it "should return true if the content's category is in the organization's external categories" do
-      c = FactoryGirl.create :content, organization: @org, content_category: @cat
-      @org.external_categories << @cat
-      c.externally_visible.should be_true
-    end
-  end
-
-  describe "externally visible scope" do
-    before do
-      # create a bunch of random content
-      FactoryGirl.create_list :content, 5
-      org = FactoryGirl.create :organization
-      cat = FactoryGirl.create :content_category
-      org.external_categories << cat
-      @c = FactoryGirl.create :content, content_category: cat, organization: org
-      @c2 = FactoryGirl.create :content, organization: org
-      @c3 = FactoryGirl.create :content, content_category: cat
-    end
-
-    subject { Content.externally_visible } 
-
-    it "should return only the content belonging to its organization's external categories" do
-      subject.count.should eq(1)
-      subject.should eq([@c])
-    end
-  end
-
   describe "checking listserv locations on import" do
     before do
       @config = Hash.new

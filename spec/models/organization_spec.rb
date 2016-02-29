@@ -30,19 +30,6 @@ describe Organization do
   before do
     @organization = FactoryGirl.create(:organization)
   end
-
-  describe "latest_presentation" do
-    it "should return nil if there are no presentation contents" do
-      @organization.latest_presentation.should == nil
-    end
-
-    it "should return the most recent presentation content" do
-      c1 = FactoryGirl.create(:content, pubdate: 1.day.ago, organization: @organization, category: "presentation")
-      c2 = FactoryGirl.create(:content, pubdate: 2.days.ago, organization: @organization, category: "presentation")
-      @organization.latest_presentation.should == c1
-    end
-  end
-
   describe 'get_all_children' do
     before do
       @s1 = FactoryGirl.create :organization, parent: @organization

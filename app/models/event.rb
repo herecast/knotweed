@@ -123,12 +123,6 @@ class Event < ActiveRecord::Base
     content.raw_content = new_desc
   end
 
-  # field sets for API responses
-  def self.truncated_event_fields
-    [:id, :title, :event_type, :sponsor,
-             :featured]
-  end
-
   # returns first upcoming event instance
   def next_instance
     event_instances.where('start_date >= ?', Time.zone.now).order('start_date ASC').first
