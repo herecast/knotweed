@@ -35,28 +35,13 @@ module Api
         @repository = @requesting_app.repository if @requesting_app.present?
       end
 
-      # generic method that, if requesting app is present, updates
-      # active record relation having queried for objects that belong to
-      # that consumer app
-      #
-      # only works on objects that have a habtm relationship with consumer apps
-      # (e.g. wufooforms and messages)
-      def filter_active_record_relation_for_consumer_app(relation)
-        if @requesting_app.present? and relation.present?
-          relation.select { |r| r.consumer_app_ids.include? @requesting_app.id }
-        else
-          relation
-        end
-      end
-      
       def authenticate_user_from_token!
         authenticate_with_http_token do |token, options|
-      	  user_email = options[:email].presence
-      	  user = user_email && User.find_by_email(user_email)
-
-      	  if user && Devise.secure_compare(user.authentication_token, token)
+          user_email = options[:email].presence
+          user = user_email && User.find_by_email(user_email)
+          if user && Devise.secure_compare(user.authentication_token, token)
             sign_in user, store: false
-      	  end
+          end
         end
       end
 

@@ -73,24 +73,4 @@ class BusinessLocationsController < ApplicationController
     end
   end
 
-  def edit_venue
-    if @business_location.geocoded?
-      @nearbys = @business_location.nearbys(3)
-      @nearbys = @business_location.nearbys(1) if @nearbys.count > 25
-      @nearbys = @business_location.nearbys(0.5) if @nearbys.count > 25
-      @nearbys = @business_location.nearbys(0.25) if @nearbys.count > 25
-      @events_per_venue = [{}]
-      @nearbys.each do |v|
-        @events_per_venue[v.id] = v.events.count
-      end
-    end
-    @events = @business_location.events
-
-    render 'edit'
-  end
-
-  def add_venue
-    @business_location = BusinessLocation.new
-    render 'new'
-  end
 end
