@@ -22,7 +22,9 @@ describe Api::V3::ImagesController do
   describe 'PUT update' do
     before do
       @img = FactoryGirl.create :image, primary: false
-      @market_post.content.images << @img
+      # need to have multiple images on the imageable or the first one is set to primary automatically
+      @img2 = FactoryGirl.create :image, primary: true
+      @market_post.content.images += [@img, @img2]
     end
 
     subject { put :update, id: @img.id, image: { primary: true } }
