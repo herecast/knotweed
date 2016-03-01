@@ -243,5 +243,4 @@ describe Api::V3::TalkController do
       end
     end
   end
-
 end
