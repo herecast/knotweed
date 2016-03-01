@@ -14,90 +14,10 @@ require 'spec_helper'
 # then your instance wouldn't have a start date.
 describe Api::V3::EventInstancesController do
 
-=begin
-  describe "GET index", sphinx: true do
-    ThinkingSphinx::Test.run do
-
-      subject { get :index, format: :json }
-
-      it "has a 200 status code" do
-        subject
-        response.code.should eq("200")
-      end
-
-      it "responds with events (and not regular content)" do
-        FactoryGirl.create_list(:event, 3)
-        FactoryGirl.create_list(:content, 2)
-        subject
-        assigns(:event_instances).count.should == 3
-      end
-
-      it "sorts events by start_date ASC" do
-        e3 = FactoryGirl.create :event, start_date: Date.today
-        e1 = FactoryGirl.create :event, start_date: 1.week.ago
-        e2 = FactoryGirl.create :event, start_date: 1.week.from_now
-        subject
-        # the ".first" below is because we just created these and know they only have one event instance.
-        assigns(:event_instances).should == [e1,e3,e2].map{ |e| e.event_instances.first }
-      end
-      
-      describe 'if params specifies a category' do
-        before do
-          FactoryGirl.create_list :event, 2, event_category: Event::EVENT_CATEGORIES[0]
-          FactoryGirl.create_list :event, 3, event_category: Event::EVENT_CATEGORIES[1]
-        end
-
-        it 'should not filter by category if the param is not an enumerated value' do
-          get :index, format: :json, category: 'woof woof'
-          assigns(:event_instances).count.should == 5
-        end
-
-        it 'should filter by category if a valid category is specified' do
-          get :index, format: :json, category: Event::EVENT_CATEGORIES[0]
-          assigns(:event_instances).count.should == 2
-        end
-
-        it 'should match string parameter to symbol value' do
-          yardsales = FactoryGirl.create :event, event_category: :yard_sales # note if event categories change, we may need to change this
-          sleep(0.5)
-          get :index, format: :json, category: 'Yard sales'
-          assigns(:event_instances).should eq([yardsales.event_instances.first])
-        end
-      end
-
-      describe "if params specifies a date range" do
-        before do
-          @e1 = FactoryGirl.create :event, start_date: Date.today
-          @e2 = FactoryGirl.create :event, start_date: 1.week.ago
-          @e3 = FactoryGirl.create :event, start_date: 1.week.from_now
-        end
-
-        subject { get :index, format: :json, date_start: 2.days.ago.to_s, date_end: 2.days.from_now.to_s }
-
-        it "should only return events with start_date within that range" do
-          subject
-          assigns(:event_instances).should == [@e1.event_instances.first]
-        end
-        
-        describe "if an event has multiple instances but only one falls in the date range" do
-          before do
-            @instance_2 = FactoryGirl.create(:event_instance, start_date: 2.weeks.ago, event: @e1)
-          end
-
-          it "should only return the instance in that range" do
-            subject
-            assigns(:event_instances).should == @e1.event_instances - [@instance_2]
-          end
-        end
-      end
-    end
-  end
-=end
-
   describe 'GET show' do
     before do
       @event = FactoryGirl.create :event
-      @inst = @event.event_instances.first
+      @inst = @event.next_or_first_instance
     end
 
     subject { get :show, format: :json, id: @inst.id }
@@ -118,7 +38,24 @@ describe Api::V3::EventInstancesController do
       expect{subject}.to change{Content.find(@inst.event.content.id).view_count}.from(0).to(1)
     end
 
-    context 'ical url' do
+    describe 'record user visit' do
+      before do
+        @event = FactoryGirl.create :event
+        @user = FactoryGirl.create :user
+        api_authenticate user: @user
+        @repo = FactoryGirl.create :repository
+        @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+        stub_request(:post, /#{@repo.recommendation_endpoint}/)
+      end
+
+      it 'should call record_user_visit if repository and user are present' do
+        get :show, id: @event.next_or_first_instance.id, format: :json,
+          consumer_app_uri: @consumer_app.uri
+        expect(WebMock).to have_requested(:post, /#{@repo.recommendation_endpoint}/)
+      end
+    end
+
+    describe 'ical_url' do
       before do
         @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
         api_authenticate consumer_app: @consumer
@@ -130,6 +67,44 @@ describe Api::V3::EventInstancesController do
       end
     end
 
+    describe 'can_edit' do
+      before do
+        @location = FactoryGirl.create :location, city: 'Another City'
+        @user = FactoryGirl.create :user, location: @location
+        @event.content.update_attribute(:created_by, @user)
+      end
+
+      subject { get :show, id: @inst.id, format: :json}
+      let(:can_edit) { JSON.parse(response.body)['event_instance']['can_edit'] }
+
+      it 'should be true for content author' do
+        api_authenticate user: @user
+        subject 
+        can_edit.should == true
+      end
+      it 'should be false for a different user' do
+        @location = FactoryGirl.create :location, city: 'Another City'
+        @different_user = FactoryGirl.create :user, location: @location
+        api_authenticate user: @different_user
+        subject 
+        can_edit.should == false
+      end
+      it 'should be false when a user is not logged in' do
+        subject 
+        can_edit.should == false
+      end
+
+      context 'when user is admin' do
+        before do
+          @user = FactoryGirl.create :admin
+          api_authenticate user: @user
+        end
+        it 'should be true' do
+          subject
+          can_edit.should be_true
+        end
+      end
+    end
   end
 
   describe 'GET ics' do
@@ -148,65 +123,77 @@ describe Api::V3::EventInstancesController do
     end
   end
 
-  describe 'when user edits the content' do
-    before do
-      @location = FactoryGirl.create :location, city: 'Another City'
-      @user = FactoryGirl.create :user, location: @location
-      @event = FactoryGirl.create :event
-      @event.content.update_attribute(:created_by, @user)
-      @inst = @event.event_instances.first
-    end
-
-    subject { get :show, id: @inst.id, format: :json }
-
-    it 'can_edit should be true for content author' do
-      api_authenticate user: @user
-      subject 
-      JSON.parse(response.body)["event_instance"]["can_edit"].should == true
-    end
-    it 'can edit should be false for a different user' do
-      @location = FactoryGirl.create :location, city: 'Another City'
-      @different_user = FactoryGirl.create :user, location: @location
-      api_authenticate user: @different_user
-      subject 
-      JSON.parse(response.body)["event_instance"]["can_edit"].should == false
-    end
-    it 'can_edit should be false when a user is not logged in' do
-      subject 
-      JSON.parse(response.body)["event_instance"]["can_edit"].should == false
-    end
-
-    context 'and user is admin' do
-      before do
-        @user = FactoryGirl.create :admin
-        api_authenticate user: @user
-      end
-      it 'can_edit should be true' do
-        subject
-        JSON.parse(response.body)['event_instance']['can_edit'].should be_true
-      end
-    end
-  end
-
   describe 'GET index' do
-    describe 'start_date' do
+    describe 'date filters' do
       before do
         @e_past = FactoryGirl.create(:event, start_date: 3.days.ago).next_or_first_instance
         @e_future = FactoryGirl.create(:event, start_date: 1.week.from_now).next_or_first_instance
+        @e_less_future = FactoryGirl.create(:event, start_date: 1.day.from_now).next_or_first_instance
+        index
+      end
+      describe 'start_date' do
+        it 'should search with start_date=today if no date_start is passed' do
+          get :index
+          assigns(:event_instances).should eq([@e_less_future, @e_future])
+        end
+
+        it 'should search by start date if it is passed' do
+          get :index, date_start: 1.week.ago
+          assigns(:event_instances).should eq([@e_past, @e_less_future, @e_future])
+        end
+      end
+
+      describe 'end_date' do
+        it 'should limit results by the passed date_end' do
+          get :index, date_end: 2.days.from_now
+          assigns(:event_instances).should eq([@e_less_future])
+        end
+      end
+    end
+
+    describe 'category' do
+      before do
+        @movie = FactoryGirl.create(:event, event_category: 'movies',
+                                    start_date: 1.day.from_now).next_or_first_instance
+        @wellness = FactoryGirl.create(:event, event_category: 'wellness', 
+                                       start_date: 2.days.from_now).next_or_first_instance
         index
       end
 
-      it 'should search with start_date=today if no date_start is passed' do
-        get :index
-        assigns(:event_instances).should eq([@e_future])
+      it 'should return results matching the category' do
+        get :index, category: 'movies'
+        assigns(:event_instances).should eq([@movie])
       end
 
-      it 'should search by start date if it is passed' do
-        get :index, date_start: 1.week.ago
-        assigns(:event_instances).should eq([@e_past, @e_future])
+      it 'should ignore category params that aren\'t whitelisted in Event::EVENT_CATEGORIES' do
+        get :index, category: 'FAKE CATEGORY'
+        assigns(:event_instances).should eq([@movie, @wellness])
       end
     end
-  
+
+    describe 'location' do
+      before do
+        @loc_with_no_events = FactoryGirl.create :location
+        @parent_loc = FactoryGirl.create :location
+        @child_loc = FactoryGirl.create :location, parents: [@parent_loc]
+        @venue = FactoryGirl.create :business_location, city: @child_loc.city, state: @child_loc.state
+        @event = FactoryGirl.create(:event, start_date: 2.days.from_now,
+                                    venue: @venue).next_or_first_instance
+        FactoryGirl.create_list :event, 3 # some other events
+        index
+      end
+
+      it 'should search using matched city name and any child locations\' names' do
+        get :index, location: @parent_loc.city
+        assigns(:event_instances).should eq([@event])
+      end
+
+      it 'should return no results searching for a location with no events' do
+        get :index, location: @loc_with_no_events.city
+        assigns(:event_instances).should eq([])
+      end
+    end
+
     describe 'pagination' do
       before do
         @count = 5

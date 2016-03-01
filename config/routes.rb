@@ -98,7 +98,7 @@ Knotweed::Application.routes.draw do
       get '/promotion_banners/:id/metrics', to: 'promotion_banners#metrics',
         as: :promotion_banner_metrics
       resources 'promotion_banners', only: [:index]
-      resources 'event_instances', only: [:index, :show, :destroy]
+      resources 'event_instances', only: [:index, :show]
       resources 'comments', only: [:index, :create]
       resources 'listservs', only: [:index]
       get '/venues', to: 'business_locations#index', as: :venues
