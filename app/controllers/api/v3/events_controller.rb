@@ -20,7 +20,7 @@ module Api
             if Image.create(image: image_data, imageable: @event.content)
               render json: @event, serializer: EventSerializer, status: 200
             else
-              render json: { errors: map_error_keys(@event.errors.messages) }, status: :unprocessable_entity
+              head :unprocessable_entity
             end
           else
             listserv_ids = params[:event].delete(:listserv_ids) || []
@@ -40,7 +40,7 @@ module Api
               render json: @event, serializer: EventSerializer,  status: 200
             else
               render json: {
-                errors: map_error_keys(@event.errors.messages)
+                errors: @event.errors.messages
               }, status: :unprocessable_entity
             end
           end
@@ -76,7 +76,7 @@ module Api
           render json: @event, status: 201
         else
           render json: {
-            errors: map_error_keys(@event.errors.messages)
+            errors: @event.errors.messages
           }, status: :unprocessable_entity
         end
       end
@@ -99,20 +99,20 @@ module Api
         location_ids.push Location::REGION_LOCATION_ID if include_upper_valley
         # have to parse out event.content parameters into the appropriate place
         new_e = { content_attributes: {} }
-        new_e[:content_attributes][:raw_content] = e[:content] if e[:content].present?
-        new_e[:content_attributes][:title] = e[:title] if e[:title].present?
+        new_e[:content_attributes][:raw_content] = e[:content] if e.has_key? :content
+        new_e[:content_attributes][:title] = e[:title] if e.has_key? :title
         new_e[:content_attributes][:location_ids] = location_ids.uniq
 
-        new_e[:cost] = e[:cost] if e[:cost].present?
+        new_e[:cost] = e[:cost] if e.has_key? :cost
         new_e[:cost_type] = e[:cost_type]
-        new_e[:contact_email] = e[:contact_email] if e[:contact_email].present?
-        new_e[:contact_phone] = e[:contact_phone] if e[:contact_phone].present?
-        new_e[:event_url] = e[:event_url] if e[:event_url].present?
+        new_e[:contact_email] = e[:contact_email] if e.has_key? :contact_email
+        new_e[:contact_phone] = e[:contact_phone] if e.has_key? :contact_phone
+        new_e[:event_url] = e[:event_url] if e.has_key? :event_url
         
-        new_e[:registration_deadline] = e[:registration_deadline] if e[:registration_deadline].present?
-        new_e[:registration_url] = e[:registration_url] if e[:registration_url].present?
-        new_e[:registration_phone] = e[:registration_phone] if e[:registration_phone].present?
-        new_e[:registration_email] = e[:registration_email] if e[:registration_email].present?
+        new_e[:registration_deadline] = e[:registration_deadline] if e.has_key? :registration_deadline
+        new_e[:registration_url] = e[:registration_url] if e.has_key? :registration_url
+        new_e[:registration_phone] = e[:registration_phone] if e.has_key? :registration_phone
+        new_e[:registration_email] = e[:registration_email] if e.has_key? :registration_email
 
         if @event.present? and @event.id # event already exists and this is an update so we need to include
           #the content ID to avoid overwriting it
@@ -135,15 +135,8 @@ module Api
         end
 
         # translate params that have the wrong name
-        new_e[:event_category] = e[:category].to_s.downcase.gsub(' ','_')
+        new_e[:event_category] = e[:category].to_s.downcase.gsub(' ','_') if e.has_key? :category
         new_e
-      end
-
-      # converts the actual model keys that active record labels errors with
-      # to the keys used by our vendor application...kind of sucks but it is what it is.
-      def map_error_keys(errors)
-        errors[:category] = errors.delete :event_category
-        errors[:event_instances] = errors.delete :event_instances_attributes
       end
 
     end

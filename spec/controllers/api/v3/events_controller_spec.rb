@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::V3::EventsController do
-
   before do
     @venue = FactoryGirl.create :business_location
     @current_user = FactoryGirl.create :user
@@ -91,7 +90,6 @@ describe Api::V3::EventsController do
       @attrs_for_update[:schedules] = [schedule_changes]
       @attrs_for_update[:cost] = '$100'
       @attrs_for_update[:registration_url] = 'http://boogle.com'
-
       @different_user = FactoryGirl.create :user
     end
 
@@ -104,6 +102,58 @@ describe Api::V3::EventsController do
       it do
       	put :update, event: @attrs_for_update, id: @event.id
       	response.code.should eq('401')
+      end
+    end
+
+    context 'with invalid attributes' do
+      before do
+        @attrs_for_update[:title] = ''
+      end
+
+      it 'should respond with errors' do
+        subject
+        JSON.parse(response.body).has_key?('errors').should be_true
+      end
+
+      it 'should respond with 422' do
+        subject
+        response.code.should eq '422'
+      end
+    end
+      
+    context 'with consumer_app / repository' do
+      before do
+        @repo = FactoryGirl.create :repository
+        @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+        api_authenticate user: @user, consumer_app: @consumer_app
+        stub_request(:post, /.*/)
+      end
+
+      # because there are so many different external calls and behaviors here, 
+      # this is really difficult to test thoroughly, but mocking and checking
+      # that the external call is made tests the basics of it.
+      it 'should call publish_to_dsp' do
+        subject
+        # note, OntotextController adds basic auth, hence the complex gsub
+        expect(WebMock).to have_requested(:post, /#{@repo.annotate_endpoint.gsub(/http:\/\//,
+          "http://#{Figaro.env.ontotext_api_username}:#{Figaro.env.ontotext_api_password}@")}/)
+      end
+    end
+
+    describe 'with an image' do
+      before do
+        @file = fixture_file_upload('/photo.jpg', 'image/jpg')
+      end
+
+      subject { put :update, id: @event.id, event: { image: @file } }
+
+      it 'should create a new Image record' do
+        expect{subject}.to change{Image.count}.by(1)
+      end
+
+      it 'should destroy all other images associated with the event' do
+        @image = FactoryGirl.create :image, imageable: @event.content
+        expect{subject}.not_to change{Image.count}
       end
     end
 
@@ -172,6 +222,41 @@ describe Api::V3::EventsController do
       end
     end
 
+    context 'with consumer_app / repository' do
+      before do
+        @repo = FactoryGirl.create :repository
+        @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+        api_authenticate user: @user, consumer_app: @consumer_app
+        stub_request(:post, /.*/)
+      end
+
+      # because there are so many different external calls and behaviors here, 
+      # this is really difficult to test thoroughly, but mocking and checking
+      # that the external call is made tests the basics of it.
+      it 'should call publish_to_dsp' do
+        subject
+        # note, OntotextController adds basic auth, hence the complex gsub
+        expect(WebMock).to have_requested(:post, /#{@repo.annotate_endpoint.gsub(/http:\/\//,
+          "http://#{Figaro.env.ontotext_api_username}:#{Figaro.env.ontotext_api_password}@")}/)
+      end
+    end
+
+    context 'with invalid attributes' do
+      before do
+        @event_attrs.delete :title
+      end
+
+      it 'should respond with errors' do
+        subject
+        JSON.parse(response.body).has_key?('errors').should be_true
+      end
+
+      it 'should respond with 422' do
+        subject
+        response.code.should eq '422'
+      end
+    end
+
     it 'should assign the event to the current api user\'s location' do
       subject
       assigns(:event).content.location_ids.should eq([@current_user.location_id])
@@ -202,7 +287,5 @@ describe Api::V3::EventsController do
       assigns(:event).venue.should_not eq(@venue)
       assigns(:event).venue.name.should eq(with_venue_attrs[:venue][:name])
     end
-
   end
-
 end
