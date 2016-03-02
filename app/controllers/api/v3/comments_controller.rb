@@ -59,6 +59,7 @@ module Api
           render json: @comment.content, serializer: SingleCommentSerializer,
             status: 201, root: 'comment'
         else
+          # we actually don't have any validation that could get us to this point right now.
           head :unprocessable_entity
         end
       end
