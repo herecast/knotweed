@@ -12,3 +12,9 @@ checkout:
 dependencies:
   pre:
     - sudo add-apt-repository ppa:builds/sphinxsearch-daily -y; sudo apt-get update; sudo apt-get install sphinxsearch=2.2.4-4699-0ubuntu10; sudo service sphinxsearch stop
+
+test:
+  post:
+    - bundle exec rspec spec/coverage_guard.rb:
+        environment:
+          RAILS_ENV: test
