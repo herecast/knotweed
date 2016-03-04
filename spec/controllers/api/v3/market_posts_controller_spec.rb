@@ -288,6 +288,12 @@ describe Api::V3::MarketPostsController do
         expect{subject}.to change{@market_post.content.reload.title}.to @attrs_for_update[:title]
       end
 
+      it 'should allow clearing out an attribute' do
+        @attrs_for_update['contact_phone'] = ''
+        subject
+        @market_post.reload.contact_phone.should eq ''
+      end
+
       describe 'with invalid parameters' do
         before do
           @attrs_for_update[:title] = ''
