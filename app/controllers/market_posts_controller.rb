@@ -12,7 +12,6 @@ class MarketPostsController < ApplicationController
     @search = MarketPost.ransack(session[:market_posts_search])
 
     if session[:market_posts_search].present?
-#      @market_posts = @search.result(distinct: true).joins(market_post: :content).order('pubdate DESC').page(params[:page]).per(100)
       @market_posts = @search.result(distinct: true).page(params[:page]).per(100)
       @market_posts = @market_posts.accessible_by(current_ability)
     else

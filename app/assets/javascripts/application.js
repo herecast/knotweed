@@ -47,3 +47,4 @@
 //= require market_posts
 //= require cleditor/jquery.cleditor
 //= require users
+//= require business_profiles
