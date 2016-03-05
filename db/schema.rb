@@ -11,11 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-<<<<<<< Updated upstream
 ActiveRecord::Schema.define(:version => 20160303000030) do
-=======
-ActiveRecord::Schema.define(:version => 20160226163352) do
->>>>>>> Stashed changes
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -45,6 +41,26 @@ ActiveRecord::Schema.define(:version => 20160226163352) do
     t.text     "edges"
     t.boolean  "is_trusted"
     t.string   "rule"
+  end
+
+  create_table "business_categories", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.string   "icon_class"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  create_table "business_categories_business_categories", :id => false, :force => true do |t|
+    t.integer "parent_id"
+    t.integer "child_id"
+  end
+
+  add_index "business_categories_business_categories", ["parent_id", "child_id"], :name => "business_categories_index", :unique => true
+
+  create_table "business_categories_business_profiles", :id => false, :force => true do |t|
+    t.integer "business_category_id"
+    t.integer "business_profile_id"
   end
 
   create_table "business_feedbacks", :force => true do |t|
@@ -83,6 +99,13 @@ ActiveRecord::Schema.define(:version => 20160226163352) do
 
   add_index "business_locations", ["created_by"], :name => "index_business_locations_on_created_by"
   add_index "business_locations", ["name"], :name => "index_business_locations_on_name"
+
+  create_table "business_profiles", :force => true do |t|
+    t.integer  "business_location_id"
+    t.boolean  "has_retail_location",  :default => true
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
+  end
 
   create_table "categories", :force => true do |t|
     t.string   "name"

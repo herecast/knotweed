@@ -37,14 +37,27 @@
               = i.input :website, input_html: { class: 'input-block-level' }
         = f.simple_fields_for :business_location do |g|
           .row-fluid
-            = g.input :address, input_html: { class: 'input-block-level' }
-          .row-fluid
-            = g.input :city, input_html: { class: 'input-block-level' }, wrapper_html: { class: 'span5' }
-            = g.input :state, input_html: { class: 'input-block-level' }, wrapper_html: { class: 'span3' }
-            = g.input :zip, input_hml: { class: 'input-block-level' }, wrapper_html: { class: 'span3' }
-          .row-fluid
-            = g.input :phone, input_html: { class: 'input-block-level' }, wrapper_html: { class: 'span5' }
-            = g.input :email, input_html: { class: 'input-block-level' }, wrapper_html: { class: 'span6' }
+            .span6
+              .row-fluid
+                = g.input :address, input_html: { class: 'span12' }, wrapper_html: { class: 'span12' }
+              .row-fluid
+                = g.input :city, input_html: { class: 'span12' }, wrapper_html: { class: 'span12' }
+              .row-fluid
+                = g.input :state, input_html: { class: 'span12' }, wrapper_html: { class: 'span6' }
+              .row-fluid
+                = g.input :zip, input_hml: { class: 'span12' }, wrapper_html: { class: 'span6' }
+                = g.input :phone, input_html: { class: 'span12' }, wrapper_html: { class: 'span6' }
+              .row-fluid
+                = g.input :email, input_html: { class: 'span12' }, wrapper_html: { class: 'span12' }
+            .span6
+              %span.pull-right.btn.btn-primary#locate_on_map_button{data: {remote: 'true'}} Locate on Map
+              - bl = @business_profile.business_location
+              - if bl.address.present?
+                - addr = CGI::escape "#{bl.address} #{bl.city} #{bl.state} #{bl.zip}"
+                %iframe#confirm_location_map{ data: { base_src_url: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=" },
+                  src: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=#{addr}" }
+              - else
+                %iframe#confirm_location_map{ data: { base_src_url: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=" } }
         .row-fluid
           = f.association :business_categories, input_html: { class: 'chosen-select input-block-level' }
         = f.simple_fields_for :business_location do |g|
