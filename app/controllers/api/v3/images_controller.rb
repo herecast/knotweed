@@ -15,25 +15,19 @@ module Api
 
       def update
         @image = Image.find(params[:id])
-        @image.primary = params[:image][:primary]
-        if @image.save
-          render json: {
-            id: @image.id,
-            image_url: @image.image.url,
-            primary: @image.primary ? 1 : 0
-          }, status: 200
-        else
-          head :unprocessable_entity
-        end
+        # this action can't actually fail so we don't need a conditional here
+        @image.update_attribute :primary, params[:image][:primary]
+        render json: {
+          id: @image.id,
+          image_url: @image.image.url,
+          primary: @image.primary ? 1 : 0
+        }, status: 200
       end
 
       def destroy
         @image = Image.find(params[:id])
-        if @image.destroy
-          head :no_content
-        else
-          head :unprocessable_entity
-        end
+        @image.destroy
+        head :no_content
       end
     end
   end

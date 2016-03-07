@@ -34,6 +34,21 @@ describe Api::V3::ContentsController do
 
     subject { get :index, format: :json }
 
+    context 'with consumer app specified' do
+      before do
+        @content = Content.where(content_category_id: @market_cat).first
+        @org = @content.organization
+        @consumer_app = FactoryGirl.create :consumer_app
+        @consumer_app.organizations << @org
+        api_authenticate consumer_app: @consumer_app
+      end
+
+      it 'should filter results by consumer app\'s organizations' do
+        subject
+        assigns(:contents).should eq([@content])
+      end
+    end
+
     context 'not signed in' do
       it 'has 200 status code' do
         subject
@@ -77,7 +92,6 @@ describe Api::V3::ContentsController do
       end
 
     end
-
   end
 
   describe 'GET related_promotion' do
@@ -141,14 +155,20 @@ describe Api::V3::ContentsController do
 
   describe 'GET similar_content' do
     before do
+      ENV['sim_stack_categories'] = nil
       @content = FactoryGirl.create(:content)
       @content_id = @content.id
       # note, similar content is filtered by organization so we need to ensure this has
       # a organization that exists in the consumer app's list.
-      @sim_content = FactoryGirl.create :content, organization: @org
+      @market_cat = FactoryGirl.create :content_category, name: 'market'
+      @sim_content1 = FactoryGirl.create :content, organization: @org
+      @sim_content2 = FactoryGirl.create :content, organization: @org,
+        content_category: @market_cat
+      request_body = {'articles'=>[{'id'=>"#{Content::BASE_URI}/#{@sim_content1.id}"},
+        {'id'=>"#{Content::BASE_URI}/#{@sim_content2.id}"}]}.to_json
       stub_request(:get, /recommend\/contextual\?contentid=/).
         to_return(:status => 200,
-          :body => {'articles'=>[{ 'id' => "#{Content::BASE_URI}/#{@sim_content.id}" }]}.to_json,
+          :body => request_body,
           :headers => { 'Content-Type' => 'application/json;charset=UTF-8' })
     end
 
@@ -160,10 +180,22 @@ describe Api::V3::ContentsController do
       response.code.should eq('200')
     end
 
+    context 'with sim_stack_categories environment variable set' do
+      before do
+        ENV['sim_stack_categories'] = 'market'
+      end
+
+      it 'should only return similar content in that category' do
+        subject
+        assigns(:contents).should eq([@sim_content2])
+      end
+    end
+
     it 'responds with relation of similar content' do
       subject
-      assigns(:contents).should eq([@sim_content])
+      assigns(:contents).should eq([@sim_content1, @sim_content2])
     end
+
 
     context 'when similar content contains events with instances in the past or future' do
       before do

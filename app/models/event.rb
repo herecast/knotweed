@@ -142,7 +142,7 @@ class Event < ActiveRecord::Base
           s.save!
         end
       end
-    rescue ActiveRecord::StatementInvalid
+    rescue ActiveRecord::RecordInvalid
       false
     end
   end
@@ -159,7 +159,7 @@ class Event < ActiveRecord::Base
           end
         end
       end
-    rescue ActiveRecord::StatementInvalid
+    rescue ActiveRecord::RecordInvalid
       false
     end
   end

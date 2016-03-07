@@ -22,14 +22,14 @@
 
 FactoryGirl.define do
   factory :market_post do
-    cost "MP_cost"
-    contact_phone "MP_contact_phone"
-    contact_email "MP_contact_email"
-    contact_url "MP_contact_url"
+    cost "$5"
+    contact_phone Faker::PhoneNumber.phone_number
+    contact_email Faker::Internet.email
+    contact_url Faker::Internet.url
     locate_name "MP_locate_name"
     locate_address "MP_locate_address"
-    latitude 1.5
-    longitude 1.5
+    latitude Faker::Address.latitude
+    longitude Faker::Address.longitude
     locate_include_name false
     content
   end

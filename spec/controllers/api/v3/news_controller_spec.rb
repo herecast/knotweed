@@ -20,7 +20,7 @@ describe Api::V3::NewsController do
       index
     end
 
-    subject { get :index, format: :json }
+    subject { get :index }
 
     it 'has 200 status code' do
       subject
@@ -75,6 +75,33 @@ describe Api::V3::NewsController do
       end
     end
 
+    context 'with a search query' do
+      before do
+        @content = Content.where(content_category_id: @news_cat).first
+      end
+
+      subject { get :index, query: @content.title }
+
+      it 'should return matching results' do
+        subject
+        assigns(:news).should eq([@content])
+      end
+    end
+
+    context 'with consumer app specified' do
+      before do
+        @content = Content.where(content_category_id: @news_cat).first
+        @org = @content.organization
+        @consumer_app = FactoryGirl.create :consumer_app
+        @consumer_app.organizations << @org
+        api_authenticate consumer_app: @consumer_app
+      end
+
+      it 'should filter results by consumer app\'s organizations' do
+        subject
+        assigns(:news).should eq([@content])
+      end
+    end
   end
 
   describe 'GET show' do
@@ -94,16 +121,48 @@ describe Api::V3::NewsController do
       assigns(:news).should eq(@news)
     end
 
-    it 'check comment_count' do
-      comment_count = @news.comment_count
-      subject
-      news=JSON.parse(@response.body)
-      news["news"]["comment_count"].should == comment_count
+    it 'should increment view count' do
+      expect{subject}.to change{@news.reload.view_count}.from(0).to(1)
     end
 
-    it 'should increment view count' do
-      expect{subject}.to change{Content.find(@news.id).view_count}.from(0).to(1)
+    context 'signed in' do
+      before do
+        @repo = FactoryGirl.create :repository
+        @user = FactoryGirl.create :user
+        @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+        @consumer_app.organizations << @news.organization
+        stub_request(:post, /#{@repo.recommendation_endpoint}/)
+        api_authenticate user: @user, consumer_app: @consumer_app
+      end
+
+      context 'as an admin' do
+        before { @user.add_role :admin }
+
+        it 'should include the admin edit url in the response' do
+          subject
+          JSON.parse(response.body)['news']['admin_content_url'].should be_present
+        end
+      end
+
+      describe 'record_user_visit' do
+        it 'should be called' do
+          subject
+          expect(WebMock).to have_requested(:post, /#{@repo.recommendation_endpoint}/)
+        end
+      end
+
     end
+
+    describe 'for content that isn\'t news' do
+      before { @c = FactoryGirl.create :content }
+
+      it 'should respond with nothing' do
+        get :show, id: @c.id
+        response.code.should eq '204'
+      end
+    end
+        
+
     context 'when requesting app has matching organizations' do
       before do
         organization = FactoryGirl.create :organization
@@ -112,12 +171,13 @@ describe Api::V3::NewsController do
         @consumer_app = FactoryGirl.create :consumer_app, organizations: [organization]
         api_authenticate consumer_app: @consumer_app
       end
-      it do
+
+      it 'should correctly load the content' do
         subject
-        response.status.should eq 200
-        JSON.parse(response.body)['news']['id'].should == @news.id
+        assigns(:news).should eq(@news)
       end
     end
+
     context 'when requesting app DOES NOT HAVE matching organizations' do
       before do
         organization = FactoryGirl.create :organization
@@ -126,6 +186,7 @@ describe Api::V3::NewsController do
         @consumer_app = FactoryGirl.create :consumer_app, organizations: []
         api_authenticate consumer_app: @consumer_app
       end
+
       it { subject; response.status.should eq 204 }
     end
   end

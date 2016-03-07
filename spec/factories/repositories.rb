@@ -22,5 +22,6 @@ FactoryGirl.define do
     dsp_endpoint "http://23.92.16.168:8080"
     sesame_endpoint "http://23.92.16.168:8081/openrdf-sesame/repositories/subtext"
     recommendation_endpoint "http://23.92.16.168:8081/openrdf-sesame/repositories/subtext"
+    annotate_endpoint "http://23.92.16.168:8081/openrdf-sesame/repositories/subtext"
   end
 end

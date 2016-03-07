@@ -55,7 +55,7 @@ module SparqlUtilities
       return str
     else
       # cut-off to make sure we don't recurse too much
-      return str.replace("\"", "") unless depth < 5
+      return str.gsub("\"", "") unless depth < 5
       l = str.index("\"")
       r = str.rindex("\"")
       if l == r

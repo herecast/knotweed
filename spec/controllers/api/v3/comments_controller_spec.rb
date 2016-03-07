@@ -101,30 +101,42 @@ describe Api::V3::CommentsController do
       api_authenticate user: @user
     end
 
+    subject { post :create, comment: { content: 'fake', parent_content_id: @event.content.id } }
+
     context 'should not allow creation if user unauthorized' do
       before { api_authenticate success: false }
       it do
-        post :create, format: :json, comment: { content: 'fake', parent_content_id: @event.content.id }
+        subject
         response.code.should eq('401')
         Comment.count.should eq(0)
       end
     end
+    
+    context 'with consumer_app / repository' do
+      before do
+        @repo = FactoryGirl.create :repository
+        @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+        api_authenticate user: @user, consumer_app: @consumer_app
+        stub_request(:post, /.*/)
+      end
 
-    it 'should create a comment given a parent_content_id' do
-      post :create, format: :json, 
-        comment: { content: 'fake', parent_content_id: @event.content.id }
-      response.code.should eq('201')
-      assigns(:comment).content.parent.should eq(@event.content)
+      # because there are so many different external calls and behaviors here, 
+      # this is really difficult to test thoroughly, but mocking and checking
+      # that the external call is made tests the basics of it.
+      it 'should call publish_to_dsp' do
+        subject
+        # note, OntotextController adds basic auth, hence the complex gsub
+        expect(WebMock).to have_requested(:post, /#{@repo.annotate_endpoint.gsub(/http:\/\//,
+          "http://#{Figaro.env.ontotext_api_username}:#{Figaro.env.ontotext_api_password}@")}/)
+      end
     end
 
     it 'should automatically set organization to DailyUV' do
-      post :create, format: :json, 
-        comment: { content: 'fake', parent_content_id: @event.content.id }
+      subject
       response.code.should eq('201')
       assigns(:comment).content.parent.should eq(@event.content)
       assigns(:comment).organization.name.should eq('DailyUV')
     end
-
   end
 
   private

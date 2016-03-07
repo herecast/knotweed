@@ -22,7 +22,33 @@ describe Api::V3::BusinessLocationsController do
       assigns(:venues).count.should eq BusinessLocation.where(status: 'approved').count
     end
 
-    context 'when user creates a  private or new location' do
+    describe 'searching' do
+      before do
+        @bl = BusinessLocation.where(status: 'approved').first
+      end
+
+      subject { get :index, query: @bl.name }
+
+      it 'should respond with the matching business location' do
+        subject
+        assigns(:venues).should eq [@bl]
+      end
+
+      context 'with autocomplete' do
+        subject! { get :index, query: @bl.city, autocomplete: true }
+        let(:response_hash) { JSON.parse response.body }
+
+        it 'should render JSON with the root venue_locations' do
+          response_hash['venue_locations'].should be_present
+        end
+
+        it 'should include the most commonly matched city, state pair as the first entry' do
+          response_hash['venue_locations'][0].should eq "#{@bl.city}, #{@bl.state}"
+        end
+      end
+    end
+
+    context 'when user creates a private or new location' do
       before do
         @user = FactoryGirl.create :user
         @private_location = FactoryGirl.create :business_location, status: 'private', created_by: @user    
