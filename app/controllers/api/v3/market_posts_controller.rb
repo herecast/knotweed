@@ -92,19 +92,16 @@ module Api
         listserv_ids = params[:market_post].delete :listserv_ids || []
 
         location_ids = [@current_api_user.location_id]
-        if params[:market_post][:extended_reach_enabled]
+        if params[:market_post].delete :extended_reach_enabled
           location_ids.push Location::REGION_LOCATION_ID
         end
 
-        @market_post.content.location_ids = location_ids
-        @market_post.content.title = params[:market_post][:title] if params[:market_post][:title].present?
-        @market_post.content.raw_content = params[:market_post][:content] if params[:market_post][:content].present?
-        @market_post.cost = params[:market_post][:price] if params[:market_post][:price].present?
-        @market_post.contact_phone = params[:market_post][:contact_phone] if params[:market_post][:contact_phone].present?
-        @market_post.contact_email = params[:market_post][:contact_email] if params[:market_post][:contact_email].present?
-        @market_post.locate_address = params[:market_post][:locate_address] if params[:market_post][:locate_address].present?
+        params[:market_post][:content_attributes] = { location_ids: location_ids, id: params[:id] }
+        params[:market_post][:content_attributes][:title] = params[:market_post].delete :title if params[:market_post].has_key? :title
+        params[:market_post][:content_attributes][:raw_content] = params[:market_post].delete :content if params[:market_post].has_key? :content
+        params[:market_post][:cost] = params[:market_post].delete :price if params[:market_post].has_key? :price
 
-        if @market_post.save # NOTE: triggers @market_post.content.save via after_save callback as well
+        if @market_post.update_attributes(params[:market_post])
           # reverse publish to specified listservs
           PromotionListserv.create_multiple_from_content(@market_post.content, listserv_ids, @requesting_app)
 

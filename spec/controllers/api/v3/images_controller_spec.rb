@@ -50,5 +50,4 @@ describe Api::V3::ImagesController do
       expect{subject}.to change{Image.find_by_id(@img.id)}.from(@img).to(nil)
     end
   end
-
 end

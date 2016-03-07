@@ -20,8 +20,7 @@ describe Api::V3::TalkController do
       index
     end
 
-    subject { get :index, format: :json }
-
+    subject { get :index }
 
     context 'not signed in' do
       it 'should respond with 401 status' do
@@ -35,6 +34,23 @@ describe Api::V3::TalkController do
         api_authenticate user: @user
       end
 
+      context 'with consumer app provided' do
+        before do
+          @consumer_app = FactoryGirl.create :consumer_app
+          # need to identify a talk item that will show up with the automatic location filter
+          @talk_item = @other_location.contents.where(content_category_id: @talk_cat).first
+          @org = @talk_item.organization
+          @consumer_app.organizations << @org
+        end
+
+        subject { get :index, consumer_app_uri: @consumer_app.uri }
+
+        it 'should filter by the app\'s organizations' do
+          subject
+          assigns(:talk).should eq([@talk_item])
+        end
+      end
+
       it 'has 200 status code' do
         subject
         response.code.should eq('200')
@@ -45,7 +61,6 @@ describe Api::V3::TalkController do
         assigns(:talk).select{|c| c.locations.include? @user.location }.count.should eq(assigns(:talk).count)
       end
     end
-
   end
 
   describe 'GET show' do
@@ -53,56 +68,49 @@ describe Api::V3::TalkController do
       @talk = FactoryGirl.create :content, content_category: @talk_cat
       api_authenticate user: @user
     end
+
     subject { get :show, id: @talk.id, format: :json }
-    context do
-      it 'has 200 status code' do
-        subject
-        response.code.should eq('200')
-      end
 
-      it 'appropriately loads the talk object' do
-        subject
-        assigns(:talk).should eq(@talk)
-      end
-
-      it 'check view_count' do
-        view_count = @talk.view_count
-        subject
-        talk=JSON.parse(@response.body)
-        talk["talk"]["view_count"].should == view_count+1
-      end
-      it 'check comment_count' do
-        comment_count = @talk.comment_count
-        subject
-        talk=JSON.parse(@response.body)
-        talk["talk"]["comment_count"].should == comment_count
-      end
-      it 'check commenter_count' do
-        commenter_count = @talk.commenter_count
-        subject
-        talk=JSON.parse(@response.body)
-        talk["talk"]["commenter_count"].should == commenter_count
-      end
-
-      it 'should increment view count' do
-        expect{subject}.to change{Content.find(@talk.id).view_count}.from(0).to(1)
-      end
+    it 'has 200 status code' do
+      subject
+      response.code.should eq('200')
     end
-    context 'when user has an avatar' do
+
+    it 'appropriately loads the talk object' do
+      subject
+      assigns(:talk).should eq(@talk)
+    end
+
+    it 'should increment view_count' do
+      expect{subject}.to change{@talk.reload.view_count}.by 1
+    end
+
+    context 'when called with an ID that does not match a talk record' do
       before do
-        google_logo_stub
-        @user.remote_avatar_url='https://www.google.com/images/srpr/logo11w.png'
-        @user.save
-        @talk.created_by = @user
-        @talk.save
+        @content = FactoryGirl.create :content # not talk!
       end
-      
-      it 'serializer should return author_image_url' do
+
+      subject! { get :show, id: @content.id }
+
+      it { response.status.should eq 204 }
+    end
+
+    describe 'with repository present' do
+      before do
+        @repo = FactoryGirl.create :repository
+        @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+        @consumer_app.organizations << @talk.organization
+        stub_request(:post, /#{@repo.recommendation_endpoint}/)
+        api_authenticate user: @user, consumer_app: @consumer_app
+      end
+
+      it 'should make a call to record_user_visit' do
         subject
-        JSON.parse(response.body)['talk']['author_image_url'].should == @user.avatar.url
+        expect(WebMock).to have_requested(:post, /#{@repo.recommendation_endpoint}/)
       end
     end
-    context 'when requesting app has matching organizations' do
+
+    context 'when requesting app includes the talk\'s organization' do
       before do
         organization = FactoryGirl.create :organization
         @talk.organization = organization
@@ -110,12 +118,14 @@ describe Api::V3::TalkController do
         @consumer_app = FactoryGirl.create :consumer_app, organizations: [organization]
         api_authenticate user: @user, consumer_app: @consumer_app
       end
-      it do
+
+      it 'should respond with the talk record' do
         subject
         response.status.should eq 200
-        JSON.parse(response.body)['talk']['id'].should == @talk.id
+        assigns(:talk).should eq @talk
       end
     end
+
     context 'when requesting app DOES NOT HAVE matching organizations' do
       before do
         organization = FactoryGirl.create :organization
@@ -160,11 +170,9 @@ describe Api::V3::TalkController do
 
       it 'should associate a new Image with the Content record' do
         subject
-        (assigns(:content).reload.images.present?).should eq(true)
+        assigns(:content).reload.images.present?.should eq(true)
       end
-
     end
-
   end
 
   describe 'POST create' do
@@ -202,7 +210,37 @@ describe Api::V3::TalkController do
         expect{subject}.to change{Content.count}.by(1)
         (assigns(:talk).content.present?).should be true
       end
+
+      context 'with listserv_id' do
+        before do
+          @listserv = FactoryGirl.create :listserv
+          @basic_attrs[:listserv_id] = @listserv.id
+        end
+
+        it { expect{subject}.to change{PromotionListserv.count}.by(1) }
+        it { expect{subject}.to change{Promotion.count}.by(1) }
+        # triggers mail to both listserv and the user
+        it { expect{subject}.to change{ActionMailer::Base.deliveries.count}.by(2) }
+      end
+
+      context 'with consumer_app / repository' do
+        before do
+          @repo = FactoryGirl.create :repository
+          @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+          api_authenticate user: @user, consumer_app: @consumer_app
+          stub_request(:post, /.*/)
+        end
+
+        # because there are so many different external calls and behaviors here, 
+        # this is really difficult to test thoroughly, but mocking and checking
+        # that the external call is made tests the basics of it.
+        it 'should call publish_to_dsp' do
+          subject
+          # note, OntotextController adds basic auth, hence the complex gsub
+          expect(WebMock).to have_requested(:post, /#{@repo.annotate_endpoint.gsub(/http:\/\//,
+            "http://#{Figaro.env.ontotext_api_username}:#{Figaro.env.ontotext_api_password}@")}/)
+        end
+      end
     end
   end
-
 end

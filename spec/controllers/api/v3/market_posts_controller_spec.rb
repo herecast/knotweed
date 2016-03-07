@@ -11,7 +11,7 @@ describe Api::V3::MarketPostsController do
       @other_location = FactoryGirl.create :location, city: 'Another City'
       @third_location = FactoryGirl.create :location, city: 'Different Again'
       @user = FactoryGirl.create :user, location: @other_location
-      FactoryGirl.create_list :content, 3, content_category: @market_cat, 
+      @default_location_contents = FactoryGirl.create_list :content, 3, content_category: @market_cat, 
         locations: [@default_location], published: true
       FactoryGirl.create_list :content, 5, content_category: @market_cat, 
         locations: [@other_location], published: true
@@ -22,7 +22,7 @@ describe Api::V3::MarketPostsController do
       index
     end
 
-    subject { get :index, format: :json }
+    subject { get :index }
 
     it 'has 200 status code' do
       subject
@@ -37,6 +37,46 @@ describe Api::V3::MarketPostsController do
     it 'should allow querying by location_id' do
       get :index, format: :json, location_id: @third_location.id
       assigns(:market_posts).select{|c| c.locations.include? @third_location }.count.should eq(assigns(:market_posts).count)
+    end
+
+    describe 'querying with location_id=0' do
+      subject { get :index, location_id: 0 }
+
+      it 'should filter by Location::DEFAULT_LOCATION' do
+        subject
+        @default_location_contents.each do |c|
+          assigns(:market_posts).should include(c)
+        end
+        assigns(:market_posts).count.should eq @default_location_contents.count
+      end
+    end
+
+    describe 'searching' do
+      before do
+        @content = Content.where(content_category_id: @market_cat).first
+      end
+
+      subject { get :index, query: @content.title }
+
+      it 'should return matching content' do
+        subject
+        assigns(:market_posts).should eq [@content]
+      end
+    end
+
+    context 'with consumer app specified' do
+      before do
+        @content = Content.where(content_category_id: @market_cat).first
+        @org = @content.organization
+        @consumer_app = FactoryGirl.create :consumer_app
+        @consumer_app.organizations << @org
+        api_authenticate consumer_app: @consumer_app
+      end
+
+      it 'should filter results by consumer app\'s organizations' do
+        subject
+        assigns(:market_posts).should eq([@content])
+      end
     end
 
     context 'not signed in' do
@@ -71,42 +111,13 @@ describe Api::V3::MarketPostsController do
 
   end
 
-  describe 'when user edits the content' do
-    before do
-      @location = FactoryGirl.create :location, city: 'Another City'
-      @user = FactoryGirl.create :user, location: @location
-      @market_post = FactoryGirl.create :content, content_category: @market_cat
-      @market_post.update_attribute(:created_by, @user)
-    end
-
-    subject { get :show, id: @market_post.id, format: :json }
-
-    it 'can_edit should be true for the content author' do
-      api_authenticate user: @user
-      subject 
-      JSON.parse(response.body)["market_post"]["can_edit"].should == true
-    end
-
-    it 'can_edit should false for a different user' do
-      @location = FactoryGirl.create :location, city: 'Another City'
-      @different_user = FactoryGirl.create :user, location: @location
-      api_authenticate user: @different_user
-      subject 
-      JSON.parse(response.body)["market_post"]["can_edit"].should == false
-    end
-
-    it 'can_edit should false when a user is not logged in' do
-      subject 
-      JSON.parse(response.body)["market_post"]["can_edit"].should == false
-    end
-  end
 
   describe 'GET show' do
     before do
       @market_post = FactoryGirl.create :content, content_category: @market_cat
     end
 
-    subject { get :show, id: @market_post.id, format: :json }
+    subject { get :show, id: @market_post.id }
 
     it 'has 200 status code' do
       subject
@@ -121,6 +132,54 @@ describe Api::V3::MarketPostsController do
     it 'should increment view count' do
       expect{subject}.to change{Content.find(@market_post.id).view_count}.from(0).to(1)
     end
+
+    describe 'can_edit' do
+      before do
+        @location = FactoryGirl.create :location, city: 'Another City'
+        @user = FactoryGirl.create :user, location: @location
+        @market_post = FactoryGirl.create :content, content_category: @market_cat
+        @market_post.update_attribute(:created_by, @user)
+      end
+
+      let(:can_edit) { JSON.parse(response.body)['market_post']['can_edit'] }
+
+      it 'can_edit should be true for the content author' do
+        api_authenticate user: @user
+        subject 
+        can_edit.should == true
+      end
+
+      it 'can_edit should false for a different user' do
+        @different_user = FactoryGirl.create :user
+        api_authenticate user: @different_user
+        subject 
+        can_edit.should == false
+      end
+
+      it 'can_edit should false when a user is not logged in' do
+        subject 
+        can_edit.should == false
+      end
+    end
+
+    context 'signed in' do
+      before do
+        @repo = FactoryGirl.create :repository
+        @user = FactoryGirl.create :user
+        @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+        @consumer_app.organizations << @market_post.organization
+        stub_request(:post, /#{@repo.recommendation_endpoint}/)
+        api_authenticate user: @user, consumer_app: @consumer_app
+      end
+
+      describe 'record_user_visit' do
+        it 'should be called' do
+          subject
+          expect(WebMock).to have_requested(:post, /#{@repo.recommendation_endpoint}/)
+        end
+      end
+    end
+
     context 'when requesting app has matching organizations' do
       before do
         organization = FactoryGirl.create :organization
@@ -129,12 +188,13 @@ describe Api::V3::MarketPostsController do
         @consumer_app = FactoryGirl.create :consumer_app, organizations: [organization]
         api_authenticate consumer_app: @consumer_app
       end
-      it do
+
+      it 'should load the content normally' do
         subject
-        response.status.should eq 200
-        JSON.parse(response.body)['market_post']['id'].should == @market_post.id
+        assigns(:market_post).should == @market_post
       end
     end
+
     context 'when requesting app DOES NOT HAVE matching organizations' do
       before do
         organization = FactoryGirl.create :organization
@@ -143,21 +203,54 @@ describe Api::V3::MarketPostsController do
         @consumer_app = FactoryGirl.create :consumer_app, organizations: []
         api_authenticate consumer_app: @consumer_app
       end
+
       it { subject; response.status.should eq 204 }
     end
+
+    describe 'for content that isn\'t market' do
+      before { @c = FactoryGirl.create :content }
+
+      it 'should respond with nothing' do
+        get :show, id: @c.id
+        response.code.should eq '204'
+      end
+    end
+       
   end
 
   describe 'GET contact' do
-    before do
-      post_content = FactoryGirl.create :content, content_category: @market_cat
-      @market_post = FactoryGirl.create :market_post, content: post_content
+    describe 'if content isn\'t market' do
+      before do
+        @content = FactoryGirl.create :content
+      end
+
+      it 'should respond with nothing' do
+        get :contact, id: @content.id
+        response.code.should eq('204')
+      end
     end
 
-    subject { get :contact, id: @market_post.content.id, format: :json }
+    describe 'for market category content' do
+      before do
+        @content = FactoryGirl.create :content, content_category: @market_cat
+      end
 
-    it 'has 200 status code' do
-      subject
-      response.code.should eq('200')
+      it 'has 200 status code' do
+        get :contact, id: @content.id
+        response.code.should eq '200'
+      end
+    end
+
+    describe 'for a market channel content' do
+      before do
+        post_content = FactoryGirl.create :content, content_category: @market_cat
+        @market_post = FactoryGirl.create :market_post, content: post_content
+      end
+
+      it 'has 200 status code' do
+        get :contact, id: @market_post.content.id
+        response.code.should eq '200'
+      end
     end
   end
 
@@ -193,6 +286,42 @@ describe Api::V3::MarketPostsController do
 
       it 'should update the associated content\'s attributes' do
         expect{subject}.to change{@market_post.content.reload.title}.to @attrs_for_update[:title]
+      end
+
+      it 'should allow clearing out an attribute' do
+        @attrs_for_update['contact_phone'] = ''
+        subject
+        @market_post.reload.contact_phone.should eq ''
+      end
+
+      describe 'with invalid parameters' do
+        before do
+          @attrs_for_update[:title] = ''
+        end
+
+        it 'should respond with a 422' do
+          subject
+          response.code.should eq '422'
+        end
+      end
+
+      context 'with consumer_app / repository' do
+        before do
+          @repo = FactoryGirl.create :repository
+          @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+          api_authenticate user: @user, consumer_app: @consumer_app
+          stub_request(:post, /.*/)
+        end
+
+        # because there are so many different external calls and behaviors here, 
+        # this is really difficult to test thoroughly, but mocking and checking
+        # that the external call is made tests the basics of it.
+        it 'should call publish_to_dsp' do
+          subject
+          # note, OntotextController adds basic auth, hence the complex gsub
+          expect(WebMock).to have_requested(:post, /#{@repo.annotate_endpoint.gsub(/http:\/\//,
+            "http://#{Figaro.env.ontotext_api_username}:#{Figaro.env.ontotext_api_password}@")}/)
+        end
       end
 
       context 'with extended_reach_enabled true' do
@@ -252,6 +381,36 @@ describe Api::V3::MarketPostsController do
       it 'should create an associated content' do
         expect{subject}.to change{Content.count}.by(1)
         (assigns(:market_post).content.present?).should be true
+      end
+
+      context 'with consumer_app / repository' do
+        before do
+          @repo = FactoryGirl.create :repository
+          @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+          api_authenticate user: @user, consumer_app: @consumer_app
+          stub_request(:post, /.*/)
+        end
+
+        # because there are so many different external calls and behaviors here, 
+        # this is really difficult to test thoroughly, but mocking and checking
+        # that the external call is made tests the basics of it.
+        it 'should call publish_to_dsp' do
+          subject
+          # note, OntotextController adds basic auth, hence the complex gsub
+          expect(WebMock).to have_requested(:post, /#{@repo.annotate_endpoint.gsub(/http:\/\//,
+            "http://#{Figaro.env.ontotext_api_username}:#{Figaro.env.ontotext_api_password}@")}/)
+        end
+      end
+
+      describe 'with invalid parameters' do
+        before do
+          @basic_attrs.delete :title
+        end
+
+        it 'should respond with a 500' do
+          subject
+          response.code.should eq '500'
+        end
       end
 
       context 'with extended_reach_enabled true' do
