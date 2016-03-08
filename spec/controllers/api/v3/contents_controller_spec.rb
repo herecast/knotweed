@@ -230,7 +230,7 @@ describe Api::V3::ContentsController do
 
       it 'should respond with the contents defined by similar_content_overrides' do
         subject
-        assigns(:contents).should eq(@some_similar_contents)
+        assigns(:contents).should match_array(@some_similar_contents)
       end
     end
   end
