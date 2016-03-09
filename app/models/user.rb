@@ -86,7 +86,7 @@ class User < ActiveRecord::Base
 
   def validate_safe_avatar_image(image)
     safe_types = ['image/jpg', 'image/jpeg', 'image/png']
-    safe_types.index(FileMagic.new(FileMagic::MAGIC_MIME).file(image.path).split('; ').first).nil?
+    if safe_types.index(FileMagic.new(FileMagic::MAGIC_MIME).file(image.path).split('; ').first).nil?
       false
     else
       safe_types.index(FileMagic.new(FileMagic::MAGIC_MIME).file(image.path).split('; ').first) > 0
