@@ -1,7 +1,7 @@
 module Api
   module V3
     class ContentsController < ApiController
-      before_filter :check_logged_in!, only:  [:moderate, :dashboard, :ad_dashboard, :metrics]
+      before_filter :check_logged_in!, only:  [:moderate, :dashboard, :metrics]
       # pings the DSP to retrieve an active related banner ad (with inventory) for a generic
       # content type.
       def related_promotion
@@ -166,7 +166,8 @@ module Api
           render json: { errors: ['You do not have permission to access these metrics.'] }, 
             status: 401
         else
-          render json: @content, serializer: ContentMetricsSerializer, context: {start_date: params[:start_date], end_date: params[:end_date]}
+          render json: @content, serializer: ContentMetricsSerializer, 
+            context: {start_date: params[:start_date], end_date: params[:end_date]}
         end
       end
 
