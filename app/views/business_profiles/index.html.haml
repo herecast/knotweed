@@ -1,0 +1,49 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-search
+        Find Business Profiles
+      .actions
+        %a.btn.box-remove.btn-mini.btn-link{ href: "#" }
+          %i.icon-remove
+        %a.btn.box-collapse.btn-mini.btn-link{ href: "#" }
+          %i
+    .box-content
+      = search_form_for @search, url: business_profiles_path do |f|
+        .controls.controls-row
+          .field.span2
+            = f.label :id_in, "ID"
+            -# format id_in val for display so it matches what's entered
+            - if session[:business_profiles_search].present? and session[:business_profiles_search].has_key? :id_in and session[:business_profiles_search][:id_in].present?
+              - id_in_val = session[:business_profiles_search][:id_in].join(',')
+            - else
+              - id_in_val = ""
+            = f.text_field :id_in, value: id_in_val, class: "span12"
+          .field.span2
+            = f.label :content_title_cont, "Name"
+            = f.text_field :content_title_cont, class: "span12"
+          .field.span2
+            = f.label :business_location_city_cont, "City"
+            = f.text_field :business_location_city_cont, value: search_field_value(:business_location_city_cont), class: "span12"
+        .form-actions
+          = f.submit "Search", class: "btn btn-primary"
+          = f.submit "Reset", name: "reset", class: "btn"
+%table.table.table-striped.table-hover.table-condensed#business_profiles_index
+  %thead
+    %tr
+      %th Content ID
+      %th Name
+      %th Location
+      %th
+  .span5
+    = page_entries_info @business_profiles if @business_profiles.present?
+    = paginate @business_profiles, window: 2 if @business_profiles.present?
+  %tbody
+    - @business_profiles.each_with_index do |c, i|
+      %tr{ class: "content-#{c.id}" }
+        %td= c.content.id
+        %td= link_to c.content.title, edit_business_profile_path(id: c.id, index: i, page: params[:page])
+        %td= c.business_location.full_address
+        %td.actions
+          = link_to "edit", edit_business_profile_path(id: c.id, index: i, page: params[:page]), class: "btn btn-mini btn-warning"
