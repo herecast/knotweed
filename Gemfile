@@ -50,7 +50,7 @@ end
 gem "carrierwave", '~> 0.9.0'
 gem 'carrierwave-mimetype-fu', '~> 0.0.2'
 gem "figaro", '~> 0.7.0'
-
+gem 'ruby-filemagic', '0.7.1'
 
 gem 'jquery-datatables-rails', '~> 3.3.0'
 

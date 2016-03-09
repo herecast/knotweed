@@ -181,11 +181,25 @@ describe Api::V3::UsersController do
           end
         end
 
-        context "when image is proper type" do
-          it 'should set new image' do
-            file = fixture_file_upload('/photo.jpg', 'image/jpg')
+        context "when image has proper extension but is wrong type" do
+          it "returns 'failed' alert" do
+            file = fixture_file_upload('/lying_file.jpg')
             put :update, format: :json, current_user: {user_id: @user.id.to_s, image: file}
-            assigns(:current_api_user).avatar_identifier.should include(file.original_filename)
+            decoded_response = JSON.parse(response.body)
+            expect(response.status).to eq 422
+            expect(decoded_response["error"]).to eq "Current User update failed"
+            expect(decoded_response["messages"].size).to eq 1
+          end
+        end
+
+        context "when image is proper type" do
+          ['jpg', 'jpeg', 'png'].each do |extension|
+            it "should set new image from file type #{extension}" do
+              file = fixture_file_upload("/photo.#{extension}", "image/#{extension}")
+              put :update, format: :json, current_user: {user_id: @user.id.to_s, image: file}
+              expect(response.status).to eq 200
+              assigns(:current_api_user).avatar_identifier.should include(file.original_filename)
+            end
           end
         end
       end

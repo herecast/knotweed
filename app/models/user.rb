@@ -84,6 +84,15 @@ class User < ActiveRecord::Base
     Thread.current[:user] = user
   end
 
+  def validate_safe_avatar_image(image)
+    safe_types = ['image/jpg', 'image/jpeg', 'image/png']
+    safe_types.index(FileMagic.new(FileMagic::MAGIC_MIME).file(image.path).split('; ').first).nil?
+      false
+    else
+      safe_types.index(FileMagic.new(FileMagic::MAGIC_MIME).file(image.path).split('; ').first) > 0
+    end
+  end
+
   private
 
     def generate_authentication_token

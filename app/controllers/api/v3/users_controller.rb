@@ -39,7 +39,16 @@ module Api
               params[:current_user][:password_confirmation]
           end
 
-          @current_api_user.avatar = params[:current_user][:image] if params[:current_user][:image].present?
+          if params[:current_user][:image].present?
+            if @current_api_user.validate_safe_avatar_image(params[:current_user][:image])
+              @current_api_user.avatar = params[:current_user][:image]
+            else
+              @current_api_user.errors.add(:avatar, "Image type not supported")
+              render json: { error: "Current User update failed", messages:  @current_api_user.errors.full_messages }, status: 422
+              return
+            end
+          end
+
           @current_api_user.public_id = params[:current_user][:public_id] if params[:current_user][:public_id].present?
 
           if @current_api_user.save 
