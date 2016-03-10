@@ -22,6 +22,11 @@ module Api
 
         opts[:with][:root_content_category_id] = ContentCategory.find_by_name('news').id
 
+        if params[:category].present?
+          category = ContentCategory.find_by_name(params['category'].humanize.titleize)
+          opts[:with][:content_category_id] = category.id if category
+        end
+
         if params[:organization].present?
           org = Organization.find_by_name params[:organization]
           opts[:with][:org_id] = org.id if org.present?
