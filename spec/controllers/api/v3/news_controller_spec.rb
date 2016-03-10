@@ -47,6 +47,27 @@ describe Api::V3::NewsController do
       end
     end
 
+    context 'querying by named category;' do
+      context 'with an existing "Sponsored Content" category;' do
+        let!(:sponsored_cat) { FactoryGirl.create :content_category, name: 'Sponsored Content', parent: @news_cat }
+
+        let!(:sponsored_content) { FactoryGirl.create :content, content_category: sponsored_cat }
+        let!(:not_sponsored) { FactoryGirl.create :content, content_category: @news_cat }
+
+        before do
+          index
+        end
+
+        subject! { get :index, format: :json, category: 'sponsored_content' }
+
+        it 'param: category=sponsored_content returns records in the correct category only' do
+          news = assigns(:news)
+          expect(news).to include(sponsored_content)
+          expect(news).to_not include(not_sponsored)
+        end
+      end
+    end
+
     context 'not signed in' do
       it 'should respond with news items' do
         subject
