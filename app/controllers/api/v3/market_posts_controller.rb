@@ -42,7 +42,12 @@ module Api
 
       def create
         market_cat = ContentCategory.find_by_name 'market'
-        org = Organization.find_or_create_by_name 'DailyUV'
+
+        if params[:market_post][:organization_id].present?
+          org_id = params[:market_post].delete :organization_id
+        else
+          org_id = Organization.find_or_create_by_name('DailyUV').id
+        end
 
         location_ids = [@current_api_user.location_id]
         if params[:market_post][:extended_reach_enabled]
@@ -58,7 +63,7 @@ module Api
           content_category_id: market_cat.id,
           pubdate: Time.zone.now,
           timestamp: Time.zone.now,
-          organization_id: org.id
+          organization_id: org_id
         }
         listserv_ids = params[:market_post].delete :listserv_ids || []
 

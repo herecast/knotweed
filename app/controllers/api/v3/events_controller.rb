@@ -54,8 +54,11 @@ module Api
         # because update doesn't include listserv publishing
         listserv_ids = params[:event].delete(:listserv_ids) || []
 
-        # hard coded organization...
-        org = Organization.find_or_create_by_name 'DailyUV'
+        if params[:event][:organization_id].present?
+          org_id = params[:event].delete :organization_id
+        else
+          org_id = Organization.find_or_create_by_name('DailyUV').id
+        end
 
         schedule_data = params[:event].delete :schedules
         schedules = schedule_data.map{ |s| Schedule.build_from_ux_for_event(s) }
@@ -63,7 +66,7 @@ module Api
         event_hash = process_event_params(params[:event])
 
         @event = Event.new(event_hash)
-        @event.content.organization = org
+        @event.content.organization_id = org_id
         @event.content.images = [Image.create(image: image_data)] if image_data.present?
         if @event.save_with_schedules(schedules)
           # reverse publish to specified listservs

@@ -39,8 +39,11 @@ module Api
       end
 
       def create
-        # hard coded organization...
-        org = Organization.find_or_create_by_name 'DailyUV'
+        if params[:talk][:organization_id].present?
+          org_id = params[:talk].delete :organization_id
+        else
+          org_id = Organization.find_or_create_by_name('DailyUV').id
+        end
 
         # hard code category
         cat = ContentCategory.find_or_create_by_name 'talk_of_the_town'
@@ -55,7 +58,7 @@ module Api
           authors: @current_api_user.try(:name),
           raw_content: params[:talk][:content],
           pubdate: Time.zone.now,
-          organization_id: org.id,
+          organization_id: org_id,
           content_category_id: cat.id
         }
 
