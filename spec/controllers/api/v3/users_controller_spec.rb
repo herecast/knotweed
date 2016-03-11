@@ -182,16 +182,6 @@ describe Api::V3::UsersController do
           end
         end
 
-        context "when image has proper extension but is wrong type" do
-          let!(:file) { fixture_file_upload('/lying_file.jpg') }
-
-          it "returns 'failed' alert" do
-            decoded_response = JSON.parse(response.body)
-            expect(response.status).to eq 422
-            expect(decoded_response["messages"].size).to eq 1
-          end
-        end
-
         context "when image is proper type" do
           ['jpg', 'jpeg', 'png'].each do |extension|
             let!(:file) { fixture_file_upload("/photo.#{extension}", "image/#{extension}") }
