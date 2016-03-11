@@ -375,7 +375,8 @@ describe Api::V3::UsersController do
           test_group: user.test_group,
           user_image_url: user.avatar.url,
           skip_analytics: false,
-          events_ical_url: nil}.stringify_keys
+          events_ical_url: nil,
+          roles: []}.stringify_keys
         }.stringify_keys
     end
 end
