@@ -126,7 +126,12 @@ module Api
         params[:page] ||= 1
         params[:per_page] ||= 12
 
-        scope = Content.where(created_by: @current_api_user)
+        if params[:organization_id].present? and @current_api_user.has_role? :manager, Organization.find(params[:organization_id])
+          scope = Content.where(organization_id: params[:organization_id])
+        else
+          scope = Content.where(created_by: @current_api_user)
+        end
+
         @news_cat = ContentCategory.find_or_create_by_name 'news'
         @talk_cat = ContentCategory.find_or_create_by_name 'talk_of_the_town'
         @market_cat = ContentCategory.find_or_create_by_name 'market'
