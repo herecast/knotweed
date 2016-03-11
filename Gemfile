@@ -51,6 +51,7 @@ gem "carrierwave", '~> 0.9.0'
 gem 'carrierwave-mimetype-fu', '~> 0.0.2'
 gem "figaro", '~> 0.7.0'
 
+
 gem 'jquery-datatables-rails', '~> 3.3.0'
 
 gem 'delayed_job_active_record', '~> 4.0.0'
