@@ -170,33 +170,33 @@ describe Api::V3::UsersController do
           api_authenticate user: @user
         end
 
+        subject! { put :update, format: :json, current_user: {user_id: @user.id.to_s, image: file} }
+
         context "when image is improper type" do
+          let!(:file) { fixture_file_upload('/bad_upload_file.json', 'application/javascript') }
+
           it "returns 'failed' alert" do
-            file = fixture_file_upload('/bad_upload_file.json', 'application/javascript')
-            put :update, format: :json, current_user: {user_id: @user.id.to_s, image: file}
             decoded_response = JSON.parse(response.body)
             expect(response.status).to eq 422
-            expect(decoded_response["error"]).to eq "Current User update failed"
             expect(decoded_response["messages"].size).to eq 1
           end
         end
 
         context "when image has proper extension but is wrong type" do
+          let!(:file) { fixture_file_upload('/lying_file.jpg') }
+
           it "returns 'failed' alert" do
-            file = fixture_file_upload('/lying_file.jpg')
-            put :update, format: :json, current_user: {user_id: @user.id.to_s, image: file}
             decoded_response = JSON.parse(response.body)
             expect(response.status).to eq 422
-            expect(decoded_response["error"]).to eq "Current User update failed"
             expect(decoded_response["messages"].size).to eq 1
           end
         end
 
         context "when image is proper type" do
           ['jpg', 'jpeg', 'png'].each do |extension|
+            let!(:file) { fixture_file_upload("/photo.#{extension}", "image/#{extension}") }
+
             it "should set new image from file type #{extension}" do
-              file = fixture_file_upload("/photo.#{extension}", "image/#{extension}")
-              put :update, format: :json, current_user: {user_id: @user.id.to_s, image: file}
               expect(response.status).to eq 200
               assigns(:current_api_user).avatar_identifier.should include(file.original_filename)
             end
