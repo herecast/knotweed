@@ -2,6 +2,12 @@ require 'spec_helper'
 require "cancan/matchers"
 
 describe Ability do
+  before do
+    # ensure that -- regardless of spec order --
+    # users are not "logged in" during this execution
+    User.current = nil
+  end
+
   describe "abilities" do
     subject(:ability) { Ability.new(user) }
     let(:user) { nil }
