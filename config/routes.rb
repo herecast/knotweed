@@ -26,6 +26,7 @@ Knotweed::Application.routes.draw do
   get "issues/select_options", to: "issues#select_options", as: :issue_select_options
   get "organizations/business_location_options", to: "organizations#business_location_options", as: :business_location_options
   resources :market_posts, except: [:destroy]
+  resources :business_profiles, except: [:destroy, :show]
   resources :import_jobs
   resources :parsers
   resources :messages, except: [:show]

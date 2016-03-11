@@ -17,6 +17,7 @@ ThinkingSphinx::Index.define(:content,
   has published
   has channel_type
   has root_content_category_id
+  has content_category_id
 
   # note, this is used for the Talk index page to query
   # root contents only

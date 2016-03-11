@@ -25,22 +25,16 @@ describe 'Contents Endpoints', type: :request do
         end
       end
 
-      it 'returns the last 30 days of daily_view_counts by default' do
+      it 'returns all daily_view_counts by default' do
         get "/api/v3/contents/#{content.id}/metrics", {}, auth_headers
         view_counts = response_json['content_metrics']['daily_view_counts']
-        expect(view_counts.count).to eql 30
-
-        report_dates = view_counts.map{|v| DateTime.parse(v['report_date']).to_date}
-        expect(report_dates).to satisfy{|dates| dates.all?{|d| d.between?(30.days.ago.to_date, Date.today)}}
+        expect(view_counts.count).to eql content.content_reports.count
       end
 
-      it 'returns the last 30 days of daily_promo_click_thru_counts by default' do
+      it 'returns all daily_promo_click_thru_counts by default' do
         get "/api/v3/contents/#{content.id}/metrics", {}, auth_headers
         view_counts = response_json['content_metrics']['daily_promo_click_thru_counts']
-        expect(view_counts.count).to eql 30
-
-        report_dates = view_counts.map{|v| DateTime.parse(v['report_date']).to_date}
-        expect(report_dates).to satisfy{|dates| dates.all?{|d| d.between?(30.days.ago.to_date, Date.today)}}
+        expect(view_counts.count).to eql content.content_reports.count
       end
 
       it 'orders daily_view_counts ASC on report_date' do

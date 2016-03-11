@@ -22,16 +22,17 @@ module Api
       end
 
       def content_reports
-        scope = object.content_reports.order('report_date DESC')
         if context.present? && context[:start_date]
+          scope = object.content_reports.order('report_date DESC')
           scope = scope.where('report_date >= ?', context[:start_date])
           if context[:end_date]
             scope = scope.where('report_date <= ?', context[:end_date])
           end
-        else
-          scope = scope.limit(30)
+          scope.reverse!
+        else 
+          scope = object.content_reports.order('report_date ASC')
         end
-        return scope.reverse
+        scope
       end
 
       def daily_view_counts

@@ -4,7 +4,7 @@ module Api
 
       attributes :id, :organization_id, :name, :phone, :email, :website,
         :address, :city, :state, :zip, :has_retail_location, :coords, :service_radius,
-        :hours, :details, :logo, :images, :category_ids, :feedback
+        :hours, :details, :logo, :images, :category_ids, :feedback, :feedback_num
 
       def id; object.content.id; end
       def details; object.content.sanitized_content; end
@@ -34,6 +34,8 @@ module Api
 
       def category_ids; object.business_category_ids; end
       def feedback; object.feedback; end
+
+      def feedback_num; object.business_feedbacks.size; end
     end
   end
 end

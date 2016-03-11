@@ -1460,6 +1460,11 @@ class Content < ActiveRecord::Base
     "/#{prefix}/#{id}"
   end
 
+  # boolean represents whether the record has associated metrics reports
+  def has_metrics_reports?
+    content_reports.present?
+  end
+
   private
 
   def query_promo_similarity_index(query_term, repo)
