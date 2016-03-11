@@ -5,7 +5,9 @@ module Api
 
       def create
         # created_by is automatically set by Auditable concern
-        params[:feedback][:business_profile_id] = params[:id]
+        content = Content.find(params[:id])
+        params[:feedback][:business_profile_id] = content.channel_id
+
         @business_feedback = BusinessFeedback.new(params[:feedback])
         if @business_feedback.save
           render json: @business_feedback, serializer: BusinessFeedbackSerializer,
