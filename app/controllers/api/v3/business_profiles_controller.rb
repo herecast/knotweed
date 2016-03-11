@@ -9,7 +9,13 @@ module Api
       def index
         page = params[:page] || 1
         per_page = params[:per_page] || 14
-        opts = { select: '*, weight()', page: page, per_page: per_page, with: {} }
+        opts = { 
+          select: '*, weight()', 
+          page: page, 
+          per_page: per_page, 
+          star: true,
+          with: {} 
+        }
 
         if params[:lat].present? and params[:lng].present?
           lat = params[:lat]
