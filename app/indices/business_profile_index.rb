@@ -3,6 +3,9 @@ ThinkingSphinx::Index.define(:business_profile,
   delta: ThinkingSphinx::Deltas::DatetimeDelta,
   delta_options: { threshold: 1.hour }
 ) do
+
+  set_property :min_prefix_len => 1
+
   indexes business_categories.name, as: :category_names
   indexes content.title, as: :title
   indexes content.raw_content, as: :content
