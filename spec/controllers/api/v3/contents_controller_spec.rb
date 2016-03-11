@@ -273,6 +273,42 @@ describe Api::V3::ContentsController do
         response.code.should eq('200')
       end
 
+      describe 'filtering by organization_id' do
+        before do
+          @news_cat = FactoryGirl.create :content_category, name: 'news'
+        end
+
+        context 'with an organization the user is not a manager of' do
+          before do
+            @org = FactoryGirl.create :organization
+            @org_contents = FactoryGirl.create_list :content, 3
+          end
+
+          subject { get :dashboard, organization_id: @org.id }
+
+          it 'should not return the organization\'s contents' do
+            subject
+            assigns(:contents).should_not match_array(@org_contents)
+          end
+        end
+
+        context 'that user is manager for' do
+          before do
+            @org = FactoryGirl.create :organization
+            @org_contents = FactoryGirl.create_list :content, 3,
+              content_category_id: @news_cat.id, organization: @org
+            @user.add_role :manager, @org
+          end
+
+          subject { get :dashboard, organization_id: @org.id }
+
+          it 'should return contents that belongs to the organization' do
+            subject
+            assigns(:contents).should match_array(@org_contents)
+          end
+        end
+      end
+
       context 'with the user owning some content' do
         before do
           @news_cat = FactoryGirl.create :content_category, name: 'news'

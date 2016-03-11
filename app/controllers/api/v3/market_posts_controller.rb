@@ -42,7 +42,12 @@ module Api
 
       def create
         market_cat = ContentCategory.find_by_name 'market'
-        org = Organization.find_or_create_by_name 'DailyUV'
+
+        if params[:market_post][:organization_id].present?
+          org_id = params[:market_post].delete :organization_id
+        else
+          org_id = Organization.find_or_create_by_name('DailyUV').id
+        end
 
         location_ids = [@current_api_user.location_id]
         if params[:market_post][:extended_reach_enabled]
@@ -58,7 +63,7 @@ module Api
           content_category_id: market_cat.id,
           pubdate: Time.zone.now,
           timestamp: Time.zone.now,
-          organization_id: org.id
+          organization_id: org_id
         }
         listserv_ids = params[:market_post].delete :listserv_ids || []
 
@@ -77,7 +82,7 @@ module Api
             @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
 
-          render json: @market_post.content, serializer: DetailedMarketPostSerializer, can_edit: true,
+          render json: @market_post.content, serializer: DetailedMarketPostSerializer, can_edit: can?(:edit, @market_post.content),
             status: 201
         else
           render json: { errors: ["Market Post could not be created"] }, status: 500
@@ -109,7 +114,7 @@ module Api
             @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
           render json: @market_post.content, status: 200, 
-            serializer: DetailedMarketPostSerializer, can_edit: true
+            serializer: DetailedMarketPostSerializer, can_edit: can?(:edit, @market_post.content)
         else
           render json: { errors: @market_post.errors.messages },
             status: :unprocessable_entity
@@ -130,7 +135,7 @@ module Api
           if @current_api_user.present? and @repository.present?
             @market_post.record_user_visit(@repository, @current_api_user.email)
           end
-          can_edit = (@current_api_user.present? && (@market_post.created_by == @current_api_user))
+          can_edit = can?(:edit, @market_post)
           render json: @market_post, serializer: DetailedMarketPostSerializer,
             can_edit: can_edit
         end

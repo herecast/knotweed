@@ -84,6 +84,10 @@ class User < ActiveRecord::Base
     Thread.current[:user] = user
   end
 
+  def ability
+      @ability ||= Ability.new(self)
+  end
+
   private
 
     def generate_authentication_token

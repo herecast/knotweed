@@ -22,8 +22,13 @@ module Api
       def create
         location_ids = [@current_api_user.try(:location_id)]
 
-        # hard coded organization...
-        org = Organization.find_or_create_by_name 'DailyUV'
+        # I don't think comments come in with organizations, but
+        # handle it if they do
+        if params[:comment][:organization_id].present?
+          org_id = params[:comment].delete :organization_id
+        else
+          org_id = Organization.find_or_create_by_name('DailyUV').id
+        end
 
         # hard code category
         cat = ContentCategory.find_or_create_by_name 'talk_of_the_town'
@@ -42,7 +47,7 @@ module Api
           authors: @current_api_user.try(:name),
           raw_content: params[:comment].delete(:content),
           pubdate: Time.zone.now,
-          organization_id: org.id,
+          organization_id: org_id,
           content_category_id: cat.id
         }
         @comment = Comment.new(comment_hash)
