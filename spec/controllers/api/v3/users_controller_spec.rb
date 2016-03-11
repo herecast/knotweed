@@ -160,21 +160,37 @@ describe Api::V3::UsersController do
 
       end
 
-      context 'set user avatar' do
+      describe 'set user avatar' do
         before do
           @user = FactoryGirl.create :user
           # just in case this gets set in the factory in the future
           @user.avatar = nil
           @user.save
 
-          @file = fixture_file_upload('/photo.jpg', 'image/jpg')
           api_authenticate user: @user
         end
 
-        subject! { put :update, format: :json, current_user: {user_id: @user.id.to_s, image: @file} }
+        subject! { put :update, format: :json, current_user: {user_id: @user.id.to_s, image: file} }
 
-        it 'should set new image' do
-          assigns(:current_api_user).avatar_identifier.should include(@file.original_filename)
+        context "when image is improper type" do
+          let!(:file) { fixture_file_upload('/bad_upload_file.json', 'application/javascript') }
+
+          it "returns 'failed' alert" do
+            decoded_response = JSON.parse(response.body)
+            expect(response.status).to eq 422
+            expect(decoded_response["messages"].size).to eq 1
+          end
+        end
+
+        context "when image is proper type" do
+          ['jpg', 'jpeg', 'png'].each do |extension|
+            let!(:file) { fixture_file_upload("/photo.#{extension}", "image/#{extension}") }
+
+            it "should set new image from file type #{extension}" do
+              expect(response.status).to eq 200
+              assigns(:current_api_user).avatar_identifier.should include(file.original_filename)
+            end
+          end
         end
       end
 
