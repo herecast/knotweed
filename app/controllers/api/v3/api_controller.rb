@@ -13,6 +13,11 @@ module Api
       before_filter :set_requesting_app_and_repository, :set_current_api_user,
         :set_current_thread_user, :init_mixpanel
 
+      # rescue CanCanCan authorization denied errors to use 403, not 500
+      rescue_from CanCan::AccessDenied do |exception|
+        render nothing: true, status: :forbidden
+      end
+
       protected
 
       def check_logged_in!

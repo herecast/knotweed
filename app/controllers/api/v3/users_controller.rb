@@ -11,7 +11,8 @@ module Api
           end
           render json: @current_api_user, serializer: UserSerializer,
             root: 'current_user',  status: 200, events_ical_url: events_ical_url,
-            context: { current_ability: current_ability }
+            context: { current_ability: current_ability,
+                       consumer_app: @requesting_app }
         else
           render json: { errors: 'User not logged in' }, status: 401
         end
