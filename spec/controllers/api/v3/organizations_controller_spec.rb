@@ -16,7 +16,7 @@ describe Api::V3::OrganizationsController do
       index
     end
 
-    subject { get :index, format: :json }
+    subject { get :index }
 
     it 'has 200 status code' do
       subject
@@ -35,5 +35,99 @@ describe Api::V3::OrganizationsController do
       assigns(:organizations).should eq([@organization])
     end
 
+    describe 'with a list of organization ids' do
+      before do
+        @list_of_orgs = FactoryGirl.create_list :organization, 3
+      end
+
+      subject { get :index, organization_ids: @list_of_orgs.map{|o| o.id} }
+
+      it 'should respond with 200' do
+        subject
+        response.code.should eq '200'
+      end
+
+      it 'should respond with the specified organizations' do
+        subject
+        assigns(:organizations).should match_array @list_of_orgs
+      end
+
+      context 'with consumer app specified' do
+        before do
+          @consumer_app.organizations += [@list_of_orgs[0], @list_of_orgs[1]]
+          api_authenticate consumer_app: @consumer_app
+        end
+
+        it 'should limit the response to organizations associated with the consumer app' do
+          subject
+          assigns(:organizations).should match_array([@list_of_orgs[0], @list_of_orgs[1]])
+        end
+      end
+    end
+  end
+
+  describe 'GET show' do
+    before do
+      @org1 = FactoryGirl.create :organization
+    end
+
+    subject { get :show, id: @org1.id, format: :json }
+
+    context 'not signed in' do
+      it 'should respond with 403' do
+        subject
+        response.code.should eq '403'
+      end
+    end
+
+    context 'signed in but not authorized' do
+      before do
+        @user = FactoryGirl.create :user
+        api_authenticate user: @user
+      end
+
+      it 'should respond with 403' do
+        subject
+        response.code.should eq '403'
+      end
+    end
+
+    context 'as authorized user' do
+      before do
+        @user = FactoryGirl.create :user
+        @user.add_role :manager, @org1
+        api_authenticate user: @user
+      end
+
+      context 'with consumer app specified' do
+        before do
+          @consumer_app = FactoryGirl.create :consumer_app
+          api_authenticate user: @user, consumer_app: @consumer_app
+        end
+
+        context 'without org being associated with consumer app' do
+          it 'should respond with a 204' do
+            subject
+            response.code.should eq '204'
+          end
+        end
+
+        context 'with org associated with consumer app' do
+          before do
+            @consumer_app.organizations << @org1
+          end
+
+          it 'should respond with a 200' do
+            subject
+            response.code.should eq '200'
+          end
+
+          it 'should load the organization' do
+            subject
+            assigns(:organization).should eq @org1
+          end
+        end
+      end
+    end
   end
 end
