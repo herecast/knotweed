@@ -22,15 +22,12 @@ module Api
       end
 
       def content_reports
-        if context.present? && context[:start_date]
-          scope = object.content_reports.order('report_date DESC')
+        scope = object.content_reports.order('report_date ASC')
+        if context.present? && context[:start_date].present?
           scope = scope.where('report_date >= ?', context[:start_date])
-          if context[:end_date]
+          if context[:end_date].present?
             scope = scope.where('report_date <= ?', context[:end_date])
           end
-          scope.reverse!
-        else 
-          scope = object.content_reports.order('report_date ASC')
         end
         scope
       end
