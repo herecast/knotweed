@@ -101,7 +101,7 @@ describe Api::V3::EventsController do
       end
       it do
       	put :update, event: @attrs_for_update, id: @event.id
-      	response.code.should eq('401')
+      	response.code.should eq('403')
       end
     end
 

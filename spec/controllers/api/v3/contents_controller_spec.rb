@@ -432,9 +432,9 @@ describe Api::V3::ContentsController do
       before do
         @content.update_attribute :created_by, nil
       end
-      it 'should respond with 401' do
+      it 'should respond with 403' do
         subject
-        expect(response.code).to eq('401')
+        expect(response.code).to eq('403')
       end
     end
 

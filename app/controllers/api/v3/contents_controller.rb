@@ -166,14 +166,9 @@ module Api
 
       def metrics
         @content = Content.find(params[:id])
-        # confirm user owns content first
-        if @current_api_user != @content.created_by 
-          render json: { errors: ['You do not have permission to access these metrics.'] }, 
-            status: 401
-        else
-          render json: @content, serializer: ContentMetricsSerializer, 
-            context: {start_date: params[:start_date], end_date: params[:end_date]}
-        end
+        authorize! :manage, @content
+        render json: @content, serializer: ContentMetricsSerializer, 
+          context: {start_date: params[:start_date], end_date: params[:end_date]}
       end
 
       protected
