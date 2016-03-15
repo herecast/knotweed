@@ -137,15 +137,15 @@ module Api
         @market_cat = ContentCategory.find_or_create_by_name 'market'
 
         if params[:channel_type] == 'news'
-          scope = scope.where(content_category_id: @news_cat.id)
+          scope = scope.where(root_content_category_id: @news_cat.id)
         elsif params[:channel_type] == 'events'
           scope = scope.where(channel_type: 'Event')
         elsif params[:channel_type] == 'talk'
-          scope = scope.where(content_category_id: @talk_cat.id)
+          scope = scope.where(root_content_category_id: @talk_cat.id)
         elsif params[:channel_type] == 'market'
-          scope = scope.where(content_category_id: @market_cat.id)
+          scope = scope.where(root_content_category_id: @market_cat.id)
         else # default -- include any of the above
-          scope = scope.where("content_category_id IN (?) OR channel_type = 'Event'", [@news_cat.id, @talk_cat.id, @market_cat.id])
+          scope = scope.where("root_content_category_id IN (?) OR channel_type = 'Event'", [@news_cat.id, @talk_cat.id, @market_cat.id])
         end
 
         sort_by = sanitize_sort_parameter(params[:sort])
