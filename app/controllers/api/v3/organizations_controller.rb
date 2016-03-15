@@ -4,13 +4,13 @@ module Api
       load_and_authorize_resource only: [:show]
 
       def index
-        if params[:organization_ids].present?
+        if params[:ids].present?
           if @requesting_app.present?
             @organizations = @requesting_app.organizations
           else
             @organizations = Organization
           end
-          @organizations = @organizations.where(id: params[:organization_ids])
+          @organizations = @organizations.where(id: params[:ids])
         else
           opts = {}
           opts = { select: '*, weight()' }

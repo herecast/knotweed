@@ -40,7 +40,7 @@ describe Api::V3::OrganizationsController do
         @list_of_orgs = FactoryGirl.create_list :organization, 3
       end
 
-      subject { get :index, organization_ids: @list_of_orgs.map{|o| o.id} }
+      subject { get :index, ids: @list_of_orgs.map{|o| o.id} }
 
       it 'should respond with 200' do
         subject
