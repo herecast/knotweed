@@ -346,7 +346,6 @@ describe Api::V3::ContentsController do
           expect(all_content.collect(&:id)).to eql user_content_only.collect(&:id)
         end
 
-
         describe 'sorting' do
           it 'allows sorting by specified parameters (pubdate)' do
             get :dashboard, sort: 'pubdate DESC'
@@ -368,6 +367,20 @@ describe Api::V3::ContentsController do
           end
         end
 
+        describe 'category children' do
+          before do
+            @child_of_news = FactoryGirl.create :content_category, name: 'child', parent: @news_cat
+            @c = FactoryGirl.create :content, content_category: @child_of_news,
+              published: true, created_by: @user
+          end
+
+          subject { get :dashboard, channel_type: 'news' }
+
+          it 'should return content belonging to news\' child category' do
+            subject
+            assigns(:contents).should include(@c)
+          end
+        end
 
         context 'allow filtering by news' do
           before do
