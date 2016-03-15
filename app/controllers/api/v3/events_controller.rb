@@ -7,42 +7,38 @@ module Api
       def update
         @event = Event.find(params[:id])
         # "authenticate" this edit action
-        unless @current_api_user == @event.content.created_by || @current_api_user.has_role?(:admin)
-          render json: { errors: ['You do not have permission to edit this event.'] }, 
-            status: 401
-        else
-          # for now, we EITHER get the image OR the event in this update logic. So 
-          # if image is present here, we branch:
-          image_data = params[:event].delete :image
-          if image_data.present?
-            # clear out existing images since we are only set up to have one right now
-            @event.content.images.destroy_all
-            if Image.create(image: image_data, imageable: @event.content)
-              render json: @event, serializer: EventSerializer, status: 200
-            else
-              head :unprocessable_entity
-            end
+        authorize! :update, @event.content
+        # for now, we EITHER get the image OR the event in this update logic. So 
+        # if image is present here, we branch:
+        image_data = params[:event].delete :image
+        if image_data.present?
+          # clear out existing images since we are only set up to have one right now
+          @event.content.images.destroy_all
+          if Image.create(image: image_data, imageable: @event.content)
+            render json: @event, serializer: EventSerializer, status: 200
           else
-            listserv_ids = params[:event].delete(:listserv_ids) || []
+            head :unprocessable_entity
+          end
+        else
+          listserv_ids = params[:event].delete(:listserv_ids) || []
 
-            schedule_data = params[:event].delete :schedules
-            schedules = schedule_data.map{ |s| Schedule.build_from_ux_for_event(s, @event.id) }
-            event_hash = process_event_params(params[:event])
-            
-            if @event.update_with_schedules(event_hash, schedules)
-              # reverse publish to specified listservs
-              PromotionListserv.create_multiple_from_content(@event.content, listserv_ids, @requesting_app)
+          schedule_data = params[:event].delete :schedules
+          schedules = schedule_data.map{ |s| Schedule.build_from_ux_for_event(s, @event.id) }
+          event_hash = process_event_params(params[:event])
+          
+          if @event.update_with_schedules(event_hash, schedules)
+            # reverse publish to specified listservs
+            PromotionListserv.create_multiple_from_content(@event.content, listserv_ids, @requesting_app)
 
-              if @repository.present?
-                @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
-              end
-
-              render json: @event, serializer: EventSerializer,  status: 200
-            else
-              render json: {
-                errors: @event.errors.messages
-              }, status: :unprocessable_entity
+            if @repository.present?
+              @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
             end
+
+            render json: @event, serializer: EventSerializer,  status: 200
+          else
+            render json: {
+              errors: @event.errors.messages
+            }, status: :unprocessable_entity
           end
         end
       end
