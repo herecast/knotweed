@@ -46,7 +46,7 @@ describe ContentsController do
 
       it 'should respond with the content belonging to that organization' do
         subject
-        assigns(:contents).should eq @contents
+        assigns(:contents).should match_array @contents
       end
     end
   end
