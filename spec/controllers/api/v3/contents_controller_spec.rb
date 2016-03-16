@@ -278,7 +278,7 @@ describe Api::V3::ContentsController do
           @news_cat = FactoryGirl.create :content_category, name: 'news'
         end
 
-        context 'with an organization the user is not a manager of' do
+        context 'that user is not a manager of' do
           before do
             @org = FactoryGirl.create :organization
             @org_contents = FactoryGirl.create_list :content, 3
@@ -305,6 +305,23 @@ describe Api::V3::ContentsController do
           it 'should return contents that belongs to the organization' do
             subject
             assigns(:contents).should match_array(@org_contents)
+          end
+        end
+
+        context 'that user is manager of parent of' do
+          before do
+            @parent = FactoryGirl.create :organization
+            @child = FactoryGirl.create :organization, parent: @parent
+            @user.add_role :manager, @parent
+            @contents = FactoryGirl.create_list :content, 3,
+              content_category_id: @news_cat.id, organization: @child
+          end
+
+          subject { get :dashboard, organization_id: @child.id }
+
+          it 'should return contents that belong to the organization' do
+            subject
+            assigns(:contents).should match_array(@contents)
           end
         end
       end

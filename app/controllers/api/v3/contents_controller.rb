@@ -126,7 +126,7 @@ module Api
         params[:page] ||= 1
         params[:per_page] ||= 12
 
-        if params[:organization_id].present? and @current_api_user.has_role? :manager, Organization.find(params[:organization_id])
+        if params[:organization_id].present? and can? :manage, Organization.find(params[:organization_id])
           scope = Content.where(organization_id: params[:organization_id])
         else
           scope = Content.where(created_by: @current_api_user)
