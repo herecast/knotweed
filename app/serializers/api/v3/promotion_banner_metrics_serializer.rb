@@ -13,15 +13,12 @@ module Api
       def image_url; object.banner_image.url; end
 
       def daily_impression_counts
-        scope = object.promotion_banner_reports.order('report_date DESC')
+        scope = object.promotion_banner_reports.order('report_date ASC')
         if context.present? && context[:start_date]
           scope = scope.where('report_date >= ?', context[:start_date])
           if context[:end_date]
             scope = scope.where('report_date <= ?', context[:end_date])
           end
-          scope.reverse!
-        else
-          scope = object.promotion_banner_reports.order('report_date ASC')
         end
         scope.map do |report|
           {
@@ -32,15 +29,12 @@ module Api
       end
 
       def daily_click_counts
-        scope = object.promotion_banner_reports.order('report_date DESC')
+        scope = object.promotion_banner_reports.order('report_date ASC')
         if context.present? && context[:start_date]
           scope = scope.where('report_date >= ?', context[:start_date])
           if context[:end_date]
             scope = scope.where('report_date <= ?', context[:end_date])
           end
-          scope.reverse!
-        else
-          scope = object.promotion_banner_reports.order('report_date ASC')
         end
         scope.map do |report|
           {
