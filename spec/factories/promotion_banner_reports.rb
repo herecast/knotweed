@@ -17,5 +17,9 @@
 
 FactoryGirl.define do
   factory :promotion_banner_report do
+    association :promotion_banner
+    report_date { Time.now }
+    impression_count { rand(0..100) }
+    click_count { rand(0..100) }
   end
 end
