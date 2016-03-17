@@ -1,5 +1,123 @@
 namespace :businesses do
 
+  desc 'Import Factual categories via their API'
+  task import_factual_categories: :environment do
+    data = HTTParty.get('https://raw.githubusercontent.com/Factual/places/master/categories/factual_taxonomy.json')
+    categories = JSON.parse(data)
+    
+    # first, we go through and create all the categories
+    categories.each do |k,v| 
+      # skip "1" because it's 'Factual Places' which isn't a real category
+      # note, we also need to ignore parent references that point to this
+      next if k == '1'
+      if cat=BusinessCategory.where(source: 'Factual', source_id: k.to_i).first
+        puts "Factual category #{v['labels']['en']} already exists\n"
+      elsif cat=BusinessCategory.where(name: v['labels']['en']).first
+        # add Factual source/id to our category so we can map Factual businesses
+        # to this category
+        cat.update_attributes({
+          source: 'Factual',
+          source_id: k.to_i
+        })
+      else # create new category
+        BusinessCategory.create({
+          source: 'Factual',
+          source_id: k.to_i,
+          name: v['labels']['en']
+        })
+      end
+    end
+
+    # unfortunately, we have to do this iteration twice to make the parent associations work.
+    # The alternative would be to do a lot of parsing of the JSON and try to create each tier
+    # separately from the top down...but that seems unnecessarily complex
+    categories.each do |k,v|
+      next if k == '1'
+      cat = BusinessCategory.where(source: 'Factual', source_id: k.to_i).first
+      if cat.present? and v['parents'].present?
+        v['parents'].each do |p_id|
+          next if p_id == '1' # skip 'Factual Places'
+          parent = BusinessCategory.where(source: 'Factual', source_id: p_id.to_i).first
+          if parent.present?
+            cat.parents << parent unless cat.parents.include? parent
+          end
+        end
+      end
+    end
+  end
+
+  # NOTES on work left to do:
+  # -- hours are not quite importing right when there's more than one entry
+  desc 'Import Factual dataset'
+  task :import_factual, [:dataset_path] => :environment do |t, args|
+    # unfortunately CSV doesn't like the way this file uses quotes so I'm just parsing line by line.
+    File.foreach(args[:dataset_path]) do |line|
+      row = line.split("\t")
+      # deal with categories
+      factual_category_ids = row[18].gsub(/[\[\]]/, '').split(',').map{|id| id.to_i}
+      subtext_category_ids = []
+      factual_category_ids.each do |id|
+        bc = BusinessCategory.where(source: 'Factual', source_id: id).first
+        subtext_category_ids << bc.id if bc.present?
+      end
+
+      profile_attributes = {
+        business_location_attributes: {
+          name: row[1],
+          address: row[2],
+          city: row[5],
+          state: row[6],
+          zip: row[9],
+          email: row[17],
+          phone: row[11],
+          hours: row[23].split(";"),
+          latitude: row[13],
+          longitude: row[14]
+        },
+        content_attributes: {
+          title: row[1],
+          pubdate: Time.zone.now,
+          organization_attributes: {
+            name: row[1],
+            website: row[16]
+          }
+        },
+        existence: row[24].strip.to_f,
+        source: 'Factual',
+        source_id: row[0],
+        business_category_ids: subtext_category_ids
+      }
+
+      # we're going to be re-running this, so we need to identify if the profile already exists
+      if existing_profile=BusinessProfile.where(source: 'Factual', source_id: row[0]).first
+        existing_attrs = {
+          id: existing_profile.id,
+          content_attributes: {
+            id: existing_profile.content.id,
+            organization_attributes: { 
+              id: existing_profile.content.organization.id
+            }
+          },
+          business_location_attributes: {
+            id: existing_profile.business_location.id
+          }
+        }
+
+        if existing_profile.update_attributes(profile_attributes.merge(existing_attrs))
+          puts "Updated existing business profile ID #{existing_profile.id}\n"
+        else
+          puts "Error updating business profile #{existing_profile.id}:\n #{existing_profile.errors.messages}\n"
+        end
+      else
+        if bp=BusinessProfile.create(profile_attributes)
+          puts "Created new business profile (ID: #{bp.id}) from Factual:#{row[0]}"
+        else
+          puts "Error creating Factual:#{row[0]}:\n #{bp.errors.messages}\n"
+        end
+      end
+    end
+  end
+
   desc 'Import seed data for business services directory'
   task import_json: :environment do
     # import categories first so we can then assign businesses to the appropriate categories
