@@ -61,20 +61,6 @@ namespace :businesses do
         subtext_category_ids << bc.id if bc.present?
       end
 
-      # check for existing organizations since we want multiple business profiles
-      # for one org to use the same one. And we index organization_name uniqueness...
-      if org=Organization.find_by_name(row[1].strip)
-        org_attributes = {
-          id: org.id
-        }
-      else
-        org_attributes = {
-          name: row[1].strip,
-          website: row[16].strip
-        }
-      end
-
-
       profile_attributes = {
         business_location_attributes: {
           name: row[1],
@@ -90,14 +76,24 @@ namespace :businesses do
         },
         content_attributes: {
           title: row[1],
-          pubdate: Time.zone.now,
-          organization_attributes: org_attributes
+          pubdate: Time.zone.now
         },
         existence: row[24].strip.to_f,
         source: 'Factual',
         source_id: row[0],
         business_category_ids: subtext_category_ids
       }
+
+      # check for existing organizations since we want multiple business profiles
+      # for one org to use the same one. And we index organization_name uniqueness...
+      if org=Organization.find_by_name(row[1].strip)
+        profile_attributes[:content_attributes][:organization_id] = org.id
+      else
+        profile_attributes[:content_attributes][:organization_attributes] = {
+          name: row[1].strip,
+          website: row[16].strip
+        }
+      end
 
       # we're going to be re-running this, so we need to identify if the profile already exists
       if existing_profile=BusinessProfile.where(source: 'Factual', source_id: row[0]).first

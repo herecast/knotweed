@@ -111,7 +111,6 @@ ActiveRecord::Schema.define(:version => 20160322214211) do
     t.datetime "updated_at",                                                                 :null => false
     t.string   "source"
     t.integer  "source_id"
-    t.decimal  "existence",                 :precision => 10, :scale => 0
     t.integer  "feedback_count",                                           :default => 0
     t.float    "feedback_recommend_avg",                                   :default => 0.0
     t.float    "feedback_price_avg",                                       :default => 0.0
