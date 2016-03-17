@@ -18,18 +18,22 @@
 #
 
 class BusinessProfile < ActiveRecord::Base
-  has_one :content, as: :channel
+  has_one :content, as: :channel, dependent: :destroy
   accepts_nested_attributes_for :content
   validates_associated :content
 
-  belongs_to :business_location
+  after_destroy do
+    organization.destroy
+  end
+
+  belongs_to :business_location, dependent: :destroy
   accepts_nested_attributes_for :business_location
 
   delegate :organization, to: :content
 
   has_and_belongs_to_many :business_categories
 
-  has_many :business_feedbacks
+  has_many :business_feedbacks, dependent: :destroy
 
   attr_accessible :content_attributes, :business_location_attributes, :has_retail_location,
     :business_category_ids, :business_location_id, :content_id, :source, :source_id,
