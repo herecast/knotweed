@@ -70,7 +70,7 @@ namespace :businesses do
           zip: row[9],
           email: row[17],
           phone: row[11],
-          hours: row[23].split(";"),
+          hours: row[23].split(";").map{|h| h.strip },
           latitude: row[13],
           longitude: row[14]
         },
