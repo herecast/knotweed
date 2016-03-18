@@ -53,6 +53,23 @@ describe 'Promotion Banner Endpoints', type: :request do
         expect(report_dates).to eql sorted_dates
       end
 
+      context 'with empty string dates' do
+          subject { get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {
+            start_date: " ", end_date: " "
+          }, auth_headers }
+
+          it 'should return all daily_impression_counts' do
+            subject
+            expect(response_json['promotion_banner_metrics']['daily_impression_counts'].count).to eql promotion_banner.promotion_banner_reports.count
+          end
+
+          it 'should return all daily_click_counts' do
+            subject
+            expect(response_json['promotion_banner_metrics']['daily_click_counts'].count).to eql promotion_banner.promotion_banner_reports.count
+          end
+      end
+
+
       context 'given a start_date parameter' do
         let(:start_date) { 25.days.ago.to_date }
 
