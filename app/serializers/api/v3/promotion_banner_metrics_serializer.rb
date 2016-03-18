@@ -14,9 +14,9 @@ module Api
 
       def daily_impression_counts
         scope = object.promotion_banner_reports.order('report_date ASC')
-        if context.present? && context[:start_date]
+        if context.present? && context[:start_date].present?
           scope = scope.where('report_date >= ?', context[:start_date])
-          if context[:end_date]
+          if context[:end_date].present?
             scope = scope.where('report_date <= ?', context[:end_date])
           end
         end
@@ -30,9 +30,9 @@ module Api
 
       def daily_click_counts
         scope = object.promotion_banner_reports.order('report_date ASC')
-        if context.present? && context[:start_date]
+        if context.present? && context[:start_date].present?
           scope = scope.where('report_date >= ?', context[:start_date])
-          if context[:end_date]
+          if context[:end_date].present?
             scope = scope.where('report_date <= ?', context[:end_date])
           end
         end
