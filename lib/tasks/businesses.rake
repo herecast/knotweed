@@ -50,9 +50,19 @@ namespace :businesses do
   # -- hours are not quite importing right when there's more than one entry
   desc 'Import Factual dataset'
   task :import_factual, [:dataset_path] => :environment do |t, args|
+    existence_threshold = 0.5
     # unfortunately CSV doesn't like the way this file uses quotes so I'm just parsing line by line.
     File.foreach(args[:dataset_path]) do |line|
       row = line.split("\t")
+
+      # first, we check to see if we already have the object in our database
+      factual_id = row[0]
+      existence = row[24].strip.to_f
+
+      # if we don't have it in the database AND existence is below threshold, skip it
+      existing_profile = BusinessProfile.where(source: 'Factual', source_id: factual_id).first
+      next if existing_profile.nil? and existence < existence_threshold
+        
       # deal with categories
       factual_category_ids = row[18].gsub(/[\[\]]/, '').split(',').map{|id| id.to_i}
       subtext_category_ids = []
@@ -96,7 +106,7 @@ namespace :businesses do
       end
 
       # we're going to be re-running this, so we need to identify if the profile already exists
-      if existing_profile=BusinessProfile.where(source: 'Factual', source_id: row[0]).first
+      if existing_profile.present?
         existing_attrs = {
           id: existing_profile.id,
           content_attributes: {
