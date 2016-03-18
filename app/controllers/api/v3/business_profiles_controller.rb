@@ -48,7 +48,7 @@ module Api
       end
 
       def create
-        @business_profile = BusinessProfile.new(params[:business_profile])
+        @business_profile = BusinessProfile.new(params[:business])
         if @business_profile.save
           render json: @business_profile, serializer: BusinessProfileSerializer,
             status: 201, root: 'business'
@@ -61,10 +61,10 @@ module Api
       def update
         @business_profile = Content.find(params[:id]).channel
         # need to add IDs to nested model updates
-        params[:business_profile][:content_attributes][:id] = @business_profile.content.id
-        params[:business_profile][:content_attributes][:organization_attributes][:id] = @business_profile.organization.id
-        params[:business_profile][:business_location_attributes][:id] = @business_profile.business_location_id
-        if @business_profile.update_attributes(params[:business_profile])
+        params[:business][:content_attributes][:id] = @business_profile.content.id
+        params[:business][:content_attributes][:organization_attributes][:id] = @business_profile.organization.id
+        params[:business][:business_location_attributes][:id] = @business_profile.business_location_id
+        if @business_profile.update_attributes(params[:business])
           render json: @business_profile, serializer: BusinessProfileSerializer,
             status: 204
         else
@@ -78,28 +78,28 @@ module Api
       # this method takes incoming API parameters and scopes them according to the
       # nested resource to which they belong.
       def parse_params!
-        params[:business_profile][:content_attributes] = { organization_attributes: {} }
-        params[:business_profile][:business_location_attributes] = {}
+        params[:business][:content_attributes] = { organization_attributes: {} }
+        params[:business][:business_location_attributes] = {}
 
         # :name attribute is reflected in both the content and organization record,
         # so copy it here before deleting.
-        params[:business_profile][:content_attributes][:title] = params[:business_profile][:name] if params[:business_profile].has_key? :name
+        params[:business][:content_attributes][:title] = params[:business][:name] if params[:business].has_key? :name
 
         [:name, :website].each do |attr|
-          if params[:business_profile].has_key? attr
-            params[:business_profile][:content_attributes][:organization_attributes][attr] = params[:business_profile].delete attr
+          if params[:business].has_key? attr
+            params[:business][:content_attributes][:organization_attributes][attr] = params[:business].delete attr
           end
         end
         
-        params[:business_profile][:content_attributes][:raw_content] = params[:business_profile].delete :details if params[:business_profile].has_key? :details
+        params[:business][:content_attributes][:raw_content] = params[:business].delete :details if params[:business].has_key? :details
 
         [:phone, :email, :address, :city, :state, :zip, :hours, :service_radius].each do |attr|
-          if params[:business_profile].has_key? attr
-            params[:business_profile][:business_location_attributes][attr] = params[:business_profile].delete attr
+          if params[:business].has_key? attr
+            params[:business][:business_location_attributes][attr] = params[:business].delete attr
           end
         end
 
-        params[:business_profile][:business_category_ids] = params[:business_profile].delete :category_ids
+        params[:business][:business_category_ids] = params[:business].delete :category_ids
       end
 
     end
