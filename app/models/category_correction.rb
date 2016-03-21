@@ -21,7 +21,12 @@ class CategoryCorrection < ActiveRecord::Base
 
   validates_presence_of :content
 
-  after_create :update_content, :remove_previous_category_corrections
+  # this has to be after_commit because otherwise, if
+  # the DSP call times out, the original save transaction
+  # times out and throws a MySQL lock error
+  after_commit :update_content
+  
+  after_save :remove_previous_category_corrections
 
   def update_content
     update_attributes( content_body: content.content, title: content.title )
