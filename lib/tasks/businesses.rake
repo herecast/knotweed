@@ -50,7 +50,7 @@ namespace :businesses do
   # -- hours are not quite importing right when there's more than one entry
   desc 'Import Factual dataset'
   task :import_factual, [:dataset_path] => :environment do |t, args|
-    existence_threshold = 0.5
+    existence_threshold = 0.4
     # unfortunately CSV doesn't like the way this file uses quotes so I'm just parsing line by line.
     File.foreach(args[:dataset_path]) do |line|
       row = line.split("\t")
@@ -71,6 +71,10 @@ namespace :businesses do
         subtext_category_ids << bc.id if bc.present?
       end
 
+      hours = row[23].split(";").map do |h|
+        BusinessProfile.convert_hours_to_standard(h, 'factual')
+      end
+
       profile_attributes = {
         business_location_attributes: {
           name: row[1],
@@ -80,7 +84,7 @@ namespace :businesses do
           zip: row[9],
           email: row[17],
           phone: row[11],
-          hours: row[23].split(";").map{|h| h.strip },
+          hours: hours,
           latitude: row[13],
           longitude: row[14]
         },

@@ -64,5 +64,41 @@ class BusinessProfile < ActiveRecord::Base
     }
   end
 
+  # helper method that standardizes hours strings
+  #
+  # @param hours [String] the hour string
+  # @param format [String] the incoming data format
+  def self.convert_hours_to_standard(hours, format=nil)
+    output = hours.strip
+    if format == 'factual'
+      output.gsub!(/Mon|Tue|Wed|Thu|Fri|Sat|Sun|Open Daily/, {
+        'Mon' => 'Mo',
+        'Tue' => 'Tu',
+        'Wed' => 'We',
+        'Thu' => 'Th',
+        'Fri' => 'Fr',
+        'Sat' => 'Sa',
+        'Sun' => 'Su',
+        'Open Daily' => 'Mo-Su'
+      })
+      # convert all "8:00" style hour definitions to "08:00"
+      output.gsub!(/([ \-])(\d:\d{2})/, "\\10\\2")
 
+      # convert 12:00 AM (midnight) to 00:00
+      output.gsub!('12:00 AM', '00:00')
+
+      # get rid of AM references
+      output.gsub!(' AM', '')
+
+      output.gsub! /(\d{1,2}):(\d{2}) PM/ do |str|
+        # "12:00 PM" is noon, which we don't want to convert to 24:00 / 0:00
+        hour = ($1 != '12' ? $1.to_i + 12 : $1)
+        "#{hour}:#{$2}"
+      end
+
+      # change day-time space divider to '|'
+      output.gsub!(' ', '|')
+    end
+    output
+  end
 end
