@@ -21,6 +21,11 @@ class CategoryCorrection < ActiveRecord::Base
 
   validates_presence_of :content
 
+  # this has to be after_commit because otherwise, if
+  # the DSP call times out, the original save transaction
+  # times out and throws a MySQL lock error
+  after_commit :publish_corrections_to_dsp
+  
   after_create :update_content, :remove_previous_category_corrections
 
   def update_content
@@ -29,6 +34,9 @@ class CategoryCorrection < ActiveRecord::Base
     content.update_attribute :content_category, category
     # mark reviewed
     content.update_attribute :category_reviewed, true
+  end
+
+  def publish_corrections_to_dsp
     # update for all repos
     content.repositories.each do |r|
       content.publish(Content::DEFAULT_PUBLISH_METHOD, r)
