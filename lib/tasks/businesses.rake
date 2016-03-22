@@ -125,7 +125,7 @@ namespace :businesses do
           }
         }
 
-        if existing_profile.update_attributes(profile_attributes.merge(existing_attrs))
+        if existing_profile.update_attributes(profile_attributes.deep_merge(existing_attrs))
           puts "Updated existing business profile ID #{existing_profile.id}\n"
         else
           puts "Error updating business profile #{existing_profile.id}:\n #{existing_profile.errors.messages}\n"
