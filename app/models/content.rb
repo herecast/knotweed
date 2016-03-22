@@ -348,7 +348,10 @@ class Content < ActiveRecord::Base
       content.category = special_attrs['content_category']
     end
     if special_attrs.has_key? "in_reply_to"
-      content.parent = Content.find_by_guid(special_attrs["in_reply_to"])
+      parent = Content.find_by_guid(special_attrs["in_reply_to"])
+      if parent.published? && !parent.quarantine?
+        content.parent = parent
+      end
     end
       
     content.import_record = job.last_import_record if job.present?

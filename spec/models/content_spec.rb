@@ -238,15 +238,53 @@ describe Content do
     end
 
     it "should correctly identify parent based on in_reply_to" do
-      c = FactoryGirl.create(:content, guid: "this-is-a-guid")
+      co = FactoryGirl.create(:content, guid: "this-is-a-guid")
+      co.published=true
+      co.repositories << FactoryGirl.create(:repository)
+      co.save
+      # the above 2 lines are necessary for the item to be considered published
       extra_data = @base_data.merge({
         "pubdate" => Time.now,
         "content" => "hello",
-        "organization_id" => c.organization.id,
-        "in_reply_to" => c.guid
+        "organization_id" => co.organization.id,
+        "in_reply_to" => co.guid
       })
       c2 = Content.create_from_import_job(extra_data)
-      c2.parent.should== c
+      c2.parent.should== co
+    end
+    
+    context "when parent content is not published" do
+      before do
+        @parent = FactoryGirl.create :content, guid: "loko-joko", published: false, repositories: []
+        extra_data = @base_data.merge({
+          "pubdate" => Time.now,
+          "content" => "hello",
+          "organization_id" => @parent.organization.id,
+          "in_reply_to" => @parent.guid
+        })
+        @child = Content.create_from_import_job extra_data
+      end
+      it "should refuse to set parent" do
+        @child.parent.should be_nil
+      end
+    end
+
+    context "when parent is quarantined" do
+      before do
+        @parent = FactoryGirl.create :content, guid: "rat-race", title: nil
+        extra_data = @base_data.merge({
+          "pubdate" => Time.now,
+          "content" => "hello",
+          "organization_id" => @parent.organization.id,
+          "in_reply_to" => @parent.guid
+        })
+        @child = Content.create_from_import_job extra_data
+      end
+
+      it "should refuse to set the parent" do
+        @parent.quarantine?.should be_true
+        @child.parent.should be_nil
+      end
     end
 
     it "should overwrite any existing content with the same organization and source_content_id" do
