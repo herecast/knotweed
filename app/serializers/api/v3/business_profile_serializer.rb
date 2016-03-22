@@ -4,7 +4,8 @@ module Api
 
       attributes :id, :organization_id, :name, :phone, :email, :website,
         :address, :city, :state, :zip, :has_retail_location, :coords, :service_radius,
-        :hours, :details, :logo, :images, :category_ids, :feedback, :feedback_num
+        :hours, :details, :logo, :images, :category_ids, :feedback, :feedback_num,
+        :can_edit
 
       def id; object.content.id; end
       def details; object.content.sanitized_content; end
@@ -36,6 +37,14 @@ module Api
       def feedback; object.feedback; end
 
       def feedback_num; object.business_feedbacks.size; end
+
+      def can_edit
+        if context.present? && context[:current_ability].present?
+          context[:current_ability].can?(:manage, object.content)
+        else
+          false
+        end
+      end
     end
   end
 end

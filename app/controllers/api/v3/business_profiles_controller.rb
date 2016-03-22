@@ -38,13 +38,13 @@ module Api
 
         @business_profiles = BusinessProfile.search(params[:query], opts)
         render json: @business_profiles, each_serializer: BusinessProfileSerializer,
-          root: 'businesses'
+          root: 'businesses', context: {current_ability: current_ability}
       end
 
       def show
         @business_profile = Content.find(params[:id]).channel
         render json: @business_profile, serializer: BusinessProfileSerializer,
-          root: 'business'
+          root: 'business', context: {current_ability: current_ability}
       end
 
       def create
