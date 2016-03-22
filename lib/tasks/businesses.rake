@@ -74,6 +74,7 @@ namespace :businesses do
       hours = row[23].split(";").map do |h|
         BusinessProfile.convert_hours_to_standard(h, 'factual')
       end
+      hours.flatten!
 
       profile_attributes = {
         business_location_attributes: {

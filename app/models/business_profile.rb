@@ -68,6 +68,8 @@ class BusinessProfile < ActiveRecord::Base
   #
   # @param hours [String] the hour string
   # @param format [String] the incoming data format
+  #
+  # @return hours [Array] array of strings representing the hour information
   def self.convert_hours_to_standard(hours, format=nil)
     output = hours.strip
     if format == 'factual'
@@ -96,8 +98,18 @@ class BusinessProfile < ActiveRecord::Base
         "#{hour}:#{$2}"
       end
 
+      # if the timing extends beyond midnight, Factual includes two sets of hours 
+      # separated by a comma
+      split_by_comma = output.split(",")
+      if split_by_comma.count > 1
+        day_string = split_by_comma[0].match(/\w{2}-\w{2}/)[0]
+        output = [split_by_comma[0], "#{day_string}|#{split_by_comma[1].strip}"]
+      else
+        output = [output]
+      end
+
       # change day-time space divider to '|'
-      output.gsub!(' ', '|')
+      output.map!{|o| o.gsub(' ', '|')}
     end
     output
   end
