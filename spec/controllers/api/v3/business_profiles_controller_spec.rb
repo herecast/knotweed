@@ -127,7 +127,7 @@ describe Api::V3::BusinessProfilesController do
       }
     end
 
-    subject { post :create, business_profile: @create_params }
+    subject { post :create, business: @create_params }
 
     it { expect{subject}.to change { Content.count }.by 1 }
     it { expect{subject}.to change { BusinessProfile.count }.by 1 }
@@ -165,7 +165,7 @@ describe Api::V3::BusinessProfilesController do
       }
     end
 
-    subject { put :update, business_profile: @update_params, id: @business_profile.content.id }
+    subject { put :update, business: @update_params, id: @business_profile.content.id }
 
     it 'should update the associated organization' do
       expect{subject}.to change { @business_profile.organization.reload.website }.to @update_params[:website]
