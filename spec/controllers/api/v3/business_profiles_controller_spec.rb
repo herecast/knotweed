@@ -27,6 +27,41 @@ describe Api::V3::BusinessProfilesController do
       assigns(:business_profiles).should eq @bps
     end
 
+    context 'Given params[:sort_by]=score_desc' do
+      it 'tranlates that to highest recommended first' do
+        expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'feedback_recommend_avg DESC'))
+        get :index, {sort_by: 'score_desc'}
+      end
+    end
+
+    context 'Given params[:sort_by]=distance_asc' do
+      it 'tranlates that to smallest geodist first' do
+        expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'geodist ASC'))
+        get :index, {sort_by: 'distance_asc'}
+      end
+    end
+
+    context 'Given params[:sort_by]=rated_desc' do
+      it 'tranlates that to most feedback first' do
+        expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'feedback_count DESC'))
+        get :index, {sort_by: 'rated_desc'}
+      end
+    end
+
+    context 'Given params[:sort_by]=alpha_asc' do
+      it 'tranlates that to alphabetical order' do
+        expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'organization_name ASC'))
+        get :index, {sort_by: 'alpha_asc'}
+      end
+    end
+
+    context 'Given params[:sort_by]=alpha_desc' do
+      it 'tranlates that to alphabetical order reversed' do
+        expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'organization_name DESC'))
+        get :index, {sort_by: 'alpha_desc'}
+      end
+    end
+
     describe 'searching' do
       before do
         @search = 'AZSXDCFB123543'

@@ -30,8 +30,9 @@ module Api
         # sphinx takes meters, but assumption is we are dealing with miles,
         # so need to convert
         opts[:with][:geodist] = 0.0..(radius.to_f*MI_TO_KM*1000)
-        opts[:order] = "geodist ASC"
-        
+
+        opts[:order] = self.sort_by
+
         if params[:category_id].present?
           opts[:with][:category_ids] = [params[:category_id]]
         end
@@ -80,6 +81,23 @@ module Api
       end
 
       protected
+      def sort_by
+        order = params[:sort_by] || "distance_asc"
+        case order
+          when "distance_asc"
+            return "geodist ASC"
+          when "score_desc"
+            return "feedback_recommend_avg DESC"
+          when "rated_desc"
+            return "feedback_count DESC"
+          when "alpha_desc"
+            return "organization_name DESC"
+          when "alpha_asc"
+            return "organization_name ASC"
+          else
+            return "geodist ASC"
+          end
+      end
 
       # this method takes incoming API parameters and scopes them according to the
       # nested resource to which they belong.
