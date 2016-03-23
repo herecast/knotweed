@@ -82,7 +82,7 @@ module Api
 
       protected
       def sort_by
-        order = params[:sort_by] || "distance_asc"
+        order = params[:sort_by] || "score_desc"
         case order
           when "distance_asc"
             return "geodist ASC"
@@ -95,7 +95,7 @@ module Api
           when "alpha_asc"
             return "organization_name ASC"
           else
-            return "geodist ASC"
+            return nil
           end
       end
 
