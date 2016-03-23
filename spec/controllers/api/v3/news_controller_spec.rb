@@ -122,6 +122,20 @@ describe Api::V3::NewsController do
         subject
         assigns(:news).should eq([@content])
       end
+
+      describe 'querying for an organization not associated with that consumer app' do
+        before do
+          @c2 = FactoryGirl.create :content, content_category: @news_cat,
+            published: true
+          @org2 = @c2.organization
+        end
+
+        subject! { get :index, organization: @org2.name }
+
+        it 'should not return anything' do
+          JSON.parse(response.body)['news'].should be_empty
+        end
+      end
     end
   end
 
@@ -211,5 +225,4 @@ describe Api::V3::NewsController do
       it { subject; response.status.should eq 204 }
     end
   end
-
 end

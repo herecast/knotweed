@@ -11,10 +11,6 @@ module Api
         opts[:per_page] = params[:per_page] || 14
         opts[:with][:published] = 1 if @repository.present?
         opts[:sql] = { include: [:images, :organization, :root_content_category] }
-        if @requesting_app.present?
-          allowed_orgs = @requesting_app.organizations
-          opts[:with].merge!({org_id: allowed_orgs.collect{|c| c.id} })
-        end
 
         if params[:location_id].present?
           opts[:with][:all_loc_ids] = params[:location_id].to_i
@@ -27,9 +23,19 @@ module Api
           opts[:with][:content_category_id] = category.id if category
         end
 
+        if @requesting_app.present?
+          allowed_orgs = @requesting_app.organizations.pluck(:id) 
+          opts[:with][:org_id] = allowed_orgs
+        end
+
         if params[:organization].present?
           org = Organization.find_by_name params[:organization]
-          opts[:with][:org_id] = org.id if org.present?
+
+          opts[:with][:org_id] = [org.id] if org.present?
+
+          if allowed_orgs.present? and !allowed_orgs.include?(org.try(:id))
+            render json: [], each_serializer: NewsSerializer and return
+          end
         end
         
         if params[:query].present?
