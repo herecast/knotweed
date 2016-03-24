@@ -24,7 +24,7 @@ describe Api::V3::BusinessProfileSerializer do
       end
     end
     context 'Given context[:current_ability] not able to manage' do
-      it 'should be true' do
+      it 'should be false' do
         ability = double('ability')
         expect(ability).to receive(:can?).with(:manage, @business_profile.content).and_return(false)
 
