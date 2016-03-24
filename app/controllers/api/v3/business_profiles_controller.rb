@@ -38,8 +38,9 @@ module Api
         end
 
         @business_profiles = BusinessProfile.search(params[:query], opts)
+
         render json: @business_profiles, each_serializer: BusinessProfileSerializer,
-          root: 'businesses', context: {current_ability: current_ability}
+          root: 'businesses', context: {current_ability: current_ability}, meta: {total: @business_profiles.total_entries}
       end
 
       def show

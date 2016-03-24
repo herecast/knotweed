@@ -69,6 +69,21 @@ describe 'Businesses Endpoints', type: :request do
         FactoryGirl.create_list(:business_profile, 4)
       }
 
+      describe 'meta.total' do
+        before do
+          index
+        end
+
+        it "is equal to the total items matching search" do
+          get url, {
+            per_page: 1,
+            radius: 10_000 # we don't want distance to limit the query
+          }
+          meta_total = response_json['meta']['total']
+          expect(meta_total).to eql business_profiles.size
+        end
+      end
+
       describe '?sort_by=score_desc' do
         before do
           tf = false
