@@ -3,10 +3,10 @@ class BusinessProfile < ActiveRecord::Base
   accepts_nested_attributes_for :content
   validates_associated :content
 
-  has_one :organization, through: :content
-
   belongs_to :business_location
   accepts_nested_attributes_for :business_location
+
+  delegate :organization, to: :content
 
   has_and_belongs_to_many :business_categories
 
