@@ -1,0 +1,35 @@
+The following business was sent in for moderation:
+%br
+%br
+User: 
+%br
+ID: #{@user.id}
+%br
+Name: #{@user.name}
+%br
+Email: #{@user.email}
+%br
+%br
+Business:
+%br
+Name: #{@content.title}
+%br
+Address: #{@location.address}
+%br
+City: #{@location.city}
+%br
+State: #{@location.state}
+%br
+Zip: #{@location.zip}
+%br
+Phone: #{@location.phone}
+%br
+Hours: #{@location.hours.try(:join, "; ")}: 
+%br
+Service Radius: #{@location.service_radius}
+%br
+Has Retail Location: #{@business_profile.has_retail_location}
+%br
+Categories: #{@categories.map{|c| c.name }}
+%br
+Details: #{@content.raw_content}

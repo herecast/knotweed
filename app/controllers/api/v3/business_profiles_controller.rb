@@ -49,13 +49,19 @@ module Api
 
       def create
         @business_profile = BusinessProfile.new(params[:business])
-        if @business_profile.save
-          render json: @business_profile, serializer: BusinessProfileSerializer,
-            status: 201, root: 'business'
-        else
-          render json: { errors: @business_profile.errors.messages },
-            status: :unprocessable_entity
-        end
+        ModerationMailer.send_business_for_moderation(@business_profile, @current_api_user).deliver
+        # for Ember data to not get upset, we need to assign fake IDs to all the objects here
+        @business_profile.content.id = Time.now.to_i
+        @business_profile.organization.id = Time.now.to_i
+        render json: @business_profile, serializer: BusinessProfileSerializer,
+          status: 201, root: 'business'
+        #if @business_profile.save
+        #  render json: @business_profile, serializer: BusinessProfileSerializer,
+        #    status: 201, root: 'business'
+        #else
+        #  render json: { errors: @business_profile.errors.messages },
+        #    status: :unprocessable_entity
+        #end
       end
 
       def update
