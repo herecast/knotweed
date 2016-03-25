@@ -17,6 +17,9 @@ describe Api::V3::NewsController do
         locations: [@other_location], published: true
       FactoryGirl.create_list :content, 4, content_category: @news_cat, 
         locations: [@third_location], published: true
+      @consumer_app = FactoryGirl.create :consumer_app
+      @consumer_app.organizations = Organization.all
+      api_authenticate user: nil, consumer_app: @consumer_app
       index
     end
 
@@ -35,6 +38,7 @@ describe Api::V3::NewsController do
     context 'querying by organization name' do
       before do
         @org = FactoryGirl.create :organization
+        @consumer_app.organizations << @org
         @org_and_loc_content = FactoryGirl.create :content, content_category: @news_cat,
           locations: [@default_location], organization: @org
         index
@@ -51,8 +55,8 @@ describe Api::V3::NewsController do
       context 'with an existing "Sponsored Content" category;' do
         let!(:sponsored_cat) { FactoryGirl.create :content_category, name: 'Sponsored Content', parent: @news_cat }
 
-        let!(:sponsored_content) { FactoryGirl.create :content, content_category: sponsored_cat }
-        let!(:not_sponsored) { FactoryGirl.create :content, content_category: @news_cat }
+        let!(:sponsored_content) { FactoryGirl.create :content, content_category: sponsored_cat, organization: Organization.first }
+        let!(:not_sponsored) { FactoryGirl.create :content, content_category: @news_cat, organization: Organization.first }
 
         before do
           index
@@ -121,6 +125,20 @@ describe Api::V3::NewsController do
       it 'should filter results by consumer app\'s organizations' do
         subject
         assigns(:news).should eq([@content])
+      end
+
+      describe 'querying for an organization not associated with that consumer app' do
+        before do
+          @c2 = FactoryGirl.create :content, content_category: @news_cat,
+            published: true
+          @org2 = @c2.organization
+        end
+
+        subject! { get :index, organization: @org2.name }
+
+        it 'should not return anything' do
+          JSON.parse(response.body)['news'].should be_empty
+        end
       end
     end
   end
@@ -211,5 +229,4 @@ describe Api::V3::NewsController do
       it { subject; response.status.should eq 204 }
     end
   end
-
 end
