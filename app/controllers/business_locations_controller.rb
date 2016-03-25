@@ -2,7 +2,16 @@ class BusinessLocationsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @business_locations = BusinessLocation.all # this line just here for debugger target
+    # if posted, save to session
+    if params[:reset]
+      session[:business_locations_search] = nil
+    elsif params[:q].present?
+      session[:business_locations_search] = params[:q]
+    end
+
+    @search = BusinessLocation.ransack(session[:business_locations_search])
+
+    @business_locations = @search.result(distinct: true).page(params[:page]).per(100).accessible_by(current_ability)
   end
 
   def edit
