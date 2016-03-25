@@ -15,7 +15,7 @@ ThinkingSphinx::Index.define(:business_profile,
   has "RADIANS(business_locations.latitude)",  :as => :latitude,  :type => :float
   has "RADIANS(business_locations.longitude)", :as => :longitude, :type => :float
   has business_categories.id, as: :category_ids, multi: true
-  has organization.name, as: :organization_name
+  has content.organization.name, as: :organization_name
   has feedback_count, as: :feedback_count
   has feedback_satisfaction_avg, as: :feedback_satisfaction_avg
   has feedback_price_avg, as: :feedback_price_avg
