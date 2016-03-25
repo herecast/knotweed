@@ -20,21 +20,28 @@ module Api
         if params[:lat].present? and params[:lng].present?
           lat = params[:lat]
           lng = params[:lng]
-        else # default to center of Upper Valley
+        elsif params[:organization_id].blank?
+          # default to center of Upper Valley
           lat,lng = Location::DEFAULT_LOCATION_COORDS
         end
 
-        # convert to radians
-        opts[:geo] = [lat,lng].map{ |coord| coord.to_f * Math::PI / 180 }
-        radius = params[:radius] || 15 # default 15 miles
-        # sphinx takes meters, but assumption is we are dealing with miles,
-        # so need to convert
-        opts[:with][:geodist] = 0.0..(radius.to_f*MI_TO_KM*1000)
+        if lat.present? && lng.present?
+          # convert to radians
+          opts[:geo] = [lat,lng].map{ |coord| coord.to_f * Math::PI / 180 }
+          radius = params[:radius] || 15 # default 15 miles
+          # sphinx takes meters, but assumption is we are dealing with miles,
+          # so need to convert
+          opts[:with][:geodist] = 0.0..(radius.to_f*MI_TO_KM*1000)
+        end
 
         opts[:order] = sort_by
 
         if params[:category_id].present?
           opts[:with][:category_ids] = [params[:category_id]]
+        end
+
+        if params[:organization_id].present?
+          opts[:with][:organization_id] = params[:organization_id]
         end
 
         @business_profiles = BusinessProfile.search(params[:query], opts)
