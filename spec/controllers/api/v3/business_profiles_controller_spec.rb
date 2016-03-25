@@ -27,6 +27,50 @@ describe Api::V3::BusinessProfilesController do
       assigns(:business_profiles).should eq @bps
     end
 
+    describe "Sorting" do
+      let(:mock_results) { double('results', total_entries: 0) }
+
+      it 'sorts by feedback_recommend_avg DESC by default' do
+        expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'feedback_recommend_avg DESC')).and_return(mock_results)
+          get :index, {sort_by: 'score_desc'}
+      end
+
+      context 'Given params[:sort_by]=score_desc' do
+        it 'tranlates that to highest recommended first' do
+          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'feedback_recommend_avg DESC')).and_return(mock_results)
+          subject
+        end
+      end
+
+      context 'Given params[:sort_by]=distance_asc' do
+        it 'tranlates that to smallest geodist first' do
+          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'geodist ASC')).and_return(mock_results)
+          get :index, {sort_by: 'distance_asc'}
+        end
+      end
+
+      context 'Given params[:sort_by]=rated_desc' do
+        it 'tranlates that to most feedback first' do
+          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'feedback_count DESC')).and_return(mock_results)
+          get :index, {sort_by: 'rated_desc'}
+        end
+      end
+
+      context 'Given params[:sort_by]=alpha_asc' do
+        it 'tranlates that to alphabetical order' do
+          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'organization_name ASC')).and_return(mock_results)
+          get :index, {sort_by: 'alpha_asc'}
+        end
+      end
+
+      context 'Given params[:sort_by]=alpha_desc' do
+        it 'tranlates that to alphabetical order reversed' do
+          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'organization_name DESC')).and_return(mock_results)
+          get :index, {sort_by: 'alpha_desc'}
+        end
+      end
+    end
+
     describe 'searching' do
       before do
         @search = 'AZSXDCFB123543'
@@ -78,15 +122,6 @@ describe Api::V3::BusinessProfilesController do
           assigns(:business_profiles).should eq [bp]
         end
 
-        it 'should order results by distance' do
-          get :index, lat: Faker::Address.latitude, lng: Faker::Address.longitude
-          bps = assigns(:business_profiles)
-          bps.each_index do |i|
-            if i < bps.count-1
-              bps[i].distance.should be < bps[i+1].distance
-            end
-          end
-        end
       end
 
     end

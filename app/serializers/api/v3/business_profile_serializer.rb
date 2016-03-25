@@ -32,11 +32,7 @@ module Api
         }
       end
 
-
       def category_ids; object.business_category_ids; end
-      def feedback; object.feedback; end
-
-      def feedback_num; object.business_feedbacks.size; end
 
       def can_edit
         if context.present? && context[:current_ability].present?
@@ -45,6 +41,17 @@ module Api
           false
         end
       end
+
+      def feedback
+        {
+          satisfaction: object.feedback_satisfaction_avg,
+          cleanliness: object.feedback_cleanliness_avg,
+          price: object.feedback_price_avg,
+          recommend: object.feedback_recommend_avg
+        }
+      end
+
+      def feedback_num; object.feedback_count; end
     end
   end
 end

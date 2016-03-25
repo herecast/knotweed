@@ -36,5 +36,7 @@ FactoryGirl.define do
     phone { Faker::PhoneNumber.phone_number }
     email { Faker::Internet.email }
     hours ['Mo-Fr 08:00-17:00']
+    latitude { Location::DEFAULT_LOCATION_COORDS[0] }
+    longitude { Location::DEFAULT_LOCATION_COORDS[1] }
   end
 end
