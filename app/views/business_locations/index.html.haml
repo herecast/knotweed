@@ -1,4 +1,31 @@
-%table.table.table-striped.table-bordered.data-table.table-condensed.display#business_locations_table
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-search
+        Find Venues
+      .actions
+        %a.btn.box-remove.btn-mini.btn-link{ href: "#" }
+          %i.icon-remove
+        %a.btn.box-collapse.btn-mini.btn-link{ href: "#" }
+          %i
+    .box-content
+      = search_form_for @search, url: business_locations_path do |f|
+        .controls.controls-row
+          .field.span3
+            = f.label :name_cont, "Name"
+            = f.text_field :name_cont, class: 'span12'
+          .field.span3
+            = f.label :address_cont, 'Address'
+            = f.text_field :address_cont, class: 'span12'
+          .field.span3
+            = f.label :status_in, 'Status'
+            = f.select :status_in, BusinessLocation::STATUS_CATEGORIES, {}, { multiple: true, class: 'chosen-select' }
+        .form-actions
+          = f.submit "Search", class: "btn btn-primary"
+          = f.submit "Reset", name: "reset", class: "btn"
+          
+%table.table.table-striped.table-bordered.table-condensed.display#business_locations_table
   %thead
     %tr
       %th Name
@@ -6,13 +33,9 @@
       %th Status
       %th ID
       %th
-  %tfoot
-    %tr
-      %th Name
-      %th Address
-      %th Status
-      %th ID
-      %th
+  .span5
+    = page_entries_info @business_locations if @business_locations.present?
+    = paginate @business_locations, window: 2 if @business_locations.present?
   %tbody
     - @business_locations.each do |venue|
       %tr{ class: "venue-#{venue.id}" }
