@@ -31,7 +31,7 @@ module Api
         # so need to convert
         opts[:with][:geodist] = 0.0..(radius.to_f*MI_TO_KM*1000)
 
-        opts[:order] = self.sort_by
+        opts[:order] = sort_by
 
         if params[:category_id].present?
           opts[:with][:category_ids] = [params[:category_id]]
