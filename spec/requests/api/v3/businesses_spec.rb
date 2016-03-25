@@ -200,6 +200,27 @@ describe 'Businesses Endpoints', type: :request do
           expect(businesses.last).to eql sorted.last
         end
       end
+
+      describe '?organization_id' do
+        let(:organization) { FactoryGirl.create :organization }
+        let(:owned_by_org) { FactoryGirl.create_list :business_profile, 3 }
+        let(:not_owned_by_org) { FactoryGirl.create_list :business_profile, 3 }
+        before do
+          owned_by_org.each do |b|
+            b.content.organization_id = organization.id
+            b.save!
+          end
+          index
+          get url, { organization_id: organization.id }
+        end
+
+        it 'only returns businesses owned by the organization' do
+          returned_ids = response_json['businesses'].collect{|b| b['id']}
+
+          expect(returned_ids).to include(*owned_by_org.collect(&:id))
+          expect(returned_ids).to_not include(*not_owned_by_org.collect(&:id))
+        end
+      end
     end
   end
 end
