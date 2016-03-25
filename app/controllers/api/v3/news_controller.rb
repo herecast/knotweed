@@ -12,6 +12,23 @@ module Api
         opts[:with][:published] = 1 if @repository.present?
         opts[:sql] = { include: [:images, :organization, :root_content_category] }
 
+        if @requesting_app.present?
+          allowed_orgs = @requesting_app.organizations.pluck(:id) 
+          opts[:with][:org_id] = allowed_orgs
+
+          if params[:organization].present?
+            org = Organization.find_by_name params[:organization]
+
+            if org.present? and allowed_orgs.include? org.id
+              opts[:with][:org_id] = [org.id]
+            else
+              render json: [], each_serializer: NewsSerializer and return
+            end
+          end
+        else
+          render json: [], each_serializer: NewsSerializer and return
+        end
+
         if params[:location_id].present?
           opts[:with][:all_loc_ids] = params[:location_id].to_i
         end
@@ -23,26 +40,12 @@ module Api
           opts[:with][:content_category_id] = category.id if category
         end
 
-        if @requesting_app.present?
-          allowed_orgs = @requesting_app.organizations.pluck(:id) 
-          opts[:with][:org_id] = allowed_orgs
-        end
-
-        if params[:organization].present?
-          org = Organization.find_by_name params[:organization]
-
-          opts[:with][:org_id] = [org.id] if org.present?
-
-          if allowed_orgs.present? and !allowed_orgs.include?(org.try(:id))
-            render json: [], each_serializer: NewsSerializer and return
-          end
-        end
-        
         if params[:query].present?
           query = Riddle::Query.escape(params[:query]) 
         else
           query = ''
         end
+
         @news = Content.search query, opts
         render json: @news, each_serializer: NewsSerializer
       end
