@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160322214211) do
+ActiveRecord::Schema.define(:version => 20160325162110) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -106,17 +106,17 @@ ActiveRecord::Schema.define(:version => 20160322214211) do
 
   create_table "business_profiles", :force => true do |t|
     t.integer  "business_location_id"
-    t.boolean  "has_retail_location",                                      :default => true
-    t.datetime "created_at",                                                                 :null => false
-    t.datetime "updated_at",                                                                 :null => false
+    t.boolean  "has_retail_location",                                     :default => true
+    t.datetime "created_at",                                                                :null => false
+    t.datetime "updated_at",                                                                :null => false
     t.string   "source"
-    t.integer  "source_id"
-    t.decimal  "existence",                 :precision => 10, :scale => 0
-    t.integer  "feedback_count",                                           :default => 0
-    t.float    "feedback_recommend_avg",                                   :default => 0.0
-    t.float    "feedback_price_avg",                                       :default => 0.0
-    t.float    "feedback_satisfaction_avg",                                :default => 0.0
-    t.float    "feedback_cleanliness_avg",                                 :default => 0.0
+    t.string   "source_id"
+    t.decimal  "existence",                 :precision => 5, :scale => 5
+    t.integer  "feedback_count",                                          :default => 0
+    t.float    "feedback_recommend_avg",                                  :default => 0.0
+    t.float    "feedback_price_avg",                                      :default => 0.0
+    t.float    "feedback_satisfaction_avg",                               :default => 0.0
+    t.float    "feedback_cleanliness_avg",                                :default => 0.0
   end
 
   add_index "business_profiles", ["existence"], :name => "index_business_profiles_on_existence"
