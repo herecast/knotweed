@@ -13,9 +13,6 @@
       = search_form_for @search, url: organizations_path do |f|
         .controls.controls-row
           .field.span3
-            = f.label :id_in, "Organization"
-            = f.collection_select :id_in, Organization.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
-          .field.span3
             = f.label :org_type_in, "Organization Type"
             = f.select :org_type_in, Organization::ORG_TYPE_OPTIONS, {}, { multiple: true, class: "chosen-select" }
           .field.span3
