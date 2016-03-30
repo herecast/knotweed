@@ -12,8 +12,9 @@ class OrganizationsController < ApplicationController
     if session[:organizations_search].present?
       @organizations = @search.result(distinct: true)
     else
-      @organizations = Organization.all
+      @organizations = Organization
     end
+    @organizations = @organizations.includes(:locations).page(params[:page]).per(25)
   end
 
   def new

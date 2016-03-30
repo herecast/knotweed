@@ -13,9 +13,6 @@
       = search_form_for @search, url: organizations_path do |f|
         .controls.controls-row
           .field.span3
-            = f.label :id_in, "Organization"
-            = f.collection_select :id_in, Organization.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
-          .field.span3
             = f.label :org_type_in, "Organization Type"
             = f.select :org_type_in, Organization::ORG_TYPE_OPTIONS, {}, { multiple: true, class: "chosen-select" }
           .field.span3
@@ -29,7 +26,7 @@
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
-%table.table.table-striped.table-bordered.data-table.table-condensed
+%table.table.table-striped.table-bordered.table-condensed
   %thead
     %tr
       %th ID
@@ -38,6 +35,9 @@
       %th Parent
       %th # Imported
       %th 
+  %span5
+    = page_entries_info @organizations if @organizations.present?
+    = paginate @organizations, window: 2 if @organizations.present?
   %tbody
     - @organizations.each do |organization|
       %tr{ class: "organization-#{organization.id}" }
