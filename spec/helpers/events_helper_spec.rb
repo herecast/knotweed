@@ -89,7 +89,7 @@ describe EventsHelper, type: :helper do
     let(:utm_string) { "?utm_medium=email&utm_source=rev-pub&utm_campaign=20151201&utm_content=#{event_path}" }
 
     context 'consumer_app set from request' do
-      let(:consumer_app) { double('consumer_app', uri: 'http://my-uri.example') }
+      let(:consumer_app) { double(uri: 'http://my-uri.example') }
       before do
         Thread.current[:consumer_app] = consumer_app
       end
