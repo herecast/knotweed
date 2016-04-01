@@ -92,7 +92,7 @@ class Annotation < ActiveRecord::Base
   end
 
   def lookup_label
-    if edges
+    if edges.present?
       label = nil
       edges.each do |e|
         if e["predicate"]["value"] == "http://www.w3.org/2000/01/rdf-schema#label"
