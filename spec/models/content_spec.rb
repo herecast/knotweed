@@ -57,6 +57,91 @@ describe Content do
 
   include_examples 'Auditable', Content
 
+
+  describe '#published?', focus: true do
+    context 'Given a repo' do
+      let(:repo) { FactoryGirl.create :repository }
+
+      context 'When has repo' do
+        before do
+          subject.repositories << repo
+        end
+
+        it 'is true' do
+          expect(subject.published?(repo)).to be_true
+        end
+      end
+
+      context 'When does not have repo' do
+        before do
+          subject.repositories = []
+        end
+
+        it 'is false' do
+          expect(subject.published?(repo)).to be_false
+        end
+      end
+    end
+
+    context 'When no repositories' do
+      before do
+        subject.repositories = []
+      end
+
+      it 'is false' do
+        expect(subject.published?).to be_false
+      end
+    end
+
+    context 'When in repositories' do
+      before do
+        subject.repositories << FactoryGirl.create(:repository)
+      end
+
+      it 'is false' do
+        expect(subject.published?).to be_true
+      end
+    end
+  end
+
+  describe '#location' do
+    context 'when #import_location nil' do
+      before do
+        allow(subject).to receive(:import_location).and_return(nil)
+      end
+
+      it 'is nil' do
+        expect(subject.location).to be_nil
+      end
+    end
+
+    context 'when #import_location exists' do
+      before do
+        subject.import_location = ImportLocation.new(city: "New York")
+      end
+
+      context 'when #import_location is in review status' do
+        before do
+          subject.import_location.status = ImportLocation::STATUS_REVIEW
+        end
+
+        it 'is nil' do
+          expect(subject.location).to be_nil
+        end
+      end
+
+      context 'when #import_location is in good status' do
+        before do
+          subject.import_location.status = ImportLocation::STATUS_GOOD
+        end
+
+        it 'is #import_location.city' do
+          expect(subject.location).to eql subject.import_location.city
+        end
+      end
+    end
+  end
+
   describe ':in_accepted_category default sphinx scope' do
     before do
       @event_cat = FactoryGirl.create :content_category, name: 'event'
