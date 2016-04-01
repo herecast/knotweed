@@ -21,6 +21,20 @@ require 'spec_helper'
 
 describe BusinessProfile do
 
+  describe '#after_destroy' do
+    before do
+      @business_profile = FactoryGirl.create :business_profile
+      @organization = FactoryGirl.create :organization
+      @content = FactoryGirl.create :content, channel_id: @business_profile.id, organization_id: @organization.id
+    end
+
+    context "when business profile is destroyed" do
+      it "destroys associated organization" do
+        expect{ @business_profile.destroy }.to change{ Organization.count }.by(-1)
+      end
+    end
+  end
+
   describe 'convert_hours_to_standard' do
     context 'from factual format' do
       # a bunch of examples that cover the Factual import data:

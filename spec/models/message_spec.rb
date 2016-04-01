@@ -41,4 +41,20 @@ describe Message do
     end
   end
 
+  describe "#active?" do
+    context "when active" do
+      it "returns true" do
+        message = FactoryGirl.create :message
+        expect(message.active?).to be true
+      end
+    end
+
+    context "when innactive" do
+      it "returns false" do
+        message = FactoryGirl.create :message, :inactive
+        expect(message.active?).to be false
+      end
+    end
+  end
+
 end

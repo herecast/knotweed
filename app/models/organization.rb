@@ -63,7 +63,7 @@ class Organization < ActiveRecord::Base
   validates_presence_of :name
 
   def self.parent_pubs
-    ids = self.where("parent_id IS NOT NULL").select(:parent_id).uniq.map { |p| p.parent_id }
+    ids = self.where("parent_id IS NOT NULL").uniq.map { |p| p.parent_id }
     self.find(ids)
   end
 

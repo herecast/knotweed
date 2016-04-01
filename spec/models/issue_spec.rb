@@ -15,5 +15,13 @@
 require 'spec_helper'
 
 describe Issue do
-  pending "add some examples to (or delete) #{__FILE__}"
+  before do
+  	@issue = FactoryGirl.create :issue, issue_edition: 'defacto name'
+  end
+
+  describe "#name" do
+  	it "returns :issue_edition as name" do
+  		expect(@issue.name).to eq 'defacto name'
+  	end
+  end
 end

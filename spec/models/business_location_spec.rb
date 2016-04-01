@@ -27,4 +27,24 @@ require 'spec_helper'
 
 describe BusinessLocation do
   include_examples 'Auditable', BusinessLocation
+
+  before do
+		@business_location = FactoryGirl.create :business_location
+  end
+
+  describe "#select_option_label" do
+  	it "returns formatted address" do
+  		label = @business_location.select_option_label
+  		expect(label).to include(@business_location.name, @business_location.address, @business_location.address, @business_location.city, @business_location.state, @business_location.zip)
+  	end
+  end
+
+  describe "#geocoding_address" do
+  	context "when the business has a name" do
+  		it "returns address with name" do
+  			@business_location.update_attribute(:locate_include_name, true)
+  			expect(@business_location.geocoding_address).to include(@business_location.name)
+  		end
+  	end
+  end
 end
