@@ -1,5 +1,27 @@
 namespace :businesses do
 
+  desc 'Fix Factual hours imported via sproc'
+  task fix_factual_hours: :environment do
+    # we only want to do this on BusinessProfiles' business locations
+    BusinessProfile.find_each do |bp|
+      bl = bp.business_location
+      next unless bl.present?
+      if bl.hours.is_a? Array or bl.hours.blank?
+        next
+      else
+        class << bl
+          def record_timestamps; false; end
+        end
+        hours_array = bl.hours.split(";").map{ |str| BusinessProfile.convert_hours_to_standard(str, 'factual') }
+        bl.hours = hours_array.flatten
+        bl.save
+        class << bl
+          def record_timestamps; super; end
+        end
+      end
+    end
+  end
+
   desc 'Import Factual categories via their API'
   task import_factual_categories: :environment do
     data = HTTParty.get('https://raw.githubusercontent.com/Factual/places/master/categories/factual_taxonomy.json')
