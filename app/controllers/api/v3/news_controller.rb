@@ -1,6 +1,11 @@
 module Api
   module V3
     class NewsController < ApiController
+      before_filter :check_logged_in!, :parse_params!, only: [:create, :update]
+
+      def create
+        news_cat = ContentCategory.find_or_create_by_name 'news'
+      end
 
       def index
         opts = { select: '*, weight()' }
@@ -71,6 +76,14 @@ module Api
           render json: @news, serializer: DetailedNewsSerializer, 
             admin_content_url: url, root: 'news'
         end
+      end
+
+      protected
+
+      # translates API params to match internals
+      def parse_params!
+        params[:news][:raw_content] = params[:news].delete :content
+        params[:news][:pubdate] = params[:news].delete :published_at
       end
 
     end
