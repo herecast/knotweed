@@ -6,6 +6,8 @@ describe ImportJobsController do
     sign_in @user
   end
 
+  it_behaves_like 'JobController'
+
   describe "POST 'create'" do 
     before do
       @org = FactoryGirl.create(:organization)

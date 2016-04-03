@@ -7,6 +7,7 @@ module Jobs
       unless @job.status == "running" or @job.status == "queued"
         @job.enqueue_job
       end
+
       respond_to do |format|
         format.js { render "jobs/run_job" }
       end
