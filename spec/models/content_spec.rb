@@ -58,7 +58,7 @@ describe Content do
   include_examples 'Auditable', Content
 
 
-  describe '#published?', focus: true do
+  describe '#published?' do
     context 'Given a repo' do
       let(:repo) { FactoryGirl.create :repository }
 
