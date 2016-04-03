@@ -26,6 +26,8 @@ require 'spec_helper'
 
 describe ImportJob do
 
+  it_behaves_like :scheduled_job
+
   describe "perform job" do
     before do
       prerender_cache_stub

@@ -21,6 +21,7 @@
 require 'spec_helper'
 
 describe PublishJob do
+  it_behaves_like :scheduled_job
 
   describe "contents count" do
     before do
