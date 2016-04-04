@@ -81,6 +81,66 @@ describe ImportJob do
       expect(WebMock).to have_requested(:post, "http://api.prerender.io/recache").twice
     end
 
+    it "returns last run at" do
+      expect(@job.last_run_at.to_s).to eq @job.created_at.to_s
+    end
+
+  end
+
+  describe '#set_stop_loop' do
+    before do
+      @import_job = FactoryGirl.create :import_job, job_type: 'continuous'
+    end
+
+    context "when import_job is continuous" do
+      it "sets stop_loop to false" do
+        @import_job.set_stop_loop
+        expect(@import_job.stop_loop).to be false
+      end
+    end
+  end
+
+  describe '#reschedule_at' do
+    before do
+      @import_job = FactoryGirl.create :import_job
+      ENV["RESCHEDULE_AT"] = nil
+    end
+
+    context "when no 'reschedule_at' environmental variable" do
+      it "returns a fabricated reschedule time" do
+        response = @import_job.reschedule_at(DateTime.now, 1)
+        expect(response.to_s).to eq (DateTime.now + 6).to_s
+      end
+    end
+  end
+
+  describe '#import_filter' do
+    before do
+      @import_job = FactoryGirl.create :import_job
+      @content = FactoryGirl.create :content, channel_id: 1
+      @event = FactoryGirl.create(:event, channel_id: 1)
+      @event_instance = FactoryGirl.create :event_instance, event_id: @event.id
+    end
+
+    let(:article) { { 'X-Original-Content-Id' => @content.id } }
+
+    context "when article has content id" do
+      it "returns true and reason" do
+        response = @import_job.import_filter(article)
+        expect(response[0]).to be true
+        expect(response[1]).to include 'X-Original-Content-Id'
+      end
+    end
+
+    let(:instance) { { 'X-Original-Event-Instance-Id' => @event_instance.id } }
+
+    context "when article has instance id" do
+      it "returns true and reason" do
+        response = @import_job.import_filter(instance)
+        expect(response[0]).to be true
+        expect(response[1]).to include 'X-Original-Event-Instance-Id'
+      end
+    end
   end
 
 end
