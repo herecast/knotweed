@@ -993,6 +993,13 @@ describe Content do
     end
   end
 
+  describe '#has_active_promotion' do
+    it 'is an alias for #has_active_promotion?' do
+      expect(subject).to receive(:has_active_promotion?)
+      subject.has_active_promotion
+    end
+  end
+
   describe '#has_paid_promotion' do
     it 'is an alias for #has_paid_promotion?' do
       expect(subject).to receive(:has_paid_promotion?)
