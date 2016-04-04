@@ -67,4 +67,38 @@ describe 'News Endpoints', type: :request do
       expect{subject}.to change{@content.reload.title}.to put_params[:title]
     end
   end
+
+  describe 'creating a news object and associating images' do
+    before do
+      @org = FactoryGirl.create :organization, can_publish_news: true
+    end
+
+    subject do
+      # create a draft content
+      post '/api/v3/news', {
+        news: {
+          title: Faker::Lorem.sentence,
+          organization_id: @org.id,
+          published_at: nil
+        }
+      }, auth_headers
+      @content = Content.find(response_json['news']['id'])
+      # add an image to the draft
+      post '/api/v3/images', {
+        image: {
+          content_id: @content.id,
+          # note -- have to specify the full path of the fixture in request specs
+          # because of a bug in rspec-rails (https://github.com/rspec/rspec-rails/issues/1554)
+          image: fixture_file_upload("#{::Rails.root}/spec/fixtures/photo.jpg", 'image/jpg'),
+          primary: true
+        }
+      }
+      @img = Image.find(response_json['image']['id'])
+    end
+
+    it 'should associate the image with the content' do
+      subject
+      @content.images.should match_array([@img])
+    end
+  end
 end

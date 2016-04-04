@@ -15,10 +15,10 @@ module Api
               @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
             end
 
-            render json: @news, serializer: DetailedNewsSerializer,
+            render json: @news, serializer: DetailedNewsSerializer, root: 'news',
               status: 201
           else
-            render json: { errors: @news.errors.messages }, status: 500
+            render json: { errors: @news.errors.messages }, status: :unprocessable_entity
           end
         end
       end
@@ -30,10 +30,10 @@ module Api
             @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
 
-          render json: @news, serializer: DetailedNewsSerializer,
-            status: 201
+          render json: @news, serializer: DetailedNewsSerializer, root: 'news',
+            status: 200
         else
-          render json: { errors: @news.errors.messages }, status: 500
+          render json: { errors: @news.errors.messages }, status: :unprocessable_entity
         end
       end
 
