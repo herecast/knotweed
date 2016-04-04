@@ -5,6 +5,36 @@ module Api
 
       def create
         news_cat = ContentCategory.find_or_create_by_name 'news'
+        if params[:news][:organization_id].blank?
+          render json: { errors: { 'organization_id' => 'Organization must be specified for news' } },
+            status: 500
+        else
+          @news = Content.new(params[:news].merge(content_category_id: news_cat.id))
+          if @news.save
+            if @repository.present? and @news.pubdate.present? # don't publish drafts
+              @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+            end
+
+            render json: @news, serializer: DetailedNewsSerializer,
+              status: 201
+          else
+            render json: { errors: @news.errors.messages }, status: 500
+          end
+        end
+      end
+
+      def update
+        @news = Content.find params[:id]
+        if @news.update_attributes(params[:news])
+          if @repository.present? and @news.pubdate.present?
+            @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+          end
+
+          render json: @news, serializer: DetailedNewsSerializer,
+            status: 201
+        else
+          render json: { errors: @news.errors.messages }, status: 500
+        end
       end
 
       def index
@@ -82,8 +112,8 @@ module Api
 
       # translates API params to match internals
       def parse_params!
-        params[:news][:raw_content] = params[:news].delete :content
-        params[:news][:pubdate] = params[:news].delete :published_at
+        params[:news][:raw_content] = params[:news].delete :content if params[:news].has_key? :content
+        params[:news][:pubdate] = params[:news].delete :published_at if params[:news].has_key? :published_at
       end
 
     end
