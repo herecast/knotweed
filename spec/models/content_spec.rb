@@ -696,7 +696,7 @@ describe Content do
     context 'primary' do
       it 'sets primary image to this image' do
         expect(subject.primary_image).to be_nil
-        image = subject.create_or_update_image(image_url, "","")
+        image = subject.create_or_update_image(image_url, "","", true)
         subject.reload
         expect(subject.primary_image).to_not be_nil
         expect(subject.primary_image).to eql image
@@ -967,10 +967,53 @@ describe Content do
 
     it "should return true if there is an active promotion banner attached" do
       p = FactoryGirl.create :promotion, active: true, content: @content
-      promotion_banner = FactoryGirl.create :promotion_banner, promotion: p
+      promotion_banner = FactoryGirl.create :promotion_banner, {
+        promotion: p,
+        campaign_end: 1.week.from_now
+      }
+
       @content.has_active_promotion?.should == true
     end
 
+  end
+
+  describe '#has_promotion_inventory?' do
+    subject { FactoryGirl.create(:content) }
+    after do
+      FileUtils.rm_rf('./public/promotion')
+    end
+    context 'when related promotion banners have inventory' do
+      before do
+        p = FactoryGirl.create :promotion, active: true, content: subject
+        FactoryGirl.create :promotion_banner, impression_count: 100, promotion: p
+      end
+      it 'returns true' do
+        expect(subject.has_promotion_inventory?).to be_true
+      end
+    end
+  end
+
+  describe '#has_paid_promotion' do
+    it 'is an alias for #has_paid_promotion?' do
+      expect(subject).to receive(:has_paid_promotion?)
+      subject.has_paid_promotion
+    end
+  end
+
+  describe '#has_promotion_inventory' do
+    it 'is an alias for #has_promotion_inventory?' do
+      expect(subject).to receive(:has_promotion_inventory?)
+      subject.has_promotion_inventory
+    end
+  end
+
+  describe '#rdf_to_gate' do
+    subject { FactoryGirl.create :content }
+    let(:repository) { FactoryGirl.build :repository }
+    it 'passes id and repository argument to OntotextController' do
+      expect(OntotextController).to receive(:rdf_to_gate).with(subject.id, repository)
+      subject.rdf_to_gate(repository)
+    end
   end
 
   describe "update_from_repo" do
@@ -1181,6 +1224,24 @@ describe Content do
         raw_content = File.read input_file
         content = FactoryGirl.create :content , raw_content: raw_content
         content.sanitized_content.should eq File.read(output_file).chomp  
+      end
+    end
+  end
+
+  describe '#remove_boilerplate' do
+    input_files = Dir['spec/fixtures/sanitized_content/*_input']
+    let!(:blacklisted_content) {File.readlines(Rails.root.join('lib', 'content_blacklist.txt'))}
+    input_files.each do |input_file|
+      context "from #{input_file}" do
+        it 'strips blacklisted content' do
+          raw_content = File.read input_file
+          content = FactoryGirl.create :content , raw_content: raw_content
+          bp_removed = content.remove_boilerplate
+
+          blacklisted_content.each do |blc|
+            expect(bp_removed).to_not include(blc)
+          end
+        end
       end
     end
   end

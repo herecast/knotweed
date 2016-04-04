@@ -1488,18 +1488,4 @@ class Content < ActiveRecord::Base
       return []
     end
   end
-
-  def query_promo_random_paid(repo)
-    sparql = ::SPARQL::Client.new repo.sesame_endpoint
-    query = File.read(Rails.root.join("lib", "queries", "query_promo_random_paid.rq")) %
-            { content_id: id }
-    sparql.query(query)
-  end
-
-  def query_promo_random(repo)
-    sparql = ::SPARQL::Client.new repo.sesame_endpoint
-    query = File.read(Rails.root.join("lib", "queries", "query_promo_random.rq")) %
-            { content_id: id }
-    sparql.query(query)
-  end
 end
