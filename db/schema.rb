@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160325162110) do
+ActiveRecord::Schema.define(:version => 20160402192554) do
 
   create_table "annotation_reports", :force => true do |t|
     t.integer  "content_id"
@@ -607,6 +607,7 @@ ActiveRecord::Schema.define(:version => 20160325162110) do
     t.boolean  "display_attributes",    :default => false
     t.string   "reverse_publish_email"
     t.boolean  "can_reverse_publish",   :default => false
+    t.boolean  "can_publish_news",      :default => false
   end
 
   add_index "organizations", ["name"], :name => "index_publications_on_name", :unique => true
