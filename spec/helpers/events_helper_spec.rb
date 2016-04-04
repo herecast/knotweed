@@ -43,15 +43,6 @@ describe EventsHelper, type: :helper do
     end
   end
 
-  describe '#full_date_string' do
-    let(:time) { Time.now }
-    subject { helper.full_date_string(time) }
-
-    it 'formats time as expected' do
-      expect(subject).to eql time.strftime('%A, %B %-d at %-l:%M %P')
-    end
-  end
-
   describe '#event_search_field_value' do
     let(:key) { :a_key }
     subject { helper.event_search_field_value(key) }
