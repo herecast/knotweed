@@ -64,7 +64,7 @@ describe ContentsHelper, type: :helper do
   describe '#can_be_listserv_promoted' do
     let(:content) { Content.new }
     before do
-      content.authors = [1]
+      content.authors = "Tim Timmons"
       content.authoremail = 'test@maildrop.cc'
       content.title = 'the title'
     end
@@ -76,7 +76,7 @@ describe ContentsHelper, type: :helper do
 
     context 'When authors empty' do
       before do
-        content.authors = []
+        content.authors = nil
       end
 
       it { should be false }
