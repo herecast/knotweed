@@ -36,4 +36,19 @@ describe CategoryCorrection do
     end
 
   end
+
+  describe '#publish_corrections_to_dsp' do
+    before do
+      @content = FactoryGirl.create :content
+      @category_correction = FactoryGirl.create :category_correction, content_id: @content.id
+      @category_correction.content.repositories << FactoryGirl.create(:repository)
+      stub_request(:any, "http://KW05055:knotweed05055@23.92.16.168:8081/openrdf-sesame/repositories/subtext/extract")
+    end
+
+    it "publishes to dsp" do
+      response = @category_correction.publish_corrections_to_dsp
+      expect(response.length).to eq 1
+    end
+  end
+
 end

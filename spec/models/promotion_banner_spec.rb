@@ -89,7 +89,7 @@ describe PromotionBanner do
 
     context "when promo has no active promotion" do
       it "removes promotion" do
-        @promotion.update_attribute(:active, false)
+        Content.any_instance.stub(:has_active_promotion?).and_return(false)
         response = @promotion_banner.update_active_promotions
         expect(response.length).to eq 1
       end
@@ -97,8 +97,7 @@ describe PromotionBanner do
 
     context "when promo has paid promotion" do
       it "marks paid promotion" do
-        @promotion.update_attribute(:active, false)
-        @promotion.update_attribute(:paid, true)
+        Content.any_instance.stub(:has_paid_promotion?).and_return(true)
         response = @promotion_banner.update_active_promotions
         expect(response.length).to eq 1
       end
@@ -106,7 +105,6 @@ describe PromotionBanner do
 
     context "when promo has no paid promotion" do
       it "removes paid promotion" do
-        @promotion.update_attribute(:active, false)
         response = @promotion_banner.update_active_promotions
         expect(response.length).to eq 1
       end
