@@ -675,6 +675,35 @@ describe Content do
     end
   end
 
+  describe '#create_or_update_image' do
+    subject { FactoryGirl.create :content }
+    let(:image_url) { "https://www.google.com/images/srpr/logo11w.png" }
+    before do
+      google_logo_stub
+    end
+
+    context 'when image url already exist on record' do
+      it 'updates existing image with the given url' do
+        image = subject.create_or_update_image(image_url, "","")
+        updated = subject.create_or_update_image(image_url, "New Caption", "")
+        expect(updated.id).to eql image.id
+
+        image.reload
+        expect(image.caption).to eql 'New Caption'
+      end
+    end
+
+    context 'primary' do
+      it 'sets primary image to this image' do
+        expect(subject.primary_image).to be_nil
+        image = subject.create_or_update_image(image_url, "","")
+        subject.reload
+        expect(subject.primary_image).to_not be_nil
+        expect(subject.primary_image).to eql image
+      end
+    end
+  end
+
   describe "set guid if not present" do
     it "should set the guid of new content that has none" do
       content = FactoryGirl.create(:content)
@@ -1395,6 +1424,37 @@ describe Content do
     it 'should automatically strip the title attribute' do
       c = FactoryGirl.create :content, title: '   This has Whitespace at Beginning And End  '
       c.title.should eq c.title.strip
+    end
+  end
+
+  describe '#ux2_uri' do
+    context 'No root content category' do
+      before do
+        subject.root_content_category = nil
+      end
+
+      it 'is ""' do
+        expect(subject.ux2_uri).to eql ""
+      end
+    end
+
+    context 'root content category' do
+      let(:category) { FactoryGirl.create :content_category }
+      before do
+        subject.root_content_category = category
+      end
+
+      it 'is "/{root_content_category.name}/{id}"' do
+        expect(subject.ux2_uri).to eql "/#{category.name}/#{subject.id}"
+      end
+    end
+  end
+
+  describe 'sanitized_content=' do
+    it 'sets raw_content' do
+      content = 'Test Content'
+      expect(subject).to receive(:raw_content=).with(content)
+      subject.sanitized_content= content
     end
   end
 
