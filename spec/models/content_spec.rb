@@ -57,7 +57,7 @@ describe Content do
 
   include_examples 'Auditable', Content
 
-  describe '#update_category_from_annotations', focus: true do
+  describe '#update_category_from_annotations' do
     let (:new_category) { 'RandomCategory' }
 
     context 'Given CATEGORY' do
@@ -125,6 +125,17 @@ describe Content do
     end
   end
 
+  describe '#create_recommendation_doc_from_annotations' do
+    let (:annotations) { {'id' => '1', 'annotation-sets' => []}  } 
+    before do
+      subject.update_attribute :pubdate, Date.today
+    end
+    it 'should return an array of hash' do
+      result = subject.create_recommendation_doc_from_annotations(annotations).pop
+      expect(result[:id]).to eq '1'
+      expect(result[:published]).to_not be_nil
+    end
+  end
   describe '#published?' do
     context 'Given a repo' do
       let(:repo) { FactoryGirl.create :repository }
