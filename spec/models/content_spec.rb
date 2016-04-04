@@ -1204,7 +1204,7 @@ describe Content do
   describe 'Content.talk_search' do
     before do
       @talk = FactoryGirl.create :content_category, name: 'talk_of_the_town'
-      @p1 = FactoryGirl.create :content, content_category: @talk
+      @p1 = FactoryGirl.create :content, content_category: @talk, pubdate: 1.year.ago
       @c1 = FactoryGirl.create :content, parent: @p1, content_category: @talk,
         raw_content: 'VERY UNIQUE STRING @#$#%'
       @c2 = FactoryGirl.create :content, parent: @c1, content_category: @talk,
