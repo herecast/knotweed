@@ -1526,6 +1526,70 @@ describe Content do
     end
   end
 
+  describe 'get_related_promotion' do
+    let(:content) { FactoryGirl.create(:content) }
+    let(:promo_banner) { FactoryGirl.create(:promotion_banner) }
+    let(:repo) { FactoryGirl.build :repository }
+
+    before do
+      FactoryGirl.create(:promotion, content: content, promotable: promo_banner)
+    end
+
+    context 'when SPARQL will return results based on similarity' do
+      let(:score) { "9" }
+
+      before do
+        mock_data = {
+            score: score
+        }
+        allow(mock_data).to receive(:uid).and_return("/some/path/#{content.id}")
+        allow_any_instance_of(SPARQL::Client).to receive(:query).and_return([mock_data])
+      end
+
+      context 'and promotion banner has inventory' do
+        before do
+          promo_banner.update_attributes({
+            max_impressions: nil,
+            daily_max_impressions: nil
+          })
+        end
+
+        it 'will return results for one of the promotion banners' do
+          result_banner, result_score, result_type = content.get_related_promotion(repo)
+          expect(result_banner).to eql promo_banner
+          expect(result_score).to eql score
+          expect(result_type).to eql 'relevance'
+        end
+      end
+    end
+
+    context 'When banner does not have inventory' do
+      before do
+        promo_banner.update_attributes({
+          max_impressions: 10,
+          impression_count: 10
+        })
+      end
+      context 'when sparql does not return anything' do
+        before do
+          allow_any_instance_of(SPARQL::Client).to receive(:query).and_return([])
+        end
+
+        context 'when no paid banners exist' do
+          before do
+            Promotion.update_all(paid: false)
+          end
+
+          it 'returns the first active banner' do
+            result_banner, result_score, result_type = content.get_related_promotion(repo)
+            expect(result_banner).to eql PromotionBanner.active.first
+            expect(result_type).to eql 'active no inventory'
+          end
+        end
+      end
+    end
+  end
+
   private
 
     def get_body_from_file(filename)
