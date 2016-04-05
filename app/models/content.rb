@@ -943,6 +943,9 @@ class Content < ActiveRecord::Base
     end
   end
 
+  ################
+  # Not currently used.  Maybe in the future? if not, then remove
+=begin
   def get_ordered_downstream_thread(tier=0)
     downstream_thread = []
     if children.present?
@@ -958,6 +961,7 @@ class Content < ActiveRecord::Base
       downstream_thread
     end
   end
+=end
 
   # helper to retrieve the category that the content should be published with
   def publish_category
