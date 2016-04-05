@@ -57,7 +57,85 @@ describe Content do
 
   include_examples 'Auditable', Content
 
+  describe '#update_category_from_annotations' do
+    let (:new_category) { 'RandomCategory' }
 
+    context 'Given CATEGORY' do
+      let(:annotations) do
+        { 'document-parts' => 
+          { 'feature-set' => [
+            { 'name' =>
+              { 'name' => 'CATEGORY' },
+              'value' =>
+                { 'value' => new_category }
+            }]
+          }            
+        }  
+      end
+
+      it 'should update content_category' do
+        subject.update_category_from_annotations(annotations)
+        expect(subject.content_category.name).to eq new_category
+      end
+    end
+
+    context 'Given CATEGORIES without CATEGORY' do
+      let(:annotations) do
+        { 'document-parts' => 
+          { 'feature-set' => [
+            { 'name' =>
+              { 'name' => 'CATEGORIES' },
+              'value' =>
+                { 'value' => new_category }
+            }]
+          }            
+        }  
+      end
+
+      it 'should update content_category' do
+        subject.update_category_from_annotations(annotations)
+        expect(subject.content_category.name).to eq new_category
+      end
+    end
+
+    context 'Given CATEGORIES with CATEGORY' do
+      let (:other_category) { 'MarksManQuail' }
+      let(:annotations) do
+        { 'document-parts' => 
+          { 'feature-set' => [
+            { 'name' =>
+              { 'name' => 'CATEGORIES' },
+              'value' =>
+                { 'value' => new_category }
+            },
+
+            { 'name' =>
+              { 'name' => 'CATEGORY' },
+              'value' =>
+                { 'value' => other_category }
+            }]
+          }            
+        }  
+      end
+
+      it 'CATEGORY should win over CATEGORIES' do
+        subject.update_category_from_annotations(annotations)
+        expect(subject.content_category.name).to eq other_category
+      end
+    end
+  end
+
+  describe '#create_recommendation_doc_from_annotations' do
+    let (:annotations) { {'id' => '1', 'annotation-sets' => []}  } 
+    before do
+      subject.update_attribute :pubdate, Date.today
+    end
+    it 'should return an array of hash' do
+      result = subject.create_recommendation_doc_from_annotations(annotations).pop
+      expect(result[:id]).to eq '1'
+      expect(result[:published]).to_not be_nil
+    end
+  end
   describe '#published?' do
     context 'Given a repo' do
       let(:repo) { FactoryGirl.create :repository }
