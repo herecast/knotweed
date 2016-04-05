@@ -34,16 +34,11 @@ describe 'mail_extractor.rb parser helper' do
         "title" => "[Norwich] Office equipment for sale",
         "pubdate" => DateTime.parse('Mon, 04 Apr 2016 21:15:41 -0400'),
         "content" => "Office equipment for sale, all perfect condition \n\n\nSiddons Office Chair, black upholstery, contoured design, adjustable, asking $50.00 \n\n2 Poppin 3 drawer file cabinets, white with blue, new $229 each, asking $75.00 each \n\nBrookfield Natural Spectrum Desk lamp by Verilux , brushed nickle, new $129, asking $50.00 \n\n6’ metal work table, about 30 inches deep, BO \n\ncomputer desk, black, wood, drawer for keyboard, BO \n\nBrothers FAX, laser Fax, Super G3, 33.6, Intellifax 2840, BO \n\n\nHP Color Laser Jet PRo MFP M47 6nw, new $499.00, asking BO \n",
-        "guid" => "184218229@retriever.VALLEY.NET"
+        "guid" => "184218229@retriever.VALLEY.NET",
+        "content_locations" => ["Norwich,VT"]
       }.each do |k,v|
         it "should correctly determine #{k}" do
           subject[k].should eq v
-        end
-      end
-
-      describe 'listserv location mapping' do
-        it 'should determine this email is for "Norwich,VT"' do
-          subject['content_locations'].should eq ["Norwich,VT"]
         end
       end
     end
@@ -58,16 +53,30 @@ describe 'mail_extractor.rb parser helper' do
         "title" => "[Bradford] Photography Workshops at Tenney Library",
         "in_reply_to" => nil,
         "guid" => "CE39EB45-07EA-4C6B-A42E-E4725EC7804C@redhousestudio.com",
-        "pubdate" => DateTime.parse('Tue, 02 Feb 2016 08:53:41 -0500')
+        "pubdate" => DateTime.parse('Tue, 02 Feb 2016 08:53:41 -0500'),
+        "content_locations" => ["Bradford,VT"]
       }.each do |k,v|
         it "should correctly determine #{k}" do
           subject[k].should eq v
         end
       end
+    end
 
-      describe 'listserv location mapping' do
-        it 'should determine this email is for "Bradford,VT"' do
-          subject['content_locations'].should eq ["Bradford,VT"]
+    # this one is content type multipart
+    describe 'valleynet_listserv_3.eml' do
+      let(:filename) { 'valleynet_listserv_3.eml' }
+
+      {
+        "authors" => "Danielle Robinson",
+        "authoremail" => "administrator@bradford-vt.us",
+        "location" => "Bradford",
+        "title" => "[Bradford] Town of Bradford- Special Meeting Warning",
+        "guid" => "006401d18f65$71a4ce30$54ee6a90$@bradford-vt.us",
+        "pubdate" => DateTime.parse('Tue, 05 Apr 2016 14:03:20 -0400'),
+        'content_locations' => ["Bradford,VT"]
+      }.each do |k,v|
+        it "should correctly assign #{k}" do
+          subject[k].should eq v
         end
       end
     end
