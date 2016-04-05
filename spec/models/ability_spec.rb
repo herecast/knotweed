@@ -46,6 +46,27 @@ describe Ability do
       it{ should be_able_to(:manage, @child_content) }
     end
 
+    context "when is an event manager" do
+      before do
+        @user           = FactoryGirl.create :user
+        @event_category = FactoryGirl.create :content_category, name: 'event'
+        @event          = FactoryGirl.create :event
+        @content        = FactoryGirl.create :content
+        @event.content.update_attribute(:content_category, @event_category)
+        @content.update_attribute(:created_by, @user)
+        
+        @user.add_role :event_manager
+      end
+
+      let(:user){ @user }
+
+      it{ should be_able_to(:access, :dashboard) }
+      it{ should be_able_to(:manage, @event.content) }
+      it{ should be_able_to(:manage, @event.venue) }
+      it{ should be_able_to(:manage, @content) }
+      
+    end
+
     context 'when is a regular user' do
       before do
         @user = FactoryGirl.create :user

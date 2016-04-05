@@ -284,8 +284,11 @@ describe AnnotationReport do
       report = AnnotationReport.csv_report 12345
       report.should include("Distinct Correct Additional Edges")
     end
-
-
+    it "should contain report-specific information" do
+      content = FactoryGirl.create :annotation_report, content_id: 123456, name: "Blarg"
+      report = AnnotationReport.csv_report 123456
+      report.should include("Blarg")
+    end
   end
 
 end
