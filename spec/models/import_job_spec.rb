@@ -100,6 +100,24 @@ describe ImportJob do
     end
   end
 
+  describe '#perform' do
+    before do
+      @parser = FactoryGirl.create :parser
+      @import_job = FactoryGirl.create :import_job, parser_id: @parser.id
+    end
+
+    context "when import job backing up" do
+      it "skips the job" do
+        ImportJob.stub(:backup_start).and_return(Time.now - 10)
+        ImportJob.stub(:backup_end).and_return(Time.now + 10)
+        import_record = FactoryGirl.create(:import_record)
+        ImportJob.any_instance.stub(:last_import_record).and_return(import_record)
+        @import_job.perform
+        expect(import_record.log_file).to receive(:info)
+      end
+    end
+  end
+
   describe '#reschedule_at' do
     before do
       @import_job = FactoryGirl.create :import_job
