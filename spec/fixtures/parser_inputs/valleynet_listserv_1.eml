@@ -1,0 +1,76 @@
+Return-Path: <norwich-owner+townlists=smlsmtp.subtext.org@lists.vitalcommunities.org>
+Delivered-To: townlists@smlsmtp.subtext.org
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+	by ip-172-31-57-9.ec2.internal (Postfix) with ESMTPS id 8C125E9075
+	for <townlists@smlsmtp.subtext.org>; Mon,  4 Apr 2016 21:19:02 -0400 (EDT)
+Received: by groups.electricembers.net (Postfix, from userid 1002)
+	id 1FFE38EFA0BA; Mon,  4 Apr 2016 18:16:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+	d=lists.vitalcommunities.org; s=npogroups; t=1459818996;
+	bh=z+kmNn9yKxdYGCmkvpXckiL2j7Was2dUB5477Wv8CeM=; l=560;
+	h=From:To:MIME-Version:Subject:Reply-To;
+	b=Agc/CcuSHlyNGaPJTxmBCwh1A1IYoHYfRDIhmqhJt1OZA6+3aQTFEYAjb/PPb15Bs
+	 0tQIAUL/yjWL3ex3HPLz+3xuDbt13gcHXwI0rwGoCtO+ZBhdOsuyyU92BWYndsUax5
+	 Hna36j3Y8sBp/VLT9VHvpr8fz+QpqbO6JSAAbSJg=
+X-Original-To: norwich@lists.vitalcommunities.org
+Delivered-To: lists.vitalcommunities.org-norwich@groups.electricembers.net
+Received: from smtp3.electricembers.net (smtp3 [208.90.215.69])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by groups.electricembers.net (Postfix) with ESMTPS id D4FF48EF933E
+	for <norwich@lists.vitalcommunities.org>; Mon,  4 Apr 2016 18:16:26 -0700 (PDT)
+X-Envelope-From: gwendolyn.thompson@valley.net
+X-Spam-Status: not spam, SpamAssassin (score=-2.331, required 5,
+	BAYES_00 -1.90, PP_MIME_FAKE_ASCII_TEXT 0.17,
+	RCVD_IN_DNSWL_NONE -0.00, RP_MATCHES_RCVD -0.60)
+X-MailScanner: Found to be clean
+X-MailScanner-Information: See http://electricembers.coop/support/shield/users
+Received: from pike1.valley.net (pike1.valley.net [209.198.87.193])
+	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by smtp3.electricembers.net (Postfix) with ESMTPS id 4DC7713EBF
+	for <norwich@lists.vitalcommunities.org>; Mon,  4 Apr 2016 18:16:09 -0700 (PDT)
+Received: from retriever.VALLEY.NET (retriever.valley.net [72.15.2.33])
+	by pike1.valley.net (8.14.5/8.12.11) with ESMTP id u34E5eTW002533
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO)
+	for <norwich@lists.vitalcommunities.org>; Tue, 5 Apr 2016 02:20:18 -0400
+Message-id: <184218229@retriever.VALLEY.NET>
+Date: 04 Apr 2016 21:15:41 -0400
+From: Gwendolyn.Thompson@VALLEY.NET (Gwendolyn Thompson)
+To: norwich@lists.vitalcommunities.org
+X-Mailer: BlitzMail/blitzserv 3.15b9
+MIME-Version: 1.0
+Subject: [Norwich] Office equipment for sale
+Reply-To: Gwendolyn.Thompson@VALLEY.NET (Gwendolyn Thompson)
+X-Loop: norwich@lists.vitalcommunities.org
+X-Sequence: 134
+Errors-to: norwich-owner@lists.vitalcommunities.org
+Precedence: list
+Precedence: bulk
+Sender: norwich@lists.vitalcommunities.org
+X-no-archive: yes
+List-Id: <norwich.lists.vitalcommunities.org>
+List-Archive: <http://lists.vitalcommunities.org/lists/arc/norwich>
+List-Help: <mailto:sympa@lists.vitalcommunities.org?subject=help>
+List-Owner: <mailto:norwich-request@lists.vitalcommunities.org>
+List-Post: <mailto:norwich@lists.vitalcommunities.org>
+List-Subscribe: <mailto:sympa@lists.vitalcommunities.org?subject=subscribe%20norwich>
+List-Unsubscribe: <mailto:sympa@lists.vitalcommunities.org?subject=unsubscribe%20norwich>
+
+Office equipment for sale, all perfect condition 
+
+
+Siddons Office Chair, black upholstery, contoured design, adjustable, asking $50.00 
+
+2 Poppin 3 drawer file cabinets, white with blue, new $229 each, asking $75.00 each 
+
+Brookfield Natural Spectrum Desk lamp by Verilux , brushed nickle, new $129, asking $50.00 
+
+6’ metal work table, about 30 inches deep, BO 
+
+computer desk, black, wood, drawer for keyboard, BO 
+
+Brothers FAX, laser Fax, Super G3, 33.6, Intellifax 2840, BO 
+
+
+HP Color Laser Jet PRo MFP M47 6nw, new $499.00, asking BO 
