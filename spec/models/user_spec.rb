@@ -40,7 +40,6 @@
 require 'spec_helper'
 
 describe User do
-
   before(:each) do
     location = FactoryGirl.create :location
     @attr = {
@@ -163,4 +162,35 @@ describe User do
       @user2.errors.added?(:public_id, :taken).should be_true
     end
   end
+
+  describe 'can_publish_news?' do
+    before do
+      @user = FactoryGirl.create :user
+    end
+
+    subject { @user.can_publish_news? }
+
+    it 'should be false if the user can\'t manage any organizations' do
+      subject.should be_false
+    end
+
+    context 'with user associated with a non-news-publishing organization' do
+      before do
+        @org = FactoryGirl.create :organization, can_publish_news: false
+        @user.add_role :manager, @org
+      end
+
+      it { should be_false }
+    end
+
+    context 'with user associated with a news-publishing organization' do
+      before do
+        @org = FactoryGirl.create :organization, can_publish_news: true
+        @user.add_role :manager, @org
+      end
+
+      it { should be_true }
+    end
+  end
+
 end

@@ -196,6 +196,27 @@ describe Api::V3::ContentsController do
       assigns(:contents).should eq([@sim_content1, @sim_content2])
     end
 
+    describe 'drafts' do
+      before do
+        @sim_content1.update_attribute :pubdate, nil
+      end
+
+      it 'should not be returned' do
+        subject
+        assigns(:contents).should_not include(@sim_content1)
+      end
+    end
+
+    describe 'scheduled content' do
+      before do
+        @sim_content1.update_attribute :pubdate, 2.weeks.from_now
+      end
+
+      it 'should not be returned' do
+        subject
+        assigns(:contents).should_not include(@sim_content1)
+      end
+    end
 
     context 'when similar content contains events with instances in the past or future' do
       before do
