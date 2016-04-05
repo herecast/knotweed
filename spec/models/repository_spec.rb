@@ -17,15 +17,15 @@
 require 'spec_helper'
 
 describe Repository do
-	before do
-		# this is to account for differences between default environment repos
-		FactoryGirl.create :repository, id: 3
-		FactoryGirl.create :repository, id: 6
-	end
+  before do
+    # this is to account for differences between default environment repos
+    FactoryGirl.create :repository, id: 3
+    FactoryGirl.create :repository, id: 6
+  end
 
   describe "::production_repo" do
-  	it "returns production repository" do
-	  	expect(Repository.production_repo).to be_a Repository
-	  end
+    it "returns production repository" do
+      expect(Repository.production_repo).to be_a Repository
+    end
   end
 end

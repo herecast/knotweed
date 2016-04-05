@@ -98,7 +98,7 @@ class BusinessProfile < ActiveRecord::Base
         "#{hour}:#{$2}"
       end
 
-      # if the timing extends beyond midnight, Factual includes two sets of hours 
+      # if the timing extends beyond midnight, Factual includes two sets of hours
       # separated by a comma
       split_by_comma = output.split(",")
       if split_by_comma.count > 1
