@@ -392,7 +392,8 @@ describe Api::V3::UsersController do
           user_image_url: user.avatar.url,
           skip_analytics: false,
           events_ical_url: nil,
-          managed_organization_ids: []}.stringify_keys
+          can_publish_news: false,
+          managed_organization_ids: []}.stringify_keys,
         }.stringify_keys
     end
 end

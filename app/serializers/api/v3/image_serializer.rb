@@ -1,8 +1,7 @@
 module Api
   module V3
     class ImageSerializer < ActiveModel::Serializer
-      attributes :caption, :credit, :url, :primary
-
+      attributes :caption, :credit, :url, :primary, :id
 
       def primary
         object.primary

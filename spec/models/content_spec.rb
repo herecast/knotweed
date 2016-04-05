@@ -57,8 +57,11 @@ describe Content do
 
   include_examples 'Auditable', Content
 
-  describe ':in_accepted_category default sphinx scope' do
+  describe 'default sphinx scope' do
     before do
+      @draft = FactoryGirl.create :content, pubdate: nil
+      @scheduled = FactoryGirl.create :content, pubdate: 2.weeks.from_now
+      @normal = FactoryGirl.create :content, pubdate: 2.hours.ago
       @event_cat = FactoryGirl.create :content_category, name: 'event'
       @news_cat = FactoryGirl.create :content_category, name: 'news'
       @in_index_event = FactoryGirl.create :event
@@ -77,6 +80,17 @@ describe Content do
       expect(Content.search).to include(@in_index_event.content)
     end
 
+    it 'should not include draft content' do
+      expect(Content.search).to_not include(@draft)
+    end
+
+    it 'should not include scheduled content' do
+      expect(Content.search).to_not include(@scheduled)
+    end
+
+    it 'should include regular content' do
+      expect(Content.search).to include(@normal)
+    end
   end
 
   # for ease of querying, our polymorphic channel relationship
@@ -1190,7 +1204,7 @@ describe Content do
   describe 'Content.talk_search' do
     before do
       @talk = FactoryGirl.create :content_category, name: 'talk_of_the_town'
-      @p1 = FactoryGirl.create :content, content_category: @talk
+      @p1 = FactoryGirl.create :content, content_category: @talk, pubdate: 1.year.ago
       @c1 = FactoryGirl.create :content, parent: @p1, content_category: @talk,
         raw_content: 'VERY UNIQUE STRING @#$#%'
       @c2 = FactoryGirl.create :content, parent: @c1, content_category: @talk,
