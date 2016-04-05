@@ -23,16 +23,28 @@ describe BusinessProfile do
 
   describe '#after_destroy' do
     before do
-      @business_profile = FactoryGirl.create :business_profile
       @organization = FactoryGirl.create :organization
-      @content = FactoryGirl.create :content, channel_id: @business_profile.id, organization_id: @organization.id
-      @content2 = FactoryGirl.create :content, organization_id: @organization.id
+      @content = FactoryGirl.create :content, organization_id: @organization.id
+      @business_profile = FactoryGirl.create :business_profile, content: @content
     end
+
+    subject { @business_profile.destroy }
 
     context "when business profile is destroyed" do
       it "destroys associated organization" do
-        expect{ @business_profile.destroy }.to change{ Organization.count }.by(-1)
+        expect{ subject }.to change{ Organization.count }.by(-1)
       end
+
+      context 'when associated organization has other content' do
+        before do
+          @content2 = FactoryGirl.create :content, organization_id: @organization.id
+        end
+
+        it 'should not destroy associated organization' do
+          expect{ subject }.to_not change{ Organization.count }
+        end
+      end
+
     end
   end
 

@@ -23,7 +23,7 @@ class BusinessProfile < ActiveRecord::Base
   validates_associated :content
 
   after_destroy do
-    organization.destroy if organization.present?
+    organization.destroy if organization.present? and organization.contents.count == 0
   end
 
   belongs_to :business_location, dependent: :destroy
