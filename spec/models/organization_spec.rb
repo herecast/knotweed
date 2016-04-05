@@ -30,6 +30,33 @@ describe Organization do
   before do
     @organization = FactoryGirl.create(:organization)
   end
+
+  describe "::parent_pubs" do
+    before do
+      @parent_org_1 = FactoryGirl.create :organization
+      @parent_org_2 = FactoryGirl.create :organization, parent: @parent_org_1
+      @child_org    = FactoryGirl.create :organization, parent: @parent_org_2
+    end
+
+    it "returns list of parent organizations" do
+      list = Organization.parent_pubs
+      expect(list).to match_array([@parent_org_1, @parent_org_2])
+    end
+  end
+
+  describe '#business_location_options' do
+    before do
+      @organization = FactoryGirl.create :organization
+      @organization.business_locations << FactoryGirl.create(:business_location)
+      @organization.business_locations << FactoryGirl.create(:business_location)
+    end
+
+    it "returns all of organizations business locations" do
+      locations = @organization.business_location_options
+      expect(locations.length).to eq 2
+    end
+  end
+
   describe 'get_all_children' do
     before do
       @s1 = FactoryGirl.create :organization, parent: @organization

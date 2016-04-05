@@ -21,10 +21,37 @@ require 'spec_helper'
 
 describe BusinessProfile do
 
+  describe '#after_destroy' do
+    before do
+      @organization = FactoryGirl.create :organization
+      @content = FactoryGirl.create :content, organization_id: @organization.id
+      @business_profile = FactoryGirl.create :business_profile, content: @content
+    end
+
+    subject { @business_profile.destroy }
+
+    context "when business profile is destroyed" do
+      it "destroys associated organization" do
+        expect{ subject }.to change{ Organization.count }.by(-1)
+      end
+
+      context 'when associated organization has other content' do
+        before do
+          @content2 = FactoryGirl.create :content, organization_id: @organization.id
+        end
+
+        it 'should not destroy associated organization' do
+          expect{ subject }.to_not change{ Organization.count }
+        end
+      end
+
+    end
+  end
+
   describe 'convert_hours_to_standard' do
     context 'from factual format' do
       # a bunch of examples that cover the Factual import data:
-      { 
+      {
         "Mon-Fri 8:00 AM-6:00 PM" => ["Mo-Fr|08:00-18:00"],
         "Sun 12:00 PM-4:00 PM" => ["Su|12:00-16:00"],
         "Open Daily 12:00 AM-11:59 PM" => ["Mo-Su|00:00-23:59"],
@@ -39,5 +66,5 @@ describe BusinessProfile do
       end
     end
   end
-  
+
 end
