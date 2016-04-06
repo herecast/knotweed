@@ -29,7 +29,7 @@ describe ImportJob do
   describe "perform job" do
     before do
       prerender_cache_stub
-      # note we need sufficient entries in the config hash here for the 
+      # note we need sufficient entries in the config hash here for the
       # output to validate.
       @config = { "timestamp" => "2011-06-07T12:25:00", "guid" => "100", "other_param" => "hello", "pubdate" => "2011-06-07T12:25:00",
                   "source" => "not empty", "title" => "      not empty and with whitespace  ",
@@ -45,7 +45,7 @@ describe ImportJob do
       @job2.enqueue_job
       successes, failures = Delayed::Worker.new(:max_priority => nil,
         :min_priority => nil,
-        :quiet => false, 
+        :quiet => false,
         :queues => ["imports", "publishing"]).work_off
     end
 
@@ -77,10 +77,115 @@ describe ImportJob do
       c.content.include?("<p> </p>").should == false
     end
 
-    it "should send a request to prerender recache" do 
+    it "should send a request to prerender recache" do
       expect(WebMock).to have_requested(:post, "http://api.prerender.io/recache").twice
     end
 
+    it "returns last run at" do
+      expect(@job.last_run_at.to_s).to eq @job.created_at.to_s
+    end
+
+  end
+
+  describe '#set_stop_loop' do
+    before do
+      @import_job = FactoryGirl.create :import_job, job_type: 'continuous'
+    end
+
+    context "when import_job is continuous" do
+      it "sets stop_loop to false" do
+        @import_job.set_stop_loop
+        expect(@import_job.stop_loop).to be false
+      end
+    end
+  end
+
+  describe '#perform' do
+    before do
+      @parser = FactoryGirl.create :parser
+      @import_job = FactoryGirl.create :import_job, parser_id: @parser.id
+    end
+
+    context "when import job backing up" do
+      it "skips the job" do
+        ImportJob.stub(:backup_start).and_return(Time.now - 10)
+        ImportJob.stub(:backup_end).and_return(Time.now + 10)
+        import_record = FactoryGirl.create(:import_record)
+        @import_job.stub(:last_import_record) { import_record }
+        log = import_record.log_file
+        import_record.stub(:log_file) { log }
+
+        expect(log).to receive(:info)
+        @import_job.perform
+      end
+    end
+  end
+
+  describe '#traverse_input_tree' do
+    before do
+      @import_job = FactoryGirl.create :import_job, job_type: 'continuous'
+      @import_record = FactoryGirl.create :import_record
+    end
+
+    context "when continuous and during backup" do
+      it "stop_loop becomes false" do
+        ImportJob.stub(:backup_start).and_return(Time.now - 10)
+        ImportJob.stub(:backup_end).and_return(Time.now + 10)
+        @import_job.stub(:last_import_record) { @import_record }
+        response = @import_job.traverse_input_tree
+        expect(@import_job.stop_loop).to be false
+      end
+    end
+  end
+
+  describe '#reschedule_at' do
+    before do
+      @import_job = FactoryGirl.create :import_job
+    end
+
+    context "when reschedule_at is set" do
+      it "returns a set reschedule time" do
+        response = @import_job.reschedule_at(DateTime.now, 1)
+        expect(response.to_s).to eq (DateTime.now + 10.seconds).to_s
+      end
+    end
+
+    context "when no reschedule_at environmental variable" do
+      it "returns a fabricated reschedule time" do
+        ENV["RESCHEDULE_AT"] = nil
+        response = @import_job.reschedule_at(DateTime.now, 1)
+        expect(response.to_s).to eq (DateTime.now + 6).to_s
+      end
+    end
+  end
+
+  describe '#import_filter' do
+    before do
+      @import_job = FactoryGirl.create :import_job
+      @content = FactoryGirl.create :content, channel_id: 1
+      @event = FactoryGirl.create(:event, channel_id: 1)
+      @event_instance = FactoryGirl.create :event_instance, event_id: @event.id
+    end
+
+    let(:article) { { 'X-Original-Content-Id' => @content.id } }
+
+    context "when article has content id" do
+      it "returns true and reason" do
+        response = @import_job.import_filter(article)
+        expect(response[0]).to be true
+        expect(response[1]).to include 'X-Original-Content-Id'
+      end
+    end
+
+    let(:instance) { { 'X-Original-Event-Instance-Id' => @event_instance.id } }
+
+    context "when article has instance id" do
+      it "returns true and reason" do
+        response = @import_job.import_filter(instance)
+        expect(response[0]).to be true
+        expect(response[1]).to include 'X-Original-Event-Instance-Id'
+      end
+    end
   end
 
 end

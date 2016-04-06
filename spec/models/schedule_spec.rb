@@ -251,6 +251,23 @@ describe Schedule do
         expect{subject._remove}.to be_true
       end
     end
+
+    context 'when ends_at < starts_at' do
+      before do
+        @schedule = FactoryGirl.create :schedule, event: @event
+        @weird_timing = @input.merge({ 'starts_at' => Time.now, "ends_at" => Time.now - 61 * 60 })
+      end
+
+      subject { Schedule.build_from_ux_for_event(@weird_timing, @event.id) }
+
+      it 'should set the end date one day ahead' do
+        timing = YAML.load(subject.recurrence)
+        start_hour = timing[:start_time][:time].to_s[8..10].to_i
+        end_hour = timing[:end_time][:time].to_s[8..10].to_i
+        expect(end_hour).to be > start_hour
+      end
+    end
+
   end
 
   describe 'to_ux_format' do
