@@ -53,6 +53,8 @@ class OrganizationsController < ApplicationController
     business_loc_list = params[:organization].delete("business_location_list")
     business_location_ids = business_loc_list.try(:split, ",")
 
+    # This is part of what cancan does normally in load_resource.
+    # It is used to pre load attributes that are part of the ability filter.
     @organization = Organization.new
     current_ability.attributes_for(:create, Organization).each do |key, value|
       @organization.send("#{key}=", value)
@@ -80,6 +82,12 @@ class OrganizationsController < ApplicationController
 
   def destroy
     @organization.destroy
+    respond_to do |format|
+      format.js
+      format.html do
+        redirect_to organizations_path
+      end
+    end
   end
 
   def business_location_options
