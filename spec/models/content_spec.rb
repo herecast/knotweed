@@ -1655,6 +1655,20 @@ describe Content do
             expect(result_banner).to eql PromotionBanner.active.first
             expect(result_type).to eql 'active no inventory'
           end
+
+          context 'when banner is not active' do
+            before do
+              promo_banner.update_attributes({
+                campaign_start: 1.month.ago,
+                campaign_end: 1.week.ago
+              })
+            end
+
+            it 'does not return the banner' do
+              result_banner, result_score, result_type = content.get_related_promotion(repo)
+              expect(result_banner).to be nil
+            end
+          end
         end
       end
     end
