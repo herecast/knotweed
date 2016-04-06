@@ -48,7 +48,7 @@ class Organization < ActiveRecord::Base
                   :website, :notes, :images_attributes, :parent_id, :location_ids,
                   :remote_logo_url, :contact_ids, :category_override,
                   :org_type, :display_attributes, :reverse_publish_email,
-                  :consumer_app_ids, :external_category_ids
+                  :consumer_app_ids, :external_category_ids, :can_publish_news
   
   mount_uploader :logo, ImageUploader
 
@@ -64,7 +64,7 @@ class Organization < ActiveRecord::Base
 
   def self.parent_pubs
     ids = self.where("parent_id IS NOT NULL").select(:parent_id).uniq.map { |p| p.parent_id }
-    self.find(ids)
+    self.where(id: ids)
   end
 
   def business_location_options

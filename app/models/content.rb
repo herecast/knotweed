@@ -53,12 +53,17 @@ require 'fileutils'
 require 'builder'
 include ActionView::Helpers::TextHelper
 class Content < ActiveRecord::Base
+  extend Enumerize
   include Auditable
   include Incrementable
   include ThinkingSphinx::Scopes
 
   sphinx_scope(:in_accepted_category) {
-    {conditions: { in_accepted_category: 1 } }
+    { 
+      conditions: { in_accepted_category: 1 },
+      # exclude drafts and scheduled content
+      with: { pubdate: 5.years.ago..Time.zone.now }
+    }
   }
   default_sphinx_scope :in_accepted_category
 
@@ -1471,6 +1476,20 @@ class Content < ActiveRecord::Base
   def has_metrics_reports?
     content_reports.present?
   end
+
+  # draft management methods
+  #
+  # contents can have three states:
+  # -- draft: saved, but not published to DSP and not returned in any API responses
+  #           except dashborad)
+  # -- scheduled: saved, pubdate in the future, published to the DSP, but not returned
+  #           in API responses except dashboard *until* Time.now > pubdate
+  # -- published: normal published state. Exists in DSP, returned in API responses.
+  # 
+  # there's the potential to implement this with a state_machine gem in the future,
+  # especially if it gets more complex. For now, we're just emulating that behavior
+  # as minimally as possible.
+
 
   private
 

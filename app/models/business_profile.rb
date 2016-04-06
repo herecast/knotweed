@@ -23,7 +23,7 @@ class BusinessProfile < ActiveRecord::Base
   validates_associated :content
 
   after_destroy do
-    organization.destroy if organization.present?
+    organization.destroy if organization.present? and organization.contents.count == 0
   end
 
   belongs_to :business_location, dependent: :destroy
@@ -98,7 +98,7 @@ class BusinessProfile < ActiveRecord::Base
         "#{hour}:#{$2}"
       end
 
-      # if the timing extends beyond midnight, Factual includes two sets of hours 
+      # if the timing extends beyond midnight, Factual includes two sets of hours
       # separated by a comma
       split_by_comma = output.split(",")
       if split_by_comma.count > 1

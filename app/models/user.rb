@@ -88,6 +88,12 @@ class User < ActiveRecord::Base
       @ability ||= Ability.new(self)
   end
 
+  # computed property that checks if the user has permission to manage
+  # any organizations that have can_publish_news=true
+  def can_publish_news?
+    Organization.accessible_by(ability, :manage).where(can_publish_news: true).count > 0
+  end
+
   private
 
     def generate_authentication_token

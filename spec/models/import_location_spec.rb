@@ -53,4 +53,11 @@ describe ImportLocation do
 
   end
 
+  describe "#name" do
+    let(:subject) { FactoryGirl.create :import_location }
+
+    it "returns formatted name for display" do
+      expect(subject.name).to include subject.city, subject.state, subject.zip
+    end
+  end
 end

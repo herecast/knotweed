@@ -41,8 +41,11 @@ module Api
           @contents.select!{ |c| @requesting_app.organizations.include? c.organization }
         end
 
-        #remove records that are events with no future instances
+        # remove records that are events with no future instances
         @contents.reject!{ |c| c.channel_type == 'Event' && c.channel.next_instance.blank?}
+
+        # remove drafts and future scheduled content
+        @contents.reject!{ |c| c.pubdate.nil? or c.pubdate >= Time.zone.now }
 
         # This is a Bad temporary hack to allow filtering the sim stack provided by apiv2
         # the same way that the consumer app filters it. 

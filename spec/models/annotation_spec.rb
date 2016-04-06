@@ -66,5 +66,75 @@ describe Annotation do
       ann.edges.length.should be >= 1
     end
   end
+
+  describe "#lookup_label" do
+    before do
+      @annotation = FactoryGirl.create :annotation
+    end
+
+    let(:edge) { { "predicate" => { "value" => "http://www.w3.org/2000/01/rdf-schema#label" }, "object" => { "value" => "New Label" } } }
+
+    context "when edge present" do
+      it "returns label containing object value" do
+        @annotation.edges << edge
+        expect(@annotation.lookup_label).to eq 'New Label'
+      end
+    end
+
+    context 'when no edges' do
+      it "returns generic label" do
+        expect(@annotation.lookup_label).to eq 'Lookup'
+      end
+    end
+  end
+
+  describe '#parsed_lookup_class' do
+    before do
+      @annotation = FactoryGirl.create :annotation
+    end
+
+    context "when lookup_class present" do
+      it "returns parsed uri" do
+        @annotation.update_attribute(:lookup_class, 'http://www.subtext.org/ontology/Company')
+        parsed_uri = Annotation.parse_uri_for_class(@annotation.lookup_class)
+        expect(parsed_uri).to eq 'Company'
+      end
+    end
+
+    context "when lookup_class not present" do
+      it "returns generic response" do
+        expect(@annotation.parsed_lookup_class).to eq "Lookup"
+      end
+    end
+  end
+
+  describe '#closest_edges_label' do
+    before do
+      @annotation = FactoryGirl.create :annotation
+    end
+
+    let(:edge) { { "predicate" => { "value" => "http://www.subtext.org/ontology/Company" }, "object" => { "value" => "New Label" } } }
+    let(:labeled_edge) { { "predicate" => { "value" => "http://www.subtext.org/ontology/Company" }, "object" => { "value" => "New Label" }, "label" => { "value" => "New Label Value" } } } 
+
+    context "when edges present without label" do
+      it "returns closest edges" do
+        @annotation.edges << edge
+        expect(@annotation.closest_edges_labels.first).to include 'Company', 'New Label'
+      end
+    end
+
+    context "when edges present with label" do
+      it "returns closest edges" do
+        @annotation.edges << labeled_edge
+        expect(@annotation.closest_edges_labels.first).to include 'Company', 'New Label Value'
+      end
+    end
+
+    context "when no edges" do
+      it "returns false" do
+        expect(@annotation.closest_edges_labels).to be false
+      end
+    end
+  end
       
 end

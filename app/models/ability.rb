@@ -14,7 +14,7 @@ class Ability
       event_category = ContentCategory.find_or_create_by_name("event")
       can :manage, Content, content_category_id: event_category.id
       can :manage, BusinessLocation # for event venues
-      can :manage, Content, created_by: user.id
+      can :manage, Content, created_by: user
     else
       managed_orgs = Organization.with_role(:manager, user)
       if managed_orgs.present?
