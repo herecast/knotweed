@@ -57,6 +57,8 @@ describe ReversePublisher do
       @rp_email = ReversePublisher.deliveries.select{ |e| e['X-Original-Content-Id'].present? }.first
     end
 
+    after { RSpec::Mocks.proxy_for(Thread).reset }
+
     it 'should include the ux2 content path for @content' do
       expect(@rp_email.body.encoded).to include("#{Thread.current[:consumer_app].uri}/news/#{@content.id}")
     end
