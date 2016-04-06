@@ -464,7 +464,7 @@ class Content < ActiveRecord::Base
       new_image = images.create(image_attrs)
     end
 
-    if primary.present?
+    if primary
       self.primary_image = new_image
     end
     new_image
