@@ -113,8 +113,8 @@ describe Annotation do
       @annotation = FactoryGirl.create :annotation
     end
 
-    let(:edge) { { "predicate" => { "value" => "ttp://www.subtext.org/ontology/Company" }, "object" => { "value" => "New Label" } } }
-    let(:labeled_edge) { { "predicate" => { "value" => "ttp://www.subtext.org/ontology/Company" }, "object" => { "value" => "New Label" }, "label" => { "value" => "New Label Value" } } } 
+    let(:edge) { { "predicate" => { "value" => "http://www.subtext.org/ontology/Company" }, "object" => { "value" => "New Label" } } }
+    let(:labeled_edge) { { "predicate" => { "value" => "http://www.subtext.org/ontology/Company" }, "object" => { "value" => "New Label" }, "label" => { "value" => "New Label Value" } } } 
 
     context "when edges present without label" do
       it "returns closest edges" do
