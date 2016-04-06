@@ -365,10 +365,6 @@ describe Content do
       google_logo5_stub
     end
 
-    after do
-      FileUtils.rm_rf('./public/content')
-    end
-        
     it "should create a new content with basic data passed by hash" do
       Content.count.should== 0
       content = Content.create_from_import_job(@base_data)
@@ -1029,9 +1025,6 @@ describe Content do
     before do
       @content = FactoryGirl.create(:content)
     end
-    after do
-      FileUtils.rm_rf('./public/promotion')
-    end
 
     it "should return false if there are no promotions" do
       @content.has_active_promotion?.should == false
@@ -1058,9 +1051,7 @@ describe Content do
 
   describe '#has_promotion_inventory?' do
     subject { FactoryGirl.create(:content) }
-    after do
-      FileUtils.rm_rf('./public/promotion')
-    end
+
     context 'when related promotion banners have inventory' do
       before do
         p = FactoryGirl.create :promotion, active: true, content: subject
