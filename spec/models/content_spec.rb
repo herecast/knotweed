@@ -136,6 +136,7 @@ describe Content do
       expect(result[:published]).to_not be_nil
     end
   end
+
   describe '#published?' do
     context 'Given a repo' do
       let(:repo) { FactoryGirl.create :repository }
