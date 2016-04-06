@@ -344,7 +344,7 @@ describe Content do
                       location: Faker::Address.street_name,
                       organization_id: org.id,
                       authoremail: Faker::Internet.email,
-                      pubdate: DateTime.now,
+                      pubdate: DateTime.parse("1/2/2015 08:15:00"),
                       source_content_id: '3538538',
                       source_category: 'Category',
                       content_category: 'Category 422',
@@ -354,7 +354,7 @@ describe Content do
                                     location: @orig_data[:location] + ' different',
                                     content_locations: [FactoryGirl.create(:location).city],
                                     guid: '53939itqjg3q0353jt',
-                                    pubdate: DateTime.now + 1.hour})
+                                    pubdate: DateTime.parse("1/2/2015 11:15:00")})
         @c2 = Content.create_from_import_job(@new_data)
       end
 
