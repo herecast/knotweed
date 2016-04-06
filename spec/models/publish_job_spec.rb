@@ -22,6 +22,21 @@ require 'spec_helper'
 
 describe PublishJob do
 
+  describe "validations" do
+    describe '#repository_present' do
+      before do
+        @publish_job = FactoryGirl.build :publish_job
+        @publish_job.query_params[:repository_id] = nil
+      end
+
+      context "when repository_id is not present" do
+        it "invalidates the publish job" do
+          expect(@publish_job.valid?).to be false
+        end
+      end
+    end
+  end
+
   describe "contents count" do
     before do
       @organization = FactoryGirl.create(:organization)
@@ -87,7 +102,7 @@ describe PublishJob do
         @job.enqueue_job
         successes, failures = Delayed::Worker.new(:max_priority => nil,
           :min_priority => nil,
-          :quiet => false, 
+          :quiet => false,
           :queues => ["imports", "publishing"]).work_off
       end
       after do
@@ -124,6 +139,49 @@ describe PublishJob do
       it "should generate a file ready email" do
         expect(ActionMailer::Base.deliveries.count).to eq(@mail_count + 1)
       end
+    end
+  end
+
+  describe '#perform' do
+    before do
+      @publish_job = FactoryGirl.create :publish_job
+      @publish_job.query_params[:repository_id] = nil
+      @publish_record = FactoryGirl.create(:publish_record)
+    end
+
+    context "when no repository_id in query_params" do
+      it "makes repo nil" do
+        @publish_job.stub(:last_publish_record) { @publish_record }
+        log = @publish_record.log_file
+        @publish_record.stub(:log_file) { log }
+        log.should_receive(:info).twice
+        @publish_job.perform
+      end
+    end
+  end
+
+  describe '#error' do
+    before do
+      @publish_job = FactoryGirl.create :publish_job
+    end
+
+    context "when job fails" do
+      it "updates job status to failed" do
+        @publish_job.error(@publish_job, 'failure')
+        expect(@publish_job.status).to eq 'failed'
+      end
+    end
+  end
+
+  describe '#last_run_at' do
+    before do
+      @publish_job = FactoryGirl.create :publish_job
+      @publish_record = FactoryGirl.create(:publish_record)
+    end
+
+    it "returns created_at from last publish record" do
+      @publish_job.stub(:last_publish_record) { @publish_record }
+      expect(@publish_job.last_run_at.to_s).to eq @publish_record.created_at.to_s
     end
   end
 end

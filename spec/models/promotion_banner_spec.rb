@@ -71,4 +71,58 @@ describe PromotionBanner do
 
   end
 
+  describe '#update_active_promotions' do
+    before do
+      @content = FactoryGirl.create :content
+      @promotion_banner = FactoryGirl.create :promotion_banner
+      @promotion = FactoryGirl.create :promotion, promotable_id: @promotion_banner.id, content_id: @content.id
+      stub_request(:any, 'http://test-dsp.subtext.org:8080/graphdb-workbench-se/repositories/subtext/statements')
+      @promotion_banner.promotion.content.repositories << FactoryGirl.create(:repository, graphdb_endpoint: 'http://test-dsp.subtext.org:8080/graphdb-workbench-se/repositories/subtext')
+    end
+
+    context "when promo has active promotion" do
+      it "marks active promotions" do
+        response = @promotion_banner.update_active_promotions
+        expect(response.length).to eq 1
+      end
+    end
+
+    context "when promo has no active promotion" do
+      it "removes promotion" do
+        Content.any_instance.stub(:has_active_promotion?).and_return(false)
+        response = @promotion_banner.update_active_promotions
+        expect(response.length).to eq 1
+      end
+    end
+
+    context "when promo has paid promotion" do
+      it "marks paid promotion" do
+        Content.any_instance.stub(:has_paid_promotion?).and_return(true)
+        response = @promotion_banner.update_active_promotions
+        expect(response.length).to eq 1
+      end
+    end
+
+    context "when promo has no paid promotion" do
+      it "removes paid promotion" do
+        response = @promotion_banner.update_active_promotions
+        expect(response.length).to eq 1
+      end
+    end
+
+    describe "::remove_promotion" do
+      it "remove promotion" do
+        response = PromotionBanner.remove_promotion(@promotion_banner.promotion.content.repositories[0], @content.id)
+        expect(response).to be_a SPARQL::Client
+      end
+    end
+
+    describe "::remove_paid_promotion" do
+      it "removes paid promotion" do
+        response = PromotionBanner.remove_paid_promotion(@promotion_banner.promotion.content.repositories[0], @content.id)
+        expect(response).to be_a SPARQL::Client
+      end
+    end
+  end
+
 end
