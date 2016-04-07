@@ -1,115 +1,161 @@
 require 'spec_helper'
 
-describe DataContextsController do
+describe DataContextsController, type: :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
   end
 
-  describe 'GET #index' do
-    context "when reset is true" do
+  describe '#index' do
+    let(:query) { {'context_cont' => 'search'} }
+    describe 'session and search' do
+      it 'remembers last search' do
+        session[:data_contexts_search] = query
 
-      subject { get :index, reset: "Reset" }
+        mock_return = double(result: DataContext)
+        expect(DataContext).to receive(:ransack).with(query).and_return(mock_return)
+        get :index
+      end
 
-      it 'should respond with 200 status code' do
-        subject
-        response.code.should eq '200'
-        expect(assigns(:status)).to be_nil
-        expect(assigns(:search)).to be_a Ransack::Search
+      context '?reset=true' do
+        before do
+          session[:data_contexts_search] = query
+        end
+
+        it 'resets saved search from session' do
+          get :index, {reset: true}
+          expect(session[:data_contexts_search]).to be_nil
+        end
+      end
+
+      context 'given parameter ?q="' do
+        it 'saves the search in session' do
+          session[:data_contexts_search] = nil
+          get :index, q: query
+          expect( session[:data_contexts_search] ).to eql query
+        end
       end
     end
 
-    context "when query present" do
-      it 'returns Loaded data contexts' do
-        data_context = FactoryGirl.create :data_context, loaded: true
-        get :index, { q: { "context_cont" => 'MyString' }, status: "Loaded" }
-        expect(assigns(:search)).to be_a Ransack::Search
-        expect(assigns(:data_contexts)).to eq [data_context]
-        response.code.should eq '200'
+    context 'given a query' do
+      it 'passes the query to ransack' do
+        mock_return = double(result: DataContext)
+        expect(DataContext).to receive(:ransack).with(query).and_return(mock_return)
+        get :index, q: query
       end
 
-      it "returns Unloaded data contexts" do
-        data_context = FactoryGirl.create :data_context
-        get :index, { q: { "context_cont" => 'MyString' }, status: "Unloaded" }
-        expect(assigns(:search)).to be_a Ransack::Search
-        expect(assigns(:data_contexts)).to eq [data_context]
-        response.code.should eq '200'
+      it 'assigns @data_contexts with result' do
+        result = FactoryGirl.create_list :data_context, 3
+        mock_return = double(result: result)
+        expect(DataContext).to receive(:ransack).with(query).and_return(mock_return)
+
+        get :index, q: query
+
+        expect( assigns(:data_contexts) ).to eql result
       end
 
-      it "returns Archived data contexts" do
-        get :index, { q: { "context_cont" => 'MyString' }, status: "Archived" }
-        expect(assigns(:search)).to be_a Ransack::Search
-        response.code.should eq '200'
+      context '?status=Loaded"' do
+        it 'converts to a ransack query: loaded_eq = true' do
+          expected_query = query.merge({'loaded_eq' => true})
+          mock_return = double(result: DataContext)
+          expect(DataContext).to receive(:ransack).with(
+            expected_query
+          ).and_return(mock_return)
+
+          get :index, q: query, status: "Loaded"
+        end
+      end
+
+      context '?status=Unloaded' do
+        it 'converts to a ransack query: loaded_eq = false' do
+          expected_query = query.merge({'loaded_eq' => false})
+          mock_return = double(result: DataContext)
+          expect(DataContext).to receive(:ransack).with(
+            expected_query
+          ).and_return(mock_return)
+
+          get :index, q: query, status: "Unloaded"
+        end
+      end
+
+      context '?status=Archived' do
+        it 'converts to a ransack query: archived_eq = true' do
+          expected_query = query.merge({'archived_eq' => true})
+          mock_return = double(result: DataContext)
+          expect(DataContext).to receive(:ransack).with(
+            expected_query
+          ).and_return(mock_return)
+
+          get :index, q: query, status: "Archived"
+        end
       end
     end
   end
 
-  describe 'GET #edit' do
-    before do
-      @data_context = FactoryGirl.create :data_context
-    end
+  describe '#update' do
+    context 'given attributes' do
+      subject { FactoryGirl.create :data_context }
+      let(:attrs) { {'context' => "new Context string"} }
 
-    subject { get :edit, id: @data_context.id }
+      before do
+        allow(DataContext).to receive(:find).and_return(subject)
+      end
 
-    it "should respond with 200 status code" do
-      subject
-      response.code.should eq '200'
+      it 'updates the instance' do
+        put :update, id: subject.id, data_context: attrs
+        expect(subject.reload.context).to eql attrs['context']
+      end
+
+      context 'valid update' do
+        before do
+          allow(subject).to receive(:update_attributes).and_return(true)
+        end
+
+        it 'redirects to data_contexts_path' do
+          put :update, id: subject.id, data_context: attrs
+          expect(response).to redirect_to(data_contexts_path)
+        end
+      end
+
+      context 'invalid update' do
+        before do
+          allow(subject).to receive(:update_attributes).and_return(false)
+        end
+
+        it 'rerenders "edit" template' do
+          put :update, id: subject.id, data_context: attrs
+          expect(response).to render_template('data_contexts/edit')
+        end
+      end
     end
   end
 
-  describe 'PUT #update' do
-    before do
-      @data_contexts = FactoryGirl.create :data_context, context: 'old context'
-    end
+  describe '#create' do
+    let(:attrs) { FactoryGirl.attributes_for :data_context }
 
-    subject { put :update, { id: @data_contexts.id, data_context: { context: 'new context' }} }
+    context 'given valid attributes' do
+      it 'creates a data_context' do
+        expect {
+          post :create, data_context: attrs
+        }.to change {
+          DataContext.count
+        }.by(1)
+      end
 
-    context "when update succeeds" do
-      it "should respond with a 302 status code" do
-        subject
-        @data_contexts.reload
-        expect(@data_contexts.context).to eq 'new context'
-        response.code.should eq '302'
+      it 'redirects to data_contexts_path' do
+        post :create, data_context: attrs
+        expect(response).to redirect_to(data_contexts_path)
       end
     end
 
-    context "when update fails" do
-      it "should render edit page" do
-        DataContext.any_instance.stub(:update_attributes) { false }
-        expect(subject).to render_template 'edit'
+    context 'invalid' do
+      before do
+        allow_any_instance_of(DataContext).to receive(:save).and_return(false)
       end
-    end
-  end
 
-  describe 'GET #new' do
-    before do
-      @data_context = FactoryGirl.create :data_context
-    end
-
-    subject { get :new }
-
-    it 'should respond with 200 status code' do
-      subject
-      response.code.should eq '200'
-    end
-  end
-
-  describe 'POST #create' do
-
-    subject { post :create, { data_context: { context: 'new dc' } } }
-
-    context "when creation succeeds" do
-      it "should respond with 302 status code" do
-        subject
-        expect(DataContext.count).to eq 1
-        response.code.should eq '302'
-      end
-    end
-
-    context "when creation fails" do
-      it "should render new page" do
-        DataContext.any_instance.stub(:save) { false }
-        expect(subject).to render_template 'new'
+      it 'rerenders "new" template' do
+        post :create, data_context: attrs
+        expect(response).to render_template('data_contexts/new')
       end
     end
   end
