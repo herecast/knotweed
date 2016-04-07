@@ -145,8 +145,9 @@ describe ImportJob do
 
     context "when reschedule_at is set" do
       it "returns a set reschedule time" do
-        response = @import_job.reschedule_at(DateTime.now, 1)
-        expect(response.to_s).to eq (DateTime.now + 10.seconds).to_s
+        now_time = DateTime.now
+        response = @import_job.reschedule_at(now_time, 1)
+        expect(response.to_s).to eq (now_time + 10.seconds).to_s
       end
     end
 

@@ -28,7 +28,7 @@ RSpec.configure do |config|
   # you can't use this metadata-based shortcut.
   config.before(:each) do
     # Index data when running specs that require sphinx
-    index if @example.metadata[:sphinx]
+    index if RSpec.current_example.metadata[:sphinx]
   end
 
 end
