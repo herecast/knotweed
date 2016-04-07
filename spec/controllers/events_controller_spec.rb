@@ -143,11 +143,11 @@ describe EventsController, :type => :controller  do
 
       context "when event saves and publishes" do
         it "should respond with flash and 302 status code" do
-          Event.any_instance.stub(:save) { true }
-          Fog::Storage.stub(:new) { 'fog' }
-          String.any_instance.stub(:copy_object) {}
-          User.any_instance.stub(:default_repository) { 'some value' }
-          Content.any_instance.stub(:publish) { true }
+          allow_any_instance_of(Event).to receive(:save).and_return(true)
+          allow(Fog::Storage).to receive(:new).and_return('fog')
+          allow_any_instance_of(String).to receive(:copy_object)
+          allow_any_instance_of(User).to receive(:default_repository).and_return('some value')
+          allow_any_instance_of(Content).to receive(:publish).and_return(true)
 
           subject
 
@@ -158,11 +158,11 @@ describe EventsController, :type => :controller  do
 
       context "when event saves but does not publish" do
         it "should respond with flash warning and 302 status code" do
-          Event.any_instance.stub(:save) { true }
-          Fog::Storage.stub(:new) { 'fog' }
-          String.any_instance.stub(:copy_object) {}
-          User.any_instance.stub(:default_repository) { 'some value' }
-          Content.any_instance.stub(:publish) { false }
+          allow_any_instance_of(Event).to receive(:save).and_return(true)
+          allow(Fog::Storage).to receive(:new).and_return('fog')
+          allow_any_instance_of(String).to receive(:copy_object)
+          allow_any_instance_of(User).to receive(:default_repository).and_return('some value')
+          allow_any_instance_of(Content).to receive(:publish).and_return(false)
 
           subject
 
@@ -185,9 +185,9 @@ describe EventsController, :type => :controller  do
 
       it "flashes success" do
         current_user = @user
-        User.any_instance.stub(:default_repository) { 'some value' }
-        Content.any_instance.stub(:publish) { true }
-        Event.any_instance.stub(:update_attributes) { true }
+        allow_any_instance_of(User).to receive(:default_repository).and_return('some value')
+        allow_any_instance_of(Content).to receive(:publish).and_return(true)
+        allow_any_instance_of(Event).to receive(:update_attributes).and_return(true)
 
         subject
 
@@ -201,8 +201,8 @@ describe EventsController, :type => :controller  do
 
       it "flashes success with Publish failed message" do
         current_user = @user
-        User.any_instance.stub(:default_repository) { 'some value' }
-        Content.any_instance.stub(:publish) { false }
+        allow_any_instance_of(User).to receive(:default_repository).and_return('some value')
+        allow_any_instance_of(Content).to receive(:publish).and_return(false)
 
         subject
 
@@ -216,7 +216,7 @@ describe EventsController, :type => :controller  do
       subject { put :update, { id: @event.id, event: { event_instances_attributes: [[{}, { start_date: @event.event_instances.first.start_date }]] } } }
 
       it "renders edit page" do
-        Event.any_instance.stub(:update_attributes) { false }
+        allow_any_instance_of(Event).to receive(:update_attributes).and_return(false)
         expect(subject).to render_template 'edit'
       end
     end
