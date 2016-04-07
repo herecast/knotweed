@@ -1,22 +1,20 @@
 source 'https://rubygems.org'
 
 ruby '2.0.0'
-gem 'rails', '~> 3.2.22.2'
-group :assets do
-  gem 'sass-rails',   '~> 3.2.3'
-  gem 'coffee-rails', '~> 3.2.1'
-  gem 'uglifier', '~> 2.4.0'
-  gem 'compass-rails', '~> 1.1.3'
-  gem 'turbo-sprockets-rails3', '~> 0.3.11'
-end
+gem 'rails', '~> 4.0'
+gem 'protected_attributes'
+gem 'sass-rails'
+gem 'coffee-rails'
+gem 'uglifier', '~> 2.4.0'
+gem 'compass-rails', '~> 1.1.3'
 gem 'jquery-rails', '~> 3.1.2'
 gem "mysql2", '~> 0.3.14'
 gem "haml-rails", "~> 0.4"
 gem "database_cleaner", "~> 1.2.0", :group => :test
 gem "devise", "~> 3.2.2"
-gem 'cancancan', '~> 1.10.0'
-gem "rolify", "~> 3.2.0"
-gem "simple_form", "~> 2.1.1"
+gem 'cancancan'
+gem "rolify"
+gem "simple_form"
 gem "quiet_assets", "~> 1.0.2", :group => :development
 gem "capistrano", "~> 3.1.0"
 gem "capistrano-bundler", "~> 1.1.1"
@@ -52,7 +50,7 @@ gem 'carrierwave-mimetype-fu', '~> 0.0.2'
 gem "figaro", '~> 0.7.0'
 
 
-gem 'jquery-datatables-rails', '~> 3.3.0'
+gem 'jquery-datatables-rails'
 
 gem 'delayed_job_active_record', '~> 4.0.0'
 gem 'daemons', '~> 1.1.9'
@@ -105,7 +103,6 @@ gem 'jbuilder', '~> 2.1.3'
 gem 'mixpanel_client', '~> 4.1.1'
 gem 'mixpanel-ruby', '~> 1.4.0' # official ruby mixpanel client. later versions need ruby > 2.0
 
-gem "select2-rails", '~> 3.5.9.1'
 gem "legato", '~> 0.4.0'
 gem "google-api-client", '~> 0.7.1'
 gem 'oauth2', '~> 1.0.0'

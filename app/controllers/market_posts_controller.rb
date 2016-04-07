@@ -28,13 +28,13 @@ class MarketPostsController < ApplicationController
     @market_post = MarketPost.new
 
     @market_post.build_content
-    @market_post.content.content_category_id = ContentCategory.find_or_create_by_name('market').id
+    @market_post.content.content_category_id = ContentCategory.find_or_create_by(name: 'market').id
     @market_post.content.images.build
 
     # hard coding some other things
     @market_post.content.category_reviewed = true
     # again with the under protest...
-    @market_post.content.organization_id = Organization.find_or_create_by_name('DailyUV').id
+    @market_post.content.organization_id = Organization.find_or_create_by(name: 'DailyUV').id
 
     # for users that can only access certain specific attribute contents
     current_ability.attributes_for(:new, MarketPost).each do |key,value|
