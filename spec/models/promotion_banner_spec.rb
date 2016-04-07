@@ -19,7 +19,7 @@
 
 require 'spec_helper'
 
-describe PromotionBanner do
+describe PromotionBanner, :type => :model do
 
   describe 'scope :for_content' do
     before do
@@ -29,13 +29,13 @@ describe PromotionBanner do
     end
 
     it 'should return the promotion banners related to the requested content' do
-      PromotionBanner.for_content(@content_id).should eq([@banner])
+      expect(PromotionBanner.for_content(@content_id)).to eq([@banner])
     end
 
     it 'should return all promotion banners related to the content' do
       promo2 = FactoryGirl.create :promotion, content_id: @content_id
       banner2 = FactoryGirl.create :promotion_banner, promotion: promo2
-      PromotionBanner.for_content(@content_id).count.should eq(2)
+      expect(PromotionBanner.for_content(@content_id).count).to eq(2)
     end
 
   end
@@ -57,7 +57,7 @@ describe PromotionBanner do
     #end
 
     it 'should return active banners' do
-      PromotionBanner.active.count.should eq(3)
+      expect(PromotionBanner.active.count).to eq(3)
     end
 
     it 'should not include banners outside their campaign date range' do
@@ -65,8 +65,8 @@ describe PromotionBanner do
         campaign_end: 2.days.ago
       not_started = FactoryGirl.create :promotion_banner, campaign_start: 3.days.from_now,
         campaign_end: 5.days.from_now
-      PromotionBanner.active.include?(already_over).should be_false
-      PromotionBanner.active.include?(not_started).should be_false
+      expect(PromotionBanner.active.include?(already_over)).to be_falsey
+      expect(PromotionBanner.active.include?(not_started)).to be_falsey
     end
 
   end
@@ -89,7 +89,7 @@ describe PromotionBanner do
 
     context "when promo has no active promotion" do
       it "removes promotion" do
-        Content.any_instance.stub(:has_active_promotion?).and_return(false)
+        allow_any_instance_of(Content).to receive(:has_active_promotion?).and_return(false)
         response = @promotion_banner.update_active_promotions
         expect(response.length).to eq 1
       end
@@ -97,7 +97,7 @@ describe PromotionBanner do
 
     context "when promo has paid promotion" do
       it "marks paid promotion" do
-        Content.any_instance.stub(:has_paid_promotion?).and_return(true)
+        allow_any_instance_of(Content).to receive(:has_paid_promotion?).and_return(true)
         response = @promotion_banner.update_active_promotions
         expect(response.length).to eq 1
       end

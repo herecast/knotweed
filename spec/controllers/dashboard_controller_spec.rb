@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DashboardController do
+describe DashboardController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
@@ -11,7 +11,7 @@ describe DashboardController do
 
     it 'should respond with 200 status code' do
       subject
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 end

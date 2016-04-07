@@ -1,5 +1,5 @@
 require 'spec_helper'
 
-describe AnnotationsController do
+describe AnnotationsController, :type => :controller do
 
 end

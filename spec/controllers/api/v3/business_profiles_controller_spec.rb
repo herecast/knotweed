@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::BusinessProfilesController do
+describe Api::V3::BusinessProfilesController, :type => :controller do
   describe 'GET index' do
     before do
       @bps = FactoryGirl.create_list :business_profile, 3
@@ -19,12 +19,12 @@ describe Api::V3::BusinessProfilesController do
 
     it 'has 200 status code' do
       subject
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'loads the business profiles' do
       subject
-      assigns(:business_profiles).should eq @bps
+      expect(assigns(:business_profiles)).to eq @bps
     end
 
     describe "Sorting" do
@@ -83,7 +83,7 @@ describe Api::V3::BusinessProfilesController do
 
       it 'should return matches' do
         subject
-        assigns(:business_profiles).should eq [@result]
+        expect(assigns(:business_profiles)).to eq [@result]
       end
 
       describe 'by category_id' do
@@ -95,7 +95,7 @@ describe Api::V3::BusinessProfilesController do
 
         it 'should return filtered results' do
           get :index, category_id: @cat.id
-          assigns(:business_profiles).should eq [@bps.first]
+          expect(assigns(:business_profiles)).to eq [@bps.first]
         end
       end
 
@@ -119,7 +119,7 @@ describe Api::V3::BusinessProfilesController do
             # radius is measured in meters) we can't just set this to 0.1 or something. 100 seems to work.
             # It's theoretically possible that this could return another randomly located result, but the odds
             # of that are very very low.
-          assigns(:business_profiles).should eq [bp]
+          expect(assigns(:business_profiles)).to eq [bp]
         end
 
       end
@@ -133,11 +133,11 @@ describe Api::V3::BusinessProfilesController do
     subject! { get :show, format: :json, id: @bp.content.id }
 
     it 'has 200 status code' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'loads the business profile' do
-      assigns(:business_profile).should eq @bp
+      expect(assigns(:business_profile)).to eq @bp
     end
   end
 
@@ -166,7 +166,7 @@ describe Api::V3::BusinessProfilesController do
 
     it 'should respond with 201 status code' do
       subject
-      response.code.should eq '201'
+      expect(response.code).to eq '201'
     end
 
     it 'should send an email' do

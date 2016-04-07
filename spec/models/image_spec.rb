@@ -16,7 +16,7 @@
 
 require 'spec_helper'
 
-describe Image do
+describe Image, :type => :model do
 
   describe 'ensure_only_one_primary' do
     before do
@@ -25,12 +25,12 @@ describe Image do
     end
 
     it 'should set primary to true if the image is the only one on the content' do
-      @img1.primary.should be_true
+      expect(@img1.primary).to be_truthy
     end
 
     it 'should update all other images on the imageable object to primary=false when creating a new primary image' do
       img2 = FactoryGirl.create :image, primary: true, imageable: @imgble
-      @img1.reload.primary.should be_false
+      expect(@img1.reload.primary).to be_falsey
     end
   end
 

@@ -13,7 +13,7 @@ describe EventsController, :type => :controller  do
 
     it 'should respond with 200 status' do
       subject
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 
@@ -22,14 +22,14 @@ describe EventsController, :type => :controller  do
 
     it 'should respond with 200 status' do
       subject
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 
   describe 'index' do
     it 'should respond with a 200 status' do
       get :index
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     describe 'Features Filter' do
@@ -52,12 +52,12 @@ describe EventsController, :type => :controller  do
 
         @q[:event_featured_true] = "1"
         get :index, q: @q
-        assigns(:event_instances).length.should == 1
+        expect(assigns(:event_instances).length).to eq(1)
       end
 
       it 'return all events' do
         get :index, q: @q
-        assigns(:event_instances).length.should == 4
+        expect(assigns(:event_instances).length).to eq(4)
       end
 
       it 'return non-featured events' do
@@ -66,7 +66,7 @@ describe EventsController, :type => :controller  do
 
         @q[:event_featured_true] = "0"
         get :index, q: @q
-        assigns(:event_instances).length.should == 3
+        expect(assigns(:event_instances).length).to eq(3)
       end
     end
   end

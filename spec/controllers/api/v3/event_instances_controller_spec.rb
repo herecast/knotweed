@@ -12,7 +12,7 @@ require 'spec_helper'
 # one important thing to note is that if you override just one entry of instance_attributes, 
 # we lose the whole default hash -- which is currently just start date. So if you passed { subtitle: "Hello" },
 # then your instance wouldn't have a start date.
-describe Api::V3::EventInstancesController do
+describe Api::V3::EventInstancesController, :type => :controller do
 
   describe 'GET show' do
     before do
@@ -24,14 +24,14 @@ describe Api::V3::EventInstancesController do
 
     it 'should return the instance' do
       subject
-      assigns(:event_instance).should eq(@inst)
+      expect(assigns(:event_instance)).to eq(@inst)
     end
 
     it 'check comment_count' do
       comment_count = @inst.event.comment_count
       subject
       inst=JSON.parse(@response.body)
-      inst["event_instance"]["comment_count"].should == comment_count
+      expect(inst["event_instance"]["comment_count"]).to eq(comment_count)
     end
 
     it 'should increment view count' do
@@ -63,7 +63,7 @@ describe Api::V3::EventInstancesController do
       end
       
       it 'response should include ical url' do
-        JSON.parse(@response.body)['event_instance']['ical_url'].should eq @consumer.uri + event_instances_ics_path(@inst.id)
+        expect(JSON.parse(@response.body)['event_instance']['ical_url']).to eq @consumer.uri + event_instances_ics_path(@inst.id)
       end
     end
 
@@ -80,18 +80,18 @@ describe Api::V3::EventInstancesController do
       it 'should be true for content author' do
         api_authenticate user: @user
         subject 
-        can_edit.should == true
+        expect(can_edit).to eq(true)
       end
       it 'should be false for a different user' do
         @location = FactoryGirl.create :location, city: 'Another City'
         @different_user = FactoryGirl.create :user, location: @location
         api_authenticate user: @different_user
         subject 
-        can_edit.should == false
+        expect(can_edit).to eq(false)
       end
       it 'should be false when a user is not logged in' do
         subject 
-        can_edit.should == false
+        expect(can_edit).to eq(false)
       end
 
       context 'when user is admin' do
@@ -101,7 +101,7 @@ describe Api::V3::EventInstancesController do
         end
         it 'should be true' do
           subject
-          can_edit.should be_true
+          expect(can_edit).to be_truthy
         end
       end
     end
@@ -116,10 +116,10 @@ describe Api::V3::EventInstancesController do
     subject! { get :show, format: :ics, id: @inst.id }
 
     it 'should contain ics data' do
-      @response.body.should match /VCALENDAR/
-      @response.body.should match /DTSTART/
-      @response.body.should match /DTSTAMP/
-      @response.body.should match /VEVENT/
+      expect(@response.body).to match /VCALENDAR/
+      expect(@response.body).to match /DTSTART/
+      expect(@response.body).to match /DTSTAMP/
+      expect(@response.body).to match /VEVENT/
     end
   end
 
@@ -134,19 +134,19 @@ describe Api::V3::EventInstancesController do
       describe 'start_date' do
         it 'should search with start_date=today if no date_start is passed' do
           get :index
-          assigns(:event_instances).should eq([@e_less_future, @e_future])
+          expect(assigns(:event_instances)).to eq([@e_less_future, @e_future])
         end
 
         it 'should search by start date if it is passed' do
           get :index, date_start: 1.week.ago
-          assigns(:event_instances).should eq([@e_past, @e_less_future, @e_future])
+          expect(assigns(:event_instances)).to eq([@e_past, @e_less_future, @e_future])
         end
       end
 
       describe 'end_date' do
         it 'should limit results by the passed date_end' do
           get :index, date_end: 2.days.from_now
-          assigns(:event_instances).should eq([@e_less_future])
+          expect(assigns(:event_instances)).to eq([@e_less_future])
         end
       end
     end
@@ -162,12 +162,12 @@ describe Api::V3::EventInstancesController do
 
       it 'should return results matching the category' do
         get :index, category: 'movies'
-        assigns(:event_instances).should eq([@movie])
+        expect(assigns(:event_instances)).to eq([@movie])
       end
 
       it 'should ignore category params that aren\'t whitelisted in Event::EVENT_CATEGORIES' do
         get :index, category: 'FAKE CATEGORY'
-        assigns(:event_instances).should eq([@movie, @wellness])
+        expect(assigns(:event_instances)).to eq([@movie, @wellness])
       end
     end
 
@@ -185,12 +185,12 @@ describe Api::V3::EventInstancesController do
 
       it 'should search using matched city name and any child locations\' names' do
         get :index, location: @parent_loc.city
-        assigns(:event_instances).should eq([@event])
+        expect(assigns(:event_instances)).to eq([@event])
       end
 
       it 'should return no results searching for a location with no events' do
         get :index, location: @loc_with_no_events.city
-        assigns(:event_instances).should eq([])
+        expect(assigns(:event_instances)).to eq([])
       end
     end
 
@@ -203,7 +203,7 @@ describe Api::V3::EventInstancesController do
 
       it 'should return paginated results' do
         get :index, per_page: @count - 1
-        assigns(:event_instances).count.should eq(@count -1)
+        expect(assigns(:event_instances).count).to eq(@count -1)
       end
     end
   end

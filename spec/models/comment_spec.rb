@@ -9,7 +9,7 @@
 
 require 'spec_helper'
 
-describe Comment do
+describe Comment, :type => :model do
   before do
     @content = FactoryGirl.create :content, pubdate: 1.day.ago
     @comment = FactoryGirl.create :comment, content: @content
@@ -17,9 +17,9 @@ describe Comment do
 
   describe "method missing override" do
     it "should allow access to content attributes directly" do
-      @comment.title.should eq(@content.title)
-      @comment.authors.should eq(@content.authors)
-      @comment.pubdate.should eq(@content.pubdate)
+      expect(@comment.title).to eq(@content.title)
+      expect(@comment.authors).to eq(@content.authors)
+      expect(@comment.pubdate).to eq(@content.pubdate)
     end
 
     it "should retain normal method_missing behavior if not a content attribute" do
@@ -31,7 +31,7 @@ describe Comment do
     it "should also save the associated content record" do
       @content.title = "Changed Title"
       @comment.save # should trigger @content.save callback
-      @content.reload.title.should eq "Changed Title"
+      expect(@content.reload.title).to eq "Changed Title"
     end
   end
 
@@ -47,7 +47,7 @@ describe Comment do
       count = @parent.comment_count
       FactoryGirl.create :comment, content: @content
       @parent.reload
-      @parent.comment_count.should == count + 1
+      expect(@parent.comment_count).to eq(count + 1)
     end
 
     it "should increase the counter commenters" do
@@ -58,7 +58,7 @@ describe Comment do
       @content.save
       FactoryGirl.create :comment, content: @content
       @parent.reload
-      @parent.commenter_count.should == count + 1
+      expect(@parent.commenter_count).to eq(count + 1)
     end
 
     it "should not increase the counter commenters" do
@@ -72,7 +72,7 @@ describe Comment do
       @content.save
       FactoryGirl.create :comment, content: @content
       @parent.reload
-      @parent.commenter_count.should == count
+      expect(@parent.commenter_count).to eq(count)
     end
   end
 end

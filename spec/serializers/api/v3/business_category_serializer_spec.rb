@@ -9,14 +9,14 @@ describe Api::V3::BusinessCategorySerializer do
   describe 'child_ids' do
     it 'should list child IDs' do
       serialized_object = JSON.parse(Api::V3::BusinessCategorySerializer.new(@parent, root: false).to_json)
-      serialized_object['child_ids'].should eq [@child.id]
+      expect(serialized_object['child_ids']).to eq [@child.id]
     end
   end
 
   describe 'parent_ids' do
     it 'should list parent IDs' do
       serialized_object = JSON.parse(Api::V3::BusinessCategorySerializer.new(@child, root: false).to_json)
-      serialized_object['parent_ids'].should eq [@parent.id]
+      expect(serialized_object['parent_ids']).to eq [@parent.id]
     end
   end
 end

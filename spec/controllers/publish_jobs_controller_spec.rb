@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PublishJobsController do 
+describe PublishJobsController, :type => :controller do 
 
   describe "POST 'create'" do
     before do
@@ -27,16 +27,16 @@ describe PublishJobsController do
       end
 
       it "should redirect to publish jobs path" do
-        response.should redirect_to(publish_jobs_path)
+        expect(response).to redirect_to(publish_jobs_path)
       end
       
       it "should properly serialize query params" do
-        @job.should_not be_nil
-        @job.query_params.should== @query_hash
+        expect(@job).not_to be_nil
+        expect(@job.query_params).to eq(@query_hash)
       end
 
       it "should register current user as a notifyee of the job" do
-        @job.notifyees.include?(@user).should== true
+        expect(@job.notifyees.include?(@user)).to eq(true)
       end
 
     end
@@ -52,11 +52,11 @@ describe PublishJobsController do
     subject! { get :index }
 
     it 'should respond with 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should load the publish jobs' do
-      assigns(:publish_jobs).should eq @jobs
+      expect(assigns(:publish_jobs)).to eq @jobs
     end
   end
 
@@ -70,11 +70,11 @@ describe PublishJobsController do
     subject! { get :edit, id: @job.id }
 
     it 'should respond with 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should load the publish job' do
-      assigns(:publish_job).should eq @job
+      expect(assigns(:publish_job)).to eq @job
     end
   end
 
@@ -118,7 +118,7 @@ describe PublishJobsController do
     context "with a job without a file_archive" do
       before do
         @job = FactoryGirl.create(:publish_job, publish_method: Content::DEFAULT_PUBLISH_METHOD)
-        Content.any_instance.stub(:publish_to_dsp).and_return(true)
+        allow_any_instance_of(Content).to receive(:publish_to_dsp).and_return(true)
         FactoryGirl.create_list(:content, 3)
         @job.before @job
         @job.perform

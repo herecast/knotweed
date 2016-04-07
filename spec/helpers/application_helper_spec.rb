@@ -6,7 +6,7 @@ describe ApplicationHelper, type: :helper do
       let(:resource) { double(errors: {base: []}) }
       subject { helper.display_base_errors(resource) }
 
-      it { should be_blank }
+      it { is_expected.to be_blank }
     end
 
     context 'Given a resource with multiple base errors' do

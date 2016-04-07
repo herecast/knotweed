@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ContentsController do
+describe ContentsController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
@@ -13,14 +13,14 @@ describe ContentsController do
     it "should create a category correction record if category changes" do
       cat_2 = FactoryGirl.create :content_category
       put :update, id: @content, content: { content_category_id: cat_2.id }
-      CategoryCorrection.where(content_id: @content.id).count.should == 1
+      expect(CategoryCorrection.where(content_id: @content.id).count).to eq(1)
       @content.reload
-      @content.category.should == cat_2.name
+      expect(@content.category).to eq(cat_2.name)
     end
 
     it "should not create a category correction if category doesn't change" do
       put :update, id: @content, content: { title: "Fake Title Update" }
-      CategoryCorrection.where(content_id: @content.id).count.should == 0
+      expect(CategoryCorrection.where(content_id: @content.id).count).to eq(0)
     end
   end
 
@@ -33,7 +33,7 @@ describe ContentsController do
 
     it 'should respond with 200 status code' do
       subject
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     context 'with an organization search param' do
@@ -46,7 +46,7 @@ describe ContentsController do
 
       it 'should respond with the content belonging to that organization' do
         subject
-        assigns(:contents).should match_array @contents
+        expect(assigns(:contents)).to match_array @contents
       end
     end
   end
@@ -60,12 +60,12 @@ describe ContentsController do
 
     it 'should respond with 200 status code' do
       subject
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should appropriately load the content' do
       subject
-      assigns(:content).should eq @content
+      expect(assigns(:content)).to eq @content
     end
   end
 
@@ -74,7 +74,7 @@ describe ContentsController do
 
     it 'should respond with 200 status code' do
       subject
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 

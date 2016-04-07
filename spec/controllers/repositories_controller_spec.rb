@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe RepositoriesController do
+describe RepositoriesController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
@@ -14,11 +14,11 @@ describe RepositoriesController do
     subject! { get :index }
 
     it 'should respond with a 200 code' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should load the repositories' do
-      assigns(:repositories).should eq @repos
+      expect(assigns(:repositories)).to eq @repos
     end
   end
 
@@ -26,7 +26,7 @@ describe RepositoriesController do
     subject! { get :new }
 
     it 'should respond with a 200 code' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 
@@ -36,11 +36,11 @@ describe RepositoriesController do
     subject! { get :edit, id: @repo.id }
 
     it 'should respond with a 200 code' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should load the repository' do
-      assigns(:repository).should eq @repo
+      expect(assigns(:repository)).to eq @repo
     end
   end
 

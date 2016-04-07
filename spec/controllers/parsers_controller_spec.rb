@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ParsersController do
+describe ParsersController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
@@ -11,11 +11,11 @@ describe ParsersController do
     subject! { get :index }
 
     it 'should respond with 200 status code' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should load the parsers' do
-      assigns(:parsers).should eq @parsers
+      expect(assigns(:parsers)).to eq @parsers
     end
   end
 
@@ -24,11 +24,11 @@ describe ParsersController do
     subject! { get :edit, id: @parser.id }
 
     it 'should respond with 200 status code' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should load the parser' do
-      assigns(:parser).should eq @parser
+      expect(assigns(:parser)).to eq @parser
     end
   end
 
@@ -36,7 +36,7 @@ describe ParsersController do
     subject! { get :new }
 
     it 'should respond with 200 status code' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 

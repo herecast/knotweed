@@ -20,7 +20,7 @@
 
 require 'spec_helper'
 
-describe MarketPost do
+describe MarketPost, :type => :model do
   before do
     @content = FactoryGirl.create :content
     @market_post = FactoryGirl.create :market_post, content: @content
@@ -28,9 +28,9 @@ describe MarketPost do
 
   describe "method missing override" do
     it "should allow access to content attributes directly" do
-      @market_post.title.should eq(@content.title)
-      @market_post.authors.should eq(@content.authors)
-      @market_post.pubdate.should eq(@content.pubdate)
+      expect(@market_post.title).to eq(@content.title)
+      expect(@market_post.authors).to eq(@content.authors)
+      expect(@market_post.pubdate).to eq(@content.pubdate)
     end
 
     it "should retain normal method_missing behavior if not a content attribute" do
@@ -42,7 +42,7 @@ describe MarketPost do
     it "should also save the associated content record" do
       @content.title = "Changed Title"
       @market_post.save # should trigger @content.save callback
-      @content.reload.title.should eq "Changed Title"
+      expect(@content.reload.title).to eq "Changed Title"
     end
   end
 

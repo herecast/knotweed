@@ -21,15 +21,15 @@ shared_examples 'Auditable' do |model|
 
     it "should set updated_by when #{model.to_s} is updated" do
       @existing_object.save
-      @existing_object.reload.updated_by.should eq(@user)
+      expect(@existing_object.reload.updated_by).to eq(@user)
     end
   end
 
   describe 'created_by' do
     it "should set updated and created by when a #{model.to_s} is created" do
       obj = FactoryGirl.create model_symbol
-      obj.created_by.should eq(@user)
-      obj.updated_by.should eq(@user)
+      expect(obj.created_by).to eq(@user)
+      expect(obj.updated_by).to eq(@user)
     end
   end
 

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 # we override Devise registrations controller to support UX2
 # and need to test the custom behavior.
-describe RegistrationsController do
+describe RegistrationsController, :type => :controller do
   before do
     @request.env["devise.mapping"] = Devise.mappings[:user]
   end
@@ -85,16 +85,16 @@ describe RegistrationsController do
       end
       
       it 'should be sent to the correct user' do
-        mail.to.should eq [@user_attributes[:email]]
+        expect(mail.to).to eq [@user_attributes[:email]]
       end
 
       it 'should be sent from the correct account' do
-        mail.from.should eq ['noreply@dailyuv.com']
+        expect(mail.from).to eq ['noreply@dailyuv.com']
       end
 
       it 'should contain correct url' do
         if mail.body.encoded =~ %r{<a href=\"#{@consumer_app.uri}/sign_up/confirm/([^"]+)">}
-          User.confirm_by_token($1).email.should eq @user_attributes[:email]
+          expect(User.confirm_by_token($1).email).to eq @user_attributes[:email]
         else
           raise 'expected consumer app URI to match email body'
         end

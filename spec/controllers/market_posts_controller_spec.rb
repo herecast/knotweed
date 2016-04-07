@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MarketPostsController do
+describe MarketPostsController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     @market_post = FactoryGirl.create :market_post
@@ -11,7 +11,7 @@ describe MarketPostsController do
   describe "GET 'new'" do
     it "returns http success" do
       get 'new'
-      response.should be_success
+      expect(response).to be_success
     end
   end
 
@@ -25,21 +25,21 @@ describe MarketPostsController do
         },
         cost: "$5"
       }
-      response.code.should eq("302")
+      expect(response.code).to eq("302")
     end
   end
 
   describe "GET 'edit'" do
     it "returns http success" do
       get 'edit', id: @market_post.id
-      response.should be_success
+      expect(response).to be_success
     end
   end
 
   describe 'GET index' do
     it 'returns http success' do
       get :index
-      response.should be_success
+      expect(response).to be_success
     end
 
     describe 'Search Filter' do
@@ -63,12 +63,12 @@ describe MarketPostsController do
 
         @q[:content_title_cont] = 'ZZ'
         get :index, q: @q
-        assigns(:market_posts).length.should == 2
+        expect(assigns(:market_posts).length).to eq(2)
       end
 
       it 'return all market_posts' do
         get :index, q: @q
-        assigns(:market_posts).length.should == 5
+        expect(assigns(:market_posts).length).to eq(5)
       end
     end
   end

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::ImagesController do
+describe Api::V3::ImagesController, :type => :controller do
   before do
     @market_post = FactoryGirl.create :market_post
     @file1 = fixture_file_upload('/photo.jpg', 'image/jpg')

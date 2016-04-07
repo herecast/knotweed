@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe ModerationMailer do
+describe ModerationMailer, :type => :mailer do
   describe "moderation_mailer email" do
     before do
       @content = FactoryGirl.create(:content)
@@ -17,12 +17,12 @@ describe ModerationMailer do
 
       it "should send an email" do
         email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver
-        ModerationMailer.deliveries.present?.should== true
-        email.body.include?(@flagger_name).should == true
-        email.body.include?(@flagger_email).should == true
-        email.body.include?(@content.authors).should == true
-        email.body.include?(@content.authoremail).should == true
-        email.to[0].should == ModerationMailer::MODERATION_EMAIL_RECIPIENT
+        expect(ModerationMailer.deliveries.present?).to eq(true)
+        expect(email.body.include?(@flagger_name)).to eq(true)
+        expect(email.body.include?(@flagger_email)).to eq(true)
+        expect(email.body.include?(@content.authors)).to eq(true)
+        expect(email.body.include?(@content.authoremail)).to eq(true)
+        expect(email.to[0]).to eq(ModerationMailer::MODERATION_EMAIL_RECIPIENT)
       end
 
       it "generates the proper content type edit link" do
@@ -49,12 +49,12 @@ describe ModerationMailer do
 
       it "should send an email" do
         email = ModerationMailer.send_moderation_flag_v2(@content, @params[:classification], @flagging_user).deliver
-        ModerationMailer.deliveries.present?.should== true
-        email.body.include?(@flagging_user.name).should == true
-        email.body.include?(@flagging_user.email).should == true
-        email.body.include?(@content.authors).should == true
-        email.body.include?(@content.authoremail).should == true
-        email.to[0].should == ModerationMailer::MODERATION_EMAIL_RECIPIENT
+        expect(ModerationMailer.deliveries.present?).to eq(true)
+        expect(email.body.include?(@flagging_user.name)).to eq(true)
+        expect(email.body.include?(@flagging_user.email)).to eq(true)
+        expect(email.body.include?(@content.authors)).to eq(true)
+        expect(email.body.include?(@content.authoremail)).to eq(true)
+        expect(email.to[0]).to eq(ModerationMailer::MODERATION_EMAIL_RECIPIENT)
       end
 
       it "generates the proper content type edit link" do

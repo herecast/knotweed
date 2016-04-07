@@ -14,7 +14,7 @@
 
 require 'spec_helper'
 
-describe Schedule do
+describe Schedule, :type => :model do
   describe 'after_save :update_event_instances' do
 
     describe 'on creation' do
@@ -38,7 +38,7 @@ describe Schedule do
       it 'should associate the new event_instances with the schedule and the event' do
         subject
         sched = Schedule.last
-        sched.event_instances.count.should eq(@recurrence.all_occurrences.count)
+        expect(sched.event_instances.count).to eq(@recurrence.all_occurrences.count)
       end
     end
 
@@ -93,9 +93,9 @@ describe Schedule do
         subject
         @schedule.reload
         example_instance = @schedule.event_instances.first
-        example_instance.presenter_name.should eq @schedule.presenter_name
-        example_instance.subtitle_override.should eq @schedule.subtitle_override
-        example_instance.description_override.should eq @schedule.description_override
+        expect(example_instance.presenter_name).to eq @schedule.presenter_name
+        expect(example_instance.subtitle_override).to eq @schedule.subtitle_override
+        expect(example_instance.description_override).to eq @schedule.description_override
       end
     end
 
@@ -109,7 +109,7 @@ describe Schedule do
 
       it 'should create event instances with the correct end_date based on duration parameter' do
        @schedule.event_instances.each do |ei|
-         ei.end_date.should eq(ei.start_date + @duration)
+         expect(ei.end_date).to eq(ei.start_date + @duration)
        end
       end
 
@@ -126,7 +126,7 @@ describe Schedule do
         it 'should update the end_date of all associated event instances' do
           subject
           @schedule.event_instances.each do |ei|
-            ei.end_date.should eq (ei.start_date + @new_duration)
+            expect(ei.end_date).to eq (ei.start_date + @new_duration)
           end
         end
       end
@@ -154,12 +154,12 @@ describe Schedule do
       end
 
       it 'should start with the right number of event instances' do
-        @schedule.reload.event_instances.count.should eq(25)
+        expect(@schedule.reload.event_instances.count).to eq(25)
       end
 
       it 'should remove an event_instance if an exception is added' do
         @schedule.add_exception_time!(Chronic.parse('today at 4pm'))
-        @schedule.reload.event_instances.count.should eq 24
+        expect(@schedule.reload.event_instances.count).to eq 24
       end
     end
   end
@@ -173,12 +173,12 @@ describe Schedule do
     subject! { @schedule.add_recurrence_rule!(@rule) }
 
     it 'should add and persist an IceCube recurrence rule' do
-      @schedule.schedule.recurrence_rules.should include(@rule)
+      expect(@schedule.schedule.recurrence_rules).to include(@rule)
     end
 
     describe 'should trigger update_event_instances' do
       it 'should create event_instances for the schedule' do
-        EventInstance.where(schedule_id: @schedule.id).count.should eq 8
+        expect(EventInstance.where(schedule_id: @schedule.id).count).to eq 8
       end
     end
   end
@@ -193,12 +193,12 @@ describe Schedule do
     subject! { @schedule.add_exception_time!(@exception_time) }
 
     it 'should add and persist an IceCube exception time' do
-      @schedule.schedule.exception_times.should include(@exception_time)
+      expect(@schedule.schedule.exception_times).to include(@exception_time)
     end
 
     it 'should remove the excepted event instance' do
-      EventInstance.where(schedule_id: @schedule.id).map{ |ei| ei.start_date.to_i}.should_not include(@exception_time.to_i)
-      EventInstance.where(schedule_id: @schedule.id).count.should eq(@original_count - 1)
+      expect(EventInstance.where(schedule_id: @schedule.id).map{ |ei| ei.start_date.to_i}).not_to include(@exception_time.to_i)
+      expect(EventInstance.where(schedule_id: @schedule.id).count).to eq(@original_count - 1)
     end
   end
 
@@ -214,29 +214,29 @@ describe Schedule do
     end
 
     it 'should be valid' do
-      @schedule.should be_valid
+      expect(@schedule).to be_valid
     end
 
     it 'should have the expected start_time' do
-      @schedule.schedule.start_time.should eq Chronic.parse('2015-12-01T14:00:00.000Z')
+      expect(@schedule.schedule.start_time).to eq Chronic.parse('2015-12-01T14:00:00.000Z')
     end
 
     it 'should have the expected end_time' do
       # we take the time passed as "ends_at" and use that to calculate a duration 
       # with (ends_at - starts_at).abs, then create the schedule with that duration.
       # which should set the end_time to duration > start_time
-      @schedule.schedule.end_time.should eq @schedule.schedule.start_time + 1.hour
+      expect(@schedule.schedule.end_time).to eq @schedule.schedule.start_time + 1.hour
     end
 
     it 'should have the expected recurrence rules' do
       # if you just pass the UTC time in, the rule is different because of the way IceCube handles timezone info
       rule = IceCube::Rule.weekly.day(1,4).until(Time.zone.at('2015-12-31T15:00:00.000Z'.to_time.end_of_day))
-      @schedule.schedule.recurrence_rules.should eq [rule]
+      expect(@schedule.schedule.recurrence_rules).to eq [rule]
     end
 
     it 'should have the expected exception times' do
       times = [Chronic.parse('2015-12-14T14:00:00.000Z'), Chronic.parse('2015-12-28T14:00:00.000Z')]
-      @schedule.schedule.exception_times.should eq times
+      expect(@schedule.schedule.exception_times).to eq times
     end
 
     context 'when passed _remove for an existing schedule' do
@@ -248,7 +248,7 @@ describe Schedule do
       subject { Schedule.build_from_ux_for_event(@remove_input, @event.id) }
 
       it 'should set the _remove transient attribute to true' do
-        expect{subject._remove}.to be_true
+        expect{subject._remove}.to be_truthy
       end
     end
 
@@ -310,7 +310,7 @@ describe Schedule do
     rules_and_outputs.each do |type, specifics|
       it "should generate the correct hash response for a #{type} recurrence" do
         @schedule.schedule = IceCube::Schedule.new(@start_time, end_time: @end_time){ |s| s.add_recurrence_rule specifics[:rule] }
-        output.should eq(specifics[:repeats_fields].merge(@basic_response))
+        expect(output).to eq(specifics[:repeats_fields].merge(@basic_response))
       end
     end
 
@@ -324,10 +324,10 @@ describe Schedule do
       end
 
       it 'should include the appropriate array of overrides' do
-        output[:overrides].should be_present
-        output[:overrides].count.should eq 2
+        expect(output[:overrides]).to be_present
+        expect(output[:overrides].count).to eq 2
         output[:overrides].each do |o|
-          o[:hidden].should be_true
+          expect(o[:hidden]).to be_truthy
         end
       end
     end
@@ -342,17 +342,17 @@ describe Schedule do
     end
 
     it 'should create a new schedule associated with the same event' do
-      @event.schedules.should eq([@schedule])
+      expect(@event.schedules).to eq([@schedule])
     end
 
     it 'should correctly define the single occurrence of the schedule' do
-      @schedule.schedule.all_occurrences.should eq [@ei.start_date]
+      expect(@schedule.schedule.all_occurrences).to eq [@ei.start_date]
     end
 
     it 'should correctly associate the event instance with the new schedule' do
-      @schedule.event_instances.should eq [@ei]
-      @ei.schedule.should eq @schedule
-      EventInstance.where(event_id: @event.id).should eq [@ei]
+      expect(@schedule.event_instances).to eq [@ei]
+      expect(@ei.schedule).to eq @schedule
+      expect(EventInstance.where(event_id: @event.id)).to eq [@ei]
     end
   end
       
@@ -367,13 +367,13 @@ describe Schedule do
       end
 
       it 'should have the expected fields' do
-        @ics.should match /VEVENT/
-        @ics.should match /DTSTART/
-        @ics.should match /DTEND/
-        @ics.should match "SUMMARY:#{@schedule.event.title}: #{@subtitle_override}"
-        @ics.should match /RRULE/
-        @ics.should match /RDATE/
-        @ics.should match /EXDATE/
+        expect(@ics).to match /VEVENT/
+        expect(@ics).to match /DTSTART/
+        expect(@ics).to match /DTEND/
+        expect(@ics).to match "SUMMARY:#{@schedule.event.title}: #{@subtitle_override}"
+        expect(@ics).to match /RRULE/
+        expect(@ics).to match /RDATE/
+        expect(@ics).to match /EXDATE/
       end
     end
 
@@ -386,12 +386,12 @@ describe Schedule do
       end
 
       it 'should have the expected fields' do
-        @ics.should match /VEVENT/
-        @ics.should match /DTSTART/
-        @ics.should match /DTEND/
-        @ics.should match "DESCRIPTION:#{@schedule.event.description}"
-        @ics.should match /RRULE/
-        @ics.should match "LOCATION:#{@venue.name}"
+        expect(@ics).to match /VEVENT/
+        expect(@ics).to match /DTSTART/
+        expect(@ics).to match /DTEND/
+        expect(@ics).to match "DESCRIPTION:#{@schedule.event.description}"
+        expect(@ics).to match /RRULE/
+        expect(@ics).to match "LOCATION:#{@venue.name}"
       end
     end
   end
