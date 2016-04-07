@@ -248,7 +248,7 @@ describe Schedule, :type => :model do
       subject { Schedule.build_from_ux_for_event(@remove_input, @event.id) }
 
       it 'should set the _remove transient attribute to true' do
-        expect{subject._remove}.to be_truthy
+        expect(subject._remove).to be_truthy
       end
     end
 
