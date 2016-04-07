@@ -57,6 +57,170 @@ describe Content do
 
   include_examples 'Auditable', Content
 
+  describe '#update_category_from_annotations' do
+    let (:new_category) { 'RandomCategory' }
+
+    context 'Given CATEGORY' do
+      let(:annotations) do
+        { 'document-parts' => 
+          { 'feature-set' => [
+            { 'name' =>
+              { 'name' => 'CATEGORY' },
+              'value' =>
+                { 'value' => new_category }
+            }]
+          }            
+        }  
+      end
+
+      it 'should update content_category' do
+        subject.update_category_from_annotations(annotations)
+        expect(subject.content_category.name).to eq new_category
+      end
+    end
+
+    context 'Given CATEGORIES without CATEGORY' do
+      let(:annotations) do
+        { 'document-parts' => 
+          { 'feature-set' => [
+            { 'name' =>
+              { 'name' => 'CATEGORIES' },
+              'value' =>
+                { 'value' => new_category }
+            }]
+          }            
+        }  
+      end
+
+      it 'should update content_category' do
+        subject.update_category_from_annotations(annotations)
+        expect(subject.content_category.name).to eq new_category
+      end
+    end
+
+    context 'Given CATEGORIES with CATEGORY' do
+      let (:other_category) { 'MarksManQuail' }
+      let(:annotations) do
+        { 'document-parts' => 
+          { 'feature-set' => [
+            { 'name' =>
+              { 'name' => 'CATEGORIES' },
+              'value' =>
+                { 'value' => new_category }
+            },
+
+            { 'name' =>
+              { 'name' => 'CATEGORY' },
+              'value' =>
+                { 'value' => other_category }
+            }]
+          }            
+        }  
+      end
+
+      it 'CATEGORY should win over CATEGORIES' do
+        subject.update_category_from_annotations(annotations)
+        expect(subject.content_category.name).to eq other_category
+      end
+    end
+  end
+
+  describe '#create_recommendation_doc_from_annotations' do
+    let (:annotations) { {'id' => '1', 'annotation-sets' => []}  } 
+    before do
+      subject.update_attribute :pubdate, Date.today
+    end
+    it 'should return an array of hash' do
+      result = subject.create_recommendation_doc_from_annotations(annotations).pop
+      expect(result[:id]).to eq '1'
+      expect(result[:published]).to_not be_nil
+    end
+  end
+
+  describe '#published?' do
+    context 'Given a repo' do
+      let(:repo) { FactoryGirl.create :repository }
+
+      context 'When has repo' do
+        before do
+          subject.repositories << repo
+        end
+
+        it 'is true' do
+          expect(subject.published?(repo)).to be_true
+        end
+      end
+
+      context 'When does not have repo' do
+        before do
+          subject.repositories = []
+        end
+
+        it 'is false' do
+          expect(subject.published?(repo)).to be_false
+        end
+      end
+    end
+
+    context 'When no repositories' do
+      before do
+        subject.repositories = []
+      end
+
+      it 'is false' do
+        expect(subject.published?).to be_false
+      end
+    end
+
+    context 'When in repositories' do
+      before do
+        subject.repositories << FactoryGirl.create(:repository)
+      end
+
+      it 'is false' do
+        expect(subject.published?).to be_true
+      end
+    end
+  end
+
+  describe '#location' do
+    context 'when #import_location nil' do
+      before do
+        allow(subject).to receive(:import_location).and_return(nil)
+      end
+
+      it 'is nil' do
+        expect(subject.location).to be_nil
+      end
+    end
+
+    context 'when #import_location exists' do
+      before do
+        subject.import_location = ImportLocation.new(city: "New York")
+      end
+
+      context 'when #import_location is in review status' do
+        before do
+          subject.import_location.status = ImportLocation::STATUS_REVIEW
+        end
+
+        it 'is nil' do
+          expect(subject.location).to be_nil
+        end
+      end
+
+      context 'when #import_location is in good status' do
+        before do
+          subject.import_location.status = ImportLocation::STATUS_GOOD
+        end
+
+        it 'is #import_location.city' do
+          expect(subject.location).to eql subject.import_location.city
+        end
+      end
+    end
+  end
+
   describe 'default sphinx scope' do
     before do
       @draft = FactoryGirl.create :content, pubdate: nil
@@ -215,10 +379,6 @@ describe Content do
       google_logo5_stub
     end
 
-    after do
-      FileUtils.rm_rf('./public/content')
-    end
-        
     it "should create a new content with basic data passed by hash" do
       Content.count.should== 0
       content = Content.create_from_import_job(@base_data)
@@ -604,6 +764,35 @@ describe Content do
     end
   end
 
+  describe '#create_or_update_image' do
+    subject { FactoryGirl.create :content }
+    let(:image_url) { "https://www.google.com/images/srpr/logo11w.png" }
+    before do
+      google_logo_stub
+    end
+
+    context 'when image url already exist on record' do
+      it 'updates existing image with the given url' do
+        image = subject.create_or_update_image(image_url, "","")
+        updated = subject.create_or_update_image(image_url, "New Caption", "")
+        expect(updated.id).to eql image.id
+
+        image.reload
+        expect(image.caption).to eql 'New Caption'
+      end
+    end
+
+    context 'primary' do
+      it 'sets primary image to this image' do
+        expect(subject.primary_image).to be_nil
+        image = subject.create_or_update_image(image_url, "","", true)
+        subject.reload
+        expect(subject.primary_image).to_not be_nil
+        expect(subject.primary_image).to eql image
+      end
+    end
+  end
+
   describe "set guid if not present" do
     it "should set the guid of new content that has none" do
       content = FactoryGirl.create(:content)
@@ -850,9 +1039,6 @@ describe Content do
     before do
       @content = FactoryGirl.create(:content)
     end
-    after do
-      FileUtils.rm_rf('./public/promotion')
-    end
 
     it "should return false if there are no promotions" do
       @content.has_active_promotion?.should == false
@@ -867,10 +1053,58 @@ describe Content do
 
     it "should return true if there is an active promotion banner attached" do
       p = FactoryGirl.create :promotion, active: true, content: @content
-      promotion_banner = FactoryGirl.create :promotion_banner, promotion: p
+      promotion_banner = FactoryGirl.create :promotion_banner, {
+        promotion: p,
+        campaign_end: 1.week.from_now
+      }
+
       @content.has_active_promotion?.should == true
     end
 
+  end
+
+  describe '#has_promotion_inventory?' do
+    subject { FactoryGirl.create(:content) }
+
+    context 'when related promotion banners have inventory' do
+      before do
+        p = FactoryGirl.create :promotion, active: true, content: subject
+        FactoryGirl.create :promotion_banner, impression_count: 100, promotion: p
+      end
+      it 'returns true' do
+        expect(subject.has_promotion_inventory?).to be_true
+      end
+    end
+  end
+
+  describe '#has_active_promotion' do
+    it 'is an alias for #has_active_promotion?' do
+      expect(subject).to receive(:has_active_promotion?)
+      subject.has_active_promotion
+    end
+  end
+
+  describe '#has_paid_promotion' do
+    it 'is an alias for #has_paid_promotion?' do
+      expect(subject).to receive(:has_paid_promotion?)
+      subject.has_paid_promotion
+    end
+  end
+
+  describe '#has_promotion_inventory' do
+    it 'is an alias for #has_promotion_inventory?' do
+      expect(subject).to receive(:has_promotion_inventory?)
+      subject.has_promotion_inventory
+    end
+  end
+
+  describe '#rdf_to_gate' do
+    subject { FactoryGirl.create :content }
+    let(:repository) { FactoryGirl.build :repository }
+    it 'passes id and repository argument to OntotextController' do
+      expect(OntotextController).to receive(:rdf_to_gate).with(subject.id, repository)
+      subject.rdf_to_gate(repository)
+    end
   end
 
   describe "update_from_repo" do
@@ -1081,6 +1315,24 @@ describe Content do
         raw_content = File.read input_file
         content = FactoryGirl.create :content , raw_content: raw_content
         content.sanitized_content.should eq File.read(output_file).chomp  
+      end
+    end
+  end
+
+  describe '#remove_boilerplate' do
+    input_files = Dir['spec/fixtures/sanitized_content/*_input']
+    let!(:blacklisted_content) {File.readlines(Rails.root.join('lib', 'content_blacklist.txt'))}
+    input_files.each do |input_file|
+      context "from #{input_file}" do
+        it 'strips blacklisted content' do
+          raw_content = File.read input_file
+          content = FactoryGirl.create :content , raw_content: raw_content
+          bp_removed = content.remove_boilerplate
+
+          blacklisted_content.each do |blc|
+            expect(bp_removed).to_not include(blc)
+          end
+        end
       end
     end
   end
@@ -1324,6 +1576,115 @@ describe Content do
     it 'should automatically strip the title attribute' do
       c = FactoryGirl.create :content, title: '   This has Whitespace at Beginning And End  '
       c.title.should eq c.title.strip
+    end
+  end
+
+  describe '#ux2_uri' do
+    context 'No root content category' do
+      before do
+        subject.root_content_category = nil
+      end
+
+      it 'is ""' do
+        expect(subject.ux2_uri).to eql ""
+      end
+    end
+
+    context 'root content category' do
+      let(:category) { FactoryGirl.create :content_category }
+      before do
+        subject.root_content_category = category
+      end
+
+      it 'is "/{root_content_category.name}/{id}"' do
+        expect(subject.ux2_uri).to eql "/#{category.name}/#{subject.id}"
+      end
+    end
+  end
+
+  describe 'sanitized_content=' do
+    it 'sets raw_content' do
+      content = 'Test Content'
+      expect(subject).to receive(:raw_content=).with(content)
+      subject.sanitized_content= content
+    end
+  end
+
+  describe 'get_related_promotion' do
+    let(:content) { FactoryGirl.create(:content) }
+    let(:promo_banner) { FactoryGirl.create(:promotion_banner) }
+    let(:repo) { FactoryGirl.build :repository }
+
+    before do
+      FactoryGirl.create(:promotion, content: content, promotable: promo_banner)
+    end
+
+    context 'when SPARQL will return results based on similarity' do
+      let(:score) { "9" }
+
+      before do
+        mock_data = {
+            score: score
+        }
+        allow(mock_data).to receive(:uid).and_return("/some/path/#{content.id}")
+        allow_any_instance_of(SPARQL::Client).to receive(:query).and_return([mock_data])
+      end
+
+      context 'and promotion banner has inventory' do
+        before do
+          promo_banner.update_attributes({
+            max_impressions: nil,
+            daily_max_impressions: nil
+          })
+        end
+
+        it 'will return results for one of the promotion banners' do
+          result_banner, result_score, result_type = content.get_related_promotion(repo)
+          expect(result_banner).to eql promo_banner
+          expect(result_score).to eql score
+          expect(result_type).to eql 'relevance'
+        end
+      end
+    end
+
+    context 'When banner does not have inventory' do
+      before do
+        promo_banner.update_attributes({
+          max_impressions: 10,
+          impression_count: 10
+        })
+      end
+      context 'when sparql does not return anything' do
+        before do
+          allow_any_instance_of(SPARQL::Client).to receive(:query).and_return([])
+        end
+
+        context 'when no paid banners exist' do
+          before do
+            Promotion.update_all(paid: false)
+          end
+
+          it 'returns the first active banner' do
+            result_banner, result_score, result_type = content.get_related_promotion(repo)
+            expect(result_banner).to eql PromotionBanner.active.first
+            expect(result_type).to eql 'active no inventory'
+          end
+
+          context 'when banner is not active' do
+            before do
+              promo_banner.update_attributes({
+                campaign_start: 1.month.ago,
+                campaign_end: 1.week.ago
+              })
+            end
+
+            it 'does not return the banner' do
+              result_banner, result_score, result_type = content.get_related_promotion(repo)
+              expect(result_banner).to be nil
+            end
+          end
+        end
+      end
     end
   end
 
