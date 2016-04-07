@@ -45,28 +45,29 @@ class PromotionBanner < ActiveRecord::Base
   # this scope combines all conditions to determine whether a promotion banner is active
   # NOTE: we need the select clause or else the "joins" causes the scope to return 
   # readonly records.
-  scope :active, includes(:promotion)
+  scope :active, -> { includes(:promotion)
     .where('campaign_start <= ?', DateTime.now)
-    .where('campaign_end >= ?', DateTime.now)
+    .where('campaign_end >= ?', DateTime.now).references(:promotion) }
 
   # this scope combines all conditions to determine whether a promotion banner is paid
   # NOTE: for now, we're just concerned with 'paid' and 'active' being true - will eventually
   # other conditions (campaign start/end, inventory)
-  scope :paid, includes(:promotion)
-    .where('promotions.paid = ?', true)
+  scope :paid, -> { includes(:promotion)
+    .where('promotions.paid = ?', true).references(:promotion) }
 
  # this scope combines all conditions to determine whether a promotion banner has inventory
   # NOTE: we need the select clause or else the "joins" causes the scope to return
   # readonly records.
-  scope :has_inventory, includes(:promotion)
+  scope :has_inventory, -> { includes(:promotion)
     .where('(impression_count < max_impressions OR max_impressions IS NULL)')
     .where('(daily_impression_count < daily_max_impressions OR daily_max_impressions IS NULL)')
+    .references(:promotion) }
 
  # this scope combines all conditions to determine whether a promotion banner is boosted
   # NOTE: we need the select clause or else the "joins" causes the scope to return
   # readonly records.
-  scope :boost, includes(:promotion)
-    .where('boost = ?', true)
+  scope :boost, -> { includes(:promotion)
+    .where('boost = ?', true) }
 
   # query promotion banners by content
   scope :for_content, lambda { |content_id| joins(:promotion).where('promotions.content_id = ?', content_id) }

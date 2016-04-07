@@ -11,7 +11,7 @@ class Ability
     elsif user.has_role? :event_manager
       can :access, :dashboard
       # give access only to event category contents
-      event_category = ContentCategory.find_or_create_by_name("event")
+      event_category = ContentCategory.find_or_create_by(name: "event")
       can :manage, Content, content_category_id: event_category.id
       can :manage, BusinessLocation # for event venues
       can :manage, Content, created_by: user

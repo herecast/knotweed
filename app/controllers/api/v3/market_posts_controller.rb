@@ -46,7 +46,7 @@ module Api
         if params[:market_post][:organization_id].present?
           org_id = params[:market_post].delete :organization_id
         else
-          org_id = Organization.find_or_create_by_name('DailyUV').id
+          org_id = Organization.find_or_create_by(name: 'DailyUV').id
         end
 
         location_ids = [@current_api_user.location_id]

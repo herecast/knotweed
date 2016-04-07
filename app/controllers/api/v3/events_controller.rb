@@ -53,7 +53,7 @@ module Api
         if params[:event][:organization_id].present?
           org_id = params[:event].delete :organization_id
         else
-          org_id = Organization.find_or_create_by_name('DailyUV').id
+          org_id = Organization.find_or_create_by(name: 'DailyUV').id
         end
 
         schedule_data = params[:event].delete :schedules
@@ -121,7 +121,7 @@ module Api
           # NOTE: these attributes are here because they can't change on update
           new_e[:content_attributes].merge!({
             pubdate: Time.zone.now,
-            content_category_id: ContentCategory.find_or_create_by_name('event').id,
+            content_category_id: ContentCategory.find_or_create_by(name: 'event').id,
             authoremail: @current_api_user.try(:email),
             authors: @current_api_user.try(:name)
           })

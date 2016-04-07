@@ -42,11 +42,11 @@ module Api
         if params[:talk][:organization_id].present?
           org_id = params[:talk].delete :organization_id
         else
-          org_id = Organization.find_or_create_by_name('DailyUV').id
+          org_id = Organization.find_or_create_by(name: 'DailyUV').id
         end
 
         # hard code category
-        cat = ContentCategory.find_or_create_by_name 'talk_of_the_town'
+        cat = ContentCategory.find_or_create_by(name: 'talk_of_the_town')
 
         listserv_id = params[:talk].delete :listserv_id
         
