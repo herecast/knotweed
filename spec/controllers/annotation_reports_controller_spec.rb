@@ -1,12 +1,30 @@
 require 'spec_helper'
 
-describe AnnotationReportsController do
+describe AnnotationReportsController, type: :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
   end
 
-  describe 'GET /annotation_reports/:id/edit' do
+  describe 'POST #create' do
+    before do
+      @repository = FactoryGirl.create :repository
+      @content = FactoryGirl.create :content
+      @data = { content_id: @content.id, repository_id: @repository.id }
+    end
+
+    subject { post :create, @data }
+
+    context "when annotation report is created" do
+      it "should respond with 200 status code" do
+        hash = { "annotation-sets" => [{ "annotation" => [] }] }.to_json
+        OntotextController.stub(:get_annotations) { '{ "results": { "bindings": [{ "annotation": { "value": "' + hash + '" } }] } }' }
+        subject
+      end
+    end
+  end
+
+  describe 'GET #edit' do
     before do
       @annotation_report = FactoryGirl.create :annotation_report
     end
@@ -15,11 +33,11 @@ describe AnnotationReportsController do
 
     it "should respond with 200 status code" do
       subject
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 
-  describe 'GET /annotation_reports/:id/table_row' do
+  describe 'GET #table_row' do
     before do
       @annotation_report = FactoryGirl.create :annotation_report
     end
@@ -28,11 +46,11 @@ describe AnnotationReportsController do
 
     it "shoud respond with 200 status code" do
       subject
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 
-  describe 'DELETE /annotation_reports/:id' do
+  describe 'DELETE #destroy' do
     before do
       @annotation_report = FactoryGirl.create :annotation_report
     end
@@ -44,7 +62,7 @@ describe AnnotationReportsController do
     end
   end
 
-  describe 'GET /annotation_reports/export/:content_id' do
+  describe 'GET #export' do
     before do
       @annotation_report = FactoryGirl.create :annotation_report
     end
@@ -53,7 +71,7 @@ describe AnnotationReportsController do
 
     it "should respond with 200 status code" do
       subject
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 end

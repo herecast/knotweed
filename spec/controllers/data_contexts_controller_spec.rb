@@ -6,7 +6,7 @@ describe DataContextsController do
     sign_in @user
   end
 
-  describe 'GET /data_contexts' do
+  describe 'GET #index' do
     context "when reset is true" do
 
       subject { get :index, reset: "Reset" }
@@ -21,14 +21,18 @@ describe DataContextsController do
 
     context "when query present" do
       it 'returns Loaded data contexts' do
+        data_context = FactoryGirl.create :data_context, loaded: true
         get :index, { q: { "context_cont" => 'MyString' }, status: "Loaded" }
         expect(assigns(:search)).to be_a Ransack::Search
+        expect(assigns(:data_contexts)).to eq [data_context]
         response.code.should eq '200'
       end
 
       it "returns Unloaded data contexts" do
+        data_context = FactoryGirl.create :data_context
         get :index, { q: { "context_cont" => 'MyString' }, status: "Unloaded" }
         expect(assigns(:search)).to be_a Ransack::Search
+        expect(assigns(:data_contexts)).to eq [data_context]
         response.code.should eq '200'
       end
 
@@ -40,7 +44,7 @@ describe DataContextsController do
     end
   end
 
-  describe 'GET /data_contexts/:id/edit' do
+  describe 'GET #edit' do
     before do
       @data_context = FactoryGirl.create :data_context
     end
@@ -53,7 +57,7 @@ describe DataContextsController do
     end
   end
 
-  describe 'PUT /data_contexts/:id' do
+  describe 'PUT #update' do
     before do
       @data_contexts = FactoryGirl.create :data_context, context: 'old context'
     end
@@ -77,7 +81,7 @@ describe DataContextsController do
     end
   end
 
-  describe 'GET /data_contexts/new' do
+  describe 'GET #new' do
     before do
       @data_context = FactoryGirl.create :data_context
     end
@@ -90,7 +94,7 @@ describe DataContextsController do
     end
   end
 
-  describe 'POST /data_contexts' do
+  describe 'POST #create' do
 
     subject { post :create, { data_context: { context: 'new dc' } } }
 
