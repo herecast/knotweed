@@ -51,7 +51,6 @@ class ContentSetsController < ApplicationController
         redirect_to content_sets_path
       end
     else
-      puts @content_set.errors.messages
       render "new"
     end
   end
