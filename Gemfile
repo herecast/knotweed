@@ -2,19 +2,19 @@ source 'https://rubygems.org'
 
 ruby '2.0.0'
 gem 'rails', '~> 4.0'
-gem 'protected_attributes'
-gem 'sass-rails'
-gem 'coffee-rails'
+gem 'protected_attributes', '~> 1.1.3'
+gem 'sass-rails', '~> 5.0.4'
+gem 'coffee-rails', '~> 4.1.1'
 gem 'uglifier', '~> 2.4.0'
 gem 'compass-rails', '~> 1.1.3'
 gem 'jquery-rails', '~> 3.1.2'
 gem "mysql2", '~> 0.3.14'
 gem "haml-rails", "~> 0.4"
 gem "database_cleaner", "~> 1.2.0", :group => :test
-gem "devise", "~> 3.2.2"
-gem 'cancancan'
-gem "rolify"
-gem "simple_form"
+gem "devise", '~> 3.5.6'
+gem 'cancancan', '~> 1.13.1'
+gem "rolify", '~> 5.1.0'
+gem "simple_form", '~> 3.2.1'
 gem "quiet_assets", "~> 1.0.2", :group => :development
 gem "capistrano", "~> 3.1.0"
 gem "capistrano-bundler", "~> 1.1.1"
@@ -50,7 +50,7 @@ gem 'carrierwave-mimetype-fu', '~> 0.0.2'
 gem "figaro", '~> 0.7.0'
 
 
-gem 'jquery-datatables-rails'
+gem 'jquery-datatables-rails', '~> 3.4.0'
 
 gem 'delayed_job_active_record', '~> 4.0.0'
 gem 'daemons', '~> 1.1.9'

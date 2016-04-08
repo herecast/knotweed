@@ -29,9 +29,17 @@ class RegistrationsController < Devise::RegistrationsController
 
   private
 
-     def set_consumer_app_in_thread
-       if request.headers['Consumer-App-Uri'].present?
-         ConsumerApp.current = ConsumerApp.find_by_uri(request.headers['Consumer-App-Uri'])
-       end
+  def sign_up_params
+    params.require(:user).permit(:name, :email, :location_id, :password, :password_confirmation)
+  end
+
+  def account_update_params
+    params.require(:user).permit(:name, :email, :location_id, :password, :password_confirmation)
+  end
+
+   def set_consumer_app_in_thread
+     if request.headers['Consumer-App-Uri'].present?
+       ConsumerApp.current = ConsumerApp.find_by_uri(request.headers['Consumer-App-Uri'])
      end
+   end
 end

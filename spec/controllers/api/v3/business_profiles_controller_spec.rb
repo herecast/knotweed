@@ -24,7 +24,7 @@ describe Api::V3::BusinessProfilesController do
 
     it 'loads the business profiles' do
       subject
-      assigns(:business_profiles).should eq @bps
+      assigns(:business_profiles).should eql(@bps)
     end
 
     describe "Sorting" do
@@ -83,7 +83,7 @@ describe Api::V3::BusinessProfilesController do
 
       it 'should return matches' do
         subject
-        assigns(:business_profiles).should eq [@result]
+        assigns(:business_profiles).should eql [@result]
       end
 
       describe 'by category_id' do
@@ -95,7 +95,7 @@ describe Api::V3::BusinessProfilesController do
 
         it 'should return filtered results' do
           get :index, category_id: @cat.id
-          assigns(:business_profiles).should eq [@bps.first]
+          assigns(:business_profiles).should eql [@bps.first]
         end
       end
 
@@ -119,7 +119,7 @@ describe Api::V3::BusinessProfilesController do
             # radius is measured in meters) we can't just set this to 0.1 or something. 100 seems to work.
             # It's theoretically possible that this could return another randomly located result, but the odds
             # of that are very very low.
-          assigns(:business_profiles).should eq [bp]
+          assigns(:business_profiles).should eql [bp]
         end
 
       end

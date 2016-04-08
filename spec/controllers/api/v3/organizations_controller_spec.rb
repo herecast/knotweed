@@ -32,7 +32,7 @@ describe Api::V3::OrganizationsController do
 
     it 'filters by consumer app if requesting app is available' do
       get :index, format: :json, consumer_app_uri: @consumer_app.uri
-      assigns(:organizations).should eq([@organization])
+      assigns(:organizations).should eql([@organization])
     end
 
     describe 'with a list of organization ids' do

@@ -60,7 +60,7 @@ describe Api::V3::MarketPostsController do
 
       it 'should return matching content' do
         subject
-        assigns(:market_posts).should eq [@content]
+        assigns(:market_posts).should eql [@content]
       end
     end
 
@@ -75,7 +75,7 @@ describe Api::V3::MarketPostsController do
 
       it 'should filter results by consumer app\'s organizations' do
         subject
-        assigns(:market_posts).should eq([@content])
+        assigns(:market_posts).should eql([@content])
       end
     end
 
