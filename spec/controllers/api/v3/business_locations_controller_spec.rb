@@ -31,7 +31,7 @@ describe Api::V3::BusinessLocationsController do
 
       it 'should respond with the matching business location' do
         subject
-        assigns(:venues).should eq [@bl]
+        assigns(:venues).should eql [@bl]
       end
 
       context 'with autocomplete' do

@@ -42,7 +42,7 @@ describe Api::V3::LocationsController do
       
       it 'should return consumer active search results' do
         get :index, query: 'search'
-        expect(assigns(:locations)).to eq([@loc1])
+        expect(assigns(:locations)).to eql([@loc1])
       end
 
       it 'should not return search results that are not consumer active' do

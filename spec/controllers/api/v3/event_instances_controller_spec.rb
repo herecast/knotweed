@@ -134,19 +134,19 @@ describe Api::V3::EventInstancesController do
       describe 'start_date' do
         it 'should search with start_date=today if no date_start is passed' do
           get :index
-          assigns(:event_instances).should eq([@e_less_future, @e_future])
+          assigns(:event_instances).should eql([@e_less_future, @e_future])
         end
 
         it 'should search by start date if it is passed' do
           get :index, date_start: 1.week.ago
-          assigns(:event_instances).should eq([@e_past, @e_less_future, @e_future])
+          assigns(:event_instances).should eql([@e_past, @e_less_future, @e_future])
         end
       end
 
       describe 'end_date' do
         it 'should limit results by the passed date_end' do
           get :index, date_end: 2.days.from_now
-          assigns(:event_instances).should eq([@e_less_future])
+          assigns(:event_instances).should eql([@e_less_future])
         end
       end
     end
@@ -162,12 +162,12 @@ describe Api::V3::EventInstancesController do
 
       it 'should return results matching the category' do
         get :index, category: 'movies'
-        assigns(:event_instances).should eq([@movie])
+        assigns(:event_instances).should eql([@movie])
       end
 
       it 'should ignore category params that aren\'t whitelisted in Event::EVENT_CATEGORIES' do
         get :index, category: 'FAKE CATEGORY'
-        assigns(:event_instances).should eq([@movie, @wellness])
+        assigns(:event_instances).should eql([@movie, @wellness])
       end
     end
 
@@ -185,7 +185,7 @@ describe Api::V3::EventInstancesController do
 
       it 'should search using matched city name and any child locations\' names' do
         get :index, location: @parent_loc.city
-        assigns(:event_instances).should eq([@event])
+        assigns(:event_instances).should eql([@event])
       end
 
       it 'should return no results searching for a location with no events' do
@@ -203,7 +203,7 @@ describe Api::V3::EventInstancesController do
 
       it 'should return paginated results' do
         get :index, per_page: @count - 1
-        assigns(:event_instances).count.should eq(@count -1)
+        assigns(:event_instances).length.should eq(@count -1)
       end
     end
   end

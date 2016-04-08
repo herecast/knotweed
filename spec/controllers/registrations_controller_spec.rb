@@ -5,20 +5,19 @@ require 'spec_helper'
 describe RegistrationsController do
   before do
     @request.env["devise.mapping"] = Devise.mappings[:user]
+    user = FactoryGirl.build :user
+    @user_attributes = {
+      name: user.name,
+      location_id: user.location.id,
+      email: user.email,
+      password: user.password,
+      password_confirmation: user.password
+    }
   end
 
   describe 'POST create' do
-
     context 'with format JSON' do
       before(:each) do
-        user = FactoryGirl.build :user
-        @user_attributes = {
-          name: user.name,
-          location_id: user.location.id,
-          email: user.email,
-          password: user.password,
-          password_confirmation: user.password
-        }
       end
 
       subject{ post :create, format: :json, user: @user_attributes }
@@ -64,25 +63,13 @@ describe RegistrationsController do
 
     context 'mailer tests' do
       before do
-        user = FactoryGirl.build :user
-        @user_attributes = {
-          name: user.name,
-          location_id: user.location.id,
-          email: user.email,
-          password: user.password,
-          password_confirmation: user.password
-        }
         @consumer_app = FactoryGirl.create :consumer_app
+        api_authenticate consumer_app: @consumer_app
       end
       
-      subject! do 
-        request.env['Consumer-App-Uri'] = @consumer_app.uri
-        post :create, format: :json, user: @user_attributes
-      end
+      subject! { post :create, format: :json, user: @user_attributes }
       
-      def mail
-        @mail ||= ActionMailer::Base.deliveries.last
-      end
+      let(:mail) { ActionMailer::Base.deliveries.last }
       
       it 'should be sent to the correct user' do
         mail.to.should eq [@user_attributes[:email]]
