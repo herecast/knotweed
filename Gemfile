@@ -6,7 +6,7 @@ gem 'protected_attributes', '~> 1.1.3'
 gem 'sass-rails', '~> 5.0.4'
 gem 'coffee-rails', '~> 4.1.1'
 gem 'uglifier', '~> 2.4.0'
-gem 'compass-rails', '~> 1.1.3'
+gem 'compass-rails', '~> 3.0.2'
 gem 'jquery-rails', '~> 3.1.2'
 gem "mysql2", '~> 0.3.14'
 gem "haml-rails", "~> 0.4"
