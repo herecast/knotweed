@@ -11,7 +11,7 @@ describe DashboardController do
 
     it 'should respond with 200 status code' do
       subject
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 
@@ -31,26 +31,26 @@ describe DashboardController do
     let(:time_frame) { nil }
     subject!{ get :session_duration, time_frame: time_frame }
 
-    it { response.code.should eq '200' }
+    it { expect(response.code).to eq '200' }
 
     context 'with time_frame "month"' do
       let(:time_frame) { 'month' }
       it 'should assign @from_date appropriately' do
-        assigns(:from_date).should eq 1.month.ago
+        expect(assigns(:from_date)).to eq 1.month.ago
       end
     end
 
     context 'with time_frame "week"' do
       let(:time_frame) { 'week' }
       it 'should assign @from_date appropriately' do
-        assigns(:from_date).should eq 1.week.ago
+        expect(assigns(:from_date)).to eq 1.week.ago
       end
     end
 
     context 'with time_frame "day"' do
       let(:time_frame) { 'day' }
       it 'should assign @from_date appropriately' do
-        assigns(:from_date).should eq 1.day.ago
+        expect(assigns(:from_date)).to eq 1.day.ago
       end
     end
   end
