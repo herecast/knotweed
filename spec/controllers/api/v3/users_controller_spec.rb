@@ -364,7 +364,7 @@ describe Api::V3::UsersController do
 
     context 'with an already confirmed account' do
       before do
-        @user.confirm!
+        @user.confirm
       end
 
       subject! { post :resend_confirmation, user: { email: @user.email } }

@@ -34,7 +34,10 @@ module Api
       def similar_content
         @content = Content.find params[:id]
 
-        @contents = @content.similar_content(@repository, 20)
+        # need to call to_a here so we can use mutating select! afterwards
+        # (Rails 4.1 deprecated calling mutating methods directly on ActiveRecord
+        # Relations)
+        @contents = @content.similar_content(@repository, 20).to_a
 
         # filter by organization
         if @requesting_app.present?

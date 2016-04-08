@@ -57,7 +57,7 @@ describe Api::V3::ContentsController do
 
       it 'should respond with 2 news items' do
         subject
-        assigns(:contents).select{|c| c.content_category_id == @news_cat.id }.count.should eq(2)
+        assigns(:contents).select{|c| c.content_category_id == @news_cat.id }.length.should eq(2)
       end
 
       it 'should not include any talk items' do

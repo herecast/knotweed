@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 ruby '2.0.0'
-gem 'rails', '~> 4.0'
+gem 'rails', '~> 4.1'
 gem 'protected_attributes', '~> 1.1.3'
 gem 'sass-rails', '~> 5.0.4'
 gem 'coffee-rails', '~> 4.1.1'
@@ -9,7 +9,7 @@ gem 'uglifier', '~> 2.4.0'
 gem 'compass-rails', '~> 3.0.2'
 gem 'jquery-rails', '~> 3.1.2'
 gem "mysql2", '~> 0.3.14'
-gem "haml-rails", "~> 0.4"
+gem "haml-rails"
 gem "database_cleaner", "~> 1.2.0", :group => :test
 gem "devise", '~> 3.5.6'
 gem 'cancancan', '~> 1.13.1'
@@ -97,7 +97,7 @@ gem 'sparql-client', '~> 1.1.3'
 
 gem 'chronic', '~> 0.10.2'
 gem 'geocoder', '~> 1.2.4'
-gem 'thinking-sphinx', "~> 3.1.4"
+gem 'thinking-sphinx'
 gem 'ts-datetime-delta', '~> 2.0.2', require: 'thinking_sphinx/deltas/datetime_delta'
 gem 'jbuilder', '~> 2.1.3'
 gem 'mixpanel_client', '~> 4.1.1'
