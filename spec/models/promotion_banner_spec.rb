@@ -42,7 +42,8 @@ describe PromotionBanner do
 
   describe 'scope :active' do
     before do
-      FactoryGirl.create_list :promotion_banner, 3 # just some generic active banners
+      # active promotion banners
+      FactoryGirl.create_list :promotion_banner, 3, campaign_start: 1.day.ago, campaign_end: 1.day.from_now
     end
 
     #it 'should not include banners that have hit max impressions' do

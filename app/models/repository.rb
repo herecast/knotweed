@@ -23,7 +23,7 @@ class Repository < ActiveRecord::Base
   has_many :publish_jobs
   has_many :annotation_reports
 
-  has_and_belongs_to_many :contents, :uniq => true
+  has_and_belongs_to_many :contents, -> { uniq }
 
   # used to determine whether or not to mark contents "published"
   # defaults to 3, but can be overridden in app.yml

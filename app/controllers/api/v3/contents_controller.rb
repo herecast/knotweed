@@ -135,9 +135,9 @@ module Api
           scope = Content.where(created_by: @current_api_user)
         end
 
-        @news_cat = ContentCategory.find_or_create_by_name 'news'
-        @talk_cat = ContentCategory.find_or_create_by_name 'talk_of_the_town'
-        @market_cat = ContentCategory.find_or_create_by_name 'market'
+        @news_cat = ContentCategory.find_or_create_by(name: 'news')
+        @talk_cat = ContentCategory.find_or_create_by(name: 'talk_of_the_town')
+        @market_cat = ContentCategory.find_or_create_by(name: 'market')
 
         if params[:channel_type] == 'news'
           scope = scope.where(root_content_category_id: @news_cat.id)

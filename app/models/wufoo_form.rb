@@ -22,7 +22,7 @@ class WufooForm < ActiveRecord::Base
 
   validates_presence_of :form_hash, :call_to_action
 
-  scope :active, where(active: true)
+  scope :active, -> { where active: true }
 
   after_validation :set_inactive_value_to_nil
 
