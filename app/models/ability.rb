@@ -16,7 +16,11 @@ class Ability
       can :manage, BusinessLocation # for event venues
       can :manage, Content, created_by: user
     else
-      managed_orgs = Organization.with_role(:manager, user)
+      if Role.where(name: 'manager').count > 0
+        managed_orgs = Organization.with_role(:manager, user)
+      else
+        managed_orgs = []
+      end
       if managed_orgs.present?
         # note: due to quirks in the way Rolify works, we *can't* use the same role name for this
         # that we use for the unscoped admin. So instead I'm calling it manager.
