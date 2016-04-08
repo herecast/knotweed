@@ -14,7 +14,7 @@ describe ContentsController, type: :controller do
 
     context "when category changes" do
 
-      subject { put :update, id: @content, content: { content_category_id: @cat_2.id } }
+      subject { put :update, id: @content, continue_editing: true, content: { content_category_id: @cat_2.id } }
 
       it "should create a category correction record" do
         subject
@@ -26,7 +26,7 @@ describe ContentsController, type: :controller do
 
     context "when category does not change" do
 
-      subject { put :update, id: @content, content: { title: "Fake Title Update" } }
+      subject { put :update, id: @content, create_new: true, content: { title: "Fake Title Update" } }
 
       it "should not create a category correction if category doesn't change" do
         subject
@@ -36,10 +36,11 @@ describe ContentsController, type: :controller do
 
     context "when content has_event_calendar" do
 
-      subject { put :update, { id: @content.id, has_event_calendar: true }, format: 'json' }
+      subject { put :update, id: @content.id, has_event_calendar: true, content: { title: "Fake Title Update" }, format: 'json' }
 
       it "should respond with 200 status code" do
         subject
+        @content.reload
         expect(response.code).to eq '200'
         expect(response.body).to eq @content.to_json
       end
@@ -62,7 +63,7 @@ describe ContentsController, type: :controller do
       FactoryGirl.create_list :content, 5
     end
 
-    subject { get :index }
+    subject { get :index, reset: true }
 
     it 'should respond with 200 status code' do
       subject
@@ -125,14 +126,17 @@ describe ContentsController, type: :controller do
     context "when channel present" do
       before do
         @channel = FactoryGirl.create :channel
-        @category = FactoryGirl.create :category, channel_id: @channel.id
-        @new_content = FactoryGirl.create :content, channel_type: 'Event', channel_id: 1
       end
 
-      subject { get :edit, id: @new_content.id }
+      subject { get :edit, id: @content.id }
 
       it "should respond with a 302 status code" do
+        allow_any_instance_of(Content).to receive(:channel).and_return @channel
+        allow_any_instance_of(Channel).to receive(:present?).and_return true
+        @content.update_attributes(channel_id: @channel.id, channel_type: 'Event')
+
         subject
+
         expect(response.code).to eq '302'
       end
     end
@@ -264,13 +268,99 @@ describe ContentsController, type: :controller do
 
     context "when query is raw id search" do
 
-      subject { get :parent_select_options, { search_query: @content.id.to_s, "q" => '{}' }, format: 'js' }
+      subject { get :parent_select_options, search_query: @content.id.to_s, q: { id_eq: nil }, format: 'js' }
 
       it "should respond with 200 status code" do
-        allow(Content).to receive(:ransack).and_return(Content.all)
-        p Content.all
         subject
-        expect(assigns(:contents)).to match_array [ @contents ]
+        expect(assigns(:contents)).to match_array [ nil, ["nice title", @content.id] ]
+        expect(response.code).to eq '200'
+      end
+    end
+
+    context "when query is id search" do
+
+      subject { get :parent_select_options, content_id: @content.id, q: { id_eq: nil }, format: 'js' }
+
+      it "should respond with 200 status code" do
+        subject
+        expect(assigns(:orig_content)).to eq @content
+        expect(response.code).to eq '200'
+      end
+    end
+
+    context "when query is a title search" do
+
+        subject { get :parent_select_options, search_query: @content.title, q: { id_eq: nil }, format: 'js' }
+
+        it "should respond with 200 status code" do
+          subject
+          expect(assigns(:contents)).to match_array [ nil, ["nice title", @content.id] ]
+        end
+    end
+  end
+
+  describe "POST #category_correction" do
+    before do
+      @content = FactoryGirl.create :content
+      @category = FactoryGirl.create :category
+    end
+
+    subject { post :category_correction, content_id: @content.id }
+
+    context "when category correction saves" do
+      it "responds with confirmation text" do
+        allow_any_instance_of(Content).to receive(:category).and_return @category
+        subject
+        expect(response.code).to eq '200'
+        expect(response.body).to include @content.id.to_s
+      end
+    end
+
+    context "when category correction save fails" do
+      it "should respond with 500 status code" do
+        allow_any_instance_of(Content).to receive(:category).and_return @category
+        allow_any_instance_of(CategoryCorrection).to receive(:save).and_return false
+        subject
+        expect(response.code).to eq '500'
+      end
+    end
+  end
+
+  describe 'POST #category_correction_reviewed' do
+    before do
+      @content = FactoryGirl.create :content
+    end
+
+    context "when reviewed and saved" do
+
+      subject { post :category_correction_reviwed, content_id: @content.id, checked: 'true' }
+
+      it "responds with confirmation text" do
+        subject
+        expect(response.code).to eq '200'
+        expect(response.body).to include @content.id.to_s
+      end
+    end
+
+    context "when reviewed but content not saved" do
+
+      subject { post :category_correction_reviwed, content_id: @content.id, checked: 'true' }
+
+      it "should respond with 500 status code" do
+        allow_any_instance_of(Content).to receive(:save).and_return false
+        subject
+        expect(response.code).to eq '500'
+      end
+    end
+
+    context "when not reviewed and saved" do
+
+      subject { post :category_correction_reviwed, content_id: @content.id, checked: 'false' }
+
+      it "should respond with confirmation text" do
+        subject
+        expect(response.code).to eq '200'
+        expect(response.body).to include @content.id.to_s
       end
     end
   end
