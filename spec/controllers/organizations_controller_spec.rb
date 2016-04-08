@@ -64,8 +64,8 @@ describe OrganizationsController, type: :controller do
 
     context '?short_form=true' do
       it 'renders partial short_form' do
-        get :new, {short_form: true}
-        expect(response).to render_template('organizations/partials/_short_form', layout: false)
+        get :new, short_form: true
+        expect(response).to render_template('organizations/partials/_short_form')
       end
     end
   end
@@ -179,7 +179,7 @@ describe OrganizationsController, type: :controller do
     let!(:biz_locations) { FactoryGirl.create_list :business_location, 2, organization: organization }
     context 'organization has some business locations' do
       it 'sets up the rjs view with business location options' do
-        get :business_location_options, {organization_id: organization.id}
+        get :business_location_options, organization_id: organization.id, format: :js
 
         biz_options = assigns(:business_locations)
         expect(biz_options).to include([nil,nil])
