@@ -57,6 +57,9 @@ class ContentSetsController < ApplicationController
 
   def destroy
     @content_set.destroy
+    respond_to do |format|
+      format.html { redirect_to content_sets_path }
+    end
   end
 
 

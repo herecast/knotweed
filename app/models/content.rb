@@ -469,7 +469,7 @@ class Content < ActiveRecord::Base
       new_image = images.create(image_attrs)
     end
 
-    if primary.present?
+    if primary
       self.primary_image = new_image
     end
     new_image
@@ -948,6 +948,9 @@ class Content < ActiveRecord::Base
     end
   end
 
+  ################
+  # Not currently used.  Maybe in the future? if not, then remove
+=begin
   def get_ordered_downstream_thread(tier=0)
     downstream_thread = []
     if children.present?
@@ -963,6 +966,7 @@ class Content < ActiveRecord::Base
       downstream_thread
     end
   end
+=end
 
   # helper to retrieve the category that the content should be published with
   def publish_category
@@ -1506,19 +1510,5 @@ class Content < ActiveRecord::Base
     rescue
       return []
     end
-  end
-
-  def query_promo_random_paid(repo)
-    sparql = ::SPARQL::Client.new repo.sesame_endpoint
-    query = File.read(Rails.root.join("lib", "queries", "query_promo_random_paid.rq")) %
-            { content_id: id }
-    sparql.query(query)
-  end
-
-  def query_promo_random(repo)
-    sparql = ::SPARQL::Client.new repo.sesame_endpoint
-    query = File.read(Rails.root.join("lib", "queries", "query_promo_random.rq")) %
-            { content_id: id }
-    sparql.query(query)
   end
 end
