@@ -179,7 +179,7 @@ describe OrganizationsController, type: :controller do
     let!(:biz_locations) { FactoryGirl.create_list :business_location, 2, organization: organization }
     context 'organization has some business locations' do
       it 'sets up the rjs view with business location options' do
-        get :business_location_options, organization_id: organization.id, format: :js
+        xhr :get, :business_location_options, organization_id: organization.id, format: :js
 
         biz_options = assigns(:business_locations)
         expect(biz_options).to include([nil,nil])
