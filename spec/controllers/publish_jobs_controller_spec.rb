@@ -122,7 +122,7 @@ describe PublishJobsController, type: :controller do
     end
   end
 
-  describe 'PUT #update', focus: true do
+  describe 'PUT #update' do
     let(:record) { FactoryGirl.create :publish_job }
 
     before do
