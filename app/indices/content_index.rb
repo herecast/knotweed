@@ -11,8 +11,11 @@ ThinkingSphinx::Index.define(:content,
 
   # attributes
   has pubdate
-  has organization.id, as: :org_id
+
+  # NOTE: for some reason, the order of these two lines is VERY IMPORTANT.
+  # See this issue: https://github.com/pat/thinking-sphinx/issues/978
   has [locations.id, organization.locations.id], as: :all_loc_ids, multi: true
+  has organization.id, as: :org_id
 
   has published
   has channel_type

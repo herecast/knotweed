@@ -45,7 +45,7 @@ describe Api::V3::ContentsController do
 
       it 'should filter results by consumer app\'s organizations' do
         subject
-        assigns(:contents).should eq([@content])
+        assigns(:contents).should eql([@content])
       end
     end
 
