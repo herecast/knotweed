@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-load File.join(Rails.root, 'lib','parsers','wordpress_blog_parser.rb')
 
 describe 'Wordpress Blog Parser' do
   let(:mock_rubypress_client) { double() }
   before do
     allow(Rubypress::Client).to receive(:new).and_return(mock_rubypress_client)
+    load File.join(Rails.root, 'lib','parsers','wordpress_blog_parser.rb')
   end
 
   describe '#parse_file' do
