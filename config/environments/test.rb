@@ -37,5 +37,4 @@ Knotweed::Application.configure do
   # ActionMailer Config
   config.action_mailer.default_url_options = { :host => '198.74.61.63:8002' }
 
-  config.active_record.raise_in_transactional_callbacks = true
 end
