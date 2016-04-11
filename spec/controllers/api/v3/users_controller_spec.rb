@@ -278,7 +278,7 @@ describe Api::V3::UsersController do
         api_authenticate user: @user, consumer_app: @consumer
       end
 
-      subject! { get :show }
+      subject! { get :show, format: :json }
 
       it 'should contain the ical url' do
         JSON.parse(@response.body)['current_user']['events_ical_url'].should be_nil

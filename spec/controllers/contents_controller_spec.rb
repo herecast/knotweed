@@ -268,7 +268,7 @@ describe ContentsController, type: :controller do
 
     context "when query is raw id search" do
 
-      subject { get :parent_select_options, search_query: @content.id.to_s, q: { id_eq: nil }, format: 'js' }
+      subject { xhr :get, :parent_select_options, search_query: @content.id.to_s, q: { id_eq: nil }, format: :js }
 
       it "should respond with 200 status code" do
         subject
@@ -279,7 +279,7 @@ describe ContentsController, type: :controller do
 
     context "when query is id search" do
 
-      subject { get :parent_select_options, content_id: @content.id, q: { id_eq: nil }, format: 'js' }
+      subject { xhr :get, :parent_select_options, content_id: @content.id, q: { id_eq: nil }, format: :js }
 
       it "should respond with 200 status code" do
         subject
@@ -290,7 +290,7 @@ describe ContentsController, type: :controller do
 
     context "when query is a title search" do
 
-        subject { get :parent_select_options, search_query: @content.title, q: { id_eq: nil }, format: 'js' }
+        subject { xhr :get, :parent_select_options, search_query: @content.title, q: { id_eq: nil }, format: :js }
 
         it "should respond with 200 status code" do
           subject
