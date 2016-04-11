@@ -58,9 +58,9 @@ describe ContentSetsController, type: :controller do
 
     context 'Given no parameters' do
       it 'returns ContentSet.all' do
-        expect(ContentSet).to receive(:all).and_return(records)
+        expect(ContentSet).to receive(:where).and_return(records)
         get :index
-        expect(assigns(:content_sets)).to eql records
+        expect(assigns(:content_sets)).to eq records
       end
     end
   end

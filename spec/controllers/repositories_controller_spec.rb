@@ -50,7 +50,7 @@ describe RepositoriesController do
       @repo = FactoryGirl.create :repository, contents: contents
     end
 
-    subject { get :clear_published_contents, id: @repo.id, format: :js }
+    subject { xhr :get, :clear_published_contents, id: @repo.id, format: :js }
 
     it 'should clear the repositories contents' do
       expect{subject}.to change{@repo.contents.count}.to 0
