@@ -20,18 +20,4 @@ class LocationsController < ApplicationController
     end
   end
 
-  def update
-    @location.update_attributes!(params[:location])
-    respond_to do |format|
-      format.js
-    end
-  end
-
-  def destroy
-    @location.destroy
-    respond_to do |format|
-      format.js
-    end
-  end
-
 end

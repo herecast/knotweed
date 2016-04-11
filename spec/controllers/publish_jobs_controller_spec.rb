@@ -1,6 +1,13 @@
 require 'spec_helper'
 
-describe PublishJobsController do 
+describe PublishJobsController, type: :controller do
+
+  it_behaves_like 'JobController' do
+    before do
+      @user = FactoryGirl.create(:admin)
+      sign_in @user
+    end
+  end
 
   describe "POST 'create'" do
     before do
@@ -125,6 +132,13 @@ describe PublishJobsController do
 
         @user = FactoryGirl.create(:admin)
         sign_in @user
+      end
+
+      # monkey patch suggested here: https://github.com/rspec/rspec-rails/issues/1532
+      # this is the only place we use `render :file` which was broken for rspec by 
+      # Rails 3.2.22, so I'm just stuffing this in here til we upgrade.
+      RSpec::Rails::ViewRendering::EmptyTemplatePathSetDecorator.class_eval do  
+        alias_method :find_all_anywhere, :find_all
       end
 
       it "should return a 404" do
