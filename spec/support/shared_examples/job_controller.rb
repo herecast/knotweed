@@ -45,7 +45,7 @@ shared_examples_for "JobController" do
 
     it 'renders jobs/cancel' do
       xhr :delete, :cancel_job, id: model.id, format: :js
-      expect(response).to render_template('jobs/cancel')
+      expect(response).to render_template('jobs/cancel_job')
     end
   end
 
