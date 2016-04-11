@@ -37,7 +37,7 @@ describe UsersController do
     context 'pagination' do
       let(:default_per_page) { Kaminari.config.default_per_page }
 
-      before do 
+      before do
         FactoryGirl.create_list(:user, default_per_page + 1)
       end
 
@@ -54,7 +54,7 @@ describe UsersController do
         end
       end
 
-      context 'given a limit parameter' do 
+      context 'given a limit parameter' do
         it 'returns max {limit} users' do
           limit = 25
           get 'index', {limit: limit}
@@ -63,4 +63,90 @@ describe UsersController do
       end
     end
   end
+
+  describe "PUT #update" do
+
+    context "when successful update of managed organization" do
+      before do
+        @organization = FactoryGirl.create :organization
+      end
+
+      subject { put :update, id: @user.id, user: { name: 'bill', managed_organization_id: @organization.id } }
+
+      it "redirects to user" do
+        subject
+        expect(response.code).to eq '302'
+      end
+    end
+
+    context "when successful update" do
+
+      subject { put :update, id: @user.id, user: { name: 'bill' } }
+
+      it "redirects to user" do
+        allow_any_instance_of(User).to receive(:update_attributes).and_return true
+        subject
+        expect(response.code).to eq '302'
+      end
+    end
+
+    context "when unsuccessful save" do
+
+      subject { put :update, id: @user.id, user: { name: 'bill' } }
+
+      it "redirects to user" do
+        allow_any_instance_of(User).to receive(:update_attributes).and_return false
+        subject
+        expect(response.code).to eq '302'
+      end
+    end
+  end
+
+  describe "DELETE #destroy" do
+
+    context "when admin deletes another user" do
+      before do
+        @new_user = FactoryGirl.create :user, email: 'tessek@squidhead.com'
+      end
+
+      subject { delete :destroy, id: @new_user.id }
+
+      it "deletes the user" do
+        expect{ subject }.to change{ User.count }.by -1
+        expect(response.code).to eq '302'
+      end
+    end
+
+    context "when admin tries to delete self" do
+
+      subject { delete :destroy, id: @user.id }
+
+      it "rejects delete request" do
+        subject
+        expect(User.count).to eq 1
+        expect(response.code).to eq '302'
+      end
+    end
+  end
+
+  describe "POST #create" do
+
+    subject { post :create, user: { name: 'Ya boi Tessek', email: 'tessek@squidhead.com', password: '12345678', password_confirmation: '12345678', location_id: '1' } }
+
+    context "when creation succeeds" do
+      it "redirects to user path" do
+        expect{ subject }.to change{ User.count }.by 1
+        expect(response.code).to eq '302'
+      end
+    end
+
+    context "when creation fails" do
+      it "renders new page" do
+        allow_any_instance_of(User).to receive(:save!).and_return false
+        subject
+        expect(response).to render_template 'new'
+      end
+    end
+  end
+
 end
