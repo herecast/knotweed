@@ -81,10 +81,6 @@ describe ImportJob do
       expect(WebMock).to have_requested(:post, "http://api.prerender.io/recache").twice
     end
 
-    it "returns last run at" do
-      expect(@job.last_run_at.to_s).to eq @job.created_at.to_s
-    end
-
   end
 
   describe '#set_stop_loop' do
