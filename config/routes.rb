@@ -13,7 +13,7 @@ Knotweed::Application.routes.draw do
   end
   root :to => redirect("#{"#{ENV['RAILS_RELATIVE_URL_ROOT']}" unless ENV['RAILS_RELATIVE_URL_ROOT'].nil?}/users/sign_in")
   resources :users
-  
+
   get "/", to: "dashboard#index", as: :dashboard
   get "/dashboard/mixpanel_charts", to: "dashboard#mixpanel_charts", as: :mixpanel_charts
   get "/dashboard/total_sign_ins", to: "dashboard#total_sign_ins", as: :total_sign_ins
@@ -33,7 +33,7 @@ Knotweed::Application.routes.draw do
   resources :publish_jobs
   resources :wufoo_forms, except: [:show]
   resources :consumer_apps, except: [:show]
-  resources :images
+  resources :images, only: [:create, :destroy, :update]
   resources :organizations, except: [:show] do
     resources :promotions, shallow: true
   end
@@ -43,7 +43,7 @@ Knotweed::Application.routes.draw do
   resources :content_sets
   resources :contacts, only: [:create, :update, :edit, :destroy]
   resources :issues, only: [:new, :create, :update, :edit, :destroy, :show]
-  resources :locations, only: [:create, :update, :new, :edit, :destroy]
+  resources :locations, only: [:create, :new, :edit]
   resources :business_locations
   resources :events, except: [:show, :destroy]
 
@@ -73,7 +73,7 @@ Knotweed::Application.routes.draw do
   # that updates the action buttons on the onesie page works correctly
   get "contents/:id/publish/:method/repository/:repository_id", to: "contents#publish", as: :publish_content
   get "contents/:id/generate_gate_xml/repository/:repository_id", to: "contents#rdf_to_gate", as: :rdf_to_gate
-  
+
   get 'import_jobs/:id/run_job', to: 'import_jobs#run_job', as: :run_import_job
   delete 'import_jobs/:id/cancel', to: 'import_jobs#cancel_job', as: :cancel_import_job
   get 'import_jobs/:id/archive', to: 'import_jobs#archive', as: :archive_import_job
@@ -81,7 +81,7 @@ Knotweed::Application.routes.draw do
   get 'publish_jobs/:id/run_job', to: 'publish_jobs#run_job', as: :run_publish_job
   delete 'publish_jobs/:id/cancel', to: 'publish_jobs#cancel_job', as: :cancel_publish_job
   get 'publish_jobs/:id/archive', to: 'publish_jobs#archive', as: :archive_publish_job
-  
+
   match 'parsers/:id/parameters', to: "parsers#parameters"
   post '/contents/category_correction', to: 'contents#category_correction'
   post '/contents/category_correction_reviewed', to: 'contents#category_correction_reviwed'
