@@ -68,7 +68,7 @@ module Api
       def moderate
         content = Content.find(params[:id])
         ModerationMailer.send_moderation_flag_v2(content, params[:flag_type], \
-          @current_api_user).deliver
+          @current_api_user).deliver_now
         head :no_content
       end
 

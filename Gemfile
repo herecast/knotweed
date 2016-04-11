@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 ruby '2.0.0'
-gem 'rails', '~> 4.1.0'
+gem 'rails', '~> 4.2.0'
 gem 'protected_attributes', '~> 1.1.3'
 gem 'sass-rails', '~> 5.0.4'
 gem 'coffee-rails', '~> 4.1.1'
@@ -125,3 +125,6 @@ gem 'icalendar', '~> 2.3'
 # so we have to specify these two versions here. Same with tins
 gem 'net-ssh', '~> 2.7.0'
 gem 'tins', '~> 0.13.1'
+
+# need to keep older sanitize with Rails 4.2 upgrde
+gem 'rails-deprecated_sanitizer', '~> 1.0.3'

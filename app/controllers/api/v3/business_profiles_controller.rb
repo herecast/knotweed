@@ -58,7 +58,7 @@ module Api
 
       def create
         @business_profile = BusinessProfile.new(params[:business])
-        ModerationMailer.send_business_for_moderation(@business_profile, @current_api_user).deliver
+        ModerationMailer.send_business_for_moderation(@business_profile, @current_api_user).deliver_now
         # for Ember data to not get upset, we need to assign fake IDs to all the objects here
         @business_profile.content.id = Time.now.to_i
         @business_profile.organization.id = Time.now.to_i
