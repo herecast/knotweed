@@ -7,7 +7,7 @@ module Api
       def show
         if @current_api_user.present? 
           if @requesting_app.present?
-            events_ical_url = @requesting_app.uri + user_event_instances_ics_path(@current_api_user.public_id.to_s)
+            events_ical_url = @requesting_app.uri + user_event_instances_ics_path(public_id: @current_api_user.public_id.to_s)
           end
           render json: @current_api_user, serializer: UserSerializer,
             root: 'current_user',  status: 200, events_ical_url: events_ical_url,
