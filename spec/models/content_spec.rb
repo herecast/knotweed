@@ -147,7 +147,7 @@ describe Content, :type => :model do
         end
 
         it 'is true' do
-          expect(subject.published?(repo)).to be_true
+          expect(subject.published?(repo)).to be_truthy
         end
       end
 
@@ -157,7 +157,7 @@ describe Content, :type => :model do
         end
 
         it 'is false' do
-          expect(subject.published?(repo)).to be_false
+          expect(subject.published?(repo)).to be_falsey
         end
       end
     end
@@ -168,7 +168,7 @@ describe Content, :type => :model do
       end
 
       it 'is false' do
-        expect(subject.published?).to be_false
+        expect(subject.published?).to be_falsey
       end
     end
 
@@ -178,7 +178,7 @@ describe Content, :type => :model do
       end
 
       it 'is false' do
-        expect(subject.published?).to be_true
+        expect(subject.published?).to be_truthy
       end
     end
   end
@@ -1068,7 +1068,7 @@ describe Content, :type => :model do
         FactoryGirl.create :promotion_banner, impression_count: 100, promotion: p
       end
       it 'returns true' do
-        expect(subject.has_promotion_inventory?).to be_true
+        expect(subject.has_promotion_inventory?).to be_truthy
       end
     end
   end

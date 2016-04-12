@@ -27,13 +27,13 @@ describe EventsController, :type => :controller  do
       subject { get :edit, { id: @event.id, index: 0 } }
 
       it "finds next event id" do
-        EventInstance.stub_chain(:ransack, :result, :joins, :order, :page, :per, :select) { [@event, @next_event] }
+        allow(EventInstance).to receive_message_chain(:ransack, :result, :joins, :order, :page, :per, :select) { [@event, @next_event] }
         subject
         expect(assigns(:next_event_id)).to eq @next_event.id
       end
 
       it "jumps to next page if necessary" do
-        EventInstance.stub_chain(:ransack, :result, :joins, :order, :page, :per, :select) { [@next_event, nil] }
+        allow(EventInstance).to receive_message_chain(:ransack, :result, :joins, :order, :page, :per, :select) { [@next_event, nil] }
         subject
         expect(assigns(:next_event_id)).to eq @next_event.id
       end
@@ -135,7 +135,7 @@ describe EventsController, :type => :controller  do
 
       context "when event does not save" do
         it "renders new" do
-          Location.stub_chain(:joins, :where) { Location.all }
+          allow(Location).to receive_message_chain(:joins, :where) { Location.all }
           subject
           expect(response).to render_template 'new'
         end
@@ -151,7 +151,7 @@ describe EventsController, :type => :controller  do
 
           subject
 
-          expect(flash.now[:notice]).to be_true
+          expect(flash.now[:notice]).to be_truthy
           expect(response.code).to eq '302'
         end
       end
@@ -166,8 +166,8 @@ describe EventsController, :type => :controller  do
 
           subject
 
-          expect(flash.now[:notice]).to be_true
-          expect(flash.now[:warning]).to be_true
+          expect(flash.now[:notice]).to be_truthy
+          expect(flash.now[:warning]).to be_truthy
           expect(response.code).to eq '302'
         end
       end
@@ -191,7 +191,7 @@ describe EventsController, :type => :controller  do
 
         subject
 
-        expect(flash.now[:notice]).to be_true
+        expect(flash.now[:notice]).to be_truthy
       end
     end
 
@@ -206,8 +206,8 @@ describe EventsController, :type => :controller  do
 
         subject
 
-        expect(flash.now[:notice]).to be_true
-        expect(flash.now[:warning]).to be_true
+        expect(flash.now[:notice]).to be_truthy
+        expect(flash.now[:warning]).to be_truthy
       end
     end
 

@@ -69,7 +69,7 @@ shared_examples_for "JobController" do
 
     it 'sets model#archive to true' do
       xhr :get, :archive, id: model.id, format: :js
-      expect(model.reload.archive).to be_true
+      expect(model.reload.archive).to be_truthy
     end
 
     it 'renders jobs/archive' do

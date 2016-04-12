@@ -111,13 +111,13 @@ describe ContentsController, type: :controller do
       subject { get :edit, { id: @content.id, index: 0 } }
 
       it "finds next event id" do
-        Content.stub_chain(:ransack, :result, :order, :page, :per, :select) { [@content, @next_content] }
+        allow(Content).to receive_message_chain(:ransack, :result, :order, :page, :per, :select) { [@content, @next_content] }
         subject
         expect(assigns(:next_content_id)).to eq @next_content.id
       end
 
       it "jumps to next page if necessary" do
-        Content.stub_chain(:ransack, :result, :order, :page, :per, :select) { [@next_content, nil] }
+        allow(Content).to receive_message_chain(:ransack, :result, :order, :page, :per, :select) { [@next_content, nil] }
         subject
         expect(assigns(:next_content_id)).to eq @next_content.id
       end
@@ -166,7 +166,7 @@ describe ContentsController, type: :controller do
 
         subject
 
-        expect(flash.now[:notice]).to be_true
+        expect(flash.now[:notice]).to be_truthy
         expect(response.code).to eq '302'
       end
     end
