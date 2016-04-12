@@ -9,7 +9,7 @@ describe 'parse upper valley list files' do
     parser_path = Dir.pwd + "/lib/parsers/"
     @test_files_path = Dir.pwd + "/spec/fixtures/upper_valley_list_test_files"
 
-    require parser_path + "upper_valley_list_parser.rb"
+    load parser_path + "upper_valley_list_parser.rb"
 
   end
 
