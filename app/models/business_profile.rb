@@ -31,7 +31,7 @@ class BusinessProfile < ActiveRecord::Base
 
   delegate :organization, to: :content
 
-  has_and_belongs_to_many :business_categories
+  has_and_belongs_to_many :business_categories, join_table: 'business_categories_business_profiles'
 
   has_many :business_feedbacks, dependent: :destroy
 

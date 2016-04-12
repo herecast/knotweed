@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe UsersController do
+describe UsersController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
@@ -12,11 +12,11 @@ describe UsersController do
     subject! { get :show, id: @user.id }
 
     it 'should respond with a 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should load the user' do
-      assigns(:user).should eq @user
+      expect(assigns(:user)).to eq @user
     end
   end
 
@@ -24,14 +24,14 @@ describe UsersController do
     subject! { get :new }
 
     it 'should respond with a 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 
   describe 'GET index' do
     it 'returns http success' do
       get 'index'
-      response.should be_success
+      expect(response).to be_success
     end
 
     context 'pagination' do

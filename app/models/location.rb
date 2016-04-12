@@ -35,10 +35,10 @@ class Location < ActiveRecord::Base
  
   attr_accessible :city, :county, :lat, :long, :state, :zip, :organization_ids, :consumer_active
 
-  default_scope order: :city
+  default_scope { order(:city) }
 
-  scope :consumer_active, where(consumer_active: true)
-  scope :not_upper_valley, where("city != 'Upper Valley'")
+  scope :consumer_active, -> { where consumer_active: true }
+  scope :not_upper_valley, -> { where "city != 'Upper Valley'" }
 
   def name
     "#{try(:city)} #{try(:state)}"

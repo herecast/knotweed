@@ -43,7 +43,7 @@ describe 'News Endpoints', type: :request do
 
       it 'should respond with errors' do
         subject
-        response_json['errors'].should be_present
+        expect(response_json['errors']).to be_present
       end
     end
   end
@@ -98,7 +98,7 @@ describe 'News Endpoints', type: :request do
 
     it 'should associate the image with the content' do
       subject
-      @content.images.should match_array([@img])
+      expect(@content.images).to match_array([@img])
     end
   end
 end

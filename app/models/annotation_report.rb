@@ -22,7 +22,7 @@ class AnnotationReport < ActiveRecord::Base
 
   attr_accessible :content_id, :name, :description, :json_response, :repository_id, :repository
   
-  default_scope order('created_at DESC')
+  default_scope { order('created_at DESC') }
 
   validates_presence_of :repository
 

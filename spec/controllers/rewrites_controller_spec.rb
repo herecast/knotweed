@@ -34,7 +34,7 @@ describe RewritesController do
 
   context '#destroy' do
     let!(:existing_rewrite) { FactoryGirl.create :rewrite }
-    subject { put :destroy, id: existing_rewrite.id }
+    subject { delete :destroy, id: existing_rewrite.id, format: :js }
     it 'should destroy the rewrite' do
       expect{subject}.to change{Rewrite.count}.from(1).to(0)
     end

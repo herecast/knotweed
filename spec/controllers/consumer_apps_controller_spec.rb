@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ConsumerAppsController do
+describe ConsumerAppsController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
@@ -11,11 +11,11 @@ describe ConsumerAppsController do
     subject! { get :index }
 
     it 'should respond with 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should load the consumer apps' do
-      assigns(:consumer_apps).should eq ConsumerApp.all
+      expect(assigns(:consumer_apps)).to eq ConsumerApp.all
     end
   end
 
@@ -24,11 +24,11 @@ describe ConsumerAppsController do
     subject! { get :edit, id: @app.id }
 
     it 'should respond with 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should load the consumer app' do
-      assigns(:consumer_app).should eq @app
+      expect(assigns(:consumer_app)).to eq @app
     end
   end
 
@@ -36,7 +36,7 @@ describe ConsumerAppsController do
     subject! { get :new }
 
     it 'should respond with 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ImportJobsController do 
+describe ImportJobsController, :type => :controller do 
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
@@ -34,17 +34,17 @@ describe ImportJobsController do
       end
     
       it "should redirect to import jobs path" do
-        response.should redirect_to(import_jobs_path)
+        expect(response).to redirect_to(import_jobs_path)
       end
 
       it "should save parameters as serialized Hash" do 
-        @job.should_not be_nil
-        @job.config.should== @parameters
+        expect(@job).not_to be_nil
+        expect(@job.config).to eq(@parameters)
       end
 
       it "should register current user as a notifyee of the job" do
-        @job.should_not be_nil
-        @job.notifyees.include?(@user).should== true
+        expect(@job).not_to be_nil
+        expect(@job.notifyees.include?(@user)).to eq(true)
       end
     end
     
@@ -55,11 +55,11 @@ describe ImportJobsController do
     subject! { get :index }
 
     it 'should respond with a 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should load the import jobs' do
-      assigns(:import_jobs).should eq @jobs
+      expect(assigns(:import_jobs)).to eq @jobs
     end
   end
 
@@ -67,7 +67,7 @@ describe ImportJobsController do
     subject! { get :new }
 
     it 'should respond with a 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 
@@ -76,7 +76,7 @@ describe ImportJobsController do
     subject! { get :edit, id: @job.id }
 
     it 'should respond with a 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 end

@@ -14,8 +14,8 @@ describe Api::V3::ContentMetricsSerializer do
     end
 
     it 'should render an array of comments' do
-      serialized_object['comments'].length.should eq(1)
-      serialized_object['comments'][0]['id'].should eq(@comment1.id)
+      expect(serialized_object['comments'].length).to eq(1)
+      expect(serialized_object['comments'][0]['id']).to eq(@comment1.id)
     end
   end
 

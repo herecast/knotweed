@@ -20,7 +20,7 @@ class Message < ActiveRecord::Base
 
   scope :active, lambda { where("start_date < ? AND (end_date > ? or end_date IS NULL)", Time.zone.now, Time.zone.now) }
   
-  default_scope order("start_date DESC")
+  default_scope { order("start_date DESC") }
 
   validates_presence_of :controller, :content, :start_date
   validate :end_date_greater_than_start_date

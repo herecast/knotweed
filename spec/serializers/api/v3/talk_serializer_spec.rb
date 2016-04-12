@@ -17,18 +17,18 @@ describe Api::V3::TalkSerializer do
     end
 
     it 'should include the parent ID' do
-      serialized_object['parent_content_id'].should eq(@parent.id)
+      expect(serialized_object['parent_content_id']).to eq(@parent.id)
     end
 
     it 'should include parent_content_type' do
-      serialized_object['parent_content_type'].should eq(@parent.root_content_category.name)
+      expect(serialized_object['parent_content_type']).to eq(@parent.root_content_category.name)
     end
 
     describe 'view_count, comment_count and commenter_count' do
       it 'should be the parent object\'s values' do
-        serialized_object['view_count'].should eq(@parent.view_count)
-        serialized_object['comment_count'].should eq(@parent.comment_count)
-        serialized_object['commenter_count'].should eq(@parent.commenter_count)
+        expect(serialized_object['view_count']).to eq(@parent.view_count)
+        expect(serialized_object['comment_count']).to eq(@parent.comment_count)
+        expect(serialized_object['commenter_count']).to eq(@parent.commenter_count)
       end
     end
 
@@ -39,7 +39,7 @@ describe Api::V3::TalkSerializer do
       end
       
       it 'should include parent_event_instance_id' do
-        serialized_object['parent_event_instance_id'].should eq(@parent.event_instances.first.id)
+        expect(serialized_object['parent_event_instance_id']).to eq(@parent.event_instances.first.id)
       end
 
     end

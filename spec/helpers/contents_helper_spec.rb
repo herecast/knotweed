@@ -27,7 +27,7 @@ describe ContentsHelper, type: :helper do
     subject { helper.search_field_value(key) }
 
     context 'params[:reset]' do
-      it { should be nil }
+      it { is_expected.to be nil }
     end
 
     context 'session[:contents_search]' do
@@ -71,7 +71,7 @@ describe ContentsHelper, type: :helper do
     subject { helper.can_be_listserv_promoted(content) }
 
     context 'When authors, authoremail, and title' do
-      it { should be true }
+      it { is_expected.to be true }
     end
 
     context 'When authors empty' do
@@ -79,7 +79,7 @@ describe ContentsHelper, type: :helper do
         content.authors = nil
       end
 
-      it { should be false }
+      it { is_expected.to be false }
     end
 
     context 'When authoremail blank' do
@@ -87,7 +87,7 @@ describe ContentsHelper, type: :helper do
         content.authoremail = ""
       end
 
-      it { should be false }
+      it { is_expected.to be false }
     end
 
     context 'When title blank' do
@@ -95,7 +95,7 @@ describe ContentsHelper, type: :helper do
         content.title = ""
       end
 
-      it { should be false }
+      it { is_expected.to be false }
     end
   end
 
@@ -107,31 +107,38 @@ describe ContentsHelper, type: :helper do
 
     context 'consumer_app set from request' do
       let(:consumer_app) { double(uri: 'http://my-uri.example') }
-      before do
-        Thread.current[:consumer_app] = consumer_app
-      end
 
-      it { should eql "#{consumer_app.uri}#{content_path}#{utm_string}" }
+      it 'is generates url based on consumer_app uri' do
+        Thread.new do
+          Thread.current[:consumer_app] = consumer_app
+          expect(subject).to eql "#{consumer_app.uri}#{content_path}#{utm_string}"
+        end.join
+      end
     end
 
     context 'consumer_app not set; @base_uri set from controller' do
       before do
         @base_uri = 'http://event.foo'
-        Thread.current[:consumer_app] = nil
       end
 
       it 'uses @base_uri' do
-        expect(subject).to eql "#{@base_uri}/contents/#{content.id}#{utm_string}"
+        Thread.new do
+          Thread.current[:consumer_app] = nil
+          expect(subject).to eql "#{@base_uri}/contents/#{content.id}#{utm_string}"
+        end.join
       end
     end
 
     context 'if not consumer_app, or @base_uri;' do
-      before do 
+      before do
         @base_uri = nil
-        Thread.current[:consumer_app] = nil
       end
-
-      it { should eql "http://www.dailyuv.com/contents/#{content.id}" }
+      it 'Uses a default url' do
+        Thread.new do
+          Thread.current[:consumer_app] = nil
+          expect(subject).to eql "http://www.dailyuv.com/contents/#{content.id}"
+        end.join
+      end
     end
   end
 end

@@ -8,26 +8,26 @@ shared_examples_for "JobController" do
     end
 
     it 'assigns @job' do
-      get :run_job, id: model.id, format: :js
+      xhr :get, :run_job, id: model.id, format: :js
       expect(assigns(:job)).to eql model
     end
 
     it 'renders jobs/run_job' do
-      get :run_job, id: model.id, format: :js
+      xhr :get, :run_job, id: model.id, format: :js
       expect(response).to render_template('jobs/run_job')
     end
 
     context 'When status is "running"' do
       it 'calls model#enqueue_job' do
         expect(model).to receive(:enqueue_job)
-        get :run_job, id: model.id, format: :js
+        xhr :get, :run_job, id: model.id, format: :js
       end
     end
 
     context 'When status is "queued"' do
       it 'calls model#enqueue_job' do
         expect(model).to receive(:enqueue_job)
-        get :run_job, id: model.id, format: :js
+        xhr :get, :run_job, id: model.id, format: :js
       end
     end
   end
@@ -44,8 +44,8 @@ shared_examples_for "JobController" do
     end
 
     it 'renders jobs/cancel' do
-      delete :cancel_job, id: model.id, format: :js
-      expect(response).to render_template('jobs/cancel')
+      xhr :delete, :cancel_job, id: model.id, format: :js
+      expect(response).to render_template('jobs/cancel_job')
     end
   end
 
@@ -68,12 +68,12 @@ shared_examples_for "JobController" do
     end
 
     it 'sets model#archive to true' do
-      get :archive, id: model.id, format: :js
-      expect(model.reload.archive).to be_true
+      xhr :get, :archive, id: model.id, format: :js
+      expect(model.reload.archive).to be_truthy
     end
 
     it 'renders jobs/archive' do
-      get :archive, id: model.id, format: :js
+      xhr :get, :archive, id: model.id, format: :js
       expect(response).to render_template('jobs/archive')
     end
   end

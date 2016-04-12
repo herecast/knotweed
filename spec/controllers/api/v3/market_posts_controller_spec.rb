@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::MarketPostsController do
+describe Api::V3::MarketPostsController, :type => :controller do
   before do
     @market_cat = FactoryGirl.create :content_category, name: 'market'
   end
@@ -26,17 +26,17 @@ describe Api::V3::MarketPostsController do
 
     it 'has 200 status code' do
       subject
-      response.code.should eq('200')
+      expect(response.code).to eq('200')
     end
 
     it 'should not include market posts older than 30 days' do
       subject
-      assigns(:market_posts).should_not include(@old_post)
+      expect(assigns(:market_posts)).not_to include(@old_post)
     end
 
     it 'should allow querying by location_id' do
       get :index, format: :json, location_id: @third_location.id
-      assigns(:market_posts).select{|c| c.locations.include? @third_location }.count.should eq(assigns(:market_posts).count)
+      expect(assigns(:market_posts).select{|c| c.locations.include? @third_location }.count).to eq(assigns(:market_posts).count)
     end
 
     describe 'querying with location_id=0' do
@@ -45,9 +45,9 @@ describe Api::V3::MarketPostsController do
       it 'should filter by Location::DEFAULT_LOCATION' do
         subject
         @default_location_contents.each do |c|
-          assigns(:market_posts).should include(c)
+          expect(assigns(:market_posts)).to include(c)
         end
-        assigns(:market_posts).count.should eq @default_location_contents.count
+        expect(assigns(:market_posts).count).to eq @default_location_contents.count
       end
     end
 
@@ -60,7 +60,7 @@ describe Api::V3::MarketPostsController do
 
       it 'should return matching content' do
         subject
-        assigns(:market_posts).should eq [@content]
+        expect(assigns(:market_posts)).to eql [@content]
       end
     end
 
@@ -75,19 +75,19 @@ describe Api::V3::MarketPostsController do
 
       it 'should filter results by consumer app\'s organizations' do
         subject
-        assigns(:market_posts).should eq([@content])
+        expect(assigns(:market_posts)).to eql([@content])
       end
     end
 
     context 'not signed in' do
       it 'should respond with market_posts items' do
         subject
-        assigns(:market_posts).select{|c| c.content_category_id == @market_cat.id }.count.should eq(assigns(:market_posts).count)
+        expect(assigns(:market_posts).select{|c| c.content_category_id == @market_cat.id }.count).to eq(assigns(:market_posts).count)
       end
 
       it 'should respond with market_posts items in any location' do
         subject
-        assigns(:market_posts).count.should eq(Content.where(content_category_id: @market_cat.id).
+        expect(assigns(:market_posts).count).to eq(Content.where(content_category_id: @market_cat.id).
                                                where('pubdate > ?', 30.days.ago).count)
       end
     end
@@ -99,12 +99,12 @@ describe Api::V3::MarketPostsController do
 
       it 'should allow querying by any passed in location_id' do
         get :index, format: :json, location_id: @user.location.id
-        assigns(:market_posts).select{|c| c.locations.include? @user.location }.count.should eq(assigns(:market_posts).count)
+        expect(assigns(:market_posts).select{|c| c.locations.include? @user.location }.count).to eq(assigns(:market_posts).count)
       end
 
       it 'should return market_posts items in any location when no location_id passed in' do
         subject
-        assigns(:market_posts).count.should eq(Content.where(content_category_id: @market_cat.id).
+        expect(assigns(:market_posts).count).to eq(Content.where(content_category_id: @market_cat.id).
                                                where('pubdate > ?', 30.days.ago).count)
       end
     end
@@ -121,12 +121,12 @@ describe Api::V3::MarketPostsController do
 
     it 'has 200 status code' do
       subject
-      response.code.should eq('200')
+      expect(response.code).to eq('200')
     end
 
     it 'appropriately loads the market_posts object' do
       subject
-      assigns(:market_post).should eq(@market_post)
+      expect(assigns(:market_post)).to eq(@market_post)
     end
 
     it 'should increment view count' do
@@ -146,19 +146,19 @@ describe Api::V3::MarketPostsController do
       it 'can_edit should be true for the content author' do
         api_authenticate user: @user
         subject 
-        can_edit.should == true
+        expect(can_edit).to eq(true)
       end
 
       it 'can_edit should false for a different user' do
         @different_user = FactoryGirl.create :user
         api_authenticate user: @different_user
         subject 
-        can_edit.should == false
+        expect(can_edit).to eq(false)
       end
 
       it 'can_edit should false when a user is not logged in' do
         subject 
-        can_edit.should == false
+        expect(can_edit).to eq(false)
       end
     end
 
@@ -191,7 +191,7 @@ describe Api::V3::MarketPostsController do
 
       it 'should load the content normally' do
         subject
-        assigns(:market_post).should == @market_post
+        expect(assigns(:market_post)).to eq(@market_post)
       end
     end
 
@@ -204,7 +204,7 @@ describe Api::V3::MarketPostsController do
         api_authenticate consumer_app: @consumer_app
       end
 
-      it { subject; response.status.should eq 204 }
+      it { subject; expect(response.status).to eq 204 }
     end
 
     describe 'for content that isn\'t market' do
@@ -212,7 +212,7 @@ describe Api::V3::MarketPostsController do
 
       it 'should respond with nothing' do
         get :show, id: @c.id
-        response.code.should eq '204'
+        expect(response.code).to eq '204'
       end
     end
        
@@ -226,7 +226,7 @@ describe Api::V3::MarketPostsController do
 
       it 'should respond with nothing' do
         get :contact, id: @content.id
-        response.code.should eq('204')
+        expect(response.code).to eq('204')
       end
     end
 
@@ -237,7 +237,7 @@ describe Api::V3::MarketPostsController do
 
       it 'has 200 status code' do
         get :contact, id: @content.id
-        response.code.should eq '200'
+        expect(response.code).to eq '200'
       end
     end
 
@@ -249,7 +249,7 @@ describe Api::V3::MarketPostsController do
 
       it 'has 200 status code' do
         get :contact, id: @market_post.content.id
-        response.code.should eq '200'
+        expect(response.code).to eq '200'
       end
     end
   end
@@ -269,7 +269,7 @@ describe Api::V3::MarketPostsController do
     context 'not signed in' do
       it 'should respond with 401' do
         subject
-        response.code.should eq('401')
+        expect(response.code).to eq('401')
       end
     end
 
@@ -291,7 +291,7 @@ describe Api::V3::MarketPostsController do
       it 'should allow clearing out an attribute' do
         @attrs_for_update['contact_phone'] = ''
         subject
-        @market_post.reload.contact_phone.should eq ''
+        expect(@market_post.reload.contact_phone).to eq ''
       end
 
       describe 'with invalid parameters' do
@@ -301,7 +301,7 @@ describe Api::V3::MarketPostsController do
 
         it 'should respond with a 422' do
           subject
-          response.code.should eq '422'
+          expect(response.code).to eq '422'
         end
       end
 
@@ -348,7 +348,7 @@ describe Api::V3::MarketPostsController do
     context 'not signed in' do
       it 'should respond with 401' do
         post :create
-        response.code.should eq('401')
+        expect(response.code).to eq('401')
       end
     end
 
@@ -371,7 +371,7 @@ describe Api::V3::MarketPostsController do
 
       it 'should respond with 201' do
         subject
-        response.code.should eq('201')
+        expect(response.code).to eq('201')
       end
 
       it 'should create a market post' do
@@ -380,7 +380,7 @@ describe Api::V3::MarketPostsController do
 
       it 'should create an associated content' do
         expect{subject}.to change{Content.count}.by(1)
-        (assigns(:market_post).content.present?).should be true
+        expect(assigns(:market_post).content.present?).to be true
       end
 
       context 'with consumer_app / repository' do
@@ -409,7 +409,7 @@ describe Api::V3::MarketPostsController do
 
         it 'should respond with a 500' do
           subject
-          response.code.should eq '500'
+          expect(response.code).to eq '500'
         end
       end
 

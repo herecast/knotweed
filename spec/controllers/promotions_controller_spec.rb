@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PromotionsController do 
+describe PromotionsController, :type => :controller do 
   include Devise::TestHelpers
 
   before do
@@ -8,7 +8,7 @@ describe PromotionsController do
     sign_in user
     @org = FactoryGirl.create(:organization)
     @content = FactoryGirl.create(:content)
-    Promotion.any_instance.stub(:update_active_promotions).and_return(true)
+    allow_any_instance_of(Promotion).to receive(:update_active_promotions).and_return(true)
     @promotion = FactoryGirl.create(:promotion, organization: @org, content: @content)
   end
 
@@ -20,7 +20,7 @@ describe PromotionsController do
     subject { get :index, organization_id: @org }
     it "assigns all promotions as @promotions" do
       subject
-      assigns(:promotions).should eq([@promotion])
+      expect(assigns(:promotions)).to eq([@promotion])
     end
   end
 
@@ -28,7 +28,7 @@ describe PromotionsController do
     subject { get :show, { id: @promotion.to_param } }
     it "assigns the requested promotion as @promotion" do
       subject
-      assigns(:promotion).should eq(@promotion)
+      expect(assigns(:promotion)).to eq(@promotion)
     end
   end
 
@@ -36,7 +36,7 @@ describe PromotionsController do
     subject { get :edit, {id: @promotion.to_param } }
     it "assigns the requested promotion as @promotion" do
       subject
-      assigns(:promotion).should eq(@promotion)
+      expect(assigns(:promotion)).to eq(@promotion)
     end
   end
 

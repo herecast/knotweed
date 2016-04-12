@@ -55,7 +55,7 @@ describe MarketPostsHelper, type: :helper do
         Thread.current[:consumer_app] = consumer_app
       end
 
-      it { should eql "#{consumer_app.uri}#{content_path}#{utm_string}" }
+      it { is_expected.to eql "#{consumer_app.uri}#{content_path}#{utm_string}" }
     end
 
     context 'consumer_app not set; @base_uri set from controller' do
@@ -75,7 +75,7 @@ describe MarketPostsHelper, type: :helper do
         Thread.current[:consumer_app] = nil
       end
 
-      it { should eql "http://www.dailyuv.com/uvmarket" }
+      it { is_expected.to eql "http://www.dailyuv.com/uvmarket" }
     end
   end
 end

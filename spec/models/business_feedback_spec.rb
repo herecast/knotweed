@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BusinessFeedback do
+describe BusinessFeedback, :type => :model do
 
   context 'after saving' do
     let(:business_profile) { FactoryGirl.create :business_profile }

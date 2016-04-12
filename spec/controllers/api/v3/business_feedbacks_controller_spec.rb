@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::BusinessFeedbacksController do
+describe Api::V3::BusinessFeedbacksController, :type => :controller do
   before do
     @user = FactoryGirl.create :user
     api_authenticate user: @user

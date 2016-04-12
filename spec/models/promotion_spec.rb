@@ -19,11 +19,11 @@
 
 require 'spec_helper'
 
-describe Promotion do
+describe Promotion, :type => :model do
   before do
     @org = FactoryGirl.create(:organization)
     @content = FactoryGirl.create(:content)
-    Promotion.any_instance.stub(:update_active_promotions).and_return(true)
+    allow_any_instance_of(Promotion).to receive(:update_active_promotions).and_return(true)
   end
 
   after do

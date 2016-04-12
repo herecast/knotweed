@@ -4,22 +4,22 @@ describe ImportJobsHelper, type: :helper do
   describe '#alert_class_for_status' do
     context 'Given argument "success"' do
       subject { helper.alert_class_for_status('success') }
-      it { should eql 'success' }
+      it { is_expected.to eql 'success' }
     end
 
     context 'Given argument "failed"' do
       subject { helper.alert_class_for_status('failed') }
-      it { should eql 'error' }
+      it { is_expected.to eql 'error' }
     end
 
     context 'Given argument "running"' do
       subject { helper.alert_class_for_status('running') }
-      it { should eql 'info' }
+      it { is_expected.to eql 'info' }
     end
 
     context 'Given argument "anything else..."' do
       subject { helper.alert_class_for_status('anything else...') }
-      it { should eql '' }
+      it { is_expected.to eql '' }
     end
   end
 
@@ -46,15 +46,15 @@ describe ImportJobsHelper, type: :helper do
           before do
             allow(job).to receive(:stop_loop).and_return(true)
           end
-          it { should include('stopping') }
+          it { is_expected.to include('stopping') }
         end
 
         context 'Job not #stop_loop' do
           before do
             allow(job).to receive(:stop_loop).and_return(false)
           end
-          it { should_not include('stopping') }
-          it { should include('Stop Job') }
+          it { is_expected.not_to include('stopping') }
+          it { is_expected.to include('Stop Job') }
         end
       end
 
@@ -63,7 +63,7 @@ describe ImportJobsHelper, type: :helper do
           allow(job).to receive(:job_type).and_return(nil)
         end
 
-        it { should include 'in process' }
+        it { is_expected.to include 'in process' }
       end
     end
 
@@ -81,7 +81,7 @@ describe ImportJobsHelper, type: :helper do
           before do
             allow(job).to receive(:run_at).and_return(Time.now)
           end
-          it { should include 'Schedule Job' }
+          it { is_expected.to include 'Schedule Job' }
         end
 
         context 'job #run_at is not present' do
@@ -89,7 +89,7 @@ describe ImportJobsHelper, type: :helper do
             allow(job).to receive(:run_at).and_return(nil)
           end
 
-          it { should include 'Run Job' }
+          it { is_expected.to include 'Run Job' }
         end
       end
 
@@ -98,7 +98,7 @@ describe ImportJobsHelper, type: :helper do
           allow(job).to receive(:next_scheduled_run).and_return(1.day.from_now)
         end
 
-        it { should include 'Cancel Scheduled Runs' }
+        it { is_expected.to include 'Cancel Scheduled Runs' }
       end
     end
   end
@@ -114,13 +114,13 @@ describe ImportJobsHelper, type: :helper do
       context 'action run' do
         subject { helper.get_path_for_job_action('run', job) }
 
-        it { should eql run_publish_job_path(job) }
+        it { is_expected.to eql run_publish_job_path(job) }
       end
 
       context 'action cancel' do
         subject { helper.get_path_for_job_action('cancel', job) }
 
-        it { should eql cancel_publish_job_path(job) }
+        it { is_expected.to eql cancel_publish_job_path(job) }
       end
     end
 
@@ -134,13 +134,13 @@ describe ImportJobsHelper, type: :helper do
       context 'action run' do
         subject { helper.get_path_for_job_action('run', job) }
 
-        it { should eql run_import_job_path(job) }
+        it { is_expected.to eql run_import_job_path(job) }
       end
 
       context 'action cancel' do
         subject { helper.get_path_for_job_action('cancel', job) }
 
-        it { should eql cancel_import_job_path(job) }
+        it { is_expected.to eql cancel_import_job_path(job) }
       end
     end
   end

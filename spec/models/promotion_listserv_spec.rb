@@ -11,7 +11,7 @@
 
 require 'spec_helper'
 
-describe PromotionListserv do
+describe PromotionListserv, :type => :model do
 
   describe 'create_from_content' do
 
@@ -19,23 +19,23 @@ describe PromotionListserv do
       list = FactoryGirl.create :listserv
       content = FactoryGirl.create :content
       pl = PromotionListserv.create_from_content(content, list)
-      pl.is_a?(PromotionListserv).should be_true
-      pl.promotion.is_a?(Promotion).should be_true
-      pl.promotion.content.should == content
+      expect(pl.is_a?(PromotionListserv)).to be_truthy
+      expect(pl.promotion.is_a?(Promotion)).to be_truthy
+      expect(pl.promotion.content).to eq(content)
     end
 
     it 'should fail if the listserv is inactive' do
       list = FactoryGirl.create :listserv, active: false
       content = FactoryGirl.create :content
       pl = PromotionListserv.create_from_content(content, list)
-      pl.should be_false
+      expect(pl).to be_falsey
     end
 
     it 'should fail if there is no authoremail present' do
       list = FactoryGirl.create :listserv
       content = FactoryGirl.create :content, authoremail: nil
       pl = PromotionListserv.create_from_content(content, list)
-      pl.should be_false
+      expect(pl).to be_falsey
       content = FactoryGirl.create :content
     end
       
@@ -53,11 +53,11 @@ describe PromotionListserv do
 
     it 'should update sent_at with the current time' do
       @pl.reload
-      @pl.sent_at.present?.should be_true
+      expect(@pl.sent_at.present?).to be_truthy
     end
 
     it 'should update the locations of the content record' do
-      @content.locations.include?(@loc1).should be_true
+      expect(@content.locations.include?(@loc1)).to be_truthy
     end
 
   end

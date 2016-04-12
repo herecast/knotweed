@@ -1,22 +1,20 @@
 source 'https://rubygems.org'
 
-ruby '2.0.0'
-gem 'rails', '~> 3.2.22.2'
-group :assets do
-  gem 'sass-rails',   '~> 3.2.3'
-  gem 'coffee-rails', '~> 3.2.1'
-  gem 'uglifier', '~> 2.4.0'
-  gem 'compass-rails', '~> 1.1.3'
-  gem 'turbo-sprockets-rails3', '~> 0.3.11'
-end
+ruby '2.2.4'
+gem 'rails', '~> 4.2.0'
+gem 'protected_attributes', '~> 1.1.3'
+gem 'sass-rails', '~> 5.0.4'
+gem 'coffee-rails', '~> 4.1.1'
+gem 'uglifier', '~> 2.4.0'
+gem 'compass-rails', '~> 3.0.2'
 gem 'jquery-rails', '~> 3.1.2'
-gem "mysql2", '~> 0.3.14'
-gem "haml-rails", "~> 0.4"
+gem "mysql2", '~> 0.3.18'
+gem "haml-rails", '~> 0.9.0'
 gem "database_cleaner", "~> 1.2.0", :group => :test
-gem "devise", "~> 3.2.2"
-gem 'cancancan', '~> 1.10.0'
-gem "rolify", "~> 3.2.0"
-gem "simple_form", "~> 2.1.1"
+gem "devise", '~> 3.5.6'
+gem 'cancancan', '~> 1.13.1'
+gem "rolify", '~> 5.1.0'
+gem "simple_form", '~> 3.2.1'
 gem "quiet_assets", "~> 1.0.2", :group => :development
 gem "capistrano", "~> 3.1.0"
 gem "capistrano-bundler", "~> 1.1.1"
@@ -29,7 +27,8 @@ gem 'rinku', "~> 1.7.3"
 group :development, :test do
   gem "factory_girl_rails", "~> 4.3.0"
   gem 'faker', '~> 1.6.1'
-  gem "rspec-rails", "~> 2.14.0"
+  gem "rspec-rails", '~> 3.4'
+  gem 'rspec', '~> 3.4'
   gem 'guard-bundler', require:false
   gem 'guard-rspec', require:false
   gem 'guard-zeus', require: false
@@ -52,7 +51,7 @@ gem 'carrierwave-mimetype-fu', '~> 0.0.2'
 gem "figaro", '~> 0.7.0'
 
 
-gem 'jquery-datatables-rails', '~> 3.3.0'
+gem 'jquery-datatables-rails', '~> 3.4.0'
 
 gem 'delayed_job_active_record', '~> 4.0.0'
 gem 'daemons', '~> 1.1.9'
@@ -84,8 +83,8 @@ end
 group :pry do
   gem "pry", '~> 0.10.3'
   gem "pry-rails", '~> 0.3.4'
-  gem "pry-debugger", '~> 0.2.3'
-  gem 'debugger', '~> 1.6.8'
+  #gem "pry-debugger", '~> 0.2.3'
+  gem 'byebug'
 end
 
 gem "turbolinks", '~> 2.2.0'
@@ -99,13 +98,13 @@ gem 'sparql-client', '~> 1.1.3'
 
 gem 'chronic', '~> 0.10.2'
 gem 'geocoder', '~> 1.2.4'
-gem 'thinking-sphinx', "~> 3.1.4"
+gem 'thinking-sphinx', '~> 3.1.4'
+gem 'joiner', '~> 0.3.4'
 gem 'ts-datetime-delta', '~> 2.0.2', require: 'thinking_sphinx/deltas/datetime_delta'
 gem 'jbuilder', '~> 2.1.3'
 gem 'mixpanel_client', '~> 4.1.1'
 gem 'mixpanel-ruby', '~> 1.4.0' # official ruby mixpanel client. later versions need ruby > 2.0
 
-gem "select2-rails", '~> 3.5.9.1'
 gem "legato", '~> 0.4.0'
 gem "google-api-client", '~> 0.7.1'
 gem 'oauth2', '~> 1.0.0'
@@ -127,3 +126,6 @@ gem 'icalendar', '~> 2.3'
 # so we have to specify these two versions here. Same with tins
 gem 'net-ssh', '~> 2.7.0'
 gem 'tins', '~> 0.13.1'
+
+# need to keep older sanitize with Rails 4.2 upgrde
+gem 'rails-deprecated_sanitizer', '~> 1.0.3'

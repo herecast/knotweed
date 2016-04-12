@@ -12,7 +12,7 @@
 
 require 'spec_helper'
 
-describe PublishRecord do
+describe PublishRecord, :type => :model do
   before { @publish_record = FactoryGirl.create(:publish_record) }
 
   describe "#files" do
@@ -21,7 +21,7 @@ describe PublishRecord do
     context "first call" do
       it "should create a new, empty array" do
         expect(subject).to be_a(Array)
-        expect(subject).to have(0).entries
+        expect(subject.entries.size).to eq(0)
       end
     end
 

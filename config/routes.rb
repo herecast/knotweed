@@ -11,7 +11,6 @@ Knotweed::Application.routes.draw do
     post '/api/v3/password_resets', to: 'api/v3/passwords#create'
     put '/api/v3/password_resets', to: 'api/v3/passwords#update'
   end
-  root :to => redirect("#{"#{ENV['RAILS_RELATIVE_URL_ROOT']}" unless ENV['RAILS_RELATIVE_URL_ROOT'].nil?}/users/sign_in")
   resources :users
 
   get "/", to: "dashboard#index", as: :dashboard
@@ -53,21 +52,21 @@ Knotweed::Application.routes.draw do
   resources :repositories
   get "repositories/:id/clear_published_contents", to: "repositories#clear_published_contents", as: :clear_published_contents
 
-  match 'annotation_reports/create/:content_id', to: "annotation_reports#create", as: :create_annotation_report
-  match 'annotation_reports/export/:content_id', to: "annotation_reports#export", as: :export_annotation_reports
-  match 'annotation_reports/:annotation_report_id/annotations/:annotation_id/edit', to: "annotations#edit", as: :edit_annotation
+  post 'annotation_reports/create/:content_id', to: "annotation_reports#create", as: :create_annotation_report
+  get 'annotation_reports/export/:content_id', to: "annotation_reports#export", as: :export_annotation_reports
+  get 'annotation_reports/:annotation_report_id/annotations/:annotation_id/edit', to: "annotations#edit", as: :edit_annotation
   resources :annotation_reports, only: [:edit, :destroy]
   get 'annotation_reports/:id/table_row' => 'annotation_reports#table_row', as: :annotation_report_table_row
 
-  match 'annotations/:id/accept(/:accepted)' => "annotations#accept_annotation", as: :accept_annotation
+  get 'annotations/:id/accept(/:accepted)' => "annotations#accept_annotation", as: :accept_annotation
 
-  match 'contacts/new(/:model(/:id))', to: "contacts#new", as: :new_contact
+  get 'contacts/new(/:model(/:id))', to: "contacts#new", as: :new_contact
 
-  match 'publish_jobs/contents_count' => "publish_jobs#contents_count", as: :contents_count
-  match 'publish_jobs/contents_count/:id' => "publish_jobs#job_contents_count", as: :job_contents_count
-  match 'publish_jobs/:id/file_archive.zip' => "publish_jobs#file_archive", as: :job_file_archive
+  get 'publish_jobs/contents_count' => "publish_jobs#contents_count", as: :contents_count
+  get 'publish_jobs/contents_count/:id' => "publish_jobs#job_contents_count", as: :job_contents_count
+  get 'publish_jobs/:id/file_archive.zip' => "publish_jobs#file_archive", as: :job_file_archive
 
-  match "parsers/:parser_id/new_import_job" => "import_jobs#new", as: :new_import_job_for_parser
+  get "parsers/:parser_id/new_import_job" => "import_jobs#new", as: :new_import_job_for_parser
 
   # NOTE: these calls must end in :repository_id so that the javascript
   # that updates the action buttons on the onesie page works correctly
@@ -81,8 +80,7 @@ Knotweed::Application.routes.draw do
   get 'publish_jobs/:id/run_job', to: 'publish_jobs#run_job', as: :run_publish_job
   delete 'publish_jobs/:id/cancel', to: 'publish_jobs#cancel_job', as: :cancel_publish_job
   get 'publish_jobs/:id/archive', to: 'publish_jobs#archive', as: :archive_publish_job
-
-  match 'parsers/:id/parameters', to: "parsers#parameters"
+  get 'parsers/:id/parameters', to: "parsers#parameters"
   post '/contents/category_correction', to: 'contents#category_correction'
   post '/contents/category_correction_reviewed', to: 'contents#category_correction_reviwed'
   get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', :defaults => {:format => 'ics'}, as: :event_instances_ics
@@ -106,8 +104,6 @@ Knotweed::Application.routes.draw do
       get '/venue_locations', to: 'business_locations#index', as: :venue_locations,
         defaults: { autocomplete: true, max_results: 5 }
       get '/locations', to: 'locations#index', as: :locations
-      get '/related_promotion', to: 'contents#related_promotion', as: :related_promotion
-      get '/similar_content', to: 'contents#similar_content', as: :similar_content
       resources 'contents', only: [:index]
       get '/contents/:id/related_promotion', to: 'contents#related_promotion', as: :related_promotion
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content

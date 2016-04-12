@@ -77,4 +77,4 @@
         %td.actions
           = link_to "edit", edit_market_post_path(id: c.id, index: i, page: params[:page]), class: "btn btn-mini btn-warning"
           - unless c.published?
-            = link_to "delete", market_post_path(c), method: :delete, remote: true, confirm: "Are you sure?", class: "btn btn-mini btn-danger"
+            = link_to "delete", market_post_path(c), method: :delete, remote: true, data: { confirm: "Are you sure?" }, class: "btn btn-mini btn-danger"

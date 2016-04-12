@@ -82,10 +82,10 @@ class Content < ActiveRecord::Base
   has_many :promotion_banners, through: :content_promotion_banner_impressions
 
   has_and_belongs_to_many :publish_records
-  has_and_belongs_to_many :repositories, :uniq => true, after_add: :mark_published
+  has_and_belongs_to_many :repositories, -> { uniq }, after_add: :mark_published
   has_and_belongs_to_many :locations
   
-  has_many :images, order: "`primary` DESC", as: :imageable, inverse_of: :imageable, dependent: :destroy
+  has_many :images, -> { order("images.primary DESC") }, as: :imageable, inverse_of: :imageable, dependent: :destroy
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes, :images
 
@@ -252,7 +252,7 @@ class Content < ActiveRecord::Base
   end
 
   def category= new_cat
-    cat = ContentCategory.find_or_create_by_name new_cat unless new_cat.nil?
+    cat = ContentCategory.find_or_create_by(name: new_cat) unless new_cat.nil?
     self.content_category = cat 
   end
   
@@ -617,7 +617,7 @@ class Content < ActiveRecord::Base
     end
 
     if cat.present?
-      cat_id = ContentCategory.find_or_create_by_name(cat).id 
+      cat_id = ContentCategory.find_or_create_by(name: cat).id 
       update_attributes(content_category_id: cat_id)
     end
   end
@@ -975,7 +975,7 @@ class Content < ActiveRecord::Base
     elsif category.present?
       category
     else 
-      c = Category.find_or_create_by_name(source_category)
+      c = Category.find_or_create_by(name: source_category)
       if c.channel.present?
         c.channel.name
       else
@@ -1055,23 +1055,23 @@ class Content < ActiveRecord::Base
       end 
     end
     if content_id.present?
-      banner = PromotionBanner.for_content(content_id).has_inventory.first(order: 'RAND()')
+      banner = PromotionBanner.for_content(content_id).has_inventory.order('RAND()').first
     elsif banner.blank? # banner may already be populated from the first conitional
       select_score = nil
       # fall back to random ads
       select_method = 'boost'
-      banner = PromotionBanner.boost.has_inventory.first(order: 'RAND()')
+      banner = PromotionBanner.boost.has_inventory.order('RAND()').first
       unless banner.present?
         select_method = 'paid'
-        banner = PromotionBanner.active.paid.has_inventory.first(order: 'RAND()')
+        banner = PromotionBanner.active.paid.has_inventory.order('RAND()').first
       end
       unless banner.present?
         select_method = 'active'
-        banner = PromotionBanner.active.has_inventory.first(order: 'RAND()')
+        banner = PromotionBanner.active.has_inventory.order('RAND()').first
       end
       unless banner.present?
         select_method = 'active no inventory'
-        banner = PromotionBanner.active.first(order: 'RAND()')
+        banner = PromotionBanner.active.order('RAND()').first
       end
     end
     return [banner, select_score, select_method]
@@ -1101,7 +1101,7 @@ class Content < ActiveRecord::Base
 	    # and use send to update the content
 	    # not necessary for now.
 	    cat = response_hash[:category].to_s.split("/")[-1]
-	    cat = ContentCategory.find_or_create_by_name(cat).id unless cat.nil?
+	    cat = ContentCategory.find_or_create_by(name: cat).id unless cat.nil?
 	    update_attributes(content_category_id: cat)
 		end
   end
@@ -1426,7 +1426,7 @@ class Content < ActiveRecord::Base
       order: 'latest_activity DESC',
       group_by: :root_parent_id,
       with: {
-        root_content_category_id: ContentCategory.find_or_create_by_name('talk_of_the_town').id
+        root_content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id
       },
       sql: { include: [:images, :organization, :root_content_category] }
     }

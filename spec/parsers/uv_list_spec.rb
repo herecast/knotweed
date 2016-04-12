@@ -21,10 +21,10 @@ describe 'parse upper valley list files' do
 
     parse_posts(all_posts, results)
 
-    results.should_not == nil
+    expect(results).not_to eq(nil)
     results.each do |post|
-        post['source'].should == 'Listserv'
-        post['content_locations'][0].should == 'Upper Valley,'
+        expect(post['source']).to eq('Listserv')
+        expect(post['content_locations'][0]).to eq('Upper Valley,')
     end
 
   end

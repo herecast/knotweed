@@ -52,7 +52,7 @@ class PromotionListserv < ActiveRecord::Base
     listservs = Listserv.where(id: listserv_ids, active: true)
 
     outbound_mail = ReversePublisher.mail_content_to_listservs(content, listservs, consumer_app)
-    outbound_mail.deliver
+    outbound_mail.deliver_now
     sent_time = DateTime.now
 
     promotion_listservs = []
@@ -65,7 +65,7 @@ class PromotionListserv < ActiveRecord::Base
       promotion_listservs << p
     end
 
-    ReversePublisher.send_copy_to_sender_from_dailyuv(content, outbound_mail).deliver
+    ReversePublisher.send_copy_to_sender_from_dailyuv(content, outbound_mail).deliver_now
 
     promotion_listservs
   end

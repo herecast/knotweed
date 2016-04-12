@@ -30,7 +30,7 @@ class ImportLocation < ActiveRecord::Base
   
   validates_presence_of :city
 
-  default_scope where("status = 1 AND (region_id=0 or region_id=1)")
+  default_scope { where("status = 1 AND (region_id=0 or region_id=1)") }
 
   STATUS_GOOD = 1
   STATUS_REVIEW = 2

@@ -8,8 +8,7 @@ if defined?(Bundler)
   Bundler.require(*Rails.groups(:assets => %w(development test)))
   Bundler.require(:pry) unless ENV['RM_INFO'] || Rails.env.production?
   Bundler.require(:rubymine) if ENV['RM_INFO']
-  # If you want your assets lazily compiled in production, use this line
-  # Bundler.require(:default, :assets, Rails.env)
+  Bundler.require(:default, Rails.env)
 end
 
 module Knotweed
@@ -64,12 +63,6 @@ module Knotweed
     # This is necessary if your schema can't be completely dumped by the schema dumper,
     # like if you have constraints or database-specific column types
     # config.active_record.schema_format = :sql
-
-    # Enforce whitelist mode for mass assignment.
-    # This will create an empty whitelist of attributes available for mass-assignment for all models
-    # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
-    # parameters by using an attr_accessible or attr_protected declaration.
-    config.active_record.whitelist_attributes = true
 
     config.action_mailer.delivery_method = :postmark
     config.action_mailer.postmark_settings = { api_token: Figaro.env.postmark_api_token }

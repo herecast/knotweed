@@ -134,7 +134,7 @@ class ImportJob < ActiveRecord::Base
     log.info "#{Time.now}: parser: #{PARSER_PATH}/#{parser.filename}"
     log.error "#{Time.now}: error: #{exception}"
     if notifyees.present?
-      JobMailer.error_email(last_import_record, exception).deliver
+      JobMailer.error_email(last_import_record, exception).deliver_now
     end
     log.error "#{Time.now}: backtrace: #{exception.backtrace.join("\n")}"
     update_attribute(:status, "failed")
