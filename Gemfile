@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.0.0'
+ruby '2.2.4'
 gem 'rails', '~> 4.2.0'
 gem 'protected_attributes', '~> 1.1.3'
 gem 'sass-rails', '~> 5.0.4'
@@ -82,8 +82,8 @@ end
 group :pry do
   gem "pry", '~> 0.10.3'
   gem "pry-rails", '~> 0.3.4'
-  gem "pry-debugger", '~> 0.2.3'
-  gem 'debugger', '~> 1.6.8'
+  #gem "pry-debugger", '~> 0.2.3'
+  gem 'byebug'
 end
 
 gem "turbolinks", '~> 2.2.0'
