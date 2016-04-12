@@ -16,7 +16,7 @@ describe Api::V3::UserSerializer do
     end
 
     it 'should list all managed organizations and their children' do
-      serialized_object['managed_organization_ids'].should match_array([@org.id, @child_org.id])
+      expect(serialized_object['managed_organization_ids']).to match_array([@org.id, @child_org.id])
     end
   end
 end

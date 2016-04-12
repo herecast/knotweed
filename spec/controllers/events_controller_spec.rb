@@ -104,12 +104,12 @@ describe EventsController, :type => :controller  do
 
         @q[:event_featured_true] = "1"
         get :index, q: @q
-        assigns(:event_instances).length.should == 1
+        expect(assigns(:event_instances).length).to eq(1)
       end
 
       it 'return all events' do
         get :index, q: @q
-        assigns(:event_instances).length.should == 4
+        expect(assigns(:event_instances).length).to eq(4)
       end
 
       it 'return non-featured events' do
@@ -118,7 +118,7 @@ describe EventsController, :type => :controller  do
 
         @q[:event_featured_true] = "0"
         get :index, q: @q
-        assigns(:event_instances).length.should == 3
+        expect(assigns(:event_instances).length).to eq(3)
       end
     end
   end

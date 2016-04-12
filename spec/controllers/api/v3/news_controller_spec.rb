@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::NewsController do
+describe Api::V3::NewsController, :type => :controller do
   before do
     @news_cat = FactoryGirl.create :content_category, name: 'news'
   end
@@ -27,12 +27,12 @@ describe Api::V3::NewsController do
 
     it 'has 200 status code' do
       subject
-      response.code.should eq('200')
+      expect(response.code).to eq('200')
     end
 
     it 'should allow querying by location_id' do
       get :index, format: :json, location_id: @third_location.id
-      assigns(:news).select{|c| c.locations.include? @third_location }.count.should eq(assigns(:news).count)
+      expect(assigns(:news).select{|c| c.locations.include? @third_location }.count).to eq(assigns(:news).count)
     end
 
     context 'querying by organization name' do
@@ -47,7 +47,7 @@ describe Api::V3::NewsController do
       subject! { get :index, format: :json, organization: @org.name }
 
       it 'should return content specific to that organization' do
-        assigns(:news).should eql([@org_and_loc_content])
+        expect(assigns(:news)).to eq([@org_and_loc_content])
       end
     end
 
@@ -75,12 +75,12 @@ describe Api::V3::NewsController do
     context 'not signed in' do
       it 'should respond with news items' do
         subject
-        assigns(:news).select{|c| c.content_category_id == @news_cat.id }.count.should eq(assigns(:news).count)
+        expect(assigns(:news).select{|c| c.content_category_id == @news_cat.id }.count).to eq(assigns(:news).count)
       end
 
       it 'should respond with news items in any location' do
         subject
-        assigns(:news).count.should eq(Content.where(content_category_id: @news_cat.id).count)
+        expect(assigns(:news).count).to eq(Content.where(content_category_id: @news_cat.id).count)
       end
     end
 
@@ -91,12 +91,12 @@ describe Api::V3::NewsController do
 
       it 'should return news item that match any passed in location_id' do
         get :index, format: :json, location_id: @user.location.id
-        assigns(:news).select{|c| c.locations.include? @user.location }.count.should eq(assigns(:news).count)
+        expect(assigns(:news).select{|c| c.locations.include? @user.location }.count).to eq(assigns(:news).count)
       end
 
       it 'should return news item in any location when location_id is not sent' do
         subject
-        assigns(:news).count.should eq(Content.where(content_category_id: @news_cat.id).count)
+        expect(assigns(:news).count).to eq(Content.where(content_category_id: @news_cat.id).count)
       end
     end
 
@@ -109,7 +109,7 @@ describe Api::V3::NewsController do
 
       it 'should return matching results' do
         subject
-        assigns(:news).should eql([@content])
+        expect(assigns(:news)).to eq([@content])
       end
     end
 
@@ -124,7 +124,7 @@ describe Api::V3::NewsController do
 
       it 'should filter results by consumer app\'s organizations' do
         subject
-        assigns(:news).should eql([@content])
+        expect(assigns(:news)).to eq([@content])
       end
 
       describe 'querying for an organization not associated with that consumer app' do
@@ -137,7 +137,7 @@ describe Api::V3::NewsController do
         subject! { get :index, organization: @org2.name }
 
         it 'should not return anything' do
-          JSON.parse(response.body)['news'].should be_empty
+          expect(JSON.parse(response.body)['news']).to be_empty
         end
       end
     end
@@ -152,12 +152,12 @@ describe Api::V3::NewsController do
 
     it 'has 200 status code' do
       subject
-      response.code.should eq('200')
+      expect(response.code).to eq('200')
     end
 
     it 'appropriately loads the news object' do
       subject
-      assigns(:news).should eq(@news)
+      expect(assigns(:news)).to eq(@news)
     end
 
     it 'should increment view count' do
@@ -179,7 +179,7 @@ describe Api::V3::NewsController do
 
         it 'should include the admin edit url in the response' do
           subject
-          JSON.parse(response.body)['news']['admin_content_url'].should be_present
+          expect(JSON.parse(response.body)['news']['admin_content_url']).to be_present
         end
       end
 
@@ -197,7 +197,7 @@ describe Api::V3::NewsController do
 
       it 'should respond with nothing' do
         get :show, id: @c.id
-        response.code.should eq '204'
+        expect(response.code).to eq '204'
       end
     end
         
@@ -213,7 +213,7 @@ describe Api::V3::NewsController do
 
       it 'should correctly load the content' do
         subject
-        assigns(:news).should eq(@news)
+        expect(assigns(:news)).to eq(@news)
       end
     end
 
@@ -226,7 +226,7 @@ describe Api::V3::NewsController do
         api_authenticate consumer_app: @consumer_app
       end
 
-      it { subject; response.status.should eq 204 }
+      it { subject; expect(response.status).to eq 204 }
     end
   end
 end

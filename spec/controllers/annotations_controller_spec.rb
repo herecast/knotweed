@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe AnnotationsController do
+describe AnnotationsController, :type => :controller do
   let!(:annotation) { FactoryGirl.create :annotation }
   before do
     @user = FactoryGirl.create :admin
@@ -33,5 +33,4 @@ describe AnnotationsController do
       expect(assigns(:annotation_report)).to eq annotation.annotation_report
     end
   end
-
 end

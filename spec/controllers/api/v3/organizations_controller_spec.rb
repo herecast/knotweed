@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::OrganizationsController do
+describe Api::V3::OrganizationsController, :type => :controller do
   describe 'GET index' do
     before do
       @organization = FactoryGirl.create :organization
@@ -20,19 +20,19 @@ describe Api::V3::OrganizationsController do
 
     it 'has 200 status code' do
       subject
-      response.code.should eq('200')
+      expect(response.code).to eq('200')
     end
 
     it 'only responds with organizations associated with news content' do
       subject
-      assigns(:organizations).include?(@organization).should eq true
-      assigns(:organizations).include?(@non_news_org).should eq false
-      assigns(:organizations).include?(@difft_app_org).should eq true
+      expect(assigns(:organizations).include?(@organization)).to eq true
+      expect(assigns(:organizations).include?(@non_news_org)).to eq false
+      expect(assigns(:organizations).include?(@difft_app_org)).to eq true
     end
 
     it 'filters by consumer app if requesting app is available' do
       get :index, format: :json, consumer_app_uri: @consumer_app.uri
-      assigns(:organizations).should eql([@organization])
+      expect(assigns(:organizations)).to eq([@organization])
     end
 
     describe 'with a list of organization ids' do
@@ -44,12 +44,12 @@ describe Api::V3::OrganizationsController do
 
       it 'should respond with 200' do
         subject
-        response.code.should eq '200'
+        expect(response.code).to eq '200'
       end
 
       it 'should respond with the specified organizations' do
         subject
-        assigns(:organizations).should match_array @list_of_orgs
+        expect(assigns(:organizations)).to match_array @list_of_orgs
       end
 
       context 'with consumer app specified' do
@@ -60,7 +60,7 @@ describe Api::V3::OrganizationsController do
 
         it 'should limit the response to organizations associated with the consumer app' do
           subject
-          assigns(:organizations).should match_array([@list_of_orgs[0], @list_of_orgs[1]])
+          expect(assigns(:organizations)).to match_array([@list_of_orgs[0], @list_of_orgs[1]])
         end
       end
     end
@@ -76,7 +76,7 @@ describe Api::V3::OrganizationsController do
     context 'not signed in' do
       it 'should respond with 403' do
         subject
-        response.code.should eq '403'
+        expect(response.code).to eq '403'
       end
     end
 
@@ -88,7 +88,7 @@ describe Api::V3::OrganizationsController do
 
       it 'should respond with 403' do
         subject
-        response.code.should eq '403'
+        expect(response.code).to eq '403'
       end
     end
 
@@ -108,7 +108,7 @@ describe Api::V3::OrganizationsController do
         context 'without org being associated with consumer app' do
           it 'should respond with a 204' do
             subject
-            response.code.should eq '204'
+            expect(response.code).to eq '204'
           end
         end
 
@@ -119,12 +119,12 @@ describe Api::V3::OrganizationsController do
 
           it 'should respond with a 200' do
             subject
-            response.code.should eq '200'
+            expect(response.code).to eq '200'
           end
 
           it 'should load the organization' do
             subject
-            assigns(:organization).should eq @org1
+            expect(assigns(:organization)).to eq @org1
           end
         end
       end

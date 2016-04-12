@@ -1,7 +1,7 @@
 require 'spec_helper'
 require "cancan/matchers"
 
-describe Ability do
+describe Ability, :type => :model do
   before do
     # ensure that -- regardless of spec order --
     # users are not "logged in" during this execution
@@ -13,17 +13,17 @@ describe Ability do
     let(:user) { nil }
 
     context "when not logged in" do
-      it { should_not be_able_to(:manage, :all) }
-      it { should_not be_able_to(:access, :rails_admin) }
-      it { should_not be_able_to(:access, :admin) }
+      it { is_expected.not_to be_able_to(:manage, :all) }
+      it { is_expected.not_to be_able_to(:access, :rails_admin) }
+      it { is_expected.not_to be_able_to(:access, :admin) }
     end
 
     context "when is an admin user" do
       let(:user){ FactoryGirl.create(:admin) }
 
-      it{ should be_able_to(:manage, :all) }
-      it{ should be_able_to(:access, :rails_admin) }
-      it{ should be_able_to(:access, :admin) }
+      it{ is_expected.to be_able_to(:manage, :all) }
+      it{ is_expected.to be_able_to(:access, :rails_admin) }
+      it{ is_expected.to be_able_to(:access, :admin) }
     end
 
     context "when is an organization manager" do
@@ -39,11 +39,11 @@ describe Ability do
 
       let(:user){ @user }
 
-      it{ should be_able_to(:access, :admin) }
-      it{ should be_able_to(:manage, @org) }
-      it{ should be_able_to(:manage, @child) }
-      it{ should be_able_to(:manage, @org_content) }
-      it{ should be_able_to(:manage, @child_content) }
+      it{ is_expected.to be_able_to(:access, :admin) }
+      it{ is_expected.to be_able_to(:manage, @org) }
+      it{ is_expected.to be_able_to(:manage, @child) }
+      it{ is_expected.to be_able_to(:manage, @org_content) }
+      it{ is_expected.to be_able_to(:manage, @child_content) }
     end
 
     context "when is an event manager" do
@@ -60,10 +60,10 @@ describe Ability do
 
       let(:user){ @user }
 
-      it{ should be_able_to(:access, :dashboard) }
-      it{ should be_able_to(:manage, @event.content) }
-      it{ should be_able_to(:manage, @event.venue) }
-      it{ should be_able_to(:manage, @content) }
+      it{ is_expected.to be_able_to(:access, :dashboard) }
+      it{ is_expected.to be_able_to(:manage, @event.content) }
+      it{ is_expected.to be_able_to(:manage, @event.venue) }
+      it{ is_expected.to be_able_to(:manage, @content) }
       
     end
 
@@ -76,8 +76,8 @@ describe Ability do
 
       let(:user){ @user }
 
-      it { should be_able_to(:manage, @content) }
-      it { should_not be_able_to(:manage, @other_content) }
+      it { is_expected.to be_able_to(:manage, @content) }
+      it { is_expected.not_to be_able_to(:manage, @other_content) }
     end
   end
 end

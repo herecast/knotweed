@@ -16,7 +16,7 @@
 
 require 'spec_helper'
 
-describe EventInstance do
+describe EventInstance, :type => :model do
   before do
     @content = FactoryGirl.create :content, raw_content: 'cool description'
     @event = FactoryGirl.create :event, content: @content, subtitle: 'helpful subtitle'

@@ -21,7 +21,7 @@ describe EventsHelper, type: :helper do
         @event.cost_type = :donation
       end
 
-      it { should eql 'donation - 9.99' }
+      it { is_expected.to eql 'donation - 9.99' }
     end
 
     context 'When cost, but no cost_type present;' do
@@ -30,7 +30,7 @@ describe EventsHelper, type: :helper do
         @event.cost_type = nil
       end
 
-      it { should eql '9.99' }
+      it { is_expected.to eql '9.99' }
     end
 
     context 'When no cost, but cost_type present;' do
@@ -39,7 +39,7 @@ describe EventsHelper, type: :helper do
         @event.cost_type = :free
       end
 
-      it { should eql 'free' }
+      it { is_expected.to eql 'free' }
     end
   end
 
@@ -50,7 +50,7 @@ describe EventsHelper, type: :helper do
       before do
         params[:reset] = true
       end
-      it { should be nil }
+      it { is_expected.to be nil }
     end
 
     context 'session[:events_search] exists' do
@@ -85,7 +85,7 @@ describe EventsHelper, type: :helper do
         Thread.current[:consumer_app] = consumer_app
       end
 
-      it { should eql "#{consumer_app.uri}#{event_path}#{utm_string}" }
+      it { is_expected.to eql "#{consumer_app.uri}#{event_path}#{utm_string}" }
     end
 
     context 'consumer_app not set; @base_uri set from controller' do
@@ -106,7 +106,7 @@ describe EventsHelper, type: :helper do
         Thread.current[:consumer_app] = nil
       end
 
-      it { should eql "http://www.dailyuv.com/events" }
+      it { is_expected.to eql "http://www.dailyuv.com/events" }
     end
   end
 end

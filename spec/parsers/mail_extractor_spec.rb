@@ -19,7 +19,7 @@ describe 'mail_extractor.rb parser helper' do
       }.each do |k,v|
         it "should use the config value for #{k}" do
           @config[k] = v
-          subject[k].should eq v
+          expect(subject[k]).to eq v
         end
       end
     end
@@ -38,7 +38,7 @@ describe 'mail_extractor.rb parser helper' do
         "content_locations" => ["Norwich,VT"]
       }.each do |k,v|
         it "should correctly determine #{k}" do
-          subject[k].should eq v
+          expect(subject[k]).to eq v
         end
       end
     end
@@ -57,7 +57,7 @@ describe 'mail_extractor.rb parser helper' do
         "content_locations" => ["Bradford,VT"]
       }.each do |k,v|
         it "should correctly determine #{k}" do
-          subject[k].should eq v
+          expect(subject[k]).to eq v
         end
       end
     end
@@ -76,7 +76,7 @@ describe 'mail_extractor.rb parser helper' do
         'content_locations' => ["Bradford,VT"]
       }.each do |k,v|
         it "should correctly assign #{k}" do
-          subject[k].should eq v
+          expect(subject[k]).to eq v
         end
       end
     end
@@ -88,19 +88,19 @@ describe 'mail_extractor.rb parser helper' do
     describe 'typical listserv emails' do
       let(:email) { "norwich@lists.valley.net" }
 
-      it { should be_true }
+      it { is_expected.to be_truthy }
     end
 
     describe 'request listserv emails' do
       let(:email) { "request@lists.valley.net" }
 
-      it { should be_false }
+      it { is_expected.to be_falsey }
     end
 
     describe 'upper valley listserv emails' do
       let(:email) { "uppervalley@lists.valley.net" }
 
-      it { should be_false }
+      it { is_expected.to be_falsey }
     end
   end
 end

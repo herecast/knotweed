@@ -26,7 +26,7 @@
 
 require 'spec_helper'
 
-describe Organization do
+describe Organization, :type => :model do
   before do
     @organization = FactoryGirl.create(:organization)
   end
@@ -66,9 +66,9 @@ describe Organization do
     end
 
     it 'should respond with the descended tree' do
-      @c1.get_all_children.should eq []
-      @s1.get_all_children.should eq [@c1]
-      @organization.get_all_children.should eq [@s1,@s2,@c1,@c2]
+      expect(@c1.get_all_children).to eq []
+      expect(@s1.get_all_children).to eq [@c1]
+      expect(@organization.get_all_children).to eq [@s1,@s2,@c1,@c2]
     end
   end
 end

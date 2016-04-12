@@ -60,7 +60,7 @@ describe 'Businesses Endpoints', type: :request do
         jbusiness = response_json['businesses'].find{|b| b['id'].eql? business.id}
 
         expect(jbusiness).to_not be nil
-        expect(jbusiness['can_edit']).to be_true
+        expect(jbusiness['can_edit']).to be_truthy
       end
     end
 

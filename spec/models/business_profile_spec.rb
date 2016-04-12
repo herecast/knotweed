@@ -19,7 +19,7 @@
 
 require 'spec_helper'
 
-describe BusinessProfile do
+describe BusinessProfile, :type => :model do
 
   describe '#after_destroy' do
     before do
@@ -62,7 +62,7 @@ describe BusinessProfile do
           "Tu-Su|10:00-23:59"
         ]
       }.each do |k,v|
-        it { BusinessProfile.convert_hours_to_standard(k, 'factual').should eq(v) }
+        it { expect(BusinessProfile.convert_hours_to_standard(k, 'factual')).to eq(v) }
       end
     end
   end

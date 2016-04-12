@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::TalkController do
+describe Api::V3::TalkController, :type => :controller do
   before do
     @talk_cat = FactoryGirl.create :content_category, name: 'talk_of_the_town'
     @other_location = FactoryGirl.create :location, city: 'Another City'
@@ -25,7 +25,7 @@ describe Api::V3::TalkController do
     context 'not signed in' do
       it 'should respond with 401 status' do
         subject
-        response.code.should eq('401')
+        expect(response.code).to eq('401')
       end
     end
 
@@ -47,18 +47,18 @@ describe Api::V3::TalkController do
 
         it 'should filter by the app\'s organizations' do
           subject
-          assigns(:talk).should eq([@talk_item])
+          expect(assigns(:talk)).to eq([@talk_item])
         end
       end
 
       it 'has 200 status code' do
         subject
-        response.code.should eq('200')
+        expect(response.code).to eq('200')
       end
 
       it 'should respond with talk items in the user\'s location' do
         subject
-        assigns(:talk).select{|c| c.locations.include? @user.location }.count.should eq(assigns(:talk).count)
+        expect(assigns(:talk).select{|c| c.locations.include? @user.location }.count).to eq(assigns(:talk).count)
       end
     end
   end
@@ -73,12 +73,12 @@ describe Api::V3::TalkController do
 
     it 'has 200 status code' do
       subject
-      response.code.should eq('200')
+      expect(response.code).to eq('200')
     end
 
     it 'appropriately loads the talk object' do
       subject
-      assigns(:talk).should eq(@talk)
+      expect(assigns(:talk)).to eq(@talk)
     end
 
     it 'should increment view_count' do
@@ -92,7 +92,7 @@ describe Api::V3::TalkController do
 
       subject! { get :show, id: @content.id }
 
-      it { response.status.should eq 204 }
+      it { expect(response.status).to eq 204 }
     end
 
     describe 'with repository present' do
@@ -121,8 +121,8 @@ describe Api::V3::TalkController do
 
       it 'should respond with the talk record' do
         subject
-        response.status.should eq 200
-        assigns(:talk).should eq @talk
+        expect(response.status).to eq 200
+        expect(assigns(:talk)).to eq @talk
       end
     end
 
@@ -135,7 +135,7 @@ describe Api::V3::TalkController do
         api_authenticate user: @user, consumer_app: @consumer_app
         subject
       end
-      it { response.status.should eq 204 }
+      it { expect(response.status).to eq 204 }
     end
   end
 
@@ -147,7 +147,7 @@ describe Api::V3::TalkController do
     context 'not signed in' do
       it 'should respond with 401' do
         put :update, id: @talk.content.id
-        response.code.should eq('401')
+        expect(response.code).to eq('401')
       end
     end
 
@@ -161,7 +161,7 @@ describe Api::V3::TalkController do
 
       it 'should respond with 200' do
         subject
-        response.code.should eq('200')
+        expect(response.code).to eq('200')
       end
 
       it 'should create a new Image' do
@@ -170,7 +170,7 @@ describe Api::V3::TalkController do
 
       it 'should associate a new Image with the Content record' do
         subject
-        assigns(:content).reload.images.present?.should eq(true)
+        expect(assigns(:content).reload.images.present?).to eq(true)
       end
     end
   end
@@ -188,7 +188,7 @@ describe Api::V3::TalkController do
     context 'not signed in' do
       it 'should respond with 401' do
         subject
-        response.code.should eq('401')
+        expect(response.code).to eq('401')
       end
     end
 
@@ -199,7 +199,7 @@ describe Api::V3::TalkController do
 
       it 'should respond with 201' do
         subject
-        response.code.should eq('201')
+        expect(response.code).to eq('201')
       end
 
       it 'should create a comment' do
@@ -208,7 +208,7 @@ describe Api::V3::TalkController do
 
       it 'should create an associated content object' do
         expect{subject}.to change{Content.count}.by(1)
-        (assigns(:talk).content.present?).should be true
+        expect(assigns(:talk).content.present?).to be true
       end
 
       context 'with listserv_id' do

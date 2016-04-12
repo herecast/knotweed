@@ -1,14 +1,13 @@
 require 'spec_helper'
 require 'json'
 
-describe Api::V3::UsersController do
+describe Api::V3::UsersController, :type => :controller do
   describe 'GET current_user' do
-    
     describe 'when user not signed in' do
       before { api_authenticate success: false }
       it 'should respond with 401 unuthorized' do
         get :show, format: :json
-        response.code.should eq('401')
+        expect(response.code).to eq('401')
       end
     end
 
@@ -28,12 +27,12 @@ describe Api::V3::UsersController do
       subject! { get :show, format: :json }
 
       it 'should respond with 200' do
-        response.code.should eq('200')
+        expect(response.code).to eq('200')
       end
 
       it 'should return expected fields' do
        desired = expected_user_response @user 
-       JSON.parse(response.body).should eq desired
+       expect(JSON.parse(response.body)).to eq desired
       end
     end
 
@@ -44,7 +43,7 @@ describe Api::V3::UsersController do
         before { api_authenticate success: false }
         it 'should respond with 401 unuthorized' do
           put :update, format: :json
-          response.code.should eq('401')
+          expect(response.code).to eq('401')
         end
       end
 
@@ -63,9 +62,9 @@ describe Api::V3::UsersController do
         subject! { put :update, @new_data }
 
         it 'should not update user' do
-          response.code.should eq '422'
-          assigns(:current_api_user).name.should eq @user.name
-          assigns(:current_api_user).name.should_not eq @new_data[:current_user][:name]
+          expect(response.code).to eq '422'
+          expect(assigns(:current_api_user).name).to eq @user.name
+          expect(assigns(:current_api_user).name).not_to eq @new_data[:current_user][:name]
         end
       end 
 
@@ -93,19 +92,19 @@ describe Api::V3::UsersController do
 
         it 'should update fields' do
           updated_user = assigns(:current_api_user)
-          updated_user.name.should eq @new_data[:current_user][:name]
-          updated_user.location.should eq Location.find @new_data[:current_user][:location_id]
-          updated_user.public_id.should eq @new_data[:current_user][:public_id]
+          expect(updated_user.name).to eq @new_data[:current_user][:name]
+          expect(updated_user.location).to eq Location.find @new_data[:current_user][:location_id]
+          expect(updated_user.public_id).to eq @new_data[:current_user][:public_id]
           
-          updated_user.unconfirmed_email.should eq @new_data[:current_user][:email]
-          updated_user.encrypted_password.should_not eq @new_data[:current_user][:encrypted_password]
-          response.code.should eq '200'
+          expect(updated_user.unconfirmed_email).to eq @new_data[:current_user][:email]
+          expect(updated_user.encrypted_password).not_to eq @new_data[:current_user][:encrypted_password]
+          expect(response.code).to eq '200'
         end
 
         it 'should respond with current_user GET data' do
           #change the test user name to editted name before comparison
           @user.name = @new_data[:current_user][:name]  
-          JSON.parse(response.body).should eq expected_user_response @user
+          expect(JSON.parse(response.body)).to eq expected_user_response @user
         end
 
       end
@@ -128,12 +127,12 @@ describe Api::V3::UsersController do
 
         it 'should not update all fields' do
           updated_user = assigns(:current_api_user)
-          updated_user.name.should eq @new_data[:current_user][:name]
-          updated_user.location.should eq Location.find @new_data[:current_user][:location_id]
+          expect(updated_user.name).to eq @new_data[:current_user][:name]
+          expect(updated_user.location).to eq Location.find @new_data[:current_user][:location_id]
           
-          updated_user.email.should eq @user.email
-          updated_user.encrypted_password.should eq @user.encrypted_password
-          response.code.should eq '200'
+          expect(updated_user.email).to eq @user.email
+          expect(updated_user.encrypted_password).to eq @user.encrypted_password
+          expect(response.code).to eq '200'
         end
 
       end
@@ -155,7 +154,7 @@ describe Api::V3::UsersController do
 
         it 'should provide appropriate reponse' do
           updated_user = assigns(:current_api_user)
-          response.code.should eq '422'
+          expect(response.code).to eq '422'
         end
 
       end
@@ -188,7 +187,7 @@ describe Api::V3::UsersController do
 
             it "should set new image from file type #{extension}" do
               expect(response.status).to eq 200
-              assigns(:current_api_user).avatar_identifier.should include(file.original_filename)
+              expect(assigns(:current_api_user).avatar_identifier).to include(file.original_filename)
             end
           end
         end
@@ -201,7 +200,7 @@ describe Api::V3::UsersController do
       @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
       # we're not really testing whether ForecastIO or the gem works here, so just stub
       # this method completely to avoid it making HTTP requests
-      ForecastIO.stub(:forecast).and_return({})
+      allow(ForecastIO).to receive(:forecast).and_return({})
     end
 
     subject { get :weather }
@@ -209,7 +208,7 @@ describe Api::V3::UsersController do
     context 'not signed in' do
       it 'should set location to default location' do
         subject
-        assigns(:location).should eq(@default_location)
+        expect(assigns(:location)).to eq(@default_location)
       end
     end
 
@@ -222,7 +221,7 @@ describe Api::V3::UsersController do
 
       it 'should set location to the user\'s location' do
         subject
-        assigns(:location).should eq(@other_loc)
+        expect(assigns(:location)).to eq(@other_loc)
       end
     end
   end
@@ -240,19 +239,19 @@ describe Api::V3::UsersController do
       subject! { get :events, format: :ics, public_id: @public_id }
 
       it 'should return ics data' do
-        @response.body.should match /VCALENDAR/
-        @response.body.should match /DTSTART/
-        @response.body.should match /DTSTAMP/
-        @response.body.should match /VEVENT/
-        @response.body.should match /RRULE/
-        @response.body.should match /VTIMEZONE/
+        expect(@response.body).to match /VCALENDAR/
+        expect(@response.body).to match /DTSTART/
+        expect(@response.body).to match /DTSTAMP/
+        expect(@response.body).to match /VEVENT/
+        expect(@response.body).to match /RRULE/
+        expect(@response.body).to match /VTIMEZONE/
       end
     end
 
     context 'with invalid public id' do
       before { @user = FactoryGirl.create :user }
       subject! { get :events, format: :ics, public_id: 'fake-ekaf' }
-      it { @response.status.should eq 404 }
+      it { expect(@response.status).to eq 404 }
     end
   end
    
@@ -267,7 +266,7 @@ describe Api::V3::UsersController do
       subject! { get :show }
 
       it 'should contain the ical url' do
-        JSON.parse(@response.body)['current_user']['events_ical_url'].should eq @consumer.uri + user_event_instances_ics_path(@user.public_id)
+        expect(JSON.parse(@response.body)['current_user']['events_ical_url']).to eq @consumer.uri + user_event_instances_ics_path(@user.public_id)
       end
     end
 
@@ -280,8 +279,8 @@ describe Api::V3::UsersController do
 
       subject! { get :show, format: :json }
 
-      it 'should not contain the ical url' do
-        JSON.parse(@response.body)['current_user']['events_ical_url'].should be_nil
+      it 'should contain the ical url' do
+        expect(JSON.parse(@response.body)['current_user']['events_ical_url']).to be_nil
       end
     end
   end
@@ -296,9 +295,9 @@ describe Api::V3::UsersController do
       subject! { post :logout , format: :json}
 
       it 'should logout user' do
-        assigns(:current_user).should be_nil
-        assigns(:current_api_user).should be_nil
-        response.code.should eq '200'
+        expect(assigns(:current_user)).to be_nil
+        expect(assigns(:current_api_user)).to be_nil
+        expect(response.code).to eq '200'
       end
     end
 
@@ -312,7 +311,7 @@ describe Api::V3::UsersController do
       subject! { post :logout , format: :json}
 
       it 'should change authentication token' do
-        @user.reload.authentication_token.should_not eq @orig_token 
+        expect(@user.reload.authentication_token).not_to eq @orig_token 
       end
     end
   end
@@ -326,7 +325,7 @@ describe Api::V3::UsersController do
       subject! { post :email_confirmation, confirmation_token: @user.instance_variable_get(:@raw_confirmation_token), format: :json}
       
       it 'should respond with auth token' do
-        JSON.parse(response.body).should eq({token: @user.authentication_token,
+        expect(JSON.parse(response.body)).to eq({token: @user.authentication_token,
                                              email: @user.email
                                          }.stringify_keys)
       end
@@ -336,7 +335,7 @@ describe Api::V3::UsersController do
       subject! { post :email_confirmation, confirmation_token: 'fake', format: :json }
       
       it 'should respond with 404' do
-        response.status.should eq 404
+        expect(response.status).to eq 404
       end
     end
   end

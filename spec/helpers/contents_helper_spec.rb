@@ -27,7 +27,7 @@ describe ContentsHelper, type: :helper do
     subject { helper.search_field_value(key) }
 
     context 'params[:reset]' do
-      it { should be nil }
+      it { is_expected.to be nil }
     end
 
     context 'session[:contents_search]' do
@@ -71,7 +71,7 @@ describe ContentsHelper, type: :helper do
     subject { helper.can_be_listserv_promoted(content) }
 
     context 'When authors, authoremail, and title' do
-      it { should be true }
+      it { is_expected.to be true }
     end
 
     context 'When authors empty' do
@@ -79,7 +79,7 @@ describe ContentsHelper, type: :helper do
         content.authors = nil
       end
 
-      it { should be false }
+      it { is_expected.to be false }
     end
 
     context 'When authoremail blank' do
@@ -87,7 +87,7 @@ describe ContentsHelper, type: :helper do
         content.authoremail = ""
       end
 
-      it { should be false }
+      it { is_expected.to be false }
     end
 
     context 'When title blank' do
@@ -95,7 +95,7 @@ describe ContentsHelper, type: :helper do
         content.title = ""
       end
 
-      it { should be false }
+      it { is_expected.to be false }
     end
   end
 

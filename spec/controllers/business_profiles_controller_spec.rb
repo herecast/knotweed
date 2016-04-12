@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BusinessProfilesController do
+describe BusinessProfilesController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
@@ -15,18 +15,18 @@ describe BusinessProfilesController do
 
     it "returns http success" do
       subject
-      response.should be_success
+      expect(response).to be_success
     end
 
     it 'loads the business_profiles' do
       subject
-      assigns(:business_profiles).should eq(@business_profiles)
+      expect(assigns(:business_profiles)).to eq(@business_profiles)
     end
 
     context 'with search params' do
       it 'should respond with matching business_profiles' do
         get :index, q: { content_title_cont: @business_profiles.first.content.title }
-        assigns(:business_profiles).should eq [@business_profiles.first]
+        expect(assigns(:business_profiles)).to eq [@business_profiles.first]
       end
     end
   end
@@ -119,7 +119,7 @@ describe BusinessProfilesController do
 
     it "returns http success" do
       subject
-      response.should be_success
+      expect(response).to be_success
     end
   end
 end

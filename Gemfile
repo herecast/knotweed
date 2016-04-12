@@ -27,7 +27,8 @@ gem 'rinku', "~> 1.7.3"
 group :development, :test do
   gem "factory_girl_rails", "~> 4.3.0"
   gem 'faker', '~> 1.6.1'
-  gem "rspec-rails", "~> 2.14.0"
+  gem "rspec-rails", '~> 3.4'
+  gem 'rspec', '~> 3.4'
   gem 'guard-bundler', require:false
   gem 'guard-rspec', require:false
   gem 'guard-zeus', require: false

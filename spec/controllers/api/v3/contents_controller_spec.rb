@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::ContentsController do
+describe Api::V3::ContentsController, :type => :controller do
   before do
     @repo = FactoryGirl.create :repository
     @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
@@ -45,29 +45,29 @@ describe Api::V3::ContentsController do
 
       it 'should filter results by consumer app\'s organizations' do
         subject
-        assigns(:contents).should eql([@content])
+        expect(assigns(:contents)).to eq([@content])
       end
     end
 
     context 'not signed in' do
       it 'has 200 status code' do
         subject
-        response.code.should eq('200')
+        expect(response.code).to eq('200')
       end
 
       it 'should respond with 2 news items' do
         subject
-        assigns(:contents).select{|c| c.content_category_id == @news_cat.id }.length.should eq(2)
+        expect(assigns(:contents).select{|c| c.content_category_id == @news_cat.id }.count).to eq(2)
       end
 
       it 'should not include any talk items' do
         subject
-        assigns(:contents).select{|c| c.content_category_id == @tott_cat.id }.count.should eq(0)
+        expect(assigns(:contents).select{|c| c.content_category_id == @tott_cat.id }.count).to eq(0)
       end
 
       it 'should only return items in the default location' do
         subject
-        assigns(:contents).select{|c| c.locations.include? @other_location }.count.should eq(0)
+        expect(assigns(:contents).select{|c| c.locations.include? @other_location }.count).to eq(0)
       end
     end
 
@@ -78,17 +78,17 @@ describe Api::V3::ContentsController do
 
       it 'has 200 status code' do
         subject
-        response.code.should eq('200')
+        expect(response.code).to eq('200')
       end
 
       it 'should include talk items' do
         subject
-        assigns(:contents).select{|c| c.content_category_id == @tott_cat.id }.count.should >0
+        expect(assigns(:contents).select{|c| c.content_category_id == @tott_cat.id }.count).to be >0
       end
 
       it 'should return items in the user\'s location' do
         subject
-        assigns(:contents).select{|c| c.locations.include? @other_location}.count.should eq(assigns(:contents).count)
+        expect(assigns(:contents).select{|c| c.locations.include? @other_location}.count).to eq(assigns(:contents).count)
       end
 
     end
@@ -98,11 +98,11 @@ describe Api::V3::ContentsController do
     before do
       @content = FactoryGirl.create :content
       @related_content = FactoryGirl.create(:content)
-      Promotion.any_instance.stub(:update_active_promotions).and_return(true)
+      allow_any_instance_of(Promotion).to receive(:update_active_promotions).and_return(true)
       @promo = FactoryGirl.create :promotion, content: @related_content
       @pb = FactoryGirl.create :promotion_banner, promotion: @promo
       # avoid making calls to repo
-      Content.any_instance.stub(:query_promo_similarity_index).and_return([])
+      allow_any_instance_of(Content).to receive(:query_promo_similarity_index).and_return([])
     end
 
     subject { get :related_promotion, format: :json, 
@@ -110,7 +110,7 @@ describe Api::V3::ContentsController do
 
     it 'has 200 status code' do
       subject
-      response.code.should eq('200')
+      expect(response.code).to eq('200')
     end
 
     it 'should increment the impression count of the banner' do
@@ -125,15 +125,15 @@ describe Api::V3::ContentsController do
 
       it 'should create a ContentPromotionBannerImpression record if none exists' do
         subject
-        ContentPromotionBannerImpression.count.should eq(1)
-        ContentPromotionBannerImpression.first.content_id.should eq(@content.id)
-        ContentPromotionBannerImpression.first.promotion_banner_id.should eq(@pb.id)
+        expect(ContentPromotionBannerImpression.count).to eq(1)
+        expect(ContentPromotionBannerImpression.first.content_id).to eq(@content.id)
+        expect(ContentPromotionBannerImpression.first.promotion_banner_id).to eq(@pb.id)
       end
 
       it 'should increment the ContentPromotionBannerImpression display count if a record exists' do
         cpbi = FactoryGirl.create :content_promotion_banner_impression, content_id: @content.id, promotion_banner_id: @pb.id
         subject
-        cpbi.reload.display_count.should eq(2)
+        expect(cpbi.reload.display_count).to eq(2)
       end
       
     end
@@ -147,7 +147,7 @@ describe Api::V3::ContentsController do
 
       it 'should respond with the banner specified by the banner_ad_override' do
         subject
-        assigns(:banner).should eq @pb2
+        expect(assigns(:banner)).to eq @pb2
       end
     end
 
@@ -177,7 +177,7 @@ describe Api::V3::ContentsController do
 
     it 'has 200 status code' do
       subject
-      response.code.should eq('200')
+      expect(response.code).to eq('200')
     end
 
     context 'with sim_stack_categories environment variable set' do
@@ -187,13 +187,13 @@ describe Api::V3::ContentsController do
 
       it 'should only return similar content in that category' do
         subject
-        assigns(:contents).should eq([@sim_content2])
+        expect(assigns(:contents)).to eq([@sim_content2])
       end
     end
 
     it 'responds with relation of similar content' do
       subject
-      assigns(:contents).should eq([@sim_content1, @sim_content2])
+      expect(assigns(:contents)).to eq([@sim_content1, @sim_content2])
     end
 
     describe 'drafts' do
@@ -203,7 +203,7 @@ describe Api::V3::ContentsController do
 
       it 'should not be returned' do
         subject
-        assigns(:contents).should_not include(@sim_content1)
+        expect(assigns(:contents)).not_to include(@sim_content1)
       end
     end
 
@@ -214,7 +214,7 @@ describe Api::V3::ContentsController do
 
       it 'should not be returned' do
         subject
-        assigns(:contents).should_not include(@sim_content1)
+        expect(assigns(:contents)).not_to include(@sim_content1)
       end
     end
 
@@ -230,14 +230,14 @@ describe Api::V3::ContentsController do
         FactoryGirl.create :event_instance, event: event, start_date: 1.week.from_now
         FactoryGirl.create :event_instance, event: event, start_date: 1.month.from_now
         @sim_content = [@content, other_content]
-        Content.any_instance.stub(:similar_content).with(@repo, 20).and_return(@sim_content)
+        allow_any_instance_of(Content).to receive(:similar_content).with(@repo, 20).and_return(@sim_content)
       end
 
       subject { get :similar_content, format: :json, id: @root_content.id, consumer_app_uri: @consumer_app.uri }
 
       it 'should response with events that have instances in the future' do
         subject
-        assigns(:contents).should eq [@content]
+        expect(assigns(:contents)).to eq [@content]
       end
     end
 
@@ -251,7 +251,7 @@ describe Api::V3::ContentsController do
 
       it 'should respond with the contents defined by similar_content_overrides' do
         subject
-        assigns(:contents).should match_array(@some_similar_contents)
+        expect(assigns(:contents)).to match_array(@some_similar_contents)
       end
     end
   end
@@ -279,7 +279,7 @@ describe Api::V3::ContentsController do
     context 'not signed in' do
       it 'has 401 status code' do
         subject
-        response.code.should eq('401')
+        expect(response.code).to eq('401')
       end
     end
 
@@ -291,7 +291,7 @@ describe Api::V3::ContentsController do
 
       it 'has 200 status code' do
         subject
-        response.code.should eq('200')
+        expect(response.code).to eq('200')
       end
 
       describe 'filtering by organization_id' do
@@ -309,7 +309,7 @@ describe Api::V3::ContentsController do
 
           it 'should not return the organization\'s contents' do
             subject
-            assigns(:contents).should_not match_array(@org_contents)
+            expect(assigns(:contents)).not_to match_array(@org_contents)
           end
         end
 
@@ -325,7 +325,7 @@ describe Api::V3::ContentsController do
 
           it 'should return contents that belongs to the organization' do
             subject
-            assigns(:contents).should match_array(@org_contents)
+            expect(assigns(:contents)).to match_array(@org_contents)
           end
         end
 
@@ -342,7 +342,7 @@ describe Api::V3::ContentsController do
 
           it 'should return contents that belong to the organization' do
             subject
-            assigns(:contents).should match_array(@contents)
+            expect(assigns(:contents)).to match_array(@contents)
           end
         end
       end
@@ -416,7 +416,7 @@ describe Api::V3::ContentsController do
 
           it 'should return content belonging to news\' child category' do
             subject
-            assigns(:contents).should include(@c)
+            expect(assigns(:contents)).to include(@c)
           end
         end
 
