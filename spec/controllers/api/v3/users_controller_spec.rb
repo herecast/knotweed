@@ -271,7 +271,7 @@ describe Api::V3::UsersController do
       end
     end
 
-    context 'when user has no public id'  do
+    context 'when user has no public id' do
       before do 
         @user = FactoryGirl.create :user, public_id: ''
         @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
@@ -280,7 +280,7 @@ describe Api::V3::UsersController do
 
       subject! { get :show, format: :json }
 
-      it 'should contain the ical url' do
+      it 'should not contain the ical url' do
         JSON.parse(@response.body)['current_user']['events_ical_url'].should be_nil
       end
     end
