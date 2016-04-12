@@ -19,7 +19,7 @@ describe PublishJobsController, type: :controller do
       fake = double(count: 100)
       expect(Content).to receive(:contents_query).and_return(fake)
 
-      get :contents_count
+      xhr :get, :contents_count, format: :js
       expect(assigns(:count)).to eql 100
     end
   end
