@@ -2,7 +2,12 @@ require 'spec_helper'
 
 describe PublishJobsController, type: :controller do
 
-  it_behaves_like 'JobController'
+  it_behaves_like 'JobController' do
+    before do
+      @user = FactoryGirl.create(:admin)
+      sign_in @user
+    end
+  end
 
   describe 'GET #contents_count' do
     before do
