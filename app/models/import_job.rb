@@ -112,7 +112,7 @@ class ImportJob < ActiveRecord::Base
   # using config var.
   # if not set, default to standard delayed_job behavior
   def reschedule_at(current_time, attempts)
-    if Figaro.env.respond_to? :reschedule_at
+    if Figaro.env.respond_to? :reschedule_at and Figaro.env.reschedule_at.present?
       current_time + Figaro.env.reschedule_at.to_i.seconds
     else # default delayed_job behavior
       current_time + attempts**4 + 5
