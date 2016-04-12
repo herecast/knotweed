@@ -16,6 +16,7 @@ gem 'cancancan', '~> 1.13.1'
 gem "rolify", '~> 5.1.0'
 gem "simple_form", '~> 3.2.1'
 gem "quiet_assets", "~> 1.0.2", :group => :development
+gem 'sshkit', '~> 1.4.0'
 gem "capistrano", "~> 3.1.0"
 gem "capistrano-bundler", "~> 1.1.1"
 gem "capistrano-rvm", '~> 0.1.1'
@@ -120,12 +121,6 @@ gem 'whenever', '~> 0.9.2', :require => false
 
 gem 'ice_cube', "~> 0.13.0"
 gem 'icalendar', '~> 2.3'
-
-# some gem that depends on net-ssh has a gemspec that tries
-# to install a version of net-ssh that requires ruby 2.0.0,
-# so we have to specify these two versions here. Same with tins
-gem 'net-ssh', '~> 2.7.0'
-gem 'tins', '~> 0.13.1'
 
 # need to keep older sanitize with Rails 4.2 upgrde
 gem 'rails-deprecated_sanitizer', '~> 1.0.3'
