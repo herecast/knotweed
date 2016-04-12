@@ -24,7 +24,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
 
     it 'loads the business profiles' do
       subject
-      expect(assigns(:business_profiles)).to eq @bps
+      expect(assigns(:business_profiles)).to eql @bps
     end
 
     describe "Sorting" do
@@ -83,7 +83,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
 
       it 'should return matches' do
         subject
-        expect(assigns(:business_profiles)).to eq [@result]
+        expect(assigns(:business_profiles)).to eql [@result]
       end
 
       describe 'by category_id' do
@@ -95,7 +95,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
 
         it 'should return filtered results' do
           get :index, category_id: @cat.id
-          expect(assigns(:business_profiles)).to eq [@bps.first]
+          expect(assigns(:business_profiles)).to eql [@bps.first]
         end
       end
 
@@ -119,7 +119,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
             # radius is measured in meters) we can't just set this to 0.1 or something. 100 seems to work.
             # It's theoretically possible that this could return another randomly located result, but the odds
             # of that are very very low.
-          expect(assigns(:business_profiles)).to eq [bp]
+          expect(assigns(:business_profiles)).to eql [bp]
         end
 
       end

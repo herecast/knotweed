@@ -60,7 +60,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
       it 'should return matching content' do
         subject
-        expect(assigns(:market_posts)).to eq [@content]
+        expect(assigns(:market_posts)).to eql [@content]
       end
     end
 
@@ -75,7 +75,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
       it 'should filter results by consumer app\'s organizations' do
         subject
-        expect(assigns(:market_posts)).to eq([@content])
+        expect(assigns(:market_posts)).to eql([@content])
       end
     end
 

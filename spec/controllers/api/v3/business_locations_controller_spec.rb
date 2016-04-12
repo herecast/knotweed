@@ -31,7 +31,7 @@ describe Api::V3::BusinessLocationsController, :type => :controller do
 
       it 'should respond with the matching business location' do
         subject
-        expect(assigns(:venues)).to eq [@bl]
+        expect(assigns(:venues)).to eql [@bl]
       end
 
       context 'with autocomplete' do

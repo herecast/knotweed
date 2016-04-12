@@ -134,19 +134,19 @@ describe Api::V3::EventInstancesController, :type => :controller do
       describe 'start_date' do
         it 'should search with start_date=today if no date_start is passed' do
           get :index
-          expect(assigns(:event_instances)).to eq([@e_less_future, @e_future])
+          expect(assigns(:event_instances)).to eql([@e_less_future, @e_future])
         end
 
         it 'should search by start date if it is passed' do
           get :index, date_start: 1.week.ago
-          expect(assigns(:event_instances)).to eq([@e_past, @e_less_future, @e_future])
+          expect(assigns(:event_instances)).to eql([@e_past, @e_less_future, @e_future])
         end
       end
 
       describe 'end_date' do
         it 'should limit results by the passed date_end' do
           get :index, date_end: 2.days.from_now
-          expect(assigns(:event_instances)).to eq([@e_less_future])
+          expect(assigns(:event_instances)).to eql([@e_less_future])
         end
       end
     end
@@ -162,12 +162,12 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
       it 'should return results matching the category' do
         get :index, category: 'movies'
-        expect(assigns(:event_instances)).to eq([@movie])
+        expect(assigns(:event_instances)).to eql([@movie])
       end
 
       it 'should ignore category params that aren\'t whitelisted in Event::EVENT_CATEGORIES' do
         get :index, category: 'FAKE CATEGORY'
-        expect(assigns(:event_instances)).to eq([@movie, @wellness])
+        expect(assigns(:event_instances)).to eql([@movie, @wellness])
       end
     end
 
@@ -185,12 +185,12 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
       it 'should search using matched city name and any child locations\' names' do
         get :index, location: @parent_loc.city
-        expect(assigns(:event_instances)).to eq([@event])
+        expect(assigns(:event_instances)).to eql([@event])
       end
 
       it 'should return no results searching for a location with no events' do
         get :index, location: @loc_with_no_events.city
-        expect(assigns(:event_instances)).to eq([])
+        expect(assigns(:event_instances)).to eql([])
       end
     end
 
@@ -203,7 +203,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
       it 'should return paginated results' do
         get :index, per_page: @count - 1
-        expect(assigns(:event_instances).count).to eq(@count -1)
+        expect(assigns(:event_instances).length).to eq(@count -1)
       end
     end
   end

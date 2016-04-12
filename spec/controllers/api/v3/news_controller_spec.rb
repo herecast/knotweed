@@ -47,7 +47,7 @@ describe Api::V3::NewsController, :type => :controller do
       subject! { get :index, format: :json, organization: @org.name }
 
       it 'should return content specific to that organization' do
-        expect(assigns(:news)).to eq([@org_and_loc_content])
+        expect(assigns(:news)).to eql([@org_and_loc_content])
       end
     end
 
@@ -109,7 +109,7 @@ describe Api::V3::NewsController, :type => :controller do
 
       it 'should return matching results' do
         subject
-        expect(assigns(:news)).to eq([@content])
+        expect(assigns(:news)).to eql([@content])
       end
     end
 
@@ -124,7 +124,7 @@ describe Api::V3::NewsController, :type => :controller do
 
       it 'should filter results by consumer app\'s organizations' do
         subject
-        expect(assigns(:news)).to eq([@content])
+        expect(assigns(:news)).to eql([@content])
       end
 
       describe 'querying for an organization not associated with that consumer app' do
