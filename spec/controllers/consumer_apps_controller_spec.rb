@@ -45,11 +45,19 @@ describe ConsumerAppsController, :type => :controller do
       @app = FactoryGirl.create :consumer_app
       @update_params = { name: 'Fake Updated Name' }
     end
-    
+
     subject { put :update, id: @app.id, consumer_app: @update_params }
 
     it 'should update the consumer app' do
       expect{subject}.to change{@app.reload.name}.to @update_params[:name]
+    end
+
+    context 'when update fails' do
+      it "renders edit page" do
+        allow_any_instance_of(ConsumerApp).to receive(:update_attributes).and_return false
+        subject
+        expect(response).to render_template 'edit'
+      end
     end
   end
 
@@ -59,6 +67,14 @@ describe ConsumerAppsController, :type => :controller do
 
     it 'should create a consumer app record' do
       expect{subject}.to change{ConsumerApp.count}.by 1
+    end
+
+    context "when creation fails" do
+      it "renders new page" do
+        allow_any_instance_of(ConsumerApp).to receive(:save).and_return false
+        subject
+        expect(response).to render_template 'new'
+      end
     end
   end
 
