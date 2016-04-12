@@ -70,6 +70,7 @@ RSpec.configure do |config|
   config.before(:each) do
     DatabaseCleaner.start
     mixpanel_track_stub
+    ActionMailer::Base.deliveries.clear
   end
   config.after(:each) do
     DatabaseCleaner.clean

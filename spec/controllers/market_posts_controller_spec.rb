@@ -27,6 +27,35 @@ describe MarketPostsController do
       }
       response.code.should eq("302")
     end
+
+    context "when market post is published" do
+      let(:repository) { FactoryGirl.create :repository }
+
+      subject { post :create, continue_editing: 'true', market_post: { content_attributes: { title: 'hi', raw_content: 'not blank' } } }
+
+      it "flashes success notice" do
+        allow_any_instance_of(User).to receive(:default_repository).and_return (repository)
+        allow_any_instance_of(Content).to receive(:publish).and_return true
+
+        subject
+
+        expect(flash.now[:notice]).to include 'successfully'
+        expect(response.code).to eq '302'
+      end
+    end
+
+    context "when market post save unsuccessful" do
+      let(:content) { FactoryGirl.create :content }
+
+      subject { post :create, market_post: {} }
+
+      it "renders new page" do
+        allow_any_instance_of(MarketPost).to receive(:save).and_return false
+        allow_any_instance_of(MarketPost).to receive(:content).and_return content
+        subject
+        expect(response).to render_template 'new'
+      end
+    end
   end
 
   describe "GET 'edit'" do
@@ -69,6 +98,68 @@ describe MarketPostsController do
       it 'return all market_posts' do
         get :index, q: @q
         assigns(:market_posts).length.should == 5
+      end
+    end
+
+    context "when param has reset" do
+
+      subject { get :index, reset: 'true' }
+
+      it "returns no market posts" do
+        subject
+        expect(assigns(:market_posts)).to eq []
+      end
+    end
+  end
+
+  describe "GET :show" do
+
+    subject { get :show, id: @market_post.id }
+
+    it "redirects to edit" do
+      subject
+      expect(response.code).to eq '302'
+      expect(response).to redirect_to edit_market_post_path
+    end
+  end
+
+  describe "PUT :update" do
+
+    context "when successful update" do
+      let(:repository) { FactoryGirl.create :repository }
+
+      subject { put :update, create_new: 'true', id: @market_post.id, market_post: { status: 'cool' } }
+
+      context "when successful publish" do
+        it "redirects" do
+          allow_any_instance_of(User).to receive(:default_repository).and_return repository
+          allow_any_instance_of(Content).to receive(:publish).and_return true
+
+          subject
+
+          expect(@market_post.reload.status).to eq 'cool'
+          expect(flash.now[:notice]).to include 're-published'
+          expect(response.code).to eq '302'
+        end
+      end
+
+      context "when failed publish" do
+        it "redirects" do
+          subject
+          expect(@market_post.reload.status).to eq 'cool'
+          expect(response.code).to eq '302'
+        end
+      end
+    end
+
+    context "when unsuccessful update" do
+
+      subject { put :update, id: @market_post.id }
+
+      it "renders edit page" do
+        allow_any_instance_of(MarketPost).to receive(:update_attributes).and_return false
+        subject
+        expect(response).to render_template 'edit'
       end
     end
   end
