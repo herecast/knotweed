@@ -138,11 +138,14 @@ describe ImportJob do
 
   describe '#reschedule_at' do
     before do
+      Timecop.freeze
       @import_job = FactoryGirl.create :import_job
     end
+    after { Timecop.return }
 
     context "when reschedule_at is set" do
       it "returns a set reschedule time" do
+        allow_any_instance_of(Figaro::Env).to receive(:reschedule_at).and_return('10')
         response = @import_job.reschedule_at(DateTime.now, 1)
         expect(response.to_s).to eq (DateTime.now + 10.seconds).to_s
       end
@@ -150,7 +153,7 @@ describe ImportJob do
 
     context "when no reschedule_at environmental variable" do
       it "returns a fabricated reschedule time" do
-        ENV["RESCHEDULE_AT"] = nil
+        allow_any_instance_of(Figaro::Env).to receive(:reschedule_at).and_return(nil)
         response = @import_job.reschedule_at(DateTime.now, 1)
         expect(response.to_s).to eq (DateTime.now + 6).to_s
       end
