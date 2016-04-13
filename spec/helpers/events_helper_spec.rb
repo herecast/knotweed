@@ -81,32 +81,40 @@ describe EventsHelper, type: :helper do
 
     context 'consumer_app set from request' do
       let(:consumer_app) { double(uri: 'http://my-uri.example') }
-      before do
-        Thread.current[:consumer_app] = consumer_app
-      end
 
-      it { is_expected.to eql "#{consumer_app.uri}#{event_path}#{utm_string}" }
+      it 'uses consumer_app uri' do
+        Thread.new do
+          Thread.current[:consumer_app] = consumer_app
+          expect(subject).to eql "#{consumer_app.uri}#{event_path}#{utm_string}"
+        end
+      end
     end
 
     context 'consumer_app not set; @base_uri set from controller' do
       before do
         @base_uri = 'http://event.foo'
-        Thread.current[:consumer_app] = nil
         @event.event_instances.first.id = 9999
       end
 
       it 'uses @base_uri, and first instance id to generate a url' do
-        expect(subject).to eql "#{@base_uri}/events/9999#{utm_string}"
+        Thread.new do
+          Thread.current[:consumer_app] = nil
+          expect(subject).to eql "#{@base_uri}/events/9999#{utm_string}"
+        end
       end
     end
 
     context 'if not consumer_app, or @base_uri;' do
-      before do 
+      before do
         @base_uri = nil
-        Thread.current[:consumer_app] = nil
       end
 
-      it { is_expected.to eql "http://www.dailyuv.com/events" }
+      it 'uses a default url' do
+        Thread.new do
+          Thread.current[:consumer_app] = nil
+          expect(subject).to eql "http://www.dailyuv.com/events"
+        end
+      end
     end
   end
 end
