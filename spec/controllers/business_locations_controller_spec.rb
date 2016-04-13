@@ -106,18 +106,18 @@ describe BusinessLocationsController, :type => :controller do
       expect(response).to be_success
     end
 
-    context "when nearbys exist" do
+    context "when nearby locations exist" do
       before do
-        @other_location = FactoryGirl.create (:business_location)
+        @other_location = FactoryGirl.create :business_location
         allow_any_instance_of(BusinessLocation).to receive(:nearbys).and_return [@other_location]
-        # allow_any_instance_of(BusinessLocation).to receive(:count).and_return 0
+        @event = FactoryGirl.create :event, venue_id: @other_location.id
       end
 
       subject { get :edit, id: @business_location.id }
 
-      it "assigns nearbys" do
+      it "assigns event count for nearby venues" do
         subject
-        expect(assigns(:events_per_venue)[@other_location.id]).to eq 0
+        expect(assigns(:events_per_venue)[@other_location.id]).to eq 1
       end
     end
 
@@ -125,7 +125,7 @@ describe BusinessLocationsController, :type => :controller do
 
       subject { xhr :get, :edit, id: @business_location.id }
 
-      it "respon with form" do
+      it "responds with form" do
         subject
         expect(response).to render_template 'business_locations/partials/_form_js'
       end
