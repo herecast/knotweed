@@ -5,7 +5,7 @@ describe Api::V3::CommentsController, :type => :controller do
 
   describe 'GET index' do
     it 'should fail without content_id' do
-      expect { get :index, format: :json}.to raise_error
+      expect { get :index, format: :json}.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     describe 'given content_id' do
