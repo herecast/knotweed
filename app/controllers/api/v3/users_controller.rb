@@ -7,7 +7,7 @@ module Api
       def show
         if @current_api_user.present? 
           if @requesting_app.present?
-            events_ical_url = @requesting_app.uri + user_event_instances_ics_path(@current_api_user.public_id.to_s)
+            events_ical_url = @requesting_app.uri + user_event_instances_ics_path(public_id: @current_api_user.public_id.to_s)
           end
           render json: @current_api_user, serializer: UserSerializer,
             root: 'current_user',  status: 200, events_ical_url: events_ical_url,
@@ -46,7 +46,9 @@ module Api
           @current_api_user.public_id = params[:current_user][:public_id] if params[:current_user][:public_id].present?
 
           if @current_api_user.save 
-            render json: @current_api_user, serializer: UserSerializer, root: 'current_user', status: 200
+            render json: @current_api_user, serializer: UserSerializer, root: 'current_user', status: 200,
+              context: { current_ability: current_ability,
+                         consumer_app: @requesting_app }
           else
             render json: { error: "Current User update failed", messages:  @current_api_user.errors.full_messages }, status: 422
           end

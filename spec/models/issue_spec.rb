@@ -14,7 +14,7 @@
 
 require 'spec_helper'
 
-describe Issue do
+describe Issue, :type => :model do
   before do
     @issue = FactoryGirl.create :issue, issue_edition: 'defacto name'
   end

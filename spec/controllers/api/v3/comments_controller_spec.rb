@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'json'
 
-describe Api::V3::CommentsController do
+describe Api::V3::CommentsController, :type => :controller do
 
   describe 'GET index' do
     it 'should fail without content_id' do
@@ -21,7 +21,7 @@ describe Api::V3::CommentsController do
 
       it 'should return the coments associated' do
         subject
-        assigns(:comments).should eq([@comment.content])
+        expect(assigns(:comments)).to eq([@comment.content])
       end
     end
     
@@ -49,7 +49,7 @@ describe Api::V3::CommentsController do
         # to match what the controller does
         comments = [@comment3, @comment2, @comment1].map{ |c| comment_format(c) }
         expected = {comments: comments}.stringify_keys
-        JSON.parse(response.body).should eq(expected)
+        expect(JSON.parse(response.body)).to eq(expected)
       end
     end
     
@@ -71,7 +71,7 @@ describe Api::V3::CommentsController do
 
       it 'should return ordered results' do
         expected = {comments: [comment_format(@comment3), comment_format(@comment2), comment_format(@comment1)]}.stringify_keys
-        JSON.parse(response.body).should eq(expected)
+        expect(JSON.parse(response.body)).to eq(expected)
       end
     end
 
@@ -88,7 +88,7 @@ describe Api::V3::CommentsController do
       subject! { get :index, format: :json, content_id: @content.id }
 
       it 'should include avatar url in the response' do
-        JSON.parse(response.body).should eq({comments: [comment_format(@comment)]}.stringify_keys)
+        expect(JSON.parse(response.body)).to eq({comments: [comment_format(@comment)]}.stringify_keys)
       end
     end
 
@@ -107,8 +107,8 @@ describe Api::V3::CommentsController do
       before { api_authenticate success: false }
       it do
         subject
-        response.code.should eq('401')
-        Comment.count.should eq(0)
+        expect(response.code).to eq('401')
+        expect(Comment.count).to eq(0)
       end
     end
     
@@ -133,9 +133,9 @@ describe Api::V3::CommentsController do
 
     it 'should automatically set organization to DailyUV' do
       subject
-      response.code.should eq('201')
-      assigns(:comment).content.parent.should eq(@event.content)
-      assigns(:comment).organization.name.should eq('DailyUV')
+      expect(response.code).to eq('201')
+      expect(assigns(:comment).content.parent).to eq(@event.content)
+      expect(assigns(:comment).organization.name).to eq('DailyUV')
     end
   end
 

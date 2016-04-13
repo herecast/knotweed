@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::ListservsController do
+describe Api::V3::ListservsController, :type => :controller do
 
   describe 'GET index' do
     before do
@@ -11,12 +11,12 @@ describe Api::V3::ListservsController do
 
     it 'has a 200 status code' do
       subject
-      response.code.should eq('200')
+      expect(response.code).to eq('200')
     end
 
     it 'assigns all listservs to instance variable' do
       subject
-      assigns(:listservs).count.should eq(Listserv.count)
+      expect(assigns(:listservs).count).to eq(Listserv.count)
     end
 
   end

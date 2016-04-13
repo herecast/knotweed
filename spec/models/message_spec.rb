@@ -15,7 +15,7 @@
 
 require 'spec_helper'
 
-describe Message do
+describe Message, :type => :model do
 
   describe "active scope" do
     before do
@@ -25,9 +25,9 @@ describe Message do
     end
 
     it "should return only active messages" do
-      Message.active.include?(@active_message).should == true
-      Message.active.include?(@expired_message).should == false
-      Message.active.include?(@not_yet_active_message).should == false
+      expect(Message.active.include?(@active_message)).to eq(true)
+      expect(Message.active.include?(@expired_message)).to eq(false)
+      expect(Message.active.include?(@not_yet_active_message)).to eq(false)
     end
   end
 
@@ -36,7 +36,7 @@ describe Message do
       it "should be invalid" do
         m = FactoryGirl.build(:message)
         m.end_date = m.start_date - 1.day
-        m.should_not be_valid
+        expect(m).not_to be_valid
       end
     end
   end

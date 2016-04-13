@@ -14,7 +14,7 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'webmock/rspec'
-require 'pry-debugger' unless ENV['RM_INFO']
+#require 'pry-debugger' unless ENV['RM_INFO']
 require 'vcr'
 WebMock.disable_net_connect!(allow_localhost: true)
 
@@ -70,6 +70,7 @@ RSpec.configure do |config|
   config.before(:each) do
     DatabaseCleaner.start
     mixpanel_track_stub
+    ActionMailer::Base.deliveries.clear
   end
   config.after(:each) do
     DatabaseCleaner.clean

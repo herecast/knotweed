@@ -4,7 +4,7 @@ module Api
       before_filter :check_logged_in!, :parse_params!, only: [:create, :update]
 
       def create
-        news_cat = ContentCategory.find_or_create_by_name 'news'
+        news_cat = ContentCategory.find_or_create_by(name: 'news')
         if params[:news][:organization_id].blank?
           render json: { errors: { 'organization_id' => 'Organization must be specified for news' } },
             status: 500

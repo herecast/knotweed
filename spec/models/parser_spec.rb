@@ -14,7 +14,7 @@
 require 'spec_helper'
 require 'parsers/wordpress_blog_parser.rb'
 
-describe Parser do
+describe Parser, :type => :model do
   # the test input and expected output is kept outside the test in spec/fixtures/wp_import
   # each _input file must have a matching named file ending with _output.
   describe 'when content includes YouTube or Vimeo URLs' do
@@ -38,7 +38,7 @@ describe Parser do
 
         doc = parse_post(wp_post, 'local_news', config)
         result = JSON.parse(File.read(output_file))
-        doc['content'].should eq result['content']
+        expect(doc['content']).to eq result['content']
       end
     end
   end

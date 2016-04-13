@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::PasswordsController do
+describe Api::V3::PasswordsController, :type => :controller do
   before do
     @user = FactoryGirl.create :user
     @request.env["devise.mapping"] = Devise.mappings[:user]
@@ -18,7 +18,7 @@ describe Api::V3::PasswordsController do
       it 'should generate a reset_password_token and set reset_password_sent_at' do
         subject
         @user.reload
-        @user.reset_password_token.present?.should be true
+        expect(@user.reset_password_token.present?).to be true
       end
     end
 
@@ -36,7 +36,7 @@ describe Api::V3::PasswordsController do
                                      password_confirmation: 'newPassword' } }
 
       it 'should update the user\'s password' do
-        @user.reload.encrypted_password.should_not eq(@orig_pass)
+        expect(@user.reload.encrypted_password).not_to eq(@orig_pass)
       end
     end
 
@@ -45,11 +45,11 @@ describe Api::V3::PasswordsController do
                                       password_confirmation: 'Whatever' } }
 
       it 'should not update the user\'s password' do
-        @user.reload.encrypted_password.should eq(@orig_pass)
+        expect(@user.reload.encrypted_password).to eq(@orig_pass)
       end
 
       it 'should respond with 404' do
-        response.code.should eq('404')
+        expect(response.code).to eq('404')
       end
     end
 

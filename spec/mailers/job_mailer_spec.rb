@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe JobMailer do
+describe JobMailer, :type => :mailer do
 
   describe "error email" do
     before do
@@ -16,11 +16,11 @@ describe JobMailer do
         :min_priority => nil,
         :quiet => false, 
         :queues => ["imports", "publishing"]).work_off
-      failures.should== 1
+      expect(failures).to eq(1)
       job = @job.class.find(@job.id)
-      job.status.should== "failed"
-      JobMailer.deliveries.present?.should== true
-      JobMailer.deliveries.last.to.include?(@user.email).should== true
+      expect(job.status).to eq("failed")
+      expect(JobMailer.deliveries.present?).to eq(true)
+      expect(JobMailer.deliveries.last.to.include?(@user.email)).to eq(true)
     end
       
   end

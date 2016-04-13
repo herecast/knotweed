@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ConsumerAppsController do
+describe ConsumerAppsController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
@@ -11,11 +11,11 @@ describe ConsumerAppsController do
     subject! { get :index }
 
     it 'should respond with 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should load the consumer apps' do
-      assigns(:consumer_apps).should eq ConsumerApp.all
+      expect(assigns(:consumer_apps)).to eq ConsumerApp.all
     end
   end
 
@@ -24,11 +24,11 @@ describe ConsumerAppsController do
     subject! { get :edit, id: @app.id }
 
     it 'should respond with 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
 
     it 'should load the consumer app' do
-      assigns(:consumer_app).should eq @app
+      expect(assigns(:consumer_app)).to eq @app
     end
   end
 
@@ -36,7 +36,7 @@ describe ConsumerAppsController do
     subject! { get :new }
 
     it 'should respond with 200 status' do
-      response.code.should eq '200'
+      expect(response.code).to eq '200'
     end
   end
 
@@ -45,11 +45,19 @@ describe ConsumerAppsController do
       @app = FactoryGirl.create :consumer_app
       @update_params = { name: 'Fake Updated Name' }
     end
-    
+
     subject { put :update, id: @app.id, consumer_app: @update_params }
 
     it 'should update the consumer app' do
       expect{subject}.to change{@app.reload.name}.to @update_params[:name]
+    end
+
+    context 'when update fails' do
+      it "renders edit page" do
+        allow_any_instance_of(ConsumerApp).to receive(:update_attributes).and_return false
+        subject
+        expect(response).to render_template 'edit'
+      end
     end
   end
 
@@ -59,6 +67,14 @@ describe ConsumerAppsController do
 
     it 'should create a consumer app record' do
       expect{subject}.to change{ConsumerApp.count}.by 1
+    end
+
+    context "when creation fails" do
+      it "renders new page" do
+        allow_any_instance_of(ConsumerApp).to receive(:save).and_return false
+        subject
+        expect(response).to render_template 'new'
+      end
     end
   end
 

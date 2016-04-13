@@ -34,7 +34,10 @@ module Api
       def similar_content
         @content = Content.find params[:id]
 
-        @contents = @content.similar_content(@repository, 20)
+        # need to call to_a here so we can use mutating select! afterwards
+        # (Rails 4.1 deprecated calling mutating methods directly on ActiveRecord
+        # Relations)
+        @contents = @content.similar_content(@repository, 20).to_a
 
         # filter by organization
         if @requesting_app.present?
@@ -65,7 +68,7 @@ module Api
       def moderate
         content = Content.find(params[:id])
         ModerationMailer.send_moderation_flag_v2(content, params[:flag_type], \
-          @current_api_user).deliver
+          @current_api_user).deliver_now
         head :no_content
       end
 
@@ -135,9 +138,9 @@ module Api
           scope = Content.where(created_by: @current_api_user)
         end
 
-        @news_cat = ContentCategory.find_or_create_by_name 'news'
-        @talk_cat = ContentCategory.find_or_create_by_name 'talk_of_the_town'
-        @market_cat = ContentCategory.find_or_create_by_name 'market'
+        @news_cat = ContentCategory.find_or_create_by(name: 'news')
+        @talk_cat = ContentCategory.find_or_create_by(name: 'talk_of_the_town')
+        @market_cat = ContentCategory.find_or_create_by(name: 'market')
 
         if params[:channel_type] == 'news'
           scope = scope.where(root_content_category_id: @news_cat.id)

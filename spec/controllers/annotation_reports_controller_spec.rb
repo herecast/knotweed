@@ -172,7 +172,7 @@ describe AnnotationReportsController, type: :controller do
         allow_any_instance_of(Annotation).to receive(:find_edges).and_return(nil)
       end
 
-      subject { post :create, name: name, repository_id: repo.id, content_id: content.id }
+      subject { post :create, name: name, repository_id: repo.id, content_id: content.id, format: :js }
 
       it 'creates an AnnotationReport record' do
         expect{ subject }.to change { AnnotationReport.count }.by(1)
@@ -198,7 +198,7 @@ describe AnnotationReportsController, type: :controller do
       @annotation_report = FactoryGirl.create :annotation_report
     end
 
-    subject { get(:edit, id: @annotation_report.id, :format => "js") }
+    subject { xhr :get, :edit, id: @annotation_report.id, format: :js }
 
     it "should respond with 200 status code" do
       subject
@@ -224,7 +224,7 @@ describe AnnotationReportsController, type: :controller do
       @annotation_report = FactoryGirl.create :annotation_report
     end
 
-    subject { delete :destroy, id: @annotation_report.id }
+    subject { xhr :delete, :destroy, id: @annotation_report.id, format: :js }
 
     it "should delete annotation report" do
       expect{ subject }.to change{ AnnotationReport.count }.by(-1)
@@ -236,7 +236,7 @@ describe AnnotationReportsController, type: :controller do
       @annotation_report = FactoryGirl.create :annotation_report
     end
 
-    subject { get(:export, content_id: @annotation_report.id, :format => "csv") }
+    subject { get :export, content_id: @annotation_report.id, format: :csv }
 
     it "should respond with 200 status code" do
       subject

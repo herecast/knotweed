@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PromotionsController do 
+describe PromotionsController, :type => :controller do 
   include Devise::TestHelpers
 
   before do
@@ -8,7 +8,7 @@ describe PromotionsController do
     sign_in user
     @org = FactoryGirl.create(:organization)
     @content = FactoryGirl.create(:content)
-    Promotion.any_instance.stub(:update_active_promotions).and_return(true)
+    allow_any_instance_of(Promotion).to receive(:update_active_promotions).and_return(true)
     @promotion = FactoryGirl.create(:promotion, organization: @org, content: @content)
   end
 
@@ -20,7 +20,7 @@ describe PromotionsController do
     subject { get :index, organization_id: @org }
     it "assigns all promotions as @promotions" do
       subject
-      assigns(:promotions).should eq([@promotion])
+      expect(assigns(:promotions)).to eq([@promotion])
     end
   end
 
@@ -28,7 +28,7 @@ describe PromotionsController do
     subject { get :show, { id: @promotion.to_param } }
     it "assigns the requested promotion as @promotion" do
       subject
-      assigns(:promotion).should eq(@promotion)
+      expect(assigns(:promotion)).to eq(@promotion)
     end
   end
 
@@ -36,12 +36,12 @@ describe PromotionsController do
     subject { get :edit, {id: @promotion.to_param } }
     it "assigns the requested promotion as @promotion" do
       subject
-      assigns(:promotion).should eq(@promotion)
+      expect(assigns(:promotion)).to eq(@promotion)
     end
   end
 
   describe "POST create" do
-    let (:options) do 
+    let (:options) do
       { description: "Another bad promotion" }
     end
     subject { post :create, { promotion: options, organization_id: @org } }
@@ -61,6 +61,23 @@ describe PromotionsController do
         expect(response).to redirect_to(Promotion.last)
       end
     end
+
+    context "when creation fails" do
+      before do
+        allow_any_instance_of(Promotion).to receive(:save).and_return false
+      end
+
+      it "html: redirects" do
+        post :create, organization_id: @org.id, promotion: { description: 'unsaved promo' }
+        expect(response).to redirect_to edit_organization_path(@org)
+        expect(response.code).to eq '302'
+      end
+
+      it "json: responds with 422 status code" do
+        post :create, organization_id: @org.id, promotion: { description: 'unsaved promo' }, format: :json
+        expect(response.code).to eq '422'
+      end
+    end
   end
 
   describe "PUT update" do
@@ -69,7 +86,7 @@ describe PromotionsController do
       let(:params) do
         { active: false,
           description: 'Another description'
-        } 
+        }
       end
       it "updates the requested promotion" do
         subject
@@ -88,6 +105,22 @@ describe PromotionsController do
         expect(response).to redirect_to(@promotion)
       end
     end
+
+    context "when update fails" do
+      before do
+        allow_any_instance_of(Promotion).to receive(:save).and_return false
+      end
+
+      it "html: renders edit page" do
+        put :update, id: @promotion.id, promotion: {}
+        expect(response).to render_template 'edit'
+      end
+
+      it "json: responds with 422 status code" do
+        put :update, id: @promotion.id, promotion: {}, format: :json
+        expect(response.code).to eq '422'
+      end
+    end
   end
 
   describe "DELETE destroy" do
@@ -98,6 +131,42 @@ describe PromotionsController do
 
     it "redirects to the promotions list" do
       expect(subject).to redirect_to(organization_promotions_path @org)
+    end
+  end
+
+  describe "GET #new" do
+    context "when content present" do
+      context "when PromotionBanner promotable type" do
+        it "html: responds with 200 status code" do
+          get :new, organization_id: @org.id, promotable_type: 'PromotionBanner', content_id: @content.id
+          expect(assigns(:promotion).content).to eq @content
+          expect(response.code).to eq '200'
+        end
+
+        it "json: responds with 200 status code" do
+          get :new, organization_id: @org.id, promotable_type: 'PromotionBanner', content_id: @content.id, format: :json
+          expect(JSON.parse(response.body)['organization_id']).to eq @org.id
+          expect(response.code).to eq '200'
+        end
+      end
+
+      context "when PromotionListserv promotable type" do
+        it "html: responds with 200 status code" do
+          get :new, organization_id: @org.id, promotable_type: 'PromotionListserv', content_id: @content.id
+          expect(assigns(:promotion).content).to eq @content
+          expect(response.code).to eq '200'
+        end
+      end
+    end
+
+    context "when no content present" do
+
+      subject { get :new, organization_id: @org.id }
+
+      it "should respond with 302 status code" do
+        subject
+        expect(response.code).to eq '302'
+      end
     end
   end
 

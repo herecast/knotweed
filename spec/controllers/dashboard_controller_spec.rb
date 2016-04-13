@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DashboardController do
+describe DashboardController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user

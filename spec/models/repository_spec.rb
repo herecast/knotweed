@@ -16,7 +16,7 @@
 
 require 'spec_helper'
 
-describe Repository do
+describe Repository, :type => :model do
   before do
     # this is to account for differences between default environment repos
     FactoryGirl.create :repository, id: 3

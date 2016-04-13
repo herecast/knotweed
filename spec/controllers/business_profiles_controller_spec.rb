@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BusinessProfilesController do
+describe BusinessProfilesController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
@@ -15,18 +15,28 @@ describe BusinessProfilesController do
 
     it "returns http success" do
       subject
-      response.should be_success
+      expect(response).to be_success
     end
 
     it 'loads the business_profiles' do
       subject
-      assigns(:business_profiles).should eq(@business_profiles)
+      expect(assigns(:business_profiles)).to eq(@business_profiles)
     end
 
     context 'with search params' do
       it 'should respond with matching business_profiles' do
         get :index, q: { content_title_cont: @business_profiles.first.content.title }
-        assigns(:business_profiles).should eq [@business_profiles.first]
+        expect(assigns(:business_profiles)).to eq [@business_profiles.first]
+      end
+    end
+
+    context "when reset" do
+
+      subject { get :index, reset: true }
+
+      it "responds with no business profiles" do
+        subject
+        expect(assigns(:business_profiles)).to eq []
       end
     end
   end
@@ -55,7 +65,7 @@ describe BusinessProfilesController do
       }
     end
 
-    subject { put :update, id: @bp.id, business_profile: @attrs_for_update }
+    subject { put :update, id: @bp.id, business_profile: @attrs_for_update, continue_editing: true }
 
     it 'should update organization website' do
       expect{subject}.to change{@org.reload.website}.to @attrs_for_update[:content_attributes][:organization_attributes][:website]
@@ -71,6 +81,19 @@ describe BusinessProfilesController do
 
     it 'should update content attributes' do
       expect{subject}.to change{@content.reload.title}.to @attrs_for_update[:content_attributes][:title]
+    end
+
+    context "when update fails" do
+      before do
+        allow_any_instance_of(BusinessProfile).to receive(:update_attributes!).and_return false
+      end
+
+      subject { put :update, id: @bp.id, business_profile: { content_attributes: { title: 'title', organization_attributes: {} } } }
+
+      it "renders edit page" do
+        subject
+        expect(response).to render_template 'edit'
+      end
     end
   end
 
@@ -108,6 +131,29 @@ describe BusinessProfilesController do
     it 'should create a business_profile record' do
       expect{subject}.to change{BusinessProfile.count}.by 1
     end
+
+    context "when create fails" do
+      before do
+        allow_any_instance_of(BusinessProfile).to receive(:save).and_return false
+      end
+
+      subject { post :create, business_profile: { content_attributes: { title: 'title', organization_attributes: {} } } }
+
+      it "renders new page" do
+        subject
+        expect(response).to render_template 'new'
+      end
+    end
+  end
+
+  describe 'GET #new' do
+
+    subject { get :new }
+
+    it "responds with 200 status code" do
+      subject
+      expect(response.code).to eq '200'
+    end
   end
 
   describe "GET 'edit'" do
@@ -119,7 +165,7 @@ describe BusinessProfilesController do
 
     it "returns http success" do
       subject
-      response.should be_success
+      expect(response).to be_success
     end
   end
 end

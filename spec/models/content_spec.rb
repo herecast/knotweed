@@ -51,9 +51,9 @@
 
 require 'spec_helper'
 
-describe Content do
+describe Content, :type => :model do
 
-  before { Promotion.any_instance.stub(:update_active_promotions).and_return(true) }
+  before { allow_any_instance_of(Promotion).to receive(:update_active_promotions).and_return(true) }
 
   include_examples 'Auditable', Content
 
@@ -147,7 +147,7 @@ describe Content do
         end
 
         it 'is true' do
-          expect(subject.published?(repo)).to be_true
+          expect(subject.published?(repo)).to be_truthy
         end
       end
 
@@ -157,7 +157,7 @@ describe Content do
         end
 
         it 'is false' do
-          expect(subject.published?(repo)).to be_false
+          expect(subject.published?(repo)).to be_falsey
         end
       end
     end
@@ -168,7 +168,7 @@ describe Content do
       end
 
       it 'is false' do
-        expect(subject.published?).to be_false
+        expect(subject.published?).to be_falsey
       end
     end
 
@@ -178,7 +178,7 @@ describe Content do
       end
 
       it 'is false' do
-        expect(subject.published?).to be_true
+        expect(subject.published?).to be_truthy
       end
     end
   end
@@ -273,21 +273,21 @@ describe Content do
   describe "find_root_parent" do
     it "should return self for a content with no parent" do
       c = FactoryGirl.create(:content)
-      c.find_root_parent.should == c
+      expect(c.find_root_parent).to eq(c)
     end
     it "should return the root parent for content" do
       c1 = FactoryGirl.create(:content)
       c2 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
       c3 = FactoryGirl.create(:content, organization: c1.organization, parent: c2)
-      c2.find_root_parent.should == c1
-      c3.find_root_parent.should == c1
+      expect(c2.find_root_parent).to eq(c1)
+      expect(c3.find_root_parent).to eq(c1)
     end
   end
 
   describe "get_downstream_thread" do 
     it "should return nil for contents without children" do
       c = FactoryGirl.create(:content)
-      c.get_downstream_thread.should == nil
+      expect(c.get_downstream_thread).to eq(nil)
     end
 
     it "should return a hash representing the full thread below the content" do
@@ -295,11 +295,11 @@ describe Content do
       c2 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
       c3 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
       c4 = FactoryGirl.create(:content, organization: c1.organization, parent: c3)
-      c1.get_downstream_thread.should == {
+      expect(c1.get_downstream_thread).to eq({
         c2.id => nil, c3.id => { 
           c4.id => nil 
         } 
-      }
+      })
     end
   end
 
@@ -309,14 +309,14 @@ describe Content do
     end
 
     it "should leave valid content unquarantined" do
-      @content.quarantine.should== false
+      expect(@content.quarantine).to eq(false)
     end
     
     it "should mark it quarantined if sanitized_content is empty" do
       @content.raw_content = "<br/>"
       @content.save
       @content.reload
-      @content.quarantine.should== true
+      expect(@content.quarantine).to eq(true)
     end
 
   end
@@ -331,13 +331,13 @@ describe Content do
     it "should not mark content published when added to a non-production repository" do
       @content.repositories << @non_prod_repo
       @content.reload
-      @content.published.should eq(false)
+      expect(@content.published).to eq(false)
     end
 
     it "should mark content published when added to prod repo" do
       @content.repositories << @prod_repo
       @content.reload
-      @content.published.should eq(true)
+      expect(@content.published).to eq(true)
     end
   end
 
@@ -347,17 +347,17 @@ describe Content do
     end
 
     it "should return sanitized_content if it has anything in it" do
-      @content.publish_content(true).should == @content.sanitized_content
+      expect(@content.publish_content(true)).to eq(@content.sanitized_content)
     end
 
     it "should strip tags from result if include_tags parameter is false" do
       @content.raw_content = "<p>Hello</p>"
-      @content.publish_content(false).should == "Hello"
+      expect(@content.publish_content(false)).to eq("Hello")
     end
 
     it "should not strip tags from result if include_tags parameter is true" do
       @content.raw_content = "<p>Hello</p>"
-      @content.publish_content(true).include?(@content.raw_content).should == true
+      expect(@content.publish_content(true).include?(@content.raw_content)).to eq(true)
     end
   end
 
@@ -380,9 +380,9 @@ describe Content do
     end
 
     it "should create a new content with basic data passed by hash" do
-      Content.count.should== 0
+      expect(Content.count).to eq(0)
       content = Content.create_from_import_job(@base_data)
-      Content.count.should== 1
+      expect(Content.count).to eq(1)
     end
 
     it "should match organization based on 'source'" do
@@ -392,12 +392,12 @@ describe Content do
         source_field: "reverse_publish_email"
       })
       content = Content.create_from_import_job(data)
-      content.organization.should == organization
+      expect(content.organization).to eq(organization)
     end
 
     it "should mark non-valid corpus entries as quarantined" do
       content = Content.create_from_import_job(@base_data)
-      content.quarantine.should == true
+      expect(content.quarantine).to eq(true)
     end
 
     it "should leave valid corpus entries as unquarantined" do
@@ -408,7 +408,7 @@ describe Content do
         "organization_id" => p.id
       })
       content = Content.create_from_import_job(extra_data)
-      content.quarantine.should== false
+      expect(content.quarantine).to eq(false)
     end
 
     it "should correctly identify parent based on in_reply_to" do
@@ -424,7 +424,7 @@ describe Content do
         "in_reply_to" => co.guid
       })
       c2 = Content.create_from_import_job(extra_data)
-      c2.parent.should== co
+      expect(c2.parent).to eq(co)
     end
     
     context "when parent content is not published" do
@@ -439,7 +439,7 @@ describe Content do
         @child = Content.create_from_import_job extra_data
       end
       it "should refuse to set parent" do
-        @child.parent.should be_nil
+        expect(@child.parent).to be_nil
       end
     end
 
@@ -456,8 +456,8 @@ describe Content do
       end
 
       it "should refuse to set the parent" do
-        @parent.quarantine?.should be_true
-        @child.parent.should be_nil
+        expect(@parent.quarantine?).to be_truthy
+        expect(@child.parent).to be_nil
       end
     end
 
@@ -472,10 +472,10 @@ describe Content do
         "organization_id" => @base_data["organization_id"]
       }
       new_content = Content.create_from_import_job(@new_data)
-      new_content.id.should== orig_id
-      Content.count.should== 1
+      expect(new_content.id).to eq(orig_id)
+      expect(Content.count).to eq(1)
       db_content = Content.all.first
-      db_content.title.should== "Different Title"
+      expect(db_content.title).to eq("Different Title")
     end
 
 
@@ -491,8 +491,8 @@ describe Content do
         "guid" => c1.guid
       }
       c2 = Content.create_from_import_job(@new_data)
-      Content.count.should== 1
-      Content.first.id.should== orig_id
+      expect(Content.count).to eq(1)
+      expect(Content.first.id).to eq(orig_id)
     end
 
     context 'when we import different content records with same title,email, on same date(not datetime), where root_content_category != news AND channel_type is null' do
@@ -519,10 +519,10 @@ describe Content do
       end
 
       it 'should update the existing content, appending a new location to it' do
-        Content.count.should eq 1
-        @c1.id.should eq @c2.id
-        @c1.locations.count.should eq 2
-        @c1.locations.include?(@c2.locations.first).should be_true
+        expect(Content.count).to eq 1
+        expect(@c1.id).to eq @c2.id
+        expect(@c1.locations.count).to eq 2
+        expect(@c1.locations.include?(@c2.locations.first)).to be_truthy
       end
 
       context 'when title starts with a listserve name' do
@@ -534,9 +534,9 @@ describe Content do
         end
 
         it 'should update the existing content, appending a new location to it' do
-          @c3.id.should eq @c4.id
-          @c3.locations.count.should eq 2
-          @c3.locations.include?(@c4.locations.first).should be_true
+          expect(@c3.id).to eq @c4.id
+          expect(@c3.locations.count).to eq 2
+          expect(@c3.locations.include?(@c4.locations.first)).to be_truthy
         end
       end
 
@@ -549,9 +549,9 @@ describe Content do
         end
 
         it 'we should update the existing content, appending a new location to it' do
-          @c5.id.should eq @c6.id
-          @c5.locations.count.should eq 2
-          @c5.locations.include?(@c6.locations.first).should be_true
+          expect(@c5.id).to eq @c6.id
+          expect(@c5.locations.count).to eq 2
+          expect(@c5.locations.include?(@c6.locations.first)).to be_truthy
         end
       end
 
@@ -564,9 +564,9 @@ describe Content do
         end
 
         it 'should not update the existing content' do
-          @c7.id.should_not eq @c8.id
-          @c7.locations.count.should eq 2
-          @c8.locations.count.should eq 1
+          expect(@c7.id).not_to eq @c8.id
+          expect(@c7.locations.count).to eq 2
+          expect(@c8.locations.count).to eq 1
         end
       end
 
@@ -584,9 +584,9 @@ describe Content do
         "guid" => c1.guid
       }
       c2 = Content.create_from_import_job(@new_data)
-      Content.count.should== 1
-      Content.first.id.should== orig_id
-      Content.first.category.should == "Test Category"
+      expect(Content.count).to eq(1)
+      expect(Content.first.id).to eq(orig_id)
+      expect(Content.first.category).to eq("Test Category")
     end
 
     it "should not overwrite any fields not in the REIMPORT_FEATURES whitelist" do
@@ -602,49 +602,49 @@ describe Content do
       }
       Content.create_from_import_job(@new_data)
       c1.reload
-      c1.title.should == @new_data["title"]
-      c1.copyright.should == "ropycight" # original
+      expect(c1.title).to eq(@new_data["title"])
+      expect(c1.copyright).to eq("ropycight") # original
     end
 
     # check source logic
     it "should create organization if source is provided and it doesn't match existing organizations" do
       @base_data["source"] = "Test Organization"
       content = Content.create_from_import_job(@base_data)
-      content.organization.name.should== "Test Organization"
+      expect(content.organization.name).to eq("Test Organization")
     end
     it "should match an existing organization if source matches organization name and source_field not provided" do
       org = FactoryGirl.create(:organization)
       @base_data["source"] = org.name
       content = Content.create_from_import_job(@base_data)
-      content.organization.should== org
+      expect(content.organization).to eq(org)
     end
 
     # check location logic
     it "should create a new location if none is found" do
       @base_data["location"] = "Test Location"
       content = Content.create_from_import_job(@base_data)
-      content.import_location.city.should== "Test Location"
+      expect(content.import_location.city).to eq("Test Location")
     end
     it "should match existing locations by city" do
       loc = FactoryGirl.create(:import_location)
       @base_data["location"] = loc.city
       content = Content.create_from_import_job(@base_data)
-      content.import_location.city.should== loc.city
+      expect(content.import_location.city).to eq(loc.city)
     end
     
     # check issue/edition logic
     it "should create a new edition if none is found" do
       @base_data["edition"] = "Holiday Edition"
       content = Content.create_from_import_job(@base_data)
-      content.issue.issue_edition.should== "Holiday Edition"
+      expect(content.issue.issue_edition).to eq("Holiday Edition")
     end
     it "should assign the appropriate data to the newly created issue" do
       @base_data["edition"] = "Holiday Edition"
       @base_data["source"] = "Test org"
       content = Content.create_from_import_job(@base_data)
-      content.issue.issue_edition.should== "Holiday Edition"
-      content.issue.publication_date.should== content.pubdate
-      content.issue.organization.should== content.organization
+      expect(content.issue.issue_edition).to eq("Holiday Edition")
+      expect(content.issue.publication_date).to eq(content.pubdate)
+      expect(content.issue.organization).to eq(content.organization)
     end
     it "should match existing issues by organization and name" do
       pubdate = Time.now
@@ -655,22 +655,22 @@ describe Content do
       @base_data["pubdate"] = pubdate
       
       content = Content.create_from_import_job(@base_data)
-      content.issue.should== issue_1
+      expect(content.issue).to eq(issue_1)
     end
 
     it "should set the import_record_id of content if provided" do
       record = FactoryGirl.create(:import_record)
       content = Content.create_from_import_job(@base_data, record.import_job)
-      content.import_record.should== record
+      expect(content.import_record).to eq(record)
     end
 
     it "should create an image record and copy the file to our CDN if 'image' is provided" do
       @base_data["image"] = "https://www.google.com/images/srpr/logo11w.png"
       c = Content.create_from_import_job(@base_data)
-      c.images.count.should == 1
+      expect(c.images.count).to eq(1)
       image = c.images.first
-      image.image.url.present?.should == true
-      image.source_url.should== "https://www.google.com/images/srpr/logo11w.png"
+      expect(image.image.url.present?).to eq(true)
+      expect(image.source_url).to eq("https://www.google.com/images/srpr/logo11w.png")
     end
 
     describe 'should handle created_by and updated_by correctly' do
@@ -679,8 +679,8 @@ describe Content do
         # @user created in auditable_shared_examples.rb included using include_examples 'Auditable', Content
         @base_data['user_id'] = @user.id
         c = Content.create_from_import_job(@base_data)
-        c.created_by.should == @user
-        c.updated_by.should == @user
+        expect(c.created_by).to eq(@user)
+        expect(c.updated_by).to eq(@user)
       end
 
     end
@@ -691,7 +691,7 @@ describe Content do
       end
 
       it 'should not have a primary image' do
-        @c.primary_image.should be_nil
+        expect(@c.primary_image).to be_nil
       end
     end
 
@@ -704,46 +704,46 @@ describe Content do
       end
 
       it 'should have the right number of images' do
-        @c.images.length.should eq @base_data['images'].count
+        expect(@c.images.length).to eq @base_data['images'].count
       end
 
       it 'should have a primary image' do
         image = @c.primary_image
-        image.image.url.present?.should be_true
-        image.source_url.should eq 'https://www.google.com/images/srpr/logo11w.png'
+        expect(image.image.url.present?).to be_truthy
+        expect(image.source_url).to eq 'https://www.google.com/images/srpr/logo11w.png'
       end
 
       it 'should have the correct primary image' do #not necessarily the first
         @c.primary_image = @c.images.last
         @c.reload
         image = @c.primary_image
-        image.image.url.present?.should eq true
-        image.source_url.should eq 'https://www.google.com/images/srpr/logo7w.png'
+        expect(image.image.url.present?).to eq true
+        expect(image.source_url).to eq 'https://www.google.com/images/srpr/logo7w.png'
       end
 
       it 'should have only one primary image' do
         @c.primary_image = @c.images.last
-        @c.images.where(primary: true).count.should eq 1
+        expect(@c.images.where(primary: true).count).to eq 1
       end
 
       it 'should delete unused images' do
-        @c.images.length.should eq @base_data['images'].count
-        @c.images.find_by_source_url('https://www.google.com/images/srpr/logo11w.png').should_not be_nil
+        expect(@c.images.length).to eq @base_data['images'].count
+        expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo11w.png')).not_to be_nil
         @base_data['images'] = [{'image' => 'https://www.google.com/images/srpr/logo7w.png'},
                                 {'image' => 'https://www.google.com/images/srpr/logo9w.png'}]
         @c = Content.create_from_import_job(@base_data)
-        @c.images.length.should eq 2
-        @c.images.find_by_source_url('https://www.google.com/images/srpr/logo11w.png').should be_nil
+        expect(@c.images.length).to eq 2
+        expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo11w.png')).to be_nil
       end
 
       it 'should correctly handle rearranged images' do
         #first, verify the image array before making a change
-        @c.images.length.should eq @base_data['images'].count
-        @c.images.find_by_source_url('https://www.google.com/images/srpr/logo11w.png').should_not be_nil
-        @c.images.find_by_source_url('https://www.google.com/images/srpr/logo9w.png').should_not be_nil
-        @c.images.find_by_source_url('https://www.google.com/images/srpr/logo7w.png').should_not be_nil
-        @c.images.find_by_source_url('https://www.google.com/images/srpr/logo6w.png').should be_nil
-        @c.images.find_by_source_url('https://www.google.com/images/srpr/logo5w.png').should be_nil
+        expect(@c.images.length).to eq @base_data['images'].count
+        expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo11w.png')).not_to be_nil
+        expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo9w.png')).not_to be_nil
+        expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo7w.png')).not_to be_nil
+        expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo6w.png')).to be_nil
+        expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo5w.png')).to be_nil
 
         # add some images, remove some others
         @base_data['images'] = [{'image' => 'https://www.google.com/images/srpr/logo5w.png'},
@@ -752,13 +752,13 @@ describe Content do
         @c = Content.create_from_import_job(@base_data)
 
         # verify the resulting image array
-        @c.images.length.should eq 3
-        @c.images.find_by_source_url('https://www.google.com/images/srpr/logo11w.png').should be_nil
-        @c.images.find_by_source_url('https://www.google.com/images/srpr/logo9w.png').should be_nil
-        @c.images.find_by_source_url('https://www.google.com/images/srpr/logo7w.png').should_not be_nil
-        @c.images.find_by_source_url('https://www.google.com/images/srpr/logo6w.png').should_not be_nil
-        @c.images.find_by_source_url('https://www.google.com/images/srpr/logo5w.png').should_not be_nil
-        @c.primary_image.name.should include('logo5w.png')
+        expect(@c.images.length).to eq 3
+        expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo11w.png')).to be_nil
+        expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo9w.png')).to be_nil
+        expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo7w.png')).not_to be_nil
+        expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo6w.png')).not_to be_nil
+        expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo5w.png')).not_to be_nil
+        expect(@c.primary_image.name).to include('logo5w.png')
       end
 
     end
@@ -796,11 +796,11 @@ describe Content do
   describe "set guid if not present" do
     it "should set the guid of new content that has none" do
       content = FactoryGirl.create(:content)
-      content.guid.should== "#{content.title.gsub(" ", "_").gsub("/", "-")}-#{content.pubdate.strftime("%Y-%m-%d")}"
+      expect(content.guid).to eq("#{content.title.gsub(" ", "_").gsub("/", "-")}-#{content.pubdate.strftime("%Y-%m-%d")}")
     end
     it "should not overwrite the guid of new content that has a guid" do
       content = FactoryGirl.create(:content, guid: "Test-Guid")
-      content.guid.should== "Test-Guid"
+      expect(content.guid).to eq("Test-Guid")
     end
   end
     
@@ -826,8 +826,8 @@ describe Content do
 
     it "should write xml and content to local corpus" do
       @content.export_to_xml nil
-      File.exists?("#{@content.export_path}/#{@content.guid}.xml").should be_true
-      File.exists?("#{@content.export_path}/#{@content.guid}.html").should be_true
+      expect(File.exists?("#{@content.export_path}/#{@content.guid}.xml")).to be_truthy
+      expect(File.exists?("#{@content.export_path}/#{@content.guid}.html")).to be_truthy
       # check the content file includes the content
       file_content = ""
       File.open "#{@content.export_path}/#{@content.guid}.html", "r" do |f|
@@ -835,7 +835,7 @@ describe Content do
           file_content << line
         end
       end
-      file_content.include?(@content.content).should be_true
+      expect(file_content.include?(@content.content)).to be_truthy
 
       # check the xml file includes some basic stuff like title
       log = Logger.new("#{Rails.root}/log/tests.log")
@@ -845,8 +845,8 @@ describe Content do
       log.debug "guid: #{@content.guid}"
       log.debug "full path: #{@content.export_path}/#{@content.guid}.xml"
       log.debug "xml_content: #{xml_content}"
-      xml_content.include?(@content.title).should be_true
-      xml_content.include?(@content.pubdate.strftime(Content::PUBDATE_OUTPUT_FORMAT)).should be_true
+      expect(xml_content.include?(@content.title)).to be_truthy
+      expect(xml_content.include?(@content.pubdate.strftime(Content::PUBDATE_OUTPUT_FORMAT))).to be_truthy
     end
   end
 
@@ -864,16 +864,16 @@ describe Content do
                 "issue_id", "content_category_id"].include? k
           # just checking with closing tags so we don't have to deal
           # with exact formatting of opening tag and attributes
-          @xml.include?("#{k.upcase}</tns:name>").should be_true
+          expect(@xml.include?("#{k.upcase}</tns:name>")).to be_truthy
           if v.present?
             # account for pubdate / timestamp formatting
             if k == "pubdate" or k == "timestamp"
-              @xml.include?("#{v.strftime(Content::PUBDATE_OUTPUT_FORMAT)}</tns:value>").should be_true
+              expect(@xml.include?("#{v.strftime(Content::PUBDATE_OUTPUT_FORMAT)}</tns:value>")).to be_truthy
             # account for cdata
             elsif k == "authoremail" or k == "authors"
-              @xml.include?("#{v}]]></tns:value>").should be_true
+              expect(@xml.include?("#{v}]]></tns:value>")).to be_truthy
             else
-              @xml.include?("#{CGI::escapeHTML v}</tns:value>").should be_true
+              expect(@xml.include?("#{CGI::escapeHTML v}</tns:value>")).to be_truthy
             end
           end
         end
@@ -882,28 +882,28 @@ describe Content do
 
     it "should use the organization's category_override if that is set" do
       @content.organization.update_attribute :category_override, "Test Category"
-      @content.to_new_xml.include?("Test Category").should be_true
+      expect(@content.to_new_xml.include?("Test Category")).to be_truthy
     end
 
     it "should use the category-mapping instead of source_category if available" do
       cat = FactoryGirl.create(:category)
       @content.update_attribute :source_category, cat.name
       @content.update_attribute :category, nil
-      @content.to_new_xml.include?(cat.channel.name).should be_true
+      expect(@content.to_new_xml.include?(cat.channel.name)).to be_truthy
     end
 
     it "should populate with a organization image if content doesnt have one" do
       @content.organization.images << @image1
-      @content.to_new_xml.include?("IMAGE</tns:name").should be_true
+      expect(@content.to_new_xml.include?("IMAGE</tns:name")).to be_truthy
     end
 
     it "should populate with content image if it exists" do
       @content.images << @image2
-      @content.to_new_xml.include?("IMAGE</tns:name").should be_true
+      expect(@content.to_new_xml.include?("IMAGE</tns:name")).to be_truthy
     end
     it "should contain document part with content" do
       # note the brackets at the end are closing CDATA
-      @xml.include?("#{@content.sanitized_content}]]></tns:content>").should be_true
+      expect(@xml.include?("#{@content.sanitized_content}]]></tns:content>")).to be_truthy
     end 
   end
 
@@ -930,13 +930,13 @@ describe Content do
       let(:base_path) { "#{@content.export_path}/pre_pipeline/#{@content.guid}" }
 
       it "should return true for successful export" do
-        expect(subject).to be_true
+        expect(subject).to be_truthy
       end
 
       it "should create xml and html files" do
         subject
-        expect(File.exists? "#{base_path}.xml").to be_true
-        expect(File.exists? "#{base_path}.html").to be_true
+        expect(File.exists? "#{base_path}.xml").to be_truthy
+        expect(File.exists? "#{base_path}.html").to be_truthy
       end
 
       it "should have a well-formed XML file" do
@@ -958,13 +958,13 @@ describe Content do
       let(:base_path) { "#{@content.export_path}/post_pipeline/#{@content.guid}" }
 
       it "should return true for successful export" do
-        expect(subject).to be_true
+        expect(subject).to be_truthy
       end
 
       it "should create xml and html files" do
         subject
-        expect(File.exists? "#{base_path}.xml").to be_true
-        expect(File.exists? "#{base_path}.html").to be_true
+        expect(File.exists? "#{base_path}.xml").to be_truthy
+        expect(File.exists? "#{base_path}.html").to be_truthy
       end
 
       it "should have a well-formed XML file" do
@@ -977,8 +977,8 @@ describe Content do
     describe "during backup times" do
       it "should return false and not do anything" do
         Timecop.freeze(Chronic.parse("3:00 am")) do
-          @content.publish("post_to_ontotext", @repo).should == false
-          @repo.contents.include?(@content).should == false
+          expect(@content.publish("post_to_ontotext", @repo)).to eq(false)
+          expect(@repo.contents.include?(@content)).to eq(false)
         end
       end
     end
@@ -995,7 +995,7 @@ describe Content do
     describe "if organization.category_override is set" do
       it "should return organization.category_override" do
         @content.organization.update_attribute :category_override, "Test Override"
-        subject.should== "Test Override"
+        expect(subject).to eq("Test Override")
       end
     end
 
@@ -1003,7 +1003,7 @@ describe Content do
       it "should return category" do
         @content.category = "Test Subtext Category"
         @content.source_category = "Test Source Category"
-        subject.should == "Test Subtext Category"
+        expect(subject).to eq("Test Subtext Category")
       end
     end
 
@@ -1015,12 +1015,12 @@ describe Content do
 
       describe "if no Category record exists" do
         it "should return the value of source_category" do
-          subject.should== @content.source_category
+          expect(subject).to eq(@content.source_category)
         end
 
         it "should create a Category record with empty channel_id" do
           subject
-          Category.find_by_name(@content.source_category).present?.should== true
+          expect(Category.find_by_name(@content.source_category).present?).to eq(true)
         end
       end
 
@@ -1028,7 +1028,7 @@ describe Content do
         it "should return the corresponding channel's name" do
           cat = FactoryGirl.create(:category)
           @content.source_category = cat.name
-          subject.should== cat.channel.name
+          expect(subject).to eq(cat.channel.name)
         end
       end
     end
@@ -1041,24 +1041,20 @@ describe Content do
     end
 
     it "should return false if there are no promotions" do
-      @content.has_active_promotion?.should == false
+      expect(@content.has_active_promotion?).to eq(false)
     end
 
     it "should return false if there is a promotion banner but it is inactive" do
       p = FactoryGirl.create :promotion, active: false, content: @content
       promotion_banner_over = FactoryGirl.create :promotion_banner, promotion: p, campaign_start: 3.days.ago,
         campaign_end: 2.days.ago
-      @content.has_active_promotion?.should == false
+      expect(@content.has_active_promotion?).to eq(false)
     end
 
     it "should return true if there is an active promotion banner attached" do
       p = FactoryGirl.create :promotion, active: true, content: @content
-      promotion_banner = FactoryGirl.create :promotion_banner, {
-        promotion: p,
-        campaign_end: 1.week.from_now
-      }
-
-      @content.has_active_promotion?.should == true
+      promotion_banner = FactoryGirl.create :promotion_banner, promotion: p
+      expect(@content.has_active_promotion?).to eq(true)
     end
 
   end
@@ -1072,7 +1068,7 @@ describe Content do
         FactoryGirl.create :promotion_banner, impression_count: 100, promotion: p
       end
       it 'returns true' do
-        expect(subject.has_promotion_inventory?).to be_true
+        expect(subject.has_promotion_inventory?).to be_truthy
       end
     end
   end
@@ -1118,8 +1114,8 @@ describe Content do
     it "should overwrite @content.category with data from the repository" do
       orig_cat = @content.category
       @content.update_from_repo(@repository)
-      @content.category.should_not == orig_cat
-      @content.category.should == @new_cat
+      expect(@content.category).not_to eq(orig_cat)
+      expect(@content.category).to eq(@new_cat)
     end
 
   end
@@ -1131,7 +1127,7 @@ describe Content do
     end
 
     it "should return the name of the attached content category" do
-      @content.category.should == @cat.name
+      expect(@content.category).to eq(@cat.name)
     end
 
   end
@@ -1157,29 +1153,29 @@ describe Content do
       eml = Mail.read(@test_files_path+"/norwich.txt")
       parsed_emails = convert_eml_to_hasharray(eml, @config)
 
-      parsed_emails[0]['source'].include?('Listserv').should == true
-      parsed_emails[0]['content_locations'].length.should == 1
-      parsed_emails[0]['content_locations'].include?('Norwich,VT').should == true
+      expect(parsed_emails[0]['source'].include?('Listserv')).to eq(true)
+      expect(parsed_emails[0]['content_locations'].length).to eq(1)
+      expect(parsed_emails[0]['content_locations'].include?('Norwich,VT')).to eq(true)
 
       content = Content.create_from_import_job(parsed_emails[0])
-      Content.count.should== 1
+      expect(Content.count).to eq(1)
 
-      content.locations.include?(@norwich).should eq(true)
+      expect(content.locations.include?(@norwich)).to eq(true)
     end
 
     it "should create lrn locations" do
       eml = Mail.read(@test_files_path+"/lrn.txt")
       parsed_emails = convert_eml_to_hasharray(eml, @config)
 
-      parsed_emails[0]['source'].include?('Listserv').should == true
-      parsed_emails[0]['content_locations'].length.should == 2
+      expect(parsed_emails[0]['source'].include?('Listserv')).to eq(true)
+      expect(parsed_emails[0]['content_locations'].length).to eq(2)
 
       content = Content.create_from_import_job(parsed_emails[0])
-      Content.count.should== 1
+      expect(Content.count).to eq(1)
 
-      content.locations.include?(@corinth).should eq(true)
+      expect(content.locations.include?(@corinth)).to eq(true)
 
-      content.locations.include?(@topsham).should eq(true)
+      expect(content.locations.include?(@topsham)).to eq(true)
 
     end
 
@@ -1210,8 +1206,8 @@ describe Content do
       parse_posts(all_posts, results)
 
       content = Content.create_from_import_job(results[0])
-      Content.count.should== 1
-      content.locations.include?(@upper_valley).should eq(true)
+      expect(Content.count).to eq(1)
+      expect(content.locations.include?(@upper_valley)).to eq(true)
     end
 
   end
@@ -1224,19 +1220,19 @@ describe Content do
     subject { @root.get_comment_thread }
 
     it 'should return an empty list if content has no children' do
-      subject.should eq([])
+      expect(subject).to eq([])
     end
 
     it 'should not include any children that are not comment channel' do
       FactoryGirl.create :content, parent_id: @root.id
-      subject.should eq([])
+      expect(subject).to eq([])
     end
 
     it 'should return content with the transient attribute "tier" set' do
       tier0 = FactoryGirl.create :comment
       tier0.content.update_attribute :parent_id, @root.id
-      subject.should eq([tier0.content])
-      subject[0].tier.should eq(0)
+      expect(subject).to eq([tier0.content])
+      expect(subject[0].tier).to eq(0)
     end
 
     it 'correctly assigns tiers to the whole tree' do
@@ -1248,15 +1244,15 @@ describe Content do
       tier1.content.update_attribute :parent_id, tier0.content.id
       tier2 = FactoryGirl.create :comment
       tier2.content.update_attribute :parent_id, tier1.content.id
-      subject.count.should eq(4)
+      expect(subject.count).to eq(4)
       tier_counts = []
       subject.each do |com|
         tier_counts[com.tier] ||=0
         tier_counts[com.tier] +=1
       end
-      tier_counts[0].should eq(2)
-      tier_counts[1].should eq(1)
-      tier_counts[2].should eq(1)
+      expect(tier_counts[0]).to eq(2)
+      expect(tier_counts[1]).to eq(1)
+      expect(tier_counts[2]).to eq(1)
     end
 
   end
@@ -1282,21 +1278,21 @@ describe Content do
       eml = Mail.read(@test_files_path+"/strafford.txt")
       parsed_emails = convert_eml_to_hasharray(eml, @config)
       content = Content.create_from_import_job(parsed_emails[0])
-      Content.count.should== 1
-      content.locations.include?(@strafford).should eq(true)
+      expect(Content.count).to eq(1)
+      expect(content.locations.include?(@strafford)).to eq(true)
       id_1 = content.id
 
       eml = Mail.read(@test_files_path+"/new_london.txt")
       parsed_emails = convert_eml_to_hasharray(eml, @config)
       content = Content.create_from_import_job(parsed_emails[0])
-      Content.count.should== 1
-      content.locations.include?(@new_london).should eq(true)
+      expect(Content.count).to eq(1)
+      expect(content.locations.include?(@new_london)).to eq(true)
       id_2 = content.id
 
-      id_1.should == id_2
-      content.locations.length.should == 2
-      content.locations.include?(@new_london).should eq(true)
-      content.locations.include?(@strafford).should eq(true)
+      expect(id_1).to eq(id_2)
+      expect(content.locations.length).to eq(2)
+      expect(content.locations.include?(@new_london)).to eq(true)
+      expect(content.locations.include?(@strafford)).to eq(true)
 
     end
   end
@@ -1314,7 +1310,7 @@ describe Content do
         raise 'expected sanitized output file not found' unless output_files.include? output_file
         raw_content = File.read input_file
         content = FactoryGirl.create :content , raw_content: raw_content
-        content.sanitized_content.should eq File.read(output_file).chomp  
+        expect(content.sanitized_content).to eq File.read(output_file).chomp  
       end
     end
   end
@@ -1345,7 +1341,7 @@ describe Content do
     end
     
     it 'should return the content records of comments associated with it' do
-      @content.comments.should eq([@comment1.content])
+      expect(@content.comments).to eq([@comment1.content])
     end
   end
 
@@ -1367,12 +1363,12 @@ describe Content do
 
     it 'should find and replace urls to match our copied images' do
       subject
-      @content.reload.raw_content.should include(@img.image.url)
+      expect(@content.reload.raw_content).to include(@img.image.url)
     end
 
     it 'should add a caption if a caption is present' do
       subject
-      @content.reload.raw_content.should include(@img.caption)
+      expect(@content.reload.raw_content).to include(@img.caption)
     end
 
     describe 'without the primary image' do
@@ -1398,9 +1394,9 @@ describe Content do
       it 'should have all images correctly handled' do
         subject
         @content.reload
-        @content.raw_content.should include(@img.image.url)
-        @content.raw_content.should include(@img3.image.url)
-        @content.raw_content.should_not include('testing.jpg') # since img2 is primary
+        expect(@content.raw_content).to include(@img.image.url)
+        expect(@content.raw_content).to include(@img3.image.url)
+        expect(@content.raw_content).not_to include('testing.jpg') # since img2 is primary
       end
     end
 
@@ -1440,7 +1436,7 @@ describe Content do
 
       it 'should set root_parent_id to self.id when no parent exists' do
         c = FactoryGirl.create :content
-        c.root_parent_id.should eq c.id
+        expect(c.root_parent_id).to eq c.id
       end
 
       context 'for existing content' do
@@ -1466,13 +1462,13 @@ describe Content do
 
     it 'should group search results by root_parent_id' do
       [Content.talk_search(@c1.raw_content), Content.talk_search(@c2.raw_content)].each do |results|
-        results.should include(@p1)
-        results.length.should eq 1
+        expect(results).to include(@p1)
+        expect(results.length).to eq 1
       end
     end
 
     it 'should group properly with no query' do
-      Content.talk_search.should eq([@p1])
+      expect(Content.talk_search).to eq([@p1])
     end
 
     describe 'result order' do
@@ -1486,7 +1482,7 @@ describe Content do
       it 'should order by the latest activity' do
         # @p1 has an earlier pubdate than @p2, but one of its comments has a later pubdate (@c2),
         # so it should show up first in the results based on its 'latest_activity'
-        Content.talk_search.should eq([@p1, @p2])
+        expect(Content.talk_search).to eq([@p1, @p2])
       end
     end
   end
@@ -1563,11 +1559,11 @@ describe Content do
 
       it 'should return the contents specified as overrides' do
         result_ids = @content.similar_content(@repo).map{ |c| c.id }
-        @ids.each {|id| result_ids.should include id }
+        @ids.each {|id| expect(result_ids).to include id }
       end
 
       it 'should return the contents in pubdate DESC order' do
-        @content.similar_content(@repo).should eq [@override1, @override2, @override3]
+        expect(@content.similar_content(@repo)).to eq [@override1, @override2, @override3]
       end
     end
   end
@@ -1575,7 +1571,7 @@ describe Content do
   describe 'title=t' do
     it 'should automatically strip the title attribute' do
       c = FactoryGirl.create :content, title: '   This has Whitespace at Beginning And End  '
-      c.title.should eq c.title.strip
+      expect(c.title).to eq c.title.strip
     end
   end
 

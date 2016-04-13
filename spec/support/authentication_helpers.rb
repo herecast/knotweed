@@ -4,15 +4,15 @@ module AuthenticationHelpers
     user = args[:user]
     if args[:success]
       if user
-        request.env['HTTP_AUTHORIZATION'] = \
+        @request.headers['HTTP_AUTHORIZATION'] = \
           "Token token=#{user.authentication_token}, \
           email=#{user.email}"
       end
       if args[:consumer_app]
-        request.env['Consumer-App-Uri'] = args[:consumer_app].uri
+        @request.headers['Consumer-App-Uri'] = args[:consumer_app].uri
       end
     else
-      request.env['HTTP_AUTHORIZATION'] = '' 
+      @request.headers['HTTP_AUTHORIZATION'] = '' 
     end
   end
 end

@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe ReversePublisher do
+describe ReversePublisher, :type => :mailer do
   before do
     @news_cat = FactoryGirl.create :content_category, name: 'news'
     @content = FactoryGirl.create :content, authoremail: 'test@test.com', 
@@ -22,12 +22,12 @@ describe ReversePublisher do
     end
 
     it 'should send a confirmation email to the user' do
-      ReversePublisher.deliveries.count.should == 2
+      expect(ReversePublisher.deliveries.count).to eq(2)
       expect(@conf_email.to).to include(@content.authoremail)
     end
 
     it 'should send the reverse publish email to the listserv' do
-      ReversePublisher.deliveries.count.should == 2
+      expect(ReversePublisher.deliveries.count).to eq(2)
       expect(@rp_email.to).to include(@listserv.reverse_publish_email)
     end
   end
@@ -40,7 +40,7 @@ describe ReversePublisher do
     end
 
     it 'should only generate one reverse publish email' do
-      ReversePublisher.deliveries.count.should == 2
+      expect(ReversePublisher.deliveries.count).to eq(2)
       expect(@rp_email.to).to include(@listserv.reverse_publish_email)
       expect(@rp_email.to).to include(@listserv2.reverse_publish_email)
     end

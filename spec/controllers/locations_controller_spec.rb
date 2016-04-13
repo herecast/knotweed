@@ -11,7 +11,7 @@ describe LocationsController, type: :controller do
       @location = FactoryGirl.create :location
     end
 
-    subject { get :edit, id: @location.id, format: 'js' }
+    subject { xhr :get, :edit, id: @location.id, format: :js }
 
     it "should respond with 200 status code" do
       subject
@@ -21,7 +21,7 @@ describe LocationsController, type: :controller do
 
   describe 'GET #new' do
 
-    subject { get :new, format: 'js' }
+    subject { xhr :get, :new, format: :js }
 
     it "should respond with 200 status code" do
       subject
@@ -31,7 +31,7 @@ describe LocationsController, type: :controller do
 
   describe 'POST #create' do
 
-    subject { post :create, location: { zip: '03770' }, format: 'js' }
+    subject { xhr :post, :create, location: { zip: '03770' }, format: :js }
 
     it "should create location" do
       expect{ subject }.to change{ Location.count }.by 1

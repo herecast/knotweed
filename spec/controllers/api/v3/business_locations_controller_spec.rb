@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::BusinessLocationsController do
+describe Api::V3::BusinessLocationsController, :type => :controller do
 
   describe 'GET index' do
     before do
@@ -14,12 +14,12 @@ describe Api::V3::BusinessLocationsController do
 
     it 'has 200 status code' do
       subject
-      response.code.should eq('200')
+      expect(response.code).to eq('200')
     end
 
     it 'responds with approved business locations' do
       subject
-      assigns(:venues).count.should eq BusinessLocation.where(status: 'approved').count
+      expect(assigns(:venues).count).to eq BusinessLocation.where(status: 'approved').count
     end
 
     describe 'searching' do
@@ -31,7 +31,7 @@ describe Api::V3::BusinessLocationsController do
 
       it 'should respond with the matching business location' do
         subject
-        assigns(:venues).should eq [@bl]
+        expect(assigns(:venues)).to eql [@bl]
       end
 
       context 'with autocomplete' do
@@ -39,11 +39,11 @@ describe Api::V3::BusinessLocationsController do
         let(:response_hash) { JSON.parse response.body }
 
         it 'should render JSON with the root venue_locations' do
-          response_hash['venue_locations'].should be_present
+          expect(response_hash['venue_locations']).to be_present
         end
 
         it 'should include the most commonly matched city, state pair as the first entry' do
-          response_hash['venue_locations'][0].should eq "#{@bl.city}, #{@bl.state}"
+          expect(response_hash['venue_locations'][0]).to eq "#{@bl.city}, #{@bl.state}"
         end
       end
     end
@@ -60,9 +60,9 @@ describe Api::V3::BusinessLocationsController do
 
       it 'it should be included in response' do
         subject
-        assigns(:venues).include?(@private_location).should be_true
-        assigns(:venues).include?(@new_location).should be_true
-        assigns(:venues).count.should eq BusinessLocation.where(status: 'approved').count + 2
+        expect(assigns(:venues).include?(@private_location)).to be_truthy
+        expect(assigns(:venues).include?(@new_location)).to be_truthy
+        expect(assigns(:venues).count).to eq BusinessLocation.where(status: 'approved').count + 2
       end
     end
   end

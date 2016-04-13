@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::LocationsController do
+describe Api::V3::LocationsController, :type => :controller do
   
   describe 'GET index' do
     before do
@@ -13,12 +13,12 @@ describe Api::V3::LocationsController do
 
     it 'has 200 status code' do
       subject
-      response.code.should eq('200')
+      expect(response.code).to eq('200')
     end
 
     it 'responds with consumer active locations' do
       subject
-      assigns(:locations).count.should eq(@num_consumer_active)
+      expect(assigns(:locations).count).to eq(@num_consumer_active)
     end
 
     context do
@@ -29,7 +29,7 @@ describe Api::V3::LocationsController do
 
       it "does not include the location named 'Upper Valley' "do 
         subject
-        assigns(:locations).select { |l| l.name.match 'Upper Valley' }.should have(0).things
+        expect(assigns(:locations).select { |l| l.name.match 'Upper Valley' }.size).to eq(0)
       end
     end
 
@@ -42,7 +42,7 @@ describe Api::V3::LocationsController do
       
       it 'should return consumer active search results' do
         get :index, query: 'search'
-        expect(assigns(:locations)).to eq([@loc1])
+        expect(assigns(:locations)).to eql([@loc1])
       end
 
       it 'should not return search results that are not consumer active' do

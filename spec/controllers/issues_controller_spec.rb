@@ -10,7 +10,7 @@ describe IssuesController, type: :controller do
     let!(:issues) { FactoryGirl.create_list :issue, 3 }
 
     it 'assigns @issues to mapped select options' do
-      get :select_options
+      xhr :get, :select_options, format: :js
       issue_list = assigns(:issues)
       issues.each do |issue|
         expect(issue_list).to include([issue.issue_edition, issue.id])
@@ -23,7 +23,7 @@ describe IssuesController, type: :controller do
       let(:non_org_issue){ issues.last }
       before do
         scoped_issues.each{|i| i.update_attribute(:organization, organization)}
-        get :select_options, organization_id: organization.id
+        xhr :get, :select_options, organization_id: organization.id, format: :js
       end
 
       subject { assigns(:issues) }
@@ -61,7 +61,7 @@ describe IssuesController, type: :controller do
     }
 
     it 'creates a record' do
-      expect { post :create, issue: attrs }.to change{ Issue.count }.by(1)
+      expect { xhr :post, :create, issue: attrs, format: :js }.to change{ Issue.count }.by(1)
     end
   end
 
@@ -72,21 +72,21 @@ describe IssuesController, type: :controller do
     end
     describe '#edit' do
       it 'renders issues/_form partial' do
-        get :edit, id: record.id, format: 'js'
+        xhr :get, :edit, id: record.id, format: :js
         expect(response).to render_template('issues/_form')
       end
     end
 
     describe '#update' do
       it 'updates record' do
-        put :update, id: record.id, issue: { issue_edition: "Test Edition" }
+        xhr :put, :update, id: record.id, issue: { issue_edition: "Test Edition" }, format: :js
         expect(record.reload.issue_edition).to eql "Test Edition"
       end
     end
 
     describe '#show' do
       it 'returns issue as json' do
-        get :show, id: record.id, format: :js
+        xhr :get, :show, id: record.id, format: :js
         record_json = {issue: record}.to_json
         expect(response.body).to eql record_json
       end
@@ -95,7 +95,7 @@ describe IssuesController, type: :controller do
     describe '#destroy' do
       it 'destroys record' do
         expect(record).to receive(:destroy)
-        delete :destroy, id: record.id
+        xhr :delete, :destroy, id: record.id, format: :js
       end
     end
   end

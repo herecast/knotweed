@@ -13,6 +13,6 @@
 
 require 'spec_helper'
 
-describe DataContext do
-  pending "add some examples to (or delete) #{__FILE__}"
+describe DataContext, :type => :model do
+  skip "add some examples to (or delete) #{__FILE__}"
 end

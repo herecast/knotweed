@@ -12,7 +12,7 @@
 
 require 'spec_helper'
 
-describe ContentCategory do
+describe ContentCategory, :type => :model do
   before do
     @content_category = FactoryGirl.create :content_category, name: 'lowercase name'
   end

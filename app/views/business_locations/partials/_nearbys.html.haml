@@ -18,6 +18,6 @@
             - if 0 == @events_per_venue[venue.id]
               = link_to 'X', business_location_path(venue), method: :delete,
                 class: 'btn btn-mini btn-danger',
-                confirm: "Are you sure you want to delete the venue #{venue.name} at #{venue.full_address}?"
+                data: { confirm: "Are you sure you want to delete the venue #{venue.name} at #{venue.full_address}?" }
 - else
   %h4 There are no nearby venues.

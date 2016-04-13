@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BusinessLocationsController do
+describe BusinessLocationsController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     @business_location = FactoryGirl.create :business_location
@@ -11,7 +11,7 @@ describe BusinessLocationsController do
   describe "GET 'index'" do
     it 'returns http success' do
       get 'index'
-      response.should be_success
+      expect(response).to be_success
     end
 
     context 'when reset' do
@@ -42,7 +42,7 @@ describe BusinessLocationsController do
   describe "GET 'new'" do
     it 'returns http success' do
       get 'new'
-      response.should be_success
+      expect(response).to be_success
     end
 
     context "when business_location has organization_id" do
@@ -103,7 +103,7 @@ describe BusinessLocationsController do
   describe "GET 'edit'" do
     it 'returns http success' do
       get 'edit', id: @business_location.id
-      response.should be_success
+      expect(response).to be_success
     end
 
     context "when nearbys exist" do
@@ -172,7 +172,7 @@ describe BusinessLocationsController do
     subject { delete :destroy, { id: @business_location.to_param} }
     it 'redirect to back' do
       subject
-      response.should redirect_to 'where_i_came_from'
+      expect(response).to redirect_to 'where_i_came_from'
     end
   end
 

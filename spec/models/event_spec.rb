@@ -26,7 +26,7 @@
 
 require 'spec_helper'
 
-describe Event do
+describe Event, :type => :model do
   before do
     @content = FactoryGirl.create :content
     @event = FactoryGirl.create :event, content: @content
@@ -34,9 +34,9 @@ describe Event do
 
   describe "method missing override" do
     it "should allow access to content attributes directly" do
-      @event.title.should eq(@content.title)
-      @event.authors.should eq(@content.authors)
-      @event.pubdate.should eq(@content.pubdate)
+      expect(@event.title).to eq(@content.title)
+      expect(@event.authors).to eq(@content.authors)
+      expect(@event.pubdate).to eq(@content.pubdate)
     end
 
     it "should retain normal method_missing behavior if not a content attribute" do
@@ -46,14 +46,14 @@ describe Event do
 
   describe "description" do
     it "should return content.content" do
-      @event.description.should eq(@content.content)
+      expect(@event.description).to eq(@content.content)
     end
   end
 
   describe "description=" do
     it "should update the associated content record's content field" do
       @event.description = "New Description"
-      @event.content.content.should eq "New Description"
+      expect(@event.content.content).to eq "New Description"
     end
   end
 
@@ -61,7 +61,7 @@ describe Event do
     it "should also save the associated content record" do
       @content.title = "Changed Title"
       @event.save # should trigger @content.save callback
-      @content.reload.title.should eq "Changed Title"
+      expect(@content.reload.title).to eq "Changed Title"
     end
   end
 
@@ -70,15 +70,15 @@ describe Event do
       @event.sponsor_url = @event.event_url = 'www.google.com'
       @event.save
       @event.reload
-      @event.sponsor_url.should eq('http://www.google.com')
-      @event.event_url.should eq('http://www.google.com')
+      expect(@event.sponsor_url).to eq('http://www.google.com')
+      expect(@event.event_url).to eq('http://www.google.com')
     end
 
     it 'should not affect URL fields that already have http' do
       @event.sponsor_url = 'http://www.google.com'
       @event.save
       @event.reload
-      @event.sponsor_url.should eq('http://www.google.com')
+      expect(@event.sponsor_url).to eq('http://www.google.com')
     end
   end
 

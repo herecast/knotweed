@@ -24,7 +24,7 @@ describe ContactsController, type: :controller do
   describe '#create' do
     let(:attrs) { FactoryGirl.attributes_for :contact }
     it 'creates a record' do
-      expect{ post :create, contact: attrs }.to change{
+      expect{ xhr :post, :create, contact: attrs, format: :js }.to change{
         Contact.count
       }.by(1)
     end
@@ -38,7 +38,7 @@ describe ContactsController, type: :controller do
 
     describe '#edit' do
       before do
-        get :edit, id: record.id, format: :js
+        xhr :get, :edit, id: record.id, format: :js
       end
 
       it 'renders form partial' do
@@ -60,7 +60,7 @@ describe ContactsController, type: :controller do
     describe '#destroy' do
       it 'destroys the record' do
         expect(record).to receive(:destroy)
-        delete :destroy, id: record.id
+        xhr :delete, :destroy, id: record.id, format: :js
       end
     end
   end

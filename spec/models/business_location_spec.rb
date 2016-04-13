@@ -25,7 +25,7 @@
 
 require 'spec_helper'
 
-describe BusinessLocation do
+describe BusinessLocation, :type => :model do
   include_examples 'Auditable', BusinessLocation
 
   before do

@@ -17,8 +17,8 @@
 
 require 'spec_helper'
 
-describe ContentReport do
+describe ContentReport, :type => :model do
   before { @content_report = FactoryGirl.build :content_report }
   subject { @content_report }
-  it { should be_valid }
+  it { is_expected.to be_valid }
 end
