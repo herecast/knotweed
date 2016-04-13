@@ -16,6 +16,7 @@ require 'rspec/rails'
 require 'webmock/rspec'
 #require 'pry-debugger' unless ENV['RM_INFO']
 require 'vcr'
+require 'factory_girl'
 WebMock.disable_net_connect!(allow_localhost: true)
 
 # Requires supporting ruby files with custom matchers and macros, etc,
@@ -62,10 +63,11 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation, {pre_count: true})
-    DatabaseCleaner.strategy = :truncation, {pre_count: true} 
+    DatabaseCleaner.strategy = :truncation, {pre_count: true}
     # Disable VCR for the test-suite, unless a test explicitely asks for it
     VCR.turn_off!
     ImageUploader.storage = :file
+    FactoryGirl.lint
   end
   config.before(:each) do
     DatabaseCleaner.start

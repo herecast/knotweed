@@ -12,6 +12,6 @@
 
 FactoryGirl.define do
   factory :channel do
-    name "Channel Funnel"
+    sequence(:name) {|i| "Channel Funnel #{i}" }
   end
 end

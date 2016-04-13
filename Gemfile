@@ -26,7 +26,7 @@ gem 'net-http-persistent', '~> 2.9'
 gem 'rinku', "~> 1.7.3"
 
 group :development, :test do
-  gem "factory_girl_rails", "~> 4.3.0"
+  gem "factory_girl_rails", "~> 4.4.0"
   gem 'faker', '~> 1.6.1'
   gem "rspec-rails", '~> 3.4'
   gem 'rspec', '~> 3.4'
