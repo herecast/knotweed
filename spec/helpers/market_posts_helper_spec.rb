@@ -51,31 +51,39 @@ describe MarketPostsHelper, type: :helper do
 
     context 'consumer_app set from request' do
       let(:consumer_app) { double(uri: 'http://my-uri.example') }
-      before do
-        Thread.current[:consumer_app] = consumer_app
-      end
 
-      it { is_expected.to eql "#{consumer_app.uri}#{content_path}#{utm_string}" }
+      it 'uses consumer app uri' do
+        Thread.new do
+          Thread.current[:consumer_app] = consumer_app
+          expect(subject).to eql "#{consumer_app.uri}#{content_path}#{utm_string}"
+        end
+      end
     end
 
     context 'consumer_app not set; @base_uri set from controller' do
       before do
         @base_uri = 'http://event.foo'
-        Thread.current[:consumer_app] = nil
       end
 
       it 'uses @base_uri, and market_post.content.id' do
-        expect(subject).to eql "#{@base_uri}/contents/#{market_post.content.id}/market_posts/#{market_post.id}#{utm_string}"
+        Thread.new do
+          Thread.current[:consumer_app] = nil
+          expect(subject).to eql "#{@base_uri}/contents/#{market_post.content.id}/market_posts/#{market_post.id}#{utm_string}"
+        end
       end
     end
 
     context 'if not consumer_app, or @base_uri;' do
       before do 
         @base_uri = nil
-        Thread.current[:consumer_app] = nil
       end
 
-      it { is_expected.to eql "http://www.dailyuv.com/uvmarket" }
+      it 'uses a default url' do
+        Thread.new do
+          Thread.current[:consumer_app] = nil
+          expect(subject).to eql "http://www.dailyuv.com/uvmarket"
+        end
+      end
     end
   end
 end
