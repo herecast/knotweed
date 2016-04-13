@@ -16,7 +16,7 @@ describe ModerationMailer, :type => :mailer do
     describe 'moderation email' do
 
       it "should send an email" do
-        email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver
+        email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver_now
         expect(ModerationMailer.deliveries.present?).to eq(true)
         expect(email.body.include?(@flagger_name)).to eq(true)
         expect(email.body.include?(@flagger_email)).to eq(true)
@@ -27,19 +27,19 @@ describe ModerationMailer, :type => :mailer do
 
       it "generates the proper content type edit link" do
         # regular content
-        email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver
+        email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver_now
         url = edit_content_url(@content)
         email.body.include?(url)
 
         # market content
         @content.channel = FactoryGirl.create(:market_post)
-        email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver
+        email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver_now
         url = edit_market_post_url(@content.channel_id)
         email.body.include?(url)
 
         # event content
         @content.channel = FactoryGirl.create(:event)
-        email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver
+        email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver_now
         url = edit_event_url(@content.channel_id)
         email.body.include?(url)
       end
@@ -48,7 +48,7 @@ describe ModerationMailer, :type => :mailer do
     describe 'version 2' do
 
       it "should send an email" do
-        email = ModerationMailer.send_moderation_flag_v2(@content, @params[:classification], @flagging_user).deliver
+        email = ModerationMailer.send_moderation_flag_v2(@content, @params[:classification], @flagging_user).deliver_now
         expect(ModerationMailer.deliveries.present?).to eq(true)
         expect(email.body.include?(@flagging_user.name)).to eq(true)
         expect(email.body.include?(@flagging_user.email)).to eq(true)
@@ -59,19 +59,19 @@ describe ModerationMailer, :type => :mailer do
 
       it "generates the proper content type edit link" do
         # regular content
-        email = ModerationMailer.send_moderation_flag_v2(@content, @params[:classification], @flagging_user).deliver
+        email = ModerationMailer.send_moderation_flag_v2(@content, @params[:classification], @flagging_user).deliver_now
         url = edit_content_url(@content)
         email.body.include?(url)
 
         # market content
         @content.channel = FactoryGirl.create(:market_post)
-        email = ModerationMailer.send_moderation_flag_v2(@content, @params[:classification], @flagging_user).deliver
+        email = ModerationMailer.send_moderation_flag_v2(@content, @params[:classification], @flagging_user).deliver_now
         url = edit_market_post_url(@content.channel_id)
         email.body.include?(url)
 
         # event content
         @content.channel = FactoryGirl.create(:event)
-        email = ModerationMailer.send_moderation_flag_v2(@content, @params[:classification], @flagging_user).deliver
+        email = ModerationMailer.send_moderation_flag_v2(@content, @params[:classification], @flagging_user).deliver_now
         url = edit_event_url(@content.channel_id)
         email.body.include?(url)
       end

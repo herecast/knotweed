@@ -68,7 +68,7 @@ gem "nokogiri", '1.6.1' # allowing a patch upgrade on this
 # gem breaks part of sanitized content that I can't really figure out
 # so I'm leaving it locked into the version we currently use.
 
-gem "fog", '~> 1.19.0'
+gem "fog", '~> 1.38.0'
 gem 'unf', '~> 0.1.3'
 gem 'datetimepicker-rails', git: 'git://github.com/zpaulovics/datetimepicker-rails', tag: 'v1.0.0'
 

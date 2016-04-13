@@ -19,7 +19,7 @@ describe BusinessLocationsController, :type => :controller do
       subject { get :index, reset: true }
 
       it "returns no business locations" do
-        Ransack::Search.any_instance.stub_chain(:result, :page, :per, :accessible_by) { [] }
+        allow_any_instance_of(Ransack::Search).to receive_message_chain(:result, :page, :per, :accessible_by).and_return []
         subject
         expect(assigns(:business_locations)).to eq []
       end
