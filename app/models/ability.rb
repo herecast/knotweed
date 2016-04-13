@@ -16,7 +16,7 @@ class Ability
       can :manage, BusinessLocation # for event venues
       can :manage, Content, created_by: user
     else
-      if Role.where(name: 'manager').count > 0
+      if user.roles.where(name: 'manager').count > 0
         managed_orgs = Organization.with_role(:manager, user)
       else
         managed_orgs = []
