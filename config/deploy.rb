@@ -8,7 +8,7 @@ set :repo_url, 'git@github.com:subtextmedia/knotweed.git'
 # Default branch is :master
 ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 
-set :rvm_ruby_version, '1.9.3-p545@knotweed'
+set :rvm_ruby_version, '2.2.4@knotweed'
 
 set :delayed_job_args, "-n 4"
 
