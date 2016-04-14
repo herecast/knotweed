@@ -17,7 +17,11 @@ require 'capistrano/deploy'
 # require 'capistrano/rbenv'
 # require 'capistrano/chruby'
 require 'capistrano/bundler'
-require 'capistrano/rvm'
+# only require rvm on the deploy task that needs it, otherwise it will run
+# rvm hooks on our non-deploy tasks (eg refresh)
+task :deploy do
+  require 'capistrano/rvm'
+end
 require 'capistrano/rails/assets'
 require 'capistrano/rails/migrations'
 require 'thinking_sphinx/capistrano'
