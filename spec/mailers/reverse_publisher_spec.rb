@@ -49,18 +49,16 @@ describe ReversePublisher, :type => :mailer do
   # this is testing the special construction of the consumer app URL 
   # for the content based on whether or not Thread.current[:consumer_app] is set
   describe 'ux2 content links' do
-    before do
-      # stub out Thread.current for purposes of testing this
-      allow(Thread).to receive(:current).and_return({consumer_app: FactoryGirl.create(:consumer_app)})
-      @listserv.send_content_to_listserv(@content, Thread.current[:consumer_app])
-      # only the reverse publish email has this header, so use that to select it
-      @rp_email = ReversePublisher.deliveries.select{ |e| e['X-Original-Content-Id'].present? }.first
-    end
-
-    after { RSpec::Mocks.teardown }
+    let(:consumer_app) {FactoryGirl.create(:consumer_app)}
 
     it 'should include the ux2 content path for @content' do
-      expect(@rp_email.body.encoded).to include("#{Thread.current[:consumer_app].uri}/news/#{@content.id}")
+      Thread.new do
+        Thread.current[:consumer_app] = FactoryGirl.create(:consumer_app)
+        listserv.send_content_to_listserv(@content, consumer_app)
+        # only the reverse publish email has this header, so use that to select it
+        rp_email = ReversePublisher.deliveries.select{ |e| e['X-Original-Content-Id'].present? }.first
+        expect(rp_email.body.encoded).to include("#{consumer_app.uri}/news/#{@content.id}")
+      end
     end
   end
 
