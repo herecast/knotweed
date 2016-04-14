@@ -1,5 +1,5 @@
 - if @nearbys.present?
-  %h4 #{@nearbys.count.to_s} Nearby Venues
+  %h4 #{@nearbys.count(:all).to_s} Nearby Venues
   .row-fluid
     %table.table.table-striped.table-bordered.data-table.table-condensed
       %th Name
