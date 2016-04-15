@@ -76,7 +76,7 @@ describe ContentsController, type: :controller do
         @contents = FactoryGirl.create_list :content, 3, organization: @org
       end
 
-      subject { get :index, q: { organization_id_in: [@org.id] } }
+      subject { get :index, q: { organization_id_in: [@org.id], locations_id_in: [''] } }
 
       it 'should respond with the content belonging to that organization' do
         subject
