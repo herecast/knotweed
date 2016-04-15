@@ -29,7 +29,12 @@ class ContentsController < ApplicationController
 
     @content_categories = ContentCategory.accessible_by(current_ability)
     if session[:contents_search].present?
-      @contents = session[:contents_search][:locations_id_in].all?(&:blank?) ? Content.joins(shared_context.join_sources) : Content.joins(:locations).joins(shared_context.join_sources)
+      if session[:contents_search][:locations_id_in].all?(&:blank?)
+        @contents = Content.joins(shared_context.join_sources)
+      else
+        @contents = Content.joins(:locations).joins(shared_context.join_sources)
+      end
+
       @contents = @contents
         .where(shared_conditions.reduce(&:or))
         .order("pubdate DESC").page(params[:page])
