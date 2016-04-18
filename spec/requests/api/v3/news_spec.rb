@@ -92,7 +92,7 @@ describe 'News Endpoints', type: :request do
           image: fixture_file_upload("#{::Rails.root}/spec/fixtures/photo.jpg", 'image/jpg'),
           primary: true
         }
-      }
+      }, auth_headers
       @img = Image.find(response_json['image']['id'])
     end
 
