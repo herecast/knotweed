@@ -49,7 +49,7 @@ class Organization < ActiveRecord::Base
                   :remote_logo_url, :contact_ids, :category_override,
                   :org_type, :display_attributes, :reverse_publish_email,
                   :consumer_app_ids, :external_category_ids, :can_publish_news
-  
+
   mount_uploader :logo, ImageUploader
 
   scope :alphabetical, -> { order("organizations.name ASC") }
@@ -58,6 +58,7 @@ class Organization < ActiveRecord::Base
   ORG_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher", 'Publication']
   #validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
 
+  validates :logo, :image_minimum_size => true
   validates_uniqueness_of :name
   validates_uniqueness_of :reverse_publish_email, allow_nil: true, allow_blank: true
   validates_presence_of :name
