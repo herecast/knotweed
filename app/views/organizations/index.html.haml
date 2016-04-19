@@ -13,6 +13,9 @@
       = search_form_for @search, url: organizations_path do |f|
         .controls.controls-row
           .field.span3
+            = f.label :name_cont, "Name"
+            = f.text_field :name_cont, class: 'span12'
+          .field.span3
             = f.label :org_type_in, "Organization Type"
             = f.select :org_type_in, Organization::ORG_TYPE_OPTIONS, {}, { multiple: true, class: "chosen-select" }
           .field.span3
