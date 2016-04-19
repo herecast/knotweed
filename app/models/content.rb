@@ -92,7 +92,7 @@ class Content < ActiveRecord::Base
   belongs_to :organization
   accepts_nested_attributes_for :organization
   attr_accessible :organization_attributes
-  delegate :name, to: :organization, prefix: true
+  delegate :name, to: :organization, prefix: true, allow_nil: true
 
   belongs_to :parent, class_name: "Content"
   delegate :view_count, :comment_count, :commenter_count, to: :parent, prefix: true

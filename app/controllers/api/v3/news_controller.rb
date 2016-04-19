@@ -5,35 +5,36 @@ module Api
 
       def create
         news_cat = ContentCategory.find_or_create_by(name: 'news')
-        if params[:news][:organization_id].blank?
-          render json: { errors: { 'organization_id' => 'Organization must be specified for news' } },
-            status: 500
-        else
-          @news = Content.new(params[:news].merge(content_category_id: news_cat.id))
-          if @news.save
-            if @repository.present? and @news.pubdate.present? # don't publish drafts
-              @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
-            end
-
-            render json: @news, serializer: DetailedNewsSerializer, root: 'news',
-              status: 201
-          else
-            render json: { errors: @news.errors.messages }, status: :unprocessable_entity
+        @news = Content.new(params[:news].merge(content_category_id: news_cat.id))
+        if @news.save
+          if @repository.present? and @news.pubdate.present? # don't publish drafts
+            @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
+
+          render json: @news, serializer: DetailedNewsSerializer, root: 'news',
+            status: 201
+        else
+          render json: { errors: @news.errors.messages }, status: :unprocessable_entity
         end
       end
 
       def update
         @news = Content.find params[:id]
-        if @news.update_attributes(params[:news])
-          if @repository.present? and @news.pubdate.present?
-            @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
-          end
-
-          render json: @news, serializer: DetailedNewsSerializer, root: 'news',
-            status: 200
+        # can't schedule or publish news without an organization
+        if params[:news][:organization_id].blank? and params[:news][:pubdate].present?
+          render json: { errors: { 'organization_id' => 'Organization must be specified for news' } },
+            status: 500
         else
-          render json: { errors: @news.errors.messages }, status: :unprocessable_entity
+          if @news.update_attributes(params[:news])
+            if @repository.present? and @news.pubdate.present?
+              @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+            end
+
+            render json: @news, serializer: DetailedNewsSerializer, root: 'news',
+              status: 200
+          else
+            render json: { errors: @news.errors.messages }, status: :unprocessable_entity
+          end
         end
       end
 

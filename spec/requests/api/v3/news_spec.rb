@@ -27,25 +27,7 @@ describe 'News Endpoints', type: :request do
       end
     end
 
-    context 'without an organization_id specified' do
-      let(:post_params) do
-        {
-          title: 'blerb',
-          content: Faker::Lorem.paragraph,
-          organization_id: nil,
-          published_at: Time.zone.now
-        }
-      end
-      
-      it 'should not create content' do
-        expect{subject}.to_not change{Content.count}
-      end
 
-      it 'should respond with errors' do
-        subject
-        expect(response_json['errors']).to be_present
-      end
-    end
   end
 
   describe 'PUT /api/v3/news/:id' do
@@ -65,6 +47,43 @@ describe 'News Endpoints', type: :request do
 
     it 'should update the content' do
       expect{subject}.to change{@content.reload.title}.to put_params[:title]
+    end
+
+    context 'without an organization_id specified' do
+      context 'with pubdate' do
+        let(:put_params) do
+          {
+            title: 'blerb',
+            content: Faker::Lorem.paragraph,
+            organization_id: nil,
+            published_at: Time.zone.now
+          }
+        end
+      
+        it 'should not update content' do
+          expect{subject}.to_not change{@content.reload.title}
+        end
+
+        it 'should respond with errors' do
+          subject
+          expect(response_json['errors']).to be_present
+        end
+      end
+
+      context 'without pubdate' do
+        let(:put_params) do
+          {
+            title: 'blerb',
+            content: Faker::Lorem.paragraph,
+            organization_id: nil,
+            published_at: nil
+          }
+        end
+
+        it 'should update the content' do
+          expect{subject}.to change{@content.reload.title}.to put_params[:title]
+        end
+      end
     end
   end
 
