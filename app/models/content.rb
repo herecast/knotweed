@@ -194,15 +194,15 @@ class Content < ActiveRecord::Base
     elements: ['a', 'p', 'ul', 'ol', 'li', 'b', 'i',
                'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'iframe'],
     attributes: {
-      a: ['href', 'title', 'target'],
-      img: ['src', 'style'],
-      iframe: ['width', 'height', 'frameborder', 'src', 'class'] # youtube
+      'a' => ['href', 'title', 'target'],
+      'img' => ['src', 'style'],
+      'iframe' => ['width', 'height', 'frameborder', 'src', 'class'] # youtube
     },
     protocols: {
-      a: { href: ['http', 'https', 'mailto'] }
+      'a' => { 'href' => ['http', 'https', 'mailto'] }
     },
     add_attributes: {
-      a: { rel: 'nofollow' }
+      'a' => { 'rel' => 'nofollow' }
     }
   }
 
