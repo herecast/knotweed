@@ -1616,6 +1616,10 @@ describe Content, :type => :model do
         expect(@content).to receive(:ugc_sanitized_content)
         subject
       end
+
+      it 'should match output of ugc_sanitized_content' do 
+        expect(subject).to eq @content.ugc_sanitized_content
+      end
     end
 
     context 'for content without a specific sanitizer' do
@@ -1624,6 +1628,10 @@ describe Content, :type => :model do
       it' should use the default_sanitized_content method' do
         expect(@content).to receive(:default_sanitized_content)
         subject
+      end
+      
+      it 'should match output of default_sanitized_content' do
+        expect(subject).to eq @content.default_sanitized_content
       end
     end
   end
