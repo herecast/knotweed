@@ -98,7 +98,7 @@ namespace :refresh_database do
 
   desc 'Publish latest import'
   task :publish_latest_import do
-    pub_start_date = ENV['PUBSTARTDATE'] ? ENV['PUBSTARTDATE'] : Date.yesterday.to_s
+    pub_start_date = ENV['PUBSTARTDATE'] ? ENV['PUBSTARTDATE'] : Date.today.prev_day.to_s
     on roles(app_server_roles) do
       execute ". $HOME/.profile && cd #{deploy_to}/current && PUBSTARTDATE=#{pub_start_date} RAILS_ENV=production bundle exec rake backpublish"
     end
