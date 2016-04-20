@@ -17,13 +17,13 @@ describe Api::V3::ContentsController, :type => :controller do
       @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
       @other_location = FactoryGirl.create :location, city: 'Another City'
       @user = FactoryGirl.create :user, location: @other_location
-      FactoryGirl.create_list :content, 10, content_category: @news_cat, 
+      FactoryGirl.create_list :content, 15, content_category: @news_cat, 
         locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 10, content_category: @market_cat, 
+      FactoryGirl.create_list :content, 15, content_category: @market_cat, 
         locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 10, content_category: @tott_cat,
+      FactoryGirl.create_list :content, 15, content_category: @tott_cat,
         locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 10, content_category: @event_cat,
+      FactoryGirl.create_list :content, 15, content_category: @event_cat,
         locations: [@default_location], published: true
       FactoryGirl.create_list :content, 3, content_category: @market_cat, 
         locations: [@other_location]
@@ -124,7 +124,7 @@ describe Api::V3::ContentsController, :type => :controller do
         subject! { get :index, format: :json }
 
         it { expect(news_content.count).to eq(2) }
-        it { expect(non_news_content.count).to eq(10) }
+        it { expect(non_news_content.count).to eq(12) }
       end
 
       context 'with both params passed' do
