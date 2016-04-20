@@ -1606,6 +1606,28 @@ describe Content, :type => :model do
     end
   end
 
+  describe '#sanitized_content' do
+    subject { @content.sanitized_content }
+
+    context 'for UGC content' do
+      before { @content = FactoryGirl.create :content, origin: Content::UGC_ORIGIN }
+
+      it 'should use the ugc_sanitized_content method' do
+        expect(@content).to receive(:ugc_sanitized_content)
+        subject
+      end
+    end
+
+    context 'for content without a specific sanitizer' do
+      before { @content = FactoryGirl.create :content, origin: nil }
+
+      it' should use the default_sanitized_content method' do
+        expect(@content).to receive(:default_sanitized_content)
+        subject
+      end
+    end
+  end
+
   describe 'get_related_promotion' do
     let(:content) { FactoryGirl.create(:content) }
     let(:promo_banner) { FactoryGirl.create(:promotion_banner) }
