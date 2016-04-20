@@ -162,6 +162,8 @@ class Content < ActiveRecord::Base
   PUBDATE_OUTPUT_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
   BASE_URI = "http://www.subtext.org/Document"
+  
+  UGC_ORIGIN = 'UGC'
 
   # publish methods are string representations
   # of methods on the Content model
@@ -185,6 +187,24 @@ class Content < ActiveRecord::Base
                   sale_event sports wanted)
 
   BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt')) 
+
+  # NOTE: this needs to be kept in sync with the Ember app
+  # if it changes over there.
+  EMBER_SANITIZE_CONFIG = {
+    elements: ['a', 'p', 'ul', 'ol', 'li', 'b', 'i',
+               'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'iframe'],
+    attributes: {
+      a: ['href', 'title', 'target'],
+      img: ['src', 'style'],
+      iframe: ['width', 'height', 'frameborder', 'src', 'class'] # youtube
+    },
+    protocols: {
+      a: { href: ['http', 'https', 'mailto'] }
+    },
+    add_attributes: {
+      a: { rel: 'nofollow' }
+    }
+  }
 
   # ensure that we never save titles with leading/trailing whitespace
   def title=t
@@ -1156,7 +1176,20 @@ class Content < ActiveRecord::Base
   # Creates HTML-annotated, sanitized version of the raw_content that should be
   # as display-ready as possible
   def sanitized_content
-    return raw_content if raw_content.nil?
+    if raw_content.nil?
+      raw_content
+    elsif origin == UGC_ORIGIN
+      ugc_sanitized_content
+    else
+      default_sanitized_content
+    end
+  end
+
+  def ugc_sanitized_content
+    Sanitize.fragment(raw_content, EMBER_SANITIZE_CONFIG)
+  end
+
+  def default_sanitized_content
     pre_sanitize_filters = [
       # HACK: not sure exactly what this is...
       #[:gsub!, ["\u{a0}",""]], # get rid of... this

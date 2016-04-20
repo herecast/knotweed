@@ -305,6 +305,18 @@ describe Api::V3::MarketPostsController, :type => :controller do
         end
       end
 
+      context 'with params organization_id' do
+        let(:organization) { FactoryGirl.create(:organization) }
+        let(:params_with_org) { @attrs_for_update.merge(orgainzation_id: organization.id) }
+
+        it 'allows the param, but ignores it' do
+          put :update, id: @market_post.content.id, market_post: params_with_org
+          @market_post.reload
+          expect(@market_post.content.organization).to_not eql organization
+          expect(response.status).to eql 200
+        end
+      end
+
       context 'with consumer_app / repository' do
         before do
           @repo = FactoryGirl.create :repository

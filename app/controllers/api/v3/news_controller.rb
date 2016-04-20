@@ -5,7 +5,7 @@ module Api
 
       def create
         news_cat = ContentCategory.find_or_create_by(name: 'news')
-        @news = Content.new(params[:news].merge(content_category_id: news_cat.id))
+        @news = Content.new(params[:news].merge(content_category_id: news_cat.id, origin: Content::UGC_ORIGIN))
         if @news.save
           if @repository.present? and @news.pubdate.present? # don't publish drafts
             @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
