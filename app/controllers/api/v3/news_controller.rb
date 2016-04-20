@@ -22,7 +22,8 @@ module Api
         @news = Content.find params[:id]
         # some unique validation
         # if it's already published, don't allow changing the pubdate (i.e. unpublishing or scheduling)
-        if @news.pubdate.present? and @news.pubdate <= Time.zone.now and params[:news].has_key?(:pubdate)
+        if @news.pubdate.present? and @news.pubdate <= Time.zone.now and params[:news].has_key?(:pubdate) \
+            and Chronic.parse(params[:news][:pubdate]) != @news.pubdate
           render json: { errors: { 'published_at' => 'Can\'t unpublish already published news' } },
             status: 500
         # don't allow publishing or scheduling without an organization

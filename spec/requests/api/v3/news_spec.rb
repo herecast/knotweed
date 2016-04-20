@@ -105,6 +105,23 @@ describe 'News Endpoints', type: :request do
       end
     end
 
+    describe 'modifying published content' do
+      before do
+        @content.update_attribute :pubdate, 1.week.ago
+      end
+
+      let(:put_params) do
+        {
+          published_at: @content.pubdate,
+          title: 'New Title For This Content'
+        }
+      end
+
+      it 'should update the content' do
+        expect{subject}.to change{@content.reload.title}
+      end
+    end
+
     context 'without an organization specified' do
       before { @content.update_attribute :organization_id, nil }
 
