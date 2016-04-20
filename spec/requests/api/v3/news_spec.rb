@@ -27,23 +27,17 @@ describe 'News Endpoints', type: :request do
       end
     end
 
-    context 'without an organization_id specified' do
+    describe 'saving a draft' do
       let(:post_params) do
         {
-          title: 'blerb',
-          content: Faker::Lorem.paragraph,
-          organization_id: nil,
-          published_at: Time.zone.now
+          title: 'My Title',
+          content: 'Who cares',
+          published_at: nil
         }
       end
-      
-      it 'should not create content' do
-        expect{subject}.to_not change{Content.count}
-      end
 
-      it 'should respond with errors' do
-        subject
-        expect(response_json['errors']).to be_present
+      it 'should create a content record' do
+        expect{subject}.to change{Content.count}.by 1
       end
     end
   end
@@ -52,7 +46,7 @@ describe 'News Endpoints', type: :request do
     before do
       @news_cat = FactoryGirl.create :content_category, name: 'news'
       @org = FactoryGirl.create :organization, can_publish_news: true
-      @content = FactoryGirl.create :content, organization: @org
+      @content = FactoryGirl.create :content, organization: @org, pubdate: nil
     end
 
     let(:put_params) do
@@ -65,6 +59,106 @@ describe 'News Endpoints', type: :request do
 
     it 'should update the content' do
       expect{subject}.to change{@content.reload.title}.to put_params[:title]
+    end
+
+    describe 'scheduling a draft for publishing' do
+      let(:put_params) do
+        {
+          published_at: 2.months.from_now
+        }
+      end
+
+      it 'should update the content pubdate' do
+        expect{subject}.to change{@content.reload.pubdate}
+      end
+    end
+
+    describe 'unscheduling a previously scheduled draft' do
+      before do
+        @content.update_attribute :pubdate, 2.months.from_now
+      end
+
+      let(:put_params) do
+        {
+          published_at: nil
+        }
+      end
+
+      it 'should unset the pubdate and make the content a draft' do
+        expect{subject}.to change{@content.reload.pubdate}.to nil
+      end
+    end
+
+    describe 'unpublishing published content' do
+      before do
+        @content.update_attribute :pubdate, 1.week.ago
+      end
+
+      let(:put_params) do
+        {
+          published_at: nil
+        }
+      end
+
+      it 'should not succeed' do
+        expect{subject}.to_not change{@content.reload.pubdate}
+      end
+    end
+
+    describe 'modifying published content' do
+      before do
+        @content.update_attribute :pubdate, 1.week.ago
+      end
+
+      let(:put_params) do
+        {
+          published_at: @content.pubdate,
+          title: 'New Title For This Content'
+        }
+      end
+
+      it 'should update the content' do
+        expect{subject}.to change{@content.reload.title}
+      end
+    end
+
+    context 'without an organization specified' do
+      before { @content.update_attribute :organization_id, nil }
+
+      context 'with pubdate' do
+        let(:put_params) do
+          {
+            title: 'blerb',
+            content: Faker::Lorem.paragraph,
+            organization_id: nil,
+            published_at: Time.zone.now
+          }
+        end
+      
+        it 'should not update content' do
+          expect{subject}.to_not change{@content.reload.title}
+        end
+
+        it 'should respond with errors' do
+          subject
+          expect(response_json['errors']).to be_present
+        end
+      end
+
+      context 'without pubdate' do
+        let(:put_params) do
+          {
+            title: 'blerb',
+            content: Faker::Lorem.paragraph,
+            organization_id: nil,
+            published_at: nil
+          }
+        end
+
+        it 'should update the content' do
+          expect{subject}.to change{@content.reload.title}.to put_params[:title]
+        end
+      end
     end
   end
 
