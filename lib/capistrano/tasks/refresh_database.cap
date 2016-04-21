@@ -1,0 +1,106 @@
+require 'rake/clean'
+require 'date'
+
+# TODO - put this somewhere else?
+MAILDIRS = %w{ inbound uvlist wp_posts wp_dailyuv }
+ADAPT_FILE = 'adapt.sql'
+
+desc 'Refresh database from production data'
+task :refresh_database do
+  %w{ kill_delayed_jobs
+      move_mail
+      transfer_mysql_data
+      run_migrations
+      reindex
+      restart_front_end
+      start_delayed_jobs
+      publish_latest_import }.each do |task|
+    invoke "refresh_database:#{task}"
+  end
+end
+
+namespace :refresh_database do
+  def app_server_roles
+    fetch(:app_server_role, :app)
+  end
+
+  def get_adapt_template
+    File.read(File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'config', 'adapt.rq')))
+  end
+
+  desc 'Kill running delayed jobs'
+  task :kill_delayed_jobs do
+    on roles(app_server_roles) do
+      execute ". $HOME/.profile && cd #{deploy_to}/current && RAILS_ENV=production bin/delayed_job stop"
+    end
+  end
+
+  desc 'Writes adapt.sql file for transforming the database to work for the new environment'
+  task :write_adapt_sql do
+    File.open(ADAPT_FILE, 'w') do |f|
+      f.write(get_adapt_template % {dsp_endpoint_hostname: fetch(:dsp_endpoint_hostname)})
+    end
+    CLEAN.include(ADAPT_FILE)
+  end
+
+  desc 'Move mail from /new to /cur'
+  task :move_mail do
+    on roles(app_server_roles) do
+      MAILDIRS.each do |mdir|
+        execute "mv /var/mail/#{mdir}/new/* /var/mail/#{mdir}/cur || :"
+      end
+    end
+  end
+
+  desc 'Transfer mysql data from prod'
+  task :transfer_mysql_data => :write_adapt_sql do
+    ask(:source_mysql_username, 'root')
+    ask(:source_mysql_password, nil)
+    ask(:dest_mysql_username, 'root')
+    ask(:dest_mysql_password, nil)
+    # TODO - this should only execute on one server
+    on roles(app_server_roles) do
+      execute "mysqldump -u #{fetch(:source_mysql_username)} -p#{fetch(:source_mysql_password)} -h #{fetch(:source_mysql_host)} #{fetch(:dest_mysql_database)} | " \
+              "mysql -u #{fetch(:dest_mysql_username)} -p#{fetch(:dest_mysql_password)} -h #{fetch(:dest_mysql_host)} #{fetch(:dest_mysql_database)}"
+
+      upload! ADAPT_FILE, '/tmp/adapt.sql'
+      execute "mysql -u #{fetch(:dest_mysql_username)} -p#{fetch(:dest_mysql_password)} -h #{fetch(:dest_mysql_host)} #{fetch(:dest_mysql_database)} < /tmp/adapt.sql"
+    end
+  end
+
+  desc 'Run rails database migrations'
+  task :run_migrations do
+    on roles(app_server_roles) do
+      execute ". $HOME/.profile && cd #{deploy_to}/current && RAILS_ENV=production bundle exec rake db:migrate"
+    end
+  end
+
+  desc 'Reindex sphinx'
+  task :reindex do
+    on roles(app_server_roles) do
+      execute ". $HOME/.profile && cd #{deploy_to}/current && ./lib/indexing/full_index.sh"
+    end
+  end
+
+  desc 'Restart ember front-end'
+  task :restart_front_end do
+    on roles(app_server_roles) do
+      execute 'touch /var/www/knotweed-ember/current/tmp/restart.txt'
+    end
+  end
+
+  desc 'Start delayed jobs'
+  task :start_delayed_jobs do
+    on roles(app_server_roles) do
+      execute ". $HOME/.profile && cd #{deploy_to}/current && RAILS_ENV=production bin/delayed_job -n 4 restart"
+    end
+  end
+
+  desc 'Publish latest import'
+  task :publish_latest_import do
+    pub_start_date = ENV['PUBSTARTDATE'] ? ENV['PUBSTARTDATE'] : Date.today.prev_day.to_s
+    on roles(app_server_roles) do
+      execute ". $HOME/.profile && cd #{deploy_to}/current && PUBSTARTDATE=#{pub_start_date} RAILS_ENV=production bundle exec rake backpublish"
+    end
+  end
+end
