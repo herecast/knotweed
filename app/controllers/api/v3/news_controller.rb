@@ -95,7 +95,9 @@ module Api
       def show
         @news = Content.find params[:id]
         
-        if @requesting_app.present?
+        # filter out orgs that don't belong with this app
+        # have to still allow drafts that haven't selected their org yet, though
+        if @requesting_app.present? and @news.organization.present?
           head :no_content and return unless @requesting_app.organizations.include?(@news.organization)
         end
 
