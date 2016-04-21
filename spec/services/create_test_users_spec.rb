@@ -8,14 +8,14 @@ describe CreateTestUsers do
   end
 
   describe '#create_user' do
-    it "increases users by 1" do
+    it "increases user count by 1" do
       expect(STDOUT).to receive(:puts).once
       expect{ @rake_factory.create_user }.to change { User.count }.by 1
     end
   end
 
   describe '#create_org' do
-    it "increases org count by 1" do
+    it "increases organization count by 1" do
       expect(STDOUT).to receive(:puts).once
       expect{ @rake_factory.create_org }.to change { Organization.count }.by 1
     end
