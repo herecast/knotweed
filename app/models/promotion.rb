@@ -52,9 +52,4 @@ class Promotion < ActiveRecord::Base
     self.active = true if self.active.nil?
   end
 
-  protected
-
-  def build_promotable(params, assignment_options)
-    self.promotable = promotable_type.constantize.new(params)
-  end
 end
