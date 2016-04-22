@@ -195,7 +195,7 @@ class Content < ActiveRecord::Base
                'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'iframe'],
     attributes: {
       'a' => ['href', 'title', 'target'],
-      'img' => ['src', 'style'],
+      'img' => ['src', 'style', 'class'],
       'iframe' => ['width', 'height', 'frameborder', 'src', 'class'] # youtube
     },
     protocols: {
