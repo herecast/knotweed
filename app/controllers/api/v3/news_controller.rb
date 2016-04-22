@@ -58,8 +58,13 @@ module Api
           allowed_orgs = @requesting_app.organizations.pluck(:id) 
           opts[:with][:org_id] = allowed_orgs
 
-          if params[:organization].present? and params[:organization] != 'Everyone'
-            org = Organization.find_by_name params[:organization]
+          if (params[:organization].present? and params[:organization] != 'Everyone') or params[:organization_id].present?
+
+            if params[:organization].present?
+              org = Organization.find_by_name params[:organization]
+            elsif params[:organization_id].present?
+              org = Organization.find params[:organization_id]
+            end
 
             if org.present? and allowed_orgs.include? org.id
               opts[:with][:org_id] = [org.id]

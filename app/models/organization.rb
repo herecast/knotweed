@@ -48,7 +48,8 @@ class Organization < ActiveRecord::Base
                   :website, :notes, :images_attributes, :parent_id, :location_ids,
                   :remote_logo_url, :contact_ids, :category_override,
                   :org_type, :display_attributes, :reverse_publish_email,
-                  :consumer_app_ids, :external_category_ids, :can_publish_news
+                  :consumer_app_ids, :external_category_ids, :can_publish_news,
+                  :subscribe_url, :description
 
   mount_uploader :logo, ImageUploader
 

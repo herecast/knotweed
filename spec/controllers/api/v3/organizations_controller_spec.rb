@@ -130,4 +130,70 @@ describe Api::V3::OrganizationsController, :type => :controller do
       end
     end
   end
+
+  describe 'PUT update' do
+    before do
+      @org = FactoryGirl.create :organization
+    end
+
+    let(:put_params) do
+      { 
+        id: @org.id,
+        format: :json,
+        organization: {
+          name: 'New Name',
+          description: Faker::Lorem.sentence(2),
+          logo: fixture_file_upload('/photo.jpg', 'image/jpg') 
+        }
+      }
+    end
+
+    subject { put :update, put_params }
+
+    context 'as authorized user' do
+      before do
+        @user = FactoryGirl.create :user
+        @user.add_role :manager, @org
+        api_authenticate user: @user
+      end
+
+      after(:all) do
+        # executing this request "uploads" an image to public/organization/1
+        FileUtils.rm_rf(Dir["#{Rails.root}/public/organization"])
+      end
+
+      it 'should respond with 204' do
+        subject
+        expect(response.code).to eq '204'
+      end
+
+      it 'should update description' do
+        expect{subject}.to change{@org.reload.description}
+      end
+
+      it 'should update logo' do
+        expect{subject}.to change{@org.reload.logo.url}
+      end
+
+      it 'should update name' do
+        expect{subject}.to change{@org.reload.name}
+      end
+    end
+
+    context 'as unauthorized (but logged in) user' do
+      before do
+        @user = FactoryGirl.create :user
+        api_authenticate user: @user
+      end
+
+      it 'should respond with 403' do
+        subject
+        expect(response.code).to eq '403'
+      end
+
+      it 'should not update the organization' do
+        expect{subject}.to_not change{@org.reload.name}
+      end
+    end
+  end
 end
