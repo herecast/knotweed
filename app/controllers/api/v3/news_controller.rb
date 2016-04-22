@@ -94,7 +94,8 @@ module Api
         end
 
         @news = Content.search query, opts
-        render json: @news, each_serializer: NewsSerializer
+        render json: @news, each_serializer: NewsSerializer,
+          meta: {total: @news.total_entries}
       end
 
       def show
