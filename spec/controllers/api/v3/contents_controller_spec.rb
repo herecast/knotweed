@@ -20,7 +20,7 @@ describe Api::V3::ContentsController, :type => :controller do
       FactoryGirl.create_list :content, 15, content_category: @news_cat, 
         locations: [@default_location], published: true
       FactoryGirl.create_list :content, 15, content_category: @market_cat, 
-        locations: [@default_location], published: true
+        locations: [@default_location], published: true, channel_type: 'MarketPost'
       FactoryGirl.create_list :content, 15, content_category: @tott_cat,
         locations: [@default_location], published: true
       FactoryGirl.create_list :content, 15, content_category: @event_cat,

@@ -93,4 +93,38 @@ describe 'Contents Endpoints', type: :request do
       end
     end
   end
+
+  describe 'GET api/v3/contents/contents', type: :request do
+    let(:org) { FactoryGirl.create :organization }
+    let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
+    let!(:default_location) { FactoryGirl.create :location, city: Location::DEFAULT_LOCATION }
+    let!(:news_cat) { FactoryGirl.create :content_category, name: 'news'}
+    let!(:event_cat) { FactoryGirl.create :content_category, name: 'event'}
+    let!(:market_cat) { FactoryGirl.create :content_category, name: 'market'}
+    let!(:talk_cat) { FactoryGirl.create :content_category, name: 'talk_of_the_town'}
+    let!(:market_post_ugc) { FactoryGirl.create :content, organization: org,  channel_type: 'MarketPost', content_category: market_cat, locations: [default_location], published: true }
+    let!(:market_post_listserv) { FactoryGirl.create :content, channel_type: nil, organization: org, content_category: market_cat, locations: [default_location], published: true }
+    let(:headers) { {'ACCEPT' => 'application/json',
+                     'Consumer-App-Uri' => consumer_app.uri
+                  } }
+    before { index }
+
+    it 'should return only ugc market posts' do
+      get "/api/v3/contents", {}, headers
+      expect(response_json['contents'].map { |c| c['id'] } ).to match_array [market_post_ugc.id]
+    end
+
+    context 'with other content types' do
+      let!(:news_post) { FactoryGirl.create :content, content_category: news_cat, organization: org, locations: [default_location], published: true }
+      let!(:event) { FactoryGirl.create :content, content_category: event_cat, organization: org, locations: [default_location], published: true }
+      let!(:event_instance) { FactoryGirl.create :event_instance, event: FactoryGirl.create(:event, content: event)}
+      before { index }
+
+      it 'they should be returned by the api' do
+        get "/api/v3/contents", {}, headers
+        expect(response_json['contents'].map { |c| c['id'] } ).to include event.id
+        expect(response_json['contents'].map { |c| c['id'] } ).to include news_post.id
+      end
+    end
+  end
 end

@@ -132,6 +132,10 @@ module Api
           root_content_category_id: reg_cat_ids
         })
 
+        root_market_category = ContentCategory.find_by(name: 'market')
+        reg_opts[:select] = reg_opts[:select] +  " ,IF(root_content_category_id = #{root_market_category.id} AND  channel_type='', 1, 0) AS is_listserv_market_post"
+        reg_opts[:without] = { is_listserv_market_post: 1 }
+
         news_contents = Content.search news_opts
         reg_contents = Content.search reg_opts
 
