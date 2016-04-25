@@ -11,7 +11,7 @@ checkout:
 
 dependencies:
   pre:
-    - sudo add-apt-repository ppa:builds/sphinxsearch-daily -y; sudo apt-get update; sudo apt-get install sphinxsearch=2.2.4-4699-0ubuntu10; sudo service sphinxsearch stop
+    - sudo add-apt-repository ppa:builds/sphinxsearch-rel22 -y; sudo apt-get update; sudo apt-get install sphinxsearch=2.2.10-release-0ubuntu12~precise; sudo service sphinxsearch stop
 
 test:
   post:
