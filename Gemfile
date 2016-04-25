@@ -125,3 +125,6 @@ gem 'icalendar', '~> 2.3'
 
 # need to keep older sanitize with Rails 4.2 upgrde
 gem 'rails-deprecated_sanitizer', '~> 1.0.3'
+
+# ugc sanitizer
+gem 'sanitize', '~> 4.0.1'

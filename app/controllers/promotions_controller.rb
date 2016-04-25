@@ -59,7 +59,15 @@ class PromotionsController < ApplicationController
   # POST /promotions
   # POST /promotions.json
   def create
+    promotable_klass = params[:promotion].delete(:promotable_type).try(:constantize)
+    promotable_attributes = params[:promotion].delete :promotable_attributes
+
     @promotion = Promotion.new(params[:promotion])
+
+    if promotable_klass.present?
+      @promotion.promotable = promotable_klass.new promotable_attributes
+    end
+
     pub = Organization.find params[:organization_id]
     @promotion.organization = pub
 
@@ -102,4 +110,5 @@ class PromotionsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
 end

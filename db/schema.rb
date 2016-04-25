@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160407212613) do
+ActiveRecord::Schema.define(version: 20160421213218) do
 
   create_table "annotation_reports", force: :cascade do |t|
     t.integer  "content_id",    limit: 4
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "name",          limit: 255
     t.text     "description",   limit: 65535
     t.text     "json_response", limit: 4294967295
@@ -27,8 +27,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.integer  "annotation_report_id", limit: 4
     t.string   "annotation_id",        limit: 255
     t.boolean  "accepted"
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "startnode",            limit: 255
     t.string   "endnode",              limit: 255
     t.string   "annotation_type",      limit: 255
@@ -47,8 +47,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "name",        limit: 255
     t.string   "description", limit: 255
     t.string   "icon_class",  limit: 255
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "source",      limit: 255
     t.integer  "source_id",   limit: 4
   end
@@ -75,8 +75,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.boolean  "cleanliness"
     t.boolean  "price"
     t.boolean  "recommend"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "business_locations", force: :cascade do |t|
@@ -85,8 +85,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "phone",               limit: 255
     t.string   "email",               limit: 255
     t.text     "hours",               limit: 65535
-    t.datetime "created_at",                                                       null: false
-    t.datetime "updated_at",                                                       null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "organization_id",     limit: 4
     t.float    "latitude",            limit: 24
     t.float    "longitude",           limit: 24
@@ -107,8 +107,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
   create_table "business_profiles", force: :cascade do |t|
     t.integer  "business_location_id",      limit: 4
     t.boolean  "has_retail_location",                                           default: true
-    t.datetime "created_at",                                                                   null: false
-    t.datetime "updated_at",                                                                   null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "source",                    limit: 255
     t.string   "source_id",                 limit: 255
     t.decimal  "existence",                             precision: 5, scale: 5
@@ -125,8 +125,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
   create_table "categories", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.integer  "channel_id", limit: 4
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "categories", ["name"], name: "index_categories_on_name", using: :btree
@@ -138,29 +138,29 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "user_email",   limit: 255
     t.string   "title",        limit: 255
     t.text     "content_body", limit: 65535
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "category_corrections", ["content_id"], name: "index_category_corrections_on_content_id", using: :btree
 
   create_table "channels", force: :cascade do |t|
     t.string   "name",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "comments", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "consumer_apps", force: :cascade do |t|
     t.string   "name",          limit: 255
     t.string   "uri",           limit: 255
     t.integer  "repository_id", limit: 4
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "consumer_apps", ["uri"], name: "index_consumer_apps_on_uri", unique: true, using: :btree
@@ -196,8 +196,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "phone",        limit: 255
     t.string   "email",        limit: 255
     t.text     "notes",        limit: 65535
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "contact_type", limit: 255
     t.text     "address",      limit: 65535
   end
@@ -209,8 +209,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
 
   create_table "content_categories", force: :cascade do |t|
     t.string   "name",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "parent_id",  limit: 4
   end
 
@@ -220,13 +220,15 @@ ActiveRecord::Schema.define(version: 20160407212613) do
   end
 
   add_index "content_categories_organizations", ["content_category_id", "organization_id"], name: "index_on_content_category_id_and_publication_id", using: :btree
+  add_index "content_categories_organizations", ["content_category_id"], name: "index_content_categories_organizations_on_content_category_id", using: :btree
+  add_index "content_categories_organizations", ["organization_id"], name: "index_content_categories_organizations_on_organization_id", using: :btree
 
   create_table "content_promotion_banner_impressions", force: :cascade do |t|
     t.integer  "content_id",          limit: 4
     t.integer  "promotion_banner_id", limit: 4
     t.integer  "display_count",       limit: 4,   default: 1
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "select_method",       limit: 255
     t.float    "select_score",        limit: 24
   end
@@ -242,8 +244,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.integer  "total_view_count",         limit: 4
     t.integer  "total_banner_click_count", limit: 4
     t.integer  "total_comment_count",      limit: 4
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "content_sets", force: :cascade do |t|
@@ -254,8 +256,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.text     "description",           limit: 65535
     t.text     "notes",                 limit: 65535
     t.string   "status",                limit: 255
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.date     "start_date"
     t.date     "end_date"
     t.boolean  "ongoing"
@@ -273,8 +275,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.text     "raw_content",               limit: 65535
     t.integer  "issue_id",                  limit: 4
     t.integer  "import_location_id",        limit: 4
-    t.datetime "created_at",                                              null: false
-    t.datetime "updated_at",                                              null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "copyright",                 limit: 255
     t.string   "guid",                      limit: 255
     t.datetime "pubdate"
@@ -310,26 +312,19 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.text     "similar_content_overrides", limit: 65535
     t.integer  "banner_ad_override",        limit: 4
     t.integer  "root_parent_id",            limit: 4
+    t.boolean  "my_town_only",                            default: false
   end
 
   add_index "contents", ["authoremail"], name: "index_contents_on_authoremail", using: :btree
-  add_index "contents", ["authors"], name: "authors", using: :btree
   add_index "contents", ["channel_id"], name: "index_contents_on_channel_id", using: :btree
   add_index "contents", ["channel_type"], name: "index_contents_on_channel_type", using: :btree
   add_index "contents", ["channelized_content_id"], name: "index_contents_on_channelized_content_id", using: :btree
   add_index "contents", ["content_category_id"], name: "content_category_id", using: :btree
   add_index "contents", ["created_by"], name: "index_contents_on_created_by", using: :btree
-  add_index "contents", ["guid"], name: "guid", using: :btree
-  add_index "contents", ["import_location_id"], name: "location_id", using: :btree
-  add_index "contents", ["import_record_id"], name: "import_record_id", using: :btree
-  add_index "contents", ["organization_id"], name: "source_id", using: :btree
   add_index "contents", ["parent_id"], name: "index_contents_on_parent_id", using: :btree
-  add_index "contents", ["pubdate"], name: "pubdate", using: :btree
   add_index "contents", ["published"], name: "index_contents_on_published", using: :btree
   add_index "contents", ["root_content_category_id"], name: "index_contents_on_root_content_category_id", using: :btree
   add_index "contents", ["root_parent_id"], name: "index_contents_on_root_parent_id", using: :btree
-  add_index "contents", ["source_category"], name: "categories", using: :btree
-  add_index "contents", ["title"], name: "title", using: :btree
 
   create_table "contents_locations", id: false, force: :cascade do |t|
     t.integer "content_id",  limit: 4
@@ -359,8 +354,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.boolean  "loaded",                 default: false
     t.datetime "last_load"
     t.boolean  "archived",               default: false
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "datasets", force: :cascade do |t|
@@ -369,8 +364,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "description",     limit: 255
     t.string   "realm",           limit: 255
     t.string   "model_type",      limit: 255
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
@@ -383,8 +378,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.datetime "failed_at"
     t.string   "locked_by",  limit: 255
     t.string   "queue",      limit: 255
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
@@ -395,8 +390,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.datetime "end_date"
     t.string   "subtitle_override",    limit: 255
     t.text     "description_override", limit: 65535
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "presenter_name",       limit: 255
     t.integer  "schedule_id",          limit: 4
   end
@@ -414,8 +409,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "sponsor_url",           limit: 255
     t.text     "links",                 limit: 65535
     t.boolean  "featured"
-    t.datetime "created_at",                                          null: false
-    t.datetime "updated_at",                                          null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "contact_phone",         limit: 255
     t.string   "contact_email",         limit: 255
     t.string   "cost_type",             limit: 255
@@ -428,7 +423,6 @@ ActiveRecord::Schema.define(version: 20160407212613) do
   end
 
   add_index "events", ["featured"], name: "index_events_on_featured", using: :btree
-  add_index "events", ["venue_id"], name: "events_on_venue_id_index", using: :btree
   add_index "events", ["venue_id"], name: "index_events_on_venue_id", using: :btree
 
   create_table "images", force: :cascade do |t|
@@ -437,8 +431,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "image",          limit: 255
     t.string   "imageable_type", limit: 255
     t.integer  "imageable_id",   limit: 4
-    t.datetime "created_at",                                 null: false
-    t.datetime "updated_at",                                 null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "source_url",     limit: 400
     t.boolean  "primary",                    default: false
   end
@@ -452,8 +446,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "source_path",           limit: 255
     t.string   "job_type",              limit: 255
     t.integer  "organization_id",       limit: 4
-    t.datetime "created_at",                                          null: false
-    t.datetime "updated_at",                                          null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "status",                limit: 255
     t.integer  "frequency",             limit: 4,     default: 0
     t.boolean  "archive",                             default: false, null: false
@@ -466,33 +460,31 @@ ActiveRecord::Schema.define(version: 20160407212613) do
   end
 
   create_table "import_locations", force: :cascade do |t|
-    t.integer  "parent_id",      limit: 4,   default: 0
-    t.integer  "region_id",      limit: 4,   default: 0
     t.string   "city",           limit: 255
     t.string   "state",          limit: 255
     t.string   "zip",            limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "parent_id",      limit: 4
+    t.integer  "region_id",      limit: 4
     t.string   "country",        limit: 128
     t.string   "link_name",      limit: 255
     t.string   "link_name_full", limit: 255
-    t.integer  "status",         limit: 4,   default: 0
+    t.integer  "status",         limit: 1,   default: 1, null: false
     t.string   "usgs_id",        limit: 128
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
   end
 
-  add_index "import_locations", ["city"], name: "city", using: :btree
-  add_index "import_locations", ["link_name"], name: "link_name", using: :btree
-  add_index "import_locations", ["link_name_full"], name: "link_name_full", using: :btree
-  add_index "import_locations", ["state"], name: "state", using: :btree
-  add_index "import_locations", ["status"], name: "status", using: :btree
-  add_index "import_locations", ["usgs_id"], name: "usgs_id", using: :btree
+  add_index "import_locations", ["link_name"], name: "index_import_locations_on_link_name", using: :btree
+  add_index "import_locations", ["state"], name: "index_import_locations_on_state", using: :btree
+  add_index "import_locations", ["status"], name: "index_import_locations_on_status", using: :btree
+  add_index "import_locations", ["usgs_id"], name: "index_import_locations_on_usgs_id", using: :btree
 
   create_table "import_records", force: :cascade do |t|
     t.integer  "import_job_id",  limit: 4
     t.integer  "items_imported", limit: 4, default: 0
     t.integer  "failures",       limit: 4, default: 0
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "filtered",       limit: 4, default: 0
   end
 
@@ -500,8 +492,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "issue_edition",      limit: 255
     t.integer  "organization_id",    limit: 4
     t.string   "copyright",          limit: 255
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "import_location_id", limit: 4
     t.datetime "publication_date"
   end
@@ -511,14 +503,17 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "reverse_publish_email", limit: 255
     t.string   "import_name",           limit: 255
     t.boolean  "active"
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "listservs_locations", id: false, force: :cascade do |t|
     t.integer "listserv_id", limit: 4
     t.integer "location_id", limit: 4
   end
+
+  add_index "listservs_locations", ["listserv_id"], name: "index_listservs_locations_on_listserv_id", using: :btree
+  add_index "listservs_locations", ["location_id"], name: "index_listservs_locations_on_location_id", using: :btree
 
   create_table "locations", force: :cascade do |t|
     t.string   "zip",             limit: 255
@@ -527,8 +522,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "county",          limit: 255
     t.string   "lat",             limit: 255
     t.string   "long",            limit: 255
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "consumer_active",             default: false
   end
 
@@ -545,14 +540,14 @@ ActiveRecord::Schema.define(version: 20160407212613) do
   create_table "locations_organizations", force: :cascade do |t|
     t.integer  "location_id",     limit: 4
     t.integer  "organization_id", limit: 4
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
-  add_index "locations_organizations", ["location_id", "organization_id"], name: "index_locations_publications_on_location_id_and_publication_id", using: :btree
-  add_index "locations_organizations", ["location_id"], name: "index_locations_publications_on_location_id", using: :btree
-  add_index "locations_organizations", ["organization_id", "location_id"], name: "index_locations_publications_on_publication_id_and_location_id", using: :btree
-  add_index "locations_organizations", ["organization_id"], name: "index_locations_publications_on_publication_id", using: :btree
+  add_index "locations_organizations", ["location_id", "organization_id"], name: "index_locations_organizations_on_location_id_and_organization_id", using: :btree
+  add_index "locations_organizations", ["location_id"], name: "index_locations_organizations_on_location_id", using: :btree
+  add_index "locations_organizations", ["organization_id", "location_id"], name: "index_locations_organizations_on_organization_id_and_location_id", using: :btree
+  add_index "locations_organizations", ["organization_id"], name: "index_locations_organizations_on_organization_id", using: :btree
 
   create_table "market_posts", force: :cascade do |t|
     t.string   "cost",                     limit: 255
@@ -564,8 +559,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.float    "latitude",                 limit: 24
     t.float    "longitude",                limit: 24
     t.boolean  "locate_include_name"
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "status",                   limit: 255
     t.string   "preferred_contact_method", limit: 255
   end
@@ -577,22 +572,22 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.datetime "start_date"
     t.datetime "end_date"
     t.text     "content",       limit: 65535
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "notifiers", force: :cascade do |t|
     t.integer  "user_id",         limit: 4
     t.integer  "notifyable_id",   limit: 4
     t.string   "notifyable_type", limit: 255
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "organizations", force: :cascade do |t|
     t.string   "name",                  limit: 255
-    t.datetime "created_at",                                          null: false
-    t.datetime "updated_at",                                          null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "logo",                  limit: 255
     t.integer  "organization_id",       limit: 4
     t.string   "website",               limit: 255
@@ -604,23 +599,25 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "reverse_publish_email", limit: 255
     t.boolean  "can_reverse_publish",                 default: false
     t.boolean  "can_publish_news",                    default: false
+    t.string   "subscribe_url",         limit: 255
+    t.text     "description",           limit: 65535
   end
 
-  add_index "organizations", ["name"], name: "index_publications_on_name", unique: true, using: :btree
+  add_index "organizations", ["name"], name: "index_organizations_on_name", unique: true, using: :btree
 
   create_table "parameters", force: :cascade do |t|
     t.integer  "parser_id",  limit: 4
     t.string   "name",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "parsers", force: :cascade do |t|
     t.string   "filename",    limit: 255
     t.string   "name",        limit: 255
     t.text     "description", limit: 65535
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "promotion_banner_reports", force: :cascade do |t|
@@ -630,15 +627,15 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.integer  "click_count",            limit: 4
     t.integer  "total_impression_count", limit: 4
     t.integer  "total_click_count",      limit: 4
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "promotion_banners", force: :cascade do |t|
     t.string   "banner_image",           limit: 255
     t.string   "redirect_url",           limit: 255
-    t.datetime "created_at",                                         null: false
-    t.datetime "updated_at",                                         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.date     "campaign_start"
     t.date     "campaign_end"
     t.integer  "max_impressions",        limit: 4
@@ -652,8 +649,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
   create_table "promotion_listservs", force: :cascade do |t|
     t.integer  "listserv_id", limit: 4
     t.datetime "sent_at"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "promotions", force: :cascade do |t|
@@ -662,8 +659,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.integer  "organization_id", limit: 4
     t.integer  "content_id",      limit: 4
     t.text     "description",     limit: 65535
-    t.datetime "created_at",                                    null: false
-    t.datetime "updated_at",                                    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "promotable_id",   limit: 4
     t.string   "promotable_type", limit: 255
     t.boolean  "paid",                          default: false
@@ -673,7 +670,7 @@ ActiveRecord::Schema.define(version: 20160407212613) do
 
   add_index "promotions", ["content_id"], name: "index_promotions_on_content_id", using: :btree
   add_index "promotions", ["created_by"], name: "index_promotions_on_created_by", using: :btree
-  add_index "promotions", ["organization_id"], name: "index_promotions_on_publication_id", using: :btree
+  add_index "promotions", ["organization_id"], name: "index_promotions_on_organization_id", using: :btree
 
   create_table "publish_jobs", force: :cascade do |t|
     t.text     "query_params",    limit: 65535
@@ -685,8 +682,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "error",           limit: 255
     t.string   "name",            limit: 255
     t.text     "description",     limit: 65535
-    t.datetime "created_at",                                    null: false
-    t.datetime "updated_at",                                    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.text     "file_archive",    limit: 65535
     t.datetime "run_at"
   end
@@ -695,8 +692,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.integer  "publish_job_id",  limit: 4
     t.integer  "items_published", limit: 4, default: 0
     t.integer  "failures",        limit: 4, default: 0
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "publish_records", ["publish_job_id"], name: "index_publish_records_on_publish_job_id", using: :btree
@@ -705,8 +702,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "name",                    limit: 255
     t.string   "dsp_endpoint",            limit: 255
     t.string   "sesame_endpoint",         limit: 255
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "graphdb_endpoint",        limit: 255
     t.string   "annotate_endpoint",       limit: 255
     t.string   "solr_endpoint",           limit: 255
@@ -718,8 +715,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "destination", limit: 255
     t.integer  "created_by",  limit: 4
     t.integer  "updated_by",  limit: 4
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "rewrites", ["created_by"], name: "index_rewrites_on_created_by", using: :btree
@@ -730,8 +727,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "name",          limit: 255
     t.integer  "resource_id",   limit: 4
     t.string   "resource_type", limit: 255
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "roles", ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id", using: :btree
@@ -743,8 +740,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.text     "description_override", limit: 65535
     t.string   "subtitle_override",    limit: 255
     t.string   "presenter_name",       limit: 255
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "user_wufoo_forms", id: false, force: :cascade do |t|
@@ -765,8 +762,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip",     limit: 255
     t.string   "last_sign_in_ip",        limit: 255
-    t.datetime "created_at",                                              null: false
-    t.datetime "updated_at",                                              null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "name",                   limit: 255
     t.string   "confirmation_token",     limit: 255
     t.datetime "confirmed_at"
@@ -807,8 +804,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "controller",     limit: 255
     t.string   "action",         limit: 255
     t.boolean  "active",                       default: true
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "page_url_field", limit: 255
   end
 
