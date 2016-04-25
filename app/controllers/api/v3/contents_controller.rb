@@ -81,7 +81,7 @@ module Api
           per_page = params[:per_page]
           news_per_page = params[:news_per_page]
         elsif params[:per_page].present?
-          per_page = params[:per_page]
+          per_page = params[:per_page].to_i
           news_per_page = 14 - per_page
         elsif params[:news_per_page].present?
           news_per_page = params[:news_per_page]

@@ -58,8 +58,13 @@ module Api
           allowed_orgs = @requesting_app.organizations.pluck(:id) 
           opts[:with][:org_id] = allowed_orgs
 
-          if params[:organization].present? and params[:organization] != 'Everyone'
-            org = Organization.find_by_name params[:organization]
+          if (params[:organization].present? and params[:organization] != 'Everyone') or params[:organization_id].present?
+
+            if params[:organization].present?
+              org = Organization.find_by_name params[:organization]
+            elsif params[:organization_id].present?
+              org = Organization.find params[:organization_id]
+            end
 
             if org.present? and allowed_orgs.include? org.id
               opts[:with][:org_id] = [org.id]
@@ -89,13 +94,16 @@ module Api
         end
 
         @news = Content.search query, opts
-        render json: @news, each_serializer: NewsSerializer
+        render json: @news, each_serializer: NewsSerializer,
+          meta: {total: @news.total_entries}
       end
 
       def show
         @news = Content.find params[:id]
         
-        if @requesting_app.present?
+        # filter out orgs that don't belong with this app
+        # have to still allow drafts that haven't selected their org yet, though
+        if @requesting_app.present? and @news.organization.present?
           head :no_content and return unless @requesting_app.organizations.include?(@news.organization)
         end
 
