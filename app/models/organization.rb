@@ -60,7 +60,6 @@ class Organization < ActiveRecord::Base
     'Blog']
   #validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
 
-  validates :logo, :image_minimum_size => true
   validates_uniqueness_of :name
   validates_uniqueness_of :reverse_publish_email, allow_nil: true, allow_blank: true
   validates_presence_of :name
