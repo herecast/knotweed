@@ -39,6 +39,17 @@ describe Image, :type => :model do
           expect(@image).to be_valid
         end
       end
+      
+      context 'when image does not exist in server filesystem' do
+        before do
+          @image = FactoryGirl.create :image, image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
+        end
+        
+        it 'does not try to validate image' do
+          File.delete(@image.image.current_path)
+          expect(@image).to be_valid
+        end
+      end
     end
   end
 
