@@ -40,6 +40,25 @@ describe 'News Endpoints', type: :request do
         expect{subject}.to change{Content.count}.by 1
       end
     end
+    
+    describe "content sanitization" do
+    
+      describe 'in-content img with style attributes' do
+        let(:post_params) do
+          {
+            title: 'My Title',
+            content: 'Who cares <img style="width: 50%; float: left;" src="http://go.test/this.jpg">',
+            published_at: nil
+          }
+        end
+        
+        it "does not strip out style attribute" do
+          subject
+          response_content = response_json['news']['content']
+          expect(response_content).to eql post_params[:content]
+        end
+      end
+    end
   end
 
   describe 'PUT /api/v3/news/:id' do
