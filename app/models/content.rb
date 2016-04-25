@@ -191,7 +191,7 @@ class Content < ActiveRecord::Base
   # NOTE: this needs to be kept in sync with the Ember app
   # if it changes over there.
   EMBER_SANITIZE_CONFIG = {
-    elements: ['a', 'p', 'ul', 'ol', 'li', 'b', 'i',
+    elements: ['a', 'p', 'ul', 'ol', 'li', 'b', 'i', 'u',
                'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'iframe'],
     attributes: {
       'a' => ['href', 'title', 'target'],
@@ -203,6 +203,11 @@ class Content < ActiveRecord::Base
     },
     add_attributes: {
       'a' => { 'rel' => 'nofollow' }
+    },
+    css: {
+      properties: [
+        'float', 'width', 'padding'
+      ]
     }
   }
 

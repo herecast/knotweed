@@ -1620,6 +1620,13 @@ describe Content, :type => :model do
       it 'should match output of ugc_sanitized_content' do 
         expect(subject).to eq @content.ugc_sanitized_content
       end
+      
+      it 'does not strip style attributes from image tags' do
+        img_content = '<img style="float: left; padding: 9px; width: 50%">'
+        @content.raw_content = img_content
+        expect(subject.html_safe).to eql img_content.html_safe
+      end
+      
     end
 
     context 'for content without a specific sanitizer' do
