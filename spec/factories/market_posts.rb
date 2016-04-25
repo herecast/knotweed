@@ -22,6 +22,12 @@
 
 FactoryGirl.define do
   factory :market_post do
+    ignore do
+      my_town_only false
+      locations []
+      published true
+    end
+
     cost "$5"
     contact_phone Faker::PhoneNumber.phone_number
     contact_email Faker::Internet.email
@@ -32,5 +38,16 @@ FactoryGirl.define do
     longitude Faker::Address.longitude
     locate_include_name false
     content
+
+    after(:build) do |e, evaluator|
+      e.content.my_town_only = evaluator.my_town_only
+      e.content.published = evaluator.published
+      e.content.locations = evaluator.locations
+      if ContentCategory.exists?(name: 'market')
+        e.content.content_category = ContentCategory.find_by name: 'market'
+      else
+        e.content.content_category = FactoryGirl.build :content_category, name: 'market'
+      end
+    end
   end
 end

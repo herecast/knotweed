@@ -1,9 +1,11 @@
 module Api
   module V3
     class ImagesController < ApiController
+      before_filter :check_logged_in!, only: [:update, :create] 
+
       def create
         content = Content.find(params[:image].delete(:content_id))
-
+        authorize! :manage, content
         @image = Image.new(params[:image].merge({ imageable: content }))
         if @image.save
           render json: @image, serializer: ImageSerializer, status: 201

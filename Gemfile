@@ -50,7 +50,6 @@ end
 gem "carrierwave", '~> 0.9.0'
 gem 'carrierwave-mimetype-fu', '~> 0.0.2'
 gem "figaro", '~> 0.7.0'
-gem 'dimensions', '~> 1.3.0'
 
 
 gem 'jquery-datatables-rails', '~> 3.4.0'
@@ -125,3 +124,6 @@ gem 'icalendar', '~> 2.3'
 
 # need to keep older sanitize with Rails 4.2 upgrde
 gem 'rails-deprecated_sanitizer', '~> 1.0.3'
+
+# ugc sanitizer
+gem 'sanitize', '~> 4.0.1'

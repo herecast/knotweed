@@ -19,7 +19,7 @@
 db/*.sqlite3
 #ignore the log dir
 /log/*
-#except these directories. NOTE: we have a .gitignore in each 
+#except these directories. NOTE: we have a .gitignore in each
 #dir with specifications to ignore their contents
 !/log/import_records/
 !/log/publish_records/
@@ -63,6 +63,7 @@ rerun.txt
 pickle-email-*.html
 .rvmrc
 .powrc
+adapt.sql
 
 
 
