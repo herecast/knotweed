@@ -5,12 +5,23 @@ module Api
 
       def index
         opts = {}
-        opts = { select: '*, weight()' }
         opts[:order] = 'pubdate DESC'
         opts[:with] = {
           pubdate: 30.days.ago..Time.zone.now
         }
         opts[:conditions] = {}
+        # market local only restriction
+        # if a user is signed in, we allow showing "restricted content" if it's
+        # restricted to their location (and if other search params allow it to be 
+        # included).
+        if user_signed_in?
+          opts[:select] = "*, IF(my_town_only = 0 OR IN(all_loc_ids, #{@current_user.location_id}), 1, 0) AS local_restriction"
+          opts[:with]['local_restriction'] = 1
+        else
+          # if a user is not signed in, we do not show location restricted content at all.
+          opts[:select] = "*"
+          opts[:with][:my_town_only] = false
+        end
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
         opts[:with][:published] = 1 if @repository.present?
@@ -92,21 +103,11 @@ module Api
       def update
         @market_post = Content.find(params[:id]).channel
 
+        listserv_ids = params[:market_post][:listserv_ids] || []
+
         # TODO: once we have created_by, confirm that the user can edit this market post
 
-        listserv_ids = params[:market_post].delete :listserv_ids || []
-
-        location_ids = [@current_api_user.location_id]
-        if params[:market_post].delete :extended_reach_enabled
-          location_ids.push Location::REGION_LOCATION_ID
-        end
-
-        params[:market_post][:content_attributes] = { location_ids: location_ids, id: params[:id] }
-        params[:market_post][:content_attributes][:title] = params[:market_post].delete :title if params[:market_post].has_key? :title
-        params[:market_post][:content_attributes][:raw_content] = params[:market_post].delete :content if params[:market_post].has_key? :content
-        params[:market_post][:cost] = params[:market_post].delete :price if params[:market_post].has_key? :price
-
-        if @market_post.update_attributes(params[:market_post])
+        if @market_post.update_attributes(update_attrs)
           # reverse publish to specified listservs
           PromotionListserv.create_multiple_from_content(@market_post.content, listserv_ids, @requesting_app)
 
@@ -165,6 +166,48 @@ module Api
         end
       end
 
+      private
+      def update_attrs
+        location_ids = [@current_api_user.location_id]
+
+        if params[:market_post][:extended_reach_enabled].present?
+          location_ids.push Location::REGION_LOCATION_ID
+        end
+
+        attrs = {
+          content_attributes: {
+            location_ids: location_ids,
+            id: params[:id]
+          }
+        }
+
+        if params[:market_post].has_key? :title
+          attrs[:content_attributes][:title] = params[:market_post][:title]
+        end
+
+        if params[:market_post].has_key? :content
+          attrs[:content_attributes][:raw_content] = params[:market_post][:content]
+        end
+
+        if params[:market_post].has_key? :price
+          attrs[:cost] = params[:market_post][:price]
+        end
+
+        return params.require(:market_post).permit(
+          :contact_email,
+          :contact_phone,
+          :contact_url,
+          :cost,
+          :latitude,
+          :longitude,
+          :locate_address,
+          :locate_include_name,
+          :locate_name,
+          :status,
+          :prefered_contact_method,
+          :content_attributes
+        ).deep_merge(attrs)
+      end
     end
   end
 end

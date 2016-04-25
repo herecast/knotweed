@@ -7,7 +7,7 @@ require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 
 describe 'Code Coverage' do
-  let(:minimum_coverage) { 75.0 }
+  let(:minimum_coverage) { 92.0 }
   let(:result) do
     if ENV["CIRCLE_ARTIFACTS"]
       JSON.parse File.read(ENV["CIRCLE_ARTIFACTS"] + '/coverage/.last_run.json') 

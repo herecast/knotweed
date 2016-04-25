@@ -4,18 +4,42 @@ describe Api::V3::ImagesController, :type => :controller do
   before do
     @market_post = FactoryGirl.create :market_post
     @file1 = fixture_file_upload('/photo.jpg', 'image/jpg')
+    @user = FactoryGirl.create :user # some other user
+    api_authenticate user: @user
   end
 
   describe 'POST create' do
     subject { post :create, image: { image: @file1, primary: false,
               content_id: @market_post.content.id }}
 
-    it 'should create an image' do
-      expect{subject}.to change{Image.count}.by 1
+    context 'as signed in user with authorization' do
+      before do
+        @market_post.content.update_attribute :created_by, @user
+      end
+
+
+      it 'should create an image' do
+        expect{subject}.to change{Image.count}.by 1
+      end
+
+      it 'should add an image to the content in question' do
+        expect{subject}.to change{@market_post.content.images.count}.by 1
+      end
     end
 
-    it 'should add an image to the content in question' do
-      expect{subject}.to change{@market_post.content.images.count}.by 1
+    context 'without authorization' do
+      before do
+        @market_post.content.update_attribute :created_by, nil
+      end
+
+      it 'should not create an image' do
+        expect{subject}.to_not change{Image.count}
+      end
+
+      it 'should respond with 403' do
+        subject
+        expect(response.code).to eq('403')
+      end
     end
   end
 

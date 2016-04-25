@@ -29,10 +29,17 @@ class ContentsController < ApplicationController
 
     @content_categories = ContentCategory.accessible_by(current_ability)
     if session[:contents_search].present?
-      @contents = Content.joins(shared_context.join_sources)
+      if session[:contents_search][:locations_id_in].all?(&:blank?)
+        @contents = Content.joins(shared_context.join_sources)
+      else
+        @contents = Content.joins(:locations).joins(shared_context.join_sources)
+      end
+
+      @contents = @contents
         .where(shared_conditions.reduce(&:or))
-        .order("pubdate DESC").page(params[:page]).per(100)
-      @contents = @contents.accessible_by(current_ability)
+        .order("pubdate DESC").page(params[:page])
+        .per(100)
+        .accessible_by(current_ability)
     else
       @contents = []
     end
@@ -131,7 +138,7 @@ class ContentsController < ApplicationController
     # of this functionality to begin with, it seems more straightforward
     # to put it here:
     if params[:content][:content_category_id].present? and @content.content_category_id != params[:content][:content_category_id].to_i
-      CategoryCorrection.create(content: @content, old_category: @content.category, 
+      CategoryCorrection.create(content: @content, old_category: @content.category,
                                 new_category: ContentCategory.find(params[:content][:content_category_id]).name)
       params[:content].delete :content_category_id # already taken care of updating this
     end
@@ -161,7 +168,7 @@ class ContentsController < ApplicationController
     else
       repo = nil
     end
-    if PUBLISH_METHODS_TO_DOWNLOAD.include? params[:method] 
+    if PUBLISH_METHODS_TO_DOWNLOAD.include? params[:method]
       opts[:download_result] = true
     end
     if @content.publish(params[:method], repo, nil, opts) == true
@@ -224,7 +231,7 @@ class ContentsController < ApplicationController
   def category_correction_reviwed
     content = Content.find params[:content_id]
     checked = params[:checked]
-    if checked == 'true' 
+    if checked == 'true'
       content.category_reviewed = true
     else
       content.category_reviewed = false

@@ -51,6 +51,22 @@ describe Api::V3::NewsController, :type => :controller do
       end
     end
 
+    describe 'querying by organization_id' do
+      before do
+        @org = FactoryGirl.create :organization
+        @consumer_app.organizations << @org
+        @org_and_loc_content = FactoryGirl.create :content, content_category: @news_cat,
+          locations: [@default_location], organization: @org
+        index
+      end
+
+      subject! { get :index, format: :json, organization_id: @org.id }
+
+      it 'should return content specific to that organization' do
+        expect(assigns(:news)).to eql([@org_and_loc_content])
+      end
+    end
+
     context 'querying by named category;' do
       context 'with an existing "Sponsored Content" category;' do
         let!(:sponsored_cat) { FactoryGirl.create :content_category, name: 'Sponsored Content', parent: @news_cat }

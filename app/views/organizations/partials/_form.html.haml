@@ -36,6 +36,7 @@
             = f.association :external_categories, input_html: { class: "chosen-select input-block-level" },
               hint: "Categories to be displayed in UV Market"
             = f.input :can_publish_news, input_html: { class: 'input-block-level' }
+            = f.input :subscribe_url, input_html: { class: 'input-block-level' }
           .span7
             = f.input :category_override, input_html: { class: "input-block-level" }, hint: "Set this option to force all content to publish with a specific category."
             = f.input :website, input_html: { class: "input-block-level" }
