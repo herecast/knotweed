@@ -24,11 +24,8 @@ module Api
         object.sanitized_content
       end
 
-      def author_name
-        object.authors
-      end
-
       def author_id
+        object.created_by.try(:id)
       end
 
       def published_at
