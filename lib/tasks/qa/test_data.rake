@@ -45,6 +45,25 @@ namespace :test_data do
         o.update_attribute(:can_publish_news, true)
         u.add_role :manager, o
       end
+
+    rescue Exception => e
+      puts 'data creation failed'
+      puts "#{e.inspect}"
+    end
+  end
+
+  desc 'Create two Blog users'
+  task :create_blog_users => :environment do
+
+    begin
+      puts 'Two users that are bloggers, through the organization'
+      2.times do
+        u = create_user
+        o = create_org
+        o.update_attributes org_type: 'Blog', can_publish_news: true
+        u.add_role :manager, o
+      end
+
     rescue Exception => e
       puts 'data creation failed'
       puts "#{e.inspect}"
@@ -66,24 +85,6 @@ namespace :test_data do
       c_user.add_role :manager, c_org
 
       c_org.update_attribute(:parent, p_org)
-
-    rescue Exception => e
-      puts 'data creation failed'
-      puts "#{e.inspect}"
-    end
-  end
-
-  desc 'Create two Blog users'
-  task :create_blog_users => :environment do
-
-    begin
-      puts 'Two users that are bloggers, through the organization'
-      2.times do
-        u = create_user
-        o = create_org
-        o.update_attribute :org_type, 'Blog'
-        u.add_role :manager, o
-      end
 
     rescue Exception => e
       puts 'data creation failed'
