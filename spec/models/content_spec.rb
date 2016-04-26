@@ -1721,6 +1721,31 @@ describe Content, :type => :model do
     end
   end
 
+  describe '#author_name' do
+    before do
+      @content = FactoryGirl.create :content, authors: Faker::Name.name
+      @content.update_column :created_by, nil
+    end
+
+    subject { @content.author_name }
+
+    context 'with `created_by` populated' do
+      let(:user) { FactoryGirl.create :user }
+      before { @content.update_attribute :created_by, user }
+
+      it 'should return the associated user\'s name' do
+        expect(subject).to eq user.name
+      end
+    end
+
+    context 'without `created_by` populated' do
+      it 'should return the `authors` column' do
+        expect(subject).to eq @content.authors
+      end
+    end
+  end
+
+
   private
 
     def get_body_from_file(filename)

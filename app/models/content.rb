@@ -1528,6 +1528,17 @@ class Content < ActiveRecord::Base
   # especially if it gets more complex. For now, we're just emulating that behavior
   # as minimally as possible.
 
+  # returns author information by checking `created_by` if available
+  # or falling back to `authors` otherwise
+  #
+  # @return [String] the author's name
+  def author_name
+    if created_by.present?
+      created_by.name
+    else
+      authors
+    end
+  end
 
   private
 
