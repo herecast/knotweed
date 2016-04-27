@@ -7,10 +7,11 @@ namespace :test_data do
       unique = User.find_by(email: email).nil?
     end
 
-    user = User.new email: email, password: 'password', password_confirmation: 'password', location: Location.last
+    location = Location.last || Location.create(city: 'WRJ', state: 'VT')
+    user = User.new email: email, password: 'password', password_confirmation: 'password', location: location
     if user.save
       user.update_attribute :confirmed_at, Time.now
-      puts user.email
+      puts "User created with email: #{user.email}, password: password"
       user
     else
       "user creation error: #{user.errors.full_messages}"
@@ -24,10 +25,11 @@ namespace :test_data do
       unique = Organization.find_by(name: name).nil?
     end
 
-    org = Organization.new name: Faker::Company.name
-    org.consumer_apps << ConsumerApp.first
+    org = Organization.new name: name
+    consumer_app = ConsumerApp.first || raise('Unable to find a consumer app in your database, exiting')
+    org.consumer_apps << consumer_app
     if org.save
-      puts org.name
+      puts "Organization created with name: #{org.name}"
       org
     else
       "organization creation error: #{organization.errors.full_messages}"
