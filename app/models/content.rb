@@ -191,11 +191,13 @@ class Content < ActiveRecord::Base
   # NOTE: this needs to be kept in sync with the Ember app
   # if it changes over there.
   EMBER_SANITIZE_CONFIG = {
-    elements: ['a', 'p', 'ul', 'ol', 'li', 'b', 'i', 'u',
-               'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'iframe'],
+    elements: ['a', 'p', 'ul', 'ol', 'li', 'b', 'i', 'u', 'br', 'span',
+               'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'iframe','div'],
     attributes: {
       'a' => ['href', 'title', 'target'],
-      'img' => ['src', 'style', 'class'],
+      'img' => ['src', 'style', 'class', 'title', 'alt'],
+      'div' => ['class'],
+      'span' => ['class','style'],
       'iframe' => ['width', 'height', 'frameborder', 'src', 'class'] # youtube
     },
     protocols: {
