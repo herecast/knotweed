@@ -25,7 +25,7 @@ module Api
     
          if resource.errors.empty?
            resource.unlock_access! if unlockable?(resource)
-           head :ok
+           render json: {}, status: 200
          else
            render json: { errors: resource.errors.full_messages }, status: 404
          end
