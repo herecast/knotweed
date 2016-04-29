@@ -94,7 +94,7 @@ describe 'Contents Endpoints', type: :request do
     end
   end
 
-  describe 'GET api/v3/contents/contents', type: :request do
+  describe 'GET api/v3/contents', type: :request do
     let(:org) { FactoryGirl.create :organization }
     let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
     let!(:default_location) { FactoryGirl.create :location, city: Location::DEFAULT_LOCATION }
