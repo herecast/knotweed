@@ -183,6 +183,14 @@ module Api
                 on root_category.id = contents.root_content_category_id')
         end
 
+        # if requested to sort by pubdate, sort is actually fairly complex because
+        # we want drafts to appear based on their created_by in the midst of published
+        # content sorted by pubdate
+        if sort_by.include? 'pubdate'
+          scope = scope.select("IF(pubdate IS NULL, created_at, pubdate) as sort_date, contents.*")
+          sort_by.gsub!('pubdate', 'sort_date')
+        end
+
         @contents = scope.if_event_only_when_instances
                          .order(sort_by)
                          .page(params[:page].to_i)
