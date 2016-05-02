@@ -109,35 +109,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
       end
     end
 
-    describe 'my_town_only restriction logic' do
-      before do
-        @mp1 = FactoryGirl.create :market_post, my_town_only: true,
-          locations: [@user.location]
-        @mp2 = FactoryGirl.create :market_post, my_town_only: true,
-          locations: [@default_location]
-        index
-      end
-
-      context 'signed in' do
-        before { api_authenticate user: @user }
-        it 'should return my_town_only content from the user\'s location' do
-          subject
-          expect(assigns(:market_posts)).to include(@mp1.content)
-        end
-        
-        it 'should not return my_town_only content other locations' do
-          subject
-          expect(assigns(:market_posts)).to_not include(@mp2.content)
-        end
-      end
-
-      context 'not signed in' do
-        it 'should not return any my_town_only posts' do
-          subject
-          expect(assigns(:market_posts)).to_not include([@mp1, @mp2])
-        end
-      end
-    end
   end
 
 
