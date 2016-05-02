@@ -91,49 +91,6 @@ describe Api::V3::ContentsController, :type => :controller do
       end
 
     end
-<<<<<<< HEAD
-
-    describe 'paging' do
-      context 'with per_page param' do
-        subject! { get :index, format: :json, per_page: 10 }
-
-        it "should return 10 regular contents" do
-          expect(non_news_content.count).to eq(10)
-        end
-        
-        it "should return 4 news contents" do
-          expect(news_content.count).to eq(4)
-        end
-      end
-
-      context 'with news_per_page param' do
-        subject! { get :index, format: :json, news_per_page: 10 }
-
-        it "should return 4 regular contents" do
-          expect(non_news_content.count).to eq(4)
-        end
-        
-        it "should return 10 news contents" do
-          expect(news_content.count).to eq(10)
-        end
-      end
-
-      context 'with no per_page params specified' do
-        subject! { get :index, format: :json }
-
-        it { expect(news_content.count).to eq(2) }
-        it { expect(non_news_content.count).to eq(12) }
-      end
-
-      context 'with both params passed' do
-        subject! { get :index, format: :json, per_page: 3, news_per_page: 4 }
-
-        it { expect(non_news_content.count).to eq(3) }
-        it { expect(news_content.count).to eq(4) }
-      end
-    end
-=======
->>>>>>> parent of 9a79f01... add per_page and news_per_page parameters to the contents index
   end
 
   describe 'GET related_promotion' do
