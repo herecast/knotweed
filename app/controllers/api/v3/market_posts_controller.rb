@@ -5,23 +5,12 @@ module Api
 
       def index
         opts = {}
+        opts = { select: '*, weight()' }
         opts[:order] = 'pubdate DESC'
         opts[:with] = {
           pubdate: 30.days.ago..Time.zone.now
         }
         opts[:conditions] = {}
-        # market local only restriction
-        # if a user is signed in, we allow showing "restricted content" if it's
-        # restricted to their location (and if other search params allow it to be 
-        # included).
-        if user_signed_in?
-          opts[:select] = "*, IF(my_town_only = 0 OR IN(all_loc_ids, #{@current_user.location_id}), 1, 0) AS local_restriction"
-          opts[:with]['local_restriction'] = 1
-        else
-          # if a user is not signed in, we do not show location restricted content at all.
-          opts[:select] = "*"
-          opts[:with][:my_town_only] = false
-        end
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
         opts[:with][:published] = 1 if @repository.present?
