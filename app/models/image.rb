@@ -29,6 +29,10 @@ class Image < ActiveRecord::Base
   
   after_save :ensure_only_one_primary
   
+  def url
+    image.try(:url)
+  end
+  
   # alias for rails_admin to find label method
   def name
     image_identifier
