@@ -10,11 +10,12 @@ module Api
         page = params[:page] || 1
         per_page = params[:per_page] || 14
         opts = { 
-          select: '*, weight()', 
+          select: '*, weight()',
           page: page, 
           per_page: per_page, 
           star: true,
-          with: {} 
+          with: { exists: 1 },
+          without: { archived: true }
         }
 
         if params[:lat].present? and params[:lng].present?
