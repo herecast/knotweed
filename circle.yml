@@ -21,6 +21,6 @@ test:
 
 deployment:
   development:
-    branch: feature/autodeploy
+    branch: develop
     commands:
       - bundle exec cap qa deploy
