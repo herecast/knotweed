@@ -41,7 +41,11 @@ module Api
       end
       
       def can_edit
-        serialization_options[:can_edit]
+        if context.present? && context[:current_ability].present?
+          context[:current_ability].can?(:edit, object)
+        else
+          false
+        end
       end
 
       # if user-generated, contact_phone and/or contact_email should be present, else if not user generated
