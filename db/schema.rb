@@ -106,17 +106,17 @@ ActiveRecord::Schema.define(version: 20160421213218) do
 
   create_table "business_profiles", force: :cascade do |t|
     t.integer  "business_location_id",      limit: 4
-    t.boolean  "has_retail_location",                                  default: true
-    t.datetime "created_at",                                                          null: false
-    t.datetime "updated_at",                                                          null: false
+    t.boolean  "has_retail_location",                                           default: true
+    t.datetime "created_at",                                                                   null: false
+    t.datetime "updated_at",                                                                   null: false
     t.string   "source",                    limit: 255
     t.string   "source_id",                 limit: 255
-    t.decimal  "existence",                             precision: 10
-    t.integer  "feedback_count",            limit: 4,                  default: 0
-    t.float    "feedback_recommend_avg",    limit: 24,                 default: 0.0
-    t.float    "feedback_price_avg",        limit: 24,                 default: 0.0
-    t.float    "feedback_satisfaction_avg", limit: 24,                 default: 0.0
-    t.float    "feedback_cleanliness_avg",  limit: 24,                 default: 0.0
+    t.decimal  "existence",                             precision: 5, scale: 5
+    t.integer  "feedback_count",            limit: 4,                           default: 0
+    t.float    "feedback_recommend_avg",    limit: 24,                          default: 0.0
+    t.float    "feedback_price_avg",        limit: 24,                          default: 0.0
+    t.float    "feedback_satisfaction_avg", limit: 24,                          default: 0.0
+    t.float    "feedback_cleanliness_avg",  limit: 24,                          default: 0.0
   end
 
   add_index "business_profiles", ["existence"], name: "index_business_profiles_on_existence", using: :btree
