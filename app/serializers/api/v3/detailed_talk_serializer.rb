@@ -36,14 +36,6 @@ module Api
         # PENDING
       end
 
-      def author_name
-        if object.created_by.present?
-          object.created_by.name
-        else
-          object.authors
-        end
-      end
-
       def author_image_url
         object.created_by.try(:avatar).try(:url)
       end

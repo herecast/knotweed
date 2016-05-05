@@ -70,63 +70,102 @@ describe Api::V3::OrganizationsController, :type => :controller do
     before do
       @org1 = FactoryGirl.create :organization
     end
-
     subject { get :show, id: @org1.id, format: :json }
 
-    context 'not signed in' do
-      it 'should respond with 403' do
-        subject
-        expect(response.code).to eq '403'
-      end
-    end
-
-    context 'signed in but not authorized' do
+    context 'with consumer app specified' do
       before do
-        @user = FactoryGirl.create :user
-        api_authenticate user: @user
+        @consumer_app = FactoryGirl.create :consumer_app
+        request.headers['Consumer-App-Uri'] = @consumer_app.uri
+      end
+      
+
+      context 'without org being associated with consumer app' do
+        it 'should respond with a 204' do
+          subject
+          expect(response.code).to eq '204'
+        end
       end
 
-      it 'should respond with 403' do
-        subject
-        expect(response.code).to eq '403'
+      context 'with org associated with consumer app' do
+        before do
+          @consumer_app.organizations << @org1
+        end
+
+        it 'should respond with a 200' do
+          subject
+          expect(response.code).to eq '200'
+        end
+
+        it 'should load the organization' do
+          subject
+          expect(assigns(:organization)).to eq @org1
+        end
       end
     end
+  end
+
+  describe 'PUT update' do
+    before do
+      @org = FactoryGirl.create :organization
+    end
+
+    let(:put_params) do
+      { 
+        id: @org.id,
+        format: :json,
+        organization: {
+          name: 'New Name',
+          description: Faker::Lorem.sentence(2),
+          logo: fixture_file_upload('/photo.jpg', 'image/jpg') 
+        }
+      }
+    end
+
+    subject { put :update, put_params }
 
     context 'as authorized user' do
       before do
         @user = FactoryGirl.create :user
-        @user.add_role :manager, @org1
+        @user.add_role :manager, @org
         api_authenticate user: @user
       end
 
-      context 'with consumer app specified' do
-        before do
-          @consumer_app = FactoryGirl.create :consumer_app
-          api_authenticate user: @user, consumer_app: @consumer_app
-        end
+      after(:all) do
+        # executing this request "uploads" an image to public/organization/1
+        FileUtils.rm_rf(Dir["#{Rails.root}/public/organization"])
+      end
 
-        context 'without org being associated with consumer app' do
-          it 'should respond with a 204' do
-            subject
-            expect(response.code).to eq '204'
-          end
-        end
+      it 'should respond with 204' do
+        subject
+        expect(response.code).to eq '204'
+      end
 
-        context 'with org associated with consumer app' do
-          before do
-            @consumer_app.organizations << @org1
-          end
+      it 'should update description' do
+        expect{subject}.to change{@org.reload.description}
+      end
 
-          it 'should respond with a 200' do
-            subject
-            expect(response.code).to eq '200'
-          end
+      it 'should update logo' do
+        expect{subject}.to change{@org.reload.logo.url}
+      end
 
-          it 'should load the organization' do
-            subject
-            expect(assigns(:organization)).to eq @org1
-          end
-        end
+      it 'should update name' do
+        expect{subject}.to change{@org.reload.name}
+      end
+    end
+
+    context 'as unauthorized (but logged in) user' do
+      before do
+        @user = FactoryGirl.create :user
+        api_authenticate user: @user
+      end
+
+      it 'should respond with 403' do
+        subject
+        expect(response.code).to eq '403'
+      end
+
+      it 'should not update the organization' do
+        expect{subject}.to_not change{@org.reload.name}
       end
     end
   end

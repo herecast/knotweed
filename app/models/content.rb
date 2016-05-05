@@ -92,7 +92,7 @@ class Content < ActiveRecord::Base
   belongs_to :organization
   accepts_nested_attributes_for :organization
   attr_accessible :organization_attributes
-  delegate :name, to: :organization, prefix: true
+  delegate :name, to: :organization, prefix: true, allow_nil: true
 
   belongs_to :parent, class_name: "Content"
   delegate :view_count, :comment_count, :commenter_count, to: :parent, prefix: true
@@ -162,6 +162,8 @@ class Content < ActiveRecord::Base
   PUBDATE_OUTPUT_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
   BASE_URI = "http://www.subtext.org/Document"
+  
+  UGC_ORIGIN = 'UGC'
 
   # publish methods are string representations
   # of methods on the Content model
@@ -185,6 +187,32 @@ class Content < ActiveRecord::Base
                   sale_event sports wanted)
 
   BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt')) 
+
+  # NOTE: this needs to be kept in sync with the Ember app
+  # if it changes over there.
+  EMBER_SANITIZE_CONFIG = {
+    elements: ['a', 'p', 'ul', 'ol', 'li', 'b', 'i', 'u', 'br', 'span', 'h1',
+               'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'iframe','div', 'blockquote',
+               'pre'],
+    attributes: {
+      'a' => ['href', 'title', 'target'],
+      'img' => ['src', 'style', 'class', 'title', 'alt'],
+      'div' => ['class'],
+      'span' => ['class','style'],
+      'iframe' => ['width', 'height', 'frameborder', 'src', 'class'] # youtube
+    },
+    protocols: {
+      'a' => { 'href' => ['http', 'https', 'mailto'] }
+    },
+    add_attributes: {
+      'a' => { 'rel' => 'nofollow' }
+    },
+    css: {
+      properties: [
+        'float', 'width', 'padding'
+      ]
+    }
+  }
 
   # ensure that we never save titles with leading/trailing whitespace
   def title=t
@@ -1156,7 +1184,20 @@ class Content < ActiveRecord::Base
   # Creates HTML-annotated, sanitized version of the raw_content that should be
   # as display-ready as possible
   def sanitized_content
-    return raw_content if raw_content.nil?
+    if raw_content.nil?
+      raw_content
+    elsif origin == UGC_ORIGIN
+      ugc_sanitized_content
+    else
+      default_sanitized_content
+    end
+  end
+
+  def ugc_sanitized_content
+    Sanitize.fragment(raw_content, EMBER_SANITIZE_CONFIG)
+  end
+
+  def default_sanitized_content
     pre_sanitize_filters = [
       # HACK: not sure exactly what this is...
       #[:gsub!, ["\u{a0}",""]], # get rid of... this
@@ -1490,6 +1531,17 @@ class Content < ActiveRecord::Base
   # especially if it gets more complex. For now, we're just emulating that behavior
   # as minimally as possible.
 
+  # returns author information by checking `created_by` if available
+  # or falling back to `authors` otherwise
+  #
+  # @return [String] the author's name
+  def author_name
+    if created_by.present?
+      created_by.name
+    else
+      authors
+    end
+  end
 
   private
 

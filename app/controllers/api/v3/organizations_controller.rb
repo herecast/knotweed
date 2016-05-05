@@ -1,7 +1,22 @@
 module Api
   module V3
     class OrganizationsController < ApiController
-      load_and_authorize_resource only: [:show]
+      load_resource only: [:show]
+
+      before_filter :check_logged_in!, only: [:update]
+
+      def update
+        @organization = Organization.find(params[:id])
+        authorize! :update, @organization
+
+        if @organization.update_attributes(params[:organization])
+          render json: @organization, serializer: OrganizationSerializer,
+            status: 204
+        else
+          render json: { errors: @organization.errors.messages },
+            status: :unprocessable_entity
+        end
+      end
 
       def index
         if params[:ids].present?

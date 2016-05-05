@@ -604,6 +604,8 @@ ActiveRecord::Schema.define(version: 20160407212613) do
     t.string   "reverse_publish_email", limit: 255
     t.boolean  "can_reverse_publish",                 default: false
     t.boolean  "can_publish_news",                    default: false
+    t.string   "subscribe_url",         limit: 255
+    t.text     "description",           limit: 65535
   end
 
   add_index "organizations", ["name"], name: "index_publications_on_name", unique: true, using: :btree

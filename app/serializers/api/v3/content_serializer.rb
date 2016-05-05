@@ -28,10 +28,6 @@ module Api
         object.created_by.try(:id)
       end
 
-      def author_name
-        object.authors
-      end
-
       def content_type
         object.root_content_category.name
       end

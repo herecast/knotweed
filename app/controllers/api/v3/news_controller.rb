@@ -5,35 +5,42 @@ module Api
 
       def create
         news_cat = ContentCategory.find_or_create_by(name: 'news')
-        if params[:news][:organization_id].blank?
-          render json: { errors: { 'organization_id' => 'Organization must be specified for news' } },
-            status: 500
-        else
-          @news = Content.new(params[:news].merge(content_category_id: news_cat.id))
-          if @news.save
-            if @repository.present? and @news.pubdate.present? # don't publish drafts
-              @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
-            end
-
-            render json: @news, serializer: DetailedNewsSerializer, root: 'news',
-              status: 201
-          else
-            render json: { errors: @news.errors.messages }, status: :unprocessable_entity
+        @news = Content.new(params[:news].merge(content_category_id: news_cat.id, origin: Content::UGC_ORIGIN))
+        if @news.save
+          if @repository.present? and @news.pubdate.present? # don't publish drafts
+            @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
+
+          render json: @news, serializer: DetailedNewsSerializer, root: 'news',
+            status: 201
+        else
+          render json: { errors: @news.errors.messages }, status: :unprocessable_entity
         end
       end
 
       def update
         @news = Content.find params[:id]
-        if @news.update_attributes(params[:news])
-          if @repository.present? and @news.pubdate.present?
-            @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
-          end
-
-          render json: @news, serializer: DetailedNewsSerializer, root: 'news',
-            status: 200
+        # some unique validation
+        # if it's already published, don't allow changing the pubdate (i.e. unpublishing or scheduling)
+        if @news.pubdate.present? and @news.pubdate <= Time.zone.now and params[:news].has_key?(:pubdate) \
+            and Chronic.parse(params[:news][:pubdate]) != @news.pubdate
+          render json: { errors: { 'published_at' => 'Can\'t unpublish already published news' } },
+            status: 500
+        # don't allow publishing or scheduling without an organization
+        elsif params[:news][:organization_id].blank? and @news.organization.blank? and params[:news][:pubdate].present?
+          render json: { errors: { 'organization_id' => 'Organization must be specified for news' } },
+            status: 500
         else
-          render json: { errors: @news.errors.messages }, status: :unprocessable_entity
+          if @news.update_attributes(params[:news])
+            if @repository.present? and @news.pubdate.present?
+              @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+            end
+
+            render json: @news, serializer: DetailedNewsSerializer, root: 'news',
+              status: 200
+          else
+            render json: { errors: @news.errors.messages }, status: :unprocessable_entity
+          end
         end
       end
 
@@ -51,8 +58,13 @@ module Api
           allowed_orgs = @requesting_app.organizations.pluck(:id) 
           opts[:with][:org_id] = allowed_orgs
 
-          if params[:organization].present? and params[:organization] != 'Everyone'
-            org = Organization.find_by_name params[:organization]
+          if (params[:organization].present? and params[:organization] != 'Everyone') or params[:organization_id].present?
+
+            if params[:organization].present?
+              org = Organization.find_by_name params[:organization]
+            elsif params[:organization_id].present?
+              org = Organization.find params[:organization_id]
+            end
 
             if org.present? and allowed_orgs.include? org.id
               opts[:with][:org_id] = [org.id]
@@ -82,13 +94,16 @@ module Api
         end
 
         @news = Content.search query, opts
-        render json: @news, each_serializer: NewsSerializer
+        render json: @news, each_serializer: NewsSerializer,
+          meta: {total: @news.total_entries}
       end
 
       def show
         @news = Content.find params[:id]
         
-        if @requesting_app.present?
+        # filter out orgs that don't belong with this app
+        # have to still allow drafts that haven't selected their org yet, though
+        if @requesting_app.present? and @news.organization.present?
           head :no_content and return unless @requesting_app.organizations.include?(@news.organization)
         end
 

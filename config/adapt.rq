@@ -1,0 +1,24 @@
+## Repositories
+UPDATE repositories SET
+dsp_endpoint = 'http://%{dsp_endpoint_hostname}:8082/',
+sesame_endpoint = 'http://%{dsp_endpoint_hostname}:8080/graphdb-workbench-se/repositories/subtext',
+graphdb_endpoint = 'http://%{dsp_endpoint_hostname}:8080/graphdb-workbench-se/repositories/subtext',
+annotate_endpoint = 'http://%{dsp_endpoint_hostname}:8082/extractor-web',
+solr_endpoint = 'http://%{dsp_endpoint_hostname}:8084/solr',
+recommendation_endpoint = 'http://%{dsp_endpoint_hostname}:8083/recommendations-web'
+WHERE id = 3;
+
+## Clear any running import jobs
+UPDATE import_jobs SET status = 'failed' WHERE status = 'running';
+
+## Clear any running publish jobs
+UPDATE publish_jobs SET status = 'failed' WHERE status = 'running';
+
+## DELETE any delayed_job records
+DELETE FROM delayed_jobs;
+
+## set subtextland,vt as an active location
+UPDATE locations SET consumer_active = 1 where city = 'Subtextland';
+## set VCLAB listserv as inactive/active
+UPDATE listservs set active = 0;
+UPDATE listservs set active = 1 WHERE reverse_publish_email = 'subtext@lists.vitalcommunities.org';

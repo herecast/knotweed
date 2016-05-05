@@ -76,11 +76,26 @@ describe ContentsController, type: :controller do
         @contents = FactoryGirl.create_list :content, 3, organization: @org
       end
 
-      subject { get :index, q: { organization_id_in: [@org.id] } }
+      subject { get :index, q: { organization_id_in: [@org.id], locations_id_in: [''] } }
 
       it 'should respond with the content belonging to that organization' do
         subject
         expect(assigns(:contents)).to match_array @contents
+      end
+    end
+
+    context 'with a location search param' do
+      before do
+        @location = FactoryGirl.create :location
+        @content = FactoryGirl.create :content
+        @content.locations << @location
+      end
+
+      subject { get :index, q: { locations_id_in: ['', @location.id.to_s] } }
+
+      it "returns contents connected to the location" do
+        subject
+        expect(assigns(:contents)).to match_array [@content]
       end
     end
   end

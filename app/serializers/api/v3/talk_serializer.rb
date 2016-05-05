@@ -19,16 +19,6 @@ module Api
         0
       end
 
-      # NOTE: we won't have a "created_by" in content that is imported,
-      # use created_by when availble else fall back to authors.
-      def author_name
-        if object.created_by.present?
-          object.created_by.name
-        else
-          object.authors
-        end
-      end
-
       def author_image_url
         object.created_by.try(:avatar).try(:url)
       end

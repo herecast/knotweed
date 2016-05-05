@@ -1,0 +1,56 @@
+#TODO - put this const somewhere else?
+DISK_SPACE_THRESHOLD = 40 * (1024*1024)
+
+desc 'Refresh dsp from production data'
+task :refresh_dsp do
+  %w{ check_destination_disk_space
+      create_backup
+      transfer_backup
+      restore_dsp }.each do |task|
+    invoke "refresh_dsp:#{task}"
+  end
+end
+
+namespace :refresh_dsp do
+
+  def source_dsp_role
+    fetch(:dsp_source_server_role, :source_dsp)
+  end
+
+  def dest_dsp_role
+    fetch(:dsp_dest_server_role, :dest_dsp)
+  end
+
+  desc 'Create new backup of dsp data'
+  task :create_backup do
+    on roles(source_dsp_role) do
+      execute 'cd $HOME/graphdbctrl && ./graphdb-backup.sh'
+    end
+  end
+
+  desc 'Transfer dsp backup'
+  task :transfer_backup do
+    on roles(source_dsp_role) do
+      roles(dest_dsp_role).each do |dest|
+        execute "backup_path=$(printf '%s\\n' /var/backups/graphdb/* | sort | tail -n1); scp -o BatchMode=yes -o StrictHostKeyChecking=no \"$backup_path\" #{dest}:\"$backup_path\""
+      end
+    end
+  end
+
+  desc 'Check destination disk space'
+  task :check_destination_disk_space do
+    on roles(dest_dsp_role).each do
+      # TODO - support dsp data being on a seperate filesystem
+      df_output = capture('df -kP /')
+      avail = df_output.split("\n")[-1].split[3].to_i
+      abort("Not enough free disk space on destination") unless avail >= DISK_SPACE_THRESHOLD
+    end
+  end
+
+  desc 'Restore dsp data on destination'
+  task :restore_dsp do
+    on roles(dest_dsp_role).each do
+      execute 'backup_path=$(printf \'%s\n\' /var/backups/graphdb/* | sort | tail -n1); cd $HOME/graphdbctrl && ./graphdb-restore.sh "${backup_path##*/}"'
+    end
+  end
+end
