@@ -1620,6 +1620,13 @@ describe Content, :type => :model do
       it 'should match output of ugc_sanitized_content' do 
         expect(subject).to eq @content.ugc_sanitized_content
       end
+      
+      it 'does not strip style attributes from image tags' do
+        img_content = '<img style="float: left; padding: 9px; width: 50%">'
+        @content.raw_content = img_content
+        expect(subject.html_safe).to eql img_content.html_safe
+      end
+      
     end
 
     context 'for content without a specific sanitizer' do
@@ -1713,6 +1720,31 @@ describe Content, :type => :model do
       end
     end
   end
+
+  describe '#author_name' do
+    before do
+      @content = FactoryGirl.create :content, authors: Faker::Name.name
+      @content.update_column :created_by, nil
+    end
+
+    subject { @content.author_name }
+
+    context 'with `created_by` populated' do
+      let(:user) { FactoryGirl.create :user }
+      before { @content.update_attribute :created_by, user }
+
+      it 'should return the associated user\'s name' do
+        expect(subject).to eq user.name
+      end
+    end
+
+    context 'without `created_by` populated' do
+      it 'should return the `authors` column' do
+        expect(subject).to eq @content.authors
+      end
+    end
+  end
+
 
   private
 

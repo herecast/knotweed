@@ -65,15 +65,6 @@ module Api
       def extended_reach_enabled
         object.location_ids.include? Location::REGION_LOCATION_ID
       end
-
-      def author_name
-        if object.created_by.present?
-          object.created_by.name
-        else
-          object.authors
-        end
-      end
-
     end
   end
 end

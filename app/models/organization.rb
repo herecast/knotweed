@@ -50,7 +50,6 @@ class Organization < ActiveRecord::Base
                   :org_type, :display_attributes, :reverse_publish_email,
                   :consumer_app_ids, :external_category_ids, :can_publish_news,
                   :subscribe_url, :description
-
   mount_uploader :logo, ImageUploader
 
   scope :alphabetical, -> { order("organizations.name ASC") }

@@ -73,23 +73,6 @@ module Api
       end
 
       def index
-        # by default, each page has two news items and twelve other items
-        # we accept `per_page` and/or `news_per_page` params that allow tweaking
-        # that and automatically limit the total response to 14 entries if only one per_page
-        # param is passed
-        if params[:per_page].present? and params[:news_per_page].present?
-          per_page = params[:per_page]
-          news_per_page = params[:news_per_page]
-        elsif params[:per_page].present?
-          per_page = params[:per_page].to_i
-          news_per_page = 14 - per_page
-        elsif params[:news_per_page].present?
-          news_per_page = params[:news_per_page]
-          per_page = 14 - news_per_page
-        else
-          per_page = 12
-          news_per_page = 2
-        end
         opts = { select: '*, weight()' }
         opts[:order] = 'pubdate DESC'
         opts[:with] = {}
@@ -108,7 +91,7 @@ module Api
 
         root_news_cat = ContentCategory.find_by_name 'news'
         news_opts = opts.merge({ 
-          per_page: news_per_page
+          per_page: 2
         })
         news_opts[:with] = news_opts[:with].merge({
           root_content_category_id: root_news_cat.id,
@@ -125,7 +108,7 @@ module Api
         end
 
         reg_opts = opts.merge({
-          per_page: per_page
+          per_page: 12
         })
         reg_opts[:with] = reg_opts[:with].merge({
           all_loc_ids: [location_condition],
@@ -177,6 +160,14 @@ module Api
           scope = scope.joins('
             join content_categories as root_category
                 on root_category.id = contents.root_content_category_id')
+        end
+
+        # if requested to sort by pubdate, sort is actually fairly complex because
+        # we want drafts to appear based on their created_by in the midst of published
+        # content sorted by pubdate
+        if sort_by.include? 'pubdate'
+          scope = scope.select("IF(pubdate IS NULL, created_at, pubdate) as sort_date, contents.*")
+          sort_by.gsub!('pubdate', 'sort_date')
         end
 
         @contents = scope.if_event_only_when_instances

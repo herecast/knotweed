@@ -1,7 +1,7 @@
 module Api
   module V3
     class OrganizationsController < ApiController
-      load_and_authorize_resource only: [:show]
+      load_resource only: [:show]
 
       before_filter :check_logged_in!, only: [:update]
 

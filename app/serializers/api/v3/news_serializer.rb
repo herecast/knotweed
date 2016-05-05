@@ -15,10 +15,6 @@ module Api
         object.created_by.try(:id)
       end
 
-      def author_name
-        object.authors
-      end
-
       def published_at
         object.pubdate
       end

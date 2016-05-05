@@ -191,11 +191,14 @@ class Content < ActiveRecord::Base
   # NOTE: this needs to be kept in sync with the Ember app
   # if it changes over there.
   EMBER_SANITIZE_CONFIG = {
-    elements: ['a', 'p', 'ul', 'ol', 'li', 'b', 'i',
-               'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'iframe'],
+    elements: ['a', 'p', 'ul', 'ol', 'li', 'b', 'i', 'u', 'br', 'span', 'h1',
+               'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'iframe','div', 'blockquote',
+               'pre'],
     attributes: {
       'a' => ['href', 'title', 'target'],
-      'img' => ['src', 'style', 'class'],
+      'img' => ['src', 'style', 'class', 'title', 'alt'],
+      'div' => ['class'],
+      'span' => ['class','style'],
       'iframe' => ['width', 'height', 'frameborder', 'src', 'class'] # youtube
     },
     protocols: {
@@ -203,6 +206,11 @@ class Content < ActiveRecord::Base
     },
     add_attributes: {
       'a' => { 'rel' => 'nofollow' }
+    },
+    css: {
+      properties: [
+        'float', 'width', 'padding'
+      ]
     }
   }
 
@@ -1523,6 +1531,17 @@ class Content < ActiveRecord::Base
   # especially if it gets more complex. For now, we're just emulating that behavior
   # as minimally as possible.
 
+  # returns author information by checking `created_by` if available
+  # or falling back to `authors` otherwise
+  #
+  # @return [String] the author's name
+  def author_name
+    if created_by.present?
+      created_by.name
+    else
+      authors
+    end
+  end
 
   private
 
