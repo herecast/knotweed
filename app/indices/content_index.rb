@@ -21,7 +21,6 @@ ThinkingSphinx::Index.define(:content,
   has channel_type
   has root_content_category_id
   has content_category_id
-  has my_town_only
 
   # note, this is used for the Talk index page to query
   # root contents only
