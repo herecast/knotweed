@@ -3,3 +3,4 @@ class AddMyTownOnlyFlagToContents < ActiveRecord::Migration
     add_column :contents, :my_town_only, :boolean, default: false
   end
 end
+
