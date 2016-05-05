@@ -54,7 +54,7 @@ module Api
         if @requesting_app.present? and !@requesting_app.organizations.include?(@organization)
           head :no_content
         else
-          render json: @organization, serializer: OrganizationSerializer
+          render json: @organization, serializer: OrganizationSerializer, context: { current_ability: current_ability }
         end
       end
 
