@@ -22,11 +22,15 @@ module Api
       end
 
       def can_edit
-        serialization_options[:can_edit]
+        if context.present? && context[:current_ability].present?
+          context[:current_ability].can?(:edit, object.event.content)
+        else
+          false
+        end
       end
 
       def admin_content_url
-        serialization_options[:admin_content_url]
+        context[:admin_content_url]
       end
 
       def event_instances
@@ -53,7 +57,7 @@ module Api
       def registration_email; object.event.registration_email; end
 
       def ical_url
-        serialization_options[:ical_url]
+        context[:ical_url]
       end
 
       def category
