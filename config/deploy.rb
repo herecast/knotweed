@@ -6,10 +6,10 @@ set :application, 'knotweed'
 set :repo_url, 'git@github.com:subtextmedia/knotweed.git'
 
 # Default branch is :master
-if ENV['CAP_BRANCH']
-  set :branch, ENV['CAP_BRANCH']
+if ENV['CI']
+  set :branch, ENV['CIRCLE_BRANCH']
 else
-  set :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
+  ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 end
 
 set :rvm_ruby_version, '2.2.4@knotweed'
