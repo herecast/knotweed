@@ -89,6 +89,13 @@ describe Api::V3::ContentsController, :type => :controller do
         expect(assigns(:contents).select{|c| c.locations.include? @other_location}.count).to eq(assigns(:contents).count)
       end
 
+      context ", given params[:exclude_channel]='talk' " do
+        before { get :index, exclude_channel: 'talk',  format: :json }
+        it 'should exclude talk items' do
+          expect(assigns(:contents).select{|c| c.content_category_id == @tott_cat.id }.count).to eq 0
+        end
+      end
+
     end
   end
 
