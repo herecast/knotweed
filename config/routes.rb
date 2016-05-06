@@ -12,6 +12,8 @@ Knotweed::Application.routes.draw do
     put '/api/v3/password_resets', to: 'api/v3/passwords#update'
   end
   resources :users
+  post '/users/admin-create', to: 'users#create'
+  put '/users/:id/admin-update', to: 'users#update'
 
   get "/", to: "dashboard#index", as: :dashboard
   get "/dashboard/mixpanel_charts", to: "dashboard#mixpanel_charts", as: :mixpanel_charts

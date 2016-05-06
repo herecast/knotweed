@@ -66,6 +66,10 @@ class User < ActiveRecord::Base
   def managed_organization_id; Organization.with_role(:manager, self).first.try(:id); end
   def is_organization_manager?; managed_organization_id.present?; end
 
+  def managed_organizations
+    Organization.with_role(:manager, self)
+  end
+
   def ensure_authentication_token
     if authentication_token.blank?
       self.authentication_token = generate_authentication_token

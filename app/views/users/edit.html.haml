@@ -1,0 +1,8 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-plus
+        Edit #{@user.email}
+    .box-content
+      = render partial: "users/partials/form", locals: { url: "/users/#{@user.id}/admin-update", method: :put }

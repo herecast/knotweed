@@ -1,7 +1,40 @@
-= simple_form_for @user do |f|
-  = f.error_notification
-  = f.input :name
-  = f.input :email
-  = f.input :password
-  = f.input :role_ids, as: :select, collection: Role.all, label: "Role"
-  = f.submit nil, class: "btn btn-primary"
+= simple_form_for @user, url: url, method: method do |f|
+  .row-fluid
+    .span12
+      = f.error_notification
+  .row-fluid
+    .span3
+      %h4 Information
+      = f.input :name
+      = f.input :email
+      = f.input :password
+    .span3
+      .row-fluid
+        %h4 Location
+        = f.input :location_id, collection: Location.all, selected: 19, label: false
+        %h4 Roles
+        .row-fluid
+          %input{ type: :checkbox, id: 'user_admin', name: "user[admin]", class: 'checkbox-control', checked: @user.roles.include?(Role.find(1)) }
+          %label{ for: 'user_admin', class: 'checkbox-label-control' } Admin
+        .row-fluid
+          %input{ type: :checkbox, id: 'user_event_manager', name: "user[event_manager]", class: 'checkbox-control', checked: @user.roles.include?(Role.find(2)) }
+          %label{ for: 'user_event_manager', class: 'checkbox-label-control' } Event Manager
+        .row-fluid
+          %input{ type: :checkbox, id: 'user_blogger', name: "user[blogger]", class: 'checkbox-control', checked: @user.roles.include?(Role.find(3)) }
+          %label{ for: 'user_blogger', class: 'checkbox-label-control' } Blogger
+    .span3
+      %h4 Managed Organizations
+      #organization-selectors.row-fluid
+        - if @organizations.present?
+          - @organizations.each_with_index do |org, index|
+            %div{ id: "removal-link-wrapper-#{index + 1}" }
+              %input{ type: 'hidden', name: "user[controlled_organization_#{index + 1}]", value: org.id }
+              %p
+                <b>#{org.name}</b> | 
+                %a{id: "removal-link-for-#{index + 1}", class: "organization-removal-link"} | remove
+        %select{ id: "organization-selector-" + (@organizations.present? ? @organizations.length + 1 : 1).to_s, class: 'user-organization-select' }
+          %option{ value: 'empty' } Select Organization
+          - Organization.all.each do |o|
+            %option{ value: "#{o.id}" } #{o.name}
+  .form-actions
+    = submit_tag nil, class: "btn btn-primary"
