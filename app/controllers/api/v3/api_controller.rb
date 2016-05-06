@@ -21,9 +21,9 @@ module Api
       protected
 
       def check_logged_in!
-       # unless current_user.present?
-         # render json: { errors: 'You must be logged in.' }, status: 401
-       # end
+        unless current_user.present?
+          render json: { errors: 'You must be logged in.' }, status: 401
+        end
       end
 
       def set_current_api_user

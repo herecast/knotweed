@@ -9,7 +9,7 @@ module Api
         params[:per_page] ||= 12
 
         @promotion_banners = PromotionBanner.joins(:promotion => :content).
-       #   where('promotions.created_by = ? and promotable_type = "PromotionBanner"', @current_api_user.id).
+          where('promotions.created_by = ? and promotable_type = "PromotionBanner"', @current_api_user.id).
           order(sanitize_sort_parameter(params[:sort])).
           page(params[:page].to_i).per(params[:per_page].to_i)
 
@@ -21,7 +21,7 @@ module Api
         # of causing an exception with find
         @content = Content.find_by_id params[:content_id] 
         @banner = PromotionBanner.find_by_id params[:promotion_banner_id]
-        if @content.present? and @banner.present?# and !@current_api_user.try(:skip_analytics?)
+        if @content.present? and @banner.present? and !@current_api_user.try(:skip_analytics?)
           @content.increment_integer_attr! :banner_click_count
           @banner.increment_integer_attr! :click_count
         else
@@ -33,13 +33,13 @@ module Api
       def metrics
         @promotion_banner = PromotionBanner.find(params[:id])
         # confirm user owns content first
-       # if @current_api_user != @promotion_banner.promotion.created_by 
-         # render json: { errors: ['You do not have permission to access these metrics.'] }, 
-           # status: 401
-       # else
+        if @current_api_user != @promotion_banner.promotion.created_by 
+          render json: { errors: ['You do not have permission to access these metrics.'] }, 
+            status: 401
+        else
           render json: @promotion_banner, serializer: PromotionBannerMetricsSerializer, context: 
             {start_date: params[:start_date], end_date: params[:end_date]}
-       # end
+        end
       end
 
       protected

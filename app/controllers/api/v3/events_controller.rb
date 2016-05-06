@@ -7,7 +7,7 @@ module Api
       def update
         @event = Event.find(params[:id])
         # "authenticate" this edit action
-        #  authorize! :update, @event.content
+        authorize! :update, @event.content
         # for now, we EITHER get the image OR the event in this update logic. So 
         # if image is present here, we branch:
         image_data = params[:event].delete :image
