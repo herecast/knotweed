@@ -50,6 +50,7 @@ class Organization < ActiveRecord::Base
                   :org_type, :display_attributes, :reverse_publish_email,
                   :consumer_app_ids, :external_category_ids, :can_publish_news,
                   :subscribe_url, :description
+
   mount_uploader :logo, ImageUploader
 
   scope :alphabetical, -> { order("organizations.name ASC") }
@@ -62,6 +63,7 @@ class Organization < ActiveRecord::Base
   validates_uniqueness_of :name
   validates_uniqueness_of :reverse_publish_email, allow_nil: true, allow_blank: true
   validates_presence_of :name
+  validates :logo, :image_minimum_size => true
 
   def self.parent_pubs
     ids = self.where("parent_id IS NOT NULL").select(:parent_id).uniq.map { |p| p.parent_id }
