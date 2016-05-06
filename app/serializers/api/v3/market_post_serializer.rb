@@ -3,7 +3,7 @@ module Api
     # note, this serializer actually takes content objects, not market post objects
     class MarketPostSerializer < ActiveModel::Serializer
 
-      attributes :id, :title, :published_at, :image_url, :content_id
+      attributes :id, :title, :published_at, :image_url, :content_id, :my_town_only
 
       def content_id
         object.id
