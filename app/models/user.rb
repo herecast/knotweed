@@ -60,6 +60,7 @@ class User < ActiveRecord::Base
 
   validates_presence_of :location
   validates :public_id, uniqueness: true, allow_blank: true
+  validates :avatar, :image_minimum_size => true
 
   # spoof attribute for simple form simplicity on role-changing form
   attr_accessible :managed_organization_id
