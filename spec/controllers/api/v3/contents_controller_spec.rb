@@ -17,18 +17,20 @@ describe Api::V3::ContentsController, :type => :controller do
       @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
       @other_location = FactoryGirl.create :location, city: 'Another City'
       @user = FactoryGirl.create :user, location: @other_location
-      FactoryGirl.create_list :content, 3, content_category: @news_cat, 
+      FactoryGirl.create_list :content, 15, content_category: @news_cat, 
         locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 5, content_category: @market_cat, 
+      FactoryGirl.create_list :content, 15, content_category: @market_cat, 
+        locations: [@default_location], published: true, channel_type: 'MarketPost'
+      FactoryGirl.create_list :content, 15, content_category: @tott_cat,
         locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 5, content_category: @tott_cat,
-        locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 5, content_category: @event_cat,
+      FactoryGirl.create_list :content, 15, content_category: @event_cat,
         locations: [@default_location], published: true
       index
     end
 
     subject { get :index, format: :json }
+    let(:news_content) { assigns(:contents).select{ |c| c.content_category_id == @news_cat.id } }
+    let(:non_news_content) { assigns(:contents).select{ |c| c.content_category_id != @news_cat.id } }
 
     context 'with consumer app specified' do
       before do
@@ -86,14 +88,39 @@ describe Api::V3::ContentsController, :type => :controller do
         subject
         expect(assigns(:contents).select{|c| c.locations.include? @other_location}.count).to eq(assigns(:contents).count)
       end
+    end
 
-      context ", given params[:exclude_channel]='talk' " do
-        before { get :index, exclude_channel: 'talk',  format: :json }
-        it 'should exclude talk items' do
-          expect(assigns(:contents).select{|c| c.content_category_id == @tott_cat.id }.count).to eq 0
+    context ", given params[:exclude_channel]='talk' " do
+      before { get :index, exclude_channel: 'talk',  format: :json }
+      it 'should exclude talk items' do
+        expect(assigns(:contents).select{|c| c.content_category_id == @tott_cat.id }.count).to eq 0
+      end
+    end
+
+    describe 'paging' do
+      context 'with per_page param' do
+        subject! { get :index, format: :json, per_page: 10 }
+
+        it "should return 10 regular contents" do
+          expect(non_news_content.count).to eq(10)
+        end
+        
+        it "should return 4 news contents" do
+          expect(news_content.count).to eq(4)
         end
       end
 
+      context 'with news_per_page param' do
+        subject! { get :index, format: :json, news_per_page: 10 }
+
+        it "should return 4 regular contents" do
+          expect(non_news_content.count).to eq(4)
+        end
+        
+        it "should return 10 news contents" do
+          expect(news_content.count).to eq(10)
+        end
+      end
     end
   end
 
