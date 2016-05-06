@@ -19,14 +19,12 @@ describe Api::V3::ContentsController, :type => :controller do
       @user = FactoryGirl.create :user, location: @other_location
       FactoryGirl.create_list :content, 3, content_category: @news_cat, 
         locations: [@default_location], published: true
+      FactoryGirl.create_list :content, 5, content_category: @market_cat, 
+        locations: [@default_location], published: true
       FactoryGirl.create_list :content, 5, content_category: @tott_cat,
         locations: [@default_location], published: true
       FactoryGirl.create_list :content, 5, content_category: @event_cat,
         locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 3, content_category: @market_cat, 
-        locations: [@other_location]
-      FactoryGirl.create_list :content, 3, content_category: @tott_cat, 
-        locations: [@other_location]
       index
     end
 
