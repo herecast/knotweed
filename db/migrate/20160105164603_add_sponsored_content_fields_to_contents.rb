@@ -3,7 +3,7 @@ class AddSponsoredContentFieldsToContents < ActiveRecord::Migration
     add_column :contents, :similar_content_overrides, :text
     add_column :contents, :banner_ad_override, :integer
 
-    news_cat = ContentCategory.create(name:'news')
+    news_cat = ContentCategory.find_or_create_by_name('news')
     unless ContentCategory.where(name: 'sponsored_content').exists?
       # doing this to avoid having to make parent_id mass assignable
       cc = ContentCategory.new(name: 'sponsored_content')

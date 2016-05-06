@@ -14,7 +14,7 @@ module Api
           opts[:with][:org_id] = allowed_orgs.collect{|c| c.id}
         end
 
-        opts[:with][:all_loc_ids] = [Location.first.id]
+        opts[:with][:all_loc_ids] = [@current_api_user.location_id]
 
         @talk = Content.talk_search params[:query], opts
      
@@ -44,7 +44,7 @@ module Api
         else
           org_id = Organization.find_or_create_by(name: 'DailyUV').id
         end
-  @current_api_user = User.first
+
         # hard code category
         cat = ContentCategory.find_or_create_by(name: 'talk_of_the_town')
 

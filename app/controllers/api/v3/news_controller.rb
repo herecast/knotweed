@@ -54,8 +54,8 @@ module Api
         opts[:with][:published] = 1 if @repository.present?
         opts[:sql] = { include: [:images, :organization, :root_content_category] }
 
-       # if @requesting_app.present?
-          allowed_orgs = [Organization.first.id] 
+        if @requesting_app.present?
+          allowed_orgs = @requesting_app.organizations.pluck(:id) 
           opts[:with][:org_id] = allowed_orgs
 
           if (params[:organization].present? and params[:organization] != 'Everyone') or params[:organization_id].present?
@@ -72,9 +72,9 @@ module Api
               render json: [], each_serializer: NewsSerializer and return
             end
           end
-       # else
-         # render json: [], each_serializer: NewsSerializer and return
-       # end
+        else
+          render json: [], each_serializer: NewsSerializer and return
+        end
 
         if params[:location_id].present?
           opts[:with][:all_loc_ids] = params[:location_id].to_i
