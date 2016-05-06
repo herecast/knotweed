@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  # protect_from_forgery
+  protect_from_forgery
 
   #normal Devise authentication
   before_filter :authorize_access!, :set_current_thread_user, 

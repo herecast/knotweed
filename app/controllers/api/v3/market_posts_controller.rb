@@ -50,7 +50,7 @@ module Api
           org_id = Organization.find_or_create_by(name: 'DailyUV').id
         end
 
-        location_ids = [Location.last.id]
+        location_ids = [@current_api_user.location_id]
         if params[:market_post][:extended_reach_enabled]
           location_ids.push Location::REGION_LOCATION_ID
         end
@@ -157,7 +157,7 @@ module Api
 
       private
       def update_attrs
-        location_ids = [Location.last.id]
+        location_ids = [@current_api_user.location_id]
 
         if params[:market_post][:extended_reach_enabled].present?
           location_ids.push Location::REGION_LOCATION_ID
