@@ -141,7 +141,7 @@ describe User, :type => :model do
   end
 
   describe 'required fields' do
-    before do 
+    before do
       @user = FactoryGirl.build :user, location: nil
     end
     subject { @user }
@@ -190,6 +190,18 @@ describe User, :type => :model do
       end
 
       it { is_expected.to be_truthy }
+    end
+  end
+
+  describe '#managed_organizations' do
+    before do
+      @user = FactoryGirl.create :user
+      @organization = FactoryGirl.create :organization
+      @user.add_role(:manager, @organization)
+    end
+
+    it "returns managed organizations" do
+      expect(@user.managed_organizations).to match_array [@organization]
     end
   end
 

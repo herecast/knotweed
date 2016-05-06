@@ -19,8 +19,7 @@
           %td= user.roles.first.name.titleize unless user.roles.first.nil?
           %td= Organization.with_role(:manager, user).first.try(:name)
           %td
-            %a.btn-warning.btn.btn-mini{"data-toggle" => "modal", :href => "#role-options-#{user.id}", :type => "button"} Change role
-            = render user
+            %a.btn-warning.btn.btn-mini{ href: edit_user_path(user), type: "button" } Edit User
           %td= link_to("Delete user", user_path(user), :data => { :confirm => "Are you sure?" }, :method => :delete, :class => 'btn-danger btn btn-mini') unless user == current_user
 
   = paginate @users

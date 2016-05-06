@@ -8,28 +8,26 @@ class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
   end
-  
+
+  def edit
+    @user = User.find_by id: params[:id]
+    @organizations = Organization.with_role(:manager, @user)
+  end
+
   def update
     @user = User.find(params[:id])
     authorize! :update, @user, :message => 'Not authorized as an administrator.'
-    if (org_id=params[:user].delete(:managed_organization_id)).present?
-      # the logic for this is a little wonky, but as of now, I think we're happy
-      # having one role at a time for a given user. I.e. It doesn't make sense
-      # for someone to be a global admin *and* a manager of an organization.
-      # And that can't happen with the interface, but is possible based on legacy data.
-      # So to clear that up, we'll clear out old roles here
-      @user.roles.clear
-      @user.add_role :manager, Organization.find(org_id)
-      redirect_to users_path, :notice => "User updated."
+    @user.roles.clear
+    params[:user].delete(:password) if params[:user][:password].blank?
+    if @user.update_attributes(user_params)
+      process_user_roles
+      process_user_organizations
+      redirect_to @user, :notice => "User updated."
     else
-      if @user.update_attributes(params[:user], :as => :admin)
-        redirect_to users_path, :notice => "User updated."
-      else
-        redirect_to users_path, :alert => "Unable to update user."
-      end
+      redirect_to @user, :alert => "Unable to update user."
     end
   end
-    
+
   def destroy
     authorize! :destroy, @user, :message => 'Not authorized as an administrator.'
     user = User.find(params[:id])
@@ -47,14 +45,37 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(params[:user])
+    @user = User.new(user_params)
     authorize! :create, @user
+    process_user_roles
+    process_user_organizations
     if @user.save!
       flash[:notice] = "User created."
-      redirect_to users_path
+      redirect_to @user
     else
+      flash.now[:alert] = "There was a problem creating the user"
       render "new"
     end
   end
+
+  private
+
+    def user_params
+      params.require(:user).permit(:name, :email, :password, :location_id)
+    end
+
+    def process_user_roles
+      ['admin', 'event_manager', 'blogger'].each do |role|
+        if params[:user][role].present? and params[:user][role] == 'on'
+          @user.roles << Role.find_by(name: role)
+        end
+      end
+    end
+
+    def process_user_organizations
+      params[:user].each do |key, value|
+        @user.add_role :manager, Organization.find_by(id: value) if key.include?('controlled_organization')
+      end
+    end
 
 end

@@ -1,8 +1,8 @@
 .row-fluid
-  .span12.box.borsdered-box.blue-border
+  .span12.box.bordered-box.blue-border
     .box-header.blue-background
       .title
         %i.icon-plus
         New User
     .box-content
-      = render partial: "users/partials/form"
+      = render partial: "users/partials/form", locals: { url: '/users/admin-create', method: :post }
