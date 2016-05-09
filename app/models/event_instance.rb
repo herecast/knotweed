@@ -32,10 +32,12 @@ class EventInstance < ActiveRecord::Base
   # but with its own time
   def process_end_time
     if end_date.present?
-      end_date_not_same_day = (end_date - start_date).abs > 86399 # 23h59m59s
-      if end_date_not_same_day
-        self.end_date = Chronic.parse(start_date.to_date.to_s + " " + end_date.strftime("%I:%M%p"))
-      end
+      date_format = '%Y-%m-%d'
+      time_format = "T%H:%M:%S%z"
+      self.end_date = DateTime.strptime(
+        start_date.strftime(date_format) + end_date.strftime(time_format),
+        "#{date_format}#{time_format}"
+      )
     end
   end
 
