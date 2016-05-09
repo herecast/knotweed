@@ -120,7 +120,7 @@ module Api
         reg_cat_ids = [ContentCategory.find_by_name('market').id,
                        ContentCategory.find_by_name('event').id]
         # if signed in, include talk.
-        if @current_api_user.present? && params[:exclude_channel] != 'talk' 
+        if @current_api_user.present?
           reg_cat_ids += [ContentCategory.find_by_name('talk_of_the_town').id]
         end
 
