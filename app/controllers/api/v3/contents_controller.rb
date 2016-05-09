@@ -78,13 +78,13 @@ module Api
         # that and automatically limit the total response to 14 entries if only one per_page
         # param is passed
         if params[:per_page].present? and params[:news_per_page].present?
-          per_page = params[:per_page]
-          news_per_page = params[:news_per_page]
+          per_page = params[:per_page].to_i
+          news_per_page = params[:news_per_page].to_i
         elsif params[:per_page].present?
           per_page = params[:per_page].to_i
           news_per_page = 14 - per_page
         elsif params[:news_per_page].present?
-          news_per_page = params[:news_per_page]
+          news_per_page = params[:news_per_page].to_i
           per_page = 14 - news_per_page
         else
           per_page = 12
@@ -107,7 +107,7 @@ module Api
         location_condition = @current_api_user.try(:location_id) || default_location_id
 
         root_news_cat = ContentCategory.find_by_name 'news'
-        news_opts = opts.merge({ 
+        news_opts = opts.merge({
           per_page: news_per_page
         })
         news_opts[:with] = news_opts[:with].merge({
