@@ -90,13 +90,6 @@ describe Api::V3::ContentsController, :type => :controller do
       end
     end
 
-    context ", given params[:exclude_channel]='talk' " do
-      before { get :index, exclude_channel: 'talk',  format: :json }
-      it 'should exclude talk items' do
-        expect(assigns(:contents).select{|c| c.content_category_id == @tott_cat.id }.count).to eq 0
-      end
-    end
-
     describe 'paging' do
       context 'with per_page param' do
         subject! { get :index, format: :json, per_page: 10 }
