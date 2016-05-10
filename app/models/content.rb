@@ -7,7 +7,7 @@
 #  title                     :string(255)
 #  subtitle                  :string(255)
 #  authors                   :string(255)
-#  raw_content               :text
+#  raw_content               :text(65535)
 #  issue_id                  :integer
 #  import_location_id        :integer
 #  created_at                :datetime         not null
@@ -44,7 +44,7 @@
 #  created_by                :integer
 #  updated_by                :integer
 #  banner_click_count        :integer          default(0)
-#  similar_content_overrides :text
+#  similar_content_overrides :text(65535)
 #  banner_ad_override        :integer
 #  root_parent_id            :integer
 #
@@ -65,7 +65,17 @@ class Content < ActiveRecord::Base
       with: { pubdate: 5.years.ago..Time.zone.now }
     }
   }
-  default_sphinx_scope :in_accepted_category
+
+  sphinx_scope(:not_deleted_and_in_accepted_category) {
+    {
+      conditions: { in_accepted_category: 1 },
+      # exclude drafts and scheduled content
+      with: { deleted: false, pubdate: 5.years.ago..Time.zone.now }
+    }
+
+  }
+
+  default_sphinx_scope :not_deleted_and_in_accepted_category
 
   belongs_to :issue
   belongs_to :import_location
@@ -154,6 +164,8 @@ class Content < ActiveRecord::Base
               1) > 0
            )")
   }
+
+  scope :not_deleted, -> { where(deleted_at: nil) }
 
   NEW_FORMAT = "New"
   EXPORT_FORMATS = [NEW_FORMAT]

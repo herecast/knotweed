@@ -94,7 +94,7 @@ describe 'Contents Endpoints', type: :request do
     end
   end
 
-  describe 'GET api/v3/contents', type: :request do
+  describe 'GET /api/v3/contents', type: :request do
     let(:org) { FactoryGirl.create :organization }
     let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
     let!(:default_location) { FactoryGirl.create :location, city: Location::DEFAULT_LOCATION }
@@ -126,5 +126,34 @@ describe 'Contents Endpoints', type: :request do
         expect(response_json['contents'].map { |c| c['id'] } ).to include news_post.id
       end
     end
+
+    context 'with deleted content' do
+      let!(:news_post) { FactoryGirl.create :content, content_category: news_cat, organization: org, locations: [default_location], published: true, deleted_at: Time.now }
+      before { index }
+
+      it 'is not returned' do
+        get "/api/v3/contents", {}, headers
+        expect(response_json['contents'].map { |c| c['title'] } ).to_not include news_post.title
+      end
+    end
   end
+
+  describe 'GET /api/v3/dashboard' do
+    let(:news_cat) { ContentCategory.find_or_create_by name: 'news' }
+    context 'user has deleted content' do
+      let!(:deleted_news) { FactoryGirl.create :content,
+                           content_category: news_cat,
+                           created_by: user,
+                           published: true,
+                           deleted_at: Time.now}
+
+      it 'does not return deleted content' do
+        get '/api/v3/dashboard', {}, auth_headers
+        ids = response_json['contents'].map{|i| i['id']}
+
+        expect(ids).to_not include(deleted_news.id)
+      end
+    end
+  end
+
 end

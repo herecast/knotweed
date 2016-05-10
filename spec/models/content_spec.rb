@@ -1,13 +1,12 @@
 # == Schema Information
 #
-#
 # Table name: contents
 #
 #  id                        :integer          not null, primary key
 #  title                     :string(255)
 #  subtitle                  :string(255)
 #  authors                   :string(255)
-#  raw_content               :text
+#  raw_content               :text(65535)
 #  issue_id                  :integer
 #  import_location_id        :integer
 #  created_at                :datetime         not null
@@ -44,7 +43,7 @@
 #  created_by                :integer
 #  updated_by                :integer
 #  banner_click_count        :integer          default(0)
-#  similar_content_overrides :text
+#  similar_content_overrides :text(65535)
 #  banner_ad_override        :integer
 #  root_parent_id            :integer
 #
@@ -221,6 +220,8 @@ describe Content, :type => :model do
     end
   end
 
+  it { is_expected.to respond_to(:deleted_at) }
+
   describe 'default sphinx scope' do
     before do
       @draft = FactoryGirl.create :content, pubdate: nil
@@ -233,6 +234,9 @@ describe Content, :type => :model do
       @in_index_event.content.content_category_id = @event_cat.id
       @in_index_event.content.save
       @not_in_index_event = FactoryGirl.create :content, content_category_id: @event_cat.id
+
+      @deleted_content = FactoryGirl.create :content, content_category: @news_cat, deleted_at: Time.now
+
       index
     end
 
@@ -254,6 +258,10 @@ describe Content, :type => :model do
 
     it 'should include regular content' do
       expect(Content.search).to include(@normal)
+    end
+
+    it 'does not include deleted content' do
+      expect(Content.search).to_not include(@deleted_content)
     end
   end
 

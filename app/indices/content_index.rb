@@ -22,6 +22,7 @@ ThinkingSphinx::Index.define(:content,
   has root_content_category_id
   has content_category_id
   has my_town_only
+  has "contents.deleted_at IS NOT NULL", as: :deleted, type: :boolean
 
   # note, this is used for the Talk index page to query
   # root contents only
