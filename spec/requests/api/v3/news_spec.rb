@@ -249,7 +249,18 @@ describe 'News Endpoints', type: :request do
 
     context 'not authorized to destroy' do
       before do
-        allow_any_instance_of(Ability).to receive()
+        allow_any_instance_of(Ability).to receive(:can?).with(:destroy, news).and_return false
+      end
+
+      it 'returns unauthorized' do
+        delete "/api/v3/news/#{news.id}", {}, headers.merge(auth_headers)
+        expect(response.status).to eql 403
+      end
+
+      it 'does not set #deleted_at' do
+        expect {
+          delete "/api/v3/news/#{news.id}", {}, headers.merge(auth_headers)
+        }.to_not change{ news.reload.deleted_at }
       end
 
     end

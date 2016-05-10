@@ -126,6 +126,7 @@ module Api
 
       def destroy
         @news = Content.find params[:id]
+        authorize! :destroy, @news
         is_news_category = @news.try(:root_content_category).try(:name) == 'news'
 
         if is_news_category #@TODO <- Do we need to check consumer app here?
