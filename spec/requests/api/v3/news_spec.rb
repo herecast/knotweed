@@ -214,4 +214,93 @@ describe 'News Endpoints', type: :request do
       expect(@content.images).to match_array([@img])
     end
   end
+
+  describe 'DELETE /api/v3/news' do
+    let!(:news_cat) { FactoryGirl.create :content_category, name: 'news'}
+    let(:org) { FactoryGirl.create :organization }
+    let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
+    let(:headers) { {'ACCEPT' => 'application/json',
+                     'Consumer-App-Uri' => consumer_app.uri
+                  } }
+
+    let!(:news) { FactoryGirl.create :content, created_by: user, organization: org, content_category: news_cat }
+
+    it 'sets #deleted_at' do
+      expect {
+        delete "/api/v3/news/#{news.id}", {}, headers.merge(auth_headers)
+      }.to change {
+        news.reload.deleted_at
+      }
+      expect(news.deleted_at).to be_a Time
+    end
+
+    context 'not signed in' do
+      it 'returns unauthenticated' do
+        delete "/api/v3/news/#{news.id}", {}, headers
+        expect(response.status).to eql 401
+      end
+
+      it 'does not set #deleted_at' do
+        expect {
+          delete "/api/v3/news/#{news.id}", {}, headers
+        }.to_not change{ news.reload.deleted_at }
+      end
+    end
+
+    context 'not authorized to destroy' do
+      before do
+        allow_any_instance_of(Ability).to receive()
+      end
+
+    end
+
+  end
+
+  describe 'GET /api/v3/news' do
+    let!(:news_cat) { FactoryGirl.create :content_category, name: 'news'}
+    let(:org) { FactoryGirl.create :organization }
+    let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
+    let(:headers) { {'ACCEPT' => 'application/json',
+                     'Consumer-App-Uri' => consumer_app.uri
+                  } }
+
+    let!(:news) { FactoryGirl.create :content, created_by: user, organization: org, published: true, content_category: news_cat }
+    let!(:deleted_news) { FactoryGirl.create :content, created_by: user, organization: org, published: true, content_category: news_cat, deleted_at: Time.now }
+    
+    before { index }
+
+    it 'returns news' do
+      get '/api/v3/news', {}, headers
+      ids = response_json['news'].map{|i| i['id']}
+
+      expect(ids).to include news.id
+    end
+
+    it 'does not return deleted news' do
+      get '/api/v3/news', {}, headers
+      ids = response_json['news'].map{|i| i['id']}
+
+      expect(ids).to_not include deleted_news.id
+
+    end
+
+  end
+
+  describe 'GET /api/v3/news/:id' do
+    let(:news_cat) { ContentCategory.find_or_create_by name: 'news' }
+    context 'news has been deleted' do
+      let!(:deleted_news) { FactoryGirl.create :content,
+                           content_category: news_cat,
+                           created_by: user,
+                           published: true,
+                           deleted_at: Time.now}
+
+      it 'does not return deleted content' do
+        get "/api/v3/news/#{deleted_news.id}"
+
+        expect(response.status).to eql 404
+      end
+    end
+
+  end
 end

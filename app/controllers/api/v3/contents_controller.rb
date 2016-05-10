@@ -159,6 +159,8 @@ module Api
           scope = Content.where(created_by: @current_api_user)
         end
 
+        scope = scope.not_deleted
+
         @news_cat = ContentCategory.find_or_create_by(name: 'news')
         @talk_cat = ContentCategory.find_or_create_by(name: 'talk_of_the_town')
         @market_cat = ContentCategory.find_or_create_by(name: 'market')
