@@ -22,4 +22,6 @@ ThinkingSphinx::Index.define(:business_profile,
   has feedback_recommend_avg, as: :feedback_recommend_avg
   has feedback_cleanliness_avg, as: :feedback_cleanliness_avg
   has content.organization_id, as: :organization_id
+  has archived, as: :archived
+  has 'IF(existence IS NULL OR existence >= 0.4, 1, 0)', as: :exists, type: :boolean
 end

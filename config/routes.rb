@@ -113,7 +113,7 @@ Knotweed::Application.routes.draw do
       # specifying path here to avoid deprecating the frontend even though we've changed
       # the modeling
       resources 'organizations', only: [:index, :show, :update]
-      resources 'news', only: [:index, :show, :create, :update]
+      resources 'news'
       resources 'talk', only: [:index, :show, :create, :update]
       resources 'market_posts', only: [:index, :show, :create, :update]
       get '/market_posts/:id/contact', to: 'market_posts#contact', as: :market_post_contact

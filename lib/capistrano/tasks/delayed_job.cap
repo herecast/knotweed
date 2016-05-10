@@ -1,26 +1,26 @@
 namespace :delayed_job do
- 
+
   def args
     fetch(:delayed_job_args, "")
   end
- 
+
   def delayed_job_roles
     fetch(:delayed_job_server_role, :app)
   end
- 
+
   desc 'Stop the delayed_job process'
-  task :stop do
+  task :stop => :copy do
     on roles(delayed_job_roles) do
-      within release_path do    
+      within release_path do
         with rails_env: fetch(:rails_env) do
           execute :ruby, 'bin/delayed_job', :stop
         end
       end
     end
   end
- 
+
   desc 'Start the delayed_job process'
-  task :start do
+  task :start => :copy do
     on roles(delayed_job_roles) do
       within release_path do
         with rails_env: fetch(:rails_env) do
@@ -29,9 +29,9 @@ namespace :delayed_job do
       end
     end
   end
- 
+
   desc 'Restart the delayed_job process'
-  task :restart do
+  task :restart => :copy do
     on roles(delayed_job_roles) do
       within release_path do
         with rails_env: fetch(:rails_env) do
@@ -40,5 +40,13 @@ namespace :delayed_job do
       end
     end
   end
- 
+
+  desc 'Copy delayed_job to the correct location'
+  task :copy do
+    on roles(delayed_job_roles) do
+      within release_path do
+        execute :cp, '../../repo/bin/delayed_job', '../../shared/bin'
+      end
+    end
+  end
 end

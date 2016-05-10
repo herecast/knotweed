@@ -18,3 +18,9 @@ test:
     - bundle exec rspec spec/coverage_guard.rb:
         environment:
           RAILS_ENV: test
+
+deployment:
+  development:
+    branch: develop
+    commands:
+      - bundle exec cap qa deploy

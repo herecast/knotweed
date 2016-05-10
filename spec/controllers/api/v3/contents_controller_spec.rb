@@ -25,6 +25,10 @@ describe Api::V3::ContentsController, :type => :controller do
         locations: [@default_location], published: true
       FactoryGirl.create_list :content, 15, content_category: @event_cat,
         locations: [@default_location], published: true
+      FactoryGirl.create_list :content, 15, content_category: @market_cat, 
+        locations: [@other_location], published: true, channel_type: 'MarketPost'
+      FactoryGirl.create_list :content, 15, content_category: @tott_cat,
+        locations: [@other_location], published: true
       index
     end
 
@@ -81,7 +85,9 @@ describe Api::V3::ContentsController, :type => :controller do
 
       it 'should include talk items' do
         subject
-        expect(assigns(:contents).select{|c| c.content_category_id == @tott_cat.id }.count).to be >0
+        contents = assigns(:contents)
+        expect(contents.count).to be > 0
+        expect(contents.select{|c| c.content_category_id == @tott_cat.id }.count).to be >0
       end
 
       it 'should return items in the user\'s location' do
