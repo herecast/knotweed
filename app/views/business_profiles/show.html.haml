@@ -1,0 +1,33 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-building
+        = @business_profile.business_location.name
+        Business Profile
+    .box-content
+      %h2= @business_profile.business_location.name
+      .row-fluid
+        .span6
+          %p
+            %b Website:
+          %p= @business_profile.business_location.venue_url if @business_profile.business_location.venue_url.present?
+          %p
+            %b Location:
+          %p= @business_profile.business_location.full_address if @business_profile.business_location.full_address.present?
+          %p
+            %b Phone
+          %p= @business_profile.business_location.phone if @business_profile.business_location.phone.present?
+        .span6
+          %p
+            %b Email:
+          %p= @business_profile.business_location.email if @business_profile.business_location.email.present?
+          %p
+            %b Business Hours:
+          %p= @business_profile.business_location.hours if @business_profile.business_location.hours.present?
+      .form-actions
+        - if @business_profile.claimed?
+          = link_to 'Edit', edit_business_profile_path(@business_profile), class: 'btn btn-primary'
+        - else
+          = link_to 'Claim', business_profiles_claims_path(id: @business_profile.id), method: :post, class: 'btn btn-primary btn-warning'
+          

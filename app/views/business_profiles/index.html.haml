@@ -12,7 +12,7 @@
     .box-content
       = search_form_for @search, url: business_profiles_path do |f|
         .controls.controls-row
-          .field.span2
+          .field.span3
             = f.label :id_in, "ID"
             -# format id_in val for display so it matches what's entered
             - if session[:business_profiles_search].present? and session[:business_profiles_search].has_key? :id_in and session[:business_profiles_search][:id_in].present?
@@ -20,22 +20,38 @@
             - else
               - id_in_val = ""
             = f.text_field :id_in, value: id_in_val, class: "span12"
-          .field.span2
+          .field.span3
+            = f.label :content_id_eq, "Content Id"
+            = f.text_field :content_id_eq, class: "span12"
+          .field.span3
             = f.label :business_location_name_cont, "Name"
             = f.text_field :business_location_name_cont, class: "span12"
-          .field.span2
+          .field.span3
             = f.label :business_location_city_cont, "City"
             = f.text_field :business_location_city_cont, value: search_field_value(:business_location_city_cont), class: "span12"
+        .control.controls-row
+          .field.span4
+            = f.label :business_categories_id_eq, "Category"
+            = f.collection_select :business_categories_id_eq, BusinessCategory.all, :id, :name, include_blank: 'None'
+          .field.span4
+            = f.label :content_organization_org_type_eq, "Claimed"
+            = f.select :content_organization_org_type_eq, [['Claimed', "Business"], ["Unclaimed", nil]], include_blank: 'All'
+          .field.span3
+            = f.label :archived_eq, "Archived"
+            = f.select :archived_eq, [['Active', '0'], ['Archived', '1']], include_blank: 'All', selected: @archived
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
+
 %table.table.table-striped.table-hover.table-condensed#business_profiles_index
   %thead
     %tr
-      %th ID
-      %th Name
-      %th Location
-      %th
+      %th.span1 Business<br>Profile Id
+      %th Content Id
+      %th Business Name
+      %th Address
+      %th Claim
+      %th Archive(d)
   .span5
     = page_entries_info @business_profiles if @business_profiles.present?
     = paginate @business_profiles, window: 2 if @business_profiles.present?
@@ -43,7 +59,19 @@
     - @business_profiles.each_with_index do |c, i|
       %tr{ class: "content-#{c.id}" }
         %td= c.id
-        %td= link_to c.business_location.try(:name), edit_business_profile_path(id: c.id, index: i, page: params[:page])
-        %td= c.business_location.try(:full_address)
+        %td= c.content.try(:id)
+        %td= link_to c.business_location.name, c
+        %td= c.business_location.full_address
         %td.actions
-          = link_to "edit", edit_business_profile_path(id: c.id, index: i, page: params[:page]), class: "btn btn-mini btn-warning"
+          - if c.claimed?
+            = link_to "edit", edit_business_profile_path(id: c.id, index: i, page: params[:page]), class: "btn btn-mini btn-warning"
+          - else
+            = link_to "claim", business_profiles_claims_path(id: c.id), method: :post, class: "btn btn-mini btn-warning"
+        %td
+          - if !c.claimed?
+            - if c.archived
+              = form_for c, url: business_profiles_archiving_path(id: c.id), method: :delete do |f|
+                = f.check_box :archived
+            - else
+              = form_for c, url: business_profiles_archivings_path(id: c.id), method: :post do |f|
+                = f.check_box :archived

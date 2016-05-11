@@ -6,6 +6,14 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#business_details" } do
           %i.icon-reorder
           Business Details
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#business_content" } do
+          %i.icon-reorder
+          Content
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#managers" } do
+          %i.icon-female
+          Managers
       %li.pull-right
         %span.btn.btn-small.tab-traversal-link{ data: { move_index: "-1" } } Previous
         %span.btn.btn-small.tab-traversal-link{ data: { move_index: "1" } } Next
@@ -13,23 +21,25 @@
       .tab-pane.form-horizontal#business_details{ class: 'active' }
         = f.simple_fields_for :business_location do |g|
           .row-fluid
+            .span12
+              .row-fluid
+                = g.input :name, class: 'span12'
+              .row-fluid
+                = g.input :address, class: 'span12'
+          .row-fluid
             .span6
               .row-fluid
-                = g.input :name, input_html: { class: 'span12' }, wrapper_html: { class: 'span12' }
+                = g.input :venue_url, label: 'Website', class: 'span12'
               .row-fluid
-                = g.input :venue_url, label: 'Website',input_html: { class: 'span12' },
-                  wrapper_html: { class: 'span12' }
+                = g.input :city, class: 'span12'
               .row-fluid
-                = g.input :address, input_html: { class: 'span12' }, wrapper_html: { class: 'span12' }
+                = g.input :state, class: 'span12'
               .row-fluid
-                = g.input :city, input_html: { class: 'span12' }, wrapper_html: { class: 'span12' }
+                = g.input :zip, class: 'span12'
               .row-fluid
-                = g.input :state, input_html: { class: 'span12' }, wrapper_html: { class: 'span6' }
+                = g.input :phone, class: 'span12'
               .row-fluid
-                = g.input :zip, input_hml: { class: 'span12' }, wrapper_html: { class: 'span6' }
-                = g.input :phone, input_html: { class: 'span12' }, wrapper_html: { class: 'span6' }
-              .row-fluid
-                = g.input :email, input_html: { class: 'span12' }, wrapper_html: { class: 'span12' }
+                = g.input :email, class: 'span12'
             .span6
               %span.pull-right.btn.btn-primary#locate_on_map_button{data: {remote: 'true'}} Locate on Map
               - bl = @business_profile.business_location
@@ -51,13 +61,83 @@
             %span.pull-left.btn.btn-success.add-hours-link + Add Hours
           #business_location_hours
             = g.fields_for :hours do |i|
-              - if @business_profile.business_location.hours.present?
+              - if @business_profile.business_location.hours.present? and @business_profile.business_location.hours.is_a?(Array)
                 - @business_profile.business_location.hours.each do |hour|
                   .row-fluid
                     .span6
                       = i.text_field nil, value: hour, class: 'span12'
                     .span2.offset4
                       .btn.btn-danger.remove-hours-field X
+      .tab-pane.form-horizontal#business_content
+        .row-fluid
+          .span6
+            = f.simple_fields_for :content do |g|
+              = g.input :raw_content, input_html: { class: "ckeditor input-block-level" },
+                label: "Description", as: :text, value: @business_profile.content.sanitized_content, required: true
+          .span6
+            .row-fluid
+              .span12
+                .row-fluid
+                  = f.simple_fields_for :content do |g|
+                    = g.simple_fields_for :images do |i|
+                      = i.input :image, as: :file
+              .span12
+                .row-fluid
+                  - if @business_profile.content.try(:images).present? and @business_profile.content.primary_image.id
+                    .row-fluid
+                      .span12
+                        = image_tag @business_profile.content.primary_image.image.url
+                  - elsif @placeholder_image.present?
+                    .row-fluid
+                      .span12
+                        = image_tag @placeholder_image.image.url
+                .row-fluid
+                  .span12
+                    - if @business_profile.content.organization.logo.present?
+                      %div
+                        = image_tag @business_profile.content.organization.logo.url
+                    = f.simple_fields_for :content do |g|
+                      = g.simple_fields_for :organization do |i|
+                        = i.input :logo, as: :file
+      .tab-pane.form-horizontal#managers
+        .row-fluid
+          %h2 Business Managers
+          .span12
+            %table.table.table-striped.table-hover.table-condensed
+              %thead
+                %tr
+                  %th Id
+                  %th Name
+                  %th Email
+                  %th Remove
+              %tbody
+                - if @managers.present?
+                  - @managers.each do |m|
+                    %tr
+                      %td= m.id
+                      %td= m.name
+                      %td= m.email
+                      %td= link_to 'remove', business_profiles_manager_path(id: @business_profile.id, user_id: m.id), method: :delete, class: 'btn btn-mini btn-warning'
+                - else
+                  %td No managers yet
+          %h3 Search Users
+          .span12
+            %table.table.table-striped.table-hover.data-table
+              %thead
+                %tr
+                  %th Id
+                  %th Name
+                  %th Email
+                  %th Add as Manager
+              %tbody
+                - @users.each do |user|
+                  - unless @managers.present? and @managers.include?(user)
+                    %tr{ class: "user-#{user.id}" }
+                      %td= user.id
+                      %td= user.name if user.name.present?
+                      %td= user.email
+                      %td.actions
+                        = link_to "add", business_profiles_managers_path(business_profile_id: @business_profile.id, user_id: user.id), method: :post, class: "btn btn-mini btn-warning"
 
     .form-actions
       = submit_tag nil, class: "btn btn-primary"

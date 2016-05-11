@@ -39,7 +39,11 @@ class BusinessProfile < ActiveRecord::Base
 
   attr_accessible :content_attributes, :business_location_attributes, :has_retail_location,
     :business_category_ids, :business_location_id, :content_id, :source, :source_id,
-    :existence
+    :existence, :archived
+
+  def claimed?
+    content.present? && content.organization.present? && content.organization.org_type == 'Business'
+  end
 
   def update_feedback_cache!
     fb = feedback_calc # cache db call
