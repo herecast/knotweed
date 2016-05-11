@@ -3,7 +3,7 @@ module Api
     class DashboardContentSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :parent_content_id, :content_type, :comment_count,
-        :view_count, :published_at, :event_id, :parent_content_type,
+        :view_count, :published_at, :event_id, :parent_content_type, :updated_at,
         :parent_event_instance_id, :content_id, :has_metrics_reports?
 
       def id
