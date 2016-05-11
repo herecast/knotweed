@@ -22,6 +22,7 @@ describe Api::V3::BusinessFeedbacksController, :type => :controller do
 
     it 'should create a business feedback object' do
       expect{subject}.to change{ BusinessFeedback.count }.by 1
+
     end
   end
 end

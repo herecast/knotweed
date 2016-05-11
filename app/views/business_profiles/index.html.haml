@@ -21,8 +21,8 @@
               - id_in_val = ""
             = f.text_field :id_in, value: id_in_val, class: "span12"
           .field.span2
-            = f.label :content_title_cont, "Name"
-            = f.text_field :content_title_cont, class: "span12"
+            = f.label :business_location_name_cont, "Name"
+            = f.text_field :business_location_name_cont, class: "span12"
           .field.span2
             = f.label :business_location_city_cont, "City"
             = f.text_field :business_location_city_cont, value: search_field_value(:business_location_city_cont), class: "span12"
@@ -32,7 +32,7 @@
 %table.table.table-striped.table-hover.table-condensed#business_profiles_index
   %thead
     %tr
-      %th Content ID
+      %th ID
       %th Name
       %th Location
       %th
@@ -42,8 +42,8 @@
   %tbody
     - @business_profiles.each_with_index do |c, i|
       %tr{ class: "content-#{c.id}" }
-        %td= c.content.id
-        %td= link_to c.content.title, edit_business_profile_path(id: c.id, index: i, page: params[:page])
-        %td= c.business_location.full_address
+        %td= c.id
+        %td= link_to c.business_location.try(:name), edit_business_profile_path(id: c.id, index: i, page: params[:page])
+        %td= c.business_location.try(:full_address)
         %td.actions
           = link_to "edit", edit_business_profile_path(id: c.id, index: i, page: params[:page]), class: "btn btn-mini btn-warning"

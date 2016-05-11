@@ -6,7 +6,8 @@ describe 'Businesses Endpoints', type: :request do
 
   describe 'GET /api/v3/businesses/:id' do
     context 'As an owner of the business' do
-      let(:business) { FactoryGirl.create(:business_profile) }
+      # NOTE: if it has an owner, this is a claimed business,
+      let(:business) { FactoryGirl.create(:business_profile, :claimed) }
       before do
         business.content.update_attribute(:created_by, user)
         get "/api/v3/businesses/#{business.id}", {}, auth_headers
@@ -18,7 +19,7 @@ describe 'Businesses Endpoints', type: :request do
     end
 
     context 'Not an owner of the business' do
-      let(:business) { FactoryGirl.create(:business_profile) }
+      let(:business) { FactoryGirl.create(:business_profile, :claimed) }
       before do
         business.content.update_attribute(:created_by, FactoryGirl.create(:user))
         get "/api/v3/businesses/#{business.id}", {}, auth_headers
@@ -45,7 +46,7 @@ describe 'Businesses Endpoints', type: :request do
     let(:url) { '/api/v3/businesses' }
 
     context 'a business existing that the current user owns' do
-      let(:business) { FactoryGirl.create(:business_profile) }
+      let(:business) { FactoryGirl.create(:business_profile, :claimed) }
       before do
         business.content.update_attribute(:created_by, user)
         business.business_location.update_attributes({
@@ -203,7 +204,7 @@ describe 'Businesses Endpoints', type: :request do
 
       describe '?organization_id' do
         let(:organization) { FactoryGirl.create :organization }
-        let(:owned_by_org) { FactoryGirl.create_list :business_profile, 3 }
+        let(:owned_by_org) { FactoryGirl.create_list :business_profile, 3, :claimed }
         let(:not_owned_by_org) { FactoryGirl.create_list :business_profile, 3 }
         before do
           owned_by_org.each do |b|

@@ -21,13 +21,18 @@
 
 FactoryGirl.define do
   factory :business_profile do
-    content
     business_location
 
     trait :with_feedback do
       after(:create) do |instance|
         create_list 5, :business_feedback, business_profile: instance
       end
+    end
+
+    # out of the box, business profiles are "unclaimed" and don't have associated
+    # content records. Once claimed, we generate a content and organization
+    trait :claimed do
+      content
     end
   end
 end

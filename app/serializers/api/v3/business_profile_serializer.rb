@@ -7,15 +7,29 @@ module Api
         :hours, :details, :logo, :images, :category_ids, :feedback, :feedback_num,
         :can_edit
 
-      def id; object.content.id; end
-      def details; object.content.sanitized_content; end
-      def images; object.content.images.map { |img| img.url }; end
+      def name
+        object.business_location.name
+       end
 
-      def name; object.organization.name; end
-      def organization_id; object.organization.id; end
-      def website; object.organization.website; end
-      def logo; object.organization.logo.try(:url); end
+      # the following are only available if a business has been "claimed"
+      # otherwise, there is no associated content record or organization record
+      def organization_id
+        object.organization.id if object.content.present?
+      end
 
+      def logo
+        object.organization.logo.try(:url) if object.content.present?
+      end
+
+      def details
+        object.content.sanitized_content if object.content.present?
+      end
+
+      def images
+        object.content.images.map { |img| img.url } if object.content.present?
+      end
+
+      def website; object.business_location.venue_url; end
       def phone; object.business_location.phone; end
       def email; object.business_location.email; end
       def address; object.business_location.address; end

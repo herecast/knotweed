@@ -6,38 +6,19 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#business_details" } do
           %i.icon-reorder
           Business Details
-      %li
-        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#business_content" } do
-          %i.icon-reorder
-          Content
-      - if @business_profile.id.present?
-        %li
-          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#publish" } do
-            %i.icon-upload
-            Publish/Export
-      - if @business_profile.content.try(:published?)
-        %li
-          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#annotation_reports" } do
-            Annotation Reports
-      - if @business_profile.content.try(:organization).present?
-        %li
-          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#promotions" } do
-            %i.icon-eye-open
-            Promotions
       %li.pull-right
         %span.btn.btn-small.tab-traversal-link{ data: { move_index: "-1" } } Previous
         %span.btn.btn-small.tab-traversal-link{ data: { move_index: "1" } } Next
     .tab-content
       .tab-pane.form-horizontal#business_details{ class: 'active' }
-        = f.simple_fields_for :content do |g|
-          .row-fluid
-            = g.input :title, input_html: { class: 'input-block-level' }, required: true
-          = g.simple_fields_for :organization do |i|
-            .row-fluid
-              = i.input :website, input_html: { class: 'input-block-level' }
         = f.simple_fields_for :business_location do |g|
           .row-fluid
             .span6
+              .row-fluid
+                = g.input :name, input_html: { class: 'span12' }, wrapper_html: { class: 'span12' }
+              .row-fluid
+                = g.input :venue_url, label: 'Website',input_html: { class: 'span12' },
+                  wrapper_html: { class: 'span12' }
               .row-fluid
                 = g.input :address, input_html: { class: 'span12' }, wrapper_html: { class: 'span12' }
               .row-fluid
@@ -77,29 +58,6 @@
                       = i.text_field nil, value: hour, class: 'span12'
                     .span2.offset4
                       .btn.btn-danger.remove-hours-field X
-      .tab-pane.form-horizontal#business_content
-        .row-fluid
-          .span6
-            = f.simple_fields_for :content do |g|
-              = g.input :raw_content, input_html: { class: "ckeditor input-block-level" },
-                label: "Description", as: :text, value: @business_profile.content.sanitized_content, required: true
-          .span6
-            .row-fluid
-              .span6
-                = f.simple_fields_for :content do |g|
-                  = g.simple_fields_for :images do |i|
-                    = i.input :image, as: :file
-              .span6
-                - if @business_profile.content.try(:images).present? and @business_profile.content.primary_image.id
-                  = image_tag @business_profile.content.primary_image.image.url
-                - elsif @placeholder_image.present?
-                  = image_tag @placeholder_image.image.url
-      - if @business_profile.id.present?
-        .tab-pane#publish{ data: { no_turbolink: "" } }
-          = render partial: 'contents/partials/publishing_tab', locals: { content: @business_profile.content }
-      - if @business_profile.content.try(:organization).present?
-        .tab-pane#promotions
-          = render "promotions/partials/promotions_tab", content: @business_profile.content
 
     .form-actions
       = submit_tag nil, class: "btn btn-primary"

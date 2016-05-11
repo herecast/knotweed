@@ -52,7 +52,7 @@ module Api
       end
 
       def show
-        @business_profile = Content.find(params[:id]).channel
+        @business_profile = BusinessProfile.find(params[:id])
         render json: @business_profile, serializer: BusinessProfileSerializer,
           root: 'business', context: {current_ability: current_ability}
       end
@@ -75,17 +75,25 @@ module Api
       end
 
       def update
-        @business_profile = Content.find(params[:id]).channel
-        # need to add IDs to nested model updates
-        params[:business][:content_attributes][:id] = @business_profile.content.id
-        params[:business][:content_attributes][:organization_attributes][:id] = @business_profile.organization.id
-        params[:business][:business_location_attributes][:id] = @business_profile.business_location_id
-        if @business_profile.update_attributes(params[:business])
-          render json: @business_profile, serializer: BusinessProfileSerializer,
-            status: 204
+        @business_profile = BusinessProfile.find(params[:id])
+        # This may change (this endpoint can be leveraged, at some point, to be the 
+        # mechanism for "claiming?"), but as of now, you cannot #update
+        # business profiles that haven't been claimed.
+        if @business_profile.content.nil?
+          render json: { errors: ["Business has not been claimed and can't be updated."] },
+            status: 422
         else
-          render json: { errors: @business_profile.errors.messages },
-            status: :unprocessable_entity
+          # need to add IDs to nested model updates
+          params[:business][:content_attributes][:id] = @business_profile.content.id
+          params[:business][:content_attributes][:organization_attributes][:id] = @business_profile.organization.id
+          params[:business][:business_location_attributes][:id] = @business_profile.business_location_id
+          if @business_profile.update_attributes(params[:business])
+            render json: @business_profile, serializer: BusinessProfileSerializer,
+              status: 200
+          else
+            render json: { errors: @business_profile.errors.messages },
+              status: :unprocessable_entity
+          end
         end
       end
 
@@ -100,9 +108,9 @@ module Api
           when "rated_desc"
             return "feedback_count DESC"
           when "alpha_desc"
-            return "organization_name DESC"
+            return "business_location_name DESC"
           when "alpha_asc"
-            return "organization_name ASC"
+            return "business_location_name ASC"
           else
             return nil
           end

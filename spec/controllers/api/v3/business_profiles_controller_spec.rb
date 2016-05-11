@@ -90,14 +90,14 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
 
       context 'Given params[:sort_by]=alpha_asc' do
         it 'tranlates that to alphabetical order' do
-          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'organization_name ASC')).and_return(mock_results)
+          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'business_location_name ASC')).and_return(mock_results)
           get :index, {sort_by: 'alpha_asc'}
         end
       end
 
       context 'Given params[:sort_by]=alpha_desc' do
         it 'tranlates that to alphabetical order reversed' do
-          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'organization_name DESC')).and_return(mock_results)
+          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'business_location_name DESC')).and_return(mock_results)
           get :index, {sort_by: 'alpha_desc'}
         end
       end
@@ -107,7 +107,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
       before do
         @search = 'AZSXDCFB123543'
         @result = BusinessProfile.first
-        @result.content.update_attribute :title, @search
+        @result.business_location.update_attribute :name, @search
         index
       end
 
@@ -162,7 +162,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
   describe 'GET show' do
     before { @bp = FactoryGirl.create :business_profile }
 
-    subject! { get :show, format: :json, id: @bp.content.id }
+    subject! { get :show, format: :json, id: @bp.id }
 
     it 'has 200 status code' do
       expect(response.code).to eq '200'
@@ -232,7 +232,6 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
     before do
       @user = FactoryGirl.create :user
       api_authenticate user: @user
-      @business_profile = FactoryGirl.create :business_profile
       # test updating at least one attribute in each associated model
       @update_params = {
         name: Faker::Company.name,
@@ -243,22 +242,39 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
       }
     end
 
-    subject { put :update, business: @update_params, id: @business_profile.content.id }
+    subject { put :update, business: @update_params, id: @business_profile.id }
 
-    it 'should update the associated organization' do
-      expect{subject}.to change { @business_profile.organization.reload.website }.to @update_params[:website]
+    context 'for a claimed business' do
+      before do
+        @business_profile = FactoryGirl.create :business_profile, :claimed
+      end
+
+      it 'should update the associated organization' do
+        expect{subject}.to change { @business_profile.organization.reload.website }.to @update_params[:website]
+      end
+
+      it 'should update the associated content' do
+        expect{subject}.to change { @business_profile.content.reload.raw_content }.to @update_params[:details]
+      end
+
+      it 'should update the business_profile' do
+        expect{subject}.to change { @business_profile.reload.has_retail_location? }.to @update_params[:has_retail_location]
+      end
+
+      it 'should update the business_location' do
+        expect{subject}.to change { @business_profile.business_location.reload.phone }.to @update_params[:phone]
+      end
     end
 
-    it 'should update the associated content' do
-      expect{subject}.to change { @business_profile.content.reload.raw_content }.to @update_params[:details]
-    end
+    context 'for an unclaimed business' do
+      before do
+        @business_profile = FactoryGirl.create :business_profile
+      end
 
-    it 'should update the business_profile' do
-      expect{subject}.to change { @business_profile.reload.has_retail_location? }.to @update_params[:has_retail_location]
-    end
-
-    it 'should update the business_location' do
-      expect{subject}.to change { @business_profile.business_location.reload.phone }.to @update_params[:phone]
+      it 'should respond with 422' do
+        subject
+        expect(response.code).to eq '422'
+      end
     end
   end
 end

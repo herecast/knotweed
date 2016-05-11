@@ -21,8 +21,6 @@ class BusinessProfilesController < ApplicationController
   end
 
   def update
-    # title and organization name are the same field, so we need to duplicate here
-    params[:business_profile][:content_attributes][:organization_attributes][:name] = params[:business_profile][:content_attributes][:title]
     if @business_profile.update_attributes!(params[:business_profile])
       flash[:notice] = "Successfully updated business #{@business_profile.id}"
       redirect_to form_submit_redirect_path(@business_profile.id)
@@ -32,8 +30,6 @@ class BusinessProfilesController < ApplicationController
   end
 
   def create
-    # title and organization name are the same field, so we need to duplicate here
-    params[:business_profile][:content_attributes][:organization_attributes][:name] = params[:business_profile][:content_attributes][:title]
     @business_profile = BusinessProfile.new(params[:business_profile])
     authorize! :create, @business_profile
     if @business_profile.save
@@ -45,15 +41,11 @@ class BusinessProfilesController < ApplicationController
   end
 
   def new
-    @business_profile.build_content if @business_profile.content.nil?
-    @business_profile.content.build_organization if @business_profile.content.organization.nil?
-    @business_profile.content.images.build if @business_profile.content.images.empty?
     @business_profile.build_business_location if @business_profile.business_location.nil?
   end
 
   def edit
     @business_profile = BusinessProfile.find(params[:id])
-    @business_profile.content.images.build if @business_profile.content.images.empty?
     authorize! :edit, @business_profile
   end
 

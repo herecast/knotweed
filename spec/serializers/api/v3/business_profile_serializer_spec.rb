@@ -7,12 +7,6 @@ describe Api::V3::BusinessProfileSerializer do
 
   let (:serialized_object) { JSON.parse(Api::V3::BusinessProfileSerializer.new(@business_profile, root: false).to_json) }
 
-  describe 'id' do
-    it 'should be the associated content ID' do
-      expect(serialized_object['id']).to eq @business_profile.content.id
-    end
-  end
-
   describe 'can_edit' do
     context 'Given context[:current_ability] able to manage' do
       it 'should be true' do

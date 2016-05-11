@@ -20,12 +20,12 @@ describe BusinessProfilesController, :type => :controller do
 
     it 'loads the business_profiles' do
       subject
-      expect(assigns(:business_profiles)).to eq(@business_profiles)
+      expect(assigns(:business_profiles)).to match_array(BusinessProfile.all)
     end
 
     context 'with search params' do
       it 'should respond with matching business_profiles' do
-        get :index, q: { content_title_cont: @business_profiles.first.content.title }
+        get :index, q: { business_location_name_cont: @business_profiles.first.business_location.name }
         expect(assigns(:business_profiles)).to eq [@business_profiles.first]
       end
     end
@@ -44,19 +44,11 @@ describe BusinessProfilesController, :type => :controller do
   describe "PUT 'update'" do
     before do
       @bp = FactoryGirl.create :business_profile
-      @content = @bp.content
-      @org = @content.organization
       @bl = @bp.business_location
       @attrs_for_update = {
-        content_attributes: {
-          id: @content.id,
-          organization_attributes: {
-            id: @org.id,
-            website: 'http://www.new-website-123.com'
-          },
-          title: 'New, Different Title'
-        },
         business_location_attributes: {
+          name: 'New, Different Name',
+          venue_url: 'http://www.new-website-123.com',
           id: @bl.id,
           address: Faker::Address.street_address,
           city: Faker::Address.city,
@@ -67,28 +59,14 @@ describe BusinessProfilesController, :type => :controller do
 
     subject { put :update, id: @bp.id, business_profile: @attrs_for_update, continue_editing: true }
 
-    it 'should update organization website' do
-      expect{subject}.to change{@org.reload.website}.to @attrs_for_update[:content_attributes][:organization_attributes][:website]
-    end
-
-    it 'should update organization name' do
-      expect{subject}.to change{@org.reload.name}.to @attrs_for_update[:content_attributes][:title]
-    end
-
     it 'should update business_location attributes' do
       expect{subject}.to change{@bl.reload.address}.to @attrs_for_update[:business_location_attributes][:address]
-    end
-
-    it 'should update content attributes' do
-      expect{subject}.to change{@content.reload.title}.to @attrs_for_update[:content_attributes][:title]
     end
 
     context "when update fails" do
       before do
         allow_any_instance_of(BusinessProfile).to receive(:update_attributes!).and_return false
       end
-
-      subject { put :update, id: @bp.id, business_profile: { content_attributes: { title: 'title', organization_attributes: {} } } }
 
       it "renders edit page" do
         subject
@@ -100,13 +78,8 @@ describe BusinessProfilesController, :type => :controller do
   describe "POST 'create'" do
     before do
       @attrs_for_create = {
-        content_attributes: {
-          organization_attributes: {
-            website: Faker::Internet.url
-          },
-          title: Faker::Company.name
-        },
         business_location_attributes: {
+          name: Faker::Company.name,
           address: Faker::Address.street_address,
           city: Faker::Address.city,
           state: Faker::Address.state
@@ -115,14 +88,6 @@ describe BusinessProfilesController, :type => :controller do
     end
 
     subject { post :create, business_profile: @attrs_for_create }
-
-    it 'should create an organization record' do
-      expect{subject}.to change{Organization.count}.by 1
-    end
-
-    it 'should create a content record' do
-      expect{subject}.to change{Content.count}.by 1
-    end
 
     it 'should create a business_location record' do
       expect{subject}.to change{BusinessLocation.count}.by 1
@@ -137,7 +102,7 @@ describe BusinessProfilesController, :type => :controller do
         allow_any_instance_of(BusinessProfile).to receive(:save).and_return false
       end
 
-      subject { post :create, business_profile: { content_attributes: { title: 'title', organization_attributes: {} } } }
+      subject { post :create, business_profile: { business_location_attributes: { name: Faker::Company.name } } }
 
       it "renders new page" do
         subject
