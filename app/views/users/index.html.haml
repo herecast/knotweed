@@ -1,5 +1,34 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-search
+        Find Users
+      .actions
+        %a.btn.box-remove.btn-mini.btn-link{ href: "#" }
+          %i.icon-remove
+        %a.btn.box-collapse.btn-mini.btn-link{ href: "#" }
+          %i
+    .box-content
+      = search_form_for @search, url: users_path do |f|
+        .controls.controls-row
+          .field.span2
+            = f.label :id_eq, "ID"
+            = f.number_field :id_eq, class: 'span12'
+          .field.span3
+            = f.label :name_cont, "Name"
+            = f.text_field :name_cont, class: 'span12'
+          .field.span3
+            = f.label :email_eq, "Email"
+            = f.text_field :email_eq, class: "span12"
+        .form-actions
+          = f.submit "Search", class: "btn btn-primary"
+          = f.submit "Reset", name: "reset", class: "btn"
+
+.span5
+  = paginate @users, window: 2 if @users.present?
 %h3 Users
-.span8
+.span12
   %table.table.table-condensed
     %thead
       %tr
@@ -21,5 +50,3 @@
           %td
             %a.btn-warning.btn.btn-mini{ href: edit_user_path(user), type: "button" } Edit User
           %td= link_to("Delete user", user_path(user), :data => { :confirm => "Are you sure?" }, :method => :delete, :class => 'btn-danger btn btn-mini') unless user == current_user
-
-  = paginate @users

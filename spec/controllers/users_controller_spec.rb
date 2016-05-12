@@ -52,7 +52,6 @@ describe UsersController, :type => :controller do
         FactoryGirl.create_list(:user, default_per_page + 1)
       end
 
-
       it 'returns {default_per_page} max users' do
         get 'index'
         expect(assigns(:users).size).to be <= default_per_page
@@ -64,12 +63,63 @@ describe UsersController, :type => :controller do
           expect(assigns(:users)).to_not include User.first
         end
       end
+    end
 
-      context 'given a limit parameter' do
-        it 'returns max {limit} users' do
-          limit = 25
-          get 'index', {limit: limit}
-          expect(assigns(:users).size).to be <= limit
+    context "with search parameters" do
+      context "when there are matches" do
+        before do
+          @user_1 = FactoryGirl.create :user, name: 'Nick P'
+          @user_2 = FactoryGirl.create :user, name: 'Nick G'
+        end
+
+        context "when admin searches by id" do
+
+          subject { get :index, q: { id_eq: @user_1.id } }
+
+          it "returns matching user" do
+            subject
+            expect(assigns(:users)).to match_array [@user_1]
+          end
+        end
+
+        context "when admin searches by email" do
+
+          subject { get :index, q: { email_eq: @user_2.email } }
+
+          it "returns matching user" do
+            subject
+            expect(assigns(:users)).to match_array [@user_2]
+          end
+        end
+
+        context "when admin searches by name" do
+
+          subject { get :index, q: { name_cont: 'nick' } }
+
+          it "returns matching users" do
+            subject
+            expect(assigns(:users)).to match_array [@user_1, @user_2]
+          end
+        end
+      end
+
+      context "when admin search finds no matches" do
+
+        subject { get :index, q: { name_cont: 'xyz' } }
+
+        it "returns empty array" do
+          subject
+          expect(assigns(:users)).to eq []
+        end
+      end
+
+      context "when reset" do
+
+        subject { get :index, reset: true }
+
+        it "returns all users" do
+          subject
+          expect(assigns(:users).length).to eq User.count
         end
       end
     end
