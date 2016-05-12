@@ -11,6 +11,7 @@ class BusinessProfilesController < ApplicationController
     end
 
     @search = BusinessProfile.ransack(session[:business_profiles_search])
+    @archived = session[:business_profiles_search][:archived_eq] if session[:business_profiles_search].present? and session[:business_profiles_search][:archived_eq].present?
 
     if session[:business_profiles_search].present?
       @business_profiles = @search.result(distinct: true).page(params[:page]).per(100)
@@ -20,9 +21,12 @@ class BusinessProfilesController < ApplicationController
     end
   end
 
+  def show
+  end
+
   def update
     if @business_profile.update_attributes!(params[:business_profile])
-      flash[:notice] = "Successfully updated business #{@business_profile.id}"
+      flash[:notice] = "Successfully updated business #{@business_profile.business_location.name}"
       redirect_to form_submit_redirect_path(@business_profile.id)
     else
       render 'edit'
@@ -45,21 +49,31 @@ class BusinessProfilesController < ApplicationController
   end
 
   def edit
-    @business_profile = BusinessProfile.find(params[:id])
-    authorize! :edit, @business_profile
+    @users = User.all
+
+    if @business_profile.claimed?
+      @business_profile.content.images.build if @business_profile.content.images.empty?
+      authorize! :edit, @business_profile
+      if Role.where(resource_type: 'Organization', resource_id: @business_profile.content.organization.id).present?
+        @managers = Role.where(resource_type: 'Organization', resource_id: @business_profile.content.organization.id).first.users
+      end
+    else
+      flash[:alert] = "Business must be claimed to edit"
+      redirect_to business_profiles_path
+    end
   end
 
   private
 
-  def form_submit_redirect_path(id=nil)
-    if params[:continue_editing]
-      edit_business_profile_path(id)
-    elsif params[:create_new]
-      new_business_profile_path
-    elsif params[:next_record]
-      edit_business_profile_path(params[:next_record_id], index: params[:index], page: params[:page])
-    else
-      business_profiles_path
+    def form_submit_redirect_path(id=nil)
+      if params[:continue_editing]
+        edit_business_profile_path(id)
+      elsif params[:create_new]
+        new_business_profile_path
+      elsif params[:next_record]
+        edit_business_profile_path(params[:next_record_id], index: params[:index], page: params[:page])
+      else
+        business_profiles_path
+      end
     end
-  end
 end

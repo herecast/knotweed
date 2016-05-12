@@ -18,3 +18,10 @@ jQuery ->
       </div>'
   $(document).on 'click', '.remove-hours-field', ->
     $(this).parents('.row-fluid').first().remove()
+
+jQuery ->
+  $('.edit_business_profile #business_profile_archived').on 'change', ->
+    $(this.form).submit()
+
+jQuery ->
+  $('.nav-tabs a[data-target="#managers"]').tab('show') if window.location.hash == '#managers'
