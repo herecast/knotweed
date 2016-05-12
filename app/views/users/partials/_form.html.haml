@@ -3,12 +3,12 @@
     .span12
       = f.error_notification
   .row-fluid
-    .span3
+    .span5
       %h4 Information
       = f.input :name
       = f.input :email
       = f.input :password
-    .span3
+    .span5
       .row-fluid
         %h4 Location
         = f.input :location_id, collection: Location.all, selected: 19, label: false
@@ -22,7 +22,6 @@
         .row-fluid
           %input{ type: :checkbox, id: 'user_blogger', name: "user[blogger]", class: 'checkbox-control', checked: @user.roles.include?(Role.find(3)) }
           %label{ for: 'user_blogger', class: 'checkbox-label-control' } Blogger
-    .span3
       %h4 Managed Organizations
       #organization-selectors.row-fluid
         - if @organizations.present?

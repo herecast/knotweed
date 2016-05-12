@@ -2,7 +2,15 @@ class UsersController < ApplicationController
 
   def index
     authorize! :index, @user, :message => 'Not authorized as an administrator.'
-    @users = User.page(params[:page]).per(params[:limit])
+
+    if params[:reset]
+      session[:users_search] = nil
+    elsif params[:q].present?
+      session[:users_search] = params[:q]
+    end
+
+    @search = User.ransack(session[:users_search])
+    @users = @search.result(distinct: true).page(params[:page]).per(25)
   end
 
   def show
