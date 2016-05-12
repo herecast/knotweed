@@ -7,6 +7,27 @@ describe Api::V3::DashboardContentSerializer do
 
   let (:serialized_object) { JSON.parse(Api::V3::DashboardContentSerializer.new(@content, root: false).to_json) }
 
+  [:id,
+   :title,
+   :parent_content_id,
+   :content_type,
+   :comment_count,
+   :view_count,
+   :published_at,
+   :event_id,
+   :parent_content_type,
+   :parent_event_instance_id,
+   :content_id,
+   :has_metrics_reports,
+   :updated_at
+  ].each do |field|
+
+    it "returns field: #{field.to_s}" do
+      expect(serialized_object).to have_key field.to_s
+    end
+
+  end
+
   context 'with a parent object' do
     before do
       @market_cat = FactoryGirl.create :content_category, name: 'market'

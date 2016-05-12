@@ -46,7 +46,7 @@ module Api
           @organizations = Organization.search query, opts
         end
 
-        render json: @organizations, each_serializer: OrganizationSerializer
+        render json: @organizations, each_serializer: OrganizationSerializer, context: { current_ability: current_ability }
       end
 
       def show

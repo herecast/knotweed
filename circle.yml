@@ -24,3 +24,7 @@ deployment:
     branch: develop
     commands:
       - bundle exec cap qa deploy
+  staging:
+    branch: release/next-release-candidate
+    commands:
+      - bundle exec cap staging deploy
