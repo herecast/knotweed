@@ -27,6 +27,38 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
       expect(assigns(:business_profiles)).to eql @bps
     end
 
+    describe 'excludes archived businesses' do
+      before do
+        @archived = FactoryGirl.create :business_profile, archived: true
+        @archived.business_location.update_attributes(
+          latitude: Location::DEFAULT_LOCATION_COORDS[0],
+          longitude: Location::DEFAULT_LOCATION_COORDS[1]
+        )
+        index
+      end
+
+      it do
+        subject
+        expect(assigns(:business_profiles)).to_not include @archived
+      end
+    end
+
+    describe 'excludes businesses with existence 0<existence<0.4' do
+      before do
+        @nonexistent = FactoryGirl.create :business_profile, existence: 0.3
+        @nonexistent.business_location.update_attributes(
+          latitude: Location::DEFAULT_LOCATION_COORDS[0],
+          longitude: Location::DEFAULT_LOCATION_COORDS[1]
+        )
+        index
+      end
+
+      it do
+        subject
+        expect(assigns(:business_profiles)).to_not include @nonexistent
+      end
+    end
+
     describe "Sorting" do
       let(:mock_results) { double('results', total_entries: 0) }
 

@@ -60,11 +60,16 @@ class User < ActiveRecord::Base
 
   validates_presence_of :location
   validates :public_id, uniqueness: true, allow_blank: true
+  validates :avatar, :image_minimum_size => true
 
   # spoof attribute for simple form simplicity on role-changing form
   attr_accessible :managed_organization_id
   def managed_organization_id; Organization.with_role(:manager, self).first.try(:id); end
   def is_organization_manager?; managed_organization_id.present?; end
+
+  def managed_organizations
+    Organization.with_role(:manager, self)
+  end
 
   def ensure_authentication_token
     if authentication_token.blank?

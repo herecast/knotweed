@@ -46,7 +46,7 @@ module Api
           @organizations = Organization.search query, opts
         end
 
-        render json: @organizations, each_serializer: OrganizationSerializer
+        render json: @organizations, each_serializer: OrganizationSerializer, context: { current_ability: current_ability }
       end
 
       def show
@@ -54,7 +54,7 @@ module Api
         if @requesting_app.present? and !@requesting_app.organizations.include?(@organization)
           head :no_content
         else
-          render json: @organization, serializer: OrganizationSerializer
+          render json: @organization, serializer: OrganizationSerializer, context: { current_ability: current_ability }
         end
       end
 

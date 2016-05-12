@@ -18,3 +18,13 @@ test:
     - bundle exec rspec spec/coverage_guard.rb:
         environment:
           RAILS_ENV: test
+
+deployment:
+  development:
+    branch: develop
+    commands:
+      - bundle exec cap qa deploy
+  staging:
+    branch: release/next-release-candidate
+    commands:
+      - bundle exec cap staging deploy

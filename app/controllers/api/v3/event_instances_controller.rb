@@ -66,7 +66,6 @@ module Api
         if @current_api_user.present?
           url = edit_event_url(@event_instance.event) if @current_api_user.has_role? :admin
         end
-        can_edit = can?(:edit, @event_instance.event.content)
         if @requesting_app.present?
           ical_url = @requesting_app.uri + event_instances_ics_path(params[:id]) 
         end
@@ -76,7 +75,7 @@ module Api
         end
         respond_to do |format|
           format.json { render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
-            can_edit: can_edit, admin_content_url: url, ical_url: ical_url }
+            context: { current_ability: current_ability, admin_content_url: url, ical_url: ical_url } }
           format.ics { render text: @event_instance.to_ics }
         end
       end

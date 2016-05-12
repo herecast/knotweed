@@ -1,5 +1,28 @@
-%h3 User
-%p
-  User: #{@user.name}
-%p
-  Email: #{@user.email if @user.email}
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-male
+        User #{@user.email}
+    .box-content
+      .row-fluid
+        .span4
+          %h4 Information
+          %p <b>User:</b> #{@user.name}
+          %p <b>Email:</b> #{@user.email if @user.email}
+          %p <b>Location:</b> #{@user.location.city}, #{@user.location.state}
+        .span4
+          %h4 Roles
+          %p
+            = 'Admin' if @user.roles.include?(Role.find(1))
+          %p
+            = 'Event Manager' if @user.roles.include?(Role.find(2))
+          %p
+            = 'Blogger' if @user.roles.include?(Role.find(3))
+        .span4
+          %h4 Managed Organizations
+          - @user.managed_organizations.each do |org|
+            %p #{org.name}
+      .form-actions
+        = link_to 'Edit User', edit_user_path(@user), class: 'btn btn-primary'
+        = link_to 'All Users', users_path, class: 'btn btn-default'

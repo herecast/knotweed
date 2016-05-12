@@ -93,4 +93,67 @@ describe 'Contents Endpoints', type: :request do
       end
     end
   end
+
+  describe 'GET /api/v3/contents', type: :request do
+    let(:org) { FactoryGirl.create :organization }
+    let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
+    let!(:default_location) { FactoryGirl.create :location, city: Location::DEFAULT_LOCATION }
+    let!(:news_cat) { FactoryGirl.create :content_category, name: 'news'}
+    let!(:event_cat) { FactoryGirl.create :content_category, name: 'event'}
+    let!(:market_cat) { FactoryGirl.create :content_category, name: 'market'}
+    let!(:talk_cat) { FactoryGirl.create :content_category, name: 'talk_of_the_town'}
+    let!(:market_post_ugc) { FactoryGirl.create :content, organization: org,  channel_type: 'MarketPost', content_category: market_cat, locations: [default_location], published: true }
+    let!(:market_post_listserv) { FactoryGirl.create :content, channel_type: nil, organization: org, content_category: market_cat, locations: [default_location], published: true }
+    let(:headers) { {'ACCEPT' => 'application/json',
+                     'Consumer-App-Uri' => consumer_app.uri
+                  } }
+    before { index }
+
+    it 'should return only ugc market posts' do
+      get "/api/v3/contents", {}, headers
+      expect(response_json['contents'].map { |c| c['id'] } ).to match_array [market_post_ugc.id]
+    end
+
+    context 'with other content types' do
+      let!(:news_post) { FactoryGirl.create :content, content_category: news_cat, organization: org, locations: [default_location], published: true }
+      let!(:event) { FactoryGirl.create :content, content_category: event_cat, organization: org, locations: [default_location], published: true }
+      let!(:event_instance) { FactoryGirl.create :event_instance, event: FactoryGirl.create(:event, content: event)}
+      before { index }
+
+      it 'they should be returned by the api' do
+        get "/api/v3/contents", {}, headers
+        expect(response_json['contents'].map { |c| c['id'] } ).to include event.id
+        expect(response_json['contents'].map { |c| c['id'] } ).to include news_post.id
+      end
+    end
+
+    context 'with deleted content' do
+      let!(:news_post) { FactoryGirl.create :content, content_category: news_cat, organization: org, locations: [default_location], published: true, deleted_at: Time.now }
+      before { index }
+
+      it 'is not returned' do
+        get "/api/v3/contents", {}, headers
+        expect(response_json['contents'].map { |c| c['title'] } ).to_not include news_post.title
+      end
+    end
+  end
+
+  describe 'GET /api/v3/dashboard' do
+    let(:news_cat) { ContentCategory.find_or_create_by name: 'news' }
+    context 'user has deleted content' do
+      let!(:deleted_news) { FactoryGirl.create :content,
+                           content_category: news_cat,
+                           created_by: user,
+                           published: true,
+                           deleted_at: Time.now}
+
+      it 'does not return deleted content' do
+        get '/api/v3/dashboard', {}, auth_headers
+        ids = response_json['contents'].map{|i| i['id']}
+
+        expect(ids).to_not include(deleted_news.id)
+      end
+    end
+  end
+
 end

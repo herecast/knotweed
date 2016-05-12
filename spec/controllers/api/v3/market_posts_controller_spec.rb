@@ -143,20 +143,20 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
       let(:can_edit) { JSON.parse(response.body)['market_post']['can_edit'] }
 
-      it 'can_edit should be true for the content author' do
+      it 'should be true for the content author' do
         api_authenticate user: @user
         subject 
         expect(can_edit).to eq(true)
       end
 
-      it 'can_edit should false for a different user' do
+      it 'should false for a different user' do
         @different_user = FactoryGirl.create :user
         api_authenticate user: @different_user
         subject 
         expect(can_edit).to eq(false)
       end
 
-      it 'can_edit should false when a user is not logged in' do
+      it 'should false when a user is not logged in' do
         subject 
         expect(can_edit).to eq(false)
       end

@@ -3,6 +3,7 @@ require 'subtext_tracker'
 module Api
   module V3
     class ApiController < ActionController::Base
+      rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
       # already handled by nginx
       #http_basic_authenticate_with name: Figaro.env.api_username, password: Figaro.env.api_password
@@ -57,6 +58,10 @@ module Api
       def init_mixpanel
         @tracker ||= SubtextTracker.new(Figaro.env.mixpanel_api_token)
         @mixpanel_distinct_id = current_user.try(:id) || request.headers['Mixpanel-Distinct-Id']
+      end
+
+      def record_not_found
+        head :not_found
       end
 
     end

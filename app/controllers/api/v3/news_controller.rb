@@ -1,7 +1,8 @@
 module Api
   module V3
     class NewsController < ApiController
-      before_filter :check_logged_in!, :parse_params!, only: [:create, :update]
+      before_filter :check_logged_in!, only: [:create, :update, :destroy]
+      before_filter :parse_params!, only: [:create, :update]
 
       def create
         news_cat = ContentCategory.find_or_create_by(name: 'news')
@@ -99,7 +100,7 @@ module Api
       end
 
       def show
-        @news = Content.find params[:id]
+        @news = Content.not_deleted.find params[:id]
         
         # filter out orgs that don't belong with this app
         # have to still allow drafts that haven't selected their org yet, though
@@ -123,6 +124,19 @@ module Api
         end
       end
 
+      def destroy
+        @news = Content.find params[:id]
+        authorize! :destroy, @news
+        is_news_category = @news.try(:root_content_category).try(:name) == 'news'
+
+        if is_news_category #@TODO <- Do we need to check consumer app here?
+          @news.update_attribute(:deleted_at, Time.now)
+          head :no_content
+        else
+          head :not_found
+        end
+      end
+
       protected
 
       # translates API params to match internals
@@ -132,5 +146,6 @@ module Api
       end
 
     end
+
   end
 end

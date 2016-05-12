@@ -24,10 +24,10 @@ gem "capistrano-rails", "~> 1.1"
 gem "rubypress", '~> 1.1.0'
 gem 'net-http-persistent', '~> 2.9'
 gem 'rinku', "~> 1.7.3"
+gem 'faker', '~> 1.6.1'
 
 group :development, :test do
   gem "factory_girl_rails", "~> 4.4.0"
-  gem 'faker', '~> 1.6.1'
   gem "rspec-rails", '~> 3.4'
   gem 'rspec', '~> 3.4'
   gem 'guard-bundler', require:false
@@ -50,6 +50,7 @@ end
 gem "carrierwave", '~> 0.9.0'
 gem 'carrierwave-mimetype-fu', '~> 0.0.2'
 gem "figaro", '~> 0.7.0'
+gem 'dimensions', '~> 1.3.0'
 
 
 gem 'jquery-datatables-rails', '~> 3.4.0'

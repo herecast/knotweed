@@ -28,6 +28,17 @@ describe UsersController, :type => :controller do
     end
   end
 
+  describe 'GET #edit' do
+
+    subject { get :edit, id: @user.id }
+
+    it "renders edit page" do
+      subject
+      expect(assigns(:user)).to be_a User
+      expect(response).to have_http_status 200
+    end
+  end
+
   describe 'GET index' do
     it 'returns http success' do
       get 'index'
@@ -130,8 +141,11 @@ describe UsersController, :type => :controller do
   end
 
   describe "POST #create" do
+    before do
+      @role = FactoryGirl.create :role
+    end
 
-    subject { post :create, user: { name: 'Ya boi Tessek', email: 'tessek@squidhead.com', password: '12345678', password_confirmation: '12345678', location_id: '1' } }
+    subject { post :create, user: { name: 'Ya boi Tessek', email: 'tessek@squidhead.com', password: '12345678', password_confirmation: '12345678', location_id: '1', @role.name => 'on' } }
 
     context "when creation succeeds" do
       it "redirects to user path" do
