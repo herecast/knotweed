@@ -4,9 +4,9 @@ module Api
 
       attributes :id, :title, :image_url, :author_id, :author_name, :content_type,
         :organization_id, :organization_name, :venue_name, :venue_address,
-        :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count, 
-        :comment_count, :parent_content_id, :content_id, :parent_content_type, 
-        :event_instance_id, :parent_event_instance_id
+        :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count,
+        :comment_count, :parent_content_id, :content_id, :parent_content_type,
+        :event_instance_id, :parent_event_instance_id, :registration_deadline
 
       def content_id
         object.id
@@ -108,6 +108,11 @@ module Api
         end
       end
 
+      def registration_deadline
+        if object.channel_type == 'Event'
+          object.channel.try(:registration_deadline)
+        end
+      end
     end
   end
 end
