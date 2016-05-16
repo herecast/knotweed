@@ -61,9 +61,6 @@ module Api
         end
 
         location_ids = [@current_api_user.location_id]
-        if params[:market_post][:extended_reach_enabled]
-          location_ids.push Location::REGION_LOCATION_ID
-        end
 
         content_attributes = {
           title: params[:market_post][:title],
@@ -74,7 +71,8 @@ module Api
           content_category_id: market_cat.id,
           pubdate: Time.zone.now,
           timestamp: Time.zone.now,
-          organization_id: org_id
+          organization_id: org_id,
+          my_town_only: params[:market_post].delete(:my_town_only)
         }
         listserv_ids = params[:market_post].delete :listserv_ids || []
 
