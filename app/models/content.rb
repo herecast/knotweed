@@ -126,7 +126,7 @@ class Content < ActiveRecord::Base
                 :sanitized_content, :channelized_content_id,
                 :has_event_calendar, :channel_type, :channel_id, :channel,
                 :location_ids, :root_content_category_id, :similar_content_overrides,
-                :banner_ad_override
+                :banner_ad_override, :my_town_only
 
   serialize :similar_content_overrides, Array
 

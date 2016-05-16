@@ -404,7 +404,8 @@ describe Api::V3::MarketPostsController, :type => :controller do
           contact_email: 'fake@email.com',
           locate_address: '300 Main Street Norwich VT 05055',
           preferred_contact_method: 'phone',
-          status: 'selling'
+          status: 'selling',
+          my_town_only: true
         }
       end
 
@@ -422,6 +423,11 @@ describe Api::V3::MarketPostsController, :type => :controller do
       it 'should create an associated content' do
         expect{subject}.to change{Content.count}.by(1)
         expect(assigns(:market_post).content.present?).to be true
+      end
+
+      it 'should correctly set the my_town_only attribute' do
+        subject
+        expect(assigns(:market_post).content.my_town_only).to be true
       end
 
       context 'with consumer_app / repository' do
@@ -453,19 +459,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
           expect(response.code).to eq '500'
         end
       end
-
-      context 'with extended_reach_enabled true' do
-        before do
-          @basic_attrs[:extended_reach_enabled] = true
-          @region_location = FactoryGirl.create :location, id: Location::REGION_LOCATION_ID
-        end
-
-        it 'should create a market post with locations including REGION_LOCATION_ID' do
-          subject
-          expect(assigns(:market_post).content.location_ids).to include(Location::REGION_LOCATION_ID)
-        end
-      end
-
     end
 
   end
