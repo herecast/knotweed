@@ -3,7 +3,7 @@ module Api
     class DetailedMarketPostSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :price, :content, :content_id, :published_at, :locate_address,
-        :can_edit, :has_contact_info, :images, :extended_reach_enabled, :author_name, :organization_id
+        :can_edit, :has_contact_info, :images, :my_town_only, :author_name, :organization_id
 
       root 'market_post'
 
@@ -64,10 +64,6 @@ module Api
             primary: img.primary ? 1 : 0
           }
         end
-      end
-
-      def extended_reach_enabled
-        object.location_ids.include? Location::REGION_LOCATION_ID
       end
     end
   end
