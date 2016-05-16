@@ -21,7 +21,7 @@
 class MarketPost < ActiveRecord::Base
   attr_accessible :content, :contact_email, :contact_phone, :contact_url, :cost, :latitude,
     :locate_address, :locate_include_name, :locate_name, :longitude, :status,
-    :preferred_contact_method
+    :preferred_contact_method, :my_town_only
 
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
