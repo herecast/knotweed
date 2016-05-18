@@ -81,24 +81,36 @@
                   = f.simple_fields_for :content do |g|
                     = g.simple_fields_for :images do |i|
                       = i.input :image, as: :file
+            .row-fluid
               .span12
                 .row-fluid
-                  - if @business_profile.content.try(:images).present? and @business_profile.content.primary_image.id
+                  - if @business_profile.content.try(:images).present? and @business_profile.content.primary_image.url.present?
                     .row-fluid
                       .span12
-                        = image_tag @business_profile.content.primary_image.image.url
+                        .business_profile_image_wrapper
+                          = image_tag @business_profile.content.primary_image.image.url
+                          = f.simple_fields_for :content do |g|
+                            = g.simple_fields_for :images do |i|
+                              %label
+                                = i.check_box :remove_image
+                                Remove image
                   - elsif @placeholder_image.present?
                     .row-fluid
                       .span12
                         = image_tag @placeholder_image.image.url
                 .row-fluid
                   .span12
-                    - if @business_profile.content.organization.logo.present?
-                      %div
-                        = image_tag @business_profile.content.organization.logo.url
                     = f.simple_fields_for :content do |g|
                       = g.simple_fields_for :organization do |i|
                         = i.input :logo, as: :file
+                    - if @business_profile.claimed? and @business_profile.content.organization.logo.present?
+                      .business_profile_image_wrapper
+                        = image_tag @business_profile.content.organization.logo.url
+                        = f.simple_fields_for :content do |g|
+                          = g.simple_fields_for :organization do |i|
+                            %label
+                              = i.check_box :remove_logo
+                              Remove logo
       .tab-pane.form-horizontal#managers
         .row-fluid
           %h2 Business Managers

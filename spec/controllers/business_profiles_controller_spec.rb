@@ -94,7 +94,8 @@ describe BusinessProfilesController, :type => :controller do
 
   describe "PUT 'update'" do
     before do
-      @bp = FactoryGirl.create :business_profile
+      @bp = FactoryGirl.create :business_profile, :claimed
+      @bp.content.organization.update_attribute(:org_type, 'Business')
       @bl = @bp.business_location
       @attrs_for_update = {
         business_location_attributes: {
@@ -108,20 +109,55 @@ describe BusinessProfilesController, :type => :controller do
       }
     end
 
-    subject { put :update, id: @bp.id, business_profile: @attrs_for_update, continue_editing: true }
+    context "when update succeeds" do
 
-    it 'should update business_location attributes' do
-      expect{subject}.to change{@bl.reload.address}.to @attrs_for_update[:business_location_attributes][:address]
+      subject { put :update, id: @bp.id, business_profile: @attrs_for_update, continue_editing: true }
+
+      it 'should update business_location attributes' do
+        expect{subject}.to change{@bl.reload.address}.to @attrs_for_update[:business_location_attributes][:address]
+      end
     end
 
     context "when update fails" do
       before do
-        allow_any_instance_of(BusinessProfile).to receive(:update_attributes!).and_return false
+        allow_any_instance_of(BusinessProfile).to receive(:update_attributes).and_return false
       end
+
+      subject { put :update, id: @bp.id, business_profile: @attrs_for_update, continue_editing: true }
 
       it "renders edit page" do
         subject
         expect(response).to render_template 'edit'
+      end
+    end
+
+    context "when removing image from claimed business profile" do
+      before do
+        @image = FactoryGirl.create(:image)
+        @image.image = File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
+        @bp.content.images << @image
+      end
+
+      subject { put :update, id: @bp.id, create_new: true, business_profile: { content_attributes: { id: @bp.content.id, images_attributes: { '0' => { id: @image.id, remove_image: '1' } } } } }
+
+      it "deletes image selected for deletion" do
+        subject
+        @bp.reload
+        expect(@bp.content.primary_image.image.url).to be_nil
+      end
+    end
+
+    context "when removing logo from claimed business profile organization" do
+      before do
+        @bp.content.organization.logo = File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
+      end
+
+      subject { put :update, id: @bp.id, business_profile: { content_attributes: { id: @bp.content.id, organization_attributes: { id: @bp.content.organization.id, remove_logo: '1' } } } }
+
+      it "deletes :logo" do
+        subject
+        @bp.reload
+        expect(@bp.content.organization.logo.url).to be_nil
       end
     end
   end

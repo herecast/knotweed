@@ -52,4 +52,9 @@ class Image < ActiveRecord::Base
     end
   end
 
+  def remove_image=(val)
+    image_will_change! if val
+    super
+  end
+
 end

@@ -1,5 +1,6 @@
 class BusinessProfilesController < ApplicationController
   load_and_authorize_resource except: [:create]
+  before_action :check_for_claim, only: [:edit, :update]
 
   def index
     # if posted, save to session
@@ -25,10 +26,12 @@ class BusinessProfilesController < ApplicationController
   end
 
   def update
-    if @business_profile.update_attributes!(params[:business_profile])
+    if @business_profile.update_attributes(params[:business_profile])
       flash[:notice] = "Successfully updated business #{@business_profile.business_location.name}"
       redirect_to form_submit_redirect_path(@business_profile.id)
     else
+      @users = User.all
+      get_managers
       render 'edit'
     end
   end
@@ -45,22 +48,16 @@ class BusinessProfilesController < ApplicationController
   end
 
   def new
+    @users = User.all
     @business_profile.build_business_location if @business_profile.business_location.nil?
+    @business_profile.build_content
   end
 
   def edit
     @users = User.all
-
-    if @business_profile.claimed?
-      @business_profile.content.images.build if @business_profile.content.images.empty?
-      authorize! :edit, @business_profile
-      if Role.where(resource_type: 'Organization', resource_id: @business_profile.content.organization.id).present?
-        @managers = Role.where(resource_type: 'Organization', resource_id: @business_profile.content.organization.id).first.users
-      end
-    else
-      flash[:alert] = "Business must be claimed to edit"
-      redirect_to business_profiles_path
-    end
+    get_managers
+    @business_profile.content.images.build if @business_profile.content.images.empty?
+    authorize! :edit, @business_profile
   end
 
   private
@@ -76,4 +73,16 @@ class BusinessProfilesController < ApplicationController
         business_profiles_path
       end
     end
+
+    def check_for_claim
+      unless @business_profile.claimed?
+        flash[:alert] = "Business must be claimed to edit"
+        redirect_to business_profiles_path
+      end
+    end
+
+    def get_managers
+      @managers = User.with_role(:manager, @business_profile.content.organization)
+    end
+
 end

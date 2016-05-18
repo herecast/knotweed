@@ -1,3 +1,15 @@
 // Place all the styles related to the BusinessProfiles controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.business_profile_image_wrapper {
+	margin: 0 0 10px 0;
+	padding: 10px;
+	background-color: #fafafa;
+	label {
+		display: inline-block;
+	}
+	input {
+		margin-top: 0px; 
+	}
+}

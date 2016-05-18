@@ -88,4 +88,9 @@ class Organization < ActiveRecord::Base
       []
     end
   end
+
+  def remove_logo=(val)
+    logo_will_change! if val
+    super
+  end
 end
