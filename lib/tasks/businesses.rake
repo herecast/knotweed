@@ -11,8 +11,13 @@ namespace :businesses do
       else
         class << bl
           def record_timestamps; false; end
+          attribute :hours, String
         end
         hours_array = bl.hours.split(";").map{ |str| BusinessProfile.convert_hours_to_standard(str, 'factual') }
+        bl.update_column :hours, nil
+        class << bl
+          serialize :hours, Array
+        end
         bl.hours = hours_array.flatten
         bl.save
         class << bl
