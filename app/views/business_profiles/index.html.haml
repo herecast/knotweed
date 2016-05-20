@@ -32,7 +32,7 @@
         .control.controls-row
           .field.span4
             = f.label :business_categories_id_eq, "Category"
-            = f.collection_select :business_categories_id_eq, BusinessCategory.all, :id, :name, include_blank: 'None'
+            = f.collection_select :business_categories_id_eq, BusinessCategory.order(name: :asc), :id, :name, include_blank: 'None'
           .field.span4
             = f.label :content_organization_org_type_eq, "Claimed"
             = f.select :content_organization_org_type_eq, [['Claimed', "Business"], ["Unclaimed", nil]], include_blank: 'All', selected: @claimed
