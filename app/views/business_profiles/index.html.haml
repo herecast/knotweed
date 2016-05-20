@@ -35,7 +35,7 @@
             = f.collection_select :business_categories_id_eq, BusinessCategory.all, :id, :name, include_blank: 'None'
           .field.span4
             = f.label :content_organization_org_type_eq, "Claimed"
-            = f.select :content_organization_org_type_eq, [['Claimed', "Business"], ["Unclaimed", nil]], include_blank: 'All'
+            = f.select :content_organization_org_type_eq, [['Claimed', "Business"], ["Unclaimed", nil]], include_blank: 'All', selected: @claimed
           .field.span3
             = f.label :archived_eq, "Archived"
             = f.select :archived_eq, [['Active', '0'], ['Archived', '1']], include_blank: 'All', selected: @archived
