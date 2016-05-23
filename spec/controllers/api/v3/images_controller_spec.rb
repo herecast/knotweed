@@ -56,6 +56,15 @@ describe Api::V3::ImagesController, :type => :controller do
     it 'should update the primary attribute' do
       expect{subject}.to change{@img.reload.primary}.to true
     end
+
+    context 'image caption' do
+      let(:caption) { 'my nice caption' }
+
+      subject { put :update, id: @img.id, image: { primary: true, caption: caption } }
+      it 'should update image caption' do
+        expect{subject}.to change{@img.reload.caption}.to caption
+      end
+    end
   end
 
   describe 'DELETE destroy' do
