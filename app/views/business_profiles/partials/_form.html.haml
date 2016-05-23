@@ -57,7 +57,7 @@
             %span.hint 
               Each rule needs to be in 
               = link_to 'Schema.org OpeningHours format', 'https://schema.org/openingHours'
-              Ex. 'Mo-Th 16:00-20:00'
+              Ex. 'Mo-Th|16:00-20:00'
             %span.pull-left.btn.btn-success.add-hours-link + Add Hours
           #business_location_hours
             = g.fields_for :hours do |i|
