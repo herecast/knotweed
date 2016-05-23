@@ -14,12 +14,13 @@ module Api
         end
       end
 
-      # currently the update call only allows turning the primary flag on or off
       def update
         @image = Image.find(params[:id])
-        # this action can't actually fail so we don't need a conditional here
-        @image.update_attribute :primary, params[:image][:primary]
-        render json: @image, serializer: ImageSerializer, status: 200
+        if @image.update_attributes(image_params)
+          render json: @image, serializer: ImageSerializer, status: 200
+        else
+          render json: { errors: ["Image could not be updated"] }, status: 200
+        end
       end
 
       def destroy
@@ -27,6 +28,12 @@ module Api
         @image.destroy
         head :no_content
       end
+
+      private
+        
+        def image_params
+          params.require(:image).permit(:primary, :caption)
+        end
     end
   end
 end
