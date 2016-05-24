@@ -13,7 +13,6 @@ class BusinessProfilesController < ApplicationController
 
     @search = BusinessProfile.ransack(session[:business_profiles_search])
     @archived = session.try(:[], :business_profiles_search).try(:[], :archived_eq)
-    @claimed = session.try(:[], :business_profiles_search).try(:[], :content_organization_org_type_eq)
 
     if session[:business_profiles_search].present?
       @business_profiles = @search.result(distinct: true).page(params[:page]).per(100)
