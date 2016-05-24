@@ -42,18 +42,31 @@ describe BusinessProfilesController, :type => :controller do
       end
     end
 
-    context "when searching for claimed businesses" do
+    context "when searching for businesses by claim" do
       before do
         @business_profiles[0].content = FactoryGirl.create :content
         organization = FactoryGirl.create :organization, org_type: 'Business'
         @business_profiles[0].content.update_attribute(:organization_id, organization.id)
       end
 
-      subject { get :index, q: { content_organization_org_type_eq: 'Business' } }
+      context "when selecting claimed businesses" do
 
-      it "returns claimed business profiles" do
-        subject
-        expect(assigns(:business_profiles)).to match_array [@business_profiles[0]]
+        subject { get :index, q: { content_organization_org_type_present: true } }
+
+        it "returns claimed business profiles" do
+          subject
+          expect(assigns(:business_profiles)).to match_array [@business_profiles[0]]
+        end
+      end
+
+      context "when selecting unclaimed businesses" do
+
+        subject { get :index, q: { content_organization_org_type_present: false } }
+
+        it "returns unclaimed business_profiles" do
+          subject
+          expect(assigns(:business_profiles)).not_to include @business_profiles[0]
+        end
       end
     end
 
