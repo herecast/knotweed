@@ -6,25 +6,30 @@
         = @business_profile.business_location.name
         Business Profile
     .box-content
+      - if !@business_profile.claimed?
+        %p
+          %b Note:
+          %em Business must be claimed to edit
       %h2= @business_profile.business_location.name
       .row-fluid
         .span6
           %p
             %b Website:
-          %p= @business_profile.business_location.venue_url if @business_profile.business_location.venue_url.present?
+          %p= @business_profile.business_location.try(:venue_url)
           %p
             %b Location:
-          %p= @business_profile.business_location.full_address if @business_profile.business_location.full_address.present?
+          %p= @business_profile.business_location.try(:full_address)
           %p
             %b Phone
-          %p= @business_profile.business_location.phone if @business_profile.business_location.phone.present?
+          %p= @business_profile.business_location.try(:phone)
         .span6
           %p
             %b Email:
-          %p= @business_profile.business_location.email if @business_profile.business_location.email.present?
+          %p= @business_profile.business_location.try(:email)
           %p
             %b Business Hours:
-          %p= @business_profile.business_location.hours if @business_profile.business_location.hours.present?
+          - @business_profile.business_location.try(:hours).each do |hour_set|
+            %p=hour_set
       .form-actions
         - if @business_profile.claimed?
           = link_to 'Edit', edit_business_profile_path(@business_profile), class: 'btn btn-primary'
