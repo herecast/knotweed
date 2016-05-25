@@ -38,7 +38,8 @@ namespace :refresh_database do
   desc 'Writes adapt.sql file for transforming the database to work for the new environment'
   task :write_adapt_sql do
     File.open(ADAPT_FILE, 'w') do |f|
-      f.write(get_adapt_template % {dsp_endpoint_hostname: fetch(:dsp_endpoint_hostname)})
+      f.write(get_adapt_template % {dsp_endpoint_hostname: fetch(:dsp_endpoint_hostname),
+                                    site_endpoint: fetch(:site_endpoint)})
     end
     CLEAN.include(ADAPT_FILE)
   end
