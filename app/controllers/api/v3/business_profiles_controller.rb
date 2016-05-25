@@ -4,7 +4,7 @@ module Api
 
       MI_TO_KM = 1.60934
 
-      before_filter :check_logged_in!, :parse_params!, only: [:create, :update]
+      before_filter :check_logged_in!, only: [:create, :update]
 
       def index
         page = params[:page] || 1
@@ -58,7 +58,7 @@ module Api
       end
 
       def create
-        @business_profile = BusinessProfile.new(params[:business])
+        @business_profile = BusinessProfile.new(business_profile_attributes)
         ModerationMailer.send_business_for_moderation(@business_profile, @current_api_user).deliver_now
         # for Ember data to not get upset, we need to assign fake IDs to all the objects here
         @business_profile.content.id = Time.now.to_i
@@ -83,11 +83,7 @@ module Api
           render json: { errors: ["Business has not been claimed and can't be updated."] },
             status: 422
         else
-          # need to add IDs to nested model updates
-          params[:business][:content_attributes][:id] = @business_profile.content.id
-          params[:business][:content_attributes][:organization_attributes][:id] = @business_profile.organization.id
-          params[:business][:business_location_attributes][:id] = @business_profile.business_location_id
-          if @business_profile.update_attributes(params[:business])
+          if @business_profile.update_attributes(business_profile_attributes)
             render json: @business_profile, serializer: BusinessProfileSerializer,
               root: 'business', context: {current_ability: current_ability}
           else
@@ -116,14 +112,64 @@ module Api
           end
       end
 
+      def business_params
+        params.require(:business).permit(:name, :phone, :email, :website,
+                                         :address, :city, :state, :zip,
+                                         :has_retail_location, :service_radius,
+                                         :details, :category_ids, {hours: []})
+      end
+
+      def content_attributes
+        bp = business_params
+
+        ca = {
+          organization_attributes: organization_attributes
+        }
+        ca[:id] = @business_profile.try(:content).try(:id) if @business_profile
+        ca[:title] = bp[:name] if bp[:name].present?
+        ca[:raw_content] = bp[:details] if bp[:details].present?
+        ca
+      end
+
+      def organization_attributes
+        oa = {}
+        oa[:id] = @business_profile.try(:content).try(:organization).try(:id) if @business_profile
+        oa
+      end
+
+      def business_location_attributes
+        bp = business_params
+
+        bla = bp.slice(:name, :phone, :email, :address, :city, :state, :zip,
+                       :hours, :service_radius)
+        bla[:id] = @business_profile.try(:business_location).try(:id) if @business_profile
+        bla[:venue_url] = bp[:website] if bp[:website].present?
+        bla
+      end
+
+      def business_profile_attributes
+        bp = business_params
+
+        bpa = business_params.slice(
+          :has_retail_location
+        ).merge({
+          content_attributes: content_attributes,
+          business_location_attributes: business_location_attributes
+        })
+        bpa[:business_category_ids] = bp[:category_ids] if bp[:category_ids].present?
+
+        bpa
+      end
+
       # this method takes incoming API parameters and scopes them according to the
       # nested resource to which they belong.
       def parse_params!
+=begin
         params[:business][:content_attributes] = { organization_attributes: {} }
         params[:business][:business_location_attributes] = {}
 
         # :name attribute is reflected in both the content and organization record,
-        # so copy it here before deleting.
+        # so copy it here befor) deleting.
         params[:business][:content_attributes][:title] = params[:business][:name] if params[:business].has_key? :name
 
         [:name, :website].each do |attr|
@@ -134,13 +180,14 @@ module Api
         
         params[:business][:content_attributes][:raw_content] = params[:business].delete :details if params[:business].has_key? :details
 
-        [:phone, :email, :address, :city, :state, :zip, :hours, :service_radius].each do |attr|
+        [:name, :website, :phone, :email, :address, :city, :state, :zip, :hours, :service_radius].each do |attr|
           if params[:business].has_key? attr
             params[:business][:business_location_attributes][attr] = params[:business].delete attr
           end
         end
 
         params[:business][:business_category_ids] = params[:business].delete :category_ids
+=end
       end
 
     end

@@ -249,12 +249,6 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
         @business_profile = FactoryGirl.create :business_profile, :claimed
       end
 
-      it 'should update the associated organization' do
-        expect{subject}.to change {
-          @business_profile.organization.reload.attributes.with_indifferent_access.slice(:website,:name)
-        }.to @update_params.slice(:website, :name)
-      end
-
       it 'should update the associated content' do
         expect{subject}.to change { @business_profile.content.reload.raw_content }.to @update_params[:details]
       end
