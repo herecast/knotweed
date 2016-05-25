@@ -183,6 +183,9 @@ describe BusinessProfilesController, :type => :controller do
           address: Faker::Address.street_address,
           city: Faker::Address.city,
           state: Faker::Address.state
+        },
+        content_attributes: {
+          channel_type: 'BusinessProfile'
         }
       }
     end
@@ -195,6 +198,11 @@ describe BusinessProfilesController, :type => :controller do
 
     it 'should create a business_profile record' do
       expect{subject}.to change{BusinessProfile.count}.by 1
+    end
+
+    it 'should create a claimed business' do
+      subject
+      expect(BusinessProfile.last.claimed?).to be true
     end
 
     context "when create fails" do
