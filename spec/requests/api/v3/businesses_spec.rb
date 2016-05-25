@@ -224,4 +224,48 @@ describe 'Businesses Endpoints', type: :request do
       end
     end
   end
+
+  describe 'PUT /api/v3/businesses/:id', focus: true do
+    let!(:business) { FactoryGirl.create(:business_profile) }
+    let!(:valid_params) {
+      {
+        name: 'Test new name',
+        city: 'Enfield',
+        details: "<p>I am a robot</p>",
+        email: 'my.new@email.com',
+        has_retail_location: true,
+        phone: "(555) 124-1234",
+        hours: ['Mo-Th|8:00-17:00'],
+        state: "NH",
+        website: "http://dailyuv.com",
+        zip: "03748"
+      }
+    }
+    context 'as owner of business' do
+      before do
+        business.content.update_attribute(:created_by, user)
+      end
+
+      subject { put "/api/v3/businesses/#{business.id}", {business: valid_params}, auth_headers }
+
+      it 'updates the business' do
+        subject
+        expect(response_json['business'].symbolize_keys).to match(a_hash_including(
+          name: valid_params[:name],
+          city: valid_params[:city],
+          email: valid_params[:email],
+# @TODO:  details: valid_params[:details],
+# Details gets another <p></p> wrapped around it.
+# Needs to be looked at.
+          has_retail_location: valid_params[:has_retail_location],
+          phone: valid_params[:phone],
+          hours: valid_params[:hours],
+          state: valid_params[:state],
+          website: valid_params[:website],
+          zip: valid_params[:zip],
+          can_edit: true
+        ))
+      end
+    end
+  end
 end

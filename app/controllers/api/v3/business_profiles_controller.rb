@@ -64,7 +64,7 @@ module Api
         @business_profile.content.id = Time.now.to_i
         @business_profile.organization.id = Time.now.to_i
         render json: @business_profile, serializer: BusinessProfileSerializer,
-          status: 201, root: 'business'
+          status: 201, root: 'business', context: {current_ability: current_ability}
         #if @business_profile.save
         #  render json: @business_profile, serializer: BusinessProfileSerializer,
         #    status: 201, root: 'business'
@@ -89,7 +89,7 @@ module Api
           params[:business][:business_location_attributes][:id] = @business_profile.business_location_id
           if @business_profile.update_attributes(params[:business])
             render json: @business_profile, serializer: BusinessProfileSerializer,
-              status: 200
+              root: 'business', context: {current_ability: current_ability}
           else
             render json: { errors: @business_profile.errors.messages },
               status: :unprocessable_entity
