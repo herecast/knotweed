@@ -224,4 +224,71 @@ describe 'Businesses Endpoints', type: :request do
       end
     end
   end
+
+  describe 'PUT /api/v3/businesses/:id' do
+    let!(:business) { FactoryGirl.create(:business_profile, :claimed) }
+    let!(:valid_params) {
+      {
+        name: 'Test new name',
+        details: "<p>I am a robot</p>",
+        email: 'my.new@email.com',
+        has_retail_location: true,
+        phone: "(555) 124-1234",
+        hours: ['Mo-Th|8:00-17:00'],
+        website: "http://dailyuv.com",
+        address: "123 foo st",
+        city: 'Enfield',
+        state: "NH",
+        zip: "03748",
+        service_radius: 25
+      }
+    }
+    context 'as owner of business' do
+      before do
+        business.content.update_attribute(:created_by, user)
+      end
+
+      subject { put "/api/v3/businesses/#{business.id}", {business: valid_params}, auth_headers }
+
+      it 'updates the business' do
+        subject
+        business_json = response_json['business'].symbolize_keys
+
+        expect(business_json).to match(
+          id: business.id,
+          organization_id: business.content.organization_id,
+          name: valid_params[:name],
+          phone: valid_params[:phone],
+          email: valid_params[:email],
+          website: valid_params[:website],
+          address: valid_params[:address],
+          city: valid_params[:city],
+          state: valid_params[:state],
+          zip: valid_params[:zip],
+          has_retail_location: valid_params[:has_retail_location],
+          service_radius: a_kind_of(Fixnum),
+          hours: valid_params[:hours],
+          feedback_num: a_kind_of(Fixnum),
+          can_edit: true,
+# @TODO:  details: valid_params[:details],
+# Details gets another <p></p> wrapped around it.
+# Needs to be looked at.
+          details: an_instance_of(String),
+          logo: an_instance_of(String).or(be_nil),
+          images: an_instance_of(Array),
+          category_ids: an_instance_of(Array),
+          feedback: {
+            "satisfaction" => an_instance_of(Float),
+            "cleanliness" => an_instance_of(Float),
+            "price" => an_instance_of(Float),
+            "recommend" => an_instance_of(Float)
+          },
+          coords: {
+            "lat" => an_instance_of(Float),
+            "lng" => an_instance_of(Float)
+          },
+        )
+      end
+    end
+  end
 end
