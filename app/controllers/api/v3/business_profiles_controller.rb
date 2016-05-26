@@ -160,36 +160,6 @@ module Api
 
         bpa
       end
-
-      # this method takes incoming API parameters and scopes them according to the
-      # nested resource to which they belong.
-      def parse_params!
-=begin
-        params[:business][:content_attributes] = { organization_attributes: {} }
-        params[:business][:business_location_attributes] = {}
-
-        # :name attribute is reflected in both the content and organization record,
-        # so copy it here befor) deleting.
-        params[:business][:content_attributes][:title] = params[:business][:name] if params[:business].has_key? :name
-
-        [:name, :website].each do |attr|
-          if params[:business].has_key? attr
-            params[:business][:content_attributes][:organization_attributes][attr] = params[:business].delete attr
-          end
-        end
-        
-        params[:business][:content_attributes][:raw_content] = params[:business].delete :details if params[:business].has_key? :details
-
-        [:name, :website, :phone, :email, :address, :city, :state, :zip, :hours, :service_radius].each do |attr|
-          if params[:business].has_key? attr
-            params[:business][:business_location_attributes][attr] = params[:business].delete attr
-          end
-        end
-
-        params[:business][:business_category_ids] = params[:business].delete :category_ids
-=end
-      end
-
     end
   end
 end
