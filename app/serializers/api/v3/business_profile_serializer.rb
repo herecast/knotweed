@@ -14,7 +14,7 @@ module Api
       # the following are only available if a business has been "claimed"
       # otherwise, there is no associated content record or organization record
       def organization_id
-        object.organization.id if object.content.present?
+        object.organization.try(:id) if object.content.present?
       end
 
       def logo
