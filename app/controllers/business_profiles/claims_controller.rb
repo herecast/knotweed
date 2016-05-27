@@ -19,6 +19,7 @@ class BusinessProfiles::ClaimsController < ApplicationController
       content = Content.create(content_params)
       organization = Organization.find_by(name: business_profile.business_location.name) || Organization.create(organization_params)
       content.update_attribute(:organization_id, organization.id)
+      ConsumerApp.all.each { |ca| organization.consumer_apps << ca }
       business_profile.update_attribute(:existence, 1.0)
       flash[:notice] = "#{business_profile.business_location.name} has been claimed"
       redirect_to edit_business_profile_path(id: business_profile.id, anchor: 'managers')
