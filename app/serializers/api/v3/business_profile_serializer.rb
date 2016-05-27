@@ -18,7 +18,7 @@ module Api
       end
 
       def logo
-        object.organization.logo.try(:url) if object.content.present?
+        object.organization.try(:logo).try(:url) if object.content.present?
       end
 
       def details
