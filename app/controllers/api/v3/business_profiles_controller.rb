@@ -38,7 +38,7 @@ module Api
         opts[:order] = sort_by
 
         if params[:category_id].present?
-          opts[:with][:category_ids] = [params[:category_id]]
+          opts[:with][:category_ids] = BusinessCategory.find(params[:category_id]).full_descendant_ids
         end
 
         if params[:organization_id].present?

@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :business_category do
-    name "MyString"
+    sequence(:name) { |n| "Biz Cat #{n}" }
     description "MyString"
     icon_class "MyString"
   end
