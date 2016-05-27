@@ -13,4 +13,15 @@ class BusinessCategory < ActiveRecord::Base
 
   validates_presence_of :name
 
+  # returns array of IDs of this category and all its children
+  #
+  # @return [Array] ids of business categories
+  def full_descendant_ids
+    response = [self.id]
+    children.each do |c|
+      response << c.full_descendant_ids
+    end
+    response.flatten
+  end
+
 end

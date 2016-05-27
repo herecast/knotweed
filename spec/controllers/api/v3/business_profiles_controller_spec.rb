@@ -121,13 +121,20 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
       describe 'by category_id' do
         before do
           @cat = FactoryGirl.create :business_category
+          @cat2 = FactoryGirl.create :business_category, parents: [@cat]
           @bps.first.business_categories << @cat
+          @bps.last.business_categories << @cat2
           index
         end
 
         it 'should return filtered results' do
-          get :index, category_id: @cat.id
-          expect(assigns(:business_profiles)).to eql [@bps.first]
+          get :index, category_id: @cat2.id
+          expect(assigns(:business_profiles)).to eql [@bps.last]
+        end
+
+        it 'should return results for categories and their children' do
+          get :index, category_id: @cat
+          expect(assigns(:business_profiles)).to match_array [@bps.first, @bps.last]
         end
       end
 
