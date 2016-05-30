@@ -252,7 +252,7 @@ describe 'Businesses Endpoints', type: :request do
 
       it 'updates the business' do
         subject
-        business_json = response_json['business'].symbolize_keys
+        business_json = response_json[:business]
 
         expect(business_json).to match(
           id: business.id,
@@ -278,14 +278,14 @@ describe 'Businesses Endpoints', type: :request do
           images: an_instance_of(Array),
           category_ids: an_instance_of(Array),
           feedback: {
-            "satisfaction" => an_instance_of(Float),
-            "cleanliness" => an_instance_of(Float),
-            "price" => an_instance_of(Float),
-            "recommend" => an_instance_of(Float)
+            satisfaction: an_instance_of(Float),
+            cleanliness: an_instance_of(Float),
+            price: an_instance_of(Float),
+            recommend: an_instance_of(Float)
           },
           coords: {
-            "lat" => an_instance_of(Float),
-            "lng" => an_instance_of(Float)
+            lat: an_instance_of(Float),
+            lng: an_instance_of(Float)
           },
         )
       end
