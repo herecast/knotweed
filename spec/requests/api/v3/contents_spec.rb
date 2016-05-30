@@ -15,7 +15,7 @@ describe 'Contents Endpoints', type: :request do
       get "/api/v3/contents/#{content.id}/metrics", {}, auth_headers
       expect(response.status).to eql 200
 
-      expect(response_json['content_metrics']['daily_view_counts']).to_not be_empty
+      expect(response_json[:content_metrics][:daily_view_counts]).to_not be_empty
     end
 
     context 'Given 40 days of metrics data exist;' do
@@ -27,21 +27,21 @@ describe 'Contents Endpoints', type: :request do
 
       it 'returns all daily_view_counts by default' do
         get "/api/v3/contents/#{content.id}/metrics", {}, auth_headers
-        view_counts = response_json['content_metrics']['daily_view_counts']
+        view_counts = response_json[:content_metrics][:daily_view_counts]
         expect(view_counts.count).to eql content.content_reports.count
       end
 
       it 'returns all daily_promo_click_thru_counts by default' do
         get "/api/v3/contents/#{content.id}/metrics", {}, auth_headers
-        view_counts = response_json['content_metrics']['daily_promo_click_thru_counts']
+        view_counts = response_json[:content_metrics][:daily_promo_click_thru_counts]
         expect(view_counts.count).to eql content.content_reports.count
       end
 
       it 'orders daily_view_counts ASC on report_date' do
         get "/api/v3/contents/#{content.id}/metrics", {}, auth_headers
 
-        view_counts = response_json['content_metrics']['daily_view_counts']
-        report_dates = view_counts.map{|v| DateTime.parse(v['report_date']).to_date}
+        view_counts = response_json[:content_metrics][:daily_view_counts]
+        report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
         sorted_dates = report_dates.sort
         expect(report_dates).to eql sorted_dates
       end
@@ -53,8 +53,8 @@ describe 'Contents Endpoints', type: :request do
           get "/api/v3/contents/#{content.id}/metrics", {
             start_date: start_date.to_date.to_s
           }, auth_headers
-          view_counts = response_json['content_metrics']['daily_view_counts']
-          report_dates = view_counts.map{|v| DateTime.parse(v['report_date']).to_date}
+          view_counts = response_json[:content_metrics][:daily_view_counts]
+          report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
           expect(report_dates).to satisfy{|dates| dates.all?{|d| d >= start_date}}
         end
 
@@ -62,8 +62,8 @@ describe 'Contents Endpoints', type: :request do
           get "/api/v3/contents/#{content.id}/metrics", {
             start_date: start_date.to_date.to_s
           }, auth_headers
-          view_counts = response_json['content_metrics']['daily_promo_click_thru_counts']
-          report_dates = view_counts.map{|v| DateTime.parse(v['report_date']).to_date}
+          view_counts = response_json[:content_metrics][:daily_promo_click_thru_counts]
+          report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
           expect(report_dates).to satisfy{|dates| dates.all?{|d| d >= start_date}}
         end
 
@@ -75,8 +75,8 @@ describe 'Contents Endpoints', type: :request do
               start_date: start_date.to_date.to_s,
               end_date: end_date.to_date.to_s
             }, auth_headers
-            view_counts = response_json['content_metrics']['daily_view_counts']
-            report_dates = view_counts.map{|v| DateTime.parse(v['report_date']).to_date}
+            view_counts = response_json[:content_metrics][:daily_view_counts]
+            report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
             expect(report_dates).to satisfy{|dates| dates.all?{|d| d.between?(start_date, end_date)}}
           end
 
@@ -85,8 +85,8 @@ describe 'Contents Endpoints', type: :request do
               start_date: start_date.to_date.to_s,
               end_date: end_date.to_date.to_s
             }, auth_headers
-            view_counts = response_json['content_metrics']['daily_promo_click_thru_counts']
-            report_dates = view_counts.map{|v| DateTime.parse(v['report_date']).to_date}
+            view_counts = response_json[:content_metrics][:daily_promo_click_thru_counts]
+            report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
             expect(report_dates).to satisfy{|dates| dates.all?{|d| d.between?(start_date, end_date)}}
           end
         end
@@ -111,7 +111,7 @@ describe 'Contents Endpoints', type: :request do
 
     it 'should return only ugc market posts' do
       get "/api/v3/contents", {}, headers
-      expect(response_json['contents'].map { |c| c['id'] } ).to match_array [market_post_ugc.id]
+      expect(response_json[:contents].map { |c| c[:id] } ).to match_array [market_post_ugc.id]
     end
 
     context 'with other content types' do
@@ -122,8 +122,8 @@ describe 'Contents Endpoints', type: :request do
 
       it 'they should be returned by the api' do
         get "/api/v3/contents", {}, headers
-        expect(response_json['contents'].map { |c| c['id'] } ).to include event.id
-        expect(response_json['contents'].map { |c| c['id'] } ).to include news_post.id
+        expect(response_json[:contents].map { |c| c[:id] } ).to include event.id
+        expect(response_json[:contents].map { |c| c[:id] } ).to include news_post.id
       end
     end
 
@@ -133,7 +133,7 @@ describe 'Contents Endpoints', type: :request do
 
       it 'is not returned' do
         get "/api/v3/contents", {}, headers
-        expect(response_json['contents'].map { |c| c['title'] } ).to_not include news_post.title
+        expect(response_json[:contents].map { |c| c[:title] } ).to_not include news_post.title
       end
     end
   end
@@ -149,7 +149,7 @@ describe 'Contents Endpoints', type: :request do
 
       it 'does not return deleted content' do
         get '/api/v3/dashboard', {}, auth_headers
-        ids = response_json['contents'].map{|i| i['id']}
+        ids = response_json[:contents].map{|i| i['id']}
 
         expect(ids).to_not include(deleted_news.id)
       end

@@ -5,7 +5,7 @@ RSpec.describe 'Organizations Endpoints' do
     let!(:organization) { FactoryGirl.create :organization }
 
     describe 'can_edit' do
-      subject { response_json['organization']['can_edit'] }
+      subject { response_json[:organization][:can_edit] }
 
       context 'When ability allows for edit' do
         before do
@@ -35,7 +35,7 @@ RSpec.describe 'Organizations Endpoints' do
 
     describe 'can_edit' do
       let!(:organization1) { FactoryGirl.create :organization }
-      subject { response_json['organizations'][0]['can_edit'] }
+      subject { response_json[:organizations][0][:can_edit] }
 
       context 'When ability allows for edit' do
         before do

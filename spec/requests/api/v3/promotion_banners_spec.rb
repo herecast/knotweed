@@ -16,13 +16,13 @@ describe 'Promotion Banner Endpoints', type: :request do
       get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {}, auth_headers
       expect(response.status).to eql 200
 
-      expect(response_json['promotion_banner_metrics']['daily_impression_counts']).to_not be_empty
-      expect(response_json['promotion_banner_metrics']['daily_impression_counts'][0]['report_date']).to_not be_nil
-      expect(response_json['promotion_banner_metrics']['daily_impression_counts'][0]['impression_count']).to_not be_nil
+      expect(response_json[:promotion_banner_metrics][:daily_impression_counts]).to_not be_empty
+      expect(response_json[:promotion_banner_metrics][:daily_impression_counts][0][:report_date]).to_not be_nil
+      expect(response_json[:promotion_banner_metrics][:daily_impression_counts][0][:impression_count]).to_not be_nil
 
-      expect(response_json['promotion_banner_metrics']['daily_click_counts']).to_not be_empty
-      expect(response_json['promotion_banner_metrics']['daily_click_counts'][0]['report_date']).to_not be_nil
-      expect(response_json['promotion_banner_metrics']['daily_click_counts'][0]['click_count']).to_not be_nil
+      expect(response_json[:promotion_banner_metrics][:daily_click_counts]).to_not be_empty
+      expect(response_json[:promotion_banner_metrics][:daily_click_counts][0][:report_date]).to_not be_nil
+      expect(response_json[:promotion_banner_metrics][:daily_click_counts][0][:click_count]).to_not be_nil
     end
 
     context 'Given 40 days of metrics data exist;' do
@@ -34,21 +34,21 @@ describe 'Promotion Banner Endpoints', type: :request do
 
       it 'returns all daily_impression_counts by default' do
         get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {}, auth_headers
-        impression_counts = response_json['promotion_banner_metrics']['daily_impression_counts']
+        impression_counts = response_json[:promotion_banner_metrics][:daily_impression_counts]
         expect(impression_counts.count).to eql promotion_banner.promotion_banner_reports.count
       end
 
       it 'returns all daily_click_counts by default' do
         get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {}, auth_headers
-        click_counts = response_json['promotion_banner_metrics']['daily_click_counts']
+        click_counts = response_json[:promotion_banner_metrics][:daily_click_counts]
         expect(click_counts.count).to eql promotion_banner.promotion_banner_reports.count
       end
 
       it 'orders daily_impression_counts ASC on report_date' do
         get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {}, auth_headers
 
-        view_counts = response_json['promotion_banner_metrics']['daily_impression_counts']
-        report_dates = view_counts.map{|v| DateTime.parse(v['report_date']).to_date}
+        view_counts = response_json[:promotion_banner_metrics][:daily_impression_counts]
+        report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
         sorted_dates = report_dates.sort
         expect(report_dates).to eql sorted_dates
       end
@@ -60,12 +60,12 @@ describe 'Promotion Banner Endpoints', type: :request do
 
           it 'should return all daily_impression_counts' do
             subject
-            expect(response_json['promotion_banner_metrics']['daily_impression_counts'].count).to eql promotion_banner.promotion_banner_reports.count
+            expect(response_json[:promotion_banner_metrics][:daily_impression_counts].count).to eql promotion_banner.promotion_banner_reports.count
           end
 
           it 'should return all daily_click_counts' do
             subject
-            expect(response_json['promotion_banner_metrics']['daily_click_counts'].count).to eql promotion_banner.promotion_banner_reports.count
+            expect(response_json[:promotion_banner_metrics][:daily_click_counts].count).to eql promotion_banner.promotion_banner_reports.count
           end
       end
 
@@ -77,8 +77,8 @@ describe 'Promotion Banner Endpoints', type: :request do
           get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {
             start_date: start_date.to_date.to_s
           }, auth_headers
-          view_counts = response_json['promotion_banner_metrics']['daily_impression_counts']
-          report_dates = view_counts.map{|v| DateTime.parse(v['report_date']).to_date}
+          view_counts = response_json[:promotion_banner_metrics][:daily_impression_counts]
+          report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
           expect(report_dates).to satisfy{|dates| dates.all?{|d| d >= start_date}}
         end
 
@@ -86,8 +86,8 @@ describe 'Promotion Banner Endpoints', type: :request do
           get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {
             start_date: start_date.to_date.to_s
           }, auth_headers
-          view_counts = response_json['promotion_banner_metrics']['daily_click_counts']
-          report_dates = view_counts.map{|v| DateTime.parse(v['report_date']).to_date}
+          view_counts = response_json[:promotion_banner_metrics][:daily_click_counts]
+          report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
           expect(report_dates).to satisfy{|dates| dates.all?{|d| d >= start_date}}
         end
 
@@ -99,8 +99,8 @@ describe 'Promotion Banner Endpoints', type: :request do
               start_date: start_date.to_date.to_s,
               end_date: end_date.to_date.to_s
             }, auth_headers
-            view_counts = response_json['promotion_banner_metrics']['daily_impression_counts']
-            report_dates = view_counts.map{|v| DateTime.parse(v['report_date']).to_date}
+            view_counts = response_json[:promotion_banner_metrics][:daily_impression_counts]
+            report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
             expect(report_dates).to satisfy{|dates| dates.all?{|d| d.between?(start_date, end_date)}}
           end
 
@@ -109,8 +109,8 @@ describe 'Promotion Banner Endpoints', type: :request do
               start_date: start_date.to_date.to_s,
               end_date: end_date.to_date.to_s
             }, auth_headers
-            view_counts = response_json['promotion_banner_metrics']['daily_click_counts']
-            report_dates = view_counts.map{|v| DateTime.parse(v['report_date']).to_date}
+            view_counts = response_json[:promotion_banner_metrics][:daily_click_counts]
+            report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
             expect(report_dates).to satisfy{|dates| dates.all?{|d| d.between?(start_date, end_date)}}
           end
         end

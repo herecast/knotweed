@@ -14,7 +14,7 @@ describe 'Businesses Endpoints', type: :request do
       end
 
       it 'response includes can_edit=true' do
-        expect(response_json['business']['can_edit']).to eql true
+        expect(response_json[:business][:can_edit]).to eql true
       end
     end
 
@@ -26,7 +26,7 @@ describe 'Businesses Endpoints', type: :request do
       end
 
       it 'response includes can_edit=false' do
-        expect(response_json['business']['can_edit']).to eql false
+        expect(response_json[:business][:can_edit]).to eql false
       end
     end
 
@@ -37,7 +37,7 @@ describe 'Businesses Endpoints', type: :request do
       end
 
       it 'response includes can_edit=false' do
-        expect(response_json['business']['can_edit']).to eql false
+        expect(response_json[:business][:can_edit]).to eql false
       end
     end
   end
@@ -58,10 +58,10 @@ describe 'Businesses Endpoints', type: :request do
       end
 
       it 'response includes business, and it has can_edit=true' do
-        jbusiness = response_json['businesses'].find{|b| b['id'].eql? business.id}
+        jbusiness = response_json[:businesses].find{|b| b[:id].eql? business.id}
 
         expect(jbusiness).to_not be nil
-        expect(jbusiness['can_edit']).to be_truthy
+        expect(jbusiness[:can_edit]).to be_truthy
       end
     end
 
@@ -80,7 +80,7 @@ describe 'Businesses Endpoints', type: :request do
             per_page: 1,
             radius: 10_000 # we don't want distance to limit the query
           }
-          meta_total = response_json['meta']['total']
+          meta_total = response_json[:meta][:total]
           expect(meta_total).to eql business_profiles.size
         end
       end
@@ -110,10 +110,10 @@ describe 'Businesses Endpoints', type: :request do
         end
 
         it 'returns business profiles sorted by feedback.recommend desc' do
-          businesses = response_json['businesses']
+          businesses = response_json[:businesses]
           expect(businesses.count).to eql business_profiles.count
 
-          sorted = businesses.sort_by{|b|  b['feedback']['recommend']}.reverse
+          sorted = businesses.sort_by{|b|  b[:feedback][:recommend]}.reverse
           expect(businesses.first).to eql sorted.first
           expect(businesses.last).to eql sorted.last
         end
@@ -128,8 +128,8 @@ describe 'Businesses Endpoints', type: :request do
           }
         end
         it 'returns business profiles sorted by geodist asc' do
-          businesses = response_json['businesses']
-          sorted = businesses.sort_by{|b| b['geodist']}
+          businesses = response_json[:businesses]
+          sorted = businesses.sort_by{|b| b[:geodist]}
 
           expect(businesses.count).to eql business_profiles.count
           expect(businesses.first).to eql sorted.first
@@ -157,8 +157,8 @@ describe 'Businesses Endpoints', type: :request do
           }
         end
         it 'returns business profiles sorted by feedback_num desc' do
-          businesses = response_json['businesses']
-          sorted = businesses.sort_by{|b| b['feedback_num']}.reverse
+          businesses = response_json[:businesses]
+          sorted = businesses.sort_by{|b| b[:feedback_num]}.reverse
 
           expect(businesses.count).to eql business_profiles.count
           expect(businesses.first).to eql sorted.first
@@ -175,8 +175,8 @@ describe 'Businesses Endpoints', type: :request do
           }
         end
         it 'returns business profiles sorted alphabetically' do
-          businesses = response_json['businesses']
-          sorted = businesses.sort_by{|b| b['name']}
+          businesses = response_json[:businesses]
+          sorted = businesses.sort_by{|b| b[:name]}
 
           expect(businesses.count).to eql business_profiles.count
           expect(businesses.first).to eql sorted.first
@@ -193,8 +193,8 @@ describe 'Businesses Endpoints', type: :request do
           }
         end
         it 'returns business profiles sorted reverse alphabetically' do
-          businesses = response_json['businesses']
-          sorted = businesses.sort_by{|b| b['name']}.reverse
+          businesses = response_json[:businesses]
+          sorted = businesses.sort_by{|b| b[:name]}.reverse
 
           expect(businesses.count).to eql business_profiles.count
           expect(businesses.first).to eql sorted.first
@@ -216,7 +216,7 @@ describe 'Businesses Endpoints', type: :request do
         end
 
         it 'only returns businesses owned by the organization' do
-          returned_ids = response_json['businesses'].collect{|b| b['id']}
+          returned_ids = response_json[:businesses].collect{|b| b[:id]}
 
           expect(returned_ids).to include(*owned_by_org.collect(&:id))
           expect(returned_ids).to_not include(*not_owned_by_org.collect(&:id))
