@@ -20,13 +20,8 @@ module Api
             @banner.increment_integer_attr! :impression_count
             @banner.increment_integer_attr! :daily_impression_count
           end
-          render json:  { related_promotion:
-            { 
-              image_url: @banner.banner_image.url, 
-              redirect_url: @banner.redirect_url,
-              banner_id: @banner.id
-            }
-          }
+          render json:  @banner, root: :related_promotion,
+            serializer: RelatedPromotionSerializer
         end
 
       end
