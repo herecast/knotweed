@@ -54,7 +54,7 @@ describe 'News Endpoints', type: :request do
         
         it "does not strip out style attribute" do
           subject
-          response_content = response_json['news']['content']
+          response_content = response_json[:news][:content]
           expect(response_content).to eql post_params[:content]
         end
       end
@@ -160,7 +160,7 @@ describe 'News Endpoints', type: :request do
 
         it 'should respond with errors' do
           subject
-          expect(response_json['errors']).to be_present
+          expect(response_json[:errors]).to be_present
         end
       end
 
@@ -195,7 +195,7 @@ describe 'News Endpoints', type: :request do
           published_at: nil
         }
       }, auth_headers
-      @content = Content.find(response_json['news']['id'])
+      @content = Content.find(response_json[:news][:id])
       # add an image to the draft
       post '/api/v3/images', {
         image: {
@@ -206,7 +206,7 @@ describe 'News Endpoints', type: :request do
           primary: true
         }
       }, auth_headers
-      @img = Image.find(response_json['image']['id'])
+      @img = Image.find(response_json[:image][:id])
     end
 
     it 'should associate the image with the content' do
@@ -282,14 +282,14 @@ describe 'News Endpoints', type: :request do
 
     it 'returns news' do
       get '/api/v3/news', {}, headers
-      ids = response_json['news'].map{|i| i['id']}
+      ids = response_json[:news].map{|i| i[:id]}
 
       expect(ids).to include news.id
     end
 
     it 'does not return deleted news' do
       get '/api/v3/news', {}, headers
-      ids = response_json['news'].map{|i| i['id']}
+      ids = response_json[:news].map{|i| i[:id]}
 
       expect(ids).to_not include deleted_news.id
 
