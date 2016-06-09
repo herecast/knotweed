@@ -72,8 +72,7 @@
         .row-fluid
           .span6
             = f.simple_fields_for :content do |g|
-              = g.input :raw_content, input_html: { class: "ckeditor input-block-level" },
-                label: "Description", as: :text, value: @business_profile.content.sanitized_content, required: true
+              = g.input :raw_content, label: "Description", as: :summernote, value: @business_profile.content.sanitized_content, required: true
           .span6
             .row-fluid
               .span12
