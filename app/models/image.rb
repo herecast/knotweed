@@ -44,9 +44,7 @@ class Image < ActiveRecord::Base
   def ensure_only_one_primary
     if imageable.present?
       other_images = imageable.images.where('id != ?', id)
-      if !other_images.present? # then this is the only image
-        update_attribute :primary, true unless primary
-      elsif primary
+      if primary
         other_images.update_all primary: false
       end
     end
