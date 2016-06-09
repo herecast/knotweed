@@ -14,7 +14,7 @@ namespace :test_data do
       puts "User created with email: #{user.email}, password: password"
       user
     else
-      "user creation error: #{user.errors.full_messages}"
+      raise "user creation error: #{user.errors.full_messages}"
     end
   end
 
@@ -32,7 +32,47 @@ namespace :test_data do
       puts "Organization created with name: #{org.name}"
       org
     else
-      "organization creation error: #{organization.errors.full_messages}"
+      raise "organization creation error: #{organization.errors.full_messages}"
+    end
+  end
+
+  def create_blogger_content(org)
+    news_cat = ContentCategory.find_or_create_by(name: 'news')
+    content = Content.new(
+      title: "Article with Metrics",
+      content_category_id: news_cat.id,
+      raw_content: 'This is a fake news article with metrics',
+      organization_id: org.id,
+      pubdate: Date.today - 30
+    )
+    if content.save
+      puts "Content created with title: Article with Metrics"
+      content
+    else
+      raise "content creation error: #{content.errors.full_messages}"
+    end
+  end
+
+  def create_reports(content)
+    start_date = Date.current - 30
+    total_view_count = 0
+    total_banner_click_count = 0
+    [*1..30].reverse.each do |days|
+      multiplier = Math::E ** (-(30 - days)/5.0)
+      view_count = multiplier * 30
+      banner_click_count = multiplier * 8
+      total_view_count += view_count
+      total_banner_click_count += banner_click_count
+      ContentReport.create(
+        content_id: content.id,
+        report_date: Date.today - days,
+        view_count: view_count,
+        banner_click_count: banner_click_count,
+        comment_count: 0,
+        total_view_count: total_view_count,
+        total_banner_click_count: total_banner_click_count,
+        total_comment_count: 0
+      )
     end
   end
 
@@ -87,6 +127,25 @@ namespace :test_data do
       c_user.add_role :manager, c_org
 
       c_org.update_attribute(:parent, p_org)
+
+    rescue Exception => e
+      puts 'data creation failed'
+      puts "#{e.inspect}"
+    end
+  end
+
+  desc 'Create user with Dashboard Metrics'
+  task :create_blogger_with_metrics => :environment do
+
+    begin
+      puts "Creating Blogger with Content and Metrics"
+      blogger = create_user
+      blogger.add_role :blogger
+      org = create_org
+      blogger.add_role :manager, org
+      content = create_blogger_content(org)
+      create_reports(content)
+      content.update_attribute :view_count, content.content_reports.reduce(0) { |total, cr| total + cr.view_count }
 
     rescue Exception => e
       puts 'data creation failed'
