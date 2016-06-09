@@ -33,7 +33,7 @@ describe BusinessProfilesController, :type => :controller do
     context 'when searching by category' do
       let(:business_category) { FactoryGirl.create :business_category }
 
-      subject { get :index, q: { business_categories_id_eq: business_category.id } }
+      subject { get :index, q: { business_categories_id_in: [business_category.id] } }
 
       it 'returns matching businesses' do
         @business_profiles[0].business_categories << business_category
