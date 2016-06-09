@@ -9,7 +9,7 @@ module Api
         :event_url, :schedules,
         :registration_deadline, :registration_url,
         :registration_phone, :registration_email,
-        :first_instance_id
+        :first_instance_id, :category
 
       # this is funky but without it, active model serializer tries to use the URL helper
       # event_url instead of the attribute.
@@ -38,7 +38,7 @@ module Api
       def venue_name
         object.venue.try(:name)
       end
-      
+
       def venue_address
         object.venue.try(:address)
       end
@@ -74,9 +74,13 @@ module Api
       def venue_url
         object.venue.try(:venue_url)
       end
-      
+
       def schedules
         object.schedules.map{ |s| s.to_ux_format }
+      end
+
+      def category
+        object.event_category
       end
 
     end
