@@ -1,9 +1,24 @@
 %p= @event.content.title
 
 %p
-  - @event.event_instances.each do |instance|
-    = event_instance_display(instance)
-    %br
+  - if @event.schedules.present? 
+    - @event.schedules.each do |schedule|
+      - if schedule.schedule.recurrence_rules.present?
+        - line1,line2 = friendly_schedule_date(schedule)
+        %br
+        =line1
+        %br 
+        =line2
+        %br
+        %br
+      - else
+        - schedule.event_instances.each do |instance|
+          = event_instance_display(instance)
+          %br
+  - else
+    - @event.event_instances.each do |instance|
+      = event_instance_display(instance)
+      %br
 
 - if @venue.present?
   %p
