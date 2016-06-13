@@ -51,6 +51,11 @@
                 %iframe#confirm_location_map{ data: { base_src_url: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=" } }
         .row-fluid
           = f.association :business_categories, input_html: { class: 'chosen-select input-block-level' }
+        .row-fluid
+          .span6
+            = f.simple_fields_for :content do |g|
+              = g.simple_fields_for :organization do |h|
+                = h.association :parent, collection: Organization.where.not(id: @business_profile.content.organization.id), label: "Parent Organization", input_html: { class: "input-block-level chosen-select-single-deselect" }, include_blank: true
         = f.simple_fields_for :business_location do |g|
           .row-fluid
             %h3 Opening Hours
@@ -70,46 +75,45 @@
                       .btn.btn-danger.remove-hours-field X
       .tab-pane.form-horizontal#business_content
         .row-fluid
-          .span6
+          .span10
             = f.simple_fields_for :content do |g|
               = g.input :raw_content, label: "Description", as: :summernote, value: @business_profile.content.sanitized_content, required: true
-          .span6
+        .row-fluid
+          .span12
             .row-fluid
-              .span12
-                .row-fluid
-                  = f.simple_fields_for :content do |g|
-                    = g.simple_fields_for :images do |i|
-                      = i.input :image, as: :file
+              = f.simple_fields_for :content do |g|
+                = g.simple_fields_for :images do |i|
+                  = i.input :image, as: :file
+        .row-fluid
+          .span12
             .row-fluid
-              .span12
-                .row-fluid
-                  - if @business_profile.content.try(:images).present? and @business_profile.content.primary_image.url.present?
-                    .row-fluid
-                      .span12
-                        .business_profile_image_wrapper
-                          = image_tag @business_profile.content.primary_image.image.url
-                          = f.simple_fields_for :content do |g|
-                            = g.simple_fields_for :images do |i|
-                              %label
-                                = i.check_box :remove_image
-                                Remove image
-                  - elsif @placeholder_image.present?
-                    .row-fluid
-                      .span12
-                        = image_tag @placeholder_image.image.url
+              - if @business_profile.content.try(:images).present? and @business_profile.content.primary_image.url.present?
                 .row-fluid
                   .span12
+                    .business_profile_image_wrapper
+                      = image_tag @business_profile.content.primary_image.image.url
+                      = f.simple_fields_for :content do |g|
+                        = g.simple_fields_for :images do |i|
+                          %label
+                            = i.check_box :remove_image
+                            Remove image
+              - elsif @placeholder_image.present?
+                .row-fluid
+                  .span12
+                    = image_tag @placeholder_image.image.url
+            .row-fluid
+              .span12
+                = f.simple_fields_for :content do |g|
+                  = g.simple_fields_for :organization do |i|
+                    = i.input :logo, as: :file
+                - if @business_profile.claimed? and @business_profile.content.organization.logo.present?
+                  .business_profile_image_wrapper
+                    = image_tag @business_profile.content.organization.logo.url
                     = f.simple_fields_for :content do |g|
                       = g.simple_fields_for :organization do |i|
-                        = i.input :logo, as: :file
-                    - if @business_profile.claimed? and @business_profile.content.organization.logo.present?
-                      .business_profile_image_wrapper
-                        = image_tag @business_profile.content.organization.logo.url
-                        = f.simple_fields_for :content do |g|
-                          = g.simple_fields_for :organization do |i|
-                            %label
-                              = i.check_box :remove_logo
-                              Remove logo
+                        %label
+                          = i.check_box :remove_logo
+                          Remove logo
       .tab-pane.form-horizontal#managers
         .row-fluid
           %h2 Business Managers

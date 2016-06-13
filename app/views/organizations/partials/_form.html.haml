@@ -32,7 +32,7 @@
             = f.input :org_type, collection: Organization::ORG_TYPE_OPTIONS, label: "Organization Type"
             = f.input :pay_rate_in_cents, collection: Organization::BLOGGER_PAY_RATES.map { |r| ["#{r} cents per click", r] }.insert(0, ['Select a pay rate', nil]), label: 'Blogger pay rate', include_blank: false
             = f.association :consumer_apps, input_html: { class: "chosen-select input-block-level" }
-            = f.association :parent, collection: Organization.parent_pubs, label: "Parent Organization (Syndication)",
+            = f.association :parent, collection: Organization.where.not(id: @organization.id), label: "Parent Organization (Syndication)",
               input_html: { class: "input-block-level chosen-select-single-deselect" }, include_blank: true
             = f.association :external_categories, input_html: { class: "chosen-select input-block-level" },
               hint: "Categories to be displayed in UV Market"
