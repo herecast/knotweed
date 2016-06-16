@@ -61,7 +61,7 @@ describe 'Wordpress Blog Parser' do
               'post_status' => 'publish',
               'post_title' => 'The title of my fine post',
               'guid' => 'c61bcbe3-ff40-48bf-8d2c-cdc1e6c41b05',
-              'post_date_gmt' => Time.now.strftime('%F %T'),
+              'post_date_gmt' => Time.current.strftime('%F %T'),
               'custom_fields' => [
                 { 'key' => 'author', 'value' => 'Jim Bob' },
                 { 'key' => 'userid', 'value' => '1' },

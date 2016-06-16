@@ -127,7 +127,7 @@ describe Content, :type => :model do
   describe '#create_recommendation_doc_from_annotations' do
     let (:annotations) { {'id' => '1', 'annotation-sets' => []}  } 
     before do
-      subject.update_attribute :pubdate, Date.today
+      subject.update_attribute :pubdate, Date.current
     end
     it 'should return an array of hash' do
       result = subject.create_recommendation_doc_from_annotations(annotations).pop
@@ -235,7 +235,7 @@ describe Content, :type => :model do
       @in_index_event.content.save
       @not_in_index_event = FactoryGirl.create :content, content_category_id: @event_cat.id
 
-      @deleted_content = FactoryGirl.create :content, content_category: @news_cat, deleted_at: Time.now
+      @deleted_content = FactoryGirl.create :content, content_category: @news_cat, deleted_at: Time.current
 
       index
     end
@@ -411,7 +411,7 @@ describe Content, :type => :model do
     it "should leave valid corpus entries as unquarantined" do
       p = FactoryGirl.create(:organization)
       extra_data = @base_data.merge({
-        "pubdate" => Time.now,
+        "pubdate" => Time.current,
         "content" => "hello",
         "organization_id" => p.id
       })
@@ -426,7 +426,7 @@ describe Content, :type => :model do
       co.save
       # the above 2 lines are necessary for the item to be considered published
       extra_data = @base_data.merge({
-        "pubdate" => Time.now,
+        "pubdate" => Time.current,
         "content" => "hello",
         "organization_id" => co.organization.id,
         "in_reply_to" => co.guid
@@ -439,7 +439,7 @@ describe Content, :type => :model do
       before do
         @parent = FactoryGirl.create :content, guid: "loko-joko", published: false, repositories: []
         extra_data = @base_data.merge({
-          "pubdate" => Time.now,
+          "pubdate" => Time.current,
           "content" => "hello",
           "organization_id" => @parent.organization.id,
           "in_reply_to" => @parent.guid
@@ -455,7 +455,7 @@ describe Content, :type => :model do
       before do
         @parent = FactoryGirl.create :content, guid: "rat-race", title: nil
         extra_data = @base_data.merge({
-          "pubdate" => Time.now,
+          "pubdate" => Time.current,
           "content" => "hello",
           "organization_id" => @parent.organization.id,
           "in_reply_to" => @parent.guid
@@ -655,7 +655,7 @@ describe Content, :type => :model do
       expect(content.issue.organization).to eq(content.organization)
     end
     it "should match existing issues by organization and name" do
-      pubdate = Time.now
+      pubdate = Time.current
       issue_1 = FactoryGirl.create(:issue, publication_date: pubdate) # matching pub
       issue_2 = FactoryGirl.create(:issue, issue_edition: issue_1.issue_edition) #matching name, different pub
       @base_data["edition"] = issue_1.issue_edition

@@ -39,7 +39,7 @@ describe Api::V3::CommentsController, :type => :controller do
         @comment2.content.update_attribute :created_by, FactoryGirl.create(:user)
         @comment3 = FactoryGirl.create :comment
         @comment3.content.update_attributes(parent_id: @comment1.content.id,
-                                            pubdate: Time.now)
+                                            pubdate: Time.current)
         @comment3.content.update_attribute :created_by, FactoryGirl.create(:user)
       end
     
@@ -150,7 +150,7 @@ describe Api::V3::CommentsController, :type => :controller do
     r[:user_id] = comment.created_by.id
     r[:user_name] = comment.created_by.name
     r[:user_image_url] = comment.created_by.try(:avatar).try(:url)
-    r[:pubdate] = comment.pubdate.strftime("%Y-%m-%dT%H:%M:%S%:z")
+    r[:pubdate] = comment.pubdate.iso8601
     r[:parent_content_id] = comment.parent_id
     r[:content_id] = comment.content.id
     r.stringify_keys

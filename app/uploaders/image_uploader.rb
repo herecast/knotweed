@@ -62,7 +62,7 @@ class ImageUploader < CarrierWave::Uploader::Base
 
   def timestamp
     var = :"@#{mounted_as}_timestamp"
-    model.instance_variable_get(var) or model.instance_variable_set(var, Time.now.to_i)
+    model.instance_variable_get(var) or model.instance_variable_set(var, Time.current.to_i)
   end
 
   def secure_token(length=16)

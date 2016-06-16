@@ -130,7 +130,7 @@ module Api
         is_news_category = @news.try(:root_content_category).try(:name) == 'news'
 
         if is_news_category #@TODO <- Do we need to check consumer app here?
-          @news.update_attribute(:deleted_at, Time.now)
+          @news.update_attribute(:deleted_at, Time.current)
           head :no_content
         else
           head :not_found

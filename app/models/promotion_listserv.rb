@@ -32,7 +32,7 @@ class PromotionListserv < ActiveRecord::Base
 
       # send content emails
       listserv.send_content_to_listserv(content, consumer_app)
-      p.promotable.update_attribute :sent_at, DateTime.now
+      p.promotable.update_attribute :sent_at, DateTime.current
 
       # return promotable
       p.promotable
@@ -53,7 +53,7 @@ class PromotionListserv < ActiveRecord::Base
 
     outbound_mail = ReversePublisher.mail_content_to_listservs(content, listservs, consumer_app)
     outbound_mail.deliver_now
-    sent_time = DateTime.now
+    sent_time = DateTime.current
 
     promotion_listservs = []
 

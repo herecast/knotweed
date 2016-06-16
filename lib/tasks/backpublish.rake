@@ -4,7 +4,7 @@ require 'date'
 desc 'backpublish to ontonext with start date using the environment variable PUBSTARTDATE'
 task :backpublish => :environment do
   @publish_job = PublishJob.new()
-  start_date = ENV['PUBSTARTDATE'] ? ENV['PUBSTARTDATE'] : Date.parse(Time.now.to_s).to_s
+  start_date = ENV['PUBSTARTDATE'] ? ENV['PUBSTARTDATE'] : Date.parse(Time.current.to_s).to_s
   @publish_job.query_params = {
     :published => 'both',
     :repository_id => Repository.find_by(name: 'New Ontotext').id,

@@ -99,8 +99,8 @@ class ImportJob < ActiveRecord::Base
     # is defined
     if parser.present?
       log = last_import_record.log_file
-      if Time.now > ImportJob.backup_start and Time.now < ImportJob.backup_end
-        log.info("#{Time.now}: skipping #{job_type} job: #{name} during backup")
+      if Time.current > ImportJob.backup_start and Time.current < ImportJob.backup_end
+        log.info("#{Time.current}: skipping #{job_type} job: #{name} during backup")
       else
         traverse_input_tree
       end
@@ -130,13 +130,13 @@ class ImportJob < ActiveRecord::Base
 
   def error(job, exception)
     log = last_import_record.log_file
-    log.info "#{Time.now}: input: #{self.source_path}"
-    log.info "#{Time.now}: parser: #{PARSER_PATH}/#{parser.filename}"
-    log.error "#{Time.now}: error: #{exception}"
+    log.info "#{Time.current}: input: #{self.source_path}"
+    log.info "#{Time.current}: parser: #{PARSER_PATH}/#{parser.filename}"
+    log.error "#{Time.current}: error: #{exception}"
     if notifyees.present?
       JobMailer.error_email(last_import_record, exception).deliver_now
     end
-    log.error "#{Time.now}: backtrace: #{exception.backtrace.join("\n")}"
+    log.error "#{Time.current}: backtrace: #{exception.backtrace.join("\n")}"
     update_attribute(:status, "failed")
     log.info "#{self.inspect}"
   end
@@ -159,12 +159,12 @@ class ImportJob < ActiveRecord::Base
     # just pass the source_path directly to
     # the parser
     log = last_import_record.log_file
-    log.info("#{Time.now}: source path: #{source_path}")
+    log.info("#{Time.current}: source path: #{source_path}")
     # this is where we loop continuous jobs
     # continuous jobs are automatically set to have stop_loop set to false
     # other jobs have stop_loop set to true (by an after_create callback).
     while true
-      log.info("#{Time.now}: Running parser at #{Time.now}")
+      log.info("#{Time.current}: Running parser at #{Time.current}")
       if source_path =~ /^#{URI::regexp}$/
         data = run_parser(source_path) || nil
       else
@@ -173,11 +173,11 @@ class ImportJob < ActiveRecord::Base
           if FileTest.directory?(path)
             next
           else
-            log.debug("#{Time.now}: running parser on path: #{path}")
+            log.debug("#{Time.current}: running parser on path: #{path}")
             begin
               data += run_parser(path)
             rescue StandardError => bang
-              log.error("#{Time.now}: failed to parse #{path}: #{bang}")
+              log.error("#{Time.current}: failed to parse #{path}: #{bang}")
             end
           end
         end
@@ -191,9 +191,9 @@ class ImportJob < ActiveRecord::Base
         sleep(5.0) unless self.stop_loop
       end
       # hacky trick to stop continuous jobs during backup time
-      if Time.now > ImportJob.backup_start and Time.now < ImportJob.backup_end
+      if Time.current > ImportJob.backup_start and Time.current < ImportJob.backup_end
         if job_type == CONTINUOUS
-          log.info("#{Time.now}: deferring continuous job: #{name} during backup")
+          log.info("#{Time.current}: deferring continuous job: #{name} during backup")
           # then update stop_loop attribute to break out of the cycle
           update_attribute :stop_loop, true
           # first, schedule the job to run again at 7:45 am.
@@ -252,25 +252,25 @@ class ImportJob < ActiveRecord::Base
         was_filtered = false
         was_filtered, reason = import_filter(article)
         if was_filtered
-          log.info("#{Time.now}: #{reason}")
+          log.info("#{Time.current}: #{reason}")
           filtered += 1
         else
           c = Content.create_from_import_job(article, self)
           created_contents.push(c)
-          log.info("#{Time.now}: content #{c.id} created")
+          log.info("#{Time.current}: content #{c.id} created")
           successes += 1
           if automatically_publish and repository.present?
             c.publish(publish_method, repository)
           end
         end
       rescue StandardError => bang
-        log.error("#{Time.now}: failed to process content #{article['title']}: #{bang}")
+        log.error("#{Time.current}: failed to process content #{article['title']}: #{bang}")
         failures += 1
       end
     end
-    log.info("#{Time.now}: successes: #{successes}")
-    log.info("#{Time.now}: failures: #{failures}")
-    log.info("#{Time.now}: filtered: #{filtered}")
+    log.info("#{Time.current}: successes: #{successes}")
+    log.info("#{Time.current}: failures: #{failures}")
+    log.info("#{Time.current}: filtered: #{filtered}")
     import_record.items_imported += successes
     import_record.failures += failures
     import_record.filtered += filtered

@@ -40,5 +40,4 @@ class ApplicationController < ActionController::Base
   def set_thread_consumer_app_nil
     ConsumerApp.current = nil
   end
-
 end

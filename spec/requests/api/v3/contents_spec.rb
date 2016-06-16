@@ -8,7 +8,7 @@ describe 'Contents Endpoints', type: :request do
     let(:content) { FactoryGirl.create :content, created_by: user }
 
     it 'returns daily view counts' do
-      (2.days.ago.to_date..Date.today).each do |date|
+      (2.days.ago.to_date..Date.current).each do |date|
         FactoryGirl.create(:content_report, content: content, report_date: date)
       end
 
@@ -20,7 +20,7 @@ describe 'Contents Endpoints', type: :request do
 
     context 'Given 40 days of metrics data exist;' do
       before do
-        (40.days.ago.to_date..Date.today).each do |date|
+        (40.days.ago.to_date..Date.current).each do |date|
           FactoryGirl.create(:content_report, content: content, report_date: date)
         end
       end
@@ -128,7 +128,7 @@ describe 'Contents Endpoints', type: :request do
     end
 
     context 'with deleted content' do
-      let!(:news_post) { FactoryGirl.create :content, content_category: news_cat, organization: org, locations: [default_location], published: true, deleted_at: Time.now }
+      let!(:news_post) { FactoryGirl.create :content, content_category: news_cat, organization: org, locations: [default_location], published: true, deleted_at: Time.current }
       before { index }
 
       it 'is not returned' do
@@ -145,7 +145,7 @@ describe 'Contents Endpoints', type: :request do
                            content_category: news_cat,
                            created_by: user,
                            published: true,
-                           deleted_at: Time.now}
+                           deleted_at: Time.current}
 
       it 'does not return deleted content' do
         get '/api/v3/dashboard', {}, auth_headers

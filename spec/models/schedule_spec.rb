@@ -255,7 +255,7 @@ describe Schedule, :type => :model do
     context 'when ends_at < starts_at' do
       before do
         @schedule = FactoryGirl.create :schedule, event: @event
-        @weird_timing = @input.merge({ 'starts_at' => Time.now, "ends_at" => Time.now - 61 * 60 })
+        @weird_timing = @input.merge({ 'starts_at' => Time.current, "ends_at" => Time.current - 61 * 60 })
       end
 
       subject { Schedule.build_from_ux_for_event(@weird_timing, @event.id) }
@@ -362,7 +362,7 @@ describe Schedule, :type => :model do
         @subtitle_override = Faker::Lorem.sentence(2,true,2)
         @schedule = FactoryGirl.create :schedule, subtitle_override: @subtitle_override
         @schedule.add_exception_time! @schedule.schedule.all_occurrences[1]
-        @schedule.add_recurrence_rule! IceCube::SingleOccurrenceRule.new(Time.now)
+        @schedule.add_recurrence_rule! IceCube::SingleOccurrenceRule.new(Time.current)
         @ics = @schedule.to_icalendar_event.to_ical
       end
 

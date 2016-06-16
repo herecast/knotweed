@@ -15,7 +15,7 @@ module Api
         if params[:date_start].present?
           start_date = Chronic.parse(params[:date_start]).beginning_of_day
         else
-          start_date = Date.today.beginning_of_day
+          start_date = Date.current.beginning_of_day
         end
         end_date = Chronic.parse(params[:date_end]).end_of_day if params[:date_end].present?
 

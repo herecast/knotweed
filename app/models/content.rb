@@ -561,7 +561,7 @@ class Content < ActiveRecord::Base
   # catchall publish method that handles interacting w/ the publish record
   def publish(method, repo, record=nil, opts={})
     # do not allow publishing during BACKUPS
-    if ImportJob.backup_start < Time.now and Time.now < ImportJob.backup_end
+    if ImportJob.backup_start < Time.current and Time.current < ImportJob.backup_end
       return false
     end
     if method.nil?
@@ -584,11 +584,11 @@ class Content < ActiveRecord::Base
       if result == true
         record.items_published += 1 if record.present?
       else
-        log.error("#{Time.now}: Export of #{self.id} failed (returned: #{result})")
+        log.error("#{Time.current}: Export of #{self.id} failed (returned: #{result})")
         record.failures += 1 if record.present?
       end
     rescue => e
-      log.error("#{Time.now}: Error exporting #{self.id}: #{e}")
+      log.error("#{Time.current}: Error exporting #{self.id}: #{e}")
       record.failures += 1 if record.present?
     end
     record.save if record.present?
@@ -1536,7 +1536,7 @@ class Content < ActiveRecord::Base
   # -- draft: saved, but not published to DSP and not returned in any API responses
   #           except dashborad)
   # -- scheduled: saved, pubdate in the future, published to the DSP, but not returned
-  #           in API responses except dashboard *until* Time.now > pubdate
+  #           in API responses except dashboard *until* Time.current > pubdate
   # -- published: normal published state. Exists in DSP, returned in API responses.
   # 
   # there's the potential to implement this with a state_machine gem in the future,
