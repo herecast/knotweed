@@ -156,7 +156,7 @@ describe OrganizationsController, type: :controller do
       end
 
       it 're-renders "new" template' do
-        post :create, organization: {}
+        post :create, organization: {name: nil}
         expect(response).to render_template('organizations/new')
       end
     end

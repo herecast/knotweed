@@ -68,8 +68,8 @@ describe Content, :type => :model do
               'value' =>
                 { 'value' => new_category }
             }]
-          }            
-        }  
+          }
+        }
       end
 
       it 'should update content_category' do
@@ -87,8 +87,8 @@ describe Content, :type => :model do
               'value' =>
                 { 'value' => new_category }
             }]
-          }            
-        }  
+          }
+        }
       end
 
       it 'should update content_category' do
@@ -113,8 +113,8 @@ describe Content, :type => :model do
               'value' =>
                 { 'value' => other_category }
             }]
-          }            
-        }  
+          }
+        }
       end
 
       it 'CATEGORY should win over CATEGORIES' do
@@ -434,7 +434,7 @@ describe Content, :type => :model do
       c2 = Content.create_from_import_job(extra_data)
       expect(c2.parent).to eq(co)
     end
-    
+
     context "when parent content is not published" do
       before do
         @parent = FactoryGirl.create :content, guid: "loko-joko", published: false, repositories: []
@@ -639,7 +639,7 @@ describe Content, :type => :model do
       content = Content.create_from_import_job(@base_data)
       expect(content.import_location.city).to eq(loc.city)
     end
-    
+
     # check issue/edition logic
     it "should create a new edition if none is found" do
       @base_data["edition"] = "Holiday Edition"
@@ -661,7 +661,7 @@ describe Content, :type => :model do
       @base_data["edition"] = issue_1.issue_edition
       @base_data["source"] = issue_1.organization.name
       @base_data["pubdate"] = pubdate
-      
+
       content = Content.create_from_import_job(@base_data)
       expect(content.issue).to eq(issue_1)
     end
@@ -1644,7 +1644,7 @@ describe Content, :type => :model do
         expect(@content).to receive(:default_sanitized_content)
         subject
       end
-      
+
       it 'should match output of default_sanitized_content' do
         expect(subject).to eq @content.default_sanitized_content
       end
@@ -1658,6 +1658,51 @@ describe Content, :type => :model do
 
     before do
       FactoryGirl.create(:promotion, content: content, promotable: promo_banner)
+    end
+
+    context 'when #banner_ad_override present' do
+      let(:override_banner) {FactoryGirl.create(:promotion_banner)}
+      before do
+        promotion = Promotion.new
+        promotion.promotable= override_banner
+        promotion.save!
+        content.update banner_ad_override: promotion.id
+      end
+
+      it 'returns promo override\'s banner' do
+        result_banner, result_score, result_type = content.get_related_promotion(repo)
+        expect(result_banner).to eql override_banner
+      end
+
+      it 'does not query SPARQL::Client' do
+        expect_any_instance_of(SPARQL::Client).to_not receive(:query)
+        content.get_related_promotion(repo)
+      end
+    end
+
+    context 'when content.organization has banner ad override' do
+      let(:banner_ad1) { FactoryGirl.create :promotion_banner }
+      let(:banner_ad2) { FactoryGirl.create :promotion_banner }
+      let(:banner_ad3) { FactoryGirl.create :promotion_banner }
+
+      before do
+        content.organization.update banner_ad_override: [banner_ad1.promotion.id, banner_ad2.promotion.id].join(', ')
+      end
+
+      it 'does not query SPARQL::Client' do
+        expect_any_instance_of(SPARQL::Client).to_not receive(:query)
+        content.get_related_promotion(repo)
+      end
+
+      it 'returns a banner from the csv override property' do
+        result_banner, result_score, result_type = content.get_related_promotion(repo)
+        expect([banner_ad2, banner_ad1]).to include(result_banner)
+      end
+
+      it 'does not return banners that are not listed' do
+        result_banner, result_score, result_type = content.get_related_promotion(repo)
+        expect(result_banner).to_not eql banner_ad3
+      end
     end
 
     context 'when SPARQL will return results based on similarity' do

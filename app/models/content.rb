@@ -1066,6 +1066,18 @@ class Content < ActiveRecord::Base
       end
       select_score = nil
       select_method = 'sponsored_content'
+    elsif organization.banner_ad_override?
+      ids = organization.banner_ad_override.split(/,[\s]*?/)
+
+      # NOTE: banner_ad_override actually uses the Promotion id, not the PromotionBanner id
+      promo = Promotion.find(ids.sample)
+      if promo.promotable.is_a? PromotionBanner
+        banner = promo.promotable
+      else
+        banner = nil
+      end
+      select_score = nil
+      select_method = 'sponsored_content'
     else
       # query graphdb for relevant active banner ads (pass title + content) 
       results = query_promo_similarity_index(title + " " + content, repo)
