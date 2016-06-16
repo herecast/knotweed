@@ -1,4 +1,15 @@
 require "spec_helper"
+include EventsHelper
+
+shared_examples "non-ugc event without schedules" do
+  it 'email should contain each event_instance dates in the email' do
+    test_event.event_instances.each do |event_instance|
+      rp_email.body.parts.each do |part|
+        expect(part.to_s).to include(event_instance_display(event_instance))
+      end
+    end
+  end
+end
 
 describe ReversePublisher, :type => :mailer do
   before do
@@ -58,6 +69,62 @@ describe ReversePublisher, :type => :mailer do
         # only the reverse publish email has this header, so use that to select it
         rp_email = ReversePublisher.deliveries.select{ |e| e['X-Original-Content-Id'].present? }.first
         expect(rp_email.body.encoded).to include("#{consumer_app.uri}/news/#{@content.id}")
+      end
+    end
+  end
+
+  describe 'Event' do
+    let(:listserv) { FactoryGirl.create :listserv }
+    let(:non_ugc_event) { FactoryGirl.create :event, skip_event_instance: true }
+
+    before do
+      FactoryGirl.create :event_instance, event: non_ugc_event, start_date: 2.weeks.ago, end_date: 1.week.ago, subtitle_override: 'interesting'
+      FactoryGirl.create :event_instance, event: non_ugc_event, start_date: 1.days.from_now, end_date: 3.days.from_now, subtitle_override: 'go on'
+      PromotionListserv.create_from_content(non_ugc_event.content, listserv)
+      @rp_email = ReversePublisher.deliveries.select{ |eml| eml['X-Original-Content-Id'].present? }.first
+    end
+    
+    it_behaves_like "non-ugc event without schedules" do
+      let(:test_event) { non_ugc_event }
+      let(:rp_email) { @rp_email }
+    end
+    
+    context 'with recurring schedules' do
+      let(:multi_event) { FactoryGirl.create :event, skip_event_instance: true }
+
+      let!(:schedule1) { FactoryGirl.create :schedule, event: multi_event, subtitle_override: 'no loco', recurrence: IceCube::Schedule.new(Time.zone.now + 1.hour, duration: 2.hours){ |s| s.add_recurrence_rule IceCube::Rule.daily.until(1.week.from_now) }.to_yaml }
+
+      let!(:schedule2) { FactoryGirl.create :schedule, event: multi_event, subtitle_override: 'no loco 2', recurrence: IceCube::Schedule.new(Time.zone.now - 2.days, duration: 4.hours){ |s| s.add_recurrence_rule IceCube::Rule.weekly.until(4.weeks.from_now) }.to_yaml }
+
+
+      before do
+        PromotionListserv.create_from_content(multi_event.content, listserv)
+        @rp_email = ReversePublisher.deliveries.select{ |eml| eml['X-Original-Content-Id'].present? }.second #the second email in the queue
+      end
+      
+      it 'email should contain an event summary' do
+        #schedules in this test must have recurrence
+        multi_event.schedules.each do |schedule|
+            @rp_email.body.parts.each do |part|
+              expect(part.to_s).to include(friendly_schedule_date(schedule)[0])
+              expect(part.to_s).to include(friendly_schedule_date(schedule)[1])
+            end
+        end
+      end   
+    end
+
+    context ', with single ocuurrence schedules' do
+      let(:ugc_single_event) { FactoryGirl.create :event, skip_event_instance: true }
+      let(:schedule_starts) { Time.zone.now + 3.days }
+      let!(:schedule) { FactoryGirl.create :schedule, event: ugc_single_event, subtitle_override: 'no loco 3', recurrence: IceCube::Schedule.new(schedule_starts, duration: 30.minutes){ |s| s.add_recurrence_rule IceCube::SingleOccurrenceRule.new(schedule_starts) }.to_yaml }
+
+      before do
+        PromotionListserv.create_from_content(ugc_single_event.content, listserv)
+        @rp_email = ReversePublisher.deliveries.select{ |eml| eml['X-Original-Content-Id'].present? }.second #the second email in the queue
+      end
+      it_behaves_like 'non-ugc event without schedules' do
+        let(:test_event) { ugc_single_event }
+        let(:rp_email) { @rp_email }
       end
     end
   end

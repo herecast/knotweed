@@ -59,8 +59,8 @@ describe Image, :type => :model do
       @img1 = FactoryGirl.create :image, imageable: @imgble
     end
 
-    it 'should set primary to true if the image is the only one on the content' do
-      expect(@img1.primary).to be_truthy
+    it 'should not set primary to true if the image is the only one on the content' do
+      expect(@img1.primary).to be false
     end
 
     it 'should update all other images on the imageable object to primary=false when creating a new primary image' do

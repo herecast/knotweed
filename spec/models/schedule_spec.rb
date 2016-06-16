@@ -52,7 +52,7 @@ describe Schedule, :type => :model do
         @schedule.reload
       end
 
-      subject do 
+      subject do
         @schedule.recurrence = IceCube::Schedule.new(Time.zone.now) do |s|
           s.add_recurrence_rule IceCube::Rule.weekly.until 2.weeks.from_now
         end.to_yaml
@@ -164,7 +164,7 @@ describe Schedule, :type => :model do
     end
   end
 
-  describe 'add_recurrence_rule!(rule)' do 
+  describe 'add_recurrence_rule!(rule)' do
     before do
       @schedule = FactoryGirl.create :schedule, recurrence: IceCube::Schedule.new(Time.local(2015)).to_yaml
       @rule = IceCube::Rule.daily.until(Time.local(2015) + 1.week)
@@ -205,12 +205,12 @@ describe Schedule, :type => :model do
   describe 'Schedule.build_from_ux_for_event' do
     before do
       f = File.new('spec/fixtures/schedule_input_1.json', 'r')
-      # the method takes a single schedule input, but the Ember app passes us 
+      # the method takes a single schedule input, but the Ember app passes us
       # an event record with an array of schedules. This particular test case
       # has just one schedule in it.
       @input = JSON.parse(f.read)['event']['schedules'][0]
       @event = FactoryGirl.create :event
-      @schedule = Schedule.build_from_ux_for_event(@input, @event.id) 
+      @schedule = Schedule.build_from_ux_for_event(@input, @event.id)
     end
 
     it 'should be valid' do
@@ -222,7 +222,7 @@ describe Schedule, :type => :model do
     end
 
     it 'should have the expected end_time' do
-      # we take the time passed as "ends_at" and use that to calculate a duration 
+      # we take the time passed as "ends_at" and use that to calculate a duration
       # with (ends_at - starts_at).abs, then create the schedule with that duration.
       # which should set the end_time to duration > start_time
       expect(@schedule.schedule.end_time).to eq @schedule.schedule.start_time + 1.hour
@@ -262,9 +262,9 @@ describe Schedule, :type => :model do
 
       it 'should set the end date one day ahead' do
         timing = YAML.load(subject.recurrence)
-        start_hour = timing[:start_time][:time].to_s[8..10].to_i
-        end_hour = timing[:end_time][:time].to_s[8..10].to_i
-        expect(end_hour).to be > start_hour
+        start = timing[:start_time][:time]
+        finish = timing[:end_time][:time]
+        expect(finish).to be > start
       end
     end
 
@@ -355,7 +355,7 @@ describe Schedule, :type => :model do
       expect(EventInstance.where(event_id: @event.id)).to eq [@ei]
     end
   end
-      
+
   describe 'schedule converted to ics' do
     context 'with text overrides' do
       before do

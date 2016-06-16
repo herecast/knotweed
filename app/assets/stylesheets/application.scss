@@ -2,6 +2,8 @@
 @import 'chosen';
 @import 'contents';
 @import 'parsers';
+@import 'bootstrap';
+@import 'summernote';
 @import 'flatty/theme-colors';
 @import 'flatty/bootstrap/bootstrap';
 @import 'flatty/bootstrap/bootstrap-responsive';
@@ -19,6 +21,5 @@
 @import 'business_locations';
 @import 'scaffolds';
 @import 'events';
-@import 'cleditor/jquery.cleditor';
 @import 'users';
 @import 'business_profiles';

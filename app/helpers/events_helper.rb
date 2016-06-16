@@ -28,6 +28,20 @@ module EventsHelper
     instance_string
   end
 
+  def friendly_schedule_date(schedule)
+    subtitle = ''
+    if schedule.subtitle_override.present?
+      subtitle = ' - ' + schedule.subtitle_override
+    end
+    schedule = schedule.schedule
+    return "","" unless schedule.next_occurrence.present?
+    event_date = schedule.next_occurrence.strftime("%b %-d, %Y")
+    time_range = schedule.start_time.strftime("%-l:%M %P")
+    time_range += " - " + schedule.end_time.strftime("%-l:%M %P") if schedule.end_time.present?
+    return event_date.to_s + '  ' + time_range + subtitle, 'Repeats ' + schedule.to_s
+  end
+
+
   # converts a timestamp to a human readable string
   #
   # @param [timestamp]

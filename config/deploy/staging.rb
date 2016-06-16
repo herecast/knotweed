@@ -8,7 +8,7 @@ set :source_mysql_database, 'admin_prod'
 set :dest_mysql_database, 'admin_prod'
 set :dsp_endpoint_hostname, 'stage-dsp.subtext.org'
 set :site_endpoint, 'http://stage-consumer.subtext.org'
-server '52.70.81.201', roles: %w{web app db}, primary: true, user: 'deploy'
+server 'stage-admin.subtext.org', roles: %w{web app db}, primary: true, user: 'deploy'
 server 'test-dsp.subtext.org', roles: %w{source_dsp}, primary: false, user: 'dsp', no_release: true
 server 'stage-dsp.subtext.org', roles: %w{dest_dsp}, primary: false, user: 'dsp', no_release: true
 

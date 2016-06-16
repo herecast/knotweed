@@ -609,6 +609,7 @@ ActiveRecord::Schema.define(version: 20160510141013) do
     t.boolean  "can_publish_news",                    default: false
     t.string   "subscribe_url",         limit: 255
     t.text     "description",           limit: 65535
+    t.integer  "pay_rate_in_cents",     limit: 4
   end
 
   add_index "organizations", ["name"], name: "index_publications_on_name", unique: true, using: :btree

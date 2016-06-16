@@ -10,7 +10,7 @@ module Api
       def business_profile_id
         bp_content= object.contents.where(channel_type: 'BusinessProfile').first
         if bp_content.present?
-          bp_content.id
+          bp_content.channel_id
         end
       end
 

@@ -109,7 +109,8 @@
             hint: 'The ids of content to show in the relevance stack. Input as a comma separated list of numbers.',
             as: :string
       .tab-pane#doc_content
-        = f.input :sanitized_content, input_html: { class: "ckeditor input-block-level" }, label: "Content", as: :text
+        .summernote-wrapper
+          = f.input :sanitized_content, as: :summernote, label: 'Content'
       .tab-pane#images
         = fields_for Image.new do |i|
           %fieldset#image_fields

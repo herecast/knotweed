@@ -23,7 +23,7 @@ describe 'Market Posts', type: :request do
     it 'should contain orgainzation_id' do
       get "/api/v3/market_posts/#{market_post.content.id}.json", {}, headers
 
-      expect(response_json['market_post']['organization_id']).to eql organization.id
+      expect(response_json[:market_post][:organization_id]).to eql organization.id
     end
   end
 

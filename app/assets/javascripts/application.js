@@ -13,7 +13,6 @@
 //= require jquery
 //= require jquery.turbolinks
 //= require jquery_ujs
-//= require ckeditor-jquery
 //= require flatty/jquery_ui/jquery-ui.min
 //= require flatty/bootstrap/bootstrap.min
 //= require spin.min
@@ -45,6 +44,8 @@
 //= require business_locations
 //= require events
 //= require market_posts
-//= require cleditor/jquery.cleditor
 //= require users
 //= require business_profiles
+//= require summernote
+//= require bootstrap
+//= require summernote_editor
