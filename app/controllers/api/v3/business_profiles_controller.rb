@@ -9,10 +9,10 @@ module Api
       def index
         page = params[:page] || 1
         per_page = params[:per_page] || 14
-        opts = { 
+        opts = {
           select: '*, weight()',
-          page: page, 
-          per_page: per_page, 
+          page: page,
+          per_page: per_page,
           star: true,
           with: { exists: 1 },
           without: { archived: true }
@@ -29,7 +29,7 @@ module Api
         if lat.present? && lng.present?
           # convert to radians
           opts[:geo] = [lat,lng].map{ |coord| coord.to_f * Math::PI / 180 }
-          radius = params[:radius] || 15 # default 15 miles
+          radius = params[:radius] || 50 # default 50 miles
           # sphinx takes meters, but assumption is we are dealing with miles,
           # so need to convert
           opts[:with][:geodist] = 0.0..(radius.to_f*MI_TO_KM*1000)
@@ -76,7 +76,7 @@ module Api
 
       def update
         @business_profile = BusinessProfile.find(params[:id])
-        # This may change (this endpoint can be leveraged, at some point, to be the 
+        # This may change (this endpoint can be leveraged, at some point, to be the
         # mechanism for "claiming?"), but as of now, you cannot #update
         # business profiles that haven't been claimed.
         if @business_profile.content.nil?
