@@ -156,7 +156,7 @@ describe 'Contents Endpoints', type: :request do
     end
   end
 
-  describe 'GET /api/v3/contents/:id/related_promotion', focus: true do
+  describe 'GET /api/v3/contents/:id/related_promotion' do
     context 'with existing content and related promotion;' do
       let(:organization) { FactoryGirl.create :organization }
       let!(:banner) { FactoryGirl.create :promotion_banner }
