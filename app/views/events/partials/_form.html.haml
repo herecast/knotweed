@@ -67,8 +67,7 @@
         .row-fluid
           .span6
             = f.simple_fields_for :content do |g|
-              = g.input :raw_content, input_html: {  },
-                label: "Event Description", as: :text, value: @event.remove_boilerplate
+              = g.input :raw_content, label: "Event Description", as: :summernote, value: @event.remove_boilerplate
 
           -# event specific fields
           .span6
@@ -88,9 +87,10 @@
                   .span10offset1#embedded_business_location_form{ style: "display: none;" }
                 .row-fluid
                   .controls.span12
-                    = f.input_field :venue_id, class: "span12 chosen-select-single-deselect", 
-                      collection: BusinessLocation.all, label_method: :select_option_label,
-                      include_blank: true, placeholder: "Select a venue"
+                    %p
+                      %b Note:
+                      This functionality has been turned off for the time being
+                    / = f.input_field :venue_id, class: "span12 chosen-select-single-deselect", collection: BusinessLocation.all, label_method: :select_option_label, include_blank: true, placeholder: "Select a venue"
             = f.input :event_url, input_html: { class: "input-block-level" }
 
             .row-fluid

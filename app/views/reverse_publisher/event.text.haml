@@ -1,7 +1,19 @@
 = @event.content.title
 \
-- @event.event_instances.each do |instance|
-  = event_instance_display(instance)
+- if @event.schedules.present?
+  - @event.schedules.each do |schedule|
+    - if schedule.schedule.recurrence_rules.present?
+      - line1,line2 = friendly_schedule_date(schedule)
+      \
+      = line1
+      = line2
+      \
+    - else
+      - schedule.event_instances.each do |instance|
+        = event_instance_display(instance)
+- else
+  - @event.event_instances.each do |instance|
+    = event_instance_display(instance)
 \
 - if @venue.present?
   = @venue.name if @venue.name.present?

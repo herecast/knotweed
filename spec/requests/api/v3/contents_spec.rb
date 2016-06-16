@@ -156,4 +156,28 @@ describe 'Contents Endpoints', type: :request do
     end
   end
 
+  describe 'GET /api/v3/contents/:id/related_promotion' do
+    context 'with existing content and related promotion;' do
+      let(:organization) { FactoryGirl.create :organization }
+      let!(:banner) { FactoryGirl.create :promotion_banner }
+      let!(:promo) { FactoryGirl.create :promotion, organization: organization, promotable: banner }
+      let!(:content) { FactoryGirl.create :content, banner_ad_override: promo.id }
+
+      subject { get "/api/v3/contents/#{content.id}/related_promotion" }
+
+      it 'returns related_promotion json' do
+        subject
+        expect(response_json).to match(
+          related_promotion: {
+            image_url: banner.banner_image.url,
+            redirect_url: banner.redirect_url,
+            banner_id: banner.id,
+            organization_name: organization.name,
+            promotion_id: promo.id
+          }
+        )
+      end
+    end
+  end
+
 end

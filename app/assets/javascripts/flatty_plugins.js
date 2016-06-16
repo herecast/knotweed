@@ -37,7 +37,3 @@
 //= require flatty/plugins/flot/flot.pie
 //= require flatty/plugins/flot/jquery.flot.time
 //= require flatty/plugins/flot/jquery.flot.categories
-
-$(document).ready(function() {
-  $(".ckeditor").ckeditor({});
-});

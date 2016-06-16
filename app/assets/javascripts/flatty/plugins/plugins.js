@@ -37,7 +37,6 @@
 //= require flatty/plugins/bootbox/bootbox.min
 //= require flatty/plugins/xeditable/bootstrap-editable.min
 //= require flatty/plugins/xeditable/wysihtml5
-//= require flatty/plugins/ckeditor/ckeditor
 //= require flatty/plugins/dynatree/jquery.dynatree.min
 //= require flatty/plugins/bootstrap_datetimepicker/bootstrap-datetimepicker
 //= require flatty/plugins/bootstrap_daterangepicker/moment.min
