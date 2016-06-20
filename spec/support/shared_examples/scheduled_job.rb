@@ -17,8 +17,8 @@ shared_examples_for :scheduled_job do
 
       context 'when between configued backup times' do
         before do
-          allow(ImportJob).to receive(:backup_start).and_return(Time.now - 60.minutes)
-          allow(ImportJob).to receive(:backup_end).and_return(Time.now + 60.minutes)
+          allow(ImportJob).to receive(:backup_start).and_return(Time.current - 60.minutes)
+          allow(ImportJob).to receive(:backup_end).and_return(Time.current + 60.minutes)
         end
 
         it 'will be equal to configured backup end time' do
@@ -35,18 +35,18 @@ shared_examples_for :scheduled_job do
           before do
             allow(subject).to receive(:last_run_at).and_return(nil)
             # freze time
-            now_time = Time.now
+            now_time = Time.current
             allow(Time).to receive(:now).and_return(now_time)
           end
 
-          it 'will return Time.now + frequency minutes' do
-            expect(subject.schedule).to eql (Time.now + subject.frequency.minutes)
+          it 'will return Time.current + frequency minutes' do
+            expect(subject.schedule).to eql (Time.current + subject.frequency.minutes)
           end
         end
 
         context '#run_at has a time' do
           before do
-            allow(subject).to receive(:run_at).and_return(Time.now)
+            allow(subject).to receive(:run_at).and_return(Time.current)
           end
 
           it 'will return #run_at + frequency minutes' do
@@ -57,7 +57,7 @@ shared_examples_for :scheduled_job do
 
       context '#last_run_at has a time' do
         before do
-          allow(subject).to receive(:last_run_at).and_return(Time.now)
+          allow(subject).to receive(:last_run_at).and_return(Time.current)
         end
 
         it 'will return #last_run_at + frequency minutes' do

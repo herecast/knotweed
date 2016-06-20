@@ -10,7 +10,7 @@ namespace :test_data do
     location = Location.last || Location.create(city: 'WRJ', state: 'VT')
     user = User.new email: email, password: 'password', password_confirmation: 'password', location: location
     if user.save
-      user.update_attribute :confirmed_at, Time.now
+      user.update_attribute :confirmed_at, Time.current
       puts "User created with email: #{user.email}, password: password"
       user
     else

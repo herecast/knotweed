@@ -20,7 +20,7 @@
 FactoryGirl.define do
   factory :content_report do
     association :content
-    report_date { Time.now }
+    report_date { Time.current }
     view_count { rand(0..100) }
     banner_click_count { rand(0..100) }
     comment_count { rand(0..100) }

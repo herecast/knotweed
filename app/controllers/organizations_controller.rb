@@ -30,7 +30,7 @@ class OrganizationsController < ApplicationController
   end
 
   def update
-    if @organization.update_attributes(params[:organization])
+    if @organization.update_attributes(organization_params)
       flash[:notice] = "Successfully updated organization #{@organization.id}"
       if params[:add_content_set]
         redirect_to new_content_set_path(:content_set => { :organization_id => @organization.id })
@@ -59,7 +59,7 @@ class OrganizationsController < ApplicationController
     current_ability.attributes_for(:create, Organization).each do |key, value|
       @organization.send("#{key}=", value)
     end
-    @organization.attributes = params[:organization]
+    @organization.attributes = organization_params
     authorize! :create, @organization
     if @organization.save
       @organization.update_attribute(:contact_ids, contact_ids) unless contact_ids.nil?
@@ -96,6 +96,19 @@ class OrganizationsController < ApplicationController
     respond_to do |format|
       format.js
     end
+  end
+
+  protected
+
+  def organization_params
+    params.require(:organization).permit(
+      :name, :logo, :logo_cache, :remove_logo, :organization_id,
+      :website, :notes, :images_attributes, :parent_id, :location_ids,
+      :remote_logo_url, :contact_ids, :category_override,
+      :org_type, :display_attributes, :reverse_publish_email,
+      :consumer_app_ids, :external_category_ids, :can_publish_news,
+      :subscribe_url, :description, :banner_ad_override
+    )
   end
 
 end

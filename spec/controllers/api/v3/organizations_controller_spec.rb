@@ -77,7 +77,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
         @consumer_app = FactoryGirl.create :consumer_app
         request.headers['Consumer-App-Uri'] = @consumer_app.uri
       end
-      
+
 
       context 'without org being associated with consumer app' do
         it 'should respond with a 204' do

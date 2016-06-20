@@ -106,8 +106,8 @@ describe ImportJob, :type => :model do
 
     context "when import job backing up" do
       it "skips the job" do
-        allow(ImportJob).to receive(:backup_start).and_return(Time.now - 10)
-        allow(ImportJob).to receive(:backup_end).and_return(Time.now + 10)
+        allow(ImportJob).to receive(:backup_start).and_return(Time.current - 10)
+        allow(ImportJob).to receive(:backup_end).and_return(Time.current + 10)
         import_record = FactoryGirl.create(:import_record)
         allow(@import_job).to receive(:last_import_record) { import_record }
         log = import_record.log_file
@@ -127,8 +127,8 @@ describe ImportJob, :type => :model do
 
     context "when continuous and during backup" do
       it "stop_loop becomes false" do
-        allow(ImportJob).to receive(:backup_start).and_return(Time.now - 10)
-        allow(ImportJob).to receive(:backup_end).and_return(Time.now + 10)
+        allow(ImportJob).to receive(:backup_start).and_return(Time.current - 10)
+        allow(ImportJob).to receive(:backup_end).and_return(Time.current + 10)
         allow(@import_job).to receive(:last_import_record) { @import_record }
         response = @import_job.traverse_input_tree
         expect(@import_job.stop_loop).to be false
@@ -146,16 +146,16 @@ describe ImportJob, :type => :model do
     context "when reschedule_at is set" do
       it "returns a set reschedule time" do
         allow_any_instance_of(Figaro::Env).to receive(:reschedule_at).and_return('10')
-        response = @import_job.reschedule_at(DateTime.now, 1)
-        expect(response.to_s).to eq (DateTime.now + 10.seconds).to_s
+        response = @import_job.reschedule_at(DateTime.current, 1)
+        expect(response.to_s).to eq (DateTime.current + 10.seconds).to_s
       end
     end
 
     context "when no reschedule_at environmental variable" do
       it "returns a fabricated reschedule time" do
         allow_any_instance_of(Figaro::Env).to receive(:reschedule_at).and_return(nil)
-        response = @import_job.reschedule_at(DateTime.now, 1)
-        expect(response.to_s).to eq (DateTime.now + 6).to_s
+        response = @import_job.reschedule_at(DateTime.current, 1)
+        expect(response.to_s).to eq (DateTime.current + 6).to_s
       end
     end
   end

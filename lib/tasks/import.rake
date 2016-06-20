@@ -15,7 +15,7 @@ namespace :import do
     source_path = "http://www.vnews.com/csp/mediapool/sites/Shared/assets/csp/helper/newsbankXML.csp?pubname=ValleyNews"
 
     date = Date.parse(args[:start_date])
-    while date < Date.today
+    while date < Date.current
       rss_ij = ImportJob.new({ name: "Rake VN Import (RSS) #{date.strftime("%Y%m%d")}" })
       rss_ij.organization = organization
       rss_ij.parser = parser

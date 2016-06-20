@@ -21,7 +21,7 @@ namespace :reporting do
           end
 
           ContentReport.create! content_id: content.id,
-                                report_date: Time.now,
+                                report_date: Time.current,
                                 view_count: view_count,
                                 banner_click_count: banner_click_count,
                                 comment_count: comment_count,
@@ -41,7 +41,7 @@ namespace :reporting do
   task :create_promotion_banner_report => :environment do
     logger = Logger.new("#{Rails.root}/log/rake_promotion_banner_report_#{Rails.env}.log")
     begin
-      @active_promos = PromotionBanner.where("? >= campaign_start AND ? <= campaign_end", Date.today, Date.today)
+      @active_promos = PromotionBanner.where("? >= campaign_start AND ? <= campaign_end", Date.current, Date.current)
       @active_promos.each do |promotion_banner|
         old_promotion_report = PromotionBannerReport.where(promotion_banner_id: promotion_banner.id).order(:id).last
 
@@ -54,7 +54,7 @@ namespace :reporting do
         end
 
         PromotionBannerReport.create! promotion_banner_id: promotion_banner.id,
-                                       report_date: Time.now,
+                                       report_date: Time.current,
                                        impression_count: impression_count,
                                        click_count: click_count,
                                        total_impression_count: promotion_banner.impression_count,

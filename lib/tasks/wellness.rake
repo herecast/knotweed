@@ -40,7 +40,7 @@ namespace :wellness do
         cr[:raw_content] = row[:description]
         cr[:content_category_id] = category_id
         cr[:organization_id] = org_id
-        cr[:pubdate] = Time.now
+        cr[:pubdate] = Time.current
         cr[:location_ids] = [77]
         if row[:media_url].present?
           image = Image.new

@@ -57,7 +57,7 @@ namespace :wordpress do
         next
       end
 
-      if wp_post['post_date'].to_time > Time.now
+      if wp_post['post_date'].to_time > Time.current
         puts "'#{wp_post['post_title']}' (#{wp_post['guid']}) is scheduled for the future (#{wp_post['post_date']})."
         next
       end
@@ -250,7 +250,7 @@ namespace :wordpress do
         unrecognized_posts << wp_post
       end
 
-      if wp_post['post_date'].to_time > Time.now
+      if wp_post['post_date'].to_time > Time.current
         puts "'#{wp_post['post_title']}' (#{wp_post['guid']}) is scheduled for the future (#{wp_post['post_date']})."
         next
       end
