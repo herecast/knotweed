@@ -40,7 +40,7 @@ class DashboardController < ApplicationController
     result_hash = {}
     @results.each do |r|
       if r.try(:hour).present?
-        date = DateTime.parse("#{Date.today.strftime("%Y%m%d ")} #{r.hour}")
+        date = DateTime.parse("#{Date.current.strftime("%Y%m%d ")} #{r.hour}")
         result_hash[date] = r.avgSessionDuration.to_f
       else
         date = DateTime.parse(r.date)

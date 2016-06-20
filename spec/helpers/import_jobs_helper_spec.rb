@@ -79,7 +79,7 @@ describe ImportJobsHelper, type: :helper do
 
         context 'job #run_at is present' do
           before do
-            allow(job).to receive(:run_at).and_return(Time.now)
+            allow(job).to receive(:run_at).and_return(Time.current)
           end
           it { is_expected.to include 'Schedule Job' }
         end

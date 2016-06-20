@@ -44,7 +44,7 @@ describe Message, :type => :model do
   describe "#active?" do
     context "when active" do
       it "returns true" do
-        message = FactoryGirl.create :message, start_date: DateTime.now - 1, end_date: nil
+        message = FactoryGirl.create :message, start_date: DateTime.current - 1, end_date: nil
         expect(message.active?).to be true
       end
     end

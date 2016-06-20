@@ -9,10 +9,10 @@ module Api
       def index
         page = params[:page] || 1
         per_page = params[:per_page] || 14
-        opts = { 
+        opts = {
           select: '*, weight()',
-          page: page, 
-          per_page: per_page, 
+          page: page,
+          per_page: per_page,
           star: true,
           with: { exists: 1 },
           without: { archived: true }
@@ -29,7 +29,7 @@ module Api
         if lat.present? && lng.present?
           # convert to radians
           opts[:geo] = [lat,lng].map{ |coord| coord.to_f * Math::PI / 180 }
-          radius = params[:radius] || 15 # default 15 miles
+          radius = params[:radius] || 50 # default 50 miles
           # sphinx takes meters, but assumption is we are dealing with miles,
           # so need to convert
           opts[:with][:geodist] = 0.0..(radius.to_f*MI_TO_KM*1000)
@@ -61,8 +61,8 @@ module Api
         @business_profile = BusinessProfile.new(business_profile_attributes)
         ModerationMailer.send_business_for_moderation(@business_profile, @current_api_user).deliver_now
         # for Ember data to not get upset, we need to assign fake IDs to all the objects here
-        @business_profile.content.id = Time.now.to_i
-        @business_profile.organization.id = Time.now.to_i
+        @business_profile.content.id = Time.current.to_i
+        @business_profile.organization.id = Time.current.to_i
         render json: @business_profile, serializer: BusinessProfileSerializer,
           status: 201, root: 'business', context: {current_ability: current_ability}
         #if @business_profile.save
@@ -76,7 +76,7 @@ module Api
 
       def update
         @business_profile = BusinessProfile.find(params[:id])
-        # This may change (this endpoint can be leveraged, at some point, to be the 
+        # This may change (this endpoint can be leveraged, at some point, to be the
         # mechanism for "claiming?"), but as of now, you cannot #update
         # business profiles that haven't been claimed.
         if @business_profile.content.nil?

@@ -6,7 +6,7 @@ class BusinessProfiles::ClaimsController < ApplicationController
     if business_profile
       content_params = {
         title: business_profile.business_location.name,
-        pubdate: DateTime.now,
+        pubdate: DateTime.current,
         channel_type: 'BusinessProfile',
         channel_id: business_profile.id
       }

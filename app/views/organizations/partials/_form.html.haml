@@ -38,6 +38,7 @@
               hint: "Categories to be displayed in UV Market"
             = f.input :can_publish_news, input_html: { class: 'input-block-level' }
             = f.input :subscribe_url, input_html: { class: 'input-block-level' }
+            = f.input :banner_ad_override
           .span7
             = f.input :category_override, input_html: { class: "input-block-level" }, hint: "Set this option to force all content to publish with a specific category."
             = f.input :website, input_html: { class: "input-block-level" }
@@ -66,7 +67,7 @@
           %tbody#business_locations_list
             - @organization.business_locations.each do |loc|
               = render "business_locations/partials/row", business_location: loc
-      
+
       .tab-pane#images
         = label_tag "Logo"
         = image_tag(@organization.logo.url) if @organization.logo?
@@ -129,7 +130,7 @@
           histry
         .tab-pane#promotions
           = render "promotions/partials/promotions_tab", organization: @organization
-          
+
       .form-actions
         = submit_tag "Submit and Create New Content Set", class: "btn btn-success", name: "add_content_set"
         = submit_tag nil, class: "btn btn-primary"

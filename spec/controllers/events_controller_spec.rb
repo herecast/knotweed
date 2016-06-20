@@ -131,7 +131,7 @@ describe EventsController, :type => :controller  do
         @uv = FactoryGirl.create :location, id: 77
       end
 
-      subject { post :create, { unchannelized_content_id: @content.id, event: { content_attributes: {}, event_instances_attributes: [[{}, { start_date: Date.today, start_day: DateTime.now, start_time: Time.now  }]] } } }
+      subject { post :create, { unchannelized_content_id: @content.id, event: { content_attributes: {}, event_instances_attributes: [[{}, { start_date: Date.current, start_day: DateTime.current, start_time: Time.current  }]] } } }
 
       context "when event does not save" do
         it "renders new" do
@@ -181,7 +181,7 @@ describe EventsController, :type => :controller  do
 
     context "when update and publish are successful" do
 
-      subject { put :update, { continue_editing: true, id: @event.id, event: { event_instances_attributes: [[{}, { start_date: @event.event_instances.first.start_date, start_day: DateTime.now, start_time: Time.now, end_time: Time.now + 3600 }]] } } }
+      subject { put :update, { continue_editing: true, id: @event.id, event: { event_instances_attributes: [[{}, { start_date: @event.event_instances.first.start_date, start_day: DateTime.current, start_time: Time.current, end_time: Time.current + 3600 }]] } } }
 
       it "flashes success" do
         current_user = @user

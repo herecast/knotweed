@@ -49,7 +49,7 @@ class Organization < ActiveRecord::Base
                   :remote_logo_url, :contact_ids, :category_override,
                   :org_type, :display_attributes, :reverse_publish_email,
                   :consumer_app_ids, :external_category_ids, :can_publish_news,
-                  :subscribe_url, :description, :pay_rate_in_cents
+                  :subscribe_url, :description, :banner_ad_override, :pay_rate_in_cents
 
   mount_uploader :logo, ImageUploader
 

@@ -65,8 +65,8 @@ describe Api::V3::ContentSerializer do
 
       it 'should include event instance id of first instance' do
         expect(serialized_object['event_instance_id']).to eq @event_instance.id
-        expect(serialized_object['starts_at']).to eq @event_instance.start_date.strftime("%Y-%m-%dT%H:%M:%S%:z")
-        expect(serialized_object['ends_at']).to eq @event_instance.end_date.strftime("%Y-%m-%dT%H:%M:%S%:z")
+        expect(serialized_object['starts_at']).to eq @event_instance.start_date.iso8601
+        expect(serialized_object['ends_at']).to eq @event_instance.end_date.iso8601
       end
     end
 
@@ -80,8 +80,8 @@ describe Api::V3::ContentSerializer do
 
       it 'should include event instance id of next instance' do
         expect(serialized_object['event_instance_id']).to eq @next_instance.id
-        expect(serialized_object['starts_at']).to eq @next_instance.start_date.strftime("%Y-%m-%dT%H:%M:%S%:z")
-        expect(serialized_object['ends_at']).to eq @next_instance.end_date.strftime("%Y-%m-%dT%H:%M:%S%:z")
+        expect(serialized_object['starts_at']).to eq @next_instance.start_date.iso8601
+        expect(serialized_object['ends_at']).to eq @next_instance.end_date.iso8601
       end
     end
   end

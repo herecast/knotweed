@@ -9,7 +9,7 @@ describe 'Promotion Banner Endpoints', type: :request do
     let(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: promotion }
 
     it 'returns daily impression and click counts' do
-      (2.days.ago.to_date..Date.today).each do |date|
+      (2.days.ago.to_date..Date.current).each do |date|
         FactoryGirl.create(:promotion_banner_report, promotion_banner: promotion_banner, report_date: date)
       end
 
@@ -27,7 +27,7 @@ describe 'Promotion Banner Endpoints', type: :request do
 
     context 'Given 40 days of metrics data exist;' do
       before do
-        (40.days.ago.to_date..Date.today).each do |date|
+        (40.days.ago.to_date..Date.current).each do |date|
           FactoryGirl.create(:promotion_banner_report, promotion_banner: promotion_banner, report_date: date)
         end
       end

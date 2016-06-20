@@ -17,7 +17,7 @@
 FactoryGirl.define do
   factory :issue do
     issue_edition "MyString"
-    publication_date Time.now
+    publication_date Time.current
     organization
     copyright "MyString"
   end

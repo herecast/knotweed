@@ -276,7 +276,7 @@ describe 'News Endpoints', type: :request do
                   } }
 
     let!(:news) { FactoryGirl.create :content, created_by: user, organization: org, published: true, content_category: news_cat }
-    let!(:deleted_news) { FactoryGirl.create :content, created_by: user, organization: org, published: true, content_category: news_cat, deleted_at: Time.now }
+    let!(:deleted_news) { FactoryGirl.create :content, created_by: user, organization: org, published: true, content_category: news_cat, deleted_at: Time.current }
     
     before { index }
 
@@ -304,7 +304,7 @@ describe 'News Endpoints', type: :request do
                            content_category: news_cat,
                            created_by: user,
                            published: true,
-                           deleted_at: Time.now}
+                           deleted_at: Time.current}
 
       it 'does not return deleted content' do
         get "/api/v3/news/#{deleted_news.id}"

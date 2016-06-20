@@ -60,7 +60,7 @@
           .row-fluid
             = g.input :copyright, input_html: { class: "span12" }, wrapper_html: { class: "span6" }
           .row-fluid
-            = g.input :pubdate, as: :datetime_picker, input_html: { value: @market_post.pubdate || Date.today }, wrapper_html: { class: "span6" }
+            = g.input :pubdate, as: :datetime_picker, input_html: { value: @market_post.pubdate || Date.current }, wrapper_html: { class: "span6" }
             = g.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }
             = g.input :url, input_html: { class: "input-block-level" }
 
