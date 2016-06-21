@@ -18,12 +18,61 @@ describe 'News Endpoints', type: :request do
           subtitle: 'Subtitle',
           content: Faker::Lorem.paragraph,
           organization_id: @org.id,
-          published_at: Time.zone.now
+          published_at: Time.current,
+          author_name: 'Some String Not The User'
         }
       end
 
       it 'should create a content record' do
         expect{subject}.to change{Content.count}.by 1
+      end
+    end
+
+    describe 'author_name' do
+      let(:post_params) do
+        {
+          title: 'Title',
+          organization_id: @org.id,
+          author_name: author_name
+        }
+      end
+      before { post '/api/v3/news', { news: post_params }, auth_headers }
+      subject { Content.last }
+
+      context 'when it\'s the same as the user\'s name' do
+        let(:author_name) { user.name }
+
+        it 'should persist authors as blank' do
+          expect(subject.authors).to be_blank
+        end
+
+        it 'should set authors_is_created_by to true' do
+          expect(subject.authors_is_created_by).to be true
+        end
+      end
+
+      context 'when author_name is something different' do
+        let(:author_name) { Faker::Name.name }
+
+        it 'should persist the author_name as authors' do
+          expect(subject.authors).to eq author_name
+        end
+
+        it 'should leave authors_is_created_by false' do
+          expect(subject.authors_is_created_by).to be false
+        end
+      end
+
+      context 'when author_name is blank' do
+        let(:author_name) { '' }
+
+        it 'should persist the blank author name' do
+          expect(subject.authors).to be_blank
+        end
+
+        it 'should leave authors_is_created_by false' do
+          expect(subject.authors_is_created_by).to be false
+        end
       end
     end
 
@@ -150,7 +199,7 @@ describe 'News Endpoints', type: :request do
             title: 'blerb',
             content: Faker::Lorem.paragraph,
             organization_id: nil,
-            published_at: Time.zone.now
+            published_at: Time.current
           }
         end
       

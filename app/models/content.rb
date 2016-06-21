@@ -126,7 +126,7 @@ class Content < ActiveRecord::Base
                 :sanitized_content, :channelized_content_id,
                 :has_event_calendar, :channel_type, :channel_id, :channel,
                 :location_ids, :root_content_category_id, :similar_content_overrides,
-                :banner_ad_override, :my_town_only
+                :banner_ad_override, :my_town_only, :authors_is_created_by
 
   serialize :similar_content_overrides, Array
 
@@ -1555,16 +1555,27 @@ class Content < ActiveRecord::Base
   # especially if it gets more complex. For now, we're just emulating that behavior
   # as minimally as possible.
 
-  # returns author information by checking `created_by` if available
-  # or falling back to `authors` otherwise
+  # typically returns author information by checking `created_by` if available
+  # or falling back to `authors` otherwise. For UGC News content, we reverse the conditional.
   #
   # @return [String] the author's name
   def author_name
-    if created_by.present?
-      created_by.name
+    if is_news_ugc?
+      if authors_is_created_by?
+        created_by.try(:name)
+      else
+        authors
+      end
     else
-      authors
+      created_by.present? ? created_by.name : authors
     end
+  end
+
+  # helper that checks if content is News UGC or not
+  #
+  # @return [Boolean] true if is news ugc
+  def is_news_ugc?
+    origin == UGC_ORIGIN and content_category.try(:name) == 'news'
   end
 
   private

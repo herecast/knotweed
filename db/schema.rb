@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160612182234) do
+ActiveRecord::Schema.define(version: 20160621032835) do
 
   create_table "annotation_reports", force: :cascade do |t|
     t.integer  "content_id",    limit: 4
@@ -312,8 +312,10 @@ ActiveRecord::Schema.define(version: 20160612182234) do
     t.text     "similar_content_overrides", limit: 65535
     t.integer  "banner_ad_override",        limit: 4
     t.integer  "root_parent_id",            limit: 4
-    t.datetime "deleted_at"
     t.boolean  "my_town_only",                            default: false
+    t.datetime "deleted_at"
+    t.boolean  "authors_is_created_by",                   default: false
+    t.boolean  "authors_is_created_by",                   default: false
   end
 
   add_index "contents", ["authoremail"], name: "index_contents_on_authoremail", using: :btree
