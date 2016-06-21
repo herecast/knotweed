@@ -8,9 +8,19 @@ module Api
         params[:page] ||= 1
         params[:per_page] ||= 12
 
-        @promotion_banners = PromotionBanner.joins(:promotion => :content).
-          where('promotions.created_by = ? and promotable_type = "PromotionBanner"', @current_api_user.id).
-          order(sanitize_sort_parameter(params[:sort])).
+        scope = PromotionBanner.joins(promotion: :content)
+
+        if params[:organization_id].present?
+          org = Organization.find params[:organization_id]
+          if current_ability.can? :manage, org
+            scope = scope.where('contents.organization_id = ?', org.id)
+          else
+            head :no_content and return
+          end
+        else
+          scope = scope.where('promotions.created_by = ?', @current_api_user.id)
+        end
+        @promotion_banners = scope.order(sanitize_sort_parameter(params[:sort])).
           page(params[:page].to_i).per(params[:per_page].to_i)
 
         render json: @promotion_banners, each_serializer: PromotionBannerSerializer

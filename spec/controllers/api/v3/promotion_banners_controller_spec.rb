@@ -6,41 +6,76 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     before do
       @user = FactoryGirl.create :user
       api_authenticate user: @user
-      pbs = FactoryGirl.create_list :promotion_banner, 2
-      # need to set this manually to ensure that it's set in time
-      # for the example to run
-      pbs.each do |pb|
-        pb.promotion.update_column :created_by, @user.id
-      end
     end
 
     subject { get :index, format: :json }
 
-    it 'should respond with 200' do
-      subject
-      expect(response.status).to eq 200
-    end
-
-    it 'should return all promotion banners' do
-      subject
-      expect(assigns(:promotion_banners).sort).to eq PromotionBanner.all.sort
-    end
-
-    describe 'sorting'  do
-      it 'accepts pubdate for sort' do
-        PromotionBanner.first.promotion.content.update_attribute :pubdate, 1.day.ago
-        get :index, format: :json, sort: 'pubdate DESC'
-        expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.pubdate}.last
-
-        get :index, format: :json, sort: 'pubdate ASC'
-        expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.pubdate}.first
+    describe 'organization\'s promotion banners' do
+      before do
+        @org = FactoryGirl.create :organization
+        @org_pbs = FactoryGirl.create_list :promotion_banner, 2
+        @org_pbs.each do |pb|
+          pb.promotion.content.update_attribute :organization, @org
+          # ensure promotions aren't created by user to test this fully
+          pb.promotion.update_column :created_by, nil
+        end
       end
-      it 'accepts title for sort' do
-        get :index, format: :json, sort: 'title DESC'
-        expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.title}.last
 
-        get :index, format: :json, sort: 'title ASC'
-        expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.title}.first
+      subject { get :index, format: :json, organization_id: @org.id }
+
+      context 'as manager of organization' do
+        before { @user.add_role :manager, @org }
+
+        it 'should respond with the organization pbs' do
+          subject
+          expect(assigns(:promotion_banners)).to match_array(@org_pbs)
+        end
+      end
+
+      context 'without organization privileges' do
+        it 'should respond with no content' do
+          subject
+          expect(response.status).to eq 204
+        end
+      end
+    end
+
+    describe 'user\'s promotion banners' do
+      before do
+        @user_pbs = FactoryGirl.create_list :promotion_banner, 2
+        # need to set this manually to ensure that it's set in time
+        # for the example to run
+        @user_pbs.each do |pb|
+          pb.promotion.update_column :created_by, @user.id
+        end
+      end
+        
+      it 'should respond with 200' do
+        subject
+        expect(response.status).to eq 200
+      end
+
+      it 'should return all promotion banners' do
+        subject
+        expect(assigns(:promotion_banners).sort).to eq PromotionBanner.all.sort
+        end
+
+      describe 'sorting'  do
+        it 'accepts pubdate for sort' do
+          PromotionBanner.first.promotion.content.update_attribute :pubdate, 1.day.ago
+          get :index, format: :json, sort: 'pubdate DESC'
+          expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.pubdate}.last
+
+          get :index, format: :json, sort: 'pubdate ASC'
+          expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.pubdate}.first
+        end
+        it 'accepts title for sort' do
+          get :index, format: :json, sort: 'title DESC'
+          expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.title}.last
+
+          get :index, format: :json, sort: 'title ASC'
+          expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.title}.first
+        end
       end
     end
   end
