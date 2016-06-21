@@ -657,6 +657,7 @@ ActiveRecord::Schema.define(version: 20160621032835) do
     t.integer  "daily_max_impressions",  limit: 4
     t.boolean  "boost",                              default: false
     t.integer  "daily_impression_count", limit: 4,   default: 0
+    t.boolean  "track_daily_metrics"
   end
 
   create_table "promotion_listservs", force: :cascade do |t|

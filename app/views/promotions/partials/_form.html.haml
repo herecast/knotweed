@@ -17,6 +17,7 @@
         = p.input :campaign_end, as: :date_picker, label: 'Campaign End Date'
         = p.input :daily_max_impressions, label: 'Daily Maximum Impressions'
         = p.input :max_impressions, label: 'Maximum Impressions'
+        = p.input :track_daily_metrics
     - if promotion.promotable.present?
       = f.input :promotable_type, as: :hidden
 
