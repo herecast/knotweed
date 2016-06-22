@@ -147,6 +147,7 @@ module Api
         if author_name == @current_api_user.name
           params[:news][:authors_is_created_by] = true
         else
+          params[:news][:authors_is_created_by] = false
           params[:news][:authors] = author_name
         end
         params.require(:news).permit(:raw_content, :pubdate, :authors,

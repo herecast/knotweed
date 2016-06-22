@@ -129,6 +129,27 @@ describe 'News Endpoints', type: :request do
       expect{subject}.to change{@content.reload.title}.to put_params[:title]
     end
 
+    describe 'author_name' do
+      context 'with authors_is_created_by true at first' do
+        before do
+          @content.authors = nil
+          @content.authors_is_created_by = true
+          @content.save
+        end
+
+        let(:put_params) do
+          {
+            title: 'New Different Title',
+            author_name: Faker::Name.name
+          }
+        end
+
+        it 'should set `authors_is_created_by` to false' do
+          expect{subject}.to change{@content.reload.authors_is_created_by}.to false
+        end
+      end
+    end
+
     describe 'scheduling a draft for publishing' do
       let(:put_params) do
         {
