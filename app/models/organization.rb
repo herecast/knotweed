@@ -9,13 +9,18 @@
 #  logo                  :string(255)
 #  organization_id       :integer
 #  website               :string(255)
-#  notes                 :text
+#  notes                 :text(65535)
 #  parent_id             :integer
 #  category_override     :string(255)
 #  org_type              :string(255)
 #  display_attributes    :boolean          default(FALSE)
 #  reverse_publish_email :string(255)
 #  can_reverse_publish   :boolean          default(FALSE)
+#  can_publish_news      :boolean          default(FALSE)
+#  subscribe_url         :string(255)
+#  description           :text(65535)
+#  profile_title         :string(255)
+#  banner_ad_override    :string(255)
 #
 
 class Organization < ActiveRecord::Base
@@ -49,7 +54,7 @@ class Organization < ActiveRecord::Base
                   :remote_logo_url, :contact_ids, :category_override,
                   :org_type, :display_attributes, :reverse_publish_email,
                   :consumer_app_ids, :external_category_ids, :can_publish_news,
-                  :subscribe_url, :description, :banner_ad_override, :pay_rate_in_cents
+                  :subscribe_url, :description, :banner_ad_override, :pay_rate_in_cents, :profile_title
 
   mount_uploader :logo, ImageUploader
 

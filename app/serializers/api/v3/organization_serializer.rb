@@ -3,7 +3,7 @@ module Api
     class OrganizationSerializer < ActiveModel::Serializer
 
       attributes :id, :name, :can_publish_news, :subscribe_url, :logo_url,
-        :business_profile_id, :description, :org_type, :can_edit
+        :business_profile_id, :description, :org_type, :can_edit, :profile_title
 
       def logo_url; object.logo.url if object.logo.present?; end
 
@@ -22,6 +22,9 @@ module Api
         end
       end
 
+      def profile_title
+        object.profile_title || object.name
+      end
     end
   end
 end

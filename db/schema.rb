@@ -614,6 +614,7 @@ ActiveRecord::Schema.define(version: 20160621032835) do
     t.text     "description",           limit: 65535
     t.string   "banner_ad_override",    limit: 255
     t.integer  "pay_rate_in_cents",     limit: 4
+    t.string   "profile_title",         limit: 255
   end
 
   add_index "organizations", ["name"], name: "index_publications_on_name", unique: true, using: :btree
