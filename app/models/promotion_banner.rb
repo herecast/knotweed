@@ -46,8 +46,8 @@ class PromotionBanner < ActiveRecord::Base
   # NOTE: we need the select clause or else the "joins" causes the scope to return
   # readonly records.
   scope :active, -> { includes(:promotion)
-    .where('campaign_start <= ?', DateTime.current)
-    .where('campaign_end >= ?', DateTime.current) }
+    .where('campaign_start <= ?', Time.current)
+    .where('campaign_end >= ?', Time.current) }
 
   # this scope combines all conditions to determine whether a promotion banner is paid
   # NOTE: for now, we're just concerned with 'paid' and 'active' being true - will eventually
