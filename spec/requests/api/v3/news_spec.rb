@@ -130,6 +130,25 @@ describe 'News Endpoints', type: :request do
     end
 
     describe 'author_name' do
+      context 'when the user is not the original author' do
+        let(:other_user) { FactoryGirl.create :user, name: Faker::Name.name }
+        before { @content.update_column :created_by, other_user.id }
+
+        context 'when passed the current user\'s name (*not* the author)' do
+          let(:put_params) do
+            {
+              title: 'New Different Title',
+              author_name: user.name
+            }
+          end
+
+          it 'should set `authors_is_created_by` to false' do
+            subject
+            expect(@content.reload.authors_is_created_by).to be false
+          end
+        end
+      end
+
       context 'with authors_is_created_by true at first' do
         before do
           @content.authors = nil
