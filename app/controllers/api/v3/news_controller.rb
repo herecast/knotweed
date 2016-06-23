@@ -144,9 +144,13 @@ module Api
         params[:news][:raw_content] = params[:news].delete :content if params[:news].has_key? :content
         params[:news][:pubdate] = params[:news].delete :published_at if params[:news].has_key? :published_at
         author_name = params[:news].delete :author_name
-        if author_name == @current_api_user.name
+        if @news.present? # update scenario, news already exists and has an author who may not be the current user
+          params[:news][:authors_is_created_by] = true if @news.created_by.try(:name) == author_name
+        elsif author_name == @current_api_user.name # @news hasn't been persisted yet so has no created_by
+          # which means the current user IS the author
           params[:news][:authors_is_created_by] = true
-        else
+        end
+        unless params[:news][:authors_is_created_by]
           params[:news][:authors_is_created_by] = false
           params[:news][:authors] = author_name
         end
