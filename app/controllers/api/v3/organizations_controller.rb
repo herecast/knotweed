@@ -9,7 +9,7 @@ module Api
         @organization = Organization.find(params[:id])
         authorize! :update, @organization
 
-        if @organization.update_attributes(params[:organization])
+        if @organization.update organization_params
           render json: @organization, serializer: OrganizationSerializer,
             status: 204
         else
@@ -56,6 +56,14 @@ module Api
         else
           render json: @organization, serializer: OrganizationSerializer, context: { current_ability: current_ability }
         end
+      end
+
+      protected
+
+      def organization_params
+        params.require(:organization).permit(
+          :name, :profile_title, :description, :subscribe_url, :logo
+        )
       end
 
     end

@@ -2,11 +2,11 @@ module Api
   module V3
     class NewsController < ApiController
       before_filter :check_logged_in!, only: [:create, :update, :destroy]
-      before_filter :parse_params!, only: [:create, :update]
 
       def create
+        np = news_params
         news_cat = ContentCategory.find_or_create_by(name: 'news')
-        @news = Content.new(params[:news].merge(content_category_id: news_cat.id, origin: Content::UGC_ORIGIN))
+        @news = Content.new(np.merge(content_category_id: news_cat.id, origin: Content::UGC_ORIGIN))
         if @news.save
           if @repository.present? and @news.pubdate.present? # don't publish drafts
             @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
@@ -21,18 +21,19 @@ module Api
 
       def update
         @news = Content.find params[:id]
+        np = news_params
         # some unique validation
         # if it's already published, don't allow changing the pubdate (i.e. unpublishing or scheduling)
-        if @news.pubdate.present? and @news.pubdate <= Time.zone.now and params[:news].has_key?(:pubdate) \
-            and Chronic.parse(params[:news][:pubdate]) != @news.pubdate
+        if @news.pubdate.present? and @news.pubdate <= Time.zone.now and np.has_key?(:pubdate) \
+            and Chronic.parse(np[:pubdate]) != @news.pubdate
           render json: { errors: { 'published_at' => 'Can\'t unpublish already published news' } },
             status: 500
         # don't allow publishing or scheduling without an organization
-        elsif params[:news][:organization_id].blank? and @news.organization.blank? and params[:news][:pubdate].present?
+        elsif np[:organization_id].blank? and @news.organization.blank? and np[:pubdate].present?
           render json: { errors: { 'organization_id' => 'Organization must be specified for news' } },
             status: 500
         else
-          if @news.update_attributes(params[:news])
+          if @news.update_attributes(np)
             if @repository.present? and @news.pubdate.present?
               @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
             end
@@ -139,10 +140,22 @@ module Api
 
       protected
 
-      # translates API params to match internals
-      def parse_params!
+      def news_params
         params[:news][:raw_content] = params[:news].delete :content if params[:news].has_key? :content
         params[:news][:pubdate] = params[:news].delete :published_at if params[:news].has_key? :published_at
+        author_name = params[:news].delete :author_name
+        if @news.present? # update scenario, news already exists and has an author who may not be the current user
+          params[:news][:authors_is_created_by] = true if @news.created_by.try(:name) == author_name
+        elsif author_name == @current_api_user.name # @news hasn't been persisted yet so has no created_by
+          # which means the current user IS the author
+          params[:news][:authors_is_created_by] = true
+        end
+        unless params[:news][:authors_is_created_by]
+          params[:news][:authors_is_created_by] = false
+          params[:news][:authors] = author_name
+        end
+        params.require(:news).permit(:raw_content, :pubdate, :authors,
+                      :organization_id, :title, :subtitle, :authors_is_created_by)
       end
 
     end

@@ -10,9 +10,10 @@ RSpec.describe 'Organizations Endpoints', type: :request do
         organization: {
           id: organization.id,
           name: organization.name,
+          profile_title: organization.profile_title || organization.name,
           can_publish_news: organization.can_publish_news,
           subscribe_url: organization.subscribe_url,
-          logo_url: an_instance_of(String).or(be_nil),
+          logo_url: organization.logo_url,
           business_profile_id: a_kind_of(Fixnum).or(be_nil),
           description: organization.description,
           org_type: organization.org_type,
@@ -34,6 +35,23 @@ RSpec.describe 'Organizations Endpoints', type: :request do
         it 'is business_profile.id' do
           get "/api/v3/organizations/#{organization.id}"
           expect(subject).to eql business_profile.id
+        end
+      end
+    end
+
+    describe 'profile_title' do
+      subject { response_json[:organization][:profile_title] }
+      context 'when model.profile_title is empty' do
+        before do
+          organization.update(
+            name: "test name",
+            profile_title: nil
+          )
+        end
+
+        it 'is equal to name' do
+          get "/api/v3/organizations/#{organization.id}"
+          expect(subject).to eql organization.name
         end
       end
     end
@@ -91,6 +109,44 @@ RSpec.describe 'Organizations Endpoints', type: :request do
         it 'is false' do
           expect(subject).to eql false
         end
+      end
+    end
+  end
+
+  describe 'PATCH /api/v3/organizations/:id' do
+    let!(:organization) { FactoryGirl.create :organization }
+    context 'when signed in and able to manage' do
+      let(:user) { FactoryGirl.create :user }
+      let(:auth_headers) { auth_headers_for(user) }
+      let(:valid_params) {
+        {
+          name: 'Test name',
+          profile_title: 'An interesting title',
+          description: 'My biz description',
+          subscribe_url: 'http://link.to/somewhere'
+        }
+      }
+
+      before do
+        user.roles << Role.create!(name: 'manager', resource: organization)
+      end
+
+      it 'updates' do
+        expect{
+          patch "/api/v3/organizations/#{organization.id}",
+            {organization: valid_params},
+            auth_headers
+        }.to change{
+            organization.reload.attributes.symbolize_keys.slice(
+            :name, :profile_title, :subscribe_url,
+            :description
+          )
+        }.to({
+          name: valid_params[:name],
+          profile_title: valid_params[:profile_title],
+          subscribe_url: valid_params[:subscribe_url],
+          description: valid_params[:description]
+        })
       end
     end
   end

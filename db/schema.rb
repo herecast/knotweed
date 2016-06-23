@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160612182234) do
+ActiveRecord::Schema.define(version: 20160621032835) do
 
   create_table "annotation_reports", force: :cascade do |t|
     t.integer  "content_id",    limit: 4
@@ -312,8 +312,10 @@ ActiveRecord::Schema.define(version: 20160612182234) do
     t.text     "similar_content_overrides", limit: 65535
     t.integer  "banner_ad_override",        limit: 4
     t.integer  "root_parent_id",            limit: 4
-    t.datetime "deleted_at"
     t.boolean  "my_town_only",                            default: false
+    t.datetime "deleted_at"
+    t.boolean  "authors_is_created_by",                   default: false
+    t.boolean  "authors_is_created_by",                   default: false
   end
 
   add_index "contents", ["authoremail"], name: "index_contents_on_authoremail", using: :btree
@@ -612,6 +614,7 @@ ActiveRecord::Schema.define(version: 20160612182234) do
     t.text     "description",           limit: 65535
     t.string   "banner_ad_override",    limit: 255
     t.integer  "pay_rate_in_cents",     limit: 4
+    t.string   "profile_title",         limit: 255
   end
 
   add_index "organizations", ["name"], name: "index_publications_on_name", unique: true, using: :btree
@@ -655,6 +658,7 @@ ActiveRecord::Schema.define(version: 20160612182234) do
     t.integer  "daily_max_impressions",  limit: 4
     t.boolean  "boost",                              default: false
     t.integer  "daily_impression_count", limit: 4,   default: 0
+    t.boolean  "track_daily_metrics"
   end
 
   create_table "promotion_listservs", force: :cascade do |t|

@@ -1779,11 +1779,11 @@ describe Content, :type => :model do
       @content = FactoryGirl.create :content, authors: Faker::Name.name
       @content.update_column :created_by, nil
     end
+    let(:user) { FactoryGirl.create :user }
 
     subject { @content.author_name }
 
     context 'with `created_by` populated' do
-      let(:user) { FactoryGirl.create :user }
       before { @content.update_attribute :created_by, user }
 
       it 'should return the associated user\'s name' do
@@ -1796,8 +1796,47 @@ describe Content, :type => :model do
         expect(subject).to eq @content.authors
       end
     end
+
+    context 'for news UGC content' do
+      before do
+        @content.origin = Content::UGC_ORIGIN
+        @content.content_category = FactoryGirl.build :content_category, name: 'news'
+      end
+
+      context 'with authors populated' do
+        it { should eql @content.authors }
+      end
+
+      context 'without authors populated' do
+        before do
+          @content.created_by = user
+          @content.authors = nil
+        end
+        it { should be_blank }
+
+        context 'with authors_is_created_by true' do
+          before { @content.authors_is_created_by = true }
+
+          it { should eq user.name }
+        end
+      end
+    end
   end
 
+  describe '#is_news_ugc?' do
+    let(:news_cat) { FactoryGirl.build :content_category, name: 'news' }
+    subject { content.is_news_ugc? }
+    describe 'for news UGC' do
+      let (:content) { FactoryGirl.build :content, origin: Content::UGC_ORIGIN,
+                       content_category: news_cat }
+      it { should be true }
+    end
+
+    describe 'for other content' do
+      let(:content) { FactoryGirl.build :content }
+      it { should be false }
+    end
+  end
 
   private
 

@@ -157,7 +157,9 @@ describe EventsHelper, type: :helper do
       let(:end_date) { Chronic.parse("next week sunday") }
        
       it "returns the next occurrence date as event date" do
-        expect(subject[0]).to eq Chronic.parse("tommorow at 10am").strftime("%b %-d, %Y") +  "  " + start_time.strftime("%-l:%M %P") + " - " + (start_time+duration).strftime("%-l:%M %P") + " - " + subtitle
+        Timecop.freeze(Chronic.parse("11am")) do
+          expect(subject[0]).to eq Chronic.parse("tomorrow at 10am").strftime("%b %-d, %Y") +  "  " + start_time.strftime("%-l:%M %P") + " - " + (start_time+duration).strftime("%-l:%M %P") + " - " + subtitle
+        end
       end
     end
   end

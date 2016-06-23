@@ -9,24 +9,25 @@
 #  logo                  :string(255)
 #  organization_id       :integer
 #  website               :string(255)
-#  publishing_frequency  :string(255)
-#  notes                 :text
+#  notes                 :text(65535)
 #  parent_id             :integer
 #  category_override     :string(255)
-#  tagline               :text
-#  links                 :text
-#  social_media          :text
-#  general               :text
-#  header                :text
-#  pub_type              :string(255)
+#  org_type              :string(255)
 #  display_attributes    :boolean          default(FALSE)
 #  reverse_publish_email :string(255)
 #  can_reverse_publish   :boolean          default(FALSE)
+#  can_publish_news      :boolean          default(FALSE)
+#  subscribe_url         :string(255)
+#  description           :text(65535)
+#  profile_title         :string(255)
+#  banner_ad_override    :string(255)
 #
 
 require 'spec_helper'
 
 describe Organization, :type => :model do
+  it {is_expected.to have_db_column(:profile_title)}
+
   before do
     @organization = FactoryGirl.create(:organization)
   end

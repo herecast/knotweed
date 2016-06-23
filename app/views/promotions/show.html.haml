@@ -35,6 +35,9 @@
         %p
           %b Paid:
           = @promotion.paid
+        %p
+          %b Track daily metrics:
+          = @promotion.promotable.track_daily_metrics
       - elsif @promotion.promotable.is_a? PromotionListserv
         %p
           %b Listserv:
