@@ -5,10 +5,13 @@
 # is a mark that a full index is ongoing.
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-RAILS_ROOT="$SCRIPT_DIR/../.."
+RAILS_ROOT="${RAILS_ROOT:-$SCRIPT_DIR/../..}"
 LOG_FILE="$RAILS_ROOT/log/cron.log"
 INDEXTOOL_LOG="$RAILS_ROOT/log/indextool.log"
 CONFIG_FILE="$RAILS_ROOT/config/production.sphinx.conf"
+
+mkdir -p "$RAILS_ROOT/tmp"
+mkdir -p "$RAILS_ROOT/log"
 
 if [ -f $RAILS_ROOT/tmp/indexing.lock ]; then
   echo "$(date): Not merging because an indexer is in process. If you're sure it's not, remove $RAILS_ROOT/tmp/indexing.lock" >> $LOG_FILE
@@ -23,7 +26,7 @@ else
   x=0
   while [ "$x" -lt 100 -a -e $RAILS_ROOT/tmp/delta_indexing.lock ]; do
     x=$((x+1))
-    sleep 1 
+    sleep 1
   done
   # if indexing lock file is still present after waiting 100 seconds, exit without merging
   if [ -f $RAILS_ROOT/tmp/delta_indexing.lock ]; then

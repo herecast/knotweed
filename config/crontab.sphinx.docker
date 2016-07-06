@@ -1,0 +1,5 @@
+1-59 * * * * /bin/bash -l -c 'RAILS_ROOT=/sphinx_shared /indexing/delta_index.sh'
+
+0 1-23 * * * /bin/bash -l -c 'RAILS_ROOT=/sphinx_shared /indexing/merge_deltas.sh'
+
+0 0 * * * /bin/bash -l -c 'RAILS_ROOT=/sphinx_shared /indexing/full_index.sh'

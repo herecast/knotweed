@@ -36,8 +36,8 @@ class ImportJob < ActiveRecord::Base
   PARSER_PATH = "#{Rails.root}/lib/parsers"
 
   # these have to be kept as strings
-  BACKUP_START = Figaro.env.respond_to?(:backup_start) ? Figaro.env.backup_start : "2:45 am"
-  BACKUP_END = Figaro.env.respond_to?(:backup_end) ? Figaro.env.backup_end : "3:45 am"
+  BACKUP_START = Figaro.env.backup_start? ? Figaro.env.backup_start : "2:45 am"
+  BACKUP_END = Figaro.env.backup_end? ? Figaro.env.backup_end : "3:45 am"
 
   belongs_to :organization
   belongs_to :parser
@@ -48,13 +48,13 @@ class ImportJob < ActiveRecord::Base
   has_many :notifiers, as: :notifyable
   has_many :notifyees, through: :notifiers, class_name: "User", source: "user"
   has_and_belongs_to_many :consumer_apps
-  
-  
-  attr_accessible :config, :name, :parser_id, :source_path, :job_type, 
+
+
+  attr_accessible :config, :name, :parser_id, :source_path, :job_type,
                   :organization_id, :frequency, :archive, :content_set_id,
                   :run_at, :stop_loop, :automatically_publish, :repository_id,
                   :publish_method, :job_type, :consumer_app_ids
-  
+
   validates :status, inclusion: { in: %w(failed running success scheduled) }, allow_nil: true
 
   after_destroy :cancel_scheduled_runs
@@ -90,12 +90,12 @@ class ImportJob < ActiveRecord::Base
   end
 
   # delayed job action
-  # 
+  #
   # determines the process needed to run the import job (parser, scraping, etc.)
   # and activates it
   def perform
     # for now this is always true...but as we introduce import jobs via scrape, etc., it may change.
-    # we can include the logic for selecting what branch to descend (scrape, parse, etc.) here as it 
+    # we can include the logic for selecting what branch to descend (scrape, parse, etc.) here as it
     # is defined
     if parser.present?
       log = last_import_record.log_file
@@ -106,13 +106,13 @@ class ImportJob < ActiveRecord::Base
       end
     end
   end
-  
+
   # if config var RESCHEDULE_AT is set (to a number of seconds),
   # override delayed_job reschedule_at and schedule next attempt
   # using config var.
   # if not set, default to standard delayed_job behavior
   def reschedule_at(current_time, attempts)
-    if Figaro.env.respond_to? :reschedule_at and Figaro.env.reschedule_at.present?
+    if Figaro.env.reschedule_at? and Figaro.env.reschedule_at.present?
       current_time + Figaro.env.reschedule_at.to_i.seconds
     else # default delayed_job behavior
       current_time + attempts**4 + 5
@@ -123,7 +123,7 @@ class ImportJob < ActiveRecord::Base
   def enqueue(job)
     update_attribute(:status, "scheduled")
   end
-  
+
   def success(job)
     update_attribute(:status, "success")
   end
@@ -140,7 +140,7 @@ class ImportJob < ActiveRecord::Base
     update_attribute(:status, "failed")
     log.info "#{self.inspect}"
   end
-  
+
   def before(job)
     update_attribute(:status, "running")
     # set last_run_at regardless of success or failure
@@ -152,7 +152,7 @@ class ImportJob < ActiveRecord::Base
   def enqueue_job(specific_time=nil)
     Delayed::Job.enqueue self, queue: QUEUE, run_at: (specific_time || run_at)
   end
-  
+
   def traverse_input_tree
     # check if source_path is a url -- if it is
     # this is an rss feeder and we should
@@ -209,10 +209,10 @@ class ImportJob < ActiveRecord::Base
       update_attribute :stop_loop, false
     end
   end
-     
+
   # runs the parser's parse_file method on a file located at path
   # outputs an array of articles (if parser is correct)
-  # 
+  #
   def run_parser(path)
     load "#{PARSER_PATH}/#{parser.filename}"
     resp = parse_file(path, config)
@@ -246,7 +246,7 @@ class ImportJob < ActiveRecord::Base
           article["content"].slice!(0..content_start)
         end
       end
-        
+
       begin
         # filter out emails that we sent
         was_filtered = false
@@ -314,13 +314,13 @@ class ImportJob < ActiveRecord::Base
   end
 
   private
-    
+
     def update_prerender(records)
       # no need to prerender talk items since they are not sharable
       records.reject { |r| r.root_content_category.try(:name) == 'talk_of_the_town' }
       consumer_apps.each do |consumer_app|
         records.each do |content|
-          HTTParty.post("http://api.prerender.io/recache", body: {prerenderToken: Figaro.env.prerender_token, 
+          HTTParty.post("http://api.prerender.io/recache", body: {prerenderToken: Figaro.env.prerender_token,
                         url: consumer_app.uri + content.ux2_uri }.to_json,
                         :headers => {'Content-Type' => 'application/json'})
         end
