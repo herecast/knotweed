@@ -27,7 +27,7 @@ class Repository < ActiveRecord::Base
 
   # used to determine whether or not to mark contents "published"
   # defaults to 3, but can be overridden in app.yml
-  PRODUCTION_REPOSITORY_ID = Figaro.env.respond_to?(:production_repository_id) ? Figaro.env.production_repository_id.to_i : 3
+  PRODUCTION_REPOSITORY_ID = Figaro.env.production_repository_id? ? Figaro.env.production_repository_id.to_i : 3
 
   def self.production_repo
     Repository.find(PRODUCTION_REPOSITORY_ID)

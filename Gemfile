@@ -24,7 +24,7 @@ gem "devise", '~> 3.5.6'
 gem 'dimensions', '~> 1.3.0'
 gem 'enumerize', '~> 0.11.0'
 gem 'faker', '~> 1.6.1'
-gem "figaro", '~> 0.7.0'
+gem 'figaro', '~> 1.1', '>= 1.1.1'
 gem "fog", '~> 1.38.0'
 gem 'forecast_io', '~> 2.0.0'
 gem 'geocoder', '~> 1.2.4'
@@ -71,6 +71,7 @@ gem "turbolinks", '~> 2.2.0'
 gem 'uglifier', '~> 2.4.0'
 gem 'unf', '~> 0.1.3'
 gem 'whenever', '~> 0.9.2', :require => false
+gem 'puma', '~> 3.4'
 
 group :development, :test do
   gem "factory_girl_rails", "~> 4.4.0"
@@ -91,10 +92,6 @@ group :test do
   gem "webmock", '~> 1.17.4'
 end
 
-group :rubymine,:development do
- 	gem "thin", '~> 1.6.3'
-end
-
 group :development do
   gem "annotate", '~> 2.6.5'
   gem "better_errors", '~> 0.9.0'
@@ -109,4 +106,3 @@ group :pry do
   #gem "pry-debugger", '~> 0.2.3'
   gem "pry-rails", '~> 0.3.4'
 end
-

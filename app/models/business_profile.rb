@@ -42,7 +42,7 @@ class BusinessProfile < ActiveRecord::Base
     :existence, :archived
 
   def claimed?
-    content.present? && content.organization.present? && content.organization.org_type == 'Business'
+    content.present? && organization.present?
   end
 
   def update_feedback_cache!

@@ -1,0 +1,9 @@
+FROM phusion/baseimage:0.9.18
+RUN apt-get update && apt-get install software-properties-common -y
+RUN add-apt-repository ppa:builds/sphinxsearch-rel22
+RUN apt-get update && apt-get install sphinxsearch cron -y
+RUN mkdir -p /knotweed/log
+ADD lib/indexing/ /indexing
+ADD docker-run-sphinx.sh /
+ADD config/crontab.sphinx.docker /crontab
+RUN crontab /crontab

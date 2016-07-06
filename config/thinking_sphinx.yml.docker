@@ -1,0 +1,11 @@
+production:
+  pid_file: /tmp/searchd.pid
+  indices_location: /sphinx_shared/db/sphinx
+  configuration_file: /sphinx_shared/config/production.sphinx.conf
+  binlog_path: ""
+  query_log_format: sphinxql # stage/qa only
+  dist_threads: 2
+  mem_limit: 1024M
+  morphology: stem_en
+  mysql41: 9608 # port of choice
+  address: <%= ENV['SPHINX_PORT_9608_TCP_ADDR'] %>

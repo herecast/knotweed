@@ -145,7 +145,7 @@ describe ImportJob, :type => :model do
 
     context "when reschedule_at is set" do
       it "returns a set reschedule time" do
-        allow_any_instance_of(Figaro::Env).to receive(:reschedule_at).and_return('10')
+        allow_any_instance_of(Figaro::ENV).to receive(:reschedule_at).and_return('10')
         response = @import_job.reschedule_at(DateTime.current, 1)
         expect(response.to_s).to eq (DateTime.current + 10.seconds).to_s
       end
@@ -153,7 +153,7 @@ describe ImportJob, :type => :model do
 
     context "when no reschedule_at environmental variable" do
       it "returns a fabricated reschedule time" do
-        allow_any_instance_of(Figaro::Env).to receive(:reschedule_at).and_return(nil)
+        allow_any_instance_of(Figaro::ENV).to receive(:reschedule_at).and_return(nil)
         response = @import_job.reschedule_at(DateTime.current, 1)
         expect(response.to_s).to eq (DateTime.current + 6).to_s
       end
