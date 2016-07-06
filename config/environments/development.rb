@@ -36,9 +36,5 @@ Knotweed::Application.configure do
   # Expands the lines which load the assets
   config.assets.debug = true
 
-  # Set if not pre-compiling assets
-  config.assets.compile = true
-  config.serve_static_files = true
-
   config.active_record.raise_in_transactional_callbacks = true
 end

@@ -28,9 +28,8 @@
           %p= @business_profile.business_location.try(:email)
           %p
             %b Business Hours:
-          - if @business_profile.business_location.try(:hours).class == Array
-            - @business_profile.business_location.try(:hours).each do |hour_set|
-              %p=hour_set
+          - @business_profile.business_location.try(:hours).each do |hour_set|
+            %p=hour_set
       .form-actions
         - if @business_profile.claimed?
           = link_to 'Edit', edit_business_profile_path(@business_profile), class: 'btn btn-primary'

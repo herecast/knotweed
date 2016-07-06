@@ -4,13 +4,10 @@
 # Outputs to #{Rails.root}/log/cron.log.
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-RAILS_ROOT="${RAILS_ROOT:-$SCRIPT_DIR/../..}"
+RAILS_ROOT="$SCRIPT_DIR/../.."
 LOG_FILE="$RAILS_ROOT/log/cron.log"
 INDEXTOOL_LOG="$RAILS_ROOT/log/indextool.log"
 CONFIG_FILE="$RAILS_ROOT/config/production.sphinx.conf"
-
-mkdir -p "$RAILS_ROOT/tmp"
-mkdir -p "$RAILS_ROOT/log"
 
 if [ -f $RAILS_ROOT/tmp/merging.lock ]; then
   echo "$(date): Skipping delta index because merging is in process. If you're sure it's not, remove $RAILS_ROOT/tmp/merging.lock" >> $LOG_FILE

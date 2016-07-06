@@ -1,7 +1,7 @@
 class ModerationMailer < ActionMailer::Base
 
   MODERATION_EMAIL_RECIPIENT = 'flags@subtext.org'
-  BUSINESS_MODERATION_EMAIL_RECIPIENT = Figaro.env.business_moderation_email? ? Figaro.env.business_moderation_email \
+  BUSINESS_MODERATION_EMAIL_RECIPIENT = Figaro.env.respond_to?(:business_moderation_email) ? Figaro.env.business_moderation_email \
     : MODERATION_EMAIL_RECIPIENT
   MODERATION_EMAIL_SENDER = 'noreply@dailyuv.com'
 

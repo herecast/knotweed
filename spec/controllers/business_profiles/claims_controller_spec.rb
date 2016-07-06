@@ -16,7 +16,7 @@ describe BusinessProfiles::ClaimsController, type: :controller do
         subject
         @business_profile.reload
         expect(@business_profile.content.channel_type).to eq 'BusinessProfile'
-        expect(@business_profile.content.organization.org_type).to be_truthy
+        expect(@business_profile.content.organization.org_type).to eq 'Business'
         expect(@business_profile.claimed?).to be true
       end
     end

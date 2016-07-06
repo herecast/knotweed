@@ -48,29 +48,6 @@ describe BusinessProfile, :type => :model do
     end
   end
 
-  describe '#claimed?' do
-    before do
-      @business_profile = FactoryGirl.create :business_profile
-    end
-
-    context "when business is not claimed" do
-      it "returns false" do
-        expect(@business_profile.claimed?).to be false
-      end
-    end
-
-    context "when business is claimed" do
-      before do
-        @business_profile.content = FactoryGirl.create :content
-        @business_profile.content.organization = FactoryGirl.create :organization
-      end
-
-      it "returns true" do
-        expect(@business_profile.claimed?).to be true
-      end
-    end
-  end
-
   describe 'convert_hours_to_standard' do
     context 'from factual format' do
       # a bunch of examples that cover the Factual import data:

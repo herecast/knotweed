@@ -148,7 +148,7 @@ class Content < ActiveRecord::Base
   # channel relationships
   belongs_to :channel, polymorphic: true, inverse_of: :content
 
-  TMP_EXPORT_PATH = Rails.root + "tmp/exports"
+  TMP_EXPORT_PATH = Rails.root + "/tmp/exports"
 
   scope :events, -> { joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",
                                                      "event", "sale_event") }

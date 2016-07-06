@@ -16,11 +16,11 @@ module Knotweed
 
     # don't generate RSpec tests for views and helpers
     config.generators do |g|
-
+      
       g.test_framework :rspec, fixture: true
       g.fixture_replacement :factory_girl, dir: 'spec/factories'
-
-
+      
+      
       g.view_specs false
       g.helper_specs false
     end
@@ -69,10 +69,6 @@ module Knotweed
 
     # Enable the asset pipeline
     config.assets.enabled = true
-
-    # Set if not pre-compiling assets
-    config.assets.compile = !!ENV.fetch('ASSETS_COMPILE', false)
-    config.serve_static_files = !!ENV.fetch('SERVE_STATIC_FILES', false)
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'

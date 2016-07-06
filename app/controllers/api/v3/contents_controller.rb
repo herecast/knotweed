@@ -46,8 +46,8 @@ module Api
         @contents.reject!{ |c| c.pubdate.nil? or c.pubdate >= Time.zone.now }
 
         # This is a Bad temporary hack to allow filtering the sim stack provided by apiv2
-        # the same way that the consumer app filters it.
-        if Figaro.env.sim_stack_categories?
+        # the same way that the consumer app filters it. 
+        if Figaro.env.respond_to? :sim_stack_categories
           @contents.select! do |c|
             Figaro.env.sim_stack_categories.include? c.content_category.name
           end
@@ -199,7 +199,7 @@ module Api
       def metrics
         @content = Content.find(params[:id])
         authorize! :manage, @content
-        render json: @content, serializer: ContentMetricsSerializer,
+        render json: @content, serializer: ContentMetricsSerializer, 
           context: {start_date: params[:start_date], end_date: params[:end_date]}
       end
 
