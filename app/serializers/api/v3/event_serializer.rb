@@ -9,7 +9,7 @@ module Api
         :event_url, :schedules,
         :registration_deadline, :registration_url,
         :registration_phone, :registration_email,
-        :first_instance_id, :category
+        :first_instance_id, :category, :owner_name
 
       # this is funky but without it, active model serializer tries to use the URL helper
       # event_url instead of the attribute.

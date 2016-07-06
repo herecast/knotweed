@@ -25,7 +25,7 @@
 #
 
 class Event < ActiveRecord::Base
-  extend Enumerize 
+  extend Enumerize
 
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
@@ -58,7 +58,7 @@ class Event < ActiveRecord::Base
   # validates_presence_of :content_id
 
   attr_accessible :content, :cost, :event_type, :event_url, :featured,
-    :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email, 
+    :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email,
     :cost_type, :event_category, :social_enabled, :registration_deadline,
     :registration_url, :registration_phone, :registration_email
 
@@ -113,8 +113,8 @@ class Event < ActiveRecord::Base
     end
   end
 
-  # because the text field of the Content model is called "content" 
-  # we can't use our method_missing override to access it, 
+  # because the text field of the Content model is called "content"
+  # we can't use our method_missing override to access it,
   # so this method just calls content.content
   def description
     content.content
@@ -151,7 +151,7 @@ class Event < ActiveRecord::Base
     begin
       Event.transaction do
         self.update_attributes!(event_hash)
-        schedules.each do |s| 
+        schedules.each do |s|
           if s._remove
             s.destroy
           else
@@ -161,6 +161,15 @@ class Event < ActiveRecord::Base
       end
     rescue ActiveRecord::RecordInvalid
       false
+    end
+  end
+
+  def owner_name
+    if organization.present? and organization.name != "DailyUV"
+      # this prevents DailyUV from "owning" imported events on the edit page
+      organization.name
+    elsif content.try(:created_by)
+      content.created_by.name || content.created_by.email
     end
   end
 

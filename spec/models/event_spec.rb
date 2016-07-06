@@ -82,4 +82,40 @@ describe Event, :type => :model do
     end
   end
 
+  describe '#owner_name' do
+    context "when organization owns event" do
+      before do
+        @organization = FactoryGirl.create :organization, name: 'Fake Org'
+        @content.update_attribute(:organization_id, @organization.id)
+      end
+
+      it "owner is organization name" do
+        expect(@event.owner_name).to eq @organization.name
+      end
+    end
+
+    context "when no organization owns an event but a user created it" do
+      before do
+        @user = FactoryGirl.create :user, name: 'Hodor'
+        @content.update_attribute(:created_by, @user)
+        @content.update_attribute(:organization_id, nil)
+      end
+
+      it "owner is user name" do
+        expect(@event.owner_name).to eq @user.name
+      end
+    end
+
+    context "when no organization owns event and created_by is nil" do
+      before do
+        @content.update_attribute(:organization_id, nil)
+        @content.update_attribute(:created_by, nil)
+      end
+
+      it "returns nil" do
+        expect(@event.owner_name).to be_nil
+      end
+    end
+  end
+
 end
