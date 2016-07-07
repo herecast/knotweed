@@ -26,7 +26,8 @@
         Select parameters to determine which contents will be published by this job.
     .span6.offset1
       #query_params_errors
-        = f.input :query_params, label: false, input_html: { style: "display: none;" }
+        - if @publish_job.persisted?
+          = f.input :query_params, label: false, input_html: { style: "display: none;" }
       #id-list
         = label_tag "ids", "Content IDs (comma-separated list, e.g. '3,7,9')"
         = text_field_tag "ids", @publish_job.query_params[:ids], class: "input-block-level"

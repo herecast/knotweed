@@ -69,7 +69,7 @@ Knotweed::Application.routes.draw do
 
   get 'contacts/new(/:model(/:id))', to: "contacts#new", as: :new_contact
 
-  get 'publish_jobs/contents_count' => "publish_jobs#contents_count", as: :contents_count
+  post 'publish_jobs/contents_count' => "publish_jobs#contents_count", as: :contents_count
   get 'publish_jobs/contents_count/:id' => "publish_jobs#job_contents_count", as: :job_contents_count
   get 'publish_jobs/:id/file_archive.zip' => "publish_jobs#file_archive", as: :job_file_archive
 

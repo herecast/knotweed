@@ -28,7 +28,7 @@ class PublishJobsController < ApplicationController
       @publish_job.query_params[key.to_sym] = params[key]
     end
 
-    if @publish_job.update_attributes(params[:publish_job])
+    if @publish_job.update_attributes(publish_job_params)
       subscribe_user(@publish_job)
       redirect_to publish_jobs_path
     else
@@ -44,7 +44,7 @@ class PublishJobsController < ApplicationController
     PublishJob::QUERY_PARAMS_FIELDS.each do |key|
       @publish_job.query_params[key.to_sym] = params[key]
     end
-    if @publish_job.save and @publish_job.update_attributes(params[:publish_job])
+    if @publish_job.save and @publish_job.update_attributes(publish_job_params)
       redirect_to publish_jobs_path
     else
       flash.now[:error] = "Could not save publish job"
@@ -60,5 +60,11 @@ class PublishJobsController < ApplicationController
       raise ActionController::RoutingError.new("Not Found")
     end
   end
+
+  private
+
+    def publish_job_params
+      params.require(:publish_job).permit(:name, :description, :publish_method, :run_at, :frequency, :query_params)
+    end
 
 end
