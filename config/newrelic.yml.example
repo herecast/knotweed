@@ -4,7 +4,7 @@
 # overhead.  For more information, visit www.newrelic.com.
 #
 # Generated August 24, 2015
-# 
+#
 # This configuration file is custom generated for Subtext Media Ltd
 #
 # For full documentation of agent configuration options, please refer to
@@ -12,7 +12,7 @@
 
 common: &default_settings
   # Required license key associated with your New Relic account.
-  license_key: 365a5702b2cc1d528202735e4127cae70a2d6980
+  license_key: LICENSE_KEY_HERE
 
   # Your application name. Renaming here affects where data displays in New
   # Relic.  For more details, see https://docs.newrelic.com/docs/apm/new-relic-apm/maintenance/renaming-applications
