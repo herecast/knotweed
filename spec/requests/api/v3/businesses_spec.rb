@@ -287,6 +287,7 @@ describe 'Businesses Endpoints', type: :request do
             lat: an_instance_of(Float),
             lng: an_instance_of(Float)
           },
+          has_rated: be_in([true, false])
         )
       end
     end

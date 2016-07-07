@@ -5,7 +5,7 @@ module Api
       attributes :id, :organization_id, :name, :phone, :email, :website,
         :address, :city, :state, :zip, :has_retail_location, :coords, :service_radius,
         :hours, :details, :logo, :images, :category_ids, :feedback, :feedback_num,
-        :can_edit
+        :can_edit, :has_rated
 
       def name
         object.business_location.name
@@ -54,6 +54,10 @@ module Api
         else
           false
         end
+      end
+
+      def has_rated
+        context[:current_user].present? && BusinessFeedback.find_by(created_by: context[:current_user].try(:id), business_profile_id: object.id).present?
       end
 
       def feedback

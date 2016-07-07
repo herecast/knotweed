@@ -48,13 +48,13 @@ module Api
         @business_profiles = BusinessProfile.search(params[:query], opts)
 
         render json: @business_profiles, each_serializer: BusinessProfileSerializer,
-          root: 'businesses', context: {current_ability: current_ability}, meta: {total: @business_profiles.total_entries}
+          root: 'businesses', context: {current_ability: current_ability, current_user: current_user}, meta: {total: @business_profiles.total_entries}
       end
 
       def show
         @business_profile = BusinessProfile.find(params[:id])
         render json: @business_profile, serializer: BusinessProfileSerializer,
-          root: 'business', context: {current_ability: current_ability}
+          root: 'business', context: {current_ability: current_ability, current_user: current_user}
       end
 
       def create
@@ -64,7 +64,7 @@ module Api
         @business_profile.content.id = Time.current.to_i
         @business_profile.organization.id = Time.current.to_i
         render json: @business_profile, serializer: BusinessProfileSerializer,
-          status: 201, root: 'business', context: {current_ability: current_ability}
+          status: 201, root: 'business', context: {current_ability: current_ability, current_user: current_user}
         #if @business_profile.save
         #  render json: @business_profile, serializer: BusinessProfileSerializer,
         #    status: 201, root: 'business'
@@ -85,7 +85,7 @@ module Api
         else
           if @business_profile.update_attributes(business_profile_attributes)
             render json: @business_profile, serializer: BusinessProfileSerializer,
-              root: 'business', context: {current_ability: current_ability}
+              root: 'business', context: {current_ability: current_ability, current_user: current_user}
           else
             render json: { errors: @business_profile.errors.messages },
               status: :unprocessable_entity
