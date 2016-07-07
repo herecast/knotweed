@@ -11,16 +11,14 @@
 #  website               :string(255)
 #  notes                 :text(65535)
 #  parent_id             :integer
-#  category_override     :string(255)
 #  org_type              :string(255)
-#  display_attributes    :boolean          default(FALSE)
-#  reverse_publish_email :string(255)
 #  can_reverse_publish   :boolean          default(FALSE)
 #  can_publish_news      :boolean          default(FALSE)
 #  subscribe_url         :string(255)
 #  description           :text(65535)
 #  profile_title         :string(255)
 #  banner_ad_override    :string(255)
+#  pay_rate_in_cents     :integer
 #
 
 class Organization < ActiveRecord::Base
@@ -44,17 +42,14 @@ class Organization < ActiveRecord::Base
   has_and_belongs_to_many :contacts
   has_and_belongs_to_many :locations
   has_and_belongs_to_many :consumer_apps
-  has_and_belongs_to_many :external_categories,
-        class_name: "ContentCategory"
 
   has_many :promotions, inverse_of: :organization
 
   attr_accessible :name, :logo, :logo_cache, :remove_logo, :organization_id,
                   :website, :notes, :images_attributes, :parent_id, :location_ids,
-                  :remote_logo_url, :contact_ids, :category_override,
-                  :org_type, :display_attributes, :reverse_publish_email,
-                  :consumer_app_ids, :external_category_ids, :can_publish_news,
-                  :subscribe_url, :description, :banner_ad_override, :pay_rate_in_cents, :profile_title
+                  :remote_logo_url, :contact_ids, :org_type, :consumer_app_ids,
+                  :can_publish_news, :subscribe_url, :description,
+                  :banner_ad_override, :pay_rate_in_cents, :profile_title
 
   mount_uploader :logo, ImageUploader
 
@@ -67,7 +62,6 @@ class Organization < ActiveRecord::Base
   BLOGGER_PAY_RATES = [5, 8]
 
   validates_uniqueness_of :name
-  validates_uniqueness_of :reverse_publish_email, allow_nil: true, allow_blank: true
   validates_presence_of :name
   validates :logo, :image_minimum_size => true
 
