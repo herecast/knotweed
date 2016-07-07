@@ -22,6 +22,8 @@
           %p
             %b Phone
           %p= @business_profile.business_location.try(:phone)
+          %b Archive(d)
+          = render partial: 'business_profiles/partials/archive_form', locals: { business: @business_profile }
         .span6
           %p
             %b Email:

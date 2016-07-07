@@ -1,0 +1,6 @@
+- if business.archived
+  = form_for business, url: business_profiles_archiving_path(id: business.id), method: :delete do |f|
+    = f.check_box :archived, 'data-state' => "archived#{'-claimed' if business.claimed?}"
+- else
+  = form_for business, url: business_profiles_archivings_path(id: business.id), method: :post do |f|
+    = f.check_box :archived, 'data-state' => "active#{'-claimed' if business.claimed?}"

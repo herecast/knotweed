@@ -68,10 +68,4 @@
           - else
             = link_to "claim", business_profiles_claims_path(id: c.id), method: :post, class: "btn btn-mini btn-warning"
         %td
-          - if !c.claimed?
-            - if c.archived
-              = form_for c, url: business_profiles_archiving_path(id: c.id), method: :delete do |f|
-                = f.check_box :archived
-            - else
-              = form_for c, url: business_profiles_archivings_path(id: c.id), method: :post do |f|
-                = f.check_box :archived
+          = render partial: 'business_profiles/partials/archive_form', locals: { business: c }

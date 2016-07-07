@@ -16,8 +16,8 @@ class BusinessProfiles::ClaimsController < ApplicationController
       organization.update_attribute(:org_type, 'Business') if organization.org_type.nil?
       business_profile.content.update_attribute(:organization_id, organization.id)
       ConsumerApp.all.each { |ca| organization.consumer_apps << ca }
-      business_profile.update_attribute(:existence, 1.0)
-
+      business_profile.update_attributes(existence: 1.0, archived: false)
+      
       flash[:notice] = "#{business_profile.business_location.name} has been claimed"
       redirect_to edit_business_profile_path(id: business_profile.id, anchor: 'managers')
     else

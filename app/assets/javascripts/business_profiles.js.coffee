@@ -21,7 +21,12 @@ jQuery ->
 
 jQuery ->
   $('.edit_business_profile #business_profile_archived').on 'change', ->
-    $(this.form).submit()
+    state = $(this).attr('data-state')
+    if state.includes('active') and state.includes('claimed')
+      c = confirm('Archive this business and delete its organization and profile records? (This action cannot be undone.)')
+      if c then $(this.form).submit() else $(this).prop('checked', false)
+    else
+      $(this.form).submit()
 
 jQuery ->
   $('.nav-tabs a[data-target="#managers"]').tab('show') if window.location.hash == '#managers'
