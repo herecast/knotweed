@@ -31,7 +31,6 @@ module Api
         end
       end
 
-      # this will likely need to change as role authorization gets more complex
       def managed_organization_ids
         if context.present? and context[:current_ability]
           if context[:consumer_app]
@@ -39,7 +38,8 @@ module Api
           else
             scope = Organization
           end
-          scope.accessible_by(context[:current_ability], :manage).pluck(:id)
+          orgs = scope.with_role(:manager, object)
+          (orgs + orgs.map{|o| o.get_all_children}.flatten).map{|o| o.id}.uniq
         else
           []
         end
