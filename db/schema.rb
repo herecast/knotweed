@@ -604,10 +604,7 @@ ActiveRecord::Schema.define(version: 20160621032835) do
     t.string   "website",               limit: 255
     t.text     "notes",                 limit: 65535
     t.integer  "parent_id",             limit: 4
-    t.string   "category_override",     limit: 255
     t.string   "org_type",              limit: 255
-    t.boolean  "display_attributes",                  default: false
-    t.string   "reverse_publish_email", limit: 255
     t.boolean  "can_reverse_publish",                 default: false
     t.boolean  "can_publish_news",                    default: false
     t.string   "subscribe_url",         limit: 255

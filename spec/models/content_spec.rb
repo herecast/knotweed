@@ -393,16 +393,6 @@ describe Content, :type => :model do
       expect(Content.count).to eq(1)
     end
 
-    it "should match organization based on 'source'" do
-      organization = FactoryGirl.create(:organization, reverse_publish_email: "test@test.com")
-      data = @base_data.merge({
-        source: organization.reverse_publish_email,
-        source_field: "reverse_publish_email"
-      })
-      content = Content.create_from_import_job(data)
-      expect(content.organization).to eq(organization)
-    end
-
     it "should mark non-valid corpus entries as quarantined" do
       content = Content.create_from_import_job(@base_data)
       expect(content.quarantine).to eq(true)
@@ -888,11 +878,6 @@ describe Content, :type => :model do
       end
     end
 
-    it "should use the organization's category_override if that is set" do
-      @content.organization.update_attribute :category_override, "Test Category"
-      expect(@content.to_new_xml.include?("Test Category")).to be_truthy
-    end
-
     it "should use the category-mapping instead of source_category if available" do
       cat = FactoryGirl.create(:category)
       @content.update_attribute :source_category, cat.name
@@ -999,13 +984,6 @@ describe Content, :type => :model do
     end
 
     subject { @content.publish_category }
-
-    describe "if organization.category_override is set" do
-      it "should return organization.category_override" do
-        @content.organization.update_attribute :category_override, "Test Override"
-        expect(subject).to eq("Test Override")
-      end
-    end
 
     describe "with source_category and category set" do
       it "should return category" do

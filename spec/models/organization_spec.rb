@@ -11,10 +11,7 @@
 #  website               :string(255)
 #  notes                 :text(65535)
 #  parent_id             :integer
-#  category_override     :string(255)
 #  org_type              :string(255)
-#  display_attributes    :boolean          default(FALSE)
-#  reverse_publish_email :string(255)
 #  can_reverse_publish   :boolean          default(FALSE)
 #  can_publish_news      :boolean          default(FALSE)
 #  subscribe_url         :string(255)

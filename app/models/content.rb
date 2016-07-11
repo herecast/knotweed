@@ -1010,9 +1010,7 @@ class Content < ActiveRecord::Base
 
   # helper to retrieve the category that the content should be published with
   def publish_category
-    if organization.present? and organization.category_override.present?
-      organization.category_override
-    elsif category.present?
+    if organization.present? and category.present?
       category
     else 
       c = Category.find_or_create_by(name: source_category)
