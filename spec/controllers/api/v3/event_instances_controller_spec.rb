@@ -149,6 +149,17 @@ describe Api::V3::EventInstancesController, :type => :controller do
           expect(assigns(:event_instances)).to eql([@e_less_future])
         end
       end
+
+      describe "meta[:total]" do
+
+        subject { get :index }
+
+        it "returns total event instances matching search criteria" do
+          subject
+          payload = JSON.parse(response.body)
+          expect(payload['meta']['total']).to eq 2
+        end
+      end
     end
 
     describe 'category' do
