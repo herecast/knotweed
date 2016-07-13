@@ -17,7 +17,8 @@
 class Image < ActiveRecord::Base
   include Rails.application.routes.url_helpers
 
-  belongs_to :imageable, polymorphic: true, inverse_of: :images
+  belongs_to :imageable, polymorphic: true, inverse_of: :images,
+    touch: true
 
   attr_accessible :caption, :credit, :image, :image_cache, :remove_image,
                   :imageable_id, :imageable_type, :remote_image_url,
