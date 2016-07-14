@@ -56,6 +56,18 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
         expect{ @business_profile.organization }.to raise_error(Module::DelegationError)
       end
     end
+
+    context "when BusinessProfile has no content" do
+      before do
+        allow_any_instance_of(BusinessProfile).to receive(:content).and_return nil
+      end
+
+      it "archives BusinessProfile" do
+        subject
+        @business_profile.reload
+        expect(@business_profile.archived).to be true
+      end
+    end
   end
 
   describe 'DELETE :destroy' do

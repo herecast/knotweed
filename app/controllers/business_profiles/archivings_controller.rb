@@ -29,7 +29,7 @@ class BusinessProfiles::ArchivingsController < ApplicationController
 
     def prevent_deletion_of_published_content
       @business_profile = BusinessProfile.find_by(id: params[:id])
-      if @business_profile.content.published?
+      if @business_profile.content.try(:published?)
         flash[:warning] = "Cannot delete business with published content"
         redirect_to business_profiles_path
       end
