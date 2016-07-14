@@ -1,20 +1,36 @@
 class BusinessProfiles::ManagersController < ApplicationController
 
   def create
-    business_profile = BusinessProfile.find_by(id: params[:business_profile_id])
+    get_organization
     user = User.find_by(id: params[:user_id])
-    org = business_profile.content.organization
-    user.add_role :manager, org
+    user.add_role :manager, @org
     flash[:alert] = "#{user.email} has been added as manager"
-    redirect_to edit_business_profile_path(business_profile)
+    smart_redirect
   end
 
   def destroy
-    business_profile = BusinessProfile.find_by(id: params[:id])
+    get_organization
     user = User.find_by(id: params[:user_id])
-    org = business_profile.content.organization
-    user.remove_role :manager, org
+    user.remove_role :manager, @org
     flash[:alert] = "#{user.email} has been removed as manager"
-    redirect_to edit_business_profile_path(business_profile)
+    smart_redirect
   end
+
+  private
+
+    def get_organization
+      if params[:organization_id].present?
+        @org = Organization.find(params[:organization_id])
+      else
+        @org = BusinessProfile.find(params[:business_profile_id]).content.organization
+      end
+    end
+
+    def smart_redirect
+      if params[:organization_id].present?
+        redirect_to(edit_organization_path(@org))
+      else
+        redirect_to(edit_business_profile_path(BusinessProfile.find(params[:business_profile_id])))
+      end
+    end
 end

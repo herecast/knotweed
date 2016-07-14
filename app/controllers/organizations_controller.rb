@@ -18,6 +18,8 @@ class OrganizationsController < ApplicationController
   end
 
   def new
+    @users = User.all
+    get_managers
     if params[:short_form]
       render partial: "organizations/partials/short_form", layout: false
     else
@@ -26,6 +28,8 @@ class OrganizationsController < ApplicationController
   end
 
   def edit
+    @users = User.all
+    get_managers
     @contact = Contact.new
   end
 
@@ -100,15 +104,19 @@ class OrganizationsController < ApplicationController
 
   protected
 
-  def organization_params
-    params.require(:organization).permit(
-      :name, :logo, :logo_cache, :remove_logo, :organization_id,
-      :website, :notes, :images_attributes, :parent_id, :location_ids,
-      :remote_logo_url, :contact_ids, :org_type,
-      :consumer_app_ids, :can_publish_news, :subscribe_url,
-      :description, :banner_ad_override, :pay_rate_in_cents,
-      :consumer_app_ids => [], :location_ids => []
-    )
-  end
+    def organization_params
+      params.require(:organization).permit(
+        :name, :logo, :logo_cache, :remove_logo, :organization_id,
+        :website, :notes, :images_attributes, :parent_id, :location_ids,
+        :remote_logo_url, :contact_ids, :org_type,
+        :consumer_app_ids, :can_publish_news, :subscribe_url,
+        :description, :banner_ad_override, :pay_rate_in_cents,
+        :consumer_app_ids => [], :location_ids => []
+      )
+    end
+
+    def get_managers
+      @managers = User.with_role(:manager, @organization)
+    end
 
 end

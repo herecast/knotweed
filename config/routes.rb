@@ -29,7 +29,8 @@ Knotweed::Application.routes.draw do
   resources :market_posts, except: [:destroy]
   resources :business_profiles, except: [:destroy]
   namespace :business_profiles do
-    resources :managers, only: [:create, :destroy]
+    resources :managers, only: [:create]
+    delete '/managers', to: 'managers#destroy', as: 'delete_manager'
     resources :archivings, only: [:create, :destroy]
     resources :claims, only: [:create]
   end

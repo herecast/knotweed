@@ -133,7 +133,7 @@
                         %td= m.id
                         %td= m.name
                         %td= m.email
-                        %td= link_to 'remove', business_profiles_manager_path(id: @business_profile.id, user_id: m.id), method: :delete, class: 'btn btn-mini btn-warning'
+                        %td= link_to 'remove', business_profiles_delete_manager_path(business_profile_id: @business_profile.id, user_id: m.id), method: :delete, class: 'btn btn-mini btn-warning'
                   - else
                     %td No managers yet
             %h3 Search Users

@@ -19,6 +19,9 @@
           Promote Locations
       - if @organization.id
         %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#managers" } do
+            Managers
+        %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#issues" } do
             Issues
         %li
@@ -107,6 +110,47 @@
             .span2.text-left
               = link_to "deselect all", "#", id: "deselect-all-locs"
       - if @organization.id
+        .tab-pane#managers
+          .row-fluid
+            %h2 Organization Managers
+            .span12
+              %table.table.table-striped.table-hover.table-condensed
+                %thead
+                  %tr
+                    %th Id
+                    %th Name
+                    %th Email
+                    %th Remove
+                %tbody
+                  - if @managers.present?
+                    - @managers.each do |m|
+                      %tr
+                        %td= m.id
+                        %td= m.name
+                        %td= m.email
+                        %td= link_to 'remove', business_profiles_delete_manager_path(organization_id: @organization.id, user_id: m.id), method: :delete, class: 'btn btn-mini btn-warning'
+                  - else
+                    %tr
+                      %td No managers yet
+            %h3 Search Users
+            .span12
+              %table.table.table-striped.table-hover.data-table
+                %thead
+                  %tr
+                    %th Id
+                    %th Name
+                    %th Email
+                    %th Add as Manager
+                %tbody
+                  - @users.each do |user|
+                    - unless @managers.present? and @managers.include?(user)
+                      %tr  
+                        %td= user.id
+                        %td= user.name
+                        %td= user.email
+                        %td.actions
+                          = link_to 'add', business_profiles_managers_path(organization_id: @organization.id, user_id: user.id), method: :post, class: 'btn btn-mini btn-warning'
+
         .tab-pane#issues
           .pull-right
             = link_to "+ Add New Issue", "#", class: "btn btn-success", data: { toggle: "modal", target: "#issue_form", form_url: new_issue_path({organization_id: @organization.id}) }, id: "new_issue_button"

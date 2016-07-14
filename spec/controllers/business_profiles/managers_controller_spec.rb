@@ -13,23 +13,50 @@ describe BusinessProfiles::ManagersController, type: :controller do
 
   describe "POST #create" do
 
-    subject { post :create, business_profile_id: @business_profile.id, user_id: @user.id }
+    context "when toggled through business profile interface" do
 
-    it "adds user to business profile as manager" do
-      subject
-      @user.reload
-      expect(@user.roles.last.resource_type).to eq 'Organization'
-      expect(@user.roles.last.resource_id).to eq @organization.id
+      subject { post :create, business_profile_id: @business_profile.id, user_id: @user.id }
+
+      it "adds user to business profile organization as manager" do
+        subject
+        @user.reload
+        expect(@user.has_role?(:manager, @organization)).to be true
+      end
+    end
+
+    context "when toggled through organization interface" do
+
+      subject { post :create, organization_id: @organization.id, user_id: @user.id }
+
+      it "adds user to organization as manager" do
+        subject
+        @user.reload
+        expect(@user.has_role?(:manager, @organization)).to be true
+      end
     end
   end
 
   describe "DELETE #destroy" do
-
-    subject { delete :destroy, id: @business_profile.id, user_id: @user.id }
-
-    it "removes user as business profile manager" do
+    before do
       @user.add_role :manager, @organization
-      expect{ subject }.to change{ @user.roles.count }.by -1
     end
+
+    context "when toggled through business profile interface" do
+
+      subject { delete :destroy, business_profile_id: @business_profile.id, user_id: @user.id }
+
+      it "removes user as business profile manager" do
+        expect{ subject }.to change{ @user.roles.count }.by -1
+      end
+    end
+
+    context "when toggled through organization interface" do
+
+      subject { delete :destroy, organization_id: @organization.id, user_id: @user.id }
+
+      it "removes user as organization manager" do
+        expect{ subject }.to change{ @user.roles.count }.by -1
+      end      
+    end    
   end
 end
