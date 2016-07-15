@@ -17,7 +17,6 @@ describe MarketPostsController, :type => :controller do
 
   describe "POST 'create'" do
     it "redirect to market_posts index on success" do
-      c = FactoryGirl.create :content
       post 'create', market_post: {
         content_attributes: {
           title: "hello",
@@ -74,8 +73,8 @@ describe MarketPostsController, :type => :controller do
     describe 'Search Filter' do
       before do
         # setup the search query hash
-        @q = {id_in:  "", content_title_cont: "", pubdate_gteq: "", pubdate_lteq: "",
-              content_authors_cont: "", content_repositories_id_eq: ""}
+        @q = {content_id_in:  "", content_title_cont: "", content_pubdate_gteq: "", content_pubdate_lteq: "",
+             contact_email_cont: "", content_repositories_id_eq: ""}
 
         # market_posts to filter against
         @market_post1 = FactoryGirl.create :market_post
@@ -93,6 +92,46 @@ describe MarketPostsController, :type => :controller do
         @q[:content_title_cont] = 'ZZ'
         get :index, q: @q
         expect(assigns(:market_posts).length).to eq(2)
+      end
+
+      it 'filters by the content id' do
+        @market_post.content.id = rand(10..20)
+        @market_post.save
+
+        @q[:content_id_in] = @market_post.content.id
+        get :index, q: @q
+        expect(assigns(:market_posts).length).to eq(1)
+      end
+
+      it 'does not filter by market_post id' do
+        @market_post.id = 123
+        @market_post.save
+        @q[:content_id_in] = @market_post.id
+        get :index, q: @q
+        expect(assigns(:market_posts).length).to eq(0)
+      end
+
+      it 'does not search by content author email' do
+        @q[:contact_email_cont] = @market_post.content.authoremail
+        get :index, q: @q
+        expect(assigns(:market_posts).length).to eq(0)
+      end
+      
+      it 'filters by market_post email' do
+        @q[:contact_email_cont] = @market_post.contact_email
+        get :index, q: @q
+        expect(assigns(:market_posts).all? do |post|
+          post.contact_email == @market_post.contact_email
+        end)
+      end
+
+      it 'filters by date' do
+        @market_post.content.pubdate = 2.days.ago
+        @market_post.save
+        @q[:content_pubdate_gteq] = 3.days.ago.strftime("%Y-%m-%d")
+        @q[:content_pubdate_lteq] = 1.day.ago.strftime("%Y-%m-%d")
+        get :index, q: @q
+        expect(assigns(:market_posts).length).to eq(1)
       end
 
       it 'return all market_posts' do

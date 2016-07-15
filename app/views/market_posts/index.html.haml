@@ -13,19 +13,19 @@
       = search_form_for @search, url: market_posts_path do |f|
         .controls.controls-row
           .field.span2
-            = f.label :id_in, "ID"
+            = f.label :content_id_in, "ID"
             -# format id_in val for display so it matches what's entered
-            - if session[:market_posts_search].present? and session[:market_posts_search].has_key? :id_in and session[:market_posts_search][:id_in].present?
-              - id_in_val = session[:market_posts_search][:id_in].join(',')
+            - if session[:market_posts_search].present? and session[:market_posts_search].has_key? :content_id_in and session[:market_posts_search][:content_id_in].present?
+              - content_id_in_val = session[:market_posts_search][:content_id_in]
             - else
-              - id_in_val = ""
-            = f.text_field :id_in, value: id_in_val, class: "span12"
+              - content_id_in_val = ""
+            = f.text_field :content_id_in, value: content_id_in_val, class: "span12"
           .field.span2
-            = f.label :pubdate_gteq, "From"
-            = f.text_field :pubdate_gteq, type: :date, value: search_field_value(:pubdate_gteq), class: "span12"
+            = f.label :content_pubdate_gteq, "From"
+            = f.text_field :content_pubdate_gteq, type: :date, value: search_field_value(:content_pubdate_gteq), class: "span12"
           .field.span2
-            = f.label :pubdate_lteq, "To"
-            = f.text_field :pubdate_lteq, type: :date, value: search_field_value(:pubdate_lteq), class: "span12"
+            = f.label :content_pubdate_lteq, "To"
+            = f.text_field :pubdate_lteq, type: :date, value: search_field_value(:content_pubdate_lteq), class: "span12"
           .field.span2
             = f.label :content_locations_id_in, 'Locations'
             = f.collection_select :content_locations_id_in, Location.accessible_by(current_ability),
@@ -38,8 +38,8 @@
             = f.label :content_authors_cont, "Authors"
             = f.text_field :content_authors_cont, class: "span12"
           .field.span2
-            = f.label :content_authoremail_cont, "Email"
-            = f.text_field :content_authoremail_cont, class: "span12"
+            = f.label :contact_email_cont, "Email"
+            = f.text_field :contact_email_cont, class: "span12"
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"

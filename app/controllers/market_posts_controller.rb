@@ -5,7 +5,7 @@ class MarketPostsController < ApplicationController
     if params[:reset]
       session[:market_posts_search] = nil
     elsif params[:q].present?
-      params[:q][:id_in] = params[:q][:id_in].split(',').map { |s| s.strip } if params[:q][:id_in].present?
+      params[:q][:content_id_in] = format_id_params if params[:q][:content_id_in].present?
       session[:market_posts_search] = params[:q]
     end
 
@@ -97,6 +97,10 @@ class MarketPostsController < ApplicationController
   end
 
   private
+
+  def format_id_params
+    params[:q][:content_id_in].split(',').map { |s| s.strip }
+  end
 
   def form_submit_redirect_path(id=nil)
     if params[:continue_editing]
