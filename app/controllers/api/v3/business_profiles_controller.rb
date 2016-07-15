@@ -116,7 +116,7 @@ module Api
         params.require(:business).permit(:name, :phone, :email, :website,
                                          :address, :city, :state, :zip,
                                          :has_retail_location, :service_radius,
-                                         :details, :category_ids, {hours: []})
+                                         :details, category_ids: [], hours: [])
       end
 
       def content_attributes
