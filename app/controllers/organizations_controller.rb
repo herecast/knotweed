@@ -10,7 +10,11 @@ class OrganizationsController < ApplicationController
     end
     @search = Organization.ransack(session[:organizations_search])
     if session[:organizations_search].present?
-      @organizations = @search.result(distinct: true)
+      if include_child_organizations?
+        return_child_organizations
+      else
+        @organizations = @search.result(distinct: true)
+      end
     else
       @organizations = Organization
     end
@@ -119,4 +123,18 @@ class OrganizationsController < ApplicationController
       @managers = User.with_role(:manager, @organization)
     end
 
+    def return_child_organizations
+      ids_for_parents = @search.result(distinct: true).pluck(:id)
+      @organizations = Organization.where("id IN (:ids) OR parent_id IN (:ids)", ids: ids_for_parents)
+    end
+
+    def include_child_organizations?
+      session[:organizations_search][:include_child_organizations] == "1"
+    end
+
+    def return_child_organizations
+      ids_for_parents = @search.result(distinct: true).pluck(:id)
+      ids_for_children = Organization.get_children(ids_for_parents).pluck(:id)
+      @organizations = Organization.where(id: ids_for_parents + ids_for_children)
+    end
 end

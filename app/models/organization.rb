@@ -55,6 +55,7 @@ class Organization < ActiveRecord::Base
 
   scope :alphabetical, -> { order("organizations.name ASC") }
   default_scope { self.alphabetical }
+  scope :get_children, ->(parent_ids) { where(parent_id: parent_ids) }
 
   ORG_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher", 'Publication',
     'Blog']
@@ -93,4 +94,6 @@ class Organization < ActiveRecord::Base
     logo_will_change! if val
     super
   end
+
+  ransacker :include_child_organizations
 end

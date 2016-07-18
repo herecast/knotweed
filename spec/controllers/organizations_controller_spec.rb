@@ -54,6 +54,23 @@ describe OrganizationsController, type: :controller do
         get :index
       end
     end
+    
+    context 'including child organizations' do
+      let!(:parent_organization) { FactoryGirl.create :organization }
+      let!(:child_organization) { FactoryGirl.create(:organization, parent_id: parent_organization.id) }
+
+      it 'retuns child organizations' do
+        q = { 'id_eq' => parent_organization.id, 'include_child_organizations' => '1' }
+        get :index, q: q
+        expect(assigns(:organizations).length).to eq(2)
+      end
+
+      it 'does not include child organizations' do
+        q = { 'id_eq' => parent_organization.id  }
+        get :index, q: q
+        expect(assigns(:organizations).length).to eq(1)
+      end
+    end
   end
 
   describe '#new' do

@@ -13,6 +13,9 @@
       = search_form_for @search, url: organizations_path do |f|
         .controls.controls-row
           .field.span3
+            = f.label :id_eq, "ID"
+            = f.text_field :id_eq, class: "span12"
+          .field.span3
             = f.label :name_cont, "Name"
             = f.text_field :name_cont, class: 'span12'
           .field.span3
@@ -26,6 +29,9 @@
           .field.span3
             = f.label :consumer_apps_id_in, "Consumer Apps"
             = f.collection_select :consumer_apps_id_in, ConsumerApp.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
+          .field.span3
+            = f.label :include_child_organizations, "Include Child Organizations"
+            = f.check_box :include_child_organizations
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
