@@ -29,6 +29,8 @@ describe Api::V3::ContentsController, :type => :controller do
         locations: [@other_location], published: true, channel_type: 'MarketPost'
       FactoryGirl.create_list :content, 15, content_category: @tott_cat,
         locations: [@other_location], published: true
+      FactoryGirl.create_list :content, 2, content_category: @news_cat,
+        locations: [@other_location], published: true
       index
     end
 
@@ -93,6 +95,18 @@ describe Api::V3::ContentsController, :type => :controller do
       it 'should return items in the user\'s location' do
         subject
         expect(assigns(:contents).select{|c| c.locations.include? @other_location}.count).to eq(assigns(:contents).count)
+      end
+
+      context "when location has too few contents" do
+        before do
+          @user.update_attribute(:location, FactoryGirl.create(:location))
+        end
+        
+        it "returns contents connected to default location" do
+          puts @user.location
+          subject
+          expect(assigns(:contents).select{ |c| c.locations.include? @default_location }.count).to eq assigns(:contents).count
+        end
       end
     end
 

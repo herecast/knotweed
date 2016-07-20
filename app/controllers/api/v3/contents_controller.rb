@@ -98,8 +98,8 @@ module Api
           opts[:with].merge!({org_id: allowed_orgs.collect{|c| c.id} })
         end
 
-        default_location_id = Location.find_by_city(Location::DEFAULT_LOCATION).id
-        location_condition = @current_api_user.try(:location_id) || default_location_id
+        @default_location_id = Location.find_by_city(Location::DEFAULT_LOCATION).id
+        location_condition = @current_api_user.try(:location_id) || @default_location_id
 
         root_news_cat = ContentCategory.find_by_name 'news'
         news_opts = opts.merge({
@@ -132,7 +132,10 @@ module Api
         reg_opts[:without] = { is_listserv_market_post: 1 }
 
         news_contents = Content.search news_opts
+        news_contents = new_content_search(news_opts) if news_contents.count < news_per_page
+
         reg_contents = Content.search reg_opts
+        reg_contents = new_content_search(reg_opts) if reg_contents.count < per_page
 
         # note: can't combine these two relations without converting them to arrays
         # because thinking sphinx
@@ -205,13 +208,18 @@ module Api
 
       protected
 
-      def sanitize_sort_parameter(sort)
-        sort_parts = sort.split(',')
-        sort_parts.select! do |pt|
-          pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
+        def sanitize_sort_parameter(sort)
+          sort_parts = sort.split(',')
+          sort_parts.select! do |pt|
+            pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
+          end
+          sort_parts.join(',').gsub('channel_type', 'root_category.name')
         end
-        sort_parts.join(',').gsub('channel_type', 'root_category.name')
-      end
+
+        def new_content_search(opts)
+          opts[:with][:all_loc_ids] << @default_location_id
+          Content.search opts
+        end
 
     end
   end
