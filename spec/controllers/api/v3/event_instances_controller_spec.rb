@@ -9,7 +9,7 @@ require 'spec_helper'
 #
 #   FactoryGirl.create(:event, start_date: 2.days.from_now, subtitle_override: "blargh")
 #
-# one important thing to note is that if you override just one entry of instance_attributes, 
+# one important thing to note is that if you override just one entry of instance_attributes,
 # we lose the whole default hash -- which is currently just start date. So if you passed { subtitle: "Hello" },
 # then your instance wouldn't have a start date.
 describe Api::V3::EventInstancesController, :type => :controller do
@@ -18,6 +18,8 @@ describe Api::V3::EventInstancesController, :type => :controller do
     before do
       @event = FactoryGirl.create :event
       @inst = @event.next_or_first_instance
+      schedule = FactoryGirl.create :schedule
+      @inst.update_attribute(:schedule_id, schedule.id)
     end
 
     subject { get :show, format: :json, id: @inst.id }
@@ -61,7 +63,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
         api_authenticate consumer_app: @consumer
         get :show, format: :json, id: @inst.id
       end
-      
+
       it 'response should include ical url' do
         expect(JSON.parse(@response.body)['event_instance']['ical_url']).to eq @consumer.uri + event_instances_ics_path(@inst.id)
       end
@@ -79,18 +81,18 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
       it 'should be true for content author' do
         api_authenticate user: @user
-        subject 
+        subject
         expect(can_edit).to eq(true)
       end
       it 'should be false for a different user' do
         @location = FactoryGirl.create :location, city: 'Another City'
         @different_user = FactoryGirl.create :user, location: @location
         api_authenticate user: @different_user
-        subject 
+        subject
         expect(can_edit).to eq(false)
       end
       it 'should be false when a user is not logged in' do
-        subject 
+        subject
         expect(can_edit).to eq(false)
       end
 
@@ -102,6 +104,15 @@ describe Api::V3::EventInstancesController, :type => :controller do
         it 'should be true' do
           subject
           expect(can_edit).to be_truthy
+        end
+      end
+
+      context "when event does not have a schedule" do
+        it "returns false" do
+          api_authenticate user: @user
+          @inst.update_attribute(:schedule_id, nil)
+          subject
+          expect(can_edit).to be false
         end
       end
     end
@@ -166,7 +177,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
       before do
         @movie = FactoryGirl.create(:event, event_category: 'movies',
                                     start_date: 1.day.from_now).next_or_first_instance
-        @wellness = FactoryGirl.create(:event, event_category: 'wellness', 
+        @wellness = FactoryGirl.create(:event, event_category: 'wellness',
                                        start_date: 2.days.from_now).next_or_first_instance
         index
       end

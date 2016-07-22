@@ -2,8 +2,8 @@ module Api
   module V3
     class DetailedEventInstanceSerializer < EventInstanceSerializer
 
-      attributes :event_instances, :content_id, :event_id, :social_enabled, :venue_id, 
-        :venue_url, :venue_latitude, :venue_longitude, :event_url, :venue_locate_name, 
+      attributes :event_instances, :content_id, :event_id, :social_enabled, :venue_id,
+        :venue_url, :venue_latitude, :venue_longitude, :event_url, :venue_locate_name,
         :admin_content_url, :content, :can_edit, :title, :comment_count,:presenter_name,
         :registration_deadline, :registration_url, :registration_phone,
         :registration_email, :ical_url, :category, :updated_at
@@ -22,7 +22,7 @@ module Api
       end
 
       def can_edit
-        if context.present? && context[:current_ability].present?
+        if context.present? && context[:current_ability].present? && object.schedule.present?
           context[:current_ability].can?(:edit, object.event.content)
         else
           false
