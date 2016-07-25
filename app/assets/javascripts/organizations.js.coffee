@@ -7,6 +7,8 @@ jQuery ->
     updateContentSetsSelect()
   # handle new contact button loading form via ajax
   $("#new_contact_button").on 'click', ->
+    event.preventDefault();
+    $("#contact_form").modal();
     $(".modal#contact_form .modal-body").load($(this).data("formUrl"))
   # this needs to be from document to allow editing of newly added ones
   $(document).on "click", ".edit-contact-link", ->
@@ -16,10 +18,14 @@ jQuery ->
     $(".modal#issue_form .modal-body").load $(this).data("formUrl"), ->
       $(".modal-body").find(".datetimepicker").datetimepicker()
   $(document).on "click", "#new_issue_button", ->
+    event.preventDefault();
+    $("#business_location_form").modal();
     $(".modal#issue_form .modal-body").load $(this).data("formUrl"), ->
       $(".modal-body").find(".datetimepicker").datetimepicker()
 
   $("#new_location_button").on 'click', ->
+    event.preventDefault();
+    $("#location_form").modal();
     $(".modal#location_form .modal-body").load($(this).data("formUrl"))
 
   $("#organization_location_ids").multiSelect
@@ -73,10 +79,13 @@ jQuery ->
 
   # add new business location
   $("#new_business_location_button").on 'click', ->
-    console.log 'hello'
+    event.preventDefault();
+    $("#business_location_form").modal();
     $(".modal#business_location_form .modal-body").load($(this).data("formUrl"))
   # edit existing location
   $(document).on 'click', '.edit-business-location-link', ->
+    event.preventDefault();
+    $('#business_location_form').modal();
     $(".modal#business_location_form .modal-body").load($(this).data("formUrl"))
 
 updateContentSetsSelect = ->

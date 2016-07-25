@@ -15,6 +15,7 @@ class BusinessProfiles::ClaimsController < ApplicationController
       organization = content.organization || Organization.find_or_create_by(name: business_profile.business_location.name)
       organization.update_attribute(:org_type, 'Business') if organization.org_type.nil?
       business_profile.content.update_attribute(:organization_id, organization.id)
+      business_profile.business_location.update_attribute(:organization_id, organization.id)
       ConsumerApp.all.each { |ca| organization.consumer_apps << ca }
       business_profile.update_attributes(existence: 1.0, archived: false)
       

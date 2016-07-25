@@ -46,9 +46,7 @@
       .tab-pane#business_locations
         .pull-right
           = link_to "+ Add New Location", "#", class: "btn btn-success", 
-            data: { toggle: "modal", target: "#business_location_form", 
-            form_url: new_business_location_path({ organization_id: @organization.id }  )}, 
-            id: "new_business_location_button" 
+            data: { form_url: new_business_location_path({ organization_id: @organization.id }  )}, id: "new_business_location_button" 
           / hidden field for creating business locations associated with a new organization record
           - unless @organization.id
             = f.association :business_locations, as: :hidden, input_html: { name: "organization[business_location_list]", value: "" }
@@ -78,7 +76,7 @@
             = f.input :remote_logo_url, label: "OR Upload from URL:"
       .tab-pane#contacts
         .pull-right
-          = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { toggle: "modal", target: "#contact_form", form_url: new_contact_path(Organization, @organization.id) }, id: "new_contact_button"
+          = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { form_url: new_contact_path(Organization, @organization.id) }, id: "new_contact_button"
           / hidden field for creating contacts associated with a new organization record
           - unless @organization.id
             = f.association :contacts, as: :hidden, input_html: { name: "organization[contact_list]" , value: "" }
@@ -100,7 +98,7 @@
           .span8
             = text_field_tag :search_locations, nil, class: "span12", placeholder: "search available locations"
           .span4
-            = link_to "+ Add New Promote Location", "#", class: "btn btn-success", data: { toggle: "modal", target: "#location_form", form_url: new_location_path }, id: "new_location_button"
+            = link_to "+ Add New Promote Location", "#", class: "btn btn-success", data: { form_url: new_location_path }, id: "new_location_button"
           .row-fluid
             .span8
               = f.association :locations, label: false, input_html: { class: "locations-select multi-select" }
@@ -153,7 +151,7 @@
 
         .tab-pane#issues
           .pull-right
-            = link_to "+ Add New Issue", "#", class: "btn btn-success", data: { toggle: "modal", target: "#issue_form", form_url: new_issue_path({organization_id: @organization.id}) }, id: "new_issue_button"
+            = link_to "+ Add New Issue", "#", class: "btn btn-success", data: { form_url: new_issue_path({organization_id: @organization.id}) }, id: "new_issue_button"
           %table.table.table-striped.table-condensed.sortable#issues_table
             %thead
               %tr
@@ -175,7 +173,7 @@
         = submit_tag nil, class: "btn btn-primary"
         = link_to "Cancel", :back, class: "btn"
 
-.modal.hide.fade#contact_form
+.modal.fade.modal-hack#contact_form
   .modal-header
     %button.close{ type: "button", data: { dismiss: "modal" } } x
     %h3 Organization Contact
@@ -183,21 +181,21 @@
     Loading...
 
 
-.modal.hide.fade#issue_form
+.modal.fade.modal-hack#issue_form
   .modal-header
     %button.close{ type: "button", data: { dismiss: "modal" } } x
     %h3 Issue
   .modal-body
     Loading...
 
-.modal.hide.fade#location_form
+.modal.fade.modal-hack#location_form
   .modal-header
     %button.close{ type: "button", data: { dismiss: "modal" } } x
     %h3 Location
   .modal-body
     Loading...
 
-.modal.hide.fade#business_location_form
+.modal.fade.modal-hack#business_location_form
   .modal-header
     %button.close{ type: "button", data: { dismiss: "modal" } } x
     %h3 Business Location
