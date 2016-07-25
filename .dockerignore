@@ -27,7 +27,7 @@ db/*.sqlite3
 /tmp/*
 
 # various artifacts
-**.war
+*.war
 *.rbc
 *.sassc
 .rspec
@@ -74,7 +74,7 @@ adapt.sql
 # Here are some files you may want to ignore globally:
 
 # scm revert files
-**.orig
+*.orig
 
 # Mac finder artifacts
 .DS_Store
@@ -89,8 +89,8 @@ adapt.sql
 /*.tmproj
 
 # vim artifacts
-**.swp
-**.swo
+*.swp
+*.swo
 
 /config/setup_load_paths.rb
 
@@ -107,3 +107,4 @@ adapt.sql
 /coverage
 
 .byebug_history
+!Dockerfile
