@@ -38,6 +38,7 @@ class OrganizationsController < ApplicationController
   end
 
   def update
+    update_business_info if params[:business_location].present?
     if @organization.update_attributes(organization_params)
       flash[:notice] = "Successfully updated organization #{@organization.id}"
       if params[:add_content_set]
@@ -108,14 +109,33 @@ class OrganizationsController < ApplicationController
 
   protected
 
+    def update_business_info
+      location_info = params[:business_location]
+      business_location = BusinessLocation.find(location_info[:business_location_id])
+      location_info.delete(:business_location_id)
+      format_hours(location_info)
+      business_location.update_attributes(location_info)
+      business_profile_attrs = params[:business_profile]
+      business_location.business_profile.update_attributes(business_profile_attrs)
+    end
+
+    def format_hours(location_info)
+      if location_info[:hours].any? {|h| h.blank? }
+        location_info[:hours].reject! { |h| h.blank? }
+      end
+    end
+
     def organization_params
       params.require(:organization).permit(
         :name, :logo, :logo_cache, :remove_logo, :organization_id,
         :website, :notes, :images_attributes, :parent_id, :location_ids,
         :remote_logo_url, :contact_ids, :org_type,
         :consumer_app_ids, :can_publish_news, :subscribe_url,
-        :description, :banner_ad_override, :pay_rate_in_cents,
-        :consumer_app_ids => [], :location_ids => []
+        :description, :banner_ad_override, :pay_rate_in_cents, :profile_title,
+        :consumer_app_ids => [], :location_ids => [],
+        :business_location => [:name, :address, :venue_url, :city,
+          :state, :zip, :phone, :email, :hours],
+        :business_profile => { :business_category_ids => [] }
       )
     end
 

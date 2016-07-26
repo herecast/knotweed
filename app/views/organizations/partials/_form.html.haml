@@ -6,6 +6,9 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#details" } do
           Details
       %li
+        = link_to '#', class: "green-border", data: { toggle: "tab", target: "#profile" } do
+          Profile
+      %li
         = link_to '#', class: "green-border", data: { toggle: "tab", target: "#business_locations" } do
           Locations
       %li
@@ -43,6 +46,55 @@
           .span7
             = f.input :website, input_html: { class: "input-block-level" }
             = f.input :notes, input_html: { class: "input-block-level", rows: 10 } 
+      .tab-pane.form-horizontal#profile
+        - if @organization.org_type != 'Business'
+          .row-fluid
+            .span5
+              = f.input :name, input_html: { class: "input-block-level" }
+              = f.input :profile_title, input_html: { class: "input-block-level" }
+              = f.input :subscribe_url, input_html: { class: "input-block-level" }
+              = label_tag "Logo"
+              = image_tag(@organization.logo.url) if @organization.logo?
+              - if @organization.logo?
+                = f.input :remove_logo, as: :boolean, label: "Remove logo?"
+              = f.input :logo, label: false
+              = f.input :remote_logo_url, label: "OR Upload from URL:"
+            .span7
+              .summernote-wrapper
+                = f.input :description, as: :summernote, label: 'Description'
+        - else
+          - @organization.business_locations.each do |location|
+            = simple_fields_for location do |g|
+              .row-fluid
+                .span6
+                  = g.hidden_field :business_location_id, value: location.id
+                  = g.input :name, input_html: { class: "input-block-level" }
+                  = g.input :email, input_html: { class: "input-block-level" }
+                  = g.input :venue_url, input_html: { class: "input-block-level" }
+                .span6
+                  = g.input :address, input_html: { class: "input-block-level" }
+                  = g.input :city, input_html: { class: "input-block-level" }
+                  = g.input :state, input_html: { class: "input-block-level" }
+                  = g.input :zip, input_html: { class: "input-block-level" }
+                  = g.input :phone, input_html: { class: "input-block-level" }
+                .row-fluid
+                  %h3 Opening Hours
+                  %span.hint 
+                    Each rule needs to be in 
+                    = link_to 'Schema.org OpeningHours format.', 'https://schema.org/openingHours'
+                    To specify days and time, use | as a separator. For example: Mo-Th|16:00-20:00
+                  %span.pull-left.btn.btn-success.add-hours-link + Add Hours
+                #business_location_hours
+                  = g.fields_for :hours do |i|
+                    - if location.hours.present? and location.hours.is_a?(Array)
+                      - location.hours.each do |hour|
+                        .row-fluid
+                          .span6
+                            = i.text_field nil, value: hour, class: 'span12'
+                          .span2.offset4
+                            .btn.btn-danger.remove-hours-field X
+            = simple_fields_for location.business_profile do |h|
+              = h.association :business_categories, input_html: { class: 'chosen-select input-block-level' }
       .tab-pane#business_locations
         .pull-right
           = link_to "+ Add New Location", "#", class: "btn btn-success", 

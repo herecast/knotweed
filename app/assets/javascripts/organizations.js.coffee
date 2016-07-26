@@ -96,3 +96,20 @@ updateContentSetsSelect = ->
     }
     dataType: "script"
   })
+
+jQuery ->
+  $('.add-hours-link').on 'click', ->
+     new_index = $('#business_location_hours input').length
+    $('#business_location_hours').append '
+      <div class="row-fluid">
+        <div class="span6">
+          <input class="span12" id="business_location_hours" + name="business_location[hours][]" value="" />
+        </div>
+        <div class="span2 offset4">
+          <div class="btn btn-danger remove-hours-field">
+            X
+          </div>
+        </div>
+      </div>'
+  $(document).on 'click', '.remove-hours-field', ->
+    $(this).parents('.row-fluid').first().remove()
