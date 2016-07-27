@@ -67,7 +67,7 @@ class Organization < ActiveRecord::Base
   validates :logo, :image_minimum_size => true
 
   def self.parent_pubs
-    ids = self.where("parent_id IS NOT NULL").select(:parent_id).uniq.map { |p| p.parent_id }
+    ids = self.where("parent_id IS NOT NULL").select(:parent_id, :name).uniq.map { |p| p.parent_id }
     self.where(id: ids)
   end
 

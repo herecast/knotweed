@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::V3::BusinessLocationsController, :type => :controller do
-
   describe 'GET index' do
     before do
       FactoryGirl.create_list :business_location, 3, status: 'approved'

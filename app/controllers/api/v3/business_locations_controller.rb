@@ -9,12 +9,13 @@ module Api
         opts[:per_page] = params[:max_results] || 1000
         opts[:star] = true
         opts[:with] = {}
-        opts[:with][:status] = Zlib.crc32 'approved'
+        opts[:conditions] = {}
         if @current_api_user.present?
-          opts[:with].delete :status
-          q = ", IF(created_by = #{@current_api_user.id} OR status = #{Zlib.crc32("approved")}, 1, 0) as user_loc_with_approved"
+          q = ", IF(created_by = #{@current_api_user.id} OR status_attr = 'approved', 1, 0) as user_loc_with_approved"
           opts[:select] << q
           opts[:with][:user_loc_with_approved] = 1
+        else
+          opts[:conditions][:status] = 'approved'
         end
 
         if query.present?

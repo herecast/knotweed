@@ -28,5 +28,5 @@ ThinkingSphinx::Index.define(:content,
   # root contents only
   has root_parent_id
 
-  indexes "IF(root_content_category_id = (select id from content_categories where name = 'event'), channel_type = 'Event', true)", as: :in_accepted_category
+  indexes "CASE root_content_category_id WHEN (select id from content_categories where name = 'event') THEN (CASE channel_type WHEN 'Event' THEN 1 ELSE 0 END) ELSE 1 END", as: :in_accepted_category
 end

@@ -66,7 +66,7 @@ describe Location, :type => :model do
     end
 
     context 'args: find by city multi word' do
-      before { @location = Location.find_by_city_state("white river junction") }
+      before { @location = Location.find_by_city_state("White River Junction") }
       subject { @location }
       it { is_expected.not_to be_nil }
     end

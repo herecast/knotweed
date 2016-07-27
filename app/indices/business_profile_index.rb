@@ -13,8 +13,8 @@ ThinkingSphinx::Index.define(:business_profile,
   indexes business_location.city
   indexes business_location.state
 
-  has "RADIANS(business_locations.latitude)",  :as => :latitude,  :type => :float
-  has "RADIANS(business_locations.longitude)", :as => :longitude, :type => :float
+  has "MAX(RADIANS(business_locations.latitude))",  :as => :latitude,  :type => :float
+  has "MAX(RADIANS(business_locations.longitude))", :as => :longitude, :type => :float
   has business_categories.id, as: :category_ids, multi: true
   has feedback_count, as: :feedback_count
   has feedback_satisfaction_avg, as: :feedback_satisfaction_avg
@@ -23,5 +23,7 @@ ThinkingSphinx::Index.define(:business_profile,
   has feedback_cleanliness_avg, as: :feedback_cleanliness_avg
   has content.organization_id, as: :organization_id
   has archived, as: :archived
-  has 'IF(existence IS NULL OR existence >= 0.4, 1, 0)', as: :exists, type: :boolean
+
+  #has 'IF(existence IS NULL OR existence >= 0.4, 1, 0)', as: :exists, type: :boolean
+  has '(CASE WHEN existence IS NULL THEN 1 WHEN existence >= 0.4 THEN 1 ELSE 0 END)', as: :exists, type: :boolean
 end

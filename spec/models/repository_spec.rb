@@ -17,13 +17,10 @@
 require 'spec_helper'
 
 describe Repository, :type => :model do
-  before do
-    # this is to account for differences between default environment repos
-    FactoryGirl.create :repository, id: 3
-    FactoryGirl.create :repository, id: 6
-  end
+  let(:repository) { FactoryGirl.create :repository }
 
   describe "::production_repo" do
+    before { stub_const("Repository::PRODUCTION_REPOSITORY_ID", repository.id) }
     it "returns production repository" do
       expect(Repository.production_repo).to be_a Repository
     end

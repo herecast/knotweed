@@ -61,15 +61,13 @@ describe ReversePublisher, :type => :mailer do
   # for the content based on whether or not Thread.current[:consumer_app] is set
   describe 'ux2 content links' do
     let(:consumer_app) {FactoryGirl.create(:consumer_app)}
+    before { allow(ConsumerApp).to receive(:current).and_return consumer_app }
 
     it 'should include the ux2 content path for @content' do
-      Thread.new do
-        Thread.current[:consumer_app] = FactoryGirl.create(:consumer_app)
-        listserv.send_content_to_listserv(@content, consumer_app)
-        # only the reverse publish email has this header, so use that to select it
-        rp_email = ReversePublisher.deliveries.select{ |e| e['X-Original-Content-Id'].present? }.first
-        expect(rp_email.body.encoded).to include("#{consumer_app.uri}/news/#{@content.id}")
-      end
+      @listserv.send_content_to_listserv(@content, consumer_app)
+      # only the reverse publish email has this header, so use that to select it
+      rp_email = ReversePublisher.deliveries.select{ |e| e['X-Original-Content-Id'].present? }.first
+      expect(rp_email.body.encoded).to include("#{consumer_app.uri}/news/#{@content.id}")
     end
   end
 

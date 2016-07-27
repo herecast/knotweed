@@ -331,7 +331,8 @@ describe Content, :type => :model do
 
   describe "mark_published association callback" do
     before do
-      @prod_repo = FactoryGirl.create(:repository, id: Repository::PRODUCTION_REPOSITORY_ID)
+      @prod_repo = FactoryGirl.create(:repository)
+      stub_const("Repository::PRODUCTION_REPOSITORY_ID", @prod_repo.id)
       @non_prod_repo = FactoryGirl.create(:repository)
       @content = FactoryGirl.create(:content)
     end
@@ -712,7 +713,7 @@ describe Content, :type => :model do
       end
 
       it 'should have the correct primary image' do #not necessarily the first
-        @c.primary_image = @c.images.last
+        @c.primary_image = @c.images.order('created_at asc').last
         @c.reload
         image = @c.primary_image
         expect(image.image.url.present?).to eq true

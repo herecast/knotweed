@@ -9,6 +9,10 @@ ip=$(ip addr list dev eth0 | awk '/inet / { gsub(/\/.*/, "", $2); print $2 }')
 # use grep to handle the case that the config file is "stale" and contains
 # an IP for an old container
 while ! grep -q "${ip}:9608" "$conf_file" 2>/dev/null; do
+=======
+
+# wait for ts:configure in the other container to create the config file
+while [[ ! -e "$conf_file" ]]; do
     sleep 1
 done
 

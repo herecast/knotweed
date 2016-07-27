@@ -1,5 +1,12 @@
 module SphinxHelpers
   def index
+    # the migration to postgres seems to have introduced a situation
+    # where our db queries (creating objects) are not always complete by the time
+    # execution moves on to `index`. If we weren't planning on moving to RT indexing,
+    # I'd spend more time trying to debug this, but since it's not a functional issue
+    # and we will be moving away from this style of indexing soon anyway, I think this
+    # little hack is enough to deal with the random failures we see otherwise.
+    sleep 0.25
     ThinkingSphinx::Test.index
     sleep 0.25 until index_finished?
   end

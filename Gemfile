@@ -44,7 +44,8 @@ gem "legato", '~> 0.4.0'
 gem 'mail', '~> 2.5.4'
 gem 'mixpanel_client', '~> 4.1.1'
 gem 'mixpanel-ruby', '~> 1.4.0' # official ruby mixpanel client. later versions need ruby > 2.0
-gem "mysql2", '~> 0.3.18'
+gem "pg", '~> 0.18.4'
+gem 'mysql2', '~> 0.3.18'
 gem 'net-http-persistent', '~> 2.9'
 gem 'newrelic_rpm', '~> 3.13.0.299'
 gem "nokogiri", '1.6.1' # allowing a patch upgrade on this
@@ -83,7 +84,7 @@ group :development, :test do
 end
 
 group :test do
-  gem "database_cleaner", "~> 1.2.0"
+  gem "database_cleaner", "~> 1.5.3"
   gem 'rspec_junit_formatter', '~> 0.2.3' # this is for circleci to properly read & ormat our test results
   gem 'simplecov', '~> 0.10.0'
   gem 'shoulda-matchers', '~> 3.1'

@@ -6,9 +6,10 @@ ThinkingSphinx::Index.define(:business_location,
   indexes :name, sortable: true
   indexes :city
   indexes :state
+  indexes :status
+  has :status, as: :status_attr
 
   set_property :min_prefix_len => 1
 
   has :created_by
-  has "CRC32(status)", as: :status, type: :integer
 end

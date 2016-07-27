@@ -156,13 +156,14 @@ class Content < ActiveRecord::Base
   scope :published, -> { where(published: true) }
 
   scope :if_event_only_when_instances, -> {
-    where("(IF( #{table_name}.channel_type = 'Event',
+    where("(CASE #{table_name}.channel_type WHEN 'Event' THEN
               (select count(*)
                from event_instances ei
                join events e on ei.event_id = e.id
-               where e.id = #{table_name}.channel_id),
-              1) > 0
-           )")
+               where e.id = #{table_name}.channel_id)
+              ELSE
+                1
+              END) > 0")
   }
 
   scope :not_deleted, -> { where(deleted_at: nil) }
@@ -241,11 +242,15 @@ class Content < ActiveRecord::Base
   end
 
   def primary_image
-    image = images.where(primary: true).first
-    if image.nil?
-      image = images.first
+    if images.where(primary: true).present?
+      images.where(primary: true).first
+    elsif images.order('id asc').present?
+      images.order('id asc').first
+    elsif images.present?
+      images.first
+    else
+      nil
     end
-    image
   end
 
   def primary_image=(image)
@@ -493,7 +498,7 @@ class Content < ActiveRecord::Base
     content
   end
 
-  def create_or_update_image(url, caption, credit, primary=nil)
+  def create_or_update_image(url, caption, credit, primary=false)
     image_attrs = {
         remote_image_url: url,
         source_url: url
@@ -1105,23 +1110,23 @@ class Content < ActiveRecord::Base
       end 
     end
     if content_id.present?
-      banner = PromotionBanner.for_content(content_id).has_inventory.order('RAND()').first
+      banner = PromotionBanner.for_content(content_id).has_inventory.order('random()').first
     elsif banner.blank? # banner may already be populated from the first conitional
       select_score = nil
       # fall back to random ads
       select_method = 'boost'
-      banner = PromotionBanner.boost.has_inventory.order('RAND()').first
+      banner = PromotionBanner.boost.has_inventory.order('random()').first
       unless banner.present?
         select_method = 'paid'
-        banner = PromotionBanner.active.paid.has_inventory.order('RAND()').first
+        banner = PromotionBanner.active.paid.has_inventory.order('random()').first
       end
       unless banner.present?
         select_method = 'active'
-        banner = PromotionBanner.active.has_inventory.order('RAND()').first
+        banner = PromotionBanner.active.has_inventory.order('random()').first
       end
       unless banner.present?
         select_method = 'active no inventory'
-        banner = PromotionBanner.active.order('RAND()').first
+        banner = PromotionBanner.active.order('random()').first
       end
     end
     return [banner, select_score, select_method]
@@ -1473,7 +1478,7 @@ class Content < ActiveRecord::Base
 
   # NOTE: returns the content records of child comments, NOT the comment records.
   def comments
-    children.where('channel_type = "Comment"')
+    children.where(channel_type: 'Comment')
   end
 
   # generates a Sphinx query for talk contents --

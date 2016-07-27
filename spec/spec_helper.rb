@@ -48,7 +48,7 @@ RSpec.configure do |config|
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
-  #config.use_transactional_fixtures = false
+  config.use_transactional_fixtures = false
 
   # If true, the base class of anonymous controllers will be inferred
   # automatically. This will be the default behavior in future versions of
@@ -62,28 +62,29 @@ RSpec.configure do |config|
   config.order = "random"
 
   config.before(:suite) do
-    DatabaseCleaner.clean_with(:truncation, {pre_count: true})
-    DatabaseCleaner.strategy = :truncation, {pre_count: true}
     # Disable VCR for the test-suite, unless a test explicitely asks for it
     VCR.turn_off!
     ImageUploader.storage = :file
-    
+    DatabaseCleaner.strategy = :truncation
     begin
       DatabaseCleaner.start
       FactoryGirl.lint
     ensure
       DatabaseCleaner.clean
     end
-    
   end
+
   config.before(:each) do
-    DatabaseCleaner.start
     mixpanel_track_stub
     ActionMailer::Base.deliveries.clear
+    DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.start
   end
+
   config.after(:each) do
     DatabaseCleaner.clean
   end
+
 end
 
 Geocoder.configure(lookup: :test)

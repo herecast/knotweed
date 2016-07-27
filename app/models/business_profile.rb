@@ -60,8 +60,8 @@ class BusinessProfile < ActiveRecord::Base
   #
   # @return [Hash] average feedback values
   def feedback_calc
-    averages = business_feedbacks.select('AVG(satisfaction) sat, AVG(cleanliness) cle,' +
-                                         'AVG(price) pri, AVG(recommend) rec').first
+    averages = business_feedbacks.order('').select('AVG(CAST(satisfaction AS INTEGER)) sat, AVG(CAST(cleanliness AS INTEGER)) cle,' +
+                                         'AVG(CAST(price AS INTEGER)) pri, AVG(CAST(recommend AS INTEGER)) rec').first
     {
       satisfaction: averages.sat,
       cleanliness: averages.cle,

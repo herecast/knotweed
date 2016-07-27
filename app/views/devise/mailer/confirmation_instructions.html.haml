@@ -1,5 +1,5 @@
-- if Thread.current[:consumer_app].present?
-  - url = Thread.current[:consumer_app].uri + '/sign_up/confirm/' + @token
+- if ConsumerApp.current.present?
+  - url = ConsumerApp.current.uri + '/sign_up/confirm/' + @token
 - else
   - url = confirmation_url(@resource, confirmation_token: @token)
 %p
