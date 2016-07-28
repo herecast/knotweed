@@ -143,18 +143,15 @@ class OrganizationsController < ApplicationController
       @managers = User.with_role(:manager, @organization)
     end
 
-    def return_child_organizations
-      ids_for_parents = @search.result(distinct: true).pluck(:id)
-      @organizations = Organization.where("id IN (:ids) OR parent_id IN (:ids)", ids: ids_for_parents)
-    end
-
     def include_child_organizations?
       session[:organizations_search][:include_child_organizations] == "1"
     end
 
     def return_child_organizations
-      ids_for_parents = @search.result(distinct: true).pluck(:id)
-      ids_for_children = Organization.get_children(ids_for_parents).pluck(:id)
+      # default scope involves ordering by name and Postgres shits the bed if you order
+      # by something that isn't included in the select clause
+      ids_for_parents = @search.result(distinct: true).select(:id, :name).collect(&:id)
+      ids_for_children = Organization.get_children(ids_for_parents).select(:id, :name).collect(&:id)
       @organizations = Organization.where(id: ids_for_parents + ids_for_children)
     end
 end
