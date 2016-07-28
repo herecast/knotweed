@@ -1,5 +1,5 @@
 require 'rake/clean'
-require 'date'
+require 'active_support/core_ext/date'
 
 # TODO - put this somewhere else?
 MAILDIRS = %w{ inbound uvlist wp_posts wp_dailyuv }
@@ -9,7 +9,7 @@ desc 'Refresh database from production data'
 task :refresh_database do
   %w{ kill_delayed_jobs
       move_mail
-      transfer_mysql_data
+      transfer_database_data
       run_migrations
       reindex
       restart_front_end
@@ -53,19 +53,19 @@ namespace :refresh_database do
     end
   end
 
-  desc 'Transfer mysql data from prod'
-  task :transfer_mysql_data => :write_adapt_sql do
-    ask(:source_mysql_username, 'root')
-    ask(:source_mysql_password, nil)
-    ask(:dest_mysql_username, 'root')
-    ask(:dest_mysql_password, nil)
+  desc 'Transfer database data from prod'
+  task :transfer_database_data => :write_adapt_sql do
+    ask(:source_database_username, 'knotweed')
+    ask(:source_database_password, nil)
+    ask(:dest_database_username, 'knotweed')
+    ask(:dest_database_password, nil)
     # TODO - this should only execute on one server
     on roles(app_server_roles) do
-      execute "mysqldump -u #{fetch(:source_mysql_username)} -p#{fetch(:source_mysql_password)} -h #{fetch(:source_mysql_host)} #{fetch(:dest_mysql_database)} | " \
-              "mysql -u #{fetch(:dest_mysql_username)} -p#{fetch(:dest_mysql_password)} -h #{fetch(:dest_mysql_host)} #{fetch(:dest_mysql_database)}"
+      execute "PGPASSWORD=\"#{fetch(:source_database_password)}\" pg_dump -c --if-exists -x -U #{fetch(:source_database_username)} -h #{fetch(:source_database_host)} #{fetch(:source_database)} | " \
+              "PGPASSWORD=\"#{fetch(:dest_database_password)}\" psql -U #{fetch(:dest_database_username)} -h #{fetch(:dest_database_host)} -f - #{fetch(:dest_database)}"
 
       upload! ADAPT_FILE, '/tmp/adapt.sql'
-      execute "mysql -u #{fetch(:dest_mysql_username)} -p#{fetch(:dest_mysql_password)} -h #{fetch(:dest_mysql_host)} #{fetch(:dest_mysql_database)} < /tmp/adapt.sql"
+      execute "PGPASSWORD=\"#{fetch(:dest_database_password)}\" psql -U #{fetch(:dest_database_username)} -h #{fetch(:dest_database_host)} #{fetch(:dest_database)} -f /tmp/adapt.sql"
     end
   end
 
