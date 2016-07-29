@@ -12,7 +12,7 @@ module Api
         opts[:conditions] = {}
         # market local only restriction
         # if a user is signed in, we allow showing "restricted content" if it's
-        # restricted to their location (and if other search params allow it to be 
+        # restricted to their location (and if other search params allow it to be
         # included).
         if user_signed_in?
           opts[:select] = "*, IF(my_town_only = 0 OR IN(all_loc_ids, #{@current_user.location_id}), 1, 0) AS local_restriction"
@@ -43,12 +43,12 @@ module Api
         opts[:with][:root_content_category_id] = ContentCategory.find_by_name('market').id
 
         if params[:query].present?
-          query = Riddle::Query.escape(params[:query]) 
+          query = Riddle::Query.escape(params[:query])
         else
           query = ''
         end
         @market_posts = Content.search query, opts
-        render json: @market_posts, each_serializer: MarketPostSerializer
+        render json: @market_posts, each_serializer: MarketPostSerializer, meta: { total: @market_posts.count }
       end
 
       def create
@@ -91,7 +91,7 @@ module Api
             @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
 
-          render json: @market_post.content, serializer: DetailedMarketPostSerializer, 
+          render json: @market_post.content, serializer: DetailedMarketPostSerializer,
             status: 201, context: { current_ability: current_ability }
         else
           render json: { errors: ["Market Post could not be created"] }, status: 500
@@ -112,7 +112,7 @@ module Api
           if @repository.present?
             @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
           end
-          render json: @market_post.content, status: 200, 
+          render json: @market_post.content, status: 200,
             serializer: DetailedMarketPostSerializer, context: { current_ability: current_ability }
         else
           render json: { errors: @market_post.errors.messages },
@@ -145,7 +145,7 @@ module Api
         if @market_post.try(:root_content_category).try(:name) != 'market'
           head :no_content
         elsif @market_post.try(:channel).is_a?(MarketPost)
-          render json: { 
+          render json: {
             market_post: {
               id: @market_post.channel_id,
               contact_email: @market_post.channel.contact_email,
@@ -157,7 +157,7 @@ module Api
             market_post: {
               id: @market_post.id,
               contact_email: @market_post.authoremail,
-              contact_phone: nil 
+              contact_phone: nil
             }
           }
         end

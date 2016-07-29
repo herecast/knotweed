@@ -1,7 +1,7 @@
 module Api
   module V3
     class TalkController < ApiController
-      
+
       before_filter :check_logged_in!, only: [:index, :show, :create, :update]
 
       def index
@@ -16,9 +16,9 @@ module Api
 
         opts[:with][:all_loc_ids] = [@current_api_user.location_id]
 
-        @talk = Content.talk_search params[:query], opts
-     
-        render json: @talk, each_serializer: TalkSerializer
+        @talk = Content.talk_search(params[:query], opts)
+
+        render json: @talk[:results], each_serializer: TalkSerializer, meta: { total: @talk[:total] }
       end
 
       def show
@@ -49,7 +49,7 @@ module Api
         cat = ContentCategory.find_or_create_by(name: 'talk_of_the_town')
 
         listserv_id = params[:talk].delete :listserv_id
-        
+
         # parse out content attributes
         content_attributes = {
           title: params[:talk][:title],
@@ -77,7 +77,7 @@ module Api
             status: 201
         else
           head :unprocessable_entity
-        end 
+        end
       end
 
       # NOTE, as of now, this method is ONLY for image uploading

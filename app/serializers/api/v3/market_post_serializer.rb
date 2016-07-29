@@ -3,7 +3,8 @@ module Api
     # note, this serializer actually takes content objects, not market post objects
     class MarketPostSerializer < ActiveModel::Serializer
 
-      attributes :id, :title, :published_at, :image_url, :content_id, :my_town_only
+      attributes :id, :title, :published_at, :image_url, :content_id, :my_town_only,
+        :cost
 
       def content_id
         object.id
@@ -21,6 +22,10 @@ module Api
         # NOTE: this works because the primary_image method returns images.first
         # if no primary image exists (or nil if no image exists at all)
         object.primary_image.try(:image).try(:url)
+      end
+
+      def cost
+        object.try(:channel).try(:cost)
       end
 
     end

@@ -25,6 +25,35 @@ module Api
 
         render json: @promotion_banners, each_serializer: PromotionBannerSerializer
       end
+
+      def show
+        if params[:content_id].present?
+          @content = Content.find params[:content_id]
+          # get related promo if exists
+          @banner, select_score, select_method = @content.get_related_promotion(@repository)
+        elsif params[:organization_id].present?
+          @organization = Organization.find params[:organization_id]
+          @banner, select_score, select_method = @organization.get_promotion
+        else
+          @banner, select_score, select_method = PromotionBanner.get_random_promotion
+        end
+
+        unless @banner.present? # banner must've expired or been used up since repo last updated
+          render json: {}
+        else
+          # log banner ad impression with associated details
+          ContentPromotionBannerImpression.log_impression(@content.try(:id), @banner.id,
+                                                          select_method, select_score)
+          # increment promotion_banner counts for impressions and daily_impressions
+          unless @current_api_user.try(:skip_analytics?)
+            @banner.increment_integer_attr! :impression_count
+            @banner.increment_integer_attr! :daily_impression_count
+          end
+
+          render json:  @banner, root: :promotion,
+            serializer: RelatedPromotionSerializer
+        end
+      end
       
       def track_click
         # use find_by_id because we want a return of nil instead

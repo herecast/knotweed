@@ -117,4 +117,50 @@ describe 'Promotion Banner Endpoints', type: :request do
       end
     end
   end
+
+  describe 'GET /api/v3/promotion' do
+    let(:organization) { FactoryGirl.create :organization }
+    let!(:banner) { FactoryGirl.create :promotion_banner }
+
+    context 'with existing content and related promotion;' do
+      let!(:promo) { FactoryGirl.create :promotion, organization: organization, promotable: banner }
+      let!(:content) { FactoryGirl.create :content, banner_ad_override: promo.id }
+
+      subject { get "/api/v3/promotion?content_id=#{content.id}" }
+
+      it 'returns promotion json' do
+        subject
+        expect(response_json).to match(
+          promotion: {
+            image_url: banner.banner_image.url,
+            redirect_url: banner.redirect_url,
+            banner_id: banner.id,
+            organization_name: organization.name,
+            promotion_id: promo.id
+          }
+        )
+      end
+    end
+
+    context 'with existing organization and related promotion' do
+      let!(:promo) { FactoryGirl.create :promotion, promotable_id: banner.id, promotable_type: 'PromotionBanner' }
+      let!(:new_organization) { FactoryGirl.create :organization, banner_ad_override: promo.id }
+
+      subject { get "/api/v3/promotion?organization_id=#{new_organization.id}" }
+
+      it 'returns promotion json' do
+        allow(PromotionBanner).to receive(:get_random_promotion).and_return nil
+        subject
+        expect(response_json).to match(
+          promotion: {
+            image_url: banner.banner_image.url,
+            redirect_url: banner.redirect_url,
+            banner_id: banner.id,
+            organization_name: nil,
+            promotion_id: promo.id
+          }
+        )
+      end
+    end
+  end
 end

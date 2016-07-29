@@ -139,4 +139,23 @@ class PromotionBanner < ActiveRecord::Base
     sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
   end
 
+  def self.get_random_promotion
+    select_score = nil
+    select_method = 'boost'
+    banner = PromotionBanner.boost.has_inventory.order('RANDOM()').first
+    unless banner.present?
+      select_method = 'paid'
+      banner = PromotionBanner.active.paid.has_inventory.order('RANDOM()').first
+    end
+    unless banner.present?
+      select_method = 'active'
+      banner = PromotionBanner.active.has_inventory.order('RANDOM()').first
+    end
+    unless banner.present?
+      select_method = 'active no inventory'
+      banner = PromotionBanner.active.order('RANDOM()').first
+    end
+    return [banner, select_score, select_method]
+  end
+
 end

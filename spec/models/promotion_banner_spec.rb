@@ -126,4 +126,15 @@ describe PromotionBanner, :type => :model do
     end
   end
 
+  describe '::get_random_promotion' do
+    before do
+      @promotion_banner = FactoryGirl.create :promotion_banner, boost: true, max_impressions: nil
+      FactoryGirl.create :promotion, content: FactoryGirl.create(:content), promotable: @promotion_banner
+    end
+
+    it "gets a random promotion" do
+      expect(PromotionBanner.get_random_promotion[0].id).to eq @promotion_banner.id
+    end
+  end
+
 end

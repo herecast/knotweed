@@ -11,11 +11,11 @@ describe Api::V3::TalkController, :type => :controller do
     before do
       @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
       @third_location = FactoryGirl.create :location, city: 'Different Again'
-      FactoryGirl.create_list :content, 3, content_category: @talk_cat, 
+      FactoryGirl.create_list :content, 3, content_category: @talk_cat,
         locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 5, content_category: @talk_cat, 
+      FactoryGirl.create_list :content, 5, content_category: @talk_cat,
         locations: [@other_location], published: true
-      FactoryGirl.create_list :content, 4, content_category: @talk_cat, 
+      FactoryGirl.create_list :content, 4, content_category: @talk_cat,
         locations: [@third_location], published: true
       index
     end
@@ -47,7 +47,7 @@ describe Api::V3::TalkController, :type => :controller do
 
         it 'should filter by the app\'s organizations' do
           subject
-          expect(assigns(:talk)).to eq([@talk_item])
+          expect(assigns(:talk)[:results]).to eq([@talk_item])
         end
       end
 
@@ -58,7 +58,7 @@ describe Api::V3::TalkController, :type => :controller do
 
       it 'should respond with talk items in the user\'s location' do
         subject
-        expect(assigns(:talk).select{|c| c.locations.include? @user.location }.count).to eq(assigns(:talk).count)
+        expect(assigns(:talk)[:results].select{|c| c.locations.include? @user.location }.count).to eq(assigns(:talk)[:results].count)
       end
     end
   end
@@ -231,7 +231,7 @@ describe Api::V3::TalkController, :type => :controller do
           stub_request(:post, /.*/)
         end
 
-        # because there are so many different external calls and behaviors here, 
+        # because there are so many different external calls and behaviors here,
         # this is really difficult to test thoroughly, but mocking and checking
         # that the external call is made tests the basics of it.
         it 'should call publish_to_dsp' do

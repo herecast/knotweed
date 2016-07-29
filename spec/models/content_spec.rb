@@ -61,7 +61,7 @@ describe Content, :type => :model do
 
     context 'Given CATEGORY' do
       let(:annotations) do
-        { 'document-parts' => 
+        { 'document-parts' =>
           { 'feature-set' => [
             { 'name' =>
               { 'name' => 'CATEGORY' },
@@ -80,7 +80,7 @@ describe Content, :type => :model do
 
     context 'Given CATEGORIES without CATEGORY' do
       let(:annotations) do
-        { 'document-parts' => 
+        { 'document-parts' =>
           { 'feature-set' => [
             { 'name' =>
               { 'name' => 'CATEGORIES' },
@@ -100,7 +100,7 @@ describe Content, :type => :model do
     context 'Given CATEGORIES with CATEGORY' do
       let (:other_category) { 'MarksManQuail' }
       let(:annotations) do
-        { 'document-parts' => 
+        { 'document-parts' =>
           { 'feature-set' => [
             { 'name' =>
               { 'name' => 'CATEGORIES' },
@@ -125,7 +125,7 @@ describe Content, :type => :model do
   end
 
   describe '#create_recommendation_doc_from_annotations' do
-    let (:annotations) { {'id' => '1', 'annotation-sets' => []}  } 
+    let (:annotations) { {'id' => '1', 'annotation-sets' => []}  }
     before do
       subject.update_attribute :pubdate, Date.current
     end
@@ -268,10 +268,10 @@ describe Content, :type => :model do
   # for ease of querying, our polymorphic channel relationship
   # is redundantly specified using the content_id attribute
   # from each channel submodel. Rails doesn't provide an easy way to
-  # ensure the redundant field is saved, or vice versa, 
+  # ensure the redundant field is saved, or vice versa,
   # so we add a callback on each model
   describe "redundant channel relationship" do
-    before do 
+    before do
       @content = FactoryGirl.create :content
       @event = FactoryGirl.create :event
       @event2 = FactoryGirl.create :event
@@ -292,7 +292,7 @@ describe Content, :type => :model do
     end
   end
 
-  describe "get_downstream_thread" do 
+  describe "get_downstream_thread" do
     it "should return nil for contents without children" do
       c = FactoryGirl.create(:content)
       expect(c.get_downstream_thread).to eq(nil)
@@ -304,9 +304,9 @@ describe Content, :type => :model do
       c3 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
       c4 = FactoryGirl.create(:content, organization: c1.organization, parent: c3)
       expect(c1.get_downstream_thread).to eq({
-        c2.id => nil, c3.id => { 
-          c4.id => nil 
-        } 
+        c2.id => nil, c3.id => {
+          c4.id => nil
+        }
       })
     end
   end
@@ -319,7 +319,7 @@ describe Content, :type => :model do
     it "should leave valid content unquarantined" do
       expect(@content.quarantine).to eq(false)
     end
-    
+
     it "should mark it quarantined if sanitized_content is empty" do
       @content.raw_content = "<br/>"
       @content.save
@@ -802,7 +802,7 @@ describe Content, :type => :model do
       expect(content.guid).to eq("Test-Guid")
     end
   end
-    
+
   describe "export to xml" do
     before do
       @content = FactoryGirl.create(:content)
@@ -859,7 +859,7 @@ describe Content, :type => :model do
 
     it "should contain all the attributes as feature name/value pairs" do
       @content.feature_set.each do |k, v|
-        unless ["content", "organization_id", "import_location_id", "parent_id", 
+        unless ["content", "organization_id", "import_location_id", "parent_id",
                 "issue_id", "content_category_id"].include? k
           # just checking with closing tags so we don't have to deal
           # with exact formatting of opening tag and attributes
@@ -898,7 +898,7 @@ describe Content, :type => :model do
     it "should contain document part with content" do
       # note the brackets at the end are closing CDATA
       expect(@xml.include?("#{@content.sanitized_content}]]></tns:content>")).to be_truthy
-    end 
+    end
   end
 
   describe "publish" do
@@ -915,7 +915,7 @@ describe Content, :type => :model do
     describe "#export_pre_pipeline_xml" do
       before do
         stub_request(:post, "http://#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPrePipeline").
-          to_return(:status => 200, 
+          to_return(:status => 200,
                     :body => File.open('spec/fixtures/pre_pipeline_output.xml', 'r').readlines.join(),
                     :headers => {})
       end
@@ -939,11 +939,11 @@ describe Content, :type => :model do
         expect(Nokogiri::XML(export) { |config| config.strict }).to_not be_nil
       end
     end
-    
+
     describe "postpipeline xml" do
       before do
         stub_request(:post, "http://#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPostPipeline").
-          to_return(:status => 200, 
+          to_return(:status => 200,
                     :body => File.open('spec/fixtures/post_pipeline_output.xml', 'r').readlines.join(),
                     :headers => {})
       end
@@ -1128,8 +1128,8 @@ describe Content, :type => :model do
       @test_files_path = Dir.pwd + "/spec/fixtures/listserv_test_files"
 
       require parser_path + "mail_extractor.rb"
-  
-      google_logo_stub     
+
+      google_logo_stub
 
       @norwich = FactoryGirl.create :location, city: 'Norwich', state: 'VT'
       @corinth = FactoryGirl.create :location, city: 'Corinth', state: 'VT'
@@ -1289,7 +1289,7 @@ describe Content, :type => :model do
   describe 'when user sends raw content' do
     input_files = Dir['spec/fixtures/sanitized_content/*_input']
     output_files = Dir['spec/fixtures/sanitized_content/*_output']
-    raise 'unable to find any input files for this test!' if input_files.blank?  
+    raise 'unable to find any input files for this test!' if input_files.blank?
 
     input_files.each do |input_file|
       it "from #{input_file}" do
@@ -1297,7 +1297,7 @@ describe Content, :type => :model do
         raise 'expected sanitized output file not found' unless output_files.include? output_file
         raw_content = File.read input_file
         content = FactoryGirl.create :content , raw_content: raw_content
-        expect(content.sanitized_content).to eq File.read(output_file).chomp  
+        expect(content.sanitized_content).to eq File.read(output_file).chomp
       end
     end
   end
@@ -1326,7 +1326,7 @@ describe Content, :type => :model do
       @comment1 = FactoryGirl.create :comment
       @comment1.content.update_attribute :parent_id, @content.id
     end
-    
+
     it 'should return the content records of comments associated with it' do
       expect(@content.comments).to eq([@comment1.content])
     end
@@ -1449,18 +1449,18 @@ describe Content, :type => :model do
 
     it 'should group search results by root_parent_id' do
       [Content.talk_search(@c1.raw_content), Content.talk_search(@c2.raw_content)].each do |results|
-        expect(results).to include(@p1)
-        expect(results.length).to eq 1
+        expect(results[:results]).to include(@p1)
+        expect(results[:results].length).to eq 1
       end
     end
 
     it 'should group properly with no query' do
-      expect(Content.talk_search).to eq([@p1])
+      expect(Content.talk_search[:results]).to eq([@p1])
     end
 
     describe 'result order' do
       before do
-        @p2 = FactoryGirl.create :content, content_category: @talk, 
+        @p2 = FactoryGirl.create :content, content_category: @talk,
           pubdate: @p1.pubdate + 2.days
         @c2.update_attribute :pubdate, @p2.pubdate + 2.days
         index
@@ -1469,7 +1469,7 @@ describe Content, :type => :model do
       it 'should order by the latest activity' do
         # @p1 has an earlier pubdate than @p2, but one of its comments has a later pubdate (@c2),
         # so it should show up first in the results based on its 'latest_activity'
-        expect(Content.talk_search).to eq([@p1, @p2])
+        expect(Content.talk_search[:results]).to eq([@p1, @p2])
       end
     end
   end
@@ -1604,16 +1604,16 @@ describe Content, :type => :model do
         subject
       end
 
-      it 'should match output of ugc_sanitized_content' do 
+      it 'should match output of ugc_sanitized_content' do
         expect(subject).to eq @content.ugc_sanitized_content
       end
-      
+
       it 'does not strip style attributes from image tags' do
         img_content = '<img style="float: left; padding: 9px; width: 50%">'
         @content.raw_content = img_content
         expect(subject.html_safe).to eql img_content.html_safe
       end
-      
+
     end
 
     context 'for content without a specific sanitizer' do

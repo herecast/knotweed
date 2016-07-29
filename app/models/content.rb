@@ -59,7 +59,7 @@ class Content < ActiveRecord::Base
   include ThinkingSphinx::Scopes
 
   sphinx_scope(:in_accepted_category) {
-    { 
+    {
       conditions: { in_accepted_category: 1 },
       # exclude drafts and scheduled content
       with: { pubdate: 5.years.ago..Time.zone.now }
@@ -94,7 +94,7 @@ class Content < ActiveRecord::Base
   has_and_belongs_to_many :publish_records
   has_and_belongs_to_many :repositories, -> { uniq }, after_add: :mark_published
   has_and_belongs_to_many :locations
-  
+
   has_many :images, -> { order("images.primary DESC") }, as: :imageable, inverse_of: :imageable, dependent: :destroy
   accepts_nested_attributes_for :images, allow_destroy: true
   attr_accessible :images_attributes, :images
@@ -118,11 +118,11 @@ class Content < ActiveRecord::Base
   has_one :unchannelized_original, class_name: "Content", foreign_key: "channelized_content_id"
 
   attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
-                :guid, :pubdate, :source_category, :topics, :url, :origin, 
+                :guid, :pubdate, :source_category, :topics, :url, :origin,
                 :language, :authoremail, :organization_id,
                 :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
                 :image_ids, :parent_id, :source_uri, :category,
-                :content_category_id, :category_reviewed, :raw_content, 
+                :content_category_id, :category_reviewed, :raw_content,
                 :sanitized_content, :channelized_content_id,
                 :has_event_calendar, :channel_type, :channel_id, :channel,
                 :location_ids, :root_content_category_id, :similar_content_overrides,
@@ -175,7 +175,7 @@ class Content < ActiveRecord::Base
   PUBDATE_OUTPUT_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
   BASE_URI = "http://www.subtext.org/Document"
-  
+
   UGC_ORIGIN = 'UGC'
 
   # publish methods are string representations
@@ -187,19 +187,19 @@ class Content < ActiveRecord::Base
   PUBLISH_TO_DSP = "publish_to_dsp"
   PUBLISH_METHODS = [PUBLISH_TO_DSP, EXPORT_TO_XML, EXPORT_PRE_PIPELINE,
                      EXPORT_POST_PIPELINE]
-  # set a default here so if it changes, 
+  # set a default here so if it changes,
   # we don't have to change the code in many different places
   DEFAULT_PUBLISH_METHOD = PUBLISH_TO_DSP
 
   # features that can be overwritten when we reimport
-  REIMPORT_FEATURES = %w(title subtitle authors raw_content pubdate source_category topics 
+  REIMPORT_FEATURES = %w(title subtitle authors raw_content pubdate source_category topics
                          url authoremail import_record)
 
-  CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle 
+  CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle
                   local_news nation_world offered presentation recommendation
                   sale_event sports wanted)
 
-  BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt')) 
+  BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt'))
 
   # NOTE: this needs to be kept in sync with the Ember app
   # if it changes over there.
@@ -262,7 +262,7 @@ class Content < ActiveRecord::Base
   end
 
   # holdover from when we used to use processed_content by preference.
-  # Seemed easier to keep this method, but just make it point directly to raw content 
+  # Seemed easier to keep this method, but just make it point directly to raw content
   # than to remove references to the method altogether
   def content
     raw_content
@@ -298,9 +298,9 @@ class Content < ActiveRecord::Base
 
   def category= new_cat
     cat = ContentCategory.find_or_create_by(name: new_cat) unless new_cat.nil?
-    self.content_category = cat 
+    self.content_category = cat
   end
-  
+
   # creating a new content from import job data
   # is not as simple as just creating new from hash
   # because we need to match locations, organizations, etc.
@@ -403,7 +403,7 @@ class Content < ActiveRecord::Base
         content.parent = parent
       end
     end
-      
+
     content.import_record = job.last_import_record if job.present?
 
     content.set_guid unless content.guid.present? # otherwise it won't be set till save and we need it for overwriting
@@ -423,7 +423,7 @@ class Content < ActiveRecord::Base
     end
     if existing_content.nil? and content.organization.present?
       existing_content = Content.where(organization_id: content.organization_id, guid: content.guid).try(:first)
-      # some content may be missing the guid because they come in as a listserve digest, which strips the guid. 
+      # some content may be missing the guid because they come in as a listserve digest, which strips the guid.
       # also sometimes the user posts the same message to multiple listservers, which will cause the message to have
       # multiple guids even though it's the same content. the logic below allow us to detect existing content in these cases.
       if existing_content.nil?
@@ -490,7 +490,7 @@ class Content < ActiveRecord::Base
     # this line is designed to handle content imported from Wordpress that had an image at the top of the content
     # and potentially other images.  The first image would duplicate our only (currently-supported) image,
     # which is also needed for tile view.  This line pulls the first <a ...><img ...></a> set and leaves the second and
-    # subsequent so those images actually display as intended and built in Wordpress. 
+    # subsequent so those images actually display as intended and built in Wordpress.
     # since those images have already been processed and pulled into to our AWS store, this method goes through
     # and updates the remaining img tags to point to the correct URL.
     content.process_wp_content!
@@ -531,7 +531,7 @@ class Content < ActiveRecord::Base
     true
   end
 
-  # if guid is empty, set with our own 
+  # if guid is empty, set with our own
   def set_guid
     unless self.guid.present?
       self.guid = ""
@@ -607,7 +607,7 @@ class Content < ActiveRecord::Base
   # Extracts mentions (e.g. Person, Organization, Keyphrases) from full annotations
   def extract_mentions_from_annotations(annotations)
     mentions = []
-    annotations['annotation-sets'].each do |s| 
+    annotations['annotation-sets'].each do |s|
       s['annotation'].each do |a|
         value = nil
         a['feature-set'].each do |feature|
@@ -645,7 +645,7 @@ class Content < ActiveRecord::Base
     [rec_doc]
   end
 
-  # Updates this content's category based on the annotations from the CES 
+  # Updates this content's category based on the annotations from the CES
   # If no category annotation is found, this is a no-op
   def update_category_from_annotations(annotations)
     cat = nil
@@ -662,7 +662,7 @@ class Content < ActiveRecord::Base
     end
 
     if cat.present?
-      cat_id = ContentCategory.find_or_create_by(name: cat).id 
+      cat_id = ContentCategory.find_or_create_by(name: cat).id
       update_attributes(content_category_id: cat_id)
     end
   end
@@ -710,7 +710,7 @@ class Content < ActiveRecord::Base
 
     sparql.update(query, { endpoint: repo.graphdb_endpoint + "/statements" })
     graph
-  end  
+  end
 
 # below are our various "publish methods"
   # new publish methods should return true
@@ -737,17 +737,17 @@ class Content < ActiveRecord::Base
       return true
     end
   end
-  
+
   # Post to Ontotext's new CES & Recommendations API
   # - passes content thru pipeline (annotation)
   # - formats annotation and posts to recommendation engine
   # - persists content to graphdb and updates active promo if applicable
   # @todo investigate why we're passing opts
   # @param repo [Repo] the repo object
-  # @param opts [Array] publish options e.g. :download_result 
+  # @param opts [Array] publish options e.g. :download_result
   def publish_to_dsp(repo, opts={})
     annotate_resp = JSON.parse(
-      OntotextController.post(repo.annotate_endpoint + '/extract', 
+      OntotextController.post(repo.annotate_endpoint + '/extract',
         { body: to_new_xml,
           headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",
                      'Accept' => "application/vnd.ontotext.ces.document+json" }}))
@@ -755,7 +755,7 @@ class Content < ActiveRecord::Base
       update_category_from_annotations(annotate_resp)
       rec_doc = create_recommendation_doc_from_annotations(annotate_resp)
 
-      response = OntotextController.post(repo.recommendation_endpoint + "/content?key=#{Figaro.env.ontotext_recommend_key}", 
+      response = OntotextController.post(repo.recommendation_endpoint + "/content?key=#{Figaro.env.ontotext_recommend_key}",
           { headers: { "Content-type" => "application/json",
                        "Accept" => "application/json" },
             body: rec_doc.to_json } )
@@ -835,7 +835,7 @@ class Content < ActiveRecord::Base
               end
             end
           end
-            
+
         end
         g.tag!("tns:document-part", "part"=>"BODY", "id"=>"1") do |h|
           h.tag!("tns:content") do |i|
@@ -843,7 +843,7 @@ class Content < ActiveRecord::Base
           end
         end
       end
-      
+
     end
     xml.target!
   end
@@ -884,7 +884,7 @@ class Content < ActiveRecord::Base
       return false
     end
   end
-    
+
   def export_post_pipeline_xml(repo, opts = {})
     options = { :body => self.to_new_xml }
     file_list = opts[:file_list] || Array.new
@@ -922,13 +922,13 @@ class Content < ActiveRecord::Base
         quarantine: false # can't publish quarantined docs
       }
       if query_params[:organization_id].present?
-        query[:organization_id] = query_params[:organization_id].map { |s| s.to_i } 
+        query[:organization_id] = query_params[:organization_id].map { |s| s.to_i }
       end
       if query_params[:import_location_id].present?
-        query[:import_location_id] = query_params[:import_location_id].map { |s| s.to_i } 
+        query[:import_location_id] = query_params[:import_location_id].map { |s| s.to_i }
       end
       if query_params[:content_category_id].present?
-        query[:content_category_id] = query_params[:content_category_id].map { |s| s.to_i } 
+        query[:content_category_id] = query_params[:content_category_id].map { |s| s.to_i }
       end
 
       repo = Repository.find(query_params[:repository_id]) if query_params[:repository_id].present?
@@ -1017,7 +1017,7 @@ class Content < ActiveRecord::Base
   def publish_category
     if organization.present? and category.present?
       category
-    else 
+    else
       c = Category.find_or_create_by(name: source_category)
       if c.channel.present?
         c.channel.name
@@ -1052,7 +1052,7 @@ class Content < ActiveRecord::Base
     has_promotion_inventory?
   end
 
-  # searches for and returns a related promotion for a given content and repository 
+  # searches for and returns a related promotion for a given content and repository
   # using a variety of search strategies.
   #
   # @note Returns an ordered array of PromotionBanner, score, and select method -- in that order.
@@ -1082,7 +1082,7 @@ class Content < ActiveRecord::Base
       select_score = nil
       select_method = 'sponsored_content'
     else
-      # query graphdb for relevant active banner ads (pass title + content) 
+      # query graphdb for relevant active banner ads (pass title + content)
       results = query_promo_similarity_index(title + " " + content, repo)
 
       #return random promo with inventory (if exists)
@@ -1107,29 +1107,14 @@ class Content < ActiveRecord::Base
         content_id = results[:content_id].to_s
         select_score = results[:score].to_s
         select_method = "relevance"
-      end 
+      end
     end
     if content_id.present?
       banner = PromotionBanner.for_content(content_id).has_inventory.order('random()').first
     elsif banner.blank? # banner may already be populated from the first conitional
-      select_score = nil
-      # fall back to random ads
-      select_method = 'boost'
-      banner = PromotionBanner.boost.has_inventory.order('random()').first
-      unless banner.present?
-        select_method = 'paid'
-        banner = PromotionBanner.active.paid.has_inventory.order('random()').first
-      end
-      unless banner.present?
-        select_method = 'active'
-        banner = PromotionBanner.active.has_inventory.order('random()').first
-      end
-      unless banner.present?
-        select_method = 'active no inventory'
-        banner = PromotionBanner.active.order('random()').first
-      end
+      random_promotion_info_set = PromotionBanner.get_random_promotion
     end
-    return [banner, select_score, select_method]
+    return random_promotion_info_set || [banner, select_score, select_method]
   end
 
   # callback function to update fields with repo info
@@ -1146,7 +1131,7 @@ class Content < ActiveRecord::Base
     prefix pub: <http://ontology.ontotext.com/publishing#>
     PREFIX sbtxd: <#{BASE_URI}/>
 
-    select ?category 
+    select ?category
     where {
       OPTIONAL { sbtxd:#{id} pub:hasCategory ?category . }
     }")
@@ -1310,7 +1295,7 @@ class Content < ActiveRecord::Base
     c = simple_format c, {},  sanitize: false
     c.gsub!(/(<a href="http[^>]*)>/, '\1 target="_blank">')
 
-    BLACKLIST_BLOCKS.each do |b| 
+    BLACKLIST_BLOCKS.each do |b|
       if /^\/(.*)\/([a-z]*)$/ =~ b.strip
         match = $~
         opts = 0
@@ -1325,7 +1310,7 @@ class Content < ActiveRecord::Base
           end
         end
         b = Regexp.new match[1], opts
-      else 
+      else
         b = b.strip
       end
       c.gsub!(b, "")
@@ -1513,7 +1498,7 @@ class Content < ActiveRecord::Base
     # but doesn't necessarily return the parent objects. The way to do this with the fewest
     # SQL queries possible is map our already retrieved objects to their root_parent_ids
     # and select (in one query) all content with id = root_parent_ids
-    Content.where(id: initial_results.map{|c| c.root_parent_id})
+    { results: Content.where(id: initial_results.map{|c| c.root_parent_id}), total: initial_results.count }
   end
 
   # returns latest pubdate of a given thread
@@ -1553,7 +1538,7 @@ class Content < ActiveRecord::Base
   # -- scheduled: saved, pubdate in the future, published to the DSP, but not returned
   #           in API responses except dashboard *until* Time.current > pubdate
   # -- published: normal published state. Exists in DSP, returned in API responses.
-  # 
+  #
   # there's the potential to implement this with a state_machine gem in the future,
   # especially if it gets more complex. For now, we're just emulating that behavior
   # as minimally as possible.
@@ -1593,7 +1578,7 @@ class Content < ActiveRecord::Base
 
     # get score threshold
     score_threshold = Figaro.env.promo_relevance_score_threshold
-    query = File.read(Rails.root.join("lib", "queries", "query_promo_similarity_index.rq")) % 
+    query = File.read(Rails.root.join("lib", "queries", "query_promo_similarity_index.rq")) %
             { content: clean_content, content_id: id, score_threshold: score_threshold }
     begin
       sparql.query(query)

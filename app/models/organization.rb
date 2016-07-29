@@ -95,5 +95,17 @@ class Organization < ActiveRecord::Base
     super
   end
 
+  def get_promotion
+    promotion = Promotion.find_by(id: banner_ad_override)
+    if promotion.try(:promotable).try(:class) == PromotionBanner
+      banner = promotion.promotable
+    else
+      banner = nil
+    end
+    select_score = nil
+    select_method = 'sponsored_content'
+    banner.present? ? [banner, select_score, select_method] : PromotionBanner.get_random_promotion
+  end
+
   ransacker :include_child_organizations
 end

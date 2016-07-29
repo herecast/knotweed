@@ -80,6 +80,69 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     end
   end
 
+  describe 'GET show' do
+    before do
+      @repo = FactoryGirl.create :repository
+      @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+      @org = FactoryGirl.create :organization
+      @consumer_app.organizations = [@org]
+      @content = FactoryGirl.create :content
+      @related_content = FactoryGirl.create(:content)
+      allow_any_instance_of(Promotion).to receive(:update_active_promotions).and_return(true)
+      @promo = FactoryGirl.create :promotion, content: @related_content
+      @pb = FactoryGirl.create :promotion_banner, promotion: @promo
+      # avoid making calls to repo
+      allow_any_instance_of(Content).to receive(:query_promo_similarity_index).and_return([])
+    end
+
+    subject { get :show, format: :json,
+              content_id: @content.id, consumer_app_uri: @consumer_app.uri }
+
+    it 'has 200 status code' do
+      subject
+      expect(response.code).to eq('200')
+    end
+
+    it 'should increment the impression count of the banner' do
+      expect{subject}.to change{@pb.reload.impression_count}.by(1)
+    end
+
+    it 'should increment the daily impression count of the banner' do
+      expect{subject}.to change{@pb.reload.daily_impression_count}.by(1)
+    end
+
+    describe 'logging content displayed with' do
+
+      it 'should create a ContentPromotionBannerImpression record if none exists' do
+        subject
+        expect(ContentPromotionBannerImpression.count).to eq(1)
+        expect(ContentPromotionBannerImpression.first.content_id).to eq(@content.id)
+        expect(ContentPromotionBannerImpression.first.promotion_banner_id).to eq(@pb.id)
+      end
+
+      it 'should increment the ContentPromotionBannerImpression display count if a record exists' do
+        cpbi = FactoryGirl.create :content_promotion_banner_impression, content_id: @content.id, promotion_banner_id: @pb.id
+        subject
+        expect(cpbi.reload.display_count).to eq(2)
+      end
+
+    end
+
+    context 'with banner_ad_override' do
+      before do
+        @promo2 = FactoryGirl.create :promotion, content: FactoryGirl.create(:content)
+        @pb2 = FactoryGirl.create :promotion_banner, promotion: @promo2
+        @content.update_attribute :banner_ad_override, @promo2.id
+      end
+
+      it 'should respond with the banner specified by the banner_ad_override' do
+        subject
+        expect(assigns(:banner)).to eq @pb2
+      end
+    end
+
+  end
+
   describe 'post track_click' do
     before do
       @banner = FactoryGirl.create :promotion_banner
