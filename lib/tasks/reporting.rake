@@ -41,7 +41,7 @@ namespace :reporting do
   task :create_promotion_banner_report => :environment do
     logger = Logger.new("#{Rails.root}/log/rake_promotion_banner_report_#{Rails.env}.log")
     begin
-      @active_promos = PromotionBanner.where("(? >= campaign_start AND ? <= campaign_end) OR track_daily_metrics = 1", Date.today, Date.today)
+      @active_promos = PromotionBanner.where("(? >= campaign_start AND ? <= campaign_end) OR track_daily_metrics = true", Date.today, Date.today)
       @active_promos.each do |promotion_banner|
         old_promotion_report = PromotionBannerReport.where(promotion_banner_id: promotion_banner.id).order(:id).last
 
