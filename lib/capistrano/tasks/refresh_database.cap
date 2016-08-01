@@ -31,7 +31,7 @@ namespace :refresh_database do
   desc 'Kill running delayed jobs'
   task :kill_delayed_jobs do
     on roles(app_server_roles) do
-      execute ". $HOME/.profile && cd #{deploy_to}/current && RAILS_ENV=production bin/delayed_job stop"
+      execute ". /etc/profile && cd #{deploy_to}/current && RAILS_ENV=production bin/delayed_job stop"
     end
   end
 
@@ -72,14 +72,14 @@ namespace :refresh_database do
   desc 'Run rails database migrations'
   task :run_migrations do
     on roles(app_server_roles) do
-      execute ". $HOME/.profile && cd #{deploy_to}/current && RAILS_ENV=production bundle exec rake db:migrate"
+      execute ". /etc/profile && cd #{deploy_to}/current && RAILS_ENV=production bundle exec rake db:migrate"
     end
   end
 
   desc 'Reindex sphinx'
   task :reindex do
     on roles(app_server_roles) do
-      execute ". $HOME/.profile && cd #{deploy_to}/current && ./lib/indexing/full_index.sh"
+      execute ". /etc/profile && cd #{deploy_to}/current && ./lib/indexing/full_index.sh"
     end
   end
 
@@ -93,7 +93,7 @@ namespace :refresh_database do
   desc 'Start delayed jobs'
   task :start_delayed_jobs do
     on roles(app_server_roles) do
-      execute ". $HOME/.profile && cd #{deploy_to}/current && RAILS_ENV=production bin/delayed_job -n 4 restart"
+      execute ". /etc/profile && cd #{deploy_to}/current && RAILS_ENV=production bin/delayed_job -n 4 restart"
     end
   end
 
@@ -101,7 +101,7 @@ namespace :refresh_database do
   task :publish_latest_import do
     pub_start_date = ENV['PUBSTARTDATE'] ? ENV['PUBSTARTDATE'] : Date.current.prev_day.to_s
     on roles(app_server_roles) do
-      execute ". $HOME/.profile && cd #{deploy_to}/current && PUBSTARTDATE=#{pub_start_date} RAILS_ENV=production bundle exec rake backpublish"
+      execute ". /etc/profile && cd #{deploy_to}/current && PUBSTARTDATE=#{pub_start_date} RAILS_ENV=production bundle exec rake backpublish"
     end
   end
 end

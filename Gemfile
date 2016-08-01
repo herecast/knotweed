@@ -6,8 +6,9 @@ gem 'active_model_serializers', '~> 0.9.3'
 gem 'american_date', '~> 1.1.0'
 gem 'bootstrap-sass', '~> 3.3.6'
 gem 'cancancan', '~> 1.13.1'
-gem "capistrano", "~> 3.1.0"
+gem "capistrano", "~> 3.5.0"
 gem "capistrano-bundler", "~> 1.1.1"
+gem 'capistrano-git-submodule-strategy', '~> 0.1.22'
 gem "capistrano-rails", "~> 1.1"
 gem "capistrano-rvm", '~> 0.1.1'
 gem "carmen-rails", '~> 1.0.0'
@@ -64,7 +65,7 @@ gem 'sanitize', '~> 4.0.1' # ugc sanitizer
 gem 'sass-rails', '~> 5.0.4'
 gem "simple_form", '~> 3.2.1'
 gem 'sparql-client', '~> 1.1.3'
-gem 'sshkit', '~> 1.4.0'
+gem 'sshkit', '~> 1.11.1'
 gem 'summernote-rails', '~> 0.8.1'
 gem 'thinking-sphinx', '~> 3.1.4'
 gem 'ts-datetime-delta', '~> 2.0.2', require: 'thinking_sphinx/deltas/datetime_delta'
