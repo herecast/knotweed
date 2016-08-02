@@ -135,6 +135,8 @@ Knotweed::Application.routes.draw do
       resources 'business_categories', only: [:index]
       post '/businesses/:id/feedback', to: 'business_feedbacks#create', as: :leave_feedback
       put '/businesses/:id/feedback', to: 'business_feedbacks#update', as: :update_feedback
+      resources :content_reports, only: :index
+      resources :promotion_banner_reports, only: :index
     end
   end
 
