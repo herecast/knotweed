@@ -37,7 +37,10 @@ module Api
       def state; object.business_location.state; end
       def zip; object.business_location.zip; end
       def service_radius; object.business_location.service_radius; end
-      def hours; object.business_location.hours; end
+      
+      def hours
+        object.business_location.hours.present? ? object.business_location.hours : []
+      end
 
       def coords
         {
