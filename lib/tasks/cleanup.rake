@@ -55,5 +55,9 @@ namespace :cleanup do
 
   end
 
+  task :remove_views_from_unpublished_content => :environment do
+    Content.where("published = ? AND view_count > ?", false, 0).update_all(view_count: 0)
+  end
+
 end
 

@@ -65,7 +65,7 @@ describe Api::V3::TalkController, :type => :controller do
 
   describe 'GET show' do
     before do
-      @talk = FactoryGirl.create :content, content_category: @talk_cat
+      @talk = FactoryGirl.create :content, content_category: @talk_cat, published: true
       api_authenticate user: @user
     end
 

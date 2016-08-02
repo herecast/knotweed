@@ -143,7 +143,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
   describe 'GET show' do
     before do
-      @market_post = FactoryGirl.create :content, content_category: @market_cat
+      @market_post = FactoryGirl.create :content, content_category: @market_cat, published: true
     end
 
     subject { get :show, id: @market_post.id }

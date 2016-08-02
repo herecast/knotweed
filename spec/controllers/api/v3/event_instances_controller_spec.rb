@@ -16,7 +16,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
   describe 'GET show' do
     before do
-      @event = FactoryGirl.create :event
+      @event = FactoryGirl.create(:event, published: true)
       @inst = @event.next_or_first_instance
       schedule = FactoryGirl.create :schedule
       @inst.update_attribute(:schedule_id, schedule.id)

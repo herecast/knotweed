@@ -1513,7 +1513,10 @@ class Content < ActiveRecord::Base
 
   def increment_view_count!
     # check if Thread.current[:user] has skip_analytics? before incrementing
-    increment_integer_attr!(:view_count) unless User.current.try(:skip_analytics?)
+    # check if content is published before incrementing
+    if self.published
+      increment_integer_attr!(:view_count) unless User.current.try(:skip_analytics?)
+    end
   end
 
   #returns the URI path that matches UX2 for this content record

@@ -161,7 +161,7 @@ describe Api::V3::NewsController, :type => :controller do
 
   describe 'GET show' do
     before do
-      @news = FactoryGirl.create :content, content_category: @news_cat
+      @news = FactoryGirl.create :content, content_category: @news_cat, published: true
     end
 
     subject { get :show, id: @news.id, format: :json }

@@ -1476,11 +1476,16 @@ describe Content, :type => :model do
 
   describe 'increment_view_count!' do
     before do
-      @content = FactoryGirl.create :content
+      @published_content = FactoryGirl.create(:content, published: true)
+      @unpublished_content = FactoryGirl.create(:content, published: false)
     end
 
     it 'should increment the view count' do
-      expect{@content.increment_view_count!}.to change{@content.view_count}.by 1
+      expect{@published_content.increment_view_count!}.to change{@published_content.view_count}.by 1
+    end
+
+    it 'should not increment the view count if not published' do
+      expect{@unpublished_content.increment_view_count!}.not_to change{@unpublished_content.view_count}
     end
 
     context 'for a user with skip_analytics = true' do
@@ -1490,7 +1495,7 @@ describe Content, :type => :model do
       end
 
       it 'should not increment the view count' do
-        expect{@content.increment_view_count!}.not_to change{@content.view_count}
+        expect{@unpublished_content.increment_view_count!}.not_to change{@unpublished_content.view_count}
       end
     end
   end
