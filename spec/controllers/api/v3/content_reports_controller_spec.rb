@@ -17,7 +17,7 @@ describe Api::V3::ContentReportsController, type: :controller do
 
     expect(content_report).to match({
       "Date" => @content_report.report_date.strftime("%Y-%m-%d %T"),
-      "Author" => @content_report.content.try(:created_by).try(:name),
+      "Author" => @user.name,
       "Publication Date" => @content_report.content.pubdate.strftime("%Y-%m-%d %T"),
       "Title" => @content_report.content.title,
       "Views" => @content_report.view_count.to_s,

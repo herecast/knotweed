@@ -103,7 +103,6 @@ describe Api::V3::ContentsController, :type => :controller do
         end
         
         it "returns contents connected to default location" do
-          puts @user.location
           subject
           expect(assigns(:contents).select{ |c| c.locations.include? @default_location }.count).to eq assigns(:contents).count
         end
