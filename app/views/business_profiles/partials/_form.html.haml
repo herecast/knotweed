@@ -50,7 +50,7 @@
               - else
                 %iframe#confirm_location_map{ data: { base_src_url: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=" } }
         .row-fluid
-          = f.association :business_categories, input_html: { class: 'chosen-select input-block-level' }
+          = f.association :business_categories, label_method: :name_with_parent, input_html: { class: 'chosen-select input-block-level' }
         .row-fluid
           .span6
             = f.simple_fields_for :content do |g|

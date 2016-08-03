@@ -24,4 +24,8 @@ class BusinessCategory < ActiveRecord::Base
     response.flatten
   end
 
+  def name_with_parent
+    parents.first.present? ? "#{parents.first.name} > #{name}" : name
+  end
+
 end

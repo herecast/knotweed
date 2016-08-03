@@ -93,7 +93,7 @@
                           .span2.offset4
                             .btn.btn-danger.remove-hours-field X
             = simple_fields_for location.business_profile do |h|
-              = h.association :business_categories, input_html: { class: 'chosen-select input-block-level' }
+              = h.association :business_categories, label_method: :name_with_parent, input_html: { class: 'chosen-select input-block-level' }
       .tab-pane#business_locations
         .pull-right
           = link_to "+ Add New Location", "#", class: "btn btn-success", 
