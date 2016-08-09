@@ -110,3 +110,5 @@ adapt.sql
 /coverage
 
 .byebug_history
+
+docker-compose.yml

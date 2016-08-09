@@ -1,0 +1,13 @@
+version: '2'
+services:
+  postgresql:
+    image: "postgres:9.5"
+    ports:
+      - '5432:5432'
+    environment:
+      - "POSTGRES_PASSWORD=toor"
+      - "POSTGRES_DB=knotweed_dev"
+  redis:
+    image: "redis"
+    ports:
+      - '6379:6379'
