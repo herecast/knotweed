@@ -11,7 +11,7 @@ module Api
           INNER JOIN promotion_banners pb ON pbr.promotion_banner_id = pb.id
           INNER JOIN promotions p ON p.promotable_type = 'PromotionBanner' AND p.promotable_id = pb.id
           INNER JOIN contents c ON p.content_id = c.id
-          ORDER BY report_date DESC, p.id DESC;"
+          ORDER BY DATE(report_date) DESC, campaign_start DESC, p.id DESC;"
         @promotion_banner_reports = ActiveRecord::Base.connection.execute(query)
 
         render json: { promotion_banner_reports: @promotion_banner_reports }
