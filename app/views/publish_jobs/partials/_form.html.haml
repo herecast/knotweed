@@ -50,8 +50,7 @@
         = label_tag "to", "To"
         = text_field_tag "to", @publish_job.query_params[:to], type: "date", class: "input-block-level"
         = label_tag "import_location", "Location"
-        = select_tag :import_location_id, options_from_collection_for_select(ImportLocation.where(region_id: 1).accessible_by(current_ability, :read),
-          "id", "name", @publish_job.query_params[:import_location_id]), { multiple: true, class: "chosen-select input-block-level", placeholder: "Select some options" }
+        = select_tag :import_location_id, options_from_collection_for_select(ImportLocation.where(region_id: 1).accessible_by(current_ability, :read), "id", "city", @publish_job.query_params[:import_location_id]), { multiple: true, class: "chosen-select input-block-level", placeholder: "Select some options" }
         = label_tag "content_category", "Content Category"
         = select_tag :content_category_id, 
           options_from_collection_for_select(ContentCategory.accessible_by(current_ability, :read), "id", "name", @publish_job.query_params[:content_category_id]), 
