@@ -43,10 +43,10 @@ module Api
 
         if params[:organization_id].present?
           opts[:with][:organization_id] = params[:organization_id]
+          remove_geodist(opts[:order])
         end
 
         @business_profiles = BusinessProfile.search(params[:query], opts)
-
         render json: @business_profiles, each_serializer: BusinessProfileSerializer,
           root: 'businesses', context: {current_ability: current_ability, current_user: current_user}, meta: {total: @business_profiles.total_entries}
       end
@@ -98,20 +98,46 @@ module Api
         order = params[:sort_by] || "score_desc"
         case order
           when "distance_asc"
-            return "geodist ASC"
+            closest_order
           when "score_desc"
-            return "feedback_recommend_avg DESC"
+            best_score_order
           when "rated_desc"
-            return "feedback_count DESC"
+            most_rated_order
+          when "alpha_asc"
+            alpha_order
           when "alpha_desc"
             return "business_location_name DESC"
-          when "alpha_asc"
-            return "business_location_name ASC"
           else
             return nil
-          end
+        end
       end
 
+      def best_score_order
+        "feedback_recommend_avg DESC, feedback_count DESC, geodist ASC, business_location_name ASC"
+      end
+
+      def closest_order
+        "geodist ASC, feedback_recommend_avg DESC, feedback_count DESC, business_location_name ASC"
+      end
+
+      def most_rated_order
+        "feedback_count DESC, feedback_recommend_avg DESC, geodist ASC, business_location_name ASC"
+      end
+
+      def alpha_order
+        "business_location_name ASC, feedback_recommend_avg DESC, feedback_count DESC, geodist ASC"
+      end
+
+      def remove_geodist(order)
+        if order.start_with?('geodist ASC')
+          order.gsub!('geodist ASC, ', '')
+        elsif order.end_with?('geodist ASC')
+          order.gsub!(', geodist ASC', '')
+        else
+          order.gsub!(' geodist ASC,', '')
+        end
+      end
+      
       def business_params
         params.require(:business).permit(:name, :phone, :email, :website,
                                          :address, :city, :state, :zip,

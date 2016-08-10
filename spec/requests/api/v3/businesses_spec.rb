@@ -177,7 +177,6 @@ describe 'Businesses Endpoints', type: :request do
         it 'returns business profiles sorted alphabetically' do
           businesses = response_json[:businesses]
           sorted = businesses.sort_by{|b| b[:name]}
-
           expect(businesses.count).to eql business_profiles.count
           expect(businesses.first).to eql sorted.first
           expect(businesses.last).to eql sorted.last
