@@ -60,7 +60,7 @@ class Organization < ActiveRecord::Base
   ORG_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher", 'Publication',
     'Blog']
   #validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
-  BLOGGER_PAY_RATES = [5, 8]
+  BLOGGER_PAY_RATES = [0, 5, 8]
 
   validates_uniqueness_of :name
   validates_presence_of :name

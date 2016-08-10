@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160706175649) do
+ActiveRecord::Schema.define(version: 20160803190136) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -609,7 +609,7 @@ ActiveRecord::Schema.define(version: 20160706175649) do
     t.boolean  "can_publish_news",                default: false
     t.string   "subscribe_url",       limit: 255
     t.text     "description"
-    t.integer  "pay_rate_in_cents",   limit: 8
+    t.integer  "pay_rate_in_cents",   limit: 8,   default: 0
     t.string   "banner_ad_override",  limit: 255
     t.string   "profile_title",       limit: 255
   end

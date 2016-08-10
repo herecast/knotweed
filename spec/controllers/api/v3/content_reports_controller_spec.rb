@@ -7,6 +7,7 @@ describe Api::V3::ContentReportsController, type: :controller do
     @content = FactoryGirl.create :content, created_by: @user, pubdate: Date.new(2016,1,1)
     @content_report.content = @content
     @content_report.save
+    @content.organization.update_attribute(:pay_rate_in_cents, 5)
   end
   
   subject { get :index, start_date: '2015-01-01', end_date: '2017-01-01' }
