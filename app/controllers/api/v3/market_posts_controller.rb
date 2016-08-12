@@ -48,7 +48,7 @@ module Api
           query = ''
         end
         @market_posts = Content.search query, opts
-        render json: @market_posts, each_serializer: MarketPostSerializer, meta: { total: @market_posts.count }
+        render json: @market_posts, each_serializer: DetailedMarketPostSerializer, meta: { total: @market_posts.count }
       end
 
       def create

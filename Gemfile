@@ -87,6 +87,7 @@ end
 group :test do
   gem "database_cleaner", "~> 1.5.3"
   gem 'rspec_junit_formatter', '~> 0.2.3' # this is for circleci to properly read & ormat our test results
+  gem 'rspec_boolean'
   gem 'simplecov', '~> 0.10.0'
   gem 'shoulda-matchers', '~> 3.1'
   gem "timecop", '~> 0.7.1'

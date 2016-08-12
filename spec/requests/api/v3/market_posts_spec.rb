@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+
+
 describe 'Market Posts', type: :request do
   let(:user) { FactoryGirl.create :user }
   let(:auth_headers) { auth_headers_for(user) }
@@ -19,11 +21,36 @@ describe 'Market Posts', type: :request do
       allow_any_instance_of(ConsumerApp).to receive(:organizations).and_return([organization])
     end
 
-    # Maybe we can change this later to assert against the whole json schema
-    it 'should contain orgainzation_id' do
+    it 'returns all public attributes in correct schema' do
       get "/api/v3/market_posts/#{market_post.content.id}.json", {}, headers
-
-      expect(response_json[:market_post][:organization_id]).to eql organization.id
+      expect(response_json).to match(
+        market_post: a_hash_including({
+          id: market_post.id,
+          title: market_post.content.sanitized_title,
+          price: market_post.cost,
+          content: market_post.content.sanitized_content,
+          content_id: market_post.content.id,
+          published_at: market_post.pubdate.try(:iso8601),
+          locate_address: market_post.locate_address,
+          can_edit: be_boolean,
+          has_contact_info: be_boolean,
+          my_town_only: be_boolean,
+          author_name: a_kind_of(String).or(be_nil),
+          organization_id: market_post.content.organization_id,
+          updated_at: market_post.content.updated_at.try(:iso8601),
+          image_url: an_instance_of(String).or(be_nil),
+          contact_phone: market_post.contact_phone,
+          contact_email: market_post.contact_email,
+          preferred_contact_method: market_post.preferred_contact_method,
+          images: match_array(market_post.images.collect{|i|
+            a_hash_matching({
+              id: i.id,
+              image_url: i.image_url,
+              primary: be(1).or(be(0))
+            })
+          })
+        })
+      )
     end
   end
 
@@ -42,6 +69,31 @@ describe 'Market Posts', type: :request do
     let(:user) { FactoryGirl.create :user, location: @loc1 }
 
     subject { get '/api/v3/market_posts', request_params.merge({ format: :json }) }
+
+    it 'matches expected output json' do
+      subject
+
+      expect(response_json[:market_posts][0]).to match(
+        id: a_kind_of(Integer),
+        title: a_kind_of(String),
+        price: a_kind_of(String),
+        content: a_kind_of(String),
+        content_id: a_kind_of(Integer),
+        published_at: a_kind_of(String),
+        locate_address: a_kind_of(String),
+        can_edit: be_boolean,
+        has_contact_info: be_boolean,
+        my_town_only: be_boolean,
+        author_name: a_kind_of(String),
+        organization_id: a_kind_of(Integer),
+        updated_at: a_kind_of(String),
+        image_url: an_instance_of(String).or(be_nil),
+        contact_phone: a_kind_of(String).or(be_nil),
+        contact_email: a_kind_of(String).or(be_nil),
+        preferred_contact_method: a_kind_of(String).or(be_nil),
+        images: be_an(Array)
+      )
+    end
 
     context 'as signed in user' do
       subject { get '/api/v3/market_posts', request_params.merge({ format: :json }), auth_headers }
