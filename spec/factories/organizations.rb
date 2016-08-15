@@ -18,6 +18,9 @@
 #  description           :text(65535)
 #  profile_title         :string(255)
 #  banner_ad_override    :string(255)
+#  pay_rate_in_cents     :integer(8)
+#  profile_title         :string
+#  pay_directly          :boolean
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

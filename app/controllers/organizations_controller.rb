@@ -131,7 +131,7 @@ class OrganizationsController < ApplicationController
         :website, :notes, :images_attributes, :parent_id, :location_ids,
         :remote_logo_url, :contact_ids, :org_type,
         :consumer_app_ids, :can_publish_news, :subscribe_url,
-        :description, :banner_ad_override, :pay_rate_in_cents, :profile_title,
+        :description, :banner_ad_override, :pay_rate_in_cents, :profile_title, :pay_directly,
         :consumer_app_ids => [], :location_ids => [],
         :business_location => [:name, :address, :venue_url, :city,
           :state, :zip, :phone, :email, :hours],

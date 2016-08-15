@@ -18,7 +18,9 @@
 #  description           :text(65535)
 #  profile_title         :string(255)
 #  banner_ad_override    :string(255)
-#  pay_rate_in_cents     :integer
+#  pay_rate_in_cents     :integer(8)
+#  profile_title         :string
+#  pay_directly          :boolean
 #
 
 class Organization < ActiveRecord::Base
@@ -49,7 +51,7 @@ class Organization < ActiveRecord::Base
                   :website, :notes, :images_attributes, :parent_id, :location_ids,
                   :remote_logo_url, :contact_ids, :org_type, :consumer_app_ids,
                   :can_publish_news, :subscribe_url, :description,
-                  :banner_ad_override, :pay_rate_in_cents, :profile_title
+                  :banner_ad_override, :pay_rate_in_cents, :profile_title, :pay_directly
 
   mount_uploader :logo, ImageUploader
 

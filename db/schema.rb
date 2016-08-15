@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160803190136) do
+ActiveRecord::Schema.define(version: 20160803201059) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -612,6 +612,7 @@ ActiveRecord::Schema.define(version: 20160803190136) do
     t.integer  "pay_rate_in_cents",   limit: 8,   default: 0
     t.string   "banner_ad_override",  limit: 255
     t.string   "profile_title",       limit: 255
+    t.boolean  "pay_directly",                    default: false
   end
 
   add_index "organizations", ["name"], name: "idx_1176498_index_publications_on_name", unique: true, using: :btree
