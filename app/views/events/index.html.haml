@@ -83,7 +83,7 @@
       - e = ei.event
       %tr{ class: "content-#{ei.id}" }
         %td= e.content.id
-        %td= link_to e.title, edit_event_path(e.id, index: i, page: params[:page])
+        %td= link_to e.title, edit_event_path(e.id)
         %td= link_to e.content.organization.name, 
           events_path(q: { event_content_organization_id_in: [e.content.organization.id] })
         %td

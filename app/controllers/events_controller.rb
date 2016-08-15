@@ -97,8 +97,19 @@ class EventsController < ApplicationController
     end
   end
 
+  def destroy_event_instance
+    @event = Event.find(params[:event_id])
+    authorize! :update, @event
+    event_instance = EventInstance.find(params[:event_instance_id])
+    render nothing: true, status: 200 if event_instance.destroy!
+  end
+
   def update
-    # ensure serialized values are set to empty if no fields are passed in via form
+    @event = Event.find(params[:id])
+    authorize! :update, @event
+    
+    # ensure serialized values are set to empty if no fields are passed in via
+    # form
     if params[:event].present?
       params[:event][:links] = nil unless params[:event].has_key? :links
     end
@@ -110,9 +121,6 @@ class EventsController < ApplicationController
       instances << instance[1]
     end
     params[:event][:event_instances_attributes] = instances
-
-    @event = Event.find(params[:id])
-    authorize! :update, @event
 
     if @event.update_attributes(params[:event])
       # re-publish updated content
@@ -132,21 +140,8 @@ class EventsController < ApplicationController
   end
 
   def edit
-    # need to determine id of "next record" if we got here from the search index
-    if params[:index].present?
-      params[:page] = 1 unless params[:page].present?
-      events = EventInstance.ransack(session[:events_search]).result(distinct: true).joins(event: :content).order("event_instances.start_date DESC").page(params[:page]).per(100).select("events.id, start_date")
-      @next_index = params[:index].to_i + 1
-      @next_event_id = events[@next_index].try(:id)
-      # account for scenario where we are at end of page
-      if @next_event_id.nil?
-        params[:page] = params[:page].to_i + 1
-        events = EventInstance.ransack(session[:events_search]).result(distinct: true).joins(event: :content).order("event_instances.start_date DESC").page(params[:page]).per(100).select("events.id, start_date")
-        @next_index = 0 # first one on the new page
-        @next_event_id = events[@next_index].try(:id)
-      end
-    end
     @event = Event.find(params[:id])
+    @event_instances = @event.event_instances.page(params[:page] || 1).per(25)
     @event.content.images.build if @event.content.images.empty?
     authorize! :edit, @event
   end

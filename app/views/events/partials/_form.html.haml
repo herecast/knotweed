@@ -108,9 +108,13 @@
         %hr
         %h3 Event Instances
         = f.hint "At least one instance is required."
-        = f.simple_fields_for :event_instances do |g|
+        = paginate @event_instances
+        = f.simple_fields_for(:event_instances, @event_instances) do |g|
           = render 'event_instance_fields', f: g
+        .row-fluid
         = link_to_add_fields "Add Event Instance", f, :event_instances
+        .row-fluid
+          = paginate @event_instances
 
         -# image field
         %hr
@@ -153,11 +157,6 @@
     .form-actions
       = submit_tag nil, class: "btn btn-primary"
       = submit_tag "Submit and continue with this record", class: "btn btn-success", name: "continue_editing"
-      - if @next_content_id.present?
-        = hidden_field_tag :next_record_id, @next_content_id
-        = hidden_field_tag :index, @next_index
-        = hidden_field_tag :page, params[:page]
-        = submit_tag "Submit and go to next record", class: "btn btn-success", name: "next_record"
       = submit_tag "Submit and add new", class: "btn btn-success", name: "create_new"
       = link_to "Cancel", :back, class: "btn cancel"
 

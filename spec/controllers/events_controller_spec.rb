@@ -12,31 +12,12 @@ describe EventsController, :type => :controller  do
       @next_event = FactoryGirl.create :event
     end
 
-    context "when no index param present" do
 
-      subject { get :edit, id: @event.id }
+    subject { get :edit, id: @event.id }
 
-      it 'should respond with 200 status' do
-        subject
-        expect(response.code).to eq '200'
-      end
-    end
-
-    context "when index param present" do
-
-      subject { get :edit, { id: @event.id, index: 0 } }
-
-      it "finds next event id" do
-        allow(EventInstance).to receive_message_chain(:ransack, :result, :joins, :order, :page, :per, :select) { [@event, @next_event] }
-        subject
-        expect(assigns(:next_event_id)).to eq @next_event.id
-      end
-
-      it "jumps to next page if necessary" do
-        allow(EventInstance).to receive_message_chain(:ransack, :result, :joins, :order, :page, :per, :select) { [@next_event, nil] }
-        subject
-        expect(assigns(:next_event_id)).to eq @next_event.id
-      end
+    it 'should respond with 200 status' do
+      subject
+      expect(response.code).to eq '200'
     end
   end
 
@@ -218,6 +199,16 @@ describe EventsController, :type => :controller  do
       it "renders edit page" do
         allow_any_instance_of(Event).to receive(:update_attributes).and_return(false)
         expect(subject).to render_template 'edit'
+      end
+    end
+
+    context "when deleting an event instance" do
+      let(:event_instance) { FactoryGirl.create :event_instance, event_id: @event.id } 
+
+      it "removed the event instance" do
+        xhr :put, :destroy_event_instance, event_instance_id: event_instance.id, event_id: @event.id
+        expect(response).to be_ok
+        expect(event_instance).to_not be_in @event.event_instances
       end
     end
   end

@@ -53,6 +53,7 @@ Knotweed::Application.routes.draw do
   resources :locations, only: [:create, :new, :edit]
   resources :business_locations
   resources :events, except: [:show, :destroy]
+  put "destroy_event_instance", to: "events#destroy_event_instance", as: :destroy_event_instance
 
   resources :rewrites, except: [:show]
 
