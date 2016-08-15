@@ -38,6 +38,7 @@
           .span6
             .row-fluid
               .span12
+                %div{ id: 'news-child-id', data: { news_child_ids: @news_child_ids } }
                 = f.association :content_category, label_method: :label
             .row-fluid
               .span12

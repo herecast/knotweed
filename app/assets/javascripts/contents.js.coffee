@@ -31,18 +31,20 @@ jQuery ->
     updateIssueOptions()
 
   $(document).on 'change', '#content_content_category_id', ->
-    name = $(this).find("option:selected").text()
+    content_id = $(this).find("option:selected").val()
+    news_children = $("#news-child-id").data('news-child-ids')
+    is_child_of_news = $.inArray(parseInt(content_id), news_children)
     if name == "Event" or name == "Sale Event"
       $("#add_new_organization").show()
       $("label[for='content_organization_id']").text("Organization")
     else
       $("#add_new_organization").hide()
       $("label[for='content_organization_id']").text("Organization")
-    if name == 'Sponsored Content'
-      $('.sponsored-content').show()
-    else
+    if is_child_of_news == -1
       $('.sponsored-content').hide()
       $('.sponsored-content input').val('')
+    else
+      $('.sponsored-content').show()
   $("#content_content_category_id").trigger('change')
 
   # parent content search box

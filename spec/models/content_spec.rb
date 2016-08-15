@@ -1805,6 +1805,15 @@ describe Content, :type => :model do
         end
       end
     end
+
+    context 'for content with a root category of news' do
+      before do
+        @content.root_content_category = FactoryGirl.build :content_category, name: 'news'
+        @content.created_by = user
+      end
+
+      it { should eql @content.authors }
+    end
   end
 
   describe '#is_news_ugc?' do
@@ -1819,6 +1828,15 @@ describe Content, :type => :model do
     describe 'for other content' do
       let(:content) { FactoryGirl.build :content }
       it { should be false }
+    end
+  end
+
+  describe '#is_news_child_category?' do
+    let(:root_content) { FactoryGirl.build :content_category, name: 'news' }
+    subject { content.is_news_child_category? }
+    describe 'check if content has a root_category of `news`' do
+      let(:content) { FactoryGirl.build :content, root_content_category: root_content }
+      it { should be true }
     end
   end
 

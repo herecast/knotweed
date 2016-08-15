@@ -95,6 +95,7 @@ class ContentsController < ApplicationController
   end
 
   def edit
+    @news_child_ids = ContentCategory.where(parent_id: 31).pluck(:id)
     # need to determine id of "next record" if we got here from the search index
     if params[:index].present?
       params[:page] = 1 unless params[:page].present?

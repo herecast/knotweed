@@ -1551,7 +1551,7 @@ class Content < ActiveRecord::Base
   #
   # @return [String] the author's name
   def author_name
-    if is_news_ugc?
+    if is_news_ugc? || is_news_child_category?
       if authors_is_created_by?
         created_by.try(:name)
       else
@@ -1567,6 +1567,10 @@ class Content < ActiveRecord::Base
   # @return [Boolean] true if is news ugc
   def is_news_ugc?
     origin == UGC_ORIGIN and content_category.try(:name) == 'news'
+  end
+
+  def is_news_child_category?
+    root_content_category.try(:name) == 'news'
   end
 
   private
