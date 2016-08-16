@@ -4,7 +4,7 @@ module Api
 
       attributes :id, :content_id, :admin_content_url, :content, :title, :subtitle,
         :author_name, :author_id, :organization_name, :organization_id, :published_at, :comment_count,
-        :is_sponsored_content, :updated_at
+        :is_sponsored_content, :updated_at, :can_edit
 
       has_many :images
 
@@ -38,6 +38,14 @@ module Api
 
       def is_sponsored_content
         object.is_sponsored_content?
+      end
+
+      def can_edit
+        if context.present? && context[:current_ability].present?
+          context[:current_ability].can?(:manage, object)
+        else
+          false
+        end
       end
 
     end

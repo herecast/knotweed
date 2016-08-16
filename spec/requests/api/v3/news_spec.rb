@@ -401,6 +401,33 @@ describe 'News Endpoints', type: :request do
         expect(response.status).to eql 404
       end
     end
+  end
+  
+  describe 'can_edit' do
+    let!(:news_cat) { FactoryGirl.create :content_category, name: 'news' }
+    let!(:user) { FactoryGirl.create :user }
+    let(:news) { FactoryGirl.create :content, content_category: news_cat, published: true }
 
+    context 'when ability allows for edit' do
+      before do
+        allow_any_instance_of(Ability).to receive(:can?).with(:manage, news).and_return(true)
+      end
+
+      it "returns true" do
+        get "/api/v3/news/#{news.id}"
+        expect(response_json[:news][:can_edit]).to eql true
+      end
+    end
+
+    context 'when ability does not allow to edit' do
+      before do
+        allow_any_instance_of(Ability).to receive(:can?).with(:manage, news).and_return(false)
+      end
+
+      it "returns false" do
+        get "/api/v3/news/#{news.id}"
+        expect(response_json[:news][:can_edit]).to eql false
+      end
+    end
   end
 end
