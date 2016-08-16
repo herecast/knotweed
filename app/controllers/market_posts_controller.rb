@@ -76,17 +76,8 @@ class MarketPostsController < ApplicationController
     authorize! :update, @market_post
 
     if @market_post.update_attributes(params[:market_post])
-      # re-publish updated content
-      publish_success = false
-      if current_user.default_repository.present?
-        publish_success = @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, current_user.default_repository)
-      end
       flash[:notice] = "Successfully updated market post #{@market_post.id}"
-      if publish_success
-        flash[:notice] = flash[:notice] + ' and re-published'
-      else
-        flash[:warning] = 'Publish failed'
-      end
+      handle_republish if current_user.default_repository.present?
       redirect_to form_submit_redirect_path(@market_post.id)
     else
       render 'edit'
@@ -111,6 +102,15 @@ class MarketPostsController < ApplicationController
       edit_market_post_path(params[:next_record_id], index: params[:index], page: params[:page])
     else
       market_posts_path
+    end
+  end
+
+  def handle_republish
+    publish_success = @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, current_user.default_repository)
+    if publish_success
+      flash[:notice] << ' and re-published'
+    else
+      flash[:warning] = 'Publish failed'
     end
   end
 end

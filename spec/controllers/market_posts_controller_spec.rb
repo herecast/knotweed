@@ -169,6 +169,12 @@ describe MarketPostsController, :type => :controller do
 
       subject { put :update, create_new: 'true', id: @market_post.id, market_post: { status: 'cool' } }
 
+      it 'does not dispaly multiple flash messages' do
+        subject
+        expect(flash.now[:notice]).to eq "Successfully updated market post #{@market_post.id}"
+        expect(flash.now[:warning]).to be_nil
+      end
+
       context "when successful publish" do
         it "redirects" do
           allow_any_instance_of(User).to receive(:default_repository).and_return repository
