@@ -121,7 +121,7 @@ module Api
         else
           @news.increment_view_count!
           render json: @news, serializer: DetailedNewsSerializer, 
-            admin_content_url: url, root: 'news', context: { current_ability: current_ability }
+            admin_content_url: url, root: 'news'
         end
       end
 
