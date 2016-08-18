@@ -1,4 +1,4 @@
-require "spec_helper"
+require "rails_helper"
 include EventsHelper
 
 shared_examples "non-ugc event without schedules" do
@@ -19,7 +19,7 @@ describe ReversePublisher, :type => :mailer do
     @listserv = FactoryGirl.create :listserv
   end
 
-  describe 'after_create PromotionListserv object' do
+  describe 'after_create PromotionListserv object', inline_jobs: true do
     before do
       PromotionListserv.create_from_content(@content, @listserv)
       ReversePublisher.deliveries.each do |eml|
@@ -43,7 +43,7 @@ describe ReversePublisher, :type => :mailer do
     end
   end
 
-  describe 'when sending to multiple listservs' do
+  describe 'when sending to multiple listservs', inline_jobs: true do
     before do
       @listserv2 = FactoryGirl.create :listserv
       PromotionListserv.create_multiple_from_content(@content, [@listserv.id, @listserv2.id])
@@ -59,7 +59,7 @@ describe ReversePublisher, :type => :mailer do
 
   # this is testing the special construction of the consumer app URL 
   # for the content based on whether or not Thread.current[:consumer_app] is set
-  describe 'ux2 content links' do
+  describe 'ux2 content links', inline_jobs: true do
     let(:consumer_app) {FactoryGirl.create(:consumer_app)}
     before { allow(ConsumerApp).to receive(:current).and_return consumer_app }
 
@@ -71,7 +71,7 @@ describe ReversePublisher, :type => :mailer do
     end
   end
 
-  describe 'Event' do
+  describe 'Event', inline_jobs: true do
     let(:listserv) { FactoryGirl.create :listserv }
     let(:non_ugc_event) { FactoryGirl.create :event, skip_event_instance: true }
 

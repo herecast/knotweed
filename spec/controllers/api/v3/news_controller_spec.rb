@@ -186,7 +186,6 @@ describe Api::V3::NewsController, :type => :controller do
         @user = FactoryGirl.create :user
         @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
         @consumer_app.organizations << @news.organization
-        stub_request(:post, /#{@repo.recommendation_endpoint}/)
         api_authenticate user: @user, consumer_app: @consumer_app
       end
 
@@ -199,13 +198,10 @@ describe Api::V3::NewsController, :type => :controller do
         end
       end
 
-      describe 'record_user_visit' do
-        it 'should be called' do
-          subject
-          expect(WebMock).to have_requested(:post, /#{@repo.recommendation_endpoint}/)
-        end
+      it 'should queue record_user_visit' do
+        expect{subject}.to have_enqueued_job(BackgroundJob).with('DspService',
+                        'record_user_visit', @news, @user, @repo)
       end
-
     end
 
     describe 'for content that isn\'t news' do

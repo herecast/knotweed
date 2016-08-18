@@ -140,7 +140,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
     end
   end
 
-
   describe 'GET show' do
     before do
       @market_post = FactoryGirl.create :content, content_category: @market_cat, published: true
@@ -197,15 +196,12 @@ describe Api::V3::MarketPostsController, :type => :controller do
         @user = FactoryGirl.create :user
         @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
         @consumer_app.organizations << @market_post.organization
-        stub_request(:post, /#{@repo.recommendation_endpoint}/)
         api_authenticate user: @user, consumer_app: @consumer_app
       end
 
-      describe 'record_user_visit' do
-        it 'should be called' do
-          subject
-          expect(WebMock).to have_requested(:post, /#{@repo.recommendation_endpoint}/)
-        end
+      it 'should queue record_user_visit' do
+        expect{subject}.to have_enqueued_job(BackgroundJob).with('DspService',
+                        'record_user_visit', @market_post, @user, @repo)
       end
     end
 
@@ -351,17 +347,13 @@ describe Api::V3::MarketPostsController, :type => :controller do
           @repo = FactoryGirl.create :repository
           @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
           api_authenticate user: @user, consumer_app: @consumer_app
-          stub_request(:post, /.*/)
         end
 
         # because there are so many different external calls and behaviors here, 
         # this is really difficult to test thoroughly, but mocking and checking
         # that the external call is made tests the basics of it.
         it 'should call publish_to_dsp' do
-          subject
-          # note, OntotextController adds basic auth, hence the complex gsub
-          expect(WebMock).to have_requested(:post, /#{@repo.annotate_endpoint.gsub(/http:\/\//,
-            "http://#{Figaro.env.ontotext_api_username}:#{Figaro.env.ontotext_api_password}@")}/)
+          expect{subject}.to have_enqueued_job(PublishContentJob)
         end
       end
 
@@ -435,17 +427,10 @@ describe Api::V3::MarketPostsController, :type => :controller do
           @repo = FactoryGirl.create :repository
           @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
           api_authenticate user: @user, consumer_app: @consumer_app
-          stub_request(:post, /.*/)
         end
 
-        # because there are so many different external calls and behaviors here, 
-        # this is really difficult to test thoroughly, but mocking and checking
-        # that the external call is made tests the basics of it.
-        it 'should call publish_to_dsp' do
-          subject
-          # note, OntotextController adds basic auth, hence the complex gsub
-          expect(WebMock).to have_requested(:post, /#{@repo.annotate_endpoint.gsub(/http:\/\//,
-            "http://#{Figaro.env.ontotext_api_username}:#{Figaro.env.ontotext_api_password}@")}/)
+        it 'should queue PublishContentJob' do
+          expect{subject}.to have_enqueued_job(PublishContentJob)
         end
       end
 

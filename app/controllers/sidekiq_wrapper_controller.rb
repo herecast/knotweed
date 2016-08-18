@@ -1,0 +1,2 @@
+class SidekiqWrapperController < ApplicationController
+end

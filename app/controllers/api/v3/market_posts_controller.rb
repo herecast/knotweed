@@ -88,7 +88,7 @@ module Api
           PromotionListserv.create_multiple_from_content(@market_post.content, listserv_ids, @requesting_app)
 
           if @repository.present?
-            @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+            PublishContentJob.perform_later(@market_post.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
           end
 
           render json: @market_post.content, serializer: DetailedMarketPostSerializer,
@@ -110,7 +110,7 @@ module Api
           PromotionListserv.create_multiple_from_content(@market_post.content, listserv_ids, @requesting_app)
 
           if @repository.present?
-            @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+            PublishContentJob.perform_later(@market_post.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
           end
           render json: @market_post.content, status: 200,
             serializer: DetailedMarketPostSerializer, context: { current_ability: current_ability }
@@ -132,7 +132,8 @@ module Api
         else
           @market_post.increment_view_count!
           if @current_api_user.present? and @repository.present?
-            @market_post.record_user_visit(@repository, @current_api_user.email)
+            BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit', @market_post,
+                                                           @current_api_user, @repository)
           end
           render json: @market_post, serializer: DetailedMarketPostSerializer,
             context: { current_ability: current_ability }

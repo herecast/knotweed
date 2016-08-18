@@ -1,0 +1,5 @@
+%iframe{width: '100%', height: '500px', src: '/sidekiq', onload: "autoHeightIframe(this)"}
+:javascript
+  function autoHeightIframe(obj) {
+    obj.height = obj.contentWindow.document.body.scrollHeight + 'px';
+  }

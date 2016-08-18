@@ -100,13 +100,12 @@ describe Api::V3::TalkController, :type => :controller do
         @repo = FactoryGirl.create :repository
         @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
         @consumer_app.organizations << @talk.organization
-        stub_request(:post, /#{@repo.recommendation_endpoint}/)
         api_authenticate user: @user, consumer_app: @consumer_app
       end
 
-      it 'should make a call to record_user_visit' do
-        subject
-        expect(WebMock).to have_requested(:post, /#{@repo.recommendation_endpoint}/)
+      it 'should queue record_user_visit' do
+        expect{subject}.to have_enqueued_job(BackgroundJob).with('DspService',
+                        'record_user_visit', @talk, @user, @repo)
       end
     end
 
@@ -220,7 +219,7 @@ describe Api::V3::TalkController, :type => :controller do
         it { expect{subject}.to change{PromotionListserv.count}.by(1) }
         it { expect{subject}.to change{Promotion.count}.by(1) }
         # triggers mail to both listserv and the user
-        it { expect{subject}.to change{ActionMailer::Base.deliveries.count}.by(2) }
+        it { expect{subject}.to change{ActiveJob::Base.queue_adapter.enqueued_jobs.size}.by(2) }
       end
 
       context 'with consumer_app / repository' do
@@ -228,17 +227,10 @@ describe Api::V3::TalkController, :type => :controller do
           @repo = FactoryGirl.create :repository
           @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
           api_authenticate user: @user, consumer_app: @consumer_app
-          stub_request(:post, /.*/)
         end
 
-        # because there are so many different external calls and behaviors here,
-        # this is really difficult to test thoroughly, but mocking and checking
-        # that the external call is made tests the basics of it.
-        it 'should call publish_to_dsp' do
-          subject
-          # note, OntotextController adds basic auth, hence the complex gsub
-          expect(WebMock).to have_requested(:post, /#{@repo.annotate_endpoint.gsub(/http:\/\//,
-            "http://#{Figaro.env.ontotext_api_username}:#{Figaro.env.ontotext_api_password}@")}/)
+        it 'should queue the content to be published' do
+          expect{subject}.to have_enqueued_job(PublishContentJob)
         end
       end
     end

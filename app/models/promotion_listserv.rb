@@ -51,8 +51,8 @@ class PromotionListserv < ActiveRecord::Base
     return false unless content.authoremail.present? and listserv_ids.present? # need authoremail to send to lists
     listservs = Listserv.where(id: listserv_ids, active: true)
 
-    outbound_mail = ReversePublisher.mail_content_to_listservs(content, listservs, consumer_app)
-    outbound_mail.deliver_now
+    outbound_mail = ReversePublisher.mail_content_to_listservs(content, listservs.to_a, consumer_app)
+    outbound_mail.deliver_later
     sent_time = DateTime.current
 
     promotion_listservs = []
@@ -65,7 +65,7 @@ class PromotionListserv < ActiveRecord::Base
       promotion_listservs << p
     end
 
-    ReversePublisher.send_copy_to_sender_from_dailyuv(content, outbound_mail).deliver_now
+    ReversePublisher.send_copy_to_sender_from_dailyuv(content, outbound_mail.text_part.body.to_s, outbound_mail.html_part.body.to_s).deliver_later
 
     promotion_listservs
   end

@@ -124,18 +124,6 @@ describe Content, :type => :model do
     end
   end
 
-  describe '#create_recommendation_doc_from_annotations' do
-    let (:annotations) { {'id' => '1', 'annotation-sets' => []}  }
-    before do
-      subject.update_attribute :pubdate, Date.current
-    end
-    it 'should return an array of hash' do
-      result = subject.create_recommendation_doc_from_annotations(annotations).pop
-      expect(result[:id]).to eq '1'
-      expect(result[:published]).to_not be_nil
-    end
-  end
-
   describe '#published?' do
     context 'Given a repo' do
       let(:repo) { FactoryGirl.create :repository }
@@ -845,7 +833,7 @@ describe Content, :type => :model do
       log.debug "full path: #{@content.export_path}/#{@content.guid}.xml"
       log.debug "xml_content: #{xml_content}"
       expect(xml_content.include?(@content.title)).to be_truthy
-      expect(xml_content.include?(@content.pubdate.strftime(Content::PUBDATE_OUTPUT_FORMAT))).to be_truthy
+      expect(xml_content.include?(@content.pubdate.strftime(ContentDspSerializer::PUBDATE_OUTPUT_FORMAT))).to be_truthy
     end
   end
 
@@ -854,7 +842,7 @@ describe Content, :type => :model do
       @content = FactoryGirl.create(:content)
       @image1 = FactoryGirl.create(:image)
       @image2 = FactoryGirl.create(:image)
-      @xml = @content.to_new_xml(true)
+      @xml = @content.to_xml(true)
     end
 
     it "should contain all the attributes as feature name/value pairs" do
@@ -867,7 +855,7 @@ describe Content, :type => :model do
           if v.present?
             # account for pubdate / timestamp formatting
             if k == "pubdate" or k == "timestamp"
-              expect(@xml.include?("#{v.strftime(Content::PUBDATE_OUTPUT_FORMAT)}</tns:value>")).to be_truthy
+              expect(@xml.include?("#{v.strftime(ContentDspSerializer::PUBDATE_OUTPUT_FORMAT)}</tns:value>")).to be_truthy
             # account for cdata
             elsif k == "authoremail" or k == "authors"
               expect(@xml.include?("#{v}]]></tns:value>")).to be_truthy
@@ -883,17 +871,17 @@ describe Content, :type => :model do
       cat = FactoryGirl.create(:category)
       @content.update_attribute :source_category, cat.name
       @content.update_attribute :category, nil
-      expect(@content.to_new_xml.include?(cat.channel.name)).to be_truthy
+      expect(@content.to_xml.include?(cat.channel.name)).to be_truthy
     end
 
     it "should populate with a organization image if content doesnt have one" do
       @content.organization.images << @image1
-      expect(@content.to_new_xml.include?("IMAGE</tns:name")).to be_truthy
+      expect(@content.to_xml.include?("IMAGE</tns:name")).to be_truthy
     end
 
     it "should populate with content image if it exists" do
       @content.images << @image2
-      expect(@content.to_new_xml.include?("IMAGE</tns:name")).to be_truthy
+      expect(@content.to_xml.include?("IMAGE</tns:name")).to be_truthy
     end
     it "should contain document part with content" do
       # note the brackets at the end are closing CDATA
@@ -1088,23 +1076,6 @@ describe Content, :type => :model do
       expect(OntotextController).to receive(:rdf_to_gate).with(subject.id, repository)
       subject.rdf_to_gate(repository)
     end
-  end
-
-  describe "update_from_repo" do
-    before do
-      @content = FactoryGirl.create :content, content_category: nil
-      @repository = FactoryGirl.create :repository
-      @repository.contents << @content
-      @new_cat = stub_retrieve_update_fields_from_repo(@content, @repository)
-    end
-
-    it "should overwrite @content.category with data from the repository" do
-      orig_cat = @content.category
-      @content.update_from_repo(@repository)
-      expect(@content.category).not_to eq(orig_cat)
-      expect(@content.category).to eq(@new_cat)
-    end
-
   end
 
   describe "category" do

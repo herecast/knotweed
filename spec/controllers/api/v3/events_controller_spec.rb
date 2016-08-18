@@ -129,14 +129,8 @@ describe Api::V3::EventsController, :type => :controller do
         stub_request(:post, /.*/)
       end
 
-      # because there are so many different external calls and behaviors here, 
-      # this is really difficult to test thoroughly, but mocking and checking
-      # that the external call is made tests the basics of it.
-      it 'should call publish_to_dsp' do
-        subject
-        # note, OntotextController adds basic auth, hence the complex gsub
-        expect(WebMock).to have_requested(:post, /#{@repo.annotate_endpoint.gsub(/http:\/\//,
-          "http://#{Figaro.env.ontotext_api_username}:#{Figaro.env.ontotext_api_password}@")}/)
+      it 'should queue the content to be published' do
+        expect{subject}.to have_enqueued_job(PublishContentJob)
       end
     end
 
@@ -202,7 +196,6 @@ describe Api::V3::EventsController, :type => :controller do
   end
 
   describe 'POST create' do
-
     subject { post :create, format: :json, event: @event_attrs, current_user_id: @current_user.id }
 
     it 'should create an event with a valid submission' do
@@ -230,14 +223,8 @@ describe Api::V3::EventsController, :type => :controller do
         stub_request(:post, /.*/)
       end
 
-      # because there are so many different external calls and behaviors here, 
-      # this is really difficult to test thoroughly, but mocking and checking
-      # that the external call is made tests the basics of it.
-      it 'should call publish_to_dsp' do
-        subject
-        # note, OntotextController adds basic auth, hence the complex gsub
-        expect(WebMock).to have_requested(:post, /#{@repo.annotate_endpoint.gsub(/http:\/\//,
-          "http://#{Figaro.env.ontotext_api_username}:#{Figaro.env.ontotext_api_password}@")}/)
+      it 'should queue the content to be published' do
+        expect{subject}.to have_enqueued_job(PublishContentJob)
       end
     end
 

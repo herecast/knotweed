@@ -11,3 +11,4 @@ server 'test-dsp.subtext.org', roles: %w{source_dsp}, primary: false, user: 'dsp
 server 'dev-dsp.subtext.org', roles: %w{dest_dsp}, primary: false, user: 'dsp', no_release: true
 
 set :restart_delayed_jobs, false
+set :restart_sidekiq, false

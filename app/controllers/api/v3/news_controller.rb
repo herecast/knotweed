@@ -9,7 +9,7 @@ module Api
         @news = Content.new(np.merge(content_category_id: news_cat.id, origin: Content::UGC_ORIGIN))
         if @news.save
           if @repository.present? and @news.pubdate.present? # don't publish drafts
-            @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+            PublishContentJob.perform_later(@news, @repository, Content::DEFAULT_PUBLISH_METHOD)
           end
 
           render json: @news, serializer: DetailedNewsSerializer, root: 'news',
@@ -35,7 +35,7 @@ module Api
         else
           if @news.update_attributes(np)
             if @repository.present? and @news.pubdate.present?
-              @news.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+              PublishContentJob.perform_later(@news, @repository, Content::DEFAULT_PUBLISH_METHOD)
             end
 
             render json: @news, serializer: DetailedNewsSerializer, root: 'news',
@@ -111,7 +111,7 @@ module Api
 
         if @current_api_user.present?
           url = edit_content_url(@news) if @current_api_user.has_role? :admin
-          @news.record_user_visit(@repository, @current_api_user.email) if @repository.present?
+          BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit', @news, @current_api_user, @repository) if @repository.present?
         else
           url = nil
         end

@@ -38,4 +38,6 @@ Knotweed::Application.configure do
   config.action_mailer.default_url_options = { :host => '198.74.61.63:8002' }
 
   config.active_record.raise_in_transactional_callbacks = true
+
+  config.active_job.queue_adapter = :test
 end

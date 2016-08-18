@@ -12,6 +12,7 @@
 require 'spec_helper'
 
 describe PromotionListserv, :type => :model do
+  before { ActiveJob::Base.queue_adapter = :test }
 
   describe 'create_from_content' do
 

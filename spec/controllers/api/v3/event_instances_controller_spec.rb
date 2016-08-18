@@ -42,18 +42,18 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
     describe 'record user visit' do
       before do
-        @event = FactoryGirl.create :event
         @user = FactoryGirl.create :user
         api_authenticate user: @user
         @repo = FactoryGirl.create :repository
         @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
-        stub_request(:post, /#{@repo.recommendation_endpoint}/)
       end
 
-      it 'should call record_user_visit if repository and user are present' do
-        get :show, id: @event.next_or_first_instance.id, format: :json,
-          consumer_app_uri: @consumer_app.uri
-        expect(WebMock).to have_requested(:post, /#{@repo.recommendation_endpoint}/)
+      subject { get :show, format: :json, id: @inst.id,
+                  consumer_app_uri: @consumer_app.uri }
+
+      it 'should queue record_user_visit if repository and user are present' do
+        expect{subject}.to have_enqueued_job(BackgroundJob).with('DspService',
+                        'record_user_visit', @event.content, @user, @repo)
       end
     end
 

@@ -71,7 +71,8 @@ module Api
         end
         @event_instance.event.content.increment_view_count!
         if @current_api_user.present? and @repository.present?
-          @content.record_user_visit(@repository, @current_api_user.email)
+          BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit',
+                                                         @content, @current_api_user, @repository)
         end
         respond_to do |format|
           format.json { render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,

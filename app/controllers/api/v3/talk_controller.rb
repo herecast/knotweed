@@ -32,7 +32,8 @@ module Api
         else
           @talk.increment_view_count!
           if @current_api_user.present? and @repository.present?
-            @talk.record_user_visit(@repository, @current_api_user.email)
+            BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit', @talk,
+                                                           @current_api_user, @repository)
           end
           render json: @talk, serializer: DetailedTalkSerializer, root: 'talk'
         end
@@ -70,7 +71,7 @@ module Api
           end
 
           if @repository.present?
-            @talk.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+            PublishContentJob.perform_later(@talk.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
           end
 
           render json: @talk.content, serializer: TalkSerializer,
@@ -92,7 +93,6 @@ module Api
           head :unprocessable_entity
         end
       end
-
     end
 
   end

@@ -31,7 +31,7 @@ module Api
             PromotionListserv.create_multiple_from_content(@event.content, listserv_ids, @requesting_app)
 
             if @repository.present?
-              @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+              PublishContentJob.perform_later(@event.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
             end
 
             render json: @event, serializer: EventSerializer,  status: 200
@@ -69,7 +69,7 @@ module Api
           PromotionListserv.create_multiple_from_content(@event.content, listserv_ids, @requesting_app)
 
           if @repository.present?
-            @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+            PublishContentJob.perform_later(@event.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
           end
 
           render json: @event, status: 201

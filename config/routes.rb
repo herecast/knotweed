@@ -1,8 +1,11 @@
 Knotweed::Application.routes.draw do
+  require 'sidekiq/web'
 
   authenticated :user do
     root :to => "dashboard#index"
+    mount Sidekiq::Web, at: '/sidekiq'
   end
+
   devise_for :users, controllers: { sessions: 'sessions', registrations: 'registrations' }
   #custom devise routing
   devise_scope :user  do
@@ -94,6 +97,8 @@ Knotweed::Application.routes.draw do
   post '/contents/category_correction_reviewed', to: 'contents#category_correction_reviwed'
   get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', :defaults => {:format => 'ics'}, as: :event_instances_ics
   get '/ics/events/:public_id', to: 'api/v3/users#events', :defaults => {:format => 'ics'}, as: :user_event_instances_ics
+
+  get '/sidekiq_wrapper', to: 'sidekiq_wrapper#index'
 
   # API
   namespace :api do

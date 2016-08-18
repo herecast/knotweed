@@ -51,7 +51,9 @@ namespace :deploy do
   desc 'Restart application'
   task :restart do
     restart_delayed_jobs = fetch(:restart_delayed_jobs, true)
+
     invoke 'delayed_job:restart' if restart_delayed_jobs
+
     on roles(:app), in: :sequence, wait: 5 do
       # Your restart mechanism here, for example:
       execute :touch, release_path.join('tmp/restart.txt')
@@ -97,5 +99,18 @@ namespace :deploy do
     end
   end
   after :updated, :copy_robots_txt
-
 end
+
+
+namespace :sidekiq do
+  desc 'Restart Sidekiq processes'
+  task :restart do
+    on roles(:web) do
+      restart_sidekiq = fetch(:restart_sidekiq, true)
+      if restart_sidekiq
+        execute :sudo, :service, 'workers restart'
+      end
+    end
+  end
+end
+after "deploy:published", "sidekiq:restart"

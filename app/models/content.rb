@@ -148,7 +148,7 @@ class Content < ActiveRecord::Base
   # channel relationships
   belongs_to :channel, polymorphic: true, inverse_of: :content
 
-  TMP_EXPORT_PATH = Rails.root + "tmp/exports"
+  TMP_EXPORT_PATH = Rails.root.to_s + "/tmp/exports"
 
   scope :events, -> { joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",
                                                      "event", "sale_event") }
@@ -171,8 +171,6 @@ class Content < ActiveRecord::Base
   NEW_FORMAT = "New"
   EXPORT_FORMATS = [NEW_FORMAT]
   DEFAULT_FORMAT = NEW_FORMAT
-
-  PUBDATE_OUTPUT_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
   BASE_URI = "http://www.subtext.org/Document"
 
@@ -589,11 +587,12 @@ class Content < ActiveRecord::Base
       if result == true
         record.items_published += 1 if record.present?
       else
-        log.error("#{Time.current}: Export of #{self.id} failed (returned: #{result})")
+        log.error("Export of #{self.id} failed (returned: #{result})")
         record.failures += 1 if record.present?
       end
     rescue => e
-      log.error("#{Time.current}: Error exporting #{self.id}: #{e}")
+      log.error("Error exporting #{self.id}: #{e}")
+      log.error(e.backtrace.join("\n"))
       record.failures += 1 if record.present?
     end
     record.save if record.present?
@@ -604,118 +603,24 @@ class Content < ActiveRecord::Base
     result
   end
 
-  # Extracts mentions (e.g. Person, Organization, Keyphrases) from full annotations
-  def extract_mentions_from_annotations(annotations)
-    mentions = []
-    annotations['annotation-sets'].each do |s|
-      s['annotation'].each do |a|
-        value = nil
-        a['feature-set'].each do |feature|
-          value = feature['value']['value'] if feature['name']['name'] == "inst"
-        end
-        mentions << { type: a['type'], value: value }
-      end
-    end
-    mentions
-  end
-
-  # Creates an Ontotext "recommendation" doc suitable for submission to the API
-  # from annotations returned by the content extraction service
-  def create_recommendation_doc_from_annotations(annotations)
-    rec_doc = { id: annotations['id'],
-                title: title,
-                content: sanitized_content,
-                published: pubdate.utc.iso8601,
-                url: url,
-                tags: [],
-                keyphrases: [],
-    }
-
-    extract_mentions_from_annotations(annotations).each do |m|
-      if ["Location", "Person", "Organization"].include? m[:type]
-        rec_doc[:tags] << m[:value]
-      else
-        rec_doc[:keyphrases] << m[:value]
-      end
-    end
-
-    rec_doc[:tags] = rec_doc[:tags].join(" ")
-    rec_doc[:keyphrases] = rec_doc[:keyphrases].join(" ")
-
-    [rec_doc]
-  end
-
-  # Updates this content's category based on the annotations from the CES
+  # Updates this content's category based on the annotations from the CES 
   # If no category annotation is found, this is a no-op
   def update_category_from_annotations(annotations)
-    cat = nil
-    annotations['document-parts']['feature-set'].each do |feature|
-      # if we get "CATEGORY" returned, use that to populate category
-      # if not, try CATEGORIES
-      if feature["name"]["name"] == "CATEGORY"
-        cat= feature['value']['value']
-      else
-        if feature["name"]["name"] == "CATEGORIES" and !cat.present?
-          cat= feature["value"]["value"]
-        end
-      end
-    end
+    cat = DspClassify.get_category_from_annotations(annotations)
 
     if cat.present?
-      cat_id = ContentCategory.find_or_create_by(name: cat).id
-      update_attributes(content_category_id: cat_id)
+      update_attribute :content_category, cat
     end
   end
 
-  # Persists this content to GraphDB as a series of tuples.
-  def persist_to_graph_db(repo, annotations)
-    #create/populate graph
-    graph = RDF::Graph.new
-    pub = RDF::Vocabulary.new("http://ontology.ontotext.com/publishing#")
-    category = RDF::Vocabulary.new("http://data.ontotext.com/Category/")
-    facets = RDF::Vocabulary.new("http://data.ontotext.com/facets/facetLink#")
-    features = RDF::Vocabulary.new("http://data.ontotext.com/watt/Feature/")
-    id_uri = RDF::URI(annotations['id'])
-
-    graph << [RDF::URI(annotations['id']), RDF.type, pub['Document']]
-    graph << [id_uri, pub['title'], title]
-    graph << [id_uri, pub['creationDate'], pubdate.utc.iso8601]
-    graph << [id_uri, pub['content'], sanitized_content]
-    graph << [id_uri, pub['hasCategory'], category[publish_category]]
-    graph << [id_uri, pub['annotatedContent'], JSON.generate(annotations)]
-
-    extract_mentions_from_annotations(annotations).each do |m|
-      graph << [id_uri, facets[m[:type]], RDF::URI(m[:value])]
-    end
-
-    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-
-    #clean out existing annotatedContent for this uri
-    query = File.read(Rails.root.join("lib", "queries", "remove_statements.rq")) %
-            {content_id: id}
-    sparql.update(query, { endpoint: repo.graphdb_endpoint + "/statements" })
-
-    annotations['document-parts']['feature-set'].each do |feature|
-     # populate features ONLY IF they have a value
-      if not feature['value']['value'].empty?
-        feature_key = features[SecureRandom.uuid]
-        graph << [feature_key, RDF.type, pub['Feature']]
-        graph << [feature_key, pub['featureName'], feature['name']['name']]
-        graph << [feature_key, pub['featureValue'], feature['value']['value']]
-        graph << [id_uri, pub['Feature'], feature_key]
-      end
-    end
-
-    query = "INSERT DATA {"+graph.dump(:ntriples)+"}"
-
-    sparql.update(query, { endpoint: repo.graphdb_endpoint + "/statements" })
-    graph
-  end
-
-# below are our various "publish methods"
+  # below are our various "publish methods"
   # new publish methods should return true
   # if publishing is successful and a string
   # with an error message if it is not.
+  
+  def publish_to_dsp(repo, opts={})
+    DspService.publish(self, repo)
+  end
 
   def export_to_xml(repo, opts = {}, format=nil)
     file_list = opts[:file_list] || Array.new
@@ -728,7 +633,7 @@ class Content < ActiveRecord::Base
       FileUtils.mkpath(export_path)
       xml_path = "#{export_path}/#{guid}.xml"
       File.open(xml_path, "w+") do |f|
-        f.write to_new_xml
+        f.write self.to_xml
       end
       File.open("#{export_path}/#{guid}.html", "w+") do |f|
         f.write sanitized_content
@@ -736,116 +641,6 @@ class Content < ActiveRecord::Base
       file_list << xml_path
       return true
     end
-  end
-
-  # Post to Ontotext's new CES & Recommendations API
-  # - passes content thru pipeline (annotation)
-  # - formats annotation and posts to recommendation engine
-  # - persists content to graphdb and updates active promo if applicable
-  # @todo investigate why we're passing opts
-  # @param repo [Repo] the repo object
-  # @param opts [Array] publish options e.g. :download_result
-  def publish_to_dsp(repo, opts={})
-    annotate_resp = JSON.parse(
-      OntotextController.post(repo.annotate_endpoint + '/extract',
-        { body: to_new_xml,
-          headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",
-                     'Accept' => "application/vnd.ontotext.ces.document+json" }}))
-    if annotate_resp['id'].include? document_uri
-      update_category_from_annotations(annotate_resp)
-      rec_doc = create_recommendation_doc_from_annotations(annotate_resp)
-
-      response = OntotextController.post(repo.recommendation_endpoint + "/content?key=#{Figaro.env.ontotext_recommend_key}",
-          { headers: { "Content-type" => "application/json",
-                       "Accept" => "application/json" },
-            body: rec_doc.to_json } )
-
-      if response["type"] == "SUCCESS"
-        repositories << repo unless repositories.include? repo
-
-        persist_to_graph_db(repo, annotate_resp);
-
-        # trigger updating hasActivePromotion if publish succeeded
-        if has_active_promotion?
-          PromotionBanner.mark_active_promotion(self, repo)
-        end
-
-        # trigger updating hasPaidPromotion if publish succeeded
-        if has_paid_promotion?
-          PromotionBanner.mark_paid_promotion(self, repo)
-        end
-
-        return true
-      end
-    end
-
-    return "failed to post doc: #{self.id}\nresponse:#{response.body}"
-  end
-
-  def to_new_xml(include_tags=false)
-    xml = ::Builder::XmlMarkup.new
-    xml.instruct!
-    xml.tag!("tns:document", "xmlns:tns"=>"http://www.ontotext.com/DocumentSchema", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "id" => document_uri) do |f|
-
-      f.tag!("tns:document-parts") do |g|
-        f.tag!("tns:feature-set") do |g|
-          feature_set.each do |k, v|
-            g.tag!("tns:feature") do |h|
-              if ["issue_id", "organization_id", "import_location_id", "parent_id"].include? k
-                if k == "issue_id" and issue.present?
-                  key, value = "ISSUE", issue.issue_edition
-                elsif k == "organization_id" and organization.present?
-                  key, value = "SOURCE", organization.name
-                elsif k == "import_location_id" and import_location.present?
-                  if import_location.status == ImportLocation::STATUS_GOOD
-                    key, value = "LOCATION", import_location.city
-                  end
-                elsif k == "parent_id" and parent.present?
-                  key, value = "PARENT", "#{BASE_URI}/#{v}"
-                end
-              else
-                key = k.upcase
-                if ["PUBDATE", "TIMESTAMP", "START_DATE", "END_DATE"].include? key and v.present?
-                  value = v.strftime(PUBDATE_OUTPUT_FORMAT)
-                else
-                  value = v
-                end
-              end
-              unless key == "CONTENT"
-                h.tag!("tns:name", key, "type"=>"xs:string")
-                if key == "AUTHORS" or key == "AUTHOREMAIL"
-                  g.tag!("tns:value", "type"=>"xs:string") do |i|
-                    if value.present?
-                      i.cdata!(value)
-                    end
-                  end
-                else
-                  g.tag!("tns:value", value, "type"=>"xs:string")
-                end
-              end
-            end
-          end
-          if images.present? or organization.images.present?
-            g.tag!("tns:feature") do |h|
-              h.tag!("tns:name", "IMAGE", "type"=>"xs:string")
-              if images.present?
-                g.tag!("tns:value", primary_image.image.url, "type"=>"xs:string")
-              elsif organization.images.present?
-                g.tag!("tns:value", organization.images.first.image.url, "type"=>"xs:string")
-              end
-            end
-          end
-
-        end
-        g.tag!("tns:document-part", "part"=>"BODY", "id"=>"1") do |h|
-          h.tag!("tns:content") do |i|
-            i.cdata!(publish_content(include_tags))
-          end
-        end
-      end
-
-    end
-    xml.target!
   end
 
   # the "attributes" hash no longer contains everything we want to push as a feature to DSP
@@ -861,16 +656,15 @@ class Content < ActiveRecord::Base
       "content_category_id"=>content_category_id,
       "channelized_content_id"=>channelized_content_id,
       "channel_type"=>channel_type,"channel_id"=>channel_id,
-      "source_uri"=>source_uri,"categories"=>publish_category
+      "source_uri"=>source_uri,"categories"=>publish_category,
+      "classify_only"=>false
     }
   end
 
   # Export Gate Document directly before/after Pipeline processing
   def export_pre_pipeline_xml(repo, opts = {})
-    options = { :body => self.to_new_xml }
     file_list = opts[:file_list] || Array.new
-
-    res = OntotextController.post("#{repo.dsp_endpoint}/processPrePipeline", options)
+    res = DspService.get_pipeline_xml(self, 'pre', repo)
 
     # TODO: Make check for erroneous response better
     unless res.body.nil? || res.body.empty?
@@ -886,10 +680,8 @@ class Content < ActiveRecord::Base
   end
 
   def export_post_pipeline_xml(repo, opts = {})
-    options = { :body => self.to_new_xml }
     file_list = opts[:file_list] || Array.new
-
-    res = OntotextController.post("#{repo.dsp_endpoint}/processPostPipeline", options)
+    res = DspService.get_pipeline_xml(self, 'post', repo)
 
     # TODO: Make check for erroneous response better
     unless res.body.nil? || res.body.empty?
@@ -1082,30 +874,16 @@ class Content < ActiveRecord::Base
       select_score = nil
       select_method = 'sponsored_content'
     else
-      # query graphdb for relevant active banner ads (pass title + content)
-      results = query_promo_similarity_index(title + " " + content, repo)
+      # query graphdb for relevant active banner ads (pass title + content) 
+      results = DspService.query_promo_similarity_index(title + " " + content, id, repo)
 
-      #return random promo with inventory (if exists)
-      unless results.empty?
-        # remove array record if doesn't have a 'has_inventory' scoped promo
-        results.delete_if do |v|
-          # parse out the content_id and append it to record
-          uri = v.uid.to_s
-          idx = uri.rindex("/")
-          v[:content_id] = uri[idx+1..uri.length]
-          # if no inventory, remove record from array
-          unless PromotionBanner.for_content(v[:content_id].to_s).has_inventory.count > 0
-            true
-          end
-        end
-      end
       # select one random record from remaining results
-      results = results.sample
+      result = results.sample
       promoted_content = []
       # return content id, relevance score and select method
-      if results.present?
-        content_id = results[:content_id].to_s
-        select_score = results[:score].to_s
+      if result.present?
+        content_id = result[:content_id].to_s
+        select_score = result[:score].to_s
         select_method = "relevance"
       end
     end
@@ -1115,35 +893,6 @@ class Content < ActiveRecord::Base
       random_promotion_info_set = PromotionBanner.get_random_promotion
     end
     return random_promotion_info_set || [banner, select_score, select_method]
-  end
-
-  # callback function to update fields with repo info
-  # this is run after publish to retrieve pipeline-processed
-  # fields that we want to update in our DB.
-  #
-  # as of now, it only updates category
-  #
-  # TODO: decide whether we still need this method. publish_to_ontotext no longer uses it...
-  def update_from_repo(repo)
-    sparql = ::SPARQL::Client.new repo.sesame_endpoint
-    response = sparql.query("
-    # update from repo query
-    prefix pub: <http://ontology.ontotext.com/publishing#>
-    PREFIX sbtxd: <#{BASE_URI}/>
-
-    select ?category
-    where {
-      OPTIONAL { sbtxd:#{id} pub:hasCategory ?category . }
-    }")
-    unless response[0].nil?
-	    response_hash = response[0].to_hash
-	    # if we add more fields to be updated, we can iterate through the hash
-	    # and use send to update the content
-	    # not necessary for now.
-	    cat = response_hash[:category].to_s.split("/")[-1]
-	    cat = ContentCategory.find_or_create_by(name: cat).id unless cat.nil?
-	    update_attributes(content_category_id: cat)
-		end
   end
 
   # returns the content for sending to the DSP for annotation
@@ -1414,47 +1163,9 @@ class Content < ActiveRecord::Base
     if similar_content_overrides.present?
       Content.where(id: similar_content_overrides).order('pubdate DESC').limit(num_similar).includes(:content_category)
     else
-      # some logic in here that I don't truly know the purpose of...
-      # note -- the "category" method being called on self here
-      # returns the text label of the associated content_category
-      if ["event", "market", "offered", "wanted", "for_free", "sale_event"].include? category
-        extra_param = "&mlt.boostexpr=recip(ms(NOW/HOUR,published),2.63e-10,1,1)"
-      else
-        extra_param = ''
-      end
-
-      similar_url = repo.recommendation_endpoint + '/recommend/contextual?contentid=' +
-        uri + "&key=#{Figaro.env.ontotext_recommend_key}" +
-        "&count=#{num_similar}" + "&sort=rel" + extra_param
-
-      response = HTTParty.get(similar_url)
-      if response.fetch('articles', nil)
-        similar_ids = response['articles'].map do |art|
-          art['id'].split('/')[-1].to_i
-        end
-        Content.where(id: similar_ids).includes(:content_category)
-      else
-        []
-      end
+      similar_ids = DspService.get_similar_content_ids(self, num_similar, repo)
+      Content.where(id: similar_ids).includes(:content_category)
     end
-  end
-
-  # update DSP (recommendation api) with content_id, user identifier (email address) and timestamp for each
-  # visit to a content detail page
-  #
-  # @param repo [Repository] repository to post to
-  # @param email - the user identifier we are currently using
-  # @return - response from recommendation api
-  def record_user_visit(repo, email)
-    logger.debug "REPO = #{repo.inspect}"
-    response = HTTParty.post(repo.recommendation_endpoint + '/user', {
-      body: {
-        key: Figaro.env.ontotext_recommend_key,
-        userid: email,
-        contentid: BASE_URI + "/#{id}"
-      },
-    })
-    logger.debug "RESPONSE= #{response.inspect}"
   end
 
   def uri
@@ -1560,6 +1271,10 @@ class Content < ActiveRecord::Base
     else
       created_by.present? ? created_by.name : authors
     end
+  end
+
+  def to_xml(include_tags=false)
+    ContentDspSerializer.new(self).to_xml(include_tags)
   end
 
   # helper that checks if content is News UGC or not

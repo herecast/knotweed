@@ -26,8 +26,8 @@ class Listserv < ActiveRecord::Base
   # the listserv's location
   def send_content_to_listserv(content, consumer_app=nil)
     outbound_mail = ReversePublisher.mail_content_to_listservs(content, [self], consumer_app)
-    outbound_mail.deliver_now
-    ReversePublisher.send_copy_to_sender_from_dailyuv(content, outbound_mail).deliver_now
+    outbound_mail.deliver_later
+    ReversePublisher.send_copy_to_sender_from_dailyuv(content, outbound_mail.text_part.body.to_s, outbound_mail.html_part.body.to_s).deliver_later
     add_listserv_location_to_content(content)
   end
 

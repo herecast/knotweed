@@ -63,6 +63,8 @@ gem "rubypress", '~> 1.1.0'
 gem "rubyzip", "~> 1.1.4"
 gem 'sanitize', '~> 4.0.1' # ugc sanitizer
 gem 'sass-rails', '~> 5.0.4'
+gem 'sidekiq', '~> 4.1.2'
+gem 'sinatra', require: false # for sidekiq/web
 gem "simple_form", '~> 3.2.1'
 gem 'sparql-client', '~> 1.1.3'
 gem 'sshkit', '~> 1.11.1'

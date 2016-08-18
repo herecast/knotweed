@@ -58,7 +58,7 @@ module Api
           # when they do, this is where the processing would happen.  See api/v1/comments_controller.rb
           # for example.
           if @repository.present?
-            @comment.content.publish(Content::DEFAULT_PUBLISH_METHOD, @repository)
+            PublishContentJob.perform_later(@comment.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
           end
 
           render json: @comment.content, serializer: SingleCommentSerializer,

@@ -92,7 +92,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       @promo = FactoryGirl.create :promotion, content: @related_content
       @pb = FactoryGirl.create :promotion_banner, promotion: @promo
       # avoid making calls to repo
-      allow_any_instance_of(Content).to receive(:query_promo_similarity_index).and_return([])
+      allow(DspService).to receive(:query_promo_similarity_index).and_return([])
     end
 
     subject { get :show, format: :json,
