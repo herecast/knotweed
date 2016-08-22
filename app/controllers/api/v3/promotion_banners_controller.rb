@@ -72,12 +72,12 @@ module Api
       def metrics
         @promotion_banner = PromotionBanner.find(params[:id])
         # confirm user owns content first
-        if @current_api_user != @promotion_banner.promotion.created_by 
-          render json: { errors: ['You do not have permission to access these metrics.'] }, 
-            status: 401
-        else
+        if promo_created_by_user? or user_can_manage?
           render json: @promotion_banner, serializer: PromotionBannerMetricsSerializer, context: 
             {start_date: params[:start_date], end_date: params[:end_date]}
+        else
+          render json: { errors: ['You do not have permission to access these metrics.'] }, 
+            status: 401
         end
       end
 
@@ -89,6 +89,14 @@ module Api
           pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
         end
         sort_parts.join(',').gsub(/(pubdate|title)/,'contents.\1').gsub('view_count','impression_count')
+      end
+
+      def promo_created_by_user?
+        @current_api_user == @promotion_banner.promotion.created_by
+      end
+
+      def user_can_manage?
+        @current_api_user.ability.can?(:manage, @promotion_banner.promotion.organization)
       end
 
     end
