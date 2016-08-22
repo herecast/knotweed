@@ -1,0 +1,51 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-search
+        Find Campaigns
+      .actions
+        %a.btn-box-remove.btn-mini.btn-link{ href: "#" }
+          %i.icon-remove
+        %a.btn.box-collapse.btn-link{ href: "#" }
+          %i
+    .box-content
+      = search_form_for @search, url: campaigns_path do |f|
+        .controls.controls-row
+          .field.span3
+            = f.label :promotion_content_id_eq, "ID"
+            = f.text_field :promotion_content_id_eq, class: "span12"
+          .field.span3
+            = f.label :promotion_organization_id_in, "Organization"
+            = f.collection_select :promotion_organization_id_in, Organization.all, :id, :name, {}, { multiple: true, class: "chosen-select" } 
+          .field.span2
+            = f.label :promotion_paid_eq, "Paid?"
+            = f.check_box :promotion_paid_eq
+          .field.span2
+            %label{ for: 'promotion_banners_active' } Active?
+            %input{ active_checkbox(@active) }
+          .field.span2
+            = f.label :boost_eq, "Boosted?"
+            = f.check_box :boost_eq
+        .form-actions
+          = f.submit "Search", class: "btn btn-primary"
+          = f.submit "Reset", name: "reset", class: "btn"
+%table.table.table-striped.table-hover.table-condensed#campaign_index
+  %thead
+    %tr
+      %th Content ID
+      %th Organization
+      %th Title
+      %th Pubdate
+      %th
+  .span5
+    = page_entries_info @campaigns if @campaigns.present?
+    = paginate @campaigns, window: 2 if @campaigns.present?
+  %body
+    - @campaigns.each do |c|
+      %tr
+        %td= c.promotion.content.try(:id)
+        %td{ style: "min-width: 150px" }= c.promotion.organization.try(:name)
+        %td= c.promotion.description
+        %td{ style: "min-width: 150px" }= c.promotion.content.try(:pubdate).try(:strftime, "%A, %b %d")
+        %td= link_to "edit", edit_promotion_path(c.promotion), class: "btn btn-warning btn-mini"

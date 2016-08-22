@@ -35,6 +35,17 @@
           = link_to new_content_path do
             %i.icon-plus
             %span Create New
+- if can? :read, Content
+  %li
+    = link_to campaigns_path do
+      %i.icon-flag
+      %span Campaigns
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{ controller_name == "campaigns" ? "in" : "" }" }
+      %li{ class: current_page?(campaigns_path) ? "active" : "" }
+        = link_to campaigns_path do
+          %i.icon-tasks
+          %span Search
 - if can? :read, Event
   %li
     = link_to events_path do
