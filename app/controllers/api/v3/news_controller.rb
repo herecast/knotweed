@@ -52,7 +52,7 @@ module Api
         opts[:with] = {}
         opts[:conditions] = {}
         opts[:page] = params[:page] || 1
-        opts[:per_page] = params[:per_page] || 14
+        opts[:per_page] = params[:per_page] || 12
         opts[:with][:published] = 1 if @repository.present?
         opts[:sql] = { include: [:images, :organization, :root_content_category] }
 
