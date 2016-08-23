@@ -67,6 +67,8 @@ class User < ActiveRecord::Base
   def managed_organization_id; Organization.with_role(:manager, self).first.try(:id); end
   def is_organization_manager?; managed_organization_id.present?; end
 
+  default_scope { order('id ASC') }
+
   def managed_organizations
     Organization.with_role(:manager, self)
   end
