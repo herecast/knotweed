@@ -134,4 +134,46 @@ describe 'Market Posts', type: :request do
       end
     end
   end
+
+  describe 'can_edit' do
+    let!(:market_cat) { FactoryGirl.create :content_category, name: 'market' }
+    let!(:user) { FactoryGirl.create :user }
+    let(:market_post) { FactoryGirl.create :market_post }
+
+    context 'when ability allows for edit' do
+      before do
+        allow_any_instance_of(Ability).to receive(:can?).with(:manage, market_post.content).and_return(true)
+      end
+
+      it "returns true" do
+        get "/api/v3/market_posts/#{market_post.id}"
+        expect(response_json[:market_post][:can_edit]).to eql true
+      end
+    end
+
+    context 'when ability does not allow to edit' do
+      let(:other_user) { FactoryGirl.create :user } 
+        let(:put_params) do
+          {
+            title: 'blerb',
+            content: Faker::Lorem.paragraph,
+            organization_id: nil,
+            published_at: Time.current
+          }
+        end
+      let(:auth_headers) { auth_headers_for(other_user) }
+
+      it "returns false" do
+        allow_any_instance_of(Ability).to receive(:can?).with(:manage, market_post.content).and_return(false)
+        get "/api/v3/market_posts/#{market_post.id}"
+        expect(response_json[:market_post][:can_edit]).to eql false
+      end
+
+      it 'does not allow a user to send an update' do
+        put "/api/v3/market_posts/#{market_post.id}", { news: put_params }, auth_headers
+        expect(response.status).to eql 403
+      end
+      
+    end
+  end
 end

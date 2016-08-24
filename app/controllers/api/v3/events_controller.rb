@@ -15,7 +15,7 @@ module Api
           # clear out existing images since we are only set up to have one right now
           @event.content.images.destroy_all
           if Image.create(image: image_data, imageable: @event.content)
-            render json: @event, serializer: EventSerializer, status: 200
+            render json: @event, serializer: EventSerializer, status: 200, context: { current_ability: current_ability }
           else
             head :unprocessable_entity
           end
@@ -34,7 +34,7 @@ module Api
               PublishContentJob.perform_later(@event.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
             end
 
-            render json: @event, serializer: EventSerializer,  status: 200
+            render json: @event, serializer: EventSerializer,  status: 200, context: { current_ability: current_ability }
           else
             render json: {
               errors: @event.errors.messages
@@ -72,7 +72,7 @@ module Api
             PublishContentJob.perform_later(@event.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
           end
 
-          render json: @event, status: 201
+          render json: @event, status: 201, serializer: EventSerializer, context: { current_ability: current_ability }
         else
           render json: {
             errors: @event.errors.messages
@@ -85,7 +85,7 @@ module Api
         if @requesting_app.present? and !@requesting_app.organizations.include?(@event.content.organization)
           head :no_content
         else
-          render json: @event, serializer: EventSerializer
+          render json: @event, serializer: EventSerializer, context: { current_ability: current_ability }
         end
       end
 

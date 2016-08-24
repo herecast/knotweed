@@ -21,6 +21,7 @@ module Api
 
       def update
         @news = Content.find params[:id]
+        authorize! :update, @news
         np = news_params
         # some unique validation
         # if it's already published, don't allow changing the pubdate (i.e. unpublishing or scheduling)
@@ -121,7 +122,7 @@ module Api
         else
           @news.increment_view_count!
           render json: @news, serializer: DetailedNewsSerializer, 
-            admin_content_url: url, root: 'news'
+            admin_content_url: url, root: 'news', context: { current_ability: current_ability }
         end
       end
 

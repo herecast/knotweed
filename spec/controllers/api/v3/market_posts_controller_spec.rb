@@ -298,11 +298,12 @@ describe Api::V3::MarketPostsController, :type => :controller do
       end
     end
 
-    context 'signed in' do
+    context 'signed in, and allowed to update' do
       # TODO: once we have created_by, add specs to ensure that only the user who 
       # created the object can update it.
       before do
         api_authenticate user: @user
+        allow_any_instance_of(Ability).to receive(:can?).with(:manage, @market_post.content).and_return(true)
       end
 
       it 'should update the market post\'s attributes' do

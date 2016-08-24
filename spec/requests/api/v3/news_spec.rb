@@ -114,7 +114,7 @@ describe 'News Endpoints', type: :request do
     before do
       @news_cat = FactoryGirl.create :content_category, name: 'news'
       @org = FactoryGirl.create :organization, can_publish_news: true
-      @content = FactoryGirl.create :content, organization: @org, pubdate: nil
+      @content = FactoryGirl.create :content, organization: @org, pubdate: nil, created_by: user
     end
 
     let(:put_params) do
@@ -401,6 +401,47 @@ describe 'News Endpoints', type: :request do
         expect(response.status).to eql 404
       end
     end
+  end
+  
+  describe 'can_edit' do
+    let!(:news_cat) { FactoryGirl.create :content_category, name: 'news' }
+    let!(:user) { FactoryGirl.create :user }
+    let(:news) { FactoryGirl.create :content, content_category: news_cat, published: true }
 
+    context 'when ability allows for edit' do
+      before do
+        allow_any_instance_of(Ability).to receive(:can?).with(:manage, news).and_return(true)
+      end
+
+      it "returns true" do
+        get "/api/v3/news/#{news.id}"
+        expect(response_json[:news][:can_edit]).to eql true
+      end
+    end
+
+    context 'when ability does not allow to edit' do
+      let(:other_user) { FactoryGirl.create :user } 
+        let(:put_params) do
+          {
+            title: 'blerb',
+            content: Faker::Lorem.paragraph,
+            organization_id: nil,
+            published_at: Time.current
+          }
+        end
+      let(:auth_headers) { auth_headers_for(other_user) }
+
+      it "returns false" do
+        allow_any_instance_of(Ability).to receive(:can?).with(:manage, news).and_return(false)
+        get "/api/v3/news/#{news.id}"
+        expect(response_json[:news][:can_edit]).to eql false
+      end
+
+      it 'does not allow a user to send an update' do
+        put "/api/v3/news/#{news.id}", { news: put_params }, auth_headers
+        expect(response.status).to eql 403
+      end
+      
+    end
   end
 end

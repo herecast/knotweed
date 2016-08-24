@@ -100,6 +100,7 @@ module Api
 
       def update
         @market_post = Content.find(params[:id]).channel
+        authorize! :manage, @market_post.content
 
         listserv_ids = params[:market_post][:listserv_ids] || []
 
