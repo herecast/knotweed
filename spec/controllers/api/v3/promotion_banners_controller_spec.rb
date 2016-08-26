@@ -181,12 +181,19 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       end
     end
 
-    context 'with invalid content id' do
-      subject! { post :track_click, promotion_banner_id: @banner.id, content_id: @content.id + 200, format: :json }
-      it 'should return 422' do
-        expect(response.status).to eq 422
+    context 'with content id missing' do
+      subject { post :track_click, promotion_banner_id: @banner.id, format: :json }
+
+      it 'should increment banner.click_count' do
+        expect{subject}.to change{@banner.reload.click_count}.by 1
+      end
+
+      it 'should respond with 200' do
+        subject
+        expect(response.status).to eq 200
       end
     end
+
 
     context 'with invalid promotion_banner_id' do
       subject! { post :track_click, promotion_banner_id: @banner.id + 201, content_id: @content.id, format: :json }
