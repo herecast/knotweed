@@ -439,7 +439,21 @@ describe 'News Endpoints', type: :request do
         put "/api/v3/news/#{news.id}", { news: put_params }, auth_headers
         expect(response.status).to eql 403
       end
-      
+    end
+
+    context 'the request is from Prerender' do
+      let!(:org) { FactoryGirl.create :organization }
+      let(:news) { FactoryGirl.create :content, created_by: user, organization: org, published: true, content_category: news_cat }
+      let(:user_agent) { "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36" }
+      let(:prerender_user_agent) { "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36 Prerender" }
+      it 'does not increase the view count' do
+        get "/api/v3/news/#{news.id}", {}, {'HTTP_USER_AGENT' => user_agent}
+        news.reload
+        expect(news.view_count).to eq 1
+        get "/api/v3/news/#{news.id}", {}, {'HTTP_USER_AGENT' => prerender_user_agent }
+        news.reload
+        expect(news.view_count).to eq 1
+      end
     end
   end
 end

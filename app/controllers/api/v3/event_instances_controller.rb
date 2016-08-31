@@ -67,7 +67,7 @@ module Api
         if @requesting_app.present?
           ical_url = @requesting_app.uri + event_instances_ics_path(params[:id]) 
         end
-        @event_instance.event.content.increment_view_count!
+        @event_instance.event.content.increment_view_count! unless exclude_from_impressions?
         if @current_api_user.present? and @repository.present?
           BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit',
                                                          @content, @current_api_user, @repository)

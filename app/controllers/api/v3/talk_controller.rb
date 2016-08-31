@@ -30,7 +30,7 @@ module Api
         if @talk.try(:root_content_category).try(:name) != 'talk_of_the_town'
           head :no_content
         else
-          @talk.increment_view_count!
+          @talk.increment_view_count! unless exclude_from_impressions?
           if @current_api_user.present? and @repository.present?
             BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit', @talk,
                                                            @current_api_user, @repository)

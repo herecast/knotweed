@@ -113,7 +113,7 @@ module Api
         if @news.try(:root_content_category).try(:name) != 'news'
           head :no_content
         else
-          @news.increment_view_count!
+          @news.increment_view_count! unless exclude_from_impressions?
           render json: @news, serializer: DetailedNewsSerializer, 
             admin_content_url: url, root: 'news', context: { current_ability: current_ability }
         end

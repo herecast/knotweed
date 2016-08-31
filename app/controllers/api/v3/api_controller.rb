@@ -64,6 +64,19 @@ module Api
         head :not_found
       end
 
+      def excluded_user_agents
+        ["Prerender"]
+      end
+
+      def request_user_agent
+        request.env['HTTP_USER_AGENT']
+      end
+
+      def exclude_from_impressions?
+        if request_user_agent.present?
+          excluded_user_agents.any? { |agent| request_user_agent[agent] }
+        end
+      end
     end
   end
 end
