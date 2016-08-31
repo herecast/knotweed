@@ -86,7 +86,7 @@ class Content < ActiveRecord::Base
   end
 
   def should_index?
-    deleted_at.blank? and 5.years.ago < pubdate and pubdate <= Time.zone.now
+    deleted_at.blank? and pubdate.present? and 5.years.ago < pubdate and pubdate <= Time.zone.now
   end
 
   def all_loc_ids
