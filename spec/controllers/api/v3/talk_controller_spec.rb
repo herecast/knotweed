@@ -7,7 +7,7 @@ describe Api::V3::TalkController, :type => :controller do
     @user = FactoryGirl.create :user, location: @other_location
   end
 
-  describe 'GET index' do
+  describe 'GET index', elasticsearch: true do
     before do
       @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
       @third_location = FactoryGirl.create :location, city: 'Different Again'
@@ -17,7 +17,6 @@ describe Api::V3::TalkController, :type => :controller do
         locations: [@other_location], published: true
       FactoryGirl.create_list :content, 4, content_category: @talk_cat,
         locations: [@third_location], published: true
-      index
     end
 
     subject { get :index }

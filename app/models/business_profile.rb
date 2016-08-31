@@ -18,6 +18,42 @@
 #
 
 class BusinessProfile < ActiveRecord::Base
+
+  searchkick locations: ['location'], callbacks: :async, batch_size: 100,
+    index_prefix: Figaro.env.stack_name, match: :word_start,
+    searchable: [:category_names, :title, :content, :business_location_name,
+                 :business_location_city]
+
+  def search_data
+    index = {
+      category_names: business_categories.map(&:name),
+      category_ids: business_categories.map(&:id),
+      feedback_count: feedback_count,
+      feedback_satisfaction_avg: feedback_satisfaction_avg,
+      feedback_price_avg: feedback_price_avg,
+      feedback_recommend_avg: feedback_recommend_avg,
+      feedback_cleanliness_avg: feedback_cleanliness_avg,
+      archived: archived,
+      exists: (existence.nil? or existence >= 0.4)
+    }
+    if content.present?
+      index.merge!({
+        title: content.title,
+        content: content.raw_content,
+        organization_id: content.organization_id
+      })
+    end
+    if business_location.present?
+      index.merge!({
+        business_location_name: business_location.name,
+        business_location_city: business_location.city,
+        business_location_state: business_location.state,
+        location: { lat: business_location.latitude, lon: business_location.longitude }
+      })
+    end
+    index
+  end
+
   has_one :content, as: :channel, dependent: :destroy
   accepts_nested_attributes_for :content
   validates_associated :content
@@ -33,7 +69,11 @@ class BusinessProfile < ActiveRecord::Base
 
   delegate :organization, to: :content
 
-  has_and_belongs_to_many :business_categories, join_table: 'business_categories_business_profiles'
+  has_and_belongs_to_many :business_categories, join_table: 'business_categories_business_profiles', after_add: :reindex_business_profile
+
+  def reindex_business_profile(business_category)
+    reindex_async
+  end
 
   has_many :business_feedbacks, dependent: :destroy
 

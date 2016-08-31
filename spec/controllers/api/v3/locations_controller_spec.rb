@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::V3::LocationsController, :type => :controller do
   
-  describe 'GET index' do
+  describe 'GET index', elasticsearch: true do
     before do
       FactoryGirl.create_list :location, 3
       @num_consumer_active = 2
@@ -33,24 +33,5 @@ describe Api::V3::LocationsController, :type => :controller do
       end
     end
 
-    context 'with a query parameter' do
-      before do
-        @loc1 = FactoryGirl.create :location, consumer_active: true, city: 'search for me'
-        @loc2 = FactoryGirl.create :location, consumer_active: false, city: 'shouldnotfind'
-        index
-      end
-      
-      it 'should return consumer active search results' do
-        get :index, query: 'search'
-        expect(assigns(:locations)).to eql([@loc1])
-      end
-
-      it 'should not return search results that are not consumer active' do
-        get :index, query: 'shouldnotfind'
-        expect(assigns(:locations)).to eq([])
-      end
-
-    end
   end
-
 end

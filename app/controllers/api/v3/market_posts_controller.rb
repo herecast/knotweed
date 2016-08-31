@@ -5,48 +5,43 @@ module Api
 
       def index
         opts = {}
-        opts[:order] = 'pubdate DESC'
-        opts[:with] = {
+        opts[:order] = { pubdate: :desc }
+        opts[:where] = {
           pubdate: 30.days.ago..Time.zone.now
         }
-        opts[:conditions] = {}
         # market local only restriction
         # if a user is signed in, we allow showing "restricted content" if it's
         # restricted to their location (and if other search params allow it to be
         # included).
         if user_signed_in?
-          opts[:select] = "*, IF(my_town_only = 0 OR IN(all_loc_ids, #{@current_user.location_id}), 1, 0) AS local_restriction"
-          opts[:with]['local_restriction'] = 1
+          opts[:where][:or] = [
+            [{my_town_only: false}, {all_loc_ids: [@current_user.location_id]}]
+          ]
         else
           # if a user is not signed in, we do not show location restricted content at all.
-          opts[:select] = "*"
-          opts[:with][:my_town_only] = false
+          opts[:where][:my_town_only] = false
         end
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
-        opts[:with][:published] = 1 if @repository.present?
-        opts[:sql] = { include: [:images, :organization, :root_content_category] }
+        opts[:where][:published] = 1 if @repository.present?
         if @requesting_app.present?
           allowed_orgs = @requesting_app.organizations
-          opts[:with].merge!({org_id: allowed_orgs.collect{|c| c.id} })
+          opts[:where][:organization_id] = allowed_orgs.collect{|c| c.id}
         end
 
         # Ember app passes location_id 0 for Upper Valley and an empty location_id
         # for 'All Communities'
         # the .present? condition is to deal with the parameter being empty
         if params[:location_id].present? and params[:location_id].to_i == 0
-          opts[:with][:all_loc_ids] = Location.find_by_city(Location::DEFAULT_LOCATION).id
+          opts[:where][:all_loc_ids] = Location.find_by_city(Location::DEFAULT_LOCATION).id
         elsif params[:location_id].present?
-          opts[:with][:all_loc_ids] = params[:location_id].to_i
+          opts[:where][:all_loc_ids] = params[:location_id].to_i
         end
 
-        opts[:with][:root_content_category_id] = ContentCategory.find_by_name('market').id
+        opts[:where][:root_content_category_id] = ContentCategory.find_by_name('market').id
 
-        if params[:query].present?
-          query = Riddle::Query.escape(params[:query])
-        else
-          query = ''
-        end
+        query = params[:query].present? ? params[:query] : '*'
+
         @market_posts = Content.search query, opts
         render json: @market_posts, each_serializer: DetailedMarketPostSerializer, meta: { total: @market_posts.count }
       end

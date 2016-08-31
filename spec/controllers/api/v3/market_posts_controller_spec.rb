@@ -5,7 +5,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
     @market_cat = FactoryGirl.create :content_category, name: 'market'
   end
 
-  describe 'GET index' do
+  describe 'GET index', elasticsearch: true do
     before do
       @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
       @other_location = FactoryGirl.create :location, city: 'Another City'
@@ -19,7 +19,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
         locations: [@third_location], published: true
       @old_post = FactoryGirl.create :content, content_category: @market_cat,
         locations: [@default_location], published: true, pubdate: 40.days.ago
-      index
     end
 
     subject { get :index }
@@ -60,7 +59,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
       it 'should return matching content' do
         subject
-        expect(assigns(:market_posts)).to eql [@content]
+        expect(assigns(:market_posts)).to match_array [@content]
       end
     end
 
@@ -75,7 +74,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
       it 'should filter results by consumer app\'s organizations' do
         subject
-        expect(assigns(:market_posts)).to eql([@content])
+        expect(assigns(:market_posts)).to match_array([@content])
       end
     end
 
@@ -115,7 +114,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
           locations: [@user.location]
         @mp2 = FactoryGirl.create :market_post, my_town_only: true,
           locations: [@default_location]
-        index
       end
 
       context 'signed in' do

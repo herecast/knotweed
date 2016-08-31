@@ -56,26 +56,56 @@ class Content < ActiveRecord::Base
   extend Enumerize
   include Auditable
   include Incrementable
-  include ThinkingSphinx::Scopes
 
-  sphinx_scope(:in_accepted_category) {
+  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name
+
+  def search_data
     {
-      conditions: { in_accepted_category: 1 },
-      # exclude drafts and scheduled content
-      with: { pubdate: 5.years.ago..Time.zone.now }
+      content: raw_content,
+      title: title,
+      subtitle: subtitle,
+      authors: authors,
+      pubdate: pubdate,
+      all_loc_ids: all_loc_ids,
+      organization_id: organization.try(:id),
+      published: published,
+      channel_type: channel_type,
+      root_content_category_id: content_category.try(:parent_id) || content_category_id,
+      content_category_id: content_category_id,
+      my_town_only: my_town_only,
+      deleted: deleted_at.present?,
+      root_parent_id: root_parent_id,
+      in_accepted_category: !(content_category.try(:name) == 'event' and channel_type != 'Event'),
+      is_listserv_market_post: is_listserv_market_post?,
+      latest_activity: latest_activity
     }
-  }
+  end
 
-  sphinx_scope(:not_deleted_and_in_accepted_category) {
-    {
-      conditions: { in_accepted_category: 1 },
-      # exclude drafts and scheduled content
-      with: { deleted: false, pubdate: 5.years.ago..Time.zone.now }
-    }
+  def is_listserv_market_post?
+    channel.nil? and (content_category.try(:name) == 'market' or content_category.try(:parent).try(:name) == 'market')
+  end
 
-  }
+  def should_index?
+    deleted_at.blank?
+  end
 
-  default_sphinx_scope :not_deleted_and_in_accepted_category
+  def all_loc_ids
+    locs = locations.pluck(:id)
+    if organization.present?
+      locs += organization.locations.pluck(:id)
+    end
+    locs.uniq
+  end
+
+  after_commit :reindex_associations_async
+  def reindex_associations_async
+    organization.reload.reindex_async if organization.present? and organization.persisted?
+    if channel.present? and channel.is_a? Event
+      channel.event_instances.each do |ei|
+        ei.reindex_async
+      end
+    end
+  end
 
   belongs_to :issue
   belongs_to :import_location
@@ -1186,24 +1216,16 @@ class Content < ActiveRecord::Base
   # but because we're mapping the Sphinx results to the parent records after the fact, we're able to return a relation here.
   def self.talk_search(query=nil, opts={})
     defaults = {
-      select: '*, weight(), MAX(pubdate) as latest_activity',
-      order: 'latest_activity DESC',
-      group_by: :root_parent_id,
-      with: {
+      aggs: [:root_parent_id],
+      order: { latest_activity: :desc },
+      where: {
         root_content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id
-      },
-      sql: { include: [:images, :organization, :root_content_category] }
+      }
     }
-    opts.merge!(defaults) do |key,oldval,newval|
-      if oldval.is_a? Hash and newval.is_a? Hash # deal with merging the with: sub-hash
-        oldval.merge newval
-      else
-        oldval
-      end
-    end
-    escaped_query = Riddle::Query.escape(query) if query.present?
 
-    initial_results = Content.search escaped_query, opts
+    query = query.present? ? query : '*'
+
+    initial_results = Content.search query, defaults.deep_merge(opts)
 
     # group_by :root_parent_id returns one result per root_parent_id,
     # but doesn't necessarily return the parent objects. The way to do this with the fewest

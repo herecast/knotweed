@@ -85,30 +85,28 @@ module Api
           per_page = 12
           news_per_page = 2
         end
-        opts = { select: '*, weight()' }
-        opts[:order] = 'pubdate DESC'
-        opts[:with] = {}
-        opts[:conditions] = {}
+        opts = {} 
+        opts[:order] = { pubdate: :desc }
+        opts[:where] = {}
         opts[:page] = params[:page] || 1
-        opts[:with][:published] = 1 if @repository.present?
-        opts[:sql] = { include: [:images, :organization, :root_content_category] }
+        opts[:where][:published] = true if @repository.present?
+        opts[:where][:in_accepted_category] = true
+        opts[:where][:deleted] = false
 
         if @requesting_app.present?
           allowed_orgs = @requesting_app.organizations
-          opts[:with].merge!({org_id: allowed_orgs.collect{|c| c.id} })
+          opts[:where][:organization_id] = allowed_orgs.collect{|c| c.id }
         end
 
         @default_location_id = Location.find_by_city(Location::DEFAULT_LOCATION).id
         location_condition = @current_api_user.try(:location_id) || @default_location_id
 
         root_news_cat = ContentCategory.find_by_name 'news'
-        news_opts = opts.merge({
+        news_opts = opts.deep_dup.merge({
           per_page: news_per_page
         })
-        news_opts[:with] = news_opts[:with].merge({
-          root_content_category_id: root_news_cat.id,
-          all_loc_ids: [location_condition]
-        })
+        news_opts[:where][:root_content_category_id] = root_news_cat.id
+        news_opts[:where][:all_loc_ids] = [location_condition]
 
         # is this slower than a single query that retrieves all 4 using 'name IN (...)'?
         # I doubt it.
@@ -119,22 +117,17 @@ module Api
           reg_cat_ids += [ContentCategory.find_by_name('talk_of_the_town').id]
         end
 
-        reg_opts = opts.merge({
+        reg_opts = opts.deep_dup.merge({
           per_page: per_page
         })
-        reg_opts[:with] = reg_opts[:with].merge({
-          all_loc_ids: [location_condition],
-          root_content_category_id: reg_cat_ids
-        })
+        reg_opts[:where][:all_loc_ids] = [location_condition]
+        reg_opts[:where][:root_content_category_id] = reg_cat_ids
+        reg_opts[:where][:is_listserv_market_post] = false
 
-        root_market_category = ContentCategory.find_by(name: 'market')
-        reg_opts[:select] = reg_opts[:select] +  ",IF(root_content_category_id = #{root_market_category.id} AND  channel_type='', 1, 0) AS is_listserv_market_post"
-        reg_opts[:without] = { is_listserv_market_post: 1 }
-
-        news_contents = Content.search news_opts
+        news_contents = Content.search '*', news_opts
         news_contents = new_content_search(news_opts) if news_contents.count < news_per_page
 
-        reg_contents = Content.search reg_opts
+        reg_contents = Content.search '*', reg_opts
         reg_contents = new_content_search(reg_opts) if reg_contents.count < per_page
 
         # note: can't combine these two relations without converting them to arrays
@@ -217,8 +210,8 @@ module Api
         end
 
         def new_content_search(opts)
-          opts[:with][:all_loc_ids] << @default_location_id
-          Content.search opts
+          opts[:where][:all_loc_ids] << @default_location_id
+          Content.search '*', opts
         end
 
     end

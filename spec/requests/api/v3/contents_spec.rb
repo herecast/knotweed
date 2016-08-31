@@ -94,7 +94,7 @@ describe 'Contents Endpoints', type: :request do
     end
   end
 
-  describe 'GET /api/v3/contents', type: :request do
+  describe 'GET /api/v3/contents', type: :request, elasticsearch: true do
     let(:org) { FactoryGirl.create :organization }
     let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
     let!(:default_location) { FactoryGirl.create :location, city: Location::DEFAULT_LOCATION }
@@ -102,12 +102,11 @@ describe 'Contents Endpoints', type: :request do
     let!(:event_cat) { FactoryGirl.create :content_category, name: 'event'}
     let!(:market_cat) { FactoryGirl.create :content_category, name: 'market'}
     let!(:talk_cat) { FactoryGirl.create :content_category, name: 'talk_of_the_town'}
-    let!(:market_post_ugc) { FactoryGirl.create :content, organization: org,  channel_type: 'MarketPost', content_category: market_cat, locations: [default_location], published: true }
-    let!(:market_post_listserv) { FactoryGirl.create :content, channel_type: nil, organization: org, content_category: market_cat, locations: [default_location], published: true }
+    let!(:market_post_ugc) { FactoryGirl.create :market_post, organization: org,  locations: [default_location], published: true }
+    let!(:market_post_listserv) { FactoryGirl.create :content, organization: org, content_category: market_cat, locations: [default_location], published: true }
     let(:headers) { {'ACCEPT' => 'application/json',
                      'Consumer-App-Uri' => consumer_app.uri
                   } }
-    before { index }
 
     it 'should return only ugc market posts' do
       get "/api/v3/contents", {}, headers
@@ -118,7 +117,6 @@ describe 'Contents Endpoints', type: :request do
       let!(:news_post) { FactoryGirl.create :content, content_category: news_cat, organization: org, locations: [default_location], published: true }
       let!(:event) { FactoryGirl.create :content, content_category: event_cat, organization: org, locations: [default_location], published: true }
       let!(:event_instance) { FactoryGirl.create :event_instance, event: FactoryGirl.create(:event, content: event)}
-      before { index }
 
       it 'they should be returned by the api' do
         get "/api/v3/contents", {}, headers
@@ -129,7 +127,6 @@ describe 'Contents Endpoints', type: :request do
 
     context 'with deleted content' do
       let!(:news_post) { FactoryGirl.create :content, content_category: news_cat, organization: org, locations: [default_location], published: true, deleted_at: Time.current }
-      before { index }
 
       it 'is not returned' do
         get "/api/v3/contents", {}, headers

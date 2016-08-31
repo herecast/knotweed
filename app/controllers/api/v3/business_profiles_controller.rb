@@ -7,46 +7,48 @@ module Api
       before_filter :check_logged_in!, only: [:create, :update]
 
       def index
+        query = params[:query].present? ? params[:query] : '*'
+
         page = params[:page] || 1
         per_page = params[:per_page] || 14
         opts = {
-          select: '*, weight()',
           page: page,
           per_page: per_page,
-          star: true,
-          with: { exists: 1 },
-          without: { archived: true }
+          where: {
+            exists: 1,
+            archived: false
+          }
         }
 
-        if params[:lat].present? and params[:lng].present?
-          lat = params[:lat]
-          lng = params[:lng]
-        elsif params[:organization_id].blank?
-          # default to center of Upper Valley
-          lat,lng = Location::DEFAULT_LOCATION_COORDS
-        end
+        # don't do any geodist related stuff if organization_id comes in
+        unless params[:organization_id].present?
+          if params[:lat].present? and params[:lng].present?
+            @coords = [params[:lat], params[:lng]]
+          else
+            # default to center of Upper Valley
+            @coords = Location::DEFAULT_LOCATION_COORDS
+          end
 
-        if lat.present? && lng.present?
-          # convert to radians
-          opts[:geo] = [lat,lng].map{ |coord| coord.to_f * Math::PI / 180 }
           radius = params[:radius] || 50 # default 50 miles
-          # sphinx takes meters, but assumption is we are dealing with miles,
-          # so need to convert
-          opts[:with][:geodist] = 0.0..(radius.to_f*MI_TO_KM*1000)
+          # convert to radians
+          opts[:where][:location] = {
+           near: @coords,
+           within: "#{radius}mi"
+          }
         end
 
         opts[:order] = sort_by
 
         if params[:category_id].present?
-          opts[:with][:category_ids] = BusinessCategory.find(params[:category_id]).full_descendant_ids
+          opts[:where][:category_ids] = { in: BusinessCategory.find(params[:category_id]).full_descendant_ids }
         end
 
         if params[:organization_id].present?
-          opts[:with][:organization_id] = params[:organization_id]
-          remove_geodist(opts[:order])
+          opts[:where][:organization_id] = params[:organization_id]
         end
 
-        @business_profiles = BusinessProfile.search(params[:query], opts)
+        @business_profiles = BusinessProfile.search(query, opts)
+
         render json: @business_profiles, each_serializer: BusinessProfileSerializer,
           root: 'businesses', context: {current_ability: current_ability, current_user: current_user}, meta: {total: @business_profiles.total_entries}
       end
@@ -106,38 +108,62 @@ module Api
           when "alpha_asc"
             alpha_order
           when "alpha_desc"
-            return "business_location_name DESC"
+            [{ business_location_name: :desc }]
           else
-            return nil
+            return []
         end
       end
 
       def best_score_order
-        "feedback_recommend_avg DESC, feedback_count DESC, geodist ASC, business_location_name ASC"
+        [
+          { feedback_recommend_avg: :desc },
+          { feedback_count: :desc },
+          geodist_clause,
+          { business_location_name: :asc }
+        ]
+      end
+      
+      def geodist_clause
+        if @coords.present?
+          {
+            _geo_distance: {
+              'location' => @coords.join(','),
+              'order' => 'asc',
+              'unit' => 'mi'
+            }
+          }
+        else
+          {}
+        end
       end
 
       def closest_order
-        "geodist ASC, feedback_recommend_avg DESC, feedback_count DESC, business_location_name ASC"
+        [
+          geodist_clause,
+          { feedback_recommend_avg: :desc },
+          { feedback_count: :desc },
+          { business_location_name: :asc }
+        ]
       end
 
       def most_rated_order
-        "feedback_count DESC, feedback_recommend_avg DESC, geodist ASC, business_location_name ASC"
+        [
+          { feedback_count: :desc },
+          { feedback_recommend_avg: :desc },
+          geodist_clause,
+          { business_location_name: :asc }
+        ]
       end
 
       def alpha_order
-        "business_location_name ASC, feedback_recommend_avg DESC, feedback_count DESC, geodist ASC"
+        [
+          { business_location_name: :asc },
+          { feedback_recommend_avg: :desc },
+          { feedback_count: :desc },
+          geodist_clause
+        ]
       end
 
-      def remove_geodist(order)
-        if order.start_with?('geodist ASC')
-          order.gsub!('geodist ASC, ', '')
-        elsif order.end_with?('geodist ASC')
-          order.gsub!(', geodist ASC', '')
-        else
-          order.gsub!(' geodist ASC,', '')
-        end
-      end
-      
       def business_params
         params.require(:business).permit(:name, :phone, :email, :website,
                                          :address, :city, :state, :zip,

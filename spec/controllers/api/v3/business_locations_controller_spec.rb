@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 describe Api::V3::BusinessLocationsController, :type => :controller do
-  describe 'GET index' do
+
+  describe 'GET index', elasticsearch: true do
     before do
       FactoryGirl.create_list :business_location, 3, status: 'approved'
       FactoryGirl.create :business_location, status: 'new'
       FactoryGirl.create :business_location, status: 'private'
-      index
     end
 
     subject { get :index, format: :json }
@@ -30,7 +30,7 @@ describe Api::V3::BusinessLocationsController, :type => :controller do
 
       it 'should respond with the matching business location' do
         subject
-        expect(assigns(:venues)).to eql [@bl]
+        expect(assigns(:venues)).to match_array [@bl]
       end
 
       context 'with autocomplete' do
@@ -54,7 +54,6 @@ describe Api::V3::BusinessLocationsController, :type => :controller do
         @new_location = FactoryGirl.create :business_location, status: 'new', created_by: @user    
         FactoryGirl.create :business_location, status: 'approved'
         api_authenticate user: @user
-        index
       end
 
       it 'it should be included in response' do

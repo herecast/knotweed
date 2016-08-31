@@ -20,7 +20,6 @@ require 'capistrano/bundler'
 require 'capistrano/rvm'
 require 'capistrano/rails/assets'
 require 'capistrano/rails/migrations'
-require 'thinking_sphinx/capistrano'
 require "whenever/capistrano"
 require 'capistrano/git-submodule-strategy'
 

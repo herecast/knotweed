@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Api::V3::BusinessProfilesController, :type => :controller do
-  describe 'GET index' do
+  describe 'GET index', elasticsearch: true do
     before do
       @bps = FactoryGirl.create_list :business_profile, 3
       # set all the BP.business_locations to be in the upper valley
@@ -12,7 +12,6 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
           longitude: Location::DEFAULT_LOCATION_COORDS[1]
         )
       end
-      index
     end
 
     subject { get :index }
@@ -34,7 +33,6 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
           latitude: Location::DEFAULT_LOCATION_COORDS[0],
           longitude: Location::DEFAULT_LOCATION_COORDS[1]
         )
-        index
       end
 
       it do
@@ -50,7 +48,6 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
           latitude: Location::DEFAULT_LOCATION_COORDS[0],
           longitude: Location::DEFAULT_LOCATION_COORDS[1]
         )
-        index
       end
 
       it do
@@ -61,19 +58,60 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
 
     describe "Sorting" do
       let(:mock_results) { double('results', total_entries: 0) }
-      let(:best_score_sort_order) {'feedback_recommend_avg DESC, feedback_count DESC, geodist ASC, business_location_name ASC' }
-      let(:closest_order) { 'geodist ASC, feedback_recommend_avg DESC, feedback_count DESC, business_location_name ASC' }
-      let(:most_rated_order) { 'feedback_count DESC, feedback_recommend_avg DESC, geodist ASC, business_location_name ASC' }
-      let(:alpha_order) { 'business_location_name ASC, feedback_recommend_avg DESC, feedback_count DESC, geodist ASC' }
+
+      let(:best_score_order) do
+        [
+          { feedback_recommend_avg: :desc },
+          { feedback_count: :desc },
+          geodist_clause,
+          { business_location_name: :asc }
+        ]
+      end
+      
+      let(:geodist_clause) do
+        { 
+          _geo_distance: {
+            'location' => Location::DEFAULT_LOCATION_COORDS.join(','),
+            'order' => 'asc',
+            'unit' => 'mi'
+          }
+        }
+      end
+      let(:closest_order) do
+        [
+          geodist_clause,
+          { feedback_recommend_avg: :desc },
+          { feedback_count: :desc },
+          { business_location_name: :asc }
+        ]
+      end
+
+      let(:most_rated_order) do
+        [
+          { feedback_count: :desc },
+          { feedback_recommend_avg: :desc },
+          geodist_clause,
+          { business_location_name: :asc }
+        ]
+      end
+
+      let(:alpha_order) do
+        [
+          { business_location_name: :asc },
+          { feedback_recommend_avg: :desc },
+          { feedback_count: :desc },
+          geodist_clause
+        ]
+      end
 
       it 'sorts by feedback_recommend_avg DESC by default' do
-        expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: best_score_sort_order)).and_return(mock_results)
+        expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: best_score_order)).and_return(mock_results)
         get :index
       end
 
       context 'Given params[:sort_by]=score_desc' do
         it 'tranlates that to highest recommended first' do
-          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: best_score_sort_order)).and_return(mock_results)
+          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: best_score_order)).and_return(mock_results)
           get :index, { sort_by: 'score_desc' }
         end
       end
@@ -101,7 +139,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
 
       context 'Given params[:sort_by]=alpha_desc' do
         it 'tranlates that to alphabetical order reversed' do
-          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: 'business_location_name DESC')).and_return(mock_results)
+          expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: [{ business_location_name: :desc }])).and_return(mock_results)
           get :index, {sort_by: 'alpha_desc'}
         end
       end
@@ -112,14 +150,13 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
         @search = 'AZSXDCFB123543'
         @result = BusinessProfile.first
         @result.business_location.update_attribute :name, @search
-        index
       end
 
       subject { get :index, query: @search }
 
       it 'should return matches' do
         subject
-        expect(assigns(:business_profiles)).to eql [@result]
+        expect(assigns(:business_profiles)).to match_array [@result]
       end
 
       describe 'by category_id' do
@@ -128,12 +165,11 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
           @cat2 = FactoryGirl.create :business_category, parents: [@cat]
           @bps.first.business_categories << @cat
           @bps.last.business_categories << @cat2
-          index
         end
 
         it 'should return filtered results' do
           get :index, category_id: @cat2.id
-          expect(assigns(:business_profiles)).to eql [@bps.last]
+          expect(assigns(:business_profiles)).to match_array [@bps.last]
         end
 
         it 'should return results for categories and their children' do
@@ -152,17 +188,13 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
               longitude: Faker::Address.longitude
             )
           end
-          index
         end
 
         it 'should return results within radius if specified' do
           bp = BusinessProfile.first
           get :index, lat: bp.business_location.latitude, lng: bp.business_location.longitude,
-            radius: 100 # note -- because of a lack of precision in the generated lat/lngs (and because
-            # radius is measured in meters) we can't just set this to 0.1 or something. 100 seems to work.
-            # It's theoretically possible that this could return another randomly located result, but the odds
-            # of that are very very low.
-          expect(assigns(:business_profiles)).to eql [bp]
+            radius: 1
+          expect(assigns(:business_profiles)).to match_array [bp]
         end
 
       end

@@ -26,6 +26,7 @@ FactoryGirl.define do
       my_town_only false
       locations []
       published true
+      organization nil
     end
 
     cost "$5"
@@ -43,6 +44,7 @@ FactoryGirl.define do
       e.content.my_town_only = evaluator.my_town_only
       e.content.published = evaluator.published
       e.content.locations = evaluator.locations
+      e.content.organization = evaluator.organization if evaluator.organization.present?
       if ContentCategory.exists?(name: 'market')
         e.content.content_category = ContentCategory.find_by name: 'market'
       else

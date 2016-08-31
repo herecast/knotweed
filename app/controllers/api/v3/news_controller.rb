@@ -48,18 +48,15 @@ module Api
       end
 
       def index
-        opts = { select: '*, weight()' }
-        opts[:order] = 'pubdate DESC'
-        opts[:with] = {}
-        opts[:conditions] = {}
+        opts = { where: {} }
+        opts[:order] = { pubdate: :desc }
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 12
-        opts[:with][:published] = 1 if @repository.present?
-        opts[:sql] = { include: [:images, :organization, :root_content_category] }
+        opts[:where][:published] = 1 if @repository.present?
 
         if @requesting_app.present?
           allowed_orgs = @requesting_app.organizations.pluck(:id) 
-          opts[:with][:org_id] = allowed_orgs
+          opts[:where][:organization_id] = allowed_orgs
 
           if (params[:organization].present? and params[:organization] != 'Everyone') or params[:organization_id].present?
 
@@ -70,7 +67,7 @@ module Api
             end
 
             if org.present? and allowed_orgs.include? org.id
-              opts[:with][:org_id] = [org.id]
+              opts[:where][:organization_id] = [org.id]
             else
               render json: [], each_serializer: NewsSerializer and return
             end
@@ -80,21 +77,17 @@ module Api
         end
 
         if params[:location_id].present?
-          opts[:with][:all_loc_ids] = params[:location_id].to_i
+          opts[:where][:all_loc_ids] = params[:location_id].to_i
         end
 
-        opts[:with][:root_content_category_id] = ContentCategory.find_by_name('news').id
+        opts[:where][:root_content_category_id] = ContentCategory.find_by_name('news').id
 
         if params[:category].present?
           category = ContentCategory.find_by_name(params['category'].humanize.titleize)
-          opts[:with][:content_category_id] = category.id if category
+          opts[:where][:content_category_id] = category.id if category
         end
 
-        if params[:query].present?
-          query = Riddle::Query.escape(params[:query]) 
-        else
-          query = ''
-        end
+        query = params[:query].present? ? params[:query] : '*'
 
         @news = Content.search query, opts
         render json: @news, each_serializer: NewsSerializer,

@@ -30,10 +30,10 @@ set :git_strategy, Capistrano::Git::SubmoduleStrategy
 # set :pty, true
 
 # Default value for :linked_files is []
-set :linked_files, %w{config/database.yml config/application.yml config/production.sphinx.conf config/thinking_sphinx.yml config/newrelic.yml bin/delayed_job}
+set :linked_files, %w{config/database.yml config/application.yml config/newrelic.yml bin/delayed_job}
 
 # Default value for linked_dirs is []
-set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/exports binlog db/sphinx}
+set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/exports }
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
@@ -41,9 +41,6 @@ set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public
 # Default value for keep_releases is 5
 set :keep_releases, 3
 
-# Hack for a bug in Thinking Sphinx, will be fixed with next release
-# (https://github.com/pat/thinking-sphinx/issues/787)
-set :thinking_sphinx_rails_env, fetch(:rails_env, 'production')
 set :whenever_roles, [:web, :db]
 
 namespace :deploy do
@@ -73,12 +70,6 @@ namespace :deploy do
   end
 
   after :starting, :create_log_record_folders
-
-  task :reconfigure_sphinx do
-    invoke 'thinking_sphinx:configure'
-  end
-
-  after :publishing, :reconfigure_sphinx
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do

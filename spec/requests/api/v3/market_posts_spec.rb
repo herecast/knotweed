@@ -54,7 +54,7 @@ describe 'Market Posts', type: :request do
     end
   end
 
-  describe 'GET /api/v3/market_posts' do
+  describe 'GET /api/v3/market_posts', elasticsearch: true do
     before do
       @loc1 = FactoryGirl.create :location
       @loc2 = FactoryGirl.create :location
@@ -62,7 +62,6 @@ describe 'Market Posts', type: :request do
       @mps_loc2 = FactoryGirl.create_list :market_post, 3, locations: [@loc2]
       @mp_mto_loc1 = FactoryGirl.create :market_post, locations: [@loc1], my_town_only: true
       @mp_mto_loc2 = FactoryGirl.create :market_post, locations: [@loc2], my_town_only: true
-      index
     end
 
     let(:request_params) { {} }

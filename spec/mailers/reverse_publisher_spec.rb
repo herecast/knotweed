@@ -78,6 +78,7 @@ describe ReversePublisher, :type => :mailer do
     before do
       FactoryGirl.create :event_instance, event: non_ugc_event, start_date: 2.weeks.ago, end_date: 1.week.ago, subtitle_override: 'interesting'
       FactoryGirl.create :event_instance, event: non_ugc_event, start_date: 1.days.from_now, end_date: 3.days.from_now, subtitle_override: 'go on'
+      non_ugc_event.reload
       PromotionListserv.create_from_content(non_ugc_event.content, listserv)
       @rp_email = ReversePublisher.deliveries.select{ |eml| eml['X-Original-Content-Id'].present? }.first
     end

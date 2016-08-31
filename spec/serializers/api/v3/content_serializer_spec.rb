@@ -60,7 +60,7 @@ describe Api::V3::ContentSerializer do
       before do
         @event = FactoryGirl.create :event, skip_event_instance: true
         @event_instance =  FactoryGirl.create :event_instance, start_date: 1.month.ago, end_date: 1.week.ago, event: @event
-        @content = @event.content
+        @content = @event.reload.content
       end
 
       it 'should include event instance id of first instance' do

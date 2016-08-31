@@ -31,19 +31,3 @@ every 1.day, at: '12:01 am' do
   rake 'promotion_banner:reset_daily_impression_count'
   rake 'promotion_banner:confirm_has_active_promotion'
 end
-
-# Sphinx Indexing
-
-job_type :sphinx_script, "cd :path && ./lib/indexing/:task"
-
-every '1-59 * * * *' do
-  sphinx_script "delta_index.sh"
-end
-
-every '0 1-23 * * *' do
-  sphinx_script "merge_deltas.sh"
-end
-
-every '0 0 * * *' do
-  sphinx_script "full_index.sh"
-end

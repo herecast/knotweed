@@ -24,6 +24,17 @@
 #
 
 class Organization < ActiveRecord::Base
+
+  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name
+
+  def search_data
+    {
+      name: name,
+      consumer_app_ids: consumer_apps.pluck(:id),
+      content_category_ids: contents.map{|c| c.root_content_category_id }.uniq
+    }
+  end
+
   resourcify
   belongs_to :parent, class_name: "Organization"
   has_many :children, class_name: "Organization", foreign_key: "parent_id"

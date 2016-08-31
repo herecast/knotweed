@@ -69,8 +69,6 @@ gem "simple_form", '~> 3.2.1'
 gem 'sparql-client', '~> 1.1.3'
 gem 'sshkit', '~> 1.11.1'
 gem 'summernote-rails', '~> 0.8.1'
-gem 'thinking-sphinx', '~> 3.1.4'
-gem 'ts-datetime-delta', '~> 2.0.2', require: 'thinking_sphinx/deltas/datetime_delta'
 gem "turbolinks", '~> 2.2.0'
 gem 'uglifier', '~> 2.4.0'
 gem 'unf', '~> 0.1.3'
@@ -111,3 +109,7 @@ group :pry do
   #gem "pry-debugger", '~> 0.2.3'
   gem "pry-rails", '~> 0.3.4'
 end
+
+gem 'searchkick', '~> 1.3.1'
+gem 'typhoeus', '~> 1.0.2'
+gem 'faraday_middleware-aws-signers-v4', '~> 0.1.5'

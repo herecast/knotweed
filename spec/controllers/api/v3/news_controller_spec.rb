@@ -5,7 +5,7 @@ describe Api::V3::NewsController, :type => :controller do
     @news_cat = FactoryGirl.create :content_category, name: 'news'
   end
 
-  describe 'GET index' do
+  describe 'GET index', elasticsearch: true do
     before do
       @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
       @other_location = FactoryGirl.create :location, city: 'Another City'
@@ -20,7 +20,6 @@ describe Api::V3::NewsController, :type => :controller do
       @consumer_app = FactoryGirl.create :consumer_app
       @consumer_app.organizations = Organization.all
       api_authenticate user: nil, consumer_app: @consumer_app
-      index
     end
 
     subject { get :index }
@@ -41,13 +40,12 @@ describe Api::V3::NewsController, :type => :controller do
         @consumer_app.organizations << @org
         @org_and_loc_content = FactoryGirl.create :content, content_category: @news_cat,
           locations: [@default_location], organization: @org
-        index
       end
 
       subject! { get :index, format: :json, organization: @org.name }
 
       it 'should return content specific to that organization' do
-        expect(assigns(:news)).to eql([@org_and_loc_content])
+        expect(assigns(:news)).to match_array([@org_and_loc_content])
       end
     end
 
@@ -57,13 +55,12 @@ describe Api::V3::NewsController, :type => :controller do
         @consumer_app.organizations << @org
         @org_and_loc_content = FactoryGirl.create :content, content_category: @news_cat,
           locations: [@default_location], organization: @org
-        index
       end
 
       subject! { get :index, format: :json, organization_id: @org.id }
 
       it 'should return content specific to that organization' do
-        expect(assigns(:news)).to eql([@org_and_loc_content])
+        expect(assigns(:news)).to match_array([@org_and_loc_content])
       end
     end
 
@@ -73,10 +70,6 @@ describe Api::V3::NewsController, :type => :controller do
 
         let!(:sponsored_content) { FactoryGirl.create :content, content_category: sponsored_cat, organization: Organization.first }
         let!(:not_sponsored) { FactoryGirl.create :content, content_category: @news_cat, organization: Organization.first }
-
-        before do
-          index
-        end
 
         subject! { get :index, format: :json, category: 'sponsored_content' }
 
@@ -125,7 +118,7 @@ describe Api::V3::NewsController, :type => :controller do
 
       it 'should return matching results' do
         subject
-        expect(assigns(:news)).to eql([@content])
+        expect(assigns(:news)).to match_array([@content])
       end
     end
 
@@ -140,7 +133,7 @@ describe Api::V3::NewsController, :type => :controller do
 
       it 'should filter results by consumer app\'s organizations' do
         subject
-        expect(assigns(:news)).to eql([@content])
+        expect(assigns(:news)).to match_array([@content])
       end
 
       describe 'querying for an organization not associated with that consumer app' do

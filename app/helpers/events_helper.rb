@@ -73,7 +73,7 @@ module EventsHelper
   end
 
   def ux2_event_path(event)
-    "/events/#{event.event_instances.first.id}"
+    "/events/#{event.next_or_first_instance.id}"
   end
 
   def event_url_for_email(event)

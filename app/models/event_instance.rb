@@ -15,6 +15,8 @@
 #
 
 class EventInstance < ActiveRecord::Base
+  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name
+
   belongs_to :event
   belongs_to :schedule
   attr_accessible :description_override, :end_date, :event_id, :start_date, :subtitle_override,
@@ -27,6 +29,28 @@ class EventInstance < ActiveRecord::Base
 
   validates_presence_of :start_date
   validate :end_date_after_start_date
+
+  def search_data
+    data = {
+      subtitle_override: subtitle_override,
+      start_date: start_date
+    }
+    if event.present?
+      data[:event_category] = event.event_category
+      if event.venue.present?
+        data[:venue] = event.venue.city
+      end
+      if event.content.present?
+        data.merge!({
+          content: event.content.raw_content,
+          title: event.content.title,
+          pubdate: event.content.pubdate,
+          published: event.content.published
+        })
+      end
+    end
+    data
+  end
 
   # takes the end_date and automatically sets it to the same date as start_date,
   # but with its own time
@@ -75,7 +99,7 @@ class EventInstance < ActiveRecord::Base
   end
 
   private
-    
+
     # private because this is a helper method for to_ics
     # may be called with send if needed
     def ics_event_attributes

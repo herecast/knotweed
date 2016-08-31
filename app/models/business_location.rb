@@ -27,6 +27,19 @@ class BusinessLocation < ActiveRecord::Base
   extend Enumerize
   include Auditable
 
+  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name,
+    match: :word_start, searchable: [:name, :city, :state]
+
+  def search_data
+    {
+      name: name,
+      city: city,
+      state: state,
+      created_by: created_by.try(:id),
+      status: status
+    }
+  end
+
   belongs_to :organization
   has_many :events, foreign_key: 'venue_id'
 
@@ -45,6 +58,18 @@ class BusinessLocation < ActiveRecord::Base
   enumerize :status, in: STATUS_CATEGORIES
 
   geocoded_by :geocoding_address
+
+  after_commit :reindex_associations_async
+  def reindex_associations_async
+    business_profile.reindex_async if business_profile.present?
+    if events.present?
+      events.each do |e|
+        e.event_instances.each do |ei|
+          ei.reindex_async
+        end
+      end
+    end
+  end
 
   after_validation :geocode, if: ->(obj){ obj.address.present? and (obj.address_changed? or obj.name_changed? or obj.locate_include_name_changed?)}
 

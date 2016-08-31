@@ -42,7 +42,7 @@ describe 'Businesses Endpoints', type: :request do
     end
   end
 
-  describe 'GET /api/v3/businesses' do
+  describe 'GET /api/v3/businesses', elasticsearch: true do
     let(:url) { '/api/v3/businesses' }
 
     context 'a business existing that the current user owns' do
@@ -53,7 +53,6 @@ describe 'Businesses Endpoints', type: :request do
           latitude: Location::DEFAULT_LOCATION_COORDS[0],
           longitude: Location::DEFAULT_LOCATION_COORDS[1]
         })
-        index
         get url, {}, auth_headers
       end
 
@@ -71,9 +70,6 @@ describe 'Businesses Endpoints', type: :request do
       }
 
       describe 'meta.total' do
-        before do
-          index
-        end
 
         it "is equal to the total items matching search" do
           get url, {
@@ -101,8 +97,6 @@ describe 'Businesses Endpoints', type: :request do
             end
           end
 
-          index
-
           get url, {
             sort_by: 'score_desc',
             radius: 10_000 # we don't want distance to limit the query
@@ -121,7 +115,6 @@ describe 'Businesses Endpoints', type: :request do
 
       describe '?sort_by=distance_asc' do
         before do
-          index
           get url, {
             sort_by: 'distance_desc',
             radius: 10_000 # we don't want distance to limit the query
@@ -149,8 +142,6 @@ describe 'Businesses Endpoints', type: :request do
             end
           end
 
-          index
-
           get url, {
             sort_by: 'rated_desc',
             radius: 10_000 # we don't want distance to limit the query
@@ -168,7 +159,6 @@ describe 'Businesses Endpoints', type: :request do
 
       describe '?sort_by=alpha_asc' do
         before do
-          index
           get url, {
             sort_by: 'alpha_asc',
             radius: 10_000 # we don't want distance to limit the query
@@ -185,7 +175,6 @@ describe 'Businesses Endpoints', type: :request do
 
       describe '?sort_by=alpha_desc' do
         before do
-          index
           get url, {
             sort_by: 'alpha_desc',
             radius: 10_000 # we don't want distance to limit the query
@@ -210,7 +199,6 @@ describe 'Businesses Endpoints', type: :request do
             b.content.organization_id = organization.id
             b.save!
           end
-          index
           get url, { organization_id: organization.id }
         end
 

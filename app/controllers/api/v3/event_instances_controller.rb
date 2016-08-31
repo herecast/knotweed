@@ -4,13 +4,10 @@ module Api
       
       def index
         opts = {}
-        opts = { select: '*, weight()' }
-        opts[:order] = 'start_date ASC'
+        opts[:where] = {}
+        opts[:order] = { start_date: :asc }
         opts[:per_page] = params[:per_page] || 25
         opts[:page] = params[:page] || 1
-        opts[:with] = {}
-        opts[:conditions] = {}
-        opts[:sql] = { include: {event: [{content: :images}, :venue]}}
 
         if params[:date_start].present?
           start_date = Chronic.parse(params[:date_start]).beginning_of_day
@@ -19,15 +16,15 @@ module Api
         end
         end_date = Chronic.parse(params[:date_end]).end_of_day if params[:date_end].present?
 
-        opts[:with][:published] = 1 if @repository.present?
+        opts[:where][:published] = 1 if @repository.present?
 
         if end_date.present?
-          opts[:with][:start_date] = start_date..end_date
+          opts[:where][:start_date] = start_date..end_date
         else
           # NOTE: we can't do a `greater than` search with a Sphinx attribute filter
           # without some funny business that involves changing the index,
           # so instead we're just setting this to 1 year in advance.
-          opts[:with][:start_date] = start_date..1.year.from_now
+          opts[:where][:start_date] = start_date..1.year.from_now
         end
 
         if params[:category].present?
@@ -36,23 +33,24 @@ module Api
             # NOTE: this conditional also handles the scenario where we are passed 'everything'
             # because 'everything' just means don't filter by category, and since 'everything'
             # is not inside that constant, we're good.
-            opts[:conditions][:event_category] = cat
+            opts[:where][:event_category] = cat
           end
         end
 
         # if the location is a city or (city, state) pair that matches one of our local towns,
-        # check if there are any villages (aka children) and include them in the search using the name
-        # field of the sphinx EventInstance index.
+        # check if there are any villages (aka children) and include them in the search using the
+        # venue attribute of the ES index
         # Otherwise, just search for the location
         query_location = Location.find_by_city_state(params[:location])
         if query_location.present?
-          loc_array = ["(#{query_location.city})"] + query_location.children.map{|l| "(#{l.city})"}
-          locations = loc_array.join('|')
-          query = Riddle::Query.escape("#{params[:query]}")
-          opts[:conditions][:name] = locations
+          loc_array = ["#{query_location.city}"] + query_location.children.map{|l| "#{l.city}"}
+          query = "#{params[:query]}"
+          opts[:where][:venue] = loc_array
         else
-          query = Riddle::Query.escape("#{params[:query]} #{params[:location]}")
+          query = "#{params[:query]} #{params[:location]}"
         end
+
+        query = query.present? ? query : '*'
 
         @event_instances = EventInstance.search query, opts
 

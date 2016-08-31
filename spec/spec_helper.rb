@@ -17,7 +17,7 @@ require 'webmock/rspec'
 #require 'pry-debugger' unless ENV['RM_INFO']
 require 'vcr'
 require 'factory_girl'
-WebMock.disable_net_connect!(allow_localhost: true)
+WebMock.disable_net_connect!(allow_localhost: true, allow: ENV['ELASTICSEARCH_URL'])
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -68,6 +68,7 @@ RSpec.configure do |config|
     DatabaseCleaner.strategy = :truncation
     begin
       DatabaseCleaner.start
+      build_indices
       FactoryGirl.lint
     ensure
       DatabaseCleaner.clean
@@ -75,6 +76,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do
+    DatabaseCleaner.start
     mixpanel_track_stub
     ActionMailer::Base.deliveries.clear
     DatabaseCleaner.strategy = :truncation

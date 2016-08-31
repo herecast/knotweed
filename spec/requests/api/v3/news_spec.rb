@@ -356,7 +356,7 @@ describe 'News Endpoints', type: :request do
 
   end
 
-  describe 'GET /api/v3/news' do
+  describe 'GET /api/v3/news', elasticsearch: true do
     let!(:news_cat) { FactoryGirl.create :content_category, name: 'news'}
     let(:org) { FactoryGirl.create :organization }
     let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
@@ -367,8 +367,6 @@ describe 'News Endpoints', type: :request do
     let!(:news) { FactoryGirl.create :content, created_by: user, organization: org, published: true, content_category: news_cat }
     let!(:deleted_news) { FactoryGirl.create :content, created_by: user, organization: org, published: true, content_category: news_cat, deleted_at: Time.current }
     
-    before { index }
-
     it 'returns news' do
       get '/api/v3/news', {}, headers
       ids = response_json[:news].map{|i| i[:id]}

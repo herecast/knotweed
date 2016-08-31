@@ -5,16 +5,16 @@ module Api
       before_filter :check_logged_in!, only: [:index, :show, :create, :update]
 
       def index
-        opts = { with: {}, conditions: {}}
+        opts = { where: {} }
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
-        opts[:with][:published] = 1 if @repository.present?
+        opts[:where][:published] = 1 if @repository.present?
         if @requesting_app.present?
           allowed_orgs = @requesting_app.organizations
-          opts[:with][:org_id] = allowed_orgs.collect{|c| c.id}
+          opts[:where][:organization_id] = allowed_orgs.collect{|c| c.id}
         end
 
-        opts[:with][:all_loc_ids] = [@current_api_user.location_id]
+        opts[:where][:all_loc_ids] = [@current_api_user.location_id]
 
         @talk = Content.talk_search(params[:query], opts)
 

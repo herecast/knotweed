@@ -8,7 +8,7 @@ describe Api::V3::ContentsController, :type => :controller do
     @consumer_app.organizations = [@org]
   end
 
-  describe 'GET index' do
+  describe 'GET index', elasticsearch: true do
     before do
       @news_cat = FactoryGirl.create :content_category, name: 'news'
       @tott_cat = FactoryGirl.create :content_category, name: 'talk_of_the_town'
@@ -19,19 +19,18 @@ describe Api::V3::ContentsController, :type => :controller do
       @user = FactoryGirl.create :user, location: @other_location
       FactoryGirl.create_list :content, 15, content_category: @news_cat, 
         locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 15, content_category: @market_cat, 
-        locations: [@default_location], published: true, channel_type: 'MarketPost'
+      FactoryGirl.create_list :market_post, 15,
+        locations: [@default_location], published: true
       FactoryGirl.create_list :content, 15, content_category: @tott_cat,
         locations: [@default_location], published: true
       FactoryGirl.create_list :content, 15, content_category: @event_cat,
         locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 15, content_category: @market_cat, 
-        locations: [@other_location], published: true, channel_type: 'MarketPost'
+      FactoryGirl.create_list :market_post, 15,
+        locations: [@other_location], published: true
       FactoryGirl.create_list :content, 15, content_category: @tott_cat,
         locations: [@other_location], published: true
       FactoryGirl.create_list :content, 2, content_category: @news_cat,
         locations: [@other_location], published: true
-      index
     end
 
     subject { get :index, format: :json }
@@ -94,7 +93,8 @@ describe Api::V3::ContentsController, :type => :controller do
 
       it 'should return items in the user\'s location' do
         subject
-        expect(assigns(:contents).select{|c| c.locations.include? @other_location}.count).to eq(assigns(:contents).count)
+        contents = assigns(:contents)
+        expect(contents.select{|c| c.locations.include? @other_location}.count).to eq(contents.count)
       end
 
       context "when location has too few contents" do

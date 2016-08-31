@@ -3,34 +3,27 @@ module Api
     class BusinessLocationsController < ApiController
 
       def index
-        query = Riddle::Query.escape(params[:query]) if params[:query].present?
+        query = params[:query].blank? ? '*' : params[:query]
         opts = {}
-        opts = { select: '*, weight() as w', order: 'w DESC, name DESC' }
+        opts[:order] = { _score: :desc, name: :desc }
         opts[:per_page] = params[:max_results] || 1000
-        opts[:star] = true
-        opts[:with] = {}
-        opts[:conditions] = {}
+        opts[:where] = {}
         if @current_api_user.present?
-          q = ", IF(created_by = #{@current_api_user.id} OR status_attr = 'approved', 1, 0) as user_loc_with_approved"
-          opts[:select] << q
-          opts[:with][:user_loc_with_approved] = 1
+          opts[:where][:or] = [
+            [{created_by: @current_api_user.id}, {status: 'approved'}]
+          ]
         else
-          opts[:conditions][:status] = 'approved'
+          opts[:where][:status] = 'approved'
         end
 
-        if query.present?
-          @venues = BusinessLocation.search query, opts
-        else
-          @venues = BusinessLocation.search opts
-        end
+        @venues = BusinessLocation.search query, opts
 
         if params[:autocomplete]
           # it's been requested we also add a single result for city/state  search...
-          cs_query = "@(city,state) #{Riddle::Query.escape(params[:query])}"
-          cs_opts = { star: true }
+          cs_query = params[:query]
           # The following two lines search extract the (city,state) pair from the search results,
           # then sets cs to the most frequently occurring (city,state) pair
-          cities = BusinessLocation.search(cs_query, cs_opts).map{|c| c.city.strip + ', ' + c.state.strip}
+          cities = BusinessLocation.search(cs_query).map{|c| c.city.strip + ', ' + c.state.strip}
           cs = cities.group_by{|n| n }.values.max_by(&:size)
 
           # reorganize the responses from the search so the locations that begin with the query

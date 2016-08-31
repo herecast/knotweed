@@ -210,49 +210,6 @@ describe Content, :type => :model do
 
   it { is_expected.to respond_to(:deleted_at) }
 
-  describe 'default sphinx scope' do
-    before do
-      @draft = FactoryGirl.create :content, pubdate: nil
-      @scheduled = FactoryGirl.create :content, pubdate: 2.weeks.from_now
-      @normal = FactoryGirl.create :content, pubdate: 2.hours.ago
-      @event_cat = FactoryGirl.create :content_category, name: 'event'
-      @news_cat = FactoryGirl.create :content_category, name: 'news'
-      @in_index_event = FactoryGirl.create :event
-      # ensure in_index_event has the event category
-      @in_index_event.content.content_category_id = @event_cat.id
-      @in_index_event.content.save
-      @not_in_index_event = FactoryGirl.create :content, content_category_id: @event_cat.id
-
-      @deleted_content = FactoryGirl.create :content, content_category: @news_cat, deleted_at: Time.current
-
-      index
-    end
-
-    it 'should not include unchannelized event category content' do
-      expect(Content.search).to_not include(@not_in_index_event)
-    end
-
-    it 'should include channelized event category content' do
-      expect(Content.search).to include(@in_index_event.content)
-    end
-
-    it 'should not include draft content' do
-      expect(Content.search).to_not include(@draft)
-    end
-
-    it 'should not include scheduled content' do
-      expect(Content.search).to_not include(@scheduled)
-    end
-
-    it 'should include regular content' do
-      expect(Content.search).to include(@normal)
-    end
-
-    it 'does not include deleted content' do
-      expect(Content.search).to_not include(@deleted_content)
-    end
-  end
-
   # for ease of querying, our polymorphic channel relationship
   # is redundantly specified using the content_id attribute
   # from each channel submodel. Rails doesn't provide an easy way to
@@ -1407,7 +1364,7 @@ describe Content, :type => :model do
     end
   end
 
-  describe 'Content.talk_search' do
+  describe 'Content.talk_search', elasticsearch: true do
     before do
       @talk = FactoryGirl.create :content_category, name: 'talk_of_the_town'
       @p1 = FactoryGirl.create :content, content_category: @talk, pubdate: 1.year.ago
@@ -1415,7 +1372,6 @@ describe Content, :type => :model do
         raw_content: 'VERY UNIQUE STRING @#$#%'
       @c2 = FactoryGirl.create :content, parent: @c1, content_category: @talk,
         raw_content: 'DIFFSTRING912387'
-      index
     end
 
     it 'should group search results by root_parent_id' do
@@ -1434,7 +1390,6 @@ describe Content, :type => :model do
         @p2 = FactoryGirl.create :content, content_category: @talk,
           pubdate: @p1.pubdate + 2.days
         @c2.update_attribute :pubdate, @p2.pubdate + 2.days
-        index
       end
 
       it 'should order by the latest activity' do

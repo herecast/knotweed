@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Api::V3::OrganizationsController, :type => :controller do
-  describe 'GET index' do
+  describe 'GET index', elasticsearch: true do
     before do
       @organization = FactoryGirl.create :organization
       @consumer_app = FactoryGirl.create :consumer_app
@@ -13,7 +13,6 @@ describe Api::V3::OrganizationsController, :type => :controller do
       FactoryGirl.create(:content, organization: @difft_app_org,
         content_category: @news_cat)
       @consumer_app.organizations += [@organization, @non_news_org]
-      index
     end
 
     subject { get :index }
@@ -25,14 +24,12 @@ describe Api::V3::OrganizationsController, :type => :controller do
 
     it 'only responds with organizations associated with news content' do
       subject
-      expect(assigns(:organizations).include?(@organization)).to eq true
-      expect(assigns(:organizations).include?(@non_news_org)).to eq false
-      expect(assigns(:organizations).include?(@difft_app_org)).to eq true
+      expect(assigns(:organizations)).to match_array([@organization,@difft_app_org])
     end
 
     it 'filters by consumer app if requesting app is available' do
       get :index, format: :json, consumer_app_uri: @consumer_app.uri
-      expect(assigns(:organizations)).to eql([@organization])
+      expect(assigns(:organizations)).to match_array [@organization]
     end
 
     describe 'with a list of organization ids' do
