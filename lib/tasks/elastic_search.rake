@@ -11,3 +11,12 @@ task :reindex_after, [:date_string] => :environment do |t, args|
   end
 
 end
+
+desc 'reindex all records with pubdate > now'
+task :reindex_future_posts => :environment do 
+  relation = Content.where('pubdate > ?', Time.zone.now)
+  puts "Reindexing #{relation.count} contents\n"
+  Content.where('pubdate > ?', Time.zone.now).find_each do |c|
+    c.reindex
+  end
+end
