@@ -99,7 +99,6 @@ class Content < ActiveRecord::Base
 
   after_commit :reindex_associations_async
   def reindex_associations_async
-    organization.reload.reindex_async if organization.present? and organization.persisted?
     if channel.present? and channel.is_a? Event
       channel.event_instances.each do |ei|
         ei.reindex_async

@@ -31,7 +31,7 @@ class Organization < ActiveRecord::Base
     {
       name: name,
       consumer_app_ids: consumer_apps.pluck(:id),
-      content_category_ids: contents.map{|c| c.root_content_category_id }.uniq
+      content_category_ids: contents.pluck(:root_content_category_id).uniq
     }
   end
 

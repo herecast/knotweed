@@ -115,6 +115,7 @@ describe 'News Endpoints', type: :request do
       @news_cat = FactoryGirl.create :content_category, name: 'news'
       @org = FactoryGirl.create :organization, can_publish_news: true
       @content = FactoryGirl.create :content, organization: @org, pubdate: nil, created_by: user
+      @org.reindex
     end
 
     let(:put_params) do

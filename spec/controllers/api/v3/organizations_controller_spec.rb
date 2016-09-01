@@ -13,6 +13,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
       FactoryGirl.create(:content, organization: @difft_app_org,
         content_category: @news_cat)
       @consumer_app.organizations += [@organization, @non_news_org]
+      Organization.reindex
     end
 
     subject { get :index }
