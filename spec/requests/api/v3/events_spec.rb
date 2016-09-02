@@ -3,19 +3,26 @@ require 'spec_helper'
 describe 'Events Endpoints', type: :request do
   let(:user) { FactoryGirl.create :user }
   let(:auth_headers) { auth_headers_for(user) }
+  let(:consumer_app) { FactoryGirl.create :consumer_app }
 
-  describe 'events index' do
+  describe 'events index', elasticsearch: true do
     before do
       @location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
       @event = FactoryGirl.create :event
       @event.content.locations << @location
       ContentCategory.first.update_attribute(:name, 'event')
+      consumer_app.organizations << @event.content.organization
     end
 
-    subject { get "/api/v3/events" }
+    let(:headers) { {
+      'ACCEPT' => 'application/json',
+      'Consumer-App-Uri' => consumer_app.uri
+    } }
+
+    subject { get "/api/v3/events", {}, headers }
     
     it "returns events" do
-      pending("Needs to be adjusted for Elastic search")
+      @event.content.reindex
       subject
       expect(response_json).to match(
         events: [
