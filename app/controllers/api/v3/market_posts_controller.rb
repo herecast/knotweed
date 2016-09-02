@@ -4,6 +4,7 @@ module Api
       before_filter :check_logged_in!, only: [:create, :update]
 
       def index
+        expires_in 1.minutes, public: true
         opts = {}
         opts[:order] = { pubdate: :desc }
         opts[:where] = {
@@ -24,6 +25,8 @@ module Api
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
         opts[:where][:published] = 1 if @repository.present?
+        opts[:where][:channel_type] = 'MarketPost' if params[:has_image].present? && params[:has_image] == "true"
+
         if @requesting_app.present?
           allowed_orgs = @requesting_app.organizations
           opts[:where][:organization_id] = allowed_orgs.collect{|c| c.id}

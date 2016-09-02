@@ -19,6 +19,7 @@ module Api
       end
 
       def index
+        expires_in 1.hours, public: true
         if params[:ids].present?
           if @requesting_app.present?
             @organizations = @requesting_app.organizations

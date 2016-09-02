@@ -5,6 +5,7 @@ class ContentsController < ApplicationController
   before_filter :fix_array_input, only: [:create, :update]
 
   def index
+    expires_in 1.minutes, :public => true
     # if posted, save to session
     if params[:reset]
       session[:contents_search] = nil

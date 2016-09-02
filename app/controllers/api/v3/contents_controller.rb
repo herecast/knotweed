@@ -27,6 +27,7 @@ module Api
       end
 
       def similar_content
+        expires_in 1.minutes, :public => true
         @content = Content.find params[:id]
 
         # need to call to_a here so we can use mutating select! afterwards
@@ -68,6 +69,7 @@ module Api
       end
 
       def index
+        expires_in 1.minutes, :public => true
         # by default, each page has two news items and twelve other items
         # we accept `per_page` and/or `news_per_page` params that allow tweaking
         # that and automatically limit the total response to 14 entries if only one per_page

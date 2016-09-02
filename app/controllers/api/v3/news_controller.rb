@@ -48,6 +48,7 @@ module Api
       end
 
       def index
+        expires_in 1.minutes, public: true
         opts = { where: {} }
         opts[:order] = { pubdate: :desc }
         opts[:page] = params[:page] || 1

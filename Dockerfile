@@ -1,5 +1,5 @@
 FROM ruby:2.2.4
-RUN apt-get update -qq && apt-get install -y build-essential libmysqlclient-dev nodejs && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -qq && apt-get install -y build-essential libmysqlclient-dev nodejs imagemagick && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /knotweed
 WORKDIR /knotweed
 ADD Gemfile /knotweed/

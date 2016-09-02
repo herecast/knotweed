@@ -47,6 +47,7 @@ gem 'mixpanel_client', '~> 4.1.1'
 gem 'mixpanel-ruby', '~> 1.4.0' # official ruby mixpanel client. later versions need ruby > 2.0
 gem "pg", '~> 0.18.4'
 gem 'mysql2', '~> 0.3.18'
+gem 'mini_magick', '~> 4.5.1'
 gem 'net-http-persistent', '~> 2.9'
 gem 'newrelic_rpm', '~> 3.13.0.299'
 gem "nokogiri", '1.6.1' # allowing a patch upgrade on this

@@ -7,8 +7,8 @@ module Api
       before_filter :check_logged_in!, only: [:create, :update]
 
       def index
+        expires_in 1.minutes, public: true
         query = params[:query].present? ? params[:query] : '*'
-
         page = params[:page] || 1
         per_page = params[:per_page] || 14
         opts = {

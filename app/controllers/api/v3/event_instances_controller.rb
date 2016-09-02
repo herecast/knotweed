@@ -3,6 +3,7 @@ module Api
     class EventInstancesController < ApiController
       
       def index
+        expires_in 1.minutes, public: true
         opts = {}
         opts[:where] = {}
         opts[:order] = { start_date: :asc }

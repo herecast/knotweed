@@ -3,6 +3,7 @@ module Api
     class BusinessLocationsController < ApiController
 
       def index
+        expires_in 1.minutes, :public => true
         query = params[:query].blank? ? '*' : params[:query]
         opts = {}
         opts[:order] = { _score: :desc, name: :desc }

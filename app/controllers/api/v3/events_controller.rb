@@ -4,6 +4,37 @@ module Api
 
       before_filter :check_logged_in!, only: [:create, :update]
 
+      def index
+        expires_in 1.minutes, :public => true
+        
+        opts = {}
+        opts[:order] = { pubdate: :desc }
+        opts[:with] = {}
+        opts[:conditions] = {}
+        opts[:page] = params[:page] || 1
+        opts[:with][:published] = 1 if @repository.present?
+        opts[:with][:root_content_category_id] = [ContentCategory.find_by_name('event').id]
+        opts[:sql] = { include: [:images, :organization, :root_content_category] }
+        opts[:per_page] = params[:per_page].present? ? params[:per_page].to_i : 5
+
+        if @requesting_app.present?
+          allowed_orgs = @requesting_app.organizations
+          opts[:with].merge!({org_id: allowed_orgs.collect{|c| c.id} })
+        end
+
+        @default_location_id = Location.find_by_city(Location::DEFAULT_LOCATION).id
+        location_condition = @current_api_user.try(:location_id) || @default_location_id
+
+        opts[:with] = opts[:with].merge({
+          all_loc_ids: [location_condition]
+        })
+
+        query = params[:query].present? ? params[:query] : '*'
+        @events = Content.search query, opts
+
+        render json: @events, each_serializer: ContentSerializer
+      end
+
       def update
         @event = Event.find(params[:id])
         # "authenticate" this edit action

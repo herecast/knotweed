@@ -5,6 +5,7 @@ module Api
       before_filter :check_logged_in!, only: [:index, :show, :create, :update]
 
       def index
+        expires_in 1.minutes, public: true
         opts = { where: {} }
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
