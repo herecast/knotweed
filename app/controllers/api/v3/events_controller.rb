@@ -13,7 +13,7 @@ module Api
         opts[:per_page] = params[:per_page] || 5
         opts[:where] = {}
         opts[:where][:published] = 1 if @repository.present?
-        opts[:where][:root_content_category_id] = ContentCategory.find_by_name('event').id
+        opts[:where][:channel_type] = 'Event'
         opts[:sql] = { include: [:images, :organization, :root_content_category] }
 
         if @requesting_app.present?

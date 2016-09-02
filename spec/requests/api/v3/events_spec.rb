@@ -30,7 +30,6 @@ describe 'Events Endpoints', type: :request do
             id: @event.content.id,
             title: @event.content.title,
             image_url: nil,
-            author_id: @event.content.created_by.try(:id),
             author_name: be_a(String),
             content_type: 'event',
             organization_id: @event.content.organization.id,
