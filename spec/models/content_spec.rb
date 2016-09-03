@@ -133,30 +133,6 @@ describe Content, :type => :model do
       end
     end
 
-    context "when pubdate is nil" do
-      let(:content) { FactoryGirl.create :content, pubdate: nil }
-
-      it "returns false" do
-        expect(content.should_index?).to be false
-      end
-    end
-
-    context "when pubdate is more than five years ago" do
-      let(:content) { FactoryGirl.create :content, pubdate: 6.years.ago }
-
-      it "returns false" do
-        expect(content.should_index?).to be false
-      end
-    end
-
-    context "when pubdate is in the future" do
-      let(:content) { FactoryGirl.create :content, pubdate: Date.tomorrow }
-
-      it "returns false" do
-        expect(content.should_index?).to be false
-      end
-    end
-
     context "when pubdate is within past five years and before today" do
       let(:content) { FactoryGirl.create :content, pubdate: Date.yesterday }
 

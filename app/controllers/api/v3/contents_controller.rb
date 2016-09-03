@@ -87,9 +87,7 @@ module Api
           per_page = 12
           news_per_page = 2
         end
-        opts = {} 
-        opts[:order] = { pubdate: :desc }
-        opts[:where] = {}
+        opts = Content.default_search_opts
         opts[:page] = params[:page] || 1
         opts[:where][:published] = true if @repository.present?
         opts[:where][:in_accepted_category] = true

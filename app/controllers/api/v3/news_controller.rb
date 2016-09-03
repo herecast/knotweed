@@ -49,8 +49,7 @@ module Api
 
       def index
         expires_in 1.minutes, public: true
-        opts = { where: {} }
-        opts[:order] = { pubdate: :desc }
+        opts = Content.default_search_opts
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 12
         opts[:where][:published] = 1 if @repository.present?
