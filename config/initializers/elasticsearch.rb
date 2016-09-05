@@ -7,7 +7,7 @@ Searchkick.client = Elasticsearch::Client.new(
   retry_on_failure: true # https://github.com/ankane/searchkick/issues/351
 ) do |f|
   # we don't want to attempt to sign requests to our local elasticsearch instance on dev
-  unless ENV["ELASTICSEARCH_URL"].present? && ENV["ELASTICSEARCH_URL"].include? 'localhost'
+  unless ENV["ELASTICSEARCH_URL"].present? and ENV["ELASTICSEARCH_URL"].include? 'localhost'
     if ENV["ELASTICSEARCH_URL"].include? 'es.amazonaws.com'
       f.request :aws_signers_v4, {
         credentials: Aws::Credentials.new(ENV["AWS_ACCESS_KEY_ID"], ENV["AWS_SECRET_ACCESS_KEY"]),
