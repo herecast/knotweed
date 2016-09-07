@@ -1,5 +1,7 @@
 require 'rake/clean'
 require 'active_support/core_ext/date'
+require 'faraday_middleware/aws_signers_v4'
+require 'elasticsearch'
 
 # TODO - put this somewhere else?
 MAILDIRS = %w{ inbound uvlist wp_posts wp_dailyuv }
@@ -76,11 +78,42 @@ namespace :refresh_database do
     end
   end
 
-  desc 'Reindex sphinx'
+  desc 'Restore elasticsearch index'
   task :reindex do
-    on roles(app_server_roles) do
-      execute ". /etc/profile && cd #{deploy_to}/current && ./lib/indexing/full_index.sh"
+    source_es =
+      Elasticsearch::Client.new(
+      url: fetch(:source_es_url),
+      transport_options: {request: {timeout: 900}},
+      retry_on_failure: true # https://github.com/ankane/searchkick/issues/351
+    ) do |f|
+      f.request :aws_signers_v4, {
+                  credentials: Aws::Credentials.new(ENV["AWS_ACCESS_KEY_ID"], ENV["AWS_SECRET_ACCESS_KEY"]),
+                  service_name: "es",
+                  region: "us-east-1"
+                }
     end
+    dest_es =
+      Elasticsearch::Client.new(
+      url: fetch(:dest_es_url),
+      transport_options: {request: {timeout: 900}},
+      retry_on_failure: true # https://github.com/ankane/searchkick/issues/351
+    ) do |f|
+      f.request :aws_signers_v4, {
+                  credentials: Aws::Credentials.new(ENV["AWS_ACCESS_KEY_ID"], ENV["AWS_SECRET_ACCESS_KEY"]),
+                  service_name: "es",
+                  region: "us-east-1"
+                }
+    end
+
+    snapshot_name = "refresh-#{Time.new.to_i}"
+
+    puts "creating snapshot #{snapshot_name}"
+    source_es.snapshot.create repository: fetch(:es_repository), snapshot: snapshot_name, wait_for_completion: true
+    puts "deleting existing indices"
+    # AWS doesn't support closing
+    dest_es.indices.delete index: dest_es.indices.get_aliases.keys
+    puts "restoring snapshot #{snapshot_name}"
+    dest_es.snapshot.restore repository: fetch(:es_repository), snapshot: snapshot_name
   end
 
   desc 'Restart ember front-end'

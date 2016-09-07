@@ -8,6 +8,9 @@ set :source_database, 'knotweed'
 set :dest_database, 'knotweed'
 set :dsp_endpoint_hostname, 'stage-dsp.subtext.org'
 set :site_endpoint, 'http://stage-consumer.subtext.org'
+set :source_es_url, 'https://search-prod-000-phtppggkgrtbom2xy5o2eanpt4.us-east-1.es.amazonaws.com'
+set :dest_es_url, 'https://search-stage-000-7l3qtwyg34frohtcurnj6p3lue.us-east-1.es.amazonaws.com'
+set :es_repository, 'subtext-es-snapshots'
 server 'stage-web.subtext.org', roles: %w{web app db}, primary: true, user: 'deploy'
 server 'test-dsp.subtext.org', roles: %w{source_dsp}, primary: false, user: 'dsp', no_release: true
 server 'stage-dsp.subtext.org', roles: %w{dest_dsp}, primary: false, user: 'dsp', no_release: true
