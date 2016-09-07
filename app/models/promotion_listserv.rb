@@ -28,7 +28,7 @@ class PromotionListserv < ActiveRecord::Base
     if listserv.present? and listserv.active and content.authoremail.present?
       p = Promotion.create content: content
       p.promotable = PromotionListserv.new listserv_id: listserv.id
-      p.save
+      p.save!
 
       # send content emails
       listserv.send_content_to_listserv(content, consumer_app)
@@ -60,8 +60,9 @@ class PromotionListserv < ActiveRecord::Base
     listservs.each do |l|
       l.add_listserv_location_to_content(content) 
       # create PromotionListserv records
-      p = Promotion.create content: content
-      p.promotable = PromotionListserv.create listserv_id: l.id, sent_at: sent_time
+      p = Promotion.new content: content
+      p.promotable = PromotionListserv.create!(listserv_id: l.id, sent_at: sent_time)
+      p.save!
       promotion_listservs << p
     end
 
