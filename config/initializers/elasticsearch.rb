@@ -8,7 +8,7 @@ Searchkick.client = Elasticsearch::Client.new(
 ) do |f|
   # we don't want to attempt to sign requests to our local elasticsearch instance on dev
   unless ENV["ELASTICSEARCH_URL"].present? and ENV["ELASTICSEARCH_URL"].include? 'localhost'
-    if ENV["ELASTICSEARCH_URL"].include? 'es.amazonaws.com'
+    if ENV["ELASTICSEARCH_URL"].present? and ENV["ELASTICSEARCH_URL"].include? 'es.amazonaws.com'
       f.request :aws_signers_v4, {
         credentials: Aws::Credentials.new(ENV["AWS_ACCESS_KEY_ID"], ENV["AWS_SECRET_ACCESS_KEY"]),
         service_name: "es",
