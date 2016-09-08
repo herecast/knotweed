@@ -18,10 +18,6 @@ dependencies:
     - if [[ -e ~/docker/es.tar ]]; then docker load -i ~/docker/es.tar; fi
     - docker run -d -p 9200:9200 elasticsearch:2.3
     - mkdir -p ~/docker; docker save elasticsearch:2.3 > ~/docker/es.tar
-  post:
-    - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
-    - docker build -t 465559955196.dkr.ecr.us-east-1.amazonaws.com/knotweed:$CIRCLE_SHA1 .
-    - mkdir -p ~/docker; docker save 465559955196.dkr.ecr.us-east-1.amazonaws.com/knotweed:$CIRCLE_SHA1 > ~/docker/image.tar
 
 test:
   post:
