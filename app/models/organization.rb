@@ -21,6 +21,10 @@
 #  pay_rate_in_cents     :integer(8)
 #  profile_title         :string
 #  pay_directly          :boolean
+#  can_publish_events    :boolean         default(FALSE)
+#  can_publish_market    :boolean         default(FALSE)
+#  can_publish_talk      :boolean         default(FALSE)
+#  can_publish_ads       :boolean         default(FALSE)
 #
 
 class Organization < ActiveRecord::Base
@@ -62,7 +66,9 @@ class Organization < ActiveRecord::Base
                   :website, :notes, :images_attributes, :parent_id, :location_ids,
                   :remote_logo_url, :contact_ids, :org_type, :consumer_app_ids,
                   :can_publish_news, :subscribe_url, :description,
-                  :banner_ad_override, :pay_rate_in_cents, :profile_title, :pay_directly
+                  :banner_ad_override, :pay_rate_in_cents, :profile_title, :pay_directly,
+                  :can_publish_events, :can_publish_market, :can_publish_talk,
+                  :can_publish_ads
 
   mount_uploader :logo, ImageUploader
 

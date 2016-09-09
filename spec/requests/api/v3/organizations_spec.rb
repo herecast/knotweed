@@ -17,7 +17,11 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           business_profile_id: a_kind_of(Fixnum).or(be_nil),
           description: organization.description,
           org_type: organization.org_type,
-          can_edit: boolean
+          can_edit: boolean,
+          can_publish_events: organization.can_publish_events,
+          can_publish_market: organization.can_publish_market,
+          can_publish_talk: organization.can_publish_talk,
+          can_publish_ads: organization.can_publish_ads,
         }
       )
     end

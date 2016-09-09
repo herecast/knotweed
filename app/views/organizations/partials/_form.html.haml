@@ -41,12 +41,16 @@
             = f.association :consumer_apps, input_html: { class: "chosen-select input-block-level" }
             = f.association :parent, collection: Organization.where.not(id: @organization.id), label: "Parent Organization (Syndication)",
               input_html: { class: "input-block-level chosen-select-single-deselect" }, include_blank: true
-            = f.input :can_publish_news, input_html: { class: 'input-block-level' }
             = f.input :subscribe_url, input_html: { class: 'input-block-level' }
             = f.input :banner_ad_override
           .span7
             = f.input :website, input_html: { class: "input-block-level" }
             = f.input :notes, input_html: { class: "input-block-level", rows: 10 } 
+            = f.input :can_publish_news, input_html: { class: 'input-block-level' }
+            = f.input :can_publish_events, input_html: { class: 'input-block-level' }
+            = f.input :can_publish_market, input_html: { class: 'input-block-level' }
+            = f.input :can_publish_talk, input_html: { class: 'input-block-level' }
+            = f.input :can_publish_ads, input_html: { class: 'input-block-level' }
       .tab-pane.form-horizontal#profile
         - if @organization.org_type != 'Business'
           .row-fluid
