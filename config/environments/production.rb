@@ -32,7 +32,18 @@ Knotweed::Application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
 
+
+  if ENV.fetch('LOG_STDOUT', false)
+    config.logger = Logger.new(STDOUT)
+  end
+  config.lograge.enabled = true
+  config.lograge.formatter = Lograge::Formatters::Json.new
   config.log_level = :info
+  if ENV.fetch('STACK_NAME', nil)
+    config.lograge.custom_options = lambda do |event|
+      {:stack_name => ENV['STACK_NAME']}
+    end
+  end
 
   # Prepend all log lines with the following tags
   # config.log_tags = [ :subdomain, :uuid ]
