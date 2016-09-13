@@ -1,0 +1,44 @@
+.span12.box.bordered-box.blue-border
+  .box-header.blue-background
+    .title
+      %i.icon.icon-envelope
+      Received Email (#{@received_email.id})
+  .box-content
+    .row-fluid
+      .span6
+        %dl
+          %dt File URI
+          %dd= @received_email.file_uri
+
+          %dt Message ID
+          %dd= @received_email.message_id
+
+          %dt Processed
+          %dd= I18n.l @received_email.processed_at if @received_email.processed_at?
+
+          %dt Received
+          %dd= I18n.l @received_email.created_at
+      .span6
+        %dl
+          %dt To
+          %dd= @received_email.to
+
+          %dt From
+          %dd= @received_email.from
+
+          %dt Purpose
+          %dd= @received_email.purpose
+
+
+          %dt Record
+          %dd #{@received_email.record_type}/#{@received_email.record_id}
+
+    %h4=@received_email.subject
+    %div.body
+      - unless params[:view_body].present?
+        = link_to "View Full Email Body", received_email_path(view_body: 1), class: 'btn btn-mini'
+      - else
+        %pre= @received_email.body
+
+    .form-actions
+      = link_to 'View All', received_emails_path, class: 'btn btn-default'

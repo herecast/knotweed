@@ -842,6 +842,14 @@ describe Content, :type => :model do
       end
     end
 
+    # category_override was removed from org.  make sure this souldnt be updated
+    # to something else.
+    #
+    # it "should use the organization's category_override if that is set" do
+    #   @content.organization.update_attribute :category_override, "Test Category"
+    #   expect(@content.to_xml.include?("Test Category")).to be_truthy
+    # end
+
     it "should use the category-mapping instead of source_category if available" do
       cat = FactoryGirl.create(:category)
       @content.update_attribute :source_category, cat.name
@@ -877,9 +885,17 @@ describe Content, :type => :model do
 
     describe "#export_pre_pipeline_xml" do
       before do
-        stub_request(:post, "http://#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPrePipeline").
-          to_return(:status => 200,
-                    :body => File.open('spec/fixtures/pre_pipeline_output.xml', 'r').readlines.join(),
+        stub_request(:post, "http://#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPrePipeline").with(basic_auth: [
+          Figaro.env.ontotext_api_username,
+          Figaro.env.ontotext_api_password
+        ]).to_return(:status => 200,
+                     :body => File.open('spec/fixtures/pre_pipeline_output.xml', 'r').readlines.join(),
+                     :headers => {})
+        stub_request(:post, "http://#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPostPipeline").with(basic_auth: [
+          Figaro.env.ontotext_api_username,
+          Figaro.env.ontotext_api_password
+        ]).to_return(:status => 200, 
+                    :body => File.open('spec/fixtures/post_pipeline_output.xml', 'r').readlines.join(),
                     :headers => {})
       end
 
@@ -905,8 +921,10 @@ describe Content, :type => :model do
 
     describe "postpipeline xml" do
       before do
-        stub_request(:post, "http://#{ENV['ONTOTEXT_API_USERNAME']}:#{ENV['ONTOTEXT_API_PASSWORD']}@#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPostPipeline").
-          to_return(:status => 200,
+        stub_request(:post, "http://#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPostPipeline").with(basic_auth: [
+          Figaro.env.ontotext_api_username,
+          Figaro.env.ontotext_api_password
+        ]).to_return(:status => 200, 
                     :body => File.open('spec/fixtures/post_pipeline_output.xml', 'r').readlines.join(),
                     :headers => {})
       end

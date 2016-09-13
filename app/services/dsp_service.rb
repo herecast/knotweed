@@ -4,7 +4,7 @@
 module DspService
   include HTTParty
   extend self
-  
+
   # set debug_output based on environment
   def set_debug_output
     unless Rails.env.production?
@@ -269,5 +269,5 @@ module DspService
 
     sparql.update(query, { endpoint: repo.graphdb_endpoint + "/statements" })
     graph
-  end  
+  end
 end

@@ -30,9 +30,14 @@ class PromotionListserv < ActiveRecord::Base
       p.promotable = PromotionListserv.new listserv_id: listserv.id
       p.save!
 
-      # send content emails
-      listserv.send_content_to_listserv(content, consumer_app)
-      p.promotable.update_attribute :sent_at, DateTime.current
+      listserv.add_listserv_location_to_content(content)
+
+      # send content emails if the listserv is a Vital Communities managed list
+      # otherwise, we handle mailing it ourself, elsewhere.
+      if listserv.is_vc_list?
+        listserv.send_content_to_listserv(content, consumer_app)
+        p.promotable.update_attribute :sent_at, DateTime.current
+      end
 
       # return promotable
       p.promotable
@@ -51,9 +56,12 @@ class PromotionListserv < ActiveRecord::Base
     return false unless content.authoremail.present? and listserv_ids.present? # need authoremail to send to lists
     listservs = Listserv.where(id: listserv_ids, active: true)
 
-    outbound_mail = ReversePublisher.mail_content_to_listservs(content, listservs.to_a, consumer_app)
-    outbound_mail.deliver_later
-    sent_time = DateTime.current
+    vc_lists = listservs.select{ |l| l.is_vc_list? }
+    if vc_lists.present?
+      outbound_mail = ReversePublisher.mail_content_to_listservs(content, vc_lists, consumer_app)
+      outbound_mail.deliver_later
+      sent_time = DateTime.current
+    end
 
     promotion_listservs = []
 
@@ -66,7 +74,8 @@ class PromotionListserv < ActiveRecord::Base
       promotion_listservs << p
     end
 
-    ReversePublisher.send_copy_to_sender_from_dailyuv(content, outbound_mail.text_part.body.to_s, outbound_mail.html_part.body.to_s).deliver_later
+    # don't send confirmation unless they sent it to a Vital Communities list
+    ReversePublisher.send_copy_to_sender_from_dailyuv(content, outbound_mail.text_part.body.to_s, outbound_mail.html_part.body.to_s).deliver_later if vc_lists.present?
 
     promotion_listservs
   end

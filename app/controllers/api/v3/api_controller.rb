@@ -64,6 +64,15 @@ module Api
         head :not_found
       end
 
+      def meta_pagination_for(scope)
+        {
+          total_count: scope.total_count,
+          page: scope.current_page,
+          per_page: scope.size,
+          page_count: scope.total_pages
+        }
+      end
+
       def excluded_user_agents
         ["Prerender"]
       end

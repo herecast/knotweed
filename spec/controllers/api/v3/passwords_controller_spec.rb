@@ -20,6 +20,16 @@ describe Api::V3::PasswordsController, :type => :controller do
         @user.reload
         expect(@user.reset_password_token.present?).to be true
       end
+
+      context 'with return_url' do
+        subject { post :create, user: { email: @user.email }, return_url: 'http://test.com' }
+
+        it 'should send email with link including return_url ' do
+          subject
+          last_email = ActionMailer::Base.deliveries.last
+          expect(last_email.body.encoded).to include('http://test.com')
+        end
+      end
     end
 
   end
@@ -38,6 +48,10 @@ describe Api::V3::PasswordsController, :type => :controller do
       it 'should update the user\'s password' do
         expect(@user.reload.encrypted_password).not_to eq(@orig_pass)
       end
+
+      it 'should respond 204 no content' do
+        expect(response.status).to eql 204
+      end
     end
 
     context 'with invalid token' do
@@ -48,8 +62,8 @@ describe Api::V3::PasswordsController, :type => :controller do
         expect(@user.reload.encrypted_password).to eq(@orig_pass)
       end
 
-      it 'should respond with 404' do
-        expect(response.code).to eq('404')
+      it 'should respond with 422' do
+        expect(response.code).to eq('422')
       end
     end
 

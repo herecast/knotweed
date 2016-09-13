@@ -1,10 +1,17 @@
-mysql:
-  image: "mysql:5.5"
-  ports:
-    - '3306:3306'
-  environment:
-    - "MYSQL_ROOT_PASSWORD=toor"
-redis:
-  image: "redis"
-  ports:
-    - '6379:6379'
+version: '2'
+services:
+  postgresql:
+    image: "postgres:9.5"
+    ports:
+      - '5432:5432'
+    environment:
+      - "POSTGRES_PASSWORD=toor"
+      - "POSTGRES_DB=knotweed_dev"
+  redis:
+    image: "redis"
+    ports:
+      - '6379:6379'
+  elasticsearch:
+    image: "elasticsearch"
+    ports:
+      - "9200:9200"

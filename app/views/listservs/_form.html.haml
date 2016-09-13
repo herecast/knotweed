@@ -1,0 +1,33 @@
+= simple_form_for @listserv, html: {class: 'form form-horizontal'} do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :name
+    = f.input :digest_description
+    = f.input :import_name
+    = f.input :reverse_publish_email, hint: "This can't be populated if it is a Subtext managed listserv."
+    = f.input :active, as: :boolean
+    .form-actions
+      = f.button :submit, class: 'btn btn-success'
+    %fieldset
+      %legend Subtext Managed Listserv
+      = f.input :subscribe_email, hint: "These fields can't be populated if you are using `reverse_publish_email` (and it is a Vital Communities List)"
+      = f.input :unsubscribe_email
+      = f.input :post_email
+      = f.input :mc_list_id
+      .form-actions
+        = f.button :submit, class: 'btn btn-success'
+      %fieldset
+        %legend Digest Settings
+        = f.input :send_digest
+        = f.input :digest_send_time, prompt: true, ampm: true, hint: "In your timezone (#{Time.zone.name})"
+        = f.input :timezone, as: :time_zone, priority: /US/, hint: "The timezone digest receivers would typically be in."
+        = f.input :digest_send_day, collection: @digest_days, hint: "If this is a weekely digest, select the day of the week to send.  Leave blank if daily"
+        = f.input :digest_reply_to
+        = f.input :digest_query, input_html: { class: 'span12' } , hint: "This query will be used to generate the contents for the listserv"
+        = f.input :digest_header, as: :summernote
+        = f.input :digest_footer, as: :summernote
+        = f.input :template
+        = f.input :banner_ad_override_id, as: :string
+        .form-actions
+          = f.button :submit, class: 'btn btn-success'

@@ -1,0 +1,44 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-envelope
+        Listserv Content #{@listserv_content.id}
+    .box-content
+      .row-fluid
+        %dl.span6
+          %dt Key
+          %dd= @listserv_content.key
+          %dt Sender
+          %dd
+            = @listserv_content.sender_email
+            - if @listserv_content.user
+              %p
+                %strong User:
+                = link_to @listserv_content.user.name, @listserv_content.user
+
+          %dt Listserv
+          %dd= link_to @listserv_content.listserv.name, @listserv_content.listserv
+          %dt Category
+          %dd= @listserv_content.content_category.try :name
+          %dt Subscription
+          %dd
+            - if @listserv_content.subscription
+              = link_to @listserv_content.subscription.key, edit_subscription_path(@listserv_content.subscription)
+        %dl.span6
+          %dt Created
+          %dd= @listserv_content.created_at
+          %dt Verified
+          %dd= @listserv_content.verified_at
+          %dt Verification Email Sent
+          %dd= @listserv_content.verification_email_sent_at
+          %dt Content Record
+          %dd
+            - if @listserv_content.content
+              = link_to @listserv_content.content.content_type, @listserv_content.content
+      .content
+        %h4=@listserv_content.subject
+        %pre=@listserv_content.body
+      .form-actions
+        = link_to 'Edit', edit_listserv_content_path(@listserv_content), class: 'btn btn-primary'
+        = link_to 'All', listserv_contents_path, class: 'btn btn-default'

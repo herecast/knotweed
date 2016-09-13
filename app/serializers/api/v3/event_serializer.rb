@@ -6,9 +6,10 @@ module Api
         :venue_name, :venue_address, :venue_locate_name, :venue_url,
         :venue_city, :venue_state, :venue_id, :venue_latitude, :venue_longitude,
         :venue_locate_name, :venue_zip,
-        :event_url, :schedules,
+        :event_url, :schedules, :created_at, :updated_at,
         :registration_deadline, :registration_url,
         :registration_phone, :registration_email,
+        :content_id,
         :first_instance_id, :category, :owner_name, :can_edit
 
       # this is funky but without it, active model serializer tries to use the URL helper
@@ -23,6 +24,10 @@ module Api
 
       def content
         object.content.sanitized_content
+      end
+
+      def content_id
+        object.content.id
       end
 
       def image_url

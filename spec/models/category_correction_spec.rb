@@ -42,7 +42,10 @@ describe CategoryCorrection, :type => :model do
       @content = FactoryGirl.create :content
       @category_correction = FactoryGirl.create :category_correction, content_id: @content.id
       @category_correction.content.repositories << FactoryGirl.create(:repository)
-      stub_request(:any, "http://KW05055:knotweed05055@23.92.16.168:8081/openrdf-sesame/repositories/subtext/extract")
+      stub_request(:any, "http://23.92.16.168:8081/openrdf-sesame/repositories/subtext/extract").with(basic_auth: [
+          Figaro.env.ontotext_api_username,
+          Figaro.env.ontotext_api_password
+        ])
     end
 
     it "publishes to dsp" do

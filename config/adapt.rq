@@ -24,3 +24,4 @@ UPDATE locations SET consumer_active = true where city = 'Subtextland';
 -- set VCLAB listserv as inactive/active
 UPDATE listservs set active = false;
 UPDATE listservs set active = true WHERE reverse_publish_email = 'subtext@lists.vitalcommunities.org';
+UPDATE listservs set send_digest = false, mc_list_id = null;

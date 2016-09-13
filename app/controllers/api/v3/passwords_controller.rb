@@ -22,12 +22,12 @@ module Api
        def update
          self.resource = resource_class.reset_password_by_token(resource_params)
          yield resource if block_given?
-    
+
          if resource.errors.empty?
            resource.unlock_access! if unlockable?(resource)
-           render json: {}, status: 200
+           head :no_content
          else
-           render json: { errors: resource.errors.full_messages }, status: 404
+           render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
          end
        end
 
@@ -38,7 +38,12 @@ module Api
            ConsumerApp.current = ConsumerApp.find_by_uri(request.headers['Consumer-App-Uri'])
          end
        end
-     
+
+       def resource_params
+         super.merge({
+           return_url: params[:return_url]
+         })
+       end
     end
   end
 end

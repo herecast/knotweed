@@ -26,6 +26,7 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     authorize! :update, @user, :message => 'Not authorized as an administrator.'
     @user.roles.clear
+    @user.skip_reconfirmation!
     params[:user].delete(:password) if params[:user][:password].blank?
     if @user.update_attributes(user_params)
       process_user_roles

@@ -211,7 +211,7 @@ describe Api::V3::TalkController, :type => :controller do
 
       context 'with listserv_id' do
         before do
-          @listserv = FactoryGirl.create :listserv
+          @listserv = FactoryGirl.create :vc_listserv
           @basic_attrs[:listserv_id] = @listserv.id
         end
 
@@ -219,6 +219,11 @@ describe Api::V3::TalkController, :type => :controller do
         it { expect{subject}.to change{Promotion.count}.by(1) }
         # triggers mail to both listserv and the user
         it { expect{subject}.to change{ActiveJob::Base.queue_adapter.enqueued_jobs.size}.by(2) }
+
+        it 'creates content associated with users home community when enhancing though the listserv' do
+          expect{subject}.to change { Content.count}.by(1)
+          expect(assigns(:talk).content.location_ids).to eq([@user.location_id])
+        end
       end
 
       context 'with consumer_app / repository' do

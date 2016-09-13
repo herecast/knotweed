@@ -6,7 +6,7 @@ module Api
         :venue_url, :venue_latitude, :venue_longitude, :event_url, :venue_locate_name,
         :admin_content_url, :content, :can_edit, :title, :comment_count,:presenter_name,
         :registration_deadline, :registration_url, :registration_phone,
-        :registration_email, :ical_url, :category, :updated_at
+        :registration_email, :ical_url, :created_at, :category, :updated_at
 
       SHARED_EVENT_ATTRIBUTES = [:cost, :cost_type, :contact_phone, :contact_email, :event_url]
 

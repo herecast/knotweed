@@ -4,8 +4,19 @@ module Api
 
       def index
         expires_in 1.hours, public: true
-        @listservs = Listserv.all
+
+        if params[:ids].present?
+          @listservs = Listserv.where(id: params[:ids])
+        else
+          @listservs = Listserv.all
+        end
+
         render json: @listservs, arrayserializer: ListservSerializer
+      end
+
+      def show
+        @listserv = Listserv.find(params[:id])
+        render json: @listserv, serializer: ListservSerializer
       end
 
     end

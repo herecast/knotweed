@@ -52,7 +52,7 @@ module Api
           schedule_data = params[:event].delete :schedules
           schedules = schedule_data.map{ |s| Schedule.build_from_ux_for_event(s, @event.id) }
           event_hash = process_event_params(params[:event])
-          
+
           if @event.update_with_schedules(event_hash, schedules)
             # reverse publish to specified listservs
             PromotionListserv.create_multiple_from_content(@event.content, listserv_ids, @requesting_app)
@@ -85,7 +85,7 @@ module Api
 
         schedule_data = params[:event].delete :schedules
         schedules = schedule_data.map{ |s| Schedule.build_from_ux_for_event(s) }
-        
+
         event_hash = process_event_params(params[:event])
 
         @event = Event.new(event_hash)

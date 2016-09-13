@@ -1,0 +1,55 @@
+Return-Path: <jordan.metzmeier@subtext.org>
+Received: from mail-qg0-f65.google.com (mail-qg0-f65.google.com [209.85.192.65])
+ by inbound-smtp.us-east-1.amazonaws.com with SMTP id 5tce79adofo7opdf5g3he4gtsk26oi291mb08eg1
+ for subscribe@testsmtp.subtextdev.org;
+ Fri, 13 May 2016 20:24:04 +0000 (UTC)
+X-SES-Spam-Verdict: PASS
+X-SES-Virus-Verdict: PASS
+Received-SPF: pass (spfCheck: domain of subtext.org designates 209.85.192.65 as permitted sender) client-ip=209.85.192.65; envelope-from=jordan.metzmeier@subtext.org; helo=mail-qg0-f65.google.com;
+Authentication-Results: amazonses.com;
+ spf=pass (spfCheck: domain of subtext.org designates 209.85.192.65 as permitted sender) client-ip=209.85.192.65; envelope-from=jordan.metzmeier@subtext.org; helo=mail-qg0-f65.google.com;
+ dkim=pass header.i=@subtext-org.20150623.gappssmtp.com;
+Received: by mail-qg0-f65.google.com with SMTP id b14so8123767qge.2
+        for <subscribe@testsmtp.subtextdev.org>; Fri, 13 May 2016 13:24:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=subtext-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:date:message-id:subject:from:to;
+        bh=7LqADJqVElOqSJOao1ZPWiyPj/UauhDT9DS2WdF+X0s=;
+        b=xe6IPivBDgqUpjeT7EPLB3NG9jnRFYhSE7rc4e8y9Ixn066EtTihcyN1nTDqeQg7DF
+         2yHmsv94/1RLDEgGM3ajz2UJwvpcQO5zm9B/e2+PeA+FwoSrqyINNcFqfVSh+Rvrd5b9
+         tpGkOeIGUrHP8RXngwJI5+jlUihkWV9c2/+4IlbUe8Nz6w7L+jqcT4pqTDCmfZnhCrct
+         /yZg+JnTZXRFKXk9Nk7bLBoQwNsJ9cKoLFkXu5EL1Ga/NvYkDH9ZTZzJTUUdOS4zXK2O
+         mYSzNJBY8gUvgCQr8uVfo9eRIaV2Mov9myaaDfBR9tVTaNRT9jiVfyQI/h8UIJ1Jznsb
+         wu1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=7LqADJqVElOqSJOao1ZPWiyPj/UauhDT9DS2WdF+X0s=;
+        b=D3Oxg2OxT9FpAOIwhElk+rFzhyGmmH1CafXPy1JlS5BF0SIaz4NZttPEoEbqNampv0
+         NFyjpxUc0w58W7f3nVnWjUI7zVSLd9Bs19AJvNzDWuNduPsO0jn+P5xagt8zYnDWc8Pm
+         yDxqnH7yMUQLxPbExwCRaLRiY8wCsuC4Gr2JDPFWddDeP/nnry6OAxJQMkWeTOFKbmoD
+         2cPq6CYj/sTTrI8Ao9TKoD8zFclK6sI0K/W1mWi0MwI/woitqnrNs8hI8EK8tUeJ8Teg
+         9nd6AdLMkgKqks20GTYvceK97V1svenYjPmlb9Iu0BE6Eo4Qnsath2oK76SgUELM7+YF
+         gYoQ==
+X-Gm-Message-State: AOPr4FWPZi9AQY2CYGV+Tv8jH02jBRc3hrAdZVw2V6pUUrZDbxnD8JtD52YEyS2BIeek3dmwfv8wnHlvwgeLPA==
+MIME-Version: 1.0
+X-Received: by 10.140.252.10 with SMTP id x10mr18394544qhc.81.1463171044149;
+ Fri, 13 May 2016 13:24:04 -0700 (PDT)
+Received: by 10.55.115.132 with HTTP; Fri, 13 May 2016 13:24:04 -0700 (PDT)
+X-Originating-IP: [2601:484:c301:a600:468a:5bff:fe9c:bea3]
+Date: Fri, 13 May 2016 15:24:04 -0500
+Message-ID: <CAEhfJmsv++nWFRw0vA7P3Er_1u7EYp4ccnyM6Cicz2y50T536Q@mail.gmail.com>
+Subject: test
+From: Jordan Metzmeier <jordan.metzmeier@subtext.org>
+To: subscribe@testsmtp.subtextdev.org
+Content-Type: multipart/alternative; boundary=001a113abda0554c9c0532bf0e88
+
+--001a113abda0554c9c0532bf0e88
+Content-Type: text/plain; charset=UTF-8
+
+
+--001a113abda0554c9c0532bf0e88
+Content-Type: text/html; charset=UTF-8
+
+
+--001a113abda0554c9c0532bf0e88--

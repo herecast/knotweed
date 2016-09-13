@@ -1,0 +1,184 @@
+<% unless  @subscription.user_id? %>
+
+  <table style="margin-bottom: 20px;border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+    <tbody>
+      <tr style="vertical-align: top">
+        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;">
+          <div style="color:#555555;line-height:120%;">
+            <div style="font-size:12px;line-height:14px;color:#555555;text-align:left;">
+              <div class="txtTinyMce-wrapper" style="font-size: 12px; line-height: 14px; ">
+                <p style="margin: 0;font-size: 18px;line-height: 21px;text-align: center">
+                  <span style="font-size: 26px; line-height: 31px;">
+                    <strong>
+                      <span style="line-height: 24px; font-size: 26px;">Join the <%= @subscription.listserv.name %></span>
+                    </strong>
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+    <tbody>
+      <tr style="vertical-align: top">
+        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 5px;padding-right: 10px;padding-bottom: 15px;padding-left: 10px">
+          <div style="color:#555555;line-height:120%;">
+            <div style="font-size:12px;line-height:14px;color:#555555;text-align:left;">
+              <div class="txtTinyMce-wrapper" style="font-size:12px; line-height:14px;">
+                <div class="txtTinyMce-wrapper" style="font-size: 12px; line-height: 14px;">
+                  <div class="txtTinyMce-wrapper" style="font-size: 12px; line-height: 14px;">
+                    <p style="margin: 0;font-size: 14px;line-height: 16px;text-align: center">
+                      <span style="font-size: 16px; line-height: 19px;">For your privacy and security - make your subscription official by verifying your email on dailyUV</span><br></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tbody>
+    <tr style="vertical-align: top">
+      <td class="button-container" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 15px;padding-right: 10px;padding-bottom: 15px;padding-left: 10px" align="center">
+        <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+          <tbody>
+            <tr style="vertical-align: top">
+              <td class="button" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" width="100%" align="center" valign="middle">
+                  <div
+                    style="display: inline-block;
+                    border-radius: 5px;
+                    -webkit-border-radius: 5px;
+                    -moz-border-radius: 5px;
+                    max-width: 60%;
+                    width: 100%;
+                    border-top: 0px solid transparent;
+                    border-right: 0px solid transparent;
+                    border-bottom: 0px solid transparent;
+                    border-left: 0px solid transparent;"
+                    align="center">
+
+                    <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;height: 50" width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tbody>
+                        <tr style="vertical-align: top">
+                          <td
+                            style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;border-radius: 5px;                   -webkit-border-radius: 5px;                   -moz-border-radius: 5px;                  color: #ffffff;                  background-color: #08AE66;                  padding-top: 5px;                   padding-right: 0px;                  padding-bottom: 5px;                  padding-left: 0px;                  text-align: center"
+                            valign="middle">
+                            <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{@subscription.key}/subscribe", style: "display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;color: #ffffff" do %>
+                              <span style="font-size:16px;line-height:32px;">
+                                  <span style="color: #ffffff; font-size: 20px; line-height: 40px;" data-mce-style="font-size: 20px; line-height: 44px;">
+                                    Complete Subscription
+                                  </span>
+                              </span>
+                            <% end %>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<% else %>
+
+  <table style="margin-bottom: 20px;border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+    <tbody>
+      <tr style="vertical-align: top">
+        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;">
+          <div style="color:#555555;line-height:120%;">
+            <div style="font-size:12px;line-height:14px;color:#555555;text-align:left;">
+                <p style="margin: 0;text-align: center">
+                    <strong>
+                      <span style="line-height: 18px; font-size: 18px;">
+                        Manage your <%= @listserv.name %> subscription through your dailyUV account!
+                      </span>
+                    </strong>
+                </p>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tbody>
+      <tr style="vertical-align: top">
+        <td class="button-container" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 15px;padding-right: 10px;padding-bottom: 10px;padding-left: 10px" align="center">
+          <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+            <tbody>
+              <tr style="vertical-align: top">
+                <td class="button" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" width="100%" align="center" valign="middle">
+                    <div
+                      style="display: inline-block;
+                      border-radius: 5px;
+                      -webkit-border-radius: 5px;
+                      -moz-border-radius: 5px;
+                      max-width: 60%;
+                      width: 100%;
+                      border-top: 0px solid transparent;
+                      border-right: 0px solid transparent;
+                      border-bottom: 0px solid transparent;
+                      border-left: 0px solid transparent;"
+                      align="center">
+
+                      <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;height: 50" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tbody>
+                          <tr style="vertical-align: top">
+                            <td
+                              style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;border-radius: 5px;                   -webkit-border-radius: 5px;                   -moz-border-radius: 5px;                  color: #ffffff;                  background-color: #08AE66;                  padding-top: 5px;                   padding-right: 0px;                  padding-bottom: 5px;                  padding-left: 0px;                  text-align: center"
+                              valign="middle">
+                              <!--<![endif]-->
+                              <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{@subscription.key}/subscribe", style: "display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;color: #ffffff" do %>
+                                <span style="font-size:16px;line-height:32px;">
+                                    <span style="color: #ffffff; font-size: 20px; line-height: 40px;" data-mce-style="font-size: 20px; line-height: 44px;">
+                                     Complete Subscription
+                                    </span>
+                                </span>
+                              <% end %>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+    <tbody>
+      <tr style="vertical-align: top">
+        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 5px;padding-right: 10px;padding-bottom: 15px;padding-left: 10px">
+          <div style="color:#555555;line-height:120%;">
+            <div style="font-size:12px;line-height:14px;color:#555555;text-align:left;">
+              <div class="txtTinyMce-wrapper" style="font-size:12px; line-height:14px;">
+                <div class="txtTinyMce-wrapper" style="font-size: 12px; line-height: 14px;">
+                  <div class="txtTinyMce-wrapper" style="font-size: 12px; line-height: 14px;">
+                    <p style="margin: 0;font-size: 14px;line-height: 16px;text-align: center">
+                      <span style="font-size: 16px; line-height: 19px;">For your privacy and security - make your subscription official by verifying your email on dailyUV</span><br></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+<% end %>

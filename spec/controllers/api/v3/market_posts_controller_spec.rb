@@ -348,9 +348,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
           api_authenticate user: @user, consumer_app: @consumer_app
         end
 
-        # because there are so many different external calls and behaviors here, 
-        # this is really difficult to test thoroughly, but mocking and checking
-        # that the external call is made tests the basics of it.
         it 'should call publish_to_dsp' do
           expect{subject}.to have_enqueued_job(PublishContentJob)
         end
@@ -419,6 +416,18 @@ describe Api::V3::MarketPostsController, :type => :controller do
       it 'should correctly set the my_town_only attribute' do
         subject
         expect(assigns(:market_post).content.my_town_only).to be true
+      end
+
+      context 'with listserv_id' do
+        before do
+          @listserv = FactoryGirl.create :vc_listserv
+          @basic_attrs[:listserv_id] = @listserv.id
+        end
+
+        it 'creates content associated with users home community when enhancing through the listserv' do
+          expect{subject}.to change{Content.count}.by(1)
+          expect(assigns(:market_post).content.location_ids).to eq([@user.location_id])
+        end
       end
 
       context 'with consumer_app / repository' do

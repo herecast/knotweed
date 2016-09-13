@@ -20,7 +20,6 @@
 #  confirmed_at           :datetime
 #  confirmation_sent_at   :datetime
 #  unconfirmed_email      :string(255)
-#  organization_id        :integer
 #  default_repository_id  :integer
 #  nda_agreed_at          :datetime
 #  agreed_to_nda          :boolean          default(FALSE)
@@ -35,6 +34,7 @@
 #  avatar                 :string(255)
 #  public_id              :string(255)
 #  skip_analytics         :boolean          default(FALSE)
+#  temp_password          :string(255)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

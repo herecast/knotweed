@@ -1,0 +1,18 @@
+= simple_form_for(@listserv_content, html: {class: 'form form-horizontal'}) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :key, input_html: {disabled: true}
+    = f.association :listserv
+    = f.input :user_id
+    = f.input :sender_name
+    = f.input :sender_email
+    = f.input :subject
+    = f.input :body, type: :textarea
+    = f.association :content_category
+    = f.input :content_id
+    = f.input :subscription_id
+    = f.input :verified_at, as: :datetime_picker
+
+  .form-actions
+    = f.button :submit, class: "btn btn-success"

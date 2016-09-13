@@ -3,7 +3,7 @@ module Api
     class NewsSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :image_url, :author_name, :author_id, :organization_name,
-        :organization_id, :published_at, :content
+        :organization_id, :published_at, :content, :created_at, :updated_at
 
       def image_url
         if object.images.present?

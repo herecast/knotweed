@@ -1,0 +1,74 @@
+<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr style="vertical-align: top">
+      <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-bottom: 0px;padding-left: 10px">
+        <p style="color:#555555;line-height: 31px; font-size: 26px;margin: 0;text-align: center">
+          <strong>
+            You're all set!
+          </strong>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr style="vertical-align: top">
+      <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 15px;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
+        <p style="margin: 0;font-size: 14px;line-height: 16px;text-align: center">
+          <span style="color: rgb(51, 51, 51); font-size: 16px; line-height: 19px;">
+            Your subscription to <%= @listserv.name %> is now managed through your dailyUV account. These accounts are now linked.
+          </span><br>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tbody>
+    <tr style="vertical-align: top">
+      <td class="button-container" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 15px;padding-right: 10px;padding-bottom: 10px;padding-left: 10px" align="center">
+        <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+          <tbody>
+            <tr style="vertical-align: top">
+              <td class="button" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" width="100%" align="center" valign="middle">
+                  <div
+                    style="display: inline-block;
+                    border-radius: 5px;
+                    -webkit-border-radius: 5px;
+                    -moz-border-radius: 5px;
+                    max-width: 60%;
+                    width: 100%;
+                    border-top: 0px solid transparent;
+                    border-right: 0px solid transparent;
+                    border-bottom: 0px solid transparent;
+                    border-left: 0px solid transparent;"
+                    align="center">
+
+                    <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;height: 50" width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tbody>
+                        <tr style="vertical-align: top">
+                          <td
+                            style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;border-radius: 5px;                   -webkit-border-radius: 5px;                   -moz-border-radius: 5px;                  color: #ffffff;                  background-color: #08AE66;                  padding-top: 5px;                   padding-right: 0px;                  padding-bottom: 5px;                  padding-left: 0px;                  text-align: center"
+                            valign="middle">
+                            <!--<![endif]-->
+                            <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard?user_id=#{@subscription.user_id}", user_id: @subscription.user_id, style: "display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;color: #ffffff" do %>
+                              <span style="color: #ffffff; font-size:20px;line-height:40px;">
+                                   Manage Subscriptions
+                              </span>
+                            <% end %>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+

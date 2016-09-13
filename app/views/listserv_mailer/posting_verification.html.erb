@@ -1,0 +1,193 @@
+<% content_for(:header) do %>
+<table style="margin-top: 20px; margin-bottom: 20px;border-spacing: 0;border-collapse: collapse;vertical-align: top;" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr style="vertical-align: top;background-color: #69C2F8;">
+      <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top; padding: 10px 10px 0 10px;">
+        <p style="line-height: 31px; font-size: 26px; color: #fff;;margin: 0;text-align: left">
+          <strong>
+            <%= @listserv.name.upcase %>
+          </strong>
+        </p>
+      </td>
+    </tr>
+    <tr style="vertical-align: top;background-color: #69C2F8;">
+      <td style="padding: 0 10px 10px 10px;">
+        <div style="font-size: 16px; line-height: 19px; color: #fff;">
+          a Vital Communities service delivered by dailyUV
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+  <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top; margin-bottom: 10px;" cellpadding="0" cellspacing="0" width="100%">
+    <tbody>
+      <tr style="vertical-align: top">
+        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 5px;padding-right: 10px;padding-bottom: 0px;padding-left: 10px">
+          <p style="margin: 0;font-size: 18px;line-height: 21px;text-align: center">
+            <span style="font-size: 26px; line-height: 31px;">
+              <strong>
+                "<%= @post.subject %>"
+              </strong>
+            </span>
+          </p>
+        </td>
+      </tr>
+      <tr style="vertical-align: top">
+        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 5px;padding-right: 10px;padding-bottom: 0px;padding-left: 10px">
+          <p style="margin: 0;text-align: center">
+            <span style="font-size: 16px; line-height: 19px;">
+              Your post to <%= @listserv.name %> isn't published yet!
+            </span>
+          </p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+<% end %>
+
+<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr style="vertical-align: top">
+      <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-left: 10px">
+        <p style="color:#555555;margin: 0;font-size: 18px;line-height: 21px;text-align: left;">
+          <span style="font-size: 18px;">
+            <strong>
+              We wanted to give you a chance to...
+            </strong>
+          </span>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr style="vertical-align: top">
+      <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 0px;padding-bottom: 10px;padding-left: 0px">
+        <div style="font-size:14px;line-height:16px;text-align:left;">
+          <ul style='color: rgb(51, 51, 51);'>
+            <li>EDIT your post before it goes live - fix those typos.</li>
+            <li>ADD photos to create a custom page on dailyUV - really quick!</li>
+            <li>get TOP placement in the digest - ALL FOR FREE</li>
+          </ul>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tbody>
+    <tr style="vertical-align: top">
+      <td class="button-container" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 15px;padding-right: 10px;padding-bottom: 10px;padding-left: 10px" align="center">
+
+        <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+          <tbody>
+            <tr style="vertical-align: top">
+              <td class="button" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" width="100%" align="center" valign="middle">
+                  <div
+                    style="display: inline-block;
+                    border-radius: 5px;
+                    -webkit-border-radius: 5px;
+                    -moz-border-radius: 5px;
+                    max-width: 60%;
+                    width: 100%;
+                    border-top: 0px solid transparent;
+                    border-right: 0px solid transparent;
+                    border-bottom: 0px solid transparent;
+                    border-left: 0px solid transparent;"
+                    align="center">
+
+                    <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;height: 50" width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tbody>
+                        <tr style="vertical-align: top">
+                          <td
+                            style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;border-radius: 5px;                   -webkit-border-radius: 5px;                   -moz-border-radius: 5px;                  color: #ffffff;                  background-color: #08AE66;                  padding-top: 5px;                   padding-right: 0px;                  padding-bottom: 5px;                  padding-left: 0px;                  text-align: center"
+                            valign="middle">
+                              <span style="font-size:16px;line-height:32px;">
+                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #ffffff; font-size: 20px; line-height: 40px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;" do %>
+                                    ENHANCE MY POST *
+                                <% end %>
+                              </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr style="vertical-align: top">
+      <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
+        <p style="margin: 0;font-size: 14px;line-height: 16px;text-align: center">
+          <span style="color: rgb(51, 51, 51); font-size: 14px; line-height: 16px;">
+            <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{@post.key}" do %>
+              No thanks - publish my post without changes.
+            <% end %> *
+          </span>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr style="vertical-align: top">
+      <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
+        <p style="margin: 0;font-size: 14px;line-height: 16px;text-align: center">
+          <span style="color: rgb(151, 151, 151); font-size: 14px; line-height: 16px;">
+            * By posting, I agree to subscribe to the <%= @listserv.name %> digest.
+          </span>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top; margin-top: 10px;" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr style="vertical-align: top">
+      <td style="border-collapse: collapse !important;vertical-align: top; width: 70%; font-size: 14px;">
+        <p style="color:#555555;margin: 0;font-size: 14px;line-height: 16px;text-align:left;margin-bottom: 0;">
+          <strong>
+              Sick of seeing this email every time you post?
+          </strong>
+        </p>
+        <p style='color:#555555;margin: 0;font-size: 14px;line-height: 16px;text-align: center;'>
+            - Save yourself time by starting on dailyUV
+        </p>
+      </td>
+      <td style="vertical-align: middle">
+        <div style="font-size:12px;line-height:20px;text-align:right;">
+              <span
+                style="display: inline-block;
+                border-radius: 5px;
+                -webkit-border-radius: 5px;
+                -moz-border-radius: 5px;
+                border-top: 0px solid transparent;
+                border-right: 0px solid transparent;
+                border-bottom: 0px solid transparent;
+                border-left: 0px solid transparent;
+                background-color: #69C2F8;
+                "><span style="font-size:16px;line-height:20px; padding: 5px 10px;">
+                  <a href="<%=ENV['LISTSERV_MARKETING_URL']%>" style="color: #ffffff; font-size: 16; line-height: 20px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;">
+                      Learn More
+                    </a>
+                </span>
+            </span>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

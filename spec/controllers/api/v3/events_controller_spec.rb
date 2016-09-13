@@ -274,5 +274,17 @@ describe Api::V3::EventsController, :type => :controller do
       expect(assigns(:event).venue).not_to eq(@venue)
       expect(assigns(:event).venue.name).to eq(with_venue_attrs[:venue][:name])
     end
+
+    context 'with listserv_id' do
+      before do
+        @listserv = FactoryGirl.create :vc_listserv
+        @event_attrs[:listserv_ids] = @listserv.id
+      end
+
+      it 'creates content associated with users home community when enhancing though the listserv' do
+        expect{subject}.to change{Content.count}.by(1)
+        expect(assigns(:event).content.location_ids).to eq([@current_user.location_id])
+      end
+    end
   end
 end

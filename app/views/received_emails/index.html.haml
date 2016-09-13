@@ -1,0 +1,31 @@
+%h1 Received Emails
+
+%table.table.table-striped.table-condensed
+  %caption= page_entries_info @received_emails
+  %thead
+    %tr
+      %th Purpose
+      %th From
+      %th Record
+      %th Result
+      %th Processed
+      %th Received
+      %th
+
+  %tbody
+    - @received_emails.each do |re|
+      %tr
+        %td= re.purpose || 'Not processed'
+        %td= re.from
+        %td
+          - if re.record_type?
+            #{re.record_type}/#{re.record_id}
+        %td= re.result
+        %td= I18n.l re.processed_at if re.processed_at?
+        %td= I18n.l re.created_at
+        %td
+          = link_to 'Details', re, class: 'btn btn-mini'
+  %tfoot
+    %tr
+      %td{colspan: 7}
+        = paginate @received_emails

@@ -337,6 +337,21 @@ class Content < ActiveRecord::Base
     self.content_category = cat
   end
 
+  def content_type
+    prefix = root_content_category.try(:name)
+    # convert talk_of_the_town to talk
+    prefix = 'talk' if prefix == 'talk_of_the_town'
+    prefix.to_sym
+  end
+
+  def content_type=t
+    cat_name = t.to_s
+    cat_name = 'talk' if t.to_s == 'talk_of_the_town'
+    if cat_name != content_type.to_s
+      self.category = cat_name
+    end
+  end
+
   # creating a new content from import job data
   # is not as simple as just creating new from hash
   # because we need to match locations, organizations, etc.
@@ -701,8 +716,10 @@ class Content < ActiveRecord::Base
 
   # Export Gate Document directly before/after Pipeline processing
   def export_pre_pipeline_xml(repo, opts = {})
+    options = { :body => self.to_xml }
     file_list = opts[:file_list] || Array.new
-    res = DspService.get_pipeline_xml(self, 'pre', repo)
+
+    res = OntotextController.post("#{repo.dsp_endpoint}/processPrePipeline", options)
 
     # TODO: Make check for erroneous response better
     unless res.body.nil? || res.body.empty?
@@ -718,8 +735,10 @@ class Content < ActiveRecord::Base
   end
 
   def export_post_pipeline_xml(repo, opts = {})
+    options = { :body => self.to_xml }
     file_list = opts[:file_list] || Array.new
-    res = DspService.get_pipeline_xml(self, 'post', repo)
+
+    res = OntotextController.post("#{repo.dsp_endpoint}/processPostPipeline", options)
 
     # TODO: Make check for erroneous response better
     unless res.body.nil? || res.body.empty?

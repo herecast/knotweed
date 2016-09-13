@@ -4,7 +4,8 @@ module Api
 
       attributes :id, :title, :user_count, :author_name,
         :author_image_url, :published_at, :view_count, :commenter_count, :comment_count, 
-        :parent_content_id, :content_id, :parent_content_type, :parent_event_instance_id
+        :parent_content_id, :content_id, :parent_content_type, :parent_event_instance_id,
+        :created_at, :updated_at
 
       def content_id
         object.id

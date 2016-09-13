@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 ruby '2.2.4'
 
 gem 'active_model_serializers', '~> 0.9.3'
+gem 'aescrypt'
 gem 'american_date', '~> 1.1.0'
 gem 'bootstrap-sass', '~> 3.3.6'
 gem 'cancancan', '~> 1.13.1'
@@ -53,6 +54,7 @@ gem 'net-http-persistent', '~> 2.9'
 gem 'newrelic_rpm', '~> 3.13.0.299'
 gem "nokogiri", '1.6.1' # allowing a patch upgrade on this
 gem 'oauth2', '~> 1.0.0'
+gem 'open-uri-s3', '~> 1.5.0'
 gem 'postmark-rails', '~> 0.12.0'
 gem 'protected_attributes', '~> 1.1.3'
 gem 'rails', '~> 4.2.0'
@@ -66,6 +68,8 @@ gem "rubyzip", "~> 1.1.4"
 gem 'sanitize', '~> 4.0.1' # ugc sanitizer
 gem 'sass-rails', '~> 5.0.4'
 gem 'sidekiq', '~> 4.1.2'
+gem 'sidekiq-scheduler', '~> 2.0.7'
+gem 'sidekiq-unique-jobs', '~> 4.0.17'
 gem 'sinatra', require: false # for sidekiq/web
 gem "simple_form", '~> 3.2.1'
 gem 'sparql-client', '~> 1.1.3'
@@ -83,6 +87,7 @@ group :development, :test do
   gem 'guard-rspec', require:false
   gem 'guard-zeus', require: false
   gem 'rspec', '~> 3.4'
+  gem 'rspec-activejob'
   gem "rspec-rails", '~> 3.4'
 end
 
@@ -94,13 +99,14 @@ group :test do
   gem 'shoulda-matchers', '~> 3.1'
   gem "timecop", '~> 0.7.1'
   gem "vcr", '~> 2.9.2'
-  gem "webmock", '~> 1.17.4'
+  gem "webmock", '~> 2.1.0'
 end
 
 group :development do
   gem "annotate", '~> 2.6.5'
   gem "better_errors", '~> 0.9.0'
   gem "binding_of_caller", '~> 0.7.2'
+  gem "letter_opener"
   gem "yard", '~> 0.8.7.6'
   gem "quiet_assets", "~> 1.0.2"
 end

@@ -5,7 +5,7 @@ module Api
       attributes :id, :title, :price, :content, :content_id, :published_at,
         :locate_address, :can_edit, :has_contact_info, :my_town_only,
         :author_name, :organization_id, :updated_at, :image_url, :contact_phone,
-        :contact_email, :preferred_contact_method, :images, :updated_at
+        :contact_email, :preferred_contact_method, :images, :created_at, :updated_at
 
       root 'market_post'
 

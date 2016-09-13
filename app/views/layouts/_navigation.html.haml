@@ -280,6 +280,44 @@
           = link_to new_user_path do
             %i.icon-plus
             %span Create New
+- if can? :manage, Listserv
+  %li
+    = link_to listservs_path do
+      %i.icon-envelope
+      %span Digest
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "listservs" ? "in" : "" }" }
+      %li{ class: current_page?(listservs_path) ? "active" : "" }
+      - if can? :create, Listserv
+        %li{ class: current_page?(new_listserv_path) ? "active" : "" }
+          = link_to new_listserv_path do
+            %i.icon-plus
+            %span Create New
+- if can? :manage, Subscription
+  %li
+    = link_to subscriptions_path do
+      %i.icon-envelope
+      %span Subscriptions
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "subscriptions" ? "in" : "" }" }
+      %li{ class: current_page?(subscriptions_path) ? "active" : "" }
+      - if can? :create, Subscription
+        %li{ class: current_page?(new_subscription_path) ? "active" : "" }
+          = link_to new_subscription_path do
+            %i.icon-plus
+            %span Create New
+- if can? :manage, ReceivedEmail
+  %li
+    = link_to received_emails_path do
+      %i.icon-envelope
+      %span Received Emails
+      %i.icon-angle-down.angle-down
+- if can? :manage, ListservContent
+  %li
+    = link_to listserv_contents_path do
+      %i.icon-envelope
+      %span Listserv Contents
+      %i.icon-angle-down.angle-down
 - if can? :manage, ActiveJob::Base
   %li
     = link_to '/sidekiq_wrapper' do

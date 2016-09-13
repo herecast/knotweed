@@ -26,10 +26,7 @@ module ContentsHelper
   end
 
   def ux2_content_path(content)
-    prefix = content.root_content_category.name
-    # convert talk_of_the_town to talk
-    prefix = 'talk' if prefix == 'talk_of_the_town'
-    "/#{prefix}/#{content.id}"
+    content.channel_type == "Event" ? "/events/#{content.channel.event_instances.first.id}" : "/#{content.content_type.to_s}/#{content.id}"
   end
 
   def content_url_for_email(content)

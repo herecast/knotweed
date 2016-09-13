@@ -20,7 +20,6 @@
 #  confirmed_at           :datetime
 #  confirmation_sent_at   :datetime
 #  unconfirmed_email      :string(255)
-#  organization_id        :integer
 #  default_repository_id  :integer
 #  nda_agreed_at          :datetime
 #  agreed_to_nda          :boolean          default(FALSE)
@@ -35,6 +34,7 @@
 #  avatar                 :string(255)
 #  public_id              :string(255)
 #  skip_analytics         :boolean          default(FALSE)
+#  temp_password          :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -99,6 +99,17 @@ class User < ActiveRecord::Base
   # any organizations that have can_publish_news=true
   def can_publish_news?
     Organization.accessible_by(ability, :manage).where(can_publish_news: true).count > 0
+  end
+
+  attr_accessor :reset_password_return_url
+  # http://www.rubydoc.info/github/plataformatec/devise/Devise/Models/Recoverable/ClassMethods#send_reset_password_instructions-instance_method
+  def self.send_reset_password_instructions(attributes)
+    recoverable = find_or_initialize_with_errors(reset_password_keys, attributes.except(:return_url), :not_found)
+    if attributes[:return_url].present?
+      recoverable.reset_password_return_url = attributes[:return_url]
+    end
+    recoverable.send_reset_password_instructions if recoverable.persisted?
+    recoverable
   end
 
   private

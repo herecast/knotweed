@@ -85,6 +85,10 @@ RSpec.configure do |config|
 
   config.after(:each) do
     DatabaseCleaner.clean
+    if ActiveJob::Base.queue_adapter.respond_to?(:enqueued_jobs=)
+      ActiveJob::Base.queue_adapter.enqueued_jobs = []
+      ActiveJob::Base.queue_adapter.performed_jobs = []
+    end
   end
 
 end

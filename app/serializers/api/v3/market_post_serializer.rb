@@ -23,7 +23,7 @@ module Api
     class MarketPostSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :published_at, :image_url, :content_id, :my_town_only,
-        :cost
+        :cost, :created_at, :updated_at
 
       def content_id
         object.id

@@ -1,0 +1,4 @@
+schedule_listserv_digests:
+  cron: "0 0 * * *"
+  class: 'ScheduleListservDigestsJob'
+  description: "Schedule Listserv Digests for the day."

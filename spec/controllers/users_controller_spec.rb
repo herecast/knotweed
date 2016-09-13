@@ -161,6 +161,19 @@ describe UsersController, :type => :controller do
         expect(response.code).to eq '302'
       end
     end
+
+    context "when updating email" do
+      let(:new_email) { "new@email.com" }
+      subject { put :update, id: @user.id, user: { email: new_email } }
+
+      it 'does not require confirmation' do
+        subject
+        @user.reload
+
+        expect(@user.email).to eql new_email
+        expect(@user.unconfirmed_email).to be_blank
+      end
+    end
   end
 
   describe "DELETE #destroy" do

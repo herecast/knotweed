@@ -63,6 +63,11 @@ Knotweed::Application.routes.draw do
 
   resources :data_contexts
   resources :repositories
+  resources :listservs
+  resources :subscriptions
+  resources :received_emails
+  resources :listserv_contents
+
   get "repositories/:id/clear_published_contents", to: "repositories#clear_published_contents", as: :clear_published_contents
 
   post 'annotation_reports/create/:content_id', to: "annotation_reports#create", as: :create_annotation_report
@@ -115,7 +120,7 @@ Knotweed::Application.routes.draw do
       get '/promotion', to: 'promotion_banners#show', as: :promotion
       resources 'event_instances', only: [:index, :show]
       resources 'comments', only: [:index, :create]
-      resources 'listservs', only: [:index]
+      resources 'listservs', only: [:show,:index]
       get '/venues', to: 'business_locations#index', as: :venues
       get '/venue_locations', to: 'business_locations#index', as: :venue_locations,
         defaults: { autocomplete: true, max_results: 5 }
@@ -141,9 +146,19 @@ Knotweed::Application.routes.draw do
       resources 'business_profiles', only: [:index, :show, :create, :update], path: 'businesses'
       resources 'business_categories', only: [:index]
       post '/businesses/:id/feedback', to: 'business_feedbacks#create', as: :leave_feedback
+      post '/emails', to: 'emails#create'
+      get '/subscriptions', to: 'subscriptions#index'
+      get '/subscriptions/:key', to: 'subscriptions#show'
+      patch'/subscriptions/:key', to: 'subscriptions#update'
+      patch '/subscriptions/:key/confirm', to: 'subscriptions#confirm'
+      patch '/subscriptions/:key/unsubscribe', to: 'subscriptions#unsubscribe'
+      post '/registrations/confirmed', to: 'confirmed_registrations#create'
+
+      resources :listserv_contents, only: [:show,:update]
       put '/businesses/:id/feedback', to: 'business_feedbacks#update', as: :update_feedback
       resources :content_reports, only: :index
       resources :promotion_banner_reports, only: :index
+      get '/digests', to: 'digests#index'
     end
   end
 

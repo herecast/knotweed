@@ -1,0 +1,31 @@
+%h1 Subscriptions
+
+%table.table.table-striped.table-bordered.table-condensed
+  %caption= page_entries_info @subscriptions
+  %thead
+    %tr
+      %th Listserv
+      %th Email
+      %th User ID
+      %th Confirmed
+      %th Unsubscribed
+      %th Created
+      %th Key
+      %th
+
+  %tbody
+    - @subscriptions.each do |s|
+      %tr{ class: "subscription-#{s.id}" }
+        %td= s.listserv.name
+        %td= s.email
+        %td= s.user_id
+        %td= I18n.l s.confirmed_at if s.confirmed?
+        %td= I18n.l s.unsubscribed_at if s.unsubscribed?
+        %td= I18n.l s.created_at if s.created_at?
+        %td= s.key
+        %td
+          = link_to "Edit", edit_subscription_path(s), class: 'btn btn-mini'
+  %tfoot
+    %tr
+      %td{ colspan: 5 }
+        = paginate @subscriptions

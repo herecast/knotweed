@@ -16,36 +16,40 @@ describe ReversePublisher, :type => :mailer do
     @news_cat = FactoryGirl.create :content_category, name: 'news'
     @content = FactoryGirl.create :content, authoremail: 'test@test.com', 
       content_category: @news_cat
-    @listserv = FactoryGirl.create :listserv
+    @listserv = FactoryGirl.create :listserv, reverse_publish_email: 'rpemail@subtext.org'
   end
 
   describe 'after_create PromotionListserv object', inline_jobs: true do
-    before do
-      PromotionListserv.create_from_content(@content, @listserv)
-      ReversePublisher.deliveries.each do |eml|
-        # reverse publish email has this header set, confirmation email does not.
-        if eml['X-Original-Content-Id'].present?
-          @rp_email = eml
-        else
-          @conf_email = eml
+    context 'for vital communities listservs' do
+      before do
+        @listserv = FactoryGirl.create :vc_listserv
+        PromotionListserv.create_from_content(@content, @listserv)
+        ReversePublisher.deliveries.each do |eml|
+          # reverse publish email has this header set, confirmation email does not.
+          if eml['X-Original-Content-Id'].present?
+            @rp_email = eml
+          else
+            @conf_email = eml
+          end
         end
       end
-    end
 
-    it 'should send a confirmation email to the user' do
-      expect(ReversePublisher.deliveries.count).to eq(2)
-      expect(@conf_email.to).to include(@content.authoremail)
-    end
+      it 'should send a confirmation email to the user' do
+        expect(ReversePublisher.deliveries.count).to eq(2)
+        expect(@conf_email.to).to include(@content.authoremail)
+      end
 
-    it 'should send the reverse publish email to the listserv' do
-      expect(ReversePublisher.deliveries.count).to eq(2)
-      expect(@rp_email.to).to include(@listserv.reverse_publish_email)
+      it 'should send the reverse publish email to the listserv' do
+        expect(ReversePublisher.deliveries.count).to eq(2)
+        expect(@rp_email.to).to include(@listserv.reverse_publish_email)
+      end
     end
   end
 
   describe 'when sending to multiple listservs', inline_jobs: true do
     before do
-      @listserv2 = FactoryGirl.create :listserv
+      @listserv = FactoryGirl.create :vc_listserv
+      @listserv2 = FactoryGirl.create :vc_listserv
       PromotionListserv.create_multiple_from_content(@content, [@listserv.id, @listserv2.id])
       @rp_email = ReversePublisher.deliveries.select{ |eml| eml['X-Original-Content-Id'].present? }.first
     end
@@ -56,6 +60,7 @@ describe ReversePublisher, :type => :mailer do
       expect(@rp_email.to).to include(@listserv2.reverse_publish_email)
     end
   end
+
 
   # this is testing the special construction of the consumer app URL 
   # for the content based on whether or not Thread.current[:consumer_app] is set
@@ -72,7 +77,7 @@ describe ReversePublisher, :type => :mailer do
   end
 
   describe 'Event', inline_jobs: true do
-    let(:listserv) { FactoryGirl.create :listserv }
+    let(:listserv) { FactoryGirl.create :vc_listserv }
     let(:non_ugc_event) { FactoryGirl.create :event, skip_event_instance: true }
 
     before do

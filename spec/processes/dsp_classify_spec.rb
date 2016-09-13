@@ -21,6 +21,14 @@ RSpec.describe DspClassify do
         expect{subject}.to raise_error(DspExceptions::UnableToClassify)
       end
     end
+
+    describe 'if DSP is down and a timeout error occurs' do
+      before { allow(DspService).to receive(:extract).with(any_args).and_raise(Timeout::Error) }
+
+      it 'should raise DspException::UnableToClassify' do
+        expect{subject}.to raise_error(DspExceptions::UnableToClassify)
+      end
+    end
   end
 
   describe 'self.get_category_from_annotations' do

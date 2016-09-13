@@ -1,0 +1,8 @@
+= simple_form_for @received_email, html: {class: 'form form-horizontal'} do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :file_uri
+
+  .form-actions
+    = f.button :submit, class: 'btn btn-success'

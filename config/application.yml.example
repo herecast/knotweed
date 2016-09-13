@@ -1,4 +1,4 @@
-# Add application configuration variables here, as shown below.
+# Add application configuration variables here, as shown below.  
 #
 # PUSHER_APP_ID: "2954"
 # PUSHER_KEY: 7381a978f7dd7f9a1117
@@ -90,6 +90,11 @@ PROMO_RELEVANCE_SCORE_THRESHOLD: .10
 
 PRERENDER_TOKEN: prerender-token
 
+DEFAULT_CONSUMER_HOST: dailyuv.com
+
+MAILCHIMP_API_HOST: us13.api.mailchimp.com
+MAILCHIMP_API_KEY: test
+LISTSERV_MARKETING_URL: http://listserv.dailyUV.com
 ELASTICSEARCH_URL: http://localhost:9200
 
 REDIS_URL: redis://subtext-dev.0egmnu.0001.use1.cache.amazonaws.com/1

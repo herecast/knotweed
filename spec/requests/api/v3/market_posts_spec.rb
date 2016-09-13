@@ -54,6 +54,40 @@ describe 'Market Posts', type: :request do
     end
   end
 
+  describe 'POST /api/v3/market_posts' do
+    context "with valid request data" do
+      before do
+        ContentCategory.create(name: :market)
+      end
+
+      let(:valid_params) {
+        {
+          title: 'Test',
+          content: 'Body'
+        }
+      }
+
+      subject{ post("/api/v3/market_posts", {market_post: valid_params}, auth_headers) }
+
+      it 'responds with 201' do
+        subject
+        expect(response.status).to eql 201
+      end
+
+      it 'creates a record' do
+        expect{ subject }.to change{
+          MarketPost.count
+        }.by(1)
+      end
+
+      it 'returns a content_id in json' do
+        # this is needed by listserv workflow
+        subject
+        expect(response_json[:market_post][:content_id]).to eql MarketPost.last.content.id
+      end
+    end
+  end
+
   describe 'GET /api/v3/market_posts', elasticsearch: true do
     before do
       @loc1 = FactoryGirl.create :location
@@ -66,6 +100,7 @@ describe 'Market Posts', type: :request do
 
     let(:request_params) { {} }
     let(:user) { FactoryGirl.create :user, location: @loc1 }
+    let(:market_category) { FactoryGirl.create :content_category, name: 'market' }
 
     subject { get '/api/v3/market_posts', request_params.merge({ format: :json }) }
 
@@ -85,6 +120,7 @@ describe 'Market Posts', type: :request do
         my_town_only: be_boolean,
         author_name: a_kind_of(String),
         organization_id: a_kind_of(Integer),
+        created_at: a_kind_of(String),
         updated_at: a_kind_of(String),
         image_url: an_instance_of(String).or(be_nil),
         contact_phone: a_kind_of(String).or(be_nil),

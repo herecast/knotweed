@@ -1,0 +1,72 @@
+%h1 Listserv Contents
+
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      %i.icon-search
+      Find Listserv Content
+      .actions
+        %a.btn.box-collapse.btn-mini.btn-link{href:'#'}
+          %i
+    .box-content
+      = search_form_for(@search, url: listserv_contents_url, html: {class: 'search-form'}) do |f|
+        .controls.controls-row
+          .field.span4
+            = f.label :listserv_id_eq, "Listserv"
+            = f.collection_select :listserv_id_eq, Listserv.order(name: :asc), 'id','name', prompt: ""
+          .field.span4
+            = f.label :content_category_id_eq, "Category"
+            = f.collection_select :content_category_id_eq, Category.order(name: :asc), 'id','name', prompt: ""
+          .field.checkbox.span4
+            = f.check_box :verified_at_not_null
+            = f.label :verified_at_not_null, 'Verified Only'
+        .controls.controls-row
+          .field.span4
+            = f.label :sender_email_cont, 'Sender Email'
+            = f.search_field :sender_email_cont
+          .field.span4
+            = f.label :subject_cont, 'Subject'
+            = f.search_field :subject_cont
+          .field.span4
+            = f.label :created_at_gteq, 'Created Date'
+            = f.date_field :created_at_gteq
+            = f.date_field :created_at_lteq
+        .form-actions
+          %button.btn.btn-primary{type: 'submit'} Search
+          %button.btn.reset{ type: 'submit', name: 'reset'} Reset
+      :javascript
+        jQuery(function($) {
+          $('.search-form button.reset').on('click', function(e) {
+            $('.search-form').find('select,input').val("");
+            return true;
+          });
+        });
+
+
+%table.table.table-striped.table-condensed
+  %caption= page_entries_info @listserv_contents
+  %thead
+    %tr
+      %th Listserv
+      %th Sender
+      %th Subject
+      %th Content Category
+      %th Verified
+      %th
+
+  %tbody
+    - @listserv_contents.each do |lc|
+      %tr
+        %td= lc.listserv.name
+        %td= lc.sender_email
+        %td= lc.subject
+        %td= lc.content_category.name if lc.content_category
+        %td= lc.verified_at
+        %td
+          = link_to "View", listserv_content_path(lc), class: 'btn btn-mini'
+          = link_to "Edit", edit_listserv_content_path(lc), class: 'btn btn-mini'
+
+  %tfoot
+    %tr
+      %td{ colspan: 6 }
+        = paginate @listserv_contents

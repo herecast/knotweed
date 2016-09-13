@@ -14,7 +14,13 @@ class DspClassify
   # @param repo [Repository] optional, defaults to environment variable PRODUCTION_REPO_ID
   # @return [ContentCategory] the detected content category
   def self.call(content, repo=Repository.production_repo)
-    cat = self.get_category_from_annotations(DspService.extract(content, repo))
+    begin
+      cat = self.get_category_from_annotations(DspService.extract(content, repo))
+    rescue Exception => e
+      Rails.logger.error e.message
+      Rails.logger.error e.backtrace.join("\n")
+      cat = nil
+    end
     if cat.present?
       cat
     else

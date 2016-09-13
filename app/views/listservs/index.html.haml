@@ -1,0 +1,27 @@
+%h1 Digests
+
+%table.table.table-striped.table-bordered.table-condensed
+  %caption= page_entries_info @listservs
+  %thead
+    %tr
+      %th ID
+      %th Name
+      %th Digest Time
+      %th Digest Day
+      %th Subscribers
+      %th
+
+  %tbody
+    - @listservs.each do |ls|
+      %tr{ class: "listserv-#{ls.id}" }
+        %td= ls.id
+        %td= link_to ls.name, edit_listserv_path(ls)
+        %td= ls.digest_send_time.strftime('%H:%M') if ls.digest_send_time?
+        %td= ls.digest_send_day
+        %td= ls.active_subscriber_count
+        %td
+          = link_to "Edit", edit_listserv_path(ls), class: 'btn btn-mini'
+  %tfoot
+    %tr
+      %td{ colspan: 5 }
+        = paginate @listservs

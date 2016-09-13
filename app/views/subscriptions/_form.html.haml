@@ -1,0 +1,15 @@
+= simple_form_for @subscription, html: {class: 'form form-horizontal'}  do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :key, input_html: {disabled: true}
+    = f.input :email
+    = f.association :listserv
+    = f.input :user_id
+    = f.input :source
+    = f.input :confirmed_at, as: :date_picker
+    = f.input :unsubscribed_at, as: :date_picker
+    = f.input :blacklist
+
+  .form-actions
+    = f.button :submit, class: 'btn btn-success'

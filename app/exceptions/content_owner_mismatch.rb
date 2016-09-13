@@ -1,0 +1,2 @@
+class ContentOwnerMismatch < Exception
+end
