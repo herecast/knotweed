@@ -286,5 +286,15 @@ describe Api::V3::EventsController, :type => :controller do
         expect(assigns(:event).content.location_ids).to eq([@current_user.location_id])
       end
     end
+
+    context "when event category does not exist" do
+      before do
+        @event_attrs[:category] = '[object Object]'
+      end
+
+      it "created event" do
+        expect{ subject }.to change{ Event.count }.by(1)
+      end
+    end
   end
 end

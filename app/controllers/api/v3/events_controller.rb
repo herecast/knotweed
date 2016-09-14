@@ -163,6 +163,7 @@ module Api
 
         # translate params that have the wrong name
         new_e[:event_category] = e[:category].to_s.downcase.gsub(' ','_') if e.has_key? :category
+        new_e[:event_category] = nil unless Event::EVENT_CATEGORIES.include? new_e[:event_category]
         new_e
       end
 
