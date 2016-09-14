@@ -57,10 +57,26 @@ namespace :refresh_database do
 
   desc 'Transfer database data from prod'
   task :transfer_database_data => :write_adapt_sql do
-    ask(:source_database_username, 'knotweed')
-    ask(:source_database_password, nil)
-    ask(:dest_database_username, 'knotweed')
-    ask(:dest_database_password, nil)
+    if ENV.has_key?('SOURCE_DATABASE_USERNAME')
+      set(:source_database_username, ENV['SOURCE_DATABASE_USERNAME'])
+    else
+      ask(:source_database_username, 'knotweed')
+    end
+    if ENV.has_key?('SOURCE_DATABASE_PASSWORD')
+      set(:source_database_password, ENV['SOURCE_DATABASE_PASSWORD'])
+    else
+      ask(:source_database_password, nil)
+    end
+    if ENV.has_key?('DEST_DATABASE_USERNAME')
+      set(:dest_database_username, ENV['DEST_DATABASE_USERNAME'])
+    else
+      ask(:dest_database_username, 'knotweed')
+    end
+    if ENV.has_key?('DEST_DATABASE_PASSWORD')
+      set(:dest_database_password, ENV['DEST_DATABASE_PASSWORD'])
+    else
+      ask(:dest_database_password, nil)
+    end
     # TODO - this should only execute on one server
     on roles(app_server_roles) do
       execute "PGPASSWORD=\"#{fetch(:source_database_password)}\" pg_dump -c --if-exists -x -U #{fetch(:source_database_username)} -h #{fetch(:source_database_host)} #{fetch(:source_database)} | " \
