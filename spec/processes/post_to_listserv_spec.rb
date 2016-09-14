@@ -128,8 +128,8 @@ RSpec.describe PostToListserv do
     end
 
     describe 'ListservContent#body' do
-      it 'is equal to sanitized ReceivedEmail#body' do
-        expect(subject.body).to eql UgcSanitizer.call(email.body)
+      it 'is equal to ReceivedEmail#body' do
+        expect(subject.body).to eql email.body
       end
     end
   end

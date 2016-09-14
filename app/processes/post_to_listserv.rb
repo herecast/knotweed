@@ -40,7 +40,7 @@ class PostToListserv
       sender_email: @email.from,
       sender_name: @email.sender_name,
       subject: @email.subject || "?",
-      body: UgcSanitizer.call(@email.body),
+      body: @email.body,
       subscription: subscription,
       user: subscription.try(:user) || matching_user
     )

@@ -237,6 +237,32 @@ class Content < ActiveRecord::Base
 
   BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt'))
 
+  # NOTE: this needs to be kept in sync with the Ember app
+  # if it changes over there.
+  EMBER_SANITIZE_CONFIG = {
+    elements: ['a', 'p', 'ul', 'ol', 'li', 'b', 'i', 'u', 'br', 'span', 'h1',
+               'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'iframe','div', 'blockquote',
+               'pre'],
+    attributes: {
+      'a' => ['href', 'title', 'target'],
+      'img' => ['src', 'style', 'class', 'title', 'alt'],
+      'div' => ['class'],
+      'span' => ['class','style'],
+      'iframe' => ['width', 'height', 'frameborder', 'src', 'class'] # youtube
+    },
+    protocols: {
+      'a' => { 'href' => ['http', 'https', 'mailto'] }
+    },
+    add_attributes: {
+      'a' => { 'rel' => 'nofollow' }
+    },
+    css: {
+      properties: [
+        'float', 'width', 'padding'
+      ]
+    }
+  }
+
   # ensure that we never save titles with leading/trailing whitespace
   def title=t
     write_attribute(:title, t.to_s.strip)
@@ -986,7 +1012,7 @@ class Content < ActiveRecord::Base
   end
 
   def ugc_sanitized_content
-    UgcSanitizer.call(raw_content)
+    Sanitize.fragment(raw_content, EMBER_SANITIZE_CONFIG)
   end
 
   def default_sanitized_content
