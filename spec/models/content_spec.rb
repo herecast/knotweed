@@ -1400,6 +1400,27 @@ describe Content, :type => :model do
     end
   end
 
+  describe 'Content.search', elasticsearch: true do
+    describe 'authors' do
+      before do
+        @user = FactoryGirl.create :user
+        @news = FactoryGirl.create :content,
+          content_category: FactoryGirl.create(:content_category, name: 'news')
+        @not_news = FactoryGirl.create :content
+        @not_news.update_attribute :created_by, @user
+        @news.update_attribute :created_by, @user
+      end
+
+      it 'should index authors for news content' do
+        expect(Content.search(@news.authors).results).to eq([@news])
+      end
+
+      it 'should index created_by.name if available for non-news content' do
+        expect(Content.search(@user.name).results).to eq([@not_news])
+      end
+    end
+  end
+
   describe 'Content.talk_search', elasticsearch: true do
     before do
       @talk = FactoryGirl.create :content_category, name: 'talk_of_the_town'

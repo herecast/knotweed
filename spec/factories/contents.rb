@@ -54,7 +54,7 @@ FactoryGirl.define do
   factory :content do
     title { "Title-#{[*('A'..'Z')].sample(8).join}" }
     subtitle "Subtitle"
-    authors "John Smith"
+    authors Faker::Name.name
     raw_content "Content goes here"
     organization
     issue

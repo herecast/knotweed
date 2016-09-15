@@ -64,7 +64,7 @@ class Content < ActiveRecord::Base
       content: raw_content,
       title: title,
       subtitle: subtitle,
-      authors: authors,
+      authors: author_name,
       pubdate: pubdate,
       all_loc_ids: all_loc_ids,
       organization_id: organization.try(:id),
