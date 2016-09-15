@@ -101,8 +101,8 @@
               = h.association :business_categories, label_method: :name_with_parent, input_html: { class: 'chosen-select input-block-level' }
       .tab-pane#business_locations
         .pull-right
-          = link_to "+ Add New Location", "#", class: "btn btn-success", 
-            data: { form_url: new_business_location_path({ organization_id: @organization.id }  )}, id: "new_business_location_button" 
+          - unless @organization.org_type == "Business"
+            = link_to "+ Add New Location", "#", class: "btn btn-success", data: { form_url: new_business_location_path({ organization_id: @organization.id }  )}, id: "new_business_location_button" 
           / hidden field for creating business locations associated with a new organization record
           - unless @organization.id
             = f.association :business_locations, as: :hidden, input_html: { name: "organization[business_location_list]", value: "" }
