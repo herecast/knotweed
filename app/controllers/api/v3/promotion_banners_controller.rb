@@ -41,18 +41,31 @@ module Api
         unless @banner.present? # banner must've expired or been used up since repo last updated
           render json: {}
         else
-          # log banner ad impression with associated details
-          ContentPromotionBannerImpression.log_impression(@content.try(:id), @banner.id,
-                                                          select_method, select_score)
-          # increment promotion_banner counts for impressions and daily_impressions
           unless @current_api_user.try(:skip_analytics?)
-            @banner.increment_integer_attr! :impression_count
-            @banner.increment_integer_attr! :daily_impression_count
+            @banner.increment_integer_attr! :load_count
+            ContentPromotionBannerLoad.log_load(@content.try(:id), @banner.id,
+                                                            select_method, select_score)
+
+            logger.info "[Load count incremented for]: #{@banner.inspect}"
           end
 
           render json:  @banner, root: :promotion,
             serializer: RelatedPromotionSerializer
         end
+      end
+
+      def track_impression
+        @banner = PromotionBanner.find params[:id]
+
+        # increment promotion_banner counts for impressions and daily_impressions
+        unless @current_api_user.try(:skip_analytics?)
+          @banner.increment_integer_attr! :impression_count
+          @banner.increment_integer_attr! :daily_impression_count
+
+          logger.info "[Impression count incremented for]: #{@banner.inspect}"
+        end
+
+        head :ok
       end
 
       def track_click
@@ -100,7 +113,6 @@ module Api
       def user_can_manage?
         @current_api_user.ability.can?(:manage, @promotion_banner.promotion.organization)
       end
-
     end
   end
 end

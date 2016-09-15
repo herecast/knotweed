@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160831215644) do
+ActiveRecord::Schema.define(version: 20160912165029) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -226,17 +226,15 @@ ActiveRecord::Schema.define(version: 20160831215644) do
 
   add_index "content_categories_organizations", ["content_category_id", "organization_id"], name: "idx_16559_index_on_content_category_id_and_publication_id", using: :btree
 
-  create_table "content_promotion_banner_impressions", id: :bigserial, force: :cascade do |t|
-    t.integer  "content_id",          limit: 8
-    t.integer  "promotion_banner_id", limit: 8
-    t.integer  "display_count",       limit: 8,   default: 1
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
-    t.string   "select_method",       limit: 255
+  create_table "content_promotion_banner_loads", force: :cascade do |t|
+    t.integer  "content_id"
+    t.integer  "promotion_banner_id"
+    t.integer  "load_count",          default: 1
+    t.string   "select_method"
     t.float    "select_score"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
-
-  add_index "content_promotion_banner_impressions", ["content_id", "promotion_banner_id"], name: "idx_16564_content_promotion_banner_impression", unique: true, using: :btree
 
   create_table "content_reports", id: :bigserial, force: :cascade do |t|
     t.integer  "content_id",               limit: 8
@@ -719,6 +717,8 @@ ActiveRecord::Schema.define(version: 20160831215644) do
     t.boolean  "boost",                              default: false
     t.integer  "daily_impression_count", limit: 8,   default: 0
     t.boolean  "track_daily_metrics"
+    t.integer  "load_count",                         default: 0
+    t.integer  "integer",                            default: 0
   end
 
   create_table "promotion_listservs", id: :bigserial, force: :cascade do |t|

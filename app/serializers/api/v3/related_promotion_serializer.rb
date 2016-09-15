@@ -18,6 +18,7 @@ module Api
       def image_url
         object.banner_image.url
       end
+
     end
   end
 end

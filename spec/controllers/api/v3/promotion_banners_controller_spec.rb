@@ -49,7 +49,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
           pb.promotion.update_column :created_by, @user.id
         end
       end
-        
+
       it 'should respond with 200' do
         subject
         expect(response.status).to eq 200
@@ -103,29 +103,25 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       expect(response.code).to eq('200')
     end
 
-    it 'should increment the impression count of the banner' do
-      expect{subject}.to change{@pb.reload.impression_count}.by(1)
+    it 'should increment the load count of the banner' do
+      expect{subject}.to change{@pb.reload.load_count}.by(1)
     end
 
-    it 'should increment the daily impression count of the banner' do
-      expect{subject}.to change{@pb.reload.daily_impression_count}.by(1)
+    it 'should create a ContentPromotionBannerLoad record if none exists' do
+      subject
+      expect(ContentPromotionBannerLoad.count).to eq(1)
+      expect(ContentPromotionBannerLoad.first.content_id).to eq(@content.id)
+      expect(ContentPromotionBannerLoad.first.promotion_banner_id).to eq(@pb.id)
     end
 
-    describe 'logging content displayed with' do
+    it 'should increment the ContentPromotionBannerLoad load count if a record exists' do
+      cpbi = FactoryGirl.create :content_promotion_banner_load, content_id: @content.id, promotion_banner_id: @pb.id
+      subject
+      expect(cpbi.reload.load_count).to eq(2)
+    end
 
-      it 'should create a ContentPromotionBannerImpression record if none exists' do
-        subject
-        expect(ContentPromotionBannerImpression.count).to eq(1)
-        expect(ContentPromotionBannerImpression.first.content_id).to eq(@content.id)
-        expect(ContentPromotionBannerImpression.first.promotion_banner_id).to eq(@pb.id)
-      end
-
-      it 'should increment the ContentPromotionBannerImpression display count if a record exists' do
-        cpbi = FactoryGirl.create :content_promotion_banner_impression, content_id: @content.id, promotion_banner_id: @pb.id
-        subject
-        expect(cpbi.reload.display_count).to eq(2)
-      end
-
+    it 'does not modify the impression_count of banner' do
+      expect{subject}.to_not change{@pb.reload.impression_count}
     end
 
     context 'with banner_ad_override' do
@@ -141,6 +137,40 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       end
     end
 
+  end
+
+  describe 'post track_impression' do
+    before do
+      @banner = FactoryGirl.create :promotion_banner
+      @content = FactoryGirl.create :content
+    end
+
+    subject { post :track_impression, id: @banner.id,
+               format: :json }
+
+    it 'should respond with 200' do
+      subject
+      expect(response.status).to eq 200
+    end
+
+    it 'should increment the daily impression count of the banner' do
+      expect{subject}.to change{@banner.reload.daily_impression_count}.by(1)
+    end
+
+    context 'as a user with skip_analytics = true' do
+      before do
+        @user = FactoryGirl.create :user, skip_analytics: true
+        api_authenticate user: @user
+      end
+
+      it 'should not increment banner.impression_count' do
+        expect{subject}.not_to change{@banner.reload.impression_count}
+      end
+
+      it 'should not increment the daily impression count of the banner' do
+        expect{subject}.not_to change{@banner.reload.daily_impression_count}
+      end
+    end
   end
 
   describe 'post track_click' do

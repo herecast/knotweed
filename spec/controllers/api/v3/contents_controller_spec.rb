@@ -155,29 +155,8 @@ describe Api::V3::ContentsController, :type => :controller do
       expect(response.code).to eq('200')
     end
 
-    it 'should increment the impression count of the banner' do
-      expect{subject}.to change{@pb.reload.impression_count}.by(1)
-    end
-
-    it 'should increment the daily impression count of the banner' do
-      expect{subject}.to change{@pb.reload.daily_impression_count}.by(1)
-    end
-
-    describe 'logging content displayed with' do
-
-      it 'should create a ContentPromotionBannerImpression record if none exists' do
-        subject
-        expect(ContentPromotionBannerImpression.count).to eq(1)
-        expect(ContentPromotionBannerImpression.first.content_id).to eq(@content.id)
-        expect(ContentPromotionBannerImpression.first.promotion_banner_id).to eq(@pb.id)
-      end
-
-      it 'should increment the ContentPromotionBannerImpression display count if a record exists' do
-        cpbi = FactoryGirl.create :content_promotion_banner_impression, content_id: @content.id, promotion_banner_id: @pb.id
-        subject
-        expect(cpbi.reload.display_count).to eq(2)
-      end
-      
+    it 'should increment the load count of the banner' do
+      expect{subject}.to change{@pb.reload.load_count}.by(1)
     end
 
     context 'with banner_ad_override' do

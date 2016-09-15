@@ -12,14 +12,12 @@ module Api
         unless @banner.present? # banner must've expired or been used up since repo last updated
           render json: {}
         else
-          # log banner ad impression with associated details
-          ContentPromotionBannerImpression.log_impression(@content.id, @banner.id,
-                                                          select_method, select_score)
-          # increment promotion_banner counts for impressions and daily_impressions
           unless @current_api_user.try(:skip_analytics?)
-            @banner.increment_integer_attr! :impression_count
-            @banner.increment_integer_attr! :daily_impression_count
+            @banner.increment_integer_attr! :load_count
+            ContentPromotionBannerLoad.log_load(@content.try(:id), @banner.id,
+                                                            select_method, select_score)
           end
+
           render json:  @banner, root: :related_promotion,
             serializer: RelatedPromotionSerializer
         end

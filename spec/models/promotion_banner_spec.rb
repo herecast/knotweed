@@ -21,6 +21,8 @@ require 'spec_helper'
 
 describe PromotionBanner, :type => :model do
 
+  it {is_expected.to have_db_column(:load_count).of_type(:integer).with_options(default:0)}
+
   describe 'scope :for_content' do
     before do
       @banner = FactoryGirl.create :promotion_banner
