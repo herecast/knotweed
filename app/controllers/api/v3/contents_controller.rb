@@ -178,7 +178,7 @@ module Api
         # we want drafts to appear based on their created_by in the midst of published
         # content sorted by pubdate
         if sort_by.include? 'pubdate'
-          scope = scope.select("CASE pubdate WHEN NULL THEN created_at ELSE pubdate END as sort_date, contents.*")
+          scope = scope.select("CASE WHEN pubdate IS NULL THEN updated_at ELSE pubdate END as sort_date, contents.*")
           sort_by.gsub!('pubdate', 'sort_date')
         end
 

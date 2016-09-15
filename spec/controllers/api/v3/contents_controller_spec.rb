@@ -407,8 +407,11 @@ describe Api::V3::ContentsController, :type => :controller do
 
         describe 'sorting' do
           it 'allows sorting by specified parameters (pubdate)' do
+            content = Content.last
+            content.update_attribute(:pubdate, Date.tomorrow)
+
             get :dashboard, sort: 'pubdate DESC'
-            expect(assigns(:contents).first).to eq(Content.order('pubdate DESC').first)
+            expect(assigns(:contents).first).to eq(content)
           end
 
           describe 'by channel_type ASC' do
