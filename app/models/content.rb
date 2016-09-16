@@ -76,8 +76,7 @@ class Content < ActiveRecord::Base
       deleted: deleted_at.present?,
       root_parent_id: root_parent_id,
       in_accepted_category: !(content_category.try(:name) == 'event' and channel_type != 'Event'),
-      is_listserv_market_post: is_listserv_market_post?,
-      latest_activity: latest_activity
+      is_listserv_market_post: is_listserv_market_post?
     }
   end
 
@@ -1234,31 +1233,65 @@ class Content < ActiveRecord::Base
     children.where(channel_type: 'Comment')
   end
 
-  # generates a Sphinx query for talk contents --
-  # logic abstracted from the ApiV3 Talk controller
+  # generates an elasticsearch query for the ApiV3 talk index controller
   #
   # @param query [String] the search query string if present
   # @param opts [Hash] options beyond the default Talk query options that need to be included
-  # @return [ActiveRecord::Relation] Sphinx normally returns an array of Content objects, not an ActiveRecord relation,
-  # but because we're mapping the Sphinx results to the parent records after the fact, we're able to return a relation here.
+  # @return [Hash] containing results: ActiveRecord::Relation, total: integer
   def self.talk_search(query=nil, opts={})
-    defaults = {
-      aggs: [:root_parent_id],
-      order: { latest_activity: :desc },
-      where: {
-        root_content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id
+    per_page = opts.delete(:per_page) || 24
+    page = opts.delete(:page) || 1
+
+    if query.present?
+      search_query = { match: { _all: { query: query } } }
+    else
+      search_query = { match_all: {} }
+    end
+
+    body = {
+      query: search_query,
+      size: 0,
+      aggs: { 
+        parents: { 
+          filter: {
+            bool: {
+              must: [
+                { term: { root_content_category_id: ContentCategory.find_by_name('talk_of_the_town').id } }
+              ]
+            }
+          },
+          aggs: {
+            parents: {
+              terms: {
+                field: :root_parent_id,
+                order: { max_activity: :desc },
+                size: 1000
+              },  
+              aggs: {
+                max_activity: { max: { field: :pubdate } }
+              }
+            },
+          },
+        }
       }
     }
+    if opts[:where].present?
+      conditions = opts[:where].map do |k,v|
+        if v.is_a? Array
+          { in: { k => v } }
+        else
+          { term: { k => v } }
+        end
+      end
+      body[:aggs][:parents][:filter][:bool][:must] += conditions
+    end
 
-    query = query.present? ? query : '*'
+    initial_query = Content.search(body: body)
+    resulting_ids = initial_query.response['aggregations']['parents']['parents']['buckets'].map{ |obj| obj['key'] }
 
-    initial_results = Content.search query, defaults.deep_merge(opts)
+    paged_ids = resulting_ids.slice((page.to_i-1)*per_page.to_i, per_page.to_i)
 
-    # group_by :root_parent_id returns one result per root_parent_id,
-    # but doesn't necessarily return the parent objects. The way to do this with the fewest
-    # SQL queries possible is map our already retrieved objects to their root_parent_ids
-    # and select (in one query) all content with id = root_parent_ids
-    { results: Content.where(id: initial_results.map{|c| c.root_parent_id}), total: initial_results.count }
+    { results: Content.where(id: paged_ids), total: resulting_ids.count }
   end
 
   # returns latest pubdate of a given thread

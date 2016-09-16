@@ -1425,34 +1425,46 @@ describe Content, :type => :model do
     before do
       @talk = FactoryGirl.create :content_category, name: 'talk_of_the_town'
       @p1 = FactoryGirl.create :content, content_category: @talk, pubdate: 1.year.ago
-      @c1 = FactoryGirl.create :content, parent: @p1, content_category: @talk,
+      @p2 = FactoryGirl.create :content, content_category: @talk, pubdate: 1.week.ago
+      @p3 = FactoryGirl.create :content, content_category: @talk, pubdate: 1.day.ago
+      @p1c1 = FactoryGirl.create :content, parent: @p1, content_category: @talk,
         raw_content: 'VERY UNIQUE STRING @#$#%'
-      @c2 = FactoryGirl.create :content, parent: @c1, content_category: @talk,
+      @p1c2 = FactoryGirl.create :content, parent: @p1c1, content_category: @talk,
         raw_content: 'DIFFSTRING912387'
+      @p2c1 = FactoryGirl.create :content, parent: @p2, content_category: @talk,
+        raw_content: 'adsfdsafds', pubdate: 3.hours.ago
     end
 
     it 'should group search results by root_parent_id' do
-      [Content.talk_search(@c1.raw_content), Content.talk_search(@c2.raw_content)].each do |results|
+      [Content.talk_search(@p1c1.raw_content), Content.talk_search(@p1c2.raw_content)].each do |results|
         expect(results[:results]).to include(@p1)
         expect(results[:results].length).to eq 1
       end
     end
 
     it 'should group properly with no query' do
-      expect(Content.talk_search[:results]).to eq([@p1])
+      results = Content.talk_search[:results]
+      expect(results).to include(@p1)
+      expect(results).to include(@p2)
+      expect(results).to include(@p3)
     end
 
     describe 'result order' do
-      before do
-        @p2 = FactoryGirl.create :content, content_category: @talk,
-          pubdate: @p1.pubdate + 2.days
-        @c2.update_attribute :pubdate, @p2.pubdate + 2.days
-      end
-
       it 'should order by the latest activity' do
         # @p1 has an earlier pubdate than @p2, but one of its comments has a later pubdate (@c2),
         # so it should show up first in the results based on its 'latest_activity'
-        expect(Content.talk_search[:results]).to eq([@p1, @p2])
+        expect(Content.talk_search[:results]).to match_array([@p1, @p2, @p3])
+      end
+    end
+
+    describe 'paging' do
+      it 'should return the requested number of results' do
+        expect(Content.talk_search(nil, { per_page: 1 })[:results].count).to eq 1
+      end
+
+      it 'should return different results when requesting a later page' do
+        expect(Content.talk_search(nil, { per_page: 1, page: 1 })[:results]).to_not match_array(
+          Content.talk_search(nil, { per_page: 1, page: 2 })[:results])
       end
     end
   end
