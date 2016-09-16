@@ -63,7 +63,8 @@ class ListservsController < ApplicationController
         :banner_ad_override_id,
         :digest_description,
         :digest_send_day,
-        :digest_query
+        :digest_query,
+        :template
       )
     end
 end

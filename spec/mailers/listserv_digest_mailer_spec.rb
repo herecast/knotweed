@@ -7,6 +7,7 @@ RSpec.describe ListservDigestMailer do
       let(:listserv_contents) { FactoryGirl.create_list :listserv_content, 3, :verified }
       let(:contents) { FactoryGirl.create_list :content, 3 }
       let!(:banner_ad) { FactoryGirl.create :promotion_banner }
+      let(:market_post) { FactoryGirl.create :market_post }
 
       let!(:listserv_digest) {
         FactoryGirl.create :listserv_digest,
@@ -119,6 +120,18 @@ RSpec.describe ListservDigestMailer do
 
       describe 'generated body' do
         subject { described_class.digest(listserv_digest).body.encoded }
+
+        context 'when the template is for UV digest' do
+          it 'displats the banner add correctly' do
+            listserv.update_attributes(template: 'uv_digest')
+            content = contents.first
+            content.content_type = :market
+            content.channel = market_post
+            content.save!
+
+            expect(subject).to include "uv-digest-banner"
+          end
+        end
 
         it 'includes name of listserv + Digest' do
           expect(subject).to include "#{listserv.name} Digest"

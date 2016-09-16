@@ -1,0 +1,111 @@
+<a id='top'></a>
+<h2>
+  <%=@listserv.name%> Digest
+  -- <small><%= @digest.created_at.strftime("%a, %b %e %Y")%></small>
+</h2>
+
+<div class='header'>
+  <%= raw @listserv.digest_header %>
+</div>
+
+<div class='enhanced-posts'>
+  <% @digest.contents.sort_by{|c| [c.content_type, c.pubdate] }.group_by{|c| c.content_type}.each do |ct, contents| %>
+    <% if ct == :market %>
+      <% if @listserv.banner_ad.present? %>
+        <div class="uv-digest-banner" style="padding-bottom: 15px; vertical-align: top">
+          <%= link_to image_tag(@listserv.banner_ad.banner_image), @listserv.banner_ad.redirect_url %>
+        </div>
+      <% end %>
+    <% end %>
+    <strong><%= ct.to_s.titleize.upcase %></strong>
+    <table style="border-collapse: collapse; width: 100%; max-width: 800px;">
+      <% contents.each do |c| %>
+        <tr style='border: 1px solid #222;'>
+          <td style="padding: 3px; vertical-align: top;">
+            <p>
+              <%= link_to c.title, url_for_consumer_app(ux2_content_path(c))%><br />
+              <%= c.pubdate.strftime("%m/%d/%y %l:%M %p") %>
+            </p>
+            <p>
+              <%= raw truncate(strip_tags(c.sanitized_content.gsub("><", "> <")), length: 200).strip%>
+            </p>
+            <p>
+              <span style='float: left'>
+                Posted by
+                <%= c.author_name %>
+              </span>
+              <span style='float: right'>
+                <% if ct == :event %>
+                  <%= c.channel.cost %>
+                  <% if c.channel.venue %>
+                    @ <%= c.channel.venue.try(:name) %>
+                  <% elsif c.locations.first %>
+                    @ <%= c.locations.first.map{|l| [l.city,l.state]}.join(', ') %>
+                  <% end %>
+                <% elsif ct == :market %>
+                  <% if c.channel.cost? %>
+                    Price: <%= c.channel.cost %>
+                  <% end %>
+                <% end %>
+              </span>
+              <span style="clear: both"></span>
+            </p>
+          </td>
+          <td style='vertical-align: top; text-align: right; width: 100px;'>
+            <% if c.primary_image %>
+              <img src="<%= c.primary_image.url%>" width="100" style="max-height: 100px;" />
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+    <br>
+  <% end %>
+</div>
+
+<% if @digest.contents.any? %>
+  <div class='table of contents'>
+    <h3>TABLE OF CONTENTS</h3>
+    <ol>
+      <% @digest.listserv_contents.sort_by(&:verified_at).each do |lc|%>
+        <li><a href='#lc-<%=lc.id%>'><%= lc.subject %></a></li>
+      <% end %>
+    </ol>
+  </div>
+<% end %>
+<div class='posts'>
+  <p>BEGIN DIGEST</p>
+  <% @digest.listserv_contents.sort_by(&:verified_at).each do |lc| %>
+    <hr width="50%" color="#830617">
+    <div id='lc-<%=lc.id%>' class='post'>
+      <strong><%= lc.subject %></strong><br>
+      From: <%= lc.sender_name %><br>
+      Date: <%= lc.verified_at.strftime('%m/%d/%y %l:%M %p') %>
+
+      <div class='body'>
+        <%= simple_format raw(strip_tags(lc.body.gsub("><", ">\n<")).strip) %>
+      </div>
+      <div class='actions'>
+        <table align="center">
+          <tr>
+            <td>
+              <a href='mailto:<%= lc.sender_email %>?subject=Re: <%=lc.subject%>'>Reply to sender</a>
+            </td>
+            <td> -- </td>
+            <td>
+              <a href='mailto:<%= @listserv.post_email %>?subject=Re: <%=lc.subject%>'>Reply to list</a>
+            </td>
+            <td> -- </td>
+            <td>
+              <a href='#top'>Back to Top</a>
+            </td>
+          </tr>
+        </table>
+    </div>
+  <% end %>
+  <p>END DIGEST</p>
+</div>
+
+<div class='footer'>
+  <%= raw @listserv.digest_footer %>
+</div>

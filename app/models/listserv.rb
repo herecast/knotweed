@@ -124,6 +124,12 @@ class Listserv < ActiveRecord::Base
   def content_ids_for_results
     custom_digest_results.map { |result| result[:id] }
   end
+  
+  def digest_templates
+    templates = Dir.entries('app/views/listserv_digest_mailer/')
+    file_names = templates.map { |file| file.split('.').first }
+    file_names.compact!
+  end
 
   private
 
@@ -158,9 +164,4 @@ class Listserv < ActiveRecord::Base
     #[{'id' => 1 }, {'id' => 2}]
   end
   
-  def digest_templates
-    templates = Dir.entries('app/views/listserv_digest_mailer/')
-    file_names = templates.map { |file| file.split('.').first }
-    file_names.compact!
-  end
 end
