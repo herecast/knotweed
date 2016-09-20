@@ -54,7 +54,7 @@ describe MarketPostsHelper, type: :helper do
       before { allow(ConsumerApp).to receive(:current).and_return(consumer_app) }
 
       it 'uses consumer app uri' do
-        expect(subject).to eql "#{consumer_app.uri}#{content_path}#{utm_string}"
+        expect(subject).to eql "#{consumer_app.uri}/market/#{market_post.content.id}"
       end
     end
 
@@ -65,7 +65,7 @@ describe MarketPostsHelper, type: :helper do
       end
 
       it 'uses @base_uri, and market_post.content.id' do
-        expect(subject).to eql "#{@base_uri}/contents/#{market_post.content.id}/market_posts/#{market_post.id}#{utm_string}"
+        expect(subject).to eql "#{@base_uri}/market/#{market_post.content.id}"
       end
     end
 
@@ -76,7 +76,7 @@ describe MarketPostsHelper, type: :helper do
       end
 
       it 'uses a default url' do
-        expect(subject).to eql "http://www.dailyuv.com/uvmarket"
+        expect(subject).to eql "http://www.dailyuv.com/market"
       end
     end
   end
