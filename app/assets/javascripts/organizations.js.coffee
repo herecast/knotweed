@@ -98,8 +98,7 @@ updateContentSetsSelect = ->
   })
 
 jQuery ->
-  $('.add-hours-link').on 'click', ->
-     new_index = $('#business_location_hours input').length
+  $('.add-hours-link-organizations').on 'click', ->
     $('#business_location_hours').append '
       <div class="row-fluid">
         <div class="span6">

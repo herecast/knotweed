@@ -52,7 +52,7 @@
             = f.input :can_publish_talk, input_html: { class: 'input-block-level' }
             = f.input :can_publish_ads, input_html: { class: 'input-block-level' }
       .tab-pane.form-horizontal#profile
-        - if @organization.org_type != 'Business'
+        - unless @organization.org_type == 'Business'
           .row-fluid
             .span5
               = f.input :profile_title, input_html: { class: "input-block-level" }
@@ -66,39 +66,38 @@
             .span7
               .summernote-wrapper
                 = f.input :description, as: :summernote, label: 'Description'
-        - else
-          - @organization.business_locations.each do |location|
-            = simple_fields_for location do |g|
+        - @organization.business_locations.each do |location|
+          = simple_fields_for location do |g|
+            .row-fluid
+              .span6
+                = g.hidden_field :business_location_id, value: location.id
+                = g.input :name, input_html: { class: "input-block-level" }
+                = g.input :email, input_html: { class: "input-block-level" }
+                = g.input :venue_url, input_html: { class: "input-block-level" }
+              .span6
+                = g.input :address, input_html: { class: "input-block-level" }
+                = g.input :city, input_html: { class: "input-block-level" }
+                = g.input :state, input_html: { class: "input-block-level" }
+                = g.input :zip, input_html: { class: "input-block-level" }
+                = g.input :phone, input_html: { class: "input-block-level" }
               .row-fluid
-                .span6
-                  = g.hidden_field :business_location_id, value: location.id
-                  = g.input :name, input_html: { class: "input-block-level" }
-                  = g.input :email, input_html: { class: "input-block-level" }
-                  = g.input :venue_url, input_html: { class: "input-block-level" }
-                .span6
-                  = g.input :address, input_html: { class: "input-block-level" }
-                  = g.input :city, input_html: { class: "input-block-level" }
-                  = g.input :state, input_html: { class: "input-block-level" }
-                  = g.input :zip, input_html: { class: "input-block-level" }
-                  = g.input :phone, input_html: { class: "input-block-level" }
-                .row-fluid
-                  %h3 Opening Hours
-                  %span.hint 
-                    Each rule needs to be in 
-                    = link_to 'Schema.org OpeningHours format.', 'https://schema.org/openingHours'
-                    To specify days and time, use | as a separator. For example: Mo-Th|16:00-20:00
-                  %span.pull-left.btn.btn-success.add-hours-link + Add Hours
-                #business_location_hours
-                  = g.fields_for :hours do |i|
-                    - if location.hours.present? and location.hours.is_a?(Array)
-                      - location.hours.each do |hour|
-                        .row-fluid
-                          .span6
-                            = i.text_field nil, value: hour, class: 'span12'
-                          .span2.offset4
-                            .btn.btn-danger.remove-hours-field X
-            = simple_fields_for location.business_profile do |h|
-              = h.association :business_categories, label_method: :name_with_parent, input_html: { class: 'chosen-select input-block-level' }
+                %h3 Opening Hours
+                %span.hint 
+                  Each rule needs to be in 
+                  = link_to 'Schema.org OpeningHours format.', 'https://schema.org/openingHours'
+                  To specify days and time, use | as a separator. For example: Mo-Th|16:00-20:00
+                %span.pull-left.btn.btn-success.add-hours-link-organizations + Add Hours
+              #business_location_hours
+                = g.fields_for :hours do |i|
+                  - if location.hours.present? && location.hours.is_a?(Array)
+                    - location.hours.each do |hour|
+                      .row-fluid
+                        .span6
+                          = i.text_field nil, value: hour, class: 'span12'
+                        .span2.offset4
+                          .btn.btn-danger.remove-hours-field X
+          = simple_fields_for location.business_profile do |h|
+            = h.association :business_categories, label_method: :name_with_parent, input_html: { class: 'chosen-select input-block-level' }
       .tab-pane#business_locations
         .pull-right
           - unless @organization.org_type == "Business"
