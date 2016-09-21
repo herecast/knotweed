@@ -22,6 +22,25 @@ describe EventInstance, :type => :model do
     @event = FactoryGirl.create :event, content: @content, subtitle: 'helpful subtitle'
   end
 
+  describe 'search', elasticsearch: true do
+    before do
+      @event.venue = FactoryGirl.create :business_location, name: Faker::Company.name
+      @event.save
+      EventInstance.reindex
+    end
+    
+    subject { EventInstance.search(search_term) }
+
+    describe 'by venue name' do
+      let(:search_term) { @event.venue.name }
+
+      it 'should return search results matching the venue name' do
+        expect(subject).to match_array(@event.event_instances)
+      end
+    end
+    
+  end
+
   describe "validation" do
     describe '#end_date_after_start_date' do
       context "when end date is before start date" do

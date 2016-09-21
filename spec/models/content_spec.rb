@@ -1419,6 +1419,16 @@ describe Content, :type => :model do
         expect(Content.search(@user.name).results).to eq([@not_news])
       end
     end
+
+    describe 'organization name' do
+      before do
+        @content = FactoryGirl.create :content
+      end
+
+      it 'should index organization name' do
+        expect(Content.search(@content.organization.name).results).to eq([@content])
+      end
+    end
   end
 
   describe 'Content.talk_search', elasticsearch: true do

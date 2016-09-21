@@ -16,7 +16,7 @@
 
 class EventInstance < ActiveRecord::Base
   searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name,
-    searchable: [:content, :title, :subtitle_override, :event_category, :venue]
+    searchable: [:content, :title, :subtitle_override, :event_category, :venue, :venue_name]
 
   belongs_to :event
   belongs_to :schedule
@@ -40,6 +40,7 @@ class EventInstance < ActiveRecord::Base
       data[:event_category] = event.event_category
       if event.venue.present?
         data[:venue] = event.venue.city
+        data[:venue_name] = event.venue.name
       end
       if event.content.present?
         data.merge!({

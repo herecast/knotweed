@@ -58,7 +58,7 @@ class Content < ActiveRecord::Base
   include Incrementable
 
   searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name,
-    searchable: [:content, :title, :subtitle, :authors]
+    searchable: [:content, :title, :subtitle, :authors, :organization_name]
 
   def search_data
     {
@@ -69,6 +69,7 @@ class Content < ActiveRecord::Base
       pubdate: pubdate,
       all_loc_ids: all_loc_ids,
       organization_id: organization.try(:id),
+      organization_name: organization.try(:name),
       published: published,
       channel_type: channel_type,
       root_content_category_id: content_category.try(:parent_id) || content_category_id,
