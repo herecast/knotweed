@@ -39,7 +39,81 @@ describe PromotionBanner, :type => :model do
       banner2 = FactoryGirl.create :promotion_banner, promotion: promo2
       expect(PromotionBanner.for_content(@content_id).count).to eq(2)
     end
+  end
 
+  describe 'stacking for_content and has_inventory scopes' do
+    subject { PromotionBanner.for_content(banner.promotion.content_id).has_inventory }
+
+    context 'a banner with no inventory' do
+      let(:banner) { FactoryGirl.create :promotion_banner,
+        daily_max_impressions: 5, daily_impression_count: 5,
+        max_impressions: nil }
+
+      it 'should not be returned' do
+        expect(subject).to_not include(banner)
+      end
+    end
+
+    context 'a banner with inventory' do
+      let(:banner) { FactoryGirl.create :promotion_banner,
+        daily_max_impressions: 7, daily_impression_count: 5,
+        max_impressions: nil }
+
+      it 'should be returned' do
+        expect(subject).to include(banner)
+      end
+    end
+  end
+
+  describe 'scope :has_inventory' do
+    subject { PromotionBanner.has_inventory } 
+
+    context 'a promotion banner with no impression limits' do
+      let(:promotion_banner) { FactoryGirl.create :promotion_banner,
+        daily_max_impressions: nil, max_impressions: nil } 
+
+      it 'should be included' do
+        expect(subject).to include(promotion_banner)
+      end
+    end
+
+    context 'a promotion banner over daily_max_impressions' do
+      let(:promotion_banner) { FactoryGirl.create :promotion_banner,
+        daily_max_impressions: 5, daily_impression_count: 5 }
+
+      it 'should not be included' do
+        expect(subject).to_not include(promotion_banner)
+      end
+    end
+
+    context 'a promotion banner over max_impressions' do
+      let(:promotion_banner) { FactoryGirl.create :promotion_banner,
+        max_impressions: 5, impression_count: 5 }
+
+      it 'should not be included' do
+        expect(subject).to_not include(promotion_banner)
+      end
+    end
+
+    context 'a promotion banner over daily_max_impressions but not over max_impressions' do
+      let(:promotion_banner) { FactoryGirl.create :promotion_banner,
+        daily_max_impressions: 5, max_impressions: 6,
+        daily_impression_count: 5, impression_count: 5 } 
+
+      it 'should not be included' do
+        expect(subject).to_not include(promotion_banner)
+      end
+    end
+
+    context 'a promotion banner over max_impressions but not over daily_max_impressions' do
+      let(:promotion_banner) { FactoryGirl.create :promotion_banner,
+        daily_max_impressions: 3, max_impressions: 6,
+        daily_impression_count: 2, impression_count: 6 } 
+
+      it 'should not be included' do
+        expect(subject).to_not include(promotion_banner)
+      end
+    end
   end
 
   describe 'scope :active' do
