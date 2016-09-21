@@ -39,7 +39,7 @@ class BusinessProfile < ActiveRecord::Base
     if content.present?
       index.merge!({
         title: content.title,
-        content: content.raw_content,
+        content: strip_tags(content.raw_content),
         organization_id: content.organization_id
       })
     end

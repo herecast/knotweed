@@ -57,11 +57,12 @@ class Content < ActiveRecord::Base
   include Auditable
   include Incrementable
 
-  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name
+  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name,
+    searchable: [:content, :title, :subtitle, :authors]
 
   def search_data
     {
-      content: raw_content,
+      content: strip_tags(raw_content),
       title: title,
       subtitle: subtitle,
       authors: author_name,
