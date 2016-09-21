@@ -946,7 +946,7 @@ class Content < ActiveRecord::Base
       end
     end
     if content_id.present?
-      banner = PromotionBanner.for_content(content_id).has_inventory.order('random()').first
+      banner = PromotionBanner.for_content(content_id).active.has_inventory.order('random()').first
     elsif banner.blank? # banner may already be populated from the first conitional
       random_promotion_info_set = PromotionBanner.get_random_promotion
     end

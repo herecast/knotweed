@@ -1749,11 +1749,19 @@ describe Content, :type => :model do
             before do
               promo_banner.update_attributes({
                 campaign_start: 1.month.ago,
-                campaign_end: 1.week.ago
+                campaign_end: 1.week.ago,
+                max_impressions: nil
               })
+              promo_banner.promotion.update_attribute(:content_id, content.id)
             end
 
             it 'does not return the banner' do
+              result_banner, result_score, result_type = content.get_related_promotion(repo)
+              expect(result_banner).to be nil
+            end
+
+            it 'does not return banner even with content id' do
+              allow(DspService).to receive(:query_promo_similarity_index).and_return([promo_banner.promotion])
               result_banner, result_score, result_type = content.get_related_promotion(repo)
               expect(result_banner).to be nil
             end
