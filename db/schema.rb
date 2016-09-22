@@ -673,6 +673,7 @@ ActiveRecord::Schema.define(version: 20160912165029) do
     t.boolean  "can_publish_market",              default: false
     t.boolean  "can_publish_talk",                default: false
     t.boolean  "can_publish_ads",                 default: false
+    t.string   "profile_ad_override", limit: 255
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
