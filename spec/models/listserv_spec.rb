@@ -42,6 +42,7 @@ describe Listserv, :type => :model do
   it { is_expected.to have_db_column(:digest_description).of_type(:text) }
   it { is_expected.to have_db_column(:digest_send_day).of_type(:string) }
   it { is_expected.to have_db_column(:digest_query).of_type(:text) }
+  it { is_expected.to have_db_column(:sponsored_by).of_type(:string) }
   describe '#active_subscriber_count' do
     it 'is equal to related active subscriptions' do
       ls = FactoryGirl.create :listserv

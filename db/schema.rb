@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160912165029) do
+ActiveRecord::Schema.define(version: 20160918161348) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -577,6 +577,7 @@ ActiveRecord::Schema.define(version: 20160912165029) do
     t.integer  "digest_max_contents",                      default: 25
     t.integer  "digest_max_listserv_contents",             default: 25
     t.string   "template"
+    t.string   "sponsored_by"
   end
 
   create_table "listservs_locations", id: false, force: :cascade do |t|
