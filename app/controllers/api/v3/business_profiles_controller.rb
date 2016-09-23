@@ -38,6 +38,10 @@ module Api
         end
 
         opts[:order] = sort_by
+        if query.present? and query != '*'
+          opts[:order].unshift({ _score: :desc })
+        end
+
 
         if params[:category_id].present?
           opts[:where][:category_ids] = { in: BusinessCategory.find(params[:category_id]).full_descendant_ids }
