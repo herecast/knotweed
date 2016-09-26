@@ -206,9 +206,10 @@ describe UsersController, :type => :controller do
   describe "POST #create" do
     before do
       @role = FactoryGirl.create :role
+      @location = FactoryGirl.create :location
     end
 
-    subject { post :create, user: { name: 'Ya boi Tessek', email: 'tessek@squidhead.com', password: '12345678', password_confirmation: '12345678', location_id: '1', @role.name => 'on' } }
+    subject { post :create, user: { name: 'Ya boi Tessek', email: 'tessek@squidhead.com', password: '12345678', password_confirmation: '12345678', location_id: @location.id, @role.name => 'on' } }
 
     context "when creation succeeds" do
       it "redirects to user path" do

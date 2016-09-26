@@ -134,7 +134,7 @@ describe PublishJob, :type => :model do
       end
 
       it "should create a zip archive" do
-        expect(File.exists?("public/exports/#{@job.id}.zip")).to be_truthy
+        expect(Dir["public/exports/*.zip"].length).to eq(1)
       end
 
       it "should generate a file ready email" do

@@ -181,7 +181,7 @@ describe 'Market Posts', type: :request do
       end
 
       it "returns true" do
-        get "/api/v3/market_posts/#{market_post.id}"
+        get "/api/v3/market_posts/#{market_post.content.id}"
         expect(response_json[:market_post][:can_edit]).to eql true
       end
     end
@@ -200,12 +200,12 @@ describe 'Market Posts', type: :request do
 
       it "returns false" do
         allow_any_instance_of(Ability).to receive(:can?).with(:manage, market_post.content).and_return(false)
-        get "/api/v3/market_posts/#{market_post.id}"
+        get "/api/v3/market_posts/#{market_post.content.id}"
         expect(response_json[:market_post][:can_edit]).to eql false
       end
 
       it 'does not allow a user to send an update' do
-        put "/api/v3/market_posts/#{market_post.id}", { news: put_params }, auth_headers
+        put "/api/v3/market_posts/#{market_post.content.id}", { news: put_params }, auth_headers
         expect(response.status).to eql 403
       end
       

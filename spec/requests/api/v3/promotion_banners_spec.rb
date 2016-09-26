@@ -5,8 +5,11 @@ describe 'Promotion Banner Endpoints', type: :request do
   let(:auth_headers) { auth_headers_for(user) }
 
   describe 'GET /api/v3/promotion_banners/:id/metrics' do
-    let(:promotion) { FactoryGirl.create :promotion, created_by: user }
-    let(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: promotion }
+    before do
+      @promotion = FactoryGirl.create :promotion
+      @promotion.update_attribute(:created_by, user)
+    end
+    let(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: @promotion }
 
     it 'returns daily impression and click counts' do
       (2.days.ago.to_date..Date.current).each do |date|

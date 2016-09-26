@@ -8,134 +8,6 @@ describe Api::V3::ContentsController, :type => :controller do
     @consumer_app.organizations = [@org]
   end
 
-  describe 'GET index', elasticsearch: true do
-    before do
-      @news_cat = FactoryGirl.create :content_category, name: 'news'
-      @tott_cat = FactoryGirl.create :content_category, name: 'talk_of_the_town'
-      @market_cat = FactoryGirl.create :content_category, name: 'market'
-      @event_cat = FactoryGirl.create :content_category, name: 'event'
-      @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
-      @other_location = FactoryGirl.create :location, city: 'Another City'
-      @user = FactoryGirl.create :user, location: @other_location
-      FactoryGirl.create_list :content, 15, content_category: @news_cat, 
-        locations: [@default_location], published: true
-      FactoryGirl.create_list :market_post, 15,
-        locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 15, content_category: @tott_cat,
-        locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 15, content_category: @event_cat,
-        locations: [@default_location], published: true
-      FactoryGirl.create_list :market_post, 15,
-        locations: [@other_location], published: true
-      FactoryGirl.create_list :content, 15, content_category: @tott_cat,
-        locations: [@other_location], published: true
-      FactoryGirl.create_list :content, 2, content_category: @news_cat,
-        locations: [@other_location], published: true
-    end
-
-    subject { get :index, format: :json }
-    let(:news_content) { assigns(:contents).select{ |c| c.content_category_id == @news_cat.id } }
-    let(:non_news_content) { assigns(:contents).select{ |c| c.content_category_id != @news_cat.id } }
-
-    context 'with consumer app specified' do
-      before do
-        @content = Content.where(content_category_id: @market_cat).first
-        @org = @content.organization
-        @consumer_app = FactoryGirl.create :consumer_app
-        @consumer_app.organizations << @org
-        api_authenticate consumer_app: @consumer_app
-      end
-
-      it 'should filter results by consumer app\'s organizations' do
-        subject
-        expect(assigns(:contents)).to eq([@content])
-      end
-    end
-
-    context 'not signed in' do
-      it 'has 200 status code' do
-        subject
-        expect(response.code).to eq('200')
-      end
-
-      it 'should respond with 2 news items' do
-        subject
-        expect(assigns(:contents).select{|c| c.content_category_id == @news_cat.id }.count).to eq(2)
-      end
-
-      it 'should not include any talk items' do
-        subject
-        expect(assigns(:contents).select{|c| c.content_category_id == @tott_cat.id }.count).to eq(0)
-      end
-
-      it 'should only return items in the default location' do
-        subject
-        expect(assigns(:contents).select{|c| c.locations.include? @other_location }.count).to eq(0)
-      end
-    end
-
-    context 'signed in' do
-      before do
-        api_authenticate user: @user
-      end
-
-      it 'has 200 status code' do
-        subject
-        expect(response.code).to eq('200')
-      end
-
-      it 'should include talk items' do
-        subject
-        contents = assigns(:contents)
-        expect(contents.count).to be > 0
-        expect(contents.select{|c| c.content_category_id == @tott_cat.id }.count).to be >0
-      end
-
-      it 'should return items in the user\'s location' do
-        subject
-        contents = assigns(:contents)
-        expect(contents.select{|c| c.locations.include? @other_location}.count).to eq(contents.count)
-      end
-
-      context "when location has too few contents" do
-        before do
-          @user.update_attribute(:location, FactoryGirl.create(:location))
-        end
-        
-        it "returns contents connected to default location" do
-          subject
-          expect(assigns(:contents).select{ |c| c.locations.include? @default_location }.count).to eq assigns(:contents).count
-        end
-      end
-    end
-
-    describe 'paging' do
-      context 'with per_page param' do
-        subject! { get :index, format: :json, per_page: 10 }
-
-        it "should return 10 regular contents" do
-          expect(non_news_content.count).to eq(10)
-        end
-        
-        it "should return 4 news contents" do
-          expect(news_content.count).to eq(4)
-        end
-      end
-
-      context 'with news_per_page param' do
-        subject! { get :index, format: :json, news_per_page: 10 }
-
-        it "should return 4 regular contents" do
-          expect(non_news_content.count).to eq(4)
-        end
-        
-        it "should return 10 news contents" do
-          expect(news_content.count).to eq(10)
-        end
-      end
-    end
-  end
-
   describe 'GET related_promotion' do
     before do
       @content = FactoryGirl.create :content
@@ -378,20 +250,21 @@ describe Api::V3::ContentsController, :type => :controller do
           #@event = FactoryGirl.create :event, content_category: @event_cat
           FactoryGirl.create_list :content, 5, 
             content_category: @news_cat, 
-            published: true, created_by: @user
+            published: true
           FactoryGirl.create_list :content, 5, 
             content_category: @market_cat, 
-            published: true, created_by: @user
+            published: true
           FactoryGirl.create_list :content, 5,
             content_category: @talk_cat,
-            published: true, created_by: @user
+            published: true
           event_conts = FactoryGirl.create_list :content, 5, 
             content_category: @event_cat,
             channel_type: 'Event',
-            published: true, created_by: @user
+            published: true
           event_conts.each do |ec|
             FactoryGirl.create :event, content: ec
           end
+          Content.update_all created_by: @user
         end
 
         it 'responds with the user\'s content' do
@@ -433,7 +306,8 @@ describe Api::V3::ContentsController, :type => :controller do
           before do
             @child_of_news = FactoryGirl.create :content_category, name: 'child', parent: @news_cat
             @c = FactoryGirl.create :content, content_category: @child_of_news,
-              published: true, created_by: @user
+              published: true
+            @c.update_attribute(:created_by, @user)
           end
 
           subject { get :dashboard, channel_type: 'news' }

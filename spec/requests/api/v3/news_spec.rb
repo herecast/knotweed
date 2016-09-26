@@ -114,7 +114,8 @@ describe 'News Endpoints', type: :request do
     before do
       @news_cat = FactoryGirl.create :content_category, name: 'news'
       @org = FactoryGirl.create :organization, can_publish_news: true
-      @content = FactoryGirl.create :content, organization: @org, pubdate: nil, created_by: user
+      @content = FactoryGirl.create :content, organization: @org, pubdate: nil
+      @content.update_attribute(:created_by, user)
       @org.reindex
     end
 
@@ -316,6 +317,7 @@ describe 'News Endpoints', type: :request do
     let!(:news) { FactoryGirl.create :content, created_by: user, organization: org, content_category: news_cat }
 
     it 'sets #deleted_at' do
+      news.update_attribute(:created_by, user)
       expect {
         delete "/api/v3/news/#{news.id}", {}, headers.merge(auth_headers)
       }.to change {

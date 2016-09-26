@@ -63,16 +63,16 @@ RSpec.describe VerifyAndUpdateListservContent do
 
 
     context 'When content_id included in attributes update' do
-      let(:user) { FactoryGirl.create :user }
-      let(:content) { FactoryGirl.create :content, created_by: user }
-
       before do
-        attributes[:content_id] = content.id
+        @user = FactoryGirl.create :user
+        @content = FactoryGirl.create :content
+        @content.update_attribute(:created_by, @user)
+        attributes[:content_id] = @content.id
       end
 
       it 'updates content reference' do
         subject
-        expect(listserv_content.reload.content).to eql content
+        expect(listserv_content.reload.content).to eql @content
       end
 
       it 'triggers confirmation email' do
@@ -83,13 +83,13 @@ RSpec.describe VerifyAndUpdateListservContent do
 
       context 'when user has temp_password set;' do
         before do
-          user.temp_password= "89r32jjkl2390"
-          user.save!
+          @user.temp_password= "89r32jjkl2390"
+          @user.save!
         end
 
         it 'clear temp_password on user' do
           expect{ subject }.to change{
-            user.reload.temp_password
+            @user.reload.temp_password
           }.to nil
         end
       end
@@ -102,7 +102,7 @@ RSpec.describe VerifyAndUpdateListservContent do
         it 'sets user_id to content\'s created_by' do
           expect{ subject }.to change{
             listserv_content.reload.user_id
-          }.to user.id
+          }.to @user.id
         end
       end
 

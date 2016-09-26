@@ -119,23 +119,6 @@ describe ImportJob, :type => :model do
     end
   end
 
-  describe '#traverse_input_tree' do
-    before do
-      @import_job = FactoryGirl.create :import_job, job_type: 'continuous'
-      @import_record = FactoryGirl.create :import_record
-    end
-
-    context "when continuous and during backup" do
-      it "stop_loop becomes false" do
-        allow(ImportJob).to receive(:backup_start).and_return(Time.current - 10)
-        allow(ImportJob).to receive(:backup_end).and_return(Time.current + 10)
-        allow(@import_job).to receive(:last_import_record) { @import_record }
-        response = @import_job.traverse_input_tree
-        expect(@import_job.stop_loop).to be false
-      end
-    end
-  end
-
   describe '#reschedule_at' do
     before do
       Timecop.freeze

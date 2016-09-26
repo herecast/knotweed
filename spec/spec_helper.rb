@@ -28,6 +28,10 @@ VCR.configure do |c|
   c.hook_into :webmock
 end
 
+TestAfterCommit.enabled = true
+
+class Delayed::Worker; define_method(:job_say) { |*args| } end
+
 RSpec.configure do |config|
   config.include AuthenticationHelpers, type: :controller
   config.include RequestHelpers, type: :request
@@ -65,7 +69,7 @@ RSpec.configure do |config|
     # Disable VCR for the test-suite, unless a test explicitely asks for it
     VCR.turn_off!
     ImageUploader.storage = :file
-    DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.strategy = :transaction
     begin
       DatabaseCleaner.start
       build_indices
@@ -76,10 +80,8 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do
-    DatabaseCleaner.start
     mixpanel_track_stub
     ActionMailer::Base.deliveries.clear
-    DatabaseCleaner.strategy = :truncation
     DatabaseCleaner.start
   end
 

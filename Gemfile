@@ -100,6 +100,7 @@ group :test do
   gem "timecop", '~> 0.7.1'
   gem "vcr", '~> 2.9.2'
   gem "webmock", '~> 2.1.0'
+  gem "test_after_commit", "~> 1.1.0"
 end
 
 group :development do

@@ -4,7 +4,8 @@ describe Api::V3::ContentReportsController, type: :controller do
   before do
     @content_report = FactoryGirl.create :content_report, report_date: Date.new(2016,1,1)
     @user = FactoryGirl.create :user
-    @content = FactoryGirl.create :content, created_by: @user, pubdate: Date.new(2016,1,1)
+    @content = FactoryGirl.create :content, pubdate: Date.new(2016,1,1)
+    @content.update_attribute(:created_by, @user)
     @content_report.content = @content
     @content_report.save
     @content.organization.update_attribute(:pay_rate_in_cents, 5)
