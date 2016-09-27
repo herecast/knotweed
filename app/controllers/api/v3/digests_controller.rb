@@ -4,7 +4,7 @@ module Api
       def index
         expires_in 1.hours, public: true
 
-        @digests = Listserv.all.select{ |ls| ls.is_managed_list? }
+        @digests = Listserv.where(display_subscribe: true)
 
         render json: @digests, each_serializer: DigestSerializer
       end

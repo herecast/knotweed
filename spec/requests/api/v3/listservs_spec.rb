@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Listserv API Endpoints', type: :request do
   describe 'GET /api/v3/listservs' do
     context 'when listservs exist;' do
-      let!(:listservs) { FactoryGirl.create_list :vc_listserv, 3 }
+      let!(:listservs) { FactoryGirl.create_list :vc_listserv, 3, display_subscribe: true }
       it 'returns them' do
         get '/api/v3/listservs'
         expect(response_json[:listservs].count).to eql listservs.count

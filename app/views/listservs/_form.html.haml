@@ -30,6 +30,7 @@
         = f.input :template, collection: @listserv.digest_templates, include_blank: false
         = f.input :sponsored_by, hint: "Ex: 'Sponsored by Monsanto'"
         = f.input :banner_ad_override_id, as: :string
+        = f.input :display_subscribe, label: "Subscription option on DailyUV registration and user account"
 
         .form-actions
           = f.button :submit, class: 'btn btn-success'

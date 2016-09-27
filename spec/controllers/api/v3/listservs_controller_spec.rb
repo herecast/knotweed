@@ -4,7 +4,8 @@ describe Api::V3::ListservsController, :type => :controller do
 
   describe 'GET index' do
     before do
-      FactoryGirl.create_list :listserv, 3
+      FactoryGirl.create_list :listserv, 2
+      FactoryGirl.create :listserv, reverse_publish_email: 'mail@example.org'
     end
 
     subject { get :index, format: :json }
@@ -14,9 +15,9 @@ describe Api::V3::ListservsController, :type => :controller do
       expect(response.code).to eq('200')
     end
 
-    it 'assigns all listservs to instance variable' do
+    it 'only returns listservs that are sending digests and displaying subscriptions' do
       subject
-      expect(assigns(:listservs).count).to eq(Listserv.count)
+      expect(assigns(:listservs).count).to eq 1
     end
 
   end

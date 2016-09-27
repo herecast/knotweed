@@ -65,7 +65,8 @@ class ListservsController < ApplicationController
         :digest_send_day,
         :digest_query,
         :template,
-        :sponsored_by
+        :sponsored_by,
+        :display_subscribe
       )
     end
 end
