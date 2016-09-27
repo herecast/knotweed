@@ -1,5 +1,5 @@
 module EmailTemplateHelper
-  def url_for_consumer_app(url)
+  def url_for_consumer_app(url="/")
     "http://#{consumer_host}#{url}"
   end
 
