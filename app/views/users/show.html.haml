@@ -23,6 +23,26 @@
           %h4 Managed Organizations
           - @user.managed_organizations.each do |org|
             %p #{org.name}
+      .row-fluid
+        %h4 Digest Subscriptions
+        %table.table.table-striped.table-bordered.table-condensed
+          %thead
+            %tr
+              %th Listserv
+              %th Confirmed
+              %th Unsubscribed
+              %th Created
+              %th Key
+
+          %tbody
+            - @user.subscriptions.each do |s|
+              %tr{ class: "subscription-#{s.id}" }
+                %td= s.listserv.name
+                %td= I18n.l s.confirmed_at if s.confirmed?
+                %td= I18n.l s.unsubscribed_at if s.unsubscribed?
+                %td= I18n.l s.created_at if s.created_at?
+                %td= s.key
+
       .form-actions
         = link_to 'Edit User', edit_user_path(@user), class: 'btn btn-primary'
         = link_to 'All Users', users_path, class: 'btn btn-default'

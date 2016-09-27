@@ -14,7 +14,11 @@ Knotweed::Application.routes.draw do
     post '/api/v3/password_resets', to: 'api/v3/passwords#create'
     put '/api/v3/password_resets', to: 'api/v3/passwords#update'
   end
-  resources :users
+  resources :users do
+    member do
+      put :update_subscription
+    end
+  end
   post '/users/admin-create', to: 'users#create'
   put '/users/:id/admin-update', to: 'users#update'
 

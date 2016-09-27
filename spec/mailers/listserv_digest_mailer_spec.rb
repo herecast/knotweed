@@ -168,7 +168,6 @@ RSpec.describe ListservDigestMailer do
         end
 
         it 'includes the date for the content post' do
-          # byebug
           listserv_contents.each do |content|
             expect(subject).to include content.verified_at.strftime('%m/%d/%y %l:%M %p')
           end

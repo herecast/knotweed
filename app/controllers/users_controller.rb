@@ -20,6 +20,7 @@ class UsersController < ApplicationController
   def edit
     @user = User.find_by id: params[:id]
     @organizations = Organization.with_role(:manager, @user)
+    @digests = Listserv.all
   end
 
   def update
@@ -34,6 +35,19 @@ class UsersController < ApplicationController
       redirect_to @user, :notice => "User updated."
     else
       redirect_to @user, :alert => "Unable to update user."
+    end
+  end
+
+  def update_subscription
+    @user = User.find_by id: params[:user_id]
+    if params['listserv_id'].to_i.in?(@user.active_listserv_subscription_ids)
+      sub = @user.subscriptions.where(listserv_id: params['listserv_id'].to_i).first
+      UnsubscribeSubscription.call(sub)
+      render nothing: true, status: 200
+    else
+      listserv = Listserv.find(params['listserv_id'])
+      SubscribeToListservSilently.call(listserv, @user, request.remote_ip)
+      render nothing: true, status: 200
     end
   end
 
@@ -84,6 +98,13 @@ class UsersController < ApplicationController
     def process_user_organizations
       params[:user].each do |key, value|
         @user.add_role :manager, Organization.find_by(id: value) if key.include?('controlled_organization')
+      end
+    end
+
+    def new_subscription_ids
+      if params['listserv_id'].present?
+        new_subs =  params['listserv_id'].to_i - @user.subscriptions.map(&:listserv_id)
+        new_subs.map!(&:to_i)
       end
     end
 

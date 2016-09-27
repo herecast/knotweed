@@ -176,6 +176,60 @@ describe UsersController, :type => :controller do
     end
   end
 
+  describe "PUT #update_subscription" do
+    context "when creating a new subscription for a user" do
+      before do
+        @listserv = FactoryGirl.create :listserv
+      end
+      subject { xhr :put, :update_subscription, id: @user.id, user_id: @user.id, listserv_id: @listserv.id }
+
+      it 'creates a subscription to the listserv for the user' do
+        expect{ subject }.to change{ @user.subscriptions.reload.count }.by 1
+      end
+
+      it 'runs SubscribeToListservSilently' do
+        expect(SubscribeToListservSilently).to receive(:call).with(@listserv, @user, request.remote_ip)
+        subject
+      end
+    end
+
+    context "when unsubscribing a user from a current subscription" do
+      before do
+        @listserv = FactoryGirl.create :listserv
+        @subscription = FactoryGirl.create :subscription, user_id: @user.id, listserv_id: @listserv.id
+      end
+      subject { xhr :put, :update_subscription, id: @user.id, user_id: @user.id, listserv_id: @listserv.id }
+
+      it 'updates the subscription' do
+        subject
+        expect(@subscription.reload.unsubscribed_at).to_not be_nil
+      end
+
+      it 'runs the Unsubscribe Job' do
+        expect(UnsubscribeSubscription).to receive(:call).with(@subscription)
+        subject
+      end
+    end
+
+    context "when re-subscribing a user to a listserv" do
+      before do
+        @listserv = FactoryGirl.create :listserv
+      end
+      subject { xhr :put, :update_subscription, id: @user.id, user_id: @user.id, listserv_id: @listserv.id }
+
+      it 'sets unsubscribed_at to nil' do
+        subject
+        @subscription = Subscription.where(listserv_id: @listserv.id, user_id: @user.id).first
+        expect(@subscription.unsubscribed_at).to be_nil
+      end
+
+      it 'runs SubscribeToListservSilently' do
+        expect(SubscribeToListservSilently).to receive(:call).with(@listserv, @user, request.remote_ip)
+        subject
+      end
+    end
+  end
+
   describe "DELETE #destroy" do
 
     context "when admin deletes another user" do

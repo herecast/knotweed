@@ -35,5 +35,10 @@
           %option{ value: 'empty' } Select Organization
           - Organization.all.each do |o|
             %option{ value: "#{o.id}" } #{o.name}
+  .row-fluid
+    %h4 Subscriptions
+    - @digests.each do |digest|
+      = check_box_tag 'subscribed_ids[]', digest.id, digest.id.in?(@user.active_subscription_ids), data: { disable_with: 'Subscribing...', remote: true, url: url_for(action: :update_subscription, user_id: @user.id, listserv_id: digest.id), method: "PUT" }
+      %p= digest.name
   .form-actions
     = submit_tag nil, class: "btn btn-primary"

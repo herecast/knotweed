@@ -40,9 +40,12 @@
 class User < ActiveRecord::Base
 
   has_many :notifiers
+  has_many :subscriptions
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
   mount_uploader :avatar, ImageUploader
+
+  accepts_nested_attributes_for :subscriptions
 
   before_save :ensure_authentication_token
 
@@ -110,6 +113,14 @@ class User < ActiveRecord::Base
     end
     recoverable.send_reset_password_instructions if recoverable.persisted?
     recoverable
+  end
+
+  def subscribed_listserv_ids
+    self.subscriptions.map(&:listserv_id)
+  end
+
+  def active_listserv_subscription_ids
+    self.subscriptions.where(unsubscribed_at: nil).map(&:listserv_id)
   end
 
   private
