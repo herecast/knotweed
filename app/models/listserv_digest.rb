@@ -22,6 +22,6 @@ class ListservDigest < ActiveRecord::Base
  def contents
     @contents ||=
       content_ids.any? ?
-        Content.where(id: content_ids) : []
+        Content.where(id: content_ids).sort_by{|c| content_ids.index(c.id)} : []
   end
 end

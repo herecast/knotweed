@@ -121,14 +121,15 @@ class Listserv < ActiveRecord::Base
     ]
   end
 
-  def content_ids_for_results
-    custom_digest_results.map { |result| result[:id] }
-  end
-  
   def digest_templates
     templates = Dir.entries('app/views/listserv_digest_mailer/')
     file_names = templates.map { |file| file.split('.').first }
     file_names.compact!
+  end
+
+  def contents_from_custom_query
+    custom_ids = custom_digest_results.map { |result| result['id'].to_i }
+    Content.where(id: custom_ids).sort_by {|c| custom_ids.index(c.id) }
   end
 
   private
@@ -150,18 +151,6 @@ class Listserv < ActiveRecord::Base
   end
 
   def custom_digest_results
-    records = get_query
-    #retuns columns for query
-    fields = records.fields
-    #combines column name with value into array
-    #[[column_name, value], [column_name, value]]
-    zipped_results = records.map { |record| fields.zip(record) }
-    #convert results to hash_with_different_access
-    zipped_results.map do |array|
-      ActiveSupport::HashWithIndifferentAccess.new(array.to_h)
-    end
-    #retuns array wwith results as hash
-    #[{'id' => 1 }, {'id' => 2}]
+    get_query.to_a
   end
-  
 end

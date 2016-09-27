@@ -9,7 +9,7 @@ class ListservDigestJob < ApplicationJob
           listserv_contents: listserv_contents_verified_after(
             listserv.last_digest_generation_time || 1.month.ago
           ),
-          contents: contents_for_custom_digest
+          contents: @listserv.contents_from_custom_query
         })
       else
         digest = ListservDigest.new({
@@ -54,7 +54,4 @@ class ListservDigestJob < ApplicationJob
           .collect{|lc| lc.content}).uniq
   end
 
-  def contents_for_custom_digest
-    Content.where(id: @listserv.content_ids_for_results)
-  end
 end

@@ -159,4 +159,25 @@ describe Listserv, :type => :model do
     end
   end
 
+  describe '#contents_from_custom_query' do
+    context 'when custom query exists, with matching records' do
+      let!(:contents) { FactoryGirl.create_list :content, 3 }
+      let!(:listserv) { Listserv.new }
+      before do
+        listserv.digest_query = "SELECT * FROM contents"
+      end
+
+      subject { listserv.contents_from_custom_query }
+
+      it "is equal to matching records" do
+        expect(subject).to eql contents
+      end
+
+      it 'maintains the same sort order' do
+        listserv.digest_query += " ORDER BY id DESC"
+        expect(subject.first).to eql contents.sort_by(&:id).reverse.first
+      end
+    end
+  end
+
 end
