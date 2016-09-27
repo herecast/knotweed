@@ -17,7 +17,7 @@
       <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 15px;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
         <p style="margin: 0;font-size: 14px;line-height: 16px;text-align: center">
           <span style="color: rgb(51, 51, 51); font-size: 16px; line-height: 19px;">
-            Your subscription to <%= @listserv.name %> is now managed through your dailyUV account. These accounts are now linked.
+            Your subscription to <%= @listserv.name %> is active and can be managed through your dailyUV account.
           </span><br>
         </p>
       </td>
@@ -55,7 +55,7 @@
                             <!--<![endif]-->
                             <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard?user_id=#{@subscription.user_id}", user_id: @subscription.user_id, style: "display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;color: #ffffff" do %>
                               <span style="color: #ffffff; font-size:20px;line-height:40px;">
-                                   Manage Subscriptions
+                                   Manage Subscription
                               </span>
                             <% end %>
                           </td>
