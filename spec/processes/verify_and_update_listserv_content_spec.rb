@@ -143,6 +143,11 @@ RSpec.describe VerifyAndUpdateListservContent do
         subject
       end
 
+      it 'does not send subscription confirmation email' do
+        expect(NotificationService).to_not receive(:subscription_confirmation)
+        subject
+      end
+
       it 'sets the subscription user' do
         subject
         listserv_content.reload
@@ -173,6 +178,11 @@ RSpec.describe VerifyAndUpdateListservContent do
             subscription.reload.confirmed_at
           }.to instance_of(ActiveSupport::TimeWithZone)
         end
+
+        it 'does not send subscription confirmation email' do
+          expect(NotificationService).to_not receive(:subscription_confirmation)
+          subject
+        end
       end
 
       context 'Subscription was previously unsubscribed' do
@@ -188,6 +198,11 @@ RSpec.describe VerifyAndUpdateListservContent do
 
         it 'does not send subscription verification email' do
           expect(NotificationService).to_not receive(:subscription_verification)
+          subject
+        end
+
+        it 'does not send subscription confirmation email' do
+          expect(NotificationService).to_not receive(:subscription_confirmation)
           subject
         end
       end

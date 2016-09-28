@@ -20,12 +20,9 @@ class ConfirmSubscription
       @subscription.confirmed_at ||= Time.current
       @subscription.unsubscribed_at = nil
       @subscription.save!
-
-      NotificationService.subscription_confirmation(@subscription)
       sync_with_mc
     elsif @subscription.unsubscribed?
       @subscription.update! unsubscribed_at: nil
-      NotificationService.subscription_confirmation(@subscription)
       sync_with_mc
     end
 
