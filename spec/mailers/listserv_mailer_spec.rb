@@ -205,8 +205,7 @@ RSpec.describe ListservMailer, type: :mailer do
       end
 
       it 'uses the no_enhance_posting_confirmation email' do
-        expect(body_html).to include("Next time you post to the #{listserv_content.listserv.name} try selecting...")
-        expect(body_text).to include("Try following the link to enhance your post instead of following the link to send this post as is.")
+        expect(body_html).to include("non-enhance-confirmation")
       end
     end
   end
