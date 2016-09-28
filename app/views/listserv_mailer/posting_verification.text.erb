@@ -1,31 +1,18 @@
 Thanks for posting to <%=@post.listserv.name%>
 ===========================================================================
 
-Your post...
-"<%= @post.subject %>"
-...isn't in the digest yet...WHY?
+Your post isn't published yet.
 
-Posting to <%= @listserv.name %> is simple, but with dailyUV you can...
+Please choose to...
 
-  - EDIT your post before it goes live - fix those typos.
-  - ADD photos to create a custom page on dailyUV - really quick!
-  - get TOP placement in the digest - BAM.
-
-
-Follow this link to enhance your post: *
+Add photos/edit: *
 http://<%=ENV['DEFAULT_CONSUMER_HOST']%>/lists/posts/<%=@post.key%>
 
-
-To publish without changes: *
+Publish without changes: *
 http://<%=ENV['DEFAULT_CONSUMER_HOST']%>/lists/confirm_post/<%=@post.key%>
 
+
 * By posting, I agree to subscribe to the <%= @listserv.name %> digest.
-
-Sick of seeing this email every time you post? Skip it!!
- - Start on dailyUV and you don't have to verify!
-
-Learn more here:
-<%=ENV['LISTSERV_MARKETING_URL']%>
 
 ---------------------------------------------------------------------------
 
