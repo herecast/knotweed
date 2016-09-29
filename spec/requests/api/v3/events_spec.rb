@@ -56,6 +56,7 @@ describe 'Events Endpoints', type: :request do
   end
 
   describe 'can_edit' do
+    let(:schedule) { FactoryGirl.create :schedule }
     let(:event) { FactoryGirl.create :event }
 
     context 'when ability allows for edit' do
@@ -84,7 +85,7 @@ describe 'Events Endpoints', type: :request do
       end
 
       it 'does not allow a user to send an update' do
-        put "/api/v3/events/#{event.id}", { event: put_params }, auth_headers
+        put "/api/v3/events/#{schedule.event.id}", { event: put_params }, auth_headers
         expect(response.status).to eql 403
       end
       

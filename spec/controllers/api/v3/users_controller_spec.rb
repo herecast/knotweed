@@ -231,7 +231,8 @@ describe Api::V3::UsersController, :type => :controller do
       before do
         @public_id = 'slomo'
         user = FactoryGirl.create :user, public_id: @public_id
-        content = FactoryGirl.create :content, created_by: user
+        content = FactoryGirl.create :content
+        content.update_attribute(:created_by, user)
         event = FactoryGirl.create :event, content: content
         FactoryGirl.create :schedule, event: event
       end
