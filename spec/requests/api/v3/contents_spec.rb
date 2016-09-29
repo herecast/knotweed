@@ -128,6 +128,7 @@ describe 'Contents Endpoints', type: :request do
         subject
         expect(response_json).to match(
           related_promotion: {
+            id: banner.id,
             image_url: banner.banner_image.url,
             redirect_url: banner.redirect_url,
             banner_id: banner.id,

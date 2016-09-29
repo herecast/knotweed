@@ -67,7 +67,8 @@ module Api
             end
 
             if org.present? and allowed_orgs.include? org.id
-              opts[:where][:organization_id] = [org.id]
+              org_ids = org.get_all_children.collect(&:id) + [org.id]
+              opts[:where][:organization_id] = org_ids.compact.uniq
             else
               render json: [], each_serializer: NewsSerializer and return
             end

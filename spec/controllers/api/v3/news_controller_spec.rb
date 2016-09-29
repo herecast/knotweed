@@ -57,10 +57,27 @@ describe Api::V3::NewsController, :type => :controller do
           locations: [@default_location], organization: @org
       end
 
-      subject! { get :index, format: :json, organization_id: @org.id }
+      subject { get :index, format: :json, organization_id: @org.id }
 
       it 'should return content specific to that organization' do
+        subject
         expect(assigns(:news)).to match_array([@org_and_loc_content])
+      end
+
+      context "with child organizations having content" do
+        let(:child_org) { FactoryGirl.create(:organization, parent: @org) }
+        let!(:child_org_content) {
+          FactoryGirl.create :content, {
+            organization: child_org,
+            locations: [@default_location],
+            content_category: @news_cat
+          }
+        }
+
+        it 'returns the child org content with org content' do
+          subject
+          expect(assigns(:news)).to match_array([@org_and_loc_content, child_org_content])
+        end
       end
     end
 

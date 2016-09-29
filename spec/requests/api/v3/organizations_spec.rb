@@ -22,6 +22,9 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           can_publish_market: organization.can_publish_market,
           can_publish_talk: organization.can_publish_talk,
           can_publish_ads: organization.can_publish_ads,
+          profile_ad_override: organization.profile_ad_override,
+          profile_image_url: organization.profile_image.url,
+          background_image_url: organization.background_image.url
         }
       )
     end
@@ -84,6 +87,33 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           expect(subject).to eql false
         end
       end
+    end
+
+    describe 'promotion ad override' do
+      subject { response_json[:organization] }
+
+      context 'when a profile_ad_override is empty' do
+        it 'has promotion as nil' do
+          get "/api/v3/organizations/#{organization.id}"
+          expect(subject[:profile_ad_override]).to be_nil
+        end
+      end
+
+      context 'when a profile_ad_override is present' do
+        let!(:banner) { FactoryGirl.create :promotion_banner }
+        let!(:promotion) { FactoryGirl.create :promotion, organization: organization, promotable: banner }
+
+        before do
+          organization.profile_ad_override = promotion.id
+          organization.save!
+        end
+
+        it 'returns the id of the promotion' do
+          get "/api/v3/organizations/#{organization.id}"
+          expect(subject[:profile_ad_override]).to eql promotion.id
+        end
+      end
+
     end
   end
 

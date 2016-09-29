@@ -1,7 +1,7 @@
 module Api
   module V3
     class RelatedPromotionSerializer < ActiveModel::Serializer
-      attributes :banner_id, :image_url, :redirect_url, :organization_name, :promotion_id
+      attributes :id, :banner_id, :image_url, :redirect_url, :organization_name, :promotion_id
 
       def banner_id
         object.id

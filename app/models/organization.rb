@@ -25,6 +25,9 @@
 #  can_publish_market    :boolean         default(FALSE)
 #  can_publish_talk      :boolean         default(FALSE)
 #  can_publish_ads       :boolean         default(FALSE)
+#  profile_ad_override   :string(255)
+#  profile_image         :string(255)
+#  background_image      :string(255)
 #
 
 class Organization < ActiveRecord::Base
@@ -65,12 +68,17 @@ class Organization < ActiveRecord::Base
   attr_accessible :name, :logo, :logo_cache, :remove_logo, :organization_id,
                   :website, :notes, :images_attributes, :parent_id, :location_ids,
                   :remote_logo_url, :contact_ids, :org_type, :consumer_app_ids,
+                  :profile_image, :remote_profile_image_url, :remove_profile_image, :profile_image_cache,
+                  :background_image, :remote_background_image_url, :remove_background_image, :profile_background_image_cache,
                   :can_publish_news, :subscribe_url, :description,
                   :banner_ad_override, :pay_rate_in_cents, :profile_title, :pay_directly,
                   :can_publish_events, :can_publish_market, :can_publish_talk,
-                  :can_publish_ads
+                  :profile_ad_override,
+                  :can_publish_ads, :profile_image, :background_image
 
   mount_uploader :logo, ImageUploader
+  mount_uploader :profile_image, ImageUploader
+  mount_uploader :background_image, ImageUploader
 
   scope :alphabetical, -> { order("organizations.name ASC") }
   default_scope { self.alphabetical }
@@ -107,6 +115,10 @@ class Organization < ActiveRecord::Base
     else
       []
     end
+  end
+  
+  def get_promotion_ad_override
+    Promotion.find_by(id: profile_ad_override.to_i)
   end
 
   def remove_logo=(val)

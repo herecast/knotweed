@@ -130,10 +130,12 @@ class OrganizationsController < ApplicationController
         :name, :logo, :logo_cache, :remove_logo, :organization_id,
         :website, :notes, :images_attributes, :parent_id, :location_ids,
         :remote_logo_url, :contact_ids, :org_type,
+        :profile_image, :remote_profile_image_url, :remove_profile_image, :profile_image_cache,
+        :background_image, :remote_background_image_url, :remove_background_image, :profile_background_image_cache,
         :consumer_app_ids, :can_publish_news, :subscribe_url,
         :description, :banner_ad_override, :pay_rate_in_cents, :profile_title, :pay_directly,
         :can_publish_market, :can_publish_ads, :can_publish_talk, :can_publish_events,
-        :consumer_app_ids => [], :location_ids => [],
+        :profile_ad_override, :consumer_app_ids => [], :location_ids => [],
         :business_location => [:name, :address, :venue_url, :city,
           :state, :zip, :phone, :email, :hours],
         :business_profile => { :business_category_ids => [] }

@@ -27,7 +27,10 @@ module Api
       end
 
       def show
-        if params[:content_id].present?
+        if params[:promotion_id].present?
+          @banner = Promotion.where(promotable_type: 'PromotionBanner').find(params[:promotion_id]).promotable
+          select_score, select_method = nil, 'sponsored content'
+        elsif params[:content_id].present?
           @content = Content.find params[:content_id]
           # get related promo if exists
           @banner, select_score, select_method = @content.get_related_promotion(@repository)

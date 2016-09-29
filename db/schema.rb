@@ -673,6 +673,8 @@ ActiveRecord::Schema.define(version: 20160927144840) do
     t.boolean  "can_publish_market",              default: false
     t.boolean  "can_publish_talk",                default: false
     t.boolean  "can_publish_ads",                 default: false
+    t.string   "profile_image",       limit: 255
+    t.string   "background_image",    limit: 255
     t.string   "profile_ad_override", limit: 255
     t.string   "profile_image",       limit: 255
     t.string   "background_image",    limit: 255

@@ -61,7 +61,8 @@ module Api
 
       def organization_params
         params.require(:organization).permit(
-          :name, :profile_title, :description, :subscribe_url, :logo
+          :name, :profile_title, :description, :subscribe_url, :logo,
+          :background_image, :profile_image
         )
       end
 

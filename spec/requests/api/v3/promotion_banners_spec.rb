@@ -135,6 +135,7 @@ describe 'Promotion Banner Endpoints', type: :request do
         subject
         expect(response_json).to match(
           promotion: {
+            id: banner.id,
             image_url: banner.banner_image.url,
             redirect_url: banner.redirect_url,
             banner_id: banner.id,
@@ -156,6 +157,7 @@ describe 'Promotion Banner Endpoints', type: :request do
         subject
         expect(response_json).to match(
           promotion: {
+            id: banner.id,
             image_url: banner.banner_image.url,
             redirect_url: banner.redirect_url,
             banner_id: banner.id,
@@ -165,5 +167,27 @@ describe 'Promotion Banner Endpoints', type: :request do
         )
       end
     end
+  end
+
+  describe 'GET /api/v3/promotions/:promotion_id' do
+    let!(:other_banner) { FactoryGirl.create :promotion_banner }
+    let!(:banner) { FactoryGirl.create :promotion_banner, id: 200 }
+
+    subject { get "/api/v3/promotions/#{banner.promotion.id}" }
+
+    it 'returns promotion json' do
+      subject
+      expect(response_json).to match(
+        promotion: {
+          id: banner.id,
+          image_url: banner.banner_image.url,
+          redirect_url: banner.redirect_url,
+          banner_id: banner.id,
+          organization_name: an_instance_of(String) | be_nil,
+          promotion_id: banner.promotion.id
+        }
+      )
+    end
+
   end
 end
