@@ -49,4 +49,3 @@
           %td= Organization.with_role(:manager, user).first.try(:name)
           %td
             %a.btn-warning.btn.btn-mini{ href: edit_user_path(user), type: "button" } Edit User
-          %td= link_to("Delete user", user_path(user), :data => { :confirm => "Are you sure?" }, :method => :delete, :class => 'btn-danger btn btn-mini') unless user == current_user
