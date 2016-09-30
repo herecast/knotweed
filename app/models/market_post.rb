@@ -27,6 +27,7 @@ class MarketPost < ActiveRecord::Base
   accepts_nested_attributes_for :content
   attr_accessible :content_attributes
   validates_associated :content
+  validates :contact_phone, format: { without: /[a-wyzA-WYZ]/ }
 
   has_one :source, through: :content, class_name: "Organization", foreign_key: "organization_id"
   has_one :content_category, through: :content

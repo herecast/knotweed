@@ -46,4 +46,22 @@ describe MarketPost, :type => :model do
     end
   end
 
+  describe "contact phone validation" do
+    it "does not accept alpha characters for contact phone" do
+      @market_post.contact_phone = "SSS-0123"
+      @market_post.valid?
+      expect(@market_post.errors).to_not be_nil
+      expect(@market_post.errors.full_messages).to include "Contact phone is invalid"
+    end
+
+    it "allows for 'x' or 'X' for phone extensions" do
+      @market_post.contact_phone = "555-2368 X123"
+      @market_post.valid?
+      expect(@market_post.errors.any?).to be false
+      @market_post.contact_phone = "555-2368 x123"
+      @market_post.valid?
+      expect(@market_post.errors.any?).to be false
+    end
+  end
+
 end
