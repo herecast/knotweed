@@ -70,6 +70,7 @@ module Knotweed
 
     config.action_mailer.delivery_method = :postmark
     config.action_mailer.postmark_settings = { api_token: Figaro.env.postmark_api_token }
+    config.action_mailer.asset_host = Figaro.env.default_host
 
     # Enable the asset pipeline
     config.assets.enabled = true
