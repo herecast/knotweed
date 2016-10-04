@@ -13,8 +13,6 @@
 #
 
 class Issue < ActiveRecord::Base
-  attr_accessible :copyright, :issue_edition, :publication_date, :organization_id, :import_location_id
-  
   belongs_to :organization
   belongs_to :import_location
   has_many :contents

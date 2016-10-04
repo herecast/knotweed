@@ -54,7 +54,7 @@ class EventsController < ApplicationController
 
     params[:event]['content_attributes']['location_ids'] = location_ids
 
-    @event = Event.new(params[:event])
+    @event = Event.new(event_params)
     authorize! :create, @event
     if @event.save
       # if this was curated from an existing content record, we need to update
@@ -122,7 +122,7 @@ class EventsController < ApplicationController
     end
     params[:event][:event_instances_attributes] = instances
 
-    if @event.update_attributes(params[:event])
+    if @event.update_attributes(event_params)
       # re-publish updated content
       if current_user.default_repository.present?
          publish_success = @event.content.publish(Content::DEFAULT_PUBLISH_METHOD, current_user.default_repository)
@@ -185,46 +185,59 @@ class EventsController < ApplicationController
 
   private
 
-  def form_submit_redirect_path(id=nil)
-    if params[:continue_editing]
-      edit_event_path(id)
-    elsif params[:create_new]
-      new_event_path
-    elsif params[:next_record]
-      edit_event_path(params[:next_record_id], index: params[:index], page: params[:page])
-    elsif @curated == true
-      contents_path
-    else
-      events_path
+    def event_params
+      params.require(:event).permit(
+        :event_url,
+        :contact_phone,
+        :contact_email,
+        :event_category,
+        :cost_type,
+        :cost,
+        :registration_deadline,
+        event_instances_attributes: [ :start_date, :end_date, :subtitle_override, :presenter_name, :id, :_destroy ],
+        content_attributes: [ :content_category_id, :category_reviewed, :organization_id, :subtitle, :authors, :copyright, :pubdate, :url, :id, :raw_content, :title, image_attributes: [ :id ] ]  
+      )
     end
-  end
 
-  def process_instance_date_params(event_instance)
-    if event_instance.has_key? :start_day and event_instance.has_key? :start_time
-      Chronic.time_class = Time.zone
-      event_instance[:start_date] = (Chronic.parse(event_instance[:start_day] + " " + event_instance[:start_time])).to_s
-      # if end time is specified, but no end day, use start day
-      # if (event_instance[:end_time].present? or event_instance[:end_time].blank?)
-      if (event_instance[:end_time].present?)
-        event_instance[:end_day] = event_instance[:start_day]
-        event_instance[:end_date] = (Chronic.parse(event_instance[:end_day] + " " + event_instance[:end_time])).to_s
+    def form_submit_redirect_path(id=nil)
+      if params[:continue_editing]
+        edit_event_path(id)
+      elsif params[:create_new]
+        new_event_path
+      elsif params[:next_record]
+        edit_event_path(params[:next_record_id], index: params[:index], page: params[:page])
+      elsif @curated == true
+        contents_path
+      else
+        events_path
       end
-
-      # clean up unneeded stuff
-      event_instance.delete(:start_day)
-      event_instance.delete(:start_time)
-      event_instance.delete(:end_day)
-      event_instance.delete(:end_time)
     end
-  end
 
-  def remove_list_from_title(title)
-    if title.present?
-      title.gsub(/\[.*\]/, '')
-    else
-      nil
+    def process_instance_date_params(event_instance)
+      if event_instance.has_key? :start_day and event_instance.has_key? :start_time
+        Chronic.time_class = Time.zone
+        event_instance[:start_date] = (Chronic.parse(event_instance[:start_day] + " " + event_instance[:start_time])).to_s
+        # if end time is specified, but no end day, use start day
+        # if (event_instance[:end_time].present? or event_instance[:end_time].blank?)
+        if (event_instance[:end_time].present?)
+          event_instance[:end_day] = event_instance[:start_day]
+          event_instance[:end_date] = (Chronic.parse(event_instance[:end_day] + " " + event_instance[:end_time])).to_s
+        end
+
+        # clean up unneeded stuff
+        event_instance.delete(:start_day)
+        event_instance.delete(:start_time)
+        event_instance.delete(:end_day)
+        event_instance.delete(:end_time)
+      end
     end
-  end
 
+    def remove_list_from_title(title)
+      if title.present?
+        title.gsub(/\[.*\]/, '')
+      else
+        nil
+      end
+    end
 
 end

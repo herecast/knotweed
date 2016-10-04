@@ -88,13 +88,13 @@ describe BusinessLocationsController, :type => :controller do
       end
 
       it "html: renders new page" do
-        post :create
+        post :create, business_location: { address: 'fake', city: 'fake', state: 'fake' }
         expect(response).to render_template 'new'
       end
 
       it "js: responds with errors" do
         allow_any_instance_of(BusinessLocation).to receive(:errors).and_return ['error']
-        post :create, format: :js
+        post :create, format: :js, business_location: { address: 'fake', city: 'fake', state: 'fake' }
         expect(JSON.parse(response.body).length).to eq 1
       end
     end
@@ -161,7 +161,7 @@ describe BusinessLocationsController, :type => :controller do
 
         it "js: re" do
           allow_any_instance_of(BusinessLocation).to receive(:errors).and_return ['error']
-          put :update, id: @business_location.id, format: :js
+          put :update, id: @business_location.id, business_location: params, format: :js
           expect(JSON.parse(response.body).length).to eq 1
         end
       end

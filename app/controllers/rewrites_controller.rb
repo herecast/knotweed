@@ -10,7 +10,7 @@ class RewritesController < ApplicationController
   end
 
   def create
-    @rewrite = Rewrite.new(params[:rewrite])
+    @rewrite = Rewrite.new(rewrite_params)
     if @rewrite.save
       flash[:notice] = "Rewrite saved."
       redirect_to rewrites_path
@@ -21,7 +21,7 @@ class RewritesController < ApplicationController
 
   def update
     @rewrite = Rewrite.find(params[:id])
-    if @rewrite.update_attributes(params[:rewrite])
+    if @rewrite.update_attributes(rewrite_params)
       flash[:notice] = 'Successfully updated rewrite.'
     end
     respond_with(@rewrite, location: rewrites_url)
@@ -33,5 +33,11 @@ class RewritesController < ApplicationController
       format.js
     end
   end
+
+  private
+
+    def rewrite_params
+      params.require(:rewrite).permit(:destination, :source)
+    end
   
 end

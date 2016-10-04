@@ -26,7 +26,7 @@ class BusinessProfilesController < ApplicationController
   end
 
   def update
-    if @business_profile.update_attributes(params[:business_profile])
+    if @business_profile.update_attributes(business_profile_params)
       flash[:notice] = "Successfully updated business #{@business_profile.business_location.name}"
       redirect_to form_submit_redirect_path(@business_profile.id)
     else
@@ -37,7 +37,7 @@ class BusinessProfilesController < ApplicationController
   end
 
   def create
-    @business_profile = BusinessProfile.new(params[:business_profile])
+    @business_profile = BusinessProfile.new(business_profile_params)
     authorize! :create, @business_profile
     if @business_profile.save
       @business_profile.update_attribute(:existence, 1.0)
@@ -65,6 +65,16 @@ class BusinessProfilesController < ApplicationController
   end
 
   private
+
+    def business_profile_params
+      params.require(:business_profile).permit(
+        :content_attributes,
+        :business_location,
+        business_category_ids: [],
+        business_location_attributes: [ :name, :address, :venue_url, :city, :state, :zip, :phone, :email, :id, :hours => [] ],
+        content_attributes: [ :id, :raw_content, images_attributes: [ :id, :image, :remove_image ], organization_attributes: [ :id, :parent_id, :logo, :remove_logo ] ]
+      )
+    end
 
     def form_submit_redirect_path(id=nil)
       if params[:continue_editing]

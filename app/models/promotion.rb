@@ -31,13 +31,6 @@ class Promotion < ActiveRecord::Base
   # but rather, contents that it is shown with on the consumer site.
   has_many :contents, through: :content_promotion_banner_impressions
 
-  # TODO: At some point we probably want to lock this down a bit more so it's not so easy to attach 
-  # promotions to any content/publication
-  attr_accessible :active, :description, :content, :organization,
-                  :organization_id, :content_id, :target_url,
-                  :promotable_attributes, :promotable_type, :paid,
-                  :banner # note this attribute no longer exists, but needs to be
-                  # in our code until afer the migration is run
   mount_uploader :banner, ImageUploader # same with this ^^
   # we are actually retaining the database column for now as well. At some point down the road,
   # we can remove these two lines of code and the database column

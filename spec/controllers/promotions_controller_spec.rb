@@ -112,12 +112,12 @@ describe PromotionsController, :type => :controller do
       end
 
       it "html: renders edit page" do
-        put :update, id: @promotion.id, promotion: {}
+        put :update, id: @promotion.id, promotion: { description: 'Ocean planet' }
         expect(response).to render_template 'edit'
       end
 
       it "json: responds with 422 status code" do
-        put :update, id: @promotion.id, promotion: {}, format: :json
+        put :update, id: @promotion.id, promotion: { description: 'Desert planet' }, format: :json
         expect(response.code).to eq '422'
       end
     end

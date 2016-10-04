@@ -44,7 +44,7 @@ class MarketPostsController < ApplicationController
   end
 
   def create
-    @market_post = MarketPost.new(params[:market_post])
+    @market_post = MarketPost.new(market_post_params)
     authorize! :create, @market_post
     if @market_post.save
       publish_success = false
@@ -75,7 +75,7 @@ class MarketPostsController < ApplicationController
     @market_post = MarketPost.find(params[:id])
     authorize! :update, @market_post
 
-    if @market_post.update_attributes(params[:market_post])
+    if @market_post.update_attributes(market_post_params)
       flash[:notice] = "Successfully updated market post #{@market_post.id}"
       handle_republish if current_user.default_repository.present?
       redirect_to form_submit_redirect_path(@market_post.id)
@@ -89,28 +89,47 @@ class MarketPostsController < ApplicationController
 
   private
 
-  def format_id_params
-    params[:q][:content_id_in].split(',').map { |s| s.strip }
-  end
-
-  def form_submit_redirect_path(id=nil)
-    if params[:continue_editing]
-      edit_market_post_path(id)
-    elsif params[:create_new]
-      new_market_post_path
-    elsif params[:next_record]
-      edit_market_post_path(params[:next_record_id], index: params[:index], page: params[:page])
-    else
-      market_posts_path
+    def market_post_params
+      params.require(:market_post).permit(
+        :content,
+        :contact_email,
+        :contact_phone,
+        :contact_url,
+        :cost,
+        :latitude,
+        :locate_address,
+        :locate_include_name,
+        :locate_name,
+        :longitude,
+        :status,
+        :preferred_contact_method,
+        content_attributes: [ :id, :content_category_id, :category_reviewed, :organization_id, :subtitle, :authors, :copyright, :pubdate, :url, :title, :raw_content, images_attributes: [ :id, :image ] ]
+      )
     end
-  end
 
-  def handle_republish
-    publish_success = @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, current_user.default_repository)
-    if publish_success
-      flash[:notice] << ' and re-published'
-    else
-      flash[:warning] = 'Publish failed'
+    def format_id_params
+      params[:q][:content_id_in].split(',').map { |s| s.strip }
     end
-  end
+
+    def form_submit_redirect_path(id=nil)
+      if params[:continue_editing]
+        edit_market_post_path(id)
+      elsif params[:create_new]
+        new_market_post_path
+      elsif params[:next_record]
+        edit_market_post_path(params[:next_record_id], index: params[:index], page: params[:page])
+      else
+        market_posts_path
+      end
+    end
+
+    def handle_republish
+      publish_success = @market_post.content.publish(Content::DEFAULT_PUBLISH_METHOD, current_user.default_repository)
+      if publish_success
+        flash[:notice] << ' and re-published'
+      else
+        flash[:warning] = 'Publish failed'
+      end
+    end
+
 end

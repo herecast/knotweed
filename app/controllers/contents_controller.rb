@@ -58,7 +58,7 @@ class ContentsController < ApplicationController
   def create
     image_list = params[:content].delete(:image_list)
     image_ids = image_list.try(:split, ",")
-    @content = Content.new(params[:content])
+    @content = Content.new(content_params)
     authorize! :create, @content
     connection = nil
     if @content.save
@@ -145,7 +145,7 @@ class ContentsController < ApplicationController
       params[:content].delete :content_category_id # already taken care of updating this
     end
 
-    if @content.update_attributes(params[:content])
+    if @content.update_attributes(content_params)
       flash[:notice] = "Successfully updated content #{@content.id}"
       redirect_to form_submit_redirect_path(@content.id)
     else
@@ -247,25 +247,45 @@ class ContentsController < ApplicationController
 
   private
 
-  def form_submit_redirect_path(id=nil)
-    if params[:continue_editing]
-      edit_content_path(id)
-    elsif params[:create_new]
-      new_content_path
-    elsif params[:next_record]
-      edit_content_path(params[:next_record_id], index: params[:index], page: params[:page])
-    else
-      contents_path
+    def content_params
+      params.require(:content).permit(
+        :title,
+        :content_category_id,
+        :organization_id,
+        :category_reviewed,
+        :has_event_calendar,
+        :title,
+        :subtitle,
+        :authors,
+        :issue_id,
+        :parent_id,
+        :copyright,
+        :pubdate,
+        :url,
+        :banner_ad_override,
+        :sanitized_content
+      )
     end
-  end
 
-  def fix_array_input
-    input = params[:content][:similar_content_overrides]
-    if input.present?
-      params[:content][:similar_content_overrides] = input.gsub('[','').gsub(']','').split(',').map{|str| str.strip.to_i }
-    else
-      params[:content].delete :similar_content_overrides
+    def form_submit_redirect_path(id=nil)
+      if params[:continue_editing]
+        edit_content_path(id)
+      elsif params[:create_new]
+        new_content_path
+      elsif params[:next_record]
+        edit_content_path(params[:next_record_id], index: params[:index], page: params[:page])
+      else
+        contents_path
+      end
     end
-  end
+
+    def fix_array_input
+      input = params[:content][:similar_content_overrides]
+      if input.present?
+        params[:content][:similar_content_overrides] = input.gsub('[','').gsub(']','').split(',').map{|str| str.strip.to_i }
+      else
+        params[:content].delete :similar_content_overrides
+      end
+    end
 
 end

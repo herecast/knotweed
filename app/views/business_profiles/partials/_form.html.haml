@@ -97,10 +97,6 @@
                           %label
                             = i.check_box :remove_image
                             Remove image
-              - elsif @placeholder_image.present?
-                .row-fluid
-                  .span12
-                    = image_tag @placeholder_image.image.url
             .row-fluid
               .span12
                 = f.simple_fields_for :content do |g|

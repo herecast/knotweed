@@ -14,7 +14,7 @@ describe ContentsController, type: :controller do
 
     context "when category changes" do
 
-      subject { put :update, id: @content, continue_editing: true, content: { content_category_id: @cat_2.id } }
+      subject { put :update, id: @content, continue_editing: true, content: { content_category_id: @cat_2.id, title: 'Luke OG Skywalker' } }
 
       it "should create a category correction record" do
         subject
@@ -148,7 +148,8 @@ describe ContentsController, type: :controller do
       it "should respond with a 302 status code" do
         allow_any_instance_of(Content).to receive(:channel).and_return @channel
         allow_any_instance_of(Channel).to receive(:present?).and_return true
-        @content.update_attributes(channel_id: @channel.id, channel_type: 'Event')
+        @content.update_attribute(:channel_id, @channel.id)
+        @content.update_attribute(:channel_type, 'Event')
 
         subject
 
@@ -171,7 +172,7 @@ describe ContentsController, type: :controller do
       @image = FactoryGirl.create :image
     end
 
-    subject { post :create, { content: { image_list: "#{@image.id}" } } }
+    subject { post :create, { content: { image_list: "#{@image.id}", title: 'Jabba' } } }
 
     context "when content creation succeeds" do
       it "should respond with 302 status code" do

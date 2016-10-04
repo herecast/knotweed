@@ -46,7 +46,7 @@ class DataContextsController < ApplicationController
   end
 
   def update
-    if @data_context.update_attributes(params[:data_context])
+    if @data_context.update_attributes(data_context_params)
       flash[:notice] = "Successfully updated data context #{@data_context.id}"
       redirect_to data_contexts_path
     else
@@ -65,4 +65,16 @@ class DataContextsController < ApplicationController
       render "new"
     end
   end
+
+  private
+
+    def data_context_params
+      params.require(:data_context).permit(
+        :archived,
+        :context,
+        :last_load,
+        :loaded
+      )
+    end
+
 end

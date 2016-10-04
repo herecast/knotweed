@@ -77,10 +77,6 @@ class BusinessProfile < ActiveRecord::Base
 
   has_many :business_feedbacks, dependent: :destroy
 
-  attr_accessible :content_attributes, :business_location_attributes, :has_retail_location,
-    :business_category_ids, :business_location_id, :content_id, :source, :source_id,
-    :existence, :archived
-
   def claimed?
     content.present? && organization.present?
   end

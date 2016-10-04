@@ -3,7 +3,9 @@ class AnnotationReportsController < ApplicationController
   def create
     repo = Repository.find(params[:repository_id])
     json_data = JSON.parse(OntotextController.get_annotations(params[:content_id], repo))["results"]["bindings"][0]["annotation"]["value"]
-    @annotation_report = AnnotationReport.create(content_id: params[:content_id], name: params[:name], repository: repo, json_response: json_data)
+    @annotation_report = AnnotationReport.create(annotation_report_params)
+    @annotation_report.update_attribute(:repository, repo)
+    @annotation_report.update_attribute(:json_response, json_data)
     @hash_data = JSON.parse(json_data)
     @hash_data["annotation-sets"][0]["annotation"].each do |ant|
       new_ant = Annotation.new(annotation_report_id: @annotation_report.id, annotation_id: ant["id"], 
@@ -63,5 +65,18 @@ class AnnotationReportsController < ApplicationController
       format.csv { send_data AnnotationReport.csv_report(params[:content_id]) }
     end
   end
+
+  private
+
+    def annotation_report_params
+      params.permit(
+        :content_id,
+        :name,
+        :description,
+        :json_response,
+        :repository_id,
+        :repository
+      )
+    end
 
 end

@@ -26,7 +26,7 @@ class ContentSetsController < ApplicationController
   end
 
   def update
-    if @content_set.update_attributes(params[:content_set])
+    if @content_set.update_attributes(content_set_params)
       flash[:notice] = "Successfully updated content set #{@content_set.id}"
       if params[:add_import_job]
         import_job = { :organization_id => @content_set.organization.id, :content_set_id => @content_set.id }
@@ -62,5 +62,27 @@ class ContentSetsController < ApplicationController
     end
   end
 
+  private
+
+    def content_set_params
+      params.require(:content_set).permit(
+        :organization_id,
+        :name,
+        :status,
+        :publishing_frequency,
+        :description,
+        :start_date,
+        :end_date,
+        :ongoing,
+        :import_method,
+        :import_method_details,
+        :import_priority,
+        :import_url_path,
+        :import_jobs_attributes,
+        :format,
+        :notes,
+        :developer_notes
+        )
+    end
 
 end

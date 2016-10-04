@@ -23,7 +23,7 @@ class ContactsController < ApplicationController
   end
 
   def update
-    @contact.update_attributes!(params[:contact])
+    @contact.update_attributes!(contact_params)
     respond_to do |format|
       format.js
     end
@@ -35,5 +35,19 @@ class ContactsController < ApplicationController
       format.js
     end
   end
+
+  private
+
+    def contact_params
+      params.require(:contact).permit(
+        :email,
+        :name,
+        :notes,
+        :phone,
+        :contact_type,
+        :organization_ids,
+        :address
+      )
+    end
 
 end

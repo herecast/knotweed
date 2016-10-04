@@ -24,7 +24,7 @@ class ParsersController < ApplicationController
   end
 
   def create
-    @parser = Parser.new(params[:parser])
+    @parser = Parser.new(parser_params)
     if @parser.save
       flash[:notice] = "Parser saved."
       redirect_to parsers_path
@@ -41,7 +41,7 @@ class ParsersController < ApplicationController
   
   def update
     @parser = Parser.find(params[:id])
-    if @parser.update_attributes(params[:parser])
+    if @parser.update_attributes(parser_params)
       flash[:notice] = "Successfully updated parser."
     end
     respond_with(@parser, location: parsers_url)
@@ -53,5 +53,17 @@ class ParsersController < ApplicationController
       format.js
     end
   end
+
+  private
+
+    def parser_params
+      params.require(:parser).permit(
+        :filename,
+        :name,
+        :description,
+        :parameter,
+        parameters_attributes: []
+      )
+    end
   
 end

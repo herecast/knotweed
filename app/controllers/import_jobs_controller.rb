@@ -20,7 +20,7 @@ class ImportJobsController < ApplicationController
   end
   
   def create
-    @import_job = ImportJob.new(params[:import_job])
+    @import_job = ImportJob.new(import_job_params)
     if @import_job.save
       subscribe_user(@import_job)
       @import_job.save_config(params[:parameters])
@@ -33,7 +33,7 @@ class ImportJobsController < ApplicationController
   
   def update
     @import_job = ImportJob.find(params[:id])
-    if @import_job.update_attributes(params[:import_job])
+    if @import_job.update_attributes(import_job_params)
       @import_job.save_config(params[:parameters])
       flash[:notice] = "Successfully updated import job."
     end
@@ -53,5 +53,28 @@ class ImportJobsController < ApplicationController
       format.js
     end
   end
+
+  private
+
+    def import_job_params
+      params.require(:import_job).permit(
+        :config,
+        :name,
+        :parser_id,
+        :source_path,
+        :job_type,
+        :organization_id,
+        :frequency,
+        :archive,
+        :content_set_id,
+        :run_at,
+        :stop_loop,
+        :automatically_publish,
+        :repository_id,
+        :publish_method,
+        :job_type,
+        :consumer_app_ids
+        )
+    end
 
 end

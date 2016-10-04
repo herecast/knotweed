@@ -20,7 +20,7 @@ class WufooFormsController < ApplicationController
 
   def update
     @wufoo_form = WufooForm.find(params[:id])
-    if @wufoo_form.update_attributes(params[:wufoo_form])
+    if @wufoo_form.update_attributes(wufoo_form_params)
       flash[:notice] = "Form updated."
       redirect_to wufoo_forms_path
     else
@@ -30,4 +30,21 @@ class WufooFormsController < ApplicationController
 
   def destroy
   end
+
+  private
+
+    def wufoo_form_params
+      params.require(:wufoo_form).permit(
+        :action,
+        :active,
+        :call_to_action,
+        :controller,
+        :email_field,
+        :page_url_field,
+        :form_hash,
+        :name,
+        consumer_app_ids: []
+      )
+    end
+
 end

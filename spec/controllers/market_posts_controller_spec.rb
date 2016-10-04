@@ -46,7 +46,7 @@ describe MarketPostsController, :type => :controller do
     context "when market post save unsuccessful" do
       let(:content) { FactoryGirl.create :content }
 
-      subject { post :create, market_post: {} }
+      subject { post :create, market_post: { cost: nil } }
 
       it "renders new page" do
         allow_any_instance_of(MarketPost).to receive(:save).and_return false
@@ -167,7 +167,7 @@ describe MarketPostsController, :type => :controller do
     context "when successful update" do
       let(:repository) { FactoryGirl.create :repository }
 
-      subject { put :update, create_new: 'true', id: @market_post.id, market_post: { status: 'cool' } }
+      subject { put :update, id: @market_post.id, market_post: { status: 'cool' } }
 
       it 'does not dispaly multiple flash messages' do
         subject
@@ -199,7 +199,7 @@ describe MarketPostsController, :type => :controller do
 
     context "when unsuccessful update" do
 
-      subject { put :update, id: @market_post.id }
+      subject { put :update, id: @market_post.id, market_post: { cost: nil } }
 
       it "renders edit page" do
         allow_any_instance_of(MarketPost).to receive(:update_attributes).and_return false

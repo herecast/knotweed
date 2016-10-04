@@ -22,7 +22,7 @@ class MessagesController < ApplicationController
 
   def update
     @message = Message.find(params[:id])
-    if @message.update_attributes(params[:message])
+    if @message.update_attributes(message_params)
       flash[:notice] = "Message updated."
       redirect_to messages_path
     else
@@ -32,4 +32,19 @@ class MessagesController < ApplicationController
 
   def destroy
   end
+
+  private
+
+    def message_params
+      params.require(:message).permit(
+        :action,
+        :content,
+        :controller,
+        :created_by,
+        :end_date,
+        :start_date,
+        consumer_app_ids: []
+      )
+    end
+
 end

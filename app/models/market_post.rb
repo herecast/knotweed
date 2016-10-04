@@ -19,13 +19,9 @@
 #
 
 class MarketPost < ActiveRecord::Base
-  attr_accessible :content, :contact_email, :contact_phone, :contact_url, :cost, :latitude,
-    :locate_address, :locate_include_name, :locate_name, :longitude, :status,
-    :preferred_contact_method
 
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
-  attr_accessible :content_attributes
   validates_associated :content
   validates :contact_phone, format: { without: /[a-wyzA-WYZ]/ }
 

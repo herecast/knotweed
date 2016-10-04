@@ -26,12 +26,6 @@ class ContentSet < ActiveRecord::Base
   belongs_to :organization
   has_many :import_jobs
 
-  attr_accessible :description, :import_method, :import_method_details, 
-                  :name, :notes, :organization_id, :status, :import_jobs_attributes,
-                  :start_date, :end_date, :ongoing, :format, :publishing_frequency,
-                  :developer_notes, :import_priority, :import_url_path
-
-
   FILE_IMPORT = "File Import"
   RSS_FEED = "RSS Feed"
   WEB_SCRAPE = "Web Scrape"

@@ -19,7 +19,7 @@ class RepositoriesController < ApplicationController
 
   def update
     @repository = Repository.find(params[:id])
-    if @repository.update_attributes(params[:repository])
+    if @repository.update_attributes(repository_params)
       flash[:notice] = "Successfully updated repository."
       redirect_to repositories_path
     else
@@ -40,4 +40,16 @@ class RepositoriesController < ApplicationController
       format.js
     end
   end
+
+  private
+
+    def repository_params
+      params.require(:repository).permit(
+        :dsp_endpoint,
+        :name,
+        :sesame_endpoint,
+        :recommendation_endpoint
+      )
+    end
+
 end

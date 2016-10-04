@@ -21,7 +21,7 @@ class IssuesController < ApplicationController
   end
 
   def update
-    @issue.update_attributes!(params[:issue])
+    @issue.update_attributes!(issue_params)
     respond_to do |format|
       format.js
     end
@@ -53,4 +53,17 @@ class IssuesController < ApplicationController
       format.js
     end
   end
+
+  private
+
+    def issue_params
+      params.require(:issue).permit(
+        :copyright,
+        :issue_edition,
+        :publication_date,
+        :organization_id,
+        :import_location_id
+      )
+    end
+
 end

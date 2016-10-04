@@ -61,7 +61,7 @@ class BusinessLocationsController < ApplicationController
 
   def update
     @business_location.updated_by = current_user
-    if @business_location.update_attributes(params[:business_location])
+    if @business_location.update_attributes(business_location_params)
       respond_to do |format|
         format.js
         format.html { redirect_to business_locations_path }
@@ -82,4 +82,20 @@ class BusinessLocationsController < ApplicationController
     end
   end
 
+  private
+
+    def business_location_params
+      params.require(:business_location).permit(:name,
+        :locate_include_name,
+        :address,
+        :city,
+        :state,
+        :zip,
+        :venue_url,
+        :email,
+        :phone,
+        :status,
+        :organization_id,
+        )
+    end
 end

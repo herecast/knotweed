@@ -64,7 +64,14 @@ class PublishJobsController < ApplicationController
   private
 
     def publish_job_params
-      params.require(:publish_job).permit(:name, :description, :publish_method, :run_at, :frequency, :query_params)
+      params.require(:publish_job).permit(
+        :name,
+        :description,
+        :publish_method,
+        :run_at,
+        :frequency,
+        :query_params
+      )
     end
 
 end

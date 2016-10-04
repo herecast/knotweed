@@ -178,7 +178,7 @@ describe EventsController, :type => :controller  do
 
     context "when update succeeds and publish fails" do
 
-      subject { put :update, { create_new: true, id: @event.id, event: { event_instances_attributes: [[{}, { start_date: @event.event_instances.first.start_date }]] } } }
+      subject { put :update, { create_new: true, id: @event.id, event: { event_instances_attributes: { "1" => { start_date: @event.event_instances.first.start_date } } } } }
 
       it "flashes success with Publish failed message" do
         current_user = @user

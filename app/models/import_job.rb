@@ -49,12 +49,6 @@ class ImportJob < ActiveRecord::Base
   has_many :notifyees, through: :notifiers, class_name: "User", source: "user"
   has_and_belongs_to_many :consumer_apps
 
-
-  attr_accessible :config, :name, :parser_id, :source_path, :job_type,
-                  :organization_id, :frequency, :archive, :content_set_id,
-                  :run_at, :stop_loop, :automatically_publish, :repository_id,
-                  :publish_method, :job_type, :consumer_app_ids
-
   validates :status, inclusion: { in: %w(failed running success scheduled) }, allow_nil: true
 
   after_destroy :cancel_scheduled_runs

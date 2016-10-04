@@ -110,19 +110,9 @@ class OrganizationsController < ApplicationController
   protected
 
     def update_business_info
-      location_info = params[:business_location]
-      business_location = BusinessLocation.find(location_info[:business_location_id])
-      location_info.delete(:business_location_id)
-      format_hours(location_info)
-      business_location.update_attributes(location_info)
-      business_profile_attrs = params[:business_profile]
-      business_location.business_profile.update_attributes(business_profile_attrs)
-    end
-
-    def format_hours(location_info)
-      if location_info[:hours].any? {|h| h.blank? }
-        location_info[:hours].reject! { |h| h.blank? }
-      end
+      business_location = BusinessLocation.find(params[:business_location][:business_location_id])
+      business_location.update_attributes(business_location_params)
+      business_location.business_profile.update_attributes(business_profile_params) if params[:business_profile].present?
     end
 
     def organization_params
@@ -140,6 +130,28 @@ class OrganizationsController < ApplicationController
           :state, :zip, :phone, :email, :hours],
         :business_profile => { :business_category_ids => [] }
       )
+    end
+
+    def business_location_params
+      params.require(:business_location).permit(
+        :name,
+        :email,
+        :venue_url,
+        :address,
+        :city,
+        :state,
+        :zip,
+        :phone,
+        hours: []
+      ).tap do |attrs|
+        if attrs[:hours].respond_to?(:[])
+          attrs[:hours].reject! { |h| h.blank? }
+        end
+      end
+    end
+
+    def business_profile_params
+      params.require(:business_profile).permit(business_category_ids: [])
     end
 
     def get_managers

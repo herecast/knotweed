@@ -1,6 +1,5 @@
 class PromotionsController < ApplicationController
-  # GET /promotions
-  # GET /promotions.json
+ 
   def index
     @organization = Organization.find(params[:organization_id])
     @promotions = @organization.promotions
@@ -11,8 +10,6 @@ class PromotionsController < ApplicationController
     end
   end
 
-  # GET /promotions/1
-  # GET /promotions/1.json
   def show
     @promotion = Promotion.find(params[:id])
 
@@ -22,8 +19,6 @@ class PromotionsController < ApplicationController
     end
   end
 
-  # GET /promotions/new
-  # GET /promotions/new.json
   def new
     organization = Organization.find(params[:organization_id])
     # as of now, we are not allowing creation of promotions without
@@ -49,20 +44,17 @@ class PromotionsController < ApplicationController
       flash[:notice] = "Can't create a promotion with no content"
       redirect_to edit_organization_path(organization)
     end
-    end
+  end
 
-  # GET /promotions/1/edit
   def edit
     @promotion = Promotion.find(params[:id])
   end
 
-  # POST /promotions
-  # POST /promotions.json
   def create
     promotable_klass = params[:promotion].delete(:promotable_type).try(:constantize)
     promotable_attributes = params[:promotion].delete :promotable_attributes
 
-    @promotion = Promotion.new(params[:promotion])
+    @promotion = Promotion.new(promotion_params)
 
     if promotable_klass.present?
       @promotion.promotable = promotable_klass.new promotable_attributes
@@ -82,13 +74,11 @@ class PromotionsController < ApplicationController
     end
   end
 
-  # PUT /promotions/1
-  # PUT /promotions/1.json
   def update
     @promotion = Promotion.find(params[:id])
 
     respond_to do |format|
-      if @promotion.update_attributes(params[:promotion])
+      if @promotion.update_attributes(promotion_params)
         format.html { redirect_to @promotion, notice: 'Promotion was successfully updated.' }
         format.json { head :no_content }
       else
@@ -97,5 +87,22 @@ class PromotionsController < ApplicationController
       end
     end
   end
+
+  private
+
+    def promotion_params
+      params.require(:promotion).permit(
+        :active,
+        :description,
+        :content,
+        :organization,
+        :organization_id,
+        :content_id,
+        :target_url,
+        :promotable_attributes,
+        :promotable_type,
+        :paid
+      )
+    end
 
 end

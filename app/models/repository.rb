@@ -15,9 +15,6 @@
 #
 
 class Repository < ActiveRecord::Base
-  attr_accessible :dsp_endpoint, :name, :sesame_endpoint,
-    :recommendation_endpoint
-
   validates_presence_of :dsp_endpoint, :sesame_endpoint, :name
 
   has_many :publish_jobs
