@@ -123,17 +123,6 @@ describe PromotionsController, :type => :controller do
     end
   end
 
-  describe "DELETE destroy" do
-    subject { delete :destroy, {id: @promotion.to_param} }
-    it "destroys the requested promotion" do
-      expect { subject }.to change(Promotion, :count).by(-1)
-    end
-
-    it "redirects to the promotions list" do
-      expect(subject).to redirect_to(organization_promotions_path @org)
-    end
-  end
-
   describe "GET #new" do
     context "when content present" do
       context "when PromotionBanner promotable type" do

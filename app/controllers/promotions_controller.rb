@@ -98,17 +98,4 @@ class PromotionsController < ApplicationController
     end
   end
 
-  # DELETE /promotions/1
-  # DELETE /promotions/1.json
-  def destroy
-    @promotion = Promotion.find(params[:id])
-    pub = @promotion.organization
-    @promotion.destroy
-
-    respond_to do |format|
-      format.html { redirect_to organization_promotions_path(pub), notice: 'Promotion successfully destroyed!' }
-      format.json { head :no_content }
-    end
-  end
-
 end
