@@ -94,14 +94,11 @@ class PromotionsController < ApplicationController
       params.require(:promotion).permit(
         :active,
         :description,
-        :content,
-        :organization,
         :organization_id,
         :content_id,
-        :target_url,
-        :promotable_attributes,
         :promotable_type,
-        :paid
+        :paid,
+        promotable_attributes: [ :id, :boost, :campaign_start, :campaign_end, :daily_max_impressions, :track_daily_metrics, :banner_image, :redirect_url ]
       )
     end
 
