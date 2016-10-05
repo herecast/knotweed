@@ -56,6 +56,7 @@ describe PromotionsController, :type => :controller do
           campaign_start: Date.yesterday,
           campaign_end: Date.today,
           daily_max_impressions: 4,
+          max_impressions: 15,
           track_daily_metrics: true,
           banner_image: nil,
           redirect_url: 'https://hoth.biz'
@@ -69,7 +70,7 @@ describe PromotionsController, :type => :controller do
         :content_id,
         :promotable_type,
         :paid,
-        :promotable_attributes => [ :id, :boost, :campaign_start, :campaign_end, :daily_max_impressions, :track_daily_metrics, :banner_image, :redirect_url ]
+        :promotable_attributes => [ :id, :boost, :campaign_start, :campaign_end, :daily_max_impressions, :max_impressions, :track_daily_metrics, :banner_image, :redirect_url ]
       ).for(:create, params: { organization_id: organization, promotion: params } )
     end
 

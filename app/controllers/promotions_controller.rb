@@ -98,7 +98,7 @@ class PromotionsController < ApplicationController
         :content_id,
         :promotable_type,
         :paid,
-        promotable_attributes: [ :id, :boost, :campaign_start, :campaign_end, :daily_max_impressions, :track_daily_metrics, :banner_image, :redirect_url ]
+        promotable_attributes: [ :id, :boost, :campaign_start, :campaign_end, :daily_max_impressions, :max_impressions, :track_daily_metrics, :banner_image, :redirect_url ]
       )
     end
 
