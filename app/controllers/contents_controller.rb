@@ -254,7 +254,6 @@ class ContentsController < ApplicationController
         :organization_id,
         :category_reviewed,
         :has_event_calendar,
-        :title,
         :subtitle,
         :authors,
         :issue_id,
@@ -263,7 +262,8 @@ class ContentsController < ApplicationController
         :pubdate,
         :url,
         :banner_ad_override,
-        :sanitized_content
+        :sanitized_content,
+        similar_content_overrides: []
       )
     end
 

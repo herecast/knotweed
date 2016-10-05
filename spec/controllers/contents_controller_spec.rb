@@ -170,18 +170,52 @@ describe ContentsController, type: :controller do
   describe 'POST #create' do
     before do
       @image = FactoryGirl.create :image
+      allow(Fog::Storage).to receive(:new).and_return('fog')
+      allow_any_instance_of(String).to receive(:copy_object)
+      allow_any_instance_of(String).to receive(:delete_object)
+    end
+
+    let(:content_params) { {
+      image_list: "#{@image.id}",
+      title: 'Jabba',
+      content_category_id: 4,
+      category_reviewed: true,
+      has_event_calendar: true,
+      subtitle: 'subtitle',
+      authors: 'Some peeps, like Jabba',
+      copyright: 'Tattooine, 2348',
+      pubdate: Time.current,
+      url: 'http://empire.org',
+      banner_ad_override: 34343,
+      sanitized_content: 'Propaganda, probably',
+      similar_content_overrides: '234,235'
+    } }
+
+    it "allows specified parameters" do
+      should permit(
+        :title,
+        :content_category_id,
+        :organization_id,
+        :category_reviewed,
+        :has_event_calendar,
+        :subtitle,
+        :authors,
+        :issue_id,
+        :parent_id,
+        :copyright,
+        :pubdate,
+        :url,
+        :banner_ad_override,
+        :sanitized_content,
+        similar_content_overrides: []
+      ).for(:create, params: { content: content_params })
     end
 
     subject { post :create, { content: { image_list: "#{@image.id}", title: 'Jabba' } } }
 
     context "when content creation succeeds" do
       it "should respond with 302 status code" do
-        allow(Fog::Storage).to receive(:new).and_return('fog')
-        allow_any_instance_of(String).to receive(:copy_object)
-        allow_any_instance_of(String).to receive(:delete_object)
-
         subject
-
         expect(flash.now[:notice]).to be_truthy
         expect(response.code).to eq '302'
       end
