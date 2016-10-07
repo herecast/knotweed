@@ -152,10 +152,10 @@
                                 <tr style="<%= @font_stack %>">
                                   <td style="padding:0px;width:45px;<%= @font_stack %>">
                                     <% author_name = post.organization.try(:name) || post.author_name %>
-                                    <% if post.organization.logo? %>
+                                    <% if post.organization.profile_image? %>
                                       <img
                                         alt="<%= author_name %>"
-                                        src="<%= post.organization.logo.url %>"
+                                        src="<%= post.organization.profile_image.url %>"
                                         style="
                                           border-radius:1000px;
                                           vertical-align:middle;
