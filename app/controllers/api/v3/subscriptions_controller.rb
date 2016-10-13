@@ -37,6 +37,18 @@ module Api
         render json: {}, status: :ok
       end
 
+      def unsubscribe_from_mailchimp
+        subscription = find_subscription
+        subscription.unsubscribed_at ||= Time.zone.now
+        subscription.save!
+
+        render json: subscription, serializer: SubscriptionSerializer
+      end
+
+      def verify_mc_webhook
+        render json: {}, status: :ok
+      end
+
       protected
       def get_resource
         @subscription = Subscription.find_by(key: params[:key])
@@ -47,6 +59,22 @@ module Api
 
       def subscription_params
         params.require(:subscription).permit(:email_type, :name)
+      end
+
+      def user_from_mailchimp
+        email = params['data']['email']
+        User.find_by(email: email)
+      end
+
+      def listserv_from_mailchimp
+        mc_list_id = params['data']['list_id']
+        Listserv.where(mc_list_id: mc_list_id).try(:first)
+      end
+
+      def find_subscription
+        Subscription.where("listserv_id = ? AND email = ?", 
+                           listserv_from_mailchimp.id, params['data']['email'])
+                           .try(:first)
       end
     end
   end

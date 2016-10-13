@@ -6,6 +6,13 @@ end
 
 RSpec.describe 'Subscriptions Endpoints', type: :request do
 
+  describe 'GET /api/v3/unsubscribe_from_mailchimp' do
+    it 'returns 200' do
+      get '/api/v3/subscriptions/unsubscribe_from_mailchimp'
+      expect(response.status).to eql 200
+    end
+  end
+
   describe 'GET /api/v3/subscriptions' do
     let(:user) { FactoryGirl.create :user }
     let(:auth_headers) { auth_headers_for(user) }
