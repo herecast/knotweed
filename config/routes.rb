@@ -157,9 +157,11 @@ Knotweed::Application.routes.draw do
       post '/subscriptions/unsubscribe_from_mailchimp', to: 'subscriptions#unsubscribe_from_mailchimp'
       get '/subscriptions', to: 'subscriptions#index'
       get '/subscriptions/:key', to: 'subscriptions#show'
+      post '/subscriptions', to: 'subscriptions#create'
       patch'/subscriptions/:key', to: 'subscriptions#update'
       patch '/subscriptions/:key/confirm', to: 'subscriptions#confirm'
-      patch '/subscriptions/:key/unsubscribe', to: 'subscriptions#unsubscribe'
+      delete "subscriptions/:key", to: 'subscriptions#destroy'
+      delete "subscriptions/:listserv_id/:email", to: 'subscriptions#destroy'
       post '/registrations/confirmed', to: 'confirmed_registrations#create'
 
       resources :listserv_contents, only: [:show,:update]

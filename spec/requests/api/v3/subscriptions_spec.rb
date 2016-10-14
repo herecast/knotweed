@@ -137,9 +137,9 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
         subscription.update! confirmed_at: Time.now, confirm_ip: '192.168.1.0'
       end
 
-      it 'returns 200 status' do
+      it 'returns 204 status' do
         subject
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(204)
       end
 
       it 'does not change confirmed_at date' do
@@ -167,9 +167,9 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
         allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(remote_ip)
       end
 
-      it 'returns 200 status' do
+      it 'returns 204 status' do
         subject
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(204)
       end
 
       it 'runs ConfirmSubscription process' do
@@ -179,37 +179,30 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
     end
   end
 
-  describe 'PATCH /api/v3/subscriptions/:key/unsubscribe' do
-    let(:subscription) { FactoryGirl.create :subscription }
+  describe 'DELETE /api/v3/subscriptions/{listserv_id}/{base64_email}' do
+    let(:listserv) { FactoryGirl.create :listserv }
+    let(:email) { "theloneranger@texas.com" }
+    let(:encoded_email) {
+      CGI.escape(Base64.encode64(email))
+    }
+    subject { delete "/api/v3/subscriptions/#{listserv.id}/#{encoded_email}" }
 
-    subject { patch "/api/v3/subscriptions/#{subscription.key}/unsubscribe" }
+    it 'returns 204 status' do
+      subject
+      expect(response).to have_http_status(204)
+    end
 
-    context 'when already unusbscribed' do
-      before do
-        subscription.update unsubscribed_at: Time.now
-      end
-
-      it 'returns 200 status' do
-        subject
-        expect(response).to have_http_status(200)
-      end
-
-      it 'does not change unsubscribed_at date' do
-        expect{ subject }.to_not change{
-          subscription.reload.unsubscribed_at
-        }
-      end
+    context 'when subscription exists matching email and listserv_id' do
+      let(:subscription) {
+        FactoryGirl.create :subscription,
+          listserv: listserv,
+          email: email,
+          unsubscribed_at: nil
+      }
 
       it 'runs UnsubscribeSubscription' do
         expect(UnsubscribeSubscription).to receive(:call).with(subscription)
         subject
-      end
-    end
-
-    context 'not already unsubscribed' do
-      it 'returns 200 status' do
-        subject
-        expect(response).to have_http_status(200)
       end
 
       it 'sets unsubscribed_at' do
@@ -219,6 +212,30 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
           subscription.reload.unsubscribed_at
         }.from(nil)
       end
+    end
+  end
+
+  describe 'DELETE /api/v3/subscription/:key' do
+    let!(:subscription) { FactoryGirl.create :subscription }
+
+    subject { delete "/api/v3/subscriptions/#{subscription.key}" }
+
+    it 'returns 204 status' do
+      subject
+      expect(response).to have_http_status(204)
+    end
+
+    it 'runs UnsubscribeSubscription' do
+      expect(UnsubscribeSubscription).to receive(:call).with(subscription)
+      subject
+    end
+
+    it 'sets unsubscribed_at' do
+      expect{
+        subject
+      }.to change{
+        subscription.reload.unsubscribed_at
+      }.from(nil)
     end
   end
 end

@@ -12,7 +12,7 @@ RSpec.describe 'Digest API Endpoints', type: :request do
         expect(response_json[:digests].count).to eq digests.count
 
         response_json[:digests].each do |digest|
-          expect(digest).to include(:listserv_id, :digest_description, :name, :digest_send_time, :digest_send_day)
+          expect(digest).to include(:id, :digest_description, :name, :digest_send_time, :digest_send_day)
         end
       end
     end
