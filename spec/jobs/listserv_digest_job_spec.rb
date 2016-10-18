@@ -18,6 +18,7 @@ RSpec.describe ListservDigestJob do
       before do
         listserv.update send_digest: true,
           digest_reply_to: 'test@test.com',
+          digest_subject: 'This is the STUFF!',
           last_digest_generation_time: 1.day.ago
       end
 
@@ -87,12 +88,78 @@ RSpec.describe ListservDigestJob do
               listserv: listserv
           }
 
-          it 'creates a digest record' do
-            expect{ subject }.to change{
-              ListservDigest.count
-            }.to(1)
+          context 'with no campaigns' do
+            it 'creates a digest record' do
+              expect{ subject }.to change{
+                ListservDigest.count
+              }.to(1)
 
-            expect(ListservDigest.last.listserv).to eql listserv
+              expect(ListservDigest.last.listserv).to eql listserv
+            end
+
+            it 'sets instance information' do
+              subject
+              digest = ListservDigest.last
+              expect(digest.subject).to eql listserv.digest_subject
+              expect(digest.reply_to).to eql listserv.digest_reply_to
+              expect(digest.from_name).to eql listserv.name
+              expect(digest.template).to eql listserv.template
+              expect(digest.subscription_ids).to match_array listserv.subscriptions.pluck(:id)
+            end
+
+          end
+
+          context 'with active campaigns' do
+            let!(:campaign_1) { FactoryGirl.create :campaign,
+              listserv: listserv,
+              community_ids: [listserv.subscriptions.first.user.location_id],
+              sponsored_by: Faker::Company.name,
+              promotion_id: FactoryGirl.create(:promotion_banner).promotion.id
+            }
+
+            let!(:campaign_2) {FactoryGirl.create :campaign,
+              listserv: listserv,
+              community_ids: [listserv.subscriptions.last.user.location_id],
+              sponsored_by: Faker::Company.name,
+              digest_query: 'SELECT * FROM contents'
+            }
+
+            it 'creates digest records for each campaign' do
+              expect{ subject }.to change{
+                ListservDigest.count
+              }.to(2)
+            end
+
+            describe 'subscription_ids' do
+              it 'should be populated by listserv subscriptions filtered by location_ids' do
+                subject
+                # get campaign 1 digest
+                digest = ListservDigest.where(listserv: listserv).
+                  select{ |ld| ld.location_ids == campaign_1.community_ids }.first
+                expect(digest.subscription_ids).to match_array [listserv.subscriptions.first.id]
+              end
+            end
+
+            it 'uses the custom digest query when specified' do
+              subject
+              # get the digest corresponding to campaign2
+              digest = ListservDigest.where(listserv: listserv).select{ |ld| ld.location_ids == campaign_2.community_ids }.first
+              expect(digest.contents).to match_array(Content.all)
+            end
+
+            it 'sets instance information for each digest' do
+              subject
+              ListservDigest.where(listserv: listserv).each do |digest|
+                # select campaign by community_ids so we can know which campaign to match against
+                campaign = Campaign.where(listserv: listserv).select{|c| c.community_ids == digest.location_ids }.first
+                expect(digest.subject).to eql listserv.digest_subject
+                expect(digest.reply_to).to eql listserv.digest_reply_to
+                expect(digest.from_name).to eql listserv.name
+                expect(digest.template).to eql listserv.template
+                expect(digest.sponsored_by).to eql campaign.sponsored_by
+                expect(digest.promotion_id).to eql campaign.promotion_id
+              end
+            end
           end
 
           describe '#listserv_contents' do
@@ -147,28 +214,28 @@ RSpec.describe ListservDigestJob do
             end
           end
         end
-      end
+        context 'when digest never generated before;' do
+          before do
+            listserv.update! last_digest_generation_time: nil
+          end
 
-      context 'when digest never generated before;' do
-        before do
-          listserv.update! last_digest_generation_time: nil
-        end
+          context 'content exists verified less than 1 month ago;' do
+            let!(:listserv_content) {
+              FactoryGirl.create :listserv_content,
+                :verified,
+                listserv: listserv,
+                verified_at: 27.days.ago
+             }
 
-        context 'content exists verified less than 1 month ago;' do
-          let!(:listserv_content) {
-            FactoryGirl.create :listserv_content,
-              :verified,
-              listserv: listserv,
-              verified_at: 27.days.ago
-           }
-
-          it 'creates a digest record with referencing that content' do
-            subject
-            digest = ListservDigest.last
-            expect(digest.listserv_content_ids).to include(listserv_content.id)
+            it 'creates a digest record referencing that content' do
+              subject
+              digest = ListservDigest.last
+              expect(digest.listserv_content_ids).to include(listserv_content.id)
+            end
           end
         end
       end
+
     end
   end
 end

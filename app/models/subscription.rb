@@ -58,6 +58,10 @@ class Subscription < ActiveRecord::Base
     user.try(:name) || name
   end
 
+  def subscribed?
+    confirmed? && !unsubscribed?
+  end
+
   protected
 
   def detect_and_connect_user

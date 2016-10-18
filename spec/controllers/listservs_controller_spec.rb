@@ -4,20 +4,25 @@ RSpec.describe ListservsController, type: :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
+    Listserv.destroy_all
   end
 
   let(:valid_attributes) {{
-    name: "listserv1",
+    name: 'listserv1',
+    list_type: 'internal_digest',
     subscribe_email: 'subscribe@example.org',
     unsubscribe_email: 'unsubscribe@example.org',
     post_email: 'post@example.org',
     digest_send_time: '13:01',
     mc_list_id: 'xyz123',
-    mc_segment_id: 'xyz123',
+    mc_group_name: 'xyz123',
     send_digest: false,
     digest_reply_to: 'test@example.org',
     digest_header: '',
-    digest_footer: ''
+    digest_footer: '',
+    digest_subject: 'da subject',
+    digest_preheader: 'a distinguished curated list',
+    sender_name: 'Mace Windu'
   }}
 
   describe "GET #index" do

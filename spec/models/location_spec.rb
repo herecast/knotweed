@@ -12,11 +12,29 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  consumer_active :boolean          default(FALSE)
+#  is_region       :boolean          default(FALSE)
 #
 
 require 'spec_helper'
 
 describe Location, :type => :model do
+  it {is_expected.to have_db_column(:is_region).of_type(:boolean)}
+
+  describe 'non_region' do
+    let!(:region) {
+      FactoryGirl.create :location, is_region: true
+    }
+    let!(:non_region) {
+      FactoryGirl.create :location, is_region: false
+    }
+    subject { Location.non_region }
+
+    it 'returns only locations not flagged is_region' do
+      expect(subject).to include(non_region)
+      expect(subject).to_not include(region)
+    end
+  end
+
   describe 'Location#find_by_city_state' do
     before do
       FactoryGirl.create :location, city: 'White River Junction', state: 'VT', consumer_active: true

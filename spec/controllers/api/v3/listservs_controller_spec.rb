@@ -4,8 +4,9 @@ describe Api::V3::ListservsController, :type => :controller do
 
   describe 'GET index' do
     before do
-      FactoryGirl.create_list :listserv, 2
-      FactoryGirl.create :listserv, reverse_publish_email: 'mail@example.org'
+      FactoryGirl.create :listserv
+      FactoryGirl.create :listserv, list_type: 'internal_digest'
+      FactoryGirl.create :listserv, list_type: 'external_list'
     end
 
     subject { get :index, format: :json }
@@ -15,9 +16,9 @@ describe Api::V3::ListservsController, :type => :controller do
       expect(response.code).to eq('200')
     end
 
-    it 'only returns listservs that are sending digests and displaying subscriptions' do
+    it 'only returns listservs that are sending digests and are not a custom digest' do
       subject
-      expect(assigns(:listservs).count).to eq 1
+      expect(assigns(:listservs).count).to eq 2
     end
 
   end

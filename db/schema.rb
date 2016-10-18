@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160927144840) do
+ActiveRecord::Schema.define(version: 20161014185234) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -126,6 +126,20 @@ ActiveRecord::Schema.define(version: 20160927144840) do
 
   add_index "business_profiles", ["existence"], name: "idx_16451_index_business_profiles_on_existence", using: :btree
   add_index "business_profiles", ["source", "source_id"], name: "idx_16451_index_business_profiles_on_source_and_source_id", using: :btree
+
+  create_table "campaigns", force: :cascade do |t|
+    t.integer  "listserv_id"
+    t.integer  "community_ids", default: [],              array: true
+    t.integer  "promotion_id"
+    t.string   "sponsored_by"
+    t.text     "digest_query"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "campaigns", ["community_ids"], name: "index_campaigns_on_community_ids", using: :btree
+  add_index "campaigns", ["listserv_id"], name: "index_campaigns_on_listserv_id", using: :btree
+  add_index "campaigns", ["promotion_id"], name: "index_campaigns_on_promotion_id", using: :btree
 
   create_table "categories", id: :bigserial, force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -514,20 +528,20 @@ ActiveRecord::Schema.define(version: 20160927144840) do
 
   create_table "listserv_contents", force: :cascade do |t|
     t.integer  "listserv_id"
-    t.string   "sender_name"
-    t.string   "sender_email"
-    t.string   "subject"
+    t.string   "sender_name",                limit: 255
+    t.string   "sender_email",               limit: 255
+    t.string   "subject",                    limit: 255
     t.text     "body"
     t.integer  "content_category_id"
     t.integer  "subscription_id"
-    t.string   "key"
+    t.string   "key",                        limit: 255
     t.datetime "verification_email_sent_at"
     t.datetime "verified_at"
     t.datetime "pubdate"
     t.integer  "content_id"
     t.integer  "user_id"
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
     t.string   "verify_ip"
   end
 
@@ -541,42 +555,57 @@ ActiveRecord::Schema.define(version: 20160927144840) do
   create_table "listserv_digests", force: :cascade do |t|
     t.integer  "listserv_id"
     t.string   "listserv_content_ids"
-    t.string   "campaign_id"
+    t.string   "mc_campaign_id"
     t.datetime "sent_at"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
     t.string   "content_ids"
+    t.string   "from_name"
+    t.string   "reply_to"
+    t.string   "subject"
+    t.string   "template"
+    t.string   "sponsored_by"
+    t.integer  "promotion_id"
+    t.integer  "location_ids",         default: [],              array: true
+    t.string   "mc_segment_id"
+    t.integer  "subscription_ids",     default: [],              array: true
   end
 
   add_index "listserv_digests", ["listserv_id"], name: "index_listserv_digests_on_listserv_id", using: :btree
 
   create_table "listservs", id: :bigserial, force: :cascade do |t|
-    t.string   "name",                        limit: 255
-    t.string   "reverse_publish_email",       limit: 255
-    t.string   "import_name",                 limit: 255
+    t.string   "name",                         limit: 255
+    t.string   "reverse_publish_email",        limit: 255
+    t.string   "import_name",                  limit: 255
     t.boolean  "active"
-    t.datetime "created_at",                                                                     null: false
-    t.datetime "updated_at",                                                                     null: false
+    t.datetime "created_at",                                                                      null: false
+    t.datetime "updated_at",                                                                      null: false
     t.time     "digest_send_time"
     t.string   "unsubscribe_email"
     t.string   "post_email"
     t.string   "subscribe_email"
     t.string   "mc_list_id"
-    t.string   "mc_segment_id"
-    t.boolean  "send_digest",                             default: false
+    t.string   "mc_group_name"
+    t.boolean  "send_digest",                              default: false
     t.datetime "last_digest_send_time"
     t.datetime "last_digest_generation_time"
     t.text     "digest_header"
     t.text     "digest_footer"
     t.string   "digest_reply_to"
-    t.string   "timezone",                                default: "Eastern Time (US & Canada)"
+    t.string   "timezone",                                 default: "Eastern Time (US & Canada)"
     t.text     "digest_description"
     t.string   "digest_send_day"
-    t.integer  "banner_ad_override_id"
+    t.integer  "promotion_id"
     t.text     "digest_query"
+    t.integer  "digest_max_contents",                      default: 25
+    t.integer  "digest_max_listserv_contents",             default: 25
     t.string   "template"
     t.string   "sponsored_by"
+    t.string   "digest_subject"
+    t.string   "digest_preheader"
     t.boolean  "display_subscribe",                        default: false
+    t.string   "list_type",                                default: "custom_list"
+    t.string   "sender_name"
   end
 
   create_table "listservs_locations", id: false, force: :cascade do |t|
@@ -594,6 +623,7 @@ ActiveRecord::Schema.define(version: 20160927144840) do
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
     t.boolean  "consumer_active",             default: false
+    t.boolean  "is_region",                   default: false
   end
 
   create_table "locations_locations", id: false, force: :cascade do |t|
@@ -651,15 +681,15 @@ ActiveRecord::Schema.define(version: 20160927144840) do
     t.datetime "updated_at",                  null: false
   end
 
-  create_table "organizations", id: :bigserial, force: :cascade do |t|
+  create_table "organizations", force: :cascade do |t|
     t.string   "name",                limit: 255
     t.datetime "created_at",                                      null: false
     t.datetime "updated_at",                                      null: false
     t.string   "logo",                limit: 255
-    t.integer  "organization_id",     limit: 8
+    t.integer  "organization_id"
     t.string   "website",             limit: 255
     t.text     "notes"
-    t.integer  "parent_id",           limit: 8
+    t.integer  "parent_id"
     t.string   "org_type",            limit: 255
     t.boolean  "can_reverse_publish",             default: false
     t.boolean  "can_publish_news",                default: false
@@ -676,8 +706,6 @@ ActiveRecord::Schema.define(version: 20160927144840) do
     t.string   "profile_image",       limit: 255
     t.string   "background_image",    limit: 255
     t.string   "profile_ad_override", limit: 255
-    t.string   "profile_image",       limit: 255
-    t.string   "background_image",    limit: 255
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
@@ -795,7 +823,7 @@ ActiveRecord::Schema.define(version: 20160927144840) do
   add_index "received_emails", ["file_uri"], name: "index_received_emails_on_file_uri", using: :btree
   add_index "received_emails", ["record_type", "record_id"], name: "index_received_emails_on_record_type_and_record_id", using: :btree
 
-  create_table "repositories", id: :bigserial, force: :cascade do |t|
+  create_table "repositories", force: :cascade do |t|
     t.string   "name",                    limit: 255
     t.string   "dsp_endpoint",            limit: 255
     t.string   "sesame_endpoint",         limit: 255
@@ -901,7 +929,7 @@ ActiveRecord::Schema.define(version: 20160927144840) do
     t.string   "avatar",                 limit: 255
     t.string   "public_id",              limit: 255
     t.boolean  "skip_analytics",                     default: false
-    t.string   "temp_password"
+    t.string   "temp_password",          limit: 255
   end
 
   add_index "users", ["email"], name: "idx_16858_index_users_on_email", unique: true, using: :btree
@@ -930,6 +958,8 @@ ActiveRecord::Schema.define(version: 20160927144840) do
 
   add_index "wufoo_forms", ["controller", "action", "active"], name: "idx_16881_index_wufoo_forms_on_controller_and_action_and_active", unique: true, using: :btree
 
+  add_foreign_key "campaigns", "listservs"
+  add_foreign_key "campaigns", "promotions"
   add_foreign_key "listserv_contents", "content_categories"
   add_foreign_key "listserv_contents", "contents"
   add_foreign_key "listserv_contents", "listservs"

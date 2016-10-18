@@ -1,3 +1,8 @@
+<div class='preheader' style='display: none !important;'>
+  <%= @listserv.digest_preheader %>
+  <%= @digest.contents.sort_by{|c| c.pubdate}.collect{|c| c.title.truncate_words(8)}.join(' | ') %>
+</div>
+
 <a id='top'></a>
 <h2>
   <%=@listserv.name%> Digest
@@ -9,8 +14,9 @@
 </div>
 
 <div>
-  <% if @listserv.banner_ad.present? %>
-    <%= link_to image_tag(@listserv.banner_ad.banner_image), @listserv.banner_ad.redirect_url %>
+  <% if @digest.promotion.present? %>
+    <% banner_ad = @digest.promotion.promotable %>
+    <%= link_to image_tag(banner_ad.banner_image), banner_ad.redirect_url %>
   <% end %>
 </div>
 <div class='enhanced-posts'>

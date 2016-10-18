@@ -10,24 +10,37 @@
 #  created_at                  :datetime         not null
 #  updated_at                  :datetime         not null
 #  digest_send_time            :time
-#  unsubscribe_email           :string(255)
-#  post_email                  :string(255)
-#  subscribe_email             :string(255)
-#  mc_list_id                  :string(255)
-#  mc_segment_id               :string(255)
+#  unsubscribe_email           :string
+#  post_email                  :string
+#  subscribe_email             :string
+#  mc_list_id                  :string
+#  mc_group_name               :string
 #  send_digest                 :boolean          default(FALSE)
 #  last_digest_send_time       :datetime
 #  last_digest_generation_time :datetime
-#  digest_header               :text(65535)
-#  digest_footer               :text(65535)
-#  digest_send_description     :text
-#  digest_send_day             :integer
+#  digest_header               :text
+#  digest_footer               :text
+#  digest_reply_to             :string
+#  timezone                    :string           default("Eastern Time (US & Canada)")
+#  digest_description          :text
+#  digest_send_day             :string
+#  banner_ad_override_id       :integer
+#  digest_query                :text
+#  template                    :string
+#  sponsored_by                :string
+#  digest_subject              :string
+#  digest_preheader            :string
+#  display_subscribe           :boolean          default(FALSE)
 #
 
 class Listserv < ActiveRecord::Base
+  include ListservSync
   has_many :promotion_listservs
   has_and_belongs_to_many :locations
   has_many :subscriptions
+  has_many :campaigns
+
+  belongs_to :promotion
 
   validates_uniqueness_of :reverse_publish_email, :unsubscribe_email,
     :subscribe_email, :post_email, allow_blank: true
@@ -41,6 +54,9 @@ class Listserv < ActiveRecord::Base
 
   validates :digest_reply_to, presence: true, if: :send_digest?
   validates :digest_send_time, presence: true, if: :send_digest?
+  validates_presence_of :list_type
+
+  validate :mc_group_name_required, if: :mc_list_id?
 
   validate :no_altering_queries
   validate :valid_template_name
@@ -75,6 +91,10 @@ class Listserv < ActiveRecord::Base
     reverse_publish_email.present?
   end
 
+  def mc_sync?
+    mc_list_id? && mc_group_name?
+  end
+
   def no_altering_queries
     if self.digest_query?
       query_array = self.digest_query.upcase.split(' ')
@@ -95,18 +115,13 @@ class Listserv < ActiveRecord::Base
       tm = parse_digest_send_time
       tm.future? ? tm : tm.tomorrow
     elsif digest_send_time? && digest_send_day?
-      tm = parse_digest_send_time
-      time_with_week = tm.next_week(digest_days_as_symbol)
-      find_week_to_send(time_with_week)
+      tm = digest_send_time.strftime('%H:%M')
+      Chronic.parse("#{digest_send_day} #{tm}")
     end
   end
 
   def banner_ad
-    PromotionBanner.find(self.banner_ad_override_id) if banner_ad_override_id.present?
-  end 
-
-  def digest_days_as_symbol
-    self.digest_send_day.downcase.to_sym
+    promotion.promotable if promotion
   end
 
   def self.digest_days
@@ -118,6 +133,14 @@ class Listserv < ActiveRecord::Base
       "Thursday",
       "Friday",
       "Saturday",
+    ]
+  end
+
+  def list_types
+    [
+      ['External List', 'external_list'],
+      ['Internal List', 'internal_list'],
+      ['Custom Digest', 'custom_digest']
     ]
   end
 
@@ -152,5 +175,13 @@ class Listserv < ActiveRecord::Base
 
   def custom_digest_results
     get_query.to_a
+  end
+
+  def mc_group_name_required
+    if mc_list_id?
+      unless mc_group_name?
+        errors.add(:mc_group_name, "required when mc_list_id present")
+      end
+    end
   end
 end

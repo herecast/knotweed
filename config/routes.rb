@@ -67,7 +67,9 @@ Knotweed::Application.routes.draw do
 
   resources :data_contexts
   resources :repositories
-  resources :listservs
+  resources :listservs do
+    resources :campaigns, controller: :listserv_campaigns
+  end
   resources :subscriptions
   resources :received_emails
   resources :listserv_contents

@@ -9,15 +9,28 @@
 #  active                      :boolean
 #  created_at                  :datetime         not null
 #  updated_at                  :datetime         not null
-#  daily_digest_send_time      :time
-#  unsubscribe_email           :string(255)
-#  post_email                  :string(255)
-#  subscribe_email             :string(255)
+#  digest_send_time            :time
+#  unsubscribe_email           :string
+#  post_email                  :string
+#  subscribe_email             :string
+#  mc_list_id                  :string
+#  mc_segment_id               :string
 #  send_digest                 :boolean          default(FALSE)
 #  last_digest_send_time       :datetime
 #  last_digest_generation_time :datetime
-#  mc_list_id                  :string(255)
-#  mc_segment_id               :string(255)
+#  digest_header               :text
+#  digest_footer               :text
+#  digest_reply_to             :string
+#  timezone                    :string           default("Eastern Time (US & Canada)")
+#  digest_description          :text
+#  digest_send_day             :string
+#  banner_ad_override_id       :integer
+#  digest_query                :text
+#  template                    :string
+#  sponsored_by                :string
+#  digest_subject              :string
+#  digest_preheader            :string
+#  display_subscribe           :boolean          default(FALSE)
 #
 
 require 'spec_helper'
@@ -31,7 +44,7 @@ describe Listserv, :type => :model do
   it { is_expected.to respond_to(:is_vc_list?) }
 
   it { is_expected.to have_db_column(:mc_list_id).of_type(:string) }
-  it { is_expected.to have_db_column(:mc_segment_id).of_type(:string) }
+  it { is_expected.to have_db_column(:mc_group_name).of_type(:string) }
   it { is_expected.to have_db_column(:send_digest).of_type(:boolean) }
   it { is_expected.to have_db_column(:last_digest_send_time).of_type(:datetime) }
   it { is_expected.to have_db_column(:last_digest_generation_time).of_type(:datetime) }
@@ -44,6 +57,11 @@ describe Listserv, :type => :model do
   it { is_expected.to have_db_column(:digest_query).of_type(:text) }
   it { is_expected.to have_db_column(:sponsored_by).of_type(:string) }
   it { is_expected.to have_db_column(:display_subscribe).of_type(:boolean) }
+  it { is_expected.to have_db_column(:digest_subject).of_type(:string) }
+  it { is_expected.to have_db_column(:digest_preheader).of_type(:string) }
+  it { is_expected.to have_many(:campaigns) }
+  it { is_expected.to have_db_column(:list_type).of_type(:string) }
+  
   describe '#active_subscriber_count' do
     it 'is equal to related active subscriptions' do
       ls = FactoryGirl.create :listserv
@@ -53,6 +71,12 @@ describe Listserv, :type => :model do
         confirm_ip: '1.1.1.1'
 
       expect(ls.active_subscriber_count).to eql subs.count
+    end
+  end
+
+  describe '#mc_sync?' do
+    it 'is true when mc_list_id? and mc_group_name?' do
+      expect(subject.mc_sync?).to eql (subject.mc_list_id? && subject.mc_group_name?)
     end
   end
 
@@ -96,13 +120,26 @@ describe Listserv, :type => :model do
         expect(listserv.errors).to include(:digest_send_time)
       end
     end
+
+    context 'when mc_list_id' do
+      before do
+        subject.mc_list_id = '123432kl;'
+      end
+
+      it 'requires mc_group_name' do
+        expect(subject).to be_invalid
+        expect(subject.errors[:mc_group_name]).to include('required when mc_list_id present')
+      end
+    end
   end
 
   describe 'banner_ad' do
-    let!(:banner_ad) { FactoryGirl.create :promotion_banner }
-    let(:banner_ad_listserv) { FactoryGirl.create :listserv, banner_ad_override_id: banner_ad.id }
-    it 'retuns a banner ad' do
-      expect(banner_ad_listserv.banner_ad).to eq banner_ad
+    let!(:promotion) { FactoryGirl.create :promotion, promotable_type: 'PromotionBanner' }
+    let!(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: promotion }
+    let(:banner_ad_listserv) { FactoryGirl.create :listserv, promotion: promotion }
+  
+   it 'retuns a banner ad' do
+      expect(banner_ad_listserv.banner_ad).to eq promotion_banner
     end
   end
 
@@ -137,7 +174,7 @@ describe Listserv, :type => :model do
     end
 
     context 'when digest send day is present' do
-      let(:listserv_with_day) { FactoryGirl.create :listserv, 
+      let(:listserv_with_day) { FactoryGirl.create :listserv,
                                 digest_send_time: "06:00",
                                 digest_send_day: 2.days.from_now.strftime('%A'),
                                 send_digest: true, 
@@ -145,16 +182,18 @@ describe Listserv, :type => :model do
 
       it 'returns the correct send time if day is upcoming in the week' do
         Timecop.freeze(Time.zone.now) do
-         tm = listserv_with_day.next_digest_send_time
-         expect(tm.strftime("%B %D")).to eq 2.days.from_now.strftime("%B %D")
+         send_time = listserv_with_day.next_digest_send_time
+         test_time = Time.zone.parse('06:00') + 2.days
+         expect(send_time).to eq test_time
         end
       end
 
       it 'returns the correct send time if day is next week' do
         listserv_with_day.update_attributes(digest_send_day: 1.day.ago.strftime('%A'))
         Timecop.freeze(Time.zone.now) do
-          tm = listserv_with_day.next_digest_send_time
-          expect(tm.strftime("%B %D")).to eq 6.days.from_now.strftime("%B %D")
+          send_time = listserv_with_day.next_digest_send_time
+          test_time = Time.zone.parse('06:00') + 6.days
+          expect(send_time).to eq test_time
         end
       end
     end
@@ -177,6 +216,37 @@ describe Listserv, :type => :model do
       it 'maintains the same sort order' do
         listserv.digest_query += " ORDER BY id DESC"
         expect(subject.first).to eql contents.sort_by(&:id).reverse.first
+      end
+    end
+  end
+
+  describe 'syncing mc_group_name' do
+    context 'when group name is added' do
+      let(:listserv) { FactoryGirl.create :listserv }
+      before do
+        listserv.mc_list_id="123"
+        listserv.mc_group_name = 'Test Digest'
+      end
+
+      it 'triggers MailchimpService.find_or_create_digest' do
+        expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'find_or_create_digest', listserv.mc_list_id, listserv.mc_group_name)
+        listserv.save!
+      end
+    end
+
+    context 'when group name is changed' do
+      let(:listserv) {
+        FactoryGirl.create :listserv,
+          mc_list_id: 321,
+          mc_group_name: 'old name'
+      }
+      before do
+        listserv.mc_group_name = 'Test Digest'
+      end
+
+      it 'triggers MailchimpService.find_or_create_digest' do
+        expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'rename_digest', listserv.mc_list_id, 'old name', 'Test Digest')
+        listserv.save!
       end
     end
   end

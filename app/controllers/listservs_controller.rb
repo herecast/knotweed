@@ -55,18 +55,23 @@ class ListservsController < ApplicationController
         :post_email,
         :digest_send_time,
         :mc_list_id,
+        :mc_group_name,
         :digest_header,
         :digest_footer,
         :send_digest,
         :digest_reply_to,
         :timezone,
-        :banner_ad_override_id,
+        :promotion_id,
         :digest_description,
         :digest_send_day,
         :digest_query,
         :template,
         :sponsored_by,
-        :display_subscribe
+        :display_subscribe,
+        :digest_preheader,
+        :digest_subject,
+        :list_type,
+        :sender_name
       )
     end
 end

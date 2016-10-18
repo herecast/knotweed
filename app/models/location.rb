@@ -12,6 +12,7 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  consumer_active :boolean          default(FALSE)
+#  is_region       :boolean          default(FALSE)
 #
 
 class Location < ActiveRecord::Base
@@ -39,6 +40,10 @@ class Location < ActiveRecord::Base
 
   scope :consumer_active, -> { where consumer_active: true }
   scope :not_upper_valley, -> { where "city != 'Upper Valley'" }
+
+  scope :non_region, -> {
+    where(is_region: false)
+  }
 
   def name
     "#{try(:city)} #{try(:state)}"

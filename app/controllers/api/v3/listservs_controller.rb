@@ -8,7 +8,7 @@ module Api
         if params[:ids].present?
           @listservs = Listserv.where(id: params[:ids])
         else
-          @listservs = Listserv.all.select{ |ls| ls.is_managed_list? || ls.is_vc_list? }
+          @listservs = Listserv.where.not(list_type: 'custom_digest')
         end
 
         render json: @listservs, arrayserializer: ListservSerializer

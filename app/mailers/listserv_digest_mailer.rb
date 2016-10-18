@@ -9,9 +9,10 @@ class ListservDigestMailer < ActionMailer::Base
   def digest(digest_record)
     @digest = digest_record
     @listserv = digest_record.listserv
-    template = @listserv.template? ? "#{@listserv.template}" : "digest"
 
-    mail_instance = mail(subject: "#{@listserv.name} digest", template_name: "#{template}")
+    template = @digest.template? ? @digest.template : "digest"
+
+    mail_instance = mail(subject: @digest.subject, template_name: "#{template}")
     mail_instance.delivery_handler = self
     mail_instance
   end
@@ -24,16 +25,16 @@ class ListservDigestMailer < ActionMailer::Base
   end
 
   def deliver_mail(mail_instance)
-    unless @digest.campaign_id?
+    unless @digest.mc_campaign_id?
       campaign = MailchimpService.create_campaign(@digest, mail_instance.body.encoded)
-      @digest.update_attribute :campaign_id, campaign[:id]
+      @digest.update_attribute :mc_campaign_id, campaign[:id]
     end
     BackgroundJob.perform_later(self.class.name, 'send_campaign', @digest)
   end
 
   # Background for it's own retry schedule
   def self.send_campaign(digest)
-    MailchimpService.send_campaign(digest.campaign_id)
+    MailchimpService.send_campaign(digest.mc_campaign_id)
     digest.update_attribute :sent_at, Time.current
     digest.listserv.update_attribute :last_digest_send_time, digest.sent_at
   end

@@ -1,5 +1,29 @@
+# == Schema Information
+#
+# Table name: listserv_digests
+#
+#  id                   :integer          not null, primary key
+#  listserv_id          :integer
+#  listserv_content_ids :string
+#  mc_campaign_id       :string
+#  sent_at              :datetime
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  content_ids          :string
+#  from_name            :string
+#  reply_to             :string
+#  subject              :string
+#  template             :string
+#  sponsored_by         :string
+#  promotion_id         :integer
+#  location_ids         :integer          default([]), is an Array
+#
+
 class ListservDigest < ActiveRecord::Base
   belongs_to :listserv
+  belongs_to :promotion
+
+  # pre-postgres below:  maybe update to array column?
   serialize :listserv_content_ids, Array
   serialize :content_ids, Array
 
@@ -19,9 +43,38 @@ class ListservDigest < ActiveRecord::Base
     @contents = contents
   end
 
- def contents
+  def contents
     @contents ||=
       content_ids.any? ?
         Content.where(id: content_ids).sort_by{|c| content_ids.index(c.id)} : []
   end
+
+  def locations=(list)
+    write_attribute :location_ids, (list || []).collect(&:id).sort
+  end
+
+  def locations
+    if location_ids.any?
+      Location.where(id: location_ids)
+    else
+      []
+    end
+  end
+
+  def subscriptions=(list)
+    write_attribute :subscription_ids, (list || []).collect(&:id).sort
+  end
+
+  def subscriptions
+    if subscription_ids.any?
+      Subscription.where(id: subscription_ids)
+    else
+      []
+    end
+  end
+
+  def subscriber_emails
+    subscriptions.present? ? subscriptions.pluck(:email) : []
+  end
+
 end

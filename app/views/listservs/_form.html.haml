@@ -2,7 +2,9 @@
   = f.error_notification
 
   .form-inputs
+    = f.input :list_type, collection: @listserv.list_types, include_blank: false
     = f.input :name
+    = f.input :sender_name
     = f.input :digest_description
     = f.input :import_name
     = f.input :reverse_publish_email, hint: "This can't be populated if it is a Subtext managed listserv."
@@ -15,6 +17,7 @@
       = f.input :unsubscribe_email
       = f.input :post_email
       = f.input :mc_list_id
+      = f.input :mc_group_name
       .form-actions
         = f.button :submit, class: 'btn btn-success'
       %fieldset
@@ -25,12 +28,83 @@
         = f.input :digest_send_day, collection: @digest_days, hint: "If this is a weekely digest, select the day of the week to send.  Leave blank if daily"
         = f.input :digest_reply_to
         = f.input :digest_query, input_html: { class: 'span12' } , hint: "This query will be used to generate the contents for the listserv"
+        = f.input :digest_subject
+        = f.input :digest_preheader
         = f.input :digest_header, as: :summernote
         = f.input :digest_footer, as: :summernote
         = f.input :template, collection: @listserv.digest_templates, include_blank: false
         = f.input :sponsored_by, hint: "Ex: 'Sponsored by Monsanto'"
-        = f.input :banner_ad_override_id, as: :string
+        = f.input :promotion_id, as: :string
         = f.input :display_subscribe, label: "Subscription option on DailyUV registration and user account"
 
         .form-actions
           = f.button :submit, class: 'btn btn-success'
+
+      - if @listserv.persisted?
+        %fieldset#campaigns
+          %legend
+            Campaigns
+            %button.btn.new-campaign{type: 'button', data: {template: ((render("listserv_campaigns/form", campaign: Campaign.new(listserv: f.object))))}}
+              %i.glyphicon.glyphicon-plus
+              New
+
+          %table.table.table-striped
+            %thead
+              %tr
+                %th Communities
+                %th Sponsored By
+                %th Promotion
+                %th Query Override
+                %th
+            %tbody
+              - @listserv.campaigns.each do |campaign|
+                = render 'listserv_campaigns/row', campaign: campaign
+
+          %script#campaignModal{type: 'text/html'}
+            .modal.fade
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    %button.close{type: 'button', "data-dismiss"=>"modal"}
+                      &times;
+                    %h4.modal-title Campaign
+                  .modal-body
+                  .modal-footer
+                    %button.btn.btn-primary{type: 'button'} Save Changes
+
+          :javascript
+            jQuery(function($){
+              var template = $('#campaignModal').html();
+              var $campaigns = $('#campaigns');
+
+              function buildModal($btn) {
+                var $modal = $(template).appendTo($('body'));
+                $modal.find('.modal-body').append($btn.data('template'));
+
+                $modal.modal({
+                  show: false
+                }).on('hidden.bs.modal', function() {
+                  $modal.remove();
+                }).on('click', 'button.btn-primary', function() {
+                  $modal.find('form').submit();
+                }).on('ajax:success', function() {
+                  $modal.modal('hide');
+                });
+                return $modal;
+              }
+
+              $campaigns.on('click', 'button.new-campaign', function() {
+                var $modal = buildModal($(this));
+                $modal.modal('show');
+              });
+
+              $campaigns.on('click', 'button.edit-campaign', function() {
+                var $modal = buildModal($(this));
+                $modal.find('#campaign_community_ids').val()
+                $modal.modal('show');
+              });
+
+            });
+
+
+

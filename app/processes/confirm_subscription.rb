@@ -33,7 +33,7 @@ class ConfirmSubscription
 
   private
   def sync_with_mc
-    if @subscription.listserv.mc_list_id?
+    if @subscription.listserv.mc_sync?
       BackgroundJob.perform_later('MailchimpService', 'subscribe', @subscription)
     end
   end

@@ -12,6 +12,7 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  consumer_active :boolean          default(FALSE)
+#  is_region       :boolean          default(FALSE)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

@@ -65,6 +65,8 @@ class User < ActiveRecord::Base
   validates :public_id, uniqueness: true, allow_blank: true
   validates :avatar, :image_minimum_size => true
 
+  after_update :update_subscriptions_locations
+
   # spoof attribute for simple form simplicity on role-changing form
   attr_accessible :managed_organization_id
   def managed_organization_id; Organization.with_role(:manager, self).first.try(:id); end
@@ -121,6 +123,14 @@ class User < ActiveRecord::Base
 
   def active_listserv_subscription_ids
     self.subscriptions.where(unsubscribed_at: nil).map(&:listserv_id)
+  end
+
+  def update_subscriptions_locations
+    if self.location_id_changed? && self.subscriptions.present?
+      self.subscriptions.each do |sub|
+        BackgroundJob.perform_later('MailchimpService', 'update_subscription', sub) if sub.listserv.mc_sync?
+      end
+    end
   end
 
   private

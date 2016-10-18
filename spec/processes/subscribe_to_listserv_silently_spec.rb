@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe SubscribeToListservSilently do
   context 'Given a listserv and user' do
-    let(:listserv) { FactoryGirl.create :listserv, mc_list_id: '123' }
+    let!(:listserv) { FactoryGirl.create :listserv, mc_list_id: '123', mc_group_name: 'blah' }
     let(:user) { FactoryGirl.create :user }
     let(:confirm_ip) { '127.0.0.1' }
 
@@ -18,10 +18,10 @@ RSpec.describe SubscribeToListservSilently do
       expect(subscription.source).to eql 'knotweed'
     end
 
-      it 'backgrounds MailchimpService.subscribe' do
-        expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'subscribe', an_instance_of(Subscription))
-        subject
-      end
+    it 'backgrounds MailchimpService.subscribe' do
+      expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'subscribe', an_instance_of(Subscription))
+      subject
+    end
     
     context 'when existing subscription' do
       let!(:existing) { Subscription.create!(listserv: listserv,

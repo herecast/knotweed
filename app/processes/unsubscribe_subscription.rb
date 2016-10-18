@@ -11,7 +11,7 @@ class UnsubscribeSubscription
     unless @subscription.unsubscribed?
       @subscription.update! unsubscribed_at: Time.current
 
-      if @subscription.listserv.mc_list_id
+      if @subscription.listserv.mc_sync?
         BackgroundJob.perform_later('MailchimpService', 'unsubscribe', @subscription)
       end
     end

@@ -207,4 +207,42 @@ describe User, :type => :model do
     end
   end
 
+  describe 'subscription updates' do
+    before do
+      @user = FactoryGirl.create :user
+      @new_location = FactoryGirl.create :location
+    end
+
+    context 'when user has subscriptions, and location is updated' do
+      context 'when listserv is setup to sync with mailchimp' do
+        before do
+          @listserv = FactoryGirl.create :listserv, mc_list_id: '123', mc_group_name: 'my_group'
+          @sub = FactoryGirl.create :subscription, user: @user, listserv: @listserv
+        end
+
+        it 'backgrounds a MailchimpService.update_subscription for each subscription' do
+          expect(BackgroundJob).to receive(:perform_later).with('MailchimpService','update_subscription', @sub)
+          @user.location = @new_location
+          @user.save!
+        end
+      end
+
+      context 'when listserv is not setup to sync with mailchimp' do
+        before do
+          @listserv = FactoryGirl.create :listserv, mc_list_id: nil, mc_group_name: nil
+          @sub = FactoryGirl.create :subscription, user: @user, listserv: @listserv
+        end
+
+        it 'does not trigger Mailchimpservice.update_subscription' do
+          expect(BackgroundJob).to_not receive(:perform_later).with('MailchimpService', 'update_subscription', @sub)
+          @user.location = @new_location
+          @user.save!
+        end
+
+      end
+    end
+    context 'when user has subscriptions, but'
+
+  end
+
 end

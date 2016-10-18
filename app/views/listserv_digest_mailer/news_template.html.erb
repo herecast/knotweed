@@ -3,6 +3,12 @@
 
 <% @font_stack = raw "font-family:Helvetica,sans-serif !important" %>
 <% @table_attrs = raw ' cellpadding="0" cellspacing="0" border="0"' %>
+
+<div class='preheader' style='display: none !important;'>
+  <%= @listserv.digest_preheader %>
+  <%= contents.collect{|c| c.title.truncate_words(8)}.join(' | ') %>
+</div>
+
   <div style="margin:0;background-color:#EFEFEF;padding:0">
     <div dir="ltr">
     <br>
@@ -60,11 +66,11 @@
         </tr>
         <!-- END TITLE -->
 
-        <% if @digest.listserv.sponsored_by? %>
+        <% if @digest.sponsored_by? %>
         <!-- SPONSOR -->
         <tr style="<%= @font_stack %>">
           <td style="<%= @font_stack %>;font-weight:600;margin:0px !important;padding:0px !important;font-size:18px !important;line-height:16px !important;height:16px !important;max-height:16px !important">
-            <div style="text-align:center;<%= @font_stack %>;margin:0px !important;padding:0px !important;padding-top:7px !important;font-size:18px !important;line-height:20px !important;height:20px! important;max-height:20px !important"><%= @digest.listserv.sponsored_by %></div>
+            <div style="text-align:center;<%= @font_stack %>;margin:0px !important;padding:0px !important;padding-top:7px !important;font-size:18px !important;line-height:20px !important;height:20px! important;max-height:20px !important"><%= @digest.sponsored_by %></div>
             <br>
           </td>
         </tr>
@@ -191,8 +197,9 @@
             </table>
         </tr>
 
-        <% if @digest.listserv.banner_ad.present? && index == ad_index %>
+        <% if @digest.promotion.present? && index == ad_index %>
 
+          <% banner_ad = @digest.promotion.promotable %>
         <!-- BEGIN AD -->
         <tr style="<%= @font_stack %>">
           <td style="padding:0px 20px;text-align:right;<%= @font_stack %>">
@@ -214,8 +221,8 @@
                         <tr style="<%= @font_stack %>">
                           <td style="padding:0px;<%= @font_stack %>">
                             <div style="line-height:32px;<%= @font_stack %>">
-                              <a href="<%= @digest.listserv.banner_ad.redirect_url %>" style="text-decoration:none! important;color:#000000 !important" target="_blank">
-                                <img alt="Story photo thumbnail" src="<%= @digest.listserv.banner_ad.banner_image %>" style="max-width:100%;vertical-align:top;width:400px;min-height:200px;padding:0px !important;margin:0px !important;display:block !important;border:none !important">
+                              <a href="<%= banner_ad.redirect_url %>" style="text-decoration:none! important;color:#000000 !important" target="_blank">
+                                <img alt="Story photo thumbnail" src="<%= banner_ad.banner_image %>" style="max-width:100%;vertical-align:top;width:400px;min-height:200px;padding:0px !important;margin:0px !important;display:block !important;border:none !important">
                               </a>
                             </div>
                           </td>

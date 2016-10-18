@@ -69,7 +69,7 @@ RSpec.configure do |config|
     # Disable VCR for the test-suite, unless a test explicitely asks for it
     VCR.turn_off!
     ImageUploader.storage = :file
-    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.strategy = :truncation
     begin
       DatabaseCleaner.start
       build_indices
@@ -77,6 +77,7 @@ RSpec.configure do |config|
     ensure
       DatabaseCleaner.clean
     end
+    DatabaseCleaner.strategy = :transaction
   end
 
   config.before(:each) do

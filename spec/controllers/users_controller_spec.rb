@@ -141,8 +141,11 @@ describe UsersController, :type => :controller do
     end
 
     context "when successful update" do
+      before do
+        @location = FactoryGirl.create :location
+      end
 
-      subject { put :update, id: @user.id, user: { name: 'bill' } }
+      subject { put :update, id: @user.id, user: { name: 'bill', location_id: @location.id} }
 
       it "redirects to user" do
         allow_any_instance_of(User).to receive(:update_attributes).and_return true

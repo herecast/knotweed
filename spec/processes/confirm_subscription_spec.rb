@@ -26,7 +26,7 @@ RSpec.describe ConfirmSubscription do
 
   context 'when subscription.listserv has mc_list_id' do
     before do
-      subscription.listserv.update mc_list_id: '43q432'
+      subscription.listserv.update mc_list_id: '43q432', mc_group_name: 'blah'
     end
 
     it 'backgrounds MailchimpService.subscribe' do
@@ -37,7 +37,7 @@ RSpec.describe ConfirmSubscription do
 
   context 'when subscription.listserv does not have mc_list_id' do
     before do
-      subscription.listserv.update mc_list_id: nil
+      subscription.listserv.update mc_list_id: nil, mc_group_name: nil
     end
 
     it 'does not background MailchimpService.subscribe' do

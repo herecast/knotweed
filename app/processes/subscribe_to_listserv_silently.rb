@@ -18,7 +18,6 @@ class SubscribeToListservSilently
       email: @user.email
     })
 
-    @subscription.unsubscribed_at = nil
     @subscription.name = @user.name
     @subscription.source = "knotweed"
 
@@ -42,7 +41,7 @@ class SubscribeToListservSilently
   end
 
   def sync_with_mc
-    if @subscription.listserv.mc_list_id?
+    if @subscription.listserv.mc_sync?
       BackgroundJob.perform_later('MailchimpService', 'subscribe', @subscription)
     end
   end

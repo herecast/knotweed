@@ -18,13 +18,16 @@ RSpec.describe 'Digest API Endpoints', type: :request do
     end
 
     context 'when listservs are not active or `is_managed_list`' do
-      let!(:digests) { FactoryGirl.create_list :listserv, 3 }
+      FactoryGirl.create :subtext_listserv
+      FactoryGirl.create :vc_listserv
+      # listserv factory defaults to list_type: 'custom digest'
+      let!(:digests) { FactoryGirl.create_list :listserv, 3, list_type: 'internal_digest' }
       let!(:active_digest) { FactoryGirl.create :listserv, active: true, display_subscribe: true }
       before do
         digests.each { |digest| digest.update_attributes(active: false, post_email: Faker::Internet.email)}
       end
 
-      it 'does not return the listserv digests where `display_subscribe` is false' do
+      it 'does not return the listserv digests where `display_subscribe` is false and `list_type` is custom_digest' do
         get '/api/v3/digests'
         expect(response_json[:digests].count).to eq 1
       end
