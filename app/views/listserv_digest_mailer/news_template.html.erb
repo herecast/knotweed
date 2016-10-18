@@ -246,6 +246,13 @@
         <!-- END POST -->
         <% end %>
 
+        <!-- DIGEST FOOTER -->
+        <tr style="<%= @font_stack %>">
+          <td style="text-align: center;padding:10px 60px 10px;<%= @font_stack %>">
+            <%= raw @digest.listserv.digest_footer %>
+          </td>
+        </tr>
+        <!-- END DIGEST FOOTER -->
 
         <!-- BEGIN FOOTER -->
         <tr style="<%= @font_stack %>">
