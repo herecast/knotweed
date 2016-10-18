@@ -86,7 +86,7 @@ describe Api::V3::ContentsController, :type => :controller do
 
     it 'responds with relation of similar content' do
       subject
-      expect(assigns(:contents)).to eq([@sim_content1, @sim_content2])
+      expect(assigns(:contents)).to match_array([@sim_content1, @sim_content2])
     end
 
     describe 'drafts' do
