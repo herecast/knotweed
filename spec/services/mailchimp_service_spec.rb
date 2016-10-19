@@ -13,11 +13,6 @@ RSpec.describe MailchimpService do
   it { is_expected.to respond_to(:subscribe) }
   it { is_expected.to respond_to(:unsubscribe) }
 
-  before do
-    # clear various caches
-    described_class.clear_caches
-  end
-
   describe 'update_subscription' do
     let(:mc_digest) { {id: 8} }
     let(:mc_community) { {id: 9} }

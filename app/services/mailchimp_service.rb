@@ -2,16 +2,6 @@ module MailchimpService
   include HTTParty
   extend self
 
-  attr_accessor :_category_cache
-  attr_accessor :_interest_cache
-  attr_accessor :_merge_field_cache
-
-  def clear_caches
-    _category_cache = nil
-    _merge_field_cache = nil
-    _interest_cache = nil
-  end
-
   format :json
   base_uri "https://" + Figaro.env.mailchimp_api_host.to_s + '/3.0'
   basic_auth 'user', Figaro.env.mailchimp_api_key.to_s
@@ -135,10 +125,7 @@ module MailchimpService
   # @param [String] - digest name
   # @return [Hash]
   def find_or_create_category(list_id, name, options={})
-    _category_cache ||= {}
-    _category_cache[ list_id ] ||= interest_categories(list_id)
-
-    group = _category_cache[list_id].find do |category|
+    group = interest_categories(list_id).find do |category|
       category[:title] == name
     end
 
@@ -151,7 +138,6 @@ module MailchimpService
     }.to_json))
 
     group = data.slice('id','title','type','list_id','display_order').symbolize_keys
-    _category_cache[ list_id ] << group
 
     return group
   end
@@ -163,10 +149,8 @@ module MailchimpService
   # @return [Hash]
   def find_or_create_digest(list_id, name)
     category = find_or_create_category(list_id, 'digests', {type: 'checkboxes'})
-    _interest_cache ||= {}
-    _interest_cache[ [list_id, category[:id]] ] ||= interests(list_id, category[:id])
 
-    interest = _interest_cache[ [list_id, category[:id]] ].find do |interest|
+    interest = interests(list_id, category[:id]).find do |interest|
       interest[:name] == name
     end
 
@@ -177,7 +161,6 @@ module MailchimpService
     }.to_json))
 
     interest = data.slice('id','name','type','category_id','list_id','display_order').symbolize_keys
-    _interest_cache[ [list_id, category[:id]] ] << interest
 
     return interest
   end
@@ -217,10 +200,7 @@ module MailchimpService
   # @param [Hash] - options
   # @return [Hash]
   def find_or_create_merge_field(list_id, tag, options = {})
-    _merge_field_cache ||= {}
-    _merge_field_cache[ list_id ] ||= merge_fields(list_id)
-
-    field = _merge_field_cache[list_id].find do |mf|
+    field = merge_fields(list_id).find do |mf|
       mf[:tag] == tag
     end
 
@@ -236,7 +216,6 @@ module MailchimpService
 
     field = data.slice('tag', 'merge_id', 'name', 'type', 'required', 'default_value',
                        'display_order', 'public').symbolize_keys
-    _merge_field_cache[ list_id ] << field
     return field
   end
 
