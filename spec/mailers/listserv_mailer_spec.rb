@@ -48,9 +48,9 @@ RSpec.describe ListservMailer, type: :mailer do
       expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/manage")
     end
 
-    it 'includes dashboard link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard")
+    it 'includes account link' do
+      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account")
+      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account")
     end
 
     it 'includes home page link' do
@@ -101,9 +101,9 @@ RSpec.describe ListservMailer, type: :mailer do
       expect(body_text).to include(listserv.name)
     end
 
-    it 'includes dashboard link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard?user_id=#{subscription.user_id}")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard?user_id=#{subscription.user_id}")
+    it 'includes account subscriptions link' do
+      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account/subscriptions")
+      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account/subscriptions")
     end
 
     it 'includes link to listserv marketing site' do
@@ -171,9 +171,9 @@ RSpec.describe ListservMailer, type: :mailer do
       expect(body_text).to include(listserv_content.listserv.name)
     end
 
-    it 'includes dashboard link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard")
+    it 'includes account link' do
+      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account")
+      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account")
     end
 
     it 'includes home page link' do
