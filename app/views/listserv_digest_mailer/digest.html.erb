@@ -67,6 +67,7 @@
   <% end %>
 </div>
 
+<% if @digest.listserv_contents.any? %>
 <div class='table of contents'>
   <h3>TABLE OF CONTENTS</h3>
   <ol>
@@ -75,6 +76,7 @@
     <% end %>
   </ol>
 </div>
+<% end %>
 
 <div class='posts'>
   <p>BEGIN DIGEST</p>
