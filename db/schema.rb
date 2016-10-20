@@ -56,14 +56,14 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.integer  "source_id",   limit: 8
   end
 
-  add_index "business_categories", ["source", "source_id"], name: "idx_1176179_index_business_categories_on_source_and_source_id", using: :btree
+  add_index "business_categories", ["source", "source_id"], name: "idx_16420_index_business_categories_on_source_and_source_id", using: :btree
 
   create_table "business_categories_business_categories", id: false, force: :cascade do |t|
     t.integer "parent_id", limit: 8
     t.integer "child_id",  limit: 8
   end
 
-  add_index "business_categories_business_categories", ["parent_id", "child_id"], name: "idx_1176186_business_categories_index", unique: true, using: :btree
+  add_index "business_categories_business_categories", ["parent_id", "child_id"], name: "idx_16427_business_categories_index", unique: true, using: :btree
 
   create_table "business_categories_business_profiles", id: false, force: :cascade do |t|
     t.integer "business_category_id", limit: 8
@@ -104,9 +104,9 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.decimal  "service_radius",                  precision: 10
   end
 
-  add_index "business_locations", ["city"], name: "idx_1176200_index_business_locations_on_city", using: :btree
-  add_index "business_locations", ["created_by"], name: "idx_1176200_index_business_locations_on_created_by", using: :btree
-  add_index "business_locations", ["name"], name: "idx_1176200_index_business_locations_on_name", using: :btree
+  add_index "business_locations", ["city"], name: "idx_16441_index_business_locations_on_city", using: :btree
+  add_index "business_locations", ["created_by"], name: "idx_16441_index_business_locations_on_created_by", using: :btree
+  add_index "business_locations", ["name"], name: "idx_16441_index_business_locations_on_name", using: :btree
 
   create_table "business_profiles", id: :bigserial, force: :cascade do |t|
     t.integer  "business_location_id",      limit: 8
@@ -124,22 +124,8 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.boolean  "archived",                              default: false
   end
 
-  add_index "business_profiles", ["existence"], name: "idx_1176210_index_business_profiles_on_existence", using: :btree
-  add_index "business_profiles", ["source", "source_id"], name: "idx_1176210_index_business_profiles_on_source_and_source_id", using: :btree
-
-  create_table "campaigns", force: :cascade do |t|
-    t.integer  "listserv_id"
-    t.integer  "community_ids", default: [],              array: true
-    t.integer  "promotion_id"
-    t.string   "sponsored_by"
-    t.text     "digest_query"
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
-  end
-
-  add_index "campaigns", ["community_ids"], name: "index_campaigns_on_community_ids", using: :btree
-  add_index "campaigns", ["listserv_id"], name: "index_campaigns_on_listserv_id", using: :btree
-  add_index "campaigns", ["promotion_id"], name: "index_campaigns_on_promotion_id", using: :btree
+  add_index "business_profiles", ["existence"], name: "idx_16451_index_business_profiles_on_existence", using: :btree
+  add_index "business_profiles", ["source", "source_id"], name: "idx_16451_index_business_profiles_on_source_and_source_id", using: :btree
 
   create_table "campaigns", force: :cascade do |t|
     t.integer  "listserv_id"
@@ -162,7 +148,7 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.datetime "updated_at",             null: false
   end
 
-  add_index "categories", ["name"], name: "idx_1176226_index_categories_on_name", using: :btree
+  add_index "categories", ["name"], name: "idx_16467_index_categories_on_name", using: :btree
 
   create_table "category_corrections", id: :bigserial, force: :cascade do |t|
     t.integer  "content_id",   limit: 8
@@ -175,7 +161,7 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.datetime "updated_at",               null: false
   end
 
-  add_index "category_corrections", ["content_id"], name: "idx_1176232_index_category_corrections_on_content_id", using: :btree
+  add_index "category_corrections", ["content_id"], name: "idx_16473_index_category_corrections_on_content_id", using: :btree
 
   create_table "channels", id: :bigserial, force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -196,7 +182,7 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.datetime "updated_at",                null: false
   end
 
-  add_index "consumer_apps", ["uri"], name: "idx_1176253_index_consumer_apps_on_uri", unique: true, using: :btree
+  add_index "consumer_apps", ["uri"], name: "idx_16494_index_consumer_apps_on_uri", unique: true, using: :btree
 
   create_table "consumer_apps_import_jobs", id: false, force: :cascade do |t|
     t.integer "consumer_app_id", limit: 8
@@ -208,21 +194,21 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.integer "consumer_app_id", limit: 8
   end
 
-  add_index "consumer_apps_messages", ["consumer_app_id", "message_id"], name: "idx_1176263_consumer_apps_messages_joins_index", unique: true, using: :btree
+  add_index "consumer_apps_messages", ["consumer_app_id", "message_id"], name: "idx_16504_consumer_apps_messages_joins_index", unique: true, using: :btree
 
   create_table "consumer_apps_organizations", id: false, force: :cascade do |t|
     t.integer "consumer_app_id", limit: 8, null: false
     t.integer "organization_id", limit: 8, null: false
   end
 
-  add_index "consumer_apps_organizations", ["consumer_app_id", "organization_id"], name: "idx_1176266_consumer_app_publication_index", using: :btree
+  add_index "consumer_apps_organizations", ["consumer_app_id", "organization_id"], name: "idx_16507_consumer_app_publication_index", using: :btree
 
   create_table "consumer_apps_wufoo_forms", id: false, force: :cascade do |t|
     t.integer "consumer_app_id", limit: 8
     t.integer "wufoo_form_id",   limit: 8
   end
 
-  add_index "consumer_apps_wufoo_forms", ["consumer_app_id", "wufoo_form_id"], name: "idx_1176269_consumer_apps_wufoo_forms_joins_index", unique: true, using: :btree
+  add_index "consumer_apps_wufoo_forms", ["consumer_app_id", "wufoo_form_id"], name: "idx_16510_consumer_apps_wufoo_forms_joins_index", unique: true, using: :btree
 
   create_table "contacts", id: :bigserial, force: :cascade do |t|
     t.string   "name",         limit: 255
@@ -252,7 +238,7 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.integer "organization_id",     limit: 8
   end
 
-  add_index "content_categories_organizations", ["content_category_id", "organization_id"], name: "idx_1176318_index_on_content_category_id_and_publication_id", using: :btree
+  add_index "content_categories_organizations", ["content_category_id", "organization_id"], name: "idx_16559_index_on_content_category_id_and_publication_id", using: :btree
 
   create_table "content_promotion_banner_loads", force: :cascade do |t|
     t.integer  "content_id"
@@ -346,34 +332,34 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.boolean  "authors_is_created_by",                 default: false
   end
 
-  add_index "contents", ["authoremail"], name: "idx_1176286_index_contents_on_authoremail", using: :btree
-  add_index "contents", ["authors"], name: "idx_1176286_authors", using: :btree
-  add_index "contents", ["channel_id"], name: "idx_1176286_index_contents_on_channel_id", using: :btree
-  add_index "contents", ["channel_type"], name: "idx_1176286_index_contents_on_channel_type", using: :btree
-  add_index "contents", ["channelized_content_id"], name: "idx_1176286_index_contents_on_channelized_content_id", using: :btree
-  add_index "contents", ["content_category_id"], name: "idx_1176286_content_category_id", using: :btree
-  add_index "contents", ["created_by"], name: "idx_1176286_index_contents_on_created_by", using: :btree
-  add_index "contents", ["guid"], name: "idx_1176286_guid", using: :btree
-  add_index "contents", ["import_location_id"], name: "idx_1176286_location_id", using: :btree
-  add_index "contents", ["import_record_id"], name: "idx_1176286_import_record_id", using: :btree
-  add_index "contents", ["organization_id"], name: "idx_1176286_source_id", using: :btree
-  add_index "contents", ["parent_id"], name: "idx_1176286_index_contents_on_parent_id", using: :btree
-  add_index "contents", ["pubdate"], name: "idx_1176286_pubdate", using: :btree
-  add_index "contents", ["published"], name: "idx_1176286_index_contents_on_published", using: :btree
-  add_index "contents", ["root_content_category_id"], name: "idx_1176286_index_contents_on_root_content_category_id", using: :btree
-  add_index "contents", ["root_parent_id"], name: "idx_1176286_index_contents_on_root_parent_id", using: :btree
-  add_index "contents", ["source_category"], name: "idx_1176286_categories", using: :btree
-  add_index "contents", ["title"], name: "idx_1176286_title", using: :btree
+  add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree
+  add_index "contents", ["authors"], name: "idx_16527_authors", using: :btree
+  add_index "contents", ["channel_id"], name: "idx_16527_index_contents_on_channel_id", using: :btree
+  add_index "contents", ["channel_type"], name: "idx_16527_index_contents_on_channel_type", using: :btree
+  add_index "contents", ["channelized_content_id"], name: "idx_16527_index_contents_on_channelized_content_id", using: :btree
+  add_index "contents", ["content_category_id"], name: "idx_16527_content_category_id", using: :btree
+  add_index "contents", ["created_by"], name: "idx_16527_index_contents_on_created_by", using: :btree
+  add_index "contents", ["guid"], name: "idx_16527_guid", using: :btree
+  add_index "contents", ["import_location_id"], name: "idx_16527_location_id", using: :btree
+  add_index "contents", ["import_record_id"], name: "idx_16527_import_record_id", using: :btree
+  add_index "contents", ["organization_id"], name: "idx_16527_source_id", using: :btree
+  add_index "contents", ["parent_id"], name: "idx_16527_index_contents_on_parent_id", using: :btree
+  add_index "contents", ["pubdate"], name: "idx_16527_pubdate", using: :btree
+  add_index "contents", ["published"], name: "idx_16527_index_contents_on_published", using: :btree
+  add_index "contents", ["root_content_category_id"], name: "idx_16527_index_contents_on_root_content_category_id", using: :btree
+  add_index "contents", ["root_parent_id"], name: "idx_16527_index_contents_on_root_parent_id", using: :btree
+  add_index "contents", ["source_category"], name: "idx_16527_categories", using: :btree
+  add_index "contents", ["title"], name: "idx_16527_title", using: :btree
 
   create_table "contents_locations", id: false, force: :cascade do |t|
     t.integer "content_id",  limit: 8
     t.integer "location_id", limit: 8
   end
 
-  add_index "contents_locations", ["content_id", "location_id"], name: "idx_1176303_index_contents_locations_on_content_id_and_location", using: :btree
-  add_index "contents_locations", ["content_id"], name: "idx_1176303_index_contents_locations_on_content_id", using: :btree
-  add_index "contents_locations", ["location_id", "content_id"], name: "idx_1176303_index_contents_locations_on_location_id_and_content", using: :btree
-  add_index "contents_locations", ["location_id"], name: "idx_1176303_index_contents_locations_on_location_id", using: :btree
+  add_index "contents_locations", ["content_id", "location_id"], name: "idx_16544_index_contents_locations_on_content_id_and_location_i", using: :btree
+  add_index "contents_locations", ["content_id"], name: "idx_16544_index_contents_locations_on_content_id", using: :btree
+  add_index "contents_locations", ["location_id", "content_id"], name: "idx_16544_index_contents_locations_on_location_id_and_content_i", using: :btree
+  add_index "contents_locations", ["location_id"], name: "idx_16544_index_contents_locations_on_location_id", using: :btree
 
   create_table "contents_publish_records", id: false, force: :cascade do |t|
     t.integer "content_id",        limit: 8
@@ -385,8 +371,8 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.integer "repository_id", limit: 8, null: false
   end
 
-  add_index "contents_repositories", ["content_id", "repository_id"], name: "idx_1176309_index_contents_repositories_on_content_id_and_repos", using: :btree
-  add_index "contents_repositories", ["repository_id", "content_id"], name: "idx_1176309_index_contents_repositories_on_repository_id_and_co", using: :btree
+  add_index "contents_repositories", ["content_id", "repository_id"], name: "idx_16550_index_contents_repositories_on_content_id_and_reposit", using: :btree
+  add_index "contents_repositories", ["repository_id", "content_id"], name: "idx_16550_index_contents_repositories_on_repository_id_and_cont", using: :btree
 
   create_table "data_contexts", id: :bigserial, force: :cascade do |t|
     t.string   "context",    limit: 255
@@ -421,7 +407,7 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.datetime "updated_at",                         null: false
   end
 
-  add_index "delayed_jobs", ["priority", "run_at"], name: "idx_1176363_delayed_jobs_priority", using: :btree
+  add_index "delayed_jobs", ["priority", "run_at"], name: "idx_16604_delayed_jobs_priority", using: :btree
 
   create_table "event_instances", id: :bigserial, force: :cascade do |t|
     t.integer  "event_id",             limit: 8
@@ -435,9 +421,9 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.integer  "schedule_id",          limit: 8
   end
 
-  add_index "event_instances", ["end_date"], name: "idx_1176384_index_event_instances_on_end_date", using: :btree
-  add_index "event_instances", ["event_id"], name: "idx_1176384_index_event_instances_on_event_id", using: :btree
-  add_index "event_instances", ["start_date"], name: "idx_1176384_index_event_instances_on_start_date", using: :btree
+  add_index "event_instances", ["end_date"], name: "idx_16625_index_event_instances_on_end_date", using: :btree
+  add_index "event_instances", ["event_id"], name: "idx_16625_index_event_instances_on_event_id", using: :btree
+  add_index "event_instances", ["start_date"], name: "idx_16625_index_event_instances_on_start_date", using: :btree
 
   create_table "events", id: :bigserial, force: :cascade do |t|
     t.string   "event_type",            limit: 255
@@ -461,9 +447,9 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.string   "registration_email",    limit: 255
   end
 
-  add_index "events", ["featured"], name: "idx_1176374_index_events_on_featured", using: :btree
-  add_index "events", ["venue_id"], name: "idx_1176374_events_on_venue_id_index", using: :btree
-  add_index "events", ["venue_id"], name: "idx_1176374_index_events_on_venue_id", using: :btree
+  add_index "events", ["featured"], name: "idx_16615_index_events_on_featured", using: :btree
+  add_index "events", ["venue_id"], name: "idx_16615_events_on_venue_id_index", using: :btree
+  add_index "events", ["venue_id"], name: "idx_16615_index_events_on_venue_id", using: :btree
 
   create_table "images", id: :bigserial, force: :cascade do |t|
     t.string   "caption",        limit: 255
@@ -477,7 +463,7 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.boolean  "primary",                    default: false
   end
 
-  add_index "images", ["imageable_type", "imageable_id"], name: "idx_1176393_index_images_on_imageable_type_and_imageable_id", using: :btree
+  add_index "images", ["imageable_type", "imageable_id"], name: "idx_16634_index_images_on_imageable_type_and_imageable_id", using: :btree
 
   create_table "import_jobs", id: :bigserial, force: :cascade do |t|
     t.integer  "parser_id",             limit: 8
@@ -516,12 +502,12 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.datetime "updated_at",                             null: false
   end
 
-  add_index "import_locations", ["city"], name: "idx_1176416_city", using: :btree
-  add_index "import_locations", ["link_name"], name: "idx_1176416_link_name", using: :btree
-  add_index "import_locations", ["link_name_full"], name: "idx_1176416_link_name_full", using: :btree
-  add_index "import_locations", ["state"], name: "idx_1176416_state", using: :btree
-  add_index "import_locations", ["status"], name: "idx_1176416_status", using: :btree
-  add_index "import_locations", ["usgs_id"], name: "idx_1176416_usgs_id", using: :btree
+  add_index "import_locations", ["city"], name: "idx_16657_city", using: :btree
+  add_index "import_locations", ["link_name"], name: "idx_16657_link_name", using: :btree
+  add_index "import_locations", ["link_name_full"], name: "idx_16657_link_name_full", using: :btree
+  add_index "import_locations", ["state"], name: "idx_16657_state", using: :btree
+  add_index "import_locations", ["status"], name: "idx_16657_status", using: :btree
+  add_index "import_locations", ["usgs_id"], name: "idx_16657_usgs_id", using: :btree
 
   create_table "import_records", id: :bigserial, force: :cascade do |t|
     t.integer  "import_job_id",  limit: 8
@@ -571,10 +557,10 @@ ActiveRecord::Schema.define(version: 20161018195332) do
   create_table "listserv_digests", force: :cascade do |t|
     t.integer  "listserv_id"
     t.string   "listserv_content_ids"
-    t.string   "mc_campaign_id"
+    t.string   "campaign_id"
     t.datetime "sent_at"
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
     t.string   "content_ids"
     t.string   "from_name"
     t.string   "reply_to"
@@ -601,7 +587,7 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.string   "post_email"
     t.string   "subscribe_email"
     t.string   "mc_list_id"
-    t.string   "mc_group_name"
+    t.string   "mc_segment_id"
     t.boolean  "send_digest",                             default: false
     t.datetime "last_digest_send_time"
     t.datetime "last_digest_generation_time"
@@ -611,17 +597,13 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.string   "timezone",                                 default: "Eastern Time (US & Canada)"
     t.text     "digest_description"
     t.string   "digest_send_day"
-    t.integer  "promotion_id"
+    t.integer  "banner_ad_override_id"
     t.text     "digest_query"
     t.integer  "digest_max_contents",                      default: 25
     t.integer  "digest_max_listserv_contents",             default: 25
     t.string   "template"
     t.string   "sponsored_by"
-    t.string   "digest_subject"
-    t.string   "digest_preheader"
     t.boolean  "display_subscribe",                       default: false
-    t.string   "list_type",                               default: "custom_list"
-    t.string   "sender_name"
   end
 
   create_table "listservs_locations", id: false, force: :cascade do |t|
@@ -639,7 +621,6 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
     t.boolean  "consumer_active",             default: false
-    t.boolean  "is_region",                   default: false
   end
 
   create_table "locations_locations", id: false, force: :cascade do |t|
@@ -647,20 +628,20 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.integer "child_id",  limit: 8
   end
 
-  add_index "locations_locations", ["child_id", "parent_id"], name: "idx_1176466_index_locations_locations_on_child_id_and_parent_id", using: :btree
-  add_index "locations_locations", ["child_id"], name: "idx_1176466_index_locations_locations_on_child_id", using: :btree
-  add_index "locations_locations", ["parent_id", "child_id"], name: "idx_1176466_index_locations_locations_on_parent_id_and_child_id", using: :btree
-  add_index "locations_locations", ["parent_id"], name: "idx_1176466_index_locations_locations_on_parent_id", using: :btree
+  add_index "locations_locations", ["child_id", "parent_id"], name: "idx_16707_index_locations_locations_on_child_id_and_parent_id", using: :btree
+  add_index "locations_locations", ["child_id"], name: "idx_16707_index_locations_locations_on_child_id", using: :btree
+  add_index "locations_locations", ["parent_id", "child_id"], name: "idx_16707_index_locations_locations_on_parent_id_and_child_id", using: :btree
+  add_index "locations_locations", ["parent_id"], name: "idx_16707_index_locations_locations_on_parent_id", using: :btree
 
   create_table "locations_organizations", id: false, force: :cascade do |t|
     t.integer "location_id",     limit: 8
     t.integer "organization_id", limit: 8
   end
 
-  add_index "locations_organizations", ["location_id", "organization_id"], name: "idx_1176469_index_locations_publications_on_location_id_and_pub", using: :btree
-  add_index "locations_organizations", ["location_id"], name: "idx_1176469_index_locations_publications_on_location_id", using: :btree
-  add_index "locations_organizations", ["organization_id", "location_id"], name: "idx_1176469_index_locations_publications_on_publication_id_and_", using: :btree
-  add_index "locations_organizations", ["organization_id"], name: "idx_1176469_index_locations_publications_on_publication_id", using: :btree
+  add_index "locations_organizations", ["location_id", "organization_id"], name: "idx_16710_index_locations_publications_on_location_id_and_publi", using: :btree
+  add_index "locations_organizations", ["location_id"], name: "idx_16710_index_locations_publications_on_location_id", using: :btree
+  add_index "locations_organizations", ["organization_id", "location_id"], name: "idx_16710_index_locations_publications_on_publication_id_and_lo", using: :btree
+  add_index "locations_organizations", ["organization_id"], name: "idx_16710_index_locations_publications_on_publication_id", using: :btree
 
   create_table "market_posts", id: :bigserial, force: :cascade do |t|
     t.string   "cost",                     limit: 255
@@ -724,7 +705,7 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.string   "profile_ad_override", limit: 255
   end
 
-  add_index "organizations", ["name"], name: "idx_1176498_index_publications_on_name", unique: true, using: :btree
+  add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
 
   create_table "parameters", id: :bigserial, force: :cascade do |t|
     t.integer  "parser_id",  limit: 8
@@ -792,9 +773,9 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.integer  "updated_by",      limit: 8
   end
 
-  add_index "promotions", ["content_id"], name: "idx_1176524_index_promotions_on_content_id", using: :btree
-  add_index "promotions", ["created_by"], name: "idx_1176524_index_promotions_on_created_by", using: :btree
-  add_index "promotions", ["organization_id"], name: "idx_1176524_index_promotions_on_publication_id", using: :btree
+  add_index "promotions", ["content_id"], name: "idx_16765_index_promotions_on_content_id", using: :btree
+  add_index "promotions", ["created_by"], name: "idx_16765_index_promotions_on_created_by", using: :btree
+  add_index "promotions", ["organization_id"], name: "idx_16765_index_promotions_on_publication_id", using: :btree
 
   create_table "publish_jobs", id: :bigserial, force: :cascade do |t|
     t.text     "query_params"
@@ -822,7 +803,7 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.datetime "updated_at",                            null: false
   end
 
-  add_index "publish_records", ["publish_job_id"], name: "idx_1176570_index_publish_records_on_publish_job_id", using: :btree
+  add_index "publish_records", ["publish_job_id"], name: "idx_16811_index_publish_records_on_publish_job_id", using: :btree
 
   create_table "received_emails", force: :cascade do |t|
     t.string   "file_uri"
@@ -862,9 +843,9 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.datetime "updated_at",              null: false
   end
 
-  add_index "rewrites", ["created_by"], name: "idx_1176587_index_rewrites_on_created_by", using: :btree
-  add_index "rewrites", ["source"], name: "idx_1176587_index_rewrites_on_source", unique: true, using: :btree
-  add_index "rewrites", ["updated_at"], name: "idx_1176587_index_rewrites_on_updated_at", using: :btree
+  add_index "rewrites", ["created_by"], name: "idx_16828_index_rewrites_on_created_by", using: :btree
+  add_index "rewrites", ["source"], name: "idx_16828_index_rewrites_on_source", unique: true, using: :btree
+  add_index "rewrites", ["updated_at"], name: "idx_16828_index_rewrites_on_updated_at", using: :btree
 
   create_table "roles", id: :bigserial, force: :cascade do |t|
     t.string   "name",          limit: 255
@@ -874,8 +855,8 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.datetime "updated_at",                null: false
   end
 
-  add_index "roles", ["name", "resource_type", "resource_id"], name: "idx_1176596_index_roles_on_name_and_resource_type_and_resource_", using: :btree
-  add_index "roles", ["name"], name: "idx_1176596_index_roles_on_name", using: :btree
+  add_index "roles", ["name", "resource_type", "resource_id"], name: "idx_16837_index_roles_on_name_and_resource_type_and_resource_id", using: :btree
+  add_index "roles", ["name"], name: "idx_16837_index_roles_on_name", using: :btree
 
   create_table "schedules", id: :bigserial, force: :cascade do |t|
     t.text     "recurrence"
@@ -913,7 +894,7 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.integer "wufoo_form_id", limit: 8
   end
 
-  add_index "user_wufoo_forms", ["user_id", "wufoo_form_id"], name: "idx_1176635_index_user_wufoo_forms_on_user_id_and_wufoo_form_id", unique: true, using: :btree
+  add_index "user_wufoo_forms", ["user_id", "wufoo_form_id"], name: "idx_16876_index_user_wufoo_forms_on_user_id_and_wufoo_form_id", unique: true, using: :btree
 
   create_table "users", id: :bigserial, force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",         null: false
@@ -950,16 +931,16 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.string   "temp_password",          limit: 255
   end
 
-  add_index "users", ["email"], name: "idx_1176617_index_users_on_email", unique: true, using: :btree
-  add_index "users", ["public_id"], name: "idx_1176617_index_users_on_public_id", unique: true, using: :btree
-  add_index "users", ["reset_password_token"], name: "idx_1176617_index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["email"], name: "idx_16858_index_users_on_email", unique: true, using: :btree
+  add_index "users", ["public_id"], name: "idx_16858_index_users_on_public_id", unique: true, using: :btree
+  add_index "users", ["reset_password_token"], name: "idx_16858_index_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "users_roles", id: false, force: :cascade do |t|
     t.integer "user_id", limit: 8
     t.integer "role_id", limit: 8
   end
 
-  add_index "users_roles", ["user_id", "role_id"], name: "idx_1176632_index_users_roles_on_user_id_and_role_id", using: :btree
+  add_index "users_roles", ["user_id", "role_id"], name: "idx_16873_index_users_roles_on_user_id_and_role_id", using: :btree
 
   create_table "wufoo_forms", id: :bigserial, force: :cascade do |t|
     t.string   "form_hash",      limit: 255
@@ -974,10 +955,8 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.string   "page_url_field", limit: 255
   end
 
-  add_index "wufoo_forms", ["controller", "action", "active"], name: "idx_1176640_index_wufoo_forms_on_controller_and_action_and_acti", unique: true, using: :btree
+  add_index "wufoo_forms", ["controller", "action", "active"], name: "idx_16881_index_wufoo_forms_on_controller_and_action_and_active", unique: true, using: :btree
 
-  add_foreign_key "campaigns", "listservs"
-  add_foreign_key "campaigns", "promotions"
   add_foreign_key "listserv_contents", "content_categories"
   add_foreign_key "listserv_contents", "contents"
   add_foreign_key "listserv_contents", "listservs"
