@@ -34,9 +34,6 @@ class PublishJob < ActiveRecord::Base
 
   serialize :query_params, Hash
 
-  attr_accessible :frequency, :organization_id, :publish_method, :query_params, :status,
-                  :archive, :error, :name, :description, :run_at
-
   after_destroy :cancel_scheduled_runs
 
   default_scope { where archive: false }
@@ -46,29 +43,6 @@ class PublishJob < ActiveRecord::Base
   validates :publish_method, inclusion: { in: Content::PUBLISH_METHODS }, allow_nil: true
 
   validate :repository_present
-
-  # determine publish method and construct
-  # Content query from query_params hash
-  def perform
-    begin
-      record = last_publish_record
-      if query_params[:repository_id].present?
-        repo = Repository.find query_params[:repository_id]
-      else
-        repo = nil
-      end
-      Content.contents_query(query_params).find_each(batch_size: 500) do |c|
-        record.contents << c
-        c.publish(publish_method, repo, record)
-      end
-      log = record.log_file
-      log.info("failures: #{record.failures}")
-      log.info("items published: #{record.items_published}")
-      create_file_archive(record) unless record.files.empty?
-    rescue => e
-      log.error("Error creating file archive: #{e}\n#{e.backtrace.join("\n")}")
-    end
-  end
 
   # Create a zipped archive of all files created by a publish job
   # Archives live at public/exports/job_id.zip
@@ -92,28 +66,6 @@ class PublishJob < ActiveRecord::Base
     JobMailer.file_ready(record).deliver_now
   end
 
-  # status hooks
-  def enqueue(job)
-    update_attribute(:status, "scheduled")
-  end
-
-  def success(job)
-    update_attribute(:status, "success")
-  end
-
-  def error(job, exception)
-    update_attributes(:status => "failed")
-  end
-
-  def before(job)
-    update_attribute(:status, "running")
-    publish_records.create
-  end
-
-  def enqueue_job
-    Delayed::Job.enqueue self, queue: QUEUE, run_at: run_at
-  end
-
   def contents_count
     Content.contents_query(query_params).count
   end
@@ -133,5 +85,11 @@ class PublishJob < ActiveRecord::Base
     unless query_params.has_key? :repository_id and query_params[:repository_id].present?
       errors.add(:query_params, "You must select a repository")
     end
+  end
+
+  # just a wrapper so the two job types can share the JobController module
+  # even though they differ in Workers
+  def enqueue_job
+    PublishWorker.perform_later(self)
   end
 end

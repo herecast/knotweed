@@ -98,6 +98,12 @@ class ImportJob < ActiveRecord::Base
     end
   end
 
+  # just a wrapper so the two job types can share the JobController module
+  # even though they differ in Workers
+  def enqueue_job
+    ImportWorker.set(wait_until: next_run_time).perform_later(self)
+  end
+
   def save_config(parameters)
     update_attribute(:config, parameters)
   end
