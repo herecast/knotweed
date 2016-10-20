@@ -76,10 +76,10 @@ class ImportJob < ActiveRecord::Base
   # changing stop_loop (which happens from ImportWorker and import_jobs_controller,
   # then ensure stop_loop is FALSE for continuous jobs
   def set_stop_loop
-    if job_type == CONTINUOUS and job_type_changed?
-      stop_loop = false
+    if job_type == CONTINUOUS and (job_type_changed? or stop_loop_changed?)
+      self.stop_loop = false
     else
-      stop_loop = true
+      self.stop_loop = true
     end
     true
   end

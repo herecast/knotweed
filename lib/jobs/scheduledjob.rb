@@ -6,10 +6,9 @@ module Jobs
       base.extend(ClassMethods)
     end
 
-    # cancel scheduled runs by removing any Delayed::Job
-    # records pointing to this job
+    # cancel scheduled runs by removing the Sidekiq job referenced from the ScheduledSet queue
     def cancel_scheduled_runs
-      Sidekiq::ScheduledSet.new.find(self.sidekiq_jid).delete
+      obj = Sidekiq::ScheduledSet.new.find(self.sidekiq_jid).delete
       # if status was scheduled, change to blank
       # otherwise (in scenario where job just succeeded or failed)
       # leave status be

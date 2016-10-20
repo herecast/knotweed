@@ -142,8 +142,10 @@ RSpec.describe ImportWorker, type: :job do
 
     describe 'recurring jobs' do
       before do
+        Timecop.freeze
         job.update job_type: ImportJob::RECURRING, frequency: 60
       end
+      after { Timecop.return }
 
       it 'should update the job attributes with scheduling' do
         expect{subject}.to change{job.sidekiq_jid}
@@ -152,8 +154,7 @@ RSpec.describe ImportWorker, type: :job do
       end
 
       it 'should schedule the job with sidekiq' do
-        subject
-        expect(Sidekiq::ScheduledSet.new.size).to eq 1
+        expect{subject}.to have_enqueued_job(ImportWorker).at(Time.now + 60.minutes)
       end
     end
 
@@ -162,6 +163,7 @@ RSpec.describe ImportWorker, type: :job do
         job.update job_type: ImportJob::CONTINUOUS
         Timecop.freeze
       end
+      after { Timecop.return }
 
       it 'should re-run the job in 5 seconds' do
         expect(ImportWorker).to receive(:set).with({wait_until: 5.seconds.from_now}).

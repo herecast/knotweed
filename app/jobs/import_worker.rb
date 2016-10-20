@@ -50,9 +50,9 @@ class ImportWorker < ApplicationJob
             perform_later(@import_job)
         end
       elsif @import_job.job_type == ImportJob::RECURRING
-        @import_job.update status: 'scheduled', 
-          sidekiq_jid: ImportWorker.set(wait_until: @import_job.next_run_time).
-          perform_later(@import_job)
+        scheduled_jid = ImportWorker.set(wait_until: @import_job.next_run_time).
+          perform_later(@import_job).job_id
+        @import_job.update status: 'scheduled', sidekiq_jid: scheduled_jid
       else
         @import_job.update status: 'success', sidekiq_jid: nil
       end
