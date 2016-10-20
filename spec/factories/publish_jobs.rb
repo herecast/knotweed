@@ -6,7 +6,6 @@
 #  query_params    :text
 #  organization_id :integer
 #  status          :string(255)
-#  frequency       :integer          default(0)
 #  publish_method  :string(255)
 #  archive         :boolean          default(FALSE)
 #  error           :string(255)
@@ -22,7 +21,6 @@
 
 FactoryGirl.define do
   factory :publish_job do
-    frequency 0
     publish_method Content::EXPORT_TO_XML
 
     after(:build) do |pj|
