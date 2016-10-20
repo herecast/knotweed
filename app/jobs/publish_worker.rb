@@ -27,5 +27,6 @@ class PublishWorker < ApplicationJob
       @log.error("Error creating file archive: #{e}\n#{e.backtrace.join("\n")}")
       @publish_job.update status: 'failed'
     end
+    @publish_job.update status: 'success', sidekiq_jid: nil
   end
 end

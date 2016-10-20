@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161018195332) do
+ActiveRecord::Schema.define(version: 20161020201515) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -781,7 +781,6 @@ ActiveRecord::Schema.define(version: 20161018195332) do
     t.text     "query_params"
     t.integer  "organization_id",    limit: 8
     t.string   "status",             limit: 255
-    t.integer  "frequency",          limit: 8,   default: 0
     t.string   "publish_method",     limit: 255
     t.boolean  "archive",                        default: false
     t.string   "error",              limit: 255

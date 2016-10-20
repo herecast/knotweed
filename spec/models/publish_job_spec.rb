@@ -92,7 +92,7 @@ describe PublishJob, :type => :model do
     end
   end
 
-  describe "perform job" do
+  describe "perform job", inline_jobs: true do
     context "that outputs files" do
       before do
         @mail_count = ActionMailer::Base.deliveries.count
@@ -100,11 +100,7 @@ describe PublishJob, :type => :model do
         FactoryGirl.create_list(:content, 3)
         user = FactoryGirl.create(:user)
         @job.notifyees << user
-        @job.enqueue_job
-        successes, failures = Delayed::Worker.new(:max_priority => nil,
-          :min_priority => nil,
-          :quiet => false,
-          :queues => ["imports", "publishing"]).work_off
+        PublishWorker.new.perform(@job)
       end
       after do
         #clean up output folder
