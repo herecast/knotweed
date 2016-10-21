@@ -23,10 +23,10 @@ class PublishWorker < ApplicationJob
       @log.info("failures: #{record.failures}")
       @log.info("items published: #{record.items_published}")
       @publish_job.create_file_archive(record) unless record.files.empty?
+      @publish_job.update status: 'success', sidekiq_jid: nil
     rescue Exception => e
       @log.error("Error creating file archive: #{e}\n#{e.backtrace.join("\n")}")
       @publish_job.update status: 'failed'
     end
-    @publish_job.update status: 'success', sidekiq_jid: nil
   end
 end

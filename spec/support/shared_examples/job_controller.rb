@@ -44,6 +44,7 @@ shared_examples_for "JobController" do
     end
 
     it 'renders jobs/cancel' do
+      expect(model).to receive(:cancel_scheduled_runs)
       xhr :delete, :cancel_job, id: model.id, format: :js
       expect(response).to render_template('jobs/cancel_job')
     end
