@@ -20,6 +20,8 @@
 #  automatically_publish :boolean          default(FALSE)
 #  repository_id         :integer
 #  publish_method        :string(255)
+#  sidekiq_jid           :string
+#  next_scheduled_run    :datetime
 #
 
 require 'spec_helper'

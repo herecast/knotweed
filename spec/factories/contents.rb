@@ -46,6 +46,9 @@
 #  similar_content_overrides :text
 #  banner_ad_override        :integer
 #  root_parent_id            :integer
+#  deleted_at                :datetime
+#  my_town_only              :boolean          default(FALSE)
+#  authors_is_created_by     :boolean          default(FALSE)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

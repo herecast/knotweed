@@ -8,7 +8,7 @@
 #  updated_at    :datetime         not null
 #  name          :string(255)
 #  description   :text
-#  json_response :text(2147483647)
+#  json_response :text
 #  repository_id :integer
 #
 
