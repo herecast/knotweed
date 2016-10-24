@@ -16,6 +16,9 @@ UPDATE publish_jobs SET status = 'failed' WHERE status = 'running';
 
 UPDATE consumer_apps set uri = '%{site_endpoint}' WHERE name = 'Daily UV';
 
+-- DELETE any delayed_job records
+DELETE FROM delayed_jobs;
+
 -- set subtextland,vt as an active location
 UPDATE locations SET consumer_active = true where city = 'Subtextland';
 -- set VCLAB listserv as inactive/active

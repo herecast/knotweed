@@ -46,8 +46,14 @@ MIXPANEL_API_TOKEN: mixpanel-api-token
 # google maps api key for generating business_location maps
 GMAPS_API_KEY: gmapskey
 
+# optional configuration that allows you to specify how many seconds to wait
+# before retrying a failed job.
+# if not set, uses default delayed_job calculation:
+# attempts**4 + 5
+RESCHEDULE_AT: 10
+
 # config vars that specify when backup starts and ends for use with
-# pausing import/publish jobs and preventing publishing
+# pausing delayed_jobs and preventing publishing
 # if not specified, default is 2:45-3:45AM (server time, which is EST now)
 # what is placed here in app.yml is parsed by chronic so a simple
 # "2:45 am" will suffice

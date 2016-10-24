@@ -30,6 +30,8 @@ end
 
 TestAfterCommit.enabled = true
 
+class Delayed::Worker; define_method(:job_say) { |*args| } end
+
 RSpec.configure do |config|
   config.include AuthenticationHelpers, type: :controller
   config.include RequestHelpers, type: :request
