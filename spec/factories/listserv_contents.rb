@@ -4,13 +4,13 @@
 #
 #  id                         :integer          not null, primary key
 #  listserv_id                :integer
-#  sender_name                :string(255)
-#  sender_email               :string(255)
-#  subject                    :string(255)
-#  body                       :text(65535)
+#  sender_name                :string
+#  sender_email               :string
+#  subject                    :string
+#  body                       :text
 #  content_category_id        :integer
 #  subscription_id            :integer
-#  key                        :string(255)
+#  key                        :string
 #  verification_email_sent_at :datetime
 #  verified_at                :datetime
 #  pubdate                    :datetime
@@ -18,6 +18,7 @@
 #  user_id                    :integer
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
+#  verify_ip                  :string
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

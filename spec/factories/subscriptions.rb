@@ -8,15 +8,16 @@
 #  confirmed_at         :datetime
 #  unsubscribed_at      :datetime
 #  blacklist            :boolean          default(FALSE)
-#  subscription_details :string(255)
-#  source               :string(255)
-#  email                :string(255)      not null
-#  confirmation_details :string(255)
+#  subscription_details :string
+#  source               :string
+#  email                :string           not null
+#  confirmation_details :string
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  key                  :string(255)      not null
-#  name                 :string(255)
-#  confirm_ip           :string(255)
+#  key                  :string           not null
+#  name                 :string
+#  confirm_ip           :string
+#  email_type           :string           default("html")
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
