@@ -153,8 +153,14 @@ RSpec.describe ImportWorker, type: :job do
         expect(job.next_scheduled_run).to be > Time.current
       end
 
+      # ActiveJob queueing does some weird stuff with .00000x the sixth decimal place
+      # of float times for scheduling. It's not totally predictable, and we don't care about
+      # it, so we need to do this funky matching to successfully pass here even though it
+      # would be much nicer to use "have_enqueued_job"
       it 'should schedule the job with sidekiq' do
-        expect{subject}.to have_enqueued_job(ImportWorker).at(Time.current + 60.minutes)
+        subject
+        expect(Time.at(ActiveJob::Base.queue_adapter.enqueued_jobs.first[:at]).to_i).to \
+          eq (Time.current+60.minutes).to_i
       end
     end
 
