@@ -154,7 +154,7 @@ RSpec.describe ImportWorker, type: :job do
       end
 
       it 'should schedule the job with sidekiq' do
-        expect{subject}.to have_enqueued_job(ImportWorker).at(Time.now + 60.minutes)
+        expect{subject}.to have_enqueued_job(ImportWorker).at(Time.current + 60.minutes)
       end
     end
 
