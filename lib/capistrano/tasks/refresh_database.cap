@@ -9,13 +9,11 @@ ADAPT_FILE = 'adapt.sql'
 
 desc 'Refresh database from production data'
 task :refresh_database do
-  %w{ kill_delayed_jobs
-      move_mail
+  %w{ move_mail
       transfer_database_data
       run_migrations
       reindex
       restart_front_end
-      start_delayed_jobs
       publish_latest_import }.each do |task|
     invoke "refresh_database:#{task}"
   end
@@ -28,13 +26,6 @@ namespace :refresh_database do
 
   def get_adapt_template
     File.read(File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'config', 'adapt.rq')))
-  end
-
-  desc 'Kill running delayed jobs'
-  task :kill_delayed_jobs do
-    on roles(app_server_roles) do
-      execute ". /etc/profile && cd #{deploy_to}/current && RAILS_ENV=production bin/delayed_job stop"
-    end
   end
 
   desc 'Writes adapt.sql file for transforming the database to work for the new environment'
@@ -136,13 +127,6 @@ namespace :refresh_database do
   task :restart_front_end do
     on roles(app_server_roles) do
       execute 'touch /var/www/knotweed-ember/current/tmp/restart.txt'
-    end
-  end
-
-  desc 'Start delayed jobs'
-  task :start_delayed_jobs do
-    on roles(app_server_roles) do
-      execute ". /etc/profile && cd #{deploy_to}/current && RAILS_ENV=production bin/delayed_job -n 4 restart"
     end
   end
 
