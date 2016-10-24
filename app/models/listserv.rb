@@ -24,15 +24,13 @@
 #  timezone                    :string           default("Eastern Time (US & Canada)")
 #  digest_description          :text
 #  digest_send_day             :string
-#  promotion_id                :integer
+#  banner_ad_override_id       :integer
 #  digest_query                :text
 #  template                    :string
 #  sponsored_by                :string
-#  display_subscribe           :boolean          default(FALSE)
 #  digest_subject              :string
 #  digest_preheader            :string
-#  list_type                   :string           default("custom_list")
-#  sender_name                 :string
+#  display_subscribe           :boolean          default(FALSE)
 #
 
 class Listserv < ActiveRecord::Base

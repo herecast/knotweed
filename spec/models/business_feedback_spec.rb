@@ -1,19 +1,3 @@
-# == Schema Information
-#
-# Table name: business_feedbacks
-#
-#  id                  :integer          not null, primary key
-#  created_by          :integer
-#  updated_by          :integer
-#  business_profile_id :integer
-#  satisfaction        :boolean
-#  cleanliness         :boolean
-#  price               :boolean
-#  recommend           :boolean
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#
-
 require 'spec_helper'
 
 describe BusinessFeedback, :type => :model do

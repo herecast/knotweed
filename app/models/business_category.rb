@@ -1,17 +1,3 @@
-# == Schema Information
-#
-# Table name: business_categories
-#
-#  id          :integer          not null, primary key
-#  name        :string(255)
-#  description :string(255)
-#  icon_class  :string(255)
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  source      :string(255)
-#  source_id   :integer
-#
-
 class BusinessCategory < ActiveRecord::Base
   has_and_belongs_to_many :business_profiles
 

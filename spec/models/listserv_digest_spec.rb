@@ -17,8 +17,6 @@
 #  sponsored_by         :string
 #  promotion_id         :integer
 #  location_ids         :integer          default([]), is an Array
-#  subscription_ids     :integer          default([]), is an Array
-#  mc_segment_id        :string
 #
 
 require 'rails_helper'

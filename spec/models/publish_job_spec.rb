@@ -2,21 +2,20 @@
 #
 # Table name: publish_jobs
 #
-#  id                 :integer          not null, primary key
-#  query_params       :text
-#  organization_id    :integer
-#  status             :string(255)
-#  publish_method     :string(255)
-#  archive            :boolean          default(FALSE)
-#  error              :string(255)
-#  name               :string(255)
-#  description        :text
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#  file_archive       :text
-#  run_at             :datetime
-#  sidekiq_jid        :string
-#  next_scheduled_run :datetime
+#  id              :integer          not null, primary key
+#  query_params    :text
+#  organization_id :integer
+#  status          :string(255)
+#  frequency       :integer          default(0)
+#  publish_method  :string(255)
+#  archive         :boolean          default(FALSE)
+#  error           :string(255)
+#  name            :string(255)
+#  description     :text
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  file_archive    :text
+#  run_at          :datetime
 #
 
 require 'spec_helper'

@@ -8,16 +8,15 @@
 #  confirmed_at         :datetime
 #  unsubscribed_at      :datetime
 #  blacklist            :boolean          default(FALSE)
-#  subscription_details :string
-#  source               :string
-#  email                :string           not null
-#  confirmation_details :string
+#  subscription_details :string(255)
+#  source               :string(255)
+#  email                :string(255)      not null
+#  confirmation_details :string(255)
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  key                  :string           not null
-#  name                 :string
-#  confirm_ip           :string
-#  email_type           :string           default("html")
+#  key                  :string(255)      not null
+#  name                 :string(255)
+#  confirm_ip           :string(255)
 #
 
 require 'rails_helper'

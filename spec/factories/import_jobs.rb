@@ -20,8 +20,6 @@
 #  automatically_publish :boolean          default(FALSE)
 #  repository_id         :integer
 #  publish_method        :string(255)
-#  sidekiq_jid           :string
-#  next_scheduled_run    :datetime
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

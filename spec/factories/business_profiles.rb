@@ -8,14 +8,13 @@
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
 #  source                    :string(255)
-#  source_id                 :string(255)
-#  existence                 :float
+#  source_id                 :integer
+#  existence                 :integer
 #  feedback_count            :integer          default(0)
 #  feedback_recommend_avg    :float            default(0.0)
 #  feedback_price_avg        :float            default(0.0)
 #  feedback_satisfaction_avg :float            default(0.0)
 #  feedback_cleanliness_avg  :float            default(0.0)
-#  archived                  :boolean          default(FALSE)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

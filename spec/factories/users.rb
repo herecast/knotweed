@@ -34,7 +34,7 @@
 #  avatar                 :string(255)
 #  public_id              :string(255)
 #  skip_analytics         :boolean          default(FALSE)
-#  temp_password          :string
+#  temp_password          :string(255)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

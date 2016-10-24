@@ -6,10 +6,10 @@
 #  content_id          :integer
 #  promotion_banner_id :integer
 #  load_count          :integer          default(1)
-#  select_method       :string
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  select_method       :string(255)
 #  select_score        :float
-#  created_at          :datetime
-#  updated_at          :datetime
 #
 
 FactoryGirl.define do
