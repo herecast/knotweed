@@ -41,8 +41,8 @@ class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
 
   def merge_fields
     {
-      FNAME: object.subscriber_name.to_s.split(/\s+/).first,
-      LNAME: object.subscriber_name.to_s.split(/\s+/).last
+      FNAME: object.subscriber_name.to_s.split(/\s+/).first.to_s,
+      LNAME: object.subscriber_name.to_s.split(/\s+/).last.to_s
     }.tap do |h|
       if object.user && object.user.location
         h[:ZIP] = object.user.location.zip
