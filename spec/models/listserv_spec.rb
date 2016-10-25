@@ -133,6 +133,13 @@ describe Listserv, :type => :model do
     end
   end
 
+  describe 'mc_group_name=' do
+    it 'to match mailchimp, it strips leading and trailing whitespace' do
+      subject.mc_group_name= " test "
+      expect(subject.mc_group_name).to eql "test"
+    end
+  end
+
   describe 'banner_ad' do
     let!(:promotion) { FactoryGirl.create :promotion, promotable_type: 'PromotionBanner' }
     let!(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: promotion }

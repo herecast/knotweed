@@ -63,6 +63,10 @@ class Listserv < ActiveRecord::Base
 
   default_scope { where active: true }
 
+  def mc_group_name=n
+    write_attribute :mc_group_name, (n.nil? ? n : n.strip)
+  end
+
   def active_subscriber_count
     subscriptions.active.count
   end
