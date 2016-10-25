@@ -25,7 +25,7 @@
         = f.input :send_digest
         = f.input :digest_send_time, prompt: true, ampm: true, hint: "In your timezone (#{Time.zone.name})"
         = f.input :timezone, as: :time_zone, priority: /US/, hint: "The timezone digest receivers would typically be in."
-        = f.input :digest_send_day, collection: @digest_days, hint: "If this is a weekely digest, select the day of the week to send.  Leave blank if daily"
+        = f.input :digest_send_day, collection: Listserv.digest_days, hint: "If this is a weekely digest, select the day of the week to send.  Leave blank if daily"
         = f.input :digest_reply_to
         = f.input :digest_query, input_html: { class: 'span12' } , hint: "This query will be used to generate the contents for the listserv"
         = f.input :digest_subject
