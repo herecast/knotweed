@@ -318,8 +318,10 @@ describe Api::V3::UsersController, :type => :controller do
   end
   
   describe 'POST email_confirmation' do
+    include ActiveJob::TestHelper
     before do
       @user = FactoryGirl.create :user, confirmed_at: nil
+      @subs = FactoryGirl.create_list :subscription, 2, user_id: @user.id, confirmed_at: nil, confirm_ip: nil
     end
     context 'with valid confirmation token' do
       # we have to call instance_variable_get to pull the raw token that's included in the email. confirmation_token in the DB is the encrypted version.
@@ -329,6 +331,22 @@ describe Api::V3::UsersController, :type => :controller do
         expect(JSON.parse(response.body)).to eq({token: @user.authentication_token,
                                              email: @user.email
                                          }.stringify_keys)
+      end
+
+      context 'with unconfirmed digest subscriptions' do
+
+        it 'confirms subscriptions after confriming their account' do
+          expect(@subs.none? { |sub| sub.confirmed_at == nil })
+        end
+
+        it 'calls the Mailchimp subscribe service' do
+          subject
+          ActiveJob::Base.queue_adapter.enqueued_jobs.each do |job|
+            expect(job[:args].first).to eq 'MailchimpService'
+            expect(job[:args][1]).to eq 'subscribe'
+          end
+          expect(ActiveJob::Base.queue_adapter.enqueued_jobs.count).to eq @subs.count
+        end
       end
     end
 

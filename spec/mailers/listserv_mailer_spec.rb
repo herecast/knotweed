@@ -18,8 +18,8 @@ RSpec.describe ListservMailer, type: :mailer do
     end
 
     it 'includes confirmation link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/subscribe")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/subscribe")
+      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account/subscriptions")
+      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account/subscriptions")
     end
 
     it 'includes list name' do

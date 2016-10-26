@@ -18,16 +18,17 @@ module Api
       end
 
       def create
-        @subscription = Subscription.find_or_initialize_by(subscription_params)
-        @subscription.confirm_ip = request.remote_ip
-        if @subscription.persisted?
-          SubscribeToListservSilently.call(@subscription.listserv, @subscription.user, @subscription.confirm_ip)
-          render json: @subscription, serializer: SubscriptionSerializer, status: 201
-        elsif @subscription.save
-          SubscribeToListservSilently.call(@subscription.listserv, @subscription.user, @subscription.confirm_ip)
+        if params[:subscription][:listserv_id].present?
+          user = find_user
+          listserv = Listserv.find(params[:subscription][:listserv_id])
+          if user.confirmed?
+            @subscription = SubscribeToListservSilently.call(listserv, user, request.remote_ip)
+          else
+            @subscription = SubscribeToListserv.call(listserv, { email: params[:subscription][:email] })
+          end
           render json: @subscription, serializer: SubscriptionSerializer, status: 201
         else
-          render json: {errors: @subscription.errors}, status: 422
+          render json: {errors: 'listserv_id cant be blank'}, status: 422
         end
       end
 
@@ -106,6 +107,10 @@ module Api
         Subscription.where("listserv_id = ? AND email = ?", 
                            listserv_from_mailchimp.id, params['data']['email'])
                            .try(:first)
+      end
+
+      def find_user
+        User.find_by(email: params[:subscription][:email])
       end
     end
   end

@@ -238,4 +238,95 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
       }.from(nil)
     end
   end
+
+  describe 'POST /api/v3/subscriptions' do
+    let(:listserv) { FactoryGirl.create :listserv }
+    let(:user) { FactoryGirl.create :user }
+    let(:unconfirmed_user) { FactoryGirl.create :user, confirmed_at: nil }
+    let(:subscription_params) { {'subscription' => {'email' => "#{user.email}",
+                                'name' => "#{listserv.name}", 'user_id' => nil, 'listserv_id' => "#{listserv.id}"}}}
+    let(:invalid_sub_params) { {'subscription' => {'id' => nil, 'email' => "#{user.email}", 'name' => "#{listserv.name}",
+                                        'listserv_id' => nil}} }
+    subject { post '/api/v3/subscriptions', subscription_params }
+
+    context 'with valid subscription attributes' do
+
+      it 'responds with the correct status code' do
+        subject
+        expect(response.code).to eq '201'
+      end
+
+      it 'creates new subscription' do
+        expect{
+          subject
+        }.to change{ Subscription.count }.by(1)
+      end
+
+      it 'renders the the json for the new subscription' do
+        subject
+        expect(response_json[:subscription][:email]).to eq user.email
+        expect(response_json[:subscription][:name]).to eq user.name
+        expect(response_json[:subscription][:listserv_id]).to eq listserv.id
+      end
+
+      it 'can subscribe a user using listserv_id and email' do
+        expect {
+          post '/api/v3/subscriptions', { subscription: {listserv_id: listserv.id, email: user.email}}
+        }.to change{ Subscription.count }.by(1)
+      end
+
+      context 'when a user has confirmed their account' do
+        it 'runs the SubscribeToListservSilently job' do
+          request = double('request')
+          request.stub(:remote_ip) {'127.0.0.1'}
+          expect(SubscribeToListservSilently).to receive(:call).with(listserv, user, request.remote_ip )
+          subject
+        end
+      end
+
+      context 'when a user has not confirmed their account' do
+        before do
+          @new_user_params = { 'subscription' => 
+                                { 'listserv_id' => listserv.id, 
+                                'email' => "#{unconfirmed_user.email}",
+                                'name' => "#{listserv.name}", 
+                                'user_id' => nil } }
+        end
+        
+        it 'subscribes to a listserv' do
+          expect(SubscribeToListserv).to receive(:call).with(listserv, { email: unconfirmed_user.email })
+          post '/api/v3/subscriptions', @new_user_params
+        end
+      end
+
+      context 'when listserv_id is present' do
+
+        it 'creates new subscription' do
+          expect{
+            post '/api/v3/subscriptions', subscription_params.merge!(listserv_id: listserv.id)
+          }.to change{ Subscription.count }.by(1)
+        end
+
+      end
+    end
+
+    context 'with invalid attributes' do
+
+      subject { post '/api/v3/subscriptions', invalid_sub_params }
+
+      it 'renders 422 status code' do
+        subject
+        expect(response.code).to eq '422'
+      end
+
+      it 'does not create a new subscription' do
+        expect{
+          subject
+        }.to_not change{
+          Subscription.count
+        }
+      end
+    end
+
+  end
 end

@@ -90,6 +90,14 @@ module Api
           res = { token: user.authentication_token,
                   email: user.email
                 }
+          if user.unconfirmed_subscriptions?
+            user.unconfirmed_subscriptions.each do |sub|
+              sub.confirm_ip = request.remote_ip
+              sub.confirmed_at ||= Time.zone.now
+              sub.save!
+              BackgroundJob.perform_later('MailchimpService', 'subscribe', sub)
+            end
+          end
         else
           head :not_found and return
         end

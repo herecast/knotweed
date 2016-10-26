@@ -133,6 +133,18 @@ class User < ActiveRecord::Base
     end
   end
 
+  def unconfirmed_subscriptions?
+    self.subscriptions.any? { |sub| sub.confirmed_at == nil }
+  end
+
+  def unconfirmed_subscriptions
+    self.subscriptions.where(confirmed_at: nil)
+  end
+
+  def confirmed?
+    self.confirmed_at != nil
+  end
+
   private
 
     def generate_authentication_token
