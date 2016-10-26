@@ -30,6 +30,7 @@ class PromotionBanner < ActiveRecord::Base
     :click_count, :boost, :daily_max_impressions, :daily_impression_count, :track_daily_metrics
 
   mount_uploader :banner_image, ImageUploader
+  skip_callback :commit, :after, :remove_previously_stored_banner_image
 
   UPLOAD_ENDPOINT = "/statements"
 

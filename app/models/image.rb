@@ -25,6 +25,7 @@ class Image < ActiveRecord::Base
                   :source_url, :imageable, :primary
 
   mount_uploader :image, ImageUploader
+  skip_callback :commit, :after, :remove_previously_stored_image
 
   # validates_presence_of :image
   validates :image, :image_minimum_size => true

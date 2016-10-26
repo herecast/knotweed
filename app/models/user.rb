@@ -44,6 +44,7 @@ class User < ActiveRecord::Base
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
   mount_uploader :avatar, ImageUploader
+  skip_callback :commit, :after, :remove_previously_stored_avatar
 
   accepts_nested_attributes_for :subscriptions
 
