@@ -41,7 +41,8 @@ class ImportWorker < ApplicationJob
           # this means a user has tried to break out of continuous job running
           # so we need to A) not queue another job and B) reset stop_loop to false
           # so that when they restart it, it works fine.
-          @import_job.update stop_loop: false, status: 'success', sidekiq_jid: nil
+          @import_job.update stop_loop: false, status: 'success', sidekiq_jid: nil,
+            next_scheduled_run: nil
         else
           # keep continuous jobs running
           # to match old behavior, and save us a little Sidekiq working,
@@ -181,7 +182,8 @@ class ImportWorker < ApplicationJob
   end
 
   def handle_error(exception)
-    @import_job.update_attribute :status, 'failed'
+    @import_job.update status: 'failed', next_scheduled_run: nil,
+      sidekiq_jid: nil
     @log.info "#{Time.current}: input: #{@import_job.source_path}"
     @log.info "#{Time.current}: parser: #{ImportJob::PARSER_PATH}/#{@import_job.parser.filename}" if @import_job.parser.present?
     @log.error "#{Time.current}: error: #{exception}"
@@ -190,6 +192,13 @@ class ImportWorker < ApplicationJob
     end
     @log.error "#{Time.current}: backtrace: #{exception.backtrace.join("\n")}"
     @log.info "#{@import_job.inspect}"
-    raise(exception)
+
+    # in order to maintain continuity with the interface and existing import job behavior,
+    # we aren't allowing any exceptions to bubble up into Sidekiq. This is really not 
+    # the best use of Sidekiq, but coming up with another strategy would be substantially
+    # more work and would probalby have to involve rewriting the parsers so that each 
+    # job run is more atomic and we don't have to worry about it retrying. SO since we're
+    # about to rewrite the email import stuff out of this code anyway, I am explicitly NOT
+    # raising the exception
   end
 end
