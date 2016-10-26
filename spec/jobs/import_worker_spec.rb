@@ -50,10 +50,6 @@ RSpec.describe ImportWorker, type: :job do
       end
       expect(job.status).to eq 'failed'
     end
-
-    it 'should still raise the exception' do
-      expect{subject}.to raise_error(exception)
-    end
   end
 
   describe 'import filter' do

@@ -19,12 +19,10 @@
 #  next_scheduled_run :datetime
 #
 
-require 'jobs/scheduledjob'
 require 'zip'
 
 class PublishJob < ActiveRecord::Base
 
-  include Jobs::ScheduledJob
   QUEUE = 'publishing'
 
   belongs_to :organization
@@ -34,8 +32,6 @@ class PublishJob < ActiveRecord::Base
   has_many :notifyees, through: :notifiers, class_name: "User", source: "user"
 
   serialize :query_params, Hash
-
-  after_destroy :cancel_scheduled_runs
 
   default_scope { where archive: false }
 

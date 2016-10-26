@@ -22,8 +22,6 @@
 require 'spec_helper'
 
 describe PublishJob, :type => :model do
-  it_behaves_like :scheduled_job
-
   describe "validations" do
     describe '#repository_present' do
       before do
@@ -152,3 +150,4 @@ describe PublishJob, :type => :model do
     end
   end
 end
+

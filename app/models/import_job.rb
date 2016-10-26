@@ -29,11 +29,10 @@ require 'json'
 require "builder"
 require 'fileutils'
 require 'uri'
-require 'jobs/scheduledjob'
+require 'sidekiq/api'
 
 class ImportJob < ActiveRecord::Base
 
-  include Jobs::ScheduledJob
   QUEUE = "imports"
   PARSER_PATH = "#{Rails.root}/lib/parsers"
 
@@ -121,5 +120,24 @@ class ImportJob < ActiveRecord::Base
   # returns time last run at
   def last_run_at
     last_import_record.try(:created_at)
+  end
+
+  # cancel scheduled runs by removing the Sidekiq job referenced from the ScheduledSet queue
+  def cancel_scheduled_runs
+    jobs = Sidekiq::ScheduledSet.new.
+      select{ |job| job.args[0]["job_id"] == sidekiq_jid }
+    jobs.each(&:delete)
+    # if status was scheduled, change to blank
+    # otherwise (in scenario where job just succeeded or failed)
+    # leave status be
+    attrs = {
+      sidekiq_jid: nil,
+      next_scheduled_run: nil,
+      status: 'failed'
+    }
+    if status == "scheduled"
+      attrs[:status] = nil
+    end
+    update! attrs
   end
 end
