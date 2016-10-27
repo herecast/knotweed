@@ -1,33 +1,27 @@
 namespace :listserv_subscribers do
 
-  desc 'Subscribe 1000 users to most popular digest'
-  task :prepopulate_digest, [:digest_name] => :environment do |t, args|
-    norwich = Location.find_by city: 'Norwich', state: 'VT'
-    norwich_users = User.unscoped
-                        .where(location_id: norwich.id)
+  desc 'Subscribe users to digest'
+  task :prepopulate_digest, [:digest_name, :location_city, :location_state, :user_count] => :environment do |t, args|
+    
+    location = Location.find_by! city: args[:location_city], state: args[:location_state]
+    location_users = User.unscoped
+                        .where(location_id: location.id)
                         .where.not(confirmed_at: nil)
                         .order(confirmed_at: :desc)
-                        .limit(600)
+                        .limit(args[:user_count])
 
-    hanover = Location.find_by city: 'Hanover', state: 'NH'
-    hanover_users = User.unscoped
-                        .where(location_id: hanover.id)
-                        .where.not(confirmed_at: nil)
-                        .order(confirmed_at: :desc)
-                        .limit(400)
+    listserv = Listserv.find_by! name: args[:digest_name]
 
-    subscribers = norwich_users + hanover_users
-    listserv = Listserv.find_by name: args[:digest_name]
-
-    puts "Adding #{subscribers.count} subscriptions..."
-    subscribers.each do |s|
+    puts "Adding #{location_users.count} subscriptions to #{listserv.name}..."
+    initial_count = listserv.subscriptions.count
+    location_users.each do |u|
       begin
-        SubscribeToListservSilently.call(listserv, s, (s.last_sign_in_ip || '1.1.1.1'))
+        SubscribeToListservSilently.call(listserv, u, (u.last_sign_in_ip || '1.1.1.1'))
       rescue Exception => e
-        puts "User with email #{s.email} failed in subsciption with: #{e.inspect}"
+        puts "User with email #{u.email} failed in subsciption with: #{e.inspect}"
       end
     end
-    puts "The #{listserv.name} digest has been updated with #{listserv.subscriptions.count} subscriptions."
+    puts "The #{listserv.name} digest has been updated with #{listserv.subscriptions.count - initial_count} subscriptions."
   
   end
 end
