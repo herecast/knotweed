@@ -33,5 +33,25 @@ RSpec.describe 'Digest API Endpoints', type: :request do
       end
     end
   end
+
+  describe 'GET /api/v3/digests/:id' do
+    context 'when given an id of a listserv record' do
+      let!(:digest) { FactoryGirl.create :listserv, :custom_digest }
+
+      subject { get "/api/v3/digests/#{digest.id}" }
+
+      it 'returns expected json output' do
+        subject
+        expect(response_json[:digest]).to match({
+          id: digest.id,
+          digest_description: digest.digest_description,
+          name: digest.name,
+          digest_send_time: digest.digest_send_time.strftime('%l:%M %p').strip,
+          digest_send_day: digest.digest_send_day,
+          next_digest_send_time: digest.next_digest_send_time.iso8601
+        })
+      end
+    end
+  end
 end
 

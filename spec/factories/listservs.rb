@@ -55,4 +55,9 @@ FactoryGirl.define do
     end
     list_type 'custom_digest'
   end
+
+  trait :custom_digest do
+    digest_send_day 'Monday'
+    list_type 'custom_digest'
+  end
 end

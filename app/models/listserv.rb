@@ -63,6 +63,10 @@ class Listserv < ActiveRecord::Base
 
   default_scope { where active: true }
 
+  scope :custom_digest, ->{
+    where(list_type: 'custom_digest')
+  }
+
   def mc_group_name=n
     write_attribute :mc_group_name, (n.nil? ? n : n.strip)
   end

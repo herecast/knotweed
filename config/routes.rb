@@ -146,6 +146,7 @@ Knotweed::Application.routes.draw do
       get '/market_posts/:id/contact', to: 'market_posts#contact', as: :market_post_contact
       get '/weather', to: 'users#weather', as: :weather
       post '/users/logout', to: 'users#logout', as: :logout
+      get '/user', to: 'users#verify'
       get '/dashboard', to: 'contents#dashboard', as: :dashboard
       post '/users/email_confirmation', to: 'users#email_confirmation', as: :email_confirmation
       post '/users/resend_confirmation', to: 'users#resend_confirmation', as: :resend_confirmation
@@ -171,6 +172,7 @@ Knotweed::Application.routes.draw do
       resources :content_reports, only: :index
       resources :promotion_banner_reports, only: :index
       get '/digests', to: 'digests#index'
+      get '/digests/:id', to: 'digests#show'
     end
   end
 
