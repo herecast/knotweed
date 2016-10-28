@@ -557,10 +557,10 @@ ActiveRecord::Schema.define(version: 20161020201515) do
   create_table "listserv_digests", force: :cascade do |t|
     t.integer  "listserv_id"
     t.string   "listserv_content_ids"
-    t.string   "campaign_id"
+    t.string   "mc_campaign_id"
     t.datetime "sent_at"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
     t.string   "content_ids"
     t.string   "from_name"
     t.string   "reply_to"
@@ -597,7 +597,7 @@ ActiveRecord::Schema.define(version: 20161020201515) do
     t.string   "timezone",                                default: "Eastern Time (US & Canada)"
     t.text     "digest_description"
     t.string   "digest_send_day"
-    t.integer  "banner_ad_override_id"
+    t.integer  "promotion_id"
     t.text     "digest_query"
     t.string   "template"
     t.string   "sponsored_by"
@@ -623,6 +623,7 @@ ActiveRecord::Schema.define(version: 20161020201515) do
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
     t.boolean  "consumer_active",             default: false
+    t.boolean  "is_region",                   default: false
   end
 
   create_table "locations_locations", id: false, force: :cascade do |t|
@@ -958,6 +959,8 @@ ActiveRecord::Schema.define(version: 20161020201515) do
 
   add_index "wufoo_forms", ["controller", "action", "active"], name: "idx_16881_index_wufoo_forms_on_controller_and_action_and_active", unique: true, using: :btree
 
+  add_foreign_key "campaigns", "listservs"
+  add_foreign_key "campaigns", "promotions"
   add_foreign_key "listserv_contents", "content_categories"
   add_foreign_key "listserv_contents", "contents"
   add_foreign_key "listserv_contents", "listservs"
