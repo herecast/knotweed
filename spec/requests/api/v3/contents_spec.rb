@@ -133,7 +133,8 @@ describe 'Contents Endpoints', type: :request do
             redirect_url: banner.redirect_url,
             banner_id: banner.id,
             organization_name: organization.name,
-            promotion_id: promo.id
+            promotion_id: promo.id,
+            title: promo.content.title
           }
         )
       end
