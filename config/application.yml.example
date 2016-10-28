@@ -82,8 +82,6 @@ POSTMARK_API_TOKEN: postmark-token
 
 PROMO_RELEVANCE_SCORE_THRESHOLD: .10
 
-PRERENDER_TOKEN: prerender-token
-
 DEFAULT_CONSUMER_HOST: dailyuv.com
 
 MAILCHIMP_API_HOST: us13.api.mailchimp.com

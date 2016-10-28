@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161020201515) do
+ActiveRecord::Schema.define(version: 20161028163501) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -183,11 +183,6 @@ ActiveRecord::Schema.define(version: 20161020201515) do
   end
 
   add_index "consumer_apps", ["uri"], name: "idx_16494_index_consumer_apps_on_uri", unique: true, using: :btree
-
-  create_table "consumer_apps_import_jobs", id: false, force: :cascade do |t|
-    t.integer "consumer_app_id", limit: 8
-    t.integer "import_job_id",   limit: 8
-  end
 
   create_table "consumer_apps_messages", id: false, force: :cascade do |t|
     t.integer "message_id",      limit: 8
