@@ -6,6 +6,19 @@ describe ParsersController, :type => :controller do
     sign_in @user
   end
 
+  describe "GET #parameters" do
+    let!(:parser) { FactoryGirl.create :parser }
+    let!(:import_job) { FactoryGirl.create :import_job }
+    let!(:parameter) { FactoryGirl.create :parameter, parser_id: parser.id }
+
+    subject { get :parameters, id: parser.id, import_job_id: import_job.id }
+
+    it "runs" do
+      subject
+      expect(response).to have_http_status :success
+    end
+  end
+
   describe 'GET index' do
     before { @parsers = FactoryGirl.create_list :parser, 3 }
     subject! { get :index }
@@ -41,11 +54,19 @@ describe ParsersController, :type => :controller do
   end
 
   describe 'POST create' do
-    subject { post :create, parser: { name: 'Fake Parser',
-                                      filename: 'fake_parser.rb' } }
+    subject { post :create, parser: { name: 'Fake Parser', filename: 'fake_parser.rb' } }
 
-    it 'should create a new parser' do
-      expect{subject}.to change{Parser.count}.by 1
+    context "when creation succeeds" do
+      it 'should create a new parser' do
+        expect{subject}.to change{Parser.count}.by 1
+      end
+    end
+
+    context "when creation fails" do
+      it "should not create a new parser" do
+        allow_any_instance_of(Parser).to receive(:save).and_return(false)
+        expect{ subject }.to change{ Parser.count }.by(0)
+      end
     end
   end
 
@@ -59,6 +80,16 @@ describe ParsersController, :type => :controller do
 
     it 'should update the parser record' do
       expect{subject}.to change{@parser.reload.name}.to @update_params[:name]
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    let!(:parser) { FactoryGirl.create :parser }
+
+    subject { delete :destroy, id: parser.id, format: :js }
+
+    it "should delete parser" do
+      expect{ subject }.to change{ Parser.count }.by(-1)
     end
   end
 end

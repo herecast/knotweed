@@ -128,6 +128,43 @@ RSpec.describe ListservContent, type: :model do
     end
   end
 
+  describe "#categorized?" do
+    let(:listserv_content) { FactoryGirl.create :listserv_content }
+
+    context "when not categorized" do
+      it "returns false" do
+        expect(listserv_content.categorized?).to be false
+      end
+    end
+
+    context "when categorized" do
+      let!(:content_category) { FactoryGirl.create :content_category }
+      let(:listserv_content) { FactoryGirl.create :listserv_content, content_category_id: content_category.id }
+
+      it "returns true" do
+        expect(listserv_content.categorized?).to be true
+      end
+    end
+  end
+
+  describe "#published?" do
+    context "when content is not published" do
+      let(:listserv_content) { FactoryGirl.create :listserv_content, pubdate: nil }
+
+      it "returns false" do
+        expect(listserv_content.published?).to be false
+      end
+    end
+
+    context "when content is published" do
+      let(:listserv_content) { FactoryGirl.create :listserv_content, pubdate: Date.yesterday }
+
+      it "returns true" do
+        expect(listserv_content.published?).to be true
+      end
+    end
+  end
+
   describe 'ascii_body' do
     context 'when #body has non ASCII recognized characters' do
       subject { ListservContent.new }
@@ -146,7 +183,56 @@ RSpec.describe ListservContent, type: :model do
             And Bahram, that great Hunter  the Wild Ass
             Stamps oer his Head, and he lies fast asleep"
       end
+    end
 
+    context "when no body present" do
+      before do
+        subject.update_attribute(:body, nil)
+      end
+
+      it "returns blank string" do
+        expect(subject.ascii_body).to eq ""
+      end
+    end
+  end
+
+  describe "#publish_content" do
+    let(:listserv_content) { FactoryGirl.create :listserv_content, body: '<p>hi, Jaba</p>' }
+
+    context "when tags are meant to be included" do
+      it "returns content with tags" do
+        expect(listserv_content.publish_content(true)).to eq listserv_content.body
+      end
+    end
+
+    context "when tags are meant to be removed" do
+      it "returns body stripped of tags" do
+        expect(listserv_content.publish_content).to eq "hi, Jaba"
+      end
+    end
+  end
+
+  describe "#feature_set" do
+    before do
+      @listserv_content = FactoryGirl.create :listserv_content, subject: 'Pod racing, 101'
+    end
+
+    it "returns accurate feature set" do
+      expect(@listserv_content.feature_set).to include(
+        "title" => @listserv_content.subject,
+        "source" => "Listserv",
+        "classify_only" => true
+      )
+    end
+  end
+
+  describe "#document_uri" do
+    before do
+      @listserv_content = FactoryGirl.create :listserv_content
+    end
+
+    it "returns blank string" do
+      expect(@listserv_content.document_uri).to eq ""
     end
   end
 
