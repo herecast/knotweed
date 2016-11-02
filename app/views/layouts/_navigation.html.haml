@@ -323,3 +323,16 @@
     = link_to '/sidekiq_wrapper' do
       %i.icon-dashboard
       %span Sidekiq Dashboard
+- if can? :manage, Feature
+  %li
+    = link_to features_path do
+      %i.icon-flag
+      %span Features
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "features" ? "in" : "" }" }
+      %li{ class: current_page?(subscriptions_path) ? "active" : "" }
+      - if can? :create, Feature
+        %li{ class: current_page?(new_feature_path) ? "active" : "" }
+          = link_to new_feature_path do
+            %i.icon-plus
+            %span Create New
