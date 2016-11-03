@@ -129,7 +129,7 @@ class User < ActiveRecord::Base
   def update_subscriptions_locations
     if self.location_id_changed? && self.subscriptions.present?
       self.subscriptions.each do |sub|
-        BackgroundJob.perform_later('MailchimpService', 'update_subscription', sub) if sub.listserv.mc_sync?
+        BackgroundJob.perform_later('MailchimpService', 'update_subscription', sub) if sub.listserv.try(:mc_sync?)
       end
     end
   end
