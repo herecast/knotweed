@@ -10,6 +10,7 @@
 #  digest_query  :text
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  title         :string
 #
 
 require 'rails_helper'
@@ -23,6 +24,7 @@ RSpec.describe Campaign, type: :model do
 
   it{ is_expected.to belong_to(:listserv) }
   it{ is_expected.to belong_to(:promotion) }
+  it{ is_expected.to have_db_column(:title).of_type(:string) }
 
   describe 'communities' do
     context 'assigned an array of locations' do

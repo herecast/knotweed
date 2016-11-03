@@ -474,6 +474,7 @@ RSpec.describe MailchimpService do
       let!(:digest) {
         FactoryGirl.create :listserv_digest,
           listserv: listserv,
+          title: 'Digest of the day (q1)',
           subject: 'Digest of the day',
           from_name: 'DailyUV',
           reply_to: 'duv@duv.net',
@@ -509,6 +510,7 @@ RSpec.describe MailchimpService do
               }
             },
             settings: {
+              title: digest.title,
               subject_line: digest.subject,
               from_name: digest.from_name,
               reply_to: digest.reply_to

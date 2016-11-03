@@ -14,6 +14,7 @@ class ListservDigestJob < ApplicationJob
           }
           campaign_attrs[:sponsored_by] = campaign.sponsored_by if campaign.sponsored_by?
           campaign_attrs[:promotion_id] = campaign.promotion_id if campaign.promotion_id?
+          campaign_attrs[:title] = campaign.title if campaign.title?
           digests << ListservDigest.new(digest_attributes.merge(campaign_attrs))
         end
       else
@@ -61,7 +62,7 @@ class ListservDigestJob < ApplicationJob
   def digest_attributes
     {
       listserv: @listserv,
-      subject: (@listserv.digest_subject? ? @listserv.digest_subject : "#{@listserv.name Digest}"),
+      subject: (@listserv.digest_subject? ? @listserv.digest_subject : "#{@listserv.name} Digest"),
       from_name: @listserv.sender_name? ? @listserv.sender_name : @listserv.name,
       reply_to: @listserv.digest_reply_to,
       template: @listserv.template,
@@ -69,7 +70,8 @@ class ListservDigestJob < ApplicationJob
         @listserv.last_digest_generation_time || 1.month.ago
       ),
       sponsored_by: @listserv.sponsored_by,
-      promotion_id: @listserv.promotion_id
+      promotion_id: @listserv.promotion_id,
+      title: (@listserv.digest_subject? ? @listserv.digest_subject : "#{@listserv.name} Digest")
     }
   end
 

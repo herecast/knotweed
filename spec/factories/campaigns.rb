@@ -10,6 +10,7 @@
 #  digest_query  :text
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  title         :string
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

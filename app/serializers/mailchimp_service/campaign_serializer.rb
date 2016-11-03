@@ -18,6 +18,7 @@ module MailchimpService
 
     def settings
       {
+        title: object.title,
         subject_line: object.subject,
         from_name: object.from_name,
         reply_to: object.reply_to

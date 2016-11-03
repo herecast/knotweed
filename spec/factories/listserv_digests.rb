@@ -17,6 +17,9 @@
 #  sponsored_by         :string
 #  promotion_id         :integer
 #  location_ids         :integer          default([]), is an Array
+#  mc_segment_id        :string
+#  subscription_ids     :integer          default([]), is an Array
+#  title                :string
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
