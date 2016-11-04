@@ -27,5 +27,6 @@ FactoryGirl.define do
     daily_max_impressions 100
     impression_count 0
     daily_impression_count 0
+    banner_image { File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg')) }
   end
 end

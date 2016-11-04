@@ -102,8 +102,7 @@ describe PromotionsController, :type => :controller do
 
       it "html: redirects" do
         post :create, organization_id: @org.id, promotion: { description: 'unsaved promo' }
-        expect(response).to redirect_to edit_organization_path(@org)
-        expect(response.code).to eq '302'
+        expect(response).to render_template 'new'
       end
 
       it "json: responds with 422 status code" do

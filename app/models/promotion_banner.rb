@@ -39,6 +39,7 @@ class PromotionBanner < ActiveRecord::Base
   after_destroy :update_active_promotions
 
   validates_presence_of :promotion
+  validates_presence_of :banner_image
   validates :max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'max_impressions.present?'
 #  validates :daily_max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'daily_max_impressions.present?'
 
