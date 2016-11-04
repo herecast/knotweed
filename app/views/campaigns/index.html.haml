@@ -46,6 +46,6 @@
       %tr
         %td= c.promotion.content.try(:id)
         %td{ style: "min-width: 150px" }= c.promotion.organization.try(:name)
-        %td= c.promotion.description
+        %td= c.promotion.content.try(:title)
         %td{ style: "min-width: 150px" }= c.promotion.content.try(:pubdate).try(:strftime, "%A, %b %d")
         %td= link_to "edit", edit_promotion_path(c.promotion), class: "btn btn-warning btn-mini"
