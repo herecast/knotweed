@@ -17,8 +17,6 @@ class CategoryCorrection < ActiveRecord::Base
 
   belongs_to :content
 
-  attr_accessible :content_body, :content, :new_category, :old_category, :title, :user_email
-
   validates_presence_of :content
 
   # this has to be after_commit because otherwise, if

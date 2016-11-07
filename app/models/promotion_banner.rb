@@ -25,10 +25,6 @@ class PromotionBanner < ActiveRecord::Base
   has_many :contents, through: :content_promotion_banner_impressions
   has_many :promotion_banner_reports
 
-  attr_accessible :banner_image, :redirect_url, :remove_banner, :banner_cache,
-    :campaign_start, :campaign_end, :max_impressions, :impression_count,
-    :click_count, :boost, :daily_max_impressions, :daily_impression_count, :track_daily_metrics
-
   mount_uploader :banner_image, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_banner_image
 

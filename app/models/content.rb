@@ -136,11 +136,9 @@ class Content < ActiveRecord::Base
 
   has_many :images, -> { order("images.primary DESC") }, as: :imageable, inverse_of: :imageable, dependent: :destroy
   accepts_nested_attributes_for :images, allow_destroy: true
-  attr_accessible :images_attributes, :images
 
   belongs_to :organization
   accepts_nested_attributes_for :organization
-  attr_accessible :organization_attributes
   delegate :name, to: :organization, prefix: true, allow_nil: true
 
   belongs_to :parent, class_name: "Content"
@@ -155,17 +153,6 @@ class Content < ActiveRecord::Base
   # mapping to content record that represents the channelized content
   belongs_to :channelized_content, class_name: "Content"
   has_one :unchannelized_original, class_name: "Content", foreign_key: "channelized_content_id"
-
-  attr_accessible :title, :subtitle, :authors, :issue_id, :import_location_id, :copyright,
-                :guid, :pubdate, :source_category, :topics, :url, :origin,
-                :language, :authoremail, :organization_id,
-                :quarantine, :doctype, :timestamp, :contentsource, :source_content_id,
-                :image_ids, :parent_id, :source_uri, :category,
-                :content_category_id, :category_reviewed, :raw_content,
-                :sanitized_content, :channelized_content_id,
-                :has_event_calendar, :channel_type, :channel_id, :channel,
-                :location_ids, :root_content_category_id, :similar_content_overrides,
-                :banner_ad_override, :my_town_only, :authors_is_created_by
 
   serialize :similar_content_overrides, Array
 
@@ -373,13 +360,6 @@ class Content < ActiveRecord::Base
     end
 
     raw_content = data.delete 'content'
-
-    data.keys.each do |k|
-      unless Content.accessible_attributes.entries.include? k
-        log.debug("unknown key provided by parser: #{k}")
-        data.delete k
-      end
-    end
 
     content = Content.new(data)
     content.raw_content = raw_content

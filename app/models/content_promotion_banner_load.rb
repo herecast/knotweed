@@ -13,8 +13,6 @@
 #
 
 class ContentPromotionBannerLoad < ActiveRecord::Base
-  attr_accessible :content_id, :load_count, :promotion_banner_id, :select_method, :select_score
-
   belongs_to :content
   belongs_to :promotion_banner
 

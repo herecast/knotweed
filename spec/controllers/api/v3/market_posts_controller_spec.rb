@@ -11,11 +11,11 @@ describe Api::V3::MarketPostsController, :type => :controller do
       @other_location = FactoryGirl.create :location, city: 'Another City'
       @third_location = FactoryGirl.create :location, city: 'Different Again'
       @user = FactoryGirl.create :user, location: @other_location
-      @default_location_contents = FactoryGirl.create_list :content, 3, content_category: @market_cat, 
+      @default_location_content = FactoryGirl.create :content, content_category: @market_cat, 
         locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 5, content_category: @market_cat, 
+      FactoryGirl.create :content, content_category: @market_cat, 
         locations: [@other_location], published: true
-      FactoryGirl.create_list :content, 4, content_category: @market_cat, 
+      FactoryGirl.create :content, content_category: @market_cat, 
         locations: [@third_location], published: true
       @old_post = FactoryGirl.create :content, content_category: @market_cat,
         locations: [@default_location], published: true, pubdate: 40.days.ago
@@ -43,10 +43,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
       it 'should filter by Location::DEFAULT_LOCATION' do
         subject
-        @default_location_contents.each do |c|
-          expect(assigns(:market_posts)).to include(c)
-        end
-        expect(assigns(:market_posts).count).to eq @default_location_contents.count
+        expect(assigns(:market_posts)).to match_array [@default_location_content]
       end
     end
 
@@ -281,9 +278,11 @@ describe Api::V3::MarketPostsController, :type => :controller do
     before do
       @user = FactoryGirl.create :user
       @market_post = FactoryGirl.create :market_post
+      @market_post.content.update_attribute :created_by, @user
       @attrs_for_update = { 
         title: 'This is a changed title',
-        price: 'New low price'
+        price: 'New low price',
+        content: 'Hoth'
       }
     end
 
@@ -301,7 +300,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
       # created the object can update it.
       before do
         api_authenticate user: @user
-        allow_any_instance_of(Ability).to receive(:can?).with(:manage, @market_post.content).and_return(true)
       end
 
       it 'should update the market post\'s attributes' do
@@ -309,7 +307,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
       end
 
       it 'should update the associated content\'s attributes' do
-        expect{subject}.to change{@market_post.content.reload.title}.to @attrs_for_update[:title]
+        expect{subject}.to change{@market_post.reload.content.title}.to @attrs_for_update[:title]
       end
 
       it 'should allow clearing out an attribute' do
@@ -331,7 +329,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
       context 'with params organization_id' do
         let(:organization) { FactoryGirl.create(:organization) }
-        let(:params_with_org) { @attrs_for_update.merge(orgainzation_id: organization.id) }
+        let(:params_with_org) { @attrs_for_update.merge(organization_id: organization.id) }
 
         it 'allows the param, but ignores it' do
           put :update, id: @market_post.content.id, market_post: params_with_org
@@ -361,7 +359,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
         it 'should update the market post with locations including REGION_LOCATION_ID' do
           subject
-          expect(assigns(:market_post).content.location_ids).to include(Location::REGION_LOCATION_ID)
+          expect(@market_post.reload.content.location_ids).to include(Location::REGION_LOCATION_ID)
         end
       end
 

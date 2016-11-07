@@ -34,8 +34,6 @@ class Location < ActiveRecord::Base
   has_and_belongs_to_many :parents, class_name: 'Location', foreign_key: :child_id, association_foreign_key: :parent_id
   has_and_belongs_to_many :children, class_name: 'Location', foreign_key: :parent_id, association_foreign_key: :child_id
 
-  attr_accessible :city, :county, :lat, :long, :state, :zip, :organization_ids, :consumer_active
-
   default_scope { order(:city) }
 
   scope :consumer_active, -> { where consumer_active: true }

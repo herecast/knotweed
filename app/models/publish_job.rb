@@ -34,9 +34,6 @@ class PublishJob < ActiveRecord::Base
 
   serialize :query_params, Hash
 
-  attr_accessible :frequency, :organization_id, :publish_method, :query_params, :status,
-                  :archive, :error, :name, :description, :run_at
-
   after_destroy :cancel_scheduled_runs
 
   default_scope { where archive: false }

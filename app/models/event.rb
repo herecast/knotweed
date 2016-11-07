@@ -29,7 +29,6 @@ class Event < ActiveRecord::Base
 
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
-  attr_accessible :content_attributes
   validates_associated :content
 
   has_one :source, through: :content, class_name: "Organization", foreign_key: "organization_id"
@@ -41,7 +40,6 @@ class Event < ActiveRecord::Base
   belongs_to :venue, class_name: "BusinessLocation", foreign_key: "venue_id"
   accepts_nested_attributes_for :venue,
     reject_if: proc { |attributes| attributes['name'].blank? and attributes['address'].blank? }
-  attr_accessible :venue_attributes, :venue_id
 
   # event instances represent individual datetimes for events that might occur more than once
   # they can also have a subtitle and description that "override" the master
@@ -50,17 +48,11 @@ class Event < ActiveRecord::Base
   has_many :schedules, dependent: :destroy
 
   accepts_nested_attributes_for :event_instances, allow_destroy: true
-  attr_accessible :event_instances_attributes
 
   # we can either remove this validation (the path I chose) OR
   # make the events#create action a lot more complex in that it would have
   # to first save and create the content, then save the event.
   # validates_presence_of :content_id
-
-  attr_accessible :content, :cost, :event_type, :event_url, :featured,
-    :links, :sponsor, :sponsor_url, :venue, :contact_phone, :contact_email,
-    :cost_type, :event_category, :social_enabled, :registration_deadline,
-    :registration_url, :registration_phone, :registration_email
 
   EVENT_CATEGORIES = [:first_friday, :movies, :wellness, :live_music, :arts]
 

@@ -64,20 +64,13 @@ module Api
       end
 
       def create
-        @business_profile = BusinessProfile.new(business_profile_attributes)
+        @business_profile = BusinessProfile.new(business_profile_params)
         ModerationMailer.send_business_for_moderation(@business_profile, @current_api_user).deliver_now
         # for Ember data to not get upset, we need to assign fake IDs to all the objects here
         @business_profile.content.id = Time.current.to_i
         @business_profile.organization.id = Time.current.to_i
         render json: @business_profile, serializer: BusinessProfileSerializer,
           status: 201, root: 'business', context: {current_ability: current_ability, current_user: current_user}
-        #if @business_profile.save
-        #  render json: @business_profile, serializer: BusinessProfileSerializer,
-        #    status: 201, root: 'business'
-        #else
-        #  render json: { errors: @business_profile.errors.messages },
-        #    status: :unprocessable_entity
-        #end
       end
 
       def update
@@ -85,137 +78,145 @@ module Api
         # This may change (this endpoint can be leveraged, at some point, to be the
         # mechanism for "claiming?"), but as of now, you cannot #update
         # business profiles that haven't been claimed.
-        if @business_profile.content.nil?
-          render json: { errors: ["Business has not been claimed and can't be updated."] },
-            status: 422
-        else
-          if @business_profile.update_attributes(business_profile_attributes)
+        if @business_profile.claimed?
+          if @business_profile.update_attributes(business_profile_params)
             render json: @business_profile, serializer: BusinessProfileSerializer,
               root: 'business', context: {current_ability: current_ability, current_user: current_user}
           else
             render json: { errors: @business_profile.errors.messages },
               status: :unprocessable_entity
           end
+        else
+          render json: { errors: ["Business has not been claimed and can't be updated."] },
+            status: 422
         end
       end
 
       protected
-      def sort_by
-        order = params[:sort_by] || "score_desc"
-        case order
-          when "distance_asc"
-            closest_order
-          when "score_desc"
-            best_score_order
-          when "rated_desc"
-            most_rated_order
-          when "alpha_asc"
-            alpha_order
-          when "alpha_desc"
-            [{ business_location_name: :desc }]
-          else
-            return []
-        end
-      end
 
-      def best_score_order
-        [
-          { feedback_recommend_avg: :desc },
-          { feedback_count: :desc },
-          geodist_clause,
-          { business_location_name: :asc }
-        ]
-      end
-      
-      def geodist_clause
-        if @coords.present?
-          {
-            _geo_distance: {
-              'location' => @coords.join(','),
-              'order' => 'asc',
-              'unit' => 'mi'
+        def sort_by
+          order = params[:sort_by] || "score_desc"
+          case order
+            when "distance_asc"
+              closest_order
+            when "score_desc"
+              best_score_order
+            when "rated_desc"
+              most_rated_order
+            when "alpha_asc"
+              alpha_order
+            when "alpha_desc"
+              [{ business_location_name: :desc }]
+            else
+              return []
+          end
+        end
+
+        def best_score_order
+          [
+            { feedback_recommend_avg: :desc },
+            { feedback_count: :desc },
+            geodist_clause,
+            { business_location_name: :asc }
+          ]
+        end
+        
+        def geodist_clause
+          if @coords.present?
+            {
+              _geo_distance: {
+                'location' => @coords.join(','),
+                'order' => 'asc',
+                'unit' => 'mi'
+              }
+            }
+          else
+            {}
+          end
+        end
+
+        def closest_order
+          [
+            geodist_clause,
+            { feedback_recommend_avg: :desc },
+            { feedback_count: :desc },
+            { business_location_name: :asc }
+          ]
+        end
+
+        def most_rated_order
+          [
+            { feedback_count: :desc },
+            { feedback_recommend_avg: :desc },
+            geodist_clause,
+            { business_location_name: :asc }
+          ]
+        end
+
+        def alpha_order
+          [
+            { business_location_name: :asc },
+            { feedback_recommend_avg: :desc },
+            { feedback_count: :desc },
+            geodist_clause
+          ]
+        end
+
+        def business_profile_params
+          new_params = params
+          new_params.merge!(additional_attributes).delete(:business)
+          new_params.require(:business_profile).permit(
+            :has_retail_location,
+            business_category_ids: [],
+            content_attributes: [
+              :id,
+              :title,
+              :raw_content,
+              organization_attributes: [ :id ]
+            ],
+            business_location_attributes: [
+              :id,
+              :name,
+              :phone,
+              :email,
+              :address,
+              :city,
+              :state,
+              :zip,
+              :status,
+              :service_radius,
+              :venue_url,
+              :locate_include_name,
+              hours: []
+            ]
+          )
+        end
+
+        def additional_attributes
+          attributes = {
+            business_profile: {
+              has_retail_location: params[:business][:has_retail_location],
+              business_category_ids: params[:business][:category_ids],
+              content_attributes: {
+                title: params[:business][:name],
+                raw_content: params[:business][:details],
+                organization_attributes: {}
+              },
+              business_location_attributes: params[:business].slice(
+                :name, :phone, :email, :address, :city, :state, :zip, :hours, :service_radius
+              ).merge(venue_url: params[:business][:website])
             }
           }
-        else
-          {}
+
+          if @business_profile.present?
+            attributes[:business_profile][:content_attributes][:id] = @business_profile.try(:content).try(:id)
+            attributes[:business_profile][:content_attributes][:organization_attributes][:id] = @business_profile.try(:content).try(:organization).try(:id)
+            attributes[:business_profile][:business_location_attributes][:id] = @business_profile.try(:business_location).try(:id)
+          end
+
+          attributes
         end
-      end
 
-      def closest_order
-        [
-          geodist_clause,
-          { feedback_recommend_avg: :desc },
-          { feedback_count: :desc },
-          { business_location_name: :asc }
-        ]
-      end
-
-      def most_rated_order
-        [
-          { feedback_count: :desc },
-          { feedback_recommend_avg: :desc },
-          geodist_clause,
-          { business_location_name: :asc }
-        ]
-      end
-
-      def alpha_order
-        [
-          { business_location_name: :asc },
-          { feedback_recommend_avg: :desc },
-          { feedback_count: :desc },
-          geodist_clause
-        ]
-      end
-
-      def business_params
-        params.require(:business).permit(:name, :phone, :email, :website,
-                                         :address, :city, :state, :zip,
-                                         :has_retail_location, :service_radius,
-                                         :details, category_ids: [], hours: [])
-      end
-
-      def content_attributes
-        bp = business_params
-
-        ca = {
-          organization_attributes: organization_attributes
-        }
-        ca[:id] = @business_profile.try(:content).try(:id) if @business_profile
-        ca[:title] = bp[:name] if bp[:name].present?
-        ca[:raw_content] = bp[:details] if bp[:details].present?
-        ca
-      end
-
-      def organization_attributes
-        oa = {}
-        oa[:id] = @business_profile.try(:content).try(:organization).try(:id) if @business_profile
-        oa
-      end
-
-      def business_location_attributes
-        bp = business_params
-
-        bla = bp.slice(:name, :phone, :email, :address, :city, :state, :zip,
-                       :hours, :service_radius)
-        bla[:id] = @business_profile.try(:business_location).try(:id) if @business_profile
-        bla[:venue_url] = bp[:website] if bp[:website].present?
-        bla
-      end
-
-      def business_profile_attributes
-        bp = business_params
-
-        bpa = business_params.slice(
-          :has_retail_location
-        ).merge({
-          content_attributes: content_attributes,
-          business_location_attributes: business_location_attributes
-        })
-        bpa[:business_category_ids] = bp[:category_ids] if bp[:category_ids].present?
-
-        bpa
-      end
     end
   end
 end

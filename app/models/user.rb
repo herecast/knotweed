@@ -57,19 +57,12 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable, :confirmable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  # Setup accessible (or protected) attributes for your model
-  attr_accessible :role_ids, :as => :admin
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :role_ids,
-    :default_repository_id, :location, :location_id, :avatar
-
   validates_presence_of :location
   validates :public_id, uniqueness: true, allow_blank: true
   validates :avatar, :image_minimum_size => true
 
   after_update :update_subscriptions_locations
 
-  # spoof attribute for simple form simplicity on role-changing form
-  attr_accessible :managed_organization_id
   def managed_organization_id; Organization.with_role(:manager, self).first.try(:id); end
   def is_organization_manager?; managed_organization_id.present?; end
 

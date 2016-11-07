@@ -25,9 +25,6 @@ class ImportLocation < ActiveRecord::Base
   belongs_to :parent, :class_name => "ImportLocation"
   has_many :aliases, :class_name => "ImportLocation", :foreign_key => "parent_id"
   
-  attr_accessible :city, :state, :zip, :country, :link_name, :link_name_full, :status,
-                  :region_id, :parent_id, :usgs_id
-  
   validates_presence_of :city
 
   default_scope { where("status = 1 AND (region_id=0 or region_id=1)") }

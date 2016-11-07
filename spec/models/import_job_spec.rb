@@ -33,7 +33,7 @@ describe ImportJob, :type => :model do
       prerender_cache_stub
       # note we need sufficient entries in the config hash here for the
       # output to validate.
-      @config = { "timestamp" => "2011-06-07T12:25:00", "guid" => "100", "other_param" => "hello", "pubdate" => "2011-06-07T12:25:00",
+      @config = { "timestamp" => "2011-06-07T12:25:00", "guid" => "100", "pubdate" => "2011-06-07T12:25:00",
                   "source" => "not empty", "title" => "      not empty and with whitespace  ",
                   "content" => "<p> </p> <p> </p> Content begins here" }
       @parser = FactoryGirl.create(:parser, filename: "test/parser_that_outputs_config.rb")
@@ -42,7 +42,7 @@ describe ImportJob, :type => :model do
       # run job via delayed_job hooks (even though delayed_job doesnt run in tests)
       @job.enqueue_job
       # another job whose output fails validation
-      @config2 = { "guid" => "101", "other_param" => "hello" }
+      @config2 = { "guid" => "101" }
       @job2 = FactoryGirl.create(:import_job, parser: @parser, config: @config2)
       @job2.enqueue_job
       successes, failures = Delayed::Worker.new(:max_priority => nil,

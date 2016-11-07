@@ -10,8 +10,6 @@
 #
 
 class ContentCategory < ActiveRecord::Base
-  attr_accessible :name
-
   has_many :contents
 
   belongs_to :parent, class_name: "ContentCategory"

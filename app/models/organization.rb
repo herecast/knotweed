@@ -65,17 +65,6 @@ class Organization < ActiveRecord::Base
 
   has_many :promotions, inverse_of: :organization
 
-  attr_accessible :name, :logo, :logo_cache, :remove_logo, :organization_id,
-                  :website, :notes, :images_attributes, :parent_id, :location_ids,
-                  :remote_logo_url, :contact_ids, :org_type, :consumer_app_ids,
-                  :profile_image, :remote_profile_image_url, :remove_profile_image, :profile_image_cache,
-                  :background_image, :remote_background_image_url, :remove_background_image, :profile_background_image_cache,
-                  :can_publish_news, :subscribe_url, :description,
-                  :banner_ad_override, :pay_rate_in_cents, :profile_title, :pay_directly,
-                  :can_publish_events, :can_publish_market, :can_publish_talk,
-                  :profile_ad_override,
-                  :can_publish_ads, :profile_image, :background_image
-
   mount_uploader :logo, ImageUploader
   mount_uploader :profile_image, ImageUploader
   mount_uploader :background_image, ImageUploader
