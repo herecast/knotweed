@@ -51,14 +51,7 @@ class PromotionsController < ApplicationController
   end
 
   def create
-    promotable_klass = params[:promotion].delete(:promotable_type).try(:constantize)
-    promotable_attributes = params[:promotion].delete :promotable_attributes
-
     @promotion = Promotion.new(promotion_params)
-
-    if promotable_klass.present?
-      @promotion.promotable = promotable_klass.new promotable_attributes
-    end
 
     pub = Organization.find params[:organization_id]
     @promotion.organization = pub
@@ -68,7 +61,7 @@ class PromotionsController < ApplicationController
         format.html { redirect_to @promotion, notice: 'Promotion was successfully created.' }
         format.json { render json: @promotion, status: :created, location: @promotion }
       else
-        format.html { redirect_to edit_organization_path(pub), error: @promotion.errors.messages }
+        format.html { render 'new', error: @promotion.errors.messages }
         format.json { render json: @promotion.errors, status: :unprocessable_entity }
       end
     end

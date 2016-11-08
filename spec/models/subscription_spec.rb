@@ -114,7 +114,7 @@ RSpec.describe Subscription, type: :model do
     end
 
     context 'user record' do
-      let(:user) { User.new name: 'Donald Duck' }
+      let(:user) { FactoryGirl.create :user, name: 'Donald Duck' }
       let(:subscription) { Subscription.new name: "Mickey Mouse", user: user }
 
       subject { subscription.subscriber_name }

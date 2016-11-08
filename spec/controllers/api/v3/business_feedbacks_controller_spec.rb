@@ -21,6 +21,17 @@ describe Api::V3::BusinessFeedbacksController, :type => :controller do
       expect{subject}.to change{ BusinessFeedback.count }.by 1
     end
 
+    context "when feedback creation fails" do
+      before do
+        allow_any_instance_of(BusinessFeedback).to receive(:save).and_return(false)
+      end
+
+      it "returns unprocessable entity code" do
+        subject
+        expect(response).to have_http_status :unprocessable_entity
+      end
+    end
+
     context "when user has already rated business" do
       before do
         content = FactoryGirl.create :business_feedback, business_profile_id: @profile.id, recommend: 0
@@ -47,6 +58,17 @@ describe Api::V3::BusinessFeedbacksController, :type => :controller do
       subject
       @feedback.reload
       expect(@feedback.recommend).to be true
+    end
+
+    context "when update fails" do
+      before do
+        allow_any_instance_of(BusinessFeedback).to receive(:update_attributes).and_return(false)
+      end
+
+      it "returns unprocessable entity status" do
+        subject
+        expect(response).to have_http_status :unprocessable_entity
+      end
     end
 
   end

@@ -4,9 +4,9 @@ module Api
       before_filter :check_logged_in!, only: [:update, :create] 
 
       def create
-        content = Content.find(params[:image].delete(:content_id))
-        authorize! :manage, content
-        @image = Image.new(params[:image].merge({ imageable: content }))
+        @content = Content.find(params[:image].delete(:content_id))
+        authorize! :manage, @content
+        @image = Image.new(image_params)
         if @image.save
           render json: @image, serializer: ImageSerializer, status: 201
         else
@@ -32,7 +32,15 @@ module Api
       private
         
         def image_params
-          params.require(:image).permit(:primary, :caption)
+          params.require(:image).permit(
+            :primary,
+            :caption,
+            :credit,
+            :image,
+            :imageable_type,
+            :imageable_id,
+            :source_url
+          ).merge({ imageable: @content })
         end
     end
   end

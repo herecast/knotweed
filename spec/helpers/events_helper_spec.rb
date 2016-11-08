@@ -148,7 +148,7 @@ describe EventsHelper, type: :helper do
 
     context "when event starts in the past and ends in the future" do
       let(:start_time) { Chronic.parse("last week monday at 10am") }
-      let(:end_date) { Chronic.parse("next week sunday") }
+      let(:end_date) { Chronic.parse("next week saturday") }
        
       it "returns the next occurrence date as event date" do
         Timecop.freeze(Chronic.parse("11am")) do

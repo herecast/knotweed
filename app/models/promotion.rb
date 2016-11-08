@@ -36,6 +36,8 @@ class Promotion < ActiveRecord::Base
   # we can remove these two lines of code and the database column
 
   accepts_nested_attributes_for :promotable
+  PROMOTABLE_TYPES = ['PromotionBanner']
+
   after_initialize :init
   # after_save :update_active_promotions
 
@@ -43,6 +45,13 @@ class Promotion < ActiveRecord::Base
 
   def init
     self.active = true if self.active.nil?
+  end
+
+  def promotable_attributes=(attributes)
+    if PROMOTABLE_TYPES.include?(promotable_type)
+      self.promotable ||= self.promotable_type.constantize.new
+      self.promotable.assign_attributes(attributes)
+    end
   end
 
 end

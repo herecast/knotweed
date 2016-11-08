@@ -20,10 +20,6 @@ class Image < ActiveRecord::Base
   belongs_to :imageable, polymorphic: true, inverse_of: :images,
     touch: true
 
-  attr_accessible :caption, :credit, :image, :image_cache, :remove_image,
-                  :imageable_id, :imageable_type, :remote_image_url,
-                  :source_url, :imageable, :primary
-
   mount_uploader :image, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_image
 

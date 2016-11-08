@@ -1,0 +1,10 @@
+
+= simple_form_for @feature, html: {class: 'form form-horizontal'} do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :name
+    = f.input :description
+    = f.input :active, as: :boolean
+    .form-actions
+      = f.button :submit, class: 'btn btn-success'

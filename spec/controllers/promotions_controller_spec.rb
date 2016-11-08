@@ -41,39 +41,6 @@ describe PromotionsController, :type => :controller do
   end
 
   describe "POST create" do
-    it "allows permitted parameters" do
-      organization = FactoryGirl.create :organization
-      params = {
-        active: true,
-        description: 'Dusty planet',
-        organization_id: 1,
-        content_id: 1,
-        promotable_type: 'PromotionBanner',
-        paid: true,
-        promotable_attributes: {
-          id: 1,
-          boost: false,
-          campaign_start: Date.yesterday,
-          campaign_end: Date.today,
-          daily_max_impressions: 4,
-          max_impressions: 15,
-          track_daily_metrics: true,
-          banner_image: nil,
-          redirect_url: 'https://hoth.biz'
-        }
-      }
-
-      should permit(
-        :active,
-        :description,
-        :organization_id,
-        :content_id,
-        :promotable_type,
-        :paid,
-        :promotable_attributes => [ :id, :boost, :campaign_start, :campaign_end, :daily_max_impressions, :max_impressions, :track_daily_metrics, :banner_image, :redirect_url ]
-      ).for(:create, params: { organization_id: organization, promotion: params } )
-    end
-
     let (:options) do
       { description: "Another bad promotion" }
     end
@@ -102,8 +69,7 @@ describe PromotionsController, :type => :controller do
 
       it "html: redirects" do
         post :create, organization_id: @org.id, promotion: { description: 'unsaved promo' }
-        expect(response).to redirect_to edit_organization_path(@org)
-        expect(response.code).to eq '302'
+        expect(response).to render_template 'new'
       end
 
       it "json: responds with 422 status code" do

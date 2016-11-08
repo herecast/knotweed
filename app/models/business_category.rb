@@ -22,9 +22,6 @@ class BusinessCategory < ActiveRecord::Base
     join_table: :business_categories_business_categories,
     foreign_key: :parent_id, association_foreign_key: :child_id
 
-  attr_accessible :description, :icon_class, :name, :parent_ids, :child_ids,
-    :source, :source_id
-
   validates_presence_of :name
 
   # returns array of IDs of this category and all its children

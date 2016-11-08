@@ -46,10 +46,6 @@ class BusinessLocation < ActiveRecord::Base
 
   has_one :business_profile
 
-  attr_accessible :address, :email, :hours, :name, :organization_id, :phone,
-    :latitude, :longitude, :venue_url, :locate_include_name, :city, :state,
-    :zip, :status, :service_radius
-
   serialize :hours, Array
 
   validates_presence_of :city, :state

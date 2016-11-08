@@ -57,21 +57,19 @@
 
         <!-- TITLE -->
         <tr style="<%= @font_stack %>">
-          <td style="color:#000000;text-align:center;font-size:36px;<%= @font_stack %>;font-weight:700 !important">
+          <td style="color:#000000;text-align:center;font-size:36px;<%= @font_stack %>;font-weight:700 !important; padding-bottom: 10px;">
             <span align="center" style="color:#000000;font-weight:700;font-size:36px;line-height:32px;font-family:Helvetica,sans-serif;#158af2 !important;text-decoration:none !important">
               <%= @digest.listserv.name %>
             </span>
-            <br>
           </td>
         </tr>
         <!-- END TITLE -->
 
         <% if @digest.sponsored_by? %>
         <!-- SPONSOR -->
-        <tr style="<%= @font_stack %>">
-          <td style="<%= @font_stack %>;font-weight:600;margin:0px !important;padding:0px !important;font-size:18px !important;line-height:16px !important;height:16px !important;max-height:16px !important">
-            <div style="text-align:center;<%= @font_stack %>;margin:0px !important;padding:0px !important;padding-top:7px !important;font-size:18px !important;line-height:20px !important;height:20px! important;max-height:20px !important"><%= @digest.sponsored_by %></div>
-            <br>
+        <tr>
+          <td style="padding-bottom: 10px;">
+            <div style="text-align:center;<%= @font_stack %>;margin:0px !important;padding:0px !important;font-size:18px !important;line-height:20px !important;height:20px! important;max-height:20px !important"><%= @digest.sponsored_by %></div>
           </td>
         </tr>
         <!-- END SPONSOR -->
@@ -79,8 +77,8 @@
 
         <!-- DATE -->
         <tr style="<%= @font_stack %>">
-          <td style="color:#FFFFFF;text-transform:uppercase;text-align:center;<%= @font_stack %>">
-            <div style="background-color:#69C2F8;display:inline;padding:4px 6px;letter-spacing:1px;font-size:15px;line-height:15px;<%= @font_stack %>"><%= @digest.created_at.strftime("%B %e %Y").upcase %></div>
+          <td style="text-align:center;<%= @font_stack %>; padding-bottom: 10px;">
+            <div style="color:#FFFFFF;text-transform:uppercase;background-color:#69C2F8;display:inline;display:inline-block;padding:4px 6px;letter-spacing:1px;font-size:15px;line-height:1.25;<%= @font_stack %>"><%= @digest.created_at.strftime("%B %e %Y").upcase %></div>
           </td>
         </tr>
         <!-- END DATE -->

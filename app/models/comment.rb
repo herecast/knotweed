@@ -10,7 +10,6 @@
 class Comment < ActiveRecord::Base
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
-  attr_accessible :content_attributes
   validates_associated :content
 
   has_one :source, through: :content, class_name: "Organization", foreign_key: "organization_id"
@@ -18,9 +17,6 @@ class Comment < ActiveRecord::Base
   has_many :images, through: :content
   has_many :repositories, through: :content
   has_one :import_location, through: :content
-
-  attr_accessible :tier # this is not stored on the database, but is used to generate a tiered tree
-  # for the API
 
   after_save do |comment|
     comment.content.save

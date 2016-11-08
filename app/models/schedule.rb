@@ -15,7 +15,6 @@
 class Schedule < ActiveRecord::Base
   has_many :event_instances, dependent: :destroy
   belongs_to :event
-  attr_accessible :recurrence, :description_override, :subtitle_override, :presenter_name
   attr_accessor :_remove
 
   after_save :update_event_instances

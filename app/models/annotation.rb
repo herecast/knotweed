@@ -30,10 +30,6 @@ class Annotation < ActiveRecord::Base
 
   belongs_to :annotation_report
 
-  attr_accessible :accepted, :annotation_id, :annotation_report_id, :startnode, :endnode, :annotation_type,
-                  :is_generated, :lookup_class, :token_feature, :recognized_class, :annotated_string,
-                  :instance, :edges, :is_trusted, :rule
-
   before_save :set_edges
 
   def status

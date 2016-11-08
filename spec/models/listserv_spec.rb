@@ -219,7 +219,7 @@ describe Listserv, :type => :model do
       subject { listserv.contents_from_custom_query }
 
       it "is equal to matching records" do
-        expect(subject).to eql contents
+        expect(subject).to match_array contents
       end
 
       it 'maintains the same sort order' do

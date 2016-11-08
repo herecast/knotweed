@@ -7,18 +7,19 @@ describe Api::V3::NewsController, :type => :controller do
 
   describe 'GET index', elasticsearch: true do
     before do
+      @original_organization = FactoryGirl.create :organization
       @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
       @other_location = FactoryGirl.create :location, city: 'Another City'
       @third_location = FactoryGirl.create :location, city: 'Different Again'
       @user = FactoryGirl.create :user, location: @other_location
-      FactoryGirl.create_list :content, 3, content_category: @news_cat, 
-        locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 5, content_category: @news_cat, 
-        locations: [@other_location], published: true
-      FactoryGirl.create_list :content, 4, content_category: @news_cat, 
-        locations: [@third_location], published: true
+      FactoryGirl.create :content, content_category: @news_cat, 
+        locations: [@default_location], published: true, organization: @original_organization
+      FactoryGirl.create :content, content_category: @news_cat, 
+        locations: [@other_location], published: true, organization: @original_organization
+      FactoryGirl.create :content, content_category: @news_cat, 
+        locations: [@third_location], published: true, organization: @original_organization
       @consumer_app = FactoryGirl.create :consumer_app
-      @consumer_app.organizations = Organization.all
+      @consumer_app.organizations << @original_organization
       api_authenticate user: nil, consumer_app: @consumer_app
     end
 
@@ -142,7 +143,8 @@ describe Api::V3::NewsController, :type => :controller do
     context 'with consumer app specified' do
       before do
         @content = Content.where(content_category_id: @news_cat).first
-        @org = @content.organization
+        @org = FactoryGirl.create :organization
+        @content.update_attribute(:organization_id, @org.id)
         @consumer_app = FactoryGirl.create :consumer_app
         @consumer_app.organizations << @org
         api_authenticate consumer_app: @consumer_app
