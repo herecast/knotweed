@@ -109,10 +109,6 @@ class Organization < ActiveRecord::Base
     end
   end
   
-  def get_promotion_ad_override
-    Promotion.find_by(id: profile_ad_override.to_i)
-  end
-
   def remove_logo=(val)
     logo_will_change! if val
     super
@@ -128,6 +124,11 @@ class Organization < ActiveRecord::Base
     select_score = nil
     select_method = 'sponsored_content'
     banner.present? ? [banner, select_score, select_method] : PromotionBanner.get_random_promotion
+  end
+
+  # selects an ad from the array of profile ad override options
+  def get_profile_ad_override_id
+    profile_ad_override.split(',').sample.to_i if profile_ad_override.present?
   end
 
   ransacker :include_child_organizations

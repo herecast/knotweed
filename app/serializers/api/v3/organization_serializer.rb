@@ -33,11 +33,7 @@ module Api
       end
 
       def profile_ad_override
-        if object.profile_ad_override.present?
-          object.profile_ad_override.to_i
-        else
-          nil
-        end
+        object.get_profile_ad_override_id
       end
 
     end
