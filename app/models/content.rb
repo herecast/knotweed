@@ -364,6 +364,12 @@ class Content < ActiveRecord::Base
 
     raw_content = data.delete 'content'
 
+    data.keys.each do |k|
+      unless Content.method_defined? "#{k}="
+        data.delete k
+      end
+    end
+
     content = Content.new(data)
     content.raw_content = raw_content
 
