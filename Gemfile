@@ -77,7 +77,6 @@ gem 'summernote-rails', '~> 0.8.1'
 gem "turbolinks", '~> 2.2.0'
 gem 'uglifier', '~> 2.4.0'
 gem 'unf', '~> 0.1.3'
-gem 'whenever', '~> 0.9.2', :require => false
 gem 'puma', '~> 3.4'
 
 group :development, :test do
