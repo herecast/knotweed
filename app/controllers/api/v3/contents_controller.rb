@@ -48,7 +48,8 @@ module Api
         # the same way that the consumer app filters it.
         if Figaro.env.sim_stack_categories?
           @contents.select! do |c|
-            Figaro.env.sim_stack_categories.include? c.content_category.name
+            name = c.content_category.try(:name)
+            name && Figaro.env.sim_stack_categories.include?(name)
           end
         end
 
