@@ -116,7 +116,8 @@ RSpec.describe ListservDigestJob do
               title: 'Camp1',
               community_ids: [listserv.subscriptions.first.user.location_id],
               sponsored_by: Faker::Company.name,
-              promotion_id: FactoryGirl.create(:promotion_banner).promotion.id
+              promotion_id: FactoryGirl.create(:promotion_banner).promotion.id,
+              preheader: 'Camp1 PREHEADER'
             }
 
             let!(:campaign_2) {FactoryGirl.create :campaign,
@@ -162,6 +163,7 @@ RSpec.describe ListservDigestJob do
                 expect(digest.sponsored_by).to eql campaign.sponsored_by
                 expect(digest.promotion_id).to eql campaign.promotion_id
                 expect(digest.title).to eql campaign.title
+                expect(digest.preheader).to eql campaign.preheader
               end
             end
           end

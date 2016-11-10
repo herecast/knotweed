@@ -21,6 +21,7 @@ RSpec.describe Campaign, type: :model do
   it{ is_expected.to have_db_column(:promotion_id).of_type(:integer) }
   it{ is_expected.to have_db_column(:sponsored_by).of_type(:string) }
   it{ is_expected.to have_db_column(:digest_query).of_type(:text) }
+  it{ is_expected.to have_db_column(:preheader).of_type(:string) }
 
   it{ is_expected.to belong_to(:listserv) }
   it{ is_expected.to belong_to(:promotion) }

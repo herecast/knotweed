@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161031171427) do
+ActiveRecord::Schema.define(version: 20161103215504) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -136,6 +136,7 @@ ActiveRecord::Schema.define(version: 20161031171427) do
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.string   "title"
+    t.string   "preheader"
   end
 
   add_index "campaigns", ["community_ids"], name: "index_campaigns_on_community_ids", using: :btree
@@ -586,6 +587,7 @@ ActiveRecord::Schema.define(version: 20161031171427) do
     t.integer  "subscription_ids",     default: [],              array: true
     t.string   "mc_segment_id"
     t.string   "title"
+    t.string   "preheader"
   end
 
   add_index "listserv_digests", ["listserv_id"], name: "index_listserv_digests_on_listserv_id", using: :btree
