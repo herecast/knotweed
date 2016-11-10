@@ -14,8 +14,9 @@
 #
 
 class Campaign < ActiveRecord::Base
+  include HasPromotionForBanner
+
   belongs_to :listserv
-  belongs_to :promotion
 
   validate :require_a_community
   validate :prevent_community_overlap

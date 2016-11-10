@@ -4,5 +4,5 @@
   = c.input :title, hint: 'not visible to receivers'
   = c.input :community_ids, collection: Location.non_region.consumer_active, input_html: { multiple: true }
   = c.input :sponsored_by
-  = c.input :promotion_id
+  = c.input :promotion_id, as: :string
   = c.input :digest_query

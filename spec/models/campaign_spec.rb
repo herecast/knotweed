@@ -70,6 +70,38 @@ RSpec.describe Campaign, type: :model do
     expect(subject.errors).to_not include(:community_ids)
   end
 
+  context 'when given a promotion id' do
+    let!(:promo_with_banner) {
+      FactoryGirl.create :promotion,
+        promotable: FactoryGirl.create(:promotion_banner)
+    }
+
+    let!(:other_promo) {
+      FactoryGirl.create :promotion,
+        promotable: FactoryGirl.create(:promotion_listserv)
+    }
+
+    it 'checks existence of the promotion' do
+      subject.promotion_id = '190380'
+      subject.valid? #trigger validation
+      expect(subject.errors).to have_key(:promotion_id)
+
+      subject.promotion_id = promo_with_banner.id
+      subject.valid? #trigger validation
+      expect(subject.errors).to_not have_key(:promotion_id)
+    end
+
+    it 'requires promotion is tied to a PromotionBanner' do
+      subject.promotion_id = other_promo.id
+      subject.valid? #trigger validation
+      expect(subject.errors).to have_key(:promotion_id)
+
+      subject.promotion_id = promo_with_banner.id
+      subject.valid? #trigger validation
+      expect(subject.errors).to_not have_key(:promotion_id)
+    end
+  end
+
   describe 'community overlap' do
     context 'when multiple campaigns exist for a listserv' do
       let(:locations) { FactoryGirl.create_list :location, 2 }
