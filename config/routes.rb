@@ -115,7 +115,7 @@ Knotweed::Application.routes.draw do
 
   # API
   namespace :api do
-    namespace :v3 do
+    namespace :v3, defaults: {format: 'json'} do
       get '/current_user', to: 'users#show'
       put '/current_user', to: 'users#update'
       resources 'events', only: [:create, :show, :update, :index]
