@@ -14,7 +14,7 @@
 #  post_email                  :string
 #  subscribe_email             :string
 #  mc_list_id                  :string
-#  mc_segment_id               :string
+#  mc_group_name               :string
 #  send_digest                 :boolean          default(FALSE)
 #  last_digest_send_time       :datetime
 #  last_digest_generation_time :datetime
@@ -24,13 +24,15 @@
 #  timezone                    :string           default("Eastern Time (US & Canada)")
 #  digest_description          :text
 #  digest_send_day             :string
-#  banner_ad_override_id       :integer
+#  promotion_id                :integer
 #  digest_query                :text
 #  template                    :string
 #  sponsored_by                :string
+#  display_subscribe           :boolean          default(FALSE)
 #  digest_subject              :string
 #  digest_preheader            :string
-#  display_subscribe           :boolean          default(FALSE)
+#  list_type                   :string           default("custom_list")
+#  sender_name                 :string
 #
 
 require 'spec_helper'

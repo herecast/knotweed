@@ -34,7 +34,7 @@
 #  avatar                 :string(255)
 #  public_id              :string(255)
 #  skip_analytics         :boolean          default(FALSE)
-#  temp_password          :string(255)
+#  temp_password          :string
 #
 
 class User < ActiveRecord::Base

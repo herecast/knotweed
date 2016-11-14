@@ -500,6 +500,8 @@ ActiveRecord::Schema.define(version: 20161103215504) do
     t.boolean  "automatically_publish",             default: false
     t.integer  "repository_id",         limit: 8
     t.string   "publish_method",        limit: 255
+    t.string   "sidekiq_jid"
+    t.datetime "next_scheduled_run"
   end
 
   create_table "import_locations", id: :bigserial, force: :cascade do |t|
@@ -618,9 +620,9 @@ ActiveRecord::Schema.define(version: 20161103215504) do
     t.text     "digest_query"
     t.string   "template"
     t.string   "sponsored_by"
+    t.boolean  "display_subscribe",                       default: false
     t.string   "digest_subject"
     t.string   "digest_preheader"
-    t.boolean  "display_subscribe",                       default: false
     t.string   "list_type",                               default: "custom_list"
     t.string   "sender_name"
   end
@@ -818,18 +820,19 @@ ActiveRecord::Schema.define(version: 20161103215504) do
 
   create_table "publish_jobs", id: :bigserial, force: :cascade do |t|
     t.text     "query_params"
-    t.integer  "organization_id", limit: 8
-    t.string   "status",          limit: 255
-    t.integer  "frequency",       limit: 8,   default: 0
-    t.string   "publish_method",  limit: 255
-    t.boolean  "archive",                     default: false
-    t.string   "error",           limit: 255
-    t.string   "name",            limit: 255
+    t.integer  "organization_id",    limit: 8
+    t.string   "status",             limit: 255
+    t.string   "publish_method",     limit: 255
+    t.boolean  "archive",                        default: false
+    t.string   "error",              limit: 255
+    t.string   "name",               limit: 255
     t.text     "description"
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
+    t.datetime "created_at",                                     null: false
+    t.datetime "updated_at",                                     null: false
     t.text     "file_archive"
     t.datetime "run_at"
+    t.string   "sidekiq_jid"
+    t.datetime "next_scheduled_run"
   end
 
   create_table "publish_records", id: :bigserial, force: :cascade do |t|

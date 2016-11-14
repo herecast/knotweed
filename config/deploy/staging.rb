@@ -15,5 +15,4 @@ server 'stage-web.subtext.org', roles: %w{web app db}, primary: true, user: 'dep
 server 'test-dsp.subtext.org', roles: %w{source_dsp}, primary: false, user: 'dsp', no_release: true
 server 'stage-dsp.subtext.org', roles: %w{dest_dsp}, primary: false, user: 'dsp', no_release: true
 
-set :restart_delayed_jobs, true
 set :restart_sidekiq, true

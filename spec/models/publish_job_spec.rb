@@ -2,27 +2,26 @@
 #
 # Table name: publish_jobs
 #
-#  id              :integer          not null, primary key
-#  query_params    :text
-#  organization_id :integer
-#  status          :string(255)
-#  frequency       :integer          default(0)
-#  publish_method  :string(255)
-#  archive         :boolean          default(FALSE)
-#  error           :string(255)
-#  name            :string(255)
-#  description     :text
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  file_archive    :text
-#  run_at          :datetime
+#  id                 :integer          not null, primary key
+#  query_params       :text
+#  organization_id    :integer
+#  status             :string(255)
+#  publish_method     :string(255)
+#  archive            :boolean          default(FALSE)
+#  error              :string(255)
+#  name               :string(255)
+#  description        :text
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  file_archive       :text
+#  run_at             :datetime
+#  sidekiq_jid        :string
+#  next_scheduled_run :datetime
 #
 
 require 'spec_helper'
 
 describe PublishJob, :type => :model do
-  it_behaves_like :scheduled_job
-
   describe "validations" do
     describe '#repository_present' do
       before do
@@ -92,7 +91,7 @@ describe PublishJob, :type => :model do
     end
   end
 
-  describe "perform job" do
+  describe "perform job", inline_jobs: true do
     context "that outputs files" do
       before do
         @mail_count = ActionMailer::Base.deliveries.count
@@ -100,11 +99,7 @@ describe PublishJob, :type => :model do
         FactoryGirl.create_list(:content, 3)
         user = FactoryGirl.create(:user)
         @job.notifyees << user
-        @job.enqueue_job
-        successes, failures = Delayed::Worker.new(:max_priority => nil,
-          :min_priority => nil,
-          :quiet => false,
-          :queues => ["imports", "publishing"]).work_off
+        PublishWorker.new.perform(@job)
       end
       after do
         #clean up output folder
@@ -143,37 +138,6 @@ describe PublishJob, :type => :model do
     end
   end
 
-  describe '#perform' do
-    before do
-      @publish_job = FactoryGirl.create :publish_job
-      @publish_job.query_params[:repository_id] = nil
-      @publish_record = FactoryGirl.create(:publish_record)
-    end
-
-    context "when no repository_id in query_params" do
-      it "makes repo nil" do
-        allow(@publish_job).to receive(:last_publish_record) { @publish_record }
-        log = @publish_record.log_file
-        allow(@publish_record).to receive(:log_file) { log }
-        expect(log).to receive(:info).twice
-        @publish_job.perform
-      end
-    end
-  end
-
-  describe '#error' do
-    before do
-      @publish_job = FactoryGirl.create :publish_job
-    end
-
-    context "when job fails" do
-      it "updates job status to failed" do
-        @publish_job.error(@publish_job, 'failure')
-        expect(@publish_job.status).to eq 'failed'
-      end
-    end
-  end
-
   describe '#last_run_at' do
     before do
       @publish_job = FactoryGirl.create :publish_job
@@ -186,3 +150,4 @@ describe PublishJob, :type => :model do
     end
   end
 end
+

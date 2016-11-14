@@ -182,9 +182,9 @@ describe PublishJobsController, type: :controller do
         @job.query_params[:repository_id] = repo.id
 
         FactoryGirl.create_list(:content, 3)
-        @job.before @job
-        @job.perform
       end
+
+      subject! { PublishWorker.new.perform(@job) }
 
       after do
         system("rm -rf #{Content::TMP_EXPORT_PATH}/*")
@@ -216,12 +216,12 @@ describe PublishJobsController, type: :controller do
         @job = FactoryGirl.create(:publish_job, publish_method: Content::DEFAULT_PUBLISH_METHOD)
         allow_any_instance_of(Content).to receive(:publish_to_dsp).and_return(true)
         FactoryGirl.create_list(:content, 3)
-        @job.before @job
-        @job.perform
 
         @user = FactoryGirl.create(:admin)
         sign_in @user
       end
+
+      subject! { PublishWorker.new.perform(@job) }
 
       it "should return a 404" do
         get :file_archive, { id: @job.id }

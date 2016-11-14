@@ -7,7 +7,7 @@
 #  title                     :string(255)
 #  subtitle                  :string(255)
 #  authors                   :string(255)
-#  raw_content               :text(65535)
+#  raw_content               :text
 #  issue_id                  :integer
 #  import_location_id        :integer
 #  created_at                :datetime         not null
@@ -44,9 +44,12 @@
 #  created_by                :integer
 #  updated_by                :integer
 #  banner_click_count        :integer          default(0)
-#  similar_content_overrides :text(65535)
+#  similar_content_overrides :text
 #  banner_ad_override        :integer
 #  root_parent_id            :integer
+#  deleted_at                :datetime
+#  my_town_only              :boolean          default(FALSE)
+#  authors_is_created_by     :boolean          default(FALSE)
 #
 
 require 'fileutils'
@@ -360,6 +363,12 @@ class Content < ActiveRecord::Base
     end
 
     raw_content = data.delete 'content'
+
+    data.keys.each do |k|
+      unless Content.method_defined? "#{k}="
+        data.delete k
+      end
+    end
 
     content = Content.new(data)
     content.raw_content = raw_content
