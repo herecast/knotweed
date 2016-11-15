@@ -371,6 +371,8 @@ GEM
       railties (>= 4.0.1)
     hashdiff (0.3.0)
     hashie (3.4.4)
+    health_check (1.5.1)
+      rails (>= 2.3.0)
     hpricot (0.8.6)
     html2haml (2.0.0)
       erubis (~> 2.7.0)
@@ -715,6 +717,7 @@ DEPENDENCIES
   guard-rspec
   guard-zeus
   haml-rails (~> 0.9.0)
+  health_check (~> 1.5, >= 1.5.1)
   hpricot (~> 0.8.6)
   httparty (~> 0.12.0)
   icalendar (~> 2.3)
@@ -784,4 +787,4 @@ RUBY VERSION
    ruby 2.2.4p230
 
 BUNDLED WITH
-   1.13.2
+   1.13.6
