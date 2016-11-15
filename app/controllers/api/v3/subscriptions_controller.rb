@@ -70,6 +70,7 @@ module Api
       def unsubscribe_from_mailchimp
         subscription = find_subscription
         subscription.unsubscribed_at ||= Time.zone.now
+        subscription.mc_unsubscribed_at = Time.zone.now
         subscription.save!
 
         render json: subscription, serializer: SubscriptionSerializer

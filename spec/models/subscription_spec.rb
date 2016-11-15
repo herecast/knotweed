@@ -30,6 +30,7 @@ RSpec.describe Subscription, type: :model do
 
   it { is_expected.to have_db_column(:confirm_ip).of_type(:string) }
   it { is_expected.to have_db_column(:email_type).of_type(:string) }
+  it { is_expected.to have_db_column(:mc_unsubscribed_at).of_type(:datetime) }
 
   describe 'validation' do
     subject { FactoryGirl.build :subscription }
