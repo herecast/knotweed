@@ -142,7 +142,7 @@ class ImportWorker < ApplicationJob
           @log.info("#{Time.current}: content #{c.id} created")
           successes += 1
           if @import_job.automatically_publish and @import_job.repository.present?
-            c.publish(publish_method, repository)
+            c.publish(@import_job.publish_method, @import_job.repository)
           end
         end
       rescue StandardError => bang
