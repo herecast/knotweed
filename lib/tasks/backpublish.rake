@@ -16,7 +16,6 @@ task :backpublish => :environment do
 
   # required to serialize query params?
   @publish_job.save
-  @publish_job.before(nil)
-  @publish_job.perform
+  PublishWorker.new.perform(@publish_job)
   @publish_job.destroy
 end
