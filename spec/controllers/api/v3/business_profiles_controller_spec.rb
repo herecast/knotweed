@@ -3,15 +3,17 @@ require 'spec_helper'
 describe Api::V3::BusinessProfilesController, :type => :controller do
   describe 'GET index', elasticsearch: true do
     before do
-      @bps = FactoryGirl.create_list :business_profile, 3
+      bls = FactoryGirl.create_list :business_location, 3
       # set all the BP.business_locations to be in the upper valley
       # so they return with the default search options
-      @bps.each do |bp|
-        bp.business_location.update_attributes(
+      bls.each do |bl|
+        bl.update_attributes(
           latitude: Location::DEFAULT_LOCATION_COORDS[0],
           longitude: Location::DEFAULT_LOCATION_COORDS[1]
         )
+        FactoryGirl.create :business_profile, business_location: bl
       end
+      @bps = BusinessProfile.all
     end
 
     subject { get :index }

@@ -66,11 +66,14 @@ RSpec.describe ListservMailer, type: :mailer do
     describe 'digest send time' do
       before do
         listserv.update digest_send_time: "09:30"
+        @dynamic_eastern_time_zone = Time.zone.now.dst? ? "EDT" : "EST"
+        @dynamic_pacific_time_zone = Time.zone.now.dst? ? "PDT" : "PST"
+
       end
 
       it 'shows in email' do
-        expect(body_html).to include("9:30 AM (EDT)")
-        expect(body_text).to include("9:30 AM (EDT)")
+        expect(body_html).to include("9:30 AM (#{@dynamic_eastern_time_zone})")
+        expect(body_text).to include("9:30 AM (#{@dynamic_eastern_time_zone})")
       end
 
       context 'When listserv timezone is different' do
@@ -79,8 +82,8 @@ RSpec.describe ListservMailer, type: :mailer do
         end
 
         it 'shows in email with correct timezone' do
-          expect(body_html).to include("6:30 AM (PDT)")
-          expect(body_text).to include("6:30 AM (PDT)")
+          expect(body_html).to include("6:30 AM (#{@dynamic_pacific_time_zone})")
+          expect(body_text).to include("6:30 AM (#{@dynamic_pacific_time_zone})")
         end
       end
     end

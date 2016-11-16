@@ -8,15 +8,16 @@
 #  confirmed_at         :datetime
 #  unsubscribed_at      :datetime
 #  blacklist            :boolean          default(FALSE)
-#  subscription_details :string(255)
-#  source               :string(255)
-#  email                :string(255)      not null
-#  confirmation_details :string(255)
+#  subscription_details :string
+#  source               :string
+#  email                :string           not null
+#  confirmation_details :string
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  key                  :string(255)      not null
-#  name                 :string(255)
-#  confirm_ip           :string(255)
+#  key                  :string           not null
+#  name                 :string
+#  confirm_ip           :string
+#  email_type           :string           default("html")
 #
 
 require 'rails_helper'
@@ -29,6 +30,7 @@ RSpec.describe Subscription, type: :model do
 
   it { is_expected.to have_db_column(:confirm_ip).of_type(:string) }
   it { is_expected.to have_db_column(:email_type).of_type(:string) }
+  it { is_expected.to have_db_column(:mc_unsubscribed_at).of_type(:datetime) }
 
   describe 'validation' do
     subject { FactoryGirl.build :subscription }
@@ -113,7 +115,7 @@ RSpec.describe Subscription, type: :model do
     end
 
     context 'user record' do
-      let(:user) { User.new name: 'Donald Duck' }
+      let(:user) { FactoryGirl.create :user, name: 'Donald Duck' }
       let(:subscription) { Subscription.new name: "Mickey Mouse", user: user }
 
       subject { subscription.subscriber_name }

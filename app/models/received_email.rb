@@ -3,15 +3,15 @@
 # Table name: received_emails
 #
 #  id           :integer          not null, primary key
-#  file_uri     :string(255)
-#  purpose      :string(255)
+#  file_uri     :string
+#  purpose      :string
 #  processed_at :datetime
-#  from         :string(255)
-#  to           :string(255)
-#  message_id   :string(255)
+#  from         :string
+#  to           :string
+#  message_id   :string
 #  record_id    :integer
-#  record_type  :string(255)
-#  result       :string(255)
+#  record_type  :string
+#  result       :text
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #

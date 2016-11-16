@@ -24,23 +24,26 @@
 #  timezone                    :string           default("Eastern Time (US & Canada)")
 #  digest_description          :text
 #  digest_send_day             :string
-#  banner_ad_override_id       :integer
+#  promotion_id                :integer
 #  digest_query                :text
 #  template                    :string
 #  sponsored_by                :string
+#  display_subscribe           :boolean          default(FALSE)
 #  digest_subject              :string
 #  digest_preheader            :string
-#  display_subscribe           :boolean          default(FALSE)
+#  list_type                   :string           default("custom_list")
+#  sender_name                 :string
 #
 
 class Listserv < ActiveRecord::Base
   include ListservSync
+  include HasPromotionForBanner
+
   has_many :promotion_listservs
   has_and_belongs_to_many :locations
   has_many :subscriptions
   has_many :campaigns
 
-  belongs_to :promotion
 
   validates_uniqueness_of :reverse_publish_email, :unsubscribe_email,
     :subscribe_email, :post_email, allow_blank: true
@@ -62,6 +65,10 @@ class Listserv < ActiveRecord::Base
   validate :valid_template_name
 
   default_scope { where active: true }
+
+  scope :custom_digest, ->{
+    where(list_type: 'custom_digest')
+  }
 
   def mc_group_name=n
     write_attribute :mc_group_name, (n.nil? ? n : n.strip)

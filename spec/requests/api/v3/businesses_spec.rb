@@ -46,18 +46,19 @@ describe 'Businesses Endpoints', type: :request do
     let(:url) { '/api/v3/businesses' }
 
     context 'a business existing that the current user owns' do
-      let(:business) { FactoryGirl.create(:business_profile, :claimed) }
       before do
-        business.content.update_attribute(:created_by, user)
-        business.business_location.update_attributes({
+        location = FactoryGirl.create :business_location
+        location.update_attributes(
           latitude: Location::DEFAULT_LOCATION_COORDS[0],
           longitude: Location::DEFAULT_LOCATION_COORDS[1]
-        })
+        )
+        @business = FactoryGirl.create :business_profile, :claimed, business_location: location
+        @business.content.update_attribute(:created_by, user)
         get url, {}, auth_headers
       end
 
       it 'response includes business, and it has can_edit=true' do
-        jbusiness = response_json[:businesses].find{|b| b[:id].eql? business.id}
+        jbusiness = response_json[:businesses].find{|b| b[:id].eql? @business.id}
 
         expect(jbusiness).to_not be nil
         expect(jbusiness[:can_edit]).to be_truthy

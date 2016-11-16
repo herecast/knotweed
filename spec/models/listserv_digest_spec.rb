@@ -17,6 +17,9 @@
 #  sponsored_by         :string
 #  promotion_id         :integer
 #  location_ids         :integer          default([]), is an Array
+#  mc_segment_id        :string
+#  subscription_ids     :integer          default([]), is an Array
+#  title                :string
 #
 
 require 'rails_helper'
@@ -33,6 +36,8 @@ RSpec.describe ListservDigest, type: :model do
   it { is_expected.to have_db_column(:reply_to).of_type(:string) }
   it { is_expected.to have_db_column(:sponsored_by).of_type(:string) }
   it{ is_expected.to have_db_column(:location_ids).of_type(:integer).with_options(array: true) }
+  it { is_expected.to have_db_column(:title).of_type(:string) }
+  it { is_expected.to have_db_column(:preheader).of_type(:string) }
 
   it { is_expected.to belong_to(:listserv) }
   it { is_expected.to belong_to(:promotion) }

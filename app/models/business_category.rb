@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: business_categories
+#
+#  id          :integer          not null, primary key
+#  name        :string(255)
+#  description :string(255)
+#  icon_class  :string(255)
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  source      :string(255)
+#  source_id   :integer
+#
+
 class BusinessCategory < ActiveRecord::Base
   has_and_belongs_to_many :business_profiles
 
@@ -7,9 +21,6 @@ class BusinessCategory < ActiveRecord::Base
   has_and_belongs_to_many :children, class_name: 'BusinessCategory',
     join_table: :business_categories_business_categories,
     foreign_key: :parent_id, association_foreign_key: :child_id
-
-  attr_accessible :description, :icon_class, :name, :parent_ids, :child_ids,
-    :source, :source_id
 
   validates_presence_of :name
 

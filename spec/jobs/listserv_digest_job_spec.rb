@@ -105,6 +105,7 @@ RSpec.describe ListservDigestJob do
               expect(digest.from_name).to eql listserv.name
               expect(digest.template).to eql listserv.template
               expect(digest.subscription_ids).to match_array listserv.subscriptions.pluck(:id)
+              expect(digest.title).to eql listserv.digest_subject
             end
 
           end
@@ -112,12 +113,15 @@ RSpec.describe ListservDigestJob do
           context 'with active campaigns' do
             let!(:campaign_1) { FactoryGirl.create :campaign,
               listserv: listserv,
+              title: 'Camp1',
               community_ids: [listserv.subscriptions.first.user.location_id],
               sponsored_by: Faker::Company.name,
-              promotion_id: FactoryGirl.create(:promotion_banner).promotion.id
+              promotion_id: FactoryGirl.create(:promotion_banner).promotion.id,
+              preheader: 'Camp1 PREHEADER'
             }
 
             let!(:campaign_2) {FactoryGirl.create :campaign,
+              title: 'camp2',
               listserv: listserv,
               community_ids: [listserv.subscriptions.last.user.location_id],
               sponsored_by: Faker::Company.name,
@@ -158,6 +162,8 @@ RSpec.describe ListservDigestJob do
                 expect(digest.template).to eql listserv.template
                 expect(digest.sponsored_by).to eql campaign.sponsored_by
                 expect(digest.promotion_id).to eql campaign.promotion_id
+                expect(digest.title).to eql campaign.title
+                expect(digest.preheader).to eql campaign.preheader
               end
             end
           end

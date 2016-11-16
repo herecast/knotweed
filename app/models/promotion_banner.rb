@@ -15,6 +15,9 @@
 #  daily_max_impressions  :integer
 #  boost                  :boolean          default(FALSE)
 #  daily_impression_count :integer          default(0)
+#  track_daily_metrics    :boolean
+#  load_count             :integer          default(0)
+#  integer                :integer          default(0)
 #
 
 class PromotionBanner < ActiveRecord::Base
@@ -24,10 +27,6 @@ class PromotionBanner < ActiveRecord::Base
   has_many :content_promotion_banner_impressions
   has_many :contents, through: :content_promotion_banner_impressions
   has_many :promotion_banner_reports
-
-  attr_accessible :banner_image, :redirect_url, :remove_banner, :banner_cache,
-    :campaign_start, :campaign_end, :max_impressions, :impression_count,
-    :click_count, :boost, :daily_max_impressions, :daily_impression_count, :track_daily_metrics
 
   mount_uploader :banner_image, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_banner_image
@@ -39,6 +38,7 @@ class PromotionBanner < ActiveRecord::Base
   after_destroy :update_active_promotions
 
   validates_presence_of :promotion
+  validates_presence_of :banner_image
   validates :max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'max_impressions.present?'
 #  validates :daily_max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'daily_max_impressions.present?'
 

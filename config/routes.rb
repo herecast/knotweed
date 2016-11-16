@@ -80,6 +80,7 @@ Knotweed::Application.routes.draw do
   get 'annotation_reports/export/:content_id', to: "annotation_reports#export", as: :export_annotation_reports
   get 'annotation_reports/:annotation_report_id/annotations/:annotation_id/edit', to: "annotations#edit", as: :edit_annotation
   resources :annotation_reports, only: [:edit, :destroy]
+  resources :features
   get 'annotation_reports/:id/table_row' => 'annotation_reports#table_row', as: :annotation_report_table_row
 
   get 'annotations/:id/accept(/:accepted)' => "annotations#accept_annotation", as: :accept_annotation
@@ -146,6 +147,7 @@ Knotweed::Application.routes.draw do
       get '/market_posts/:id/contact', to: 'market_posts#contact', as: :market_post_contact
       get '/weather', to: 'users#weather', as: :weather
       post '/users/logout', to: 'users#logout', as: :logout
+      get '/user', to: 'users#verify'
       get '/dashboard', to: 'contents#dashboard', as: :dashboard
       post '/users/email_confirmation', to: 'users#email_confirmation', as: :email_confirmation
       post '/users/resend_confirmation', to: 'users#resend_confirmation', as: :resend_confirmation
@@ -171,6 +173,8 @@ Knotweed::Application.routes.draw do
       resources :content_reports, only: :index
       resources :promotion_banner_reports, only: :index
       get '/digests', to: 'digests#index'
+      get '/digests/:id', to: 'digests#show'
+      get '/features', to: 'features#index'
     end
   end
 

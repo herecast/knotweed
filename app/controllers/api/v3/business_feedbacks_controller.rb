@@ -8,7 +8,7 @@ module Api
         # created_by is automatically set by Auditable concern
         params[:feedback][:business_profile_id] = params[:id]
 
-        @business_feedback = BusinessFeedback.new(params[:feedback])
+        @business_feedback = BusinessFeedback.new(feedback_params)
         if @business_feedback.save
           render json: @business_feedback, serializer: BusinessFeedbackSerializer,
             status: 201
@@ -22,7 +22,7 @@ module Api
         params[:feedback][:business_profile_id] = params[:id]
 
         @business_feedback = BusinessFeedback.find_by(created_by: current_user.id, business_profile_id: params[:id])
-        if @business_feedback.update_attributes(params[:feedback])
+        if @business_feedback.update_attributes(feedback_params)
           render json: @business_feedback, serializer: BusinessFeedbackSerializer, status: :ok
         else
           render json: { errors: @business_feedback.errors.messages }, status: :unprocessable_entity
@@ -31,11 +31,21 @@ module Api
 
       private
 
-      def prevent_multiple_ratings
-        if BusinessFeedback.find_by(created_by: current_user.id, business_profile_id: params[:id]).present?
-          render json: {}, status: :forbidden
+        def prevent_multiple_ratings
+          if BusinessFeedback.find_by(created_by: current_user.id, business_profile_id: params[:id]).present?
+            render json: {}, status: :forbidden
+          end
         end
-      end
+
+        def feedback_params
+          params.require(:feedback).permit(
+            :business_profile_id,
+            :satisfaction,
+            :cleanliness,
+            :price,
+            :recommend
+          )
+        end
 
     end
   end

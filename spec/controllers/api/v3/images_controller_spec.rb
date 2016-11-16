@@ -41,6 +41,20 @@ describe Api::V3::ImagesController, :type => :controller do
         expect(response.code).to eq('403')
       end
     end
+
+    context "when image does not save" do
+      before do
+        @market_post.content.update_attribute :created_by, @user
+        allow_any_instance_of(Image).to receive(:save).and_return(false)
+      end
+
+      subject { post :create, image: { image: @file1, content_id: @market_post.content.id } }
+
+      it "returns unprocessable entity status" do
+        subject
+        expect(response).to have_http_status :unprocessable_entity
+      end
+    end
   end
 
   describe 'PUT update' do
@@ -63,6 +77,20 @@ describe Api::V3::ImagesController, :type => :controller do
       subject { put :update, id: @img.id, image: { primary: true, caption: caption } }
       it 'should update image caption' do
         expect{subject}.to change{@img.reload.caption}.to caption
+      end
+    end
+
+    context "when update fails" do
+      before do
+        @market_post.content.update_attribute :created_by, @user
+        allow_any_instance_of(Image).to receive(:update_attributes).and_return(false)
+      end
+
+      subject { put :update, id: @img.id, image: { primary: true } }
+
+      it "returns unprocessable entity status" do
+        subject
+        expect(response).to have_http_status :ok
       end
     end
   end

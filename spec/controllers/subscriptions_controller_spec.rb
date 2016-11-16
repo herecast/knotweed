@@ -22,9 +22,8 @@ RSpec.describe SubscriptionsController, type: :controller do
 
     context 'when many subcriptions exist' do
       before do
-        5.times do
-          FactoryGirl.create :subscription
-          sleep 0.2
+        5.times do |i|
+          FactoryGirl.create :subscription, created_at: Time.current + i
         end
       end
 
@@ -70,7 +69,6 @@ RSpec.describe SubscriptionsController, type: :controller do
         expect(response).to redirect_to(subscriptions_url)
       end
     end
-
   end
 
   describe "PUT #update" do
@@ -96,6 +94,20 @@ RSpec.describe SubscriptionsController, type: :controller do
         subscription = Subscription.create! valid_attributes
         put :update, {:id => subscription.to_param, :subscription => valid_attributes}
         expect(response).to redirect_to(subscriptions_url)
+      end
+    end
+
+    context "with invalid params" do
+      before do
+        @subscription = FactoryGirl.create :subscription
+      end
+
+      subject { put :update, id: @subscription.id, subscription: { email: nil } }
+
+      it "does not update subscription" do
+        initial_state = @subscription.clone
+        subject
+        expect(@subscription.reload).to eq initial_state
       end
     end
 

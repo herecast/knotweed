@@ -16,7 +16,7 @@
         %td= job.organization.try(:name)
         %td= job.last_run_at.strftime("%m/%d/%Y %I:%M%p") if job.last_run_at.present?
         %td.next-run
-          = job.next_scheduled_run.strftime("%m/%d/%Y %I:%M%p") if job.next_scheduled_run.present?
+          = job.next_scheduled_run.try(:strftime, "%m/%d/%Y %I:%M%p")
         %td.job-status
           %div{ class: "label label-#{alert_class_for_status(job.status)}" }= job.status
         %td.job-actions

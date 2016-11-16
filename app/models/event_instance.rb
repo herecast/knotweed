@@ -15,13 +15,11 @@
 #
 
 class EventInstance < ActiveRecord::Base
-  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name,
+  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.searchkick_index_prefix,
     searchable: [:content, :title, :subtitle_override, :event_category, :venue, :venue_name]
 
   belongs_to :event
   belongs_to :schedule
-  attr_accessible :description_override, :end_date, :event_id, :start_date, :subtitle_override,
-    :presenter_name, :schedule_id
 
   # it was requested to only have end time, not end date.
   # Rather than change the field, I've just turned it into a time picker

@@ -15,6 +15,9 @@
 #  daily_max_impressions  :integer
 #  boost                  :boolean          default(FALSE)
 #  daily_impression_count :integer          default(0)
+#  track_daily_metrics    :boolean
+#  load_count             :integer          default(0)
+#  integer                :integer          default(0)
 #
 
 require 'spec_helper'
@@ -22,6 +25,16 @@ require 'spec_helper'
 describe PromotionBanner, :type => :model do
 
   it {is_expected.to have_db_column(:load_count).of_type(:integer).with_options(default:0)}
+
+  describe 'validation' do
+    context "when no banner image present" do
+      let(:promotion_banner) { FactoryGirl.build :promotion_banner, banner_image: nil }
+
+      it "is invalid" do
+        expect(promotion_banner.valid?).to be false
+      end
+    end
+  end
 
   describe 'scope :for_content' do
     before do

@@ -6,15 +6,13 @@
 #  content_id          :integer
 #  promotion_banner_id :integer
 #  load_count          :integer          default(1)
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  select_method       :string(255)
+#  select_method       :string
 #  select_score        :float
+#  created_at          :datetime
+#  updated_at          :datetime
 #
 
 class ContentPromotionBannerLoad < ActiveRecord::Base
-  attr_accessible :content_id, :load_count, :promotion_banner_id, :select_method, :select_score
-
   belongs_to :content
   belongs_to :promotion_banner
 

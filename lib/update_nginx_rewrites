@@ -1,0 +1,48 @@
+#!/bin/bash
+
+map_file="/etc/nginx/blogger.redirects"
+lock_file="/var/update_nginx_rewrites.lock"
+last_updated_at_cache_file="/var/update_nginx_rewrites.sh_last_updated_at"
+export PGPASSWORD=$RAILS_KNOTWEED_DB_PASSWORD
+
+docker_kill() {
+    local id="${1?missing id}"
+    local signal="${2?missing signal}"
+    echo -e "POST /containers/$id/kill?signal=$signal HTTP/1.1\r\nHost: localhost\r\n" | nc -U /var/run/docker.sock
+}
+
+if [ ! -e "$map_file" ]; then
+    touch "$map_file"
+fi
+
+if [ -e $lock_file ]
+then
+    echo "looks like this process is already running; if this takes more than 1 minute, we may need to reconsider the way we do these redirects"
+    exit 1
+fi
+touch $lock_file
+
+rewrite_host=$CONSUMER_APP_URI
+
+if [ ! -e $map_file ]
+then
+    # if the map file doesn't exist we start from scratch
+    rm $last_updated_at_cache_file
+fi
+last_updated_at="0000-00-00 00:00:00"
+if [ -e $last_updated_at_cache_file ]
+then
+    last_updated_at=`cat $last_updated_at_cache_file`
+fi
+
+something_updated=$(/usr/bin/psql -tA -U $RAILS_KNOTWEED_DB_USERNAME -h $RAILS_KNOTWEED_DB_HOST $RAILS_KNOTWEED_DB_NAME -c "SELECT count(1) FROM rewrites WHERE updated_at>'$last_updated_at'")
+if [ "$something_updated" != "0" ]
+then
+    /usr/bin/psql -tA -U $RAILS_KNOTWEED_DB_USERNAME -h $RAILS_KNOTWEED_DB_HOST $RAILS_KNOTWEED_DB_NAME -c "select 'location ~* /' || source || E' {\n    rewrite ^ $rewrite_host/' || destination || E' permanent;\n}' from rewrites;" > "$map_file"
+    echo "reloading Nginx"
+    docker_kill $NGINX_CONTAINER SIGHUP
+fi
+
+date -u +'%F %T' > $last_updated_at_cache_file
+rm $lock_file
+exit 0

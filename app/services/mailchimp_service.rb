@@ -13,22 +13,24 @@ module MailchimpService
   # @param [Subscription]
   def update_subscription(subscription)
     if subscription.listserv.mc_sync?
-      subscriber_hash = Digest::MD5.hexdigest(subscription.email)
+      unless subscription.mc_unsubscribed_at?
+        subscriber_hash = Digest::MD5.hexdigest(subscription.email)
 
-      if subscription.user
-        find_or_create_merge_field(subscription.listserv.mc_list_id, 'ZIP',
-                                   name: 'Zip', type: 'zip')
-        find_or_create_merge_field(subscription.listserv.mc_list_id, 'CITY',
-                                   name: 'City', type: 'text')
-        find_or_create_merge_field(subscription.listserv.mc_list_id, 'STATE',
-                                   name: 'State', type: 'text')
-      end
+        if subscription.user
+          find_or_create_merge_field(subscription.listserv.mc_list_id, 'ZIP',
+                                     name: 'Zip', type: 'zip')
+          find_or_create_merge_field(subscription.listserv.mc_list_id, 'CITY',
+                                     name: 'City', type: 'text')
+          find_or_create_merge_field(subscription.listserv.mc_list_id, 'STATE',
+                                     name: 'State', type: 'text')
+        end
 
-      detect_error(
-        put("/lists/#{subscription.listserv.mc_list_id}/members/#{subscriber_hash}",
-          body: SubscriptionSerializer.new(subscription).to_json
+        detect_error(
+          put("/lists/#{subscription.listserv.mc_list_id}/members/#{subscriber_hash}",
+            body: SubscriptionSerializer.new(subscription).to_json
+          )
         )
-      )
+      end
     else
       raise MissingListId.new(subscription.listserv)
     end

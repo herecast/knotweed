@@ -139,6 +139,15 @@ module Api
         end
       end
 
+      def verify
+        user = User.where(email: params[:email])
+        if user.present?
+          render json: {}, status: :ok and return
+        else
+          render json: {}, status: :not_found and return
+        end
+      end
+
     end
   end
 end

@@ -13,8 +13,6 @@ class PromotionListserv < ActiveRecord::Base
   has_one :promotion, as: :promotable
   belongs_to :listserv
 
-  attr_accessible :listserv_id, :sent_at
-
   validates_associated :promotion, :listserv
 
   # Creates a new promotion listserv record from a Content object and Listserv object.

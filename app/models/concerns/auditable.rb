@@ -8,15 +8,16 @@
 # with users and implements a before_save callback that appropriately sets those relationships.
 # Include it with:
 #   include Auditable
-module Auditable
+#
+require 'active_support/concern'
 
-  def self.included(base)
-    base.extend ClassMethods
-    base.class_eval do
-      belongs_to :created_by, class_name: 'User', foreign_key: 'created_by'
-      belongs_to :updated_by, class_name: 'User', foreign_key: 'updated_by'
-      before_save :set_auditables
-    end
+module Auditable
+  extend ActiveSupport::Concern
+
+  included do
+    belongs_to :created_by, class_name: 'User', foreign_key: 'created_by'
+    belongs_to :updated_by, class_name: 'User', foreign_key: 'updated_by'
+    before_save :set_auditables
   end
 
   def set_auditables

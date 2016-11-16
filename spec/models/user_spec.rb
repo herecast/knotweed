@@ -34,7 +34,7 @@
 #  avatar                 :string(255)
 #  public_id              :string(255)
 #  skip_analytics         :boolean          default(FALSE)
-#  temp_password          :string(255)
+#  temp_password          :string
 #
 
 require 'spec_helper'
@@ -54,18 +54,18 @@ describe User, :type => :model do
   end
 
   it "should create a new instance given a valid attribute" do
-    User.create!(@attr)
+    expect{ FactoryGirl.create :user, @attr }.to change{ User.count }.by 1
   end
 
   it "should require an email address" do
-    no_email_user = User.new(@attr.merge(:email => ""))
+    no_email_user = FactoryGirl.build :user, @attr.merge(:email => "")
     expect(no_email_user).not_to be_valid
   end
 
   it "should accept valid email addresses" do
     addresses = %w[user@foo.com THE_USER@foo.bar.org first.last@foo.jp]
     addresses.each do |address|
-      valid_email_user = User.new(@attr.merge(:email => address))
+      valid_email_user = FactoryGirl.build :user, @attr.merge(:email => address)
       expect(valid_email_user).to be_valid
     end
   end
@@ -73,28 +73,28 @@ describe User, :type => :model do
   it "should reject invalid email addresses" do
     addresses = %w[user@foo,com user_at_foo.org example.user@foo.]
     addresses.each do |address|
-      invalid_email_user = User.new(@attr.merge(:email => address))
+      invalid_email_user = FactoryGirl.build :user, @attr.merge(:email => address)
       expect(invalid_email_user).not_to be_valid
     end
   end
 
   it "should reject duplicate email addresses" do
-    User.create!(@attr)
-    user_with_duplicate_email = User.new(@attr)
+    FactoryGirl.create :user, @attr
+    user_with_duplicate_email = FactoryGirl.build :user, @attr
     expect(user_with_duplicate_email).not_to be_valid
   end
 
   it "should reject email addresses identical up to case" do
     upcased_email = @attr[:email].upcase
-    User.create!(@attr.merge(:email => upcased_email))
-    user_with_duplicate_email = User.new(@attr)
+    FactoryGirl.create :user, @attr.merge(:email => upcased_email)
+    user_with_duplicate_email = FactoryGirl.build :user, @attr
     expect(user_with_duplicate_email).not_to be_valid
   end
 
   describe "passwords" do
 
     before(:each) do
-      @user = User.new(@attr)
+      @user = FactoryGirl.build :user, @attr
     end
 
     it "should have a password attribute" do
@@ -109,19 +109,19 @@ describe User, :type => :model do
   describe "password validations" do
 
     it "should require a password" do
-      expect(User.new(@attr.merge(:password => "", :password_confirmation => ""))).
+      expect(FactoryGirl.build :user, @attr.merge(:password => "", :password_confirmation => "")).
         not_to be_valid
     end
 
     it "should require a matching password confirmation" do
-      expect(User.new(@attr.merge(:password_confirmation => "invalid"))).
+      expect(FactoryGirl.build :user, @attr.merge(:password_confirmation => "invalid")).
         not_to be_valid
     end
 
     it "should reject short passwords" do
       short = "a" * 5
       hash = @attr.merge(:password => short, :password_confirmation => short)
-      expect(User.new(hash)).not_to be_valid
+      expect(FactoryGirl.build :user, hash).not_to be_valid
     end
 
   end
@@ -129,7 +129,7 @@ describe User, :type => :model do
   describe "password encryption" do
 
     before(:each) do
-      @user = User.create!(@attr)
+      @user = FactoryGirl.create :user, @attr
     end
 
     it "should have an encrypted password attribute" do

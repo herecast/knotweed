@@ -14,7 +14,7 @@
 #  post_email                  :string
 #  subscribe_email             :string
 #  mc_list_id                  :string
-#  mc_segment_id               :string
+#  mc_group_name               :string
 #  send_digest                 :boolean          default(FALSE)
 #  last_digest_send_time       :datetime
 #  last_digest_generation_time :datetime
@@ -24,13 +24,15 @@
 #  timezone                    :string           default("Eastern Time (US & Canada)")
 #  digest_description          :text
 #  digest_send_day             :string
-#  banner_ad_override_id       :integer
+#  promotion_id                :integer
 #  digest_query                :text
 #  template                    :string
 #  sponsored_by                :string
+#  display_subscribe           :boolean          default(FALSE)
 #  digest_subject              :string
 #  digest_preheader            :string
-#  display_subscribe           :boolean          default(FALSE)
+#  list_type                   :string           default("custom_list")
+#  sender_name                 :string
 #
 
 require 'spec_helper'
@@ -61,7 +63,7 @@ describe Listserv, :type => :model do
   it { is_expected.to have_db_column(:digest_preheader).of_type(:string) }
   it { is_expected.to have_many(:campaigns) }
   it { is_expected.to have_db_column(:list_type).of_type(:string) }
-  
+
   describe '#active_subscriber_count' do
     it 'is equal to related active subscriptions' do
       ls = FactoryGirl.create :listserv
@@ -131,6 +133,39 @@ describe Listserv, :type => :model do
         expect(subject.errors[:mc_group_name]).to include('required when mc_list_id present')
       end
     end
+
+    context 'when given a promotion id' do
+      let!(:promo_with_banner) {
+        FactoryGirl.create :promotion,
+          promotable: FactoryGirl.create(:promotion_banner)
+      }
+
+      let!(:other_promo) {
+        FactoryGirl.create :promotion,
+          promotable: FactoryGirl.create(:promotion_listserv)
+      }
+
+      it 'checks existence of the promotion' do
+        subject.promotion_id = '190380'
+        subject.valid? #trigger validation
+        expect(subject.errors).to have_key(:promotion_id)
+
+        subject.promotion_id = promo_with_banner.id
+        subject.valid? #trigger validation
+        expect(subject.errors).to_not have_key(:promotion_id)
+      end
+
+      it 'requires promotion is tied to a PromotionBanner' do
+        subject.promotion_id = other_promo.id
+        subject.valid? #trigger validation
+        expect(subject.errors).to have_key(:promotion_id)
+
+        subject.promotion_id = promo_with_banner.id
+        subject.valid? #trigger validation
+        expect(subject.errors).to_not have_key(:promotion_id)
+      end
+    end
+
   end
 
   describe 'mc_group_name=' do
@@ -217,7 +252,7 @@ describe Listserv, :type => :model do
       subject { listserv.contents_from_custom_query }
 
       it "is equal to matching records" do
-        expect(subject).to eql contents
+        expect(subject).to match_array contents
       end
 
       it 'maintains the same sort order' do

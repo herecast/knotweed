@@ -20,4 +20,16 @@ describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe "#link_to_add_field" do
+    before do
+      @location = FactoryGirl.create :location
+      allow_any_instance_of(self.class).to receive(:render).and_return("great fields")
+    end
+    
+    it "builds field" do
+      result = form_for(@location, url: '/locations') { |f| link_to_add_fields("Add users", f, :users) }
+      expect(result).to include("id=\"edit_location_#{@location.id}\"")
+    end
+  end
 end

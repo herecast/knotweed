@@ -10,6 +10,7 @@
 #  digest_query  :text
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  title         :string
 #
 
 require 'rails_helper'
@@ -20,9 +21,11 @@ RSpec.describe Campaign, type: :model do
   it{ is_expected.to have_db_column(:promotion_id).of_type(:integer) }
   it{ is_expected.to have_db_column(:sponsored_by).of_type(:string) }
   it{ is_expected.to have_db_column(:digest_query).of_type(:text) }
+  it{ is_expected.to have_db_column(:preheader).of_type(:string) }
 
   it{ is_expected.to belong_to(:listserv) }
   it{ is_expected.to belong_to(:promotion) }
+  it{ is_expected.to have_db_column(:title).of_type(:string) }
 
   describe 'communities' do
     context 'assigned an array of locations' do
@@ -66,6 +69,38 @@ RSpec.describe Campaign, type: :model do
     subject.community_ids << FactoryGirl.create(:location).id
     subject.valid?
     expect(subject.errors).to_not include(:community_ids)
+  end
+
+  context 'when given a promotion id' do
+    let!(:promo_with_banner) {
+      FactoryGirl.create :promotion,
+        promotable: FactoryGirl.create(:promotion_banner)
+    }
+
+    let!(:other_promo) {
+      FactoryGirl.create :promotion,
+        promotable: FactoryGirl.create(:promotion_listserv)
+    }
+
+    it 'checks existence of the promotion' do
+      subject.promotion_id = '190380'
+      subject.valid? #trigger validation
+      expect(subject.errors).to have_key(:promotion_id)
+
+      subject.promotion_id = promo_with_banner.id
+      subject.valid? #trigger validation
+      expect(subject.errors).to_not have_key(:promotion_id)
+    end
+
+    it 'requires promotion is tied to a PromotionBanner' do
+      subject.promotion_id = other_promo.id
+      subject.valid? #trigger validation
+      expect(subject.errors).to have_key(:promotion_id)
+
+      subject.promotion_id = promo_with_banner.id
+      subject.valid? #trigger validation
+      expect(subject.errors).to_not have_key(:promotion_id)
+    end
   end
 
   describe 'community overlap' do

@@ -1,0 +1,20 @@
+%h1 Feature Toggle
+
+%table.table.table-striped.table-border.table-condensed#feature_index
+  %thead
+    %tr
+      %th ID
+      %th Name
+      %th Description
+      %th Active
+      %th
+  .span5
+  %body
+    - @features.each do |feature|
+      %tr
+        %td= feature.id
+        %td{ style: "min-width: 150px" }= feature.try(:name)
+        %td= feature.try(:description)
+        %td
+          %i{ class: "#{feature.active? ? 'icon-check' : 'icon-remove'}" }
+        %td= link_to "edit", edit_feature_path(feature), class: "btn btn-primary btn-mini"

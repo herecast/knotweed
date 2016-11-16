@@ -50,44 +50,13 @@ module Api
       end
 
       def create
-        market_cat = ContentCategory.find_by_name 'market'
-
-        if params[:market_post][:organization_id].present?
-          org_id = params[:market_post].delete :organization_id
-        else
-          org_id = Organization.find_or_create_by(name: 'DailyUV').id
-        end
-
-        location_ids = [@current_api_user.location_id]
-
-        content_attributes = {
-          title: params[:market_post][:title],
-          raw_content: params[:market_post][:content],
-          authoremail: @current_api_user.try(:email),
-          authors: @current_api_user.try(:name),
-          location_ids: location_ids,
-          content_category_id: market_cat.id,
-          pubdate: Time.zone.now,
-          timestamp: Time.zone.now,
-          organization_id: org_id,
-          my_town_only: params[:market_post].delete(:my_town_only)
-        }
-        listserv_ids = params[:market_post].delete :listserv_ids || []
-
-        market_hash = { content_attributes: content_attributes }
-        market_hash[:cost] = params[:market_post][:price]
-        market_hash[:contact_phone] = params[:market_post][:contact_phone]
-        market_hash[:contact_email] = params[:market_post][:contact_email]
-        market_hash[:locate_address] = params[:market_post][:locate_address]
-
-        @market_post = MarketPost.new(market_hash)
+        @market_post = MarketPost.new(market_post_params)
         if @market_post.save
           # reverse publish to specified listservs
+          listserv_ids = params[:market_post][:listserv_ids] || []
           PromotionListserv.create_multiple_from_content(@market_post.content, listserv_ids, @requesting_app)
 
-          if @repository.present?
-            PublishContentJob.perform_later(@market_post.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
-          end
+          PublishContentJob.perform_later(@market_post.content, @repository, Content::DEFAULT_PUBLISH_METHOD) if @repository.present?
 
           render json: @market_post.content, serializer: DetailedMarketPostSerializer,
             status: 201, context: { current_ability: current_ability }
@@ -99,18 +68,13 @@ module Api
       def update
         @market_post = Content.find(params[:id]).channel
         authorize! :manage, @market_post.content
-
-        listserv_ids = params[:market_post][:listserv_ids] || []
-
-        # TODO: once we have created_by, confirm that the user can edit this market post
-
-        if @market_post.update_attributes(update_attrs)
+        if @market_post.update_attributes(market_post_params)
           # reverse publish to specified listservs
+          listserv_ids = params[:market_post][:listserv_ids] || []
           PromotionListserv.create_multiple_from_content(@market_post.content, listserv_ids, @requesting_app)
+          
+          PublishContentJob.perform_later(@market_post.content, @repository, Content::DEFAULT_PUBLISH_METHOD) if @repository.present?
 
-          if @repository.present?
-            PublishContentJob.perform_later(@market_post.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
-          end
           render json: @market_post.content, status: 200,
             serializer: DetailedMarketPostSerializer, context: { current_ability: current_ability }
         else
@@ -164,47 +128,75 @@ module Api
       end
 
       private
-      def update_attrs
-        location_ids = [@current_api_user.location_id]
 
-        if params[:market_post][:extended_reach_enabled].present?
-          location_ids.push Location::REGION_LOCATION_ID
+        def market_post_params
+          new_params = params
+          attributes = @market_post.present? ? additional_update_attributes : additional_create_attributes
+          new_params[:market_post].merge!(attributes)
+          new_params.require(:market_post).permit(
+            :contact_email,
+            :contact_phone,
+            :contact_url,
+            :cost,
+            :latitude,
+            :longitude,
+            :locate_address,
+            :locate_include_name,
+            :locate_name,
+            :status,
+            :prefered_contact_method,
+            content_attributes: [
+              :id,
+              :title,
+              :raw_content,
+              :authoremail,
+              :authors,
+              :content_category_id,
+              :pubdate,
+              :timestamp,
+              :organization_id,
+              :my_town_only,
+              location_ids: []
+            ]
+          )
         end
 
-        attrs = {
-          content_attributes: {
-            location_ids: location_ids,
-            id: params[:id]
+        def additional_create_attributes
+          {
+            cost: params[:market_post][:price],
+            content_attributes: {
+              title: params[:market_post][:title],
+              raw_content: params[:market_post][:content],
+              authoremail: @current_api_user.try(:email),
+              authors: @current_api_user.try(:name),
+              location_ids: [@current_api_user.location_id],
+              content_category_id: ContentCategory.find_or_create_by(name: 'market').id,
+              pubdate: Time.zone.now,
+              timestamp: Time.zone.now,
+              organization_id: params[:market_post][:organization_id] || Organization.find_or_create_by(name: 'DailyUV').id,
+              my_town_only: params[:market_post].delete(:my_town_only)
+            }
           }
-        }
-
-        if params[:market_post].has_key? :title
-          attrs[:content_attributes][:title] = params[:market_post][:title]
         end
 
-        if params[:market_post].has_key? :content
-          attrs[:content_attributes][:raw_content] = params[:market_post][:content]
+        def additional_update_attributes
+          additional_attributes = {
+            cost: params[:market_post][:price],
+            content_attributes: {
+              id: params[:id],
+              location_ids: [@current_api_user.location_id],
+              title: params[:market_post][:title],
+              raw_content: params[:market_post][:content]
+            }
+          }
+
+          if params[:market_post][:extended_reach_enabled].present?
+            additional_attributes[:content_attributes][:location_ids].push(Location::REGION_LOCATION_ID)
+          end
+
+          additional_attributes
         end
 
-        if params[:market_post].has_key? :price
-          attrs[:cost] = params[:market_post][:price]
-        end
-
-        return params.require(:market_post).permit(
-          :contact_email,
-          :contact_phone,
-          :contact_url,
-          :cost,
-          :latitude,
-          :longitude,
-          :locate_address,
-          :locate_include_name,
-          :locate_name,
-          :status,
-          :prefered_contact_method,
-          :content_attributes
-        ).deep_merge(attrs)
-      end
     end
   end
 end

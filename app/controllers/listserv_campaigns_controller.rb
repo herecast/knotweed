@@ -41,6 +41,8 @@ class ListservCampaignsController < ApplicationController
       :sponsored_by,
       :promotion_id,
       :digest_query,
+      :title,
+      :preheader,
       community_ids: [],
     ).tap do |p|
       if p[:community_ids].respond_to?(:[])

@@ -41,32 +41,9 @@ module Api
       end
 
       def create
-        if params[:talk][:organization_id].present?
-          org_id = params[:talk].delete :organization_id
-        else
-          org_id = Organization.find_or_create_by(name: 'DailyUV').id
-        end
-
-        # hard code category
-        cat = ContentCategory.find_or_create_by(name: 'talk_of_the_town')
-
-        listserv_id = params[:talk].delete :listserv_id
-
-        # parse out content attributes
-        content_attributes = {
-          title: params[:talk][:title],
-          location_ids: [@current_api_user.location_id],
-          authoremail: @current_api_user.try(:email),
-          authors: @current_api_user.try(:name),
-          raw_content: params[:talk][:content],
-          pubdate: Time.zone.now,
-          organization_id: org_id,
-          content_category_id: cat.id
-        }
-
-        @talk = Comment.new({ content_attributes: content_attributes })
-
+        @talk = Comment.new(talk_params)
         if @talk.save
+          listserv_id = params[:talk][:listserv_id]
           if listserv_id.present?
             PromotionListserv.create_from_content(@talk.content, Listserv.find(listserv_id), @requesting_app)
           end
@@ -94,7 +71,41 @@ module Api
           head :unprocessable_entity
         end
       end
-    end
 
+      private
+
+        def talk_params
+          new_params = params
+          new_params[:talk].merge!(additional_attributes)
+          new_params.require(:talk).permit(
+            content_attributes: [
+              :title,
+              :authoremail,
+              :authors,
+              :raw_content,
+              :pubdate,
+              :organization_id,
+              :content_category_id,
+              location_ids: []
+            ]
+          )
+        end
+
+        def additional_attributes
+          {
+            content_attributes: {
+              title: params[:talk][:title],
+              location_ids: [@current_api_user.location_id],
+              authoremail: @current_api_user.try(:email),
+              authors: @current_api_user.try(:name),
+              raw_content: params[:talk][:content],
+              pubdate: Time.zone.now,
+              organization_id: params[:talk][:organization_id] || Organization.find_or_create_by(name: 'DailyUV').id,
+              content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id
+            }
+          }
+        end
+
+    end
   end
 end

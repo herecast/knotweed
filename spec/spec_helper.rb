@@ -30,8 +30,6 @@ end
 
 TestAfterCommit.enabled = true
 
-class Delayed::Worker; define_method(:job_say) { |*args| } end
-
 RSpec.configure do |config|
   config.include AuthenticationHelpers, type: :controller
   config.include RequestHelpers, type: :request
@@ -88,6 +86,7 @@ RSpec.configure do |config|
 
   config.after(:each) do
     DatabaseCleaner.clean
+    FileUtils.rm_rf(Dir["#{Rails.root}/spec/support/uploads"])
     if ActiveJob::Base.queue_adapter.respond_to?(:enqueued_jobs=)
       ActiveJob::Base.queue_adapter.enqueued_jobs = []
       ActiveJob::Base.queue_adapter.performed_jobs = []

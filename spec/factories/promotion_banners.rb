@@ -15,6 +15,9 @@
 #  daily_max_impressions  :integer
 #  boost                  :boolean          default(FALSE)
 #  daily_impression_count :integer          default(0)
+#  track_daily_metrics    :boolean
+#  load_count             :integer          default(0)
+#  integer                :integer          default(0)
 #
 
 FactoryGirl.define do
@@ -27,5 +30,6 @@ FactoryGirl.define do
     daily_max_impressions 100
     impression_count 0
     daily_impression_count 0
+    banner_image { File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg')) }
   end
 end

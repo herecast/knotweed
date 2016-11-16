@@ -13,8 +13,6 @@ end
 
 set :rvm_ruby_version, '2.2.4@knotweed'
 
-set :delayed_job_args, "-n 4"
-
 # for parsers submodule
 set :git_strategy, Capistrano::Git::SubmoduleStrategy
 # Default value for :scm is :git
@@ -30,7 +28,7 @@ set :git_strategy, Capistrano::Git::SubmoduleStrategy
 # set :pty, true
 
 # Default value for :linked_files is []
-set :linked_files, %w{config/database.yml config/application.yml config/newrelic.yml bin/delayed_job}
+set :linked_files, %w{config/database.yml config/application.yml config/newrelic.yml }
 
 # Default value for linked_dirs is []
 set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/exports }
@@ -41,16 +39,10 @@ set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public
 # Default value for keep_releases is 5
 set :keep_releases, 3
 
-set :whenever_roles, [:web, :db]
-
 namespace :deploy do
 
   desc 'Restart application'
   task :restart do
-    restart_delayed_jobs = fetch(:restart_delayed_jobs, true)
-
-    invoke 'delayed_job:restart' if restart_delayed_jobs
-
     on roles(:app), in: :sequence, wait: 5 do
       # Your restart mechanism here, for example:
       execute :touch, release_path.join('tmp/restart.txt')

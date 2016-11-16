@@ -7,7 +7,7 @@
 #  address             :string(255)
 #  phone               :string(255)
 #  email               :string(255)
-#  hours               :string(255)
+#  hours               :text
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  organization_id     :integer
@@ -18,16 +18,17 @@
 #  city                :string(255)
 #  state               :string(255)
 #  zip                 :string(255)
+#  status              :string(255)
 #  created_by          :integer
 #  updated_by          :integer
-#  status              :string(255)
+#  service_radius      :decimal(10, )
 #
 
 class BusinessLocation < ActiveRecord::Base
   extend Enumerize
   include Auditable
 
-  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name,
+  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.searchkick_index_prefix,
     match: :word_start, searchable: [:name, :city, :state]
 
   def search_data
@@ -44,10 +45,6 @@ class BusinessLocation < ActiveRecord::Base
   has_many :events, foreign_key: 'venue_id'
 
   has_one :business_profile
-
-  attr_accessible :address, :email, :hours, :name, :organization_id, :phone,
-    :latitude, :longitude, :venue_url, :locate_include_name, :city, :state,
-    :zip, :status, :service_radius
 
   serialize :hours, Array
 
