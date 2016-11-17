@@ -1,7 +1,7 @@
 module MailchimpService
   class CampaignSerializer < ActiveModel::Serializer
     root false
-    attributes :type, :recipients, :settings
+    attributes :type, :recipients, :settings, :tracking
 
     def type
       'regular'
@@ -22,6 +22,12 @@ module MailchimpService
         subject_line: object.subject,
         from_name: object.from_name,
         reply_to: object.reply_to
+      }
+    end
+
+    def tracking
+      {
+        google_analytics: object.ga_tag
       }
     end
   end

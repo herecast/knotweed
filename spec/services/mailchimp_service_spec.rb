@@ -540,6 +540,9 @@ RSpec.describe MailchimpService do
               subject_line: digest.subject,
               from_name: digest.from_name,
               reply_to: digest.reply_to
+            },
+            tracking: {
+              google_analytics: digest.ga_tag
             }
           })
         ).to_return(
