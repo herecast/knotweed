@@ -130,6 +130,13 @@ describe 'Market Posts', type: :request do
       )
     end
 
+    it 'returns the correct number of total results' do
+      get '/api/v3/market_posts', request_params.merge(per_page: 3)
+      collection_count = response_json[:market_posts].count
+      total_count = response_json[:meta][:total]
+      expect(total_count).to be > collection_count
+    end
+
     context 'as signed in user' do
       subject { get '/api/v3/market_posts', request_params.merge({ format: :json }), auth_headers }
 
