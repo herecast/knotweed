@@ -81,4 +81,16 @@ class ListservDigest < ActiveRecord::Base
     subscriptions.present? ? subscriptions.pluck(:email) : []
   end
 
+  def ga_tag
+    frequency = listserv.digest_send_day? ? "Weekly" : "Daily"
+    send_date = Date.today.strftime("%m_%d_%y")
+    formatted_title = title.gsub(' ', '_')
+    tag = "#{frequency}_#{formatted_title}_#{send_date}"
+    if tag.bytesize > 50
+      "#{frequency}_#{formatted_title[0,30]}_#{send_date}"
+    else
+      tag
+    end
+  end
+
 end

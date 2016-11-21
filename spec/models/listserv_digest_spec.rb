@@ -101,4 +101,34 @@ RSpec.describe ListservDigest, type: :model do
     end
   end
 
+  describe '#ga_tag' do
+    let(:listserv) { FactoryGirl.create :listserv }
+    before do
+      subject.title = "Test Listserv Digest"
+      subject.listserv = listserv
+    end
+  
+    it 'returns a google analytics tag with frequecy and date' do
+      expect(subject.ga_tag).to eq "Daily_#{subject.title.gsub(' ', '_')}_#{Date.today.strftime("%m_%d_%y")}"
+    end
+
+    context 'when the digest delivers weekly' do
+      before { subject.listserv.digest_send_day = "Tuesday" }
+
+      it 'has the correct frequency' do
+        expect(subject.ga_tag).to eq "Weekly_#{subject.title.gsub(' ', '_')}_#{Date.today.strftime("%m_%d_%y")}"
+      end
+    end
+
+    context 'when the returned string is greater than 50 bytes' do
+     before { subject.title = "Here is a super long title that will be too large formatted" }
+
+      it 'returns a formatted string less than 50 bytes' do
+        frequency = listserv.digest_send_day? ? "Weekly" : "Daily"
+        formatted_title = subject.title[0, 30].gsub(' ', '_')
+        expect(subject.ga_tag.bytesize).to be < 50
+        expect(subject.ga_tag).to eq "#{frequency}_#{formatted_title}_#{Date.today.strftime('%m_%d_%y')}"
+      end
+    end
+  end
 end

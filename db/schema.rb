@@ -186,6 +186,11 @@ ActiveRecord::Schema.define(version: 20161108143955) do
 
   add_index "consumer_apps", ["uri"], name: "idx_16494_index_consumer_apps_on_uri", unique: true, using: :btree
 
+  create_table "consumer_apps_import_jobs", id: false, force: :cascade do |t|
+    t.integer "consumer_app_id", limit: 8
+    t.integer "import_job_id",   limit: 8
+  end
+
   create_table "consumer_apps_messages", id: false, force: :cascade do |t|
     t.integer "message_id",      limit: 8
     t.integer "consumer_app_id", limit: 8
@@ -608,9 +613,9 @@ ActiveRecord::Schema.define(version: 20161108143955) do
     t.text     "digest_query"
     t.string   "template"
     t.string   "sponsored_by"
+    t.boolean  "display_subscribe",                       default: false
     t.string   "digest_subject"
     t.string   "digest_preheader"
-    t.boolean  "display_subscribe",                       default: false
     t.string   "list_type",                               default: "custom_list"
     t.string   "sender_name"
   end

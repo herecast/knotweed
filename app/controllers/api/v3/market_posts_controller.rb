@@ -46,7 +46,7 @@ module Api
         query = params[:query].present? ? params[:query] : '*'
 
         @market_posts = Content.search query, opts
-        render json: @market_posts, each_serializer: DetailedMarketPostSerializer, meta: { total: @market_posts.count }
+        render json: @market_posts, each_serializer: DetailedMarketPostSerializer, meta: { total: @market_posts.total_count }
       end
 
       def create
