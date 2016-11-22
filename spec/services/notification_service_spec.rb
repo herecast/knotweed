@@ -8,7 +8,6 @@ RSpec.describe NotificationService do
   it { is_expected.to respond_to(:existing_subscription) }
 
   it { is_expected.to respond_to(:posting_verification) }
-  it { is_expected.to respond_to(:posting_confirmation) }
 
   describe "#subscription_confirmation" do
     let(:subscription) { FactoryGirl.create :subscription }
@@ -40,17 +39,6 @@ RSpec.describe NotificationService do
       expect(ListservMailer).to receive(:existing_subscription).with(subscription).and_return(mail)
 
       NotificationService.existing_subscription(subscription)
-    end
-  end
-
-  describe "#posting_confirmation" do
-    let(:listserv_content) { FactoryGirl.create :listserv_content }
-    it 'Delivers via activemailer delayed' do
-      mail = double()
-      expect(mail).to receive(:deliver_later)
-      expect(ListservMailer).to receive(:posting_confirmation).with(listserv_content, nil).and_return(mail)
-
-      NotificationService.posting_confirmation(listserv_content, nil)
     end
   end
 

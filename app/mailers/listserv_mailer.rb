@@ -26,27 +26,6 @@ class ListservMailer < ActionMailer::Base
     mail(to: @subscription.email, subject: 'Complete your Subscription')
   end
 
-  def posting_confirmation(post, temp_password = nil)
-    @post = post
-    @subscription = post.subscription
-    @listserv = post.listserv
-    @content = post.content
-    if temp_password.present?
-      @temp_password = AESCrypt.decrypt(
-        temp_password,
-        "listserv_content/#{post.key}"
-      )
-    end
-
-    if @post.content_id?
-      template = "posting_confirmation"
-    else
-      template = "no_enhance_posting_confirmation"
-    end
-
-    mail(to: @post.sender_email, subject: "#{@post.subject} - Your post is live! View Details", template_name: template)
-  end
-
   def posting_verification(post)
     @post = post
     @subscription = post.subscription

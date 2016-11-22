@@ -1,0 +1,20 @@
+%article.listserv-contents.verify.row
+  .col-sm-10.col-md-offset-1.text-center
+    - if @error == ContentOwnerMismatch
+      %h1 Oops!
+      %p This page isn't available for you.
+      %p=link_to 'Return to Daily UV homepage', 'http://dailyuv.com'
+    - elsif @listserv_content.invalid?
+      %h1 Oops!
+      %h2 Something has gone wrong.
+      %p Please let us know what you were trying to do, so we can fix this.
+      %p= link_to 'support@dailyuv.com','mailto:support@dailyuv.com'
+    - else
+      %h1.h1 You're all set!
+      - if @error == ListservExceptions::AlreadyVerified
+        %p You have already verified this post. Thank you!
+      - else
+        %p Your post will appear in tomorrow's #{@listserv_content.listserv.try(:name)} digest, but not on dailyUV.
+
+      %p
+        %a{href: "http://listserv.dailyuv.net"} Learn more
