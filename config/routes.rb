@@ -81,6 +81,7 @@ Knotweed::Application.routes.draw do
   get 'annotation_reports/:annotation_report_id/annotations/:annotation_id/edit', to: "annotations#edit", as: :edit_annotation
   resources :annotation_reports, only: [:edit, :destroy]
   resources :features
+  resources :market_categories, except: [:show]
   get 'annotation_reports/:id/table_row' => 'annotation_reports#table_row', as: :annotation_report_table_row
 
   get 'annotations/:id/accept(/:accepted)' => "annotations#accept_annotation", as: :accept_annotation
@@ -175,6 +176,8 @@ Knotweed::Application.routes.draw do
       get '/digests', to: 'digests#index'
       get '/digests/:id', to: 'digests#show'
       get '/features', to: 'features#index'
+      get '/market_categories', to: 'market_categories#index'
+      get '/market_categories/:id', to: 'market_categories#show'
     end
   end
 
