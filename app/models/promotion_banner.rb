@@ -27,6 +27,7 @@ class PromotionBanner < ActiveRecord::Base
   has_many :content_promotion_banner_impressions
   has_many :contents, through: :content_promotion_banner_impressions
   has_many :promotion_banner_reports
+  has_many :promotion_banner_metrics
 
   mount_uploader :banner_image, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_banner_image

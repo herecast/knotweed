@@ -756,6 +756,23 @@ ActiveRecord::Schema.define(version: 20161109210741) do
     t.datetime "updated_at",              null: false
   end
 
+  create_table "promotion_banner_metrics", force: :cascade do |t|
+    t.integer  "promotion_banner_id"
+    t.string   "event_type"
+    t.integer  "content_id"
+    t.string   "select_method"
+    t.float    "select_score"
+    t.integer  "user_id"
+    t.string   "location"
+    t.string   "page_url"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  add_index "promotion_banner_metrics", ["created_at"], name: "index_promotion_banner_metrics_on_created_at", using: :btree
+  add_index "promotion_banner_metrics", ["event_type"], name: "index_promotion_banner_metrics_on_event_type", using: :btree
+  add_index "promotion_banner_metrics", ["promotion_banner_id"], name: "index_promotion_banner_metrics_on_promotion_banner_id", using: :btree
+
   create_table "promotion_banner_reports", id: :bigserial, force: :cascade do |t|
     t.integer  "promotion_banner_id",    limit: 8
     t.datetime "report_date"

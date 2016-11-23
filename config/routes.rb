@@ -136,7 +136,6 @@ Knotweed::Application.routes.draw do
         defaults: { autocomplete: true, max_results: 5 }
       get '/locations', to: 'locations#index', as: :locations
       resources 'contents', only: [:index]
-      get '/contents/:id/related_promotion', to: 'contents#related_promotion', as: :related_promotion
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
       # specifying path here to avoid deprecating the frontend even though we've changed

@@ -44,6 +44,12 @@ module Api
         unless @banner.present? # banner must've expired or been used up since repo last updated
           render json: {}
         else
+          report_promotion_banner_metric('load',
+            content_id: params[:content_id],
+            select_method: select_method,
+            select_score: select_score
+          )
+
           unless @current_api_user.try(:skip_analytics?)
             @banner.increment_integer_attr! :load_count
             ContentPromotionBannerLoad.log_load(@content.try(:id), @banner.id,
@@ -59,6 +65,7 @@ module Api
 
       def track_impression
         @banner = PromotionBanner.find params[:id]
+        report_promotion_banner_metric('impression', content_id: params[:content_id])
 
         # increment promotion_banner counts for impressions and daily_impressions
         unless @current_api_user.try(:skip_analytics?)
@@ -76,12 +83,14 @@ module Api
         # of causing an exception with find
         @banner = PromotionBanner.find_by_id params[:promotion_banner_id]
         if @banner.present?
+          report_promotion_banner_metric('click', content_id: params[:content_id])
+          
           unless @current_api_user.try(:skip_analytics?)
             @banner.increment_integer_attr! :click_count
             @content = Content.find_by_id params[:content_id]
             @content.increment_integer_attr! :banner_click_count if @content.present?
           end
-          head :ok
+          render json: {}, status: :ok
         else
           head :unprocessable_entity and return
         end
@@ -115,6 +124,17 @@ module Api
 
       def user_can_manage?
         @current_api_user.ability.can?(:manage, @promotion_banner.promotion.organization)
+      end
+
+      def report_promotion_banner_metric(type, opts=nil)
+        PromotionBannerMetric.create(
+          event_type: type,
+          promotion_banner_id: @banner.id,
+          user_id: @current_api_user.try(:id),
+          content_id: opts[:content_id],
+          select_method: opts[:select_method],
+          select_score: opts[:select_score]
+        )
       end
     end
   end
