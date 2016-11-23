@@ -11,11 +11,13 @@
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  title         :string
+#  preheader     :string
 #
 
 class Campaign < ActiveRecord::Base
+  include HasPromotionForBanner
+
   belongs_to :listserv
-  belongs_to :promotion
 
   validate :require_a_community
   validate :prevent_community_overlap

@@ -60,7 +60,7 @@ class Content < ActiveRecord::Base
   include Auditable
   include Incrementable
 
-  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name,
+  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.searchkick_index_prefix,
     searchable: [:content, :title, :subtitle, :authors, :organization_name]
 
   def search_data
@@ -96,7 +96,7 @@ class Content < ActiveRecord::Base
   def self.default_search_opts
     {
       order: { pubdate: :desc },
-      where: { 
+      where: {
         pubdate: 5.years.ago..Time.zone.now
       }
     }
@@ -620,7 +620,7 @@ class Content < ActiveRecord::Base
     result
   end
 
-  # Updates this content's category based on the annotations from the CES 
+  # Updates this content's category based on the annotations from the CES
   # If no category annotation is found, this is a no-op
   def update_category_from_annotations(annotations)
     cat = DspClassify.get_category_from_annotations(annotations)
@@ -634,7 +634,7 @@ class Content < ActiveRecord::Base
   # new publish methods should return true
   # if publishing is successful and a string
   # with an error message if it is not.
-  
+
   def publish_to_dsp(repo, opts={})
     DspService.publish(self, repo)
   end
@@ -895,7 +895,7 @@ class Content < ActiveRecord::Base
       select_score = nil
       select_method = 'sponsored_content'
     else
-      # query graphdb for relevant active banner ads (pass title + content) 
+      # query graphdb for relevant active banner ads (pass title + content)
       results = DspService.query_promo_similarity_index(title + " " + content, id, repo)
 
       # select one random record from remaining results
@@ -1217,8 +1217,8 @@ class Content < ActiveRecord::Base
     body = {
       query: search_query,
       size: 0,
-      aggs: { 
-        parents: { 
+      aggs: {
+        parents: {
           filter: {
             bool: {
               must: [
@@ -1232,7 +1232,7 @@ class Content < ActiveRecord::Base
                 field: :root_parent_id,
                 order: { max_activity: :desc },
                 size: 1000
-              },  
+              },
               aggs: {
                 max_activity: { max: { field: :pubdate } }
               }

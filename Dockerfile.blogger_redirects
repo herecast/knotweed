@@ -1,0 +1,6 @@
+FROM python:2.7-slim
+RUN apt-get update && apt-get install -y apt-transport-https ca-certificates postgresql-client netcat-openbsd && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN pip install https://bitbucket.org/dbenamy/devcron/get/tip.tar.gz
+RUN mkdir /cron && echo '* * * * * /update_nginx_rewrites' > /cron/crontab
+ADD lib/update_nginx_rewrites /
+CMD ["devcron.py", "/cron/crontab"]

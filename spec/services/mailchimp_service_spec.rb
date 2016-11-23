@@ -394,7 +394,33 @@ RSpec.describe MailchimpService do
       end
     end
 
+    context 'given a subscription with mc_unsubscribed_at' do
+      let(:subscription) {
+        FactoryGirl.create(:subscription,
+         :confirmed,
+         unsubscribed_at: Time.now,
+         mc_unsubscribed_at: Time.now,
+         listserv: listserv,
+         name: "Bobby Roberts"
+        )
+      }
 
+      subject {
+        MailchimpService.update_subscription(subscription)
+      }
+
+      let(:subscriber_hash) { Digest::MD5.hexdigest subscription.email }
+
+      it 'does not make api update' do
+        apistub = stub_request(:put,
+          "https://#{base_url}/lists/#{listserv.mc_list_id}/members/#{subscriber_hash}"
+        )
+
+        subject
+
+        expect(apistub).to_not have_been_requested
+      end
+    end
   end
 
   describe '.subscribe' do
@@ -514,6 +540,9 @@ RSpec.describe MailchimpService do
               subject_line: digest.subject,
               from_name: digest.from_name,
               reply_to: digest.reply_to
+            },
+            tracking: {
+              google_analytics: digest.ga_tag
             }
           })
         ).to_return(

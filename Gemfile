@@ -31,6 +31,7 @@ gem 'forecast_io', '~> 2.0.0'
 gem 'geocoder', '~> 1.2.4'
 gem "google-api-client", '~> 0.7.1'
 gem "haml-rails", '~> 0.9.0'
+gem 'health_check', '~> 1.5', '>= 1.5.1'
 gem 'hpricot', '~> 0.8.6'
 gem 'httparty', '~> 0.12.0'
 gem 'icalendar', '~> 2.3'
@@ -77,7 +78,6 @@ gem 'summernote-rails', '~> 0.8.1'
 gem "turbolinks", '~> 2.2.0'
 gem 'uglifier', '~> 2.4.0'
 gem 'unf', '~> 0.1.3'
-gem 'whenever', '~> 0.9.2', :require => false
 gem 'puma', '~> 3.4'
 
 group :development, :test do

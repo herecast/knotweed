@@ -31,7 +31,7 @@
 
 class Organization < ActiveRecord::Base
 
-  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name
+  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.searchkick_index_prefix
 
   def search_data
     {
@@ -107,7 +107,7 @@ class Organization < ActiveRecord::Base
       []
     end
   end
-  
+
   def remove_logo=(val)
     logo_will_change! if val
     super

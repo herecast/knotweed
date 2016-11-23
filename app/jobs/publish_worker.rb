@@ -9,6 +9,7 @@ class PublishWorker < ApplicationJob
   def perform(publish_job)
     begin
       @publish_job = publish_job
+      @publish_job.update_attribute :status, 'running'
       record = @publish_job.publish_records.create
       @log = record.log_file
       if @publish_job.query_params[:repository_id].present?

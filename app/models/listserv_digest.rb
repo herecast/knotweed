@@ -20,6 +20,7 @@
 #  mc_segment_id        :string
 #  subscription_ids     :integer          default([]), is an Array
 #  title                :string
+#  preheader            :string
 #
 
 class ListservDigest < ActiveRecord::Base
@@ -78,6 +79,18 @@ class ListservDigest < ActiveRecord::Base
 
   def subscriber_emails
     subscriptions.present? ? subscriptions.pluck(:email) : []
+  end
+
+  def ga_tag
+    frequency = listserv.digest_send_day? ? "Weekly" : "Daily"
+    send_date = Date.today.strftime("%m_%d_%y")
+    formatted_title = title.gsub(' ', '_')
+    tag = "#{frequency}_#{formatted_title}_#{send_date}"
+    if tag.bytesize > 50
+      "#{frequency}_#{formatted_title[0,30]}_#{send_date}"
+    else
+      tag
+    end
   end
 
 end

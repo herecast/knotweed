@@ -63,7 +63,7 @@ describe Listserv, :type => :model do
   it { is_expected.to have_db_column(:digest_preheader).of_type(:string) }
   it { is_expected.to have_many(:campaigns) }
   it { is_expected.to have_db_column(:list_type).of_type(:string) }
-  
+
   describe '#active_subscriber_count' do
     it 'is equal to related active subscriptions' do
       ls = FactoryGirl.create :listserv
@@ -133,6 +133,39 @@ describe Listserv, :type => :model do
         expect(subject.errors[:mc_group_name]).to include('required when mc_list_id present')
       end
     end
+
+    context 'when given a promotion id' do
+      let!(:promo_with_banner) {
+        FactoryGirl.create :promotion,
+          promotable: FactoryGirl.create(:promotion_banner)
+      }
+
+      let!(:other_promo) {
+        FactoryGirl.create :promotion,
+          promotable: FactoryGirl.create(:promotion_listserv)
+      }
+
+      it 'checks existence of the promotion' do
+        subject.promotion_id = '190380'
+        subject.valid? #trigger validation
+        expect(subject.errors).to have_key(:promotion_id)
+
+        subject.promotion_id = promo_with_banner.id
+        subject.valid? #trigger validation
+        expect(subject.errors).to_not have_key(:promotion_id)
+      end
+
+      it 'requires promotion is tied to a PromotionBanner' do
+        subject.promotion_id = other_promo.id
+        subject.valid? #trigger validation
+        expect(subject.errors).to have_key(:promotion_id)
+
+        subject.promotion_id = promo_with_banner.id
+        subject.valid? #trigger validation
+        expect(subject.errors).to_not have_key(:promotion_id)
+      end
+    end
+
   end
 
   describe 'mc_group_name=' do

@@ -12,6 +12,7 @@ class ListservDigestJob < ApplicationJob
             location_ids: campaign.community_ids,
             subscription_ids: subscription_ids_for_campaign(campaign)
           }
+          campaign_attrs[:preheader] = campaign.preheader if campaign.preheader?
           campaign_attrs[:sponsored_by] = campaign.sponsored_by if campaign.sponsored_by?
           campaign_attrs[:promotion_id] = campaign.promotion_id if campaign.promotion_id?
           campaign_attrs[:title] = campaign.title if campaign.title?

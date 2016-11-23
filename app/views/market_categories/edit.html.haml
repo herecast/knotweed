@@ -1,0 +1,38 @@
+%div.span12.box.bordered-box.blue-border
+  %div.box-header.blue-background
+    .title
+      %i.icon-pencil
+      Market Category ID #{@market_category.id}
+  %div.box-content
+    = render 'form'
+    = link_to 'New Market Category', new_market_category_path, class: 'btn btn-primary'
+    = link_to 'All Market Categories', market_categories_path, class: 'btn btn-primary'
+    = link_to 'Delete Market Category', market_category_path(@market_category), method: :delete, class: 'btn btn-danger'
+  - if @search_preview
+    %table.table.table-striped.table-bordered.data-table.table-condensed
+      %thead
+        %tr
+          %th Content ID
+          %th Title
+          %th Email
+          %th Cost
+          %th # of Images
+          %th Published On
+          %th
+      %tbody
+        %h3 Search Results Preview
+        %strong= "Total Results: #{@search_preview.count}"
+        - @search_preview.each do |result|
+          %tr{ class: "market-category-#{result.id}" }
+            %td= result.id
+            %td= link_to result.title, edit_content_path(result)
+            %td= result.authoremail
+            - if result.channel
+              %td= result.channel.try(:cost)
+              %td= result.channel.images.count
+            - else
+              %td -
+              %td -
+            %td= result.pubdate.strftime('%m/%d')
+            %td
+              = link_to "Edit", edit_content_path(result), class: 'btn btn-mini'

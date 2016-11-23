@@ -2,27 +2,6 @@ module Api
   module V3
     class ContentsController < ApiController
       before_filter :check_logged_in!, only:  [:moderate, :dashboard, :metrics]
-      # pings the DSP to retrieve an active related banner ad (with inventory) for a generic
-      # content type.
-      def related_promotion
-        @content = Content.find params[:id]
-        # get related promo if exists
-        @banner, select_score, select_method = @content.get_related_promotion(@repository)
-
-        unless @banner.present? # banner must've expired or been used up since repo last updated
-          render json: {}
-        else
-          unless @current_api_user.try(:skip_analytics?)
-            @banner.increment_integer_attr! :load_count
-            ContentPromotionBannerLoad.log_load(@content.try(:id), @banner.id,
-                                                            select_method, select_score)
-          end
-
-          render json:  @banner, root: :related_promotion,
-            serializer: RelatedPromotionSerializer
-        end
-
-      end
 
       def similar_content
         expires_in 1.minutes, :public => true
@@ -48,7 +27,8 @@ module Api
         # the same way that the consumer app filters it.
         if Figaro.env.sim_stack_categories?
           @contents.select! do |c|
-            Figaro.env.sim_stack_categories.include? c.content_category.name
+            name = c.content_category.try(:name)
+            name && Figaro.env.sim_stack_categories.include?(name)
           end
         end
 

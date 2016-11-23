@@ -21,7 +21,7 @@
 class BusinessProfile < ActiveRecord::Base
 
   searchkick locations: ['location'], callbacks: :async, batch_size: 100,
-    index_prefix: Figaro.env.stack_name, match: :word_start,
+    index_prefix: Figaro.env.searchkick_index_prefix, match: :word_start,
     searchable: [:category_names, :title, :content, :business_location_name,
                  :business_location_city]
 

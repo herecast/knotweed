@@ -101,10 +101,16 @@ describe Api::V3::SubscriptionsController, type: :controller do
         expect(response.code).to eq('200')
       end
       
-      it 'updates the subscription' do
+      it 'updates the subscription unsubscribed_at' do
         subject
         body = JSON.parse(response.body)
         expect(body['subscription']['unsubscribed_at']).to_not be_nil
+      end
+
+      it 'updates the subscription mc_unsubscribed_at' do
+        expect{subject}.to change{
+          subscription.reload.mc_unsubscribed_at
+        }.from(nil).to(instance_of(ActiveSupport::TimeWithZone))
       end
     end
 

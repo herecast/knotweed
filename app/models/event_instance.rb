@@ -15,7 +15,7 @@
 #
 
 class EventInstance < ActiveRecord::Base
-  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.stack_name,
+  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.searchkick_index_prefix,
     searchable: [:content, :title, :subtitle_override, :event_category, :venue, :venue_name]
 
   belongs_to :event

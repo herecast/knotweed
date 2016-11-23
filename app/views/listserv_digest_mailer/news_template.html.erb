@@ -5,7 +5,7 @@
 <% @table_attrs = raw ' cellpadding="0" cellspacing="0" border="0"' %>
 
 <div class='preheader' style='display: none !important;'>
-  <%= @listserv.digest_preheader %>
+  <%= @digest.preheader? ? @digest.preheader : @listserv.digest_preheader %>
   <%= contents.collect{|c| c.title.truncate_words(8)}.join(' | ') %>
 </div>
 
@@ -64,7 +64,7 @@
           </td>
         </tr>
         <!-- END TITLE -->
-
+        
         <% if @digest.sponsored_by? %>
         <!-- SPONSOR -->
         <tr>

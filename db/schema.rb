@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161031171427) do
+ActiveRecord::Schema.define(version: 20161109210741) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -136,6 +136,7 @@ ActiveRecord::Schema.define(version: 20161031171427) do
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.string   "title"
+    t.string   "preheader"
   end
 
   add_index "campaigns", ["community_ids"], name: "index_campaigns_on_community_ids", using: :btree
@@ -220,13 +221,6 @@ ActiveRecord::Schema.define(version: 20161031171427) do
   create_table "contacts_organizations", id: false, force: :cascade do |t|
     t.integer "contact_id",      limit: 8
     t.integer "organization_id", limit: 8
-  end
-
-  create_table "contacts_publications", force: :cascade do |t|
-    t.integer  "contact_id"
-    t.integer  "publication_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "content_categories", id: :bigserial, force: :cascade do |t|
@@ -583,6 +577,7 @@ ActiveRecord::Schema.define(version: 20161031171427) do
     t.integer  "subscription_ids",     default: [],              array: true
     t.string   "mc_segment_id"
     t.string   "title"
+    t.string   "preheader"
   end
 
   add_index "listserv_digests", ["listserv_id"], name: "index_listserv_digests_on_listserv_id", using: :btree
@@ -665,6 +660,18 @@ ActiveRecord::Schema.define(version: 20161031171427) do
     t.datetime "updated_at"
   end
 
+  create_table "market_categories", force: :cascade do |t|
+    t.string   "name"
+    t.string   "query"
+    t.string   "category_image"
+    t.string   "detail_page_banner"
+    t.boolean  "featured",           default: false
+    t.boolean  "trending",           default: false
+    t.integer  "result_count"
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
+
   create_table "market_posts", id: :bigserial, force: :cascade do |t|
     t.string   "cost",                     limit: 255
     t.string   "contact_phone",            limit: 255
@@ -744,6 +751,23 @@ ActiveRecord::Schema.define(version: 20161031171427) do
     t.datetime "updated_at",              null: false
   end
 
+  create_table "promotion_banner_metrics", force: :cascade do |t|
+    t.integer  "promotion_banner_id"
+    t.string   "event_type"
+    t.integer  "content_id"
+    t.string   "select_method"
+    t.float    "select_score"
+    t.integer  "user_id"
+    t.string   "location"
+    t.string   "page_url"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  add_index "promotion_banner_metrics", ["created_at"], name: "index_promotion_banner_metrics_on_created_at", using: :btree
+  add_index "promotion_banner_metrics", ["event_type"], name: "index_promotion_banner_metrics_on_event_type", using: :btree
+  add_index "promotion_banner_metrics", ["promotion_banner_id"], name: "index_promotion_banner_metrics_on_promotion_banner_id", using: :btree
+
   create_table "promotion_banner_reports", id: :bigserial, force: :cascade do |t|
     t.integer  "promotion_banner_id",    limit: 8
     t.datetime "report_date"
@@ -799,18 +823,6 @@ ActiveRecord::Schema.define(version: 20161031171427) do
   add_index "promotions", ["created_by"], name: "idx_16765_index_promotions_on_created_by", using: :btree
   add_index "promotions", ["organization_id"], name: "idx_16765_index_promotions_on_publication_id", using: :btree
 
-  create_table "publications", force: :cascade do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "logo"
-    t.integer  "organization_id"
-    t.string   "website"
-    t.string   "publishing_frequency"
-    t.text     "notes"
-    t.integer  "parent_id"
-  end
-
   create_table "publish_jobs", id: :bigserial, force: :cascade do |t|
     t.text     "query_params"
     t.integer  "organization_id",    limit: 8
@@ -837,19 +849,6 @@ ActiveRecord::Schema.define(version: 20161031171427) do
   end
 
   add_index "publish_records", ["publish_job_id"], name: "idx_16811_index_publish_records_on_publish_job_id", using: :btree
-
-  create_table "rails_admin_histories", force: :cascade do |t|
-    t.text     "message"
-    t.string   "username"
-    t.integer  "item"
-    t.string   "table"
-    t.integer  "month",      limit: 2
-    t.integer  "year",       limit: 8
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "rails_admin_histories", ["item", "table", "month", "year"], name: "index_rails_admin_histories", using: :btree
 
   create_table "received_emails", force: :cascade do |t|
     t.string   "file_uri"
@@ -930,25 +929,11 @@ ActiveRecord::Schema.define(version: 20161031171427) do
     t.string   "name"
     t.string   "confirm_ip"
     t.string   "email_type",           default: "html"
+    t.datetime "mc_unsubscribed_at"
   end
 
   add_index "subscriptions", ["listserv_id"], name: "index_subscriptions_on_listserv_id", using: :btree
   add_index "subscriptions", ["user_id"], name: "index_subscriptions_on_user_id", using: :btree
-
-  create_table "triples", force: :cascade do |t|
-    t.integer  "dataset_id"
-    t.string   "resource_class"
-    t.integer  "resource_id"
-    t.string   "resource_text"
-    t.string   "predicate"
-    t.string   "object_type"
-    t.string   "object_class"
-    t.integer  "object_resource_id"
-    t.string   "object_resource_text"
-    t.string   "realm"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "user_wufoo_forms", id: false, force: :cascade do |t|
     t.integer "user_id",       limit: 8
