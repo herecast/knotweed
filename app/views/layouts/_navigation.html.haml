@@ -336,3 +336,14 @@
           = link_to new_feature_path do
             %i.icon-plus
             %span Create New
+  %li
+    = link_to market_categories_path do
+      %i.icon-sitemap
+      %span Market Categories
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "market_categories" ? "in" : "" }" }
+      %li{ class: current_page?(market_categories_path) ? "active" : "" }
+        %li{ class: current_page?(new_listserv_path) ? "active" : "" }
+          = link_to new_market_category_path do
+            %i.icon-plus
+            %span Create New

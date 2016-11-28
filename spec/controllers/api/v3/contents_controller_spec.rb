@@ -8,44 +8,6 @@ describe Api::V3::ContentsController, :type => :controller do
     @consumer_app.organizations = [@org]
   end
 
-  describe 'GET related_promotion' do
-    before do
-      @content = FactoryGirl.create :content
-      @related_content = FactoryGirl.create(:content)
-      allow_any_instance_of(Promotion).to receive(:update_active_promotions).and_return(true)
-      @promo = FactoryGirl.create :promotion, content: @related_content
-      @pb = FactoryGirl.create :promotion_banner, promotion: @promo
-      # avoid making calls to repo
-      allow_any_instance_of(DspService).to receive(:query_promo_similarity_index).and_return([])
-    end
-
-    subject { get :related_promotion, format: :json, 
-              id: @content.id, consumer_app_uri: @consumer_app.uri }
-
-    it 'has 200 status code' do
-      subject
-      expect(response.code).to eq('200')
-    end
-
-    it 'should increment the load count of the banner' do
-      expect{subject}.to change{@pb.reload.load_count}.by(1)
-    end
-
-    context 'with banner_ad_override' do
-      before do
-        @promo2 = FactoryGirl.create :promotion, content: FactoryGirl.create(:content)
-        @pb2 = FactoryGirl.create :promotion_banner, promotion: @promo2
-        @content.update_attribute :banner_ad_override, @promo2.id
-      end
-
-      it 'should respond with the banner specified by the banner_ad_override' do
-        subject
-        expect(assigns(:banner)).to eq @pb2
-      end
-    end
-
-  end
-
   describe 'GET similar_content' do
     before do
       ENV['sim_stack_categories'] = nil
