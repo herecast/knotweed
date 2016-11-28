@@ -169,6 +169,7 @@ Knotweed::Application.routes.draw do
       post '/registrations/confirmed', to: 'confirmed_registrations#create'
 
       resources :listserv_contents, only: [:show,:update]
+      get '/listserv_contents/:id/verify' => 'listserv_contents#verify', format: 'html'
       put '/businesses/:id/feedback', to: 'business_feedbacks#update', as: :update_feedback
       resources :content_reports, only: :index
       resources :promotion_banner_reports, only: :index

@@ -1,0 +1,47 @@
+@import 'bootstrap';
+
+@font-face {
+  font-family:proxima-nova;
+  src:url(https://use.typekit.net/af/03034e/00000000000000003b9ad1b1/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7) format("woff2"),url(https://use.typekit.net/af/03034e/00000000000000003b9ad1b1/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7) format("woff"),url(https://use.typekit.net/af/03034e/00000000000000003b9ad1b1/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7) format("opentype");
+  font-weight:700;
+  font-style:normal;
+}
+@font-face {
+  font-family:proxima-nova;
+  src:url(https://use.typekit.net/af/edab9a/00000000000000003b9ad1b9/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4) format("woff2"),url(https://use.typekit.net/af/edab9a/00000000000000003b9ad1b9/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4) format("woff"),url(https://use.typekit.net/af/edab9a/00000000000000003b9ad1b9/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4) format("opentype");
+  font-weight:400;
+  font-style:normal;
+}
+@font-face{
+  font-family:proxima-nova-extra-condensed;
+  src:url(https://use.typekit.net/af/aa6f5f/00000000000000003b9ad20b/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n6) format("woff2"),url(https://use.typekit.net/af/aa6f5f/00000000000000003b9ad20b/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n6) format("woff"),url(https://use.typekit.net/af/aa6f5f/00000000000000003b9ad20b/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n6) format("opentype");
+  font-weight:600;
+  font-style:normal;
+}
+
+body {
+  padding: 80px 40px 40px 40px;
+  background-color: #EFEFEF;
+  > {
+    main {
+      background: #fff;
+      box-shadow: 0 0 5px #777;
+      padding-top: 15px;
+      padding-bottom: 15px;
+    }
+    header h1 {
+      font-family: 'proxima-nova-extra-condensed', Verdana, Arial, Helvetica, sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding-top: 10px;
+      margin-top: 0;
+      font-size: 52px;
+      text-align: center;
+      a, a:hover {
+        text-decoration: none;
+        color: #333;
+        cursor: pointer;
+      }
+    }
+  }
+}

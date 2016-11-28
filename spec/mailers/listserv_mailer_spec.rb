@@ -130,8 +130,8 @@ RSpec.describe ListservMailer, type: :mailer do
     end
 
     it 'includes verify only link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{listserv_content.key}")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{listserv_content.key}")
+      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/api/v3/listserv_contents/#{listserv_content.key}/verify")
+      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/api/v3/listserv_contents/#{listserv_content.key}/verify")
     end
 
     it 'includes link to learn more' do
@@ -151,64 +151,6 @@ RSpec.describe ListservMailer, type: :mailer do
       end
       it 'does not display unsubscribe link' do
         expect(body_html).to_not include("UNSUBSCRIBE FROM") 
-      end
-    end
-  end
-
-  describe '#posting_confirmation' do
-    let(:content) { FactoryGirl.create :content }
-    let(:listserv_content) { FactoryGirl.create :listserv_content, sender_email: 'test@example.org', content: content }
-    subject { ListservMailer.posting_confirmation(listserv_content) }
-
-    it 'is sent to listserv_content#sender_email' do
-      expect(subject.to).to eql [listserv_content.sender_email]
-    end
-
-    it 'includes manage link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{listserv_content.subscription.key}/manage")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{listserv_content.subscription.key}/manage")
-    end
-
-    it 'includes list name' do
-      expect(body_html).to include(listserv_content.listserv.name)
-      expect(body_text).to include(listserv_content.listserv.name)
-    end
-
-    it 'includes account link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account")
-    end
-
-    it 'includes home page link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}")
-    end
-
-    it 'includes link to listserv marketing site' do
-      expect(body_html).to include(ENV['LISTSERV_MARKETING_URL'])
-      expect(body_text).to include(ENV['LISTSERV_MARKETING_URL'])
-    end
-
-    context 'when enhanced content;' do
-      let(:content) { FactoryGirl.create(:content) }
-      before do
-        listserv_content.update content: content
-      end
-
-      it 'has link to content' do
-        expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/#{content.content_type}/#{content.id}")
-        expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/#{content.content_type}/#{content.id}")
-      end
-
-    end
-
-    context 'when posting without enhancing content' do
-      before do
-        listserv_content.update content: nil
-      end
-
-      it 'uses the no_enhance_posting_confirmation email' do
-        expect(body_html).to include("non-enhance-confirmation")
       end
     end
   end

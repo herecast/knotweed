@@ -50,18 +50,6 @@ RSpec.describe VerifyAndUpdateListservContent do
       end
     end
 
-    context 'without content_id' do
-      before do
-        attributes[:content_id] = nil
-      end
-
-      it 'sends no enhance confirmation email' do
-        expect(NotificationService).to receive(:posting_confirmation)
-        subject
-      end
-    end
-
-
     context 'When content_id included in attributes update' do
       before do
         @user = FactoryGirl.create :user
@@ -73,25 +61,6 @@ RSpec.describe VerifyAndUpdateListservContent do
       it 'updates content reference' do
         subject
         expect(listserv_content.reload.content).to eql @content
-      end
-
-      it 'triggers confirmation email' do
-        expect(NotificationService).to receive(:posting_confirmation).with(listserv_content, an_instance_of(String).or(be_nil))
-        subject
-      end
-
-
-      context 'when user has temp_password set;' do
-        before do
-          @user.temp_password= "89r32jjkl2390"
-          @user.save!
-        end
-
-        it 'clear temp_password on user' do
-          expect{ subject }.to change{
-            @user.reload.temp_password
-          }.to nil
-        end
       end
 
       context 'when no existing user reference' do

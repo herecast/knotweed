@@ -136,4 +136,61 @@ RSpec.describe "listserv contents endpoints", type: :request do
       end
     end
   end
+
+  describe 'GET /api/v3/listserv_contents/:key/verify (HTML)' do
+    let(:remote_ip) { '192.168.0.1' }
+    before do
+      allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(remote_ip)
+    end
+
+    context 'when content exists;' do
+      let(:listserv_content) { FactoryGirl.create :listserv_content }
+      subject{ get '/api/v3/listserv_contents/' + listserv_content.key + '/verify', format: 'html' }
+
+      it 'passes record to VerifyAndUpdateListservContent process' do
+        expect(VerifyAndUpdateListservContent).to receive(:call).with(
+          listserv_content,
+          {verify_ip: remote_ip}
+        )
+        subject
+      end
+
+      context 'not verified yet' do
+        before do
+          listserv_content.update verified_at: nil
+        end
+
+        it "displays correct You're all set message" do
+          subject
+          expect(response.body).to include("You're all set")
+          expect(response.body).to include("Your post will appear in tomorrow's #{listserv_content.listserv.name} digest, but not on dailyUV")
+        end
+
+        it 'sets verify_ip to remote_ip' do
+          expect{subject}.to change{
+            listserv_content.reload.verify_ip
+          }.to(remote_ip)
+        end
+
+        it 'verifies the listserv content record' do
+          expect{subject}.to change{
+            listserv_content.reload.verified_at
+          }.to(instance_of(ActiveSupport::TimeWithZone))
+        end
+      end
+
+      context 'already verified' do
+        before do
+          listserv_content.update verified_at: Time.now, verify_ip: remote_ip
+        end
+
+        it "displays correct You're all set message" do
+          subject
+          expect(response.body).to include("You're all set")
+          expect(response.body).to include("You have already verified this post. Thank you!")
+        end
+
+      end
+    end
+  end
 end

@@ -16,10 +16,6 @@ module NotificationService
     ListservMailer.existing_subscription(subscription).deliver_later
   end
 
-  def posting_confirmation(posting, temp_password = nil)
-    ListservMailer.posting_confirmation(posting, temp_password).deliver_later
-  end
-
   def posting_verification(posting)
     ListservMailer.posting_verification(posting).deliver_later
   end

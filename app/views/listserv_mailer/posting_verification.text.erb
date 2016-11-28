@@ -1,18 +1,18 @@
-Thanks for posting to <%=@post.listserv.name%>
+Your post isn't published yet.
+This verification step helps reduce spam.
 ===========================================================================
 
-Your post isn't published yet.
+Confirm by choosing to...
 
-Please choose to...
-
-Add photos/edit: *
+SPRUCE IT UP
 http://<%=ENV['DEFAULT_CONSUMER_HOST']%>/lists/posts/<%=@post.key%>
 
-Publish without changes: *
-http://<%=ENV['DEFAULT_CONSUMER_HOST']%>/lists/confirm_post/<%=@post.key%>
+SEND AS IS
+http://<%=ENV['DEFAULT_CONSUMER_HOST']%>/api/v3/listserv_contents/<%=@post.key%>/verify
 
+BOTH CHOICES ARE FREE
 
-* By selecting one of these options you agree to subscribe to the <%= @listserv.name %> digest.
+This will subscribe you to the <%=@listserv.name%> digest, if you aren't already.
 
 ---------------------------------------------------------------------------
 

@@ -1,3 +1,7 @@
+<% content_for(:preheader) do %>
+  Open this email to confirm your post to <%=@listserv.name%>
+<% end %>
+
 <% content_for(:header) do %>
 <table style="margin-top: 20px; margin-bottom: 20px;border-spacing: 0;border-collapse: collapse;vertical-align: top;" cellpadding="0" cellspacing="0" width="100%">
   <tbody>
@@ -25,11 +29,8 @@
       <tr style="vertical-align: top">
         <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 5px;padding-right: 10px;padding-bottom: 0px;padding-left: 10px">
           <p style="margin: 0;font-size: 18px;line-height: 21px;text-align: center">
-            <span style="font-size: 26px; line-height: 31px;">
-              <strong>
-                Your post isn't published yet.
-              </strong>
-            </span>
+            Your post isn't published yet.<br>
+            This verification step helps reduce spam.
           </p>
         </td>
       </tr>
@@ -44,7 +45,7 @@
         <p style="color:#555555;margin: 0;font-size: 18px;line-height: 21px;text-align: left;">
           <span style="font-size: 18px;">
             <strong>
-              Choose to...
+              Confirm by choosing to...
             </strong>
           </span>
         </p>
@@ -82,7 +83,7 @@
                             valign="middle">
                               <span style="font-size:16px;line-height:32px;">
                                 <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #ffffff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;" do %>
-                                    ADD PHOTOS/EDIT *
+                                   SPRUCE IT UP
                                 <% end %>
                               </span>
                           </td>
@@ -119,8 +120,8 @@
                             style="border-collapse: collapse !important;vertical-align: top;border-radius: 5px;                   -webkit-border-radius: 5px;                   -moz-border-radius: 5px;                  color: #ffffff;                  background-color: #08AE66;                  padding-top: 5px;                   padding-right: 0px;                  padding-bottom: 5px;                  padding-left: 0px;                  text-align: center"
                             valign="middle">
                               <span style="font-size:16px;line-height:32px;">
-                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{@post.key}", style: "color: #ffffff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;" do %>
-                                    SEND AS IS *
+                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/api/v3/listserv_contents/#{@post.key}/verify", style: "color: #ffffff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;" do %>
+                                   SEND AS IS
                                 <% end %>
                               </span>
                           </td>
@@ -142,9 +143,14 @@
   <tbody>
     <tr style="vertical-align: top">
       <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
-        <p style="margin: 0;font-size: 14px;line-height: 16px;text-align: center">
+        <p style="font-size: 14px;line-height: 16px;text-align: center">
+          <strong>
+            BOTH CHOICES ARE FREE
+          </strong>
+        </p>
+        <p style="font-size: 14px;line-height: 16px;text-align: center">
           <span style="color: rgb(151, 151, 151); font-size: 14px; line-height: 16px;">
-            * By selecting one of these options you agree to subscribe to the <%= @listserv.name %> digest.
+            This will subscribe you to the <%= @listserv.name %> digest, if you aren't already.
           </span>
         </p>
       </td>
