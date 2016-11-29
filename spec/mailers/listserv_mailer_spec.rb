@@ -154,4 +154,24 @@ RSpec.describe ListservMailer, type: :mailer do
       end
     end
   end
+
+  describe '#subscriber_blacklisted' do
+    let(:listserv) { FactoryGirl.create :listserv, admin_email: 'admin@gmail.com' }
+    let(:subscription) { FactoryGirl.create :subscription, listserv: listserv }
+    subject { ListservMailer.subscriber_blacklisted(subscription) }
+
+    it 'is sent when a subscriber is blacklisted' do
+      expect(subject.subject).to eq "You've been blocked from posting to the #{subscription.listserv.name}"
+    end
+
+    it 'displays "Sorry!" in the title' do
+      expect(body_html).to include('Sorry!')
+      expect(body_text).to include('Sorry!')
+    end
+
+    it 'dispalys the admins email address' do
+      expect(body_html).to include('mailto:admin@gmail.com')
+      expect(body_text).to include('admin@gmail.com')
+    end
+  end
 end

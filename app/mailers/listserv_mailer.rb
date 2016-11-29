@@ -16,7 +16,7 @@ class ListservMailer < ActionMailer::Base
     @subscription = sub
     @listserv = sub.listserv
 
-    mail(to: @subscription.email, subject: 'Complete your Subscription')
+    mail(to: @subscription.email, subject: 'COMPLETE YOUR SUBSCRIPTION')
   end
 
   def existing_subscription(sub)
@@ -32,5 +32,12 @@ class ListservMailer < ActionMailer::Base
     @listserv = post.listserv
 
     mail(to: @post.sender_email, subject: "#{@post.subject} - CONFIRM TO PUBLISH")
+  end
+
+  def subscriber_blacklisted(sub)
+    @subscription = sub
+    @listserv = sub.listserv
+
+    mail(to: @subscription.email, subject: "You've been blocked from posting to the #{@listserv.name}")
   end
 end

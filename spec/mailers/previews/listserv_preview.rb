@@ -15,4 +15,12 @@ class ListservPreview < ActionMailer::Preview
   def posting_verification
     ListservMailer.posting_verification(ListservContent.last)
   end
+
+  def posting_confirmation
+    ListservMailer.posting_confirmation(ListservContent.last)
+  end
+
+  def subscriber_blacklisted
+    ListservMailer.subscriber_blacklisted(Subscription.last)
+  end
 end

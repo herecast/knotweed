@@ -618,6 +618,7 @@ ActiveRecord::Schema.define(version: 20161108143955) do
     t.string   "digest_preheader"
     t.string   "list_type",                               default: "custom_list"
     t.string   "sender_name"
+    t.string   "admin_email"
   end
 
   create_table "listservs_locations", id: false, force: :cascade do |t|
