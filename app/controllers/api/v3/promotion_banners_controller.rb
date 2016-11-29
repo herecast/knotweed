@@ -44,13 +44,14 @@ module Api
         unless @banner.present? # banner must've expired or been used up since repo last updated
           render json: {}
         else
-          report_promotion_banner_metric('load',
-            content_id: params[:content_id],
-            select_method: select_method,
-            select_score: select_score
-          )
 
           unless @current_api_user.try(:skip_analytics?)
+            report_promotion_banner_metric('load',
+              content_id: params[:content_id],
+              select_method: select_method,
+              select_score: select_score
+            )
+
             @banner.increment_integer_attr! :load_count
             ContentPromotionBannerLoad.log_load(@content.try(:id), @banner.id,
                                                             select_method, select_score)
@@ -65,10 +66,11 @@ module Api
 
       def track_impression
         @banner = PromotionBanner.find params[:id]
-        report_promotion_banner_metric('impression', content_id: params[:content_id])
 
         # increment promotion_banner counts for impressions and daily_impressions
         unless @current_api_user.try(:skip_analytics?)
+          report_promotion_banner_metric('impression', content_id: params[:content_id])
+
           @banner.increment_integer_attr! :impression_count
           @banner.increment_integer_attr! :daily_impression_count
 
@@ -82,10 +84,10 @@ module Api
         # use find_by_id because we want a return of nil instead
         # of causing an exception with find
         @banner = PromotionBanner.find_by_id params[:promotion_banner_id]
-        if @banner.present?
-          report_promotion_banner_metric('click', content_id: params[:content_id])
-          
+        if @banner.present?    
           unless @current_api_user.try(:skip_analytics?)
+            report_promotion_banner_metric('click', content_id: params[:content_id])
+
             @banner.increment_integer_attr! :click_count
             @content = Content.find_by_id params[:content_id]
             @content.increment_integer_attr! :banner_click_count if @content.present?
