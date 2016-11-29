@@ -33,6 +33,7 @@
 #  digest_preheader            :string
 #  list_type                   :string           default("custom_list")
 #  sender_name                 :string
+#  admin_email                 :string
 #
 
 class Listserv < ActiveRecord::Base

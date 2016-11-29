@@ -9,6 +9,8 @@ RSpec.describe NotificationService do
 
   it { is_expected.to respond_to(:posting_verification) }
 
+  it { is_expected.to respond_to(:subscriber_blacklisted) }
+
   describe "#subscription_confirmation" do
     let(:subscription) { FactoryGirl.create :subscription }
     it 'Delivers via activemailer delayed' do
@@ -50,6 +52,17 @@ RSpec.describe NotificationService do
       expect(ListservMailer).to receive(:posting_verification).with(listserv_content).and_return(mail)
 
       NotificationService.posting_verification(listserv_content)
+    end
+  end
+
+  describe '#subscriber_blacklisted' do
+    let(:subscription) { FactoryGirl.create :subscription }
+    it 'Delivers vis activemailer delayed' do
+      mail = double()
+      expect(mail).to receive(:deliver_later)
+      expect(ListservMailer).to receive(:subscriber_blacklisted).with(subscription).and_return(mail)
+
+      NotificationService.subscriber_blacklisted(subscription)
     end
   end
 

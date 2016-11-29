@@ -71,7 +71,8 @@ class ListservsController < ApplicationController
         :digest_preheader,
         :digest_subject,
         :list_type,
-        :sender_name
+        :sender_name,
+        :admin_email
       )
     end
 end

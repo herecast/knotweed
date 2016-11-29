@@ -19,4 +19,8 @@ module NotificationService
   def posting_verification(posting)
     ListservMailer.posting_verification(posting).deliver_later
   end
+
+  def subscriber_blacklisted(subscription)
+    ListservMailer.subscriber_blacklisted(subscription).deliver_later
+  end
 end
