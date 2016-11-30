@@ -32,17 +32,20 @@ Knotweed::Application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
 
-
+  custom_opts = {}
+  if ENV.fetch('STACK_NAME', nil)
+    custom_opts[:stack_name] = ENV['STACK_NAME']
+  end
   if ENV.fetch('LOG_STDOUT', false)
     config.logger = Logger.new(STDOUT)
   end
   config.lograge.enabled = true
   config.lograge.formatter = Lograge::Formatters::Json.new
   config.log_level = :info
-  if ENV.fetch('STACK_NAME', nil)
-    config.lograge.custom_options = lambda do |event|
-      {:stack_name => ENV['STACK_NAME']}
-    end
+  config.lograge.custom_options = lambda do |event|
+    exceptions = %w(controller action format id)
+    custom_opts[:params] = event.payload[:params].except(*exceptions)
+    custom_opts
   end
 
   # Prepend all log lines with the following tags
