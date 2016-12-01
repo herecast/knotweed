@@ -103,15 +103,25 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       expect(response.code).to eq('200')
     end
 
-    it "creates promotion banner metric of type: load" do
-      expect{ subject }.to change{
-        PromotionBannerMetric.count
-      }.by 1
-      expect(PromotionBannerMetric.last.event_type).to eq 'load'
+    it "calls record_promotion_banner_metric with 'load'" do
+      expect(BackgroundJob).to receive(:perform_later).with(
+        'RecordPromotionBannerMetric', "call", "load", any_args
+      )
+      subject
     end
 
-    it 'should increment the load count of the banner' do
-      expect{subject}.to change{@pb.reload.load_count}.by(1)
+    context 'as a user with skip_analytics = true' do
+      before do
+        @user = FactoryGirl.create :user, skip_analytics: true
+        api_authenticate user: @user
+      end
+
+      it 'should not call record_promotion_banner_metric' do
+        expect(BackgroundJob).not_to receive(:perform_later).with(
+          'RecordPromotionBannerMetric', "call", any_args
+        )
+        subject
+      end
     end
 
     it 'should create a ContentPromotionBannerLoad record if none exists' do
@@ -125,10 +135,6 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       cpbi = FactoryGirl.create :content_promotion_banner_load, content_id: @content.id, promotion_banner_id: @pb.id
       subject
       expect(cpbi.reload.load_count).to eq(2)
-    end
-
-    it 'does not modify the impression_count of banner' do
-      expect{subject}.to_not change{@pb.reload.impression_count}
     end
 
     context 'with banner_ad_override' do
@@ -160,15 +166,11 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       expect(response.status).to eq 200
     end
 
-    it 'creates promotion banner metric of type: impression' do
-      expect{ subject }.to change{
-        PromotionBannerMetric.count
-      }.by 1
-      expect(PromotionBannerMetric.last.event_type).to eq 'impression'
-    end
-
-    it 'should increment the daily impression count of the banner' do
-      expect{subject}.to change{@banner.reload.daily_impression_count}.by(1)
+    it "calls record_promotion_banner_metric with 'impression'" do
+      expect(BackgroundJob).to receive(:perform_later).with(
+        'RecordPromotionBannerMetric', "call", "impression", any_args
+      )
+      subject
     end
 
     context 'as a user with skip_analytics = true' do
@@ -177,12 +179,11 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         api_authenticate user: @user
       end
 
-      it 'should not increment banner.impression_count' do
-        expect{subject}.not_to change{@banner.reload.impression_count}
-      end
-
-      it 'should not increment the daily impression count of the banner' do
-        expect{subject}.not_to change{@banner.reload.daily_impression_count}
+      it 'should not call record_promotion_banner_metric' do
+        expect(BackgroundJob).not_to receive(:perform_later).with(
+          'RecordPromotionBannerMetric', "call", any_args
+        )
+        subject
       end
     end
   end
@@ -202,19 +203,15 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       expect(response.status).to eq 200
     end
 
-    it 'creates promotion banner metric of type: click' do
-      expect{ subject }.to change{
-        PromotionBannerMetric.count
-      }.by 1
-      expect(PromotionBannerMetric.last.event_type).to eq 'click'
+    it "calls record_promotion_banner_metric with 'click" do
+      expect(BackgroundJob).to receive(:perform_later).with(
+        'RecordPromotionBannerMetric', "call", "click", any_args
+      )
+      subject
     end
 
     it 'should increment content.banner_click_count' do
       expect{subject}.to change{@content.reload.banner_click_count}.by 1
-    end
-
-    it 'should increment banner.click_count' do
-      expect{subject}.to change{@banner.reload.click_count}.by 1
     end
 
     context 'as a user with skip_analytics = true' do
@@ -223,21 +220,16 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         api_authenticate user: @user
       end
 
-      it 'should not increment content.banner_click_count' do
-        expect{subject}.not_to change{@content.reload.banner_click_count}
-      end
-
-      it 'should not increment banner.click_count' do
-        expect{subject}.not_to change{@banner.reload.click_count}
+      it 'should not call record_promotion_banner_metric' do
+        expect(BackgroundJob).not_to receive(:perform_later).with(
+          'RecordPromotionBannerMetric', "call", any_args
+        )
+        subject
       end
     end
 
     context 'with content id missing' do
       subject { post :track_click, promotion_banner_id: @banner.id, format: :json }
-
-      it 'should increment banner.click_count' do
-        expect{subject}.to change{@banner.reload.click_count}.by 1
-      end
 
       it 'should respond with 200' do
         subject

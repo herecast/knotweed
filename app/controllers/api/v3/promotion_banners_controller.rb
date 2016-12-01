@@ -44,19 +44,18 @@ module Api
         unless @banner.present? # banner must've expired or been used up since repo last updated
           render json: {}
         else
-
           unless @current_api_user.try(:skip_analytics?)
-            report_promotion_banner_metric('load',
+            BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'load', @current_api_user, @banner, Date.current.to_s,
               content_id: params[:content_id],
               select_method: select_method,
               select_score: select_score
             )
-
-            @banner.increment_integer_attr! :load_count
-            ContentPromotionBannerLoad.log_load(@content.try(:id), @banner.id,
-                                                            select_method, select_score)
-
-            logger.info "[Load count incremented for]: #{@banner.inspect}"
+            ContentPromotionBannerLoad.log_load(
+              @content.try(:id),
+              @banner.id,
+              select_method,
+              select_score
+            )
           end
 
           render json:  @banner, root: :promotion,
@@ -67,17 +66,13 @@ module Api
       def track_impression
         @banner = PromotionBanner.find params[:id]
 
-        # increment promotion_banner counts for impressions and daily_impressions
         unless @current_api_user.try(:skip_analytics?)
-          report_promotion_banner_metric('impression', content_id: params[:content_id])
-
-          @banner.increment_integer_attr! :impression_count
-          @banner.increment_integer_attr! :daily_impression_count
-
-          logger.info "[Impression count incremented for]: #{@banner.inspect}"
+          BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'impression', @current_api_user, @banner, Date.current.to_s,
+            content_id: params[:content_id]
+          )
         end
 
-        head :ok
+        render json: {}, status: :ok
       end
 
       def track_click
@@ -86,9 +81,10 @@ module Api
         @banner = PromotionBanner.find_by_id params[:promotion_banner_id]
         if @banner.present?    
           unless @current_api_user.try(:skip_analytics?)
-            report_promotion_banner_metric('click', content_id: params[:content_id])
+            BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'click', @current_api_user, @banner, Date.current.to_s,
+              content_id: params[:content_id]
+            )
 
-            @banner.increment_integer_attr! :click_count
             @content = Content.find_by_id params[:content_id]
             @content.increment_integer_attr! :banner_click_count if @content.present?
           end
@@ -128,16 +124,6 @@ module Api
         @current_api_user.ability.can?(:manage, @promotion_banner.promotion.organization)
       end
 
-      def report_promotion_banner_metric(type, opts=nil)
-        PromotionBannerMetric.create(
-          event_type: type,
-          promotion_banner_id: @banner.id,
-          user_id: @current_api_user.try(:id),
-          content_id: opts[:content_id],
-          select_method: opts[:select_method],
-          select_score: opts[:select_score]
-        )
-      end
     end
   end
 end
