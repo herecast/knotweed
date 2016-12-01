@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::V3::PromotionBannerReportsController, type: :controller do
   before do
-    @promotion_banner_report = FactoryGirl.create :promotion_banner_report, report_date: Date.new(2016, 1, 1)
+    @promotion_banner_report = FactoryGirl.create :promotion_banner_report, report_date: Date.yesterday
     @promotion_banner_report.promotion_banner.promotion.update_attribute(:paid, 't')
   end
 
