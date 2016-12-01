@@ -1,0 +1,16 @@
+= simple_form_for @market_category, html: { class: 'form form-horizontal' }do |f|
+  = f.error_notification
+  -if @market_category.errors.messages[:base].present?
+    %div.alert.alert-error
+      %span= @market_category.errors.messages[:base].first
+
+  .form-inputs
+    = f.input :name
+    = f.input :query, as: :text
+    = f.input :category_image
+    = f.input :detail_page_banner
+    = f.input :featured
+    = f.input :trending
+
+  .form-actions
+    = f.button :submit

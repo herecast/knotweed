@@ -28,66 +28,6 @@ RSpec.describe ListservMailer, type: :mailer do
     end
   end
 
-  describe '#subscription_confirmation' do
-    let(:listserv) { FactoryGirl.create :listserv, unsubscribe_email: 'unsub.me@list.org' }
-    let(:subscription) { FactoryGirl.create :subscription, email: 'test@example.org', listserv: listserv }
-
-    subject { ListservMailer.subscription_confirmation(subscription) }
-
-    it 'is sent to subscription#email' do
-      expect(subject.to).to eql [subscription.email]
-    end
-
-    it 'includes list name' do
-      expect(body_html).to include(listserv.name)
-      expect(body_text).to include(listserv.name)
-    end
-
-    it 'includes manage link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/manage")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/manage")
-    end
-
-    it 'includes account link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account")
-    end
-
-    it 'includes home page link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}")
-    end
-
-    it 'includes link to the listserv marketing site' do
-      expect(body_html).to include(ENV['LISTSERV_MARKETING_URL'])
-      expect(body_text).to include(ENV['LISTSERV_MARKETING_URL'])
-    end
-
-    describe 'digest send time' do
-      before do
-        listserv.update digest_send_time: "09:30"
-        @dynamic_eastern_time_zone = Time.zone.now.dst? ? "EDT" : "EST"
-        @dynamic_pacific_time_zone = Time.zone.now.dst? ? "PDT" : "PST"
-
-      end
-
-      it 'shows in email' do
-        expect(body_html).to include("9:30 AM (#{@dynamic_eastern_time_zone})")
-        expect(body_text).to include("9:30 AM (#{@dynamic_eastern_time_zone})")
-      end
-
-      context 'When listserv timezone is different' do
-        before do 
-          listserv.update timezone: "Pacific Time (US & Canada)"
-        end
-
-        it 'shows in email with correct timezone' do
-          expect(body_html).to include("6:30 AM (#{@dynamic_pacific_time_zone})")
-          expect(body_text).to include("6:30 AM (#{@dynamic_pacific_time_zone})")
-        end
-      end
-    end
-  end
 
   describe '#existing_subscription' do
     let(:listserv) { FactoryGirl.create :listserv, unsubscribe_email: 'unsub.me@list.org' }
@@ -152,6 +92,26 @@ RSpec.describe ListservMailer, type: :mailer do
       it 'does not display unsubscribe link' do
         expect(body_html).to_not include("UNSUBSCRIBE FROM") 
       end
+    end
+  end
+
+  describe '#subscriber_blacklisted' do
+    let(:listserv) { FactoryGirl.create :listserv, admin_email: 'admin@gmail.com' }
+    let(:subscription) { FactoryGirl.create :subscription, listserv: listserv }
+    subject { ListservMailer.subscriber_blacklisted(subscription) }
+
+    it 'is sent when a subscriber is blacklisted' do
+      expect(subject.subject).to eq "You've been blocked from posting to the #{subscription.listserv.name}"
+    end
+
+    it 'displays "Sorry!" in the title' do
+      expect(body_html).to include('Sorry!')
+      expect(body_text).to include('Sorry!')
+    end
+
+    it 'dispalys the admins email address' do
+      expect(body_html).to include('mailto:admin@gmail.com')
+      expect(body_text).to include('admin@gmail.com')
     end
   end
 end

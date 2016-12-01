@@ -148,11 +148,6 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
         }
       end
 
-      it 'does not send subscription confirmation email' do
-        expect(NotificationService).to_not receive(:subscription_confirmation)
-        subject
-      end
-
       context 'when unsubscribed' do
         before do
           subscription.update unsubscribed_at: Time.now
@@ -175,11 +170,6 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
       it 'returns 204 status' do
         subject
         expect(response).to have_http_status(204)
-      end
-
-      it 'sends subscription confirmation email' do
-        expect(NotificationService).to receive(:subscription_confirmation).with(subscription)
-        subject
       end
 
       it 'sets confirm_ip and confirmed_at' do

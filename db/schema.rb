@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161108143955) do
+ActiveRecord::Schema.define(version: 20161109210741) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -618,6 +618,7 @@ ActiveRecord::Schema.define(version: 20161108143955) do
     t.string   "digest_preheader"
     t.string   "list_type",                               default: "custom_list"
     t.string   "sender_name"
+    t.string   "admin_email"
   end
 
   create_table "listservs_locations", id: false, force: :cascade do |t|
@@ -657,6 +658,25 @@ ActiveRecord::Schema.define(version: 20161108143955) do
   add_index "locations_organizations", ["location_id"], name: "idx_16710_index_locations_publications_on_location_id", using: :btree
   add_index "locations_organizations", ["organization_id", "location_id"], name: "idx_16710_index_locations_publications_on_publication_id_and_lo", using: :btree
   add_index "locations_organizations", ["organization_id"], name: "idx_16710_index_locations_publications_on_publication_id", using: :btree
+
+  create_table "locations_publications", force: :cascade do |t|
+    t.integer  "location_id"
+    t.integer  "publication_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "market_categories", force: :cascade do |t|
+    t.string   "name"
+    t.string   "query"
+    t.string   "category_image"
+    t.string   "detail_page_banner"
+    t.boolean  "featured",           default: false
+    t.boolean  "trending",           default: false
+    t.integer  "result_count"
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
 
   create_table "market_posts", id: :bigserial, force: :cascade do |t|
     t.string   "cost",                     limit: 255
@@ -736,6 +756,23 @@ ActiveRecord::Schema.define(version: 20161108143955) do
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
   end
+
+  create_table "promotion_banner_metrics", force: :cascade do |t|
+    t.integer  "promotion_banner_id"
+    t.string   "event_type"
+    t.integer  "content_id"
+    t.string   "select_method"
+    t.float    "select_score"
+    t.integer  "user_id"
+    t.string   "location"
+    t.string   "page_url"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  add_index "promotion_banner_metrics", ["created_at"], name: "index_promotion_banner_metrics_on_created_at", using: :btree
+  add_index "promotion_banner_metrics", ["event_type"], name: "index_promotion_banner_metrics_on_event_type", using: :btree
+  add_index "promotion_banner_metrics", ["promotion_banner_id"], name: "index_promotion_banner_metrics_on_promotion_banner_id", using: :btree
 
   create_table "promotion_banner_reports", id: :bigserial, force: :cascade do |t|
     t.integer  "promotion_banner_id",    limit: 8

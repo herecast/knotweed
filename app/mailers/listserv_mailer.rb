@@ -4,19 +4,11 @@ class ListservMailer < ActionMailer::Base
 
   add_template_helper ContentsHelper
 
-  def subscription_confirmation(sub)
-    @subscription = sub
-    @listserv = sub.listserv
-    @digest_send_time = sub.listserv.next_digest_send_time.in_time_zone(sub.listserv.timezone).strftime("%l:%M %p (%Z)")
-
-    mail(to: @subscription.email, subject: 'Subscription Details')
-  end
-
   def subscription_verification(sub)
     @subscription = sub
     @listserv = sub.listserv
 
-    mail(to: @subscription.email, subject: 'Complete your Subscription')
+    mail(to: @subscription.email, subject: 'COMPLETE YOUR SUBSCRIPTION')
   end
 
   def existing_subscription(sub)
@@ -32,5 +24,12 @@ class ListservMailer < ActionMailer::Base
     @listserv = post.listserv
 
     mail(to: @post.sender_email, subject: "#{@post.subject} - CONFIRM TO PUBLISH")
+  end
+
+  def subscriber_blacklisted(sub)
+    @subscription = sub
+    @listserv = sub.listserv
+
+    mail(to: @subscription.email, subject: "You've been blocked from posting to the #{@listserv.name}")
   end
 end

@@ -103,6 +103,13 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       expect(response.code).to eq('200')
     end
 
+    it "creates promotion banner metric of type: load" do
+      expect{ subject }.to change{
+        PromotionBannerMetric.count
+      }.by 1
+      expect(PromotionBannerMetric.last.event_type).to eq 'load'
+    end
+
     it 'should increment the load count of the banner' do
       expect{subject}.to change{@pb.reload.load_count}.by(1)
     end
@@ -153,6 +160,13 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       expect(response.status).to eq 200
     end
 
+    it 'creates promotion banner metric of type: impression' do
+      expect{ subject }.to change{
+        PromotionBannerMetric.count
+      }.by 1
+      expect(PromotionBannerMetric.last.event_type).to eq 'impression'
+    end
+
     it 'should increment the daily impression count of the banner' do
       expect{subject}.to change{@banner.reload.daily_impression_count}.by(1)
     end
@@ -186,6 +200,13 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     it 'should respond with 200' do
       subject
       expect(response.status).to eq 200
+    end
+
+    it 'creates promotion banner metric of type: click' do
+      expect{ subject }.to change{
+        PromotionBannerMetric.count
+      }.by 1
+      expect(PromotionBannerMetric.last.event_type).to eq 'click'
     end
 
     it 'should increment content.banner_click_count' do

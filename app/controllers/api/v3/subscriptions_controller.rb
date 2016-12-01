@@ -41,7 +41,7 @@ module Api
       end
 
       def confirm
-        ConfirmSubscriptionAndNotify.call(@subscription, request.remote_ip)
+        ConfirmSubscription.call(@subscription, request.remote_ip)
 
         render json: {}, status: :no_content
       end

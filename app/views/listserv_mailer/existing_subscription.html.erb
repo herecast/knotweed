@@ -4,7 +4,7 @@
       <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-bottom: 0px;padding-left: 10px">
         <p style="color:#555555;line-height: 31px; font-size: 26px;margin: 0;text-align: center">
           <strong>
-            Subscription Confirmed
+            You're all set!
           </strong>
         </p>
       </td>
@@ -17,7 +17,8 @@
       <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 15px;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
         <p style="margin: 0;font-size: 14px;line-height: 16px;text-align: center">
           <span style="color: rgb(51, 51, 51); font-size: 16px; line-height: 19px;">
-            Your subscription to <%= @listserv.name %> is active and can be managed through your dailyUV account.
+            You are subscribed to the <%= @listserv.name %>.  Look for the next digest in your inbox tomorrow!
+            To post, send an email to <b><%= @listserv.post_email %></b>
           </span><br>
         </p>
       </td>
