@@ -42,11 +42,9 @@ module Api
         end
 
         opts[:where][:root_content_category_id] = ContentCategory.find_by_name('market').id
-        # opts[:per_page] = 50
 
         query = params[:query].present? ? params[:query] : '*'
 
-        Rails.logger.debug "DEFAULT_OPTS: #{opts}"
         @market_posts = Content.search query, opts
         render json: @market_posts, each_serializer: DetailedMarketPostSerializer, meta: { total: @market_posts.total_count }
       end

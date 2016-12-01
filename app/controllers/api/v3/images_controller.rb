@@ -16,6 +16,7 @@ module Api
 
       def update
         @image = Image.find(params[:id])
+        @content = Content.find(params[:image][:content_id])
         if @image.update_attributes(image_params)
           render json: @image, serializer: ImageSerializer, status: 200
         else
