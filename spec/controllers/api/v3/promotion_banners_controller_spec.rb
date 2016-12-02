@@ -103,11 +103,39 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       expect(response.code).to eq('200')
     end
 
-    it "calls record_promotion_banner_metric with 'load'" do
-      expect(BackgroundJob).to receive(:perform_later).with(
-        'RecordPromotionBannerMetric', "call", "load", any_args
-      )
-      subject
+    context "when most_recent_reset_time is nil" do
+      before do
+        Rails.cache.clear
+      end
+
+      it "runs background job to clear daily impressions and to record 'load' event" do
+        expect(BackgroundJob).to receive(:perform_later).with(any_args).twice
+        subject
+      end
+    end
+
+    context "when most_recent_reset_time is from the previous day" do
+      before do
+        Rails.cache.write('most_recent_reset_time', Date.yesterday)
+      end
+
+      it "runs background job to clear daily impressions and to record 'load' event" do
+        expect(BackgroundJob).to receive(:perform_later).with(any_args).twice
+        subject
+      end
+    end
+
+    context "when most_recent_reset_time is from current day" do
+      before do
+        Rails.cache.write('most_recent_reset_time', Date.current)
+      end
+
+      it "records 'load' event" do
+        expect(BackgroundJob).to receive(:perform_later).with(
+          "RecordPromotionBannerMetric", "call", 'load', any_args
+        )
+        subject
+      end
     end
 
     context 'as a user with skip_analytics = true' do

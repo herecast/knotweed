@@ -85,5 +85,7 @@ module Knotweed
     # Default ActiveJob adapter
     # jobs can configure their own individually
     config.active_job.queue_adapter = :sidekiq
+
+    config.cache_store = :redis_store
   end
 end

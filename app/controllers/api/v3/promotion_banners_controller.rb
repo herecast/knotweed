@@ -27,6 +27,8 @@ module Api
       end
 
       def show
+        conditionally_reset_daily_impression_values
+
         if params[:promotion_id].present?
           @banner = Promotion.where(promotable_type: 'PromotionBanner').find(params[:promotion_id]).promotable
           select_score, select_method = nil, 'sponsored content'
@@ -122,6 +124,14 @@ module Api
 
       def user_can_manage?
         @current_api_user.ability.can?(:manage, @promotion_banner.promotion.organization)
+      end
+
+      def conditionally_reset_daily_impression_values
+        most_recent_reset_time = Rails.cache.fetch('most_recent_reset_time')
+        if most_recent_reset_time.nil? || most_recent_reset_time < Date.current
+          BackgroundJob.perform_later('ResetPromotionBannerDailyImpressionCounts', 'call')
+          Rails.cache.write('most_recent_reset_time', Time.current, expires_in: 24.hours)
+        end
       end
 
     end
