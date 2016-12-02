@@ -137,10 +137,12 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
   describe 'GET show' do
     before do
-      @market_post = FactoryGirl.create :content, content_category: @market_cat, published: true
+      @content = FactoryGirl.create :content, content_category: @market_cat
+      # @market_post = FactoryGirl.create :content, content_category: @market_cat, published: true
+      @market_post = FactoryGirl.create :market_post, content: @content
     end
 
-    subject { get :show, id: @market_post.id }
+    subject { get :show, id: @content.id }
 
     it 'has 200 status code' do
       subject
@@ -149,18 +151,17 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
     it 'appropriately loads the market_posts object' do
       subject
-      expect(assigns(:market_post)).to eq(@market_post)
+      expect(assigns(:market_post)).to eq(@content)
     end
 
     it 'should increment view count' do
-      expect{subject}.to change{Content.find(@market_post.id).view_count}.from(0).to(1)
+      expect{subject}.to change{Content.find(@content.id).view_count}.from(0).to(1)
     end
 
     describe 'can_edit' do
       before do
         @location = FactoryGirl.create :location, city: 'Another City'
         @user = FactoryGirl.create :user, location: @location
-        @market_post = FactoryGirl.create :content, content_category: @market_cat
         @market_post.update_attribute(:created_by, @user)
       end
 
@@ -196,7 +197,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
       it 'should queue record_user_visit' do
         expect{subject}.to have_enqueued_job(BackgroundJob).with('DspService',
-                        'record_user_visit', @market_post, @user, @repo)
+                        'record_user_visit', @content, @user, @repo)
       end
     end
 
@@ -211,7 +212,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
       it 'should load the content normally' do
         subject
-        expect(assigns(:market_post)).to eq(@market_post)
+        expect(assigns(:market_post)).to eq(@content)
       end
     end
 

@@ -55,7 +55,9 @@ module Api
       end
 
       def can_edit
-        if context.present? && context[:current_ability].present?
+        if object.channel.nil?
+          false
+        elsif context.present? && context[:current_ability].present?
           context[:current_ability].can?(:manage, object)
         else
           false
