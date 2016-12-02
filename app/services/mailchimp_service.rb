@@ -166,6 +166,18 @@ module MailchimpService
 
     return interest
   end
+  
+  def add_unsubscribe_hook(list_id)
+    data = detect_error(get("/lists/#{list_id}/webhooks"))
+    if data['webhooks'].empty?
+      detect_error(post("/lists/#{list_id}/webhooks", body: {
+        url: "#{ENV['DEFAULT_HOST']}/api/v3/subscriptions/unsubscribe_from_mailchimp",
+        events: { subscribe: false, unsubscribe: true, profile: false, cleaned: false, upemail: false, campaign: false },
+        sources: { user: true, admin: true, api: true }
+      }.to_json))
+    end
+
+  end
 
   def rename_digest(list_id, old_name, new_name)
     if new_name.present?

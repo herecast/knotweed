@@ -36,7 +36,7 @@
 #
 
 class Listserv < ActiveRecord::Base
-  include ListservSync
+  include ListservSupport
   include HasPromotionForBanner
 
   has_many :promotion_listservs

@@ -1,9 +1,10 @@
-module ListservSync
+module ListservSupport
 
   extend ActiveSupport::Concern
 
   included do
     after_save :sync_mc_digest_name, if: :mc_group_name_changed?
+    after_save :add_mc_webhook, if: :mc_list_id_changed?
   end
 
   def sync_mc_digest_name
@@ -17,5 +18,9 @@ module ListservSync
                                     self.mc_list_id, self.mc_group_name)
       end
     end
+  end
+
+  def add_mc_webhook
+    BackgroundJob.perform_later('MailchimpService', 'add_unsubscribe_hook', self.mc_list_id) if self.mc_list_id.present?
   end
 end
