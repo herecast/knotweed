@@ -67,11 +67,11 @@
             .span7
               .summernote-wrapper
                 = f.input :description, as: :summernote, label: 'Description'
-        - @organization.business_locations.each do |location|
-          = simple_fields_for location do |g|
+        - @organization.business_locations.each do | business_location |
+          = simple_fields_for business_location do |g|
             .row-fluid
               .span6
-                = g.hidden_field :business_location_id, value: location.id
+                = g.hidden_field :business_location_id, value: business_location.id
                 = g.input :name, input_html: { class: "input-block-level" }
                 = g.input :email, input_html: { class: "input-block-level" }
                 = g.input :venue_url, input_html: { class: "input-block-level" }
@@ -90,15 +90,16 @@
                 %span.pull-left.btn.btn-success.add-hours-link-organizations + Add Hours
               #business_location_hours
                 = g.fields_for :hours do |i|
-                  - if location.hours.present? && location.hours.is_a?(Array)
-                    - location.hours.each do |hour|
+                  - if business_location.hours.present? && business_location.hours.is_a?(Array)
+                    - business_location.hours.each do |hour|
                       .row-fluid
                         .span6
                           = i.text_field nil, value: hour, class: 'span12'
                         .span2.offset4
                           .btn.btn-danger.remove-hours-field X
-          = simple_fields_for location.business_profile do |h|
-            = h.association :business_categories, label_method: :name_with_parent, input_html: { class: 'chosen-select input-block-level' }
+          - if business_location.business_profile
+            = simple_fields_for business_location.business_profile do |h|
+              = h.association :business_categories, label_method: :name_with_parent, input_html: { class: 'chosen-select input-block-level' }
       .tab-pane#business_locations
         .pull-right
           - unless @organization.org_type == "Business"
