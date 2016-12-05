@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161122173640) do
+ActiveRecord::Schema.define(version: 20161201191947) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -791,7 +791,6 @@ ActiveRecord::Schema.define(version: 20161122173640) do
 
   add_index "promotion_banner_reports", ["promotion_banner_id"], name: "index_promotion_banner_reports_on_promotion_banner_id", using: :btree
   add_index "promotion_banner_reports", ["report_date"], name: "index_promotion_banner_reports_on_report_date", using: :btree
-
 
   create_table "promotion_banners", id: :bigserial, force: :cascade do |t|
     t.string   "banner_image",           limit: 255
