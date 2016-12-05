@@ -26,12 +26,15 @@ class ImportWorker < ApplicationJob
         @log.info("#{Time.current}: rescheduling #{@import_job.job_type} job: #{@import_job.name} during backup")
         ImportWorker.set(wait_until: ImportJob.backup_end).perform_later(@import_job) and return
       else
-        @log.info("#{Time.current}: source path: #{@import_job.source_path}")
+        @log.info("#{Time.current}: source path: #{@import_job.full_import_path}")
         @log.info("#{Time.current}: Running parser at #{Time.current}")
-        if @import_job.source_path =~ /^#{URI::regexp}$/
-          data = run_parser(@import_job.source_path)
+        if @import_job.source_uri.present? # web scraping import
+          data = run_parser(@import_job.source_uri)
+        elsif Figaro.env.imports_bucket.present?
+          data = parse_s3_files
         else
-          data = parse_file_tree(@import_job.source_path)
+          data = []
+          @log.info("#{Time.current}: App is not configured with an import bucket; nothing could be imported.")
         end
         process_data(data)
       end
@@ -64,18 +67,34 @@ class ImportWorker < ApplicationJob
 
   private
 
-  def parse_file_tree(source_path)
+  def parse_s3_files
+    connection = Fog::Storage.new({
+      :provider                 => 'AWS',
+      :aws_access_key_id        => Figaro.env.aws_access_key_id,
+      :aws_secret_access_key    => Figaro.env.aws_secret_access_key
+    })
+
+    files = connection.directories.get(Figaro.env.imports_bucket,
+                                       prefix: @import_job.inbound_prefix).files
     data = []
-    Find.find(source_path) do |path|
-      if FileTest.directory?(path)
-        next
-      else
-        @log.debug("#{Time.current}: running parser on path: #{path}")
-        begin
-          data += run_parser(path)
-        rescue StandardError => bang
-          @log.error("#{Time.current}: failed to parse #{path}: #{bang}")
-        end
+    files.each do |file|
+      @log.debug("#{Time.current}: running parser on: #{Figaro.env.imports_bucket}/#{file.key}")
+      begin
+        key = file.key
+        path = "s3://#{Figaro.env.imports_bucket}/#{key}"
+        # run the parser and then move the file to the outbound_prefix
+        data += run_parser(path)
+        # copy to new path
+        connection.copy_object(
+          Figaro.env.imports_bucket,
+          key,
+          Figaro.env.imports_bucket,
+          key.gsub(@import_job.inbound_prefix, @import_job.outbound_prefix)
+        )
+        # delete original
+        connection.delete_object(Figaro.env.imports_bucket, key)
+      rescue StandardError => bang
+        @log.error("#{Time.current}: failed to parse #{path}: #{bang}")
       end
     end
     data
@@ -184,7 +203,7 @@ class ImportWorker < ApplicationJob
   def handle_error(exception)
     @import_job.update status: 'failed', next_scheduled_run: nil,
       sidekiq_jid: nil
-    @log.info "#{Time.current}: input: #{@import_job.source_path}"
+    @log.info "#{Time.current}: input: #{@import_job.full_import_path}"
     @log.info "#{Time.current}: parser: #{ImportJob::PARSER_PATH}/#{@import_job.parser.filename}" if @import_job.parser.present?
     @log.error "#{Time.current}: error: #{exception}"
     if @import_job.notifyees.present?

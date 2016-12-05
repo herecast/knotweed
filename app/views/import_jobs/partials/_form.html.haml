@@ -3,12 +3,15 @@
 = simple_form_for @import_job, html: { data: { id: @import_job.id }, class: "form form-horizontal edit_import_job" } do |f|
   = f.error_notification
   = f.input :name
-  = f.input :source_path
+  = f.input :source_uri, hint: 'NOTE: You can either define a source URI *or* S3 information'
+  .row-fluid
+    = f.input :inbound_prefix, wrapper_html: { class: 'span5' }, label: 'Inbound S3 Prefix'
+    = f.input :outbound_prefix, wrapper_html: { class: 'span5' }, label: 'Outbound S3 Prefix'
   = f.input :run_at, as: :datetime_picker, label: "Schedule At"
   = f.input :job_type, collection: ImportJob::JOB_TYPES.map{ |m| [m.titlecase, m] }, 
     include_blank: false
   = f.input :frequency, hint: "Repeat every x minutes", wrapper_html: { class: "frequency" }
-  = f.association :parser, collection: Parser.accessible_by(current_ability, :read), input_html: { class: "chosen-select span4" }
+  = f.association :parser, collection: Parser.accessible_by(current_ability, :read), input_html: { class: "chosen-select span4" }, hint: 'NOTE: All filesystem based parsers except UVList and ongoing mail import parsers have been deprecated; please contact a developer if you need to use a different one.'
   = f.association :organization, input_html: { allow_single_deselect: true,
     class: "chosen-select-single-deselect span4", id: "organizations_select", data: { update_content_sets_url: update_content_sets_path } },
     include_blank: true

@@ -92,3 +92,6 @@ LISTSERV_MARKETING_URL: http://listserv.dailyUV.com
 ELASTICSEARCH_URL: http://localhost:9200
 
 REDIS_URL: redis://subtext-dev.0egmnu.0001.use1.cache.amazonaws.com/1
+
+# S3 bucket from which import jobs pull for file system imports
+IMPORTS_BUCKET: knotweed-imports-test

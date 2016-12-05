@@ -479,7 +479,7 @@ ActiveRecord::Schema.define(version: 20161122173640) do
     t.integer  "parser_id",             limit: 8
     t.string   "name",                  limit: 255
     t.text     "config"
-    t.string   "source_path",           limit: 255
+    t.string   "source_uri",            limit: 255
     t.string   "job_type",              limit: 255
     t.integer  "organization_id",       limit: 8
     t.datetime "created_at",                                        null: false
@@ -495,6 +495,8 @@ ActiveRecord::Schema.define(version: 20161122173640) do
     t.string   "publish_method",        limit: 255
     t.string   "sidekiq_jid"
     t.datetime "next_scheduled_run"
+    t.string   "inbound_prefix"
+    t.string   "outbound_prefix"
   end
 
   create_table "import_locations", id: :bigserial, force: :cascade do |t|
