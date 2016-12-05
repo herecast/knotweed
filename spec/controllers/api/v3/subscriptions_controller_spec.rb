@@ -52,14 +52,14 @@ describe Api::V3::SubscriptionsController, type: :controller do
       post :create, @sub_attrs, format: :json
       expect(response.code).to eq '422'
     end
-    
+
     it 'silently re-subscribes a user to the listserv' do
       expect(SubscribeToListservSilently).to receive(:call).with(@listserv, @user, '0.0.0.0')
       subject
     end
 
     context 'when a user re-subscribes' do
-      
+
       it 'handles already persisted subscriptions' do
         @subscription = Subscription.create(@sub_attrs[:subscription])
         subject
@@ -71,7 +71,7 @@ describe Api::V3::SubscriptionsController, type: :controller do
         subject
         expect(assigns(:subscription).unsubscribed_at).to be_nil
       end
-      
+
     end
   end
 
@@ -93,14 +93,14 @@ describe Api::V3::SubscriptionsController, type: :controller do
                                  "list_id"=>"#{listserv.mc_list_id}"}} }
 
     subject { post :unsubscribe_from_mailchimp, mc_request }
- 
+
     #maybe set up VCR to get the response or create a fixture
     context 'when the user unsubscribes' do
       it 'has a 200 status code' do
         subject
         expect(response.code).to eq('200')
       end
-      
+
       it 'updates the subscription unsubscribed_at' do
         subject
         body = JSON.parse(response.body)
@@ -117,13 +117,13 @@ describe Api::V3::SubscriptionsController, type: :controller do
     context 'when the user is unsubscribed' do
       before do
         subscription.update_attributes(unsubscribed_at: 1.day.ago)
-      
+
       end
       it 'has a 200 status code' do
         subject
         expect(response.code).to eq('200')
       end
-      
+
       it 'does not change subscribed_at if already set' do
         expect { subject }.not_to change { subscription.unsubscribed_at }
       end

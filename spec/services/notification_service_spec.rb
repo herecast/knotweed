@@ -3,24 +3,12 @@ require 'spec_helper'
 RSpec.describe NotificationService do
   subject { NotificationService }
 
-  it { is_expected.to respond_to(:subscription_confirmation) }
   it { is_expected.to respond_to(:subscription_verification) }
   it { is_expected.to respond_to(:existing_subscription) }
 
   it { is_expected.to respond_to(:posting_verification) }
 
   it { is_expected.to respond_to(:subscriber_blacklisted) }
-
-  describe "#subscription_confirmation" do
-    let(:subscription) { FactoryGirl.create :subscription }
-    it 'Delivers via activemailer delayed' do
-      mail = double()
-      expect(mail).to receive(:deliver_later)
-      expect(ListservMailer).to receive(:subscription_confirmation).with(subscription).and_return(mail)
-
-      NotificationService.subscription_confirmation(subscription)
-    end
-  end
 
   describe "#subscription_verification" do
     let(:subscription) { FactoryGirl.create :subscription }

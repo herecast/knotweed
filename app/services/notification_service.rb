@@ -4,10 +4,6 @@
 module NotificationService
   extend self
 
-  def subscription_confirmation(subscription)
-    ListservMailer.subscription_confirmation(subscription).deliver_later
-  end
-
   def subscription_verification(subscription)
     ListservMailer.subscription_verification(subscription).deliver_later
   end

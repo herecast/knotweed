@@ -4,14 +4,6 @@ class ListservMailer < ActionMailer::Base
 
   add_template_helper ContentsHelper
 
-  def subscription_confirmation(sub)
-    @subscription = sub
-    @listserv = sub.listserv
-    @digest_send_time = sub.listserv.next_digest_send_time.in_time_zone(sub.listserv.timezone).strftime("%l:%M %p (%Z)")
-
-    mail(to: @subscription.email, subject: 'Subscription Details')
-  end
-
   def subscription_verification(sub)
     @subscription = sub
     @listserv = sub.listserv
