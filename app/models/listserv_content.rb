@@ -123,6 +123,26 @@ class ListservContent < ActiveRecord::Base
     end
   end
 
+  def update_from_content(content)
+    assign_attributes(
+      subject: content.title,
+      content_category: content.root_content_category,
+      body: content.sanitized_content,
+      user: content.created_by,
+      sender_email: content.created_by.email,
+      sender_name: content.created_by.name,
+      content: content
+    )
+  end
+
+  def sent_in_digest?
+    if persisted?
+      return ListservDigest.has_listserv_content(self).exists?
+    else
+      return false
+    end
+  end
+
   protected
   def generate_key
     self.key = SecureRandom.uuid

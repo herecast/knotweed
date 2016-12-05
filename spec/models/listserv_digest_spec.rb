@@ -28,8 +28,8 @@ RSpec.describe ListservDigest, type: :model do
   it { is_expected.to have_db_column(:mc_campaign_id).of_type(:string) }
   it { is_expected.to have_db_column(:mc_segment_id).of_type(:string) }
   it { is_expected.to have_db_column(:sent_at).of_type(:datetime) }
-  it { is_expected.to have_db_column(:listserv_content_ids).of_type(:string) }
-  it { is_expected.to have_db_column(:content_ids).of_type(:string) }
+  it { is_expected.to have_db_column(:listserv_content_ids).of_type(:integer) }
+  it { is_expected.to have_db_column(:content_ids).of_type(:integer) }
   it { is_expected.to have_db_column(:subject).of_type(:string) }
   it { is_expected.to have_db_column(:template).of_type(:string) }
   it { is_expected.to have_db_column(:from_name).of_type(:string) }

@@ -67,5 +67,6 @@ FactoryGirl.define do
     content_category
     authoremail 'fake@email.com'
     published false
+    created_by { FactoryGirl.create(:user) }
   end
 end

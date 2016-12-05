@@ -248,4 +248,72 @@ RSpec.describe ListservContent, type: :model do
     end
   end
 
+  describe '#update_from_content' do
+    context 'Given a content record' do
+      let(:content) { FactoryGirl.create(:content, created_by: FactoryGirl.create(:user)) }
+      subject { described_class.new }
+      before do
+        subject.update_from_content content
+      end
+
+      it 'has matching subject to content.title' do
+        expect(subject.subject).to eql content.title
+      end
+
+      it 'has body to sanitized content' do
+        expect(subject.body).to eql content.sanitized_content
+      end
+
+      it 'sets content_id reference' do
+        expect(subject.content_id).to eql content.id
+      end
+
+      it 'sets user' do
+        expect(subject.user).to eql content.created_by
+      end
+
+      it 'sets email' do
+        expect(subject.sender_email).to eql content.created_by.email
+      end
+
+      it 'sets name' do
+        expect(subject.sender_name).to eql content.created_by.name
+      end
+
+      it 'has matching category to content root category' do
+        expect(subject.content_category).to eql content.root_content_category
+      end
+    end
+  end
+
+  describe '#sent_in_digest?' do
+    let(:content) { FactoryGirl.create :content }
+    let(:listserv) { FactoryGirl.create :listserv }
+
+    subject{
+      FactoryGirl.create :listserv_content,
+        listserv: listserv,
+        content: content
+    }
+
+
+    context 'When no digest with record in listserv_content_ids' do
+      it 'is false' do
+        expect(subject.sent_in_digest?).to be false
+      end
+    end
+
+    context 'When digest exists with record in listsrv_content_ids' do
+      let!(:digest) {
+        FactoryGirl.create :listserv_digest,
+          listserv: listserv,
+          listserv_content_ids: [subject.id]
+      }
+
+      it 'is true' do
+        expect(subject.sent_in_digest?).to be true
+      end
+    end
+  end
+
 end

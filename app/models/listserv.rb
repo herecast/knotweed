@@ -79,14 +79,6 @@ class Listserv < ActiveRecord::Base
     subscriptions.active.count
   end
 
-  # Sends the content to this listserv using ReversePublishMailer
-  def send_content_to_listserv(content, consumer_app=nil)
-    outbound_mail = ReversePublisher.mail_content_to_listservs(content, [self], consumer_app)
-    outbound_mail.deliver_later
-    ReversePublisher.send_copy_to_sender_from_dailyuv(content, outbound_mail.text_part.body.to_s, outbound_mail.html_part.body.to_s).deliver_later
-    add_listserv_location_to_content(content)
-  end
-
   def add_listserv_location_to_content(content)
     if self.locations.present?
       self.locations.each do |l|

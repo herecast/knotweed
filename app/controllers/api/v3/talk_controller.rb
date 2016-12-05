@@ -45,7 +45,13 @@ module Api
         if @talk.save
           listserv_id = params[:talk][:listserv_id]
           if listserv_id.present?
-            PromotionListserv.create_from_content(@talk.content, Listserv.find(listserv_id), @requesting_app)
+            listserv = Listserv.find(listserv_id)
+            PromoteContentToListservs.call(
+              @talk.content,
+              @requesting_app,
+              request.remote_ip,
+              listserv
+            )
           end
 
           if @repository.present?

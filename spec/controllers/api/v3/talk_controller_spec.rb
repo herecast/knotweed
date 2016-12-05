@@ -211,14 +211,24 @@ describe Api::V3::TalkController, :type => :controller do
 
       context 'with listserv_id' do
         before do
+          @consumer_app = FactoryGirl.create :consumer_app, uri: 'http://test.me'
+          request.headers['Consumer-App-Uri'] = @consumer_app.uri
+
           @listserv = FactoryGirl.create :vc_listserv
           @basic_attrs[:listserv_id] = @listserv.id
+          @ip = '1.1.1.1'
+          allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(@ip)
         end
 
-        it { expect{subject}.to change{PromotionListserv.count}.by(1) }
-        it { expect{subject}.to change{Promotion.count}.by(1) }
-        # triggers mail to both listserv and the user
-        it { expect{subject}.to change{ActiveJob::Base.queue_adapter.enqueued_jobs.size}.by(2) }
+        it 'promotes the content to the listserv' do
+          expect(PromoteContentToListservs).to receive(:call).with(
+            instance_of(Content),
+            @consumer_app,
+            @ip,
+            @listserv
+          )
+          subject
+        end
 
         it 'creates content associated with users home community when enhancing though the listserv' do
           expect{subject}.to change { Content.count}.by(1)

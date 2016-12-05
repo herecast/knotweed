@@ -12,6 +12,7 @@
 class PromotionListserv < ActiveRecord::Base
   has_one :promotion, as: :promotable
   belongs_to :listserv
+  belongs_to :listserv_content
 
   validates_associated :promotion, :listserv
 
@@ -21,6 +22,7 @@ class PromotionListserv < ActiveRecord::Base
   #
   # @param content [Content] the content object to associate the promotion with
   # @param listserv [Listserv] listserv object to associate the PromotionListserv with
+  # @param consumer_app [ConsumerApp] for generating correct urls in emails
   # @return [PromotionListserv] the new PromotionListserv object
   def self.create_from_content(content, listserv, consumer_app=nil)
     if listserv.present? and listserv.active and content.authoremail.present?
@@ -28,54 +30,10 @@ class PromotionListserv < ActiveRecord::Base
       p.promotable = PromotionListserv.new listserv_id: listserv.id
       p.save!
 
-      listserv.add_listserv_location_to_content(content)
-
-      # send content emails if the listserv is a Vital Communities managed list
-      # otherwise, we handle mailing it ourself, elsewhere.
-      if listserv.is_vc_list?
-        listserv.send_content_to_listserv(content, consumer_app)
-        p.promotable.update_attribute :sent_at, DateTime.current
-      end
-
       # return promotable
       p.promotable
     else
       false
     end
   end
-
-  # Handles promotion of one piece of content to multiple listservs. Sends one email to 
-  # all the listservs and creates promotion_listserv records for each.
-  #
-  # @param content [Content] the content object
-  # @param listserv_ids [Array<Integer>] listserv IDs to use to lookup listservs
-  # @return [Array<PromotionListserv>] the created PromotionListserv objects
-  def self.create_multiple_from_content(content, listserv_ids, consumer_app=nil)
-    return false unless content.authoremail.present? and listserv_ids.present? # need authoremail to send to lists
-    listservs = Listserv.where(id: listserv_ids, active: true)
-
-    vc_lists = listservs.select{ |l| l.is_vc_list? }
-    if vc_lists.present?
-      outbound_mail = ReversePublisher.mail_content_to_listservs(content, vc_lists, consumer_app)
-      outbound_mail.deliver_later
-      sent_time = DateTime.current
-    end
-
-    promotion_listservs = []
-
-    listservs.each do |l|
-      l.add_listserv_location_to_content(content) 
-      # create PromotionListserv records
-      p = Promotion.new content: content
-      p.promotable = PromotionListserv.create!(listserv_id: l.id, sent_at: sent_time)
-      p.save!
-      promotion_listservs << p
-    end
-
-    # don't send confirmation unless they sent it to a Vital Communities list
-    ReversePublisher.send_copy_to_sender_from_dailyuv(content, outbound_mail.text_part.body.to_s, outbound_mail.html_part.body.to_s).deliver_later if vc_lists.present?
-
-    promotion_listservs
-  end
-
 end
