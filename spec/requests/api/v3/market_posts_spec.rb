@@ -217,5 +217,20 @@ describe 'Market Posts', type: :request do
       end
       
     end
+
+    context 'when no market post object exists for content' do
+      let(:listserv_content) { FactoryGirl.create :content, content_category: market_cat }
+      
+      before do
+        allow_any_instance_of(Ability).to receive(:can?).with(:manage, listserv_content).and_return(true)
+      end
+
+      it 'returns false' do
+        get "/api/v3/market_posts/#{listserv_content.id}"
+        expect(response_json[:market_post][:can_edit]).to eq false
+      end
+
+    end
+
   end
 end

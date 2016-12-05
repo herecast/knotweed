@@ -272,6 +272,7 @@ describe Listserv, :type => :model do
       end
 
       it 'triggers MailchimpService.find_or_create_digest' do
+        expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'add_unsubscribe_hook', listserv.mc_list_id)
         expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'find_or_create_digest', listserv.mc_list_id, listserv.mc_group_name)
         listserv.save!
       end
@@ -291,6 +292,26 @@ describe Listserv, :type => :model do
         expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'rename_digest', listserv.mc_list_id, 'old name', 'Test Digest')
         listserv.save!
       end
+    end
+  end
+
+  describe 'adding mailchimp webhook' do
+    let(:listserv) { FactoryGirl.build_stubbed :listserv, mc_list_id: '123', mc_group_name: 'group_name' }
+    let!(:persisted_listserv) { FactoryGirl.create :listserv, mc_list_id: '000', mc_group_name: 'group_name' }
+
+    before do
+      allow(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'find_or_create_digest', listserv.mc_list_id, listserv.mc_group_name).and_return(true)
+    end
+
+    it 'triggers Mailchimp.add_mc_webhook when saving a listserv' do
+      expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'add_unsubscribe_hook', listserv.mc_list_id)
+      listserv.save!
+    end
+
+    it 'triggers MailchimpService when a listserv mc_list_id changes' do
+      expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'add_unsubscribe_hook', '321')
+      persisted_listserv.update_attributes(mc_list_id: '321')
+      persisted_listserv.save!
     end
   end
 

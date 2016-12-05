@@ -29,7 +29,7 @@
 FactoryGirl.define do
   factory :import_job do
     name "MyString"
-    source_path "#{Rails.root}/lib/parsers/test/input"
+    source_uri "http://www.google.com"
     organization
   end
 end

@@ -59,13 +59,14 @@ describe Api::V3::ImagesController, :type => :controller do
 
   describe 'PUT update' do
     before do
+      @content = FactoryGirl.create :content
       @img = FactoryGirl.create :image, primary: false
       # need to have multiple images on the imageable or the first one is set to primary automatically
       @img2 = FactoryGirl.create :image, primary: true
       @market_post.content.images += [@img, @img2]
     end
 
-    subject { put :update, id: @img.id, image: { primary: true } }
+    subject { put :update, id: @img.id, image: { primary: true, content_id: @content.id } }
 
     it 'should update the primary attribute' do
       expect{subject}.to change{@img.reload.primary}.to true
@@ -74,7 +75,7 @@ describe Api::V3::ImagesController, :type => :controller do
     context 'image caption' do
       let(:caption) { 'my nice caption' }
 
-      subject { put :update, id: @img.id, image: { primary: true, caption: caption } }
+      subject { put :update, id: @img.id, image: { primary: true, caption: caption, content_id: @content.id } }
       it 'should update image caption' do
         expect{subject}.to change{@img.reload.caption}.to caption
       end
@@ -86,7 +87,7 @@ describe Api::V3::ImagesController, :type => :controller do
         allow_any_instance_of(Image).to receive(:update_attributes).and_return(false)
       end
 
-      subject { put :update, id: @img.id, image: { primary: true } }
+      subject { put :update, id: @img.id, image: { primary: true, content_id: @content.id } }
 
       it "returns unprocessable entity status" do
         subject

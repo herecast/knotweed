@@ -2,8 +2,9 @@ require 'spec_helper'
 
 describe Api::V3::PromotionBannerReportsController, type: :controller do
   before do
-    @promotion_banner_report = FactoryGirl.create :promotion_banner_report, report_date: Date.new(2016, 1, 1)
+    @promotion_banner_report = FactoryGirl.create :promotion_banner_report, report_date: Date.yesterday
     @promotion_banner_report.promotion_banner.promotion.update_attribute(:paid, 't')
+    @other_pbr = FactoryGirl.create :promotion_banner_report, report_date: Date.current - 2.days, promotion_banner_id: @promotion_banner_report.promotion_banner_id
   end
 
   subject { get :index }
@@ -19,8 +20,8 @@ describe Api::V3::PromotionBannerReportsController, type: :controller do
       "report_date" => @promotion_banner_report.report_date.strftime("%Y-%m-%d %T"),
       "daily_impression_count" => @promotion_banner_report.impression_count.to_s,
       "daily_click_count" => @promotion_banner_report.click_count.to_s,
-      "total_impression_count" => @promotion_banner_report.total_impression_count,
-      "total_click_count" => @promotion_banner_report.total_click_count,
+      "total_impression_count" => (@promotion_banner_report.impression_count + @other_pbr.impression_count).to_s,
+      "total_click_count" => (@promotion_banner_report.click_count + @other_pbr.click_count).to_s,
       "campaign_start" => @promotion_banner_report.promotion_banner.campaign_start.strftime("%Y-%m-%d"),
       "campaign_end" => @promotion_banner_report.promotion_banner.campaign_end.strftime("%Y-%m-%d"),
       "max_impressions" => @promotion_banner_report.promotion_banner.max_impressions.to_s,

@@ -30,7 +30,7 @@ class ContentSetsController < ApplicationController
       flash[:notice] = "Successfully updated content set #{@content_set.id}"
       if params[:add_import_job]
         import_job = { :organization_id => @content_set.organization.id, :content_set_id => @content_set.id }
-        import_job[:source_path] = @content_set.import_url_path if @content_set.import_url_path.present?
+        import_job[:source_uri] = @content_set.import_url_path if @content_set.import_url_path.present?
         redirect_to new_import_job_path(:import_job => import_job)
       else
         redirect_to content_sets_path
@@ -45,7 +45,7 @@ class ContentSetsController < ApplicationController
       flash[:notice] = "Created content set with id #{@content_set.id}"
       if params[:add_import_job]
         import_job = { :organization_id => @content_set.organization.id, :content_set_id => @content_set.id }
-        import_job[:source_path] = @content_set.import_url_path if @content_set.import_url_path.present?
+        import_job[:source_uri] = @content_set.import_url_path if @content_set.import_url_path.present?
         redirect_to new_import_job_path(:import_job => import_job)
       else
         redirect_to content_sets_path

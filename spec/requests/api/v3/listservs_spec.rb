@@ -18,7 +18,7 @@ RSpec.describe 'Listserv API Endpoints', type: :request do
           subset = listservs.slice(0,2)
           get '/api/v3/listservs', ids: subset.collect(&:id)
           returned_ids = response_json[:listservs].collect{|l| l[:id]}
-          expect(returned_ids).to eql subset.collect(&:id)
+          expect(returned_ids).to match_array subset.collect(&:id)
         end
       end
     end
