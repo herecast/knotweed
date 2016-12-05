@@ -44,7 +44,8 @@ class FeaturesController < ApplicationController
       :name,
       :description,
       :active,
-      :expires_at
+      :expires_at,
+      :options
     )
   end
 

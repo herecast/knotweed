@@ -459,6 +459,7 @@ ActiveRecord::Schema.define(version: 20161122173640) do
     t.boolean  "active"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.text     "options"
   end
 
   create_table "images", id: :bigserial, force: :cascade do |t|
