@@ -173,6 +173,21 @@ RSpec.describe ListservDigestJob do
               subject
               expect(ListservDigest.last.listserv_contents.to_a).to eql listserv_content_verified_after.to_a
             end
+
+            context 'when content exists for blacklisted subscribers' do
+              let(:blacklisted_content) {
+                listserv_content_verified_after.first
+              }
+              before do
+                blacklisted_content.subscription.update blacklist: true
+              end
+
+              it 'does not include the content from the blacklisted subscriber' do
+                subject
+                listserv_contents = ListservDigest.last.listserv_contents.to_a
+                expect(listserv_contents).to_not include blacklisted_content
+              end
+            end
           end
 
           describe '#contents' do
