@@ -41,6 +41,8 @@ class ListservDigestJob < ApplicationJob
   private
   def listserv_contents_verified_after(time)
     ListservContent\
+      .joins(:subscription)\
+      .where('subscriptions.blacklist <> ?', true)\
       .where(listserv_id: @listserv.id)\
       .where("verified_at > ?", time)\
       .where('content_id IS NULL')
