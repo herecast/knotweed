@@ -161,6 +161,54 @@ describe PromotionBanner, :type => :model do
 
   end
 
+  describe "#current_daily_report" do
+    before do
+      @promotion_banner = FactoryGirl.create :promotion_banner
+    end
+
+    context "when no current daily PromotionBannerReport present" do
+      it "returns nil" do
+        expect(@promotion_banner.current_daily_report(Date.current)).to be_nil
+      end
+    end
+
+    context "when a current daily PromotionBannerReport is present" do
+      it "returns report" do
+        promotion_banner_report = FactoryGirl.create(:promotion_banner_report,
+          promotion_banner_id: @promotion_banner.id,
+          report_date: Date.current
+        )
+        expect(@promotion_banner.current_daily_report(Date.current)).to eq promotion_banner_report
+      end
+    end
+  end
+
+  describe "#find_or_create_daily_report" do
+    before do
+      @promotion_banner = FactoryGirl.create :promotion_banner
+    end
+
+    subject { @promotion_banner.find_or_create_daily_report(Date.current) }
+
+    context "when no current PromotionBannerReport is present" do
+      it "creates current daily PromotionBannerReport" do
+        expect{ subject }.to change{
+          PromotionBannerReport.count
+        }.by 1
+      end
+    end
+
+    context "when current PromotionBannerReport is present" do
+      it "returns current PromotionBannerReport" do
+        promotion_banner_report = FactoryGirl.create(:promotion_banner_report,
+          promotion_banner_id: @promotion_banner.id,
+          report_date: Date.current
+        )
+        expect(subject).to eq promotion_banner_report
+      end
+    end
+  end
+
   describe '#update_active_promotions' do
     before do
       @content = FactoryGirl.create :content

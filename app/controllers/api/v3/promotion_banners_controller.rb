@@ -27,7 +27,7 @@ module Api
       end
 
       def show
-        conditionally_reset_daily_impression_values
+        conditionally_prime_daily_ad_reports
 
         if params[:promotion_id].present?
           @banner = Promotion.where(promotable_type: 'PromotionBanner').find(params[:promotion_id]).promotable
@@ -126,10 +126,10 @@ module Api
         @current_api_user.ability.can?(:manage, @promotion_banner.promotion.organization)
       end
 
-      def conditionally_reset_daily_impression_values
+      def conditionally_prime_daily_ad_reports
         most_recent_reset_time = Rails.cache.fetch('most_recent_reset_time')
         if most_recent_reset_time.nil? || most_recent_reset_time < Date.current
-          BackgroundJob.perform_later('ResetPromotionBannerDailyImpressionCounts', 'call')
+          BackgroundJob.perform_later('PrimeDailyPromotionBannerReports', 'call', Date.current.to_s)
           Rails.cache.write('most_recent_reset_time', Time.current, expires_in: 24.hours)
         end
       end
