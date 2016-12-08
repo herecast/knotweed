@@ -143,6 +143,14 @@ class ListservContent < ActiveRecord::Base
     end
   end
 
+  def author_name
+    if user
+      user.name
+    else
+      sender_name
+    end
+  end
+
   protected
   def generate_key
     self.key = SecureRandom.uuid

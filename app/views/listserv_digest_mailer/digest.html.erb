@@ -1,6 +1,6 @@
 <div class='preheader' style='display: none !important;'>
   <%= @listserv.digest_preheader %>
-  <%= @digest.contents.sort_by{|c| c.pubdate}.collect{|c| c.title.truncate_words(8)}.join(' | ') %>
+  <%= @digest.listserv_contents.sort_by{|c| c.verified_at}.collect{|c| c.subject.truncate_words(8)}.join(' | ') %>
 </div>
 <a id='top'></a>
 <h2>
@@ -15,11 +15,28 @@
 <% if @digest.listserv_contents.any? %>
   <div class='table of contents'>
     <h3>TABLE OF CONTENTS</h3>
-    <ol>
-      <% @digest.listserv_contents.sort_by(&:verified_at).each do |lc|%>
-        <li><a href='#lc-<%=lc.id%>'><%= lc.subject %></a></li>
-      <% end %>
-    </ol>
+    <% @digest.listserv_contents.group_by{|l| l.channel_type || 'Miscellaneous'}\
+      .sort_by{|(cat, items)| cat.to_s.eql?('Miscellaneous') ? 'z' : cat.to_s }.each do |cat, contents| %>
+      <h4 style='margin-bottom: 0;'><%= cat.to_s.titleize %></h4>
+      <ol style='margin-top: 0;'>
+        <% contents.sort_by(&:verified_at).each do |lc|%>
+          <li>
+            <a href='#lc-<%=lc.id%>'><%= lc.subject %></a>
+            - <%= lc.author_name %>
+            <% if lc.content_id? %>
+              - <%= link_to 'View on DailyUV', content_url_for_email(lc.content), target: '_blank', style: 'font-size: smaller;display:inline-block; padding: 0.25em 0.5em; background:#eee;border: 2px solid #ddd;text-decoration:none;' %>
+            <% end %>
+          </li>
+        <% end %>
+      </ol>
+    <% end %>
+  </div>
+<% end %>
+
+<% if @digest.promotion.present? %>
+  <% banner_ad = @digest.promotion.promotable %>
+  <div class="digest-banner" style="padding: 15px 0 15px 0; vertical-align: top">
+    <%= link_to image_tag(banner_ad.banner_image), banner_ad.redirect_url %>
   </div>
 <% end %>
 
@@ -36,6 +53,9 @@
         <%= simple_format raw(strip_tags(lc.body.gsub("><", ">\n<")).strip) %>
       </div>
       <div class='actions'>
+        <% if lc.content_id? %>
+          <%= link_to 'View on DailyUV', content_url_for_email(lc.content), target: '_blank', style: 'font-size: smaller;display:inline-block; padding: 0.25em 0.5em; background:#eee; border: 2px solid #ddd;text-decoration:none;' %>
+        <% end %>
         <table align="center">
           <tr>
             <td>

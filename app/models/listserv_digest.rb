@@ -38,7 +38,7 @@ class ListservDigest < ActiveRecord::Base
 
   def listserv_contents
     @listserv_contents ||=
-      listserv_content_ids.any? ?
+      listserv_content_ids.present? ?
         ListservContent.where(id: listserv_content_ids) : []
   end
 
@@ -49,7 +49,7 @@ class ListservDigest < ActiveRecord::Base
 
   def contents
     @contents ||=
-      content_ids.any? ?
+      content_ids.present? ?
         Content.where(id: content_ids).sort_by{|c| content_ids.index(c.id)} : []
   end
 

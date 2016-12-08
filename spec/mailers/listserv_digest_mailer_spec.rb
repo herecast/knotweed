@@ -134,59 +134,54 @@ RSpec.describe ListservDigestMailer do
       describe 'generated body' do
         subject { described_class.digest(listserv_digest).body.encoded }
 
-        context 'when the template is for UV digest' do
-          it 'displays the banner ad correctly' do
+        context 'when the template is for listserv digest' do
+          before do
             listserv_digest.update(
-              template: 'uv_digest',
+              template: 'digest',
               promotion: promotion
             )
-            content = contents.first
-            content.content_type = :market
-            content.channel = market_post
-            content.save!
+          end
 
-            expect(subject).to include "uv-digest-banner"
+          it 'displays the banner ad correctly' do
+            expect(subject).to include "digest-banner"
+          end
+
+          it 'includes all the listserv content titles' do
+            listserv_contents.each do |content|
+              expect(subject).to include content.subject
+            end
+          end
+
+          it 'includes listserv contents sender names' do
+            listserv_contents.each do |content|
+              expect(subject).to include content.sender_name
+            end
+          end
+
+          it 'includes the author email' do
+            listserv_contents.each do |content|
+              expect(subject).to include content.sender_email
+            end
+          end
+
+          it 'includes the date for the content post' do
+            listserv_contents.each do |content|
+              expect(subject).to include content.verified_at.strftime('%m/%d/%y %l:%M %p')
+            end
           end
         end
 
-        it 'includes name of listserv + Digest' do
-          expect(subject).to include "#{listserv.name} Digest"
-        end
-
-        it 'includes all the listserv content titles' do
-          listserv_contents.each do |content|
-            expect(subject).to include content.subject
+        context 'when the template is for custom content query' do
+          before do
+            listserv_digest.update!(template: 'news_template')
           end
-        end
 
-        it 'includes all the content titles' do
-          contents.each do |content|
-            expect(subject).to include content.title
+          it 'includes all the content titles' do
+            contents.each do |content|
+              expect(subject).to include content.title
+            end
           end
-        end
 
-        it 'includes contents author names' do
-          contents.each do |content|
-            expect(subject).to include content.author_name
-          end
-        end
-
-        it 'includes listserv contents sender names' do
-          listserv_contents.each do |content|
-            expect(subject).to include content.sender_name
-          end
-        end
-
-        it 'includes the author email' do
-          listserv_contents.each do |content|
-            expect(subject).to include content.sender_email
-          end
-        end
-
-        it 'includes the date for the content post' do
-          listserv_contents.each do |content|
-            expect(subject).to include content.verified_at.strftime('%m/%d/%y %l:%M %p')
-          end
         end
 
       end

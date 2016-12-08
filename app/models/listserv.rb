@@ -148,6 +148,14 @@ class Listserv < ActiveRecord::Base
     ]
   end
 
+  def internal_list?
+    list_type.eql? 'internal_list'
+  end
+
+  def custom_digest?
+    list_type.eql?('custom_digest') && digest_query?
+  end
+
   def digest_templates
     templates = Dir.entries('app/views/listserv_digest_mailer/')
     file_names = templates.map { |file| file.split('.').first }

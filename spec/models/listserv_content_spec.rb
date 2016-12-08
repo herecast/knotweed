@@ -316,4 +316,26 @@ RSpec.describe ListservContent, type: :model do
     end
   end
 
+  describe '#author_name' do
+    before do
+      subject.sender_name = 'Daniel Johns'
+    end
+
+    it 'is the sender_name' do
+      expect(subject.author_name).to eql subject.sender_name
+    end
+
+    context 'when user is linked' do
+      let(:user) { User.new(name: 'Kurt Cobain') }
+
+      before do
+        subject.user = user
+      end
+
+      it 'should be the user name' do
+        expect(subject.author_name).to eql user.name
+      end
+    end
+  end
+
 end
