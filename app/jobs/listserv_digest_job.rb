@@ -41,8 +41,7 @@ class ListservDigestJob < ApplicationJob
       .joins(:subscription)\
       .where('subscriptions.blacklist <> ?', true)\
       .where(listserv_id: @listserv.id)\
-      .where("verified_at > ?", time)\
-      .where('content_id IS NULL')
+      .where("verified_at > ?", time)
   end
 
   def digest_attributes
