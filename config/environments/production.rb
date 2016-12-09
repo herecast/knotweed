@@ -32,17 +32,20 @@ Knotweed::Application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
 
-
+  custom_opts = {}
+  if ENV.fetch('STACK_NAME', nil)
+    custom_opts[:stack_name] = ENV['STACK_NAME']
+  end
   if ENV.fetch('LOG_STDOUT', false)
     config.logger = Logger.new(STDOUT)
   end
   config.lograge.enabled = true
   config.lograge.formatter = Lograge::Formatters::Json.new
   config.log_level = :info
-  if ENV.fetch('STACK_NAME', nil)
-    config.lograge.custom_options = lambda do |event|
-      {:stack_name => ENV['STACK_NAME']}
-    end
+  config.lograge.custom_options = lambda do |event|
+    exceptions = %w(controller action format id)
+    custom_opts[:params] = event.payload[:params].except(*exceptions)
+    custom_opts
   end
 
   # Prepend all log lines with the following tags
@@ -80,6 +83,15 @@ Knotweed::Application.configure do
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.default :charset => "utf-8"
+  config.action_mailer.smtp_settings = {
+    address: ENV['SMTP_ADDRESS'],
+    port: 25,
+    user_name: ENV['SMTP_USERNAME'],
+    password: ENV['SMTP_PASSWORD'],
+    authentication: 'plain',
+    enable_starttls_auto: false,
+    openssl_verify_mode: 'none',
+  }
 
   config.active_record.raise_in_transactional_callbacks = false
 end

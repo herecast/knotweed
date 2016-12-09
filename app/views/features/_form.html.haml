@@ -6,5 +6,6 @@
     = f.input :name
     = f.input :description
     = f.input :active, as: :boolean
+    = f.input :options, hint: 'Ex: { "foo": "bar", "boo": "far" }'
     .form-actions
       = f.button :submit, class: 'btn btn-success'

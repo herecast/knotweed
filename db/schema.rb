@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161109210741) do
+ActiveRecord::Schema.define(version: 20161122173640) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -454,6 +454,7 @@ ActiveRecord::Schema.define(version: 20161109210741) do
     t.boolean  "active"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.text     "options"
   end
 
   create_table "images", id: :bigserial, force: :cascade do |t|
@@ -474,7 +475,7 @@ ActiveRecord::Schema.define(version: 20161109210741) do
     t.integer  "parser_id",             limit: 8
     t.string   "name",                  limit: 255
     t.text     "config"
-    t.string   "source_path",           limit: 255
+    t.string   "source_uri",            limit: 255
     t.string   "job_type",              limit: 255
     t.integer  "organization_id",       limit: 8
     t.datetime "created_at",                                        null: false
@@ -490,6 +491,8 @@ ActiveRecord::Schema.define(version: 20161109210741) do
     t.string   "publish_method",        limit: 255
     t.string   "sidekiq_jid"
     t.datetime "next_scheduled_run"
+    t.string   "inbound_prefix"
+    t.string   "outbound_prefix"
   end
 
   create_table "import_locations", id: :bigserial, force: :cascade do |t|
@@ -777,7 +780,12 @@ ActiveRecord::Schema.define(version: 20161109210741) do
     t.integer  "total_click_count",      limit: 8
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
+    t.integer  "load_count"
   end
+
+  add_index "promotion_banner_reports", ["promotion_banner_id"], name: "index_promotion_banner_reports_on_promotion_banner_id", using: :btree
+  add_index "promotion_banner_reports", ["report_date"], name: "index_promotion_banner_reports_on_report_date", using: :btree
+
 
   create_table "promotion_banners", id: :bigserial, force: :cascade do |t|
     t.string   "banner_image",           limit: 255

@@ -27,6 +27,8 @@ module Api
       end
 
       def show
+        conditionally_prime_daily_ad_reports
+
         if params[:promotion_id].present?
           @banner = Promotion.where(promotable_type: 'PromotionBanner').find(params[:promotion_id]).promotable
           select_score, select_method = nil, 'sponsored content'
@@ -44,18 +46,18 @@ module Api
         unless @banner.present? # banner must've expired or been used up since repo last updated
           render json: {}
         else
-          report_promotion_banner_metric('load',
-            content_id: params[:content_id],
-            select_method: select_method,
-            select_score: select_score
-          )
-
           unless @current_api_user.try(:skip_analytics?)
-            @banner.increment_integer_attr! :load_count
-            ContentPromotionBannerLoad.log_load(@content.try(:id), @banner.id,
-                                                            select_method, select_score)
-
-            logger.info "[Load count incremented for]: #{@banner.inspect}"
+            BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'load', @current_api_user, @banner, Date.current.to_s,
+              content_id: params[:content_id],
+              select_method: select_method,
+              select_score: select_score
+            )
+            ContentPromotionBannerLoad.log_load(
+              @content.try(:id),
+              @banner.id,
+              select_method,
+              select_score
+            )
           end
 
           render json:  @banner, root: :promotion,
@@ -65,28 +67,26 @@ module Api
 
       def track_impression
         @banner = PromotionBanner.find params[:id]
-        report_promotion_banner_metric('impression', content_id: params[:content_id])
 
-        # increment promotion_banner counts for impressions and daily_impressions
         unless @current_api_user.try(:skip_analytics?)
-          @banner.increment_integer_attr! :impression_count
-          @banner.increment_integer_attr! :daily_impression_count
-
-          logger.info "[Impression count incremented for]: #{@banner.inspect}"
+          BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'impression', @current_api_user, @banner, Date.current.to_s,
+            content_id: params[:content_id]
+          )
         end
 
-        head :ok
+        render json: {}, status: :ok
       end
 
       def track_click
         # use find_by_id because we want a return of nil instead
         # of causing an exception with find
         @banner = PromotionBanner.find_by_id params[:promotion_banner_id]
-        if @banner.present?
-          report_promotion_banner_metric('click', content_id: params[:content_id])
-          
+        if @banner.present?    
           unless @current_api_user.try(:skip_analytics?)
-            @banner.increment_integer_attr! :click_count
+            BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'click', @current_api_user, @banner, Date.current.to_s,
+              content_id: params[:content_id]
+            )
+
             @content = Content.find_by_id params[:content_id]
             @content.increment_integer_attr! :banner_click_count if @content.present?
           end
@@ -126,16 +126,14 @@ module Api
         @current_api_user.ability.can?(:manage, @promotion_banner.promotion.organization)
       end
 
-      def report_promotion_banner_metric(type, opts=nil)
-        PromotionBannerMetric.create(
-          event_type: type,
-          promotion_banner_id: @banner.id,
-          user_id: @current_api_user.try(:id),
-          content_id: opts[:content_id],
-          select_method: opts[:select_method],
-          select_score: opts[:select_score]
-        )
+      def conditionally_prime_daily_ad_reports
+        most_recent_reset_time = Rails.cache.fetch('most_recent_reset_time')
+        if most_recent_reset_time.nil? || most_recent_reset_time < Date.current
+          BackgroundJob.perform_later('PrimeDailyPromotionBannerReports', 'call', Date.current.to_s)
+          Rails.cache.write('most_recent_reset_time', Time.current, expires_in: 24.hours)
+        end
       end
+
     end
   end
 end

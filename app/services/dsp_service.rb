@@ -119,6 +119,8 @@ module DspService
                 content: content.sanitized_content,
                 published: content.pubdate.utc.iso8601,
                 url: content.url,
+                parent_category: content.root_content_category.name,
+                has_active_promo: content.has_active_promotion?,
                 tags: [],
                 keyphrases: [],
     }

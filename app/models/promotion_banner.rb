@@ -74,6 +74,14 @@ class PromotionBanner < ActiveRecord::Base
   # query promotion banners by content
   scope :for_content, lambda { |content_id| joins(:promotion).where('promotions.content_id = ?', content_id) }
 
+  def current_daily_report(current_date=Date.current)
+    promotion_banner_reports.where("report_date >= ?", current_date).take
+  end
+
+  def find_or_create_daily_report(current_date=Date.current)
+    current_daily_report(current_date) || promotion_banner_reports.create!(report_date: current_date)
+  end
+
   def update_active_promotions
     if promotion.content.present?
       # this is a little convoluted as we go to the content model

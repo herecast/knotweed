@@ -61,6 +61,7 @@ gem 'rails', '~> 4.2.0'
 gem 'rails-deprecated_sanitizer', '~> 1.0.3' # need to keep older sanitize with Rails 4.2 upgrde
 gem 'ransack', '~> 1.5.1'
 gem "rdf", '~> 1.1.6'
+gem 'redis-rails', '~>5.0.1'
 gem 'rinku', "~> 1.7.3"
 gem "rolify", '~> 5.1.0'
 gem "rubypress", '~> 1.1.0'

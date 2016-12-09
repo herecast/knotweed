@@ -1394,4 +1394,70 @@ RSpec.describe MailchimpService do
       end
     end
   end
+
+  describe 'add_unsubscribe_hook' do
+    let(:list_id) { '1234' }
+    let(:listserv) {
+      FactoryGirl.create :listserv,
+        mc_list_id: list_id,
+        mc_group_name: 'Test Digest'
+    }
+
+    before do
+      ENV.stub(:[]).with('DEFAULT_HOST').and_return('http://test.com')
+    end
+
+    subject { described_class.add_unsubscribe_hook(list_id) }
+
+
+      it 'adds a new webhook for the list' do
+        webhook_request = stub_request(:get, "https://#{base_url}/lists/#{list_id}/webhooks")\
+          .with(
+          basic_auth: auth,
+          headers: {
+            "Content-Type" => 'application/json',
+            "Accept" => 'application/json'
+          }
+        ).to_return(
+          status: 200,
+          headers: {
+            "Content-Type" => 'application/json',
+          },
+          body: { webhooks: [] }.to_json
+        )
+        api_request = stub_request(:post,
+          "https://#{base_url}/lists/#{list_id}/webhooks")\
+          .with(
+            basic_auth: auth,
+            headers: {
+              "Content-Type" => 'application/json',
+              "Accept" => 'application/json'
+            },
+            body: {
+              url: "#{ENV['DEFAULT_HOST']}/api/v3/subscriptions/unsubscribe_from_mailchimp",
+              events: {
+                subscribe: false,
+                unsubscribe: true,
+                profile: false,
+                cleaned: false,
+                upemail: false,
+                campaign: false
+            },
+              sources: { 
+                user: true,
+                admin: true,
+                api: true
+              }
+            }.to_json)\
+          .to_return(
+            status: 200,
+            headers: {
+              "Content-Type" => 'application/json',
+            }
+          )
+        subject
+        expect(webhook_request).to have_been_requested
+        expect(api_request).to have_been_requested
+      end
+  end
 end

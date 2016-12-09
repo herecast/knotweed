@@ -51,6 +51,9 @@ class ImportJob < ActiveRecord::Base
 
   validates :status, inclusion: { in: %w(failed running success scheduled) }, allow_nil: true
 
+  validates :source_uri, absence: true, if: :s3_fields_present?
+  validates :inbound_prefix, :outbound_prefix, absence: true, if: 'source_uri.present?'
+
   after_destroy :cancel_scheduled_runs
 
   default_scope { where archive: false }
@@ -63,6 +66,20 @@ class ImportJob < ActiveRecord::Base
   JOB_TYPES = [CONTINUOUS, AD_HOC, RECURRING]
 
   before_validation :set_stop_loop
+
+  def s3_fields_present?
+    inbound_prefix.present? and outbound_prefix.present?
+  end
+
+  # returns either source_uri or a constructed S3 URL based on the fields;
+  # currently only used in logging
+  def full_import_path
+    if source_uri.present?
+      source_uri
+    else
+      "s3://#{Figaro.env.import_bucket}/#{inbound_prefix}"
+    end
+  end
 
   def self.backup_start
     Chronic.parse(BACKUP_START)

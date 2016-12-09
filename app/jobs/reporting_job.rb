@@ -6,8 +6,6 @@ class ReportingJob < ApplicationJob
   def perform
     Knotweed::Application.load_tasks
     Rake::Task['reporting:create_content_report'].invoke
-    Rake::Task['reporting:create_promotion_banner_report'].invoke
-    Rake::Task['promotion_banner:reset_daily_impression_count'].invoke
     Rake::Task['promotion_banner:confirm_has_active_promotion'].invoke
   end
 

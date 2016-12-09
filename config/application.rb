@@ -92,5 +92,6 @@ module Knotweed
         resource '/api/v3/*', :headers => :any, :methods => [:get, :put, :patch, :post, :delete, :options]
       end
     end
+    config.cache_store = :redis_store
   end
 end
