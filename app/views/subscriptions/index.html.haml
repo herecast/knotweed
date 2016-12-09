@@ -1,5 +1,47 @@
 %h1 Subscriptions
 
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      %i.icon-search
+      Find Subscriptions
+      .actions
+        %a.btn.box-collapse.btn-mini.btn-link{href:'#'}
+          %i
+    .box-content
+      = search_form_for(@search, url: subscriptions_url, html: {class: 'search-form'}) do |f|
+        .controls.controls-row
+          .field.span4
+            = f.label :email_cont, "Email"
+            = f.search_field :email_cont
+          .field.span4
+            = f.label :listserv_id_eq, "Listserv"
+            = f.collection_select :listserv_id_eq, Listserv.order(name: :asc), 'id', 'name', prompt: ''
+          .field.span4
+            = f.label :user_id_eq, "UserID"
+            = f.search_field :user_id_eq
+        .controls.controls-row
+          .field.span4
+            = f.label :created_at_gteq, 'Created Date'
+            = f.date_field :created_at_gteq
+            = f.date_field :created_at_lteq
+          .field.checkbox.span4
+            = f.check_box :confirmed_at_not_null, include_hidden: false
+            = f.label :confirmed_at_not_null, 'Confirmed Only'
+          .field.checkbox.span4
+            = f.check_box :unsubscribed_at_not_null, include_hidden: false
+            = f.label :unsubscribed_at_not_null, 'Unsubscribed Only'
+        .form-actions
+          %button.btn.btn-primary{type: 'submit'} Search
+          %button.btn.reset{ type: 'submit', name: 'reset'} Reset
+      :javascript
+        jQuery(function($) {
+          $('.search-form').on('click', 'button.reset', function(e) {
+            $('.search-form').find('select,input').val("");
+            return true;
+          });
+        });
+
 %table.table.table-striped.table-bordered.table-condensed
   %caption= page_entries_info @subscriptions
   %thead

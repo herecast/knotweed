@@ -1,8 +1,13 @@
 class SubscriptionsController < ApplicationController
   before_action :set_subscription, only: [:show, :edit, :update, :destroy]
+  before_action :store_query_in_session, only: [:index]
 
   def index
-    @subscriptions = Subscription.order("created_at DESC").page(params[:page])
+    @search = Subscription.ransack(search_query)
+    @subscriptions = @search.result(distinct: true)\
+      .includes(:listserv)\
+      .order("created_at DESC")\
+      .page(params[:page])
   end
 
   def show
@@ -47,5 +52,15 @@ class SubscriptionsController < ApplicationController
       params.require(:subscription).permit(
         :email, :listserv_id, :blacklist, :source, :unsubscribed_at,
         :confirmed_at, :user_id)
+    end
+
+    def store_query_in_session
+      if params[:q].present?
+        session[:subscriptions_search] = params[:q]
+      end
+    end
+
+    def search_query
+      session[:subscriptions_search] || params[:q]
     end
 end

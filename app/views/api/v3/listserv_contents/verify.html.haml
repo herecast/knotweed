@@ -9,6 +9,9 @@
       %h2 Something has gone wrong.
       %p Please let us know what you were trying to do, so we can fix this.
       %p= link_to 'support@dailyuv.com','mailto:support@dailyuv.com'
+    - elsif @error == ListservExceptions::BlacklistedSender
+      %h1 Posting not allowed.
+      %p Please contact an administrator. You have been put on the blacklist.
     - else
       %h1.h1 You're all set!
       - if @error == ListservExceptions::AlreadyVerified

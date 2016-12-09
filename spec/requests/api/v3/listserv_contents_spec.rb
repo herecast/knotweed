@@ -134,6 +134,21 @@ RSpec.describe "listserv contents endpoints", type: :request do
           expect(response.status).to eql 422
         end
       end
+
+      context 'when ListservExceptions::BlacklistedSender is raised' do
+        before do
+          allow(VerifyAndUpdateListservContent).to receive(:call).and_raise(
+            ListservExceptions::BlacklistedSender.new(
+              listserv_content.listserv,
+              listserv_content.sender_email)
+          )
+        end
+
+        it 'returns status 422' do
+          subject
+          expect(response.status).to eql 422
+        end
+      end
     end
   end
 

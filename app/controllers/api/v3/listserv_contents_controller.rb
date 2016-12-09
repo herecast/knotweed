@@ -17,6 +17,8 @@ module Api
         render json: {errors: "Content owner mismatch"}, status: 422
       rescue ListservExceptions::AlreadyVerified
         render status: 422, json: {errors: "Already verified!" }
+      rescue ListservExceptions::BlacklistedSender
+        render status: 422, json: {errors: "You are no longer allowed to send to this list. Please contact an administrator." }
       end
 
       def verify
@@ -26,6 +28,8 @@ module Api
           @error = ContentOwnerMisMatch
         rescue ListservExceptions::AlreadyVerified
           @error = ListservExceptions::AlreadyVerified
+        rescue ListservExceptions::BlacklistedSender
+          @error = ListservExceptions::BlacklistedSender
         end
 
         render 'verify', layout: 'minimal'

@@ -18,7 +18,7 @@
             = f.label :content_category_id_eq, "Category"
             = f.collection_select :content_category_id_eq, Category.order(name: :asc), 'id','name', prompt: ""
           .field.checkbox.span4
-            = f.check_box :verified_at_not_null
+            = f.check_box :verified_at_not_null, include_hidden: false
             = f.label :verified_at_not_null, 'Verified Only'
         .controls.controls-row
           .field.span4

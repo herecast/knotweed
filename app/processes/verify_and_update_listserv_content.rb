@@ -22,12 +22,10 @@ class VerifyAndUpdateListservContent
 
     set_user if @attributes[:content_id].present?
 
-    if @model.save
-      ensure_subscription_to_listserv
-      return true
-    else
-      return false
-    end
+    ensure_subscription_to_listserv
+    ensure_subscription_not_blacklisted
+
+    return @model.save
   end
 
   private
@@ -58,6 +56,14 @@ class VerifyAndUpdateListservContent
 
     ConfirmSubscription.call(@model.subscription, @model.verify_ip)
     @model.subscription.save!
-    @model.save! # to pickup any new subscription_id
+  end
+
+  def ensure_subscription_not_blacklisted
+    if @model.subscription.blacklist?
+      raise ListservExceptions::BlacklistedSender.new(
+        @model.listserv,
+        @model.subscription.email
+      )
+    end
   end
 end

@@ -175,6 +175,16 @@ RSpec.describe VerifyAndUpdateListservContent do
           subject
         end
       end
+
+      context 'when subscriber is on blacklist' do
+        before do
+          subscription.update blacklist: true
+        end
+
+        it 'raises ListservExceptions::BlacklistedSender' do
+          expect{subject}.to raise_error(ListservExceptions::BlacklistedSender)
+        end
+      end
     end
 
   end
