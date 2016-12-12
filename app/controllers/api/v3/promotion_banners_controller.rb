@@ -52,12 +52,6 @@ module Api
               select_method: select_method,
               select_score: select_score
             )
-            ContentPromotionBannerLoad.log_load(
-              @content.try(:id),
-              @banner.id,
-              select_method,
-              select_score
-            )
           end
 
           render json:  @banner, root: :promotion,

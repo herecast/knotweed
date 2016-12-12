@@ -152,19 +152,6 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       end
     end
 
-    it 'should create a ContentPromotionBannerLoad record if none exists' do
-      subject
-      expect(ContentPromotionBannerLoad.count).to eq(1)
-      expect(ContentPromotionBannerLoad.first.content_id).to eq(@content.id)
-      expect(ContentPromotionBannerLoad.first.promotion_banner_id).to eq(@pb.id)
-    end
-
-    it 'should increment the ContentPromotionBannerLoad load count if a record exists' do
-      cpbi = FactoryGirl.create :content_promotion_banner_load, content_id: @content.id, promotion_banner_id: @pb.id
-      subject
-      expect(cpbi.reload.load_count).to eq(2)
-    end
-
     context 'with banner_ad_override' do
       before do
         @promo2 = FactoryGirl.create :promotion, content: FactoryGirl.create(:content)
