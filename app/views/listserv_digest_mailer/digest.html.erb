@@ -2,7 +2,7 @@
   <%= @listserv.digest_preheader %>
   <%= @digest.listserv_contents.sort_by{|c| c.verified_at}.collect{|c| c.subject.truncate_words(8)}.join(' | ') %>
 </div>
-<a id='top'></a>
+<a id='top' name='top'></a>
 <h2>
   <%=@listserv.name%> Digest
   -- <small><%= @digest.created_at.strftime("%a, %b %e %Y")%></small>
@@ -21,7 +21,7 @@
       <ol style='margin-top: 0;'>
         <% contents.sort_by(&:verified_at).each do |lc|%>
           <li>
-            <a href='#lc-<%=lc.id%>'><%= lc.subject %></a>
+            <a href='#lc<%=lc.id%>'><%= lc.subject %></a>
             - <%= lc.author_name %>
             <% if lc.content_id? %>
               - <%= link_to 'View on DailyUV', content_url_for_email(lc.content), target: '_blank', style: 'font-size: smaller;display:inline-block; padding: 0.25em 0.5em; background:#eee;border: 2px solid #ddd;text-decoration:none;' %>
@@ -44,10 +44,11 @@
   <p>BEGIN DIGEST</p>
   <% @digest.listserv_contents.sort_by(&:verified_at).each do |lc| %>
     <hr width="50%" color="#830617">
-    <div id='lc-<%=lc.id%>' class='post'>
+    <div class='post'>
       <strong><%= lc.subject %></strong><br>
       From: <%= lc.sender_name %><br>
       Date: <%= lc.verified_at.strftime('%m/%d/%y %l:%M %p') %>
+      <a id='lc<%=lc.id%>' name='lc<%=lc.id%>'></a>
 
       <div class='body'>
         <%= simple_format raw(strip_tags(lc.body.gsub("><", ">\n<")).strip) %>

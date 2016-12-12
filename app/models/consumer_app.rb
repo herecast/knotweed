@@ -32,4 +32,10 @@ class ConsumerApp < ActiveRecord::Base
   def self.current=(app)
     Thread.current[:consumer_app] = app
   end
+
+  def self.default
+    if Figaro.env.default_consumer_host?
+      return self.where('uri ilike ?', "%#{Figaro.env.default_consumer_host}%").first
+    end
+  end
 end
