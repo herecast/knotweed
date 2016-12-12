@@ -15,8 +15,17 @@
 <% if @digest.listserv_contents.any? %>
   <div class='table of contents'>
     <h3>TABLE OF CONTENTS</h3>
-    <% @digest.listserv_contents.group_by{|l| l.channel_type || 'Miscellaneous'}\
-      .sort_by{|(cat, items)| cat.to_s.eql?('Miscellaneous') ? 'z' : cat.to_s }.each do |cat, contents| %>
+    <%
+      @digest.listserv_contents.group_by do |l|
+        if l.content_id? && l.channel_type.present?
+          l.channel_type
+        else
+          'Miscellaneous'
+        end
+      end.sort_by do |(cat, items)|
+        cat.to_s.eql?('Miscellaneous') ? 'z' : cat.to_s
+      end.each do |cat, contents|
+    %>
       <h4 style='margin-bottom: 0;'><%= cat.to_s.titleize %></h4>
       <ol style='margin-top: 0;'>
         <% contents.sort_by(&:verified_at).each do |lc|%>
