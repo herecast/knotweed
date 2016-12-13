@@ -18,15 +18,13 @@
     <%
       @digest.listserv_contents.group_by do |l|
         if l.content_id? && l.channel_type.present?
-          l.channel_type
+          l.channel_type.to_s.titleize
         else
           'Uncategorized'
         end
-      end.sort_by do |(cat, items)|
-        cat.to_s
-      end.each do |cat, contents|
+      end.sort.each do |cat, contents|
     %>
-      <h4 style='margin-bottom: 0;'><%= cat.to_s.titleize %></h4>
+      <h4 style='margin-bottom: 0;'><%= cat %></h4>
       <ol style='margin-top: 0;'>
         <% contents.sort_by(&:verified_at).each do |lc|%>
           <li>
