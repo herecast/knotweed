@@ -74,12 +74,12 @@ module DspService
         persist_to_graph_db(content, annotate_resp, repo)
         # trigger updating hasActivePromotion if publish succeeded
         if content.has_active_promotion?
-          PromotionBanner.mark_active_promotion(content, repo)
+          self.update_promotion('add_active', content.id, repo)
         end
 
         # trigger updating hasPaidPromotion if publish succeeded
         if content.has_paid_promotion?
-          PromotionBanner.mark_paid_promotion(content, repo)
+          self.update_promotion('add_paid', content.id, repo)
         end
       else
         result = false
@@ -271,5 +271,11 @@ module DspService
 
     sparql.update(query, { endpoint: repo.graphdb_endpoint + "/statements" })
     graph
+  end
+
+  def update_promotion(type, content_id, repo)
+    query = File.read("./lib/queries/#{type}_promo.rq") % {content_id: content_id}
+    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
+    sparql.update(query, { endpoint: repo.graphdb_endpoint + "/statements" })
   end
 end

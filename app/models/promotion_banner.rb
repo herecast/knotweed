@@ -74,81 +74,6 @@ class PromotionBanner < ActiveRecord::Base
   # query promotion banners by content
   scope :for_content, lambda { |content_id| joins(:promotion).where('promotions.content_id = ?', content_id) }
 
-  def current_daily_report(current_date=Date.current)
-    promotion_banner_reports.where("report_date >= ?", current_date).take
-  end
-
-  def find_or_create_daily_report(current_date=Date.current)
-    current_daily_report(current_date) || promotion_banner_reports.create!(report_date: current_date)
-  end
-
-  def update_active_promotions
-    if promotion.content.present?
-      # this is a little convoluted as we go to the content model
-      # only to go back to the content's promotions...but in the interest
-      # of code continuity, this allows us to change the logic in just once place
-      # (Content.has_active_promotion?) that determines this.
-      # Extended this to include updating 'paid' promos.
-      has_active_promo = promotion.content.has_active_promotion?
-      has_paid_promo = promotion.content.has_paid_promotion?
-
-      # update each repo storing content
-      promotion.content.repositories.each do |r|
-        if has_active_promo
-          PromotionBanner.mark_active_promotion(promotion.content, r)
-        else
-          remove_promotion(r)
-        end
-      end
-      # update 'hasPaidPromotion' flag
-      promotion.content.repositories.each do |r|
-        if has_paid_promo
-          PromotionBanner.mark_paid_promotion(promotion.content, r)
-        else
-          remove_paid_promotion(r)
-        end
-      end
-    end
-  end
-
-  def self.mark_active_promotion(content, repo)
-    query = File.read('./lib/queries/add_active_promo.rq') % {content_id: content.id}
-    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-    sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
-  end
-
-  def remove_promotion(repo)
-    query = File.read('./lib/queries/remove_active_promo.rq') % {content_id: promotion.content.id}
-    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-    sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
-  end
-
-  # same as above method but called without a promotion
-  def self.remove_promotion(repo, content_id)
-    query = File.read('./lib/queries/remove_active_promo.rq') % {content_id: content_id}
-    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-    sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
-  end
-
-  def self.mark_paid_promotion(content, repo)
-    query = File.read('./lib/queries/add_paid_promo.rq') % {content_id: content.id}
-    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-    sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
-  end
-
-  def remove_paid_promotion(repo)
-    query = File.read('./lib/queries/remove_paid_promo.rq') % {content_id: promotion.content.id}
-    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-    sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
-  end
-
-  # same as above method but called without a promotion
-  def self.remove_paid_promotion(repo, content_id)
-    query = File.read('./lib/queries/remove_paid_promo.rq') % {content_id: content_id}
-    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
-    sparql.update(query, { endpoint: repo.graphdb_endpoint + UPLOAD_ENDPOINT })
-  end
-
   def self.get_random_promotion
     select_score = nil
     select_method = 'boost'
@@ -168,4 +93,23 @@ class PromotionBanner < ActiveRecord::Base
     return [banner, select_score, select_method]
   end
 
+  def current_daily_report(current_date=Date.current)
+    promotion_banner_reports.where("report_date >= ?", current_date).take
+  end
+
+  def find_or_create_daily_report(current_date=Date.current)
+    current_daily_report(current_date) || promotion_banner_reports.create!(report_date: current_date)
+  end
+
+  def update_active_promotions
+    if promotion.content.present?
+      promotion.content.repositories.each do |r|
+        active_action = promotion.content.has_active_promotion? ? 'add_active' : 'remove_active'
+        DspService.update_promotion(active_action, promotion.content.id, r)
+
+        paid_action = promotion.content.has_paid_promotion? ? 'add_paid' : 'remove_paid'
+        DspService.update_promotion(paid_action, promotion.content.id, r)
+      end
+    end
+  end
 end
