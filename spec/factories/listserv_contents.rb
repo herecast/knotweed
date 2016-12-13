@@ -19,6 +19,8 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  verify_ip                  :string
+#  deleted_at                 :datetime
+#  deleted_by                 :string
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

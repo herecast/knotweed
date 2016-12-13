@@ -19,6 +19,8 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  verify_ip                  :string
+#  deleted_at                 :datetime
+#  deleted_by                 :string
 #
 
 require 'rails_helper'
@@ -56,6 +58,18 @@ RSpec.describe ListservContent, type: :model do
       it 'requires verify_ip' do
         expect(subject).to_not be_valid
         expect(subject.errors[:verify_ip]).to include("can't be blank")
+      end
+    end
+  end
+
+  describe 'soft deletion' do
+    it{ is_expected.to have_db_column(:deleted_at) }
+
+    context 'when deleted_at set' do
+      subject{ FactoryGirl.create :listserv_content, deleted_at: Time.now }
+
+      it 'does not return from active record queries' do
+        expect(ListservContent.all.to_a).to_not include(subject)
       end
     end
   end

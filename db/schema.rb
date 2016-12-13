@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161201191947) do
+ActiveRecord::Schema.define(version: 20161212194633) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -558,10 +558,13 @@ ActiveRecord::Schema.define(version: 20161201191947) do
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.string   "verify_ip"
+    t.datetime "deleted_at"
+    t.string   "deleted_by"
   end
 
   add_index "listserv_contents", ["content_category_id"], name: "index_listserv_contents_on_content_category_id", using: :btree
   add_index "listserv_contents", ["content_id"], name: "index_listserv_contents_on_content_id", using: :btree
+  add_index "listserv_contents", ["deleted_at"], name: "index_listserv_contents_on_deleted_at", using: :btree
   add_index "listserv_contents", ["key"], name: "index_listserv_contents_on_key", using: :btree
   add_index "listserv_contents", ["listserv_id"], name: "index_listserv_contents_on_listserv_id", using: :btree
   add_index "listserv_contents", ["subscription_id"], name: "index_listserv_contents_on_subscription_id", using: :btree

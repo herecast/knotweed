@@ -47,6 +47,7 @@ gem 'lograge', '~> 0.3.6'
 gem 'mail', '~> 2.5.4'
 gem 'mixpanel_client', '~> 4.1.1'
 gem 'mixpanel-ruby', '~> 1.4.0' # official ruby mixpanel client. later versions need ruby > 2.0
+gem 'paranoia', '~> 2.1.5'
 gem "pg", '~> 0.18.4'
 gem 'mysql2', '~> 0.3.18'
 gem 'mini_magick', '~> 4.5.1'

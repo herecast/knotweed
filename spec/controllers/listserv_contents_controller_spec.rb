@@ -186,16 +186,41 @@ RSpec.describe ListservContentsController, type: :controller do
       )
     }
 
-    it "destroys the requested listserv_content" do
-      expect {
-        delete :destroy, {:id => listserv_content.to_param}
-      }.to change(ListservContent, :count).by(-1)
+    it "soft deletes the requested listserv_content" do
+      delete :destroy, {:id => listserv_content.to_param}
+      deleted_content = ListservContent.unscoped.find(listserv_content.id)
+      expect(deleted_content.deleted_at).to be_a ActiveSupport::TimeWithZone
+    end
+
+    it "sets deleted_by column to current user name" do
+      delete :destroy, {:id => listserv_content.to_param}
+      deleted_content = ListservContent.unscoped.find(listserv_content.id)
+      expect(deleted_content.deleted_by).to eql @user.name
     end
 
     it "redirects to the listserv_contents list" do
       delete :destroy, {:id => listserv_content.to_param}
       expect(response).to redirect_to(listserv_contents_url)
     end
+  end
+
+  describe 'POST #undelete' do
+    let!(:listserv_content) {
+      FactoryGirl.create :listserv_content,
+        deleted_at: Time.current,
+        deleted_by: "Mr. Test"
+    }
+
+    subject{ post :undelete, {id: listserv_content.to_param} }
+
+    it 'reverses a soft delete' do
+      expect{subject}.to change{
+        listserv_content.reload.deleted_at
+      }.to(nil).and change{
+        listserv_content.reload.deleted_by
+      }.to(nil)
+    end
+
   end
 
 end

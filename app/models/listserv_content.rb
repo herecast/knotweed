@@ -19,9 +19,12 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  verify_ip                  :string
+#  deleted_at                 :datetime
+#  deleted_by                 :string
 #
 
 class ListservContent < ActiveRecord::Base
+  acts_as_paranoid column: :deleted_at
   belongs_to :listserv
   belongs_to :content_category
   belongs_to :subscription

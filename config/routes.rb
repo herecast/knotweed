@@ -72,7 +72,9 @@ Knotweed::Application.routes.draw do
   end
   resources :subscriptions
   resources :received_emails
-  resources :listserv_contents
+  resources :listserv_contents do
+    post :undelete, on: :member
+  end
 
   get "repositories/:id/clear_published_contents", to: "repositories#clear_published_contents", as: :clear_published_contents
 

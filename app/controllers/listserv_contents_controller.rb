@@ -1,18 +1,24 @@
 class ListservContentsController < ApplicationController
-  before_action :set_listserv_content, only: [:show, :edit, :update, :destroy]
+  before_action :set_listserv_content, only: [:edit, :update, :destroy]
 
   def index
     if params[:q].present?
       session[:listserv_contents_search] = params[:q]
     end
 
-    @search = ListservContent.ransack(session[:listserv_contents_search])
+    model_scope = ListservContent
+    if session[:listserv_contents_search].present? && session[:listserv_contents_search][:deleted_at_not_null].present?
+      model_scope = model_scope.with_deleted
+    end
+
+    @search = model_scope.ransack(session[:listserv_contents_search])
     scope = @search.result(distinct: true).order('created_at DESC')
 
     @listserv_contents = scope.page(params[:page] || 1).per(params[:per_page] || 100)
   end
 
   def show
+    @listserv_content = ListservContent.with_deleted.find(params[:id])
   end
 
   def new
@@ -49,9 +55,23 @@ class ListservContentsController < ApplicationController
   end
 
   def destroy
-    @listserv_content.destroy
+    @listserv_content.update deleted_at: Time.current, deleted_by: current_user.name
     respond_to do |format|
       format.html { redirect_to listserv_contents_url }
+      format.js
+    end
+  end
+
+  def undelete
+    @listserv_content = ListservContent.unscoped.find(params[:id])
+    @listserv_content.update(
+      deleted_at: nil,
+      deleted_by: nil
+    )
+
+    respond_to do |format|
+      format.html { redirect_to @listserv_content }
+      format.js
     end
   end
 

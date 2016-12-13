@@ -85,7 +85,7 @@ RSpec.describe ListservDigestJob do
             describe '#listserv_contents' do
               it 'is the listserv_contents verified after last generation' do
                 subject
-                expect(ListservDigest.last.listserv_contents.to_a).to eql listserv_content_verified_after.to_a
+                expect(ListservDigest.last.listserv_contents.to_a).to match_array listserv_content_verified_after.to_a
               end
 
               context 'when content exists for blacklisted subscribers' do
@@ -100,6 +100,21 @@ RSpec.describe ListservDigestJob do
                   subject
                   listserv_contents = ListservDigest.last.listserv_contents.to_a
                   expect(listserv_contents).to_not include blacklisted_content
+                end
+              end
+
+              context 'some content was removed by moderator' do
+                let(:deleted_content) {
+                  listserv_content_verified_after.first
+                }
+                before do
+                  deleted_content.update! deleted_at: Time.current
+                end
+
+                it 'does not included removed content' do
+                  subject
+                  listserv_contents = ListservDigest.last.listserv_contents.to_a
+                  expect(listserv_contents).to_not include deleted_content
                 end
               end
             end

@@ -1,0 +1,3 @@
+var $undoBtn = $('<%= j render 'remove_unremove_button', model: @listserv_content %>');
+
+var $deleteBtn = $('[data-delete-btn=<%= @listserv_content.id %>]').replaceWith($undoBtn);
