@@ -875,7 +875,7 @@ class Content < ActiveRecord::Base
   # @note Returns an ordered array of PromotionBanner, score, and select method -- in that order.
   # @param repo [Repository] the repository to query
   # @return [Array<PromotionBanner, String, String>]
-  def get_related_promotion(repo)
+  def get_related_promotion(repo, max_return=3)
     if banner_ad_override.present?
       # NOTE: banner_ad_override actually uses the Promotion id, not the PromotionBanner id
       promo = Promotion.find(banner_ad_override)
@@ -899,16 +899,15 @@ class Content < ActiveRecord::Base
       select_score = nil
       select_method = 'sponsored_content'
     else
-      # query graphdb for relevant active banner ads (pass title + content)
-      results = DspService.query_promo_similarity_index(title + " " + content, id, repo)
-
-      # select one random record from remaining results
+      # use DspService to return active, relevant ads w/inventory over a certain threshold score
+      results = DspService.get_related_promo_ids(self, max_return, repo)
+      # select one random record from returned results
       result = results.sample
       promoted_content = []
       # return content id, relevance score and select method
       if result.present?
-        content_id = result[:content_id].to_s
-        select_score = result[:score].to_s
+        content_id = result['id'].split('/')[-1].to_i
+        select_score = result['score'].to_s
         select_method = "relevance"
       end
     end
@@ -1340,24 +1339,4 @@ class Content < ActiveRecord::Base
     root_content_category.try(:name) == 'news'
   end
 
-  private
-
-  def query_promo_similarity_index(query_term, repo)
-
-    # access endpoint
-    sparql = ::SPARQL::Client.new repo.sesame_endpoint
-    # sanitize query_term
-    clean_content = SparqlUtilities.sanitize_input(SparqlUtilities.clean_lucene_query(
-                    ActionView::Base.full_sanitizer.sanitize(query_term)))
-
-    # get score threshold
-    score_threshold = Figaro.env.promo_relevance_score_threshold
-    query = File.read(Rails.root.join("lib", "queries", "query_promo_similarity_index.rq")) %
-            { content: clean_content, content_id: id, score_threshold: score_threshold }
-    begin
-      sparql.query(query)
-    rescue
-      return []
-    end
-  end
 end

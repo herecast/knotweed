@@ -1702,10 +1702,10 @@ describe Content, :type => :model do
 
       before do
         mock_data = {
-            score: score
+            'score' => score,
+            'id' => "#{content.id}"
         }
-        allow(mock_data).to receive(:uid).and_return("/some/path/#{content.id}")
-        allow_any_instance_of(SPARQL::Client).to receive(:query).and_return([mock_data])
+        allow(DspService).to receive(:get_related_promo_ids).and_return([mock_data])
       end
 
       context 'and promotion banner has inventory' do
@@ -1734,7 +1734,7 @@ describe Content, :type => :model do
       end
       context 'when sparql does not return anything' do
         before do
-          allow_any_instance_of(SPARQL::Client).to receive(:query).and_return([])
+          allow(DspService).to receive(:get_related_promo_ids).and_return([])
         end
 
         context 'when no paid banners exist' do
