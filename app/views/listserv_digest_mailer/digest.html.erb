@@ -20,10 +20,10 @@
         if l.content_id? && l.channel_type.present?
           l.channel_type
         else
-          'Miscellaneous'
+          'Uncategorized'
         end
       end.sort_by do |(cat, items)|
-        cat.to_s.eql?('Miscellaneous') ? 'z' : cat.to_s
+        cat.to_s
       end.each do |cat, contents|
     %>
       <h4 style='margin-bottom: 0;'><%= cat.to_s.titleize %></h4>
