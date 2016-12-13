@@ -648,11 +648,12 @@ class Content < ActiveRecord::Base
       return "doc #{id} is quarantined and was not exported"
     else
       FileUtils.mkpath(export_path)
-      xml_path = "#{export_path}/#{guid}.xml"
+      escaped_guid = CGI::escape guid
+      xml_path = "#{export_path}/#{escaped_guid}.xml"
       File.open(xml_path, "w+") do |f|
         f.write self.to_xml
       end
-      File.open("#{export_path}/#{guid}.html", "w+") do |f|
+      File.open("#{export_path}/#{escaped_guid}.html", "w+") do |f|
         f.write sanitized_content
       end
       file_list << xml_path
@@ -680,17 +681,20 @@ class Content < ActiveRecord::Base
 
   # Export Gate Document directly before/after Pipeline processing
   def export_pre_pipeline_xml(repo, opts = {})
-    options = { :body => self.to_xml }
     file_list = opts[:file_list] || Array.new
 
-    res = OntotextController.post("#{repo.dsp_endpoint}/processPrePipeline", options)
+    res = OntotextController.post(repo.dsp_endpoint + '/processPrePipeline',
+        { body: to_xml,
+          headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",
+                     'Accept' => "application/vnd.ontotext.ces.document+json;charset=UTF-8" }})
 
-    # TODO: Make check for erroneous response better
-    unless res.body.nil? || res.body.empty?
+ # TODO: Make check for erroneous response better
+    unless res.parsed_response.nil? || res.parsed_response.empty?
       FileUtils.mkpath("#{export_path}/pre_pipeline")
-      xml_path = "#{export_path}/pre_pipeline/#{guid}.xml"
-      File.open(xml_path, "w+") { |f| f.write(res.body) }
-      File.open("#{export_path}/pre_pipeline/#{guid}.html", "w+") { |f| f.write(sanitized_content) }
+      escaped_guid = CGI::escape guid
+      xml_path = "#{export_path}/pre_pipeline/#{escaped_guid}.xml"
+      File.open(xml_path, "w+") { |f| f.write(res.parsed_response) }
+      File.open("#{export_path}/pre_pipeline/#{escaped_guid}.html", "w+") { |f| f.write(sanitized_content) }
       file_list << xml_path
       return true
     else
