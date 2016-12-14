@@ -321,11 +321,6 @@ class Content < ActiveRecord::Base
   # is not as simple as just creating new from hash
   # because we need to match locations, organizations, etc.
   def self.create_from_import_job(input, job=nil)
-    if job
-      log = job.last_import_record.log_file
-    else
-      log = Logger.new("#{Rails.root}/log/contents.log")
-    end
     # pull special attributes out of the data hash
     special_attrs = {}
     # convert symbols to strings
@@ -587,12 +582,9 @@ class Content < ActiveRecord::Base
     if method.nil?
       method = DEFAULT_PUBLISH_METHOD
     end
-    # if there is a publish record, log output to corresponding log file
     if record.present?
-      log = record.log_file
       file_list = record.files
     else
-      log = Logger.new("#{Rails.root}/log/publishing.log")
       if opts[:download_result].present?
         file_list = []
       end
@@ -604,12 +596,12 @@ class Content < ActiveRecord::Base
       if result == true
         record.items_published += 1 if record.present?
       else
-        log.error("Export of #{self.id} failed (returned: #{result})")
+        logger.error("Export of #{self.id} failed (returned: #{result})")
         record.failures += 1 if record.present?
       end
     rescue => e
-      log.error("Error exporting #{self.id}: #{e}")
-      log.error(e.backtrace.join("\n"))
+      logger.error("Error exporting #{self.id}: #{e}")
+      logger.error(e.backtrace.join("\n"))
       record.failures += 1 if record.present?
     end
     record.save if record.present?
