@@ -20,12 +20,12 @@
         %td= mc.id
         %td= link_to mc.name, edit_market_category_path(mc)
         %td= mc.query
-        %td= mc.category_image
-        %td= mc.detail_page_banner
+        %td= image_tag(mc.category_image.url, style: 'max-width: 100px;') if mc.category_image.present?
+        %td= image_tag(mc.detail_page_banner.url, style: 'max-width: 100px;') if mc.detail_page_banner.present?
         %td= mc.featured
         %td= mc.trending
         %td= mc.result_count unless mc.result_count.nil?
         %td= mc.updated_at.strftime('%m/%d %l:%M %p')
         %td
           = link_to "Edit", edit_market_category_path(mc), class: 'btn btn-mini'
-          = link_to "Delete", market_category_path(mc), method: :delete, class: 'btn btn-mini btn-danger'
+          = link_to "Delete", market_category_path(mc), method: :delete, class: 'btn btn-mini btn-danger', data: { confirm: "Remove this category?" }

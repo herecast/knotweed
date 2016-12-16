@@ -7,6 +7,14 @@ module Api
       def count
         object.result_count
       end
+
+      def category_image
+        object.category_image.url if object.category_image.present?
+      end
+
+      def detail_page_banner
+        object.detail_page_banner.url if object.detail_page_banner.present?
+      end
     end
   end
 end
