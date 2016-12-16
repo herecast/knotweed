@@ -953,7 +953,8 @@ class Content < ActiveRecord::Base
   # Creates sanitized version of title - at this point, just stripping out listerv towns
   def sanitized_title
     if title.present?
-      title.gsub(/\[[^\]]+\]/, "").strip
+      new_title = title.gsub(/\[[^\]]+\]/, "").strip
+      new_title.present? ? new_title : "Post by #{author_name}"
     else
       nil
     end
