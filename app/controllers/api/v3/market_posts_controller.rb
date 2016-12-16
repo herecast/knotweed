@@ -43,6 +43,9 @@ module Api
 
         opts[:where][:root_content_category_id] = ContentCategory.find_by_name('market').id
 
+        # includes tables to eliminate n+1 queries
+        opts[:includes] = [:channel, :root_content_category, :created_by, :created_by, :images]
+
         query = params[:query].present? ? params[:query] : '*'
 
         @market_posts = Content.search query, opts

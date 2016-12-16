@@ -28,9 +28,9 @@ class OrganizationsController < ApplicationController
       render partial: "organizations/partials/short_form", layout: false
     else
       render 'new'
-    end
+    end 
   end
-
+  
   def edit
     @users = User.all
     get_managers
@@ -47,7 +47,7 @@ class OrganizationsController < ApplicationController
         redirect_to organizations_path
       end
     else
-      render "edit"
+      render action: "edit"
     end
   end
 

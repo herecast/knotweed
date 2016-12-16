@@ -1598,6 +1598,31 @@ describe Content, :type => :model do
     end
   end
 
+  describe "#sanitized_title" do
+    context "when no title present" do
+      it "returns nil" do
+        content = FactoryGirl.create :content, title: nil
+        expect(content.sanitized_title).to be_nil
+      end
+    end
+
+    context "when title present" do
+      it "returns title" do
+        content = FactoryGirl.create :content, title: 'In a galaxy...'
+        expect(content.sanitized_title).to eq content.title
+      end
+    end
+
+    context "when title is only listserv name" do
+      it "returns 'Post by...' title" do
+        content = FactoryGirl.create :content, title: "[Hoth]"
+        user = FactoryGirl.create :user, name: 'Han Solo'
+        content.update_attribute :created_by, user
+        expect(content.sanitized_title).to include "Han Solo"
+      end
+    end
+  end
+
   describe 'sanitized_content=' do
     it 'sets raw_content' do
       content = 'Test Content'
@@ -1702,10 +1727,10 @@ describe Content, :type => :model do
 
       before do
         mock_data = {
-            score: score
+            'score' => score,
+            'id' => "#{content.id}"
         }
-        allow(mock_data).to receive(:uid).and_return("/some/path/#{content.id}")
-        allow_any_instance_of(SPARQL::Client).to receive(:query).and_return([mock_data])
+        allow(DspService).to receive(:get_related_promo_ids).and_return([mock_data])
       end
 
       context 'and promotion banner has inventory' do
@@ -1734,7 +1759,7 @@ describe Content, :type => :model do
       end
       context 'when sparql does not return anything' do
         before do
-          allow_any_instance_of(SPARQL::Client).to receive(:query).and_return([])
+          allow(DspService).to receive(:get_related_promo_ids).and_return([])
         end
 
         context 'when no paid banners exist' do

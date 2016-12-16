@@ -36,34 +36,4 @@ namespace :reporting do
     end
 
   end
-
-  desc 'create a promotion banner report'
-  task :create_promotion_banner_report => :environment do
-    logger = Logger.new("#{Rails.root}/log/rake_promotion_banner_report_#{Rails.env}.log")
-    begin
-      @active_promos = PromotionBanner.where("(? >= campaign_start AND ? <= campaign_end) OR track_daily_metrics = true", Date.today, Date.today)
-      @active_promos.each do |promotion_banner|
-        old_promotion_report = PromotionBannerReport.where(promotion_banner_id: promotion_banner.id).order(:id).last
-
-        if old_promotion_report
-          impression_count = promotion_banner.impression_count - old_promotion_report.total_impression_count
-          click_count = promotion_banner.click_count - old_promotion_report.total_click_count
-        else
-          impression_count = promotion_banner.impression_count
-          click_count = promotion_banner.click_count
-        end
-
-        PromotionBannerReport.create! promotion_banner_id: promotion_banner.id,
-                                       report_date: Time.current,
-                                       impression_count: impression_count,
-                                       click_count: click_count,
-                                       total_impression_count: promotion_banner.impression_count,
-                                       total_click_count: promotion_banner.click_count
-      end
-    rescue Exception => e
-      logger.error e.message
-      logger.error e.backtrace.inspect
-    end
-
-  end
 end

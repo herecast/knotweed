@@ -92,7 +92,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       @promo = FactoryGirl.create :promotion, content: @related_content
       @pb = FactoryGirl.create :promotion_banner, promotion: @promo
       # avoid making calls to repo
-      allow(DspService).to receive(:query_promo_similarity_index).and_return([])
+      allow(DspService).to receive(:get_related_promo_ids).and_return([])
     end
 
     subject { get :show, format: :json,
@@ -150,19 +150,6 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         )
         subject
       end
-    end
-
-    it 'should create a ContentPromotionBannerLoad record if none exists' do
-      subject
-      expect(ContentPromotionBannerLoad.count).to eq(1)
-      expect(ContentPromotionBannerLoad.first.content_id).to eq(@content.id)
-      expect(ContentPromotionBannerLoad.first.promotion_banner_id).to eq(@pb.id)
-    end
-
-    it 'should increment the ContentPromotionBannerLoad load count if a record exists' do
-      cpbi = FactoryGirl.create :content_promotion_banner_load, content_id: @content.id, promotion_banner_id: @pb.id
-      subject
-      expect(cpbi.reload.load_count).to eq(2)
     end
 
     context 'with banner_ad_override' do

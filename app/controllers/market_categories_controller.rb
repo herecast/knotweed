@@ -52,6 +52,11 @@ class MarketCategoriesController < ApplicationController
         :category_image,
         :detail_page_banner,
         :featured,
-        :trending)
+        :trending, 
+        :remove_category_image,
+        :remove_detail_page_banner,
+        :category_image_cache,
+        :detail_page_banner_cache
+      )
     end
 end

@@ -25,8 +25,8 @@ RSpec.describe 'MarketCategories API Endpoints' do
         id: market_category.id,
         name: market_category.name,
         query: market_category.query,
-        category_image: market_category.category_image,
-        detail_page_banner: market_category.detail_page_banner,
+        category_image: market_category.category_image.url,
+        detail_page_banner: market_category.detail_page_banner.url,
         featured: market_category.featured,
         trending: market_category.trending,
         count: market_category.result_count

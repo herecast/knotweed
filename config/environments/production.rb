@@ -45,6 +45,7 @@ Knotweed::Application.configure do
   config.lograge.custom_options = lambda do |event|
     exceptions = %w(controller action format id)
     custom_opts[:params] = event.payload[:params].except(*exceptions)
+    custom_opts[:search] = event.payload[:searchkick_runtime] if event.payload[:searchkick_runtime].to_f > 0
     custom_opts
   end
 

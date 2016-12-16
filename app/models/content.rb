@@ -321,11 +321,6 @@ class Content < ActiveRecord::Base
   # is not as simple as just creating new from hash
   # because we need to match locations, organizations, etc.
   def self.create_from_import_job(input, job=nil)
-    if job
-      log = job.last_import_record.log_file
-    else
-      log = Logger.new("#{Rails.root}/log/contents.log")
-    end
     # pull special attributes out of the data hash
     special_attrs = {}
     # convert symbols to strings
@@ -587,12 +582,9 @@ class Content < ActiveRecord::Base
     if method.nil?
       method = DEFAULT_PUBLISH_METHOD
     end
-    # if there is a publish record, log output to corresponding log file
     if record.present?
-      log = record.log_file
       file_list = record.files
     else
-      log = Logger.new("#{Rails.root}/log/publishing.log")
       if opts[:download_result].present?
         file_list = []
       end
@@ -604,12 +596,12 @@ class Content < ActiveRecord::Base
       if result == true
         record.items_published += 1 if record.present?
       else
-        log.error("Export of #{self.id} failed (returned: #{result})")
+        logger.error("Export of #{self.id} failed (returned: #{result})")
         record.failures += 1 if record.present?
       end
     rescue => e
-      log.error("Error exporting #{self.id}: #{e}")
-      log.error(e.backtrace.join("\n"))
+      logger.error("Error exporting #{self.id}: #{e}")
+      logger.error(e.backtrace.join("\n"))
       record.failures += 1 if record.present?
     end
     record.save if record.present?
@@ -648,11 +640,12 @@ class Content < ActiveRecord::Base
       return "doc #{id} is quarantined and was not exported"
     else
       FileUtils.mkpath(export_path)
-      xml_path = "#{export_path}/#{guid}.xml"
+      escaped_guid = CGI::escape guid
+      xml_path = "#{export_path}/#{escaped_guid}.xml"
       File.open(xml_path, "w+") do |f|
         f.write self.to_xml
       end
-      File.open("#{export_path}/#{guid}.html", "w+") do |f|
+      File.open("#{export_path}/#{escaped_guid}.html", "w+") do |f|
         f.write sanitized_content
       end
       file_list << xml_path
@@ -680,17 +673,20 @@ class Content < ActiveRecord::Base
 
   # Export Gate Document directly before/after Pipeline processing
   def export_pre_pipeline_xml(repo, opts = {})
-    options = { :body => self.to_xml }
     file_list = opts[:file_list] || Array.new
 
-    res = OntotextController.post("#{repo.dsp_endpoint}/processPrePipeline", options)
+    res = OntotextController.post(repo.dsp_endpoint + '/processPrePipeline',
+        { body: to_xml,
+          headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",
+                     'Accept' => "application/vnd.ontotext.ces.document+json;charset=UTF-8" }})
 
-    # TODO: Make check for erroneous response better
-    unless res.body.nil? || res.body.empty?
+ # TODO: Make check for erroneous response better
+    unless res.parsed_response.nil? || res.parsed_response.empty?
       FileUtils.mkpath("#{export_path}/pre_pipeline")
-      xml_path = "#{export_path}/pre_pipeline/#{guid}.xml"
-      File.open(xml_path, "w+") { |f| f.write(res.body) }
-      File.open("#{export_path}/pre_pipeline/#{guid}.html", "w+") { |f| f.write(sanitized_content) }
+      escaped_guid = CGI::escape guid
+      xml_path = "#{export_path}/pre_pipeline/#{escaped_guid}.xml"
+      File.open(xml_path, "w+") { |f| f.write(res.parsed_response) }
+      File.open("#{export_path}/pre_pipeline/#{escaped_guid}.html", "w+") { |f| f.write(sanitized_content) }
       file_list << xml_path
       return true
     else
@@ -871,7 +867,7 @@ class Content < ActiveRecord::Base
   # @note Returns an ordered array of PromotionBanner, score, and select method -- in that order.
   # @param repo [Repository] the repository to query
   # @return [Array<PromotionBanner, String, String>]
-  def get_related_promotion(repo)
+  def get_related_promotion(repo, max_return=3)
     if banner_ad_override.present?
       # NOTE: banner_ad_override actually uses the Promotion id, not the PromotionBanner id
       promo = Promotion.find(banner_ad_override)
@@ -895,16 +891,15 @@ class Content < ActiveRecord::Base
       select_score = nil
       select_method = 'sponsored_content'
     else
-      # query graphdb for relevant active banner ads (pass title + content)
-      results = DspService.query_promo_similarity_index(title + " " + content, id, repo)
-
-      # select one random record from remaining results
+      # use DspService to return active, relevant ads w/inventory over a certain threshold score
+      results = DspService.get_related_promo_ids(self, max_return, repo)
+      # select one random record from returned results
       result = results.sample
       promoted_content = []
       # return content id, relevance score and select method
       if result.present?
-        content_id = result[:content_id].to_s
-        select_score = result[:score].to_s
+        content_id = result['id'].split('/')[-1].to_i
+        select_score = result['score'].to_s
         select_method = "relevance"
       end
     end
@@ -958,7 +953,8 @@ class Content < ActiveRecord::Base
   # Creates sanitized version of title - at this point, just stripping out listerv towns
   def sanitized_title
     if title.present?
-      title.gsub(/\[[^\]]+\]/, "").strip
+      new_title = title.gsub(/\[[^\]]+\]/, "").strip
+      new_title.present? ? new_title : "Post by #{author_name}"
     else
       nil
     end
@@ -1336,24 +1332,4 @@ class Content < ActiveRecord::Base
     root_content_category.try(:name) == 'news'
   end
 
-  private
-
-  def query_promo_similarity_index(query_term, repo)
-
-    # access endpoint
-    sparql = ::SPARQL::Client.new repo.sesame_endpoint
-    # sanitize query_term
-    clean_content = SparqlUtilities.sanitize_input(SparqlUtilities.clean_lucene_query(
-                    ActionView::Base.full_sanitizer.sanitize(query_term)))
-
-    # get score threshold
-    score_threshold = Figaro.env.promo_relevance_score_threshold
-    query = File.read(Rails.root.join("lib", "queries", "query_promo_similarity_index.rq")) %
-            { content: clean_content, content_id: id, score_threshold: score_threshold }
-    begin
-      sparql.query(query)
-    rescue
-      return []
-    end
-  end
 end

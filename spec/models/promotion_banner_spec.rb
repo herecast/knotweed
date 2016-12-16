@@ -247,20 +247,6 @@ describe PromotionBanner, :type => :model do
         expect(response.length).to eq 1
       end
     end
-
-    describe "::remove_promotion" do
-      it "remove promotion" do
-        response = PromotionBanner.remove_promotion(@promotion_banner.promotion.content.repositories[0], @content.id)
-        expect(response).to be_a SPARQL::Client
-      end
-    end
-
-    describe "::remove_paid_promotion" do
-      it "removes paid promotion" do
-        response = PromotionBanner.remove_paid_promotion(@promotion_banner.promotion.content.repositories[0], @content.id)
-        expect(response).to be_a SPARQL::Client
-      end
-    end
   end
 
   describe '::get_random_promotion' do

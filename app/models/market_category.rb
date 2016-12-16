@@ -16,6 +16,9 @@ class MarketCategory < ActiveRecord::Base
   validate :not_featured_and_trending
   validate :trending_limit, if: :trending_changed_to_true?
   validate :featured_limit, if: :featured_changed_to_true?
+
+  mount_uploader :category_image, ImageUploader
+  mount_uploader :detail_page_banner, ImageUploader
   
   scope :trending, -> { where(trending: true) }
   scope :featured, -> { where(featured: true) }
