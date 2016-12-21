@@ -771,6 +771,7 @@ ActiveRecord::Schema.define(version: 20161209183115) do
     t.string   "page_url"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
+    t.boolean  "gtm_blocked"
   end
 
   add_index "promotion_banner_metrics", ["created_at"], name: "index_promotion_banner_metrics_on_created_at", using: :btree
