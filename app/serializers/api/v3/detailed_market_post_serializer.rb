@@ -5,7 +5,8 @@ module Api
       attributes :id, :title, :price, :content, :content_id, :published_at,
         :locate_address, :can_edit, :has_contact_info, :my_town_only,
         :author_name, :organization_id, :updated_at, :image_url, :contact_phone,
-        :contact_email, :preferred_contact_method, :images, :created_at, :updated_at
+        :contact_email, :preferred_contact_method, :images, :created_at, :updated_at,
+        :sold
 
       root 'market_post'
 
@@ -86,6 +87,14 @@ module Api
         # NOTE: this works because the primary_image method returns images.first
         # if no primary image exists (or nil if no image exists at all)
         object.primary_image.try(:image).try(:url)
+      end
+
+      def sold
+        if object.channel
+          object.channel.sold
+        else
+          false
+        end
       end
     end
   end
