@@ -25,7 +25,6 @@
 
 class ListservDigest < ActiveRecord::Base
   belongs_to :listserv
-  belongs_to :promotion
 
   # pre-postgres below:  maybe update to array column?
   serialize :listserv_content_ids, Array
@@ -93,4 +92,11 @@ class ListservDigest < ActiveRecord::Base
     end
   end
 
+  def promotions
+    if promotion_ids.any?
+      Promotion.where(id: promotion_ids).sort_by {|p| promotion_ids.index(p.id) }
+    else
+      []
+    end
+  end
 end

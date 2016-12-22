@@ -11,7 +11,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161209183115) do
+ActiveRecord::Schema.define(version: 20161220211336) do
+
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -130,18 +131,17 @@ ActiveRecord::Schema.define(version: 20161209183115) do
   create_table "campaigns", force: :cascade do |t|
     t.integer  "listserv_id"
     t.integer  "community_ids", default: [],              array: true
-    t.integer  "promotion_id"
     t.string   "sponsored_by"
     t.text     "digest_query"
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.string   "title"
     t.string   "preheader"
+    t.integer  "promotion_ids", default: [],              array: true
   end
 
   add_index "campaigns", ["community_ids"], name: "index_campaigns_on_community_ids", using: :btree
   add_index "campaigns", ["listserv_id"], name: "index_campaigns_on_listserv_id", using: :btree
-  add_index "campaigns", ["promotion_id"], name: "index_campaigns_on_promotion_id", using: :btree
 
   create_table "categories", id: :bigserial, force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -580,12 +580,12 @@ ActiveRecord::Schema.define(version: 20161209183115) do
     t.string   "subject"
     t.string   "template"
     t.string   "sponsored_by"
-    t.integer  "promotion_id"
     t.integer  "location_ids",         default: [],              array: true
     t.integer  "subscription_ids",     default: [],              array: true
     t.string   "mc_segment_id"
     t.string   "title"
     t.string   "preheader"
+    t.integer  "promotion_ids",        default: [],              array: true
   end
 
   add_index "listserv_digests", ["listserv_id"], name: "index_listserv_digests_on_listserv_id", using: :btree
@@ -612,7 +612,6 @@ ActiveRecord::Schema.define(version: 20161209183115) do
     t.string   "timezone",                                default: "Eastern Time (US & Canada)"
     t.text     "digest_description"
     t.string   "digest_send_day"
-    t.integer  "promotion_id"
     t.text     "digest_query"
     t.string   "template"
     t.string   "sponsored_by"
@@ -621,6 +620,7 @@ ActiveRecord::Schema.define(version: 20161209183115) do
     t.string   "digest_preheader"
     t.string   "list_type",                               default: "custom_list"
     t.string   "sender_name"
+    t.integer  "promotion_ids",                           default: [],                                        array: true
   end
 
   create_table "listservs_locations", id: false, force: :cascade do |t|
@@ -1018,7 +1018,6 @@ ActiveRecord::Schema.define(version: 20161209183115) do
   add_index "wufoo_forms", ["controller", "action", "active"], name: "idx_16881_index_wufoo_forms_on_controller_and_action_and_active", unique: true, using: :btree
 
   add_foreign_key "campaigns", "listservs"
-  add_foreign_key "campaigns", "promotions"
   add_foreign_key "listserv_contents", "content_categories"
   add_foreign_key "listserv_contents", "contents"
   add_foreign_key "listserv_contents", "listservs"

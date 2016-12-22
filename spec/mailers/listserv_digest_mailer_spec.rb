@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe ListservDigestMailer do
   describe '.digest' do
     context 'Given a listserv digest record' do
-      let(:listserv) { FactoryGirl.create :listserv, promotion: promotion }
+      let(:listserv) { FactoryGirl.create :listserv, promotion_ids: [promotion.id] }
       let(:listserv_contents) { FactoryGirl.create_list :listserv_content, 3, :verified }
       let(:contents) { FactoryGirl.create_list :content, 3 }
       let!(:promotion) { FactoryGirl.create :promotion, promotable_type: 'PromotionBanner' }
@@ -138,7 +138,7 @@ RSpec.describe ListservDigestMailer do
           it 'displays the banner ad correctly' do
             listserv_digest.update(
               template: 'uv_digest',
-              promotion: promotion
+              promotion_ids: [promotion.id]
             )
             content = contents.first
             content.content_type = :market

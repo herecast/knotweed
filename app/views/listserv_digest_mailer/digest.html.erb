@@ -14,8 +14,8 @@
 </div>
 
 <div>
-  <% if @digest.promotion.present? %>
-    <% banner_ad = @digest.promotion.promotable %>
+  <% if @digest.promotions.any? %>
+    <% banner_ad = @digest.promotions.first.promotable %>
     <%= link_to image_tag(banner_ad.banner_image), banner_ad.redirect_url %>
   <% end %>
 </div>

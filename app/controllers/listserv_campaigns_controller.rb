@@ -39,11 +39,12 @@ class ListservCampaignsController < ApplicationController
   def campaign_params
     params.require(:campaign).permit(
       :sponsored_by,
-      :promotion_id,
       :digest_query,
       :title,
       :preheader,
+      :promotions_list,
       community_ids: [],
+      promotion_ids: [],
     ).tap do |p|
       if p[:community_ids].respond_to?(:[])
         p[:community_ids].reject!{|c| c.empty?}

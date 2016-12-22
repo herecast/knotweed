@@ -35,6 +35,14 @@ class Campaign < ActiveRecord::Base
     end
   end
 
+  def promotions_list=(list)
+    write_attribute(:promotion_ids, list.split(/[,\s]+/))
+  end
+
+  def promotions_list
+    promotion_ids.join(", ")
+  end
+
   def contents_from_custom_query
     custom_ids = custom_digest_results.map { |result| result['id'].to_i }
     Content.where(id: custom_ids).sort_by {|c| custom_ids.index(c.id) }
@@ -68,6 +76,14 @@ class Campaign < ActiveRecord::Base
 
   def siblings
     self.class.where(listserv_id: listserv_id).where.not(id: id)
+  end
+
+  def promotions
+    if promotion_ids.any?
+      Promotion.where(id: promotion_ids).sort_by {|p| promotion_ids.index(p.id) }
+    else
+      []
+    end
   end
 
   private
