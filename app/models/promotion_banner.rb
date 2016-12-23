@@ -74,25 +74,6 @@ class PromotionBanner < ActiveRecord::Base
   # query promotion banners by content
   scope :for_content, lambda { |content_id| joins(:promotion).where('promotions.content_id = ?', content_id) }
 
-  def self.get_random_promotion
-    select_score = nil
-    select_method = 'boost'
-    banner = PromotionBanner.boost.has_inventory.order('RANDOM()').first
-    unless banner.present?
-      select_method = 'paid'
-      banner = PromotionBanner.active.paid.has_inventory.order('RANDOM()').first
-    end
-    unless banner.present?
-      select_method = 'active'
-      banner = PromotionBanner.active.has_inventory.order('RANDOM()').first
-    end
-    unless banner.present?
-      select_method = 'active no inventory'
-      banner = PromotionBanner.active.order('RANDOM()').first
-    end
-    return [banner, select_score, select_method]
-  end
-
   def current_daily_report(current_date=Date.current)
     promotion_banner_reports.where("report_date >= ?", current_date).take
   end

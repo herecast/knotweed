@@ -161,7 +161,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
       it 'should respond with the banner specified by the banner_ad_override' do
         subject
-        expect(assigns(:banner)).to eq @pb2
+        expect(assigns(:promotion_banners).first).to eq @pb2
       end
     end
 
