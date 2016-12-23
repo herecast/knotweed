@@ -130,9 +130,12 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         Rails.cache.write('most_recent_reset_time', Date.current)
       end
 
+      subject { get :show, format: :json,
+              promotion_id: @promo.id, consumer_app_uri: @consumer_app.uri }
+
       it "records 'load' event" do
         expect(BackgroundJob).to receive(:perform_later).with(
-          "RecordPromotionBannerMetric", "call", 'load', any_args
+          "RecordPromotionBannerMetric", "call", 'load', nil, @pb, any_args
         )
         subject
       end

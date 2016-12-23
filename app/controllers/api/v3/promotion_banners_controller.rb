@@ -38,8 +38,8 @@ module Api
         conditionally_prime_daily_ad_reports
         @promotion_banners = SelectPromotionBanners.call(opts)
 
-        @promotion_banners = @promotion_banners.map{ |promo| promo.first }
         log_promotion_banner_loads
+        @promotion_banners = @promotion_banners.map{ |promo| promo.first }
         
         render json:  @promotion_banners, root: :promotions,
           each_serializer: RelatedPromotionSerializer
@@ -118,10 +118,10 @@ module Api
       def log_promotion_banner_loads
         unless @current_api_user.try(:skip_analytics?)
           @promotion_banners.each do |promotion_banner|
-            BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'load', @current_api_user, promotion_banner, Date.current.to_s,
+            BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'load', @current_api_user, promotion_banner[0], Date.current.to_s,
               content_id: params[:content_id],
-              select_method: promotion_banner[1],
-              select_score: promotion_banner[2]
+              select_score: promotion_banner[1],
+              select_method: promotion_banner[2]
             )
           end
         end
