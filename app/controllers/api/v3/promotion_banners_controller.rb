@@ -118,7 +118,7 @@ module Api
       def log_promotion_banner_loads
         unless @current_api_user.try(:skip_analytics?)
           @promotion_banners.each do |promotion_banner|
-            BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'load', @current_api_user, @banner, Date.current.to_s,
+            BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'load', @current_api_user, promotion_banner, Date.current.to_s,
               content_id: params[:content_id],
               select_method: promotion_banner[1],
               select_score: promotion_banner[2]
