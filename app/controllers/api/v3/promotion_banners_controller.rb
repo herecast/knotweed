@@ -38,8 +38,8 @@ module Api
         conditionally_prime_daily_ad_reports
         @promotion_banners = SelectPromotionBanners.call(opts)
 
-        log_promotion_banner_loads
         @promotion_banners = @promotion_banners.map{ |promo| promo.first }
+        log_promotion_banner_loads
         
         render json:  @promotion_banners, root: :promotions,
           each_serializer: RelatedPromotionSerializer
