@@ -2,25 +2,22 @@ module HasPromotionForBanner
   extend ActiveSupport::Concern
 
   included do
-    belongs_to :promotion
-    validate :promotion_exists, if: :promotion_id
-    validate :is_valid_promotion_banner, if: :promotion
+    validate :promotions_exists, if: :promotion_ids?
+    validate :is_valid_promotion_banner, if: :promotion_ids_changed?
   end
 
   private
 
   def is_valid_promotion_banner
-    if promotion
-      unless promotion.promotable.is_a? PromotionBanner
-        errors.add(:promotion_id, "must be a promotion tied to a banner")
-      end
+    unless promotions.all? { |promo| promo.promotable.is_a? PromotionBanner }
+      errors.add(:promotion_ids, "you have one or more promotions without a banner")
     end
   end
 
-  def promotion_exists
-    if promotion_id
-      unless promotion
-        errors.add(:promotion_id, 'must exist')
+  def promotions_exists
+    if promotion_ids.any?
+      unless promotions.any?
+        errors.add(:promotion_ids, 'must exist')
       end
     end
   end

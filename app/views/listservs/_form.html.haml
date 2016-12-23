@@ -34,7 +34,8 @@
         = f.input :digest_footer, as: :summernote
         = f.input :template, collection: @listserv.digest_templates, include_blank: false
         = f.input :sponsored_by, hint: "Ex: 'Sponsored by Monsanto'"
-        = f.input :promotion_id, as: :string
+        = f.input :promotion_ids do
+          = f.input_field :promotions_list
         = f.input :display_subscribe, label: "Subscription option on DailyUV registration and user account"
 
         .form-actions

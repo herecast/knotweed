@@ -23,7 +23,7 @@ module Api
     class MarketPostSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :published_at, :image_url, :content_id, :my_town_only,
-        :cost, :created_at, :updated_at
+        :cost, :created_at, :updated_at, :sold
 
       def content_id
         object.id
@@ -45,6 +45,14 @@ module Api
 
       def cost
         object.try(:channel).try(:cost)
+      end
+
+      def sold
+        if object.channel
+          object.channel.sold
+        else
+          false
+        end
       end
 
     end

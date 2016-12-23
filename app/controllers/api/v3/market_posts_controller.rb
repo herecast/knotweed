@@ -148,6 +148,7 @@ module Api
             :locate_name,
             :status,
             :prefered_contact_method,
+            :sold,
             content_attributes: [
               :id,
               :title,

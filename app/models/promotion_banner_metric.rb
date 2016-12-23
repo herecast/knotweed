@@ -13,6 +13,7 @@
 #  page_url            :string
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  gtm_blocked         :boolean
 #
 
 class PromotionBannerMetric < ActiveRecord::Base

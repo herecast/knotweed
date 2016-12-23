@@ -27,7 +27,8 @@ class RecordPromotionBannerMetric
         user_id: @user.try(:id),
         content_id: @opts[:content_id],
         select_method: @opts[:select_method],
-        select_score: @opts[:select_score]
+        select_score: @opts[:select_score],
+        gtm_blocked: @opts[:gtm_blocked]
       )
     end
 

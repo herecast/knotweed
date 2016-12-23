@@ -15,8 +15,8 @@
 <div class='enhanced-posts'>
   <% @digest.contents.sort_by{|c| [c.content_type, c.pubdate] }.group_by{|c| c.content_type}.each do |ct, contents| %>
     <% if ct == :market %>
-      <% if @digest.promotion.present? %>
-        <% banner_ad = @digest.promotion.promotable %>
+      <% if @digest.promotions.any? %>
+        <% banner_ad = @digest.promotions.first.promotable %>
         <div class="uv-digest-banner" style="padding-bottom: 15px; vertical-align: top">
           <%= link_to image_tag(banner_ad.banner_image), banner_ad.redirect_url %>
         </div>

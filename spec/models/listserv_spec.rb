@@ -44,6 +44,7 @@ describe Listserv, :type => :model do
   it { is_expected.to respond_to(:post_email, :post_email=) }
   it { is_expected.to respond_to(:is_managed_list?) }
   it { is_expected.to respond_to(:is_vc_list?) }
+  it { is_expected.to respond_to(:promotions_list, :promotions_list=)}
 
   it { is_expected.to have_db_column(:mc_list_id).of_type(:string) }
   it { is_expected.to have_db_column(:mc_group_name).of_type(:string) }
@@ -145,22 +146,22 @@ describe Listserv, :type => :model do
           promotable: FactoryGirl.create(:promotion_listserv)
       }
 
-      it 'checks existence of the promotion' do
-        subject.promotion_id = '190380'
+      it 'checks existence of promotions' do
+        subject.promotion_ids = ['8675309', '234234']
         subject.valid? #trigger validation
-        expect(subject.errors).to have_key(:promotion_id)
+        expect(subject.errors.messages.first).to include(:promotion_ids)
 
-        subject.promotion_id = promo_with_banner.id
+        subject.promotion_ids= [promo_with_banner.id]
         subject.valid? #trigger validation
         expect(subject.errors).to_not have_key(:promotion_id)
       end
 
       it 'requires promotion is tied to a PromotionBanner' do
-        subject.promotion_id = other_promo.id
+        subject.promotion_ids = [other_promo.id]
         subject.valid? #trigger validation
-        expect(subject.errors).to have_key(:promotion_id)
+        expect(subject.errors).to have_key(:promotion_ids)
 
-        subject.promotion_id = promo_with_banner.id
+        subject.promotion_ids = [promo_with_banner.id]
         subject.valid? #trigger validation
         expect(subject.errors).to_not have_key(:promotion_id)
       end
@@ -175,13 +176,13 @@ describe Listserv, :type => :model do
     end
   end
 
-  describe 'banner_ad' do
+  describe 'banner_ads' do
     let!(:promotion) { FactoryGirl.create :promotion, promotable_type: 'PromotionBanner' }
     let!(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: promotion }
-    let(:banner_ad_listserv) { FactoryGirl.create :listserv, promotion: promotion }
+    let(:banner_ad_listserv) { FactoryGirl.create :listserv, promotion_ids: [promotion.id] }
   
-   it 'retuns a banner ad' do
-      expect(banner_ad_listserv.banner_ad).to eq promotion_banner
+   it 'retuns an array of banner ads' do
+      expect(banner_ad_listserv.banner_ads.first).to eq promotion_banner
     end
   end
 

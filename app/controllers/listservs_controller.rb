@@ -61,7 +61,6 @@ class ListservsController < ApplicationController
         :send_digest,
         :digest_reply_to,
         :timezone,
-        :promotion_id,
         :digest_description,
         :digest_send_day,
         :digest_query,
@@ -71,7 +70,9 @@ class ListservsController < ApplicationController
         :digest_preheader,
         :digest_subject,
         :list_type,
-        :sender_name
+        :sender_name,
+        :promotions_list,
+        promotion_ids: []
       )
     end
 end

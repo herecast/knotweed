@@ -64,7 +64,8 @@ module Api
 
         unless @current_api_user.try(:skip_analytics?)
           BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'impression', @current_api_user, @banner, Date.current.to_s,
-            content_id: params[:content_id]
+            content_id:  params[:content_id],
+            gtm_blocked: params[:gtm_blocked] == 'true'
           )
         end
 

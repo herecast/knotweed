@@ -38,9 +38,9 @@ RSpec.describe ListservDigest, type: :model do
   it{ is_expected.to have_db_column(:location_ids).of_type(:integer).with_options(array: true) }
   it { is_expected.to have_db_column(:title).of_type(:string) }
   it { is_expected.to have_db_column(:preheader).of_type(:string) }
+  it { is_expected.to have_db_column(:promotion_ids)}
 
   it { is_expected.to belong_to(:listserv) }
-  it { is_expected.to belong_to(:promotion) }
 
   it { is_expected.to respond_to :listserv_contents }
   it { is_expected.to respond_to :contents }
@@ -131,4 +131,25 @@ RSpec.describe ListservDigest, type: :model do
       end
     end
   end
-end
+
+  describe '#promotions' do
+    let!(:promotion) { FactoryGirl.create :promotion }
+    context 'when promotions are present' do
+      before do
+        subject.promotion_ids = [promotion.id]
+      end
+      it 'returns a relation of promotions' do
+        expect(subject.promotions.first).to eq promotion
+      end
+    end
+
+    context 'when there are no associated promotions' do
+      before do
+        subject.promotion_ids = []
+      end
+      it 'returns an empry array' do
+        expect(subject.promotions).to be_empty
+      end
+    end
+  end
+end 
