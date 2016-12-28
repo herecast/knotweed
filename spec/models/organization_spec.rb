@@ -78,17 +78,4 @@ describe Organization, :type => :model do
       expect(@organization.get_all_children).to eq [@s1,@s2,@c1,@c2]
     end
   end
-
-  describe '#get_promotion' do
-    before do
-      @banner = FactoryGirl.create :promotion_banner
-      promotion = FactoryGirl.create :promotion, promotable_id: @banner.id, promotable_type: 'PromotionBanner'
-      @organization = FactoryGirl.create :organization, banner_ad_override: promotion.id
-    end
-
-    it "returns promoted banner" do
-      allow(PromotionBanner).to receive(:get_random_promotion).and_return nil
-      expect(@organization.get_promotion[0].id).to eq @banner.id
-    end
-  end
 end

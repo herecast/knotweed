@@ -861,57 +861,6 @@ class Content < ActiveRecord::Base
     has_promotion_inventory?
   end
 
-  # searches for and returns a related promotion for a given content and repository
-  # using a variety of search strategies.
-  #
-  # @note Returns an ordered array of PromotionBanner, score, and select method -- in that order.
-  # @param repo [Repository] the repository to query
-  # @return [Array<PromotionBanner, String, String>]
-  def get_related_promotion(repo, max_return=3)
-    if banner_ad_override.present?
-      # NOTE: banner_ad_override actually uses the Promotion id, not the PromotionBanner id
-      promo = Promotion.find(banner_ad_override)
-      if promo.promotable.is_a? PromotionBanner
-        banner = promo.promotable
-      else
-        banner = nil
-      end
-      select_score = nil
-      select_method = 'sponsored_content'
-    elsif organization.banner_ad_override?
-      ids = organization.banner_ad_override.split(/,[\s]*?/)
-
-      # NOTE: banner_ad_override actually uses the Promotion id, not the PromotionBanner id
-      promo = Promotion.find(ids.sample)
-      if promo.promotable.is_a? PromotionBanner
-        banner = promo.promotable
-      else
-        banner = nil
-      end
-      select_score = nil
-      select_method = 'sponsored_content'
-    else
-      # use DspService to return active, relevant ads w/inventory over a certain threshold score
-      results = DspService.get_related_promo_ids(self, max_return, repo)
-      # select one random record from returned results
-      result = results.sample
-      promoted_content = []
-      # return content id, relevance score and select method
-      if result.present?
-        content_id = result['id'].split('/')[-1].to_i
-        select_score = result['score'].to_s
-        select_method = "relevance"
-      end
-    end
-    if content_id.present?
-      banner = PromotionBanner.for_content(content_id).active.has_inventory.order('random()').first
-    end
-    if banner.blank?
-      random_promotion_info_set = PromotionBanner.get_random_promotion
-    end
-    return random_promotion_info_set || [banner, select_score, select_method]
-  end
-
   # returns the content for sending to the DSP for annotation
   def publish_content(include_tags=false)
     pub_content = sanitized_content

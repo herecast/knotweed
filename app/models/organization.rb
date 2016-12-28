@@ -113,18 +113,6 @@ class Organization < ActiveRecord::Base
     super
   end
 
-  def get_promotion
-    promotion = Promotion.find_by(id: banner_ad_override)
-    if promotion.try(:promotable).try(:class) == PromotionBanner
-      banner = promotion.promotable
-    else
-      banner = nil
-    end
-    select_score = nil
-    select_method = 'sponsored_content'
-    banner.present? ? [banner, select_score, select_method] : PromotionBanner.get_random_promotion
-  end
-
   # selects an ad from the array of profile ad override options
   def get_profile_ad_override_id
     profile_ad_override.split(',').sample.to_i if profile_ad_override.present?

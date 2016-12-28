@@ -27,36 +27,22 @@ module Api
       end
 
       def show
+        opts                   = {}
+        opts[:limit]           = params[:limit] || 1
+        opts[:exclude]         = params[:exclude]
+        opts[:promotion_id]    = params[:promotion_id]
+        opts[:content_id]      = params[:content_id]
+        opts[:organization_id] = params[:organization_id]
+        opts[:repository]      = @repository
+
         conditionally_prime_daily_ad_reports
+        @promotion_banners = SelectPromotionBanners.call(opts)
 
-        if params[:promotion_id].present?
-          @banner = Promotion.where(promotable_type: 'PromotionBanner').find(params[:promotion_id]).promotable
-          select_score, select_method = nil, 'sponsored content'
-        elsif params[:content_id].present?
-          @content = Content.find params[:content_id]
-          # get related promo if exists
-          @banner, select_score, select_method = @content.get_related_promotion(@repository)
-        elsif params[:organization_id].present?
-          @organization = Organization.find params[:organization_id]
-          @banner, select_score, select_method = @organization.get_promotion
-        else
-          @banner, select_score, select_method = PromotionBanner.get_random_promotion
-        end
-
-        unless @banner.present? # banner must've expired or been used up since repo last updated
-          render json: {}
-        else
-          unless @current_api_user.try(:skip_analytics?)
-            BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'load', @current_api_user, @banner, Date.current.to_s,
-              content_id: params[:content_id],
-              select_method: select_method,
-              select_score: select_score
-            )
-          end
-
-          render json:  @banner, root: :promotion,
-            serializer: RelatedPromotionSerializer
-        end
+        log_promotion_banner_loads
+        @promotion_banners = @promotion_banners.map{ |promo| promo.first }
+        
+        render json:  @promotion_banners, root: :promotions,
+          each_serializer: RelatedPromotionSerializer
       end
 
       def track_impression
@@ -126,6 +112,18 @@ module Api
         if most_recent_reset_time.nil? || most_recent_reset_time < Date.current
           BackgroundJob.perform_later('PrimeDailyPromotionBannerReports', 'call', Date.current.to_s)
           Rails.cache.write('most_recent_reset_time', Time.current, expires_in: 24.hours)
+        end
+      end
+
+      def log_promotion_banner_loads
+        unless @current_api_user.try(:skip_analytics?)
+          @promotion_banners.each do |promotion_banner|
+            BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'load', @current_api_user, promotion_banner[0], Date.current.to_s,
+              content_id: params[:content_id],
+              select_score: promotion_banner[1],
+              select_method: promotion_banner[2]
+            )
+          end
         end
       end
 
