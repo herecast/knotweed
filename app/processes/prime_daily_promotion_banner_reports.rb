@@ -10,7 +10,7 @@ class PrimeDailyPromotionBannerReports
 
   def call
     reset_daily_impression_counts
-    create_reports_for_track_daily_metrics_promotion_banners
+    create_reports_for_current_promotion_banners
     update_active_promotions
   end
 
@@ -21,8 +21,8 @@ class PrimeDailyPromotionBannerReports
         .update_all("daily_impression_count = 0")
     end
 
-    def create_reports_for_track_daily_metrics_promotion_banners
-      PromotionBanner.where(track_daily_metrics: true).each do |promotion_banner|
+    def create_reports_for_current_promotion_banners
+      PromotionBanner.active(@current_date).each do |promotion_banner|
         promotion_banner.find_or_create_daily_report(@current_date)
       end
     end

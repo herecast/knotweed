@@ -13,7 +13,6 @@
 
 ActiveRecord::Schema.define(version: 20161220211336) do
 
-
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -806,9 +805,10 @@ ActiveRecord::Schema.define(version: 20161220211336) do
     t.integer  "daily_max_impressions",  limit: 8
     t.boolean  "boost",                              default: false
     t.integer  "daily_impression_count", limit: 8,   default: 0
-    t.boolean  "track_daily_metrics"
     t.integer  "load_count",                         default: 0
     t.integer  "integer",                            default: 0
+    t.string "promotion_type"
+    t.float "cost_per_impression"
   end
 
   create_table "promotion_listservs", id: :bigserial, force: :cascade do |t|
@@ -819,7 +819,6 @@ ActiveRecord::Schema.define(version: 20161220211336) do
   end
 
   create_table "promotions", id: :bigserial, force: :cascade do |t|
-    t.boolean  "active"
     t.string   "banner",          limit: 255
     t.integer  "organization_id", limit: 8
     t.integer  "content_id",      limit: 8

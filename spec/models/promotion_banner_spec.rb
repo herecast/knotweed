@@ -130,33 +130,27 @@ describe PromotionBanner, :type => :model do
   end
 
   describe 'scope :active' do
-    before do
-      # active promotion banners
-      FactoryGirl.create_list :promotion_banner, 3, campaign_start: 2.days.ago, campaign_end: 2.days.from_now
-    end
+    let!(:active_banner) { FactoryGirl.create :promotion_banner, :active }
+    let!(:inactive_banner) { FactoryGirl.create :promotion_banner, :inactive }
 
-    #it 'should not include banners that have hit max impressions' do
-    #  over_max = FactoryGirl.create :promotion_banner, impression_count: 50, max_impressions:50
-    #  PromotionBanner.active.include?(over_max).should be_false
-    #end
-
-    #it 'should not include banners whose associated promotion is inactive' do
-    #  inactive = FactoryGirl.create :promotion_banner
-    #  inactive.promotion.update_attribute :active, false
-    #  PromotionBanner.active.include?(inactive).should be_false
-    #end
-
+    subject { PromotionBanner.active }
     it 'should return active banners' do
-      expect(PromotionBanner.active.count).to eq(3)
+      expect(subject).to match_array [active_banner]
     end
 
     it 'should not include banners outside their campaign date range' do
-      already_over = FactoryGirl.create :promotion_banner, campaign_start: 3.days.ago,
-        campaign_end: 2.days.ago
-      not_started = FactoryGirl.create :promotion_banner, campaign_start: 3.days.from_now,
-        campaign_end: 5.days.from_now
-      expect(PromotionBanner.active.include?(already_over)).to be_falsey
-      expect(PromotionBanner.active.include?(not_started)).to be_falsey
+      expect(subject).to_not include(inactive_banner)
+    end
+
+    describe 'when passed a time argument' do
+      let(:banner) { FactoryGirl.create :promotion_banner, campaign_start: 2.weeks.from_now,
+        campaign_end: 3.weeks.from_now }
+
+      subject { PromotionBanner.active(banner.campaign_start + 1.minute) }
+
+      it 'should return banners active at that time' do
+        expect(subject).to include(banner)
+      end
     end
 
   end

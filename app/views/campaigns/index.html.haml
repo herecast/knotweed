@@ -27,15 +27,21 @@
           .field.span2
             = f.label :boost_eq, "Boosted?"
             = f.check_box :boost_eq
+        .controls.controls-row
+          .field.span3
+            = f.label :promotion_type_eq, 'Promotion Type'
+            = f.select :promotion_type_eq, PromotionBanner::PROMOTION_TYPES, { include_blank: true }
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
 %table.table.table-striped.table-hover.table-condensed#campaign_index
   %thead
     %tr
+      %th Promotion Type
       %th Content ID
       %th Organization
       %th Title
+      %th Campaign Dates
       %th Pubdate
       %th
   .span5
@@ -44,8 +50,10 @@
   %body
     - @campaigns.each do |c|
       %tr
+        %td= c.promotion_type
         %td= c.promotion.content.try(:id)
         %td{ style: "min-width: 150px" }= c.promotion.organization.try(:name)
         %td= c.promotion.content.try(:title)
+        %td #{c.campaign_start.try(:strftime, "%m/%d/%Y")}-#{c.campaign_end.try(:strftime, "%m/%d/%Y")}
         %td{ style: "min-width: 150px" }= c.promotion.content.try(:pubdate).try(:strftime, "%A, %b %d")
         %td= link_to "edit", edit_promotion_path(c.promotion), class: "btn btn-warning btn-mini"

@@ -1007,39 +1007,34 @@ describe Content, :type => :model do
   end
 
   describe "has_active_promotion?" do
-    before do
-      @content = FactoryGirl.create(:content)
-    end
+    let(:content) { FactoryGirl.create(:content) }
 
     it "should return false if there are no promotions" do
-      expect(@content.has_active_promotion?).to eq(false)
+      expect(content.has_active_promotion?).to eq(false)
     end
 
     it "should return false if there is a promotion banner but it is inactive" do
-      p = FactoryGirl.create :promotion, active: false, content: @content
-      promotion_banner_over = FactoryGirl.create :promotion_banner, promotion: p, campaign_start: 3.days.ago,
-        campaign_end: 2.days.ago
-      expect(@content.has_active_promotion?).to eq(false)
+      FactoryGirl.create :promotion_banner, :inactive, content: content
+      expect(content.has_active_promotion?).to eq(false)
     end
 
     it "should return true if there is an active promotion banner attached" do
-      p = FactoryGirl.create :promotion, active: true, content: @content
-      promotion_banner = FactoryGirl.create :promotion_banner, promotion: p
-      expect(@content.has_active_promotion?).to eq(true)
+      FactoryGirl.create :promotion_banner, :active, content: content
+      expect(content.has_active_promotion?).to eq(true)
     end
 
   end
 
   describe '#has_promotion_inventory?' do
-    subject { FactoryGirl.create(:content) }
+    let(:content) { FactoryGirl.create(:content) }
+    subject { content.has_promotion_inventory? }
 
     context 'when related promotion banners have inventory' do
       before do
-        p = FactoryGirl.create :promotion, active: true, content: subject
-        FactoryGirl.create :promotion_banner, impression_count: 100, promotion: p
+        FactoryGirl.create :promotion_banner, impression_count: 100, content: content
       end
       it 'returns true' do
-        expect(subject.has_promotion_inventory?).to be_truthy
+        expect(subject).to be_truthy
       end
     end
   end

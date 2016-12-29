@@ -26,10 +26,6 @@ RSpec.describe SelectPromotionBanners do
 
     context "when content_id passed in" do
       let(:content) { FactoryGirl.create(:content) }
-      let(:promo_banner) { FactoryGirl.create(:promotion_banner) }
-      before do
-        FactoryGirl.create(:promotion, content: content, promotable: promo_banner)
-      end
 
       subject do
         SelectPromotionBanners.call(
@@ -39,13 +35,8 @@ RSpec.describe SelectPromotionBanners do
       end
 
       context 'when #banner_ad_override present' do
-        let(:override_banner) {FactoryGirl.create(:promotion_banner)}
-        before do
-          promotion = Promotion.new
-          promotion.promotable= override_banner
-          promotion.save!
-          content.update banner_ad_override: promotion.id
-        end
+        let(:override_banner) { FactoryGirl.create(:promotion_banner, :active, :sponsored) }
+        let(:content) { FactoryGirl.create :content, banner_ad_override: override_banner.promotion.id }
 
         it 'returns promo override\'s banner' do
           results = subject
@@ -59,13 +50,9 @@ RSpec.describe SelectPromotionBanners do
       end
 
       context 'when content.organization has banner ad override' do
-        let(:banner_ad1) { FactoryGirl.create :promotion_banner }
-        let(:banner_ad2) { FactoryGirl.create :promotion_banner }
-        let(:banner_ad3) { FactoryGirl.create :promotion_banner }
-
-        before do
-          content.organization.update banner_ad_override: [banner_ad1.promotion.id, banner_ad2.promotion.id].join(', ')
-        end
+        let(:banner_ad1) { FactoryGirl.create :promotion_banner, :active, :sponsored }
+        let(:organization) { FactoryGirl.create :organization, banner_ad_override: "#{banner_ad1.promotion.id}" }
+        let!(:content) { FactoryGirl.create :content, organization: organization }
 
         it 'does not query SPARQL::Client' do
           expect_any_instance_of(SPARQL::Client).to_not receive(:query)
@@ -73,13 +60,16 @@ RSpec.describe SelectPromotionBanners do
         end
 
         it 'returns a banner from the csv override property' do
-          results = subject
-          expect([banner_ad2, banner_ad1]).to include(results.first[0])
+          expect(subject.first[0]).to eq banner_ad1
         end
 
-        it 'does not return banners that are not listed' do
-          results = subject
-          expect(results.first[0]).to_not eql banner_ad3
+        context 'that is inactive' do
+          let!(:inactive_banner) { FactoryGirl.create :promotion_banner, :inactive, :sponsored }
+          before { content.organization.update banner_ad_override: inactive_banner.id }
+
+          it 'not respond with that banner' do
+            expect(subject).to_not include inactive_banner
+          end
         end
 
         context "when banner_ad_override does not return an active ad" do
@@ -93,6 +83,7 @@ RSpec.describe SelectPromotionBanners do
 
       context 'when SPARQL will return results based on similarity' do
         let(:score) { "9" }
+        let(:promo_banner) { FactoryGirl.create :promotion_banner, content: content }
 
         before do
           mock_data = {
@@ -120,12 +111,9 @@ RSpec.describe SelectPromotionBanners do
       end
 
       context 'When banner does not have inventory' do
-        before do
-          promo_banner.update_attributes({
-            max_impressions: 10,
-            impression_count: 10
-          })
-        end
+        let(:promo_banner) { FactoryGirl.create :promotion_banner, content: content,
+          max_impressions: 10, impression_count: 10 }
+
         context 'when sparql does not return anything' do
           before do
             allow(DspService).to receive(:get_related_promo_ids).and_return([])
@@ -185,6 +173,14 @@ RSpec.describe SelectPromotionBanners do
     context "when no reference provided" do
       subject { SelectPromotionBanners.call(repository: repo) }
 
+      context 'when an active and boosted NON-RUN-OF-SITE promotion exists' do
+        let!(:sponsored_banner) { FactoryGirl.create :promotion_banner, :active, :sponsored, boost: true, max_impressions: nil }
+
+        it 'does not return the banner' do
+          expect(subject).to_not include(sponsored_banner)
+        end
+      end
+
       context "when active and boosted promotion exists" do
         before do
           @promotion_banner = FactoryGirl.create :promotion_banner, boost: true, max_impressions: nil
@@ -208,13 +204,21 @@ RSpec.describe SelectPromotionBanners do
       end
 
       context "when only active with no inventory" do
-        before do
-          @promotion_banner = FactoryGirl.create :promotion_banner, daily_max_impressions: 5, daily_impression_count: 6
-        end
+        let!(:banner) { FactoryGirl.create :promotion_banner, :active, daily_max_impressions: 5, daily_impression_count: 6 }
 
         it "gets active, no inventory ad" do
-          results = subject
-          expect(results.first[0]).to eq @promotion_banner
+          expect(subject.first[0]).to eq banner
+        end
+      end
+
+      context 'when only active, no inventory, and non-ROS' do
+        let!(:banner) do
+          FactoryGirl.create :promotion_banner, :active, :digest,
+            daily_max_impressions: 5, daily_impression_count: 6
+        end
+
+        it 'should return nothing' do
+          expect(subject).to eq []
         end
       end
     end
@@ -260,7 +264,6 @@ RSpec.describe SelectPromotionBanners do
         expect(results).to eq []
       end
     end
-
   end
 
 end

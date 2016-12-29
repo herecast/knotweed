@@ -20,6 +20,7 @@ class CampaignsController < ApplicationController
         .page(params[:page])
         .per(25)
         .accessible_by(current_ability)
+        .includes(promotion: [:content, :organization])
       @campaigns = @campaigns.active if @active
     else
       @campaigns = []
