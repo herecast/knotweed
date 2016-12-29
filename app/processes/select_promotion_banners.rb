@@ -82,12 +82,8 @@ class SelectPromotionBanners
 
     def get_organization_promotion(organization)
       if organization.banner_ad_override.present?
-        possible_banners = PromotionBanner
-          .joins('INNER JOIN promotions on promotions.promotable_id = promotion_banners.id')
-          .active
-          .where('promotions.promotable_type=?',"PromotionBanner")
-          .where('promotions.id in (?)', organization.banner_ad_override)
-        add_promotion([possible_banners.sample, nil, 'sponsored_content']) if possible_banners.present?
+        ids = organization.banner_ad_override.split(/,[\s]*?/)
+        get_direct_promotion(ids.sample)
       end
     end
 
