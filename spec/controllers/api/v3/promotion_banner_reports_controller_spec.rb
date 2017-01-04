@@ -22,6 +22,7 @@ describe Api::V3::PromotionBannerReportsController, type: :controller do
     expect(promotion_banner_report).to match({
       "type" => @pb.promotion_type,
       "promo_id" => @pb.promotion.id,
+      "banner_id" => @pb.id,
       "campaign_start" => @pb.campaign_start.strftime("%D"),
       "campaign_end" => @pb.campaign_end.strftime("%D"),
       "served" => @pb.impression_count,

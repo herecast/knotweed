@@ -4,12 +4,13 @@ module Api
       # apologies for the naming -- this uses promotion banner objects to combine all promotion banner reports
       # from a given date range into a single JSON object
       
-      attributes :type, :promo_id, :campaign_start, :campaign_end,
+      attributes :type, :promo_id, :banner_id, :campaign_start, :campaign_end,
         :served, :cost, :daily_max, :clicks, :ctr, :client, :banner,
         :daily_reports
 
       def type; object.promotion_type; end
       def promo_id; object.promotion.id; end
+      def banner_id; object.id; end
       def campaign_start; object.campaign_start.try(:strftime,"%D"); end
       def campaign_end; object.campaign_end.try(:strftime,"%D"); end
       def served; object.impression_count; end
