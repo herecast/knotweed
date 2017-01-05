@@ -82,15 +82,11 @@ describe PromotionsController, :type => :controller do
   describe "PUT update" do
     subject { put :update, { id: @promotion.to_param, promotion: params} }
     describe "with valid params" do
-      let(:params) do
-        { active: false,
-          description: 'Another description'
-        }
-      end
+      let(:params) { { description: 'Another description' } }
+
       it "updates the requested promotion" do
         subject
         @promotion.reload
-        expect(@promotion.active).to eq(params[:active])
         expect(@promotion.description).to eq(params[:description])
       end
 

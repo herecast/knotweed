@@ -45,7 +45,7 @@ class SelectPromotionBanners
 
     def get_direct_promotion(promotion_id)
       promotion = Promotion.find_by(id: promotion_id)
-      if promotion && promotion.promotable.is_a?(PromotionBanner)
+      if promotion && promotion.promotable.is_a?(PromotionBanner) && promotion.promotable.active?
         add_promotion([promotion.promotable, nil, 'sponsored_content'])
       end
     end
@@ -68,6 +68,7 @@ class SelectPromotionBanners
             if content_id.present?
               banner = PromotionBanner.for_content(content_id)
                                       .active.has_inventory
+                                      .run_of_site
                                       .order('random()')
                                       .first
             end
@@ -87,7 +88,7 @@ class SelectPromotionBanners
     end
 
     def get_random_promotion
-      query = PromotionBanner.active.order('RANDOM()')
+      query = PromotionBanner.active.run_of_site.order('RANDOM()')
 
       banners = query.boost.has_inventory.limit(promotion_banners_needed).where.not(id: @exclude)
       banners.each do |banner|

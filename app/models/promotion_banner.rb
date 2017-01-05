@@ -15,7 +15,6 @@
 #  daily_max_impressions  :integer
 #  boost                  :boolean          default(FALSE)
 #  daily_impression_count :integer          default(0)
-#  track_daily_metrics    :boolean
 #  load_count             :integer          default(0)
 #  integer                :integer          default(0)
 #
@@ -35,21 +34,15 @@ class PromotionBanner < ActiveRecord::Base
   UPLOAD_ENDPOINT = "/statements"
 
   after_save :update_active_promotions
-  before_destroy { |record| record.promotion.update_attribute :active, false; true }
   after_destroy :update_active_promotions
 
-  validates_presence_of :promotion
-  validates_presence_of :banner_image
+  validates_presence_of :promotion, :banner_image, :campaign_start, :campaign_end, :promotion_type
   validates :max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'max_impressions.present?'
 #  validates :daily_max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'daily_max_impressions.present?'
 
-  # @deprecated as of release 3.0.3
-  # this scope combines all conditions to determine whether a promotion banner is active
-  # NOTE: we need the select clause or else the "joins" causes the scope to return
-  # readonly records.
-  scope :active, -> { includes(:promotion)
-    .where('campaign_start <= ?', Time.current)
-    .where('campaign_end >= ?', Time.current) }
+  # returns currently active promotion banners
+  scope :active, ->(date=Time.current) { where("(campaign_start + INTERVAL '5 hours') <= ?", date)
+    .where("(campaign_end + INTERVAL '5 hours') >= ?", date) }
 
   # this scope combines all conditions to determine whether a promotion banner is paid
   # NOTE: for now, we're just concerned with 'paid' and 'active' being true - will eventually
@@ -73,6 +66,18 @@ class PromotionBanner < ActiveRecord::Base
 
   # query promotion banners by content
   scope :for_content, lambda { |content_id| joins(:promotion).where('promotions.content_id = ?', content_id) }
+
+  RUN_OF_SITE = "ROS"
+  SPONSORED = "Sponsored"
+  DIGEST = "Digest"
+  NATIVE = "Native"
+  PROMOTION_TYPES = [RUN_OF_SITE, SPONSORED, DIGEST, NATIVE]
+
+  scope :run_of_site, -> { where(promotion_type: RUN_OF_SITE) }
+
+  def active?
+    campaign_start <= Time.current and campaign_end >= Time.current
+  end
 
   def current_daily_report(current_date=Date.current)
     promotion_banner_reports.where("report_date >= ?", current_date).take

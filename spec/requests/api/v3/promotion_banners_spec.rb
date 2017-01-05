@@ -123,10 +123,10 @@ describe 'Promotion Banner Endpoints', type: :request do
 
   describe 'GET /api/v3/promotion' do
     let(:organization) { FactoryGirl.create :organization }
-    let!(:banner) { FactoryGirl.create :promotion_banner }
 
     context 'with existing content and related promotion;' do
-      let!(:promo) { FactoryGirl.create :promotion, organization: organization, promotable: banner }
+      let(:banner) { FactoryGirl.create :promotion_banner, organization: organization }
+      let(:promo) { banner.promotion }
       let!(:content) { FactoryGirl.create :content, banner_ad_override: promo.id }
 
       subject { get "/api/v3/promotions?content_id=#{content.id}" }
@@ -147,7 +147,8 @@ describe 'Promotion Banner Endpoints', type: :request do
     end
 
     context 'with existing organization and related promotion' do
-      let!(:promo) { FactoryGirl.create :promotion, promotable_id: banner.id, promotable_type: 'PromotionBanner' }
+      let(:banner) { FactoryGirl.create :promotion_banner }
+      let(:promo) { banner.promotion }
       let!(:new_organization) { FactoryGirl.create :organization, banner_ad_override: promo.id }
 
       subject { get "/api/v3/promotions?organization_id=#{new_organization.id}" }
