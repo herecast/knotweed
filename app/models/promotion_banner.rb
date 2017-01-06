@@ -41,8 +41,8 @@ class PromotionBanner < ActiveRecord::Base
 #  validates :daily_max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'daily_max_impressions.present?'
 
   # returns currently active promotion banners
-  scope :active, ->(date=Time.current) { where("(campaign_start + INTERVAL '5 hours') <= ?", date)
-    .where("(campaign_end + INTERVAL '5 hours') >= ?", date) }
+  scope :active, ->(date=Date.current) { where("campaign_start <= ?", date)
+    .where("campaign_end >= ?", date) }
 
   # this scope combines all conditions to determine whether a promotion banner is paid
   # NOTE: for now, we're just concerned with 'paid' and 'active' being true - will eventually
