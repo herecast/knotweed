@@ -142,7 +142,7 @@ module Api
               user_ip:    request.remote_ip
             )
           end
-          render json: {}, status: :success
+          render json: {}, status: :accepted
         else
           render json: {}, status: :not_found
         end
