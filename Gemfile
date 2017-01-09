@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.2.4'
+ruby '2.3.3'
 
 gem 'active_model_serializers', '~> 0.9.3'
 gem 'aescrypt'

@@ -807,8 +807,8 @@ ActiveRecord::Schema.define(version: 20161220211336) do
     t.integer  "daily_impression_count", limit: 8,   default: 0
     t.integer  "load_count",                         default: 0
     t.integer  "integer",                            default: 0
-    t.string "promotion_type"
-    t.float "cost_per_impression"
+    t.string   "promotion_type"
+    t.float    "cost_per_impression"
   end
 
   create_table "promotion_listservs", id: :bigserial, force: :cascade do |t|
