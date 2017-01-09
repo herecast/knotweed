@@ -2,7 +2,7 @@
   = f.error_notification
 
   .form-inputs
-    = f.input :list_type, collection: @listserv.list_types, include_blank: false
+    = f.input :list_type, collection: @listserv.list_types, include_blank: false, selected: 'custom_digest', hint: "Use: 'Custom Digest' for creating a newsletter, 'Internal Digest' for UVList, and 'External Digest' for area listservs"
     = f.input :name
     = f.input :sender_name
     = f.input :digest_description
