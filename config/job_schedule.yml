@@ -2,10 +2,6 @@ schedule_listserv_digests:
   cron: "0 0 * * *"
   class: 'ScheduleListservDigestsJob'
   description: "Schedule Listserv Digests for the day."
-reporting:
-  cron: "0 0 * * *"
-  class: 'ReportingJob'
-  description: "Generate daily reports and reset promotion banner counts."
 market_category_count:
   cron: "0 0 * * *"
   class: 'UpdateMarketCategoriesCountJob'

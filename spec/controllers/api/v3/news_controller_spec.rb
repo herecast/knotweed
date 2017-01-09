@@ -188,10 +188,6 @@ describe Api::V3::NewsController, :type => :controller do
       expect(assigns(:news)).to eq(@news)
     end
 
-    it 'should increment view count' do
-      expect{subject}.to change{@news.reload.view_count}.from(0).to(1)
-    end
-
     context 'signed in' do
       before do
         @repo = FactoryGirl.create :repository
@@ -251,6 +247,32 @@ describe Api::V3::NewsController, :type => :controller do
       end
 
       it { subject; expect(response.status).to eq 204 }
+    end
+  end
+
+  describe 'POST #create_impression' do
+    before do
+      @news = FactoryGirl.create :content, published: true
+    end
+
+    subject { post :create_impression, id: @news.id }
+
+    it "creates content metric, type: impression" do
+      expect(BackgroundJob).to receive(:perform_later).with(
+        'RecordContentMetric', 'call', @news, 'impression', any_args
+      )
+      subject
+    end
+
+    context "when admin logged in" do
+      before do
+        user = FactoryGirl.create :user, skip_analytics: true
+        api_authenticate user: user
+      end
+
+      it "does not increment view count" do
+        expect(BackgroundJob).not_to receive(:perform_later)
+      end
     end
   end
 end

@@ -1745,6 +1745,65 @@ describe Content, :type => :model do
     end
   end
 
+  describe "#current_daily_report" do
+    before do
+      @content_category = FactoryGirl.build :content_category, name: 'news'
+      @news = FactoryGirl.create :content, content_category_id: @content_category.id
+    end
+
+    subject { @news.current_daily_report }
+
+    context "when no daily report present" do
+      before do
+        @content_report = FactoryGirl.create :content_report, report_date: Date.yesterday
+        @news.content_reports << @content_report
+      end
+
+      it "returns nil" do
+        expect(subject).to be_nil
+      end
+    end
+
+    context "when daily report present" do
+      before do
+        @content_report = FactoryGirl.create :content_report, report_date: Date.current
+        @news.content_reports << @content_report
+      end
+
+      it "returns current report" do
+        expect(subject).to eq @content_report
+      end
+    end
+  end
+
+  describe "#find_or_create_daily_report" do
+    before do
+      @content_category = FactoryGirl.build :content_category, name: 'news'
+      @news = FactoryGirl.create :content, content_category_id: @content_category.id
+    end
+
+    subject { @news.find_or_create_daily_report }
+
+    context "when no report present" do
+      it "creates daily report" do
+        expect{ subject }.to change{
+          @news.reload.content_reports.count
+        }.by 1
+      end
+    end
+
+    context "when current report available" do
+      before do
+        @content_report = FactoryGirl.create :content_report, report_date: Date.current
+        @news.content_reports << @content_report
+      end
+
+      it "returns current report" do
+        expect(subject).to eq @content_report
+      end
+    end
+  end
+
   private
 
     def get_body_from_file(filename)

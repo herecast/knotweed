@@ -55,7 +55,7 @@ module Api
         opts[:where][:published] = 1 if @repository.present?
 
         if @requesting_app.present?
-          allowed_orgs = @requesting_app.organizations.pluck(:id) 
+          allowed_orgs = @requesting_app.organizations.pluck(:id)
           opts[:where][:organization_id] = allowed_orgs
 
           if (params[:organization].present? and params[:organization] != 'Everyone') or params[:organization_id].present?
@@ -114,7 +114,6 @@ module Api
         if @news.try(:root_content_category).try(:name) != 'news'
           head :no_content
         else
-          @news.increment_view_count! unless exclude_from_impressions?
           render json: @news, serializer: DetailedNewsSerializer, 
             admin_content_url: url, root: 'news', context: { current_ability: current_ability }
         end
@@ -130,6 +129,22 @@ module Api
           head :no_content
         else
           head :not_found
+        end
+      end
+
+      def create_impression
+        @news = Content.not_deleted.find params[:id]
+        if @news.present?
+          unless exclude_from_impressions? || @current_api_user.try(:skip_analytics?)
+            BackgroundJob.perform_later("RecordContentMetric", "call", @news, 'impression', Date.current.to_s,
+              user_id:    @current_api_user.try(:id),
+              user_agent: request.user_agent,
+              user_ip:    request.remote_ip
+            )
+          end
+          render json: {}, status: :success
+        else
+          render json: {}, status: :not_found
         end
       end
 

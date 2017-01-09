@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161220211336) do
+ActiveRecord::Schema.define(version: 20170105135149) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -235,6 +235,16 @@ ActiveRecord::Schema.define(version: 20161220211336) do
   end
 
   add_index "content_categories_organizations", ["content_category_id", "organization_id"], name: "idx_16559_index_on_content_category_id_and_publication_id", using: :btree
+
+  create_table "content_metrics", force: :cascade do |t|
+    t.integer  "content_id"
+    t.string   "event_type"
+    t.integer  "user_id"
+    t.string   "user_agent"
+    t.string   "user_ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "content_promotion_banner_loads", force: :cascade do |t|
     t.integer  "content_id"
@@ -766,6 +776,8 @@ ActiveRecord::Schema.define(version: 20161220211336) do
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
     t.boolean  "gtm_blocked"
+    t.string   "user_agent"
+    t.string   "user_ip"
   end
 
   add_index "promotion_banner_metrics", ["created_at"], name: "index_promotion_banner_metrics_on_created_at", using: :btree
@@ -802,8 +814,8 @@ ActiveRecord::Schema.define(version: 20161220211336) do
     t.integer  "daily_impression_count", limit: 8,   default: 0
     t.integer  "load_count",                         default: 0
     t.integer  "integer",                            default: 0
-    t.string "promotion_type"
-    t.float "cost_per_impression"
+    t.string   "promotion_type"
+    t.float    "cost_per_impression"
   end
 
   create_table "promotion_listservs", id: :bigserial, force: :cascade do |t|

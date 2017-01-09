@@ -222,14 +222,13 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     end
 
     it "calls record_promotion_banner_metric with 'click" do
-      expect(BackgroundJob).to receive(:perform_later).with(
-        'RecordPromotionBannerMetric', "call", "click", any_args
+      expect{ subject }.to have_enqueued_job(BackgroundJob).with(
+        "RecordPromotionBannerMetric", "call", 'click', nil, @banner, Date.current.to_s,
+          { content_id: @content.id }
+      ).and have_enqueued_job(BackgroundJob).with(
+        'RecordContentMetric', 'call', @content, 'click', Date.current.to_s,
+          { user_id: nil }
       )
-      subject
-    end
-
-    it 'should increment content.banner_click_count' do
-      expect{subject}.to change{@content.reload.banner_click_count}.by 1
     end
 
     context 'as a user with skip_analytics = true' do

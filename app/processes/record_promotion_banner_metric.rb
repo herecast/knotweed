@@ -22,13 +22,15 @@ class RecordPromotionBannerMetric
 
     def record_event
       PromotionBannerMetric.create!(
-        event_type: @event_type,
+        event_type:          @event_type,
         promotion_banner_id: @promotion_banner.id,
-        user_id: @user.try(:id),
-        content_id: @opts[:content_id],
-        select_method: @opts[:select_method],
-        select_score: @opts[:select_score],
-        gtm_blocked: @opts[:gtm_blocked]
+        user_id:             @user.try(:id),
+        content_id:          @opts[:content_id],
+        select_method:       @opts[:select_method],
+        select_score:        @opts[:select_score],
+        gtm_blocked:         @opts[:gtm_blocked],
+        user_agent:          @opts[:user_agent],
+        user_ip:             @opts[:user_ip]
       )
     end
 

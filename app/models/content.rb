@@ -1216,10 +1216,9 @@ class Content < ActiveRecord::Base
   end
 
   def increment_view_count!
-    # check if Thread.current[:user] has skip_analytics? before incrementing
     # check if content is published before incrementing
     if self.published
-      increment_integer_attr!(:view_count) unless User.current.try(:skip_analytics?)
+      increment_integer_attr!(:view_count)
     end
   end
 
@@ -1279,6 +1278,14 @@ class Content < ActiveRecord::Base
 
   def is_news_child_category?
     root_content_category.try(:name) == 'news'
+  end
+
+  def current_daily_report(current_date=Date.current)
+    content_reports.where("report_date >= ?", current_date).take
+  end
+
+  def find_or_create_daily_report(current_date=Date.current)
+    current_daily_report(current_date) || content_reports.create!(report_date: current_date)
   end
 
 end
