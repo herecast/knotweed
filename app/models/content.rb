@@ -1153,11 +1153,16 @@ class Content < ActiveRecord::Base
     per_page = opts.delete(:per_page) || 24
     page = opts.delete(:page) || 1
 
-    if query.present?
-      search_query = { match: { _all: { query: query } } }
-    else
-      search_query = { match_all: {} }
-    end
+    search_query =
+      { match:
+        { _all:
+          {
+            query: query || '',
+            operator: 'and',
+            zero_terms_query: 'all'
+          }
+        }
+      }
 
     body = {
       query: search_query,
