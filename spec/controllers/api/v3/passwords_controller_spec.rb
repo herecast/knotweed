@@ -32,6 +32,21 @@ describe Api::V3::PasswordsController, :type => :controller do
       end
     end
 
+    context 'with non-existing email address' do
+      subject { post :create, user: {email: "non@existent.test"}, format: :json }
+
+      it 'responds with 422 status' do
+        subject
+        expect(response.status).to eql 422
+      end
+
+      it 'returns a message about non-existent email' do
+        subject
+        json = JSON.parse(response.body)
+        expect(json['errors']).to include('email')
+      end
+    end
+
   end
 
   describe 'PUT /password_resets' do

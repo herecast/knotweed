@@ -485,6 +485,7 @@ GEM
     quiet_assets (1.0.3)
       railties (>= 3.1, < 5.0)
     rack (1.6.4)
+    rack-cors (0.4.0)
     rack-protection (1.5.3)
       rack
     rack-test (0.6.3)
@@ -763,6 +764,7 @@ DEPENDENCIES
   pry-rails (~> 0.3.4)
   puma (~> 3.4)
   quiet_assets (~> 1.0.2)
+  rack-cors (~> 0.4.0)
   rails (~> 4.2.0)
   rails-deprecated_sanitizer (~> 1.0.3)
   ransack (~> 1.5.1)

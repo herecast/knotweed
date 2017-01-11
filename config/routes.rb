@@ -116,7 +116,7 @@ Knotweed::Application.routes.draw do
 
   # API
   namespace :api do
-    namespace :v3 do
+    namespace :v3, defaults: {format: 'json'} do
       get '/current_user', to: 'users#show'
       put '/current_user', to: 'users#update'
       resources 'events', only: [:create, :show, :update, :index]
@@ -142,6 +142,7 @@ Knotweed::Application.routes.draw do
       # the modeling
       resources 'organizations', only: [:index, :show, :update]
       resources 'news'
+      post '/news/:id/impressions', to: 'news#create_impression'
       resources 'talk', only: [:index, :show, :create, :update]
       resources 'market_posts', only: [:index, :show, :create, :update]
       get '/market_posts/:id/contact', to: 'market_posts#contact', as: :market_post_contact

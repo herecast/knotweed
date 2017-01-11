@@ -103,19 +103,7 @@ class ImportWorker < ApplicationJob
   end
 
   def process_data(records)
-    update_prerender(docs_to_contents(records))
-  end
-
-  def update_prerender(records)
-    # no need to prerender talk items since they are not sharable
-    records.reject { |r| r.root_content_category.try(:name) == 'talk_of_the_town' }
-    @import_job.consumer_apps.each do |consumer_app|
-      records.each do |content|
-        HTTParty.post("http://api.prerender.io/recache", body: {prerenderToken: Figaro.env.prerender_token,
-                      url: consumer_app.uri + content.ux2_uri }.to_json,
-                      :headers => {'Content-Type' => 'application/json'})
-      end
-    end
+    docs_to_contents(records)
   end
 
   # runs the parser's parse_file method on a file located at path

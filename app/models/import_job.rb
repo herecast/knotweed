@@ -48,7 +48,6 @@ class ImportJob < ActiveRecord::Base
 
   has_many :notifiers, as: :notifyable
   has_many :notifyees, through: :notifiers, class_name: "User", source: "user"
-  has_and_belongs_to_many :consumer_apps
 
   validates :status, inclusion: { in: %w(failed running success scheduled) }, allow_nil: true
 

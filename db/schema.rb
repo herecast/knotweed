@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161220211336) do
+ActiveRecord::Schema.define(version: 20170105135149) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -185,11 +185,6 @@ ActiveRecord::Schema.define(version: 20161220211336) do
 
   add_index "consumer_apps", ["uri"], name: "idx_16494_index_consumer_apps_on_uri", unique: true, using: :btree
 
-  create_table "consumer_apps_import_jobs", id: false, force: :cascade do |t|
-    t.integer "consumer_app_id", limit: 8
-    t.integer "import_job_id",   limit: 8
-  end
-
   create_table "consumer_apps_messages", id: false, force: :cascade do |t|
     t.integer "message_id",      limit: 8
     t.integer "consumer_app_id", limit: 8
@@ -240,6 +235,16 @@ ActiveRecord::Schema.define(version: 20161220211336) do
   end
 
   add_index "content_categories_organizations", ["content_category_id", "organization_id"], name: "idx_16559_index_on_content_category_id_and_publication_id", using: :btree
+
+  create_table "content_metrics", force: :cascade do |t|
+    t.integer  "content_id"
+    t.string   "event_type"
+    t.integer  "user_id"
+    t.string   "user_agent"
+    t.string   "user_ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "content_promotion_banner_loads", force: :cascade do |t|
     t.integer  "content_id"
@@ -771,6 +776,8 @@ ActiveRecord::Schema.define(version: 20161220211336) do
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
     t.boolean  "gtm_blocked"
+    t.string   "user_agent"
+    t.string   "user_ip"
   end
 
   add_index "promotion_banner_metrics", ["created_at"], name: "index_promotion_banner_metrics_on_created_at", using: :btree

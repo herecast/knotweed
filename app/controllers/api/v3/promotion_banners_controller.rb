@@ -38,7 +38,7 @@ module Api
         conditionally_prime_daily_ad_reports
         @promotion_banners = SelectPromotionBanners.call(opts)
 
-        log_promotion_banner_loads
+        log_promotion_banner_loads(request.user_agent, request.remote_ip)
         @promotion_banners = @promotion_banners.map{ |promo| promo.first }
         
         render json:  @promotion_banners, root: :promotions,
@@ -69,7 +69,11 @@ module Api
             )
 
             @content = Content.find_by_id params[:content_id]
-            @content.increment_integer_attr! :banner_click_count if @content.present?
+            if @content.present?
+              BackgroundJob.perform_later('RecordContentMetric', 'call', @content, 'click', Date.current.to_s,
+                user_id:    @current_api_user.try(:id)
+              )
+            end
           end
           render json: {}, status: :ok
         else
@@ -115,13 +119,15 @@ module Api
         end
       end
 
-      def log_promotion_banner_loads
+      def log_promotion_banner_loads(user_agent, user_ip)
         unless @current_api_user.try(:skip_analytics?)
           @promotion_banners.each do |promotion_banner|
             BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'load', @current_api_user, promotion_banner[0], Date.current.to_s,
-              content_id: params[:content_id],
-              select_score: promotion_banner[1],
-              select_method: promotion_banner[2]
+              content_id:    params[:content_id],
+              select_score:  promotion_banner[1],
+              select_method: promotion_banner[2],
+              user_agent:    user_agent,
+              user_ip:       user_ip
             )
           end
         end

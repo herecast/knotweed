@@ -86,6 +86,12 @@ module Knotweed
     # jobs can configure their own individually
     config.active_job.queue_adapter = :sidekiq
 
+    config.middleware.insert_before 0, "Rack::Cors" do
+      allow do
+        origins '*'
+        resource '/api/v3/*', :headers => :any, :methods => [:get, :put, :patch, :post, :delete, :options]
+      end
+    end
     config.cache_store = :redis_store
   end
 end
