@@ -17,24 +17,22 @@ class ImportWorker < ApplicationJob
   def perform(import_job)
     begin
       @import_job = import_job
-      @import_job.import_records.create
-      @log = @import_job.last_import_record.log_file
+      @record = @import_job.import_records.create
 
       @import_job.update_attribute :status, 'running'
 
       if Time.current > ImportJob.backup_start and Time.current < ImportJob.backup_end
-        @log.info("#{Time.current}: rescheduling #{@import_job.job_type} job: #{@import_job.name} during backup")
+        log(:info, "rescheduling #{@import_job.job_type} job: #{@import_job.name} during backup")
         ImportWorker.set(wait_until: ImportJob.backup_end).perform_later(@import_job) and return
       else
-        @log.info("#{Time.current}: source path: #{@import_job.full_import_path}")
-        @log.info("#{Time.current}: Running parser at #{Time.current}")
+        log(:info, "source path: #{@import_job.full_import_path}")
         if @import_job.source_uri.present? # web scraping import
           data = run_parser(@import_job.source_uri)
         elsif Figaro.env.imports_bucket.present?
           data = parse_s3_files
         else
           data = []
-          @log.info("#{Time.current}: App is not configured with an import bucket; nothing could be imported.")
+          log(:info, "App is not configured with an import bucket; nothing could be imported.")
         end
         process_data(data)
       end
@@ -67,6 +65,10 @@ class ImportWorker < ApplicationJob
 
   private
 
+  def log(log_level, message)
+    logger.send(log_level, "[ImportRecord #{@record.try(:id)}] #{message}")
+  end
+
   def parse_s3_files
     connection = Fog::Storage.new({
       :provider                 => 'AWS',
@@ -78,7 +80,7 @@ class ImportWorker < ApplicationJob
                                        prefix: @import_job.inbound_prefix).files
     data = []
     files.each do |file|
-      @log.debug("#{Time.current}: running parser on: #{Figaro.env.imports_bucket}/#{file.key}")
+      log(:debug, "running parser on: #{Figaro.env.imports_bucket}/#{file.key}")
       begin
         key = file.key
         path = "s3://#{Figaro.env.imports_bucket}/#{key}"
@@ -94,26 +96,14 @@ class ImportWorker < ApplicationJob
         # delete original
         connection.delete_object(Figaro.env.imports_bucket, key)
       rescue StandardError => bang
-        @log.error("#{Time.current}: failed to parse #{path}: #{bang}")
+        log(:error, "failed to parse #{path}: #{bang}")
       end
     end
     data
   end
 
   def process_data(records)
-    update_prerender(docs_to_contents(records))
-  end
-
-  def update_prerender(records)
-    # no need to prerender talk items since they are not sharable
-    records.reject { |r| r.root_content_category.try(:name) == 'talk_of_the_town' }
-    @import_job.consumer_apps.each do |consumer_app|
-      records.each do |content|
-        HTTParty.post("http://api.prerender.io/recache", body: {prerenderToken: Figaro.env.prerender_token,
-                      url: consumer_app.uri + content.ux2_uri }.to_json,
-                      :headers => {'Content-Type' => 'application/json'})
-      end
-    end
+    docs_to_contents(records)
   end
 
   # runs the parser's parse_file method on a file located at path
@@ -133,7 +123,6 @@ class ImportWorker < ApplicationJob
   # accepts array of articles
   # and creates content entries for them
   def docs_to_contents(docs)
-    import_record = @import_job.last_import_record
     successes = failures = filtered = 0
     created_contents = []
     docs.each do |article|
@@ -153,29 +142,29 @@ class ImportWorker < ApplicationJob
         was_filtered = false
         was_filtered, reason = import_filter(article)
         if was_filtered
-          @log.info("#{Time.current}: #{reason}")
+          log(:info, "#{reason}")
           filtered += 1
         else
           c = Content.create_from_import_job(article, @import_job)
           created_contents.push(c)
-          @log.info("#{Time.current}: content #{c.id} created")
+          log(:info, "content #{c.id} created")
           successes += 1
           if @import_job.automatically_publish and @import_job.repository.present?
             c.publish(@import_job.publish_method, @import_job.repository)
           end
         end
       rescue StandardError => bang
-        @log.error("#{Time.current}: failed to process content #{article['title']}: #{bang}")
+        log(:error, "failed to process content #{article['title']}: #{bang}")
         failures += 1
       end
     end
-    @log.info("#{Time.current}: successes: #{successes}")
-    @log.info("#{Time.current}: failures: #{failures}")
-    @log.info("#{Time.current}: filtered: #{filtered}")
-    import_record.items_imported += successes
-    import_record.failures += failures
-    import_record.filtered += filtered
-    import_record.save
+    log(:info, "successes: #{successes}")
+    log(:info, "failures: #{failures}")
+    log(:info, "filtered: #{filtered}")
+    @record.items_imported += successes
+    @record.failures += failures
+    @record.filtered += filtered
+    @record.save
     created_contents
   end
 
@@ -203,14 +192,14 @@ class ImportWorker < ApplicationJob
   def handle_error(exception)
     @import_job.update status: 'failed', next_scheduled_run: nil,
       sidekiq_jid: nil
-    @log.info "#{Time.current}: input: #{@import_job.full_import_path}"
-    @log.info "#{Time.current}: parser: #{ImportJob::PARSER_PATH}/#{@import_job.parser.filename}" if @import_job.parser.present?
-    @log.error "#{Time.current}: error: #{exception}"
+    log(:info, "input: #{@import_job.full_import_path}")
+    log(:info, "parser: #{ImportJob::PARSER_PATH}/#{@import_job.parser.filename}") if @import_job.parser.present?
+    log(:error, "error: #{exception}")
     if @import_job.notifyees.present?
-      JobMailer.error_email(@import_job.last_import_record, exception).deliver_now
+      JobMailer.error_email(@record, exception).deliver_now
     end
-    @log.error "#{Time.current}: backtrace: #{exception.backtrace.join("\n")}"
-    @log.info "#{@import_job.inspect}"
+    log(:error, "backtrace: #{exception.backtrace.join("\n")}")
+    log(:info, "#{@import_job.inspect}")
 
     # in order to maintain continuity with the interface and existing import job behavior,
     # we aren't allowing any exceptions to bubble up into Sidekiq. This is really not 

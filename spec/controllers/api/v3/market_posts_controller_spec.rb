@@ -364,6 +364,20 @@ describe Api::V3::MarketPostsController, :type => :controller do
         end
       end
 
+      context 'when marking a post as sold' do
+
+        before do
+          @content =  FactoryGirl.create :content
+        end
+      
+        context 'when updating a market post with associated content' do
+          it 'updates the market post to sold' do
+            put :update, id: @market_post.content.id, market_post: @attrs_for_update.merge(sold: true)
+            expect(@market_post.reload.sold).to eq true
+          end
+        end
+      end
+
     end
 
   end

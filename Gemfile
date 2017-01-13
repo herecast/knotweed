@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.2.4'
+ruby '2.3.3'
 
 gem 'active_model_serializers', '~> 0.9.3'
 gem 'aescrypt'
@@ -57,6 +57,7 @@ gem "nokogiri", '1.6.1' # allowing a patch upgrade on this
 gem 'oauth2', '~> 1.0.0'
 gem 'open-uri-s3', '~> 1.5.0'
 gem 'postmark-rails', '~> 0.12.0'
+gem 'rack-cors', '~>0.4.0', require: "rack/cors"
 gem 'rails', '~> 4.2.0'
 gem 'rails-deprecated_sanitizer', '~> 1.0.3' # need to keep older sanitize with Rails 4.2 upgrde
 gem 'ransack', '~> 1.5.1'

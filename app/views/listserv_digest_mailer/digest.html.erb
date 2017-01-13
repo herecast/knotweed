@@ -40,11 +40,11 @@
   </div>
 <% end %>
 
-<% if @digest.promotion.present? %>
-  <% banner_ad = @digest.promotion.promotable %>
-  <div class="digest-banner" style="padding: 15px 0 15px 0; vertical-align: top">
-    <%= link_to image_tag(banner_ad.banner_image), banner_ad.redirect_url %>
-  </div>
+<% if @digest.promotions.any? %>
+  <% banner_ad = @digest.promotions.first.promotable %>
+<div class="digest-banner" style="padding: 15px 0 15px 0; vertical-align: top">
+  <%= link_to image_tag(banner_ad.banner_image), banner_ad.redirect_url %>
+</div>
 <% end %>
 
 <div class='posts'>

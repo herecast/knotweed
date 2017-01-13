@@ -15,10 +15,6 @@ class ImportRecord < ActiveRecord::Base
   belongs_to :import_job
   has_many :contents, dependent: :destroy
 
-  def log_file
-    Logger.new("#{Rails.root}/log/import_records/#{id}.log")
-  end
-
   def job
     import_job
   end

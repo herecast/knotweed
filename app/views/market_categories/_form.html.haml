@@ -7,8 +7,28 @@
   .form-inputs
     = f.input :name
     = f.input :query, as: :text
-    = f.input :category_image
-    = f.input :detail_page_banner
+    .row-fluid
+      .span4
+        = f.input :category_image
+        = f.input :category_image_cache, as: :hidden
+        = f.input :remove_category_image, as: :boolean, label: "Remove Category Image" if @market_category.category_image.present?
+      .span6
+        - if @market_category.category_image?
+          - if !@market_category.category_image.url.include?('tmp')
+            = image_tag(@market_category.category_image.url, style: 'max-width: 200px;')
+          - elsif @market_category.category_image.url.include?('tmp')
+            %p= @market_category.category_image.file.original_filename
+    .row-fluid
+      .span4
+        = f.input :detail_page_banner
+        = f.input :detail_page_banner_cache, as: :hidden
+        = f.input :remove_detail_page_banner, as: :boolean, label: "Remove Detail Page Banner" if @market_category.detail_page_banner.present?
+      .span6
+        - if @market_category.detail_page_banner? 
+          - if !@market_category.detail_page_banner.url.include?('tmp')
+            = image_tag(@market_category.detail_page_banner.url, style: 'max-width: 200px;') if @market_category.detail_page_banner?
+          - elsif @market_category.detail_page_banner.url.include?('tmp')
+            %p= @market_category.detail_page_banner.file.original_filename
     = f.input :featured
     = f.input :trending
 

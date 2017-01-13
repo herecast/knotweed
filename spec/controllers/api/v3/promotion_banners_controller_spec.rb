@@ -92,7 +92,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       @promo = FactoryGirl.create :promotion, content: @related_content
       @pb = FactoryGirl.create :promotion_banner, promotion: @promo
       # avoid making calls to repo
-      allow(DspService).to receive(:query_promo_similarity_index).and_return([])
+      allow(DspService).to receive(:get_related_promo_ids).and_return([])
     end
 
     subject { get :show, format: :json,
@@ -130,9 +130,12 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         Rails.cache.write('most_recent_reset_time', Date.current)
       end
 
+      subject { get :show, format: :json,
+              promotion_id: @promo.id, consumer_app_uri: @consumer_app.uri }
+
       it "records 'load' event" do
         expect(BackgroundJob).to receive(:perform_later).with(
-          "RecordPromotionBannerMetric", "call", 'load', any_args
+          "RecordPromotionBannerMetric", "call", 'load', nil, @pb, any_args
         )
         subject
       end
@@ -152,19 +155,6 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       end
     end
 
-    it 'should create a ContentPromotionBannerLoad record if none exists' do
-      subject
-      expect(ContentPromotionBannerLoad.count).to eq(1)
-      expect(ContentPromotionBannerLoad.first.content_id).to eq(@content.id)
-      expect(ContentPromotionBannerLoad.first.promotion_banner_id).to eq(@pb.id)
-    end
-
-    it 'should increment the ContentPromotionBannerLoad load count if a record exists' do
-      cpbi = FactoryGirl.create :content_promotion_banner_load, content_id: @content.id, promotion_banner_id: @pb.id
-      subject
-      expect(cpbi.reload.load_count).to eq(2)
-    end
-
     context 'with banner_ad_override' do
       before do
         @promo2 = FactoryGirl.create :promotion, content: FactoryGirl.create(:content)
@@ -174,7 +164,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
       it 'should respond with the banner specified by the banner_ad_override' do
         subject
-        expect(assigns(:banner)).to eq @pb2
+        expect(assigns(:promotion_banners).first).to eq @pb2
       end
     end
 
@@ -232,14 +222,13 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     end
 
     it "calls record_promotion_banner_metric with 'click" do
-      expect(BackgroundJob).to receive(:perform_later).with(
-        'RecordPromotionBannerMetric', "call", "click", any_args
+      expect{ subject }.to have_enqueued_job(BackgroundJob).with(
+        "RecordPromotionBannerMetric", "call", 'click', nil, @banner, Date.current.to_s,
+          { content_id: @content.id }
+      ).and have_enqueued_job(BackgroundJob).with(
+        'RecordContentMetric', 'call', @content, 'click', Date.current.to_s,
+          { user_id: nil }
       )
-      subject
-    end
-
-    it 'should increment content.banner_click_count' do
-      expect{subject}.to change{@content.reload.banner_click_count}.by 1
     end
 
     context 'as a user with skip_analytics = true' do

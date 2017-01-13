@@ -13,6 +13,9 @@
 #
 
 class ContentPromotionBannerLoad < ActiveRecord::Base
+  # @TODO: this model is deprecated in favor of the PromotionBannerMetric model
+  # the DB backing data needs to be archived
+
   belongs_to :content
   belongs_to :promotion_banner
 

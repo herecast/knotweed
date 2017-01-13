@@ -23,7 +23,9 @@ RSpec.describe RecordPromotionBannerMetric do
     end
 
     context "with event_type: impression" do
-      subject { RecordPromotionBannerMetric.call('impression', nil, @promotion_banner, Date.current.to_s) }
+      subject { RecordPromotionBannerMetric.call('impression', nil, @promotion_banner, Date.current.to_s,
+        gtm_blocked: true
+      ) }
       
       it "reports impression event" do
         expect{ subject }.to change{
@@ -41,6 +43,13 @@ RSpec.describe RecordPromotionBannerMetric do
         expect{ subject }.to change{
           @promotion_banner.reload.daily_impression_count
         }.by 1
+      end
+
+      context "when gtm is blocked on front end" do
+        it "records gtm_blocked as true" do
+          subject
+          expect(PromotionBannerMetric.last.gtm_blocked).to be true
+        end
       end
     end
 

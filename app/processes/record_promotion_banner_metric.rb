@@ -14,7 +14,7 @@ class RecordPromotionBannerMetric
 
   def call
     record_event
-    create_or_update_promotion_banner_report
+    find_or_create_promotion_banner_report
     increment_report_stats
   end
 
@@ -22,32 +22,20 @@ class RecordPromotionBannerMetric
 
     def record_event
       PromotionBannerMetric.create!(
-        event_type: @event_type,
+        event_type:          @event_type,
         promotion_banner_id: @promotion_banner.id,
-        user_id: @user.try(:id),
-        content_id: @opts[:content_id],
-        select_method: @opts[:select_method],
-        select_score: @opts[:select_score]
+        user_id:             @user.try(:id),
+        content_id:          @opts[:content_id],
+        select_method:       @opts[:select_method],
+        select_score:        @opts[:select_score],
+        gtm_blocked:         @opts[:gtm_blocked],
+        user_agent:          @opts[:user_agent],
+        user_ip:             @opts[:user_ip]
       )
     end
 
-    def create_or_update_promotion_banner_report
-      @report = PromotionBannerReport.where(promotion_banner_id: @promotion_banner.id)
-        .where("report_date >= ?", @current_date)
-        .take
-
-      unless @report.present?
-        @report = PromotionBannerReport.create!(
-          promotion_banner_id: @promotion_banner.id,
-          report_date: @current_date
-        )
-
-        reset_promotion_banner_daily_impression_count
-      end
-    end
-
-    def reset_promotion_banner_daily_impression_count
-      @report.promotion_banner.update_attribute(:daily_impression_count, 0)
+    def find_or_create_promotion_banner_report
+      @report = @promotion_banner.find_or_create_daily_report(@current_date)
     end
 
     def increment_report_stats

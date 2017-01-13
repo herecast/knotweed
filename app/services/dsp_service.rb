@@ -74,12 +74,12 @@ module DspService
         persist_to_graph_db(content, annotate_resp, repo)
         # trigger updating hasActivePromotion if publish succeeded
         if content.has_active_promotion?
-          PromotionBanner.mark_active_promotion(content, repo)
+          self.update_promotion('add_active', content.id, repo)
         end
 
         # trigger updating hasPaidPromotion if publish succeeded
         if content.has_paid_promotion?
-          PromotionBanner.mark_paid_promotion(content, repo)
+          self.update_promotion('add_paid', content.id, repo)
         end
       else
         result = false
@@ -139,54 +139,13 @@ module DspService
     rec_doc
   end
 
-  # queries the DSP to find a relevant promotion for a given query
-  #
-  # @param query_string [String]
-  # @param content_id [Integer] id of the content you are querying for
-  # @param repo [Repository]
-  # @return [Array<Hash>] array of hashes representing promoted content with keys :content_id, :score
-  def query_promo_similarity_index(query_string, content_id, repo=Repository.production_repo)
-    # access endpoint
-    sparql = ::SPARQL::Client.new repo.sesame_endpoint
-    # sanitize query
-    clean_content = SparqlUtilities.sanitize_input(SparqlUtilities.clean_lucene_query(
-                    ActionView::Base.full_sanitizer.sanitize(query_string)))
-
-    # get score threshold
-    score_threshold = Figaro.env.promo_relevance_score_threshold
-    query = File.read(Rails.root.join("lib", "queries", "query_promo_similarity_index.rq")) % 
-            { content: clean_content, content_id: content_id, score_threshold: score_threshold }
-    begin
-      results = sparql.query(query)
-    rescue
-      results = []
-    end
-
-    #return random promo with inventory (if exists)
-    unless results.empty?
-      # remove array record if doesn't have a 'has_inventory' scoped promo
-      results.delete_if do |v|
-        # parse out the content_id and append it to record
-        uri = v.uid.to_s
-        idx = uri.rindex("/")
-        v[:content_id] = uri[idx+1..uri.length]
-        # if no inventory, remove record from array
-        unless PromotionBanner.for_content(v[:content_id].to_s).has_inventory.count > 0
-          true
-        end
-      end
-    end
-
-    results
-  end
-
   # queries the DSP for similar content
   #
   # @param content [Content]
   # @param num_similar [Integer]
   # @param repo [Repository]
   def get_similar_content_ids(content, num_similar=8, repo=Repository.production_repo)
-    # some logic in here that I don't truly know the purpose of...
+    # for event and market categories, use extra_param boost to favor content w/in last 30 days
     # note -- the "category" method being called on self here
     # returns the text label of the associated content_category
     if ["event", "market", "offered", "wanted", "for_free", "sale_event"].include? content.category
@@ -203,6 +162,31 @@ module DspService
         art['id'].split('/')[-1].to_i
       end
       similar_ids
+    else
+      []
+    end
+  end
+
+  # queries the DSP for active, relevant ads then returns those with inventory
+  #
+  # @param content [Content]
+  # @param max_return [Integer]
+  # @param repo [Repository]
+  def get_related_promo_ids(content, max_return=3, repo=Repository.production_repo)
+    #create request url
+    related_promo_url = repo.recommendation_endpoint + '/recommend/contextual?contentid=' +
+      content.uri + "&key=#{Figaro.env.ontotext_recommend_key}" +
+      "&count=#{max_return}" + "&sort=rel&filter=has_active_promo:true"
+    #submit request
+    response = HTTParty.get(related_promo_url)
+    #get relevance score threshold (env variable)
+    score_threshold = Figaro.env.promo_relevance_score_threshold.to_f
+    #select relevant active ads with inventory
+    #TODO: should really refactor this to handle has-inventory downstream
+    if response['articles'].present?
+      promo_ids = response['articles'].select do |art|
+        art['score'] > score_threshold && PromotionBanner.for_content(art['id'].split('/')[-1].to_s).has_inventory.count > 0
+      end
     else
       []
     end
@@ -271,5 +255,11 @@ module DspService
 
     sparql.update(query, { endpoint: repo.graphdb_endpoint + "/statements" })
     graph
+  end
+
+  def update_promotion(type, content_id, repo)
+    query = File.read("./lib/queries/#{type}_promo.rq") % {content_id: content_id}
+    sparql = ::SPARQL::Client.new repo.graphdb_endpoint
+    sparql.update(query, { endpoint: repo.graphdb_endpoint + "/statements" })
   end
 end

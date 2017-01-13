@@ -3,7 +3,6 @@
 # Table name: promotions
 #
 #  id              :integer          not null, primary key
-#  active          :boolean
 #  banner          :string(255)
 #  organization_id :integer
 #  content_id      :integer
@@ -38,14 +37,7 @@ class Promotion < ActiveRecord::Base
   accepts_nested_attributes_for :promotable
   PROMOTABLE_TYPES = ['PromotionBanner']
 
-  after_initialize :init
-  # after_save :update_active_promotions
-
   UPLOAD_ENDPOINT = "/statements"
-
-  def init
-    self.active = true if self.active.nil?
-  end
 
   def promotable_attributes=(attributes)
     if PROMOTABLE_TYPES.include?(promotable_type)

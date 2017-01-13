@@ -45,6 +45,7 @@ Knotweed::Application.configure do
   config.lograge.custom_options = lambda do |event|
     exceptions = %w(controller action format id)
     custom_opts[:params] = event.payload[:params].except(*exceptions)
+    custom_opts[:search] = event.payload[:searchkick_runtime] if event.payload[:searchkick_runtime].to_f > 0
     custom_opts
   end
 
@@ -83,6 +84,15 @@ Knotweed::Application.configure do
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.default :charset => "utf-8"
+  config.action_mailer.smtp_settings = {
+    address: ENV['SMTP_ADDRESS'],
+    port: 25,
+    user_name: ENV['SMTP_USERNAME'],
+    password: ENV['SMTP_PASSWORD'],
+    authentication: 'plain',
+    enable_starttls_auto: false,
+    openssl_verify_mode: 'none',
+  }
 
   config.active_record.raise_in_transactional_callbacks = false
 end

@@ -1007,39 +1007,34 @@ describe Content, :type => :model do
   end
 
   describe "has_active_promotion?" do
-    before do
-      @content = FactoryGirl.create(:content)
-    end
+    let(:content) { FactoryGirl.create(:content) }
 
     it "should return false if there are no promotions" do
-      expect(@content.has_active_promotion?).to eq(false)
+      expect(content.has_active_promotion?).to eq(false)
     end
 
     it "should return false if there is a promotion banner but it is inactive" do
-      p = FactoryGirl.create :promotion, active: false, content: @content
-      promotion_banner_over = FactoryGirl.create :promotion_banner, promotion: p, campaign_start: 3.days.ago,
-        campaign_end: 2.days.ago
-      expect(@content.has_active_promotion?).to eq(false)
+      FactoryGirl.create :promotion_banner, :inactive, content: content
+      expect(content.has_active_promotion?).to eq(false)
     end
 
     it "should return true if there is an active promotion banner attached" do
-      p = FactoryGirl.create :promotion, active: true, content: @content
-      promotion_banner = FactoryGirl.create :promotion_banner, promotion: p
-      expect(@content.has_active_promotion?).to eq(true)
+      FactoryGirl.create :promotion_banner, :active, content: content
+      expect(content.has_active_promotion?).to eq(true)
     end
 
   end
 
   describe '#has_promotion_inventory?' do
-    subject { FactoryGirl.create(:content) }
+    let(:content) { FactoryGirl.create(:content) }
+    subject { content.has_promotion_inventory? }
 
     context 'when related promotion banners have inventory' do
       before do
-        p = FactoryGirl.create :promotion, active: true, content: subject
-        FactoryGirl.create :promotion_banner, impression_count: 100, promotion: p
+        FactoryGirl.create :promotion_banner, impression_count: 100, content: content
       end
       it 'returns true' do
-        expect(subject.has_promotion_inventory?).to be_truthy
+        expect(subject).to be_truthy
       end
     end
   end
@@ -1598,6 +1593,31 @@ describe Content, :type => :model do
     end
   end
 
+  describe "#sanitized_title" do
+    context "when no title present" do
+      it "returns nil" do
+        content = FactoryGirl.create :content, title: nil
+        expect(content.sanitized_title).to be_nil
+      end
+    end
+
+    context "when title present" do
+      it "returns title" do
+        content = FactoryGirl.create :content, title: 'In a galaxy...'
+        expect(content.sanitized_title).to eq content.title
+      end
+    end
+
+    context "when title is only listserv name" do
+      it "returns 'Post by...' title" do
+        content = FactoryGirl.create :content, title: "[Hoth]"
+        user = FactoryGirl.create :user, name: 'Han Solo'
+        content.update_attribute :created_by, user
+        expect(content.sanitized_title).to include "Han Solo"
+      end
+    end
+  end
+
   describe 'sanitized_content=' do
     it 'sets raw_content' do
       content = 'Test Content'
@@ -1639,137 +1659,6 @@ describe Content, :type => :model do
 
       it 'should match output of default_sanitized_content' do
         expect(subject).to eq @content.default_sanitized_content
-      end
-    end
-  end
-
-  describe 'get_related_promotion' do
-    let(:content) { FactoryGirl.create(:content) }
-    let(:promo_banner) { FactoryGirl.create(:promotion_banner) }
-    let(:repo) { FactoryGirl.build :repository }
-
-    before do
-      FactoryGirl.create(:promotion, content: content, promotable: promo_banner)
-    end
-
-    context 'when #banner_ad_override present' do
-      let(:override_banner) {FactoryGirl.create(:promotion_banner)}
-      before do
-        promotion = Promotion.new
-        promotion.promotable= override_banner
-        promotion.save!
-        content.update banner_ad_override: promotion.id
-      end
-
-      it 'returns promo override\'s banner' do
-        result_banner, result_score, result_type = content.get_related_promotion(repo)
-        expect(result_banner).to eql override_banner
-      end
-
-      it 'does not query SPARQL::Client' do
-        expect_any_instance_of(SPARQL::Client).to_not receive(:query)
-        content.get_related_promotion(repo)
-      end
-    end
-
-    context 'when content.organization has banner ad override' do
-      let(:banner_ad1) { FactoryGirl.create :promotion_banner }
-      let(:banner_ad2) { FactoryGirl.create :promotion_banner }
-      let(:banner_ad3) { FactoryGirl.create :promotion_banner }
-
-      before do
-        content.organization.update banner_ad_override: [banner_ad1.promotion.id, banner_ad2.promotion.id].join(', ')
-      end
-
-      it 'does not query SPARQL::Client' do
-        expect_any_instance_of(SPARQL::Client).to_not receive(:query)
-        content.get_related_promotion(repo)
-      end
-
-      it 'returns a banner from the csv override property' do
-        result_banner, result_score, result_type = content.get_related_promotion(repo)
-        expect([banner_ad2, banner_ad1]).to include(result_banner)
-      end
-
-      it 'does not return banners that are not listed' do
-        result_banner, result_score, result_type = content.get_related_promotion(repo)
-        expect(result_banner).to_not eql banner_ad3
-      end
-    end
-
-    context 'when SPARQL will return results based on similarity' do
-      let(:score) { "9" }
-
-      before do
-        mock_data = {
-            score: score
-        }
-        allow(mock_data).to receive(:uid).and_return("/some/path/#{content.id}")
-        allow_any_instance_of(SPARQL::Client).to receive(:query).and_return([mock_data])
-      end
-
-      context 'and promotion banner has inventory' do
-        before do
-          promo_banner.update_attributes({
-            max_impressions: nil,
-            daily_max_impressions: nil
-          })
-        end
-
-        it 'will return results for one of the promotion banners' do
-          result_banner, result_score, result_type = content.get_related_promotion(repo)
-          expect(result_banner).to eql promo_banner
-          expect(result_score).to eql score
-          expect(result_type).to eql 'relevance'
-        end
-      end
-    end
-
-    context 'When banner does not have inventory' do
-      before do
-        promo_banner.update_attributes({
-          max_impressions: 10,
-          impression_count: 10
-        })
-      end
-      context 'when sparql does not return anything' do
-        before do
-          allow_any_instance_of(SPARQL::Client).to receive(:query).and_return([])
-        end
-
-        context 'when no paid banners exist' do
-          before do
-            Promotion.update_all(paid: false)
-          end
-
-          it 'returns the first active banner' do
-            result_banner, result_score, result_type = content.get_related_promotion(repo)
-            expect(result_banner).to eql PromotionBanner.active.first
-            expect(result_type).to eql 'active no inventory'
-          end
-
-          context 'when banner is not active' do
-            before do
-              promo_banner.update_attributes({
-                campaign_start: 1.month.ago,
-                campaign_end: 1.week.ago,
-                max_impressions: nil
-              })
-              promo_banner.promotion.update_attribute(:content_id, content.id)
-            end
-
-            it 'does not return the banner' do
-              result_banner, result_score, result_type = content.get_related_promotion(repo)
-              expect(result_banner).to be nil
-            end
-
-            it 'does not return banner even with content id' do
-              allow(DspService).to receive(:query_promo_similarity_index).and_return([promo_banner.promotion])
-              result_banner, result_score, result_type = content.get_related_promotion(repo)
-              expect(result_banner).to be nil
-            end
-          end
-        end
       end
     end
   end
@@ -1853,6 +1742,65 @@ describe Content, :type => :model do
     describe 'check if content has a root_category of `news`' do
       let(:content) { FactoryGirl.build :content, root_content_category: root_content }
       it { should be true }
+    end
+  end
+
+  describe "#current_daily_report" do
+    before do
+      @content_category = FactoryGirl.build :content_category, name: 'news'
+      @news = FactoryGirl.create :content, content_category_id: @content_category.id
+    end
+
+    subject { @news.current_daily_report }
+
+    context "when no daily report present" do
+      before do
+        @content_report = FactoryGirl.create :content_report, report_date: Date.yesterday
+        @news.content_reports << @content_report
+      end
+
+      it "returns nil" do
+        expect(subject).to be_nil
+      end
+    end
+
+    context "when daily report present" do
+      before do
+        @content_report = FactoryGirl.create :content_report, report_date: Date.current
+        @news.content_reports << @content_report
+      end
+
+      it "returns current report" do
+        expect(subject).to eq @content_report
+      end
+    end
+  end
+
+  describe "#find_or_create_daily_report" do
+    before do
+      @content_category = FactoryGirl.build :content_category, name: 'news'
+      @news = FactoryGirl.create :content, content_category_id: @content_category.id
+    end
+
+    subject { @news.find_or_create_daily_report }
+
+    context "when no report present" do
+      it "creates daily report" do
+        expect{ subject }.to change{
+          @news.reload.content_reports.count
+        }.by 1
+      end
+    end
+
+    context "when current report available" do
+      before do
+        @content_report = FactoryGirl.create :content_report, report_date: Date.current
+        @news.content_reports << @content_report
+      end
+
+      it "returns current report" do
+        expect(subject).to eq @content_report
+      end
     end
   end
 

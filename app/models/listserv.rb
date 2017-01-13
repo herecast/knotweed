@@ -75,6 +75,14 @@ class Listserv < ActiveRecord::Base
     write_attribute :mc_group_name, (n.nil? ? n : n.strip)
   end
 
+  def promotions_list=(list)
+    write_attribute(:promotion_ids, list.split(/[,\s]+/))
+  end
+
+  def promotions_list
+    promotion_ids.join(", ")
+  end
+
   def active_subscriber_count
     subscriptions.active.count
   end
@@ -124,8 +132,10 @@ class Listserv < ActiveRecord::Base
     end
   end
 
-  def banner_ad
-    promotion.promotable if promotion
+  def banner_ads
+    if promotions.any?
+      promotions.map{|promo| promo.promotable}
+    end
   end
 
   def self.digest_days
@@ -167,8 +177,13 @@ class Listserv < ActiveRecord::Base
     Content.where(id: custom_ids).sort_by {|c| custom_ids.index(c.id) }
   end
 
-  private
-
+  def promotions
+    if promotion_ids.any?
+      Promotion.where(id: promotion_ids).sort_by {|p| promotion_ids.index(p.id) }
+    else
+      []
+    end
+  end
   def parse_digest_send_time
     Time.zone.parse(digest_send_time.strftime("%H:%M"))
   end

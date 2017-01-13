@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161212194633) do
+ActiveRecord::Schema.define(version: 20170105135149) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -130,18 +130,17 @@ ActiveRecord::Schema.define(version: 20161212194633) do
   create_table "campaigns", force: :cascade do |t|
     t.integer  "listserv_id"
     t.integer  "community_ids", default: [],              array: true
-    t.integer  "promotion_id"
     t.string   "sponsored_by"
     t.text     "digest_query"
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.string   "title"
     t.string   "preheader"
+    t.integer  "promotion_ids", default: [],              array: true
   end
 
   add_index "campaigns", ["community_ids"], name: "index_campaigns_on_community_ids", using: :btree
   add_index "campaigns", ["listserv_id"], name: "index_campaigns_on_listserv_id", using: :btree
-  add_index "campaigns", ["promotion_id"], name: "index_campaigns_on_promotion_id", using: :btree
 
   create_table "categories", id: :bigserial, force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -185,11 +184,6 @@ ActiveRecord::Schema.define(version: 20161212194633) do
   end
 
   add_index "consumer_apps", ["uri"], name: "idx_16494_index_consumer_apps_on_uri", unique: true, using: :btree
-
-  create_table "consumer_apps_import_jobs", id: false, force: :cascade do |t|
-    t.integer "consumer_app_id", limit: 8
-    t.integer "import_job_id",   limit: 8
-  end
 
   create_table "consumer_apps_messages", id: false, force: :cascade do |t|
     t.integer "message_id",      limit: 8
@@ -241,6 +235,16 @@ ActiveRecord::Schema.define(version: 20161212194633) do
   end
 
   add_index "content_categories_organizations", ["content_category_id", "organization_id"], name: "idx_16559_index_on_content_category_id_and_publication_id", using: :btree
+
+  create_table "content_metrics", force: :cascade do |t|
+    t.integer  "content_id"
+    t.string   "event_type"
+    t.integer  "user_id"
+    t.string   "user_agent"
+    t.string   "user_ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "content_promotion_banner_loads", force: :cascade do |t|
     t.integer  "content_id"
@@ -581,12 +585,12 @@ ActiveRecord::Schema.define(version: 20161212194633) do
     t.string   "subject"
     t.string   "template"
     t.string   "sponsored_by"
-    t.integer  "promotion_id"
     t.integer  "location_ids",         default: [],              array: true
     t.integer  "subscription_ids",     default: [],              array: true
     t.string   "mc_segment_id"
     t.string   "title"
     t.string   "preheader"
+    t.integer  "promotion_ids",        default: [],              array: true
     t.integer  "content_ids",                                    array: true
     t.integer  "listserv_content_ids",                           array: true
   end
@@ -615,7 +619,6 @@ ActiveRecord::Schema.define(version: 20161212194633) do
     t.string   "timezone",                                default: "Eastern Time (US & Canada)"
     t.text     "digest_description"
     t.string   "digest_send_day"
-    t.integer  "promotion_id"
     t.text     "digest_query"
     t.string   "template"
     t.string   "sponsored_by"
@@ -624,6 +627,7 @@ ActiveRecord::Schema.define(version: 20161212194633) do
     t.string   "digest_preheader"
     t.string   "list_type",                               default: "custom_list"
     t.string   "sender_name"
+    t.integer  "promotion_ids",                           default: [],                                        array: true
     t.string   "admin_email"
   end
 
@@ -694,10 +698,11 @@ ActiveRecord::Schema.define(version: 20161212194633) do
     t.float    "latitude"
     t.float    "longitude"
     t.boolean  "locate_include_name"
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
+    t.datetime "created_at",                                           null: false
+    t.datetime "updated_at",                                           null: false
     t.string   "status",                   limit: 255
     t.string   "preferred_contact_method", limit: 255
+    t.boolean  "sold",                                 default: false
   end
 
   create_table "messages", id: :bigserial, force: :cascade do |t|
@@ -774,6 +779,9 @@ ActiveRecord::Schema.define(version: 20161212194633) do
     t.string   "page_url"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
+    t.boolean  "gtm_blocked"
+    t.string   "user_agent"
+    t.string   "user_ip"
   end
 
   add_index "promotion_banner_metrics", ["created_at"], name: "index_promotion_banner_metrics_on_created_at", using: :btree
@@ -808,9 +816,10 @@ ActiveRecord::Schema.define(version: 20161212194633) do
     t.integer  "daily_max_impressions",  limit: 8
     t.boolean  "boost",                              default: false
     t.integer  "daily_impression_count", limit: 8,   default: 0
-    t.boolean  "track_daily_metrics"
     t.integer  "load_count",                         default: 0
     t.integer  "integer",                            default: 0
+    t.string   "promotion_type"
+    t.float    "cost_per_impression"
   end
 
   create_table "promotion_listservs", id: :bigserial, force: :cascade do |t|
@@ -822,7 +831,6 @@ ActiveRecord::Schema.define(version: 20161212194633) do
   end
 
   create_table "promotions", id: :bigserial, force: :cascade do |t|
-    t.boolean  "active"
     t.string   "banner",          limit: 255
     t.integer  "organization_id", limit: 8
     t.integer  "content_id",      limit: 8
@@ -1021,7 +1029,6 @@ ActiveRecord::Schema.define(version: 20161212194633) do
   add_index "wufoo_forms", ["controller", "action", "active"], name: "idx_16881_index_wufoo_forms_on_controller_and_action_and_active", unique: true, using: :btree
 
   add_foreign_key "campaigns", "listservs"
-  add_foreign_key "campaigns", "promotions"
   add_foreign_key "listserv_contents", "content_categories"
   add_foreign_key "listserv_contents", "contents"
   add_foreign_key "listserv_contents", "listservs"

@@ -113,17 +113,6 @@ RSpec.describe ImportWorker, type: :job do
       expect(Content.last.title).to eq config['title'].strip
     end
 
-    context 'with consumer apps specified (for prerendering)' do
-      let(:consumer_app) { FactoryGirl.create :consumer_app }
-      let!(:prerender_stub) { prerender_cache_stub }
-
-      it 'should send a request to Prerender' do
-        job.consumer_apps << consumer_app
-        subject
-        expect(WebMock).to have_requested(:post, "http://api.prerender.io/recache")
-      end
-    end
-
     context 'when DSP is backing up' do
       before do
         allow(ImportJob).to receive(:backup_start).and_return(Time.current - 10)

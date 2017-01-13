@@ -26,9 +26,9 @@ class ReversePublisher < ActionMailer::Base
         template_name = 'market_post'
       end
     end
-    mail(from: from, to: to, subject: subject, 
-         template_name: template_name, 
-         delivery_method: Rails.env == 'test' ? :test : :sendmail)
+    mail(from: from, to: to, subject: subject,
+         template_name: template_name,
+         delivery_method: Rails.env == 'test' ? :test : :smtp)
   end
 
   def send_copy_to_sender_from_dailyuv(content, outbound_text, outbound_html)

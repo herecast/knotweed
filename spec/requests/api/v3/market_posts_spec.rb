@@ -42,6 +42,7 @@ describe 'Market Posts', type: :request do
           contact_phone: market_post.contact_phone,
           contact_email: market_post.contact_email,
           preferred_contact_method: market_post.preferred_contact_method,
+          sold: market_post.sold,
           images: match_array(market_post.images.collect{|i|
             a_hash_matching({
               id: i.id,
@@ -49,8 +50,7 @@ describe 'Market Posts', type: :request do
               primary: be(1).or(be(0))
             })
           })
-        })
-      )
+        }))
     end
   end
 
@@ -126,7 +126,8 @@ describe 'Market Posts', type: :request do
         contact_phone: a_kind_of(String).or(be_nil),
         contact_email: a_kind_of(String).or(be_nil),
         preferred_contact_method: a_kind_of(String).or(be_nil),
-        images: be_an(Array)
+        images: be_an(Array),
+        sold: be_boolean
       )
     end
 
@@ -232,5 +233,38 @@ describe 'Market Posts', type: :request do
 
     end
 
+  end
+
+  describe 'PUT api/v3/market_post/:id' do
+    let!(:market_cat) { FactoryGirl.create :market_category, name: 'market' }
+    let!(:user) { FactoryGirl.create :user }
+    let!(:market_post) { FactoryGirl.create :market_post, sold: false }
+    let(:content) { FactoryGirl.create :content }
+    let(:auth_headers) { auth_headers_for(user) }
+    let(:market_post_params) do
+      { market_post: { 
+          contact_email: user.email, 
+          contact_phone: user.contact_phone, 
+          content: market_post.content,
+          sold: true,
+          title: "Sample market post with contnet", 
+          address: '123 fake', 
+          city: 'still needed?', 
+          zip: '19143'}
+      }
+    end
+    context 'marking a post as sold' do
+
+      before do
+        allow_any_instance_of(Ability).to receive(:can?).with(:manage, market_post.content).and_return(true)
+      end
+
+      context 'when content has an associated market post' do
+        it 'updates sold to true on the market post' do
+          put "/api/v3/market_posts/#{market_post.content.id}", market_post_params, auth_headers
+          expect(response_json[:market_post][:sold]).to eq true
+        end
+      end
+    end
   end
 end

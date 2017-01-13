@@ -5,5 +5,6 @@
   = c.input :community_ids, collection: Location.non_region.consumer_active, input_html: { multiple: true }
   = c.input :preheader
   = c.input :sponsored_by
-  = c.input :promotion_id, as: :string
+  = c.input :promotion_ids do
+    = c.input_field :promotions_list
   = c.input :digest_query

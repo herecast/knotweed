@@ -74,7 +74,7 @@ module Api
       end
 
       def excluded_user_agents
-        ["Prerender"]
+        []
       end
 
       def request_user_agent

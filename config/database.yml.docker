@@ -2,6 +2,6 @@ production:
   adapter: postgresql
   encoding: utf8
   reconnect: true
-  pool: 5
   url: <%= ENV['DATABASE_URL'] %>
   net_read_timeout: 60
+  pool: <%= ENV['DB_POOL'] || ENV['RAILS_MAX_THREADS'] || 10 %>

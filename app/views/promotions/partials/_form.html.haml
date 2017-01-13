@@ -8,16 +8,16 @@
 
   .form-inputs
     = f.input :description, input_html: { class: "input-block-level", rows: 5 }
-    = f.input :active
     = f.input :paid
     = f.simple_fields_for :promotable do |p|
       - if promotion.promotable.is_a? PromotionBanner
+        = p.input :promotion_type, as: :select, collection: PromotionBanner::PROMOTION_TYPES
         = p.input :boost
         = p.input :campaign_start, as: :date_picker, label: 'Campaign Start Date'
         = p.input :campaign_end, as: :date_picker, label: 'Campaign End Date'
         = p.input :daily_max_impressions, label: 'Daily Maximum Impressions'
         = p.input :max_impressions, label: 'Maximum Impressions'
-        = p.input :track_daily_metrics
+        = p.input :cost_per_impression
     - if promotion.promotable.present?
       = f.input :promotable_type, as: :hidden
 

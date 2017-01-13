@@ -1,6 +1,7 @@
 module Api
   module V3
     class PasswordsController < Devise::PasswordsController
+      respond_to :json
 
       before_filter :set_consumer_app_in_thread
 
