@@ -45,8 +45,6 @@ gem 'kaminari', '~> 0.15.0'
 gem "legato", '~> 0.4.0'
 gem 'lograge', '~> 0.3.6'
 gem 'mail', '~> 2.5.4'
-gem 'mixpanel_client', '~> 4.1.1'
-gem 'mixpanel-ruby', '~> 1.4.0' # official ruby mixpanel client. later versions need ruby > 2.0
 gem "pg", '~> 0.18.4'
 gem 'mysql2', '~> 0.3.18'
 gem 'mini_magick', '~> 4.5.1'

@@ -23,7 +23,6 @@ Knotweed::Application.routes.draw do
   put '/users/:id/admin-update', to: 'users#update'
 
   get "/", to: "dashboard#index", as: :dashboard
-  get "/dashboard/mixpanel_charts", to: "dashboard#mixpanel_charts", as: :mixpanel_charts
   get "/dashboard/total_sign_ins", to: "dashboard#total_sign_ins", as: :total_sign_ins
   get "dashboard/article_clicks", to: "dashboard#article_clicks", as: :article_clicks
   get "dashboard/clicks_by_category", to: "dashboard#clicks_by_category", as: :clicks_by_category
