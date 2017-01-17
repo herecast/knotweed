@@ -680,7 +680,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff
     xml-simple (1.1.5)
-    yard (0.8.7.6)
+    yard (0.9.8)
     zeus (0.15.4)
       method_source (>= 0.6.7)
 
