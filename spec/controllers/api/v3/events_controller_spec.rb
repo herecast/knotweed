@@ -253,11 +253,12 @@ describe Api::V3::EventsController, :type => :controller do
       ext_reach_attrs = @event_attrs.dup
       ext_reach_attrs[:extended_reach_enabled] = true
       # ensure that the region location actually exists...
-      FactoryGirl.create :location, id: Location::REGION_LOCATION_ID
+      location = FactoryGirl.create :location
+      stub_const("Location::REGION_LOCATION_ID", location.id)
       post :create, format: :json, event: ext_reach_attrs, current_user_id: @current_user.id
       expect(assigns(:event).content.location_ids.count).to eq(2)
       expect(assigns(:event).content.location_ids.include?(@current_user.location_id)).to be_truthy
-      expect(assigns(:event).content.location_ids.include?(Location::REGION_LOCATION_ID)).to be_truthy
+      expect(assigns(:event).content.location_ids.include?(location.id)).to be_truthy
     end
 
     it 'creates a venue with venue attributes given (instead of venue_id)' do

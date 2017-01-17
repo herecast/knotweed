@@ -4,7 +4,8 @@ describe MarketPostsController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     @market_post = FactoryGirl.create :market_post
-    @region_location = FactoryGirl.create :location, id: Location::REGION_LOCATION_ID
+    @region_location = FactoryGirl.create :location
+    stub_const("Location::REGION_LOCATION_ID", @region_location.id)
     sign_in @user
   end
 
