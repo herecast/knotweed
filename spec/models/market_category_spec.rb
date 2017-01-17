@@ -21,6 +21,7 @@ RSpec.describe MarketCategory, type: :model do
   it { is_expected.to have_db_column(:detail_page_banner) }
   it { is_expected.to have_db_column(:featured) }
   it { is_expected.to have_db_column(:trending) }
+  it { is_expected.to have_db_column(:query_modifier) }
 
   it { is_expected.to validate_presence_of(:name) }
 
@@ -109,5 +110,59 @@ RSpec.describe MarketCategory, type: :model do
       expect(default_search_options[:where]).to have_key(:root_content_category_id)
       expect(default_search_options.class).to eq Hash
     end
+  end
+
+  describe '.query_modifier_options' do
+    it 'retuns an array of options for query modifiers' do
+      query_modifier_options = MarketCategory.query_modifier_options
+      expect(query_modifier_options).to eq(['AND', 'OR', 'Match Phrase'])
+    end
+  end
+
+  describe '#formatted_modifier_options' do
+    it 'retuns the correct modifier hash' do
+      subject.query_modifier  = "OR"
+      expect(subject.formatted_modifier_options).to eq({ operator: "or"})
+      subject.query_modifier = "AND"
+      expect(subject.formatted_modifier_options).to eq({})
+      subject.query_modifier = "Match Phrase"
+      expect(subject.formatted_modifier_options).to eq({ match: :phrase })
+      subject.query_modifier = "Anything else"
+      expect(subject.formatted_modifier_options).to eq({})
+    end
+  end
+
+  describe '#formatted_query' do
+    it 'removes commas and formats the query string' do
+      subject.query = "term1, term2, term3"
+      expect(subject.formatted_query).to eq "term1 term2 term3"
+    end
+
+    it 'handles additional spaces and commas correctly' do
+      subject.query = "term1   term2 , term3"
+      expect(subject.formatted_query).to eq "term1 term2 term3"
+    end
+
+    it 'formats the query correctly if there are no spaces' do
+      subject.query = "term1,term2,term3"
+      expect(subject.formatted_query).to eq "term1 term2 term3"
+    end
+
+    it 'formats the query correctly if using only spaces' do
+      subject.query = "term1 term2 term3"
+      expect(subject.formatted_query).to eq "term1 term2 term3"
+    end
+
+    context 'when query modifier is "Match Phrase"' do
+      before do
+        subject.query_modifier = "Match Phrase"
+      end
+      it 'does not format the query string' do
+        subject.query = 'Search, for this phrase'
+        expect(subject.formatted_query).to_not eq "Search for this phrase"
+        expect(subject.formatted_query).to eq 'Search, for this phrase'
+      end
+    end
+
   end
 end

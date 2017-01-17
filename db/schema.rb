@@ -682,6 +682,7 @@ ActiveRecord::Schema.define(version: 20170105135149) do
     t.integer  "result_count"
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
+    t.string   "query_modifier",      default: 'AND'
   end
 
   create_table "market_posts", id: :bigserial, force: :cascade do |t|

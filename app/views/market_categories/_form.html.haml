@@ -7,6 +7,7 @@
   .form-inputs
     = f.input :name
     = f.input :query, as: :text
+    = f.input :query_modifier, as: :radio_buttons, collection: @query_modifiers, item_wrapper_class: 'inline', hint: 'Search defaults to use AND'
     .row-fluid
       .span4
         = f.input :category_image

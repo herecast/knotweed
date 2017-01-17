@@ -48,7 +48,11 @@ module Api
 
         query = params[:query].present? ? params[:query] : '*'
 
-        @market_posts = Content.search query, opts
+        # byebug
+        modifier = set_modifier_for_category(params[:query_modifier]) unless params[:query_modifier].blank?
+        modifier ||= {}
+
+        @market_posts = Content.search formatted_query(query), opts.merge(modifier)
         render json: @market_posts, each_serializer: DetailedMarketPostSerializer, meta: { total: @market_posts.total_count }
       end
 
@@ -199,6 +203,25 @@ module Api
           end
 
           additional_attributes
+        end
+        
+        def set_modifier_for_category(modifier)
+          case modifier
+            when "OR"
+              { operator: "or" }
+            when "Match Phrase"
+              { match: :phrase }
+            else
+              {}
+          end
+        end
+        
+        def formatted_query(query)
+          unless params[:query_modifier] == "Match Phrase"
+            query.split(/[,\s]+/).join(" ") 
+          else
+            query
+          end
         end
 
     end

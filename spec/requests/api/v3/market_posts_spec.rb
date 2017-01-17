@@ -138,6 +138,35 @@ describe 'Market Posts', type: :request do
       expect(total_count).to be > collection_count
     end
 
+    context 'searching with a modifier param' do
+
+      before do
+        @blue_post = FactoryGirl.create :market_post, title: 'Blue Color'
+        @red_post = FactoryGirl.create :market_post, title: 'Red Color'
+        @green_post = FactoryGirl.create :market_post, title: 'Green Color'
+        @no_color_post = FactoryGirl.create :market_post, title: 'No color in this post'
+      end
+      
+      it 'responds to requrests using the "AND" modifier param' do
+        get '/api/v3/market_posts', request_params.merge(query: 'color, post', query_modifier: "AND")
+        expect(response_json[:market_posts].count).to eq 1
+        expect(response_json[:market_posts].first[:title]).to eq @no_color_post.title
+      end
+
+      it 'responds to requests using the "OR" modifier param' do
+        get '/api/v3/market_posts', request_params.merge(query: 'Blue, Green, Red', query_modifier: "OR")
+        expect(response_json[:market_posts].count).to eq 3
+      end
+      
+      it 'responds to requests using the "Match Phrase" modifier param' do
+        get '/api/v3/market_posts', request_params.merge(query: "Blue Color", query_modifier: "Match Phrase")
+        expect(response_json[:market_posts].count).to eq 1
+        expect(response_json[:market_posts].first[:title]).to eq @blue_post.title
+      end
+
+    end
+
+
     context 'as signed in user' do
       subject { get '/api/v3/market_posts', request_params.merge({ format: :json }), auth_headers }
 
