@@ -26,7 +26,7 @@ gem 'figaro'
 gem "fog"
 gem 'forecast_io'
 gem 'geocoder'
-gem "google-api-client"
+gem "google-api-client", '~> 0.8.7'                   # 0.9 causes a failure in the test suite
 gem "haml-rails"
 gem 'health_check', '~> 1.5'                          # Have not yet tested the next major version
 gem 'hpricot'
@@ -80,7 +80,7 @@ gem 'uglifier', '~> 2.4'                            # Have not yet tested the ne
 gem 'unf'
 
 group :development, :test do
-  gem "factory_girl_rails"
+  gem "factory_girl_rails", '~> 4.4.0'              # 4.5.0 causes a failure in the test suite
   gem 'guard-bundler', require:false
   gem 'guard-rspec', require:false
   gem 'guard-zeus', require: false
