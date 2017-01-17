@@ -216,6 +216,8 @@ RSpec.describe ListservDigestMailer do
         end
 
         context 'when the template is for custom content query' do
+          subject { described_class.digest(listserv_digest).body }
+
           before do
             listserv_digest.update!(template: 'news_template')
           end
