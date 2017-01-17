@@ -9,7 +9,7 @@ gem 'american_date'
 gem 'bootstrap-sass'
 gem 'cancancan'
 gem "carmen-rails"
-gem "carrierwave"
+gem "carrierwave", '~> 0.9'                            # Have not yet tested the next major version
 gem 'carrierwave-mimetype-fu'
 gem 'chosen-rails'
 gem 'chronic'
@@ -17,9 +17,9 @@ gem 'coffee-rails'
 gem 'compass-rails'
 gem 'daemons'
 gem 'datetimepicker-rails', git: 'git://github.com/zpaulovics/datetimepicker-rails', tag: 'v1.0.0'
-gem "devise"
+gem "devise", '~> 3.5'                                # Have not yet tested the next major version
 gem 'dimensions'
-gem 'enumerize'
+gem 'enumerize', '~> 0.11'                            # Have not yet tested the next major version
 gem 'faker'
 gem 'faraday_middleware-aws-signers-v4'
 gem 'figaro'
@@ -28,7 +28,7 @@ gem 'forecast_io'
 gem 'geocoder'
 gem "google-api-client"
 gem "haml-rails"
-gem 'health_check'
+gem 'health_check', '~> 1.5'                          # Have not yet tested the next major version
 gem 'hpricot'
 gem 'htmlcompressor'
 gem 'httparty'
@@ -37,9 +37,9 @@ gem 'ice_cube'
 gem 'jbuilder'
 gem 'joiner'
 gem 'jquery-datatables-rails'
-gem 'jquery-rails'
+gem 'jquery-rails', '~> 3.1'                          # Have not yet tested the next major version
 gem "jquery-turbolinks"
-gem 'kaminari'
+gem 'kaminari', '~> 0.15'                             # Have not yet tested the next major version
 gem "legato"
 gem 'lograge'
 gem 'mail'
@@ -56,27 +56,27 @@ gem 'puma'
 gem 'rack-cors', require: "rack/cors"
 gem 'rails-deprecated_sanitizer', '~> 1.0.3' # need to keep older sanitize with Rails 4.2 upgrde
 gem 'ransack'
-gem "rdf"
+gem "rdf", '~> 1.1'                                 # Have not yet tested the next major version
 gem 'redis-rails'
-gem 'rinku'
+gem 'rinku', '~> 1.7'                               # Have not yet tested the next major version
 gem "rolify"
 gem "rubypress"
 gem "rubyzip"
 gem 'sanitize'
 gem 'sass-rails'
-gem 'searchkick'
+gem 'searchkick', '~> 1.3'                          # Have not yet tested the next major version
 gem 'sidekiq'
 gem 'sidekiq-scheduler'
 gem 'sidekiq-unique-jobs'
 gem "simple_form"
 gem 'sinatra', require: false # for sidekiq/web
-gem 'sparql-client'
+gem 'sparql-client', '~> 1.1'                       # Have not yet tested the next major version
 gem 'sshkit'
 gem 'summernote-rails'
 gem 'thor', '0.19.1'                                # Later versions cause warnings
-gem "turbolinks"
+gem "turbolinks", '~> 2.2'                          # Have not yet tested the next major version
 gem 'typhoeus'
-gem 'uglifier'
+gem 'uglifier', '~> 2.4'                            # Have not yet tested the next major version
 gem 'unf'
 
 group :development, :test do
@@ -97,13 +97,13 @@ group :test do
   gem 'simplecov'
   gem "test_after_commit"
   gem "timecop"
-  gem "vcr"
+  gem "vcr", '~> 2.9'                               # Have not yet tested the next major version
   gem "webmock"
 end
 
 group :development do
   gem "annotate"
-  gem "better_errors"
+  gem "better_errors", '~> 0.9'                     # Have not yet tested the next major version
   gem "binding_of_caller"
   gem "letter_opener"
   gem "quiet_assets"
