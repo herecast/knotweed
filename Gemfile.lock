@@ -657,7 +657,7 @@ GEM
     thor (0.19.1)
     thread_safe (0.3.6)
     tilt (2.0.6)
-    timecop (0.7.4)
+    timecop (0.8.1)
     tins (1.6.0)
     trollop (2.1.2)
     turbolinks (2.2.3)
