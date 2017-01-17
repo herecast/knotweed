@@ -10,15 +10,15 @@
           %h4 Information
           %p <b>User:</b> #{@user.name}
           %p <b>Email:</b> #{@user.email if @user.email}
-          %p <b>Location:</b> #{@user.location.city}, #{@user.location.state}
+          %p <b>Location:</b> #{@user.location.try(:city)}, #{@user.location.try(:state)}
         .span4
           %h4 Roles
           %p
-            = 'Admin' if @user.roles.include?(Role.find(1))
+            = 'Admin' if @user.roles.include?(Role.get('admin'))
           %p
-            = 'Event Manager' if @user.roles.include?(Role.find(2))
+            = 'Event Manager' if @user.roles.include?(Role.get('event_manager'))
           %p
-            = 'Blogger' if @user.roles.include?(Role.find(3))
+            = 'Blogger' if @user.roles.include?(Role.get('blogger'))
         .span4
           %h4 Managed Organizations
           - @user.managed_organizations.each do |org|

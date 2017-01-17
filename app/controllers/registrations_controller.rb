@@ -25,7 +25,8 @@ class RegistrationsController < Devise::RegistrationsController
   end
 
   def account_update_params
-    params.require(:user).permit(:name, :email, :location_id, :password, :password_confirmation)
+    params.require(:user).permit(:name, :email, :location_id, :password, :password_confirmation,
+                                :current_password, :default_repository_id)
   end
 
    def set_consumer_app_in_thread

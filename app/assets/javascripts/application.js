@@ -47,5 +47,4 @@
 //= require users
 //= require business_profiles
 //= require summernote
-//= require bootstrap
 //= require summernote_editor

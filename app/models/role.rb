@@ -15,4 +15,11 @@ class Role < ActiveRecord::Base
   belongs_to :resource, :polymorphic => true
 
   scopify
+
+  # just a shortcut so we don't have to write
+  #     Role.find_or_create_by(name: 'hello')
+  # every time
+  def self.get(name)
+    self.find_or_create_by(name: name)
+  end
 end
