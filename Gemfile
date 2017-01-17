@@ -73,6 +73,7 @@ gem 'sinatra', require: false # for sidekiq/web
 gem 'sparql-client'
 gem 'sshkit'
 gem 'summernote-rails'
+gem 'thor', '0.19.1'                                # Later versions cause warnings
 gem "turbolinks"
 gem 'typhoeus'
 gem 'uglifier'
