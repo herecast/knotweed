@@ -2,14 +2,25 @@ class ListservsController < ApplicationController
   before_action :set_listserv, only: [:show, :edit, :update, :destroy]
 
   def index
-    @listservs = Listserv.page(params[:page])
+    # if posted, save to session
+    if params[:reset]
+      session[:listservs_search] = nil
+    elsif params[:q].present?
+      session[:listservs_search] = params[:q]
+    end
+    unless session[:listservs_search].present?
+      session[:listservs_search] = { :active_true => true }
+    end
+    @search = Listserv.unscoped.ransack(session[:listservs_search])
+    @listservs = @search.result(distinct: true)
   end
 
   def show
   end
 
   def new
-    @listserv = Listserv.new
+    # default list type should be custom digest
+    @listserv = Listserv.new(list_type: 'custom_digest')
   end
 
   def edit
@@ -41,7 +52,7 @@ class ListservsController < ApplicationController
 
   private
     def set_listserv
-      @listserv = Listserv.find(params[:id])
+      @listserv = Listserv.unscoped.find(params[:id])
     end
 
     def listserv_params

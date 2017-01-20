@@ -157,7 +157,7 @@ class Listserv < ActiveRecord::Base
     ]
   end
 
-  def list_types
+  def self.list_types
     [
       ['External List', 'external_list'],
       ['Internal List', 'internal_list'],
