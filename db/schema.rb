@@ -259,14 +259,14 @@ ActiveRecord::Schema.define(version: 20170105135149) do
   create_table "content_reports", id: :bigserial, force: :cascade do |t|
     t.integer  "content_id",               limit: 8
     t.datetime "report_date"
-    t.integer  "view_count",               limit: 8
-    t.integer  "banner_click_count",       limit: 8
+    t.integer  "view_count",                         default: 0
+    t.integer  "banner_click_count",                 default: 0
     t.integer  "comment_count",            limit: 8
     t.integer  "total_view_count",         limit: 8
     t.integer  "total_banner_click_count", limit: 8
     t.integer  "total_comment_count",      limit: 8
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at",                                     null: false
+    t.datetime "updated_at",                                     null: false
   end
 
   create_table "content_sets", id: :bigserial, force: :cascade do |t|

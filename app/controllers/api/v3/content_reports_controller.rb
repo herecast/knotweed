@@ -18,7 +18,7 @@ module Api
           FROM content_reports r
           INNER JOIN contents c ON c.id = r.content_id
           INNER JOIN users u on u.id = c.created_by
-          INNER JOIN organizations o ON o.id = c.organization_id AND r.view_count + r.banner_click_count > 0
+          INNER JOIN organizations o ON o.id = c.organization_id AND (r.view_count > 0 OR r.banner_click_count > 0)
           WHERE (r.report_date - INTERVAL '5' HOUR) >= #{@start_date} AND (r.report_date - INTERVAL '5' HOUR) < #{@end_date}
           ORDER BY \"Author\", c.title, report_date DESC;"
         @content_reports = @connection.execute(query)
