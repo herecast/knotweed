@@ -85,7 +85,7 @@ RSpec.describe PromoteContentToListservs do
         listserv_contents = ListservContent.last(internal.count)
 
         internal.each do |list|
-          lc = listserv_contents.find{|i| i.listserv_id = list.id}
+          lc = listserv_contents.find{|i| i.listserv_id == list.id}
           expect(lc.attributes.symbolize_keys).to match hash_including({
             subject: content.title,
             listserv_id: list.id,
@@ -242,6 +242,19 @@ RSpec.describe PromoteContentToListservs do
         end
       end
 
+      it 'back references the subscription to the listserv_content' do
+        subject
+        subscriptions = Subscription.where(
+          user_id: content.created_by
+        )
+
+        internal.each do |ls|
+          subscription = subscriptions.find{|s| s.listserv == ls}
+
+          lc = ListservContent.find_by listserv: ls
+          expect(lc.subscription).to eql subscription
+        end
+      end
 
       context 'when not yet subscribed' do
         it 'subscribes the user to each listserv' do
@@ -255,6 +268,7 @@ RSpec.describe PromoteContentToListservs do
             expect(subscription).to be_present
           end
         end
+
       end
     end
   end

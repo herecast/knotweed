@@ -87,14 +87,17 @@ class PromoteContentToListservs
       })
 
       promo_list.update! listserv_content: list_content
+      ensure_subscribed list_content
     end
-
-    ensure_subscribed promotion_listservs.collect(&:listserv)
   end
 
-  def ensure_subscribed(internal_listservs)
-    internal_listservs.each do |listserv|
-      SubscribeToListservSilently.call(listserv, @content.created_by, @remote_ip)
-    end
+  def ensure_subscribed(listserv_content)
+    subscription = SubscribeToListservSilently.call(
+      listserv_content.listserv,
+      @content.created_by,
+      @remote_ip
+    )
+
+    listserv_content.update! subscription: subscription
   end
 end
