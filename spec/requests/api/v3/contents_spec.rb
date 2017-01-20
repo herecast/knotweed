@@ -116,14 +116,19 @@ describe 'Contents Endpoints', type: :request do
     end
 
     context 'user is selling items in the market' do
-      let!(:post_content) { FactoryGirl.create :content, created_by: user, published: true, content_category: market_cat }
+      let!(:post_content) { FactoryGirl.create :content, published: true, content_category: market_cat }
       let!(:market_post) { FactoryGirl.create :market_post, content: post_content, sold: true }
+
+    before do
+      market_post.created_by = user
+      market_post.save!
+    end
       
       it 'displays their current items in the market' do
         get '/api/v3/dashboard', { channel_type: 'market' }, auth_headers
-        market_post = response_json[:contents].first
-        expect(market_post[:title]).to eq(post_content.title)
-        expect(market_post[:sold]).to eq true
+        post = response_json[:contents].first
+        expect(post[:title]).to eq(post_content.title)
+        expect(post[:sold]).to eq true
       end
     end
   end
