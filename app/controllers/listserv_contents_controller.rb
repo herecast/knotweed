@@ -1,5 +1,5 @@
 class ListservContentsController < ApplicationController
-  before_action :set_listserv_content, only: [:show, :edit, :update, :destroy]
+  before_action :set_listserv_content, only: [:show, :edit, :update, :destroy, :update_metric]
 
   def index
     if params[:q].present?

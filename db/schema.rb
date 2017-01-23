@@ -545,6 +545,22 @@ ActiveRecord::Schema.define(version: 20170105135149) do
     t.datetime "publication_date"
   end
 
+  create_table "listserv_content_metrics", force: :cascade do |t|
+    t.integer  "listserv_content_id"
+    t.string   "email"
+    t.datetime "time_sent"
+    t.string   "post_type"
+    t.string   "username"
+    t.boolean  "verified"
+    t.boolean  "enhanced"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+    t.boolean  "enhance_link_clicked",              default: false
+    t.string   "step_reached"
+  end
+
+  add_index "listserv_content_metrics", ["listserv_content_id"], name: "index_listserv_content_metrics_on_listserv_content_id", using: :btree
+
   create_table "listserv_contents", force: :cascade do |t|
     t.integer  "listserv_id"
     t.string   "sender_name"

@@ -23,6 +23,7 @@ class VerifyAndUpdateListservContent
     set_user if @attributes[:content_id].present?
 
     if @model.save
+      RecordListservMetric.call('complete_metric', @model, @attributes)
       ensure_subscription_to_listserv
       send_confirmation
       clear_temp_password

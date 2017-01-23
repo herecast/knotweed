@@ -1,7 +1,7 @@
 module Api
   module V3
     class ListservContentsController < ApiController
-      before_action :find_record, only: [:show, :update]
+      before_action :find_record, only: [:show, :update, :update_metric]
 
       def show
         render json: @listserv_content, serializer: ListservContentSerializer
@@ -17,6 +17,13 @@ module Api
         render json: {errors: "Content owner mismatch"}, status: 422
       rescue ListservExceptions::AlreadyVerified
         render status: 422, json: {errors: "Already verified!" }
+      end
+
+      def update_metric
+        RecordListservMetric.call('update_metric', @listserv_content,
+          params.slice(:enhance_link_clicked, :post_type, :step_reached)
+        )
+        render json: {}, status: :ok
       end
 
       protected

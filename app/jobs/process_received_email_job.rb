@@ -77,6 +77,7 @@ class ProcessReceivedEmailJob < ActiveJob::Base
   def process_post_action
     listserv = Listserv.find_by(post_email: @email.to)
     listserv_content = PostToListserv.call(listserv, @email)
+    RecordListservMetric.call('create_metric', listserv_content)
     @email.record = listserv_content
     @email.result = "Posted to Listserv"
   rescue ListservExceptions::BlacklistedSender => e
