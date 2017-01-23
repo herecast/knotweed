@@ -17,6 +17,9 @@
 #  daily_impression_count :integer          default(0)
 #  load_count             :integer          default(0)
 #  integer                :integer          default(0)
+#  promotion_type         :string
+#  cost_per_impression    :float
+#  cost_per_day           :float
 #
 
 FactoryGirl.define do

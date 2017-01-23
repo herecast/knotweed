@@ -817,6 +817,7 @@ ActiveRecord::Schema.define(version: 20170105135149) do
     t.integer  "integer",                            default: 0
     t.string   "promotion_type"
     t.float    "cost_per_impression"
+    t.float    "cost_per_day"
   end
 
   create_table "promotion_listservs", id: :bigserial, force: :cascade do |t|

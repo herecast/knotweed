@@ -11,6 +11,7 @@
 #  total_click_count      :integer
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  load_count             :integer
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

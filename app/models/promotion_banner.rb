@@ -17,6 +17,9 @@
 #  daily_impression_count :integer          default(0)
 #  load_count             :integer          default(0)
 #  integer                :integer          default(0)
+#  promotion_type         :string
+#  cost_per_impression    :float
+#  cost_per_day           :float
 #
 
 class PromotionBanner < ActiveRecord::Base
@@ -38,7 +41,9 @@ class PromotionBanner < ActiveRecord::Base
 
   validates_presence_of :promotion, :banner_image, :campaign_start, :campaign_end, :promotion_type
   validates :max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'max_impressions.present?'
-#  validates :daily_max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'daily_max_impressions.present?'
+  validate :will_not_have_daily_and_per_impression_cost
+
+  OVER_DELIVERY_PERCENTAGE = 0.15
 
   # returns currently active promotion banners
   scope :active, ->(date=Date.current) { where("campaign_start <= ?", date)
@@ -55,7 +60,7 @@ class PromotionBanner < ActiveRecord::Base
   # readonly records.
   scope :has_inventory, -> { includes(:promotion)
     .where('(impression_count < max_impressions OR max_impressions IS NULL)')
-    .where('(daily_impression_count < daily_max_impressions OR daily_max_impressions IS NULL)')
+    .where("(daily_impression_count < (daily_max_impressions + (daily_max_impressions * #{OVER_DELIVERY_PERCENTAGE})) OR daily_max_impressions IS NULL)")
     .references(:promotion) }
 
  # this scope combines all conditions to determine whether a promotion banner is boosted
@@ -98,4 +103,13 @@ class PromotionBanner < ActiveRecord::Base
       end
     end
   end
+
+  private
+
+    def will_not_have_daily_and_per_impression_cost
+      if cost_per_impression.present? && cost_per_day.present?
+        errors.add(:cost_per_impression, 'cannot have cost_per_impression when cost_per_day is present')
+      end
+    end
+
 end

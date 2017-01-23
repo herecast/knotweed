@@ -27,6 +27,7 @@ describe Api::V3::PromotionBannerReportsController, type: :controller do
       "campaign_end" => @pb.campaign_end.strftime("%D"),
       "served" => @pb.impression_count,
       "cost" => @pb.cost_per_impression,
+      "daily_cost" => @pb.cost_per_day,
       "daily_max" => @pb.daily_max_impressions,
       "clicks" => @pb.click_count,
       "ctr" => "%.2f" % (@pb.click_count * 100.0 / @pb.impression_count),

@@ -11,6 +11,7 @@
 #  total_click_count      :integer
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  load_count             :integer
 #
 
 require 'spec_helper'
