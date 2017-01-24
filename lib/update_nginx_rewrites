@@ -41,8 +41,8 @@ then
     /usr/bin/psql -tA -U $RAILS_KNOTWEED_DB_USERNAME -h $RAILS_KNOTWEED_DB_HOST $RAILS_KNOTWEED_DB_NAME -c "select 'location ~* /' || source || E' {\n    rewrite ^ $rewrite_host/' || destination || E' permanent;\n}' from rewrites;" > "$map_file"
     echo "reloading Nginx"
     docker_kill $NGINX_CONTAINER SIGHUP
+    date -u +'%F %T' > $last_updated_at_cache_file
 fi
 
-date -u +'%F %T' > $last_updated_at_cache_file
 rm $lock_file
 exit 0
