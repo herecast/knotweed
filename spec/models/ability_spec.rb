@@ -51,9 +51,8 @@ describe Ability, :type => :model do
         @user           = FactoryGirl.create :user
         @event_category = FactoryGirl.create :content_category, name: 'event'
         @event          = FactoryGirl.create :event
-        @content        = FactoryGirl.create :content
+        @content        = FactoryGirl.create :content, created_by: @user
         @event.content.update_attribute(:content_category, @event_category)
-        @content.update_attribute(:created_by, @user)
         
         @user.add_role :event_manager
       end

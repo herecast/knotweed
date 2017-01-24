@@ -34,8 +34,8 @@ describe Api::V3::BusinessFeedbacksController, :type => :controller do
 
     context "when user has already rated business" do
       before do
-        content = FactoryGirl.create :business_feedback, business_profile_id: @profile.id, recommend: 0
-        content.update_attribute(:created_by, @user)
+        content = FactoryGirl.create :business_feedback, business_profile_id: @profile.id, recommend: 0,
+          created_by: @user
       end
 
       it "returns a 403 status" do
@@ -48,8 +48,8 @@ describe Api::V3::BusinessFeedbacksController, :type => :controller do
   describe 'PUT #update' do
     before do
       @business_profile = FactoryGirl.create :business_profile
-      @feedback = FactoryGirl.create :business_feedback, business_profile_id: @business_profile.id, recommend: 0
-      @feedback.update_attribute(:created_by, @user)
+      @feedback = FactoryGirl.create :business_feedback, business_profile_id: @business_profile.id, recommend: 0,
+        created_by: @user
     end
 
     subject { put :update, id: @business_profile.id, feedback: { recommend: 1 } }

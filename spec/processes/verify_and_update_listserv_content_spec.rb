@@ -72,8 +72,7 @@ RSpec.describe VerifyAndUpdateListservContent do
     context 'When content_id included in attributes update' do
       before do
         @user = FactoryGirl.create :user
-        @content = FactoryGirl.create :content
-        @content.update_attribute(:created_by, @user)
+        @content = FactoryGirl.create :content, created_by: @user
         attributes[:content_id] = @content.id
       end
 

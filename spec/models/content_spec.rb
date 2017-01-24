@@ -1403,10 +1403,9 @@ describe Content, :type => :model do
       before do
         @user = FactoryGirl.create :user
         @news = FactoryGirl.create :content,
-          content_category: FactoryGirl.create(:content_category, name: 'news')
-        @not_news = FactoryGirl.create :content
-        @not_news.update_attribute :created_by, @user
-        @news.update_attribute :created_by, @user
+          content_category: FactoryGirl.create(:content_category, name: 'news'),
+          created_by: @user
+        @not_news = FactoryGirl.create :content, created_by: @user
       end
 
       it 'should index authors for news content' do
@@ -1624,9 +1623,9 @@ describe Content, :type => :model do
 
     context "when title is only listserv name" do
       it "returns 'Post by...' title" do
-        content = FactoryGirl.create :content, title: "[Hoth]"
         user = FactoryGirl.create :user, name: 'Han Solo'
-        content.update_attribute :created_by, user
+        content = FactoryGirl.create :content, title: "[Hoth]",
+          created_by: user
         expect(content.sanitized_title).to include "Han Solo"
       end
     end

@@ -278,8 +278,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
   describe 'PUT update' do
     before do
       @user = FactoryGirl.create :user
-      @market_post = FactoryGirl.create :market_post
-      @market_post.content.update_attribute :created_by, @user
+      @market_post = FactoryGirl.create :market_post, created_by: @user
       @attrs_for_update = { 
         title: 'This is a changed title',
         price: 'New low price',

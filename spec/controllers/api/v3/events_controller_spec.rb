@@ -74,9 +74,8 @@ describe Api::V3::EventsController, :type => :controller do
 
   describe 'PUT update' do
     before do
-      @event = FactoryGirl.create :event
+      @event = FactoryGirl.create :event, created_by: @current_user
       @schedule = FactoryGirl.create :schedule, event: @event
-      @event.content.update_attribute :created_by, @current_user
       @attrs_for_update = @event.attributes.select do |k,v|
         ![:links, :sponsor, :sponsor_url, :featured, :id, 
          :created_at, :updated_at].include? k.to_sym

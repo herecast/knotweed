@@ -6,8 +6,7 @@ describe 'Contents Endpoints', type: :request do
 
   describe 'GET /api/v3/contents/:id/metrics' do
     before do
-      @content = FactoryGirl.create :content
-      @content.update_attribute(:created_by, user)
+      @content = FactoryGirl.create :content, created_by: user
     end
 
     it 'returns daily view counts' do
