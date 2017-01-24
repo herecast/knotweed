@@ -15,7 +15,7 @@ module Api
         if params[:status] == "inactive"
           @promotion_banners = @promotion_banners
             .where("campaign_end < ? or campaign_start > ?", Time.current, Time.current)
-        else
+        elsif params[:status] == "active"
           @promotion_banners = @promotion_banners.active
         end
 
