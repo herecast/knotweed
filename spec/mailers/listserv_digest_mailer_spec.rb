@@ -167,7 +167,7 @@ RSpec.describe ListservDigestMailer do
 
         it 'includes contents author names' do
           contents.each do |content|
-            expect(subject).to include content.author_name
+            expect(subject).to include CGI.escapeHTML(content.author_name)
           end
         end
 
