@@ -120,4 +120,26 @@ describe Location, :type => :model do
     end
 
   end
+
+  describe '#closest', elasticsearch: true do
+    let(:location) { FactoryGirl.create :location, consumer_active: true }
+    let!(:other_locations) { FactoryGirl.create_list :location, 3, consumer_active: true }
+
+    it 'should not include the location itself' do
+      expect(location.closest).to_not include location
+    end
+
+    it 'should return the specified number of results' do
+      expect(location.closest(2).count).to eq 2
+    end
+
+    it 'should order results by distance' do
+      # note, since `location` hasn't been called yet, this doesn't contain that record
+      # so we don't have to worry about filtering it out
+      locations_by_distance = Location.all.sort_by do |loc|
+        Geocoder::Calculations.distance_between([loc.lat,loc.long], [location.lat, location.long])
+      end
+      expect(locations_by_distance).to eq location.closest
+    end
+  end
 end

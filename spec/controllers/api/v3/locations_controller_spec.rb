@@ -32,6 +32,33 @@ describe Api::V3::LocationsController, :type => :controller do
         expect(assigns(:locations).select { |l| l.name.match 'Upper Valley' }.size).to eq(0)
       end
     end
+  end
 
+  describe 'GET closest', elasticsearch: true do
+    let(:location) { FactoryGirl.create :location, consumer_active: true }
+    let(:inactive_location) { FactoryGirl.create :location, consumer_active: false, lat: location.lat,
+      long: location.long }
+    let(:count) { 5 }
+
+    before do
+      FactoryGirl.create_list :location, 6, consumer_active: true
+    end
+
+    subject { get :closest, id: location.id, count: count }
+
+    it 'has 200 status code' do
+      subject
+      expect(response.code).to eq '200'
+    end
+
+    it 'responds with only consumer_active locations' do
+      subject
+      expect(assigns(:locations)).to_not include(inactive_location)
+    end
+
+    it 'responds with the specified number of locations' do
+      subject
+      expect(assigns(:locations).count).to eq count
+    end
   end
 end

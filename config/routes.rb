@@ -133,6 +133,7 @@ Knotweed::Application.routes.draw do
       get '/venues', to: 'business_locations#index', as: :venues
       get '/venue_locations', to: 'business_locations#index', as: :venue_locations,
         defaults: { autocomplete: true, max_results: 5 }
+      get '/locations/:id/closest', to: 'locations#closest', as: :closest
       get '/locations', to: 'locations#index', as: :locations
       resources 'contents', only: [:index]
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content

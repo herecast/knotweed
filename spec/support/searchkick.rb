@@ -1,4 +1,4 @@
-INDEXED_MODELS = [Content, BusinessLocation, Organization, BusinessProfile, EventInstance]
+INDEXED_MODELS = [Content, BusinessLocation, Organization, BusinessProfile, EventInstance, Location]
 
 def build_indices
   INDEXED_MODELS.each do |model|
