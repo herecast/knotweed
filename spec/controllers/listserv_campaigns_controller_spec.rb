@@ -37,12 +37,12 @@ describe ListservCampaignsController do
     end
   end
 
-  describe 'PATCH update' do
+  describe 'PUT update' do
     let(:new_sponsor) { 'new sponsor' }
     let(:patch_attrs) { {sponsored_by: new_sponsor} }
     let(:campaign)    { FactoryGirl.create(:campaign) }
     let(:listserv)    { campaign.listserv }
-    subject           { patch :update, listserv_id: listserv, id: campaign, campaign: patch_attrs, format: :js }
+    subject           { put :update, listserv_id: listserv, id: campaign, campaign: patch_attrs, format: :js }
 
     it 'modifies the given record' do
       expect{subject}.to change{campaign.reload.sponsored_by}
@@ -56,7 +56,7 @@ describe ListservCampaignsController do
 
     context 'with invalid params' do
       let(:invalid_attrs) { patch_attrs.merge(community_ids: []) }
-      subject             { patch :update, listserv_id: listserv, id: campaign, campaign: invalid_attrs, format: :js }
+      subject             { put :update, listserv_id: listserv, id: campaign, campaign: invalid_attrs, format: :js }
 
       it 'leaves the given record intact' do
         expect{subject}.not_to change{campaign.reload.sponsored_by}
