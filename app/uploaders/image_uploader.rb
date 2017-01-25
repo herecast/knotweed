@@ -31,6 +31,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   end
 
   process :resize_to_limit => [800, 800]
+  process :store_dimensions_and_type
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url
@@ -73,5 +74,14 @@ class ImageUploader < CarrierWave::Uploader::Base
     var = :"@#{mounted_as}_secure_token"
     model.instance_variable_get(var) or model.instance_variable_set(var, SecureRandom.hex(length/2))
   end
+
+  private
+
+    def store_dimensions_and_type
+      if file && model && model.class == Image
+        model.width, model.height = ::MiniMagick::Image.open(file.file)[:dimensions]
+        model.file_extension = file.extension
+      end
+    end
 
 end

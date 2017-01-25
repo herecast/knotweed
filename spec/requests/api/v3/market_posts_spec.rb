@@ -47,7 +47,10 @@ describe 'Market Posts', type: :request do
             a_hash_matching({
               id: i.id,
               image_url: i.image_url,
-              primary: be(1).or(be(0))
+              primary: be(1).or(be(0)),
+              width: i.width,
+              height: i.height,
+              file_extension: i.file_extension
             })
           })
         }))

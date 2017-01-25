@@ -5,7 +5,7 @@ module Api
       attributes :id, :subtitle, :starts_at, :ends_at, :image_url,
         :venue_name, :venue_address, :venue_city, :venue_state, 
         :venue_zip, :presenter_name, :registration_deadline, :cost_type,
-        :created_at, :updated_at
+        :created_at, :updated_at, :image_width, :image_height, :image_file_extension
 
       SHARED_EVENT_ATTRIBUTES = [:title]
 
@@ -31,6 +31,24 @@ module Api
       def image_url
         if object.event.content.images.present?
           object.event.content.images[0].image.url
+        end
+      end
+
+      def image_width
+        if object.event.content.images.present?
+          object.event.content.images[0].width
+        end
+      end
+
+      def image_height
+        if object.event.content.images.present?
+          object.event.content.images[0].height
+        end
+      end
+
+      def image_file_extension
+        if object.event.content.images.present?
+          object.event.content.images[0].file_extension
         end
       end
 

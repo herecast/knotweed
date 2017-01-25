@@ -476,6 +476,9 @@ ActiveRecord::Schema.define(version: 20170120202328) do
     t.datetime "updated_at",                                 null: false
     t.string   "source_url",     limit: 400
     t.boolean  "primary",                    default: false
+    t.integer  "width"
+    t.integer  "height"
+    t.string   "file_extension"
   end
 
   add_index "images", ["imageable_type", "imageable_id"], name: "idx_16634_index_images_on_imageable_type_and_imageable_id", using: :btree
