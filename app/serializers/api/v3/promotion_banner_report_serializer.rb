@@ -6,7 +6,7 @@ module Api
       
       attributes :type, :promo_id, :banner_id, :campaign_start, :campaign_end,
         :served, :cost, :daily_cost, :daily_max, :clicks, :ctr, :client, :banner,
-        :daily_reports
+        :daily_reports, :paid
 
       def type; object.promotion_type; end
       def promo_id; object.promotion.id; end
@@ -21,6 +21,7 @@ module Api
       def ctr; "%.2f" % (object.click_count * 100.0 / object.impression_count); end
       def client; object.promotion.try(:organization).try(:name); end
       def banner; object.promotion.try(:content).try(:title); end
+      def paid; object.promotion.try(:paid); end
 
       def daily_reports
         # we need to have a date entry for every date in the range, so generating
