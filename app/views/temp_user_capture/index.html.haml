@@ -1,0 +1,15 @@
+%h1 Temp Users
+%table.table.table-striped.table-bordered.table-condensed
+  %thead
+    %tr
+      %th Name
+      %th Email
+      %th
+
+  %tbody
+    - @temp_users.each do |user|
+      %tr
+        %td= user.name
+        %td= user.email
+        %td
+          = link_to "Delete", "/temp_user/#{user.id}", method: :delete, class: 'btn btn-mini btn-danger', data: { confirm: "Remove this record?" }

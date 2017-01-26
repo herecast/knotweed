@@ -110,6 +110,8 @@ Knotweed::Application.routes.draw do
   post '/contents/category_correction_reviewed', to: 'contents#category_correction_reviwed'
   get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', :defaults => {:format => 'ics'}, as: :event_instances_ics
   get '/ics/events/:public_id', to: 'api/v3/users#events', :defaults => {:format => 'ics'}, as: :user_event_instances_ics
+  get '/temp_users', to: 'temp_user_capture#index'
+  delete '/temp_user/:id', to: 'temp_user_capture#destroy'
 
   get '/sidekiq_wrapper', to: 'sidekiq_wrapper#index'
 
@@ -179,6 +181,7 @@ Knotweed::Application.routes.draw do
       get '/features', to: 'features#index'
       get '/market_categories', to: 'market_categories#index'
       get '/market_categories/:id', to: 'market_categories#show'
+      post '/temp_user_captures', to: 'temp_user_captures#create'
     end
   end
 
