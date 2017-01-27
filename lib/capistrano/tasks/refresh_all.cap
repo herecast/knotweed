@@ -1,2 +1,0 @@
-desc 'Refresh both the database and dsp'
-multitask :refresh_all => [:refresh_database, :refresh_dsp]
