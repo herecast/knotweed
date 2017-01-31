@@ -139,6 +139,16 @@ class User < ActiveRecord::Base
     self.confirmed_at != nil
   end
 
+  # http://www.rubydoc.info/github/plataformatec/devise/master/Devise/Models/Authenticatable
+  # http://stackoverflow.com/questions/6004216/devise-how-do-i-forbid-certain-users-from-signing-in
+  def active_for_authentication?
+    super && !archived?
+  end
+
+  def inactive_message
+    archived? ? "The user account #{email} has been deactivated." : super
+  end
+
   private
 
     def generate_authentication_token

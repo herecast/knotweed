@@ -701,7 +701,7 @@ ActiveRecord::Schema.define(version: 20170120202328) do
     t.integer  "result_count"
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
-    t.string   "query_modifier",      default: 'AND'
+    t.string   "query_modifier",     default: "AND"
   end
 
   create_table "market_posts", id: :bigserial, force: :cascade do |t|
@@ -1023,6 +1023,7 @@ ActiveRecord::Schema.define(version: 20170120202328) do
     t.string   "public_id",              limit: 255
     t.boolean  "skip_analytics",                     default: false
     t.string   "temp_password"
+    t.boolean  "archived",                           default: false
   end
 
   add_index "users", ["email"], name: "idx_16858_index_users_on_email", unique: true, using: :btree

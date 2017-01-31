@@ -18,6 +18,7 @@ Knotweed::Application.routes.draw do
     member do
       put :update_subscription
     end
+    resources :archivings, only: [:new, :create], controller: 'users/archivings'
   end
   post '/users/admin-create', to: 'users#create'
   put '/users/:id/admin-update', to: 'users#update'

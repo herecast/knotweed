@@ -4,7 +4,7 @@ class UsersController < ApplicationController
     authorize! :index, @user, :message => 'Not authorized as an administrator.'
 
     if params[:reset]
-      session[:users_search] = nil
+      session[:users_search] = { archived_true: false }
     elsif params[:q].present?
       session[:users_search] = params[:q]
     end
@@ -85,7 +85,8 @@ class UsersController < ApplicationController
   private
 
     def user_params
-      new_params = params.require(:user).permit(:name, :email, :password, :location_id, roles: [:admin,:event_manager,:blogger])
+      new_params = params.require(:user).permit(:name, :email, :password,
+        :location_id, :archived, roles: [:admin,:event_manager,:blogger])
       if new_params[:roles].present?
         new_params[:role_ids] = []
         new_params[:roles].each do |k,v|
