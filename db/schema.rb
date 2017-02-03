@@ -16,6 +16,15 @@ ActiveRecord::Schema.define(version: 20170120202328) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "ad_metrics", force: :cascade do |t|
+    t.string   "campaign"
+    t.string   "event_type"
+    t.string   "page_url"
+    t.string   "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "annotation_reports", id: :bigserial, force: :cascade do |t|
     t.integer  "content_id",    limit: 8
     t.datetime "created_at",                null: false

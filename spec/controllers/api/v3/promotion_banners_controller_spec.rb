@@ -259,6 +259,23 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     end
   end
 
+  describe "POST #create_ad_metric" do
+    context "when params contain ad_metric" do
+      subject { post :create_ad_metric, { ad_metric: {
+        campaign: 'under-laser-cta',
+        event_type: 'click',
+        page_url: 'dailyuv.com/death-star-adverts',
+        content: 'Want to advertise with the Republic?'
+      } } }
+
+      it "creates ad_metric" do
+        expect{ subject }.to change{
+          AdMetric.count
+        }.by 1
+      end
+    end
+  end
+
   describe 'GET /promotion_banners/:id/metrics' do
     before do
       @banner = FactoryGirl.create :promotion_banner

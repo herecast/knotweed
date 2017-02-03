@@ -81,6 +81,15 @@ module Api
         end
       end
 
+      def create_ad_metric
+        ad_metric = AdMetric.new(ad_metric_params)
+        if ad_metric.save
+          render json: {}, status: :ok
+        else
+          render json: {}, status: :bad_request
+        end
+      end
+
       def metrics
         @promotion_banner = PromotionBanner.find(params[:id])
         # confirm user owns content first
@@ -131,6 +140,15 @@ module Api
             )
           end
         end
+      end
+
+      def ad_metric_params
+        params.require(:ad_metric).permit(
+          :campaign,
+          :event_type,
+          :page_url,
+          :content
+        )
       end
 
     end

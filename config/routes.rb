@@ -183,6 +183,7 @@ Knotweed::Application.routes.draw do
       get '/market_categories', to: 'market_categories#index'
       get '/market_categories/:id', to: 'market_categories#show'
       post '/temp_user_captures', to: 'temp_user_captures#create'
+      post '/ad_metrics', to: 'promotion_banners#create_ad_metric'
     end
   end
 
