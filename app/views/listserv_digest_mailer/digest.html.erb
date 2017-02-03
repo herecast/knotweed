@@ -75,7 +75,7 @@
             </td>
             <td> -- </td>
             <td>
-              <%= link_to 'Unsubscribe', url_for_consumer_app("/lists/#{@listserv.id}/unsubscribe") %>
+              <%= link_to (features['listserv-user-testing'] ? 'Unsubscribe from this test' : 'Unsubscribe'), url_for_consumer_app("/lists/#{@listserv.id}/unsubscribe") %>
             </td>
             <td> -- </td>
             <td>

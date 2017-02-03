@@ -266,8 +266,16 @@
                                                                                                                         <div class="txtTinyMce-wrapper" style="font-size: 12px; line-height: 14px;">
                                                                                                                             <div class="txtTinyMce-wrapper" style="font-size: 12px; line-height: 14px;">
                                                                                                                                 <div class="txtTinyMce-wrapper" style="font-size: 12px; line-height: 14px;">
+                                                                                                                                  <% unless features['listserv-user-testing'] %>
                                                                                                                                     <p style="margin: 0;font-size: 14px;line-height: 16px;text-align: center">
-                                                                                                                                    <span style="font-size: 14px; line-height: 16px; color: rgb(153, 153, 153);">Curious why things changed? <a style="color:#69C2F8;text-decoration: underline" title="Learn more about dailyUV" href="<%= ENV['LISTSERV_MARKETING_URL'] %>" target="_blank">Learn more </a></span><br></p>
+                                                                                                                                      <span style="font-size: 14px; line-height: 16px; color: rgb(153, 153, 153);">
+                                                                                                                                        Curious why things changed?
+                                                                                                                                        <a style="color:#69C2F8;text-decoration: underline" title="Learn more about dailyUV" href="<%= ENV['LISTSERV_MARKETING_URL'] %>" target="_blank">
+                                                                                                                                          Learn more
+                                                                                                                                        </a>
+                                                                                                                                      </span>
+                                                                                                                                    </p>
+                                                                                                                                  <% end %>
                                                                                                                                     <p style="margin: 0;font-size: 14px;line-height: 16px;text-align: center"><br data-mce-bogus="1"></p>
                                                                                                                                     <p style="margin: 0;font-size: 14px;line-height: 16px;text-align: center">
                                                                                                                                     </p>

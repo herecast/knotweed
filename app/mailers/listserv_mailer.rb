@@ -3,6 +3,7 @@ class ListservMailer < ActionMailer::Base
   layout 'listserv_mailer'
 
   add_template_helper ContentsHelper
+  add_template_helper FeaturesHelper
 
   def subscription_verification(sub)
     @subscription = sub

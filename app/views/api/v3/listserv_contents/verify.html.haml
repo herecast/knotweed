@@ -17,7 +17,8 @@
       - if @error == ListservExceptions::AlreadyVerified
         %p You have already verified this post. Thank you!
       - else
-        %p Your post will appear in tomorrow's #{@listserv_content.listserv.try(:name)} digest, but not on dailyUV.
+        %p
+          Your post will appear in tomorrow's #{@listserv_content.listserv.try(:name)} digest, but not on dailyUV#{" TEST website" if features['listserv-user-testing']}.
 
       %p
         %a{href: "http://listserv.dailyuv.net"} Learn more

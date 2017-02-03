@@ -192,6 +192,23 @@ RSpec.describe "listserv contents endpoints", type: :request do
             listserv_content.reload.verified_at
           }.to(instance_of(ActiveSupport::TimeWithZone))
         end
+
+        context 'when active feature flag: listserv-user-testing' do
+          before do
+            FactoryGirl.create :feature, active: true, name: 'listserv-user-testing'
+          end
+
+          it 'displays "TEST" in the title' do
+            subject
+            expect(response.body).to include("Daily UV TEST")
+          end
+
+          it 'says "not on dailyUV TEST website"' do
+            subject
+            expect(response.body).to include("not on dailyUV TEST website")
+          end
+        end
+
       end
 
       context 'already verified' do
