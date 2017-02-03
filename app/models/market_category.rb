@@ -35,6 +35,29 @@ class MarketCategory < ActiveRecord::Base
     opts
   end
 
+  def self.query_modifier_options
+    ['AND', 'OR', 'Match Phrase']
+  end
+
+  def formatted_modifier_options
+    case query_modifier
+    when "OR"
+      { operator: "or" }
+    when "Match Phrase"
+      { match: :phrase }
+    else
+      {}
+    end
+  end
+
+  def formatted_query
+    if query_modifier == "Match Phrase"
+      query
+    else
+      query.split(/[,\s]+/).join(" ")
+    end
+  end
+
   private
 
   def not_featured_and_trending

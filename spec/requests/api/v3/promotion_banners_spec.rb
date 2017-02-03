@@ -6,8 +6,7 @@ describe 'Promotion Banner Endpoints', type: :request do
 
   describe 'GET /api/v3/promotion_banners/:id/metrics' do
     before do
-      @promotion = FactoryGirl.create :promotion
-      @promotion.update_attribute(:created_by, user)
+      @promotion = FactoryGirl.create :promotion, created_by: user
     end
     let(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: @promotion }
 

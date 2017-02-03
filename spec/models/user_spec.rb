@@ -245,4 +245,32 @@ describe User, :type => :model do
 
   end
 
+  describe '#active_for_authentication?' do
+    subject { user.active_for_authentication? }
+
+    context 'for a normal user' do
+      let(:user) { FactoryGirl.create :user, archived: false }
+
+      it 'should return true' do
+        expect(subject).to be true
+      end
+    end
+
+    context 'for an archived user' do
+      let(:user) { FactoryGirl.create :user, archived: true }
+      it 'should return false' do
+        expect(subject).to be false
+      end
+    end
+  end
+
+  describe '#inactive_message' do
+    subject { user.inactive_message }
+    let(:user1) { FactoryGirl.create :user, archived: false }
+    let(:user2) { FactoryGirl.create :user, archived: true }
+
+    it 'should be different if the user is archived' do
+      expect(user1.inactive_message).to_not eq user2.inactive_message
+    end
+  end
 end

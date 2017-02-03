@@ -74,11 +74,10 @@ describe Api::V3::EventsController, :type => :controller do
 
   describe 'PUT update' do
     before do
-      @event = FactoryGirl.create :event
+      @event = FactoryGirl.create :event, created_by: @current_user
       @schedule = FactoryGirl.create :schedule, event: @event
-      @event.content.update_attribute :created_by, @current_user
       @attrs_for_update = @event.attributes.select do |k,v|
-        ![:links, :sponsor, :sponsor_url, :featured, :id, 
+        ![:links, :sponsor, :sponsor_url, :featured, :id,
          :created_at, :updated_at].include? k.to_sym
       end
       @attrs_for_update[:title] = 'Changed the title!'
@@ -96,8 +95,8 @@ describe Api::V3::EventsController, :type => :controller do
     subject { put :update, event: @attrs_for_update, id: @event.id }
 
     context 'should not allow update if current_api_user does not match created_by' do
-      before do  
-        api_authenticate user: @different_user 
+      before do
+        api_authenticate user: @different_user
       end
       it do
       	put :update, event: @attrs_for_update, id: @event.id
@@ -120,7 +119,7 @@ describe Api::V3::EventsController, :type => :controller do
         expect(response.code).to eq '422'
       end
     end
-      
+
     context 'with consumer_app / repository' do
       before do
         @repo = FactoryGirl.create :repository
@@ -173,7 +172,7 @@ describe Api::V3::EventsController, :type => :controller do
       expect(@event.event_instances.first.presenter_name)
         .to eq(@attrs_for_update[:schedules][0][:presenter_name])
     end
-      
+
   end
 
   describe 'PUT by admin' do
@@ -184,9 +183,9 @@ describe Api::V3::EventsController, :type => :controller do
       @to_change = {title: Faker::Book.title, schedules: {}}
       api_authenticate user: @admin
     end
-    
+
     subject { put :update, event: @to_change, id: @event.id }
-    
+
     it 'should update changed fields' do
       subject
       expect(assigns(:event).content.title).to eq @to_change[:title]
@@ -212,6 +211,15 @@ describe Api::V3::EventsController, :type => :controller do
       	post :create, format: :json, event: @event_attrs
       	expect(response.code).to eq('401')
       	expect(Event.count).to eq(0)
+      end
+    end
+
+    context "when user does not flag wants_to_advertise" do
+      it "does not send an email to admin" do
+        mail = double()
+        expect(mail).not_to receive(:deliver_later)
+        expect(AdMailer).not_to receive(:event_adveritising_request)
+        subject
       end
     end
 
@@ -253,11 +261,12 @@ describe Api::V3::EventsController, :type => :controller do
       ext_reach_attrs = @event_attrs.dup
       ext_reach_attrs[:extended_reach_enabled] = true
       # ensure that the region location actually exists...
-      FactoryGirl.create :location, id: Location::REGION_LOCATION_ID
+      location = FactoryGirl.create :location
+      stub_const("Location::REGION_LOCATION_ID", location.id)
       post :create, format: :json, event: ext_reach_attrs, current_user_id: @current_user.id
       expect(assigns(:event).content.location_ids.count).to eq(2)
       expect(assigns(:event).content.location_ids.include?(@current_user.location_id)).to be_truthy
-      expect(assigns(:event).content.location_ids.include?(Location::REGION_LOCATION_ID)).to be_truthy
+      expect(assigns(:event).content.location_ids.include?(location.id)).to be_truthy
     end
 
     it 'creates a venue with venue attributes given (instead of venue_id)' do
@@ -294,6 +303,17 @@ describe Api::V3::EventsController, :type => :controller do
 
       it "created event" do
         expect{ subject }.to change{ Event.count }.by(1)
+      end
+    end
+
+    context "when wants_to_advertise is flagged" do
+      subject { post :create, format: :json, event: @event_attrs.merge(wants_to_advertise: true), current_user_id: @current_user.id }
+
+      it "sends email to admin" do
+        mail = double()
+        expect(mail).to receive(:deliver_later)
+        expect(AdMailer).to receive(:event_adveritising_request).with(@current_user, instance_of(Event)).and_return(mail)
+        subject
       end
     end
   end

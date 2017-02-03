@@ -15,9 +15,11 @@
 #  daily_max_impressions  :integer
 #  boost                  :boolean          default(FALSE)
 #  daily_impression_count :integer          default(0)
-#  track_daily_metrics    :boolean
 #  load_count             :integer          default(0)
 #  integer                :integer          default(0)
+#  promotion_type         :string
+#  cost_per_impression    :float
+#  cost_per_day           :float
 #
 
 require 'spec_helper'
@@ -32,6 +34,18 @@ describe PromotionBanner, :type => :model do
 
       it "is invalid" do
         expect(promotion_banner.valid?).to be false
+      end
+    end
+
+    context "when both cost_per_impression and cost_per_day are present" do
+      before do
+        @promotion_banner = FactoryGirl.build :promotion_banner,
+          cost_per_day: 6.45,
+          cost_per_impression: 0.12
+      end
+
+      it "is not valid" do
+        expect(@promotion_banner).not_to be_valid
       end
     end
   end
@@ -59,7 +73,7 @@ describe PromotionBanner, :type => :model do
 
     context 'a banner with no inventory' do
       let(:banner) { FactoryGirl.create :promotion_banner,
-        daily_max_impressions: 5, daily_impression_count: 5,
+        daily_max_impressions: 5, daily_impression_count: one_more_than_actual_allowance(5),
         max_impressions: nil }
 
       it 'should not be returned' do
@@ -92,7 +106,7 @@ describe PromotionBanner, :type => :model do
 
     context 'a promotion banner over daily_max_impressions' do
       let(:promotion_banner) { FactoryGirl.create :promotion_banner,
-        daily_max_impressions: 5, daily_impression_count: 5 }
+        daily_max_impressions: 5, daily_impression_count: one_more_than_actual_allowance(5) }
 
       it 'should not be included' do
         expect(subject).to_not include(promotion_banner)
@@ -111,7 +125,7 @@ describe PromotionBanner, :type => :model do
     context 'a promotion banner over daily_max_impressions but not over max_impressions' do
       let(:promotion_banner) { FactoryGirl.create :promotion_banner,
         daily_max_impressions: 5, max_impressions: 6,
-        daily_impression_count: 5, impression_count: 5 } 
+        daily_impression_count: one_more_than_actual_allowance(5), impression_count: 5 } 
 
       it 'should not be included' do
         expect(subject).to_not include(promotion_banner)
@@ -241,6 +255,10 @@ describe PromotionBanner, :type => :model do
         expect(response.length).to eq 1
       end
     end
+  end
+
+  def one_more_than_actual_allowance(daily_max)
+    (daily_max + (daily_max * PromotionBanner::OVER_DELIVERY_PERCENTAGE)).ceil
   end
 
 end

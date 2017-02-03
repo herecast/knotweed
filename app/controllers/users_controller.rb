@@ -4,7 +4,7 @@ class UsersController < ApplicationController
     authorize! :index, @user, :message => 'Not authorized as an administrator.'
 
     if params[:reset]
-      session[:users_search] = nil
+      session[:users_search] = { archived_true: false }
     elsif params[:q].present?
       session[:users_search] = params[:q]
     end
@@ -18,7 +18,7 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find_by id: params[:id]
+    @user = User.find(params[:id])
     @organizations = Organization.with_role(:manager, @user)
     @digests = Listserv.all
   end
@@ -26,7 +26,6 @@ class UsersController < ApplicationController
   def update
     @user = User.find(params[:id])
     authorize! :update, @user, :message => 'Not authorized as an administrator.'
-    @user.roles.clear
     @user.skip_reconfirmation!
     params[:user].delete(:password) if params[:user][:password].blank?
     if @user.update_attributes(user_params)
@@ -34,7 +33,9 @@ class UsersController < ApplicationController
       process_user_organizations
       redirect_to @user, :notice => "User updated."
     else
-      redirect_to @user, :alert => "Unable to update user."
+      @digests = Listserv.all
+      @organizations = Organization.with_role(:manager, @user)
+      render action: 'edit', :alert => "Unable to update user."
     end
   end
 
@@ -84,13 +85,25 @@ class UsersController < ApplicationController
   private
 
     def user_params
-      params.require(:user).permit(:name, :email, :password, :location_id)
+      new_params = params.require(:user).permit(:name, :email, :password,
+        :location_id, :archived, roles: [:admin,:event_manager,:blogger])
+      if new_params[:roles].present?
+        new_params[:role_ids] = []
+        new_params[:roles].each do |k,v|
+          new_params[:role_ids] << Role.get(k.to_s).id if v == 'on'
+        end
+        new_params.delete :roles
+      end
+      new_params
     end
 
     def process_user_roles
-      ['admin', 'event_manager', 'blogger'].each do |role|
-        if params[:user][role].present? and params[:user][role] == 'on'
-          @user.roles << Role.find_by(name: role)
+      if params[:user].has_key? :roles
+        @user.roles.clear
+        ['admin', 'event_manager', 'blogger'].each do |role|
+          if params[:user][:roles][role].present? and params[:user][:roles][role] == 'on'
+            @user.roles << Role.find_by(name: role)
+          end
         end
       end
     end

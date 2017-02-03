@@ -78,7 +78,10 @@ module Api
           {
             id: img.id,
             image_url: img.image.url,
-            primary: img.primary ? 1 : 0
+            primary: img.primary ? 1 : 0,
+            width: img.width,
+            height: img.height,
+            file_extension: img.file_extension
           }
         end
       end

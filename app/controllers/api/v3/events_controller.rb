@@ -99,6 +99,8 @@ module Api
         @event.content.organization_id = org_id
         @event.content.images = [Image.create(image: image_data)] if image_data.present?
         if @event.save_with_schedules(schedules)
+          contact_ad_team if params[:event][:wants_to_advertise]
+
           # reverse publish to specified listservs
           if listserv_ids.present?
             # reverse publish to specified listservs
@@ -180,6 +182,10 @@ module Api
         new_e[:event_category] = e[:category].to_s.downcase.gsub(' ','_') if e.has_key? :category
         new_e[:event_category] = nil unless Event::EVENT_CATEGORIES.include? new_e[:event_category]
         new_e
+      end
+
+      def contact_ad_team
+        AdMailer.event_adveritising_request(@current_api_user, @event).deliver_later
       end
 
     end

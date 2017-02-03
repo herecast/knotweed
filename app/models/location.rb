@@ -42,6 +42,23 @@ class Location < ActiveRecord::Base
   scope :non_region, -> {
     where(is_region: false)
   }
+  
+  searchkick callbacks: :async, index_prefix: Figaro.env.stack_name,
+    batch_size: 100, locations: ["location"]
+
+  def search_data
+    {
+      id: id,
+      location: { lat: lat, lon: long },
+      city: city,
+      state: state,
+      zip: zip
+    }
+  end
+
+  def should_index?
+    consumer_active?
+  end
 
   def name
     "#{try(:city)} #{try(:state)}"
@@ -85,5 +102,23 @@ class Location < ActiveRecord::Base
   #each location will only have one listserv
   def listserv
     self.listservs.first
+  end
+
+  # queries ElasticSearch index and returns the closest num locations
+  def closest(num=8)
+    opts =  {
+      order: {
+          _geo_distance: {
+            'location' => "#{lat},#{long}",
+            'order' => 'asc',
+            'unit' => 'mi'
+        }
+      },
+      limit: num,
+      where: {
+          id: { not: self.id }
+      }
+    }
+    Location.search('*', opts).results
   end
 end

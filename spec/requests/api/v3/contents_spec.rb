@@ -6,8 +6,7 @@ describe 'Contents Endpoints', type: :request do
 
   describe 'GET /api/v3/contents/:id/metrics' do
     before do
-      @content = FactoryGirl.create :content
-      @content.update_attribute(:created_by, user)
+      @content = FactoryGirl.create :content, created_by: user
     end
 
     it 'returns daily view counts' do
@@ -99,6 +98,7 @@ describe 'Contents Endpoints', type: :request do
 
   describe 'GET /api/v3/dashboard' do
     let(:news_cat) { ContentCategory.find_or_create_by name: 'news' }
+    let(:market_cat) { ContentCategory.find_or_create_by name: 'market' }
     context 'user has deleted content' do
       let!(:deleted_news) { FactoryGirl.create :content,
                            content_category: news_cat,
@@ -111,6 +111,23 @@ describe 'Contents Endpoints', type: :request do
         ids = response_json[:contents].map{|i| i['id']}
 
         expect(ids).to_not include(deleted_news.id)
+      end
+    end
+
+    context 'user is selling items in the market' do
+      let!(:post_content) { FactoryGirl.create :content, published: true, content_category: market_cat }
+      let!(:market_post) { FactoryGirl.create :market_post, content: post_content, sold: true }
+
+    before do
+      market_post.created_by = user
+      market_post.save!
+    end
+      
+      it 'displays their current items in the market' do
+        get '/api/v3/dashboard', { channel_type: 'market' }, auth_headers
+        post = response_json[:contents].first
+        expect(post[:title]).to eq(post_content.title)
+        expect(post[:sold]).to eq true
       end
     end
   end

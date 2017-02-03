@@ -40,6 +40,13 @@ RSpec.describe VerifyAndUpdateListservContent do
       }.to instance_of(ActiveSupport::TimeWithZone)
     end
 
+    it 'updates listserv content metric to verified' do
+      listserv_content_metric = FactoryGirl.create :listserv_content_metric, listserv_content_id: listserv_content.id
+        expect{ subject }.to change{
+          listserv_content_metric.reload.verified
+        }.to true
+    end
+
     context 'validation errors' do
       before do
         allow(listserv_content).to receive(:valid?).and_return(false)
@@ -53,14 +60,24 @@ RSpec.describe VerifyAndUpdateListservContent do
     context 'When content_id included in attributes update' do
       before do
         @user = FactoryGirl.create :user
-        @content = FactoryGirl.create :content
-        @content.update_attribute(:created_by, @user)
+        @content = FactoryGirl.create :content, created_by: @user
         attributes[:content_id] = @content.id
       end
 
       it 'updates content reference' do
         subject
         expect(listserv_content.reload.content).to eql @content
+      end
+
+      it 'updates listserv content metric' do
+        listserv_content_metric = FactoryGirl.create :listserv_content_metric, listserv_content_id: listserv_content.id
+        attributes[:channel_type] = 'Event'
+        subject
+        listserv_content_metric.reload
+        expect(listserv_content_metric.verified).to be true
+        expect(listserv_content_metric.enhanced).to be true
+        expect(listserv_content_metric.username).to eq listserv_content.content.created_by.name
+        expect(listserv_content_metric.post_type).to eq 'Event'
       end
 
       context 'when no existing user reference' do

@@ -12,10 +12,9 @@ describe Api::V3::CommentsController, :type => :controller do
     describe 'given content_id' do
       before do
         user = FactoryGirl.create :user
-        @content = FactoryGirl.create :content
+        @content = FactoryGirl.create :content, created_by: user
         @comment = FactoryGirl.create :comment 
         @comment.content.update_attribute :parent_id, @content.id 
-        @comment.content.update_attribute :created_by, user
       end
 
       subject { get :index, format: :json, content_id: @content.id }
@@ -31,16 +30,16 @@ describe Api::V3::CommentsController, :type => :controller do
         @event = FactoryGirl.create :event
         @comment1 = FactoryGirl.create :comment
         @comment1.content.update_attributes(parent_id: @event.content.id,
-                                            pubdate: 2.hours.ago)
-        @comment1.content.update_attribute :created_by, FactoryGirl.create(:user)
+                                            pubdate: 2.hours.ago,
+                                            created_by: FactoryGirl.create(:user))
         @comment2 = FactoryGirl.create :comment
         @comment2.content.update_attributes(parent_id: @comment1.content.id,
-                                            pubdate: 1.hour.ago)
-        @comment2.content.update_attribute :created_by, FactoryGirl.create(:user)
+                                            pubdate: 1.hour.ago,
+                                            created_by: FactoryGirl.create(:user))
         @comment3 = FactoryGirl.create :comment
         @comment3.content.update_attributes(parent_id: @comment1.content.id,
-                                            pubdate: Time.current)
-        @comment3.content.update_attribute :created_by, FactoryGirl.create(:user)
+                                            pubdate: Time.current,
+                                            created_by: FactoryGirl.create(:user))
       end
     
       subject! { get :index, format: :json, content_id: @event.content.id }
@@ -58,14 +57,14 @@ describe Api::V3::CommentsController, :type => :controller do
       before do
         @event = FactoryGirl.create :event
         @comment1 = FactoryGirl.create :comment, pubdate: Time.parse('2014-01-01')  
-        @comment1.content.update_attribute :created_by, FactoryGirl.create(:user)
-        @comment1.content.update_attribute :parent, @event.content
+        @comment1.content.update created_by: FactoryGirl.create(:user),
+          parent: @event.content
         @comment2 = FactoryGirl.create :comment, pubdate: Time.parse('2014-02-01')
-        @comment2.content.update_attribute :created_by, FactoryGirl.create(:user)
-        @comment2.content.update_attribute :parent, @comment1.content
+        @comment2.content.update created_by: FactoryGirl.create(:user),
+          parent: @comment1.content
         @comment3 = FactoryGirl.create :comment, pubdate: Time.parse('2014-03-01')
-        @comment3.content.update_attribute :parent, @comment2.content
-        @comment3.content.update_attribute :created_by, FactoryGirl.create(:user)
+        @comment3.content.update parent: @comment2.content,
+          created_by: FactoryGirl.create(:user)
       end
 
       subject! { get :index, format: :json, content_id: @event.content.id }
@@ -82,8 +81,7 @@ describe Api::V3::CommentsController, :type => :controller do
         user = FactoryGirl.create :user, remote_avatar_url:  "https://www.google.com/images/srpr/logo11w.png"
         @content = FactoryGirl.create :content
         @comment = FactoryGirl.create :comment 
-        @comment.content.update_attribute :parent_id, @content.id 
-        @comment.content.update_attribute :created_by, user
+        @comment.content.update parent_id: @content.id, created_by: user
       end
 
       subject! { get :index, format: :json, content_id: @content.id }

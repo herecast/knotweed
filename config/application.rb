@@ -94,5 +94,7 @@ module Knotweed
       end
     end
     config.cache_store = :redis_store
+
+    config.subtext = Hashie::Mash.new(config_for(:subtext))
   end
 end

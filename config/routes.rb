@@ -18,12 +18,12 @@ Knotweed::Application.routes.draw do
     member do
       put :update_subscription
     end
+    resources :archivings, only: [:new, :create], controller: 'users/archivings'
   end
   post '/users/admin-create', to: 'users#create'
   put '/users/:id/admin-update', to: 'users#update'
 
   get "/", to: "dashboard#index", as: :dashboard
-  get "/dashboard/mixpanel_charts", to: "dashboard#mixpanel_charts", as: :mixpanel_charts
   get "/dashboard/total_sign_ins", to: "dashboard#total_sign_ins", as: :total_sign_ins
   get "dashboard/article_clicks", to: "dashboard#article_clicks", as: :article_clicks
   get "dashboard/clicks_by_category", to: "dashboard#clicks_by_category", as: :clicks_by_category
@@ -113,6 +113,8 @@ Knotweed::Application.routes.draw do
   post '/contents/category_correction_reviewed', to: 'contents#category_correction_reviwed'
   get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', :defaults => {:format => 'ics'}, as: :event_instances_ics
   get '/ics/events/:public_id', to: 'api/v3/users#events', :defaults => {:format => 'ics'}, as: :user_event_instances_ics
+  get '/temp_users', to: 'temp_user_capture#index'
+  delete '/temp_user/:id', to: 'temp_user_capture#destroy'
 
   get '/sidekiq_wrapper', to: 'sidekiq_wrapper#index'
 
@@ -136,6 +138,7 @@ Knotweed::Application.routes.draw do
       get '/venues', to: 'business_locations#index', as: :venues
       get '/venue_locations', to: 'business_locations#index', as: :venue_locations,
         defaults: { autocomplete: true, max_results: 5 }
+      get '/locations/:id/closest', to: 'locations#closest', as: :closest
       get '/locations', to: 'locations#index', as: :locations
       resources 'contents', only: [:index]
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
@@ -173,6 +176,7 @@ Knotweed::Application.routes.draw do
 
       resources :listserv_contents, only: [:show,:update]
       get '/listserv_contents/:id/verify' => 'listserv_contents#verify', format: 'html'
+      patch '/listserv_contents/:id/update_metric', to: "listserv_contents#update_metric"
       put '/businesses/:id/feedback', to: 'business_feedbacks#update', as: :update_feedback
       resources :content_reports, only: :index
       resources :promotion_banner_reports, only: :index
@@ -181,6 +185,7 @@ Knotweed::Application.routes.draw do
       get '/features', to: 'features#index'
       get '/market_categories', to: 'market_categories#index'
       get '/market_categories/:id', to: 'market_categories#show'
+      post '/temp_user_captures', to: 'temp_user_captures#create'
     end
   end
 

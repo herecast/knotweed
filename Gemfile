@@ -7,11 +7,6 @@ gem 'aescrypt'
 gem 'american_date', '~> 1.1.0'
 gem 'bootstrap-sass', '~> 3.3.6'
 gem 'cancancan', '~> 1.13.1'
-gem "capistrano", "~> 3.5.0"
-gem "capistrano-bundler", "~> 1.1.1"
-gem 'capistrano-git-submodule-strategy', '~> 0.1.22'
-gem "capistrano-rails", "~> 1.1"
-gem "capistrano-rvm", '~> 0.1.1'
 gem "carmen-rails", '~> 1.0.0'
 gem "carrierwave", '~> 0.9.0'
 gem 'carrierwave-mimetype-fu', '~> 0.0.2'
@@ -45,11 +40,8 @@ gem 'kaminari', '~> 0.15.0'
 gem "legato", '~> 0.4.0'
 gem 'lograge', '~> 0.3.6'
 gem 'mail', '~> 2.5.4'
-gem 'mixpanel_client', '~> 4.1.1'
-gem 'mixpanel-ruby', '~> 1.4.0' # official ruby mixpanel client. later versions need ruby > 2.0
 gem 'paranoia', '~> 2.1.5'
 gem "pg", '~> 0.18.4'
-gem 'mysql2', '~> 0.3.18'
 gem 'mini_magick', '~> 4.5.1'
 gem 'net-http-persistent', '~> 2.9'
 gem 'newrelic_rpm', '~> 3.13.0.299'

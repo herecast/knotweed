@@ -1,0 +1,18 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        Archive User #{@user.email} (ID: #{@user.id})?
+    .box-content
+      = form_tag user_archivings_path(@user), method: :post do
+        .form-inputs
+          = label_tag :new_content_owner, "New Content Owner's Email"
+          = email_field nil, :new_content_owner, placeholder: 'HanSolo@tattooi.ne'
+          .hint
+            Do you want to reassign this user's content to another user? If not, leave this field
+            blank.
+        .form-actions
+          = submit_tag "Archive User", class: 'btn-primary btn'
+          = link_to "Cancel", 'javascript:history.back()', class: "btn"
+
+      

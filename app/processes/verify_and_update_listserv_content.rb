@@ -25,7 +25,12 @@ class VerifyAndUpdateListservContent
     ensure_subscription_to_listserv
     ensure_subscription_not_blacklisted
 
-    return @model.save
+    if @model.save
+      RecordListservMetric.call('complete_metric', @model, @attributes)
+      return true
+    else
+      return false
+    end
   end
 
   private

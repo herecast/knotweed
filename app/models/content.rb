@@ -1223,7 +1223,9 @@ class Content < ActiveRecord::Base
   def increment_view_count!
     # check if content is published before incrementing
     if self.published
-      increment_integer_attr!(:view_count)
+      unless User.current.try(:skip_analytics) && root_content_category.name == "news"
+        increment_integer_attr!(:view_count)
+      end
     end
   end
 

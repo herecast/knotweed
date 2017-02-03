@@ -8,20 +8,21 @@
       = f.input :name
       = f.input :email
       = f.input :password
+      = f.input :archived, label: 'Archived?', hint: 'Note: archived users cannot log in.'
     .span5
       .row-fluid
         %h4 Location
-        = f.input :location_id, collection: Location.where(consumer_active: true), label: false
+        = f.input :location, collection: Location.where(consumer_active: true), label: false
         %h4 Roles
         .row-fluid
-          %input{ type: :checkbox, id: 'user_admin', name: "user[admin]", class: 'checkbox-control', checked: @user.roles.include?(Role.find(1)) }
-          %label{ for: 'user_admin', class: 'checkbox-label-control' } Admin
+          %input{ type: :checkbox, id: 'user_roles_admin', name: "user[roles][admin]", class: 'checkbox-control', checked: @user.roles.include?(Role.get('admin')) }
+          %label{ for: 'user_roles_admin', class: 'checkbox-label-control' } Admin
         .row-fluid
-          %input{ type: :checkbox, id: 'user_event_manager', name: "user[event_manager]", class: 'checkbox-control', checked: @user.roles.include?(Role.find(2)) }
-          %label{ for: 'user_event_manager', class: 'checkbox-label-control' } Event Manager
+          %input{ type: :checkbox, id: 'user_roles_event_manager', name: "user[roles][event_manager]", class: 'checkbox-control', checked: @user.roles.include?(Role.get('event_manager')) }
+          %label{ for: 'user_roles_event_manager', class: 'checkbox-label-control' } Event Manager
         .row-fluid
-          %input{ type: :checkbox, id: 'user_blogger', name: "user[blogger]", class: 'checkbox-control', checked: @user.roles.include?(Role.find(3)) }
-          %label{ for: 'user_blogger', class: 'checkbox-label-control' } Blogger
+          %input{ type: :checkbox, id: 'user_roles_blogger', name: "user[roles][blogger]", class: 'checkbox-control', checked: @user.roles.include?(Role.get('blogger')) }
+          %label{ for: 'user_roles_blogger', class: 'checkbox-label-control' } Blogger
       %h4 Managed Organizations
       #organization-selectors.row-fluid
         - if @organizations.present?

@@ -158,10 +158,10 @@ describe UsersController, :type => :controller do
 
       subject { put :update, id: @user.id, user: { name: 'bill' } }
 
-      it "redirects to user" do
+      it "renders edit" do
         allow_any_instance_of(User).to receive(:update_attributes).and_return false
         subject
-        expect(response.code).to eq '302'
+        expect(response).to render_template('users/edit')
       end
     end
 

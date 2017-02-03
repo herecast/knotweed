@@ -1,5 +1,5 @@
 class ListservMailer < ActionMailer::Base
-  default from: 'uppervalley-request@dailyuv.com'
+  default from: Rails.configuration.subtext.emails.listserv
   layout 'listserv_mailer'
 
   add_template_helper ContentsHelper

@@ -1,7 +1,7 @@
 module Api
   module V3
     class ListservContentsController < ApiController
-      before_action :find_record, only: [:show, :update, :verify]
+      before_action :find_record, only: [:show, :update, :verify, :update_metric]
 
       def show
         render json: @listserv_content, serializer: ListservContentSerializer
@@ -33,6 +33,13 @@ module Api
         end
 
         render 'verify', layout: 'minimal'
+      end
+
+      def update_metric
+        RecordListservMetric.call('update_metric', @listserv_content,
+          params.slice(:enhance_link_clicked, :post_type, :step_reached)
+        )
+        render json: {}, status: :ok
       end
 
       protected

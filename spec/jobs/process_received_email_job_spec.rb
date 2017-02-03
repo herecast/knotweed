@@ -96,7 +96,7 @@ RSpec.describe ProcessReceivedEmailJob, type: :job do
       let!(:listserv) { FactoryGirl.create :subtext_listserv, post_email: email.to }
 
       it 'triggers process: PostToListserv' do
-        expect(PostToListserv).to receive(:call).with(listserv, email).and_return nil
+        expect(PostToListserv).to receive(:call).with(listserv, email).and_return FactoryGirl.create :listserv_content
         subject
       end
 
@@ -116,6 +116,12 @@ RSpec.describe ProcessReceivedEmailJob, type: :job do
           expect{ subject }.to change{
             email.reload.result
           }.to "Posted to Listserv"
+        end
+
+        it 'creates ListservContentMetric' do
+          expect{ subject }.to change{
+            ListservContentMetric.count
+          }.by 1
         end
       end
 

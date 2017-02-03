@@ -27,11 +27,13 @@ describe Api::V3::PromotionBannerReportsController, type: :controller do
       "campaign_end" => @pb.campaign_end.strftime("%D"),
       "served" => @pb.impression_count,
       "cost" => @pb.cost_per_impression,
+      "daily_cost" => @pb.cost_per_day,
       "daily_max" => @pb.daily_max_impressions,
       "clicks" => @pb.click_count,
       "ctr" => "%.2f" % (@pb.click_count * 100.0 / @pb.impression_count),
       "client" => @org.name,
       "banner" => @pb.promotion.content.title,
+      "paid" => @pb.promotion.paid,
       "daily_reports" => {
         Date.today.strftime("%D") => 0,
         1.day.ago.strftime("%D") => @pbr.impression_count,

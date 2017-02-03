@@ -1,5 +1,5 @@
 class JobMailer < ActionMailer::Base
-  default from: "jobs@subtext.org"
+  default from: Rails.configuration.subtext.emails.batch_jobs
 
   def error_email(record, error)
     @job = record.job

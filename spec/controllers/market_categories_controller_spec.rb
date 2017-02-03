@@ -12,7 +12,8 @@ RSpec.describe MarketCategoriesController, type: :controller do
     query: 'Sample Query',
     category_image: 'path/to/image',
     detail_page_banner: 'path/to/bigger_image',
-    featured: false
+    featured: false,
+    query_modifier: 'AND'
   }}
       
   let(:invalid_attributes)  {{
@@ -38,7 +39,7 @@ RSpec.describe MarketCategoriesController, type: :controller do
   end
 
   describe "GET #edit", elasticsearch: true do
-    let!(:persisted_market_category) { FactoryGirl.create :market_category, query: 'winter tires' }
+    let!(:persisted_market_category) { FactoryGirl.create :market_category, query: 'winter tires', query_modifier: 'AND' }
     let!(:market_post_content) { FactoryGirl.create :content, title: 'Winter tires for sale', 
       content_category: FactoryGirl.create(:content_category, name: 'market') }
     let!(:market_post) { FactoryGirl.create :market_post, content: market_post_content }
@@ -64,8 +65,9 @@ RSpec.describe MarketCategoriesController, type: :controller do
         expect(assigns(:market_category)).to_not be_nil
       end
 
-      it '@search_results contain values for the content result' do
+      it 'populates @search_results contain values for the content result' do
         get :edit, id: persisted_market_category
+        expect(assigns(:search_preview).count).to eq 1
         search_result = assigns(:search_preview).first
         expect(search_result).to eq market_post_content
         expect(search_result.channel).to eq market_post
@@ -74,6 +76,33 @@ RSpec.describe MarketCategoriesController, type: :controller do
       it 'sets the count field to the number of search results' do
         get :edit, id: persisted_market_category
         expect(assigns(:market_category).result_count).to eq 1
+      end
+    end
+
+    context 'when using a query modifier' do
+      content_category = ContentCategory.where(name: 'market').first
+      let!(:tire_market_post_content) { FactoryGirl.create :content, title: 'Tire', content_category: content_category }
+      let!(:specific_tire_market_post_content) { FactoryGirl.create :content, title: 'Bridgestone Snow Tires', content_category: content_category }
+      let!(:tire_market_post) { FactoryGirl.create :market_post, content: tire_market_post_content }
+      let!(:specific_tire_market_post) { FactoryGirl.create :market_post, content: specific_tire_market_post_content }
+
+      context 'when query modifier is "OR"' do
+        it 'returns the correct results for the query modifier' do
+          persisted_market_category.query_modifier = "OR"
+          persisted_market_category.save!
+          get :edit, id: persisted_market_category
+          expect(assigns(:search_preview).count).to eq 3
+        end
+      end
+
+      context 'when query modifier is "Match Phrase"' do
+        it 'returns only results containing the phrase in query' do
+          persisted_market_category.update_attributes(query_modifier: 'Match Phrase', query: "Bridgestone Snow Tires")
+          persisted_market_category.save!
+          get :edit, id: persisted_market_category
+          expect(assigns(:search_preview).count).to eq 1
+          expect(assigns(:search_preview).first).to eq specific_tire_market_post_content
+        end
       end
     end
   end
@@ -132,7 +161,7 @@ RSpec.describe MarketCategoriesController, type: :controller do
       it "redirects to the market_category" do
         market_category = MarketCategory.create! valid_attributes
         put :update, id: market_category, market_category: valid_attributes
-        expect(response).to redirect_to(market_categories_url)
+        expect(response).to redirect_to(edit_market_category_url(market_category))
       end
     end
 

@@ -109,7 +109,8 @@ describe EventsController, :type => :controller  do
     context 'when unchannelized_content_id param present' do
       before do
         @content = FactoryGirl.create :content, images: [ FactoryGirl.create(:image) ]
-        @uv = FactoryGirl.create :location, id: 77
+        @uv = FactoryGirl.create :location
+        stub_const("Location::REGION_LOCATION_ID", @uv.id)
       end
 
       subject { post :create, { unchannelized_content_id: @content.id, event: { content_attributes: {}, event_instances_attributes: [[{}, { start_date: Date.current, start_day: DateTime.current, start_time: Time.current  }]] } } }

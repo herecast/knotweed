@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170105135149) do
+ActiveRecord::Schema.define(version: 20170120202328) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -259,14 +259,14 @@ ActiveRecord::Schema.define(version: 20170105135149) do
   create_table "content_reports", id: :bigserial, force: :cascade do |t|
     t.integer  "content_id",               limit: 8
     t.datetime "report_date"
-    t.integer  "view_count",               limit: 8
-    t.integer  "banner_click_count",       limit: 8
+    t.integer  "view_count",                         default: 0
+    t.integer  "banner_click_count",                 default: 0
     t.integer  "comment_count",            limit: 8
     t.integer  "total_view_count",         limit: 8
     t.integer  "total_banner_click_count", limit: 8
     t.integer  "total_comment_count",      limit: 8
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at",                                     null: false
+    t.datetime "updated_at",                                     null: false
   end
 
   create_table "content_sets", id: :bigserial, force: :cascade do |t|
@@ -476,6 +476,9 @@ ActiveRecord::Schema.define(version: 20170105135149) do
     t.datetime "updated_at",                                 null: false
     t.string   "source_url",     limit: 400
     t.boolean  "primary",                    default: false
+    t.integer  "width"
+    t.integer  "height"
+    t.string   "file_extension"
   end
 
   add_index "images", ["imageable_type", "imageable_id"], name: "idx_16634_index_images_on_imageable_type_and_imageable_id", using: :btree
@@ -544,6 +547,22 @@ ActiveRecord::Schema.define(version: 20170105135149) do
     t.integer  "import_location_id", limit: 8
     t.datetime "publication_date"
   end
+
+  create_table "listserv_content_metrics", force: :cascade do |t|
+    t.integer  "listserv_content_id"
+    t.string   "email"
+    t.datetime "time_sent"
+    t.string   "post_type"
+    t.string   "username"
+    t.boolean  "verified"
+    t.boolean  "enhanced"
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+    t.boolean  "enhance_link_clicked", default: false
+    t.string   "step_reached"
+  end
+
+  add_index "listserv_content_metrics", ["listserv_content_id"], name: "index_listserv_content_metrics_on_listserv_content_id", using: :btree
 
   create_table "listserv_contents", force: :cascade do |t|
     t.integer  "listserv_id"
@@ -686,6 +705,7 @@ ActiveRecord::Schema.define(version: 20170105135149) do
     t.integer  "result_count"
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
+    t.string   "query_modifier",     default: "AND"
   end
 
   create_table "market_posts", id: :bigserial, force: :cascade do |t|
@@ -820,6 +840,7 @@ ActiveRecord::Schema.define(version: 20170105135149) do
     t.integer  "integer",                            default: 0
     t.string   "promotion_type"
     t.float    "cost_per_impression"
+    t.float    "cost_per_day"
   end
 
   create_table "promotion_listservs", id: :bigserial, force: :cascade do |t|
@@ -960,6 +981,13 @@ ActiveRecord::Schema.define(version: 20170105135149) do
   add_index "subscriptions", ["listserv_id"], name: "index_subscriptions_on_listserv_id", using: :btree
   add_index "subscriptions", ["user_id"], name: "index_subscriptions_on_user_id", using: :btree
 
+  create_table "temp_user_captures", force: :cascade do |t|
+    t.string   "name"
+    t.string   "email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "user_wufoo_forms", id: false, force: :cascade do |t|
     t.integer "user_id",       limit: 8
     t.integer "wufoo_form_id", limit: 8
@@ -1000,6 +1028,7 @@ ActiveRecord::Schema.define(version: 20170105135149) do
     t.string   "public_id",              limit: 255
     t.boolean  "skip_analytics",                     default: false
     t.string   "temp_password"
+    t.boolean  "archived",                           default: false
   end
 
   add_index "users", ["email"], name: "idx_16858_index_users_on_email", unique: true, using: :btree

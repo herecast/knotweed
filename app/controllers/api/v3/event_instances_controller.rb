@@ -73,13 +73,14 @@ module Api
           BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit',
                                                          @content, @current_api_user, @repository)
         end
-        respond_to do |format|
-          format.json { render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
-            context: { current_ability: current_ability, admin_content_url: url, ical_url: ical_url } }
-          format.ics { render text: @event_instance.to_ics }
+
+        if request.headers['HTTP_ACCEPT'] == 'text/calendar'
+          render text: @event_instance.to_ics
+        else
+          render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
+            context: { current_ability: current_ability, admin_content_url: url, ical_url: ical_url }
         end
       end
-
     end
   end
 end

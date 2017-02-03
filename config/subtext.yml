@@ -1,0 +1,21 @@
+# Configuration for the Subtext company.
+# Do not put sensitive data in this file (use environment variables instead).
+
+default: &default
+  emails:
+    advertising:    ads@subtext.org
+    batch_jobs:     jobs@subtext.org
+    listserv:       uppervalley-request@dailyuv.com
+    moderation:     flags@subtext.org
+    no_reply:       noreply@dailyuv.com
+    notifications:  notifications@dailyuv.com
+    support:        dailyuv@subtext.org
+
+production:
+  <<: *default
+
+development:
+  <<: *default
+
+test:
+  <<: *default

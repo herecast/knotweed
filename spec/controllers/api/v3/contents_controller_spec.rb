@@ -212,21 +212,18 @@ describe Api::V3::ContentsController, :type => :controller do
           #@event = FactoryGirl.create :event, content_category: @event_cat
           FactoryGirl.create_list :content, 5, 
             content_category: @news_cat, 
-            published: true
-          FactoryGirl.create_list :content, 5, 
-            content_category: @market_cat, 
-            published: true
+            published: true,
+            created_by: @user
+          FactoryGirl.create_list :market_post, 5, 
+            published: true,
+            created_by: @user
           FactoryGirl.create_list :content, 5,
             content_category: @talk_cat,
-            published: true
-          event_conts = FactoryGirl.create_list :content, 5, 
-            content_category: @event_cat,
-            channel_type: 'Event',
-            published: true
-          event_conts.each do |ec|
-            FactoryGirl.create :event, content: ec
-          end
-          Content.update_all created_by: @user
+            published: true,
+            created_by: @user
+          FactoryGirl.create_list :event, 5, 
+            published: true,
+            created_by: @user
         end
 
         it 'responds with the user\'s content' do
@@ -268,8 +265,7 @@ describe Api::V3::ContentsController, :type => :controller do
           before do
             @child_of_news = FactoryGirl.create :content_category, name: 'child', parent: @news_cat
             @c = FactoryGirl.create :content, content_category: @child_of_news,
-              published: true
-            @c.update_attribute(:created_by, @user)
+              published: true, created_by: @user
           end
 
           subject { get :dashboard, channel_type: 'news' }

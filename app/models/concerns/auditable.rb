@@ -23,7 +23,7 @@ module Auditable
   def set_auditables
     if User.current.present?
       unless persisted? # only set created_by if the object is new
-        self.created_by = User.current
+        self.created_by = self.created_by || User.current
       end
       # always set updated_by, even if we're creating
       self.updated_by = User.current

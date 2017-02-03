@@ -18,6 +18,7 @@
         = p.input :daily_max_impressions, label: 'Daily Maximum Impressions'
         = p.input :max_impressions, label: 'Maximum Impressions'
         = p.input :cost_per_impression
+        = p.input :cost_per_day
     - if promotion.promotable.present?
       = f.input :promotable_type, as: :hidden
 

@@ -124,9 +124,9 @@ describe Api::V3::EventInstancesController, :type => :controller do
       @inst = @event.event_instances.first
     end
 
-    subject! { get :show, format: :ics, id: @inst.id }
-
     it 'should contain ics data' do
+      @request.env["HTTP_ACCEPT"] = "text/calendar"
+      get :show, id: @inst.id
       expect(@response.body).to match /VCALENDAR/
       expect(@response.body).to match /DTSTART/
       expect(@response.body).to match /DTSTAMP/

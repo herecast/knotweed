@@ -5,8 +5,8 @@ module Api
       # from a given date range into a single JSON object
       
       attributes :type, :promo_id, :banner_id, :campaign_start, :campaign_end,
-        :served, :cost, :daily_max, :clicks, :ctr, :client, :banner,
-        :daily_reports
+        :served, :cost, :daily_cost, :daily_max, :clicks, :ctr, :client, :banner,
+        :daily_reports, :paid
 
       def type; object.promotion_type; end
       def promo_id; object.promotion.id; end
@@ -15,11 +15,13 @@ module Api
       def campaign_end; object.campaign_end.try(:strftime,"%D"); end
       def served; object.impression_count; end
       def cost; object.cost_per_impression; end
+      def daily_cost; object.cost_per_day; end
       def daily_max; object.daily_max_impressions; end
       def clicks; object.click_count; end
       def ctr; "%.2f" % (object.click_count * 100.0 / object.impression_count); end
       def client; object.promotion.try(:organization).try(:name); end
       def banner; object.promotion.try(:content).try(:title); end
+      def paid; object.promotion.try(:paid); end
 
       def daily_reports
         # we need to have a date entry for every date in the range, so generating

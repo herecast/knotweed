@@ -17,6 +17,9 @@
 #  daily_impression_count :integer          default(0)
 #  load_count             :integer          default(0)
 #  integer                :integer          default(0)
+#  promotion_type         :string
+#  cost_per_impression    :float
+#  cost_per_day           :float
 #
 
 FactoryGirl.define do
@@ -24,6 +27,7 @@ FactoryGirl.define do
     ignore do
       content nil
       organization nil
+      created_by nil
     end
 
     promotion
@@ -64,6 +68,7 @@ FactoryGirl.define do
     after(:build) do |e, evaluator|
       e.promotion.content = evaluator.content if evaluator.content.present?
       e.promotion.organization = evaluator.organization if evaluator.organization.present?
+      e.promotion.created_by = evaluator.created_by if evaluator.created_by.present?
     end
 
   end

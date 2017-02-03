@@ -10,7 +10,7 @@ RSpec.describe 'MarketCategories API Endpoints' do
         expect(response_json[:market_categories].count).to eq market_categories.count
 
         response_json[:market_categories].each do | market_category |
-          expect(market_category).to include(:id, :name, :query, :category_image, :detail_page_banner, :featured, :trending, :count)
+          expect(market_category).to include(:id, :name, :query, :category_image, :detail_page_banner, :featured, :trending, :count, :query_modifier)
         end
       end
     end
@@ -29,7 +29,8 @@ RSpec.describe 'MarketCategories API Endpoints' do
         detail_page_banner: market_category.detail_page_banner.url,
         featured: market_category.featured,
         trending: market_category.trending,
-        count: market_category.result_count
+        count: market_category.result_count,
+        query_modifier: market_category.query_modifier
       })
     end
   end

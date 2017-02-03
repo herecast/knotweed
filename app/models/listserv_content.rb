@@ -30,6 +30,7 @@ class ListservContent < ActiveRecord::Base
   belongs_to :subscription
   belongs_to :content
   belongs_to :user
+  has_one    :listserv_content_metric
 
   validates :key, presence: true, uniqueness: true
   after_initialize :generate_key, unless: :key

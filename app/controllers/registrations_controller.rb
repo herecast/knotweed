@@ -13,15 +13,6 @@ class RegistrationsController < Devise::RegistrationsController
         user.nda_agreed_at = Time.zone.now
         user.agreed_to_nda = true
         user.save
-        # mixpanel aliasing
-        if request.headers['Mixpanel-Distinct-Id'].present?
-          tracker = SubtextTracker.new(Figaro.env.mixpanel_api_token)
-          tracker.alias(user.id, request.headers['Mixpanel-Distinct-Id'])
-          tracker.people.set(user.id, {
-            name: user.name,
-            '$email' => user.email
-          })
-        end
         render json: res, status: 201 and return
       end
     end
@@ -34,7 +25,8 @@ class RegistrationsController < Devise::RegistrationsController
   end
 
   def account_update_params
-    params.require(:user).permit(:name, :email, :location_id, :password, :password_confirmation)
+    params.require(:user).permit(:name, :email, :location_id, :password, :password_confirmation,
+                                :current_password, :default_repository_id)
   end
 
    def set_consumer_app_in_thread

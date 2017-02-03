@@ -3,8 +3,9 @@ module Api
     class DetailedTalkSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :content, :content_id, :image_url, :user_count,
-        :author_name, :author_image_url, :published_at, :view_count, :commenter_count, :comment_count, 
-        :parent_content_id, :parent_content_type, :author_email, :created_at, :updated_at
+        :author_name, :author_image_url, :image_width, :image_height, :image_file_extension, :published_at,
+        :view_count, :commenter_count, :comment_count, :parent_content_id,
+        :parent_content_type, :author_email, :created_at, :updated_at
 
       def title
         object.sanitized_title
@@ -29,6 +30,24 @@ module Api
       def image_url
         if object.images.present?
           object.images[0].image.url
+        end
+      end
+
+      def image_width
+        if object.images.present?
+          object.images[0].width
+        end
+      end
+
+      def image_height
+        if object.images.present?
+          object.images[0].height
+        end
+      end
+
+      def image_file_extension
+        if object.images.present?
+          object.images[0].file_extension
         end
       end
 

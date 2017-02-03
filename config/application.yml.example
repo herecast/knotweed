@@ -36,13 +36,6 @@ ONTOTEXT_RECOMMEND_KEY: ontotext-recommend-api-key
 NOTIFICATION_EMAIL: kwnotifications@gmail.com
 NOTIFICATION_EMAIL_PASSWORD: Vermont53
 
-# Mixpanel API credentials needed for generating dashboard metrics
-MIXPANEL_API_KEY: mixpanel-api-key
-MIXPANEL_API_SECRET: mixpanel-api-secret
-
-# Mixpanel Token is used for server side tracking of API calls
-MIXPANEL_API_TOKEN: mixpanel-api-token
-
 # google maps api key for generating business_location maps
 GMAPS_API_KEY: gmapskey
 

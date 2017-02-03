@@ -114,8 +114,8 @@ describe 'News Endpoints', type: :request do
     before do
       @news_cat = FactoryGirl.create :content_category, name: 'news'
       @org = FactoryGirl.create :organization, can_publish_news: true
-      @content = FactoryGirl.create :content, organization: @org, pubdate: nil
-      @content.update_attribute(:created_by, user)
+      @content = FactoryGirl.create :content, organization: @org, pubdate: nil,
+        created_by: user
       @org.reindex
     end
 
@@ -134,7 +134,7 @@ describe 'News Endpoints', type: :request do
     describe 'author_name' do
       context 'when the user is not the original author' do
         let(:other_user) { FactoryGirl.create :user, name: Faker::Name.name }
-        before { @content.update_column :created_by, other_user.id }
+        before { @content.update_attribute :created_by, other_user}
 
         context 'when passed the current user\'s name (*not* the author)' do
           let(:put_params) do
@@ -317,7 +317,6 @@ describe 'News Endpoints', type: :request do
     let!(:news) { FactoryGirl.create :content, created_by: user, organization: org, content_category: news_cat }
 
     it 'sets #deleted_at' do
-      news.update_attribute(:created_by, user)
       expect {
         delete "/api/v3/news/#{news.id}", {}, headers.merge(auth_headers)
       }.to change {

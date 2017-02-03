@@ -1403,10 +1403,9 @@ describe Content, :type => :model do
       before do
         @user = FactoryGirl.create :user
         @news = FactoryGirl.create :content,
-          content_category: FactoryGirl.create(:content_category, name: 'news')
-        @not_news = FactoryGirl.create :content
-        @not_news.update_attribute :created_by, @user
-        @news.update_attribute :created_by, @user
+          content_category: FactoryGirl.create(:content_category, name: 'news'),
+          created_by: @user
+        @not_news = FactoryGirl.create :content, created_by: @user
       end
 
       it 'should index authors for news content' do
@@ -1495,10 +1494,24 @@ describe Content, :type => :model do
       before do
         @user = FactoryGirl.create :user, skip_analytics: true
         User.current = @user
+        @news_content_category   = FactoryGirl.create :content_category, name: "news"
+        @event_content_category = FactoryGirl.create :content_category, name: "event"
       end
 
       it 'should not increment the view count' do
         expect{@unpublished_content.increment_view_count!}.not_to change{@unpublished_content.view_count}
+      end
+
+      it 'should not increment if the root content is news' do
+        @published_content.update_attributes(content_category: @news_content_category)
+        @published_content.save!
+        expect{@published_content.increment_view_count!}.not_to change{@published_content.view_count}
+      end
+
+      it 'should increment view count for other channels' do
+        @published_content.update_attributes(content_category: @event_content_category)
+        @published_content.save!
+        expect{@published_content.increment_view_count!}.to change{@published_content.view_count}
       end
     end
   end
@@ -1610,9 +1623,9 @@ describe Content, :type => :model do
 
     context "when title is only listserv name" do
       it "returns 'Post by...' title" do
-        content = FactoryGirl.create :content, title: "[Hoth]"
         user = FactoryGirl.create :user, name: 'Han Solo'
-        content.update_attribute :created_by, user
+        content = FactoryGirl.create :content, title: "[Hoth]",
+          created_by: user
         expect(content.sanitized_title).to include "Han Solo"
       end
     end

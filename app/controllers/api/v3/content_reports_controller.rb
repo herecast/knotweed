@@ -12,13 +12,13 @@ module Api
             c.title as \"Title\",
             r.view_count as \"Views\",
             r.banner_click_count as \"Ad Clicks\",
-            (r.view_count + r.banner_click_count) * (round(CAST(float8 (o.pay_rate_in_cents/100.0) as numeric), 2)) as \"Payment\",
+            (r.view_count + (CASE WHEN r.banner_click_count IS NOT NULL THEN r.banner_click_count ELSE 0 END)) * (round(CAST(float8 (o.pay_rate_in_cents/100.0) as numeric), 2)) as \"Payment\",
             CONCAT(c.title, ' (', (c.pubdate - INTERVAL '5' HOUR), ')') AS \"Title + PubDate\",
             (SELECT COUNT(*) FROM contents WHERE parent_id = c.id AND created_at > (r.report_date - INTERVAL '1' DAY) AND created_at < r.report_date) as \"Comments\"
           FROM content_reports r
           INNER JOIN contents c ON c.id = r.content_id
           INNER JOIN users u on u.id = c.created_by
-          INNER JOIN organizations o ON o.id = c.organization_id AND r.view_count + r.banner_click_count > 0
+          INNER JOIN organizations o ON o.id = c.organization_id AND (r.view_count > 0 OR r.banner_click_count > 0)
           WHERE (r.report_date - INTERVAL '5' HOUR) >= #{@start_date} AND (r.report_date - INTERVAL '5' HOUR) < #{@end_date}
           ORDER BY \"Author\", c.title, report_date DESC;"
         @content_reports = @connection.execute(query)

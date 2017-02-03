@@ -42,12 +42,8 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
     describe 'user\'s promotion banners' do
       before do
-        @user_pbs = FactoryGirl.create_list :promotion_banner, 2
-        # need to set this manually to ensure that it's set in time
-        # for the example to run
-        @user_pbs.each do |pb|
-          pb.promotion.update_column :created_by, @user.id
-        end
+        @user_pbs = FactoryGirl.create_list :promotion_banner, 2,
+          created_by: @user
       end
 
       it 'should respond with 200' do
