@@ -41,7 +41,11 @@ Knotweed::Application.configure do
   end
   config.lograge.enabled = true
   config.lograge.formatter = Lograge::Formatters::Json.new
-  config.log_level = :info
+  config.log_level = (ENV['LOG_LEVEL'] || 'info').to_sym
+  # activerecord logging is too verbose and will push us over our loggly limit
+  active_record_logger = Logger.new(STDOUT)
+  active_record_logger.level = Logger::INFO
+  config.active_record.logger = active_record_logger
   config.lograge.custom_options = lambda do |event|
     exceptions = %w(controller action format id)
     custom_opts[:params] = event.payload[:params].except(*exceptions)
