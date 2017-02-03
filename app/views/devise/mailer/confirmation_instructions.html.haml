@@ -13,7 +13,7 @@
 %p= link_to 'Confirm my account', url
 %p
   If you are having difficulties completing the registration process, please contact a member of our support staff at
-  %a{:href => "mailto:dailyuv@subtext.org"} dailyuv@subtext.org
+  %a{:href => "mailto:#{Rails.configuration.subtext.emails.support}"} #{Rails.configuration.subtext.emails.support}
 %p
   With thanks for your interest,
   %br/

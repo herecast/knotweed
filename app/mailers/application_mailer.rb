@@ -1,5 +1,5 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'noreply@dailyuv.com'
+  default from: Rails.configuration.subtext.emails.no_reply
 
   layout 'mailer'
 end

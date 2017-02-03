@@ -1,9 +1,7 @@
 class ModerationMailer < ActionMailer::Base
 
-  MODERATION_EMAIL_RECIPIENT = 'flags@subtext.org'
   BUSINESS_MODERATION_EMAIL_RECIPIENT = Figaro.env.business_moderation_email? ? Figaro.env.business_moderation_email \
-    : MODERATION_EMAIL_RECIPIENT
-  MODERATION_EMAIL_SENDER = 'noreply@dailyuv.com'
+    : Rails.configuration.subtext.emails.moderation
 
 
   def send_moderation_flag(content, params, subject)
@@ -16,8 +14,8 @@ class ModerationMailer < ActionMailer::Base
     else
       @admin_uri = edit_content_url(@content.id)
     end
-    mail(from: MODERATION_EMAIL_SENDER,
-         to: MODERATION_EMAIL_RECIPIENT,
+    mail(from: Rails.configuration.subtext.emails.no_reply,
+         to: Rails.configuration.subtext.emails.moderation,
          subject: subject)
   end
 
@@ -36,8 +34,8 @@ class ModerationMailer < ActionMailer::Base
 
     subject = 'dailyUV Flagged as ' + flag_type + ': ' + content.title
 
-    mail(from: MODERATION_EMAIL_SENDER,
-         to: MODERATION_EMAIL_RECIPIENT,
+    mail(from: Rails.configuration.subtext.emails.no_reply,
+         to: Rails.configuration.subtext.emails.moderation,
          subject: subject)
   end
 
@@ -48,7 +46,7 @@ class ModerationMailer < ActionMailer::Base
     @categories = @business_profile.business_categories
     @user = user
     subject = 'New Business for Moderation'
-    mail(from: MODERATION_EMAIL_SENDER,
+    mail(from: Rails.configuration.subtext.emails.no_reply,
          to: BUSINESS_MODERATION_EMAIL_RECIPIENT,
          subject: subject)
   end

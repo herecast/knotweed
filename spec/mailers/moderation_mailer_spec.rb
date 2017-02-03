@@ -22,7 +22,7 @@ describe ModerationMailer, :type => :mailer do
         expect(email.body.include?(@flagger_email)).to eq(true)
         expect(email.body.include?(@content.authors)).to eq(true)
         expect(email.body.include?(@content.authoremail)).to eq(true)
-        expect(email.to[0]).to eq(ModerationMailer::MODERATION_EMAIL_RECIPIENT)
+        expect(email.to[0]).to eq(Rails.configuration.subtext.emails.moderation)
       end
 
       it "generates the proper content type edit link" do
@@ -54,7 +54,7 @@ describe ModerationMailer, :type => :mailer do
         expect(email.body.include?(@flagging_user.email)).to eq(true)
         expect(email.body.include?(@content.authors)).to eq(true)
         expect(email.body.include?(@content.authoremail)).to eq(true)
-        expect(email.to[0]).to eq(ModerationMailer::MODERATION_EMAIL_RECIPIENT)
+        expect(email.to[0]).to eq(Rails.configuration.subtext.emails.moderation)
       end
 
       it "generates the proper content type edit link" do

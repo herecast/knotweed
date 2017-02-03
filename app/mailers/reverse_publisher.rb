@@ -35,7 +35,7 @@ class ReversePublisher < ActionMailer::Base
     headers['In-Reply-To'] = content.parent.try(:guid)
     @text_body = outbound_text
     @html_body = outbound_html
-    mail(from: "noreply@dailyuv.com",
+    mail(from: Rails.configuration.subtext.emails.no_reply,
          to: content.authoremail,
          subject: content.title
     )
