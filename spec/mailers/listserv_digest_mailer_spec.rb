@@ -172,12 +172,6 @@ RSpec.describe ListservDigestMailer do
             end
           end
 
-          it 'includes contents author names' do
-            contents.each do |content|
-              expect(subject).to include CGI.escapeHTML(content.author_name)
-            end
-          end
-
           it 'includes the date for the content post' do
             listserv_contents.each do |content|
               expect(subject).to include content.verified_at.strftime('%m/%d/%y %l:%M %p')
