@@ -1,32 +1,24 @@
-Thanks for posting to <%=@post.listserv.name%>
+Your post isn't published yet.
+This verification step helps reduce spam.
 ===========================================================================
 
-Your post...
-"<%= @post.subject %>"
-...isn't in the digest yet...WHY?
+Confirm by choosing to...
 
-Posting to <%= @listserv.name %> is simple, but with dailyUV you can...
-
-  - EDIT your post before it goes live - fix those typos.
-  - ADD photos to create a custom page on dailyUV - really quick!
-  - get TOP placement in the digest - BAM.
-
-
-Follow this link to enhance your post: *
+SPRUCE IT UP
 http://<%=ENV['DEFAULT_CONSUMER_HOST']%>/lists/posts/<%=@post.key%>
 
+SEND AS IS
+http://<%=ENV['DEFAULT_CONSUMER_HOST']%>/api/v3/listserv_contents/<%=@post.key%>/verify
 
-To publish without changes: *
-http://<%=ENV['DEFAULT_CONSUMER_HOST']%>/lists/confirm_post/<%=@post.key%>
+BOTH CHOICES ARE FREE
 
-* By posting, I agree to subscribe to the <%= @listserv.name %> digest.
-
-Sick of seeing this email every time you post? Skip it!!
- - Start on dailyUV and you don't have to verify!
-
-Learn more here:
-<%=ENV['LISTSERV_MARKETING_URL']%>
+This will subscribe you to the <%=@listserv.name%> digest, if you aren't already.
 
 ---------------------------------------------------------------------------
 
 Terms & Privacy: http://dailyuv.com/terms
+
+<% if @subscription.present? && @subscription.subscribed? %>
+Unsubscribe from <% unless features['listserv-user-testing'] %><%=@listserv.name.upcase%><% else %>this test<% end %>:
+http://<%=ENV['DEFAULT_CONSUMER_HOST']%>/lists/<%= @subscription.key %>/manage
+<% end %>

@@ -33,6 +33,7 @@
 #  digest_preheader            :string
 #  list_type                   :string           default("custom_list")
 #  sender_name                 :string
+#  admin_email                 :string
 #
 
 class Listserv < ActiveRecord::Base
@@ -84,14 +85,6 @@ class Listserv < ActiveRecord::Base
 
   def active_subscriber_count
     subscriptions.active.count
-  end
-
-  # Sends the content to this listserv using ReversePublishMailer
-  def send_content_to_listserv(content, consumer_app=nil)
-    outbound_mail = ReversePublisher.mail_content_to_listservs(content, [self], consumer_app)
-    outbound_mail.deliver_later
-    ReversePublisher.send_copy_to_sender_from_dailyuv(content, outbound_mail.text_part.body.to_s, outbound_mail.html_part.body.to_s).deliver_later
-    add_listserv_location_to_content(content)
   end
 
   def add_listserv_location_to_content(content)
@@ -163,6 +156,14 @@ class Listserv < ActiveRecord::Base
       ['Internal List', 'internal_list'],
       ['Custom Digest', 'custom_digest']
     ]
+  end
+
+  def internal_list?
+    list_type.eql? 'internal_list'
+  end
+
+  def custom_digest?
+    list_type.eql?('custom_digest') && digest_query?
   end
 
   def digest_templates

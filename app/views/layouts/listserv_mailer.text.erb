@@ -2,9 +2,11 @@
 
 
 ---------------------------------------------------------------------------
+<% unless features['listserv-user-testing'] %>
+  Curious why things changed? In response to subscriber feedback,
+  Vital Communities, the nonprofit that runs the local lists, asked dailyUV
+  to develop ways to improve the service.
 
-Vital Communities' <%=@listserv.name %> & dailyUV are complementary ways
-to keep up with what's happening in your community.
-
-Learn more:
-<%= ENV['LISTSERV_MARKETING_URL'] %>
+  Learn more:
+  <%= ENV['LISTSERV_MARKETING_URL'] %>
+<% end %>

@@ -19,9 +19,12 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  verify_ip                  :string
+#  deleted_at                 :datetime
+#  deleted_by                 :string
 #
 
 class ListservContent < ActiveRecord::Base
+  acts_as_paranoid column: :deleted_at
   belongs_to :listserv
   belongs_to :content_category
   belongs_to :subscription
@@ -121,6 +124,34 @@ class ListservContent < ActiveRecord::Base
     cat_name = 'talk_of_the_town' if t.to_s == 'talk'
     if cat_name != channel_type.to_s
       self.content_category = ContentCategory.find_by(name: cat_name)
+    end
+  end
+
+  def update_from_content(content)
+    assign_attributes(
+      subject: content.title,
+      content_category: content.root_content_category,
+      body: content.sanitized_content,
+      user: content.created_by,
+      sender_email: content.created_by.email,
+      sender_name: content.created_by.name,
+      content: content
+    )
+  end
+
+  def sent_in_digest?
+    if persisted?
+      return ListservDigest.has_listserv_content(self).exists?
+    else
+      return false
+    end
+  end
+
+  def author_name
+    if user
+      user.name
+    else
+      sender_name
     end
   end
 

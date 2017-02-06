@@ -1,15 +1,19 @@
-You're all set!
+Subscription Confirmed
 ===========================================================================
 
-Your subscription to <%=@listserv.name%> is now managed through your
-dailyUV account. These accounts are now linked.
-http://<%=ENV['DEFAULT_CONSUMER_HOST']%>/dashboard?user_id=<%= @subscription.user_id  %>
+Your subscription to <%=@listserv.name%> is active and can be managed
+through your dailyUV account.
+
+[Manage Subscription]
+http://<%=ENV['DEFAULT_CONSUMER_HOST']%>/account/subscriptions
 
 Vital Communities' <%=@listserv.name%> & dailyUV are complementary ways
 to keep up with what's happening in your community.
 
+<% unless features['listserv-user-testing'] %>
 Learn More:
 <%= ENV['LISTSERV_MARKETING_URL'] %>
+<% end %>
 ---------------------------------------------------------------------------
 
 Terms & Privacy: http://dailyuv.com/terms

@@ -18,7 +18,7 @@
             = f.label :content_category_id_eq, "Category"
             = f.collection_select :content_category_id_eq, Category.order(name: :asc), 'id','name', prompt: ""
           .field.checkbox.span4
-            = f.check_box :verified_at_not_null
+            = f.check_box :verified_at_not_null, include_hidden: false
             = f.label :verified_at_not_null, 'Verified Only'
         .controls.controls-row
           .field.span4
@@ -31,6 +31,10 @@
             = f.label :created_at_gteq, 'Created Date'
             = f.date_field :created_at_gteq
             = f.date_field :created_at_lteq
+        .controls.controls-row
+          .field.checkbox.span4
+            = f.check_box :deleted_at_not_null, include_hidden: false
+            = f.label :deleted_at_not_null, 'Search for removed items'
         .form-actions
           %button.btn.btn-primary{type: 'submit'} Search
           %button.btn.reset{ type: 'submit', name: 'reset'} Reset
@@ -56,7 +60,7 @@
 
   %tbody
     - @listserv_contents.each do |lc|
-      %tr
+      %tr{class: ('error' if lc.deleted_at?), title: ('This record has been removed.' if lc.deleted_at?)}
         %td= lc.listserv.name
         %td= lc.sender_email
         %td= lc.subject
@@ -64,7 +68,6 @@
         %td= lc.verified_at
         %td
           = link_to "View", listserv_content_path(lc), class: 'btn btn-mini'
-          = link_to "Edit", edit_listserv_content_path(lc), class: 'btn btn-mini'
 
   %tfoot
     %tr

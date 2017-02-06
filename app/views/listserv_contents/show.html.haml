@@ -40,5 +40,6 @@
         %h4=@listserv_content.subject
         %pre=@listserv_content.body
       .form-actions
+        = link_to 'Back to index', listserv_contents_path, class: 'btn btn-default'
         = link_to 'Edit', edit_listserv_content_path(@listserv_content), class: 'btn btn-primary'
-        = link_to 'All', listserv_contents_path, class: 'btn btn-default'
+        = render 'remove_unremove_button', model: @listserv_content

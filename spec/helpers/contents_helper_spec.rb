@@ -20,6 +20,15 @@ describe ContentsHelper, type: :helper do
       expect(helper.ux2_content_path(tott)).to eq("/talk/#{tott.id}")
     end
 
+    context 'when content is in subscategory' do
+      let(:subcategory) { FactoryGirl.create :content_category, parent: @market_cat }
+      let!(:content) { FactoryGirl.create :content, content_category: subcategory }
+
+      it 'should with path matching parent category name' do
+        expect(helper.ux2_content_path(content)).to eq("/market/#{content.id}")
+      end
+    end
+
   end
 
   describe '#search_field_value' do
@@ -114,24 +123,29 @@ describe ContentsHelper, type: :helper do
       end
     end
 
-    context 'consumer_app not set; @base_uri set from controller' do
-      before do
-        @base_uri = 'http://event.foo'
-        allow(ConsumerApp).to receive(:current).and_return nil
-      end
-
-      it 'uses @base_uri' do
-        expect(subject).to eql "#{@base_uri}/contents/#{content.id}#{utm_string}"
-      end
-    end
-
-    context 'if not consumer_app, or @base_uri;' do
+    context 'if not consumer_app;' do
       before do
         @base_uri = nil
         allow(ConsumerApp).to receive(:current).and_return nil
       end
-      it 'Uses a default url' do
-        expect(subject).to eql "http://www.dailyuv.com/contents/#{content.id}"
+
+      it 'Uses a relative url' do
+        expect(subject).to eql "#{content_path}#{utm_string}"
+      end
+
+      context 'when a consumer app exists matching the ENV DEFAULT_CONSUMER_HOST' do
+        let(:default_host) {
+          "Test.COM:9030"
+        }
+        let!(:consumer_app) { ConsumerApp.create uri: "http://#{default_host}" }
+
+        before do
+          allow(Figaro.env).to receive(:default_consumer_host).and_return(default_host)
+        end
+
+        it 'it uses default consumer app uri as the base' do
+          expect(subject).to eql "#{consumer_app.uri}#{ux2_content_path(content)}#{utm_string}"
+        end
       end
     end
   end

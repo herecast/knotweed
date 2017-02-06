@@ -59,9 +59,16 @@ module Api
       def create
         @market_post = MarketPost.new(market_post_params)
         if @market_post.save
-          # reverse publish to specified listservs
           listserv_ids = params[:market_post][:listserv_ids] || []
-          PromotionListserv.create_multiple_from_content(@market_post.content, listserv_ids, @requesting_app)
+          if listserv_ids.any?
+            # reverse publish to specified listservs
+            PromoteContentToListservs.call(
+              @market_post.content,
+              @requesting_app,
+              request.remote_ip,
+              *Listserv.where(id: listserv_ids)
+            )
+          end
 
           PublishContentJob.perform_later(@market_post.content, @repository, Content::DEFAULT_PUBLISH_METHOD) if @repository.present?
 
@@ -76,10 +83,17 @@ module Api
         @market_post = Content.find(params[:id]).channel
         authorize! :manage, @market_post.content
         if @market_post.update_attributes(market_post_params)
-          # reverse publish to specified listservs
           listserv_ids = params[:market_post][:listserv_ids] || []
-          PromotionListserv.create_multiple_from_content(@market_post.content, listserv_ids, @requesting_app)
-          
+          if listserv_ids.any?
+            # reverse publish to specified listservs
+            PromoteContentToListservs.call(
+              @market_post.content,
+              @requesting_app,
+              request.remote_ip,
+              *Listserv.where(id: listserv_ids)
+            )
+          end
+
           PublishContentJob.perform_later(@market_post.content, @repository, Content::DEFAULT_PUBLISH_METHOD) if @repository.present?
 
           render json: @market_post.content, status: 200,

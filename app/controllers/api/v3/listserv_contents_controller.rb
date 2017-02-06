@@ -1,7 +1,7 @@
 module Api
   module V3
     class ListservContentsController < ApiController
-      before_action :find_record, only: [:show, :update, :update_metric]
+      before_action :find_record, only: [:show, :update, :verify, :update_metric]
 
       def show
         render json: @listserv_content, serializer: ListservContentSerializer
@@ -17,6 +17,22 @@ module Api
         render json: {errors: "Content owner mismatch"}, status: 422
       rescue ListservExceptions::AlreadyVerified
         render status: 422, json: {errors: "Already verified!" }
+      rescue ListservExceptions::BlacklistedSender
+        render status: 422, json: {errors: "You are no longer allowed to send to this list. Please contact an administrator." }
+      end
+
+      def verify
+        begin
+          VerifyAndUpdateListservContent.call(resource, verify_ip: request.remote_ip)
+        rescue ContentOwnerMismatch
+          @error = ContentOwnerMisMatch
+        rescue ListservExceptions::AlreadyVerified
+          @error = ListservExceptions::AlreadyVerified
+        rescue ListservExceptions::BlacklistedSender
+          @error = ListservExceptions::BlacklistedSender
+        end
+
+        render 'verify', layout: 'minimal'
       end
 
       def update_metric

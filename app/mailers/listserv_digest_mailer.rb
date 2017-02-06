@@ -4,6 +4,7 @@ class ListservDigestMailer < ActionMailer::Base
           to: 'null@null.disabled'
 
   add_template_helper ContentsHelper
+  add_template_helper FeaturesHelper
   add_template_helper EmailTemplateHelper
 
   def digest(digest_record)
@@ -38,5 +39,4 @@ class ListservDigestMailer < ActionMailer::Base
     digest.update_attribute :sent_at, Time.current
     digest.listserv.update_attribute :last_digest_send_time, digest.sent_at
   end
-
 end

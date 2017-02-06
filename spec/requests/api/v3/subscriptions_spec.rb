@@ -172,9 +172,13 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
         expect(response).to have_http_status(204)
       end
 
-      it 'runs ConfirmSubscription process' do
-        expect(ConfirmSubscription).to receive(:call).with(subscription, remote_ip)
-        subject
+      it 'sets confirm_ip and confirmed_at' do
+        expect{ subject }.to change{
+          subscription.reload.attributes.with_indifferent_access.slice(:confirm_ip, :confirmed_at)
+        }.to a_hash_including({
+          confirm_ip: remote_ip,
+          confirmed_at: an_instance_of(ActiveSupport::TimeWithZone)
+        })
       end
     end
   end

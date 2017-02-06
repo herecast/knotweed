@@ -1,5 +1,6 @@
 require "rails_helper"
 
+
 RSpec.describe ListservMailer, type: :mailer do
   let(:body_html) { subject.body.parts.find {|p| p.content_type.match /html/}.body.raw_source }
   let(:body_text) { subject.body.parts.find {|p| p.content_type.match /plain/}.body.raw_source }
@@ -7,6 +8,78 @@ RSpec.describe ListservMailer, type: :mailer do
   before(:each) do
     ENV.stub(:[]).with("LISTSERV_MARKETING_URL").and_return("http://listserv.dailyUV.com")
     ENV.stub(:[]).with("DEFAULT_CONSUMER_HOST").and_return("test.localhost")
+  end
+
+  shared_examples :has_curious_why_changed_when_not_user_test do
+    let(:message) { "Curious why things changed?" }
+
+    it 'has curious why changed message' do
+      expect(body_html).to include(message)
+      expect(body_text).to include(message)
+    end
+
+    it 'includes link to listserv marketing site' do
+      expect(body_html).to include(ENV['LISTSERV_MARKETING_URL'])
+      expect(body_text).to include(ENV['LISTSERV_MARKETING_URL'])
+    end
+
+    context 'when listserv-user-testing feature is active' do
+      before do
+        FactoryGirl.create(:feature,
+          name: 'listserv-user-testing',
+          active: true
+        )
+      end
+
+      it 'does not have curious why changed message' do
+        expect(body_html).to_not include(message)
+        expect(body_text).to_not include(message)
+      end
+
+      it 'does not include link to listserv marketing site' do
+        expect(body_html).to_not include(ENV['LISTSERV_MARKETING_URL'])
+        expect(body_text).to_not include(ENV['LISTSERV_MARKETING_URL'])
+      end
+    end
+  end
+
+  shared_examples :has_unsubscribe_with_user_test_changes do
+    let(:unsub_wording) {
+      /#{Regexp.escape("unsubscribe from")}\s+#{Regexp.escape(subscription.listserv.name)}/i
+    }
+
+    let(:unsub_url) {
+      "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/manage"
+    }
+
+    it 'has unsubscribe link' do
+      expect(body_html).to match(unsub_wording)
+      expect(body_text).to match(unsub_wording)
+
+      expect(body_html).to include(unsub_url)
+      expect(body_text).to include(unsub_url)
+    end
+
+    context 'when listserv-user-testing feature is active' do
+      before do
+        FactoryGirl.create(:feature,
+          name: 'listserv-user-testing',
+          active: true
+        )
+      end
+
+    let(:unsub_wording) {
+      /#{Regexp.escape("unsubscribe from")}\s+#{Regexp.escape("this test")}/i
+    }
+
+      it 'has unsubscribe link with test wording' do
+        expect(body_html).to match(unsub_wording)
+        expect(body_text).to match(unsub_wording)
+
+        expect(body_html).to include(unsub_url)
+        expect(body_text).to include(unsub_url)
+      end
+    end
   end
 
   describe '#subscription_verification' do
@@ -18,76 +91,18 @@ RSpec.describe ListservMailer, type: :mailer do
     end
 
     it 'includes confirmation link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account/subscriptions")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account/subscriptions")
+      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/subscribe")
+      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/subscribe")
     end
 
     it 'includes list name' do
       expect(body_html).to include(subscription.listserv.name)
       expect(body_text).to include(subscription.listserv.name)
     end
+
+    include_examples :has_curious_why_changed_when_not_user_test
   end
 
-  describe '#subscription_confirmation' do
-    let(:listserv) { FactoryGirl.create :listserv, unsubscribe_email: 'unsub.me@list.org' }
-    let(:subscription) { FactoryGirl.create :subscription, email: 'test@example.org', listserv: listserv }
-
-    subject { ListservMailer.subscription_confirmation(subscription) }
-
-    it 'is sent to subscription#email' do
-      expect(subject.to).to eql [subscription.email]
-    end
-
-    it 'includes list name' do
-      expect(body_html).to include(listserv.name)
-      expect(body_text).to include(listserv.name)
-    end
-
-    it 'includes manage link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/manage")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/manage")
-    end
-
-    it 'includes dashboard link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard")
-    end
-
-    it 'includes home page link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}")
-    end
-
-    it 'includes link to the listserv marketing site' do
-      expect(body_html).to include(ENV['LISTSERV_MARKETING_URL'])
-      expect(body_text).to include(ENV['LISTSERV_MARKETING_URL'])
-    end
-
-    describe 'digest send time' do
-      before do
-        listserv.update digest_send_time: "09:30"
-        @dynamic_eastern_time_zone = Time.zone.now.dst? ? "EDT" : "EST"
-        @dynamic_pacific_time_zone = Time.zone.now.dst? ? "PDT" : "PST"
-
-      end
-
-      it 'shows in email' do
-        expect(body_html).to include("9:30 AM (#{@dynamic_eastern_time_zone})")
-        expect(body_text).to include("9:30 AM (#{@dynamic_eastern_time_zone})")
-      end
-
-      context 'When listserv timezone is different' do
-        before do 
-          listserv.update timezone: "Pacific Time (US & Canada)"
-        end
-
-        it 'shows in email with correct timezone' do
-          expect(body_html).to include("6:30 AM (#{@dynamic_pacific_time_zone})")
-          expect(body_text).to include("6:30 AM (#{@dynamic_pacific_time_zone})")
-        end
-      end
-    end
-  end
 
   describe '#existing_subscription' do
     let(:listserv) { FactoryGirl.create :listserv, unsubscribe_email: 'unsub.me@list.org' }
@@ -104,20 +119,27 @@ RSpec.describe ListservMailer, type: :mailer do
       expect(body_text).to include(listserv.name)
     end
 
-    it 'includes dashboard link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard?user_id=#{subscription.user_id}")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard?user_id=#{subscription.user_id}")
+    it 'includes account subscriptions link' do
+      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account/subscriptions")
+      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account/subscriptions")
     end
 
-    it 'includes link to listserv marketing site' do
-      expect(body_html).to include(ENV['LISTSERV_MARKETING_URL'])
-      expect(body_text).to include(ENV['LISTSERV_MARKETING_URL'])
-    end
+    include_examples :has_curious_why_changed_when_not_user_test
   end
 
 
   describe '#posting_verification' do
-    let(:listserv_content) { FactoryGirl.create :listserv_content, sender_email: 'test@example.org' }
+    let(:subscription) {
+      FactoryGirl.create :subscription,
+        :subscribed
+    }
+    let(:listserv_content) {
+      FactoryGirl.create :listserv_content,
+        sender_email: subscription.email,
+        subscription: subscription,
+        listserv: subscription.listserv
+
+    }
     subject { ListservMailer.posting_verification(listserv_content) }
 
     it 'is sent to listserv_content#sender_email' do
@@ -130,14 +152,12 @@ RSpec.describe ListservMailer, type: :mailer do
     end
 
     it 'includes verify only link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{listserv_content.key}")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{listserv_content.key}")
+      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/api/v3/listserv_contents/#{listserv_content.key}/verify")
+      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/api/v3/listserv_contents/#{listserv_content.key}/verify")
     end
 
-    it 'includes link to learn more' do
-      expect(body_html).to include(ENV['LISTSERV_MARKETING_URL'])
-      expect(body_text).to include(ENV['LISTSERV_MARKETING_URL'])
-    end
+    include_examples :has_curious_why_changed_when_not_user_test
+    include_examples :has_unsubscribe_with_user_test_changes
 
     it 'includes list name' do
       expect(body_html).to include(listserv_content.listserv.name)
@@ -155,62 +175,23 @@ RSpec.describe ListservMailer, type: :mailer do
     end
   end
 
-  describe '#posting_confirmation' do
-    let(:content) { FactoryGirl.create :content }
-    let(:listserv_content) { FactoryGirl.create :listserv_content, sender_email: 'test@example.org', content: content }
-    subject { ListservMailer.posting_confirmation(listserv_content) }
+  describe '#subscriber_blacklisted' do
+    let(:listserv) { FactoryGirl.create :listserv, admin_email: 'admin@gmail.com' }
+    let(:subscription) { FactoryGirl.create :subscription, listserv: listserv }
+    subject { ListservMailer.subscriber_blacklisted(subscription) }
 
-    it 'is sent to listserv_content#sender_email' do
-      expect(subject.to).to eql [listserv_content.sender_email]
+    it 'is sent when a subscriber is blacklisted' do
+      expect(subject.subject).to eq "You've been blocked from posting to the #{subscription.listserv.name}"
     end
 
-    it 'includes manage link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{listserv_content.subscription.key}/manage")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{listserv_content.subscription.key}/manage")
+    it 'displays "Sorry!" in the title' do
+      expect(body_html).to include('Sorry!')
+      expect(body_text).to include('Sorry!')
     end
 
-    it 'includes list name' do
-      expect(body_html).to include(listserv_content.listserv.name)
-      expect(body_text).to include(listserv_content.listserv.name)
-    end
-
-    it 'includes dashboard link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/dashboard")
-    end
-
-    it 'includes home page link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}")
-    end
-
-    it 'includes link to listserv marketing site' do
-      expect(body_html).to include(ENV['LISTSERV_MARKETING_URL'])
-      expect(body_text).to include(ENV['LISTSERV_MARKETING_URL'])
-    end
-
-    context 'when enhanced content;' do
-      let(:content) { FactoryGirl.create(:content) }
-      before do
-        listserv_content.update content: content
-      end
-
-      it 'has link to content' do
-        expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/#{content.content_type}/#{content.id}")
-        expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/#{content.content_type}/#{content.id}")
-      end
-
-    end
-
-    context 'when posting without enhancing content' do
-      before do
-        listserv_content.update content: nil
-      end
-
-      it 'uses the no_enhance_posting_confirmation email' do
-        expect(body_html).to include("Next time you post to the #{listserv_content.listserv.name} try selecting...")
-        expect(body_text).to include("Try following the link to enhance your post instead of following the link to send this post as is.")
-      end
+    it 'dispalys the admins email address' do
+      expect(body_html).to include('mailto:admin@gmail.com')
+      expect(body_text).to include('admin@gmail.com')
     end
   end
 end

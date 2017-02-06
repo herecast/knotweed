@@ -22,11 +22,11 @@ class VerifyAndUpdateListservContent
 
     set_user if @attributes[:content_id].present?
 
+    ensure_subscription_to_listserv
+    ensure_subscription_not_blacklisted
+
     if @model.save
       RecordListservMetric.call('complete_metric', @model, @attributes)
-      ensure_subscription_to_listserv
-      send_confirmation
-      clear_temp_password
       return true
     else
       return false
@@ -50,13 +50,6 @@ class VerifyAndUpdateListservContent
     end
   end
 
-  def clear_temp_password
-    if @model.user && @model.user.temp_password?
-      @model.user.temp_password= nil
-      @model.user.save!(validate: false)
-    end
-  end
-
   def ensure_subscription_to_listserv
     @model.subscription ||= Subscription.find_or_create_by!(
       listserv: @model.listserv,
@@ -68,10 +61,14 @@ class VerifyAndUpdateListservContent
 
     ConfirmSubscription.call(@model.subscription, @model.verify_ip)
     @model.subscription.save!
-    @model.save! # to pickup any new subscription_id
   end
 
-  def send_confirmation
-    NotificationService.posting_confirmation(@model, @model.user.try(:temp_password))
+  def ensure_subscription_not_blacklisted
+    if @model.subscription.blacklist?
+      raise ListservExceptions::BlacklistedSender.new(
+        @model.listserv,
+        @model.subscription.email
+      )
+    end
   end
 end

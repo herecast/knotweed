@@ -12,4 +12,9 @@ RSpec.configure do |config|
   config.after(:all, inline_jobs: true) do
     ActiveJob::Base.queue_adapter = @old_queue_adapter
   end
+
+  config.before(:each) do
+    # do not carry state between tests
+    User.current = nil
+  end
 end

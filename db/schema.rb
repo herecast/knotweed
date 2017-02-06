@@ -565,9 +565,9 @@ ActiveRecord::Schema.define(version: 20170120202328) do
     t.string   "username"
     t.boolean  "verified"
     t.boolean  "enhanced"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-    t.boolean  "enhance_link_clicked",              default: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+    t.boolean  "enhance_link_clicked", default: false
     t.string   "step_reached"
   end
 
@@ -590,10 +590,13 @@ ActiveRecord::Schema.define(version: 20170120202328) do
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.string   "verify_ip"
+    t.datetime "deleted_at"
+    t.string   "deleted_by"
   end
 
   add_index "listserv_contents", ["content_category_id"], name: "index_listserv_contents_on_content_category_id", using: :btree
   add_index "listserv_contents", ["content_id"], name: "index_listserv_contents_on_content_id", using: :btree
+  add_index "listserv_contents", ["deleted_at"], name: "index_listserv_contents_on_deleted_at", using: :btree
   add_index "listserv_contents", ["key"], name: "index_listserv_contents_on_key", using: :btree
   add_index "listserv_contents", ["listserv_id"], name: "index_listserv_contents_on_listserv_id", using: :btree
   add_index "listserv_contents", ["subscription_id"], name: "index_listserv_contents_on_subscription_id", using: :btree
@@ -601,12 +604,10 @@ ActiveRecord::Schema.define(version: 20170120202328) do
 
   create_table "listserv_digests", force: :cascade do |t|
     t.integer  "listserv_id"
-    t.string   "listserv_content_ids"
     t.string   "mc_campaign_id"
     t.datetime "sent_at"
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
-    t.string   "content_ids"
     t.string   "from_name"
     t.string   "reply_to"
     t.string   "subject"
@@ -618,6 +619,8 @@ ActiveRecord::Schema.define(version: 20170120202328) do
     t.string   "title"
     t.string   "preheader"
     t.integer  "promotion_ids",        default: [],              array: true
+    t.integer  "content_ids",                                    array: true
+    t.integer  "listserv_content_ids",                           array: true
   end
 
   add_index "listserv_digests", ["listserv_id"], name: "index_listserv_digests_on_listserv_id", using: :btree
@@ -653,6 +656,7 @@ ActiveRecord::Schema.define(version: 20170120202328) do
     t.string   "list_type",                               default: "custom_list"
     t.string   "sender_name"
     t.integer  "promotion_ids",                           default: [],                                        array: true
+    t.string   "admin_email"
   end
 
   create_table "listservs_locations", id: false, force: :cascade do |t|
@@ -849,10 +853,11 @@ ActiveRecord::Schema.define(version: 20170120202328) do
   end
 
   create_table "promotion_listservs", id: :bigserial, force: :cascade do |t|
-    t.integer  "listserv_id", limit: 8
+    t.integer  "listserv_id",         limit: 8
     t.datetime "sent_at"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+    t.integer  "listserv_content_id"
   end
 
   create_table "promotions", id: :bigserial, force: :cascade do |t|

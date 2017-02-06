@@ -19,11 +19,6 @@ RSpec.describe ConfirmSubscription do
     })
   end
 
-  it 'sends subscription confirmation email' do
-    expect(NotificationService).to receive(:subscription_confirmation).with(subscription)
-    subject
-  end
-
   context 'when subscription.listserv has mc_list_id' do
     before do
       subscription.listserv.update mc_list_id: '43q432', mc_group_name: 'blah'
@@ -62,11 +57,6 @@ RSpec.describe ConfirmSubscription do
       subject
     end
 
-    it 'does not send subscription confirmation email' do
-      expect(NotificationService).to_not receive(:subscription_confirmation)
-      subject
-    end
-
     context 'when previously subscription unsubscribed' do
       before do
         subscription.update! unsubscribed_at: Time.current
@@ -78,10 +68,6 @@ RSpec.describe ConfirmSubscription do
         }.to false
       end
 
-      it 'sends subscription confirmation email' do
-        expect(NotificationService).to receive(:subscription_confirmation).with(subscription)
-        subject
-      end
     end
 
   end

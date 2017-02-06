@@ -72,7 +72,9 @@ Knotweed::Application.routes.draw do
   end
   resources :subscriptions
   resources :received_emails
-  resources :listserv_contents
+  resources :listserv_contents do
+    post :undelete, on: :member
+  end
 
   get "repositories/:id/clear_published_contents", to: "repositories#clear_published_contents", as: :clear_published_contents
 
@@ -173,6 +175,7 @@ Knotweed::Application.routes.draw do
       post '/registrations/confirmed', to: 'confirmed_registrations#create'
 
       resources :listserv_contents, only: [:show,:update]
+      get '/listserv_contents/:id/verify' => 'listserv_contents#verify', format: 'html'
       patch '/listserv_contents/:id/update_metric', to: "listserv_contents#update_metric"
       put '/businesses/:id/feedback', to: 'business_feedbacks#update', as: :update_feedback
       resources :content_reports, only: :index

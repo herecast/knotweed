@@ -92,6 +92,12 @@ RSpec.configure do |config|
     end
   end
 
+  config.around(:each, freeze_time: true) do |example|
+    Timecop.freeze(Time.at(100))
+    example.run
+    Timecop.return
+  end
+
 end
 
 Geocoder.configure(lookup: :test)

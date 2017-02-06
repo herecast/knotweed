@@ -33,10 +33,10 @@ module ContentsHelper
     utm_string = "?utm_medium=email&utm_source=rev-pub&utm_campaign=20151201&utm_content=#{ux2_content_path(content)}"
     if ConsumerApp.current.present?
       url = "#{ConsumerApp.current.uri}#{ux2_content_path(content)}#{utm_string}"
-    elsif @base_uri.present?
-      url = "#{@base_uri}/contents/#{content.id}#{utm_string}"
+    elsif ConsumerApp.default.present?
+      url = "#{ConsumerApp.default.uri}#{ux2_content_path(content)}#{utm_string}"
     else
-      url = "http://www.dailyuv.com/contents/#{content.id}"
+      url = "#{ux2_content_path(content)}#{utm_string}"
     end
 
     url

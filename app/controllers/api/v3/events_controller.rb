@@ -6,7 +6,7 @@ module Api
 
       def index
         expires_in 1.minutes, :public => true
-        
+
         opts = {}
         opts[:order] = { pubdate: :desc }
         opts[:page] = params[:page] || 1
@@ -54,8 +54,15 @@ module Api
           event_hash = process_event_params(params[:event])
 
           if @event.update_with_schedules(event_hash, schedules)
-            # reverse publish to specified listservs
-            PromotionListserv.create_multiple_from_content(@event.content, listserv_ids, @requesting_app)
+            if listserv_ids.present?
+              # reverse publish to specified listservs
+              PromoteContentToListservs.call(
+                @event.content,
+                @requesting_app,
+                request.remote_ip,
+                *Listserv.where(id: listserv_ids.flatten)
+              )
+            end
 
             if @repository.present?
               PublishContentJob.perform_later(@event.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
@@ -95,7 +102,15 @@ module Api
           contact_ad_team if params[:event][:wants_to_advertise]
 
           # reverse publish to specified listservs
-          PromotionListserv.create_multiple_from_content(@event.content, listserv_ids, @requesting_app)
+          if listserv_ids.present?
+            # reverse publish to specified listservs
+            PromoteContentToListservs.call(
+              @event.content,
+              @requesting_app,
+              request.remote_ip,
+              *Listserv.where(id: listserv_ids)
+            )
+          end
 
           if @repository.present?
             PublishContentJob.perform_later(@event.content, @repository, Content::DEFAULT_PUBLISH_METHOD)

@@ -57,18 +57,6 @@ RSpec.describe VerifyAndUpdateListservContent do
       end
     end
 
-    context 'without content_id' do
-      before do
-        attributes[:content_id] = nil
-      end
-
-      it 'sends no enhance confirmation email' do
-        expect(NotificationService).to receive(:posting_confirmation)
-        subject
-      end
-    end
-
-
     context 'When content_id included in attributes update' do
       before do
         @user = FactoryGirl.create :user
@@ -81,11 +69,6 @@ RSpec.describe VerifyAndUpdateListservContent do
         expect(listserv_content.reload.content).to eql @content
       end
 
-      it 'triggers confirmation email' do
-        expect(NotificationService).to receive(:posting_confirmation).with(listserv_content, an_instance_of(String).or(be_nil))
-        subject
-      end
-
       it 'updates listserv content metric' do
         listserv_content_metric = FactoryGirl.create :listserv_content_metric, listserv_content_id: listserv_content.id
         attributes[:channel_type] = 'Event'
@@ -95,19 +78,6 @@ RSpec.describe VerifyAndUpdateListservContent do
         expect(listserv_content_metric.enhanced).to be true
         expect(listserv_content_metric.username).to eq listserv_content.content.created_by.name
         expect(listserv_content_metric.post_type).to eq 'Event'
-      end
-
-      context 'when user has temp_password set;' do
-        before do
-          @user.temp_password= "89r32jjkl2390"
-          @user.save!
-        end
-
-        it 'clear temp_password on user' do
-          expect{ subject }.to change{
-            @user.reload.temp_password
-          }.to nil
-        end
       end
 
       context 'when no existing user reference' do
@@ -159,6 +129,11 @@ RSpec.describe VerifyAndUpdateListservContent do
         subject
       end
 
+      it 'does not send subscription confirmation email' do
+        expect(NotificationService).to_not receive(:subscription_confirmation)
+        subject
+      end
+
       it 'sets the subscription user' do
         subject
         listserv_content.reload
@@ -189,6 +164,11 @@ RSpec.describe VerifyAndUpdateListservContent do
             subscription.reload.confirmed_at
           }.to instance_of(ActiveSupport::TimeWithZone)
         end
+
+        it 'does not send subscription confirmation email' do
+          expect(NotificationService).to_not receive(:subscription_confirmation)
+          subject
+        end
       end
 
       context 'Subscription was previously unsubscribed' do
@@ -205,6 +185,21 @@ RSpec.describe VerifyAndUpdateListservContent do
         it 'does not send subscription verification email' do
           expect(NotificationService).to_not receive(:subscription_verification)
           subject
+        end
+
+        it 'does not send subscription confirmation email' do
+          expect(NotificationService).to_not receive(:subscription_confirmation)
+          subject
+        end
+      end
+
+      context 'when subscriber is on blacklist' do
+        before do
+          subscription.update blacklist: true
+        end
+
+        it 'raises ListservExceptions::BlacklistedSender' do
+          expect{subject}.to raise_error(ListservExceptions::BlacklistedSender)
         end
       end
     end

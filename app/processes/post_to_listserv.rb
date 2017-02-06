@@ -14,10 +14,11 @@ class PostToListserv
 
   def call
     if sender_is_blacklisted?
-      raise ListservExceptions::BlacklistedSender.new(@listserv, @email.from)
+      notify_blacklisted and return
     end
 
     add_no_content_found if content_body_empty?
+
     begin
       content.content_category = DspClassify.call(content)
     rescue DspExceptions::UnableToClassify
@@ -53,6 +54,10 @@ class PostToListserv
 
   def sender_is_blacklisted?
     !!subscription.try(:blacklist?)
+  end
+
+  def notify_blacklisted
+    NotificationService.subscriber_blacklisted(subscription)
   end
 
   def matching_user

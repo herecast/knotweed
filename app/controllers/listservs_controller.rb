@@ -82,6 +82,7 @@ class ListservsController < ApplicationController
         :digest_subject,
         :list_type,
         :sender_name,
+        :admin_email,
         :promotions_list,
         promotion_ids: []
       )

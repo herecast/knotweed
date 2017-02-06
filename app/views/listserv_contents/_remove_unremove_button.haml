@@ -1,0 +1,4 @@
+- if model.deleted_at?
+  = link_to "Removed, UNDO?", undelete_listserv_content_url(@listserv_content), class: "btn btn-warning", remote: true, method: :post, "data-undo-btn" => @listserv_content.id
+- else
+  = link_to 'Remove', @listserv_content, method: :delete, remote: true, class: 'btn btn-danger', 'data-delete-btn' => @listserv_content.id, 'data-confirm' => 'Remove this record?'

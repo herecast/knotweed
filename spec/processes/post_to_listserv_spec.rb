@@ -114,16 +114,22 @@ RSpec.describe PostToListserv do
     end
 
     context 'when sender is blacklisted' do
-      before do
+      let!(:blacklisted_subscription) {
         FactoryGirl.create :subscription, {
           listserv: listserv,
           email: email.from,
           blacklist: true
         }
+      }
+
+      it "does not send verification email" do
+        expect(NotificationService).to_not receive(:posting_verification)
+        subject
       end
 
-      it "raises exception" do
-        expect{ subject }.to raise_error(ListservExceptions::BlacklistedSender)
+      it "sends blacklisted email" do
+        expect(NotificationService).to receive(:subscriber_blacklisted).with(blacklisted_subscription)
+        subject
       end
     end
 

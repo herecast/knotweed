@@ -26,9 +26,9 @@
 class ListservDigest < ActiveRecord::Base
   belongs_to :listserv
 
-  # pre-postgres below:  maybe update to array column?
-  serialize :listserv_content_ids, Array
-  serialize :content_ids, Array
+  scope :has_listserv_content, ->( lc ) {
+    where("? = ANY(listserv_content_ids)", lc.id)
+  }
 
   def listserv_contents=contents
     self.listserv_content_ids = contents.map(&:id)
@@ -37,7 +37,7 @@ class ListservDigest < ActiveRecord::Base
 
   def listserv_contents
     @listserv_contents ||=
-      listserv_content_ids.any? ?
+      listserv_content_ids.present? ?
         ListservContent.where(id: listserv_content_ids) : []
   end
 
@@ -48,7 +48,7 @@ class ListservDigest < ActiveRecord::Base
 
   def contents
     @contents ||=
-      content_ids.any? ?
+      content_ids.present? ?
         Content.where(id: content_ids).sort_by{|c| content_ids.index(c.id)} : []
   end
 
