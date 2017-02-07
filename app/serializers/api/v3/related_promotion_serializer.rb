@@ -18,6 +18,10 @@ module Api
       def title
         object.promotion.content.try(:title)
       end
+
+      def redirect_url
+        object.promotion_type == PromotionBanner::COUPON ? "/promotions/#{object.id}" : object.redirect_url
+      end
     end
   end
 end

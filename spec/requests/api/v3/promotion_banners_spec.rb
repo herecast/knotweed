@@ -189,5 +189,20 @@ describe 'Promotion Banner Endpoints', type: :request do
       )
     end
 
+    context "when promotion_banner is type: coupon" do
+      before do
+        @promotion_coupon = FactoryGirl.create :promotion_banner,
+          promotion_type: 'Coupon',
+          coupon_image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
+      end
+
+      subject { get "/api/v3/promotions/#{@promotion_coupon.promotion.id}" }
+
+      it "returns automated redirect_url" do
+        subject
+        expect(response_json[:promotions][0][:redirect_url]).to eq "/promotions/#{@promotion_coupon.id}"
+      end
+    end
+
   end
 end

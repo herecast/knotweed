@@ -1,5 +1,5 @@
 class PromotionsController < ApplicationController
- 
+
   def index
     @organization = Organization.find(params[:organization_id])
     @promotions = @organization.promotions
@@ -92,7 +92,7 @@ class PromotionsController < ApplicationController
         :paid,
         promotable_attributes: [ :id, :boost, :campaign_start, :campaign_end, :daily_max_impressions,
           :max_impressions, :banner_image, :redirect_url, :promotion_type,
-          :cost_per_impression, :cost_per_day ]
+          :cost_per_impression, :cost_per_day, :coupon_email_body, :coupon_image ]
       )
     end
 

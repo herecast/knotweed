@@ -19,6 +19,10 @@
         = p.input :max_impressions, label: 'Maximum Impressions'
         = p.input :cost_per_impression
         = p.input :cost_per_day
+        = p.input :coupon_email_body, as: :text, label: 'Coupon Details'
+        = image_tag promotion.promotable.coupon_image_url if promotion.promotable.coupon_image.present?
+        = p.input :coupon_image, as: :file, label: 'Coupon Image (aspect ratio: w360xh640)'
+
     - if promotion.promotable.present?
       = f.input :promotable_type, as: :hidden
 
@@ -28,7 +32,7 @@
       - elsif promotion.promotable.is_a? PromotionBanner
         = image_tag promotion.promotable_banner_image.url if promotion.promotable_banner_image?
         = g.input :banner_image
-        = g.input :redirect_url, input_html: { class: "input-block-level" }
+        = g.input :redirect_url, label: 'Redirect url: If promotion type = Coupon, this will be overridden', input_html: { class: "input-block-level" }
     = f.label :content
     %label= promotion.content.try(:title)
     = f.input :content_id, as: :hidden

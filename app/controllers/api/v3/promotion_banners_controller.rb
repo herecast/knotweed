@@ -40,7 +40,7 @@ module Api
 
         log_promotion_banner_loads(request.user_agent, request.remote_ip)
         @promotion_banners = @promotion_banners.map{ |promo| promo.first }
-        
+
         render json:  @promotion_banners, root: :promotions,
           each_serializer: RelatedPromotionSerializer
       end
@@ -62,7 +62,7 @@ module Api
         # use find_by_id because we want a return of nil instead
         # of causing an exception with find
         @banner = PromotionBanner.find_by_id params[:promotion_banner_id]
-        if @banner.present?    
+        if @banner.present?
           unless @current_api_user.try(:skip_analytics?)
             BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'click', @current_api_user, @banner, Date.current.to_s,
               content_id: params[:content_id]
@@ -90,14 +90,33 @@ module Api
         end
       end
 
+      def show_promotion_coupon
+        @promotion_coupon = PromotionBanner.find_by(id: params[:id])
+        if @promotion_coupon.present?
+          render json: @promotion_coupon, serializer: PromotionCouponSerializer
+        else
+          render json: {}, status: :not_found
+        end
+      end
+
+      def create_promotion_coupon_email
+        promotion_coupon = PromotionBanner.find_by(id: params[:id])
+        if promotion_coupon.present?
+          AdMailer.coupon_request(params[:email], promotion_coupon).deliver_later
+          render json: {}, status: :ok
+        else
+          render json: {}, status: :bad_request
+        end
+      end
+
       def metrics
         @promotion_banner = PromotionBanner.find(params[:id])
         # confirm user owns content first
         if promo_created_by_user? or user_can_manage?
-          render json: @promotion_banner, serializer: PromotionBannerMetricsSerializer, context: 
+          render json: @promotion_banner, serializer: PromotionBannerMetricsSerializer, context:
             {start_date: params[:start_date], end_date: params[:end_date]}
         else
-          render json: { errors: ['You do not have permission to access these metrics.'] }, 
+          render json: { errors: ['You do not have permission to access these metrics.'] },
             status: 401
         end
       end

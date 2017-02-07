@@ -6,4 +6,10 @@ class AdMailer < ActionMailer::Base
     @event = event
     mail(to: Rails.configuration.subtext.emails.advertising, subject: "#{@user.email} wants to advertise an event")
   end
+
+  def coupon_request(email, promotion_coupon)
+    @promotion_coupon = promotion_coupon
+    title = promotion_coupon.promotion.content.try(:title)
+    mail to: email, subject: "Coupon for #{title}"
+  end
 end

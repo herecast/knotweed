@@ -276,6 +276,64 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     end
   end
 
+  describe "GET #show_promotion_coupon" do
+    context "when promotion_banner does not exist" do
+      subject { get :show_promotion_coupon, id: '40 billion' }
+
+      it "returns not_found status" do
+        subject
+        expect(response).to have_http_status :not_found
+      end
+    end
+
+    context "when promotion_banner exists" do
+      before do
+        @promotion_banner = FactoryGirl.create :promotion_banner
+      end
+
+      subject { get :show_promotion_coupon, id: @promotion_banner.id }
+
+      it "returns ok status" do
+        subject
+        expect(response).to have_http_status :ok
+      end
+    end
+  end
+
+  describe "POST #create_promotion_coupon_email" do
+    context "when promotion_banner does not exist" do
+      subject { post :create_promotion_coupon_email, id: '40 billion' }
+
+      it "returns bad_request status" do
+        subject
+        expect(response).to have_http_status :bad_request
+      end
+    end
+
+    context "when promotion_banner exists" do
+      before do
+        @promotion_banner = FactoryGirl.create :promotion_banner
+        @email = 'darth@deathstar.com'
+      end
+
+      subject { post :create_promotion_coupon_email, id: @promotion_banner.id, email: @email }
+
+      it "sends email to user" do
+        mail = double()
+        expect(mail).to receive(:deliver_later)
+        expect(AdMailer).to receive(:coupon_request)
+          .with(@email, @promotion_banner)
+          .and_return(mail)
+        subject
+      end
+
+      it "returns ok status" do
+        subject
+        expect(response).to have_http_status :ok
+      end
+    end
+  end
+
   describe 'GET /promotion_banners/:id/metrics' do
     before do
       @banner = FactoryGirl.create :promotion_banner

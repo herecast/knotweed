@@ -20,6 +20,8 @@
 #  promotion_type         :string
 #  cost_per_impression    :float
 #  cost_per_day           :float
+#  coupon_email_body      :text
+#  coupon_image           :string
 #
 
 require 'spec_helper'
@@ -46,6 +48,15 @@ describe PromotionBanner, :type => :model do
 
       it "is not valid" do
         expect(@promotion_banner).not_to be_valid
+      end
+    end
+
+    context "when promotion is type: coupon" do
+      it "requires a coupon image" do
+        promotion_banner = FactoryGirl.build :promotion_banner,
+          promotion_type: PromotionBanner::COUPON,
+          coupon_image: nil
+        expect(promotion_banner).not_to be_valid
       end
     end
   end
@@ -93,11 +104,11 @@ describe PromotionBanner, :type => :model do
   end
 
   describe 'scope :has_inventory' do
-    subject { PromotionBanner.has_inventory } 
+    subject { PromotionBanner.has_inventory }
 
     context 'a promotion banner with no impression limits' do
       let(:promotion_banner) { FactoryGirl.create :promotion_banner,
-        daily_max_impressions: nil, max_impressions: nil } 
+        daily_max_impressions: nil, max_impressions: nil }
 
       it 'should be included' do
         expect(subject).to include(promotion_banner)
@@ -125,7 +136,7 @@ describe PromotionBanner, :type => :model do
     context 'a promotion banner over daily_max_impressions but not over max_impressions' do
       let(:promotion_banner) { FactoryGirl.create :promotion_banner,
         daily_max_impressions: 5, max_impressions: 6,
-        daily_impression_count: one_more_than_actual_allowance(5), impression_count: 5 } 
+        daily_impression_count: one_more_than_actual_allowance(5), impression_count: 5 }
 
       it 'should not be included' do
         expect(subject).to_not include(promotion_banner)
@@ -135,7 +146,7 @@ describe PromotionBanner, :type => :model do
     context 'a promotion banner over max_impressions but not over daily_max_impressions' do
       let(:promotion_banner) { FactoryGirl.create :promotion_banner,
         daily_max_impressions: 3, max_impressions: 6,
-        daily_impression_count: 2, impression_count: 6 } 
+        daily_impression_count: 2, impression_count: 6 }
 
       it 'should not be included' do
         expect(subject).to_not include(promotion_banner)

@@ -20,6 +20,8 @@
 #  promotion_type         :string
 #  cost_per_impression    :float
 #  cost_per_day           :float
+#  coupon_email_body      :text
+#  coupon_image           :string
 #
 
 class PromotionBanner < ActiveRecord::Base
@@ -32,7 +34,8 @@ class PromotionBanner < ActiveRecord::Base
   has_many :promotion_banner_metrics
 
   mount_uploader :banner_image, ImageUploader
-  skip_callback :commit, :after, :remove_previously_stored_banner_image
+  mount_uploader :coupon_image, ImageUploader
+  skip_callback :commit, :after, :remove_previously_stored_banner_image, :remove_previously_stored_coupon_image
 
   UPLOAD_ENDPOINT = "/statements"
 
@@ -42,6 +45,7 @@ class PromotionBanner < ActiveRecord::Base
   validates_presence_of :promotion, :banner_image, :campaign_start, :campaign_end, :promotion_type
   validates :max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'max_impressions.present?'
   validate :will_not_have_daily_and_per_impression_cost
+  validate :if_coupon_must_have_coupon_image
 
   OVER_DELIVERY_PERCENTAGE = 0.15
 
@@ -76,7 +80,8 @@ class PromotionBanner < ActiveRecord::Base
   SPONSORED = "Sponsored"
   DIGEST = "Digest"
   NATIVE = "Native"
-  PROMOTION_TYPES = [RUN_OF_SITE, SPONSORED, DIGEST, NATIVE]
+  COUPON = "Coupon"
+  PROMOTION_TYPES = [RUN_OF_SITE, SPONSORED, DIGEST, NATIVE, COUPON]
 
   scope :run_of_site, -> { where(promotion_type: RUN_OF_SITE) }
 
@@ -109,6 +114,12 @@ class PromotionBanner < ActiveRecord::Base
     def will_not_have_daily_and_per_impression_cost
       if cost_per_impression.present? && cost_per_day.present?
         errors.add(:cost_per_impression, 'cannot have cost_per_impression when cost_per_day is present')
+      end
+    end
+
+    def if_coupon_must_have_coupon_image
+      if promotion_type == COUPON && coupon_image.file.blank?
+        errors.add(:coupon_image, 'type coupon must have coupon image')
       end
     end
 

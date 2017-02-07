@@ -20,6 +20,8 @@
 #  promotion_type         :string
 #  cost_per_impression    :float
 #  cost_per_day           :float
+#  coupon_email_body      :text
+#  coupon_image           :string
 #
 
 FactoryGirl.define do
