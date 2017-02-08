@@ -83,7 +83,7 @@ class PromotionBanner < ActiveRecord::Base
   COUPON = "Coupon"
   PROMOTION_TYPES = [RUN_OF_SITE, SPONSORED, DIGEST, NATIVE, COUPON]
 
-  scope :run_of_site, -> { where(promotion_type: RUN_OF_SITE) }
+  scope :run_of_site, -> { where(promotion_type: [RUN_OF_SITE, COUPON]) }
 
   def active?
     campaign_start <= Time.current and campaign_end >= Time.current

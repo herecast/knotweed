@@ -181,6 +181,19 @@ RSpec.describe SelectPromotionBanners do
         end
       end
 
+      context "when coupon exists" do
+        before do
+          @promotion_banner = FactoryGirl.create :promotion_banner,
+            promotion_type: PromotionBanner::COUPON,
+            coupon_image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
+        end
+
+        it "returns coupon" do
+          results = subject
+          expect(results.first[0]).to eq @promotion_banner
+        end
+      end
+
       context "when active and boosted promotion exists" do
         before do
           @promotion_banner = FactoryGirl.create :promotion_banner, boost: true, max_impressions: nil
