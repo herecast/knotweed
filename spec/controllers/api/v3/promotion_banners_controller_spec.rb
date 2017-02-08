@@ -273,6 +273,19 @@ describe Api::V3::PromotionBannersController, :type => :controller do
           AdMetric.count
         }.by 1
       end
+
+      context "when user is admin" do
+        before do
+          user = FactoryGirl.create :user, skip_analytics: true
+          api_authenticate user: user
+        end
+
+        it "does not record metric" do
+          expect{ subject }.not_to change{
+            AdMetric.count
+          }
+        end
+      end
     end
   end
 

@@ -83,7 +83,8 @@ module Api
 
       def create_ad_metric
         ad_metric = AdMetric.new(ad_metric_params)
-        if ad_metric.save
+        if ad_metric.valid?
+          ad_metric.save unless @current_api_user.try(:skip_analytics?)
           render json: {}, status: :ok
         else
           render json: {}, status: :bad_request
