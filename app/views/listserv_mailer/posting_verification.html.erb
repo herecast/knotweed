@@ -40,26 +40,10 @@
   </table>
 <% end %>
 
-<%# <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%"> %>
-<%#   <tbody> %>
-<%#     <tr style="vertical-align: top"> %>
-<%#       <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-left: 10px"> %>
-<%#         <p style="color:#555555;margin: 0;font-size: 18px;line-height: 21px;text-align: left;"> %>
-<%#           <span style="font-size: 18px;"> %>
-<%#             <strong> %>
-<%#               Confirm by choosing to... %>
-<%#             </strong> %>
-<%#           </span> %>
-<%#         </p> %>
-<%#       </td> %>
-<%#     </tr> %>
-<%#   </tbody> %>
-<%# </table> %>
-
 <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0">
   <tbody>
     <tr style="vertical-align: top">
-      <td class="button-container" width="50%" style="padding: 10px;">
+      <td class="button-container" width="50%" "padding: 0px 10px;">
 
         <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
           <tbody>
@@ -81,12 +65,29 @@
                       <tbody>
                         <tr style="vertical-align: top">
                           <td
-                            style="border-collapse: collapse !important;vertical-align: top;border-radius: 5px;                   -webkit-border-radius: 5px;                   -moz-border-radius: 5px;                  color: #ffffff;                  background-color: #08AE66;                  padding-top: 5px;                   padding-right: 0px;                  padding-bottom: 5px;                  padding-left: 0px;                  text-align: center"
+                            style="border-collapse: collapse !important;
+                            vertical-align: top;
+                            color: #4c57ff;
+                            padding-top: 5px;
+                            padding-right: 0px;
+                            padding-bottom: 5px;
+                            padding-left: 0px;
+                            text-align: center;
+                            border: 1px solid #4c57ff;
+                            height: 170px;
+                            padding: 10px;"
                             valign="middle">
                               <span style="font-size:16px;line-height:32px;">
-                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #ffffff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;" do %>
-                                   SPRUCE IT UP
+                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #4c57ff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;" do %>
+                                  <strong>SPRUCE IT UP&nbsp;&nbsp;&nbsp;&nbsp;&gt;</strong>
                                 <% end %>
+                              </span>
+                              <span style="font-size:12px;line-height:20px;">
+                                <p><em>Enhance your post with extra options.  Post into the vibrant and local DailyUV community as well as to the listserv</em></p>
+                              </span>
+                              <span style="font-size:12px;line-height:5px;">
+                                <p><em>No idea what this means?i<em></p>
+                                <p>Check out <a href="http://<%=ENV['DEFAULT_CONSUMER_HOST'] %>" target="_blank"><u>examples.</u></p>
                               </span>
                           </td>
                         </tr>
@@ -98,7 +99,7 @@
           </tbody>
         </table>
       </td>
-      <td width="50%" style='padding: 10px;'>
+      <td width="50%" style='padding: 0px 10px;'>
         <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
           <tbody>
             <tr style="vertical-align: top">
@@ -119,12 +120,25 @@
                       <tbody>
                         <tr style="vertical-align: top">
                           <td
-                            style="border-collapse: collapse !important;vertical-align: top;border-radius: 5px;                   -webkit-border-radius: 5px;                   -moz-border-radius: 5px;                  color: #ffffff;                  background-color: #08AE66;                  padding-top: 5px;                   padding-right: 0px;                  padding-bottom: 5px;                  padding-left: 0px;                  text-align: center"
+                            style="border-collapse: collapse !important;
+                            vertical-align: top;
+                            color: #4c57ff;
+                            padding-top: 5px;
+                            padding-right: 0px;
+                            padding-bottom: 5px;
+                            text-align: center;
+                            height: 170px;
+                            padding: 10px;
+                            border: 1px solid #4c57ff;"
                             valign="middle">
                               <span style="font-size:16px;line-height:32px;">
-                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/api/v3/listserv_contents/#{@post.key}/verify", style: "color: #ffffff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;" do %>
-                                   SEND AS IS
+                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/api/v3/listserv_contents/#{@post.key}/verify", style: "color: #4c57ff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;" do %>
+                                  <strong>SEND AS IS&nbsp;&nbsp;&nbsp;></strong>
+
                                 <% end %>
+                              </span>
+                              <span style="font-size:12px;line-height:20px;">
+                                <p>Send your post to the <%= @listserv.name %> unaltered.</p>
                               </span>
                           </td>
                         </tr>
