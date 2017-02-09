@@ -24,7 +24,9 @@ class ListservMailer < ActionMailer::Base
     @subscription = post.subscription
     @listserv = post.listserv
 
-    mail(to: @post.sender_email, subject: "#{@post.subject} - CONFIRM TO PUBLISH")
+    mail(to: @post.sender_email, subject: "#{@post.subject} - CONFIRM TO PUBLISH") do |format|
+      format.html { render layout: 'publish_confirmation_mailer' }
+    end
   end
 
   def subscriber_blacklisted(sub)
