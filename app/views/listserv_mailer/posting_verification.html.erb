@@ -29,10 +29,10 @@
       <tr style="vertical-align: top">
         <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 5px;padding-right: 10px;padding-bottom: 0px;padding-left: 10px">
           <p style="margin: 0;font-size: 18px;line-height: 21px;text-align: center">
-            Your post isn't published yet.<br>
+          <strong>Your post isn't published yet.</strong><br>
           </p>
           <p style="font-size: 18px;line-height: 21px;text-align: center">
-            To publish your post, confirm by choosing to...
+            <strong>To publish your post, confirm by choosing to...</strong>
           </p>
         </td>
       </tr>
@@ -75,6 +75,7 @@
                             text-align: center;
                             border: 1px solid #4c57ff;
                             height: 170px;
+                            background-color: white;
                             padding: 10px;"
                             valign="middle">
                               <span style="font-size:16px;line-height:32px;">
@@ -86,7 +87,7 @@
                                 <p><em>Enhance your post with extra options.  Post into the vibrant and local DailyUV community as well as to the listserv</em></p>
                               </span>
                               <span style="font-size:12px;line-height:5px;">
-                                <p><em>No idea what this means?i<em></p>
+                                <p><em>No idea what this means?<em></p>
                                 <p>Check out <a href="http://<%=ENV['DEFAULT_CONSUMER_HOST'] %>" target="_blank"><u>examples.</u></p>
                               </span>
                           </td>
@@ -129,6 +130,7 @@
                             text-align: center;
                             height: 170px;
                             padding: 10px;
+                            background-color: white;
                             border: 1px solid #4c57ff;"
                             valign="middle">
                               <span style="font-size:16px;line-height:32px;">
@@ -160,14 +162,7 @@
     <tr style="vertical-align: top">
       <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
         <p style="font-size: 14px;line-height: 16px;text-align: center">
-          <strong>
-            BOTH CHOICES ARE FREE
-          </strong>
-        </p>
-        <p style="font-size: 14px;line-height: 16px;text-align: center">
-          <span style="color: rgb(151, 151, 151); font-size: 14px; line-height: 16px;">
-            This will subscribe you to the <%= @listserv.name %> digest, if you aren't already.
-          </span>
+            Both choices are free and will subscribe you to the Upper Valley Discussion List (listserv) if you aren't already
         </p>
       </td>
     </tr>
