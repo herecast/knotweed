@@ -86,7 +86,7 @@ class PromotionBanner < ActiveRecord::Base
   scope :run_of_site, -> { where(promotion_type: [RUN_OF_SITE, COUPON]) }
 
   def active?
-    campaign_start <= Time.current and campaign_end >= Time.current
+    campaign_start <= Date.current && campaign_end >= Date.current
   end
 
   def current_daily_report(current_date=Date.current)
