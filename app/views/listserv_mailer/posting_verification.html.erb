@@ -7,7 +7,7 @@
   <tbody>
     <tr style="vertical-align: top;background-color: #69C2F8;">
       <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top; padding: 10px 10px 0 10px;">
-        <p style="line-height: 31px; font-size: 26px; color: #fff;;margin: 0;text-align: left">
+        <p style="line-height: 31px; font-size: 26px; color: #fff;;margin: 0;text-align: center">
           <strong>
             <%= @listserv.name.upcase %>
           </strong>
@@ -24,14 +24,14 @@
   </tbody>
 </table>
 
-  <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top; margin-bottom: 10px;" cellpadding="0" cellspacing="0" width="100%">
+  <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top; margin-bottom: -35px;" cellpadding="0" cellspacing="0" width="100%">
     <tbody>
       <tr style="vertical-align: top">
         <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 5px;padding-right: 10px;padding-bottom: 0px;padding-left: 10px">
           <p style="margin: 0;font-size: 18px;line-height: 21px;text-align: center">
           <strong>Your post isn't published yet.</strong><br>
           </p>
-          <p style="font-size: 18px;line-height: 21px;text-align: center">
+          <p style="font-size: 18px;line-height: 21px;text-align: center; padding-top: 10px;">
             <strong>To publish your post, confirm by choosing to...</strong>
           </p>
         </td>
@@ -84,7 +84,7 @@
                                 <% end %>
                               </span>
                               <span style="font-size:12px;line-height:20px;">
-                                <p><em>Enhance your post with extra options.  Post into the vibrant and local DailyUV community as well as to the listserv</em></p>
+                                <p><em>Enhance your post with extra options.  Post into the vibrant and local DailyUV community as well as to the listserv.</em></p>
                               </span>
                               <span style="font-size:12px;line-height:5px;">
                                 <p><em>No idea what this means?<em></p>
@@ -140,7 +140,7 @@
                                 <% end %>
                               </span>
                               <span style="font-size:12px;line-height:20px;">
-                                <p>Send your post to the <%= @listserv.name %> unaltered.</p>
+                                <p><em>Send your post to the <%= @listserv.name %> unaltered.</em></p>
                               </span>
                           </td>
                         </tr>
