@@ -26,6 +26,7 @@ class ListservMailer < ActionMailer::Base
 
     mail(to: @post.sender_email, subject: "#{@post.subject} - CONFIRM TO PUBLISH") do |format|
       format.html { render layout: 'publish_confirmation_mailer' }
+      format.text
     end
   end
 

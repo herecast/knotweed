@@ -152,12 +152,9 @@ RSpec.describe ListservMailer, type: :mailer do
     end
 
     it 'includes verify only link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/api/v3/listserv_contents/#{listserv_content.key}/verify")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/api/v3/listserv_contents/#{listserv_content.key}/verify")
+      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/posts/confirm_post/#{listserv_content.key}")
+      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/posts/confirm_post/#{listserv_content.key}")
     end
-
-    include_examples :has_curious_why_changed_when_not_user_test
-    include_examples :has_unsubscribe_with_user_test_changes
 
     it 'includes list name' do
       expect(body_html).to include(listserv_content.listserv.name)
