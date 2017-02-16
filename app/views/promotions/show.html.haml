@@ -31,7 +31,10 @@
           = link_to @promotion.promotable_banner_image, @promotion.promotable_banner_image.url
         %p
           %b Target URL:
-          = link_to nil, @promotion.promotable_redirect_url
+          - if @promotion.promotable.promotion_type == PromotionBanner::COUPON
+            = @promotion.promotable_redirect_url
+          - else
+            = link_to nil, @promotion.promotable_redirect_url
         %p
           %b Paid:
           = @promotion.paid

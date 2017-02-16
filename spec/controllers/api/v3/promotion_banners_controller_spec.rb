@@ -306,9 +306,22 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
       subject { get :show_promotion_coupon, id: @promotion_banner.id }
 
-      it "returns ok status" do
-        subject
-        expect(response).to have_http_status :ok
+      context "when not a coupon" do
+        it "returns not_found status" do
+          subject
+          expect(response).to have_http_status :not_found
+        end
+      end
+
+      context "when a coupon" do
+        before do
+          @promotion_banner.update_attribute :promotion_type, PromotionBanner::COUPON
+        end
+
+        it "returns ok status" do
+          subject
+          expect(response).to have_http_status :ok
+        end
       end
     end
   end

@@ -93,7 +93,7 @@ module Api
 
       def show_promotion_coupon
         @promotion_coupon = PromotionBanner.find_by(id: params[:id])
-        if @promotion_coupon.present?
+        if @promotion_coupon.present? && @promotion_coupon.promotion_type == PromotionBanner::COUPON
           render json: @promotion_coupon, serializer: PromotionCouponSerializer
         else
           render json: {}, status: :not_found

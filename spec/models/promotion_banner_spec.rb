@@ -268,6 +268,17 @@ describe PromotionBanner, :type => :model do
     end
   end
 
+  describe "#generate_coupon_click_redirect" do
+    it "auto generates coupon click url" do
+      promotion_banner = FactoryGirl.build(:promotion_banner,
+        promotion_type: PromotionBanner::COUPON,
+        coupon_image:   File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
+      )
+      promotion_banner.save
+      expect(promotion_banner.reload.redirect_url).to eq "/promotions/#{promotion_banner.id}"
+    end
+  end
+
   def one_more_than_actual_allowance(daily_max)
     (daily_max + (daily_max * PromotionBanner::OVER_DELIVERY_PERCENTAGE)).ceil
   end
