@@ -359,6 +359,7 @@ GEM
       haml (~> 4.0.0)
       nokogiri (~> 1.6.0)
       ruby_parser (~> 3.5)
+    htmlcompressor (0.3.1)
     httparty (0.12.0)
       json (~> 1.8)
       multi_xml (>= 0.5.2)
@@ -709,6 +710,7 @@ DEPENDENCIES
   haml-rails (~> 0.9.0)
   health_check (~> 1.5, >= 1.5.1)
   hpricot (~> 0.8.6)
+  htmlcompressor
   httparty (~> 0.12.0)
   icalendar (~> 2.3)
   ice_cube (~> 0.13.0)
