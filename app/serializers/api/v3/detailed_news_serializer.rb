@@ -4,7 +4,7 @@ module Api
 
       attributes :id, :content_id, :admin_content_url, :content, :title, :subtitle,
         :author_name, :author_id, :organization_name, :organization_id, :published_at, :comment_count,
-        :is_sponsored_content, :created_at, :updated_at, :can_edit
+        :is_sponsored_content, :created_at, :updated_at, :can_edit, :split_content
 
       has_many :images
 

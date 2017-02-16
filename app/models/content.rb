@@ -1295,4 +1295,8 @@ class Content < ActiveRecord::Base
     current_daily_report(current_date) || content_reports.create!(report_date: current_date)
   end
 
+  def split_content
+    SplitContentForAdPlacement.call(sanitized_content)
+  end
+
 end
