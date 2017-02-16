@@ -28,7 +28,7 @@ class SplitContentForAdPlacement
     end
 
     def greater_than_minimum_length?
-      @parsed_content.inner_text.length > 255
+      @parsed_content.inner_text.length > CHARACTER_MINIMUM
     end
 
     def does_not_meet_requirements_split
@@ -40,7 +40,7 @@ class SplitContentForAdPlacement
     end
 
     def find_first_p_node
-      if @paragraph_array[0].inner_text.length >= CHARACTER_MINIMUM
+      if @paragraph_array[0].present? && @paragraph_array[0].inner_text.length >= CHARACTER_MINIMUM
         @first_p_node = @paragraph_array[0]
       else
         @first_p_node = @paragraph_array[1]

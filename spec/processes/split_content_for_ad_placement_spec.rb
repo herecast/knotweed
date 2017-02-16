@@ -3,9 +3,9 @@ require 'rails_helper'
 RSpec.describe SplitContentForAdPlacement do
 
   describe '::call' do
-    context 'when article character total is fewer than 255' do
+    context "when article character total is fewer than #{SplitContentForAdPlacement::CHARACTER_MINIMUM}" do
       before do
-        @head = "<p><br><br><br>#{ 'a' * 254 }</p><p></p>"
+        @head = "<p><br><br><br>#{ 'a' * (SplitContentForAdPlacement::CHARACTER_MINIMUM - 1) }</p><p></p>"
         @tail = nil
         @body = "#{@head}#{@tail}"
       end
@@ -93,6 +93,22 @@ RSpec.describe SplitContentForAdPlacement do
       subject { SplitContentForAdPlacement.call(@body) }
 
       it "displays add after the image" do
+        results = subject
+        expect(results[:head]).to eq @head
+        expect(results[:tail]).to eq @tail
+      end
+    end
+
+    context "when content has no paragraphs" do
+      before do
+        @head = "<div>#{'a'*193}</div><div>#{'b'*45}</div>"
+        @tail = nil
+        @body = "#{@head}#{@tail}"
+      end
+
+      subject { SplitContentForAdPlacement.call(@body) }
+
+      it "displays at end of content" do
         results = subject
         expect(results[:head]).to eq @head
         expect(results[:tail]).to eq @tail
