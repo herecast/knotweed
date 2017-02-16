@@ -43,7 +43,7 @@
 <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0" >
   <tbody>
     <tr style="vertical-align: top">
-      <td class="button-container" width="50%" "padding: 0px 10px;">
+      <td class="button-container" width="45%" "padding: 0px 10px;">
 
         <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
           <tbody>
@@ -78,7 +78,7 @@
                             background-color: white;
                             padding: 10px;"
                             valign="middle">
-                              <span style="font-size:16px;line-height:32px;">
+                              <span style="font-size:16px;line-height:25px;">
                                 <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #4c57ff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;" do %>
                                   <strong>SPRUCE IT UP&nbsp;&nbsp;&nbsp;&nbsp;&gt;</strong>
                                 <% end %>
@@ -100,7 +100,20 @@
           </tbody>
         </table>
       </td>
-      <td width="50%" style='padding: 0px 10px;'>
+      <td width="10%">
+        <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+          <tbody>
+            <tr style="vertical-align: top">
+              <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
+                <p style="font-size: 16px;line-height: 20px;text-align: center">
+                  <strong>OR</strong>
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+      <td width="45%">
         <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
           <tbody>
             <tr style="vertical-align: top">
@@ -135,7 +148,7 @@
                             valign="middle">
                               <span style="font-size:16px;line-height:32px;">
                                 <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/posts/confirm_post/#{@post.key}", style: "color: #4c57ff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;" do %>
-                                  <strong><u><em>OR</em></u>&nbsp;&nbsp;&nbsp;SEND AS IS&nbsp;&nbsp;&nbsp;></strong>
+                                  <strong>SEND AS IS&nbsp;&nbsp;&nbsp;></strong>
 
                                 <% end %>
                               </span>
