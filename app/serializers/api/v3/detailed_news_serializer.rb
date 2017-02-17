@@ -48,6 +48,10 @@ module Api
         end
       end
 
+      def split_content
+        { head: object.sanitized_content, tail: nil }
+      end
+
     end
   end
 end
