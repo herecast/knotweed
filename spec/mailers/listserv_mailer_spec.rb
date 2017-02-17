@@ -152,8 +152,8 @@ RSpec.describe ListservMailer, type: :mailer do
     end
 
     it 'includes verify only link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/posts/confirm_post/#{listserv_content.key}")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/posts/confirm_post/#{listserv_content.key}")
+      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{listserv_content.key}")
+      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{listserv_content.key}")
     end
 
     it 'includes list name' do
