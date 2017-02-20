@@ -21,7 +21,7 @@ RSpec.describe SplitContentForAdPlacement do
 
     context "when the first two elements of content are paragraphs" do
       before do
-        @head = "<p>#{'a' * 304}</p>"
+        @head = "<p>#{'a' * SplitContentForAdPlacement::CHARACTER_MINIMUM}</p>"
         @tail = "<p>#{'b' * 280}</p>"
         @body = "#{@head}#{@tail}"
       end
@@ -69,7 +69,7 @@ RSpec.describe SplitContentForAdPlacement do
 
     context "when image is after first paragraph" do
       before do
-        @head = "<p>#{'a' * 317}</p><div>\n<img><p></p>\n</div><p>#{'ab' * 13}</p>"
+        @head = "<p>#{'a' * SplitContentForAdPlacement::CHARACTER_MINIMUM}</p><div>\n<img><p></p>\n</div><p>#{'ab' * 13}</p>"
         @tail = "<p>#{'b' * 280}</p>"
         @body = "#{@head}#{@tail}"
       end
@@ -85,7 +85,7 @@ RSpec.describe SplitContentForAdPlacement do
 
     context "when p with content is followed by an empty p and then an image" do
       before do
-        @head = "<p>#{'a' * 280}</p><p><b><br></b></p><div><img></div>"
+        @head = "<p>#{'a' * SplitContentForAdPlacement::CHARACTER_MINIMUM}</p><p><b><br></b></p><div><img></div>"
         @tail = nil
         @body = "#{@head}#{@tail}"
       end
@@ -99,16 +99,32 @@ RSpec.describe SplitContentForAdPlacement do
       end
     end
 
-    context "when content has no paragraphs" do
+    context "when content is in divs" do
       before do
-        @head = "<div>#{'a'*193}</div><div>#{'b'*45}</div>"
+        @head = "<div>#{'a'*SplitContentForAdPlacement::CHARACTER_MINIMUM}</div>"
+        @tail = "<div>#{'b'*45}</div>"
+        @body = "#{@head}#{@tail}"
+      end
+
+      subject { SplitContentForAdPlacement.call(@body) }
+
+      it "treats <div>s like <p>s" do
+        results = subject
+        expect(results[:head]).to eq @head
+        expect(results[:tail]).to eq @tail
+      end
+    end
+
+    context "when no viable content present" do
+      before do
+        @head = "<br><br><div></div><br>"
         @tail = nil
         @body = "#{@head}#{@tail}"
       end
 
       subject { SplitContentForAdPlacement.call(@body) }
 
-      it "displays at end of content" do
+      it "defaults to end of article" do
         results = subject
         expect(results[:head]).to eq @head
         expect(results[:tail]).to eq @tail
