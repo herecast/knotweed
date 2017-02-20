@@ -38,7 +38,7 @@ module Api
         conditionally_prime_daily_ad_reports
         @promotion_banners = SelectPromotionBanners.call(opts)
 
-        log_promotion_banner_loads(request.user_agent, request.remote_ip)
+        log_promotion_banner_loads
         @promotion_banners = @promotion_banners.map{ |promo| promo.first }
 
         render json:  @promotion_banners, root: :promotions,
@@ -47,15 +47,12 @@ module Api
 
       def track_impression
         @banner = PromotionBanner.find params[:id]
-
-        unless @current_api_user.try(:skip_analytics?)
-          BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'impression', @current_api_user, @banner, Date.current.to_s,
-            content_id:  params[:content_id],
-            gtm_blocked: params[:gtm_blocked] == 'true'
-          )
+        if @banner.present?
+          record_promotion_banner_metric([@banner], 'impression')
+          render json: {}, status: :ok
+        else
+          render json: {}, status: :bad_request
         end
-
-        render json: {}, status: :ok
       end
 
       def track_click
@@ -63,11 +60,8 @@ module Api
         # of causing an exception with find
         @banner = PromotionBanner.find_by_id params[:promotion_banner_id]
         if @banner.present?
+          record_promotion_banner_metric([@banner], 'click')
           unless @current_api_user.try(:skip_analytics?)
-            BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'click', @current_api_user, @banner, Date.current.to_s,
-              content_id: params[:content_id]
-            )
-
             @content = Content.find_by_id params[:content_id]
             if @content.present?
               BackgroundJob.perform_later('RecordContentMetric', 'call', @content, 'click', Date.current.to_s,
@@ -148,17 +142,28 @@ module Api
         end
       end
 
-      def log_promotion_banner_loads(user_agent, user_ip)
+      def log_promotion_banner_loads
+        @promotion_banners.each do |promotion_banner_packet|
+          record_promotion_banner_metric(promotion_banner_packet, 'load')
+        end
+      end
+
+      def record_promotion_banner_metric(promotion_banner_packet, event_type)
         unless @current_api_user.try(:skip_analytics?)
-          @promotion_banners.each do |promotion_banner|
-            BackgroundJob.perform_later("RecordPromotionBannerMetric", "call", 'load', @current_api_user, promotion_banner[0], Date.current.to_s,
-              content_id:    params[:content_id],
-              select_score:  promotion_banner[1],
-              select_method: promotion_banner[2],
-              user_agent:    user_agent,
-              user_ip:       user_ip
-            )
-          end
+          BackgroundJob.perform_later('RecordPromotionBannerMetric', 'call',
+            content_id:          params[:content_id],
+            event_type:          event_type,
+            current_date:        Date.current.to_s,
+            user_id:             @current_api_user.try(:id),
+            promotion_banner_id: promotion_banner_packet[0].id,
+            select_score:        promotion_banner_packet[1],
+            select_method:       promotion_banner_packet[2],
+            user_agent:          request.user_agent,
+            user_ip:             request.remote_ip,
+            gtm_blocked:         params[:gtm_blocked] == true,
+            page_placement:      params[:page_placement],
+            page_url:            params[:page_url]
+          )
         end
       end
 

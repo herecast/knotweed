@@ -14,6 +14,7 @@
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  gtm_blocked         :boolean
+#  page_placement      :string
 #
 
 class PromotionBannerMetric < ActiveRecord::Base

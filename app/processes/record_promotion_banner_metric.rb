@@ -4,12 +4,10 @@ class RecordPromotionBannerMetric
     self.new(*args).call
   end
 
-  def initialize(event_type, user, promotion_banner, current_date, opts={})
-    @event_type       = event_type
-    @user             = user
-    @promotion_banner = promotion_banner
-    @current_date     = current_date.to_date
+  def initialize(opts={})
     @opts             = opts
+    @promotion_banner = PromotionBanner.find(opts[:promotion_banner_id])
+    @current_date     = opts[:current_date].to_date
   end
 
   def call
@@ -22,15 +20,17 @@ class RecordPromotionBannerMetric
 
     def record_event
       PromotionBannerMetric.create!(
-        event_type:          @event_type,
-        promotion_banner_id: @promotion_banner.id,
-        user_id:             @user.try(:id),
         content_id:          @opts[:content_id],
-        select_method:       @opts[:select_method],
+        event_type:          @opts[:event_type],
+        user_id:             @opts[:user_id],
+        promotion_banner_id: @opts[:promotion_banner_id],
         select_score:        @opts[:select_score],
-        gtm_blocked:         @opts[:gtm_blocked],
+        select_method:       @opts[:select_method],
         user_agent:          @opts[:user_agent],
-        user_ip:             @opts[:user_ip]
+        user_ip:             @opts[:user_ip],
+        gtm_blocked:         @opts[:gtm_blocked],
+        page_placement:      @opts[:page_placement],
+        page_url:            @opts[:page_url]
       )
     end
 
@@ -39,7 +39,7 @@ class RecordPromotionBannerMetric
     end
 
     def increment_report_stats
-      case @event_type
+      case @opts[:event_type]
       when 'load'
         @report.increment!(:load_count)
         @promotion_banner.increment!(:load_count)

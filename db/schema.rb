@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170201184448) do
+ActiveRecord::Schema.define(version: 20170208213127) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -811,6 +811,7 @@ ActiveRecord::Schema.define(version: 20170201184448) do
     t.boolean  "gtm_blocked"
     t.string   "user_agent"
     t.string   "user_ip"
+    t.string   "page_placement"
   end
 
   add_index "promotion_banner_metrics", ["created_at"], name: "index_promotion_banner_metrics_on_created_at", using: :btree

@@ -105,7 +105,14 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       end
 
       it "runs background job to clear daily impressions and to record 'load' event" do
-        expect(BackgroundJob).to receive(:perform_later).with(any_args).twice
+        expect(BackgroundJob).to receive(:perform_later).with(
+          "PrimeDailyPromotionBannerReports", "call", Date.current.to_s
+        )
+        expect(BackgroundJob).to receive(:perform_later).with(
+          "RecordPromotionBannerMetric", "call", hash_including({
+            promotion_banner_id: @pb.id
+          })
+        )
         subject
       end
     end
@@ -116,7 +123,14 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       end
 
       it "runs background job to clear daily impressions and to record 'load' event" do
-        expect(BackgroundJob).to receive(:perform_later).with(any_args).twice
+        expect(BackgroundJob).to receive(:perform_later).with(
+          "PrimeDailyPromotionBannerReports", "call", Date.current.to_s
+        )
+        expect(BackgroundJob).to receive(:perform_later).with(
+          "RecordPromotionBannerMetric", "call", hash_including({
+            promotion_banner_id: @pb.id
+          })
+        )
         subject
       end
     end
@@ -131,7 +145,11 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
       it "records 'load' event" do
         expect(BackgroundJob).to receive(:perform_later).with(
-          "RecordPromotionBannerMetric", "call", 'load', nil, @pb, any_args
+          "RecordPromotionBannerMetric", "call", hash_including({
+            event_type: 'load',
+            user_id: nil,
+            promotion_banner_id: @pb.id
+          })
         )
         subject
       end
@@ -182,7 +200,10 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
     it "calls record_promotion_banner_metric with 'impression'" do
       expect(BackgroundJob).to receive(:perform_later).with(
-        'RecordPromotionBannerMetric', "call", "impression", any_args
+        'RecordPromotionBannerMetric', "call", hash_including({
+          event_type: "impression",
+          promotion_banner_id: @banner.id
+        })
       )
       subject
     end
@@ -218,13 +239,20 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     end
 
     it "calls record_promotion_banner_metric with 'click" do
-      expect{ subject }.to have_enqueued_job(BackgroundJob).with(
-        "RecordPromotionBannerMetric", "call", 'click', nil, @banner, Date.current.to_s,
-          { content_id: @content.id }
-      ).and have_enqueued_job(BackgroundJob).with(
+      expect(BackgroundJob).to receive(:perform_later).with(
+        "RecordPromotionBannerMetric", "call", hash_including({
+          event_type: 'click',
+          user_id: nil,
+          promotion_banner_id: @banner.id,
+          current_date: Date.current.to_s,
+          content_id: @content.id
+        })
+      )
+      expect(BackgroundJob).to receive(:perform_later).with(
         'RecordContentMetric', 'call', @content, 'click', Date.current.to_s,
           { user_id: nil }
       )
+      subject
     end
 
     context 'as a user with skip_analytics = true' do
