@@ -309,6 +309,13 @@ describe Api::V3::EventsController, :type => :controller do
     context "when wants_to_advertise is flagged" do
       subject { post :create, format: :json, event: @event_attrs.merge(wants_to_advertise: true), current_user_id: @current_user.id }
 
+      it "sends email to user with rates" do
+        mail = double()
+        expect(mail).to receive(:deliver_later)
+        expect(AdMailer).to receive(:event_advertising_user_contact).and_return(mail)
+        subject
+      end
+
       it "sends email to admin" do
         mail = double()
         expect(mail).to receive(:deliver_later)
