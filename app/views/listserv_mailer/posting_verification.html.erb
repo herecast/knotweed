@@ -28,11 +28,10 @@
     <tbody>
       <tr style="vertical-align: top">
         <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 5px;padding-right: 10px;padding-bottom: 0px;padding-left: 10px">
-          <p style="margin: 0;font-size: 25px;line-height: 25px;text-align: center">
+          <p style="margin: 0;font-size: 18px;line-height: 25px;text-align: center">
           <strong>Your post isn't published yet.</strong><br>
           </p>
           <p style="font-size: 20px;line-height: 25px;text-align: center; padding-top: 10px;">
-          <strong>To publish your post, confirm by <em><u>choosing</u></em> to...</strong>
           </p>
         </td>
       </tr>
@@ -67,27 +66,34 @@
                           <td
                             style="border-collapse: collapse !important;
                             vertical-align: top;
-                            color: #4c57ff;
-                            padding-top: 5px;
+                            border-radius: 5px;
+                            -webkit-border-radius: 5px !important;
+                            -moz-border-radius: 5px;
                             padding-right: 0px;
                             padding-bottom: 5px;
                             padding-left: 0px;
                             text-align: center;
-                            border: 1px solid #4c57ff;
+                            border: 3px solid #08AE66;
                             height: 170px;
-                            background-color: white;
-                            padding: 10px;"
+                            background-color: #CFF3D9;"
                             valign="middle">
-                              <span style="font-size:16px;line-height:25px;">
-                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #4c57ff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;" do %>
-                                  <strong>SPRUCE IT UP&nbsp;&nbsp;&nbsp;&nbsp;&gt;</strong>
-                                <% end %>
-                              </span>
-                              <span style="font-size:20px;line-height:20px;">
-                                <p><em>Add photos and reach a wider audience!</em></p>
+                                  <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #fff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
+                                    <div style="width 100%; background-color: #08AE66; padding: 5px; text-align: left !important;">
+                                      <span style="font-size:16px;line-height:25px;">
+                                        <strong>SPRUCE IT UP</strong>
+                                      </span>
+                                      <span style="font-size:25px;line-height:25px; float: right; padding-left: 5px; padding-top: 3px;">
+                                        <strong>&nbsp;&nbsp;&nbsp;&nbsp;&gt;</strong>
+                                      </span>
+                                    </div>
+                                  <% end %>
+                              <span>
+                                  <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #000; font-size: 16px; display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
+                                    <p style="padding: 0px 5px;">Add photos and reach a wider audience!</p>
+                                  <% end %>
                               </span>
                               <span style="font-size:12px;line-height:5px;">
-                                <p><em>No idea what this means?<em></p>
+                                <p>No idea what this means?</p>
                                 <p>Check out <a href="http://<%=ENV['DEFAULT_CONSUMER_HOST'] %>" target="_blank"><u>examples.</u></p>
                               </span>
                           </td>
@@ -100,11 +106,11 @@
           </tbody>
         </table>
       </td>
-      <td width="10%">
-        <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+      <td width="10%" height="100%">
+        <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%" height="100%">
           <tbody>
-            <tr style="vertical-align: top">
-              <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
+            <tr>
+              <td style="word-break: keep-all;border-collapse: collapse !important;vertical-align: center;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
                 <p style="font-size: 16px;line-height: 20px;text-align: center">
                   <strong>OR</strong>
                 </p>
@@ -136,24 +142,27 @@
                           <td
                             style="border-collapse: collapse !important;
                             vertical-align: top;
-                            color: #4c57ff;
-                            padding-top: 5px;
                             padding-right: 0px;
                             padding-bottom: 5px;
                             text-align: center;
                             height: 170px;
-                            padding: 10px;
-                            background-color: white;
-                            border: 1px solid #4c57ff;"
+                            background-color: #CFF3D9;
+                            border: 3px solid #08AE66;"
                             valign="middle">
-                              <span style="font-size:16px;line-height:32px;">
-                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{@post.key}", style: "color: #4c57ff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;" do %>
-                                  <strong>SEND AS IS&nbsp;&nbsp;&nbsp;></strong>
-
+                              <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{@post.key}", style: "color: #fff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
+                                <div style="width 100%; background-color: #08AE66; padding: 5px; text-align: left !important;">
+                                  <span style="font-size:16px;line-height:25px; padding-left: 5px;">
+                                    <strong>SEND AS IS</strong>
+                                  </span>
+                                  <span style="font-size:25px;line-height:25px; float: right; padding-left: 5px; padding-top: 3px;">
+                                    <strong>&nbsp;&nbsp;&nbsp;&nbsp;&gt;</strong><span>
+                                  </span>
+                                </div>
+                              <% end %>
+                              <span>
+                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/posts/confirm_post/#{@post.key}", style: "color: #000; font-size: 16px; display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
+                                  <p style="padding: 0px 5px;">Send your post to the <%= @listserv.name %> unaltered.</p>
                                 <% end %>
-                              </span>
-                              <span style="font-size:20px;line-height:20px;">
-                                <p><em>Send your post to the <%= @listserv.name %> unaltered.</em></p>
                               </span>
                           </td>
                         </tr>
@@ -174,8 +183,8 @@
   <tbody>
     <tr style="vertical-align: top">
       <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
-        <p style="font-size: 24px;line-height: 25px;text-align: center">
-        Both choices are free and will subscribe you to the <%= @listserv.name %> (listserv) if you aren't already.
+        <p style="font-size: 14px;line-height: 16px;text-align: center">
+        <strong>Both choices are FREE</strong> and will subscribe you to the <%= @listserv.name %> (listserv) if you aren't already.
         </p>
       </td>
     </tr>
