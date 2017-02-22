@@ -159,7 +159,9 @@
                                   </div>
                                 <% end %>
                                 <span style="font-size:16px; padding: 0px 5px;">
-                                  <p style="margin: 0px; padding: 0px 5px;">Send your post to the <%= @listserv.name %> unaltered.</p>
+                                  <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{@post.key}", style: "color: #000" do %>
+                                    <p>Send your post to the <%= @listserv.name %> unaltered.</p>
+                                  <% end %>
                                 </span>
                             </td>
                           </tr>
