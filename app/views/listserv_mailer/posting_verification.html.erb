@@ -70,14 +70,16 @@
                               background-color: #CFF3D9;"
                               valign="middle">
                                     <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #fff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
-                                      <div style="width 100%; background-color: #08AE66; padding: 5px; text-align: left !important;">
-                                        <span style="font-size:16px;line-height:25px;">
-                                          <strong>SPRUCE IT UP</strong>
-                                        </span>
-                                        <span style="font-size:25px;line-height:25px; float: right; padding-left: 5px; padding-top: 3px;">
-                                          <strong>&nbsp;&nbsp;&nbsp;&nbsp;&gt;</strong>
-                                        </span>
-                                      </div>
+                                      <table bgcolor="#08AE66" width="100%">
+                                        <tbody>
+                                          <td>
+                                            <span style="font-size:16px;line-height:25px;">
+                                              <strong>SPRUCE IT UP&nbsp;&nbsp;&nbsp;&nbsp;&gt;</strong>
+                                              <strong></strong>
+                                            </span>
+                                          </td>
+                                        </tbody>
+                                      </table>
                                     <% end %>
                                 <span style="font-size:16px;">
                                   <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #000" do %>
@@ -156,9 +158,9 @@
                                     </span>
                                   </div>
                                 <% end %>
-                                <span style="font-size:16px; padding: 0px 5px;">
+                                <span style="font-size:16px;">
                                   <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{@post.key}", style: "color: #000" do %>
-                                    <p>Send your post to the <%= @listserv.name %> unaltered.</p>
+                                    <p style="padding: 5px;">Send your post to the <%= @listserv.name %> unaltered.</p>
                                   <% end %>
                                 </span>
                             </td>
