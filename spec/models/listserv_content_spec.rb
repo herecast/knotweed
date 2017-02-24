@@ -352,4 +352,20 @@ RSpec.describe ListservContent, type: :model do
     end
   end
 
+  describe '#has_account?' do
+    let!(:user) { FactoryGirl.create :user }
+    let(:listserv_content) { FactoryGirl.create :listserv_content, user_id: nil, sender_email: user.email }
+    it 'returns true is sender_email is attached to a user account' do
+      expect(listserv_content.has_account?).to eq true
+    end
+  end
+
+  describe '#user_account_id' do
+    let!(:user) { FactoryGirl.create :user }
+    let(:listserv_content) { FactoryGirl.create :listserv_content, user_id: nil, sender_email: user.email }
+    it 'returns the user_id for users matching sender_email' do
+      expect(listserv_content.user_account_id).to eq user.id
+    end
+  end
+
 end

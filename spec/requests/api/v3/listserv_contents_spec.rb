@@ -37,6 +37,15 @@ RSpec.describe "listserv contents endpoints", type: :request do
         expect(response.status).to eql 404
       end
     end
+
+    context 'when there is no user_id' do
+      let(:user) { FactoryGirl.create :user }
+      let(:new_user_listserv_content) { FactoryGirl.create :listserv_content, user_id: nil, sender_email: user.email }
+      it 'returns the user_id the sender_email matches an existing user' do
+        get "/api/v3/listserv_contents/#{new_user_listserv_content.key}"
+        expect(response_json[:listserv_content][:user_id]).to eq user.id
+      end
+    end
   end
 
   describe 'PATCH /api/v3/listserv_contents/:key' do
