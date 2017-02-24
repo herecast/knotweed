@@ -77,6 +77,9 @@ class PromotionBanner < ActiveRecord::Base
   # query promotion banners by content
   scope :for_content, lambda { |content_id| joins(:promotion).where('promotions.content_id = ?', content_id) }
 
+  # query promotion banners by multiple promotion ids
+  scope :for_promotions, lambda { |promotion_ids| joins(:promotion).where(promotions: {:id =>  promotion_ids}) }
+
   RUN_OF_SITE = "ROS"
   SPONSORED = "Sponsored"
   DIGEST = "Digest"

@@ -54,7 +54,7 @@ class SelectPromotionBanners
       content = Content.find @opts[:content_id]
       if content.banner_ad_override.present?
         get_direct_promotion(content.banner_ad_override)
-      elsif content.organization.banner_ad_override?
+      elsif content.organization.banner_ad_override? && @not_run_of_site
         get_organization_promotion(content.organization)
       else
         @not_run_of_site = false
@@ -82,8 +82,15 @@ class SelectPromotionBanners
 
     def get_organization_promotion(organization)
       if organization.banner_ad_override.present?
+        # TODO: this is really dependent on banner_ad_override being populated properly
         ids = organization.banner_ad_override.split(/,[\s]*?/)
-        get_direct_promotion(ids.sample)
+        banner = PromotionBanner.for_promotions(ids).active.has_inventory.order('random()').first
+        if banner.present?
+          add_promotion([banner, nil, 'sponsored_content'])
+        else
+          @not_run_of_site = false
+          get_related_promotion
+        end
       end
     end
 
