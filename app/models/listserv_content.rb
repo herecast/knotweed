@@ -155,6 +155,15 @@ class ListservContent < ActiveRecord::Base
     end
   end
 
+  def has_account?
+    User.find_by_email(sender_email).present?
+  end
+
+  def user_account_id
+    User.find_by_email(sender_email).id if has_account?
+  end
+
+
   protected
   def generate_key
     self.key = SecureRandom.uuid
