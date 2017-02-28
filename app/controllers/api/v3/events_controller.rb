@@ -35,7 +35,7 @@ module Api
         @event = Event.find(params[:id])
         # "authenticate" this edit action
         authorize! :update, @event.content
-        # for now, we EITHER get the image OR the event in this update logic. So 
+        # for now, we EITHER get the image OR the event in this update logic. So
         # if image is present here, we branch:
         image_data = params[:event].delete :image
         if image_data.present?
@@ -99,7 +99,7 @@ module Api
         @event.content.organization_id = org_id
         @event.content.images = [Image.create(image: image_data)] if image_data.present?
         if @event.save_with_schedules(schedules)
-          contact_ad_team if params[:event][:wants_to_advertise]
+          contact_user_and_ad_team if params[:event][:wants_to_advertise]
 
           # reverse publish to specified listservs
           if listserv_ids.present?
@@ -152,7 +152,7 @@ module Api
         new_e[:contact_email] = e[:contact_email] if e.has_key? :contact_email
         new_e[:contact_phone] = e[:contact_phone] if e.has_key? :contact_phone
         new_e[:event_url] = e[:event_url] if e.has_key? :event_url
-        
+
         new_e[:registration_deadline] = e[:registration_deadline] if e.has_key? :registration_deadline
         new_e[:registration_url] = e[:registration_url] if e.has_key? :registration_url
         new_e[:registration_phone] = e[:registration_phone] if e.has_key? :registration_phone
@@ -184,7 +184,8 @@ module Api
         new_e
       end
 
-      def contact_ad_team
+      def contact_user_and_ad_team
+        AdMailer.event_advertising_user_contact(@current_api_user).deliver_later
         AdMailer.event_adveritising_request(@current_api_user, @event).deliver_later
       end
 

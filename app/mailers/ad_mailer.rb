@@ -1,6 +1,10 @@
 class AdMailer < ActionMailer::Base
   default from: Rails.configuration.subtext.emails.notifications
 
+  def event_advertising_user_contact(user)
+    mail to: user.email, subject: "Boosting your event on DailyUV"
+  end
+
   def event_adveritising_request(user, event)
     @user = user
     @event = event

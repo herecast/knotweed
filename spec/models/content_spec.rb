@@ -897,7 +897,7 @@ describe Content, :type => :model do
         stub_request(:post, "http://#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPostPipeline").with(basic_auth: [
           Figaro.env.ontotext_api_username,
           Figaro.env.ontotext_api_password
-        ]).to_return(:status => 200, 
+        ]).to_return(:status => 200,
                     :body => File.open('spec/fixtures/post_pipeline_output.xml', 'r').readlines.join(),
                     :headers => {})
       end
@@ -927,7 +927,7 @@ describe Content, :type => :model do
         stub_request(:post, "http://#{@repo.dsp_endpoint.sub(/(?:http:\/\/)?(.*)\/?/, '\1')}/processPostPipeline").with(basic_auth: [
           Figaro.env.ontotext_api_username,
           Figaro.env.ontotext_api_password
-        ]).to_return(:status => 200, 
+        ]).to_return(:status => 200,
                     :body => File.open('spec/fixtures/post_pipeline_output.xml', 'r').readlines.join(),
                     :headers => {})
       end
@@ -1814,6 +1814,21 @@ describe Content, :type => :model do
       it "returns current report" do
         expect(subject).to eq @content_report
       end
+    end
+  end
+
+  describe "#split_content" do
+    before do
+      @content = FactoryGirl.create :content
+      allow_any_instance_of(SplitContentForAdPlacement).to receive(:call)
+        .and_return(true)
+    end
+
+    subject { @content.split_content }
+
+    it "makes call to content splitting process" do
+      expect(SplitContentForAdPlacement).to receive(:call).with(@content.sanitized_content)
+      subject
     end
   end
 

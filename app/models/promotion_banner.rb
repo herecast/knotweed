@@ -39,6 +39,7 @@ class PromotionBanner < ActiveRecord::Base
 
   UPLOAD_ENDPOINT = "/statements"
 
+  after_save :generate_coupon_click_redirect
   after_save :update_active_promotions
   after_destroy :update_active_promotions
 
@@ -86,7 +87,7 @@ class PromotionBanner < ActiveRecord::Base
   scope :run_of_site, -> { where(promotion_type: [RUN_OF_SITE, COUPON]) }
 
   def active?
-    campaign_start <= Time.current and campaign_end >= Time.current
+    campaign_start <= Date.current && campaign_end >= Date.current
   end
 
   def current_daily_report(current_date=Date.current)
@@ -120,6 +121,13 @@ class PromotionBanner < ActiveRecord::Base
     def if_coupon_must_have_coupon_image
       if promotion_type == COUPON && coupon_image.file.blank?
         errors.add(:coupon_image, 'type coupon must have coupon image')
+      end
+    end
+
+    def generate_coupon_click_redirect
+      new_redirect_url = "/promotions/#{id}"
+      if promotion_type == COUPON && redirect_url != new_redirect_url
+        update_attribute :redirect_url, new_redirect_url
       end
     end
 

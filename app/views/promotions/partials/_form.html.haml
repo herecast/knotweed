@@ -32,7 +32,10 @@
       - elsif promotion.promotable.is_a? PromotionBanner
         = image_tag promotion.promotable_banner_image.url if promotion.promotable_banner_image?
         = g.input :banner_image
-        = g.input :redirect_url, label: 'Redirect url: If promotion type = Coupon, this will be overridden', input_html: { class: "input-block-level" }
+        - if @promotion.present? && (@promotion.promotable_type == 'PromotionBanner' && promotion.promotable.promotion_type == PromotionBanner::COUPON)
+          %p= "Coupon Redirect is: #{@promotion.promotable.redirect_url}"
+        - else
+          = g.input :redirect_url, label: 'Redirect url: If promotion type = Coupon, this will be overridden', input_html: { class: "input-block-level" }
     = f.label :content
     %label= promotion.content.try(:title)
     = f.input :content_id, as: :hidden

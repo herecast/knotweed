@@ -73,6 +73,7 @@ gem "turbolinks", '~> 2.2.0'
 gem 'uglifier', '~> 2.4.0'
 gem 'unf', '~> 0.1.3'
 gem 'puma', '~> 3.4'
+gem 'htmlcompressor'
 
 group :development, :test do
   gem "factory_girl_rails", "~> 4.4.0"
