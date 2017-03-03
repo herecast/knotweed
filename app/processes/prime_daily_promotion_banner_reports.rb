@@ -12,6 +12,7 @@ class PrimeDailyPromotionBannerReports
     reset_daily_impression_counts
     create_reports_for_current_promotion_banners
     update_active_promotions
+    notify_admin_team_of_sunsetting_ads
   end
 
   private
@@ -30,6 +31,12 @@ class PrimeDailyPromotionBannerReports
     def update_active_promotions
       PromotionBanner.all.each do |promo|
         promo.update_active_promotions
+      end
+    end
+
+    def notify_admin_team_of_sunsetting_ads
+      PromotionBanner.sunsetting.each do |promotion_banner|
+        AdMailer.ad_sunsetting(promotion_banner).deliver_now
       end
     end
 

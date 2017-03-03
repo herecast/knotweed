@@ -89,6 +89,8 @@ class PromotionBanner < ActiveRecord::Base
 
   scope :run_of_site, -> { where(promotion_type: [RUN_OF_SITE, COUPON]) }
 
+  scope :sunsetting, -> { where(campaign_end: Date.tomorrow) }
+
   def active?
     campaign_start <= Date.current && campaign_end >= Date.current
   end

@@ -31,5 +31,18 @@ RSpec.describe PrimeDailyPromotionBannerReports do
         }
       end
     end
+
+    context "when an ad is set to sunset the following day" do
+      before do
+        @sunsetting_pb = FactoryGirl.create :promotion_banner, campaign_end: Date.tomorrow
+      end
+
+      it "emails the ad team about sunsetting ads" do
+        mail = double()
+        expect(mail).to receive(:deliver_now)
+        expect(AdMailer).to receive(:ad_sunsetting).with(@sunsetting_pb).and_return(mail)
+        subject
+      end
+    end
   end
 end

@@ -10,6 +10,7 @@ default: &default
     no_reply:       noreply@dailyuv.com
     notifications:  notifications@dailyuv.com
     support:        dailyuv@subtext.org
+    sunsetting_ads: barbara.farnsworth@subtext.org
 
 production:
   <<: *default
