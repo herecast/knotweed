@@ -282,7 +282,7 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
       context 'when a user has confirmed their account' do
         it 'runs the SubscribeToListservSilently job' do
           request = double('request')
-          allow(request).to receive(:remote_ip).and_return('127.0.0.1')
+          request.stub(:remote_ip) {'127.0.0.1'}
           expect(SubscribeToListservSilently).to receive(:call).with(listserv, user, request.remote_ip )
           subject
         end

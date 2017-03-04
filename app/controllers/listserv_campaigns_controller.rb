@@ -27,9 +27,7 @@ class ListservCampaignsController < ApplicationController
     if @campaign.destroy
       render status: :ok
     else
-      #:nocov:
       render status: :unprocessable_entity
-      #:nocov:
     end
   end
 

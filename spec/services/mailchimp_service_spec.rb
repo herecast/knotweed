@@ -1404,7 +1404,7 @@ RSpec.describe MailchimpService do
     }
 
     before do
-      allow(ENV).to receive(:[]).with('DEFAULT_HOST').and_return('http://test.com')
+      ENV.stub(:[]).with('DEFAULT_HOST').and_return('http://test.com')
     end
 
     subject { described_class.add_unsubscribe_hook(list_id) }

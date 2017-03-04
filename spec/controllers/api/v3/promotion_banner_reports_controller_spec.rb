@@ -1,12 +1,6 @@
 require 'spec_helper'
 
 describe Api::V3::PromotionBannerReportsController, type: :controller do
-  around(:each) do |example|
-    Timecop.freeze Time.zone.now.beginning_of_day + 6.hours do
-      example.run
-    end
-  end
-
   before do
     @org = FactoryGirl.create :organization
     @pb = FactoryGirl.create :promotion_banner, impression_count: 5,

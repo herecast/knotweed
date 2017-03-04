@@ -7,7 +7,7 @@ RSpec.describe RecordListservMetric do
       subject { RecordListservMetric.call('create_metric', nil) }
 
       it "does not create ListservContentMetric record" do
-        expect{ subject }.to raise_error(NoMethodError)
+        expect{ subject }.to raise_error
       end
     end
 
