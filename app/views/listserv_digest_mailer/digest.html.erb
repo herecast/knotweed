@@ -1,3 +1,17 @@
+<%
+    grouped_posts = @digest.listserv_contents.group_by do |l|
+      if l.content_id? && l.channel_type.present?
+        if l.channel_type == 'event'
+            "Events"
+        else
+          l.channel_type.to_s.titleize
+        end
+      else
+        'Uncategorized'
+      end
+    end.sort
+%>
+
 <div class='preheader' style='display: none !important;'>
   <%= @listserv.digest_preheader %>
   <%= @digest.listserv_contents.sort_by{|c| c.verified_at}.collect{|c| c.subject.truncate_words(8)}.join(' | ') %>
@@ -16,26 +30,25 @@
   <div class='table of contents'>
     <h3>TABLE OF CONTENTS</h3>
     <%
-      @digest.listserv_contents.group_by do |l|
-        if l.content_id? && l.channel_type.present?
-          l.channel_type.to_s.titleize
-        else
-          'Uncategorized'
-        end
-      end.sort.each do |cat, contents|
+       counter = 1
+       grouped_posts.each do |(cat, contents)|
     %>
       <h4 style='margin-bottom: 0;'><%= cat %></h4>
-      <ol style='margin-top: 0;'>
+      <table style="margin-left: 16px; border:none;">
         <% contents.sort_by(&:verified_at).each do |lc|%>
-          <li>
-            <a href='#lc<%=lc.id%>'><%= lc.subject %></a>
-            - <%= lc.author_name %>
-            <% if lc.content_id? %>
-              - <%= link_to 'View on DailyUV', content_url_for_email(lc.content), target: '_blank', style: 'font-size: smaller;display:inline-block; padding: 0.25em 0.5em; background:#eee;border: 2px solid #ddd;text-decoration:none;' %>
-            <% end %>
-          </li>
+          <tr>
+            <td style='border:none; padding-right: 8px;'><%= counter %></td>
+            <td>
+              <a href='#lc<%=lc.id%>'><%= lc.subject %></a>
+              - <%= lc.author_name %>
+              <% if lc.content_id? %>
+                - <%= link_to 'View on DailyUV', content_url_for_email(lc.content), target: '_blank', style: 'font-size: smaller;display:inline-block; padding: 0.25em 0.5em; background:#eee;border: 2px solid #ddd;text-decoration:none;' %>
+              <% end %>
+            </td>
+          </tr>
+          <% counter += 1 %>
         <% end %>
-      </ol>
+      </table>
     <% end %>
   </div>
 <% end %>
@@ -48,18 +61,25 @@
 <% end %>
 
 <div class='posts'>
-  <p>BEGIN DIGEST</p>
-  <% @digest.listserv_contents.sort_by(&:verified_at).each do |lc| %>
-    <hr width="66%" color="#830617">
-    <div class='post' style="margin-top: 3%;">
-      <strong><%= lc.subject %></strong><br>
-      From: <%= lc.sender_name %><br>
-      Date: <%= lc.verified_at.strftime('%m/%d/%y %l:%M %p') %>
-      <a id='lc<%=lc.id%>' name='lc<%=lc.id%>'></a>
+  <p style='font-weight: bold'>BEGIN DIGEST</p>
+  <%
+     counter = 1
+     grouped_posts.each do |(cat, contents)|
+  %>
+    <h4 style='margin-bottom: 0;'><%= cat %></h4>
 
-      <div class='body'>
-        <%= simple_format raw(strip_tags(lc.body.gsub("><", ">\n<")).strip) %>
-      </div>
+    <% contents.sort_by(&:verified_at).each do |lc|%>
+      <hr width="66%" color="#830617">
+      <div class='post' style="margin-top: 3%;">
+        <span style="margin-right: 8px;"><%=counter%></span>
+        <strong><%= lc.subject %></strong><br>
+        From: <%= lc.sender_name %><br>
+        Date: <%= lc.verified_at.strftime('%m/%d/%y %l:%M %p') %>
+        <a id='lc<%=lc.id%>' name='lc<%=lc.id%>'></a>
+
+        <div class='body'>
+          <%= simple_format raw(strip_tags(lc.body.gsub("><", ">\n<")).strip) %>
+        </div>
       <div class='actions'>
         <% if lc.content_id? %>
           <%= link_to 'View on DailyUV', content_url_for_email(lc.content), target: '_blank', style: 'font-size: smaller;display:inline-block; padding: 0.25em 0.5em; background:#eee; border: 2px solid #ddd;text-decoration:none;' %>
@@ -79,10 +99,11 @@
             </td>
           </tr>
         </table>
-    </div>
-  </div>
+      </div>
+      <% counter += 1 %>
+    <% end %>
   <% end %>
-  <p>END DIGEST</p>
+  <p style='font-weight: bold'>END DIGEST</p>
 </div>
 
 <div class='footer'>
