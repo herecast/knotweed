@@ -174,43 +174,7 @@ RSpec.describe ListservDigestMailer do
 
           it 'includes the date for the content post' do
             listserv_contents.each do |content|
-              expect(subject).to include content.verified_at.strftime('%m/%d/%y %l:%M %p')
-            end
-          end
-
-
-          context 'unsubscribe link' do
-            let(:unsub_wording) {
-              "unsubscribe"
-            }
-
-            let(:unsub_url) {
-              "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{listserv.id}/unsubscribe"
-            }
-
-            it 'has unsubscribe link' do
-              expect(subject.downcase).to include(unsub_wording.downcase)
-
-              expect(subject).to include(unsub_url)
-            end
-
-            context 'when listserv-user-testing feature is active' do
-              before do
-                FactoryGirl.create(:feature,
-                  name: 'listserv-user-testing',
-                  active: true
-                )
-              end
-
-            let(:unsub_wording) {
-              "unsubscribe from this test"
-            }
-
-              it 'has unsubscribe link with test wording' do
-                expect(subject.downcase).to include(unsub_wording.downcase)
-
-                expect(subject).to include(unsub_url)
-              end
+              expect(subject).to include content.verified_at.strftime('%m/%d/%y%l:%M %p')
             end
           end
         end

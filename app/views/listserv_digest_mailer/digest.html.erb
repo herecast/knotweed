@@ -50,8 +50,8 @@
 <div class='posts'>
   <p>BEGIN DIGEST</p>
   <% @digest.listserv_contents.sort_by(&:verified_at).each do |lc| %>
-    <hr width="50%" color="#830617">
-    <div class='post'>
+    <hr width="66%" color="#830617">
+    <div class='post' style="margin-top: 3%;">
       <strong><%= lc.subject %></strong><br>
       From: <%= lc.sender_name %><br>
       Date: <%= lc.verified_at.strftime('%m/%d/%y %l:%M %p') %>
@@ -67,19 +67,15 @@
         <table align="center">
           <tr>
             <td>
-              <a href='mailto:<%= lc.sender_email %>?subject=Re: <%=lc.subject%>'>Reply to sender</a>
+              <a href='mailto:<%= lc.sender_email %>?subject=Re: <%=lc.subject%>'><strong>Reply to sender</strong></a>
             </td>
             <td> -- </td>
             <td>
-              <a href='mailto:<%= @listserv.post_email %>?subject=Re: <%=lc.subject%>'>Reply to list</a>
+              <a href='mailto:<%= @listserv.post_email %>?subject=Re: <%=lc.subject%>'><strong>Reply to list</strong></a>
             </td>
             <td> -- </td>
             <td>
-              <%= link_to (features['listserv-user-testing'] ? 'Unsubscribe from this test' : 'Unsubscribe'), url_for_consumer_app("/lists/#{@listserv.id}/unsubscribe") %>
-            </td>
-            <td> -- </td>
-            <td>
-              <a href='#top'>Back to Top</a>
+              <a href='#top'><strong>Back to Top</strong></a>
             </td>
           </tr>
         </table>
