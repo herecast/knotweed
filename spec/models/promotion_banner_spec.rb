@@ -22,6 +22,7 @@
 #  cost_per_day           :float
 #  coupon_email_body      :text
 #  coupon_image           :string
+#  sales_agent            :string
 #
 
 require 'spec_helper'

@@ -11,6 +11,7 @@
     = f.input :paid
     = f.simple_fields_for :promotable do |p|
       - if promotion.promotable.is_a? PromotionBanner
+        = p.input :sales_agent, placeholder: 'Initials, please (ie: HHH)'
         = p.input :promotion_type, as: :select, collection: PromotionBanner::PROMOTION_TYPES
         = p.input :boost
         = p.input :campaign_start, as: :date_picker, label: 'Campaign Start Date'

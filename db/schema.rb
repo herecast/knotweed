@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170208213127) do
+ActiveRecord::Schema.define(version: 20170303154512) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -853,6 +853,7 @@ ActiveRecord::Schema.define(version: 20170208213127) do
     t.float    "cost_per_day"
     t.text     "coupon_email_body"
     t.string   "coupon_image"
+    t.string   "sales_agent"
   end
 
   create_table "promotion_listservs", id: :bigserial, force: :cascade do |t|

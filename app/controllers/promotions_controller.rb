@@ -91,7 +91,7 @@ class PromotionsController < ApplicationController
         :promotable_type,
         :paid,
         promotable_attributes: [ :id, :boost, :campaign_start, :campaign_end, :daily_max_impressions,
-          :max_impressions, :banner_image, :redirect_url, :promotion_type,
+          :max_impressions, :banner_image, :redirect_url, :promotion_type, :sales_agent,
           :cost_per_impression, :cost_per_day, :coupon_email_body, :coupon_image ]
       )
     end
