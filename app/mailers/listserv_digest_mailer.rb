@@ -16,6 +16,7 @@ class ListservDigestMailer < ActionMailer::Base
     template = @digest.template? ? @digest.template : "digest"
 
     mail_instance = mail(subject: @digest.subject, template_name: "#{template}")
+    mail_instance.body = ImageUrlService.optimize_image_urls(html_text: mail_instance.body.to_s)
     mail_instance.delivery_handler = self
     unless @digest.template == 'digest'
       string_body = mail_instance.body.to_s
