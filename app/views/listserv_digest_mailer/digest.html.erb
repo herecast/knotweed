@@ -16,7 +16,7 @@
   <%= @listserv.digest_preheader %>
   <%= @digest.listserv_contents.sort_by{|c| c.verified_at}.collect{|c| c.subject.truncate_words(8)}.join(' | ') %>
 </div>
-<a id='top' name='top'></a>
+<a name='top'></a>
 <h2>
   <%=@listserv.name%> Digest
   -- <small><%= @digest.created_at.strftime("%a, %b %e %Y")%></small>
@@ -75,7 +75,7 @@
         <strong><%= lc.subject %></strong><br>
         From: <%= lc.sender_name %><br>
         Date: <%= lc.verified_at.strftime('%m/%d/%y %l:%M %p') %>
-        <a id='lc<%=lc.id%>' name='lc<%=lc.id%>'></a>
+        <a name='lc<%=lc.id%>'></a>
 
         <div class='body'>
           <%= simple_format raw(strip_tags(lc.body.gsub("><", ">\n<")).strip) %>
