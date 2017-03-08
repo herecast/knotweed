@@ -81,7 +81,7 @@
                                     <% end %>
                                 <span style="font-size:16px;">
                                   <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #000" do %>
-                                    <p style="padding: 0px 5px;">Add photos and reach a wider audience!</p>
+                                    <p style="padding: 0px 5px; text-decoration: underline;">Add photos and reach a wider audience!</p>
                                   <% end %>
                                 </span>
                                 <span style="font-size:12px;line-height:10px;">
@@ -160,7 +160,7 @@
                                 <% end %>
                                 <span style="font-size:16px;">
                                   <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{@post.key}", style: "color: #000" do %>
-                                    <p style="padding: 5px;">Send your post to the <%= @listserv.name %> unaltered.</p>
+                                    <p style="padding: 5px; text-decoration: underline;">Send your post to the <%= @listserv.name %> unaltered.</p>
                                   <% end %>
                                 </span>
                             </td>
