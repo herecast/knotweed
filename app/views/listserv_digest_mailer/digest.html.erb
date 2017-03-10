@@ -42,7 +42,7 @@
               <a href='#lc<%=lc.id%>'><%= lc.subject %></a>
               - <%= lc.author_name %>
               <% if lc.content_id? %>
-                - <%= link_to 'View on DailyUV', content_url_for_email(lc.content), target: '_blank', style: 'font-size: smaller;display:inline-block; padding: 0.25em 0.5em; background:#eee;border: 2px solid #ddd;text-decoration:none;' %>
+                - <%= link_to 'View on DailyUV', content_url_for_email(lc.content), target: '_blank' %>
               <% end %>
             </td>
           </tr>
