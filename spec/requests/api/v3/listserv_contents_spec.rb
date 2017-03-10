@@ -46,6 +46,17 @@ RSpec.describe "listserv contents endpoints", type: :request do
         expect(response_json[:listserv_content][:user_id]).to eq user.id
       end
     end
+
+    context 'when body is "No content found"' do
+      let (:empty_body_content) { FactoryGirl.create :listserv_content, body: "No content found" }
+
+      it 'returns an empty string as the content body' do
+        get "/api/v3/listserv_contents/#{empty_body_content.key}"
+        expect(response_json[:listserv_content][:body]).to eq ""
+      end
+
+      subject{ get '/api/v3/listserv_contents/' + listserv_content.key }
+    end
   end
 
   describe 'PATCH /api/v3/listserv_contents/:key' do

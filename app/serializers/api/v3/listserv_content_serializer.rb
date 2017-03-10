@@ -19,6 +19,14 @@ module Api
           object.user_id
         end
       end
+
+      def body
+        if object.body.eql? "No content found"
+          String.new("")
+        else
+          object.body
+        end
+      end
     end
   end
 end
