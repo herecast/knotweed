@@ -70,12 +70,12 @@
 
     <% contents.sort_by(&:verified_at).each do |lc|%>
       <hr width="66%" color="#830617">
+      <a name='lc<%=lc.id%>'></a>
       <div class='post' style="margin-top: 3%;">
         <span style="margin-right: 8px;"><%=counter%></span>
         <strong><%= lc.subject %></strong><br>
         From: <%= lc.sender_name %><br>
         Date: <%= lc.verified_at.strftime('%m/%d/%y %l:%M %p') %>
-        <a name='lc<%=lc.id%>'></a>
 
         <div class='body'>
           <%= simple_format raw(strip_tags(lc.body.gsub("><", ">\n<")).strip) %>
