@@ -4,7 +4,7 @@ describe Api::V3::DetailedNewsSerializer do
   let (:serialized_object) { JSON.parse(Api::V3::DetailedNewsSerializer.new(@content, root: false).to_json) }
 
   before do
-    @content = FactoryGirl.create :content, raw_content: "<div><img src=\"http:foo.com/asdf/wer.png\" /></div>"
+    @content = FactoryGirl.create :content, raw_content: "<div><img src=\"http://knotweed.s3.amazonaws.com/asdf/wer.png\" /></div>"
   end
 
   around(:each) do |example|

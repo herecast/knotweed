@@ -20,7 +20,7 @@ module ImageUrlService
     result = url
 
     optimized_image_uri = ENV['OPTIMIZED_IMAGE_URI']
-    if optimized_image_uri.present? && url && url =~ /^http/i && width && height
+    if optimized_image_uri.present? && url && url =~ /^http/i && hostname_is_allowed(url) && width && height
       url_no_protocol = url.sub(/^https?:\/\//, '')
       optimized_image_quality = ENV['OPTIMIZED_IMAGE_QUALITY'] || "80"
       quality = "filters:quality(#{optimized_image_quality})"
@@ -36,6 +36,22 @@ module ImageUrlService
   end
 
   private
+
+  def hostname_is_allowed(url)
+    # Memoize the computed list of hostnames.
+    @whitelisted_hostnames ||= compute_whitelisted_hostnames
+
+    @whitelisted_hostnames.include?(URI.parse(url).hostname)
+  end
+
+  def compute_whitelisted_hostnames
+    # The incoming +ENV['IMOPT_ALLOWED_SOURCES']+ list can contain hostnames, e.g. 'd3ctw1a5413a3o.cloudfront.net'
+    # or URIs, e.g. 'https://d3ctw1a5413a3o.cloudfront.net'.  We want to convert each item to a simple hostname.
+    whitelisted_sources = ENV['IMOPT_ALLOWED_SOURCES'] || '["d3ctw1a5413a3o.cloudfront.net", "knotweed.s3.amazonaws.com", "subtext-misc.s3.amazonaws.com"]'
+    JSON.parse(whitelisted_sources).map { |src|
+      src =~ /^http/i ? src.sub(/^https?:\/\//, '') : src
+    }.uniq
+  end
 
   # Returns the optimized width and height for the given +img+ element.
   # If one or both of the two values cannot be determined, a nil will be returned

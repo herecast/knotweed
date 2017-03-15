@@ -89,3 +89,4 @@ IMPORTS_BUCKET: knotweed-imports-test
 
 OPTIMIZED_IMAGE_URI:      'http://dev-web.subtext.org:8880'
 OPTIMIZED_IMAGE_QUALITY:  "80"
+IMOPT_ALLOWED_SOURCES:  '["d3ctw1a5413a3o.cloudfront.net", "knotweed.s3.amazonaws.com", "subtext-misc.s3.amazonaws.com"]'
