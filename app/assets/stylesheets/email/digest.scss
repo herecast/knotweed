@@ -1,0 +1,21 @@
+@import "foundation-emails";
+
+img {
+  max-width:none!important;
+}
+
+.logo {
+  width: 30px!important;
+}
+
+.blue-banner {
+  background: beige;
+}
+
+.transparent {
+  background: transparent;
+}
+
+.readit-btn {
+  display: inline-block; border-radius: 2px; -webkit-border-radius: 2px; -moz-border-radius: 2px; max-width: 100%; width: auto; border-top: 0px solid transparent; border-right: 0px solid transparent; border-bottom: 0px solid transparent; border-left: 0px solid transparent;
+}
