@@ -10,11 +10,15 @@ module Api
         @comments = []
 
         if root.present?
-          result_list = root.children.where(channel_type: 'Comment')
-          @comments << result_list
-          get_all_comments result_list
-          @comments.flatten!
-          @comments.sort! { |a,b| b.pubdate <=> a.pubdate }
+          if root.content_category.name.in? %w(talk_of_the_town discussion)
+            result_list = root.talk_comments
+          else
+            result_list = root.comments
+          end
+            @comments << result_list
+            get_all_comments result_list
+            @comments.flatten!
+            @comments.sort! { |a,b| b.pubdate <=> a.pubdate }
         end
         render json: @comments, each_serializer: CommentSerializer
       end
