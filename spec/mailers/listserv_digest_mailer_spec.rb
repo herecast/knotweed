@@ -36,7 +36,6 @@ RSpec.describe ListservDigestMailer do
 
         it 'passes the generated content, and listserv digest to MailchimpService.create_campaign' do
           mail = described_class.digest(listserv_digest)
-          mail = Premailer::Rails::Hook.perform(mail)
 
           expect(MailchimpService).to receive(:create_campaign).with(
             listserv_digest,
