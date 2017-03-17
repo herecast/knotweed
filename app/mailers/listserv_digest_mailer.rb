@@ -1,5 +1,6 @@
 class ListservDigestMailer < ActionMailer::Base
   require 'htmlcompressor'
+
   layout nil
   default from: 'null@null.disabled',
           to: 'null@null.disabled'
@@ -7,6 +8,7 @@ class ListservDigestMailer < ActionMailer::Base
   add_template_helper ContentsHelper
   add_template_helper FeaturesHelper
   add_template_helper EmailTemplateHelper
+  add_template_helper DigestImageServiceHelper
 
   def digest(digest_record)
     @digest = digest_record
@@ -16,7 +18,6 @@ class ListservDigestMailer < ActionMailer::Base
     template = @digest.template? ? @digest.template : "digest"
 
     mail_instance = mail(subject: @digest.subject, template_name: "#{template}")
-    mail_instance.body = ImageUrlService.optimize_image_urls(html_text: mail_instance.body.to_s)
     mail_instance.delivery_handler = self
     unless @digest.template == 'digest'
       string_body = mail_instance.body.to_s

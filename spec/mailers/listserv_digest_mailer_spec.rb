@@ -84,6 +84,21 @@ RSpec.describe ListservDigestMailer do
           end
         end
 
+        context 'when using a custom footer' do
+          let!(:unencoded_tag) { ("*|UNSUB|*") }
+          let(:footer_markup) { "<a href=\"#{unencoded_tag}\">unsubscribe</a>" }
+          
+          before do
+            listserv.update! digest_footer: footer_markup
+          end
+
+          it 'does not encode mailchimp merge tags in links' do
+            mail = described_class.digest(listserv_digest)
+            expect(mail.body).not_to include "%7C"
+            expect(mail.body).to include unencoded_tag
+          end
+        end
+
         describe '.send_campaign' do
           before do
             allow(MailchimpService).to receive(:send_campaign)
@@ -217,7 +232,7 @@ RSpec.describe ListservDigestMailer do
 
         context 'when the template is for custom content query' do
           before do
-            listserv_digest.update!(template: 'news_template')
+            listserv_digest.update!(template: 'outlook_news_template')
           end
 
           it 'includes all the content titles' do
