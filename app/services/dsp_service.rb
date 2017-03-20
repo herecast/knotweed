@@ -121,6 +121,7 @@ module DspService
                 url: content.url,
                 parent_category: content.root_content_category.name,
                 has_active_promo: content.has_active_promotion?,
+                has_image: content.images.present?,
                 tags: [],
                 keyphrases: [],
     }
@@ -144,14 +145,24 @@ module DspService
   # @param content [Content]
   # @param num_similar [Integer]
   # @param repo [Repository]
-  def get_similar_content_ids(content, num_similar=8, repo=Repository.production_repo)
-    # for event and market categories, use extra_param boost to favor content w/in last 30 days
+  def get_similar_content_ids(content, num_similar=8, repo=Repository.production_repo, has_image: nil)
     # note -- the "category" method being called on self here
     # returns the text label of the associated content_category
-    if ["event", "market", "offered", "wanted", "for_free", "sale_event"].include? content.category
-      extra_param = "&mlt.boostexpr=recip(ms(NOW/HOUR,published),2.63e-10,1,1)"
+    # filters by parent_category for the given content_category
+    if ["market", "offered", "wanted", "for_free", "sale_event"].include? content.category
+      extra_param = "&recency=30&filter=parent_category:market"
+    elsif ["event"].include? content.category
+      extra_param = "&recency=30&filter=parent_category:event"
+    elsif ["discussion", "recommendation"].include? content.category
+      extra_param = "&filter=parent_category:talk_of_the_town"
     else
-      extra_param = ''
+      extra_param = "&filter=parent_category:news"
+    end
+
+    if has_image == false
+      extra_param += "&filter=has_image:false"
+    elsif has_image == true
+      extra_param += "&filter=has_image:true"
     end
     similar_url = repo.recommendation_endpoint + '/recommend/contextual?contentid=' +
       content.uri + "&key=#{Figaro.env.ontotext_recommend_key}" +
