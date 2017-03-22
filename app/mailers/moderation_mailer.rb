@@ -16,7 +16,8 @@ class ModerationMailer < ActionMailer::Base
     end
     mail(from: Rails.configuration.subtext.emails.no_reply,
          to: Rails.configuration.subtext.emails.moderation,
-         subject: subject)
+         subject: subject,
+         skip_premailer: true)
   end
 
   def send_moderation_flag_v2(content, flag_type, flagging_user)
@@ -36,7 +37,8 @@ class ModerationMailer < ActionMailer::Base
 
     mail(from: Rails.configuration.subtext.emails.no_reply,
          to: Rails.configuration.subtext.emails.moderation,
-         subject: subject)
+         subject: subject,
+         skip_premailer: true)
   end
 
   def send_business_for_moderation(business_profile, user)

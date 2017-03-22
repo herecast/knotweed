@@ -75,6 +75,9 @@ gem 'unf', '~> 0.1.3'
 gem 'puma', '~> 3.4'
 gem 'htmlcompressor'
 
+gem 'inky-rb', "~> 1.3.7.2", require: 'inky' # DSL for email templates
+gem 'premailer-rails', '~> 1.9.5' # Email asset pipeline
+
 group :development, :test do
   gem "factory_girl_rails", "~> 4.4.0"
   gem 'guard-bundler', require:false
