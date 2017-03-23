@@ -35,7 +35,7 @@ class ListservDigestMailer < ActionMailer::Base
 
   def deliver_mail(mail_instance)
     unless @digest.mc_campaign_id?
-      campaign = MailchimpService.create_campaign(@digest, mail_instance.body.encoded)
+      campaign = MailchimpService.create_campaign(@digest, mail_instance.body.to_s)
       @digest.update_attribute :mc_campaign_id, campaign[:id]
     end
     BackgroundJob.perform_later(self.class.name, 'send_campaign', @digest)

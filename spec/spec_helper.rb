@@ -6,6 +6,9 @@ if ENV['CIRCLE_ARTIFACTS']
   SimpleCov.coverage_dir(dir)
 end
 SimpleCov.start 'rails' do
+  add_filter "/lib/parsers/"
+  add_filter "/vendor/"
+
   add_group 'Serializers', 'app/serializers'
 end if ENV["COVERAGE"] || ENV["CI"]
 

@@ -40,7 +40,7 @@ RSpec.describe ListservDigestMailer do
 
           expect(MailchimpService).to receive(:create_campaign).with(
             listserv_digest,
-            mail.body.encoded
+            mail.body.to_s
           ).and_return(id: 'campaignid')
 
           mail.deliver_now
@@ -232,6 +232,8 @@ RSpec.describe ListservDigestMailer do
         end
 
         context 'when the template is for custom content query' do
+          subject { described_class.digest(listserv_digest).body }
+
           before do
             listserv_digest.update!(template: 'outlook_news_template')
           end

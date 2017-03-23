@@ -137,7 +137,8 @@ describe Location, :type => :model do
       # note, since `location` hasn't been called yet, this doesn't contain that record
       # so we don't have to worry about filtering it out
       locations_by_distance = Location.all.sort_by do |loc|
-        Geocoder::Calculations.distance_between([loc.lat,loc.long], [location.lat, location.long])
+        Geocoder::Calculations.distance_between([loc.lat.to_f,      loc.long.to_f],
+                                                [location.lat.to_f, location.long.to_f])
       end
       expect(locations_by_distance).to eq location.closest
     end
