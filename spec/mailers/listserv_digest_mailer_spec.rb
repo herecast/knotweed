@@ -36,10 +36,11 @@ RSpec.describe ListservDigestMailer do
 
         it 'passes the generated content, and listserv digest to MailchimpService.create_campaign' do
           mail = described_class.digest(listserv_digest)
+          mail = Premailer::Rails::Hook.perform(mail)
 
           expect(MailchimpService).to receive(:create_campaign).with(
             listserv_digest,
-            mail.body.encoded
+            mail.body.to_s
           ).and_return(id: 'campaignid')
 
           mail.deliver_now
@@ -81,6 +82,21 @@ RSpec.describe ListservDigestMailer do
             listserv_digest.template = "test"
             expect_any_instance_of(ListservDigestMailer).to receive(:mail).with(subject: listserv_digest.subject, template_name: "#{listserv_digest.template}").and_return(Mail::Message.new)
             described_class.digest(listserv_digest).deliver_now
+          end
+        end
+
+        context 'when using a custom footer' do
+          let!(:unencoded_tag) { ("*|UNSUB|*") }
+          let(:footer_markup) { "<a href=\"#{unencoded_tag}\">unsubscribe</a>" }
+          
+          before do
+            listserv.update! digest_footer: footer_markup
+          end
+
+          it 'does not encode mailchimp merge tags in links' do
+            mail = described_class.digest(listserv_digest)
+            expect(mail.body).not_to include "%7C"
+            expect(mail.body).to include unencoded_tag
           end
         end
 
@@ -180,8 +196,10 @@ RSpec.describe ListservDigestMailer do
         end
 
         context 'when the template is for custom content query' do
+          subject { described_class.digest(listserv_digest).body }
+
           before do
-            listserv_digest.update!(template: 'news_template')
+            listserv_digest.update!(template: 'outlook_news_template')
           end
 
           it 'includes all the content titles' do

@@ -22,6 +22,7 @@
 #  cost_per_day           :float
 #  coupon_email_body      :text
 #  coupon_image           :string
+#  sales_agent            :string
 #
 
 class PromotionBanner < ActiveRecord::Base
@@ -77,6 +78,9 @@ class PromotionBanner < ActiveRecord::Base
   # query promotion banners by content
   scope :for_content, lambda { |content_id| joins(:promotion).where('promotions.content_id = ?', content_id) }
 
+  # query promotion banners by multiple promotion ids
+  scope :for_promotions, lambda { |promotion_ids| joins(:promotion).where(promotions: {:id =>  promotion_ids}) }
+
   RUN_OF_SITE = "ROS"
   SPONSORED = "Sponsored"
   DIGEST = "Digest"
@@ -85,6 +89,8 @@ class PromotionBanner < ActiveRecord::Base
   PROMOTION_TYPES = [RUN_OF_SITE, SPONSORED, DIGEST, NATIVE, COUPON]
 
   scope :run_of_site, -> { where(promotion_type: [RUN_OF_SITE, COUPON]) }
+
+  scope :sunsetting, -> { where(campaign_end: Date.tomorrow) }
 
   def active?
     campaign_start <= Date.current && campaign_end >= Date.current

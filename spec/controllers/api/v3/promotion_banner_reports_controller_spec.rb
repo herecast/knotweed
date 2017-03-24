@@ -1,11 +1,17 @@
 require 'spec_helper'
 
 describe Api::V3::PromotionBannerReportsController, type: :controller do
+  around(:each) do |example|
+    Timecop.freeze Time.zone.now.beginning_of_day - 6.hours do
+      example.run
+    end
+  end
+
   before do
     @org = FactoryGirl.create :organization
     @pb = FactoryGirl.create :promotion_banner, impression_count: 5,
       campaign_start: 5.days.ago, campaign_end: 5.days.from_now, promotion_type: 'ROS',
-      cost_per_impression: 0.12
+      cost_per_impression: 0.12, sales_agent: 'LSW'
     @pbr = FactoryGirl.create :promotion_banner_report, report_date: Date.yesterday,
       promotion_banner: @pb
     @pb.promotion.update(paid: true, organization: @org)
@@ -34,6 +40,7 @@ describe Api::V3::PromotionBannerReportsController, type: :controller do
       "client" => @org.name,
       "banner" => @pb.promotion.content.title,
       "paid" => @pb.promotion.paid,
+      "sales_agent" => @pb.sales_agent,
       "daily_reports" => {
         Date.today.strftime("%D") => 0,
         1.day.ago.strftime("%D") => @pbr.impression_count,

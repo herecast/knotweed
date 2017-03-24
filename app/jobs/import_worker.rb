@@ -196,7 +196,7 @@ class ImportWorker < ApplicationJob
     log(:info, "parser: #{ImportJob::PARSER_PATH}/#{@import_job.parser.filename}") if @import_job.parser.present?
     log(:error, "error: #{exception}")
     if @import_job.notifyees.present?
-      JobMailer.error_email(@record, exception).deliver_now
+      JobMailer.error_email(@record, exception.to_s).deliver_later
     end
     log(:error, "backtrace: #{exception.backtrace.join("\n")}")
     log(:info, "#{@import_job.inspect}")

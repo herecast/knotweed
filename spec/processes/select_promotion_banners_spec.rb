@@ -64,19 +64,26 @@ RSpec.describe SelectPromotionBanners do
         end
 
         context 'that is inactive' do
-          let!(:inactive_banner) { FactoryGirl.create :promotion_banner, :inactive, :sponsored }
-          before { content.organization.update banner_ad_override: inactive_banner.id }
+          before do
+            @inactive_banner = FactoryGirl.create :promotion_banner, :inactive, :sponsored
+            content.organization.update banner_ad_override: @inactive_banner.id
+            allow(DspService).to receive(:get_related_promo_ids).and_return []
+          end
 
           it 'not respond with that banner' do
-            expect(subject).to_not include inactive_banner
+            expect(subject).to_not include @inactive_banner
           end
         end
 
         context "when banner_ad_override does not return an active ad" do
-          it "returns empty array" do
-            content.organization.update_attribute :banner_ad_override, 12345
-            results = subject
-            expect(results).to eq []
+          before do
+            content.organization.update_attribute :banner_ad_override, 1234
+            allow(DspService).to receive(:get_related_promo_ids).and_return []
+          end
+
+          it "it makes call to DspService for ad" do
+            expect(DspService).to receive(:get_related_promo_ids)
+            subject
           end
         end
       end

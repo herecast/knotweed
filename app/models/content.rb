@@ -1144,6 +1144,10 @@ class Content < ActiveRecord::Base
     children.where(channel_type: 'Comment')
   end
 
+  def talk_comments
+    children.where(root_content_category_id: [ContentCategory.find_by_name('discussion'), ContentCategory.find_by_name('talk_of_the_town').id])
+  end
+
   # generates an elasticsearch query for the ApiV3 talk index controller
   #
   # @param query [String] the search query string if present

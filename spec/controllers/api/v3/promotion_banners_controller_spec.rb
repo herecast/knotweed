@@ -105,8 +105,9 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       end
 
       it "runs background job to clear daily impressions and to record 'load' event" do
+        ENV['STACK_NAME'] = "knotweed-production"
         expect(BackgroundJob).to receive(:perform_later).with(
-          "PrimeDailyPromotionBannerReports", "call", Date.current.to_s
+          "PrimeDailyPromotionBannerReports", "call", Date.current.to_s, true
         )
         expect(BackgroundJob).to receive(:perform_later).with(
           "RecordPromotionBannerMetric", "call", hash_including({
@@ -114,6 +115,21 @@ describe Api::V3::PromotionBannersController, :type => :controller do
           })
         )
         subject
+      end
+
+      context "when environment is non-prod" do
+        it "primes reports with is_prod=false" do
+          ENV['STACK_NAME'] = "hoth-qa"
+          expect(BackgroundJob).to receive(:perform_later).with(
+            "PrimeDailyPromotionBannerReports", "call", Date.current.to_s, false
+          )
+          expect(BackgroundJob).to receive(:perform_later).with(
+          "RecordPromotionBannerMetric", "call", hash_including({
+            promotion_banner_id: @pb.id
+          })
+        )
+          subject
+        end
       end
     end
 
@@ -123,8 +139,9 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       end
 
       it "runs background job to clear daily impressions and to record 'load' event" do
+        ENV['STACK_NAME'] = "knotweed-production"
         expect(BackgroundJob).to receive(:perform_later).with(
-          "PrimeDailyPromotionBannerReports", "call", Date.current.to_s
+          "PrimeDailyPromotionBannerReports", "call", Date.current.to_s, true
         )
         expect(BackgroundJob).to receive(:perform_later).with(
           "RecordPromotionBannerMetric", "call", hash_including({

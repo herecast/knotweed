@@ -16,4 +16,9 @@ class AdMailer < ActionMailer::Base
     title = promotion_coupon.promotion.content.try(:title)
     mail to: email, subject: "Coupon for #{title}"
   end
+
+  def ad_sunsetting(promotion_banner)
+    @promotion_banner = promotion_banner
+    mail(to: Rails.configuration.subtext.emails.sunsetting_ads, subject: "Promotion with id: #{@promotion_banner.promotion.id} ends tomorrow")
+  end
 end

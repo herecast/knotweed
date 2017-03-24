@@ -1,5 +1,6 @@
 class ListservDigestMailer < ActionMailer::Base
   require 'htmlcompressor'
+
   layout nil
   default from: 'null@null.disabled',
           to: 'null@null.disabled'
@@ -7,6 +8,7 @@ class ListservDigestMailer < ActionMailer::Base
   add_template_helper ContentsHelper
   add_template_helper FeaturesHelper
   add_template_helper EmailTemplateHelper
+  add_template_helper DigestImageServiceHelper
 
   def digest(digest_record)
     @digest = digest_record
@@ -31,7 +33,7 @@ class ListservDigestMailer < ActionMailer::Base
 
   def deliver_mail(mail_instance)
     unless @digest.mc_campaign_id?
-      campaign = MailchimpService.create_campaign(@digest, mail_instance.body.encoded)
+      campaign = MailchimpService.create_campaign(@digest, mail_instance.body.to_s)
       @digest.update_attribute :mc_campaign_id, campaign[:id]
     end
     BackgroundJob.perform_later(self.class.name, 'send_campaign', @digest)

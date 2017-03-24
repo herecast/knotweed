@@ -23,6 +23,22 @@ describe Api::V3::CommentsController, :type => :controller do
         subject
         expect(assigns(:comments)).to eq([@comment.content])
       end
+
+      context 'when the root content is a talk item' do
+        let(:talk_cat) { FactoryGirl.create :content_category, name: 'talk_of_the_town' }
+        before do
+          user = FactoryGirl.create :user
+          @content = FactoryGirl.create :content, content_category: talk_cat, created_by: user
+          @comment_content = FactoryGirl.create :content, content_category: talk_cat
+          @talk_comment = FactoryGirl.create :comment, content: @comment_content
+          @talk_comment.content.update_attributes(parent_id: @content.id, root_content_category_id: talk_cat)
+        end
+
+        it 'returns the correct comments for the root content' do
+          subject
+          expect(assigns(:comments)).to eq([@talk_comment.content])
+        end
+      end
     end
     
     describe 'nested comments' do

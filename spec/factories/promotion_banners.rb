@@ -22,6 +22,7 @@
 #  cost_per_day           :float
 #  coupon_email_body      :text
 #  coupon_image           :string
+#  sales_agent            :string
 #
 
 FactoryGirl.define do

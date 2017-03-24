@@ -3,10 +3,10 @@ module Api
     class PromotionBannerReportSerializer < ActiveModel::Serializer
       # apologies for the naming -- this uses promotion banner objects to combine all promotion banner reports
       # from a given date range into a single JSON object
-      
+
       attributes :type, :promo_id, :banner_id, :campaign_start, :campaign_end,
         :served, :cost, :daily_cost, :daily_max, :clicks, :ctr, :client, :banner,
-        :daily_reports, :paid
+        :paid, :sales_agent, :daily_reports
 
       def type; object.promotion_type; end
       def promo_id; object.promotion.id; end
@@ -38,7 +38,7 @@ module Api
           date -= 1.day
         end
         object.promotion_banner_reports.each do |pbr|
-          # this might seem redundant -- iterating through pbrs we're not using -- 
+          # this might seem redundant -- iterating through pbrs we're not using --
           # but because the original query "includes" promotion_banner_reports, this actually
           # saves us from an n+1 query
           if output_hash.has_key? pbr.report_date.strftime("%D")

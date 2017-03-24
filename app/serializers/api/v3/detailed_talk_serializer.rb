@@ -80,7 +80,7 @@ module Api
       end
 
       def comment_count
-        object.comment_count
+        object.talk_comments.count
       end
 
       def parent_content_id

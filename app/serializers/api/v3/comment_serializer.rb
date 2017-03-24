@@ -10,7 +10,11 @@ module Api
         :user_id, :user_name, :content_id, :user_image_url
 
       def id
-        object.channel.id
+        if object.channel.present?
+          object.channel.id
+        else
+          object.id
+        end
       end
 
       def content

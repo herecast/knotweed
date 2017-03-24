@@ -91,10 +91,10 @@ describe PublishJob, :type => :model do
     end
   end
 
-  describe "perform job", inline_jobs: true do
+  describe "perform job" do
     context "that outputs files" do
       before do
-        @mail_count = ActionMailer::Base.deliveries.count
+        @mail_count = ActiveJob::Base.queue_adapter.enqueued_jobs.size
         @job = FactoryGirl.create(:publish_job, publish_method: Content::EXPORT_TO_XML)
         FactoryGirl.create_list(:content, 3)
         user = FactoryGirl.create(:user)
@@ -133,7 +133,8 @@ describe PublishJob, :type => :model do
       end
 
       it "should generate a file ready email" do
-        expect(ActionMailer::Base.deliveries.count).to eq(@mail_count + 1)
+        expect(ActiveJob::Base.queue_adapter.enqueued_jobs.size).to eq(@mail_count + 1)
+        expect(ActiveJob::Base.queue_adapter.enqueued_jobs.last[:job]).to eq(ActionMailer::DeliveryJob)
       end
     end
   end
