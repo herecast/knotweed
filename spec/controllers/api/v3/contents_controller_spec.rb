@@ -112,6 +112,7 @@ describe Api::V3::ContentsController, :type => :controller do
   end
 
   describe 'POST /contents/:id/moderate' do
+    subject { post :moderate, id: @content.id, flag_type: 'Inappropriate' }
      
     before do
       @content = FactoryGirl.create :content
@@ -121,9 +122,10 @@ describe Api::V3::ContentsController, :type => :controller do
     end
 
     it 'should queue flag notification email' do
-      mailer_count = ActionMailer::Base.deliveries.count
-      post :moderate, id: @content.id, flag_type: 'Inappropriate'
-      expect(ActionMailer::Base.deliveries.count).to eq(mailer_count + 1)
+      expect {
+        subject
+      }.to change{ActiveJob::Base.queue_adapter.enqueued_jobs.size}.by(1)
+      expect(ActiveJob::Base.queue_adapter.enqueued_jobs.last[:job]).to eq(ActionMailer::DeliveryJob)
     end
 
   end

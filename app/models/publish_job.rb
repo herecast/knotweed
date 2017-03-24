@@ -59,7 +59,7 @@ class PublishJob < ActiveRecord::Base
     end
     self.file_archive = zip_file_name
     self.save
-    JobMailer.file_ready(record).deliver_now
+    JobMailer.file_ready(record).deliver_later
   end
 
   def contents_count

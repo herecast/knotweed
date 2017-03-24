@@ -16,7 +16,6 @@
     class: "chosen-select-single-deselect span4", id: "organizations_select", data: { update_content_sets_url: update_content_sets_path } },
     include_blank: true
   = f.association :content_set, collection: @content_sets, input_html: { class: "chosen-select span4", id: "content_sets_select" }
-  = f.association :consumer_apps, as: :check_boxes
   = f.input :automatically_publish, label: "Automatically Publish Content?"
   .control-group.auto-publish
     = f.association :repository, input_html: { class: "span4" }
