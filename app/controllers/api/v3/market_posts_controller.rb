@@ -53,7 +53,7 @@ module Api
         modifier ||= {}
 
         @market_posts = Content.search formatted_query(query), opts.merge(modifier)
-        render json: @market_posts, each_serializer: DetailedMarketPostSerializer, meta: { total: @market_posts.total_count }
+        render json: @market_posts, each_serializer: DetailedMarketPostSerializer, meta: { total: @market_posts.total_count }, context: { current_ability: current_ability }
       end
 
       def create

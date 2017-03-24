@@ -28,6 +28,7 @@ FactoryGirl.define do
       published true
       organization nil
       created_by nil
+      title nil
     end
 
     cost "$5"
@@ -47,6 +48,7 @@ FactoryGirl.define do
       e.content.locations = evaluator.locations
       e.content.organization = evaluator.organization if evaluator.organization.present?
       e.content.created_by = evaluator.created_by if evaluator.created_by.present?
+      e.content.title = evaluator.title if evaluator.title.present?
       if ContentCategory.exists?(name: 'market')
         e.content.content_category = ContentCategory.find_by name: 'market'
       else
