@@ -183,6 +183,24 @@ describe 'Market Posts', type: :request do
           subject
           expect(assigns(:market_posts)).to_not include @mp_mto_loc2.content
         end
+
+        context 'when user owns a market post' do
+          let!(:owned_by_user) {
+            FactoryGirl.create :market_post,
+              title: 'Owned by user Post',
+              created_by: user,
+              locations: [user.location]
+          }
+
+          it 'returns can_edit=true for that record' do
+            subject
+            post = response_json[:market_posts].find do |h|
+              h[:id].eql? owned_by_user.id
+            end
+
+            expect(post[:can_edit]).to be true
+          end
+        end
       end
 
       describe 'searching for the user\'s location' do

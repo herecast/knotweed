@@ -34,11 +34,11 @@
        grouped_posts.each do |(cat, contents)|
     %>
       <h4 style='margin-bottom: 0;'><%= cat %></h4>
-      <table style="margin-left: 16px; border:none;">
+      <table style="border:none;">
         <% contents.sort_by(&:verified_at).each do |lc|%>
-          <tr>
-            <td style='border:none; padding-right: 8px;'><%= counter %></td>
-            <td>
+          <tr style='vertical-align: top;'>
+            <td style='border:none; padding-right: 8px; vertical-align: top;'><%= counter %>.</td>
+            <td style='vertical-align: top;'>
               <a href='#lc<%=lc.id%>'><%= lc.subject %></a>
               - <%= lc.author_name %>
               <% if lc.content_id? %>
@@ -72,7 +72,7 @@
       <hr width="66%" color="#830617">
       <a name='lc<%=lc.id%>'></a>
       <div class='post' style="margin-top: 3%;">
-        <span style="margin-right: 8px;"><%=counter%></span>
+        <span style="margin-right: 8px;"><%=counter%>.</span>
         <strong><%= lc.subject %></strong><br>
         From: <%= lc.sender_name %><br>
         Date: <%= lc.verified_at.strftime('%m/%d/%y %l:%M %p') %>
@@ -88,10 +88,6 @@
           <tr>
             <td>
               <a href='mailto:<%= lc.sender_email %>?subject=Re: <%=lc.subject%>'><strong>Reply to sender</strong></a>
-            </td>
-            <td> -- </td>
-            <td>
-              <a href='mailto:<%= @listserv.post_email %>?subject=Re: <%=lc.subject%>'><strong>Reply to list</strong></a>
             </td>
             <td> -- </td>
             <td>
