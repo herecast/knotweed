@@ -61,14 +61,14 @@
                               style="border-collapse: collapse !important;
                               vertical-align: top;
                               padding-right: 0px;
-                              padding-bottom: 5px;
+                              padding-bottom: 20px;
                               padding-left: 0px;
                               text-align: center;
-                              height: 170px;
+                              min-height: 170px;
                               background-color: #CFF3D9;"
                               valign="middle">
                                     <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #fff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
-                                      <table bgcolor="#08AE66" width="100%">
+                                      <table bgcolor="#08AE66" width="100%" style="vertical-align: top;">
                                         <tbody>
                                           <td>
                                             <span style="font-size:16px;line-height:25px;">
@@ -134,7 +134,7 @@
                       border-left: 0px solid transparent;"
                       align="center">
 
-                      <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;height: 50" width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;" width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tbody>
                           <tr style="vertical-align: top">
                             <td
@@ -145,7 +145,7 @@
                               text-align: center;
                               height: 170px;
                               background-color: #CFF3D9;"
-                              valign="middle">
+                             >
                                 <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{@post.key}", style: "color: #fff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
                                   <table bgcolor="#08AE66" width="100%">
                                     <tbody>
