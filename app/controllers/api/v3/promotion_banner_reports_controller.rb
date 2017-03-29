@@ -23,6 +23,26 @@ module Api
           each_serializer: PromotionBannerReportSerializer
       end
 
+      def show_daily_report
+        date = Chronic.parse(params[:report_date])
+        @promotion_banners = PromotionBanner.includes(promotion: :content)
+                                            .includes(:promotion_banner_reports)
+                                            .where("date_trunc('day', promotion_banner_reports.report_date) = ?", date.strftime('%Y-%m-%d'))
+                                            .active(date.to_date)
+                                            .paid
+        report = []
+        @promotion_banners.each do |pb|
+          report << {
+            promotion_id:     pb.promotion.id,
+            title:            pb.promotion.content.title,
+            type:            "Cost type: #{pb.cost_per_day ? "Per day" : "Per impression"}, #{pb.cost_per_day || pb.cost_per_impression}",
+            impression_count: pb.promotion_banner_reports.first.try(:impression_count),
+            revenue:          pb.promotion_banner_reports.first.try(:daily_revenue)
+          }
+        end
+        render json: { report: report }
+      end
+
     end
   end
 end

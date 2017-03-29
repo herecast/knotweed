@@ -189,6 +189,7 @@ Knotweed::Application.routes.draw do
       post '/ad_metrics', to: 'promotion_banners#create_ad_metric'
       get '/promotion_coupons/:id', to: 'promotion_banners#show_promotion_coupon'
       post '/promotion_coupons/:id/request_email', to: 'promotion_banners#create_promotion_coupon_email'
+      get '/promotion_banner_reports/daily_report', to: 'promotion_banner_reports#show_daily_report'
     end
   end
 
