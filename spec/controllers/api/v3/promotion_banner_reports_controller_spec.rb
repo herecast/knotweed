@@ -86,4 +86,42 @@ describe Api::V3::PromotionBannerReportsController, type: :controller do
       ])
     end
   end
+
+  describe 'GET #show_monthly_projections' do
+    before do
+      @active_daily_cost_pb_report = FactoryGirl.create :promotion_banner_report,
+        report_date: Date.current
+      @active_impression_cost_pb_report = FactoryGirl.create :promotion_banner_report,
+        report_date: Date.current,
+        impression_count: 5
+      @inactive_ad_report = FactoryGirl.create :promotion_banner_report,
+        report_date: Date.current
+      @active_daily_cost_pb_report.promotion_banner.update_attributes(
+        cost_per_day: 6.43,
+        campaign_start: Date.current,
+        campaign_end:   Date.current
+      )
+      @active_impression_cost_pb_report.promotion_banner.update_attributes(
+        cost_per_impression: 0.15,
+        campaign_start:      Date.current,
+        campaign_end:        Date.current
+      )
+      @inactive_ad_report.promotion_banner.update_attributes(
+        cost_per_day:   7.58,
+        campaign_start: 60.days.from_now,
+        campaign_end:   60.days.from_now
+      )
+      PromotionBanner.all.each { |pb| pb.promotion.update_attribute(:paid, true) }
+    end
+
+    subject { get :show_monthly_projection}
+
+    it "returns projected total" do
+      subject
+      total_from_first = (@active_daily_cost_pb_report.promotion_banner.cost_per_day * 1)
+      total_from_second = (@active_impression_cost_pb_report.impression_count * @active_impression_cost_pb_report.promotion_banner.cost_per_impression)
+      expected_total = total_from_first + total_from_second
+      expect(JSON.parse(response.body)['current_month_revenue_projection'].to_f).to eq expected_total
+    end
+  end
 end

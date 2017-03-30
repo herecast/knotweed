@@ -180,6 +180,7 @@ Knotweed::Application.routes.draw do
       put '/businesses/:id/feedback', to: 'business_feedbacks#update', as: :update_feedback
       resources :content_reports, only: :index
       resources :promotion_banner_reports, only: :index
+      get '/promotion_banners/monthly_projection', to: 'promotion_banner_reports#show_monthly_projection'
       get '/digests', to: 'digests#index'
       get '/digests/:id', to: 'digests#show'
       get '/features', to: 'features#index'
