@@ -67,5 +67,18 @@ FactoryGirl.define do
     content_category
     authoremail 'fake@email.com'
     published false
+
+    trait :talk do
+      content_category {
+        ContentCategory.find_or_create_by({
+          name: 'talk_of_the_town'
+        })
+      }
+    end
+
+    trait :published do
+      published true
+      pubdate { Time.current }
+    end
   end
 end
