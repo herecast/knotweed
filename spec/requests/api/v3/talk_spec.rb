@@ -4,6 +4,65 @@ describe 'Talk', type: :request do
   let(:user) { FactoryGirl.create :user }
   let(:auth_headers) { auth_headers_for(user) }
 
+  describe 'GET /api/v3/talk/:id' do
+    context 'record exists' do
+      let(:record) {
+        FactoryGirl.create(:content, :talk, :published, {
+          created_by: FactoryGirl.create(:user)
+        })
+      }
+
+      context 'not authenticated' do
+        subject { get "/api/v3/talk/#{record.id}" }
+
+        it 'returns 401' do
+          expect(subject).to eql 401
+        end
+
+        context 'talk is located to "Upper Valley" (default location/region)' do
+          let(:default_location) {
+            FactoryGirl.create :location, :default
+          }
+          before do
+            record.update locations: [default_location]
+          end
+
+          it 'returns 200' do
+            expect(subject).to eql 200
+          end
+
+          it 'returns record json' do
+            subject
+            expect(response_json).to match(
+              talk: {
+                id: record.id,
+                title: record.title,
+                content: record.sanitized_content,
+                content_id: record.id,
+                image_url: an_instance_of(String).or(be_nil),
+                user_count: a_kind_of(Integer).or(be_nil),
+                author_name: an_instance_of(String),
+                author_image_url: an_instance_of(String).or(be_nil),
+                image_width: a_kind_of(Integer).or(be_nil),
+                image_height: a_kind_of(Integer).or(be_nil),
+                image_file_extension: an_instance_of(String).or(be_nil),
+                published_at: record.pubdate.iso8601,
+                view_count: a_kind_of(Integer),
+                commenter_count: a_kind_of(Integer),
+                comment_count: a_kind_of(Integer),
+                parent_content_id: record.parent_id,
+                parent_content_type: an_instance_of(String).or(be_nil),
+                author_email: record.created_by.email,
+                created_at: record.created_at.iso8601,
+                updated_at: record.updated_at.iso8601
+              }
+            )
+          end
+        end
+      end
+    end
+  end
+
   describe 'POST /api/v3/talk' do
     context "with valid request data" do
       before do

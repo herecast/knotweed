@@ -26,5 +26,12 @@ FactoryGirl.define do
     lat { Faker::Address.latitude }
     long { Faker::Address.longitude }
     consumer_active false
+
+    trait :default do
+      id Location::REGION_LOCATION_ID
+      city Location::DEFAULT_LOCATION
+      lat Location::DEFAULT_LOCATION_COORDS[0]
+      long Location::DEFAULT_LOCATION_COORDS[1]
+    end
   end
 end

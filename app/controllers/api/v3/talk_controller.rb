@@ -2,7 +2,7 @@ module Api
   module V3
     class TalkController < ApiController
 
-      before_filter :check_logged_in!, only: [:index, :show, :create, :update]
+      before_filter :check_logged_in!, only: [:create, :update]
 
       def index
         expires_in 1.minutes, public: true
@@ -15,7 +15,9 @@ module Api
           opts[:where][:organization_id] = allowed_orgs.collect{|c| c.id}
         end
 
-        opts[:where][:all_loc_ids] = [@current_api_user.location_id]
+        opts[:where][:all_loc_ids] = [Location::REGION_LOCATION_ID]
+        opts[:where][:all_loc_ids] << @current_api_user.location_id if @current_api_user
+
 
         @talk = Content.talk_search(params[:query], opts)
 
@@ -29,15 +31,23 @@ module Api
         end
 
         if @talk.try(:root_content_category).try(:name) != 'talk_of_the_town'
-          head :no_content
-        else
-          @talk.increment_view_count! unless exclude_from_impressions?
-          if @current_api_user.present? and @repository.present?
-            BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit', @talk,
-                                                           @current_api_user, @repository)
-          end
-          render json: @talk, serializer: DetailedTalkSerializer, root: 'talk'
+          head :no_content and return
         end
+
+        unless @talk.location_ids.include? Location::REGION_LOCATION_ID
+          unless @current_api_user
+            render_401 and return
+          end
+        end
+
+        @talk.increment_view_count! unless exclude_from_impressions?
+
+        if @current_api_user.present? and @repository.present?
+          BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit', @talk,
+                                                         @current_api_user, @repository)
+        end
+
+        render json: @talk, serializer: DetailedTalkSerializer, root: 'talk'
       end
 
       def create

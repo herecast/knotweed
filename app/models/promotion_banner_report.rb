@@ -16,4 +16,12 @@
 
 class PromotionBannerReport < ActiveRecord::Base
   belongs_to :promotion_banner
+
+  def daily_revenue
+    if promotion_banner.cost_per_day.present?
+      promotion_banner.cost_per_day
+    elsif promotion_banner.cost_per_impression.present?
+      promotion_banner.cost_per_impression * (impression_count || 0)
+    end
+  end
 end

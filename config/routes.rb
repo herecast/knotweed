@@ -180,6 +180,7 @@ Knotweed::Application.routes.draw do
       put '/businesses/:id/feedback', to: 'business_feedbacks#update', as: :update_feedback
       resources :content_reports, only: :index
       resources :promotion_banner_reports, only: :index
+      get '/promotion_banners/monthly_projection', to: 'promotion_banner_reports#show_monthly_projection'
       get '/digests', to: 'digests#index'
       get '/digests/:id', to: 'digests#show'
       get '/features', to: 'features#index'
@@ -189,6 +190,7 @@ Knotweed::Application.routes.draw do
       post '/ad_metrics', to: 'promotion_banners#create_ad_metric'
       get '/promotion_coupons/:id', to: 'promotion_banners#show_promotion_coupon'
       post '/promotion_coupons/:id/request_email', to: 'promotion_banners#create_promotion_coupon_email'
+      get '/promotion_banner_reports/daily_report', to: 'promotion_banner_reports#show_daily_report'
     end
   end
 
