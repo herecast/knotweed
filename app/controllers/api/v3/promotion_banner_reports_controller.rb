@@ -67,10 +67,14 @@ module Api
           monthly_total = 0
           (@start_of_month..@end_of_month).each do |date|
             if promotion_banner.campaign_start <= date && promotion_banner.campaign_end >= date
-              report = promotion_banner.promotion_banner_reports
-                  .where("date_trunc('day', report_date) = ?", date)
-                  .take
-              monthly_total += report.try(:daily_revenue) || 0
+              if date <= Date.current
+                report = promotion_banner.promotion_banner_reports
+                    .where("date_trunc('day', report_date) = ?", date)
+                    .take
+                monthly_total += report.try(:daily_revenue) || 0
+              else
+                monthly_total += promotion_banner.cost_per_day || 0
+              end
             end
           end
           monthly_total
