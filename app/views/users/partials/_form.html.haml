@@ -12,7 +12,7 @@
     .span5
       .row-fluid
         %h4 Location
-        = f.input :location, collection: Location.where(consumer_active: true), label: false
+        = f.input :location, collection: Location.where(consumer_active: true), label: false, selected: @user.location.id
         %h4 Roles
         .row-fluid
           %input{ type: :checkbox, id: 'user_roles_admin', name: "user[roles][admin]", class: 'checkbox-control', checked: @user.roles.include?(Role.get('admin')) }
