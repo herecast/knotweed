@@ -13,7 +13,7 @@ end
 #end
 
 
-guard :rspec, cmd: 'bin/zeus rspec' do
+guard :rspec, cmd: 'bin/rspec' do
   watch(%r{^spec/.+_spec\.rb$})
   watch(%r{^lib/(.+)\.rb$})     { |m| "spec/lib/#{m[1]}_spec.rb" }
   watch('spec/spec_helper.rb')  { "spec" }
@@ -40,7 +40,7 @@ guard :rspec, cmd: 'bin/zeus rspec' do
 end
 
 
-guard 'zeus', cli: '> /dev/null' do
+#guard 'zeus', cli: '> /dev/null' do
   #require 'ostruct'
 
   #rspec = OpenStruct.new
@@ -81,4 +81,4 @@ guard 'zeus', cli: '> /dev/null' do
   # watch(%r|^test/test_helper\.rb$|)    { "test" }
   # watch(%r|^app/controllers/(.*)\.rb$|) { |m| "test/functional/#{m[1]}_test.rb" }
   # watch(%r|^app/models/(.*)\.rb$|)      { |m| "test/unit/#{m[1]}_test.rb" }
-end
+#end

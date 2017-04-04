@@ -82,13 +82,15 @@ gem 'uglifier', '~> 2.4'                            # Have not yet tested the ne
 gem 'unf'
 
 group :development, :test do
-  gem "factory_girl_rails", '~> 4.4.0'              # 4.5.0 causes a failure in the test suite
+  gem "factory_girl_rails", "~> 4.4.0"              # 4.5.0 causes a failure in the test suite
   gem 'guard-bundler', require:false
+  gem 'guard', require: false
   gem 'guard-rspec', require:false
-  gem 'guard-zeus', require: false
   gem 'rspec'
   gem 'rspec-activejob'
   gem "rspec-rails"
+  gem 'spring'
+  gem 'spring-commands-rspec'
 end
 
 group :test do
