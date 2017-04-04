@@ -19,7 +19,17 @@ class ListservDigestJob < ApplicationJob
           digests << ListservDigest.new(digest_attributes.merge(campaign_attrs))
         end
       else
-        digests << ListservDigest.new(digest_attributes)
+        if digest_attributes[:listserv_contents].present? && digest_attributes[:listserv_contents].count > 50
+          digest_attributes[:listserv_contents].each_slice(50).with_index do |lc, i|
+            batched_digest_attrs = digest_attributes
+            batched_digest_attrs[:subject] += " Pt #{ i + 1 }"
+            batched_digest_attrs.merge!(listserv_contents: lc)
+            digests << ListservDigest.new(batched_digest_attrs)
+          end
+
+        else
+          digests << ListservDigest.new(digest_attributes)
+        end
       end
 
       @listserv.update last_digest_generation_time: Time.current

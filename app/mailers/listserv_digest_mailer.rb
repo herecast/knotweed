@@ -13,16 +13,14 @@ class ListservDigestMailer < ActionMailer::Base
   def digest(digest_record)
     @digest = digest_record
     @listserv = digest_record.listserv
-    compressor = HtmlCompressor::Compressor.new
+    compressor = HtmlCompressor::Compressor.new(options = {:preserve_line_breaks => true})
 
     template = @digest.template? ? @digest.template : "digest"
 
     mail_instance = mail(subject: @digest.subject, template_name: "#{template}")
     mail_instance.delivery_handler = self
-    unless @digest.template == 'digest'
-      string_body = mail_instance.body.to_s
-      mail_instance.body = compressor.compress(string_body)
-    end
+    string_body = mail_instance.body.to_s
+    mail_instance.body = compressor.compress(string_body)
     mail_instance
   end
 

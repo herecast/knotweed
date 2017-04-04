@@ -64,6 +64,40 @@ RSpec.describe ListservDigestJob do
               expect(digest.title).to eql listserv.digest_subject
             end
 
+            context 'when there are more than 50 listserv_content items' do
+              let!(:large_listserv_content_set) {
+                FactoryGirl.create_list :listserv_content, 51,
+                  :verified,
+                  verified_at: listserv.last_digest_generation_time + 1.hour,
+                  listserv: listserv
+              }
+              
+              it 'creates a digest record for each batch' do
+                expect{ subject }.to change{
+                  ListservDigest.count
+                }.to(2)
+              end
+              
+              it 'sets instance information' do
+                subject
+                digests = ListservDigest.last(2)
+                digests.each_with_index do |digest, i|
+                  expect(digest.subject).to eql "#{listserv.digest_subject} Pt #{i+1}"
+                  expect(digest.reply_to).to eql listserv.digest_reply_to
+                  expect(digest.from_name).to eql listserv.name
+                  expect(digest.template).to eql listserv.template
+                  expect(digest.subscription_ids).to match_array listserv.subscriptions.pluck(:id)
+                  expect(digest.title).to eql listserv.digest_subject
+                end
+              end
+
+              it 'limits the listserv_contents to 50 items each digest' do
+                subject
+                digests = ListservDigest.last(2)
+                expect(digests.first.listserv_contents.count).to eq 50
+              end
+            end
+
             it 'sends digest' do
               mail = double()
               expect(ListservDigestMailer).to receive(:digest).with(

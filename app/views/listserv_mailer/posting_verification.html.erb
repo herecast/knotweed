@@ -7,7 +7,7 @@
   <tbody>
     <tr style="vertical-align: top;background-color: #69C2F8;">
       <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top; padding: 10px 10px 0 10px;">
-        <p style="line-height: 31px; font-size: 26px; color: #fff;;margin: 0;text-align: left">
+        <p style="line-height: 31px; font-size: 26px; color: #fff;;margin: 0;text-align: center">
           <strong>
             <%= @listserv.name.upcase %>
           </strong>
@@ -17,20 +17,19 @@
     <tr style="vertical-align: top;background-color: #69C2F8;">
       <td style="padding: 0 10px 10px 10px;">
         <div style="font-size: 16px; line-height: 19px; color: #fff;">
-          a Vital Communities service delivered by dailyUV
+          a Vital Communities service delivered by DailyUV
         </div>
       </td>
     </tr>
   </tbody>
 </table>
 
-  <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top; margin-bottom: 10px;" cellpadding="0" cellspacing="0" width="100%">
+  <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top; margin-bottom: -35px;" cellpadding="0" cellspacing="0" width="100%">
     <tbody>
       <tr style="vertical-align: top">
-        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 5px;padding-right: 10px;padding-bottom: 0px;padding-left: 10px">
-          <p style="margin: 0;font-size: 18px;line-height: 21px;text-align: center">
-            Your post isn't published yet.<br>
-            This verification step helps reduce spam.
+        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 5px;padding-right: 10px;padding-bottom: 50px;padding-left: 10px">
+          <p style="margin: 0;font-size: 18px;line-height: 25px;text-align: center">
+          <strong>Your post isn't published yet.</strong><br>
           </p>
         </td>
       </tr>
@@ -38,101 +37,142 @@
   </table>
 <% end %>
 
-<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0" >
   <tbody>
     <tr style="vertical-align: top">
-      <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-left: 10px">
-        <p style="color:#555555;margin: 0;font-size: 18px;line-height: 21px;text-align: left;">
-          <span style="font-size: 18px;">
-            <strong>
-              Confirm by choosing to...
-            </strong>
-          </span>
-        </p>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tbody>
-    <tr style="vertical-align: top">
-      <td class="button-container" width="50%" style="padding: 10px;">
-
-        <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-          <tbody>
-            <tr style="vertical-align: top">
-              <td class="button" style="border-collapse: collapse !important;vertical-align: top" align="center" valign="middle">
-                  <div
-                    style="display: inline-block;
+      <td class="button-container" width="45%" "padding: 0px 10px;">
+        <div style="border: 3px solid #08AE66;
                     border-radius: 5px;
                     -webkit-border-radius: 5px;
-                    -moz-border-radius: 5px;
-                    width: 100%;
-                    border-top: 0px solid transparent;
-                    border-right: 0px solid transparent;
-                    border-bottom: 0px solid transparent;
-                    border-left: 0px solid transparent;"
-                    align="center">
+                    -moz-border-radius: 5px;">
+          <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+            <tbody>
+              <tr style="vertical-align: top">
+                <td class="button" style="border-collapse: collapse !important;vertical-align: top" align="center" valign="middle">
+                    <div
+                      style="display: inline-block;
+                      width: 100%;"
+                      align="center">
 
-                    <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;height: 50" width="100%" border="0" cellspacing="0" cellpadding="0">
-                      <tbody>
-                        <tr style="vertical-align: top">
-                          <td
-                            style="border-collapse: collapse !important;vertical-align: top;border-radius: 5px;                   -webkit-border-radius: 5px;                   -moz-border-radius: 5px;                  color: #ffffff;                  background-color: #08AE66;                  padding-top: 5px;                   padding-right: 0px;                  padding-bottom: 5px;                  padding-left: 0px;                  text-align: center"
-                            valign="middle">
-                              <span style="font-size:16px;line-height:32px;">
-                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #ffffff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;" do %>
-                                   SPRUCE IT UP
-                                <% end %>
-                              </span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                      <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;height: 50" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tbody>
+                          <tr style="vertical-align: top">
+                            <td
+                              style="border-collapse: collapse !important;
+                              vertical-align: top;
+                              padding-right: 0px;
+                              padding-bottom: 20px;
+                              padding-left: 0px;
+                              text-align: center;
+                              min-height: 170px;
+                              background-color: #CFF3D9;"
+                              valign="middle">
+                                    <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #fff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
+                                      <table bgcolor="#08AE66" width="100%" style="vertical-align: top;">
+                                        <tbody>
+                                          <td>
+                                            <span style="font-size:16px;line-height:25px;">
+                                              <strong>SPRUCE IT UP&nbsp;&nbsp;&nbsp;&nbsp;&gt;</strong>
+                                              <strong></strong>
+                                            </span>
+                                          </td>
+                                        </tbody>
+                                      </table>
+                                    <% end %>
+                                <span style="font-size:16px;">
+                                  <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #000" do %>
+                                    <p style="padding: 0px 5px; text-decoration: underline;">Add photos and reach a wider audience!</p>
+                                  <% end %>
+                                </span>
+                                <span style="font-size:12px;line-height:10px;">
+                                  <p>No idea what this means?</p>
+                                  <p>Check out <a href="http://<%=ENV['DEFAULT_CONSUMER_HOST'] %>/lists/example-preview" target="_blank"><u>examples.</u></p>
+                                </span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </td>
+      <td width="10%" height="100%">
+        <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%" height="100%">
+          <tbody>
+            <tr>
+              <td style="word-break: keep-all;border-collapse: collapse !important;vertical-align: center;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
+                <p style="font-size: 16px;line-height: 20px;text-align: center">
+                  <strong>OR</strong>
+                </p>
               </td>
             </tr>
           </tbody>
         </table>
       </td>
-      <td width="50%" style='padding: 10px;'>
-        <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
-          <tbody>
-            <tr style="vertical-align: top">
-              <td class="button" style="border-collapse: collapse !important;vertical-align: top" align="center" valign="middle">
-                  <div
-                    style="display: inline-block;
+      <td width="45%">
+        <div style="border: 3px solid #08AE66;
                     border-radius: 5px;
                     -webkit-border-radius: 5px;
-                    -moz-border-radius: 5px;
-                    width: 100%;
-                    border-top: 0px solid transparent;
-                    border-right: 0px solid transparent;
-                    border-bottom: 0px solid transparent;
-                    border-left: 0px solid transparent;"
-                    align="center">
+                    -moz-border-radius: 5px;">
+          <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+            <tbody>
+              <tr style="vertical-align: top">
+                <td class="button" style="border-collapse: collapse !important;vertical-align: top" align="center" valign="middle">
+                    <div
+                      style="display: inline-block;
+                      border-radius: 5px;
+                      -webkit-border-radius: 5px;
+                      -moz-border-radius: 5px;
+                      width: 100%;
+                      border-top: 0px solid transparent;
+                      border-right: 0px solid transparent;
+                      border-bottom: 0px solid transparent;
+                      border-left: 0px solid transparent;"
+                      align="center">
 
-                    <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;height: 50" width="100%" border="0" cellspacing="0" cellpadding="0">
-                      <tbody>
-                        <tr style="vertical-align: top">
-                          <td
-                            style="border-collapse: collapse !important;vertical-align: top;border-radius: 5px;                   -webkit-border-radius: 5px;                   -moz-border-radius: 5px;                  color: #ffffff;                  background-color: #08AE66;                  padding-top: 5px;                   padding-right: 0px;                  padding-bottom: 5px;                  padding-left: 0px;                  text-align: center"
-                            valign="middle">
-                              <span style="font-size:16px;line-height:32px;">
-                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/api/v3/listserv_contents/#{@post.key}/verify", style: "color: #ffffff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;" do %>
-                                   SEND AS IS
+                      <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tbody>
+                          <tr style="vertical-align: top">
+                            <td
+                              style="border-collapse: collapse !important;
+                              vertical-align: top;
+                              padding-right: 0px;
+                              padding-bottom: 5px;
+                              text-align: center;
+                              height: 170px;
+                              background-color: #CFF3D9;"
+                             >
+                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{@post.key}", style: "color: #fff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
+                                  <table bgcolor="#08AE66" width="100%">
+                                    <tbody>
+                                      <td>
+                                        <span style="font-size:16px;line-height:25px;">
+                                          <strong>SEND AS IS&nbsp;&nbsp;&nbsp;&nbsp;&gt;</strong>
+                                          <strong></strong>
+                                        </span>
+                                      </td>
+                                    </tbody>
+                                  </table>
                                 <% end %>
-                              </span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                                <span style="font-size:16px;">
+                                  <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{@post.key}", style: "color: #000" do %>
+                                    <p style="padding: 5px; text-decoration: underline;">Send your post to the <%= @listserv.name %> unaltered.</p>
+                                  <% end %>
+                                </span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </td>
     </tr>
   </tbody>
@@ -144,14 +184,7 @@
     <tr style="vertical-align: top">
       <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
         <p style="font-size: 14px;line-height: 16px;text-align: center">
-          <strong>
-            BOTH CHOICES ARE FREE
-          </strong>
-        </p>
-        <p style="font-size: 14px;line-height: 16px;text-align: center">
-          <span style="color: rgb(151, 151, 151); font-size: 14px; line-height: 16px;">
-            This will subscribe you to the <%= @listserv.name %> digest, if you aren't already.
-          </span>
+        <strong>Both choices are FREE</strong> and will subscribe you to the <%= @listserv.name %> if you aren't already.
         </p>
       </td>
     </tr>

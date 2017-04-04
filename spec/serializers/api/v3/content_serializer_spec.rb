@@ -85,4 +85,14 @@ describe Api::V3::ContentSerializer do
       end
     end
   end
+
+  context 'when the post has "No Content Found" in the body' do
+    before do
+      @content.raw_content = "No content found"
+    end
+
+    it 'returns an empty string' do
+      expect(serialized_object['content']).to eq ""
+    end
+  end
 end
