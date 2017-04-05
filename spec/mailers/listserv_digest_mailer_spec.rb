@@ -191,7 +191,7 @@ RSpec.describe ListservDigestMailer do
           it 'includes the date for the content post' do
             listserv_contents.each do |content|
               date = content.verified_at.strftime('%m/%d/%y')
-              time = content.verified_at.strftime('%l:%M %p')
+              time = content.verified_at.strftime('%-l:%M %p')
               expect(subject).to match(/#{date}\s+#{time}/)
             end
           end
