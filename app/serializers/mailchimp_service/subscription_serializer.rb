@@ -45,7 +45,7 @@ class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
       LNAME: object.subscriber_name.to_s.split(/\s+/).last.to_s
     }.tap do |h|
       if object.user && object.user.location
-        h[:ZIP] = object.user.location.zip
+        h[:ZIP] = object.user.location.zip if object.user.location.zip?
         h[:CITY] = object.user.location.city
         h[:STATE] = object.user.location.state
       end
@@ -67,7 +67,10 @@ class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
       keys = keys - [:ip_signup, :ip_opt, :timestamp_opt]
     end
 
-    unless (object.user && object.user.location)
+    unless (object.user &&
+        object.user.location &&
+        object.user.location.lat? &&
+        object.user.location.long?)
       keys  = keys - [:location]
     end
 

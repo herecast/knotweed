@@ -117,6 +117,47 @@ RSpec.describe MailchimpService do
 
           subject
         end
+
+        context 'when user account location has no lat/lng' do
+          before do
+            user.location.update!(lat: nil, long: nil)
+          end
+
+          it 'does upsert on mailchimp api, without location key' do
+            api_without_location = stub_request(
+              :put, "https://#{base_url}/lists/#{listserv.mc_list_id}/members/#{subscriber_hash}"
+            ).with(
+              basic_auth: auth,
+              headers: {
+                "Content-Type" => 'application/json',
+                "Accept" => 'application/json'
+              },
+              body: {
+                email_type: subscription.email_type,
+                status: 'subscribed',
+                ip_signup: subscription.confirm_ip,
+                timestamp_signup: subscription.created_at.iso8601,
+                ip_opt: subscription.confirm_ip,
+                timestamp_opt: subscription.confirmed_at.iso8601,
+                email_address: subscription.email,
+                status_if_new: 'subscribed',
+                merge_fields: {
+                  FNAME: subscription.subscriber_name.split(/\s+/).first,
+                  LNAME: subscription.subscriber_name.split(/\s+/).last,
+                  ZIP: user.location.zip,
+                  CITY: user.location.city,
+                  STATE: user.location.state
+                },
+                interests: {
+                  mc_digest[:id] => true
+                }
+              }.to_json
+            )
+            subject
+
+            expect(api_without_location).to have_been_requested
+          end
+        end
       end
 
       context 'when no user record' do
