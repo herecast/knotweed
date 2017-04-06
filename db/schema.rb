@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170303154512) do
+ActiveRecord::Schema.define(version: 20170406130428) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -488,6 +488,7 @@ ActiveRecord::Schema.define(version: 20170303154512) do
     t.integer  "width"
     t.integer  "height"
     t.string   "file_extension"
+    t.integer  "position",                   default: 0
   end
 
   add_index "images", ["imageable_type", "imageable_id"], name: "idx_16634_index_images_on_imageable_type_and_imageable_id", using: :btree

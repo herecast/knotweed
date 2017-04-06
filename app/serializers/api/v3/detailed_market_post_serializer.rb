@@ -74,7 +74,7 @@ module Api
       end
 
       def images
-        object.images.map do |img|
+        object.images.in_rendering_order.map do |img|
           {
             id: img.id,
             image_url: img.image.url,

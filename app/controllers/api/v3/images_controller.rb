@@ -40,6 +40,7 @@ module Api
             :image,
             :imageable_type,
             :imageable_id,
+            :position,
             :source_url
           ).merge({ imageable: @content })
         end

@@ -28,6 +28,8 @@ class Image < ActiveRecord::Base
 
   after_save :ensure_only_one_primary
 
+  scope :in_rendering_order, -> { order("#{self.table_name}.position ASC, #{self.table_name}.created_at ASC") }
+
   def url
     image.try(:url)
   end

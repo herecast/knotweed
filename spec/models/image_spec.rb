@@ -69,4 +69,18 @@ describe Image, :type => :model do
     end
   end
 
+  describe '.in_rendering_order' do
+    before do
+      @imgble = FactoryGirl.create :content
+      @img1 = FactoryGirl.create :image, imageable: @imgble, position: 99
+      @img2 = FactoryGirl.create :image, primary: true, imageable: @imgble, position: 50
+      @img3 = FactoryGirl.create :image, imageable: @imgble, position: 1
+    end
+
+    it 'renders the images in order of primary first, then the remaining images by position' do
+      expect(@imgble.images.order(:id        ).to_a).to eq [@img2, @img1, @img3]
+      expect(@imgble.images.in_rendering_order.to_a).to eq [@img2, @img3, @img1]
+    end
+  end
+
 end
