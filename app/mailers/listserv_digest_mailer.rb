@@ -17,7 +17,7 @@ class ListservDigestMailer < ActionMailer::Base
 
     template = @digest.template? ? @digest.template : "digest"
 
-    mail_instance = mail(subject: @digest.subject, template_name: "#{template}")
+    mail_instance = mail(subject: @digest.subject, template_name: "#{template}", skip_premailer: template == "digest" ? true : false )
     mail_instance.delivery_handler = self
     string_body = mail_instance.body.to_s
     mail_instance.body = compressor.compress(string_body)

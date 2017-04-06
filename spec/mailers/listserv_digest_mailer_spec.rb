@@ -36,7 +36,10 @@ RSpec.describe ListservDigestMailer do
 
         it 'passes the generated content, and listserv digest to MailchimpService.create_campaign' do
           mail = described_class.digest(listserv_digest)
-          mail = Premailer::Rails::Hook.perform(mail)
+          #this line will be needed once we're back to using premailer for all
+          #templates.
+
+          # mail = Premailer::Rails::Hook.perform(mail)
 
           expect(MailchimpService).to receive(:create_campaign).with(
             listserv_digest,
@@ -74,13 +77,13 @@ RSpec.describe ListservDigestMailer do
 
         context 'when a listserv digest has a template' do
           it 'defaults to the digest template' do
-            expect_any_instance_of(ListservDigestMailer).to receive(:mail).with(subject: listserv_digest.subject, template_name: 'digest').and_return(Mail::Message.new)
+            expect_any_instance_of(ListservDigestMailer).to receive(:mail).with(subject: listserv_digest.subject, template_name: 'digest', skip_premailer: true).and_return(Mail::Message.new)
             described_class.digest(listserv_digest).deliver_now
           end
 
           it 'uses the template for the listserv' do
             listserv_digest.template = "test"
-            expect_any_instance_of(ListservDigestMailer).to receive(:mail).with(subject: listserv_digest.subject, template_name: "#{listserv_digest.template}").and_return(Mail::Message.new)
+            expect_any_instance_of(ListservDigestMailer).to receive(:mail).with(subject: listserv_digest.subject, template_name: "#{listserv_digest.template}", skip_premailer: false).and_return(Mail::Message.new)
             described_class.digest(listserv_digest).deliver_now
           end
         end
