@@ -5,4 +5,4 @@
         %i.icon-plus
         New User
     .box-content
-      = render partial: "users/partials/form", locals: { url: '/users/admin-create', method: :post }
+      = render partial: "users/partials/form", locals: { url: create_user_path, method: :post }

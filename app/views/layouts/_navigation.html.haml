@@ -320,7 +320,7 @@
       %i.icon-angle-down.angle-down
 - if can? :manage, ActiveJob::Base
   %li
-    = link_to '/sidekiq_wrapper' do
+    = link_to sidekiq_wrapper_path do
       %i.icon-dashboard
       %span Sidekiq Dashboard
 - if can? :manage, Feature

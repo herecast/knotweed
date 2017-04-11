@@ -12,4 +12,4 @@
         %td= user.name
         %td= user.email
         %td
-          = link_to "Delete", "/temp_user/#{user.id}", method: :delete, class: 'btn btn-mini btn-danger', data: { confirm: "Remove this record?" }
+          = link_to "Delete", delete_temp_user_path(user), method: :delete, class: 'btn btn-mini btn-danger', data: { confirm: "Remove this record?" }

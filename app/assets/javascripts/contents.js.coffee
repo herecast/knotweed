@@ -79,7 +79,7 @@ jQuery ->
     new_category = $this.find('option:selected').text()
     $.ajax(
       method: 'POST'
-      url: 'contents/category_correction'
+      url: 'admin/contents/category_correction'
       data:
         content_id: id
         new_category: new_category).done (msg) ->
@@ -92,7 +92,7 @@ jQuery ->
     checked = $(this).is(':checked')
     $.ajax
       method: 'POST'
-      url: 'contents/category_correction_reviewed'
+      url: 'admin/contents/category_correction_reviewed'
       data:
         content_id: id
         checked: checked
