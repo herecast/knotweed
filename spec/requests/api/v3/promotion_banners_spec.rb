@@ -203,6 +203,26 @@ describe 'Promotion Banner Endpoints', type: :request do
         expect(response_json[:promotions][0][:redirect_url]).to eq "/promotions/#{@promotion_coupon.id}"
       end
     end
+  end
 
+  describe "GET /api/v3/promotion_banners" do
+    before do
+      @promotion_banner = FactoryGirl.create :promotion_banner,
+        promotion_type: PromotionBanner::DIGEST
+      @promotion_banner.promotion.update_attribute :created_by, user
+      @results = { :opens_total => 219, :total_clickes => 5}
+
+      allow(MailchimpService).to receive(:get_report).and_return @results
+    end
+
+    subject { get '/api/v3/promotion_banners', {}, auth_headers }
+
+    context "when promotion_type: Digest" do
+      it "returns an instance with mailchimp information" do
+        subject
+        expect(response_json[:promotion_banners].first[:impression_count]).to eq @results[:opens_total]
+        expect(response_json[:promotion_banners].first[:click_count]).to eq @results[:total_clicks]
+      end
+    end
   end
 end

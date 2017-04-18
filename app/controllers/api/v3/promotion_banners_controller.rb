@@ -23,6 +23,7 @@ module Api
         @promotion_banners = scope.order(sanitize_sort_parameter(params[:sort])).
           page(params[:page].to_i).per(params[:per_page].to_i)
 
+        create_mocks_for_digest_ads
         render json: @promotion_banners, each_serializer: PromotionBannerSerializer
       end
 
@@ -175,6 +176,22 @@ module Api
           :page_url,
           :content
         )
+      end
+
+      def create_mocks_for_digest_ads
+        new_pb_array = []
+        @promotion_banners.each do |pb|
+          if pb.promotion_type == PromotionBanner::DIGEST
+            results = MailchimpService.get_report(pb)
+            new_pb_array << MockPromotionBannerWithMailchimpStats.new(
+              results:          results,
+              promotion_banner: pb
+            )
+          else
+            new_pb_array << pb
+          end
+        end
+        @promotion_banners = new_pb_array
       end
 
     end
