@@ -243,13 +243,13 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
       context "when user is admin" do
         before do
-          @user = FactoryGirl.create :admin
+          @user = FactoryGirl.create :user, skip_analytics: true
           api_authenticate user: @user
         end
 
         it "does not increment view count" do
           expect{ subject }.not_to change{
-            @event_instance.event.content.view_count
+            @event_instance.reload.event.content.view_count
           }
         end
 
