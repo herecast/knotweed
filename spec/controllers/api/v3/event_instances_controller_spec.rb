@@ -36,10 +36,6 @@ describe Api::V3::EventInstancesController, :type => :controller do
       expect(inst["event_instance"]["comment_count"]).to eq(comment_count)
     end
 
-    it 'should increment view count' do
-      expect{subject}.to change{Content.find(@inst.event.content.id).view_count}.from(0).to(1)
-    end
-
     describe 'record user visit' do
       before do
         @user = FactoryGirl.create :user
@@ -222,6 +218,58 @@ describe Api::V3::EventInstancesController, :type => :controller do
       it 'should return paginated results' do
         get :index, per_page: @count - 1
         expect(assigns(:event_instances).length).to eq(@count -1)
+      end
+    end
+  end
+
+  describe "POST #create_impression" do
+    context "when no event instance" do
+      subject { post :create_impression, id: 5 }
+
+      it "returns not_found status" do
+        subject
+        expect(response).to have_http_status :not_found
+      end
+    end
+
+    context "when event instance is present" do
+      before do
+        @event = FactoryGirl.create :event
+        @event.content.update_attribute :published, true
+        @event_instance = @event.event_instances.first
+      end
+
+      subject { post :create_impression, id: @event_instance.id }
+
+      context "when user is admin" do
+        before do
+          @user = FactoryGirl.create :admin
+          api_authenticate user: @user
+        end
+
+        it "does not increment view count" do
+          expect{ subject }.not_to change{
+            @event_instance.event.content.view_count
+          }
+        end
+
+        it "returns accepted status" do
+          subject
+          expect(response).to have_http_status :accepted
+        end
+      end
+
+      context "when user is not admin" do
+        it "increments view count" do
+          expect{ subject }.to change{
+            @event_instance.reload.event.content.view_count
+          }.by 1
+        end
+
+        it "returns accepted status" do
+          subject
+          expect(response).to have_http_status :accepted
+        end
       end
     end
   end

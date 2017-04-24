@@ -138,6 +138,7 @@ Knotweed::Application.routes.draw do
       get '/promotions', to: 'promotion_banners#show'
       get '/promotions/:promotion_id', to: 'promotion_banners#show'
       resources 'event_instances', only: [:index, :show]
+      post 'events/:id/impressions', to: "event_instances#create_impression"
       resources 'comments', only: [:index, :create]
       resources 'listservs', only: [:show,:index]
       get '/venues', to: 'business_locations#index', as: :venues

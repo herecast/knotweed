@@ -1,7 +1,7 @@
 module Api
   module V3
     class EventInstancesController < ApiController
-      
+
       def index
         expires_in 1.minutes, public: true
         opts = {}
@@ -66,9 +66,8 @@ module Api
           url = edit_event_url(@event_instance.event) if @current_api_user.has_role? :admin
         end
         if @requesting_app.present?
-          ical_url = @requesting_app.uri + event_instances_ics_path(params[:id]) 
+          ical_url = @requesting_app.uri + event_instances_ics_path(params[:id])
         end
-        @event_instance.event.content.increment_view_count! unless exclude_from_impressions?
         if @current_api_user.present? and @repository.present?
           BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit',
                                                          @content, @current_api_user, @repository)
@@ -79,6 +78,16 @@ module Api
         else
           render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
             context: { current_ability: current_ability, admin_content_url: url, ical_url: ical_url }
+        end
+      end
+
+      def create_impression
+        @event_instance = EventInstance.find(params[:id])
+        if @event_instance.present?
+          @event_instance.event.content.increment_view_count! unless exclude_from_impressions?
+          render json: {}, status: :accepted
+        else
+          render json: {}, status: :not_found
         end
       end
     end
