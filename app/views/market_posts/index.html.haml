@@ -63,8 +63,7 @@
         %td= link_to c.title, edit_market_post_path(id: c.id, index: i, page: params[:page])
         %td
           - if c.authors.present?
-            =# link_to c.authors, content_path(q: { authors_cont: c.authors })
-            = c.authors
+            = link_to c.authors, user_path(c.created_by)
         %td
           - c.content.locations.each_with_index do |loc, i|
             = link_to loc.name, market_posts_path(q: { content_locations_id_in: [loc.id] })
@@ -73,6 +72,8 @@
         %td
           - if c.contact_email.present?
             = c.contact_email
+          - else
+            = c.created_by.email
         %td= c.pubdate.try(:strftime, "%Y-%m-%d")
         %td.actions
           = link_to "edit", edit_market_post_path(id: c.id, index: i, page: params[:page]), class: "btn btn-mini btn-warning"
