@@ -93,8 +93,18 @@ class ReceivedEmail < ActiveRecord::Base
 
   def preprocess
     self.message_id = message_object.message_id
-    self.to = message_object.to.join(', ')
-    self.from = message_object.from.first
+
+    to = message_object.to
+    if to.respond_to? :join
+      to = to.join(', ')
+    end
+    self.to =to 
+
+    from = message_object.from
+    if to.respond_to? :first
+      from = from.first
+    end
+    self.from = from
   end
 
   private

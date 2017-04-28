@@ -1,0 +1,76 @@
+Return-Path: <rwgronauer@aol.com>
+Received: from groups.electricembers.net (groups.electricembers.net [208.90.215.70])
+ by inbound-smtp.us-east-1.amazonaws.com with SMTP id 2e4urk8h4us8i9863vkgt35k82gsc2cue049l901
+ for post@stagesessmtp.subtextdev.org;
+ Wed, 05 Apr 2017 23:04:47 +0000 (UTC)
+X-SES-Spam-Verdict: PASS
+X-SES-Virus-Verdict: PASS
+Received-SPF: softfail (spfCheck: transitioning domain of aol.com does not designate 208.90.215.70 as permitted sender) client-ip=208.90.215.70; envelope-from=rwgronauer@aol.com; helo=groups.electricembers.net;
+Authentication-Results: amazonses.com;
+ spf=softfail (spfCheck: transitioning domain of aol.com does not designate 208.90.215.70 as permitted sender) client-ip=208.90.215.70; envelope-from=rwgronauer@aol.com; helo=groups.electricembers.net;
+ dkim=pass header.i=@mx.aol.com;
+X-SES-RECEIPT: AEFBQUFBQUFBQUFIZUQ1ZEg1b3hhb0htRTZtejMvVVFHdmFYejZFUHh5MUc4WnFuMnh3YlN1cERwSlFrdXlTZUQreXlwbG1YZFBnTGMrRjN3WCtlY0pYTFRmd1hNdldpSUN4WG5PRHc0L0hvR1JlZWtWS1ZjVlU1YndTK3VqWDJaZ0tFZU83UjF6UDcwakF2bWpVTlpJYW5aaUhEZnlvcU9lUzNtVGVBZ09jWmRFNnk5VC8zdGRCYXBqbm9RUUZKTWR1R3pWWDFTZU9pdEZuUTRMK09hY0tTOVI3TkZMMnI4NkZNdnd4S3RyRndqMUMwTnJlL0dYSFFyUDJYS3VSZ0Vyak8zL1BEbU5IWFNkOENEM3dNVG9Xa2duZzExRExONQ==
+X-SES-DKIM-SIGNATURE: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=224i4yxa5dv7c2xz3womw6peuasteono; d=amazonses.com; t=1491433471;
+        h=X-SES-RECEIPT:Date:From:To:Message-Id:Subject:MIME-Version:Content-Type;
+        bh=nhscZFXR/LJZaq+ngk1RB6WK7xHZGHqS7XJ6tNJtyeU=;
+        b=TKEM8KXhWg2EyooilY/cj1hczbwp83TjZYzoe6VXGLJuGuPYTHOfQwgmaCylwot7
+        gzwZ4Bb/XWn8vrNC9socxo/B5iKcGicA7Kkw5I4Ok59rebunrKrSX3OxxHUHuHrLfIk
+        /1WgQe3EfZLxkCKnqg6qHJgGIOzLWxVGA8ggHxA4=
+Received: by groups.electricembers.net (Postfix)
+        id DEBC38EFA18C; Wed,  5 Apr 2017 16:04:46 -0700 (PDT)
+Delivered-To: lists.vitalcommunities.org-subtext@groups.electricembers.net
+Received: from smtp3.electricembers.net (smtp3 [208.90.215.69])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by groups.electricembers.net (Postfix) with ESMTPS id C47A38EFA109
+        for <subtext@lists.vitalcommunities.org>; Wed,  5 Apr 2017 16:04:46 -0700 (PDT)
+Received: from omr-a018e.mx.aol.com (omr-a018e.mx.aol.com [204.29.186.64])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by smtp3.electricembers.net (Postfix) with ESMTPS id 3F848156D2
+        for <subtext@lists.vitalcommunities.org>; Wed,  5 Apr 2017 16:04:33 -0700 (PDT)
+Received: from mtaomg-aan01.mx.aol.com (mtaomg-aan01.mx.aol.com [172.27.19.79])
+        by omr-a018e.mx.aol.com (Outbound Mail Relay) with ESMTP id 4B4963800070
+        for <subtext@lists.vitalcommunities.org>; Wed,  5 Apr 2017 19:04:32 -0400 (EDT)
+Received: from core-ace02f.mail.aol.com (core-ace02.mail.aol.com [172.27.23.2])
+        by mtaomg-aan01.mx.aol.com (OMAG/Core Interface) with ESMTP id C1C0738000081
+        for <subtext@lists.vitalcommunities.org.>; Wed,  5 Apr 2017 19:04:31 -0400 (EDT)
+Received: from 64.222.161.219 by webprd-m104.mail.aol.com (10.74.71.94) with HTTP (WebMailUI); Wed, 05 Apr 2017 19:04:31 -0400
+Date: Wed, 5 Apr 2017 19:04:31 -0400
+From: Robert Gronauer <rwgronauer@aol.com>
+To: subtext@lists.vitalcommunities.org.
+Message-Id: <15b405cbd8c-62ca-31ba@webprd-m104.mail.aol.com>
+Subject: trying out a new format
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+        boundary="----=_Part_15179_1859477281.1491433471370"
+X-MB-Message-Source: WebUI
+X-MB-Message-Type: User
+X-Mailer: JAS STD
+X-Originating-IP: [64.222.161.219]
+x-aol-global-disposition: G
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mx.aol.com;
+        s=20150623; t=1491433472;
+        bh=nhscZFXR/LJZaq+ngk1RB6WK7xHZGHqS7XJ6tNJtyeU=;
+        h=From:To:Subject:Message-Id:Date:MIME-Version:Content-Type;
+        b=7maAEJnBUnd5Mewr+E7utHh67CpgPFJRJjgwnlDFpQs5js9j5oTfDgsHYbgE4/x1D
+         0ArGs5OmunzTJstybQMiCE97BssTOpklhbnM8pF2MNEHA9W67L2lpUuwe5hWYjYisy
+         SJlRUoyZpLgdl0spkDpPFQYcZu5fRjCuUW1U6AW4=
+x-aol-sid: 3039ac1b134f58e577ff7cfc
+
+------=_Part_15179_1859477281.1491433471370
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+So, fellow list servers. How do you think this will work?
+Devora Gronauer
+
+------=_Part_15179_1859477281.1491433471370
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<font color='black' size='2' face='arial'>So, fellow list servers. How do you think this will work?
+<div>Devora Gronauer</div>
+</font>
+------=_Part_15179_1859477281.1491433471370--

@@ -337,6 +337,26 @@ EOS
         end
       end
     end
+
+    context 'When email TO is malformed and returned as a string, (real bug from prod)' do
+      let(:email_with_unexpected_to) {
+        File.read(Rails.root.join('spec','fixtures','emails','email_with_string_to.eml'))
+      }
+
+      subject { ReceivedEmail.new }
+      before do
+        allow(subject).to receive(:message_object).and_return(
+          Mail.new(email_with_unexpected_to)
+        )
+
+        subject.preprocess
+      end
+
+      it '#to returns proper email' do
+        expect(subject.to).to be_a String
+        expect(subject.to).to include '@'
+      end
+    end
   end
 
   describe 'sender_name' do
