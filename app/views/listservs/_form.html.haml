@@ -9,6 +9,8 @@
     = f.input :digest_description
     = f.input :import_name
     = f.input :reverse_publish_email, hint: "This can't be populated if it is a Subtext managed listserv."
+    = f.input :forwarding_email, hint: "Email address to forward all received posting emails for archiving"
+    = f.input :forward_for_processing, as: :boolean
     = f.input :active, as: :boolean
     .form-actions
       = f.button :submit, class: 'btn btn-success'

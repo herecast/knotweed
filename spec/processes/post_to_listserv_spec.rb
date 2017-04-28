@@ -11,6 +11,9 @@ RSpec.describe PostToListserv do
     let!(:email) { FactoryGirl.create :received_email, from: 'test@test.com' }
 
     before do
+      # The following line can be removed after the model has been 
+      # updated with this attribute
+      allow(listserv).to receive(:forward_for_processing?).and_return(false)
       allow(email).to receive(:sender_name).and_return('test person')
     end
 
@@ -136,6 +139,57 @@ RSpec.describe PostToListserv do
     describe 'ListservContent#body' do
       it 'is equal to sanitized ReceivedEmail#body' do
         expect(subject.body).to eql UgcSanitizer.call(email.body)
+      end
+    end
+
+    context "Given a listserv, configured to forward it's emails", inline_jobs: true do
+      let(:forward_receiver) { "lists-clone@listserv.test" }
+
+      before do
+        allow(listserv).to receive(:forward_for_processing?).and_return(true)
+        allow(listserv).to receive(:forwarding_email).and_return(forward_receiver)
+
+        Mail.defaults do
+          delivery_method :test
+        end
+      end
+
+      after(:each) do
+        Mail::TestMailer.deliveries.clear
+      end
+
+      it "sends verification email" do
+        expect(NotificationService).to receive(:posting_verification).with(instance_of(ListservContent))
+        subject
+      end
+
+      it 'sends an email to the email specified in forwarding_email' do
+        subject
+        sent_emails = Mail::TestMailer.deliveries
+        expect(sent_emails.last.to).to include forward_receiver
+      end
+
+      describe 'forwarded email' do
+        before do 
+          PostToListserv.call(listserv, email)
+        end
+
+        subject {
+          Mail::TestMailer.deliveries.last
+        }
+
+        it "has the same from address as original sender" do
+          expect(subject.from).to eql email.message_object.from
+        end
+
+        it "has the same subject as the original" do
+          expect(subject.subject).to eql email.message_object.subject
+        end
+
+        it "has the same body as the original" do
+          expect(subject.body.to_s).to eql email.message_object.body.to_s
+        end
+
       end
     end
   end

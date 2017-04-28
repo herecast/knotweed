@@ -65,6 +65,8 @@ describe Listserv, :type => :model do
   it { is_expected.to have_many(:campaigns) }
   it { is_expected.to have_db_column(:list_type).of_type(:string) }
   it { is_expected.to have_db_column(:admin_email).of_type(:string) }
+  it { is_expected.to have_db_column(:forwarding_email).of_type(:string) }
+  it { is_expected.to have_db_column(:forward_for_processing).of_type(:boolean) }
 
   describe '#active_subscriber_count' do
     it 'is equal to related active subscriptions' do
@@ -122,6 +124,14 @@ describe Listserv, :type => :model do
         listserv.digest_send_time = nil
         expect(listserv).to_not be_valid
         expect(listserv.errors).to include(:digest_send_time)
+      end
+    end
+
+    context 'forward_for_processing is true' do
+      let(:listserv) { FactoryGirl.build :listserv, forward_for_processing: true }
+      it 'requires a forwarding email' do
+        expect(listserv.valid?).to be false
+        expect(listserv.errors).to include(:forwarding_email)
       end
     end
 

@@ -84,6 +84,8 @@ class ListservsController < ApplicationController
         :sender_name,
         :admin_email,
         :promotions_list,
+        :forwarding_email,
+        :forward_for_processing,
         promotion_ids: []
       )
     end

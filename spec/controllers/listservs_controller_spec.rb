@@ -23,7 +23,9 @@ RSpec.describe ListservsController, type: :controller do
     digest_subject: 'da subject',
     digest_preheader: 'a distinguished curated list',
     sender_name: 'Mace Windu',
-    admin_email: 'admin@gmail.com'
+    admin_email: 'admin@gmail.com',
+    forwarding_email: 'forwarding@mail.com',
+    forward_for_processing: '1'
   }}
 
   describe "GET #index" do

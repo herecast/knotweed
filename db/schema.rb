@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170406130428) do
+ActiveRecord::Schema.define(version: 20170413183635) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -619,9 +619,9 @@ ActiveRecord::Schema.define(version: 20170406130428) do
     t.string   "mc_segment_id"
     t.string   "title"
     t.string   "preheader"
-    t.integer  "promotion_ids",        default: [],              array: true
     t.integer  "content_ids",                                    array: true
     t.integer  "listserv_content_ids",                           array: true
+    t.integer  "promotion_ids",        default: [],              array: true
   end
 
   add_index "listserv_digests", ["listserv_id"], name: "index_listserv_digests_on_listserv_id", using: :btree
@@ -651,13 +651,15 @@ ActiveRecord::Schema.define(version: 20170406130428) do
     t.text     "digest_query"
     t.string   "template"
     t.string   "sponsored_by"
-    t.boolean  "display_subscribe",                       default: false
     t.string   "digest_subject"
     t.string   "digest_preheader"
+    t.boolean  "display_subscribe",                       default: false
     t.string   "list_type",                               default: "custom_list"
     t.string   "sender_name"
-    t.integer  "promotion_ids",                           default: [],                                        array: true
     t.string   "admin_email"
+    t.integer  "promotion_ids",                           default: [],                                        array: true
+    t.string   "forwarding_email"
+    t.boolean  "forward_for_processing",                  default: false
   end
 
   create_table "listservs_locations", id: false, force: :cascade do |t|
@@ -697,13 +699,6 @@ ActiveRecord::Schema.define(version: 20170406130428) do
   add_index "locations_organizations", ["location_id"], name: "idx_16710_index_locations_publications_on_location_id", using: :btree
   add_index "locations_organizations", ["organization_id", "location_id"], name: "idx_16710_index_locations_publications_on_publication_id_and_lo", using: :btree
   add_index "locations_organizations", ["organization_id"], name: "idx_16710_index_locations_publications_on_publication_id", using: :btree
-
-  create_table "locations_publications", force: :cascade do |t|
-    t.integer  "location_id"
-    t.integer  "publication_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "market_categories", force: :cascade do |t|
     t.string   "name"

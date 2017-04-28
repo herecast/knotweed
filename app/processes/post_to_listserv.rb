@@ -30,6 +30,10 @@ class PostToListserv
     NotificationService.posting_verification(content)
     content.update verification_email_sent_at: Time.now
 
+    if @listserv.forward_for_processing? && @listserv.forwarding_email
+      forward_email
+    end
+
     return content
   end
 
@@ -77,6 +81,10 @@ class PostToListserv
   def add_no_content_found
     content.body = "No content found"
     content.save!
+  end
+
+  def forward_email
+    ForwardReceivedEmailJob.perform_later(@email, @listserv.forwarding_email)
   end
 
 end

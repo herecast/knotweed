@@ -58,6 +58,7 @@ class Listserv < ActiveRecord::Base
 
   validates :digest_reply_to, presence: true, if: :send_digest?
   validates :digest_send_time, presence: true, if: :send_digest?
+  validates :forwarding_email, presence: true, if: :forward_for_processing?
   validates_presence_of :list_type
 
   validate :mc_group_name_required, if: :mc_list_id?
