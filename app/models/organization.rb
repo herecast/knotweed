@@ -74,6 +74,16 @@ class Organization < ActiveRecord::Base
   scope :alphabetical, -> { order("organizations.name ASC") }
   default_scope { self.alphabetical }
   scope :get_children, ->(parent_ids) { where(parent_id: parent_ids) }
+  scope :descendants_of, ->(org_ids) {
+    children_ids = self.get_children(org_ids).pluck(:id)
+    if children_ids.present?
+      children_descendant_ids = self.descendants_of(children_ids).pluck(:id)
+      self.where(id: children_ids + children_descendant_ids)
+    else
+      self.none
+    end
+  }
+  scope :news_publishers, -> { where(org_type: %w[Publisher Publication Blog]) }
 
   ORG_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher", 'Publication',
     'Blog']
@@ -97,15 +107,7 @@ class Organization < ActiveRecord::Base
   #
   # @return [Array<Organization>] the descendants of the organization
   def get_all_children
-    if children.present?
-      response = children
-      children.each do |c|
-        response += c.get_all_children
-      end
-      response
-    else
-      []
-    end
+    self.class.descendants_of(self.id)
   end
 
   def remove_logo=(val)

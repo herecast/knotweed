@@ -53,7 +53,9 @@ module Api
         params[:per_page] ||= 12
 
         if params[:organization_id].present? and can? :manage, Organization.find(params[:organization_id])
-          scope = Content.where(organization_id: params[:organization_id])
+          org_id = params[:organization_id]
+          hierarchical_org_ids = Organization.descendants_of(org_id).news_publishers.pluck(:id) + [org_id]
+          scope = Content.where(organization_id: hierarchical_org_ids)
         else
           scope = Content.where(created_by: @current_api_user)
         end

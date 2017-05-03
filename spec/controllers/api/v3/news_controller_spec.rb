@@ -7,7 +7,7 @@ describe Api::V3::NewsController, :type => :controller do
 
   describe 'GET index', elasticsearch: true do
     before do
-      @original_organization = FactoryGirl.create :organization
+      @original_organization = FactoryGirl.create :organization, org_type: 'Publication'
       @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
       @other_location = FactoryGirl.create :location, city: 'Another City'
       @third_location = FactoryGirl.create :location, city: 'Different Again'
@@ -66,7 +66,7 @@ describe Api::V3::NewsController, :type => :controller do
       end
 
       context "with child organizations having content" do
-        let(:child_org) { FactoryGirl.create(:organization, parent: @org) }
+        let(:child_org) { FactoryGirl.create(:organization, parent: @org, org_type: 'Blog') }
         let!(:child_org_content) {
           FactoryGirl.create :content, {
             organization: child_org,
