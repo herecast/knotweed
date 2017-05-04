@@ -1,0 +1,24 @@
+- url = "http://#{ENV['DEFAULT_CONSUMER_HOST']}/sign_up/confirm/#{@token}"
+%p
+  Hi #{@first_name},
+%p
+  You are receiving this email because you replied to a Market post on DailyUV.
+%p
+  We have created an account for you to make it even easier to buy and sell in the DailyUV Market.
+%p
+  Please sign in to activate your account.
+%p 
+  Your temporary password is:
+  %strong #{@password}
+
+%table{:border => "0", :cellpadding => "0", :cellspacing => "0", :width => "100%"}
+  %tr
+    %td
+      %table{:border => "0", :cellpadding => "0", :cellspacing => "0"}
+        %tr
+          %td{:align => "center", :bgcolor => "#08AE66", :style => "padding: 12px 18px 12px 18px; -webkit-border-radius:3px; border-radius:3px"}
+            %a{:href => url, :style => "font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; display: inline-block;", :target => "_blank"} Confirm My Account >
+
+%p
+  Problems? Email us at 
+  %a{ href: "mailto:dailyuv@subtext.org" } dailyuv@subtext.org

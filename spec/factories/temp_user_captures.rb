@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :temp_user_capture do
-    name "MyString"
-    email "MyString"
+    name Faker::Name.name
+    sequence(:email) { |i| "temp_user_#{i}@test.com" }
   end
 end

@@ -6,3 +6,7 @@ market_category_count:
   cron: "0 0 * * *"
   class: 'UpdateMarketCategoriesCountJob'
   description: "Update result count for market category search results"
+register_temp_users:
+  cron: "0 0 * * *"
+  class: 'RegisterTempUsersJob'
+  description: 'Registers users captures in TempUserCapture table'
