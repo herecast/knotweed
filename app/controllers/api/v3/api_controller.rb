@@ -70,18 +70,8 @@ module Api
         }
       end
 
-      def excluded_user_agents
-        []
-      end
-
-      def request_user_agent
-        request.env['HTTP_USER_AGENT']
-      end
-
-      def exclude_from_impressions?
-        if request_user_agent.present?
-          excluded_user_agents.any? { |agent| request_user_agent[agent] }
-        end
+      def analytics_blocked?
+        !!@current_api_user.try(:skip_analytics?)
       end
     end
   end

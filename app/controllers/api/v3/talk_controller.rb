@@ -40,7 +40,7 @@ module Api
           end
         end
 
-        @talk.increment_view_count! unless exclude_from_impressions?
+        @talk.increment_view_count! unless analytics_blocked?
 
         if @current_api_user.present? and @repository.present?
           BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit', @talk,

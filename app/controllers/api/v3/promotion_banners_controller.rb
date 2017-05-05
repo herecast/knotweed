@@ -62,7 +62,7 @@ module Api
         @banner = PromotionBanner.find_by_id params[:promotion_banner_id]
         if @banner.present?
           record_promotion_banner_metric([@banner], 'click')
-          unless @current_api_user.try(:skip_analytics?)
+          unless analytics_blocked?
             @content = Content.find_by_id params[:content_id]
             if @content.present?
               BackgroundJob.perform_later('RecordContentMetric', 'call', @content, 'click', Date.current.to_s,
@@ -79,7 +79,7 @@ module Api
       def create_ad_metric
         ad_metric = AdMetric.new(ad_metric_params)
         if ad_metric.valid?
-          ad_metric.save unless @current_api_user.try(:skip_analytics?)
+          ad_metric.save unless analytics_blocked?
           render json: {}, status: :ok
         else
           render json: {}, status: :bad_request
@@ -151,7 +151,7 @@ module Api
       end
 
       def record_promotion_banner_metric(promotion_banner_packet, event_type)
-        unless @current_api_user.try(:skip_analytics?)
+        unless analytics_blocked?
           BackgroundJob.perform_later('RecordPromotionBannerMetric', 'call',
             content_id:          params[:content_id],
             event_type:          event_type,

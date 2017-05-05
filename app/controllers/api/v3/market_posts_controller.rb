@@ -114,7 +114,7 @@ module Api
         if @market_post.try(:root_content_category).try(:name) != 'market'
           head :no_content
         else
-          @market_post.increment_view_count! unless exclude_from_impressions?
+          @market_post.increment_view_count! unless analytics_blocked?
           if @current_api_user.present? and @repository.present?
             BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit', @market_post,
                                                            @current_api_user, @repository)
@@ -218,7 +218,7 @@ module Api
 
           additional_attributes
         end
-        
+
         def set_modifier_for_category(modifier)
           case modifier
             when "OR"
@@ -229,10 +229,10 @@ module Api
               {}
           end
         end
-        
+
         def formatted_query(query)
           unless params[:query_modifier] == "Match Phrase"
-            query.split(/[,\s]+/).join(" ") 
+            query.split(/[,\s]+/).join(" ")
           else
             query
           end

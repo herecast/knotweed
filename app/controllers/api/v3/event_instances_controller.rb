@@ -84,9 +84,7 @@ module Api
       def create_impression
         @event_instance = EventInstance.find(params[:id])
         if @event_instance.present?
-          unless exclude_from_impressions? || @current_api_user.try(:skip_analytics?)
-            @event_instance.event.content.increment_view_count!
-          end
+          @event_instance.event.content.increment_view_count! unless analytics_blocked?
           render json: {}, status: :accepted
         else
           render json: {}, status: :not_found

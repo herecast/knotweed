@@ -97,7 +97,7 @@ module Api
 
       def show
         @news = Content.not_deleted.find params[:id]
-        
+
         # filter out orgs that don't belong with this app
         # have to still allow drafts that haven't selected their org yet, though
         if @requesting_app.present? and @news.organization.present?
@@ -114,7 +114,7 @@ module Api
         if @news.try(:root_content_category).try(:name) != 'news'
           head :no_content
         else
-          render json: @news, serializer: DetailedNewsSerializer, 
+          render json: @news, serializer: DetailedNewsSerializer,
             admin_content_url: url, root: 'news', context: { current_ability: current_ability }
         end
       end
@@ -135,7 +135,7 @@ module Api
       def create_impression
         @news = Content.not_deleted.find params[:id]
         if @news.present?
-          unless exclude_from_impressions? || @current_api_user.try(:skip_analytics?)
+          unless analytics_blocked?
             BackgroundJob.perform_later("RecordContentMetric", "call", @news, 'impression', Date.current.to_s,
               user_id:    @current_api_user.try(:id),
               user_agent: request.user_agent,
