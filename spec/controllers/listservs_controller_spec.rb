@@ -25,7 +25,8 @@ RSpec.describe ListservsController, type: :controller do
     sender_name: 'Mace Windu',
     admin_email: 'admin@gmail.com',
     forwarding_email: 'forwarding@mail.com',
-    forward_for_processing: '1'
+    forward_for_processing: '1',
+    post_threshold: 5,
   }}
 
   describe "GET #index" do

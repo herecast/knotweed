@@ -86,6 +86,7 @@ class ListservsController < ApplicationController
         :promotions_list,
         :forwarding_email,
         :forward_for_processing,
+        :post_threshold,
         promotion_ids: []
       )
     end

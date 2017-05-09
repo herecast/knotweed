@@ -67,6 +67,7 @@ describe Listserv, :type => :model do
   it { is_expected.to have_db_column(:admin_email).of_type(:string) }
   it { is_expected.to have_db_column(:forwarding_email).of_type(:string) }
   it { is_expected.to have_db_column(:forward_for_processing).of_type(:boolean) }
+  it { is_expected.to have_db_column(:post_threshold).of_type(:integer) }
 
   describe '#active_subscriber_count' do
     it 'is equal to related active subscriptions' do

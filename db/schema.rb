@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170413183635) do
+ActiveRecord::Schema.define(version: 20170501172252) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -660,6 +660,7 @@ ActiveRecord::Schema.define(version: 20170413183635) do
     t.integer  "promotion_ids",                           default: [],                                        array: true
     t.string   "forwarding_email"
     t.boolean  "forward_for_processing",                  default: false
+    t.integer  "post_threshold",                          default: 0
   end
 
   create_table "listservs_locations", id: false, force: :cascade do |t|

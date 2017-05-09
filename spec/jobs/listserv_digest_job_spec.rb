@@ -206,6 +206,15 @@ RSpec.describe ListservDigestJob do
               expect(digest.title).to eql listserv.digest_subject
             end
 
+            context 'when a digest does not have enough posts' do
+              let(:threshold_digest) { FactoryGirl.create :listserv, digest_query: 'SELECT * FROM CONTENTS LIMIT 1', post_threshold: 5 }
+              it 'does not create a digest if posts are below post_threshold' do
+                expect { ListservDigestJob.new.perform(threshold_digest) }.to_not change{
+                  ListservDigest.count
+                }
+              end
+            end
+
             it 'sets up #contents with results from query' do
               subject
               digest = ListservDigest.last
@@ -231,6 +240,26 @@ RSpec.describe ListservDigestJob do
               sponsored_by: Faker::Company.name,
               digest_query: 'SELECT * FROM contents'
             }
+
+            context 'when a campaign does not have enough posts' do
+              let(:min_post_listserv) { FactoryGirl.create :listserv,
+                                        post_threshold: 5,
+                                        digest_query: "SELECT * FROM contents LIMIT 0" }
+              let!(:empty_campaign) {FactoryGirl.create :campaign,
+                title: 'empty_campaign',
+                listserv: min_post_listserv,
+                community_ids: [listserv.subscriptions.last.user.location_id],
+                sponsored_by: Faker::Company.name,
+                digest_query: 'SELECT * FROM contents LIMIT 0'
+              }
+
+              it 'does not create a new digest if below post_threshold' do
+                subject
+                ListservDigest.all.each do |digest|
+                  expect(digest.listserv_id).to_not eq min_post_listserv.id
+                end
+              end
+            end
 
             it 'creates digest records for each campaign' do
               expect{ subject }.to change{

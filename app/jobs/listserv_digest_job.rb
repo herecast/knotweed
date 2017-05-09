@@ -16,7 +16,9 @@ class ListservDigestJob < ApplicationJob
           campaign_attrs[:sponsored_by] = campaign.sponsored_by if campaign.sponsored_by?
           campaign_attrs[:promotion_ids] = campaign.promotion_ids if campaign.promotion_ids?
           campaign_attrs[:title] = campaign.title if campaign.title?
-          digests << ListservDigest.new(digest_attributes.merge(campaign_attrs))
+          if campaign_post_count_above_threshold?(campaign)
+            digests << ListservDigest.new(digest_attributes.merge(campaign_attrs))
+          end
         end
       else
         if digest_attributes[:listserv_contents].present? && digest_attributes[:listserv_contents].count > 50
@@ -28,7 +30,9 @@ class ListservDigestJob < ApplicationJob
           end
 
         else
-          digests << ListservDigest.new(digest_attributes)
+          unless @listserv.custom_digest? && custom_query_count < @listserv.post_threshold
+            digests << ListservDigest.new(digest_attributes)
+          end
         end
       end
 
@@ -107,6 +111,14 @@ class ListservDigestJob < ApplicationJob
     else
       @listserv.contents_from_custom_query
     end
+  end
+
+  def campaign_post_count_above_threshold?(campaign)
+    @listserv.post_threshold <= contents_for_campaign(campaign).count
+  end
+
+  def custom_query_count
+    @listserv.try(:contents_from_custom_query).try(:count) || 0
   end
 
 end
