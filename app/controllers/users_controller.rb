@@ -2,6 +2,7 @@ class UsersController < ApplicationController
 
   def index
     authorize! :index, @user, :message => 'Not authorized as an administrator.'
+    @user_sources = User.pluck(:source).compact.uniq
 
     if params[:reset]
       session[:users_search] = { archived_true: false }

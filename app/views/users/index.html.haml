@@ -21,6 +21,9 @@
           .field.span3
             = f.label :email_eq, "Email"
             = f.text_field :email_eq, class: "span12"
+          .field.span3
+            = f.label :source_cont, "Source"
+            = f.select :source_cont, @user_sources, include_blank: true
           .field.span2
             = f.label :archived_true, "Archived?"
             = f.check_box :archived_true
@@ -40,6 +43,8 @@
         %th Registered
         %th Role
         %th Organization
+        %th Source
+        %th Confirmed?
         %th
         %th
     %tbody
@@ -50,6 +55,8 @@
           %td= user.created_at.try(:to_date)
           %td= user.roles.first.name.titleize unless user.roles.first.nil?
           %td= Organization.with_role(:manager, user).first.try(:name)
+          %td= user.source
+          %td= user.confirmed? ? "Yes" : "No"
           %td
             %a.btn-warning.btn.btn-mini{ href: edit_user_path(user), type: "button" } Edit
             %a.btn-error.btn.btn-mini{ href: new_user_archiving_path(user), type: 'button' } Archive
