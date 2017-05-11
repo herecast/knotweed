@@ -1,0 +1,10 @@
+%p
+  Dear #{@user.name},
+
+%p
+  You requested a link to sign in to DailyUV.com.
+%p
+  To continue signing in, click this link:
+
+%p= link_to 'Sign in to DailyUV.com', url_for_consumer_app('/sign_in?auth_token=' + @auth_token)
+

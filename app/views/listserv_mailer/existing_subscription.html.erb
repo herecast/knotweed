@@ -54,7 +54,7 @@
                             style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;border-radius: 5px;                   -webkit-border-radius: 5px;                   -moz-border-radius: 5px;                  color: #ffffff;                  background-color: #08AE66;                  padding-top: 5px;                   padding-right: 0px;                  padding-bottom: 5px;                  padding-left: 0px;                  text-align: center"
                             valign="middle">
                             <!--<![endif]-->
-                            <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/account/subscriptions", user_id: @subscription.user_id, style: "display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;color: #ffffff" do %>
+                            <%=link_to "http://#{Figaro.env.default_consumer_host}/account/subscriptions", user_id: @subscription.user_id, style: "display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #08AE66;color: #ffffff" do %>
                               <span style="color: #ffffff; font-size:20px;line-height:40px;">
                                    Manage Subscription
                               </span>

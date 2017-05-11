@@ -27,7 +27,15 @@ class PostToListserv
 
     content.save!
 
-    NotificationService.posting_verification(content)
+    if content.user_id?
+      NotificationService.posting_verification(
+        content,
+        sign_in_token: SignInToken.create(user: content.user).token
+      )
+    else
+      NotificationService.posting_verification(content)
+    end
+
     content.update verification_email_sent_at: Time.now
 
     if @listserv.forward_for_processing? && @listserv.forwarding_email

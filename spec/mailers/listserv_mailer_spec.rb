@@ -6,8 +6,11 @@ RSpec.describe ListservMailer, type: :mailer do
   let(:body_text) { subject.body.parts.find {|p| p.content_type.match /plain/}.body.raw_source }
 
   before(:each) do
-    ENV.stub(:[]).with("LISTSERV_MARKETING_URL").and_return("http://listserv.dailyUV.com")
-    ENV.stub(:[]).with("DEFAULT_CONSUMER_HOST").and_return("test.localhost")
+    allow(Figaro.env).to receive(:listserv_marketing_url)\
+      .and_return("http://listserv.dailyUV.com")
+
+    allow(Figaro.env).to receive(:default_consumer_host)\
+      .and_return("test.localhost")
   end
 
   shared_examples :has_curious_why_changed_when_not_user_test do
@@ -19,8 +22,8 @@ RSpec.describe ListservMailer, type: :mailer do
     end
 
     it 'includes link to listserv marketing site' do
-      expect(body_html).to include(ENV['LISTSERV_MARKETING_URL'])
-      expect(body_text).to include(ENV['LISTSERV_MARKETING_URL'])
+      expect(body_html).to include(Figaro.env.listserv_marketing_url)
+      expect(body_text).to include(Figaro.env.listserv_marketing_url)
     end
 
     context 'when listserv-user-testing feature is active' do
@@ -37,8 +40,8 @@ RSpec.describe ListservMailer, type: :mailer do
       end
 
       it 'does not include link to listserv marketing site' do
-        expect(body_html).to_not include(ENV['LISTSERV_MARKETING_URL'])
-        expect(body_text).to_not include(ENV['LISTSERV_MARKETING_URL'])
+        expect(body_html).to_not include(Figaro.env.listserv_marketing_url)
+        expect(body_text).to_not include(Figaro.env.listserv_marketing_url)
       end
     end
   end
@@ -49,7 +52,7 @@ RSpec.describe ListservMailer, type: :mailer do
     }
 
     let(:unsub_url) {
-      "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/manage"
+      "http://#{Figaro.env.default_consumer_host}/lists/#{subscription.key}/manage"
     }
 
     it 'has unsubscribe link' do
@@ -91,8 +94,8 @@ RSpec.describe ListservMailer, type: :mailer do
     end
 
     it 'includes confirmation link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/subscribe")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/#{subscription.key}/subscribe")
+      expect(body_html).to include("http://#{Figaro.env.default_consumer_host}/lists/#{subscription.key}/subscribe")
+      expect(body_text).to include("http://#{Figaro.env.default_consumer_host}/lists/#{subscription.key}/subscribe")
     end
 
     it 'includes list name' do
@@ -120,8 +123,8 @@ RSpec.describe ListservMailer, type: :mailer do
     end
 
     it 'includes account subscriptions link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account/subscriptions")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/account/subscriptions")
+      expect(body_html).to include("http://#{Figaro.env.default_consumer_host}/account/subscriptions")
+      expect(body_text).to include("http://#{Figaro.env.default_consumer_host}/account/subscriptions")
     end
 
     include_examples :has_curious_why_changed_when_not_user_test
@@ -147,13 +150,13 @@ RSpec.describe ListservMailer, type: :mailer do
     end
 
     it 'includes enhance link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{listserv_content.key}")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{listserv_content.key}")
+      expect(body_html).to include("http://#{Figaro.env.default_consumer_host}/lists/posts/#{listserv_content.key}")
+      expect(body_text).to include("http://#{Figaro.env.default_consumer_host}/lists/posts/#{listserv_content.key}")
     end
 
     it 'includes verify only link' do
-      expect(body_html).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{listserv_content.key}")
-      expect(body_text).to include("http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{listserv_content.key}")
+      expect(body_html).to include("http://#{Figaro.env.default_consumer_host}/lists/confirm_post/#{listserv_content.key}")
+      expect(body_text).to include("http://#{Figaro.env.default_consumer_host}/lists/confirm_post/#{listserv_content.key}")
     end
 
     it 'includes list name' do
@@ -166,8 +169,20 @@ RSpec.describe ListservMailer, type: :mailer do
         listserv_content.subscription.unsubscribed_at = Time.zone.now
         listserv_content.save
       end
+
       it 'does not display unsubscribe link' do
         expect(body_html).to_not include("UNSUBSCRIBE FROM") 
+      end
+    end
+
+    context 'given a sign_in_token' do
+      let(:token) { SecureRandom.hex(10) }
+      subject { ListservMailer.posting_verification(listserv_content, sign_in_token: token) }
+
+      it 'inclues token as auth_token in enhance link' do
+        expected_url = "http://#{Figaro.env.default_consumer_host}/lists/posts/#{listserv_content.key}?auth_token=#{token}"
+        expect(body_html).to include(expected_url)
+        expect(body_text).to include(expected_url)
       end
     end
   end

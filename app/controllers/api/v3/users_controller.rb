@@ -148,6 +148,17 @@ module Api
         end
       end
 
+      def email_signin_link user = User.find_by(email: params[:email])
+        if user.present?
+          NotificationService.sign_in_link(
+            SignInToken.create(user: user)
+          )
+
+          render json: {}, status: :created
+        else
+          render json: {error: 'email does not match an existing user'}, status: 422
+        end
+      end
     end
   end
 end

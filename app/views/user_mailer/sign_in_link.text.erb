@@ -1,0 +1,8 @@
+Dear <%=@user.name%>,
+
+You requested a link to sign in to DailyUV.com.
+
+To continue signing in, follow this url:
+
+<%=url_for_consumer_app('/sign_in?auth_token=' + @auth_token)%>
+

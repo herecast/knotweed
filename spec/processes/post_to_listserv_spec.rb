@@ -114,6 +114,17 @@ RSpec.describe PostToListserv do
       it "assigns user" do
         expect(subject.user).to eql user
       end
+
+      it 'generates a new email auth token, and passes it to the notification' do
+        sign_in_token = FactoryGirl.create(:sign_in_token, user: user)
+        allow(SignInToken).to receive(:create).with(user: user).and_return(sign_in_token)
+
+        expect(NotificationService).to receive(:posting_verification).with(
+          instance_of(ListservContent), {sign_in_token: sign_in_token.token}
+        )
+
+        subject
+      end
     end
 
     context 'when sender is blacklisted' do

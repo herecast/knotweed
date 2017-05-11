@@ -19,7 +19,8 @@ class ListservMailer < ActionMailer::Base
     mail(to: @subscription.email, subject: 'Complete your Subscription')
   end
 
-  def posting_verification(post)
+  def posting_verification(post, sign_in_token: nil)
+    @auth_token = sign_in_token
     @post = post
     @subscription = post.subscription
     @listserv = post.listserv

@@ -37,9 +37,9 @@ RSpec.describe NotificationService do
     it 'Delivers via activemailer delayed' do
       mail = double()
       expect(mail).to receive(:deliver_later)
-      expect(ListservMailer).to receive(:posting_verification).with(listserv_content).and_return(mail)
+      expect(ListservMailer).to receive(:posting_verification).with(listserv_content, {}).and_return(mail)
 
-      NotificationService.posting_verification(listserv_content)
+      NotificationService.posting_verification(listserv_content, {})
     end
   end
 
@@ -51,6 +51,18 @@ RSpec.describe NotificationService do
       expect(ListservMailer).to receive(:subscriber_blacklisted).with(subscription).and_return(mail)
 
       NotificationService.subscriber_blacklisted(subscription)
+    end
+  end
+
+  describe '#sign_in_link' do
+    let(:sign_in_token) { FactoryGirl.build :sign_in_token}
+
+    it 'delivers via activemailer delayed' do
+      mail = double()
+      expect(mail).to receive(:deliver_later)
+      expect(UserMailer).to receive(:sign_in_link).with(sign_in_token).and_return(mail)
+
+      NotificationService.sign_in_link(sign_in_token)
     end
   end
 

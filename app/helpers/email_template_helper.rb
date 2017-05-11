@@ -4,6 +4,6 @@ module EmailTemplateHelper
   end
 
   def consumer_host
-    ENV.fetch('DEFAULT_CONSUMER_HOST', "dailyuv.com")
+    Figaro.env.default_consumer_host || "dailyuv.com"
   end
 end

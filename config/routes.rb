@@ -7,7 +7,10 @@ Knotweed::Application.routes.draw do
     post '/api/v3/users/sign_up', to: 'registrations#create'
     post '/api/v3/password_resets', to: 'api/v3/passwords#create'
     put '/api/v3/password_resets', to: 'api/v3/passwords#update'
+
+    post '/api/v3/users/sign_in_with_token', to: 'sessions#sign_in_with_token'
   end
+
 
   # /admin/...
   scope '/admin' do
@@ -163,6 +166,7 @@ Knotweed::Application.routes.draw do
       get '/dashboard', to: 'contents#dashboard', as: :dashboard
       post '/users/email_confirmation', to: 'users#email_confirmation', as: :email_confirmation
       post '/users/resend_confirmation', to: 'users#resend_confirmation', as: :resend_confirmation
+      post '/users/email_signin_link', to: 'users#email_signin_link', as: :email_signin_link
       resources 'images', only: [:create, :update, :destroy]
 
       resources 'business_profiles', only: [:index, :show, :create, :update], path: 'businesses'

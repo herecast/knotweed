@@ -67,7 +67,7 @@
                               min-height: 170px;
                               background-color: #CFF3D9;"
                               valign="middle">
-                                    <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #fff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
+                              <%=link_to "http://#{Figaro.env.default_consumer_host}/lists/posts/#{@post.key}#{'?auth_token=' + @auth_token if @auth_token}", style: "color: #fff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
                                       <table bgcolor="#08AE66" width="100%" style="vertical-align: top;">
                                         <tbody>
                                           <td>
@@ -80,13 +80,13 @@
                                       </table>
                                     <% end %>
                                 <span style="font-size:16px;">
-                                  <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/posts/#{@post.key}", style: "color: #000" do %>
+                                  <%=link_to "http://#{Figaro.env.default_consumer_host}/lists/posts/#{@post.key}#{'?auth_token=' + @auth_token if @auth_token}", style: "color: #000" do %>
                                     <p style="padding: 0px 5px; text-decoration: underline;">Add photos and reach a wider audience!</p>
                                   <% end %>
                                 </span>
                                 <span style="font-size:12px;line-height:10px;">
                                   <p>No idea what this means?</p>
-                                  <p>Check out <a href="http://<%=ENV['DEFAULT_CONSUMER_HOST'] %>/lists/example-preview" target="_blank"><u>examples.</u></p>
+                                  <p>Check out <a href="http://<%=Figaro.env.default_consumer_host %>/lists/example-preview" target="_blank"><u>examples.</u></p>
                                 </span>
                             </td>
                           </tr>
@@ -146,7 +146,7 @@
                               height: 170px;
                               background-color: #CFF3D9;"
                              >
-                                <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{@post.key}", style: "color: #fff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
+                                <%=link_to "http://#{Figaro.env.default_consumer_host}/lists/confirm_post/#{@post.key}", style: "color: #fff; font-size: 16px; line-height: 32px;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center; width: 100%;" do %>
                                   <table bgcolor="#08AE66" width="100%">
                                     <tbody>
                                       <td>
@@ -159,7 +159,7 @@
                                   </table>
                                 <% end %>
                                 <span style="font-size:16px;">
-                                  <%=link_to "http://#{ENV['DEFAULT_CONSUMER_HOST']}/lists/confirm_post/#{@post.key}", style: "color: #000" do %>
+                                  <%=link_to "http://#{Figaro.env.default_consumer_host}/lists/confirm_post/#{@post.key}", style: "color: #000" do %>
                                     <p style="padding: 5px; text-decoration: underline;">Send your post to the <%= @listserv.name %> unaltered.</p>
                                   <% end %>
                                 </span>
