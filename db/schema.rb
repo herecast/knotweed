@@ -11,7 +11,6 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
 ActiveRecord::Schema.define(version: 20170501172252) do
 
   # These are extensions that must be enabled in order to support this database
@@ -424,6 +423,15 @@ ActiveRecord::Schema.define(version: 20170501172252) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "idx_16604_delayed_jobs_priority", using: :btree
+
+  create_table "event_categories", force: :cascade do |t|
+    t.string   "name"
+    t.string   "query"
+    t.string   "query_modifier"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+    t.string   "slug"
+  end
 
   create_table "event_instances", id: :bigserial, force: :cascade do |t|
     t.integer  "event_id",             limit: 8

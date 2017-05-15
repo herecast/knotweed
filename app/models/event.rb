@@ -54,10 +54,7 @@ class Event < ActiveRecord::Base
   # to first save and create the content, then save the event.
   # validates_presence_of :content_id
 
-  EVENT_CATEGORIES = [:first_friday, :movies, :wellness, :live_music, :arts]
-
   enumerize :cost_type, in: [:free, :paid, :donation]
-  enumerize :event_category, in: EVENT_CATEGORIES
 
   serialize :links, Hash
 

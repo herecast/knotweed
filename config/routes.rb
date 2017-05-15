@@ -68,6 +68,7 @@ Knotweed::Application.routes.draw do
     resources :locations, only: [:create, :new, :edit]
     resources :business_locations
     resources :events, except: [:show, :destroy]
+    resources :event_categories, except: :show
     put "destroy_event_instance", to: "events#destroy_event_instance", as: :destroy_event_instance
 
     resources :rewrites, except: [:show]
@@ -142,6 +143,7 @@ Knotweed::Application.routes.draw do
       get '/promotions/:promotion_id', to: 'promotion_banners#show'
       resources 'event_instances', only: [:index, :show]
       post 'events/:id/impressions', to: "event_instances#create_impression"
+      resources :event_categories, only: :index
       resources 'comments', only: [:index, :create]
       resources 'listservs', only: [:show,:index]
       get '/venues', to: 'business_locations#index', as: :venues

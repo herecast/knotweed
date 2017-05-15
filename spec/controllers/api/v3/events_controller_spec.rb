@@ -7,7 +7,6 @@ describe Api::V3::EventsController, :type => :controller do
     @listserv = FactoryGirl.create :listserv
     api_authenticate user:  @current_user
     @event_attrs = {
-      category: Event::EVENT_CATEGORIES[0],
       contact_email: 'test@test.com',
       contact_phone: '888-888-8888',
       content: 'Hello this is test.',

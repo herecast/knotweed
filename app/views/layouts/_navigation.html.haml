@@ -62,6 +62,22 @@
           = link_to new_event_path do
             %i.icon-plus
             %span Create New
+- if can? :read, EventCategory
+  %li
+    = link_to event_categories_path do
+      %i.icon-sitemap
+      %span Event Categories
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == 'event_categories' ? "in" : ""}" }
+      %li{ class: current_page?(event_categories_path) ? "active" : "" }
+        = link_to event_categories_path do
+          %i.icon-tasks
+          %span See all
+      - if can? :create, EventCategory
+        %li{ class: current_page?(new_event_category_path) ? "active" : "" }
+          = link_to new_event_category_path do
+            %i.icon-plus
+            %span Create New
 - if can? :read, MarketPost
   %li
     = link_to market_posts_path do

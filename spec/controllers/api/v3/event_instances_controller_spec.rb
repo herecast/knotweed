@@ -134,25 +134,20 @@ describe Api::V3::EventInstancesController, :type => :controller do
     describe 'date filters' do
       before do
         @e_past = FactoryGirl.create(:event, start_date: 3.days.ago).next_or_first_instance
-        @e_future = FactoryGirl.create(:event, start_date: 1.week.from_now).next_or_first_instance
-        @e_less_future = FactoryGirl.create(:event, start_date: 1.day.from_now).next_or_first_instance
+        @e_future = FactoryGirl.create(:event, start_date: 1.day.from_now).next_or_first_instance
+        @e_current = FactoryGirl.create(:event, start_date: Date.current).next_or_first_instance
       end
-      describe 'start_date' do
-        it 'should search with start_date=today if no date_start is passed' do
+      context ' when start_date is passed without category' do
+        it 'returns events on the start date' do
           get :index
-          expect(assigns(:event_instances)).to match_array([@e_less_future, @e_future])
-        end
-
-        it 'should search by start date if it is passed' do
-          get :index, date_start: 1.week.ago
-          expect(assigns(:event_instances)).to match_array([@e_past, @e_less_future, @e_future])
+          expect(assigns(:event_instances)).to match_array([@e_current])
         end
       end
 
-      describe 'end_date' do
-        it 'should limit results by the passed date_end' do
-          get :index, date_end: 2.days.from_now
-          expect(assigns(:event_instances)).to match_array([@e_less_future])
+      context 'when end_date is passed' do
+        it 'should limit results by the passed days_ahead' do
+          get :index, days_ahead: 2
+          expect(assigns(:event_instances)).to match_array([@e_current, @e_future])
         end
       end
 
@@ -163,56 +158,29 @@ describe Api::V3::EventInstancesController, :type => :controller do
         it "returns total event instances matching search criteria" do
           subject
           payload = JSON.parse(response.body)
-          expect(payload['meta']['total']).to eq 2
+          expect(payload['meta']['total']).to eq 1
         end
       end
     end
 
-    describe 'category' do
+    context 'when category param present' do
       before do
-        @movie = FactoryGirl.create(:event, event_category: 'movies',
-                                    start_date: 1.day.from_now).next_or_first_instance
-        @wellness = FactoryGirl.create(:event, event_category: 'wellness',
-                                       start_date: 2.days.from_now).next_or_first_instance
+        allow(GetEventsByCategories).to receive(:call).and_return []
+        @category_param = { category: 'movies' }
       end
 
-      it 'should return results matching the category' do
-        get :index, category: 'movies'
-        expect(assigns(:event_instances)).to match_array([@movie])
-      end
+      subject { get :index, @category_param }
 
-      it 'should ignore category params that aren\'t whitelisted in Event::EVENT_CATEGORIES' do
-        get :index, category: 'FAKE CATEGORY'
-        expect(assigns(:event_instances)).to match_array([@movie, @wellness])
-      end
-    end
-
-    describe 'location' do
-      before do
-        @loc_with_no_events = FactoryGirl.create :location
-        @parent_loc = FactoryGirl.create :location
-        @child_loc = FactoryGirl.create :location, parents: [@parent_loc]
-        @venue = FactoryGirl.create :business_location, city: @child_loc.city, state: @child_loc.state
-        @event = FactoryGirl.create(:event, start_date: 2.days.from_now,
-                                    venue: @venue).next_or_first_instance
-        FactoryGirl.create_list :event, 3 # some other events
-      end
-
-      it 'should search using matched city name and any child locations\' names' do
-        get :index, location: @parent_loc.city
-        expect(assigns(:event_instances)).to match_array([@event])
-      end
-
-      it 'should return no results searching for a location with no events' do
-        get :index, location: @loc_with_no_events.city
-        expect(assigns(:event_instances)).to match_array([])
+      it 'calls GetEventsByCategories with category param' do
+        expect(GetEventsByCategories).to receive(:call).with(@category_param[:category], any_args)
+        subject
       end
     end
 
     describe 'pagination' do
       before do
         @count = 5
-        FactoryGirl.create_list :event, @count
+        FactoryGirl.create_list :event, @count, start_date: Date.current
       end
 
       it 'should return paginated results' do

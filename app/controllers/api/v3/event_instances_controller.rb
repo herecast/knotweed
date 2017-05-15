@@ -4,59 +4,23 @@ module Api
 
       def index
         expires_in 1.minutes, public: true
-        opts = {}
-        opts[:where] = {}
-        opts[:order] = { start_date: :asc }
-        opts[:per_page] = params[:per_page] || 25
-        opts[:page] = params[:page] || 1
+        @opts = {}
+        @opts[:order] = { start_date: :asc }
+        @opts[:per_page] = params[:per_page]
+        @opts[:page] = params[:page] || 1
+        @opts[:where] = {}
+        @opts[:where][:published] = 1 if @repository.present?
+        set_date_range
 
-        if params[:date_start].present?
-          start_date = Chronic.parse(params[:date_start]).beginning_of_day
+        if params[:category].present? && params[:category] != 'Everything'
+          @event_instances = GetEventsByCategories.call(params[:category], @opts)
         else
-          start_date = Date.current.beginning_of_day
-        end
-        end_date = Chronic.parse(params[:date_end]).end_of_day if params[:date_end].present?
-
-        opts[:where][:published] = 1 if @repository.present?
-
-        if end_date.present?
-          opts[:where][:start_date] = start_date..end_date
-        else
-          # NOTE: we can't do a `greater than` search with a Sphinx attribute filter
-          # without some funny business that involves changing the index,
-          # so instead we're just setting this to 1 year in advance.
-          opts[:where][:start_date] = start_date..1.year.from_now
+          query = params[:query].present? ? params[:query] : "*"
+          @event_instances = EventInstance.search(query, @opts)
         end
 
-        if params[:category].present?
-          cat = params[:category].to_s.downcase.gsub(' ','_')
-          if Event::EVENT_CATEGORIES.include?(cat.to_sym)
-            # NOTE: this conditional also handles the scenario where we are passed 'everything'
-            # because 'everything' just means don't filter by category, and since 'everything'
-            # is not inside that constant, we're good.
-            opts[:where][:event_category] = cat
-          end
-        end
-
-        # if the location is a city or (city, state) pair that matches one of our local towns,
-        # check if there are any villages (aka children) and include them in the search using the
-        # venue attribute of the ES index
-        # Otherwise, just search for the location
-        query_location = Location.find_by_city_state(params[:location])
-        if query_location.present?
-          loc_array = ["#{query_location.city}"] + query_location.children.map{|l| "#{l.city}"}
-          query = "#{params[:query]}"
-          opts[:where][:venue] = loc_array
-        else
-          query = "#{params[:query]} #{params[:location]}"
-        end
-
-        query = query.present? ? query : '*'
-
-        @event_instances = EventInstance.search query, opts
-
-        render json: @event_instances, arrayserializer: EventInstanceSerializer,
-          meta: { total: @event_instances.total_entries }
+        render json: @event_instances, each_serializer: EventInstanceSerializer,
+          meta: { total: @event_instances.try(:count) || 0 }
       end
 
       def show
@@ -90,6 +54,21 @@ module Api
           render json: {}, status: :not_found
         end
       end
+
+      private
+
+        def set_date_range
+          start_date = Chronic.parse(params[:date_start]).try(:beginning_of_day) || Date.current.beginning_of_day
+          if params[:days_ahead].present?
+            end_date = start_date + params[:days_ahead].to_i.days
+          elsif params[:category].present?
+            end_date = start_date + 7.days
+          else
+            end_date = start_date + 1.day
+          end
+          @opts[:where][:start_date] = start_date..end_date
+        end
+
     end
   end
 end
