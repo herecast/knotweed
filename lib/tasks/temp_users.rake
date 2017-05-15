@@ -34,8 +34,6 @@ namespace :temp_users do
       end
     end
     Rails.logger.info "#{TempUserCapture.count} new users registered..."
-    puts "Removing Temporary Users..."
     TempUserCapture.where("created_at < ?", script_start_time).destroy_all
-    puts "Done!"
   end
 end
