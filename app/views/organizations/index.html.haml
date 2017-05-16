@@ -30,6 +30,9 @@
             = f.label :consumer_apps_id_in, "Consumer Apps"
             = f.collection_select :consumer_apps_id_in, ConsumerApp.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
+            = f.label :can_publish_news_true, "Include Can Publish News"
+            = f.check_box :can_publish_news_true
+          .field.span3
             = f.label :include_child_organizations, "Include Child Organizations"
             = f.check_box :include_child_organizations
         .form-actions

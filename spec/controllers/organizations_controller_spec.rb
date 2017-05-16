@@ -71,6 +71,16 @@ describe OrganizationsController, type: :controller do
         expect(assigns(:organizations).length).to eq(1)
       end
     end
+
+    context 'when searching by can_publish_news' do
+      let!(:news_org) { FactoryGirl.create :organization, can_publish_news: true }
+      
+      it 'returns records where can_publish_news is true' do
+        get :index, q: { "can_publish_news_true" => 1 }
+        expect(assigns(:organizations).first).to eq(news_org)
+      end
+    
+    end
   end
 
   describe '#new' do
