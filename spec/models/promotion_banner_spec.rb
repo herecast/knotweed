@@ -178,7 +178,128 @@ describe PromotionBanner, :type => :model do
         expect(subject).to include(banner)
       end
     end
+  end
 
+  describe "#active?" do
+    before do
+      @promotion_banner = FactoryGirl.create :promotion_banner
+    end
+
+    context "when campaign start is after current date" do
+      it "returns false" do
+        @promotion_banner.update_attribute(:campaign_start, Date.tomorrow)
+        expect(@promotion_banner.reload.active?).to be false
+      end
+    end
+
+    context "when campaign end is before current date" do
+      it "returns false" do
+        @promotion_banner.update_attribute(:campaign_end, Date.yesterday)
+        expect(@promotion_banner.reload.active?).to be false
+      end
+    end
+
+    context "when campaign start is >= current date and campaign end is <= current date" do
+      it "returns true" do
+        @promotion_banner.update_attributes(
+          campaign_start: Date.yesterday,
+          campaign_end: Date.tomorrow
+        )
+        expect(@promotion_banner.reload.active?).to be true
+      end
+    end
+  end
+
+  describe "#has_inventory?" do
+    before do
+      @promotion_banner = FactoryGirl.create :promotion_banner
+    end
+
+    context "when no daily impressions left and no total impressions left" do
+      it "returns false" do
+        @promotion_banner.update_attributes(
+          max_impressions: 5,
+          impression_count: 6,
+          daily_max_impressions: 2,
+          daily_impression_count: 3
+        )
+        expect(@promotion_banner.reload.has_inventory?).to be false
+      end
+    end
+
+    context "when no daily impressions left and some total impressions left" do
+      it "returns false" do
+        @promotion_banner.update_attributes(
+          max_impressions: 10,
+          impression_count: 8,
+          daily_max_impressions: 3,
+          daily_impression_count: 4
+        )
+        expect(@promotion_banner.reload.has_inventory?).to be false
+      end
+    end
+
+    context "when some daily impressions left but no total impressions left" do
+      it "returns false" do
+        @promotion_banner.update_attributes(
+          max_impressions: 10,
+          impression_count: 11,
+          daily_max_impressions: 3,
+          daily_impression_count: 2
+        )
+        expect(@promotion_banner.reload.has_inventory?).to be false
+      end
+    end
+
+    context "when some daily impressions left and some total impressions left" do
+      it "returns true" do
+        @promotion_banner.update_attributes(
+          max_impressions: 10,
+          impression_count: 8,
+          daily_max_impressions: 3,
+          daily_impression_count: 2
+        )
+        expect(@promotion_banner.reload.has_inventory?).to be true
+      end
+    end
+  end
+
+  describe "#active_with_inventory?" do
+    before do
+      @promotion_banner = FactoryGirl.create :promotion_banner
+    end
+
+    context "when not active and without inventory" do
+      it "returns false" do
+        allow_any_instance_of(PromotionBanner).to receive(:active?).and_return false
+        allow_any_instance_of(PromotionBanner).to receive(:has_inventory?).and_return false
+        expect(@promotion_banner.active_with_inventory?).to be false
+      end
+    end
+
+    context "when active and without inventory" do
+      it "returns false" do
+        allow_any_instance_of(PromotionBanner).to receive(:active?).and_return true
+        allow_any_instance_of(PromotionBanner).to receive(:has_inventory?).and_return false
+        expect(@promotion_banner.active_with_inventory?).to be false
+      end
+    end
+
+    context "when not active with inventory" do
+      it "returns false" do
+        allow_any_instance_of(PromotionBanner).to receive(:active?).and_return false
+        allow_any_instance_of(PromotionBanner).to receive(:has_inventory?).and_return true
+        expect(@promotion_banner.active_with_inventory?).to be false
+      end
+    end
+
+    context "when active with inventory" do
+      it "returns true" do
+        allow_any_instance_of(PromotionBanner).to receive(:active?).and_return true
+        allow_any_instance_of(PromotionBanner).to receive(:has_inventory?).and_return true
+        expect(@promotion_banner.active_with_inventory?).to be true
+      end
+    end
   end
 
   describe "#current_daily_report" do

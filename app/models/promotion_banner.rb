@@ -96,6 +96,14 @@ class PromotionBanner < ActiveRecord::Base
     campaign_start <= Date.current && campaign_end >= Date.current
   end
 
+  def has_inventory?
+    has_daily_impressions_left? && has_total_impressions_left?
+  end
+
+  def active_with_inventory?
+    active? && has_inventory?
+  end
+
   def current_daily_report(current_date=Date.current)
     promotion_banner_reports.where("report_date >= ?", current_date).take
   end
@@ -137,4 +145,15 @@ class PromotionBanner < ActiveRecord::Base
       end
     end
 
+    def total_daily_allowable_impressions
+      daily_max_impressions + (daily_max_impressions * OVER_DELIVERY_PERCENTAGE)
+    end
+
+    def has_daily_impressions_left?
+      daily_max_impressions.present? ? daily_impression_count < total_daily_allowable_impressions : true
+    end
+
+    def has_total_impressions_left?
+      max_impressions.present? ? impression_count < max_impressions : true
+    end
 end

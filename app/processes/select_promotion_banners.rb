@@ -45,8 +45,11 @@ class SelectPromotionBanners
 
     def get_direct_promotion(promotion_id)
       promotion = Promotion.find_by(id: promotion_id)
-      if promotion && promotion.promotable.is_a?(PromotionBanner) && promotion.promotable.active?
+      if promotion && promotion.promotable.is_a?(PromotionBanner) && promotion.promotable.active_with_inventory?
         add_promotion([promotion.promotable, nil, 'sponsored_content'])
+      else
+        @not_run_of_site = false
+        get_random_promotion
       end
     end
 
