@@ -1,0 +1,9 @@
+<row class="collapse">
+  <columns small="12" large="9">
+    <img src="https://s3.amazonaws.com/subtext-misc/sierra-nevada/dailyuv-logo-sm.svg" alt="DailyUV" class='float-left DailyUVLogo' height="25px">
+    <h6 class='u-marginBottom0 u-xs-textRight u-textLeft'><i>&nbsp;This week in Hartland, VT</i></h6>
+  </columns>
+  <columns small="12" large="3">
+    <p class="u-textRight">May 9</p>
+  </columns>
+</row>
