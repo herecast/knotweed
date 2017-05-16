@@ -312,6 +312,20 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
         end
 
       end
+
+      context 'when the subscription request is from a user registration' do
+        it 'creates a new subscription' do
+          expect{
+            post '/api/v3/subscriptions', subscription_params.merge!(subscribed_from_registration: true)
+          }.to change{ Subscription.count }.by(1)
+        end
+
+        it 'does not call the SubscribeToListserv jobs' do
+          expect(SubscribeToListserv).to_not receive(:call).with(listserv, { email: unconfirmed_user.email })
+          expect(SubscribeToListservSilently).to_not receive(:call).with(listserv, { email: unconfirmed_user.email })
+          post '/api/v3/subscriptions', subscription_params.merge!(subscribed_from_registration: true)
+        end
+      end
     end
 
     context 'with invalid attributes' do

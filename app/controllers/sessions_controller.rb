@@ -17,6 +17,10 @@ class SessionsController < Devise::SessionsController
     user = SignInToken.authenticate(params[:token])
 
     if user.present?
+      unless user.confirmed?
+        ConfirmRegistration.call({confirmation_token: user.confirmation_token, confirm_ip: request.remote_ip })
+        user.reload
+      end
       sign_in user
       render json: {
         email: user.email,

@@ -85,24 +85,16 @@ module Api
       end
 
       def email_confirmation
-        user = User.confirm_by_token params[:confirmation_token]
+        user = ConfirmRegistration.call({confirmation_token: params[:confirmation_token],
+                                         confirm_ip: request.remote_ip })
         if user.errors.blank?
-          res = { token: user.authentication_token,
-                  email: user.email
-                }
-          if user.unconfirmed_subscriptions?
-            user.unconfirmed_subscriptions.each do |sub|
-              sub.confirm_ip = request.remote_ip
-              sub.confirmed_at ||= Time.zone.now
-              sub.save!
-              BackgroundJob.perform_later('MailchimpService', 'subscribe', sub)
-            end
-          end
+          resp = { token: user.authentication_token,
+                   email: user.email }
+          render json: resp
         else
-          head :not_found and return
+          head :not_found
         end
 
-        render json: res
       end
 
       def resend_confirmation

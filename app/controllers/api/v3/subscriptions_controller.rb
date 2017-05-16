@@ -23,7 +23,9 @@ module Api
           listserv = Listserv.find(params[:subscription][:listserv_id])
           if user.confirmed?
             @subscription = SubscribeToListservSilently.call(listserv, user, request.remote_ip)
-          else
+          elsif subscribed_from_registration?
+            @subscription = Subscription.create!(subscription_params)
+          else 
             @subscription = SubscribeToListserv.call(listserv, { email: params[:subscription][:email] })
           end
           render json: @subscription, serializer: SubscriptionSerializer, status: 201
@@ -112,6 +114,10 @@ module Api
 
       def find_user
         User.find_by(email: params[:subscription][:email])
+      end
+
+      def subscribed_from_registration?
+        params[:subscription][:subscribed_from_registration]
       end
     end
   end
