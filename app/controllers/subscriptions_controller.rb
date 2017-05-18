@@ -5,6 +5,7 @@ class SubscriptionsController < ApplicationController
   def index
     @search = Subscription.ransack(search_query)
     @subscriptions = @search.result(distinct: true)\
+      .active\
       .includes(:listserv)\
       .order("created_at DESC")\
       .page(params[:page])

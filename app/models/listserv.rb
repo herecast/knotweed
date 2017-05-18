@@ -66,7 +66,7 @@ class Listserv < ActiveRecord::Base
   validate :no_altering_queries
   validate :valid_template_name
 
-  default_scope { where active: true }
+  scope :active, ->{ where(active: true) }
 
   scope :custom_digest, ->{
     where(list_type: 'custom_digest')

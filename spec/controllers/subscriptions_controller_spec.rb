@@ -15,7 +15,10 @@ RSpec.describe SubscriptionsController, type: :controller do
 
   describe "GET #index" do
     it "assigns all subscriptions as @subscriptions" do
-      subscription = Subscription.create! valid_attributes
+      subscription = Subscription.create! valid_attributes.merge({
+        confirmed_at: Time.now,
+        confirm_ip: "1.1.1.1"
+      })
       get :index, {}
       expect(assigns(:subscriptions)).to eq([subscription])
     end
@@ -23,7 +26,10 @@ RSpec.describe SubscriptionsController, type: :controller do
     context 'when many subcriptions exist' do
       before do
         5.times do |i|
-          FactoryGirl.create :subscription, created_at: Time.current + i
+          FactoryGirl.create :subscription,
+            created_at: Time.current + i,
+            confirmed_at: Time.now,
+            confirm_ip: "1.1.1.1"
         end
       end
 

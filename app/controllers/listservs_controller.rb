@@ -11,7 +11,7 @@ class ListservsController < ApplicationController
     unless session[:listservs_search].present?
       session[:listservs_search] = { :active_true => true }
     end
-    @search = Listserv.unscoped.ransack(session[:listservs_search])
+    @search = Listserv.ransack(session[:listservs_search])
     @listservs = @search.result(distinct: true)
   end
 
@@ -52,7 +52,7 @@ class ListservsController < ApplicationController
 
   private
     def set_listserv
-      @listserv = Listserv.unscoped.find(params[:id])
+      @listserv = Listserv.find(params[:id])
     end
 
     def listserv_params

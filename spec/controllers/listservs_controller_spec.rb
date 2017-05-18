@@ -4,7 +4,6 @@ RSpec.describe ListservsController, type: :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
-    Listserv.destroy_all
   end
 
   let(:valid_attributes) {{
@@ -27,6 +26,7 @@ RSpec.describe ListservsController, type: :controller do
     forwarding_email: 'forwarding@mail.com',
     forward_for_processing: '1',
     post_threshold: 5,
+    active: true
   }}
 
   describe "GET #index" do
