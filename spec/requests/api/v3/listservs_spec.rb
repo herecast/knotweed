@@ -13,6 +13,14 @@ RSpec.describe 'Listserv API Endpoints', type: :request do
         end
       end
 
+      it "does not return inactive listservs" do
+        inactive_listserv = Listserv.last
+        inactive_listserv.update_attribute(:active, false)
+        get '/api/v3/listservs'
+        returned_ids = response_json[:listservs].collect{|l| l[:id]}
+        expect(returned_ids).not_to include inactive_listserv.id
+      end
+
       context 'given ids[]= parameter' do
         it 'returns the specified listservs' do
           subset = listservs.slice(0,2)
