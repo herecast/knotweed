@@ -20,7 +20,7 @@ module Api
         end
 
         render json: @event_instances, each_serializer: EventInstanceSerializer,
-          meta: { total: @event_instances.try(:count) || 0 }
+          meta: { total: @event_instances.try(:total_entries) || @event_instances.count }
       end
 
       def show
