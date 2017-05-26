@@ -48,7 +48,6 @@ module Api
 
         query = params[:query].present? ? params[:query] : '*'
 
-        # byebug
         modifier = set_modifier_for_category(params[:query_modifier]) unless params[:query_modifier].blank?
         modifier ||= {}
 

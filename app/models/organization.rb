@@ -32,6 +32,7 @@
 class Organization < ActiveRecord::Base
 
   searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.searchkick_index_prefix
+  ransacker :show_news_publishers
 
   def search_data
     {

@@ -30,11 +30,17 @@
             = f.label :consumer_apps_id_in, "Consumer Apps"
             = f.collection_select :consumer_apps_id_in, ConsumerApp.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
-            = f.label :can_publish_news_true, "Include Can Publish News"
-            = f.check_box :can_publish_news_true
+            = f.label :show_news_publishers, "Display Can-Publish-News Only"
+            - if params[:q].present? && session[:organizations_search]
+              = f.check_box :show_news_publishers, checked: params[:q][:show_news_publishers] == "1" ? true : false
+            - else
+              = f.check_box :show_news_publishers, checked: false
           .field.span3
             = f.label :include_child_organizations, "Include Child Organizations"
-            = f.check_box :include_child_organizations
+            - if params[:q].present? && session[:organizations_search]
+              = f.check_box :include_child_organizations, checked: params[:q][:include_child_organizations] == "1" ? true : false
+            - else
+              = f.check_box :include_child_organizations, checked: false
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"

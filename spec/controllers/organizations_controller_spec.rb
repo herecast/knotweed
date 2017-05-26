@@ -40,6 +40,23 @@ describe OrganizationsController, type: :controller do
       end
     end
 
+    context 'when searching by orgs that can publish news' do
+      before do
+        @news_org = FactoryGirl.create :organization, can_publish_news: true
+        @org = FactoryGirl.create :organization
+      end
+      
+      it 'retuns only organizations that can publish news when true' do
+        get :index, q: { "show_news_publishers" => "1" }
+        expect(assigns(:organizations).all? { |org| org.can_publish_news == true }).to eq true
+      end
+
+      it 'retuns all organizations' do
+        get :index, q: { "show_news_publishers" => "0" }
+        expect(assigns(:organizations).count).to eq Organization.count
+      end
+    end
+
     context 'no parameters; session[:organizations_search]' do
       before do
         session[:organizations_search] = {fake: "search"}
@@ -69,6 +86,23 @@ describe OrganizationsController, type: :controller do
         q = { 'id_eq' => parent_organization.id  }
         get :index, q: q
         expect(assigns(:organizations).length).to eq(1)
+      end
+
+      context 'when searching by can_publish_news' do
+        let!(:parent_news_org) { FactoryGirl.create :organization, can_publish_news: true }
+        let!(:child_news_org) { FactoryGirl.create :organization, parent_id: parent_news_org.id }
+        
+        it 'retuns child organizations for orgs that can publish news' do
+          q = { 'include_child_organizations' => '1',
+                'can_publish_news_true' => '1' }
+          get :index, q: q
+          expect(assigns(:organizations).length).to eq(2)
+          expect(assigns(:organizations))
+          ids = assigns(:organizations).map(&:id)
+          expect(ids).to include parent_news_org.id
+          expect(ids).to include child_news_org.id
+        end
+
       end
     end
 

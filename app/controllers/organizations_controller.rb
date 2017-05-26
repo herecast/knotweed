@@ -13,7 +13,11 @@ class OrganizationsController < ApplicationController
       if include_child_organizations?
         return_child_organizations
       else
-        @organizations = @search.result(distinct: true)
+        if return_news_orgs?
+          @organizations = @search.result(distinct: true).where(can_publish_news: true)
+        else
+          @organizations = @search.result(distinct: true)
+        end
       end
     else
       @organizations = Organization
@@ -165,8 +169,19 @@ class OrganizationsController < ApplicationController
     def return_child_organizations
       # default scope involves ordering by name and Postgres shits the bed if you order
       # by something that isn't included in the select clause
-      ids_for_parents = @search.result(distinct: true).select(:id, :name).collect(&:id)
+      if return_news_orgs?
+        ids_for_parents = @search.result(distinct: true).
+          where(can_publish_news: true).
+          select(:id, :name).collect(&:id)
+      else
+        ids_for_parents = @search.result(distinct: true).select(:id, :name).collect(&:id)
+      end
+
       ids_for_children = Organization.get_children(ids_for_parents).select(:id, :name).collect(&:id)
       @organizations = Organization.where(id: ids_for_parents + ids_for_children)
+    end
+
+    def return_news_orgs?
+      session[:organizations_search]["show_news_publishers"] == "1"
     end
 end
