@@ -113,11 +113,6 @@ module Api
         if @market_post.try(:root_content_category).try(:name) != 'market'
           head :no_content
         else
-          @market_post.increment_view_count! unless analytics_blocked?
-          if @current_api_user.present? and @repository.present?
-            BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit', @market_post,
-                                                           @current_api_user, @repository)
-          end
           render json: @market_post, serializer: DetailedMarketPostSerializer,
             context: { current_ability: current_ability }
         end
@@ -236,7 +231,6 @@ module Api
             query
           end
         end
-
     end
   end
 end

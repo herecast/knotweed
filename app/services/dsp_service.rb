@@ -39,13 +39,13 @@ module DspService
   # visit to a content detail page
   #
   # @param content [Content]
-  # @param user [User] the user who visited
+  # @param user_id [string] the user identifier for who visited
   # @param repo [Repository] repository to post to
-  def record_user_visit(content, user, repo=Repository.production_repo)
+  def record_user_visit(content, user_id, repo=Repository.production_repo)
     post(repo.recommendation_endpoint + '/user', {
       body: {
         key: Figaro.env.ontotext_recommend_key,
-        userid: user.email,
+        userid: user_id,
         contentid: Content::BASE_URI + "/#{content.id}"
       },
     })

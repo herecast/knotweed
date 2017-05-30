@@ -106,7 +106,6 @@ module Api
 
         if @current_api_user.present?
           url = edit_content_url(@news) if @current_api_user.has_role? :admin
-          BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit', @news, @current_api_user, @repository) if @repository.present?
         else
           url = nil
         end
@@ -129,22 +128,6 @@ module Api
           head :no_content
         else
           head :not_found
-        end
-      end
-
-      def create_impression
-        @news = Content.not_deleted.find params[:id]
-        if @news.present?
-          unless analytics_blocked?
-            BackgroundJob.perform_later("RecordContentMetric", "call", @news, 'impression', Date.current.to_s,
-              user_id:    @current_api_user.try(:id),
-              user_agent: request.user_agent,
-              user_ip:    request.remote_ip
-            )
-          end
-          render json: {}, status: :accepted
-        else
-          render json: {}, status: :not_found
         end
       end
 

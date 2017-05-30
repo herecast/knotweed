@@ -154,10 +154,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
       expect(assigns(:market_post)).to eq(@content)
     end
 
-    it 'should increment view count' do
-      expect{subject}.to change{Content.find(@content.id).view_count}.from(0).to(1)
-    end
-
     describe 'can_edit' do
       before do
         @location = FactoryGirl.create :location, city: 'Another City'
@@ -183,21 +179,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
       it 'should false when a user is not logged in' do
         subject 
         expect(can_edit).to eq(false)
-      end
-    end
-
-    context 'signed in' do
-      before do
-        @repo = FactoryGirl.create :repository
-        @user = FactoryGirl.create :user
-        @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
-        @consumer_app.organizations << @market_post.organization
-        api_authenticate user: @user, consumer_app: @consumer_app
-      end
-
-      it 'should queue record_user_visit' do
-        expect{subject}.to have_enqueued_job(BackgroundJob).with('DspService',
-                        'record_user_visit', @content, @user, @repo)
       end
     end
 

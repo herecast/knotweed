@@ -205,11 +205,6 @@ describe Api::V3::NewsController, :type => :controller do
           expect(JSON.parse(response.body)['news']['admin_content_url']).to be_present
         end
       end
-
-      it 'should queue record_user_visit' do
-        expect{subject}.to have_enqueued_job(BackgroundJob).with('DspService',
-                        'record_user_visit', @news, @user, @repo)
-      end
     end
 
     describe 'for content that isn\'t news' do
@@ -247,32 +242,6 @@ describe Api::V3::NewsController, :type => :controller do
       end
 
       it { subject; expect(response.status).to eq 204 }
-    end
-  end
-
-  describe 'POST #create_impression' do
-    before do
-      @news = FactoryGirl.create :content, published: true
-    end
-
-    subject { post :create_impression, id: @news.id }
-
-    it "creates content metric, type: impression" do
-      expect(BackgroundJob).to receive(:perform_later).with(
-        'RecordContentMetric', 'call', @news, 'impression', any_args
-      )
-      subject
-    end
-
-    context "when admin logged in" do
-      before do
-        user = FactoryGirl.create :user, skip_analytics: true
-        api_authenticate user: user
-      end
-
-      it "does not increment view count" do
-        expect(BackgroundJob).not_to receive(:perform_later)
-      end
     end
   end
 end

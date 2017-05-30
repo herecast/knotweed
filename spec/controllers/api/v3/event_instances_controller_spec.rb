@@ -36,23 +36,6 @@ describe Api::V3::EventInstancesController, :type => :controller do
       expect(inst["event_instance"]["comment_count"]).to eq(comment_count)
     end
 
-    describe 'record user visit' do
-      before do
-        @user = FactoryGirl.create :user
-        api_authenticate user: @user
-        @repo = FactoryGirl.create :repository
-        @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
-      end
-
-      subject { get :show, format: :json, id: @inst.id,
-                  consumer_app_uri: @consumer_app.uri }
-
-      it 'should queue record_user_visit if repository and user are present' do
-        expect{subject}.to have_enqueued_job(BackgroundJob).with('DspService',
-                        'record_user_visit', @event.content, @user, @repo)
-      end
-    end
-
     describe 'ical_url' do
       before do
         @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
@@ -190,55 +173,4 @@ describe Api::V3::EventInstancesController, :type => :controller do
     end
   end
 
-  describe "POST #create_impression" do
-    context "when no event instance" do
-      subject { post :create_impression, id: 5 }
-
-      it "returns not_found status" do
-        subject
-        expect(response).to have_http_status :not_found
-      end
-    end
-
-    context "when event instance is present" do
-      before do
-        @event = FactoryGirl.create :event
-        @event.content.update_attribute :published, true
-        @event_instance = @event.event_instances.first
-      end
-
-      subject { post :create_impression, id: @event_instance.id }
-
-      context "when user is admin" do
-        before do
-          @user = FactoryGirl.create :user, skip_analytics: true
-          api_authenticate user: @user
-        end
-
-        it "does not increment view count" do
-          expect{ subject }.not_to change{
-            @event_instance.reload.event.content.view_count
-          }
-        end
-
-        it "returns accepted status" do
-          subject
-          expect(response).to have_http_status :accepted
-        end
-      end
-
-      context "when user is not admin" do
-        it "increments view count" do
-          expect{ subject }.to change{
-            @event_instance.reload.event.content.view_count
-          }.by 1
-        end
-
-        it "returns accepted status" do
-          subject
-          expect(response).to have_http_status :accepted
-        end
-      end
-    end
-  end
 end

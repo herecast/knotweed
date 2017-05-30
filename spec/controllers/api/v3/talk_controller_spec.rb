@@ -88,10 +88,6 @@ describe Api::V3::TalkController, :type => :controller do
       expect(assigns(:talk)).to eq(@talk)
     end
 
-    it 'should increment view_count' do
-      expect{subject}.to change{@talk.reload.view_count}.by 1
-    end
-
     context 'when called with an ID that does not match a talk record' do
       before do
         @content = FactoryGirl.create :content # not talk!
@@ -100,20 +96,6 @@ describe Api::V3::TalkController, :type => :controller do
       subject! { get :show, id: @content.id }
 
       it { expect(response.status).to eq 204 }
-    end
-
-    describe 'with repository present' do
-      before do
-        @repo = FactoryGirl.create :repository
-        @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
-        @consumer_app.organizations << @talk.organization
-        api_authenticate user: @user, consumer_app: @consumer_app
-      end
-
-      it 'should queue record_user_visit' do
-        expect{subject}.to have_enqueued_job(BackgroundJob).with('DspService',
-                        'record_user_visit', @talk, @user, @repo)
-      end
     end
 
     context 'when requesting app includes the talk\'s organization' do

@@ -142,7 +142,10 @@ Knotweed::Application.routes.draw do
       get '/promotions', to: 'promotion_banners#show'
       get '/promotions/:promotion_id', to: 'promotion_banners#show'
       resources 'event_instances', only: [:index, :show]
-      post 'events/:id/impressions', to: "event_instances#create_impression"
+
+      #deprecated
+      post 'events/:id/impressions', to: 'metrics/contents/impressions#create'
+
       resources :event_categories, only: :index
       resources 'comments', only: [:index, :create]
       resources 'listservs', only: [:show,:index]
@@ -158,7 +161,10 @@ Knotweed::Application.routes.draw do
       # the modeling
       resources 'organizations', only: [:index, :show, :update]
       resources 'news'
-      post '/news/:id/impressions', to: 'news#create_impression'
+
+      # deprecated
+      post '/news/:id/impressions', to: 'metrics/contents/impressions#create'
+
       resources 'talk', only: [:index, :show, :create, :update]
       resources 'market_posts', only: [:index, :show, :create, :update]
       get '/market_posts/:id/contact', to: 'market_posts#contact', as: :market_post_contact
@@ -203,6 +209,8 @@ Knotweed::Application.routes.draw do
       get '/promotion_coupons/:id', to: 'promotion_banners#show_promotion_coupon'
       post '/promotion_coupons/:id/request_email', to: 'promotion_banners#create_promotion_coupon_email'
       get '/promotion_banner_reports/daily_report', to: 'promotion_banner_reports#show_daily_report'
+
+      post '/metrics/contents/:id/impressions', to: 'metrics/contents/impressions#create'
     end
   end
 

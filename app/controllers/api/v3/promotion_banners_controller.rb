@@ -66,7 +66,8 @@ module Api
             @content = Content.find_by_id params[:content_id]
             if @content.present?
               BackgroundJob.perform_later('RecordContentMetric', 'call', @content, 'click', Date.current.to_s,
-                user_id:    @current_api_user.try(:id)
+                user_id:    @current_api_user.try(:id),
+                client_id: params[:client_id]
               )
             end
           end
@@ -157,6 +158,7 @@ module Api
             event_type:          event_type,
             current_date:        Date.current.to_s,
             user_id:             @current_api_user.try(:id),
+            client_id:           params[:client_id],
             promotion_banner_id: promotion_banner_packet[0].id,
             select_score:        promotion_banner_packet[1],
             select_method:       promotion_banner_packet[2],

@@ -76,6 +76,14 @@ FactoryGirl.define do
       }
     end
 
+    trait :news do
+      content_category {
+        ContentCategory.find_or_create_by({
+          name: 'news'
+        })
+      }
+    end
+
     trait :published do
       published true
       pubdate { Time.current }

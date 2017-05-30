@@ -25,7 +25,8 @@ class RecordContentMetric
         content_id: @content.id,
         user_id:    @opts[:user_id],
         user_agent: @opts[:user_agent],
-        user_ip:    @opts[:user_ip]
+        user_ip:    @opts[:user_ip],
+        client_id:  @opts[:client_id]
       )
     end
 

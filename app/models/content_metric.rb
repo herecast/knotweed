@@ -8,6 +8,7 @@
 #  user_id    :integer
 #  user_agent :string
 #  user_ip    :string
+#  client_id  :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #

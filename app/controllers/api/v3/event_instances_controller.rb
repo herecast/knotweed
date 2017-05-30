@@ -32,26 +32,12 @@ module Api
         if @requesting_app.present?
           ical_url = @requesting_app.uri + event_instances_ics_path(params[:id])
         end
-        if @current_api_user.present? and @repository.present?
-          BackgroundJob.perform_later_if_redis_available('DspService', 'record_user_visit',
-                                                         @content, @current_api_user, @repository)
-        end
 
         if request.headers['HTTP_ACCEPT'] == 'text/calendar'
           render text: @event_instance.to_ics
         else
           render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
             context: { current_ability: current_ability, admin_content_url: url, ical_url: ical_url }
-        end
-      end
-
-      def create_impression
-        @event_instance = EventInstance.find(params[:id])
-        if @event_instance.present?
-          @event_instance.event.content.increment_view_count! unless analytics_blocked?
-          render json: {}, status: :accepted
-        else
-          render json: {}, status: :not_found
         end
       end
 

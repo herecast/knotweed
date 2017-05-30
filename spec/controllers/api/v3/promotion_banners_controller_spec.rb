@@ -207,7 +207,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       @content = FactoryGirl.create :content
     end
 
-    subject { post :track_impression, id: @banner.id,
+    subject { post :track_impression, id: @banner.id, client_id: "ClientID!",
                format: :json }
 
     it 'should respond with 200' do
@@ -219,7 +219,8 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       expect(BackgroundJob).to receive(:perform_later).with(
         'RecordPromotionBannerMetric', "call", hash_including({
           event_type: "impression",
-          promotion_banner_id: @banner.id
+          promotion_banner_id: @banner.id,
+          client_id: 'ClientID!'
         })
       )
       subject
@@ -248,7 +249,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     end
 
     subject { post :track_click, promotion_banner_id: @banner.id,
-               content_id: @content.id, format: :json }
+               content_id: @content.id, client_id: 'ClientId@', format: :json }
 
     it 'should respond with 200' do
       subject
@@ -260,6 +261,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         "RecordPromotionBannerMetric", "call", hash_including({
           event_type: 'click',
           user_id: nil,
+          client_id: 'ClientId@',
           promotion_banner_id: @banner.id,
           current_date: Date.current.to_s,
           content_id: @content.id
@@ -267,7 +269,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       )
       expect(BackgroundJob).to receive(:perform_later).with(
         'RecordContentMetric', 'call', @content, 'click', Date.current.to_s,
-          { user_id: nil }
+          { user_id: nil, client_id: 'ClientId@' }
       )
       subject
     end

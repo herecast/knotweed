@@ -32,4 +32,30 @@ RSpec.describe DspService do
       expect(subject[:published]).to be_present
     end
   end
+
+  describe '#record_user_visit' do
+    let(:ontotext_key) { 'dsak32kds' }
+    let(:repo) { FactoryGirl.build_stubbed :repository }
+    let(:content) { FactoryGirl.build_stubbed :content, :news, id: 1 }
+    let(:user_id) { '889' }
+
+    before do
+      allow(Figaro.env).to receive(:ontotext_recommend_key).and_return(ontotext_key)
+    end
+
+    subject { DspService.record_user_visit(content, user_id, repo) }
+
+    it "posts to the user recommendation endpoint" do
+      dsp_request = stub_request(:post, repo.recommendation_endpoint + '/user').with(
+        body: {
+          key: ontotext_key,
+          userid: user_id,
+          contentid: Content::BASE_URI + "/" + content.id.to_s
+        }
+      )
+
+      subject
+      expect(dsp_request).to have_been_requested
+    end
+  end
 end
