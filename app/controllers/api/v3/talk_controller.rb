@@ -15,9 +15,11 @@ module Api
           opts[:where][:organization_id] = allowed_orgs.collect{|c| c.id}
         end
 
-        opts[:where][:all_loc_ids] = [Location::REGION_LOCATION_ID]
-        opts[:where][:all_loc_ids] << @current_api_user.location_id if @current_api_user
-
+        if @current_api_user
+          opts[:where][:all_loc_ids] = [@current_api_user.location_id]
+        else
+          opts[:where][:all_loc_ids] = [Location::REGION_LOCATION_ID]
+        end
 
         @talk = Content.talk_search(params[:query], opts)
 

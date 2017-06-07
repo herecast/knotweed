@@ -22,11 +22,11 @@ describe Api::V3::TalkController, :type => :controller do
     subject { get :index }
 
     context 'not signed in' do
-      it 'should respond with 200 status' do
+      it 'should respond with 401 status' do
         subject
         expect(response.code).to eq('200')
       end
-      
+
       it 'defaults to the Upper Valley location' do
         subject
         assigns(:talk)[:results].each do |content|
@@ -65,7 +65,13 @@ describe Api::V3::TalkController, :type => :controller do
       it 'should respond with talk items in the user\'s location' do
         subject
         results_locations = assigns(:talk)[:results].map{|c| c.locations}
-        expect(results_locations.all?{|location| location == @user.location || @default_location}).to eq true
+        expect(results_locations.all?{|locations| locations.include? @user.location}).to eq true
+      end
+
+      it 'should not return talk items from default location' do
+        subject
+        results_locations = assigns(:talk)[:results].map{|c| c.locations}
+        expect(results_locations.any?{|locations| locations.include? @default_location}).to eq false
       end
     end
   end
