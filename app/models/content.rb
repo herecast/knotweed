@@ -104,7 +104,7 @@ class Content < ActiveRecord::Base
 
   def all_loc_ids
     locs = locations.pluck(:id)
-    if organization.present?
+    if content_type != :talk && organization.present?
       locs += organization.locations.pluck(:id)
     end
     locs.uniq
@@ -306,7 +306,7 @@ class Content < ActiveRecord::Base
     prefix = root_content_category.try(:name)
     # convert talk_of_the_town to talk
     prefix = 'talk' if prefix == 'talk_of_the_town'
-    prefix.to_sym
+    prefix.to_s.to_sym
   end
 
   def content_type=t

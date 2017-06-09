@@ -73,6 +73,26 @@ describe Api::V3::TalkController, :type => :controller do
         results_locations = assigns(:talk)[:results].map{|c| c.locations}
         expect(results_locations.any?{|locations| locations.include? @default_location}).to eq false
       end
+
+      context 'Talk item associated to an organization, with locations' do
+        let(:org_location) { FactoryGirl.create :location }
+        let(:organization) { FactoryGirl.create :organization, locations: [org_location] }
+        let(:talk_location) { FactoryGirl.create :location }
+        let!(:talk_with_org) {
+          FactoryGirl.create :content, :talk, {
+            published: true,
+            locations: [talk_location],
+            organization: organization
+          }
+        }
+
+        subject { get :index, location_id: org_location.slug }
+
+        it 'does not return talk from the organization locations' do
+          subject
+          expect(assigns(:talk)[:results]).to_not include(talk_with_org)
+        end
+      end
     end
   end
 
