@@ -41,4 +41,16 @@ module ContentsHelper
 
     url
   end
+
+  # Returns "dailyUV/my-org" given a full URL like "http://www.dailyUV.com/organizations/3456-my-org".
+  def organization_url_label(url)
+    # URI.parse requires a scheme in the URL if the rest of this method is to work.
+    url_with_scheme = url.to_s =~ /^http(s?)\:\/\// ? url.to_s : "http://#{url}"
+    uri = URI.parse(url_with_scheme) rescue nil
+    return url.to_s unless uri
+
+    host_label = uri.host.to_s.split('.').reverse[0..1].last
+    org_label = uri.path.to_s.sub('/organizations', '').split('/').find_all { |c| c.present? }.first.to_s.sub(/^\d+\-/, '')
+    [host_label, org_label].find_all { |c| c.present? }.join('/')
+  end
 end
