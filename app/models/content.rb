@@ -239,9 +239,6 @@ class Content < ActiveRecord::Base
   def mark_published(repo)
     if repo.id == Repository::PRODUCTION_REPOSITORY_ID
       update_attribute :published, true
-      if root_content_category_id && root_content_category_id == ContentCategory.find_by_name('news')&.id
-        NotifySubscribersJob.perform_later(self)
-      end
     end
   end
 

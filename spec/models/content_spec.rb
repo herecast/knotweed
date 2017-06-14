@@ -314,12 +314,6 @@ describe Content, :type => :model do
       @content.reload
       expect(@content.published).to eq(true)
     end
-
-    it "sends notifications for news published to the prod repo" do
-      @content = FactoryGirl.create(:content, :news)
-      expect(NotifySubscribersJob).to receive(:perform_later)
-      @content.repositories << @prod_repo
-    end
   end
 
   describe "publish_content" do
