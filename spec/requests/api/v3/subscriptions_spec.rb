@@ -134,7 +134,7 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
 
     context 'when already confirmed' do
       before do
-        subscription.update! confirmed_at: Time.now, confirm_ip: '192.168.1.0'
+        subscription.update! confirmed_at: Time.zone.now, confirm_ip: '192.168.1.0'
       end
 
       it 'returns 204 status' do
@@ -150,7 +150,7 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
 
       context 'when unsubscribed' do
         before do
-          subscription.update unsubscribed_at: Time.now
+          subscription.update unsubscribed_at: Time.zone.now
         end
 
         it 'unsets unsubscribed status' do

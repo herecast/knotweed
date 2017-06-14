@@ -120,6 +120,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
         @e_future = FactoryGirl.create(:event, start_date: 1.day.from_now).next_or_first_instance
         @e_current = FactoryGirl.create(:event, start_date: Date.current).next_or_first_instance
       end
+      
       context ' when start_date is passed without category' do
         it 'returns events on the start date' do
           get :index

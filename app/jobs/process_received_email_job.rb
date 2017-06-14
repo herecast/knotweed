@@ -21,7 +21,7 @@ class ProcessReceivedEmailJob < ActiveJob::Base
         else
           @email.result = "Cannot process, unknown purpose"
       end
-      @email.processed_at = Time.now
+      @email.processed_at = Time.zone.now
     rescue Exception => e
       @email.result = e.message + '\n' + e.backtrace.join('\n')
       Rails.logger.error(e.message)

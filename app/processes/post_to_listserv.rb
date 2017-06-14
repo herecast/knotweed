@@ -36,7 +36,7 @@ class PostToListserv
       NotificationService.posting_verification(content)
     end
 
-    content.update verification_email_sent_at: Time.now
+    content.update verification_email_sent_at: Time.zone.now
 
     if @listserv.forward_for_processing? && @listserv.forwarding_email
       forward_email

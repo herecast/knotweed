@@ -15,7 +15,7 @@ RSpec.describe VerifyAndUpdateListservContent do
 
     context 'When already verified' do
       before do
-        listserv_content.update verified_at: Time.now
+        listserv_content.update verified_at: Time.zone.now
       end
 
       it "raises ListservExceptions::AlreadyVerified" do
@@ -173,7 +173,7 @@ RSpec.describe VerifyAndUpdateListservContent do
 
       context 'Subscription was previously unsubscribed' do
         before do
-          subscription.update unsubscribed_at: Time.now
+          subscription.update unsubscribed_at: Time.zone.now
         end
 
         it 'resubscribes' do

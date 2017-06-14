@@ -10,7 +10,7 @@ module Api
           create_temp_password(user)
         end
 
-        user.confirmed_at = Time.now
+        user.confirmed_at = Time.zone.now
 
         user.location_id ||= default_location.id
 

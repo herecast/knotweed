@@ -15,8 +15,7 @@ RSpec.describe ListservContentsController, type: :controller do
       subject: 'New event!',
       body: 'A really long description',
       content_category_id: FactoryGirl.create(:content_category).id,
-      verified_at: Time.now,
-      content_id: FactoryGirl.create(:content).id,
+      verified_at: Time.zone.now, content_id: FactoryGirl.create(:content).id,
       listserv_id: FactoryGirl.create(:subtext_listserv).id
     }
   }

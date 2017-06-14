@@ -233,7 +233,7 @@ RSpec.describe "listserv contents endpoints", type: :request do
 
       context 'already verified' do
         before do
-          listserv_content.update verified_at: Time.now, verify_ip: remote_ip
+          listserv_content.update verified_at: Time.zone.now, verify_ip: remote_ip
         end
 
         it "displays correct You're all set message" do

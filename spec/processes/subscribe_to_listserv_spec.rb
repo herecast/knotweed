@@ -40,7 +40,7 @@ RSpec.describe SubscribeToListserv do
       context 'when already confirmed' do
         before do
           existing.update!(
-            confirmed_at: Time.now,
+            confirmed_at: Time.zone.now,
             confirm_ip: '1.1.1.1'
           )
         end
@@ -73,7 +73,7 @@ RSpec.describe SubscribeToListserv do
 
       context 'when previously unsubscribed;' do
         before do
-          existing.update_attribute(:unsubscribed_at, Time.now)
+          existing.update_attribute(:unsubscribed_at, Time.zone.now)
         end
 
         it 'changes unsubscribed status to subscribed' do

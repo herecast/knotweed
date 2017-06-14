@@ -439,8 +439,8 @@ RSpec.describe MailchimpService do
       let(:subscription) {
         FactoryGirl.create(:subscription,
          :confirmed,
-         unsubscribed_at: Time.now,
-         mc_unsubscribed_at: Time.now,
+         unsubscribed_at: Time.zone.now,
+         mc_unsubscribed_at: Time.zone.now,
          listserv: listserv,
          name: "Bobby Roberts"
         )

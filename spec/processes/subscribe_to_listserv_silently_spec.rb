@@ -55,7 +55,7 @@ RSpec.describe SubscribeToListservSilently do
 
       context 'when previosuly unsubscribed' do
         before do
-          existing.update_attribute(:unsubscribed_at, Time.now)
+          existing.update_attribute(:unsubscribed_at, Time.zone.now)
         end
 
         it 'changes unsubscribed status to subscribed' do

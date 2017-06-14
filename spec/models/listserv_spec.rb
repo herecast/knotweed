@@ -74,7 +74,7 @@ describe Listserv, :type => :model do
       ls = FactoryGirl.create :listserv
       subs = FactoryGirl.create_list :subscription, 3,
         listserv: ls,
-        confirmed_at: Time.now,
+        confirmed_at: Time.zone.now,
         confirm_ip: '1.1.1.1'
 
       expect(ls.active_subscriber_count).to eql subs.count
@@ -247,7 +247,7 @@ describe Listserv, :type => :model do
         listserv_with_day.update_attributes(digest_send_day: 1.day.ago.strftime('%A'))
         Timecop.freeze(Time.zone.now) do
           send_time = listserv_with_day.next_digest_send_time
-          test_time = Time.zone.parse('06:00') + 6.days
+          test_time = (Time.zone.parse('06:00') + 6.days)
           expect(send_time).to eq test_time
         end
       end

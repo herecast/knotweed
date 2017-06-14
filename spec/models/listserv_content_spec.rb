@@ -66,7 +66,7 @@ RSpec.describe ListservContent, type: :model do
     it{ is_expected.to have_db_column(:deleted_at) }
 
     context 'when deleted_at set' do
-      subject{ FactoryGirl.create :listserv_content, deleted_at: Time.now }
+      subject{ FactoryGirl.create :listserv_content, deleted_at: Time.zone.now }
 
       it 'does not return from active record queries' do
         expect(ListservContent.all.to_a).to_not include(subject)
