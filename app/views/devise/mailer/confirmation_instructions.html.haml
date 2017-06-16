@@ -1,7 +1,7 @@
 - if ConsumerApp.current.present?
   - url = ConsumerApp.current.uri + '/sign_up/confirm/' + @token
 - else
-  - url = confirmation_url(@resource, confirmation_token: @token)
+  - url = "http://#{ENV['DEFAULT_CONSUMER_HOST']}/sign_up/confirm/" + @token
 %p
   Dear #{@email},
 %p

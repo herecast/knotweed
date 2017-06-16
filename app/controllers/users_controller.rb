@@ -67,6 +67,7 @@ class UsersController < ApplicationController
 
   def new
     @user = User.new
+    @digests = Listserv.active
     authorize! :new, @user
   end
 
@@ -75,7 +76,7 @@ class UsersController < ApplicationController
     authorize! :create, @user
     process_user_roles
     process_user_organizations
-    if @user.save!
+    if @user.save
       flash[:notice] = "User created."
       redirect_to @user
     else

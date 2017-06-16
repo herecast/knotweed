@@ -278,7 +278,7 @@ describe UsersController, :type => :controller do
     context "when creation fails" do
       it "renders new page" do
         allow_any_instance_of(User).to receive(:save!).and_return false
-        subject
+        post :create, user: { name: 'Invalid User' }
         expect(response).to render_template 'new'
       end
     end

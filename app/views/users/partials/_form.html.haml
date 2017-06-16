@@ -2,17 +2,22 @@
   .row-fluid
     .span12
       = f.error_notification
+      - if @user.errors.any?
+        %ul
+        - @user.errors.full_messages.each do |error|
+          %li= error
   .row-fluid
     .span5
       %h4 Information
       = f.input :name
       = f.input :email
-      = f.input :password
+      - unless @user.persisted?
+        = f.input :password
       = f.input :archived, label: 'Archived?', hint: 'Note: archived users cannot log in.'
     .span5
       .row-fluid
         %h4 Location
-        = f.input :location, collection: Location.where(consumer_active: true), label: false, selected: @user.location.id
+        = f.input :location_id, collection: Location.where(consumer_active: true), label: false, selected: @user.location.present? ? @user.location.id : nil, include_blank: true
         %h4 Roles
         .row-fluid
           %input{ type: :checkbox, id: 'user_roles_admin', name: "user[roles][admin]", class: 'checkbox-control', checked: @user.roles.include?(Role.get('admin')) }
@@ -37,9 +42,10 @@
           - Organization.all.each do |o|
             %option{ value: "#{o.id}" } #{o.name}
   .row-fluid
-    %h4 Subscriptions
-    - @digests.each do |digest|
-      = check_box_tag 'subscribed_ids[]', digest.id, digest.id.in?(@user.active_listserv_subscription_ids), data: { disable_with: 'Subscribing...', remote: true, url: url_for(action: :update_subscription, user_id: @user.id, listserv_id: digest.id), method: "PUT" }
-      %p= digest.name
+    -if @user.persisted?
+      %h4 Subscriptions
+      - @digests.each do |digest|
+        = check_box_tag 'subscribed_ids[]', digest.id, digest.id.in?(@user.active_listserv_subscription_ids), data: { disable_with: 'Subscribing...', remote: true, url: url_for(action: :update_subscription, user_id: @user.id, listserv_id: digest.id), method: "PUT" }
+        %p= digest.name
   .form-actions
     = submit_tag nil, class: "btn btn-primary"
