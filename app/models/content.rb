@@ -50,6 +50,7 @@
 #  deleted_at                :datetime
 #  my_town_only              :boolean          default(FALSE)
 #  authors_is_created_by     :boolean          default(FALSE)
+#  subscriber_mc_identifier  :string
 #
 
 require 'fileutils'
@@ -173,6 +174,8 @@ class Content < ActiveRecord::Base
   # this has to be after save to accomodate the situation
   # where we are creating new content with no parent
   after_save :set_root_parent_id
+
+  after_update :update_subscriber_notification
 
   # channel relationships
   belongs_to :channel, polymorphic: true, inverse_of: :content
@@ -1303,4 +1306,13 @@ class Content < ActiveRecord::Base
     SplitContentForAdPlacement.call(sanitized_content)
   end
 
+  private
+
+  def update_subscriber_notification
+    # We only update subscriber notification campaigns for published news items.
+    return unless published
+    return unless root_content_category_id && root_content_category_id == ContentCategory.find_by_name('news')&.id
+
+    NotifySubscribersJob.perform_later(self.id)
+  end
 end
