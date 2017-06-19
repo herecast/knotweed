@@ -6,25 +6,12 @@ class NotifySubscribersJob < ApplicationJob
 
   ERB_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/notification.html.erb"
 
-  def perform(post_id)
-    post = Content.find_by(id: post_id)
-    return unless post
-
-    # If a notification has already been sent, the game is over, so do nothing.
-    return if notification_already_sent(post)
-
-    # In all cases, if the post already has a MailChimp notification campaign, cancel it.
-    # If we still need a campaign (decided below), we'll create a new one below.
-    if post.subscriber_mc_identifier.present?
-      SubscriptionsMailchimpClient.cancel_campaign(campaign_identifier: post.subscriber_mc_identifier)
-      post.update_attribute(:subscriber_mc_identifier, nil)  # No callbacks!
-    end
-
+  def perform(post)
     # Ignore posts that would produce malformed notifications.
-    return unless (title              = post.title.presence)
-    return unless (author_name        = post.author_name.presence || post.created_by&.name)
-    return unless (organization_name  = post.organization_name.presence)
-    return unless (mc_list_identifier = SubscriberListIdFetcher.new.call(post.organization).presence)
+    return unless title              = post.title.presence
+    return unless author_name        = post.created_by&.name.presence || post.author_name.presence
+    return unless organization_name  = post.organization_name.presence
+    return unless mc_list_identifier = SubscriberListIdFetcher.new.call(post.organization).presence
 
     # If this point is reached, we have a viable post about which we can notify subscribers.
     # We will send the notification as HTML.
@@ -36,32 +23,18 @@ class NotifySubscribersJob < ApplicationJob
 
     # Create a new MailChimp campaign for this mailing, then send the mailing to the subscribers in
     # the organization's list.
-    campaign_id = SubscriptionsMailchimpClient.create_campaign(list_identifier: mc_list_identifier,
-                                                               subject:         "See the new post from #{organization_name}",
-                                                               title:           title,
-                                                               from_name:       organization_name,
-                                                               reply_to:        "dailyUV@subtext.org")
-    SubscriptionsMailchimpClient.create_content(campaign_identifier: campaign_id,
-                                                html:                notification_html)
-
-    send_at = post.pubdate
-    # MailChimp is fussy about schedules being in the future.
-    if send_at && send_at > 2.minutes.from_now
-      SubscriptionsMailchimpClient.schedule_campaign(campaign_identifier: campaign_id, send_at: send_at)
-    else
-      SubscriptionsMailchimpClient.send_campaign(campaign_identifier: campaign_id)
-    end
-
-    post.update_attribute(:subscriber_mc_identifier, campaign_id)    # No callbacks!
+    mc_client = SubscriptionsMailchimpClient
+    campaign_id = mc_client.create_campaign(list_identifier: mc_list_identifier,
+                                            subject:         "See #{organization_name}'s new post",
+                                            title:           title,
+                                            from_name:       organization_name,
+                                            reply_to:        "dailyUV@subtext.org")
+    mc_client.create_content(campaign_identifier: campaign_id,
+                             html:                notification_html)
+    mc_client.send_campaign(campaign_identifier: campaign_id)
   end
 
   private
-
-  def notification_already_sent(post)
-    if post.subscriber_mc_identifier.present?
-      SubscriptionsMailchimpClient.get_status(campaign_identifier: post.subscriber_mc_identifier) =~ /sent/i
-    end
-  end
 
   def generate_html(title, author_name, organization_name, organization_url, post_url)
     @title, @author_name, @organization_name, @organization_url, @post_url =

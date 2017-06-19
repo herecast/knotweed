@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170614182607) do
+ActiveRecord::Schema.define(version: 20170517030035) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -346,7 +346,6 @@ ActiveRecord::Schema.define(version: 20170614182607) do
     t.datetime "deleted_at"
     t.boolean  "my_town_only",                          default: false
     t.boolean  "authors_is_created_by",                 default: false
-    t.string   "subscriber_mc_identifier"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree
