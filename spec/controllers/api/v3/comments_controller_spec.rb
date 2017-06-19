@@ -13,8 +13,8 @@ describe Api::V3::CommentsController, :type => :controller do
       before do
         user = FactoryGirl.create :user
         @content = FactoryGirl.create :content, created_by: user
-        @comment = FactoryGirl.create :comment 
-        @comment.content.update_attribute :parent_id, @content.id 
+        @comment = FactoryGirl.create :comment
+        @comment.content.update_attribute :parent_id, @content.id
       end
 
       subject { get :index, format: :json, content_id: @content.id }
@@ -40,7 +40,7 @@ describe Api::V3::CommentsController, :type => :controller do
         end
       end
     end
-    
+
     describe 'nested comments' do
       before do
         @event = FactoryGirl.create :event
@@ -57,7 +57,7 @@ describe Api::V3::CommentsController, :type => :controller do
                                             pubdate: Time.current,
                                             created_by: FactoryGirl.create(:user))
       end
-    
+
       subject! { get :index, format: :json, content_id: @event.content.id }
 
       it 'should return the results flattened and ordered' do
@@ -68,11 +68,11 @@ describe Api::V3::CommentsController, :type => :controller do
         expect(JSON.parse(response.body)).to eq(expected)
       end
     end
-    
+
     describe 'ordered by pubdate DESC' do
       before do
         @event = FactoryGirl.create :event
-        @comment1 = FactoryGirl.create :comment, pubdate: Time.parse('2014-01-01')  
+        @comment1 = FactoryGirl.create :comment, pubdate: Time.parse('2014-01-01')
         @comment1.content.update created_by: FactoryGirl.create(:user),
           parent: @event.content
         @comment2 = FactoryGirl.create :comment, pubdate: Time.parse('2014-02-01')
@@ -96,7 +96,7 @@ describe Api::V3::CommentsController, :type => :controller do
         google_logo_stub
         user = FactoryGirl.create :user, remote_avatar_url:  "https://www.google.com/images/srpr/logo11w.png"
         @content = FactoryGirl.create :content
-        @comment = FactoryGirl.create :comment 
+        @comment = FactoryGirl.create :comment
         @comment.content.update parent_id: @content.id, created_by: user
       end
 
@@ -126,7 +126,7 @@ describe Api::V3::CommentsController, :type => :controller do
         expect(Comment.count).to eq(0)
       end
     end
-    
+
     context 'with consumer_app / repository' do
       before do
         @repo = FactoryGirl.create :repository
@@ -158,7 +158,7 @@ describe Api::V3::CommentsController, :type => :controller do
     r[:user_id] = comment.created_by.id
     r[:user_name] = comment.created_by.name
     r[:user_image_url] = comment.created_by.try(:avatar).try(:url)
-    r[:pubdate] = comment.pubdate.iso8601
+    r[:published_at] = comment.pubdate.iso8601
     r[:parent_content_id] = comment.parent_id
     r[:content_id] = comment.content.id
     r.stringify_keys
