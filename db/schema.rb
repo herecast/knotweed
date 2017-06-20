@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170517030035) do
+ActiveRecord::Schema.define(version: 20170619185253) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -454,7 +454,7 @@ ActiveRecord::Schema.define(version: 20170517030035) do
     t.string   "event_type",            limit: 255
     t.integer  "venue_id",              limit: 8
     t.string   "cost",                  limit: 255
-    t.string   "event_url",             limit: 255
+    t.string   "event_url"
     t.string   "sponsor",               limit: 255
     t.string   "sponsor_url",           limit: 255
     t.text     "links"
