@@ -368,7 +368,7 @@ describe 'News Endpoints', type: :request do
 
     let!(:news) { FactoryGirl.create :content, created_by: user, organization: org, published: true, content_category: news_cat }
     let!(:deleted_news) { FactoryGirl.create :content, created_by: user, organization: org, published: true, content_category: news_cat, deleted_at: Time.current }
-    
+
     it 'returns news' do
       get '/api/v3/news', {}, headers
       ids = response_json[:news].map{|i| i[:id]}

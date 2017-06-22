@@ -273,4 +273,22 @@ describe User, :type => :model do
       expect(user1.inactive_message).to_not eq user2.inactive_message
     end
   end
+
+  describe '#location_id=' do
+    let(:location) { FactoryGirl.create :location }
+
+    context 'given a location id' do
+      it 'sets the correct location' do
+        subject.location_id = location.id
+        expect(subject.location).to eq location
+      end
+    end
+
+    context 'given a location slug' do
+      it 'sets the correct location' do
+        subject.location_id = location.slug
+        expect(subject.location).to eq location
+      end
+    end
+  end
 end

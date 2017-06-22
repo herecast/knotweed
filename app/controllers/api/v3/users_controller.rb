@@ -4,6 +4,7 @@ module Api
     class UsersController < ApiController
       
       before_filter :check_logged_in!, only: [:show, :update, :logout] 
+
       def show
         if @current_api_user.present? 
           if @requesting_app.present?
@@ -31,7 +32,7 @@ module Api
           @current_api_user.name = 
             params[:current_user][:name] if params[:current_user][:name].present?
           if params[:current_user][:location_id].present?
-            location = Location.find(params[:current_user][:location_id])
+            location = Location.find_by_slug_or_id(params[:current_user][:location_id])
             @current_api_user.location = location
           end
           @current_api_user.email =  params[:current_user][:email] if params[:current_user][:email].present?

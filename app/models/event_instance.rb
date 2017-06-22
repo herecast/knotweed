@@ -45,7 +45,8 @@ class EventInstance < ActiveRecord::Base
           content: strip_tags(event.content.raw_content),
           title: event.content.title,
           pubdate: event.content.pubdate,
-          published: event.content.published
+          published: event.content.published,
+          all_loc_ids: event.content.all_loc_ids
         })
       end
     end

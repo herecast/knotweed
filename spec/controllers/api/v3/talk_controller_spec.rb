@@ -9,63 +9,77 @@ describe Api::V3::TalkController, :type => :controller do
 
   describe 'GET index', elasticsearch: true do
     before do
-      @default_location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
+      @default_location = FactoryGirl.create :location,
+        id: Location::REGION_LOCATION_ID,
+        city: Location::DEFAULT_LOCATION
       @third_location = FactoryGirl.create :location, city: 'Different Again'
-      FactoryGirl.create_list :content, 3, content_category: @talk_cat,
+      FactoryGirl.create_list :content, 3, :talk,
         locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 5, content_category: @talk_cat,
+      FactoryGirl.create_list :content, 5, :talk,
         locations: [@other_location], published: true
-      FactoryGirl.create_list :content, 4, content_category: @talk_cat,
+      FactoryGirl.create_list :content, 4, :talk,
         locations: [@third_location], published: true
     end
 
     subject { get :index }
 
-    context 'not signed in' do
-      it 'should respond with 401 status' do
+    context 'with consumer app provided' do
+      before do
+        @consumer_app = FactoryGirl.create :consumer_app
+        # need to identify a talk item that will show up with the automatic location filter
+        @talk_item = @default_location.contents.where(content_category_id: @talk_cat).first
+        @org = @talk_item.organization
+        @consumer_app.organizations << @org
+      end
+
+      subject { get :index, consumer_app_uri: @consumer_app.uri }
+
+      it 'should filter by the app\'s organizations' do
+        subject
+        expect(assigns(:talk)[:results].to_a).to eq([@talk_item])
+      end
+    end
+
+    context 'no location specified' do
+      it 'should respond with 200 status' do
         subject
         expect(response.code).to eq('200')
       end
 
       it 'defaults to the Upper Valley location' do
         subject
+        expect(assigns(:talk)[:results].count).to eql 3
+
         assigns(:talk)[:results].each do |content|
           expect(content.locations.first).to eq @default_location
         end
       end
     end
 
-    context 'signed in' do
-      before do
-        api_authenticate user: @user
+    context 'location id specified' do
+      subject { get :index, location_id: @other_location.id }
+
+      it 'should respond with talk items in the location' do
+        subject
+        expect(assigns(:talk)[:results].count).to eql 5
+        results_locations = assigns(:talk)[:results].map{|c| c.locations}
+        expect(results_locations.all?{|locations| locations.include? @other_location}).to eq true
       end
 
-      context 'with consumer app provided' do
-        before do
-          @consumer_app = FactoryGirl.create :consumer_app
-          # need to identify a talk item that will show up with the automatic location filter
-          @talk_item = @other_location.contents.where(content_category_id: @talk_cat).first
-          @org = @talk_item.organization
-          @consumer_app.organizations << @org
-        end
+      context 'location id is a slug' do
+        subject { get :index, location_id: @other_location.slug }
 
-        subject { get :index, consumer_app_uri: @consumer_app.uri }
-
-        it 'should filter by the app\'s organizations' do
+        it 'should respond with talk items in the location' do
           subject
-          expect(assigns(:talk)[:results]).to eq([@talk_item])
+          expect(assigns(:talk)[:results].count).to eql 5
+          results_locations = assigns(:talk)[:results].map{|c| c.locations}
+          expect(results_locations.all?{|locations| locations.include? @other_location}).to eq true
         end
       end
 
       it 'has 200 status code' do
         subject
         expect(response.code).to eq('200')
-      end
-
-      it 'should respond with talk items in the user\'s location' do
-        subject
-        results_locations = assigns(:talk)[:results].map{|c| c.locations}
-        expect(results_locations.all?{|locations| locations.include? @user.location}).to eq true
       end
 
       it 'should not return talk items from default location' do
@@ -94,6 +108,7 @@ describe Api::V3::TalkController, :type => :controller do
         end
       end
     end
+
   end
 
   describe 'GET show' do

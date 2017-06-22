@@ -6,6 +6,7 @@
 #  zip             :string(255)
 #  city            :string(255)
 #  state           :string(255)
+#  slug            :string(255)
 #  county          :string(255)
 #  lat             :string(255)
 #  long            :string(255)
@@ -19,6 +20,41 @@ require 'spec_helper'
 
 describe Location, :type => :model do
   it {is_expected.to have_db_column(:is_region).of_type(:boolean)}
+
+  describe "#slug" do
+    it {is_expected.to have_db_column(:slug)}
+    it {is_expected.to validate_uniqueness_of(:slug)}
+
+    it 'is a dasherized city and state' do
+      subject.city = "Wateroo Otte-Witte"
+      subject.state = "UY"
+
+      expect(subject.slug).to eq 'wateroo-otte-witte-uy'
+    end
+
+    it 'replaces non alphanumeric characters' do
+      subject.state = "ID"
+      subject.city = "Coeur d'Alene"
+
+      expect(subject.slug).to eql 'coeur-d-alene-id'
+    end
+  end
+
+  describe '.find_by_slug_or_id' do
+    let!(:location) { FactoryGirl.create :location }
+
+    context 'given slug' do
+      it 'finds record' do
+        expect(Location.find_by_slug_or_id(location.slug)).to eq location
+      end
+    end
+
+    context 'given id' do
+      it 'finds record' do
+        expect(Location.find_by_slug_or_id(location.id)).to eq location
+      end
+    end
+  end
 
   describe 'non_region' do
     let!(:region) {
@@ -141,6 +177,74 @@ describe Location, :type => :model do
                                                 [location.lat.to_f, location.long.to_f])
       end
       expect(locations_by_distance).to eq location.closest
+    end
+  end
+
+  describe '.nearest_to_coords' do
+    context 'Given lat and lng' do
+      let(:lat) { 0 }
+      let(:lng) { 0 }
+
+      subject {
+        Location.nearest_to_coords(latitude: lat, longitude: lng)
+      }
+
+      context 'Locations exist varying distances away from coords' do
+        let!(:middle) { FactoryGirl.create :location, lat: 1.5, long: 1.5 }
+        let!(:nearest) { FactoryGirl.create :location, lat: 0.1, long: 1 }
+        let!(:furthest) { FactoryGirl.create :location, lat: 2, long: 2 }
+
+        it 'locations in order of nearest first' do
+          expect(subject.to_a).to match [nearest, middle, furthest]
+        end
+      end
+    end
+  end
+
+  describe '.nearest_to_ip' do
+    context 'Given an ip address' do
+      let(:ip) { '127.1.0.4' }
+      subject {
+        Location.nearest_to_ip(ip)
+      }
+
+      context 'Geocoder returns a result for IP' do
+        let(:result) { 
+          Geocoder::Result::Base.new(
+            latitude: 12.0012,
+            longitude: 11.001
+          )
+        }
+
+        before do
+          allow(Geocoder).to receive(:search).with(ip).and_return(
+            [result]
+          )
+        end
+
+        it "returns locations nearest to result coordinates" do
+          location = FactoryGirl.build(:location)
+
+          expect(Location).to receive(:nearest_to_coords).with(
+            latitude: result.latitude,
+            longitude: result.longitude
+          ).and_return([location])
+
+          expect(subject.to_a).to eql [location]
+        end
+      end
+
+      context 'Geocoder returns no result' do
+        before do
+          allow(Geocoder).to receive(:search).with(ip).and_return(
+            []
+          )
+        end
+
+        it 'returns empty array' do
+          expect(subject).to be_empty
+        end
+      end
     end
   end
 end

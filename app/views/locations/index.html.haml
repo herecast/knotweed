@@ -1,0 +1,47 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-search
+        Find Locations
+      .actions
+        %a.btn.box-remove.btn-mini.btn-link{ href: "#" }
+          %i.icon-remove
+        %a.btn.box-collapse.btn-mini.btn-link{ href: "#" }
+          %i
+    .box-content
+      = search_form_for @search, url: locations_path do |f|
+        .controls.controls-row
+          .field.span3
+            = f.label :city_cont, "City"
+            = f.text_field :city_cont, class: 'span12'
+          .field.span3
+            = f.label :state_cont, 'State'
+            = f.text_field :state_cont, class: 'span12'
+
+        .form-actions
+          = f.submit "Search", class: "btn btn-primary"
+          = f.submit "Reset", name: "reset", class: "btn"
+
+%table.table.table-striped.table-bordered.table-condensed.display#locations_table
+  %thead
+    %tr
+      %th City
+      %th State
+      %th Region?
+      %th Consumer Active?
+      %th Slug
+      %th
+  .span5
+    = page_entries_info @locations if @locations.present?
+    = paginate @locations, window: 2 if @locations.present?
+  %tbody
+    - @locations.each do |location|
+      %tr{ "data-id" => location.id }
+        %td= location.city
+        %td= location.state
+        %td= {true => 'Yes', false => 'No'}[location.is_region?]
+        %td= {true => 'Yes', false => 'No'}[location.consumer_active?]
+        %td= location.slug
+        %td.actions
+          = link_to "edit", edit_location_path(location), class: "btn btn-mini btn-warning"

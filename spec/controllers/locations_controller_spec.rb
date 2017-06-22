@@ -1,42 +1,121 @@
 require 'spec_helper'
 
-describe LocationsController, type: :controller do
+describe LocationsController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
+    @location = FactoryGirl.create :location
     sign_in @user
+    request.env['HTTP_REFERER'] = 'where_i_came_from'
   end
 
-  describe 'GET #edit' do
+  describe "GET 'index'" do
+    it 'returns http success' do
+      get 'index'
+      expect(response).to be_success
+    end
+
+    context 'when reset' do
+
+      subject { get :index, reset: true }
+
+      it "returns no locations" do
+        allow_any_instance_of(Ransack::Search).to receive_message_chain(:result, :page, :per, :accessible_by).and_return []
+        subject
+        expect(assigns(:locations)).to eq []
+      end
+    end
+
+    context 'when query' do
+      let(:query) { { q: 'query' } }
+      let(:results) { [FactoryGirl.build_stubbed(:location)] }
+
+      subject { get :index, query }
+
+      it "returns results" do
+        Ransack::Search.any_instance.stub_chain(:result, :page, :per, :accessible_by) { results }
+        subject
+        expect(assigns(:locations)).to eq results
+      end
+    end
+  end
+
+  describe "GET 'new'" do
     before do
-      @location = FactoryGirl.create :location
+      get 'new'
     end
 
-    subject { xhr :get, :edit, id: @location.id, format: :js }
-
-    it "should respond with 200 status code" do
-      subject
-      expect(response.code).to eq '200'
+    it 'returns http success' do
+      expect(response).to be_success
     end
-  end
 
-  describe 'GET #new' do
-
-    subject { xhr :get, :new, format: :js }
-
-    it "should respond with 200 status code" do
-      subject
-      expect(response.code).to eq '200'
+    it 'renders the new template' do
+      expect(response).to render_template 'locations/new'
     end
   end
 
-  describe 'POST #create' do
+  describe "POST #create" do
+    context "when creation succeeds" do
+      it "html: redirects to locations" do
+        post :create, location: { city: 'fake', state: 'fake' }
+        expect(response.code).to eq '302'
+        expect(response).to redirect_to locations_path
+      end
+    end
 
-    subject { xhr :post, :create, location: { zip: '03770' }, format: :js }
+    context "when creation fails" do
+      before do
+        allow_any_instance_of(Location).to receive(:save).and_return false
+      end
 
-    it "should create location" do
-      expect{ subject }.to change{ Location.count }.by 1
-      expect(response.code).to eq '200'
+      it "html: renders new page" do
+        post :create, location: { city: 'fake', state: 'fake' }
+        expect(response).to render_template 'new'
+      end
     end
   end
 
+  describe "GET 'edit'" do
+    before do
+      get 'edit', id: @location.id
+    end
+
+    it 'returns http success' do
+      expect(response).to be_success
+    end
+
+    it 'renders the edit template' do
+      expect(response).to render_template 'locations/edit'
+    end
+  end
+
+  describe "PUT 'update'" do
+
+    subject { put :update, { id: @location.to_param, location: params} }
+
+    describe 'with valid params' do
+      let(:params) { { city: 'Another string' } }
+
+      it 'updates the location' do
+        subject
+        @location.reload
+        expect(@location.city).to eq(params[:city])
+      end
+
+      it 'redirect to locations' do
+        subject
+        expect(response).to redirect_to(locations_path)
+      end
+
+      context "when update fails" do
+        before do
+          allow_any_instance_of(Location).to receive(:update_attributes).and_return false
+        end
+
+        it "html: renders edit page" do
+          subject
+          expect(response).to render_template 'edit'
+        end
+      end
+    end
+  end
 end

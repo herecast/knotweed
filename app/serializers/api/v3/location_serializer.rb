@@ -3,7 +3,10 @@ module Api
     class LocationSerializer < ActiveModel::Serializer
 
       attributes :id, :city, :state
-      
+
+      def id
+        object.slug
+      end
     end
   end
 end

@@ -135,6 +135,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
         end
       end
 
+
       describe "meta[:total]" do
 
         subject { get :index }
@@ -160,6 +161,46 @@ describe Api::V3::EventInstancesController, :type => :controller do
         subject
       end
     end
+
+    describe 'location_id filter' do
+      let(:location_1) { FactoryGirl.create :location }
+      let!(:event_location_1) {
+        FactoryGirl.create :event,
+          locations: [location_1],
+          start_date: 3.hours.from_now
+      }
+
+      let(:location_2) { FactoryGirl.create :location }
+      let!(:event_location_2) {
+        FactoryGirl.create :event,
+          locations: [location_2],
+          start_date: 3.hours.from_now
+      }
+
+      context 'location_id is not specified' do
+        subject { get :index }
+
+        it 'returns event instances from all locations' do
+          subject
+          expect(assigns(:event_instances)).to match [
+            event_location_1.event_instances,
+            event_location_2.event_instances
+          ].flatten
+        end
+      end
+
+      context 'location_id is specified' do
+        subject { get :index, location_id: location_1.slug }
+
+        it 'returns event instances from the specified location' do
+          subject
+          expect(assigns(:event_instances)).to match [
+            event_location_1.event_instances
+          ].flatten
+        end
+      end
+    end
+
 
     describe 'pagination' do
       before do

@@ -78,7 +78,8 @@ module Api
         end
 
         if params[:location_id].present?
-          opts[:where][:all_loc_ids] = params[:location_id].to_i
+          location = Location.find_by_slug_or_id params[:location_id]
+          opts[:where][:all_loc_ids] = location.id
         end
 
         opts[:where][:root_content_category_id] = ContentCategory.find_by_name('news').id

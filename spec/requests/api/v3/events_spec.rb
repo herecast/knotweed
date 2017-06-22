@@ -6,12 +6,19 @@ describe 'Events Endpoints', type: :request do
   let(:consumer_app) { FactoryGirl.create :consumer_app }
 
   describe 'events index', elasticsearch: true do
+    let!(:non_default_location_event) {
+      FactoryGirl.create :event,
+        locations: [FactoryGirl.create(:location)]
+    }
+
     before do
       @location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
-      @event = FactoryGirl.create :event
-      @event.content.locations << @location
+      @event = FactoryGirl.create :event, locations: [@location]
+
       ContentCategory.first.update_attribute(:name, 'event')
       consumer_app.organizations << @event.content.organization
+      consumer_app.organizations << non_default_location_event.content.organization
+      Content.searchkick_index.refresh
     end
 
     let(:headers) { {
@@ -20,9 +27,8 @@ describe 'Events Endpoints', type: :request do
     } }
 
     subject { get "/api/v3/events", {}, headers }
-    
+
     it "returns events" do
-      @event.content.reindex
       subject
       expect(response_json).to match(
         events: [
@@ -36,6 +42,8 @@ describe 'Events Endpoints', type: :request do
             organization_name: @event.content.organization.name,
             venue_name: @event.venue.name,
             venue_address: @event.venue.try(:address),
+            venue_city: @event.venue.city,
+            venue_state: @event.venue.state,
             published_at: @event.content.pubdate.try(:iso8601),
             starts_at: @event.event_instances.first.start_date.try(:iso8601),
             ends_at: @event.event_instances.first.end_date.try(:iso8601),
@@ -52,6 +60,41 @@ describe 'Events Endpoints', type: :request do
           })
         ]
       )
+    end
+
+    context 'without location_id specified' do
+      it 'returns events from default location' do
+        subject
+        event_ids = response_json[:events].map{|attrs| attrs[:id]}
+        expect(event_ids).to include @event.content.id
+        expect(event_ids).to_not include non_default_location_event.content.id
+      end
+    end
+
+    context 'with location_id specified' do
+      it 'returns events from specified location only' do
+        get "/api/v3/events", {
+          location_id: non_default_location_event.content.location_ids.first
+        }, headers
+
+        event_ids = response_json[:events].map{|attrs| attrs[:id]}
+
+        #expect(event_ids).to_not include @event.id
+        expect(event_ids).to include non_default_location_event.content.id
+      end
+
+      context 'location_id is a slug' do
+        it 'returns events from specified location only' do
+          get "/api/v3/events", {
+            location_id: non_default_location_event.content.locations.first.slug
+          }, headers
+
+          event_ids = response_json[:events].map{|attrs| attrs[:id]}
+
+          #expect(event_ids).to_not include @event.id
+          expect(event_ids).to include non_default_location_event.content.id
+        end
+      end
     end
   end
 

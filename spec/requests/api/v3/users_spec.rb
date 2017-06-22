@@ -8,6 +8,42 @@ RSpec.describe 'User API Endpoints', type: :request do
     }
   }
 
+  describe 'GET /api/v3/current_user' do
+    context 'signed in ' do
+      let(:user) { FactoryGirl.create :user }
+      let(:headers) {
+        json_headers['HTTP_AUTHORIZATION'] = \
+          "Token token=#{user.authentication_token}, \
+          email=#{user.email}"
+        json_headers
+      }
+
+      it 'returns json representation of signed in user' do
+        get '/api/v3/current_user', {}, headers
+
+        expect(response_json).to match({
+          current_user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            created_at: user.created_at.iso8601,
+            location_id: user.location.slug,
+            location: user.location.name,
+            listserv_id: an_instance_of(String).or(be_nil),
+            listserv_name: an_instance_of(String).or(be_nil),
+            test_group: an_instance_of(String).or(be_nil),
+            user_image_url: an_instance_of(String).or(be_nil),
+            events_ical_url: an_instance_of(String).or(be_nil),
+            skip_analytics: user.skip_analytics,
+            managed_organization_ids: an_instance_of(Array),
+            can_publish_news: user.can_publish_news?
+
+          }
+        })
+      end
+    end
+  end
+
   describe 'GET /api/v3/user/:email'do
     let(:user) { FactoryGirl.create :user }
 

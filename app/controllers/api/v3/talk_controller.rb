@@ -15,8 +15,8 @@ module Api
           opts[:where][:organization_id] = allowed_orgs.collect{|c| c.id}
         end
 
-        if @current_api_user
-          opts[:where][:all_loc_ids] = [@current_api_user.location_id]
+        if params[:location_id].present?
+          opts[:where][:all_loc_ids] = [Location.find_by_slug_or_id(params[:location_id]).id]
         else
           opts[:where][:all_loc_ids] = [Location::REGION_LOCATION_ID]
         end

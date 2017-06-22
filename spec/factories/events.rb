@@ -35,6 +35,7 @@ FactoryGirl.define do
       skip_event_instance false
       created_by nil
       published false
+      locations nil
     end
 
     content
@@ -58,6 +59,8 @@ FactoryGirl.define do
       end
       e.content.published = evaluator.published
       e.content.created_by = evaluator.created_by if evaluator.created_by.present?
+
+      e.content.locations = evaluator.locations if evaluator.locations
     end
 
   end

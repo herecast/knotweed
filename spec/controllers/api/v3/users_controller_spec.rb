@@ -79,7 +79,7 @@ describe Api::V3::UsersController, :type => :controller do
                         current_user: {
                           user_id: @user.id.to_s,
                           name: 'Skye Bill',
-                          location_id: location.id ,
+                          location_id: location.slug ,
                           email: 'skye@bill.com',
                           password: 'snever4aet3',
                           password_confirmation: 'snever4aet3',
@@ -93,7 +93,7 @@ describe Api::V3::UsersController, :type => :controller do
         it 'should update fields' do
           updated_user = assigns(:current_api_user)
           expect(updated_user.name).to eq @new_data[:current_user][:name]
-          expect(updated_user.location).to eq Location.find @new_data[:current_user][:location_id]
+          expect(updated_user.location).to eq Location.find_by_slug_or_id @new_data[:current_user][:location_id]
           expect(updated_user.public_id).to eq @new_data[:current_user][:public_id]
           
           expect(updated_user.unconfirmed_email).to eq @new_data[:current_user][:email]
@@ -393,14 +393,14 @@ describe Api::V3::UsersController, :type => :controller do
   end
 
   private
-    
+
     def expected_user_response(user)
        { current_user: {
           id: user.id,
           name: user.name,
           email: user.email,
           created_at: user.created_at.iso8601,
-          location_id: user.location.id,
+          location_id: user.location.slug,
           location: user.location.name,
           listserv_name: user.location.listserv.name,
           listserv_id: user.location.listserv.id,

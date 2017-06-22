@@ -35,6 +35,11 @@ describe Api::V3::NewsController, :type => :controller do
       expect(assigns(:news).select{|c| c.locations.include? @third_location }.count).to eq(assigns(:news).count)
     end
 
+    it 'should allow querying by location_id with a slug' do
+      get :index, format: :json, location_id: @third_location.slug
+      expect(assigns(:news).select{|c| c.locations.include? @third_location }.count).to eq(assigns(:news).count)
+    end
+
     context 'querying by organization name' do
       before do
         @org = FactoryGirl.create :organization

@@ -1,23 +1,48 @@
 class LocationsController < ApplicationController
+  load_and_authorize_resource
+
+  def index
+    # if posted, save to session
+    if params[:reset]
+      session[:locations_search] = nil
+    elsif params[:q].present?
+      session[:locations_search] = params[:q]
+    end
+
+    @search = Location.order('city ASC').ransack(session[:locations_search])
+
+    @locations = @search.result(distinct: true).page(params[:page]).per(100).accessible_by(current_ability)
+  end
 
   def edit
-    @location = Location.find(params[:id])
-    respond_to do |format|
-      format.js { render partial: "locations/form" }
-    end
+    render 'edit'
   end
 
   def new
-    respond_to do |format|
-      format.js { render partial: "locations/form" }
-    end
+    render 'new'
   end
 
   def create
-    @location = Location.new(location_params)
-    @location.save!
-    respond_to do |format|
-      format.js
+    if @location.save
+      respond_to do |format|
+        format.html { redirect_to locations_path }
+      end
+    else
+      respond_to do |format|
+        format.html { render 'new' }
+      end
+    end
+  end
+
+  def update
+    if @location.update_attributes(location_params)
+      respond_to do |format|
+        format.html { redirect_to locations_path }
+      end
+    else
+      respond_to do |format|
+        format.html { render 'edit' }
+      end
     end
   end
 
@@ -26,14 +51,14 @@ class LocationsController < ApplicationController
     def location_params
       params.require(:location).permit(
         :city,
-        :country,
-        :lat,
-        :long,
         :state,
         :zip,
-        :organization_ids,
-        :consumer_active
+        :slug,
+        :county,
+        :lat,
+        :long,
+        :consumer_active,
+        :is_region
       )
     end
-
 end

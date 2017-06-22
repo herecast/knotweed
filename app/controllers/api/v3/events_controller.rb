@@ -21,9 +21,12 @@ module Api
           opts[:where][:organization_id] = allowed_orgs.collect{|c| c.id}
         end
 
-        @default_location_id = Location.find_by_city(Location::DEFAULT_LOCATION).id
-        location_condition = @current_api_user.try(:location_id) || @default_location_id
-        opts[:where][:all_loc_ids] = [location_condition]
+        if params[:location_id].present?
+          opts[:where][:all_loc_ids] = [Location.find_by_slug_or_id(params[:location_id]).id]
+        else
+          @default_location_id = Location.find_by_city(Location::DEFAULT_LOCATION).id
+          opts[:where][:all_loc_ids] = [@default_location_id]
+        end
 
         query = params[:query].present? ? params[:query] : '*'
         @events = Content.search query, opts

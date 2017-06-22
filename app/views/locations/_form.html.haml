@@ -1,15 +1,17 @@
-= simple_form_for @location, remote: true do |f|
-  .row-fluid
-    = f.input :city, label: "City/Town", input_html: { class: "span11" }
+= simple_form_for @location do |f|
   .row-fluid
     .span6
+      = f.input :city, label: "City/Town"
       = f.input :state do
         = subregion_select :location, :state, Carmen::Country.coded('US')
-    .span6
+
       = f.input :zip, input_html: { data: { mask: "99999" } }
-  .row-fluid
-    .span6
       = f.input :lat, label: "Latitude"
-    .span6
       = f.input :long, label: "Longitude"
+
+    .span6
+      = f.input :slug
+      = f.input :is_region, label: "Region"
+      = f.input :consumer_active
+
   = f.submit nil, class: "btn btn-success"

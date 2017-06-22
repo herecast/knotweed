@@ -35,10 +35,10 @@ module Api
         # Ember app passes location_id 0 for Upper Valley and an empty location_id
         # for 'All Communities'
         # the .present? condition is to deal with the parameter being empty
-        if params[:location_id].present? and params[:location_id].to_i == 0
-          opts[:where][:all_loc_ids] = Location.find_by_city(Location::DEFAULT_LOCATION).id
+        if params[:location_id].present? and params[:location_id] == '0'
+          opts[:where][:all_loc_ids] = [Location.find_by_city(Location::DEFAULT_LOCATION).id]
         elsif params[:location_id].present?
-          opts[:where][:all_loc_ids] = params[:location_id].to_i
+          opts[:where][:all_loc_ids] = [Location.find_by_slug_or_id(params[:location_id]).id]
         end
 
         opts[:where][:root_content_category_id] = ContentCategory.find_by_name('market').id

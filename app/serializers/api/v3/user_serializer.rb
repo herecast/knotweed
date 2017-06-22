@@ -6,7 +6,7 @@ module Api
         :skip_analytics, :managed_organization_ids, :can_publish_news?
 
       def location_id
-        object.location.id
+        object.location.slug
       end
 
       def location

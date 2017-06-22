@@ -6,6 +6,11 @@ ENV['MAILCHIMP_API_HOST'] = "test.com"
 ENV['MAILCHIMP_API_KEY'] = "test.key"
 
 RSpec.describe MailchimpService do
+  before do
+    allow(Figaro.env).to receive(:mailchimp_api_host).and_return("test.com")
+    allow(Figaro.env).to receive(:mailchimp_api_key).and_return("test.key")
+  end
+
   subject { MailchimpService }
   let(:base_url) { Figaro.env.mailchimp_api_host.to_s + '/3.0' }
   let(:auth) { ["user", Figaro.env.mailchimp_api_key] }
@@ -1445,7 +1450,7 @@ RSpec.describe MailchimpService do
     }
 
     before do
-      allow(ENV).to receive(:[]).with('DEFAULT_HOST').and_return('http://test.com')
+      allow(Figaro.env).to receive('default_host').and_return('http://test.com')
     end
 
     subject { described_class.add_unsubscribe_hook(list_id) }
@@ -1475,7 +1480,7 @@ RSpec.describe MailchimpService do
               "Accept" => 'application/json'
             },
             body: {
-              url: "#{ENV['DEFAULT_HOST']}/api/v3/subscriptions/unsubscribe_from_mailchimp",
+              url: "#{Figaro.env.default_host}/api/v3/subscriptions/unsubscribe_from_mailchimp",
               events: {
                 subscribe: false,
                 unsubscribe: true,

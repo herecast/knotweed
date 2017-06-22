@@ -6,6 +6,7 @@
 #  zip             :string(255)
 #  city            :string(255)
 #  state           :string(255)
+#  slug            :string(255)
 #  county          :string(255)
 #  lat             :string(255)
 #  long            :string(255)
@@ -25,6 +26,9 @@ class Location < ActiveRecord::Base
   # coordinates for the center of the upper valley
   DEFAULT_LOCATION_COORDS = [43.645, -72.243]
 
+
+  validates :slug, uniqueness: true
+
   has_and_belongs_to_many :organizations
   has_and_belongs_to_many :listservs
   has_and_belongs_to_many :contents
@@ -33,8 +37,6 @@ class Location < ActiveRecord::Base
 
   has_and_belongs_to_many :parents, class_name: 'Location', foreign_key: :child_id, association_foreign_key: :parent_id
   has_and_belongs_to_many :children, class_name: 'Location', foreign_key: :parent_id, association_foreign_key: :child_id
-
-  default_scope { order(:city) }
 
   scope :consumer_active, -> { where consumer_active: true }
   scope :not_upper_valley, -> { where "city != 'Upper Valley'" }
@@ -49,7 +51,10 @@ class Location < ActiveRecord::Base
   def search_data
     {
       id: id,
-      location: { lat: lat, lon: long },
+      location: {
+        lat: lat,
+        lon: long,
+      },
       city: city,
       state: state,
       zip: zip
@@ -62,6 +67,39 @@ class Location < ActiveRecord::Base
 
   def name
     "#{try(:city)} #{try(:state)}"
+  end
+
+  def self.with_distance latitude:, longitude:
+    where('lat IS NOT NULL AND long IS NOT NULL')\
+    .where("lat <> '' AND long <> ''")\
+    .select(
+      "*,
+        ( 3959 * acos( cos( radians(#{sanitize(latitude)}) ) *
+            cos( radians( locations.lat::float8 ) ) * 
+          cos( radians( locations.long::float8 ) - radians(#{sanitize(longitude)}) ) +
+          sin( radians(#{sanitize(latitude)}) ) * 
+          sin( radians( locations.lat::float8 ) ) )
+        ) AS distance
+      "
+    )
+  end
+
+  def self.nearest_to_coords latitude:, longitude:
+    with_distance(
+      latitude: latitude,
+      longitude: longitude
+    )\
+    .order('distance ASC')
+  end
+
+  def self.nearest_to_ip ip
+    result = Geocoder.search(ip).first
+
+    if result
+      nearest_to_coords latitude: result.latitude, longitude: result.longitude
+    else
+      []
+    end
   end
 
   def self.get_ids_from_location_strings(loc_array)
@@ -98,6 +136,14 @@ class Location < ActiveRecord::Base
     Location.where(args).first
   end
 
+  def self.find_by_slug_or_id identifier
+    if identifier.to_s =~ /^\d+$/
+      find(identifier)
+    else
+      find_by(slug: identifier)
+    end
+  end
+
   #though the HABTM relationship allows for many listservs, in reality
   #each location will only have one listserv
   def listserv
@@ -120,5 +166,21 @@ class Location < ActiveRecord::Base
       }
     }
     Location.search('*', opts).results
+  end
+
+  def city=c
+    write_attribute :city, c
+    build_slug
+    c
+  end
+
+  def state=s
+    write_attribute :state, s
+    build_slug
+    s
+  end
+
+  def build_slug
+    self.slug= "#{city} #{state}".parameterize
   end
 end

@@ -61,4 +61,50 @@ describe Api::V3::LocationsController, :type => :controller do
       expect(assigns(:locations).count).to eq count
     end
   end
+
+  describe 'GET show' do
+    let(:location) { FactoryGirl.create :location }
+
+    subject! { get :show, id: location.id }
+
+    it 'has 200 status code' do
+      expect(response.code).to eq '200'
+    end
+
+    it 'responds with the location' do
+      expect(assigns(:location)).to eq location
+    end
+  end
+
+  describe 'GET locate' do
+    context 'When nearest location is not consumer_active = true' do
+      let!(:nearest) {
+        FactoryGirl.create :location,
+          consumer_active: false,
+          lat: 0.5,
+          long: 0.5
+      }
+      let!(:nearest_active) {
+        FactoryGirl.create :location,
+          consumer_active: true,
+          lat: 0.8,
+          long: 0.8
+      }
+      let!(:furthest) {
+        FactoryGirl.create :location,
+          consumer_active: true,
+          lat: 1.2,
+          long: 1.2
+      }
+
+      subject {
+        get :locate, coords: "0,0"
+      }
+
+      it 'returns nearest consumer_active location' do
+        subject
+        expect(assigns(:location)).to eql nearest_active
+      end
+    end
+  end
 end

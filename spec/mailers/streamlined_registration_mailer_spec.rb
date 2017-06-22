@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe StreamlinedRegistrationMailer do
   describe 'confirmation_instructions' do
     before do
-      ENV.stub(:[]).with("DEFAULT_CONSUMER_HOST").and_return("test.localhost")
+      allow(Figaro.env).to receive("default_consumer_host").and_return("test.localhost")
       @password = Devise.friendly_token(8)
       location = FactoryGirl.create :location, city: "Hartford"
       @user = User.new(name: Faker::Name.name, 
@@ -29,7 +29,7 @@ RSpec.describe StreamlinedRegistrationMailer do
       expect(@mail.body.include?(@password)).to eq(true)
       expect(@mail.body.include?(@user.instance_variable_get(:@raw_confirmation_token))).to eq(true)
       expect(@mail.to.first).to eq @user.email
-      expect(@mail.body.include?("http://#{ENV["DEFAULT_CONSUMER_HOST"]}/sign_up/confirm/#{@token}"))
+      expect(@mail.body.include?("http://#{Figaro.env.default_consumer_host}/sign_up/confirm/#{@token}"))
     end
 
   end

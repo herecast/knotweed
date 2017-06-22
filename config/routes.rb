@@ -65,7 +65,7 @@ Knotweed::Application.routes.draw do
     resources :content_sets
     resources :contacts, only: [:create, :update, :edit, :destroy]
     resources :issues, only: [:new, :create, :update, :edit, :destroy, :show]
-    resources :locations, only: [:create, :new, :edit]
+    resources :locations, except: [:destroy]
     resources :business_locations
     resources :events, except: [:show, :destroy]
     resources :event_categories, except: :show
@@ -152,8 +152,11 @@ Knotweed::Application.routes.draw do
       get '/venues', to: 'business_locations#index', as: :venues
       get '/venue_locations', to: 'business_locations#index', as: :venue_locations,
         defaults: { autocomplete: true, max_results: 5 }
+
       get '/locations/:id/closest', to: 'locations#closest', as: :closest
-      get '/locations', to: 'locations#index', as: :locations
+      get '/locations/locate', to: 'locations#locate'
+      resources :locations, only: [:index, :show]
+
       resources 'contents', only: [:index]
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics

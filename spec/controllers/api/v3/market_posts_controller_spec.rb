@@ -35,6 +35,13 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
     it 'should allow querying by location_id' do
       get :index, format: :json, location_id: @third_location.id
+      expect(assigns(:market_posts).count).to eql 1
+      expect(assigns(:market_posts).select{|c| c.locations.include? @third_location }.count).to eq(assigns(:market_posts).count)
+    end
+
+    it 'should allow querying by location_id as slug' do
+      get :index, format: :json, location_id: @third_location.slug
+      expect(assigns(:market_posts).count).to eql 1
       expect(assigns(:market_posts).select{|c| c.locations.include? @third_location }.count).to eq(assigns(:market_posts).count)
     end
 

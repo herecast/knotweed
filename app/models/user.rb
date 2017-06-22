@@ -149,6 +149,15 @@ class User < ActiveRecord::Base
     archived? ? "The user account #{email} has been deactivated." : super
   end
 
+  def location_id=lid
+    unless lid.nil?
+      loc=Location.find_by_slug_or_id(lid)
+      super loc.id
+    else
+      super lid
+    end
+  end
+
   private
 
     def generate_authentication_token

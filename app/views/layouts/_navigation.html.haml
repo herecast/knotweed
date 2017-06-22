@@ -110,6 +110,22 @@
           = link_to new_business_location_path do
             %i.icon-plus
             %span Create New
+- if can? :read, Location
+  %li
+    = link_to locations_path do
+      %i.icon-map-marker
+      %span Locations
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "locations" ? "in" : "" }" }
+      %li{ class: current_page?(locations_path) ? "active" : "" }
+        = link_to locations_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, Location
+        %li{ class: current_page?(new_location_path) ? "active" : "" }
+          = link_to new_location_path do
+            %i.icon-plus
+            %span Create New
 - if can? :read, BusinessProfile
   %li
     = link_to business_profiles_path do

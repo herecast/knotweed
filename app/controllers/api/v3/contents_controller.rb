@@ -118,12 +118,6 @@ module Api
           end
           sort_parts.join(',').gsub('channel_type', 'root_category.name')
         end
-
-        def new_content_search(opts)
-          opts[:where][:all_loc_ids] << @default_location_id
-          Content.search '*', opts
-        end
-
     end
   end
 end

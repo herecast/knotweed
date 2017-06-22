@@ -3,10 +3,10 @@ module Api
     class ContentSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :image_url, :author_id, :author_name, :content_type,
-        :organization_id, :organization_name, :venue_name, :venue_address,
+        :organization_id, :organization_name,
         :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count,
         :comment_count, :parent_content_id, :content_id, :parent_content_type,
-        :event_instance_id, :parent_event_instance_id, :registration_deadline,
+        
         :created_at, :updated_at
 
       def content_id
@@ -36,6 +36,18 @@ module Api
       def venue_name
         if object.channel_type == 'Event'
           object.channel.try(:venue).try(:name)
+        end
+      end
+
+      def venue_city
+        if object.channel_type == 'Event'
+          object.channel.try(:venue).try(:city)
+        end
+      end
+
+      def venue_state
+        if object.channel_type == 'Event'
+          object.channel.try(:venue).try(:state)
         end
       end
 
@@ -117,6 +129,28 @@ module Api
         if object.channel_type == 'Event'
           object.channel.try(:registration_deadline)
         end
+      end
+
+      def filter(keys)
+
+        if isEvent
+          return keys | %w(
+            event_instance_id venue_name venue_address
+            venue_city venue_state parent_event_instance_id
+            registration_deadline
+          )
+        end
+
+        keys
+      end
+
+      private
+
+      def isEvent
+        (object.channel_type == "Event") || (
+          object.parent.present? and
+          object.parent.channel_type == 'Event'
+        )
       end
     end
   end

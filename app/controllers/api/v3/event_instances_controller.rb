@@ -12,6 +12,11 @@ module Api
         @opts[:where][:published] = 1 if @repository.present?
         set_date_range
 
+        if params[:location_id].present?
+          location = Location.find_by_slug_or_id(params[:location_id])
+          @opts[:where][:all_loc_ids] = [location.id]
+        end
+
         if params[:category].present? && params[:category] != 'Everything'
           @event_instances = GetEventsByCategories.call(params[:category], @opts)
         else

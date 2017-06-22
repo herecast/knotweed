@@ -9,10 +9,9 @@ describe Api::V3::ContentSerializer do
 
   context 'fields' do
     [:id, :title, :image_url, :author_id, :author_name, :content_type,
-          :organization_id, :organization_name, :venue_name, :venue_address,
+          :organization_id, :organization_name,
           :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count, 
-          :comment_count,:parent_content_id, :content_id, :parent_content_type, 
-          :event_instance_id,:parent_event_instance_id, :registration_deadline
+          :comment_count,:parent_content_id, :content_id, :parent_content_type,
     ].each do |k|
       it "has field: #{k.to_s}" do
         expect(serialized_object).to have_key(k.to_s)
