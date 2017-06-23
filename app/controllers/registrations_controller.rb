@@ -10,6 +10,8 @@ class RegistrationsController < Devise::RegistrationsController
         }
         # temporary solution to support running UX1 and UX2 simultaneously
         # can be removed when we moonlight UX1!
+        location = Location.find_by(city: 'Hartford', state: 'VT')
+        user.location = location
         user.nda_agreed_at = Time.zone.now
         user.agreed_to_nda = true
         user.save

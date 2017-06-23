@@ -5,6 +5,7 @@ Knotweed::Application.routes.draw do
   devise_scope :user  do
     post '/api/v3/users/sign_in', to: 'sessions#create'
     post '/api/v3/users/sign_up', to: 'registrations#create'
+    post '/api/v3/users/oauth', to: 'sessions#oauth'
     post '/api/v3/password_resets', to: 'api/v3/passwords#create'
     put '/api/v3/password_resets', to: 'api/v3/passwords#update'
 

@@ -41,6 +41,7 @@ class User < ActiveRecord::Base
 
   has_many :notifiers
   has_many :subscriptions
+  has_many :social_logins
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
   mount_uploader :avatar, ImageUploader
@@ -155,6 +156,30 @@ class User < ActiveRecord::Base
       super loc.id
     else
       super lid
+    end
+  end
+  
+  def self.from_facebook_oauth(auth)
+    location = Location.find_by(city: 'Hartford', state: 'VT')
+    extra_info = {}
+    user = User.find_by_email(auth[:email])
+    if user.nil?
+      user = User.new(email: auth[:email], 
+                      password: Devise.friendly_token[0,20],
+                      name: auth[:name],
+                      nda_agreed_at: Time.zone.now,
+                      agreed_to_nda: true,
+                      location: location)
+      if user.valid?
+        user.skip_confirmation!
+        SocialLogin.create(provider: auth[:provider], uid: auth[:id], extra_info: auth[:extra_info], user: user)
+      end
+      user
+    else
+      social_login = SocialLogin.find_or_create_by(user_id: user.id, provider: auth[:provider], uid: auth[:id])
+      #this should capture any updates the user makes to their additional info.
+      social_login.update_attributes(extra_info: auth[:extra_info])
+      user
     end
   end
 

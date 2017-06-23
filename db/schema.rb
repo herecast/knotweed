@@ -990,6 +990,17 @@ ActiveRecord::Schema.define(version: 20170619185253) do
   add_index "sign_in_tokens", ["token"], name: "index_sign_in_tokens_on_token", using: :btree
   add_index "sign_in_tokens", ["user_id"], name: "index_sign_in_tokens_on_user_id", using: :btree
 
+  create_table "social_logins", force: :cascade do |t|
+    t.integer  "user_id",    null: false
+    t.string   "provider",   null: false
+    t.string   "uid",        null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.json     "extra_info"
+  end
+
+  add_index "social_logins", ["user_id"], name: "index_social_logins_on_user_id", using: :btree
+
   create_table "subscriptions", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "listserv_id"
@@ -1097,6 +1108,7 @@ ActiveRecord::Schema.define(version: 20170619185253) do
   add_foreign_key "listserv_contents", "users"
   add_foreign_key "listserv_digests", "listservs"
   add_foreign_key "sign_in_tokens", "users"
+  add_foreign_key "social_logins", "users"
   add_foreign_key "subscriptions", "listservs"
   add_foreign_key "subscriptions", "users"
 end

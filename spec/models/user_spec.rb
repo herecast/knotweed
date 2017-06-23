@@ -290,5 +290,83 @@ describe User, :type => :model do
         expect(subject.location).to eq location
       end
     end
+  
+  describe '.from_facebook_oauth' do
+    let!(:default_location) { FactoryGirl.create :location, city: 'Hartford', state: 'VT' }
+    let(:facebook_response) {
+      {
+        email: "facebook_user@mail.com",
+        name: "John Smith",
+        verified: true,
+        age_range: { min: 21 },
+        timezone: -6,
+        gender: "male",
+        id: "1234567",
+        provider: "facebook",
+        extra_info: { verified: true,
+                      age_range: {  min: 21 },
+                      time_zone: -6,
+                      gender: "male" }
+      }
+    }
+    
+    subject { User.from_facebook_auth(facebook_response) }
+
+    context 'when the user already exists' do
+      let!(:existing_facebook_user) { FactoryGirl.create :user }
+      
+      it 'returns the correct user' do
+        auth = facebook_response.merge(email: existing_facebook_user.email)
+        expect(User.from_facebook_oauth(auth)).to eq existing_facebook_user
+      end
+
+      context 'when the user has not logged in with facebook before' do
+        let!(:existing_user) { FactoryGirl.create :user }
+        before do
+          @auth = facebook_response.merge(email: existing_user.email)
+        end
+        
+        it 'returns the correct user' do
+          expect(User.from_facebook_oauth(@auth)).to eq existing_user
+        end
+
+        it 'creates a SocialLogin record for the user' do
+          user = User.from_facebook_oauth(@auth)
+          expect(user.social_logins.first).to_not be_nil
+        end
+
+        it 'sets the correct fields on the SocialLogin record' do
+          user = User.from_facebook_oauth(@auth)
+          social_login = user.social_logins.first
+          expect(social_login.provider).to eq facebook_response[:provider]
+          expect(social_login.uid).to eq facebook_response[:id]
+          expect(social_login.uid).to eq facebook_response[:id]
+          # extra_info
+          expect(social_login.extra_info).to eq facebook_response[:extra_info].deep_stringify_keys
+        end
+      end
+    end
+
+    context 'when the user does not have an existing account' do
+      
+      it 'creates a new user account' do
+        expect{ User.from_facebook_oauth(facebook_response) }.to change{ User.count }.by(1)
+      end
+
+      it 'sets the correct info for the new user' do
+        user = User.from_facebook_oauth(facebook_response)
+        expect(user.name).to eq facebook_response[:name]
+        expect(user.email).to eq facebook_response[:email]
+        expect(user.nda_agreed_at).to_not be_nil
+        expect(user.agreed_to_nda).to eq true
+        expect(user.location).to eq default_location
+      end
+      
+      it 'confirms the new users account' do
+        user = User.from_facebook_oauth(facebook_response)
+        expect(user.confirmed?).to eq true
+      end
+    end
   end
+end
 end

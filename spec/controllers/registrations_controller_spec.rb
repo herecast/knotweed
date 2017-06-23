@@ -3,6 +3,7 @@ require 'spec_helper'
 # we override Devise registrations controller to support UX2
 # and need to test the custom behavior.
 describe RegistrationsController, :type => :controller do
+  let!(:default_location) { FactoryGirl.create :location, city: 'Hartford', state: 'VT' }
   before do
     @request.env["devise.mapping"] = Devise.mappings[:user]
     user = FactoryGirl.build :user
@@ -58,6 +59,11 @@ describe RegistrationsController, :type => :controller do
         subject
         expect(user.confirmation_token).to_not be_nil
         expect(user.confirmation_sent_at).to_not be_nil
+      end
+
+      it 'should set a default location for the user' do
+        subject
+        expect(user.location).to eq default_location
       end
     end
 

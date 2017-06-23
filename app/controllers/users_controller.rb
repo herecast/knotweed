@@ -12,7 +12,7 @@ class UsersController < ApplicationController
 
     @search = User.ransack(session[:users_search])
     @search.sorts = 'created_at desc'
-    @users = @search.result(distinct: true).page(params[:page]).per(25)
+    @users = @search.result.page(params[:page]).per(25)
   end
 
   def show

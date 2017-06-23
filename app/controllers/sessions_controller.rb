@@ -32,4 +32,23 @@ class SessionsController < Devise::SessionsController
       }, status: 422
     end
   end
+  
+  def oauth
+    user_info = FacebookService.get_user_info(params[:accessToken])
+    fb_user_info = ActiveSupport::HashWithIndifferentAccess.new(user_info)
+    fb_user_info[:extra_info] = {}
+    fb_user_info[:provider] = "facebook"
+    fb_user_info[:extra_info][:verified] = fb_user_info[:verified]
+    fb_user_info[:extra_info][:age_range] = fb_user_info[:age_range]
+    fb_user_info[:extra_info][:time_zone] = fb_user_info[:timezone]
+    fb_user_info[:extra_info][:gender] = fb_user_info[:gender]
+    user = User.from_facebook_oauth(fb_user_info)
+    if user.present? && user.persisted?
+      sign_in user
+      render json: { email: user.email, token: user.authentication_token }, status: :created
+    else
+      missing_fields = user.errors.keys.map(&:to_s).join(",")
+      render json: { error: "There was a problem signing in", missing_fields: missing_fields }, status: 422
+    end
+  end
 end
