@@ -12,11 +12,11 @@ describe Api::V3::NewsController, :type => :controller do
       @other_location = FactoryGirl.create :location, city: 'Another City'
       @third_location = FactoryGirl.create :location, city: 'Different Again'
       @user = FactoryGirl.create :user, location: @other_location
-      FactoryGirl.create :content, content_category: @news_cat, 
+      FactoryGirl.create :content, content_category: @news_cat,
         locations: [@default_location], published: true, organization: @original_organization
-      FactoryGirl.create :content, content_category: @news_cat, 
+      FactoryGirl.create :content, content_category: @news_cat,
         locations: [@other_location], published: true, organization: @original_organization
-      FactoryGirl.create :content, content_category: @news_cat, 
+      FactoryGirl.create :content, content_category: @news_cat,
         locations: [@third_location], published: true, organization: @original_organization
       @consumer_app = FactoryGirl.create :consumer_app
       @consumer_app.organizations << @original_organization
@@ -217,10 +217,10 @@ describe Api::V3::NewsController, :type => :controller do
 
       it 'should respond with nothing' do
         get :show, id: @c.id
-        expect(response.code).to eq '204'
+        expect(response.code).to eq '404'
       end
     end
-        
+
 
     context 'when requesting app has matching organizations' do
       before do
@@ -246,7 +246,7 @@ describe Api::V3::NewsController, :type => :controller do
         api_authenticate consumer_app: @consumer_app
       end
 
-      it { subject; expect(response.status).to eq 204 }
+      it { subject; expect(response.status).to eq 404 }
     end
   end
 end

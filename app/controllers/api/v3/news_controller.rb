@@ -102,7 +102,7 @@ module Api
         # filter out orgs that don't belong with this app
         # have to still allow drafts that haven't selected their org yet, though
         if @requesting_app.present? and @news.organization.present?
-          head :no_content and return unless @requesting_app.organizations.include?(@news.organization)
+          return render json: {}, :status => 404 unless @requesting_app.organizations.include?(@news.organization)
         end
 
         if @current_api_user.present?
@@ -112,7 +112,7 @@ module Api
         end
 
         if @news.try(:root_content_category).try(:name) != 'news'
-          head :no_content
+          render json: {}, :status => 404
         else
           render json: @news, serializer: DetailedNewsSerializer,
             admin_content_url: url, root: 'news', context: { current_ability: current_ability }
