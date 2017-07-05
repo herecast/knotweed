@@ -49,6 +49,7 @@
 #  deleted_at                :datetime
 #  my_town_only              :boolean          default(FALSE)
 #  authors_is_created_by     :boolean          default(FALSE)
+#  subscriber_mc_identifier  :string
 #
 
 require 'spec_helper'
@@ -313,6 +314,42 @@ describe Content, :type => :model do
       @content.repositories << @prod_repo
       @content.reload
       expect(@content.published).to eq(true)
+    end
+
+    it "sends notifications for news published to the prod repo" do
+      org = FactoryGirl.create(:organization, name: Content::ORGANIZATIONS_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.first)
+      @content = FactoryGirl.create(:content, :news, organization: org)
+      expect(@content.send(:outside_subscriber_notification_blast_radius?)).to eq false
+      expect(NotifySubscribersJob).to receive(:perform_later)
+      @content.repositories << @prod_repo
+    end
+
+    context "organization is outside of blast radius" do
+      it "does not send notification to subscribers" do
+        @content = FactoryGirl.create(:content, :news)
+        expect(@content.send(:outside_subscriber_notification_blast_radius?)).to eq true
+        expect(NotifySubscribersJob).to_not receive(:perform_later)
+        @content.repositories << @prod_repo
+      end
+    end
+  end
+
+  context "a published news item" do
+    before do
+      @prod_repo = FactoryGirl.create(:repository)
+      stub_const("Repository::PRODUCTION_REPOSITORY_ID", @prod_repo.id)
+      org = FactoryGirl.create(:organization, name: Content::ORGANIZATIONS_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.first)
+      @content = FactoryGirl.create(:content, :news, organization: org)
+      expect(@content.send(:outside_subscriber_notification_blast_radius?)).to eq false
+      @content.repositories << @prod_repo
+      expect(@content.reload.published).to be_truthy
+    end
+
+    describe "changing the title" do
+      it "updates the subscriber notification" do
+        expect(NotifySubscribersJob).to receive(:perform_later)
+        @content.update(title: "#{@content.title}-new!")
+      end
     end
   end
 

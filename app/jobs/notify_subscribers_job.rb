@@ -1,4 +1,6 @@
-# Sends email notifications (via MailChimp) about published posts to organization subscribers.
+# Synchronizes the given post's MailChimp email notification campaign with the post.
+# The synchronization may involve creating a campaign for the give post, updating an unsent campaign, or
+# halting the post's campaign.
 
 class NotifySubscribersJob < ApplicationJob
   include ContentsHelper
@@ -6,39 +8,90 @@ class NotifySubscribersJob < ApplicationJob
 
   ERB_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/notification.html.erb"
 
-  def perform(post)
-    # Ignore posts that would produce malformed notifications.
-    return unless title              = post.title.presence
-    return unless author_name        = post.created_by&.name.presence || post.author_name.presence
-    return unless organization_name  = post.organization_name.presence
-    return unless mc_list_identifier = SubscriberListIdFetcher.new.call(post.organization).presence
+  def perform(post_id)
+    post = Content.find_by(id: post_id)
+    return unless post
 
-    # If this point is reached, we have a viable post about which we can notify subscribers.
-    # We will send the notification as HTML.
-    notification_html = generate_html(title,
-                                      author_name,
-                                      organization_name,
-                                      url_for_consumer_app("/organizations/#{post.organization_id}"),
-                                      url_for_consumer_app(ux2_content_path(post)))
+    # If a notification campaign has already been sent, the game is over, so do nothing.
+    return if notification_already_sent(post)
 
-    # Create a new MailChimp campaign for this mailing, then send the mailing to the subscribers in
-    # the organization's list.
-    mc_client = SubscriptionsMailchimpClient
-    campaign_id = mc_client.create_campaign(list_identifier: mc_list_identifier,
-                                            subject:         "See #{organization_name}'s new post",
-                                            title:           title,
-                                            from_name:       organization_name,
-                                            reply_to:        "dailyUV@subtext.org")
-    mc_client.create_content(campaign_identifier: campaign_id,
-                             html:                notification_html)
-    mc_client.send_campaign(campaign_identifier: campaign_id)
+    if needs_new_campaign(post)
+      mc_list_identifier = SubscriberListIdFetcher.new.call(post.organization).presence
+      if mc_list_identifier
+        campaign_id = SubscriptionsMailchimpClient.create_campaign(list_identifier: mc_list_identifier,
+                                                                   subject:         campaign_subject(post),
+                                                                   title:           post.title,
+                                                                   from_name:       post.organization_name,
+                                                                   reply_to:        campaign_reply_to)
+        post.update_attribute(:subscriber_mc_identifier, campaign_id.presence)
+      end
+    end
+
+    synchronize_campaign(post)
   end
 
   private
 
-  def generate_html(title, author_name, organization_name, organization_url, post_url)
-    @title, @author_name, @organization_name, @organization_url, @post_url =
-      title, author_name, organization_name, organization_url, post_url
+  def campaign_reply_to
+    "dailyUV@subtext.org"
+  end
+
+  def campaign_subject(post)
+    "See the new post from #{post.organization_name}"
+  end
+
+  def needs_new_campaign(post)
+    # If the post already has a campaign, we never create a new one.  We only ever modify the existing one.
+    return false if post.subscriber_mc_identifier
+
+    # Cancelled posts don't need a new campaign.
+    return false unless post.pubdate
+
+    # Deleted posts don't need a new campaign.
+    return false if post.deleted_at
+
+    true
+  end
+
+  def synchronize_campaign(post)
+    return unless post.subscriber_mc_identifier
+
+    # Synchronize the campaign's HTML content, settings, and schedule with the post.
+    notification_html = generate_html(post.title,
+                                      post.organization_name,
+                                      url_for_consumer_app("/organizations/#{post.organization_id}"),
+                                      url_for_consumer_app(ux2_content_path(post)))
+    SubscriptionsMailchimpClient.update_campaign(campaign_identifier: post.subscriber_mc_identifier,
+                                                 subject:         campaign_subject(post),
+                                                 title:           post.title,
+                                                 from_name:       post.organization_name,
+                                                 reply_to:        campaign_reply_to)
+    SubscriptionsMailchimpClient.set_content(campaign_identifier: post.subscriber_mc_identifier,
+                                             html:                notification_html)
+
+    # Synchronize the campaign's schedule with the post.  If the post is no longer scheduled for publishing,
+    # only unschedule the campaign.
+    SubscriptionsMailchimpClient.unschedule_campaign(campaign_identifier: post.subscriber_mc_identifier)
+    if !post.deleted_at && post.pubdate
+      # MailChimp is fussy about schedules being on the quarter-hour (e.g. hh:00, hh:15, hh:30, or hh:45).
+      send_at = next_quarter_hour(post.pubdate)
+      SubscriptionsMailchimpClient.schedule_campaign(campaign_identifier: post.subscriber_mc_identifier, send_at: send_at)
+    end
+  end
+
+  def next_quarter_hour(time)
+    Time.at(((time - 1.second).to_f / 15.minutes.to_i).floor * 15.minutes.to_i) + 15.minutes
+  end
+
+  def notification_already_sent(post)
+    if post.subscriber_mc_identifier.present?
+      SubscriptionsMailchimpClient.get_status(campaign_identifier: post.subscriber_mc_identifier) =~ /sent/i
+    end
+  end
+
+  def generate_html(title, organization_name, organization_url, post_url)
+    @title, @organization_name, @organization_url, @post_url =
+      title, organization_name, organization_url, post_url
     ERB.new(File.read(ERB_TEMPLATE_PATH)).result(binding)
   end
 end

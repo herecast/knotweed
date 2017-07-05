@@ -50,6 +50,7 @@
 #  deleted_at                :datetime
 #  my_town_only              :boolean          default(FALSE)
 #  authors_is_created_by     :boolean          default(FALSE)
+#  subscriber_mc_identifier  :string
 #
 
 require 'fileutils'
@@ -173,6 +174,8 @@ class Content < ActiveRecord::Base
   # this has to be after save to accomodate the situation
   # where we are creating new content with no parent
   after_save :set_root_parent_id
+
+  after_save :update_subscriber_notification
 
   # channel relationships
   belongs_to :channel, polymorphic: true, inverse_of: :content
@@ -1303,4 +1306,42 @@ class Content < ActiveRecord::Base
     SplitContentForAdPlacement.call(sanitized_content)
   end
 
+  private
+
+  def update_subscriber_notification
+    # Limit the blast radius.
+    return if outside_subscriber_notification_blast_radius?
+
+    # Currently, we only notify news subscribers.
+    return unless root_content_category_id && root_content_category_id == ContentCategory.find_by_name('news')&.id
+
+    # We only update subscriber notification campaigns for published items.
+    return unless published
+
+    # We only need to synchronize the MailChimp notification email campaign if specific fields have changed.
+    monitored_fields = %w[
+      deleted_at
+      pubdate
+      published
+      title
+    ]
+    return if (self.changed & monitored_fields).empty?
+
+    # If this point is reached, this +Content+ item has changed in a way that requires its MailChimp notification
+    # email campaign to either be created, upddated, or deleted.
+    # This job will synchronize the current state of this +Content+ item's notification email campaign with the
+    # current state of this +Content+ item.
+    NotifySubscribersJob.perform_later(self.id)
+
+    true
+  end
+
+  ORGANIZATIONS_FOR_AUTOMATIC_SUBSCRIBER_ALERTS = [
+    "Things That Interest Us",
+    "Woodstock Town News",
+  ]
+
+  def outside_subscriber_notification_blast_radius?
+    !ORGANIZATIONS_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.include?(organization_name)
+  end
 end

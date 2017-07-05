@@ -84,6 +84,39 @@ RSpec.describe SubscriptionsMailchimpClient do
     end
   end
 
+  describe "#update_campaign" do
+    let!(:apistub) {
+      stub_request(:patch,
+                   "#{endpoint}/campaigns/qwer"
+      ).with(
+        basic_auth: auth,
+        headers:    {
+          "Content-Type" => 'application/json',
+          "Accept"       => 'application/json'
+        },
+        body:       {
+                      settings:   {
+                        subject_line: "sub",
+                        title:        "tle",
+                        from_name:    "from",
+                        reply_to:     "reply",
+                      },
+                    }.to_json
+      ).to_return(body: {
+                          id: 'abc'
+                        }.to_json
+      )
+    }
+
+    it "executes without exception" do
+      expect{subject.update_campaign(campaign_identifier: "qwer",
+                                     subject:             "sub",
+                                     title:               "tle",
+                                     from_name:           "from",
+                                     reply_to:            "reply")}.not_to raise_error
+    end
+  end
+
   describe "#create_content" do
     let!(:apistub) {
       stub_request(:put,
@@ -101,14 +134,36 @@ RSpec.describe SubscriptionsMailchimpClient do
     }
 
     it "is successful" do
-      expect(subject.create_content(campaign_identifier: 'qwer', html: "<p></p>")).to be_success
+      expect(subject.set_content(campaign_identifier: 'qwer', html: "<p></p>")).to be_success
     end
   end
 
-  describe "#send_campaign" do
+  describe "#schedule_campaign" do
+    let(:send_at)  { "2017-02-04T19:13:00+00:00" }
     let!(:apistub) {
       stub_request(:post,
-                   "#{endpoint}/campaigns/qwer/actions/send"
+                   "#{endpoint}/campaigns/qwer/actions/schedule"
+      ).with(
+        basic_auth: auth,
+        headers:    {
+          "Content-Type" => 'application/json',
+          "Accept"       => 'application/json'
+        },
+        body:       {
+                      schedule_time: send_at,
+                    }.to_json
+      )
+    }
+
+    it "is successful" do
+      expect(subject.schedule_campaign(campaign_identifier: 'qwer', send_at: Time.zone.parse(send_at))).to be_success
+    end
+  end
+
+  describe "#unschedule_campaign" do
+    let!(:apistub) {
+      stub_request(:post,
+                   "#{endpoint}/campaigns/qwer/actions/unschedule"
       ).with(
         basic_auth: auth,
         headers:    {
@@ -119,7 +174,25 @@ RSpec.describe SubscriptionsMailchimpClient do
     }
 
     it "is successful" do
-      expect(subject.send_campaign(campaign_identifier: 'qwer')).to be_success
+      expect(subject.unschedule_campaign(campaign_identifier: 'qwer')).to be_success
+    end
+  end
+
+  describe "#get_status" do
+    let!(:apistub) {
+      stub_request(:get,
+                   "#{endpoint}/campaigns/qwer"
+      ).with(
+        basic_auth: auth,
+        headers:    {
+          "Content-Type" => 'application/json',
+          "Accept"       => 'application/json'
+        }
+      ).to_return(body: {status: 'this is a status'}.to_json)
+    }
+
+    it "is successful" do
+      expect(subject.get_status(campaign_identifier: 'qwer')).to eq 'this is a status'
     end
   end
 end

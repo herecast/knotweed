@@ -346,6 +346,7 @@ ActiveRecord::Schema.define(version: 20170619185253) do
     t.datetime "deleted_at"
     t.boolean  "my_town_only",                          default: false
     t.boolean  "authors_is_created_by",                 default: false
+    t.string   "subscriber_mc_identifier"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree
