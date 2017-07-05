@@ -5,8 +5,9 @@ RSpec.describe 'Content Impressions' do
     let(:remote_ip) { '1.1.1.1' }
     let(:user_agent) { "AmigaVoyager/3.4.4 (MorphOS/PPC native)" }
 
+    let(:location) { FactoryGirl.create :location, slug: 'newton-nh' }
     let(:context_data) {
-      { client_id: '1222kk898943' }
+      { client_id: '1222kk898943', location_id: location.slug }
     }
 
     let(:consumer_app) {
@@ -107,7 +108,8 @@ RSpec.describe 'Content Impressions' do
           a_hash_including({
             user_agent: user_agent,
             user_ip: remote_ip,
-            client_id: context_data[:client_id]
+            client_id: context_data[:client_id],
+            location_id: location.id
           })
         )
 
@@ -132,7 +134,8 @@ RSpec.describe 'Content Impressions' do
               user_agent: user_agent,
               user_ip: remote_ip,
               user_id: user.id,
-              client_id: context_data[:client_id]
+              client_id: context_data[:client_id],
+              location_id: location.id
             })
           )
 

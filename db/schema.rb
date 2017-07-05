@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170619185253) do
+ActiveRecord::Schema.define(version: 20170629151258) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -251,9 +251,10 @@ ActiveRecord::Schema.define(version: 20170619185253) do
     t.integer  "user_id"
     t.string   "user_agent"
     t.string   "user_ip"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
     t.string   "client_id"
+    t.integer  "location_id"
   end
 
   create_table "content_promotion_banner_loads", force: :cascade do |t|
@@ -822,6 +823,7 @@ ActiveRecord::Schema.define(version: 20170619185253) do
     t.string   "user_ip"
     t.string   "page_placement"
     t.string   "client_id"
+    t.integer  "location_id"
   end
 
   add_index "promotion_banner_metrics", ["created_at"], name: "index_promotion_banner_metrics_on_created_at", using: :btree

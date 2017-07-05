@@ -15,6 +15,9 @@
 require 'rails_helper'
 
 RSpec.describe ContentMetric, type: :model do
+  it { is_expected.to belong_to :location }
+  it { is_expected.to belong_to :user }
+
   context "when no content_id present" do
     it "is not valid" do
       content_metric = FactoryGirl.build :content_metric, content_id: nil

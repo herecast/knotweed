@@ -24,6 +24,7 @@ class RecordPromotionBannerMetric
         event_type:          @opts[:event_type],
         user_id:             @opts[:user_id],
         client_id:           @opts[:client_id],
+        location_id:         @opts[:location_id],
         promotion_banner_id: @opts[:promotion_banner_id],
         select_score:        @opts[:select_score],
         select_method:       @opts[:select_method],

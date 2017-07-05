@@ -202,13 +202,19 @@ describe Api::V3::PromotionBannersController, :type => :controller do
   end
 
   describe 'post track_impression' do
+    let(:location) { FactoryGirl.create :location }
     before do
       @banner = FactoryGirl.create :promotion_banner
       @content = FactoryGirl.create :content
     end
 
-    subject { post :track_impression, id: @banner.id, client_id: "ClientID!",
-               format: :json }
+    subject {
+      post :track_impression,
+        id: @banner.id,
+        client_id: "ClientID!",
+        location_id: location.slug,
+        format: :json
+    }
 
     it 'should respond with 200' do
       subject
@@ -220,7 +226,8 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         'RecordPromotionBannerMetric', "call", hash_including({
           event_type: "impression",
           promotion_banner_id: @banner.id,
-          client_id: 'ClientID!'
+          client_id: 'ClientID!',
+          location_id: location.id
         })
       )
       subject
@@ -242,14 +249,21 @@ describe Api::V3::PromotionBannersController, :type => :controller do
   end
 
   describe 'post track_click' do
+    let(:location) { FactoryGirl.create :location }
     before do
       @banner = FactoryGirl.create :promotion_banner
       @content = FactoryGirl.create :content
       @content.promotion_banners = [@banner]
     end
 
-    subject { post :track_click, promotion_banner_id: @banner.id,
-               content_id: @content.id, client_id: 'ClientId@', format: :json }
+    subject {
+      post :track_click,
+        promotion_banner_id: @banner.id,
+        content_id: @content.id,
+        client_id: 'ClientId@',
+        location_id: location.slug,
+        format: :json
+    }
 
     it 'should respond with 200' do
       subject
@@ -262,6 +276,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
           event_type: 'click',
           user_id: nil,
           client_id: 'ClientId@',
+          location_id: location.id,
           promotion_banner_id: @banner.id,
           current_date: Date.current.to_s,
           content_id: @content.id

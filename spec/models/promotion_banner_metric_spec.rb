@@ -19,6 +19,8 @@
 require 'rails_helper'
 
 RSpec.describe PromotionBannerMetric, type: :model do
+  it { is_expected.to belong_to :user }
+  it { is_expected.to belong_to :location }
 
   context "when no promotion_banner_id" do
     it "PromotionBannerMetric is not valid" do

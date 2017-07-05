@@ -153,7 +153,7 @@ module Api
 
       def record_promotion_banner_metric(promotion_banner_packet, event_type)
         unless analytics_blocked?
-          BackgroundJob.perform_later('RecordPromotionBannerMetric', 'call',
+          data = {
             content_id:          params[:content_id],
             event_type:          event_type,
             current_date:        Date.current.to_s,
@@ -167,7 +167,14 @@ module Api
             gtm_blocked:         params[:gtm_blocked] == true,
             page_placement:      params[:page_placement],
             page_url:            params[:page_url]
-          )
+          }
+
+          if params[:location_id].present?
+            location = Location.find_by_slug_or_id(params[:location_id])
+            data[:location_id] = location.try(:id)
+          end
+
+          BackgroundJob.perform_later('RecordPromotionBannerMetric', 'call', data)
         end
       end
 
