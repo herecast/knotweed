@@ -1337,6 +1337,7 @@ class Content < ActiveRecord::Base
   end
 
   ORGANIZATIONS_FOR_AUTOMATIC_SUBSCRIBER_ALERTS = [
+    "Rauner Library Blog",
     "Things That Interest Us",
     "Woodstock Town News",
   ]
