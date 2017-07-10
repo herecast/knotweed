@@ -40,6 +40,9 @@
           .field.span2
             = f.label :contact_email_cont, "Email"
             = f.text_field :contact_email_cont, class: "span12"
+          .field.span2
+            = f.label :sold_eq, "Sold?"
+            = f.check_box :sold_eq
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
@@ -51,6 +54,7 @@
       %th Authors
       %th Locations
       %th Email
+      %th Sold?
       %th Pubdate
       %th
   .span5
@@ -74,6 +78,7 @@
             = c.contact_email
           - else
             = c.created_by.email
+        %td= c.sold
         %td= c.pubdate.try(:strftime, "%Y-%m-%d")
         %td.actions
           = link_to "edit", edit_market_post_path(id: c.id, index: i, page: params[:page]), class: "btn btn-mini btn-warning"

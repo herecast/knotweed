@@ -6,6 +6,7 @@ class MarketPostsController < ApplicationController
       session[:market_posts_search] = nil
     elsif params[:q].present?
       params[:q][:content_id_in] = format_id_params if params[:q][:content_id_in].present?
+      params[:q].each { |key, val| params[:q][key] = '' if val == '0' }
       session[:market_posts_search] = params[:q]
     end
 
