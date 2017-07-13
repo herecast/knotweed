@@ -11,11 +11,11 @@ describe Api::V3::MarketPostsController, :type => :controller do
       @other_location = FactoryGirl.create :location, city: 'Another City'
       @third_location = FactoryGirl.create :location, city: 'Different Again'
       @user = FactoryGirl.create :user, location: @other_location
-      @default_location_content = FactoryGirl.create :content, content_category: @market_cat, 
+      @default_location_content = FactoryGirl.create :content, content_category: @market_cat,
         locations: [@default_location], published: true
-      FactoryGirl.create :content, content_category: @market_cat, 
+      FactoryGirl.create :content, content_category: @market_cat,
         locations: [@other_location], published: true
-      FactoryGirl.create :content, content_category: @market_cat, 
+      FactoryGirl.create :content, content_category: @market_cat,
         locations: [@third_location], published: true
       @old_post = FactoryGirl.create :content, content_category: @market_cat,
         locations: [@default_location], published: true, pubdate: 40.days.ago
@@ -126,7 +126,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
           subject
           expect(assigns(:market_posts)).to include(@mp1.content)
         end
-        
+
         it 'should not return my_town_only content other locations' do
           subject
           expect(assigns(:market_posts)).to_not include(@mp2.content)
@@ -172,19 +172,19 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
       it 'should be true for the content author' do
         api_authenticate user: @user
-        subject 
+        subject
         expect(can_edit).to eq(true)
       end
 
       it 'should false for a different user' do
         @different_user = FactoryGirl.create :user
         api_authenticate user: @different_user
-        subject 
+        subject
         expect(can_edit).to eq(false)
       end
 
       it 'should false when a user is not logged in' do
-        subject 
+        subject
         expect(can_edit).to eq(false)
       end
     end
@@ -224,50 +224,13 @@ describe Api::V3::MarketPostsController, :type => :controller do
         expect(response.code).to eq '204'
       end
     end
-       
-  end
-
-  describe 'GET contact' do
-    describe 'if content isn\'t market' do
-      before do
-        @content = FactoryGirl.create :content
-      end
-
-      it 'should respond with nothing' do
-        get :contact, id: @content.id
-        expect(response.code).to eq('204')
-      end
-    end
-
-    describe 'for market category content' do
-      before do
-        @content = FactoryGirl.create :content, content_category: @market_cat
-      end
-
-      it 'has 200 status code' do
-        get :contact, id: @content.id
-        expect(response.code).to eq '200'
-      end
-    end
-
-    describe 'for a market channel content' do
-      before do
-        post_content = FactoryGirl.create :content, content_category: @market_cat
-        @market_post = FactoryGirl.create :market_post, content: post_content
-      end
-
-      it 'has 200 status code' do
-        get :contact, id: @market_post.content.id
-        expect(response.code).to eq '200'
-      end
-    end
   end
 
   describe 'PUT update' do
     before do
       @user = FactoryGirl.create :user
       @market_post = FactoryGirl.create :market_post, created_by: @user
-      @attrs_for_update = { 
+      @attrs_for_update = {
         title: 'This is a changed title',
         price: 'New low price',
         content: 'Hoth'
@@ -284,7 +247,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
     end
 
     context 'signed in, and allowed to update' do
-      # TODO: once we have created_by, add specs to ensure that only the user who 
+      # TODO: once we have created_by, add specs to ensure that only the user who
       # created the object can update it.
       before do
         api_authenticate user: @user
@@ -357,7 +320,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
         before do
           @content =  FactoryGirl.create :content
         end
-      
+
         context 'when updating a market post with associated content' do
           it 'updates the market post to sold' do
             put :update, id: @market_post.content.id, market_post: @attrs_for_update.merge(sold: true)

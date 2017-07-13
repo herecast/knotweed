@@ -15,7 +15,11 @@ module Api
       end
 
       def contact_email
-        object.try(:channel).try(:contact_email)
+        if object.try(:channel).is_a?(MarketPost)
+          object.try(:channel).try(:contact_email)
+        else
+          object.authoremail
+        end
       end
 
       def preferred_contact_method

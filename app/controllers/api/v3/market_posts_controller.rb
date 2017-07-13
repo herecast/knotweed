@@ -118,30 +118,6 @@ module Api
         end
       end
 
-      def contact
-        @market_post = Content.find params[:id]
-
-        if @market_post.try(:root_content_category).try(:name) != 'market'
-          head :no_content
-        elsif @market_post.try(:channel).is_a?(MarketPost)
-          render json: {
-            market_post: {
-              id: @market_post.channel_id,
-              contact_email: @market_post.channel.contact_email,
-              contact_phone: @market_post.channel.contact_phone
-            }
-          }
-        else
-          render json: {
-            market_post: {
-              id: @market_post.id,
-              contact_email: @market_post.authoremail,
-              contact_phone: nil
-            }
-          }
-        end
-      end
-
       private
 
         def market_post_params
