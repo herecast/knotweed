@@ -51,6 +51,8 @@ class OrganizationsController < ApplicationController
         redirect_to organizations_path
       end
     else
+      @users = User.all
+      get_managers
       render action: "edit"
     end
   end
@@ -89,6 +91,8 @@ class OrganizationsController < ApplicationController
         end
       end
     else
+      @users = User.all
+      get_managers
       render "new"
     end
   end
@@ -122,7 +126,7 @@ class OrganizationsController < ApplicationController
 
     def organization_params
       params.require(:organization).permit(
-        :name, :logo, :logo_cache, :remove_logo, :organization_id,
+        :name, :logo, :logo_cache, :remove_logo, :organization_id, :twitter_handle,
         :website, :notes, :images_attributes, :parent_id, :location_ids,
         :remote_logo_url, :contact_ids, :org_type,
         :profile_image, :remote_profile_image_url, :remove_profile_image, :profile_image_cache,

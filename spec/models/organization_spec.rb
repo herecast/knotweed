@@ -38,6 +38,22 @@ describe Organization, :type => :model do
     @organization = FactoryGirl.create(:organization)
   end
 
+  describe "validations" do
+    context "when Twitter handle does not begin with @" do
+      it "is not valid" do
+        organization = FactoryGirl.build :organization, twitter_handle: 'jango_fett'
+        expect(organization).not_to be_valid
+      end
+    end
+
+    context "when Twitter handle begins with @" do
+      it "is valid" do
+        organization = FactoryGirl.build :organization, twitter_handle: '@jango_fett'
+        expect(organization).to be_valid
+      end
+    end
+  end
+
   describe "::parent_pubs" do
     before do
       @parent_org_1 = FactoryGirl.create :organization

@@ -24,7 +24,8 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           can_publish_ads: organization.can_publish_ads,
           profile_ad_override: organization.profile_ad_override,
           profile_image_url: organization.profile_image.url,
-          background_image_url: organization.background_image.url
+          background_image_url: organization.background_image.url,
+          twitter_handle: organization.twitter_handle
         }
       )
     end

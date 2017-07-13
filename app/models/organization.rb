@@ -94,6 +94,7 @@ class Organization < ActiveRecord::Base
   validates_uniqueness_of :name
   validates_presence_of :name
   validates :logo, :image_minimum_size => true
+  validate :twitter_handle_format
 
   def self.parent_pubs
     ids = self.where("parent_id IS NOT NULL").select(:parent_id, :name).uniq.map { |p| p.parent_id }
@@ -122,4 +123,14 @@ class Organization < ActiveRecord::Base
   end
 
   ransacker :include_child_organizations
+
+  private
+
+    def twitter_handle_format
+      twitter_handle_regex = /^@([A-Za-z0-9_]+)$/
+      unless twitter_handle.blank? || !!twitter_handle_regex.match(twitter_handle)
+        errors.add(:twitter_handle, "Twitter handle must start with @. The handle may have letters, numbers and underscores, but no spaces.")
+      end
+    end
+
 end

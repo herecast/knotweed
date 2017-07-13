@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170629151258) do
+ActiveRecord::Schema.define(version: 20170711193603) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -788,6 +788,7 @@ ActiveRecord::Schema.define(version: 20170629151258) do
     t.string   "profile_image",       limit: 255
     t.string   "background_image",    limit: 255
     t.string   "profile_ad_override", limit: 255
+    t.string   "twitter_handle"
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
