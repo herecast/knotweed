@@ -83,5 +83,45 @@ RSpec.describe NotifySubscribersJob, type: :job do
         NotifySubscribersJob.new.perform(post.id)
       end
     end
+
+    context "a post whose pubdate is in the future" do
+      before do
+        post.update_attribute(:pubdate, 1.day.from_now)
+      end
+
+      it "schedules the campaign for a little bit past the pubdate" do
+        expect(SubscriptionsMailchimpClient).to receive(:create_campaign).and_return("some-id")
+        expect(SubscriptionsMailchimpClient).to receive(:update_campaign)
+        expect(SubscriptionsMailchimpClient).to receive(:set_content)
+        expect(SubscriptionsMailchimpClient).to receive(:unschedule_campaign)
+
+        scheduled_time = nil
+        allow(SubscriptionsMailchimpClient).to receive(:schedule_campaign) do |args|
+          scheduled_time = args[:send_at]
+        end
+        NotifySubscribersJob.new.perform(post.id)
+        expect((scheduled_time - post.pubdate) < 30.minutes)
+      end
+    end
+
+    context "a post whose pubdate is in the past" do
+      before do
+        post.update_attribute(:pubdate, 1.day.ago)
+      end
+
+      it "schedules the campaign for a little bit in the future" do
+        expect(SubscriptionsMailchimpClient).to receive(:create_campaign).and_return("some-id")
+        expect(SubscriptionsMailchimpClient).to receive(:update_campaign)
+        expect(SubscriptionsMailchimpClient).to receive(:set_content)
+        expect(SubscriptionsMailchimpClient).to receive(:unschedule_campaign)
+
+        scheduled_time = nil
+        allow(SubscriptionsMailchimpClient).to receive(:schedule_campaign) do |args|
+          scheduled_time = args[:send_at]
+        end
+        NotifySubscribersJob.new.perform(post.id)
+        expect((scheduled_time - Time.now) < 30.minutes)
+      end
+    end
   end
 end

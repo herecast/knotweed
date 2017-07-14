@@ -73,8 +73,12 @@ class NotifySubscribersJob < ApplicationJob
     # only unschedule the campaign.
     SubscriptionsMailchimpClient.unschedule_campaign(campaign_identifier: post.subscriber_mc_identifier)
     if !post.deleted_at && post.pubdate
+      # MailChimp is fussy about campaign only being scheduled for future times.
+      # In case their clock is off a little, pad the time with a couple minutes.
+      future_campaign_send_at = [post.pubdate, Time.now].max + 2.minutes
+
       # MailChimp is fussy about schedules being on the quarter-hour (e.g. hh:00, hh:15, hh:30, or hh:45).
-      send_at = next_quarter_hour(post.pubdate)
+      send_at = next_quarter_hour(future_campaign_send_at)
       SubscriptionsMailchimpClient.schedule_campaign(campaign_identifier: post.subscriber_mc_identifier, send_at: send_at)
     end
   end
