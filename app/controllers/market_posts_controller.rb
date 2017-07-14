@@ -105,7 +105,20 @@ class MarketPostsController < ApplicationController
         :longitude,
         :status,
         :preferred_contact_method,
-        content_attributes: [ :id, :content_category_id, :category_reviewed, :organization_id, :subtitle, :authors, :copyright, :pubdate, :url, :title, :raw_content, images_attributes: [ :id, :image ] ]
+        content_attributes: [
+          :id,
+          :content_category_id,
+          :category_reviewed,
+          :organization_id,
+          :subtitle,
+          :authors,
+          :copyright,
+          :pubdate,
+          :url,
+          :title,
+          :raw_content,
+          organization_ids: [],
+          images_attributes: [ :id, :image ] ]
       )
     end
 

@@ -14,3 +14,7 @@ register_temp_users:
   cron: "0 0 * * *"
   class: 'RegisterTempUsersJob'
   description: 'Registers users captures in TempUserCapture table'
+make_sunsetted_content_private:
+  cron: "1 0 * * *"
+  class: 'MakeSunsettedContentPrivate'
+  description: 'Make sunsetted Content private'

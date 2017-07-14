@@ -348,6 +348,8 @@ ActiveRecord::Schema.define(version: 20170711193603) do
     t.boolean  "my_town_only",                          default: false
     t.boolean  "authors_is_created_by",                 default: false
     t.string   "subscriber_mc_identifier"
+    t.boolean  "biz_feed_public"
+    t.datetime "sunset_date"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree
@@ -631,9 +633,9 @@ ActiveRecord::Schema.define(version: 20170711193603) do
     t.string   "mc_segment_id"
     t.string   "title"
     t.string   "preheader"
+    t.integer  "promotion_ids",        default: [],              array: true
     t.integer  "content_ids",                                    array: true
     t.integer  "listserv_content_ids",                           array: true
-    t.integer  "promotion_ids",        default: [],              array: true
   end
 
   add_index "listserv_digests", ["listserv_id"], name: "index_listserv_digests_on_listserv_id", using: :btree
@@ -663,13 +665,13 @@ ActiveRecord::Schema.define(version: 20170711193603) do
     t.text     "digest_query"
     t.string   "template"
     t.string   "sponsored_by"
+    t.boolean  "display_subscribe",                       default: false
     t.string   "digest_subject"
     t.string   "digest_preheader"
-    t.boolean  "display_subscribe",                       default: false
     t.string   "list_type",                               default: "custom_list"
     t.string   "sender_name"
-    t.string   "admin_email"
     t.integer  "promotion_ids",                           default: [],                                        array: true
+    t.string   "admin_email"
     t.string   "forwarding_email"
     t.boolean  "forward_for_processing",                  default: false
     t.integer  "post_threshold",                          default: 0
@@ -763,6 +765,14 @@ ActiveRecord::Schema.define(version: 20170711193603) do
     t.datetime "updated_at",                  null: false
   end
 
+  create_table "organization_content_tags", force: :cascade do |t|
+    t.integer "organization_id"
+    t.integer "content_id"
+  end
+
+  add_index "organization_content_tags", ["content_id"], name: "index_organization_content_tags_on_content_id", using: :btree
+  add_index "organization_content_tags", ["organization_id"], name: "index_organization_content_tags_on_organization_id", using: :btree
+
   create_table "organizations", id: :bigserial, force: :cascade do |t|
     t.string   "name",                limit: 255
     t.datetime "created_at",                                      null: false
@@ -789,6 +799,7 @@ ActiveRecord::Schema.define(version: 20170711193603) do
     t.string   "background_image",    limit: 255
     t.string   "profile_ad_override", limit: 255
     t.string   "twitter_handle"
+    t.jsonb    "custom_links"
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
@@ -889,6 +900,7 @@ ActiveRecord::Schema.define(version: 20170711193603) do
     t.boolean  "paid",                        default: false
     t.integer  "created_by",      limit: 8
     t.integer  "updated_by",      limit: 8
+    t.string   "share_platform"
   end
 
   add_index "promotions", ["content_id"], name: "idx_16765_index_promotions_on_content_id", using: :btree
@@ -1075,7 +1087,7 @@ ActiveRecord::Schema.define(version: 20170711193603) do
     t.boolean  "skip_analytics",                     default: false
     t.string   "temp_password"
     t.boolean  "archived",                           default: false
-    t.string   "source",                 limit: 255
+    t.string   "source"
   end
 
   add_index "users", ["email"], name: "idx_16858_index_users_on_email", unique: true, using: :btree
@@ -1111,6 +1123,8 @@ ActiveRecord::Schema.define(version: 20170711193603) do
   add_foreign_key "listserv_contents", "subscriptions"
   add_foreign_key "listserv_contents", "users"
   add_foreign_key "listserv_digests", "listservs"
+  add_foreign_key "organization_content_tags", "contents"
+  add_foreign_key "organization_content_tags", "organizations"
   add_foreign_key "sign_in_tokens", "users"
   add_foreign_key "social_logins", "users"
   add_foreign_key "subscriptions", "listservs"

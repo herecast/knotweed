@@ -5,7 +5,8 @@ module Api
       attributes :id, :name, :can_publish_news, :subscribe_url, :logo_url,
         :business_profile_id, :description, :org_type, :can_edit, :profile_title,
         :can_publish_events, :can_publish_market, :can_publish_talk, :can_publish_ads,
-        :profile_ad_override, :profile_image_url, :background_image_url, :twitter_handle
+        :profile_ad_override, :profile_image_url, :background_image_url, :claimed,
+        :twitter_handle, :custom_links
 
       def logo_url; object.logo.url if object.logo.present?; end
 
@@ -36,6 +37,9 @@ module Api
         object.get_profile_ad_override_id
       end
 
+      def claimed
+        object.business_locations.first.try(:business_profile).try(:claimed?) || false
+      end
     end
   end
 end

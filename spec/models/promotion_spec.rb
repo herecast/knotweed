@@ -3,7 +3,6 @@
 # Table name: promotions
 #
 #  id              :integer          not null, primary key
-#  active          :boolean
 #  banner          :string(255)
 #  organization_id :integer
 #  content_id      :integer
@@ -15,6 +14,7 @@
 #  paid            :boolean          default(FALSE)
 #  created_by      :integer
 #  updated_by      :integer
+#  share_platform  :string
 #
 
 require 'spec_helper'

@@ -188,6 +188,7 @@ describe ContentsController, type: :controller do
       url: 'http://empire.org',
       banner_ad_override: 34343,
       sanitized_content: 'Propaganda, probably',
+      organization_ids: '12,15',
       similar_content_overrides: '234,235'
     } }
 
@@ -207,6 +208,7 @@ describe ContentsController, type: :controller do
         :url,
         :banner_ad_override,
         :sanitized_content,
+        organization_ids: [],
         similar_content_overrides: []
       ).for(:create, params: { content: content_params })
     end

@@ -57,6 +57,7 @@
                   %dd= @event.repositories.map{ |r| r.dsp_endpoint }.join(", ")
           = g.input :subtitle, input_html: { class: "input-block-level" }
           = g.input :authors, input_html: { class: "input-block-level" }
+          = g.association :organizations, label: 'Tagged Organizations', input_html: { class: 'chosen-select input-block-level' }
           .row-fluid
             = g.input :copyright, input_html: { class: "span12" }, wrapper_html: { class: "span6" }
           .row-fluid

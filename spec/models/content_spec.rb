@@ -50,6 +50,8 @@
 #  my_town_only              :boolean          default(FALSE)
 #  authors_is_created_by     :boolean          default(FALSE)
 #  subscriber_mc_identifier  :string
+#  biz_feed_public           :boolean
+#  sunset_date               :datetime
 #
 
 require 'spec_helper'

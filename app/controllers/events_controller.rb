@@ -1,7 +1,7 @@
 class EventsController < ApplicationController
 
   # It turns out -- after coding this controller -- that they actually want every event instance
-  # to show up in a row. So, this search action actually happens on event indices. Which has a 
+  # to show up in a row. So, this search action actually happens on event indices. Which has a
   # side effect of making our query parameters REALLY long, but that's ok.
   def index
     # if posted, save to session
@@ -13,7 +13,7 @@ class EventsController < ApplicationController
       end
       session[:events_search] = params[:q]
     end
-    
+
     @search = EventInstance.ransack(session[:events_search])
 
     if session[:events_search].present?
@@ -107,7 +107,7 @@ class EventsController < ApplicationController
   def update
     @event = Event.find(params[:id])
     authorize! :update, @event
-    
+
     # ensure serialized values are set to empty if no fields are passed in via
     # form
     if params[:event].present?
@@ -166,7 +166,7 @@ class EventsController < ApplicationController
     @event.event_instances.build
 
     # set default fields for event channelized content here
-    
+
     # for the record, I hate this. That we're hard coding "event" which is represented by a database
     # field *throughout* the codebase. It's done under protest.
     @event.content.content_category_id = ContentCategory.find_or_create_by(name: "event").id
@@ -195,7 +195,20 @@ class EventsController < ApplicationController
         :cost,
         :registration_deadline,
         event_instances_attributes: [ :start_date, :end_date, :subtitle_override, :presenter_name, :id, :_destroy ],
-        content_attributes: [ :content_category_id, :category_reviewed, :organization_id, :subtitle, :authors, :copyright, :pubdate, :url, :id, :raw_content, :title, image_attributes: [ :id ] ]  
+        content_attributes: [
+          :content_category_id,
+          :category_reviewed,
+          :organization_id,
+          :subtitle,
+          :authors,
+          :copyright,
+          :pubdate,
+          :url,
+          :id,
+          :raw_content,
+          :title,
+          organization_ids: [],
+          image_attributes: [ :id ] ]
       )
     end
 

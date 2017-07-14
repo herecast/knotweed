@@ -5,7 +5,7 @@ module Api
       attributes :id, :organization_id, :name, :phone, :email, :website,
         :address, :city, :state, :zip, :has_retail_location, :coords, :service_radius,
         :hours, :details, :logo, :images, :category_ids, :feedback, :feedback_num,
-        :can_edit, :has_rated
+        :can_edit, :has_rated, :claimed
 
       def name
         object.business_location.name
@@ -37,7 +37,7 @@ module Api
       def state; object.business_location.state; end
       def zip; object.business_location.zip; end
       def service_radius; object.business_location.service_radius; end
-      
+
       def hours
         object.business_location.hours.present? ? object.business_location.hours : []
       end
@@ -73,6 +73,8 @@ module Api
       end
 
       def feedback_num; object.feedback_count; end
+
+      def claimed; object.claimed?; end
     end
   end
 end

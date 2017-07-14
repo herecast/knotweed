@@ -49,6 +49,8 @@
 #  deleted_at                :datetime
 #  my_town_only              :boolean          default(FALSE)
 #  authors_is_created_by     :boolean          default(FALSE)
+#  biz_feed_public           :boolean
+#  sunset_date               :datetime
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

@@ -10,6 +10,7 @@ module Api
         authorize! :update, @organization
 
         if @organization.update organization_params
+          add_custom_links if params[:organization][:custom_links].present?
           render json: @organization, serializer: OrganizationSerializer,
             status: 204
         else
@@ -19,7 +20,7 @@ module Api
       end
 
       def index
-        expires_in 1.hours, public: true
+        expires_in 1.minute, public: true
         if params[:ids].present?
           if @requesting_app.present?
             @organizations = @requesting_app.organizations
@@ -61,9 +62,19 @@ module Api
 
       def organization_params
         params.require(:organization).permit(
-          :name, :profile_title, :description, :subscribe_url, :logo,
-          :background_image, :profile_image, :twitter_handle
+          :name,
+          :profile_title,
+          :description,
+          :subscribe_url,
+          :logo,
+          :background_image,
+          :profile_image,
+          :twitter_handle
         )
+      end
+
+      def add_custom_links
+        @organization.update_attribute(:custom_links, params[:organization][:custom_links])
       end
 
     end

@@ -27,6 +27,7 @@
 #  profile_image       :string(255)
 #  background_image    :string(255)
 #  profile_ad_override :string(255)
+#  custom_links        :jsonb
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

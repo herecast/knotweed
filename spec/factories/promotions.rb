@@ -14,6 +14,7 @@
 #  paid            :boolean          default(FALSE)
 #  created_by      :integer
 #  updated_by      :integer
+#  share_platform  :string
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

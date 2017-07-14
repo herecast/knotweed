@@ -163,6 +163,16 @@ Knotweed::Application.routes.draw do
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
       # specifying path here to avoid deprecating the frontend even though we've changed
       # the modeling
+      namespace :contents do
+        get '/:content_id/promotions', to: "promotions#index"
+        post '/:content_id/promotions', to: "promotions#create"
+      end
+      namespace :organizations do
+        get    '/:organization_id/contents',                  to: "contents#index"
+        put    '/:organization_id/contents/:content_id',      to: "contents#update"
+        post   '/:organization_id/contents/:content_id/tags', to: "contents/tags#create"
+        delete '/:organization_id/contents/:content_id/tags', to: "contents/tags#destroy"
+      end
       resources 'organizations', only: [:index, :show, :update]
       resources 'news'
 

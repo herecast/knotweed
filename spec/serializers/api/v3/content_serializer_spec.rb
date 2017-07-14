@@ -10,8 +10,12 @@ describe Api::V3::ContentSerializer do
   context 'fields' do
     [:id, :title, :image_url, :author_id, :author_name, :content_type,
           :organization_id, :organization_name,
-          :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count, 
+          :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count,
           :comment_count,:parent_content_id, :content_id, :parent_content_type,
+          :click_count, :event_instance_id, :parent_event_instance_id, :registration_deadline,
+          :created_at, :updated_at, :redirect_url, :event_id, :cost, :avatar_url,
+          :organization_profile_image_url, :biz_feed_public, :sunset_date, :campaign_start,
+          :campaign_end
     ].each do |k|
       it "has field: #{k.to_s}" do
         expect(serialized_object).to have_key(k.to_s)
@@ -48,7 +52,7 @@ describe Api::V3::ContentSerializer do
         @parent = FactoryGirl.create :event
         @content.update_attribute :parent_id, @parent.content.id
       end
-      
+
       it 'should include parent_event_instance_id' do
         expect(serialized_object['parent_event_instance_id']).to eq(@parent.event_instances.first.id)
       end

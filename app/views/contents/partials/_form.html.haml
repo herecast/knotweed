@@ -77,6 +77,7 @@
             - else
               = link_to "Create Calendar Event from record", new_event_path(unchannelized_content_id: @content.id), class: "btn btn-success"
             = f.input :has_event_calendar, label: "Curated?"
+        = f.association :organizations, label: 'Tagged Organizations', input_html: { class: 'chosen-select input-block-level' }
         = f.input :title, input_html: { class: "input-block-level" }
         = f.input :subtitle, input_html: { class: "input-block-level" }
         = f.input :authors, input_html: { class: "input-block-level" }

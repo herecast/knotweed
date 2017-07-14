@@ -25,7 +25,9 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           profile_ad_override: organization.profile_ad_override,
           profile_image_url: organization.profile_image.url,
           background_image_url: organization.background_image.url,
-          twitter_handle: organization.twitter_handle
+          twitter_handle: organization.twitter_handle,
+          claimed: organization.business_locations.first.try(:business_profile).try(:claimed?) || false,
+          custom_links: nil
         }
       )
     end

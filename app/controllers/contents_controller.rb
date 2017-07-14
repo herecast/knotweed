@@ -263,6 +263,7 @@ class ContentsController < ApplicationController
         :url,
         :banner_ad_override,
         :sanitized_content,
+        organization_ids: [],
         similar_content_overrides: []
       )
     end

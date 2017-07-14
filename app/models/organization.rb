@@ -27,6 +27,7 @@
 #  profile_image       :string(255)
 #  background_image    :string(255)
 #  profile_ad_override :string(255)
+#  custom_links        :jsonb
 #
 
 class Organization < ActiveRecord::Base
@@ -48,6 +49,9 @@ class Organization < ActiveRecord::Base
 
   has_many :contents
   has_many :business_profiles, through: :contents
+
+  has_many :organization_content_tags
+  has_many :tagged_contents, through: :organization_content_tags
 
   has_many :content_sets
 

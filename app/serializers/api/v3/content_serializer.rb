@@ -5,9 +5,11 @@ module Api
       attributes :id, :title, :image_url, :author_id, :author_name, :content_type,
         :organization_id, :organization_name,
         :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count,
-        :comment_count, :parent_content_id, :content_id, :parent_content_type,
-        
-        :created_at, :updated_at
+        :comment_count, :click_count, :parent_content_id, :content_id, :parent_content_type,
+        :event_instance_id, :parent_event_instance_id, :registration_deadline,
+        :created_at, :updated_at, :redirect_url, :event_id, :cost, :avatar_url,
+        :organization_profile_image_url, :biz_feed_public, :sunset_date, :campaign_start,
+        :campaign_end
 
       def content_id
         object.id
@@ -20,7 +22,9 @@ module Api
       end
 
       def image_url
-        if object.images.present?
+        if object.root_content_category_id == campaign_content_category_id
+          object.promotions.first.promotable.banner_image.try(:url)
+        elsif object.images.present?
           object.images[0].image.url
         end
       end
@@ -86,7 +90,9 @@ module Api
       end
 
       def view_count
-        if object.parent.present?
+        if object.root_content_category_id == campaign_content_category_id
+          object.promotions.includes(:promotable).first.promotable.try(:impression_count)
+        elsif object.parent.present?
           object.parent_view_count
         else
           object.view_count
@@ -106,6 +112,12 @@ module Api
           object.parent_comment_count
         else
           object.comment_count
+        end
+      end
+
+      def click_count
+        if object.root_content_category_id == campaign_content_category_id
+          object.promotions.first.promotable.try(:click_count)
         end
       end
 
@@ -144,6 +156,44 @@ module Api
         keys
       end
 
+      def redirect_url
+        if object.root_content_category_id == campaign_content_category_id
+          object.promotions.first.promotable.try(:redirect_url)
+        end
+      end
+
+      def event_id
+        if object.channel_type == 'Event'
+          object.channel.id
+        end
+      end
+
+      def cost
+        if object.channel_type == 'MarketPost'
+          object.channel.cost
+        end
+      end
+
+      def avatar_url
+        object.created_by.try(:avatar_url)
+      end
+
+      def organization_profile_image_url
+        object.organization.try(:profile_image_url)
+      end
+
+      def campaign_start
+        if object.root_content_category_id == campaign_content_category_id
+          object.promotions.first.promotable.try(:campaign_start)
+        end
+      end
+
+      def campaign_end
+        if object.root_content_category_id == campaign_content_category_id
+          object.promotions.first.promotable.try(:campaign_end)
+        end
+      end
+
       private
 
       def isEvent
@@ -151,6 +201,10 @@ module Api
           object.parent.present? and
           object.parent.channel_type == 'Event'
         )
+      end
+
+      def campaign_content_category_id
+        ContentCategory.find_or_create_by(name: 'campaign').id
       end
     end
   end

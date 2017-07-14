@@ -51,6 +51,8 @@
 #  my_town_only              :boolean          default(FALSE)
 #  authors_is_created_by     :boolean          default(FALSE)
 #  subscriber_mc_identifier  :string
+#  biz_feed_public           :boolean
+#  sunset_date               :datetime
 #
 
 require 'fileutils'
@@ -76,6 +78,7 @@ class Content < ActiveRecord::Base
       organization_name: organization.try(:name),
       published: published,
       channel_type: channel_type,
+      channel_id: channel_id,
       root_content_category_id: content_category.try(:parent_id) || content_category_id,
       content_category_id: content_category_id,
       my_town_only: my_town_only,
@@ -133,6 +136,9 @@ class Content < ActiveRecord::Base
   # contents, not the promotion of contents (which is handled through the promotion model).
   has_many :content_promotion_banner_loads
   has_many :promotion_banners, through: :content_promotion_banner_loads
+
+  has_many :organization_content_tags
+  has_many :organizations, through: :organization_content_tags
 
   has_and_belongs_to_many :publish_records
   has_and_belongs_to_many :repositories, -> { uniq }, after_add: :mark_published

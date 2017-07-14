@@ -14,6 +14,7 @@
 #  paid            :boolean          default(FALSE)
 #  created_by      :integer
 #  updated_by      :integer
+#  share_platform  :string
 #
 
 class Promotion < ActiveRecord::Base
@@ -38,6 +39,8 @@ class Promotion < ActiveRecord::Base
   PROMOTABLE_TYPES = ['PromotionBanner']
 
   UPLOAD_ENDPOINT = "/statements"
+
+  scope :shares, ->{ where('share_platform IS NOT NULL') }
 
   def promotable_attributes=(attributes)
     if PROMOTABLE_TYPES.include?(promotable_type)
