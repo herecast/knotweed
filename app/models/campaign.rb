@@ -5,13 +5,13 @@
 #  id            :integer          not null, primary key
 #  listserv_id   :integer
 #  community_ids :integer          default([]), is an Array
-#  promotion_id  :integer
 #  sponsored_by  :string
 #  digest_query  :text
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  title         :string
 #  preheader     :string
+#  promotion_ids :integer          default([]), is an Array
 #
 
 class Campaign < ActiveRecord::Base

@@ -6,7 +6,7 @@
 #  parser_id             :integer
 #  name                  :string(255)
 #  config                :text
-#  source_path           :string(255)
+#  source_uri            :string(255)
 #  job_type              :string(255)
 #  organization_id       :integer
 #  created_at            :datetime         not null
@@ -22,6 +22,8 @@
 #  publish_method        :string(255)
 #  sidekiq_jid           :string
 #  next_scheduled_run    :datetime
+#  inbound_prefix        :string
+#  outbound_prefix       :string
 #
 
 require 'find'

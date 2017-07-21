@@ -4,22 +4,23 @@
 #
 #  id                   :integer          not null, primary key
 #  listserv_id          :integer
-#  listserv_content_ids :string
 #  mc_campaign_id       :string
 #  sent_at              :datetime
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  content_ids          :string
 #  from_name            :string
 #  reply_to             :string
 #  subject              :string
 #  template             :string
 #  sponsored_by         :string
-#  promotion_id         :integer
 #  location_ids         :integer          default([]), is an Array
-#  mc_segment_id        :string
 #  subscription_ids     :integer          default([]), is an Array
+#  mc_segment_id        :string
 #  title                :string
+#  preheader            :string
+#  promotion_ids        :integer          default([]), is an Array
+#  content_ids          :integer          is an Array
+#  listserv_content_ids :integer          is an Array
 #
 
 require 'rails_helper'

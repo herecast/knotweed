@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: sign_in_tokens
+#
+#  id         :integer          not null, primary key
+#  token      :string           not null
+#  user_id    :integer
+#  created_at :datetime         not null
+#
+
 class SignInToken < ActiveRecord::Base
   belongs_to :user
   validates_presence_of :user

@@ -33,13 +33,13 @@ describe Promotion, :type => :model do
   include_examples 'Auditable', Promotion
 
   let(:valid_params) do
-    { 
+    {
       description: "What a terrible promotion"
     }
   end
 
-  subject do 
-    p = Promotion.create params 
+  subject do
+    p = Promotion.create params
     p.organization = @org
     p.content = @content
     p.save

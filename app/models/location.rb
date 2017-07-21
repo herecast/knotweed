@@ -6,7 +6,6 @@
 #  zip             :string(255)
 #  city            :string(255)
 #  state           :string(255)
-#  slug            :string(255)
 #  county          :string(255)
 #  lat             :string(255)
 #  long            :string(255)
@@ -14,6 +13,7 @@
 #  updated_at      :datetime         not null
 #  consumer_active :boolean          default(FALSE)
 #  is_region       :boolean          default(FALSE)
+#  slug            :string
 #
 
 class Location < ActiveRecord::Base

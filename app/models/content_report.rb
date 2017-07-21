@@ -5,8 +5,8 @@
 #  id                       :integer          not null, primary key
 #  content_id               :integer
 #  report_date              :datetime
-#  view_count               :integer
-#  banner_click_count       :integer
+#  view_count               :integer          default(0)
+#  banner_click_count       :integer          default(0)
 #  comment_count            :integer
 #  total_view_count         :integer
 #  total_banner_click_count :integer

@@ -1,3 +1,21 @@
+# == Schema Information
+#
+# Table name: listserv_content_metrics
+#
+#  id                   :integer          not null, primary key
+#  listserv_content_id  :integer
+#  email                :string
+#  time_sent            :datetime
+#  post_type            :string
+#  username             :string
+#  verified             :boolean
+#  enhanced             :boolean
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  enhance_link_clicked :boolean          default(FALSE)
+#  step_reached         :string
+#
+
 require 'rails_helper'
 
 RSpec.describe ListservContentMetric, type: :model do

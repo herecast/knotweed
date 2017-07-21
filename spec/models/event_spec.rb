@@ -6,7 +6,7 @@
 #  event_type            :string(255)
 #  venue_id              :integer
 #  cost                  :string(255)
-#  event_url             :string(255)
+#  event_url             :string
 #  sponsor               :string(255)
 #  sponsor_url           :string(255)
 #  links                 :text

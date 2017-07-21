@@ -1,3 +1,20 @@
+# == Schema Information
+#
+# Table name: market_categories
+#
+#  id                 :integer          not null, primary key
+#  name               :string
+#  query              :string
+#  category_image     :string
+#  detail_page_banner :string
+#  featured           :boolean          default(FALSE)
+#  trending           :boolean          default(FALSE)
+#  result_count       :integer
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  query_modifier     :string           default("AND")
+#
+
 #== Schema Information
 #
 # Table name: market_categories

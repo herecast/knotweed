@@ -12,7 +12,7 @@
 #  enhanced             :boolean
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  enhance_link_clicked :boolean
+#  enhance_link_clicked :boolean          default(FALSE)
 #  step_reached         :string
 #
 

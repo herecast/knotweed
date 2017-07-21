@@ -35,6 +35,8 @@
 #  public_id              :string(255)
 #  skip_analytics         :boolean          default(FALSE)
 #  temp_password          :string
+#  archived               :boolean          default(FALSE)
+#  source                 :string
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

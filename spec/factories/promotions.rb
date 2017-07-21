@@ -21,7 +21,7 @@
 
 FactoryGirl.define do
   factory :promotion do
-    content 
+    content
     description "What a terrible promotion"
   end
 end

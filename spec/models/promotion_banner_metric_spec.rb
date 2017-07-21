@@ -14,6 +14,11 @@
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  gtm_blocked         :boolean
+#  user_agent          :string
+#  user_ip             :string
+#  page_placement      :string
+#  client_id           :string
+#  location_id         :integer
 #
 
 require 'rails_helper'

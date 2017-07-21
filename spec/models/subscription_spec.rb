@@ -18,6 +18,7 @@
 #  name                 :string
 #  confirm_ip           :string
 #  email_type           :string           default("html")
+#  mc_unsubscribed_at   :datetime
 #
 
 require 'rails_helper'

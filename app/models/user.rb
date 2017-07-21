@@ -35,6 +35,8 @@
 #  public_id              :string(255)
 #  skip_analytics         :boolean          default(FALSE)
 #  temp_password          :string
+#  archived               :boolean          default(FALSE)
+#  source                 :string
 #
 
 class User < ActiveRecord::Base

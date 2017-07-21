@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: temp_user_captures
+#
+#  id         :integer          not null, primary key
+#  name       :string
+#  email      :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do

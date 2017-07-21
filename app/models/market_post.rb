@@ -16,6 +16,7 @@
 #  updated_at               :datetime         not null
 #  status                   :string(255)
 #  preferred_contact_method :string(255)
+#  sold                     :boolean          default(FALSE)
 #
 
 class MarketPost < ActiveRecord::Base

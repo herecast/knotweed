@@ -12,6 +12,10 @@
 #  updated_at     :datetime         not null
 #  source_url     :string(400)
 #  primary        :boolean          default(FALSE)
+#  width          :integer
+#  height         :integer
+#  file_extension :string
+#  position       :integer          default(0)
 #
 
 FactoryGirl.define do

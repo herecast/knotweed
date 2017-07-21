@@ -24,7 +24,6 @@
 #  timezone                    :string           default("Eastern Time (US & Canada)")
 #  digest_description          :text
 #  digest_send_day             :string
-#  promotion_id                :integer
 #  digest_query                :text
 #  template                    :string
 #  sponsored_by                :string
@@ -33,6 +32,11 @@
 #  digest_preheader            :string
 #  list_type                   :string           default("custom_list")
 #  sender_name                 :string
+#  promotion_ids               :integer          default([]), is an Array
+#  admin_email                 :string
+#  forwarding_email            :string
+#  forward_for_processing      :boolean          default(FALSE)
+#  post_threshold              :integer          default(0)
 #
 
 require 'spec_helper'
