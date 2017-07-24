@@ -1343,6 +1343,7 @@ class Content < ActiveRecord::Base
   end
 
   ORGANIZATIONS_FOR_AUTOMATIC_SUBSCRIBER_ALERTS = [
+    "ArtfulEdge",
     "Better Bad Decisions",
     "EducationUV",
     "Lebanon Times",
@@ -1350,8 +1351,10 @@ class Content < ActiveRecord::Base
     "Quechee Times",
     "Rauner Library Blog",
     "The Co-op Food Stores",
+    "The Gardening Guy",
     "The Subtext Blog",
     "Things That Interest Us",
+    "Vermont News",
     "Wonderment",
     "Woodstock Town News",
   ]
