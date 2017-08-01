@@ -1342,24 +1342,12 @@ class Content < ActiveRecord::Base
     true
   end
 
-  ORGANIZATIONS_FOR_AUTOMATIC_SUBSCRIBER_ALERTS = [
-    "ArtfulEdge",
-    "Better Bad Decisions",
-    "EducationUV",
-    "Lebanon Times",
-    "Norwich Times",
-    "Quechee Times",
-    "Rauner Library Blog",
-    "The Co-op Food Stores",
+  ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS = [
     "The Gardening Guy",
-    "The Subtext Blog",
-    "Things That Interest Us",
-    "Vermont News",
-    "Wonderment",
-    "Woodstock Town News",
+    "Dev Testbed",        # For testing on an FE
   ]
 
   def outside_subscriber_notification_blast_radius?
-    !ORGANIZATIONS_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.include?(organization_name)
+    ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.include?(organization_name)
   end
 end

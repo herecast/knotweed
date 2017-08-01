@@ -319,8 +319,7 @@ describe Content, :type => :model do
     end
 
     it "sends notifications for news published to the prod repo" do
-      org = FactoryGirl.create(:organization, name: Content::ORGANIZATIONS_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.first)
-      @content = FactoryGirl.create(:content, :news, organization: org)
+      @content = FactoryGirl.create(:content, :news)
       expect(@content.send(:outside_subscriber_notification_blast_radius?)).to eq false
       expect(NotifySubscribersJob).to receive(:perform_later)
       @content.repositories << @prod_repo
@@ -328,7 +327,8 @@ describe Content, :type => :model do
 
     context "organization is outside of blast radius" do
       it "does not send notification to subscribers" do
-        @content = FactoryGirl.create(:content, :news)
+        org = FactoryGirl.create(:organization, name: Content::ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.first)
+        @content = FactoryGirl.create(:content, :news, organization: org)
         expect(@content.send(:outside_subscriber_notification_blast_radius?)).to eq true
         expect(NotifySubscribersJob).to_not receive(:perform_later)
         @content.repositories << @prod_repo
@@ -340,8 +340,7 @@ describe Content, :type => :model do
     before do
       @prod_repo = FactoryGirl.create(:repository)
       stub_const("Repository::PRODUCTION_REPOSITORY_ID", @prod_repo.id)
-      org = FactoryGirl.create(:organization, name: Content::ORGANIZATIONS_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.first)
-      @content = FactoryGirl.create(:content, :news, organization: org)
+      @content = FactoryGirl.create(:content, :news)
       expect(@content.send(:outside_subscriber_notification_blast_radius?)).to eq false
       @content.repositories << @prod_repo
       expect(@content.reload.published).to be_truthy
