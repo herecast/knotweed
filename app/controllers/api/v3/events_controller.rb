@@ -90,7 +90,7 @@ module Api
         if params[:event][:organization_id].present?
           org_id = params[:event].delete :organization_id
         else
-          org_id = Organization.find_or_create_by(name: 'DailyUV').id
+          org_id = Organization.find_or_create_by(name: 'From DailyUV').id
         end
 
         schedule_data = params[:event].delete :schedules

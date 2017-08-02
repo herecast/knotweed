@@ -36,7 +36,7 @@ class MarketPostsController < ApplicationController
     # hard coding some other things
     @market_post.content.category_reviewed = true
     # again with the under protest...
-    @market_post.content.organization_id = Organization.find_or_create_by(name: 'DailyUV').id
+    @market_post.content.organization_id = Organization.find_or_create_by(name: 'From DailyUV').id
 
     # for users that can only access certain specific attribute contents
     current_ability.attributes_for(:new, MarketPost).each do |key,value|

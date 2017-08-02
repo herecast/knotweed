@@ -13,7 +13,7 @@ namespace :wellness do
     num_events = 0
     num_instances = 0
 
-    org_id = Organization.find_by_name('DailyUV').id
+    org_id = Organization.find_by_name('From DailyUV').id
     category_id = ContentCategory.find_by_name('event').id
 
     CSV.foreach(source_path, {:headers => true, :header_converters => :symbol, :converters => :all}) do |row|

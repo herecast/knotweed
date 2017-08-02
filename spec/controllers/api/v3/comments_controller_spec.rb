@@ -144,7 +144,7 @@ describe Api::V3::CommentsController, :type => :controller do
       subject
       expect(response.code).to eq('201')
       expect(assigns(:comment).content.parent).to eq(@event.content)
-      expect(assigns(:comment).organization.name).to eq('DailyUV')
+      expect(assigns(:comment).organization.name).to eq('From DailyUV')
     end
   end
 

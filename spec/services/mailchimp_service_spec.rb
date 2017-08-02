@@ -1489,7 +1489,7 @@ RSpec.describe MailchimpService do
                 upemail: false,
                 campaign: false
             },
-              sources: { 
+              sources: {
                 user: true,
                 admin: true,
                 api: true

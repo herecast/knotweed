@@ -165,7 +165,7 @@ module Api
               content_category_id: ContentCategory.find_or_create_by(name: 'market').id,
               pubdate: Time.zone.now,
               timestamp: Time.zone.now,
-              organization_id: params[:market_post][:organization_id] || Organization.find_or_create_by(name: 'DailyUV').id,
+              organization_id: params[:market_post][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
               my_town_only: params[:market_post].delete(:my_town_only)
             }
           }

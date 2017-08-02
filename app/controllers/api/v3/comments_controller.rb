@@ -1,8 +1,8 @@
 module Api
   module V3
     class CommentsController < ApiController
-      before_filter :check_logged_in!, only: [:create] 
-      
+      before_filter :check_logged_in!, only: [:create]
+
       # @param the parent content id
       # @return all child comments
       def index
@@ -67,12 +67,12 @@ module Api
               authors: @current_api_user.try(:name),
               raw_content: params[:comment][:content],
               pubdate: Time.zone.now,
-              organization_id: params[:comment][:organization_id] || Organization.find_or_create_by(name: 'DailyUV').id,
+              organization_id: params[:comment][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
               content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id
             }
           }
         end
-        
+
         # populates @comments with all nested child comments in the tree
         def get_all_comments(result_list)
           result_list.each do |comment|

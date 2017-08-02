@@ -111,7 +111,7 @@ module Api
               authors: @current_api_user.try(:name),
               raw_content: params[:talk][:content],
               pubdate: Time.zone.now,
-              organization_id: params[:talk][:organization_id] || Organization.find_or_create_by(name: 'DailyUV').id,
+              organization_id: params[:talk][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
               content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id
             }
           }
