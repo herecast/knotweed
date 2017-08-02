@@ -10,7 +10,7 @@ module Api
         authorize! :update, @organization
 
         if @organization.update organization_params
-          add_custom_links if params[:organization][:custom_links].present?
+          add_custom_links if params[:organization].key?(:custom_links)
           render json: @organization, serializer: OrganizationSerializer,
             status: 204
         else
