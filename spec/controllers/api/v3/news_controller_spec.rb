@@ -30,14 +30,11 @@ describe Api::V3::NewsController, :type => :controller do
       expect(response.code).to eq('200')
     end
 
-    it 'should allow querying by location_id' do
-      get :index, format: :json, location_id: @third_location.id
-      expect(assigns(:news).select{|c| c.locations.include? @third_location }.count).to eq(assigns(:news).count)
-    end
-
-    it 'should allow querying by location_id with a slug' do
-      get :index, format: :json, location_id: @third_location.slug
-      expect(assigns(:news).select{|c| c.locations.include? @third_location }.count).to eq(assigns(:news).count)
+    it_behaves_like "Location based index" do
+      let(:content_type) { :news }
+      let(:content_attributes) {
+        {organization: @original_organization}
+      }
     end
 
     context 'querying by organization name' do
@@ -247,6 +244,105 @@ describe Api::V3::NewsController, :type => :controller do
       end
 
       it { subject; expect(response.status).to eq 404 }
+    end
+  end
+
+  describe 'POST' do
+    let(:user) { FactoryGirl.create :user }
+    before do
+      api_authenticate user: user
+    end
+
+    let(:news_params) do
+      {
+        title: 'Title',
+        subtitle: 'Subtitle',
+        content: Faker::Lorem.paragraph,
+        organization_id: FactoryGirl.create(:organization).id,
+        published_at: Time.current,
+        author_name: 'Some String Not The User'
+      }
+    end
+
+    subject { post :create, {news: news_params} }
+
+    context 'With locations' do
+      let(:locations) { FactoryGirl.create_list(:location, 3) }
+      before do
+        news_params[:content_locations] = locations.map do |location|
+          { location_id: location.slug }
+        end
+      end
+
+      it 'allows nested content locations to be specified' do
+        subject
+        expect(response.status).to eql 201
+        expect(Content.last.locations.to_a).to include *locations
+      end
+
+      context 'base locations' do
+        before do
+          news_params[:content_locations].each{|l| l[:location_type] = 'base'}
+        end
+
+        it 'allows nested location type to be specified as base' do
+          subject
+          expect(response.status).to eql 201
+          expect(Content.last.base_locations.to_a).to include *locations
+        end
+      end
+    end
+  end
+
+  describe 'PUT' do
+    let(:user) { FactoryGirl.create :user }
+    before do
+      api_authenticate user: user
+    end
+
+    let(:news_params) do
+      {
+        title: 'Title',
+        subtitle: 'Subtitle',
+        content: Faker::Lorem.paragraph,
+        organization_id: FactoryGirl.create(:organization).id,
+        published_at: Time.current,
+        author_name: 'Some String Not The User'
+      }
+    end
+
+    let(:news) { FactoryGirl.create(:content, :news, created_by: user) }
+
+    subject { put :update, {id: news.id, news: news_params} }
+
+    context 'With locations' do
+      let(:locations) { FactoryGirl.create_list(:location, 3) }
+      before do
+        news_params[:content_locations] = locations.map do |location|
+          { location_id: location.slug }
+        end
+      end
+
+      it 'allows nested content locations to be specified' do
+        subject
+        if response.status != 200
+          debugger
+        end
+        expect(response.status).to eql 200
+        expect(Content.last.locations.to_a).to include *locations
+      end
+
+      context 'base locations' do
+        before do
+          news_params[:content_locations].each{|l| l[:location_type] = 'base'}
+        end
+
+        it 'allows nested location type to be specified as base' do
+          subject
+          expect(response.status).to eql 200
+          expect(Content.last.base_locations.to_a).to include *locations
+        end
+      end
     end
   end
 end

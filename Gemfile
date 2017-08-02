@@ -13,6 +13,7 @@ gem "carrierwave", '~> 0.9'                            # Have not yet tested the
 gem 'carrierwave-mimetype-fu'
 gem 'chosen-rails'
 gem 'chronic'
+gem 'cocoon'
 gem 'coffee-rails'
 gem 'compass-rails'
 gem 'daemons'
@@ -96,6 +97,7 @@ end
 group :test do
   gem "database_cleaner"
   gem 'rspec_boolean'
+  gem 'rspec-json_expectations'
   gem 'rspec_junit_formatter'               # this is for circleci to properly read & format our test results
   gem 'shoulda-matchers'
   gem 'simplecov'

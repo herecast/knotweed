@@ -20,6 +20,11 @@ require 'spec_helper'
 
 describe Location, :type => :model do
   it {is_expected.to have_db_column(:is_region).of_type(:boolean)}
+  it { is_expected.to have_many :contents }
+  it { is_expected.to have_many :content_locations }
+  it { is_expected.to have_many :organizations }
+  it { is_expected.to have_many :organization_locations }
+  it { is_expected.to validate_length_of(:state).is_equal_to(2) }
 
   describe "#slug" do
     it {is_expected.to have_db_column(:slug)}
@@ -244,6 +249,37 @@ describe Location, :type => :model do
         it 'returns empty array' do
           expect(subject).to be_empty
         end
+      end
+    end
+  end
+
+  describe '.within_radius_of' do
+    context 'given a coordinates object, and radius (assumed miles)' do
+      let(:coords) { [0, 0] }
+      let(:radius) { 10 }
+
+      subject { Location.within_radius_of(coords, radius) }
+
+      it 'returns locations within the radius' do
+        locations_within = 3.times.collect do
+          FactoryGirl.create :location,
+            coordinates: Geocoder::Calculations.random_point_near(
+              coords,
+              radius,
+              unit: :mi
+            )
+        end
+
+        locations_outside = 3.times.collect do
+          FactoryGirl.create :location,
+            coordinates: [
+              (30..40).to_a.sample,
+              (30..40).to_a.sample
+            ]
+        end
+
+        expect(subject).to include *locations_within
+        expect(subject).to_not include *locations_outside
       end
     end
   end

@@ -63,9 +63,11 @@ class Organization < ActiveRecord::Base
   has_many :import_jobs
   has_many :issues
   has_many :business_locations
+  has_many :organization_locations
+  accepts_nested_attributes_for :organization_locations, allow_destroy: true
+  has_many :locations, through: :organization_locations
 
   has_and_belongs_to_many :contacts
-  has_and_belongs_to_many :locations
   has_and_belongs_to_many :consumer_apps
 
   has_many :promotions, inverse_of: :organization
@@ -104,6 +106,20 @@ class Organization < ActiveRecord::Base
   def self.parent_pubs
     ids = self.where("parent_id IS NOT NULL").select(:parent_id, :name).uniq.map { |p| p.parent_id }
     self.where(id: ids)
+  end
+
+  def base_locations
+    # merge query criteria
+    locations.merge(OrganizationLocation.base)
+  end
+
+  def base_locations=locs
+    locs.each do |l|
+      OrganizationLocation.find_or_initialize_by(
+        organization: self,
+        location: l
+      ).base!
+    end
   end
 
   def business_location_options

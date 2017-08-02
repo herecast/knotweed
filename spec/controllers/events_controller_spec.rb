@@ -117,7 +117,7 @@ describe EventsController, :type => :controller  do
 
       context "when event does not save" do
         it "renders new" do
-          allow(Location).to receive_message_chain(:joins, :where) { Location.all }
+          allow(Location).to receive_message_chain(:joins, :merge) { Location.all }
           subject
           expect(response).to render_template 'new'
         end

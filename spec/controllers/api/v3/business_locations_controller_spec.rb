@@ -2,6 +2,46 @@ require 'spec_helper'
 
 describe Api::V3::BusinessLocationsController, :type => :controller do
 
+  describe 'GET location' do
+    let(:biz_location) do
+      FactoryGirl.create :business_location
+    end
+
+    subject { get :location, format: :json, id: biz_location.id }
+
+    context 'location exists' do
+      let(:location) { FactoryGirl.build :location }
+
+      before do
+        allow_any_instance_of(BusinessLocation).to receive(:location)\
+          .and_return(location)
+      end
+
+      it 'responds with a 200 status code' do
+        subject
+        expect(response.code).to eql "200"
+      end
+
+      it 'returns a json representation of location' do
+        subject
+        expect(response.body).to include_json({
+          location: {
+            id: location.slug,
+            city: location.city,
+            state: location.state
+          }
+        })
+      end
+    end
+
+    context 'location does not exist' do
+      it 'returns 404 status' do
+        subject
+        expect(response.code).to eql '404'
+      end
+    end
+  end
+
   describe 'GET index', elasticsearch: true do
     before do
       FactoryGirl.create_list :business_location, 3, status: 'approved'

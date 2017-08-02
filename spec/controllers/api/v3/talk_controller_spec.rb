@@ -16,7 +16,9 @@ describe Api::V3::TalkController, :type => :controller do
       FactoryGirl.create_list :content, 3, :talk,
         locations: [@default_location], published: true
       FactoryGirl.create_list :content, 5, :talk,
-        locations: [@other_location], published: true
+        locations: [@other_location], base_locations: [@other_location], published: true
+      FactoryGirl.create_list :content, 2, :talk,
+        locations: [@other_location], about_locations: [@other_location], published: true
       FactoryGirl.create_list :content, 4, :talk,
         locations: [@third_location], published: true
     end
@@ -40,75 +42,13 @@ describe Api::V3::TalkController, :type => :controller do
       end
     end
 
-    context 'no location specified' do
-      it 'should respond with 200 status' do
-        subject
-        expect(response.code).to eq('200')
-      end
-
-      it 'defaults to the Upper Valley location' do
-        subject
-        expect(assigns(:talk)[:results].count).to eql 3
-
-        assigns(:talk)[:results].each do |content|
-          expect(content.locations.first).to eq @default_location
-        end
-      end
+    it_behaves_like "Location based index", focus: true do
+      let(:content_type) { :talk }
+      let(:content_attrs) {
+        {organization: @org}
+      }
+      let(:assigned_var) { assigns(:talk)[:results] }
     end
-
-    context 'location id specified' do
-      subject { get :index, location_id: @other_location.id }
-
-      it 'should respond with talk items in the location' do
-        subject
-        expect(assigns(:talk)[:results].count).to eql 5
-        results_locations = assigns(:talk)[:results].map{|c| c.locations}
-        expect(results_locations.all?{|locations| locations.include? @other_location}).to eq true
-      end
-
-      context 'location id is a slug' do
-        subject { get :index, location_id: @other_location.slug }
-
-        it 'should respond with talk items in the location' do
-          subject
-          expect(assigns(:talk)[:results].count).to eql 5
-          results_locations = assigns(:talk)[:results].map{|c| c.locations}
-          expect(results_locations.all?{|locations| locations.include? @other_location}).to eq true
-        end
-      end
-
-      it 'has 200 status code' do
-        subject
-        expect(response.code).to eq('200')
-      end
-
-      it 'should not return talk items from default location' do
-        subject
-        results_locations = assigns(:talk)[:results].map{|c| c.locations}
-        expect(results_locations.any?{|locations| locations.include? @default_location}).to eq false
-      end
-
-      context 'Talk item associated to an organization, with locations' do
-        let(:org_location) { FactoryGirl.create :location }
-        let(:organization) { FactoryGirl.create :organization, locations: [org_location] }
-        let(:talk_location) { FactoryGirl.create :location }
-        let!(:talk_with_org) {
-          FactoryGirl.create :content, :talk, {
-            published: true,
-            locations: [talk_location],
-            organization: organization
-          }
-        }
-
-        subject { get :index, location_id: org_location.slug }
-
-        it 'does not return talk from the organization locations' do
-          subject
-          expect(assigns(:talk)[:results]).to_not include(talk_with_org)
-        end
-      end
-    end
-
   end
 
   describe 'GET show' do
@@ -201,8 +141,11 @@ describe Api::V3::TalkController, :type => :controller do
         subject
         expect(assigns(:content).reload.images.present?).to eq(true)
       end
+
+
     end
   end
+
 
   describe 'POST create' do
     before do
@@ -245,7 +188,8 @@ describe Api::V3::TalkController, :type => :controller do
           @consumer_app = FactoryGirl.create :consumer_app, uri: 'http://test.me'
           request.headers['Consumer-App-Uri'] = @consumer_app.uri
 
-          @listserv = FactoryGirl.create :vc_listserv
+          @listserv = FactoryGirl.create :vc_listserv,
+            locations: [FactoryGirl.create(:location)]
           @basic_attrs[:listserv_id] = @listserv.id
           @ip = '1.1.1.1'
           allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(@ip)
@@ -261,9 +205,37 @@ describe Api::V3::TalkController, :type => :controller do
           subject
         end
 
-        it 'creates content associated with users home community when enhancing though the listserv' do
+        it 'adds the listserv locations to content locations' do
           expect{subject}.to change { Content.count}.by(1)
-          expect(assigns(:talk).content.location_ids).to eq([@user.location_id])
+          expect(assigns(:talk).content.location_ids).to include(*@listserv.location_ids)
+        end
+      end
+
+      context 'With locations' do
+        let(:locations) { FactoryGirl.create_list(:location, 3) }
+
+        before do
+          @basic_attrs[:content_locations] = locations.map do |location|
+            { location_id: location.slug }
+          end
+        end
+
+        it 'allows nested content locations to be specified' do
+          subject
+          expect(response.status).to eql 201
+          expect(Content.last.locations.to_a).to include *locations
+        end
+
+        context 'base locations' do
+          before do
+            @basic_attrs[:content_locations].each{|l| l[:location_type] = 'base'}
+          end
+
+          it 'allows nested location type to be specified as base' do
+            subject
+            expect(response.status).to eql 201
+            expect(Content.last.base_locations.to_a).to include *locations
+          end
         end
       end
 

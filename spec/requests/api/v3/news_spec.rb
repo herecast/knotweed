@@ -1,5 +1,36 @@
 require 'spec_helper'
 
+def news_schema(news)
+  {
+    id: news.id,
+    content_id: news.id,
+    admin_content_url: be_an_instance_of(String).or(be_nil),
+    content: news.sanitized_content,
+    title: news.sanitized_title,
+    subtitle: news.subtitle,
+    author_name: news.author_name,
+    author_id: user.id,
+    organization_name: news.organization_name,
+    organization_id: news.organization_id,
+    published_at: news.pubdate.iso8601,
+    comment_count: news.comment_count,
+    is_sponsored_content: news.is_sponsored_content?,
+    created_at: news.created_at.iso8601,
+    updated_at: news.updated_at.iso8601,
+    images: be_an(Array),
+    can_edit: false,
+    split_content: {
+      head: be_an_instance_of(String),
+      tail: be_an_instance_of(String)
+    },
+    base_location_names: news.base_locations.map(&:name),
+    content_locations: news.content_locations.map{|l|
+      l.attributes.slice(:id, :location_type, :location_id)
+    },
+    promote_radius: be_an_instance_of(Fixnum).or(be_nil)
+  }
+end
+
 describe 'News Endpoints', type: :request do
   let(:user) { FactoryGirl.create :user }
   let(:auth_headers) { auth_headers_for(user) }
@@ -19,7 +50,8 @@ describe 'News Endpoints', type: :request do
           content: Faker::Lorem.paragraph,
           organization_id: @org.id,
           published_at: Time.current,
-          author_name: 'Some String Not The User'
+          author_name: 'Some String Not The User',
+          promote_radius: 25
         }
       end
 
@@ -384,22 +416,94 @@ describe 'News Endpoints', type: :request do
 
     end
 
+    context 'with ?location_id' do
+      let(:location) { FactoryGirl.create(:location) }
+      let!(:location_news) {
+        FactoryGirl.create :content, {
+          organization: org,
+          content_category: news_cat,
+          locations: [location],
+          base_locations: [location],
+          published: true
+        }
+      }
+      let!(:other_news) {
+        FactoryGirl.create :content, {
+          organization: org,
+          content_category: news_cat,
+          published: true
+        }
+      }
+
+      it 'returns news only based in that location' do
+        get '/api/v3/news', {location_id: location.id}, headers
+        ids = response_json[:news].map{|n| n[:id]}
+
+        expect(ids).to eql [location_news.id]
+      end
+
+      context 'with ?radius' do
+        let(:radius) { 20 }
+        let(:location_within_radius) {
+          FactoryGirl.create(:location,
+            coordinates: Geocoder::Calculations.random_point_near(
+              location,
+              19, units: :mi
+            )
+          )
+        }
+
+        let!(:near_news) {
+          FactoryGirl.create :content, {
+            organization: org,
+            content_category: news_cat,
+            locations: [
+              location_within_radius,
+              FactoryGirl.create(:location)
+            ],
+            published: true
+          }
+        }
+
+        it 'returns content from location within radius' do
+          get '/api/v3/news', {location_id: location.id, radius: radius}, headers
+          ids = response_json[:news].map{|n| n[:id]}
+
+          expect(ids).to include location_news.id, near_news.id
+        end
+      end
+    end
   end
 
   describe 'GET /api/v3/news/:id' do
     let(:news_cat) { ContentCategory.find_or_create_by name: 'news' }
+    let!(:news) {
+      FactoryGirl.create :content,
+        content_category: news_cat,
+        created_by: user,
+        base_locations: [FactoryGirl.create(:location)],
+        published: true
+    }
+
+    it 'matches expected json schema' do
+      get "/api/v3/news/#{news.id}"
+
+      expect(response.body).to include_json(
+        news: news_schema(news)
+      )
+    end
+
     context 'news has been deleted' do
-      let!(:deleted_news) { FactoryGirl.create :content,
-                           content_category: news_cat,
-                           created_by: user,
-                           published: true,
-                           deleted_at: Time.current}
+      before do
+        news.update deleted_at: Time.current
+      end
 
       it 'does not return deleted content' do
-        get "/api/v3/news/#{deleted_news.id}"
+        get "/api/v3/news/#{news.id}"
 
         expect(response.status).to eql 404
       end
+
     end
   end
   

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170711193603) do
+ActiveRecord::Schema.define(version: 20170720205022) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -245,6 +245,17 @@ ActiveRecord::Schema.define(version: 20170711193603) do
 
   add_index "content_categories_organizations", ["content_category_id", "organization_id"], name: "idx_16559_index_on_content_category_id_and_publication_id", using: :btree
 
+  create_table "content_locations", force: :cascade do |t|
+    t.integer  "content_id"
+    t.integer  "location_id"
+    t.string   "location_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "content_locations", ["content_id"], name: "index_content_locations_on_content_id", using: :btree
+  add_index "content_locations", ["location_id"], name: "index_content_locations_on_location_id", using: :btree
+
   create_table "content_metrics", force: :cascade do |t|
     t.integer  "content_id"
     t.string   "event_type"
@@ -350,6 +361,7 @@ ActiveRecord::Schema.define(version: 20170711193603) do
     t.string   "subscriber_mc_identifier"
     t.boolean  "biz_feed_public"
     t.datetime "sunset_date"
+    t.integer  "promote_radius"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree
@@ -370,16 +382,6 @@ ActiveRecord::Schema.define(version: 20170711193603) do
   add_index "contents", ["root_parent_id"], name: "idx_16527_index_contents_on_root_parent_id", using: :btree
   add_index "contents", ["source_category"], name: "idx_16527_categories", using: :btree
   add_index "contents", ["title"], name: "idx_16527_title", using: :btree
-
-  create_table "contents_locations", id: false, force: :cascade do |t|
-    t.integer "content_id",  limit: 8
-    t.integer "location_id", limit: 8
-  end
-
-  add_index "contents_locations", ["content_id", "location_id"], name: "idx_16544_index_contents_locations_on_content_id_and_location_i", using: :btree
-  add_index "contents_locations", ["content_id"], name: "idx_16544_index_contents_locations_on_content_id", using: :btree
-  add_index "contents_locations", ["location_id", "content_id"], name: "idx_16544_index_contents_locations_on_location_id_and_content_i", using: :btree
-  add_index "contents_locations", ["location_id"], name: "idx_16544_index_contents_locations_on_location_id", using: :btree
 
   create_table "contents_publish_records", id: false, force: :cascade do |t|
     t.integer "content_id",        limit: 8
@@ -706,16 +708,6 @@ ActiveRecord::Schema.define(version: 20170711193603) do
   add_index "locations_locations", ["parent_id", "child_id"], name: "idx_16707_index_locations_locations_on_parent_id_and_child_id", using: :btree
   add_index "locations_locations", ["parent_id"], name: "idx_16707_index_locations_locations_on_parent_id", using: :btree
 
-  create_table "locations_organizations", id: false, force: :cascade do |t|
-    t.integer "location_id",     limit: 8
-    t.integer "organization_id", limit: 8
-  end
-
-  add_index "locations_organizations", ["location_id", "organization_id"], name: "idx_16710_index_locations_publications_on_location_id_and_publi", using: :btree
-  add_index "locations_organizations", ["location_id"], name: "idx_16710_index_locations_publications_on_location_id", using: :btree
-  add_index "locations_organizations", ["organization_id", "location_id"], name: "idx_16710_index_locations_publications_on_publication_id_and_lo", using: :btree
-  add_index "locations_organizations", ["organization_id"], name: "idx_16710_index_locations_publications_on_publication_id", using: :btree
-
   create_table "market_categories", force: :cascade do |t|
     t.string   "name"
     t.string   "query"
@@ -773,6 +765,17 @@ ActiveRecord::Schema.define(version: 20170711193603) do
   add_index "organization_content_tags", ["content_id"], name: "index_organization_content_tags_on_content_id", using: :btree
   add_index "organization_content_tags", ["organization_id"], name: "index_organization_content_tags_on_organization_id", using: :btree
 
+  create_table "organization_locations", force: :cascade do |t|
+    t.integer  "organization_id"
+    t.integer  "location_id"
+    t.string   "location_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "organization_locations", ["location_id"], name: "index_organization_locations_on_location_id", using: :btree
+  add_index "organization_locations", ["organization_id"], name: "index_organization_locations_on_organization_id", using: :btree
+
   create_table "organizations", id: :bigserial, force: :cascade do |t|
     t.string   "name",                limit: 255
     t.datetime "created_at",                                      null: false
@@ -798,8 +801,8 @@ ActiveRecord::Schema.define(version: 20170711193603) do
     t.string   "profile_image",       limit: 255
     t.string   "background_image",    limit: 255
     t.string   "profile_ad_override", limit: 255
-    t.string   "twitter_handle"
     t.jsonb    "custom_links"
+    t.string   "twitter_handle"
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
@@ -1117,6 +1120,8 @@ ActiveRecord::Schema.define(version: 20170711193603) do
   add_index "wufoo_forms", ["controller", "action", "active"], name: "idx_16881_index_wufoo_forms_on_controller_and_action_and_active", unique: true, using: :btree
 
   add_foreign_key "campaigns", "listservs"
+  add_foreign_key "content_locations", "contents"
+  add_foreign_key "content_locations", "locations"
   add_foreign_key "listserv_contents", "content_categories"
   add_foreign_key "listserv_contents", "contents"
   add_foreign_key "listserv_contents", "listservs"
@@ -1125,6 +1130,8 @@ ActiveRecord::Schema.define(version: 20170711193603) do
   add_foreign_key "listserv_digests", "listservs"
   add_foreign_key "organization_content_tags", "contents"
   add_foreign_key "organization_content_tags", "organizations"
+  add_foreign_key "organization_locations", "locations"
+  add_foreign_key "organization_locations", "organizations"
   add_foreign_key "sign_in_tokens", "users"
   add_foreign_key "social_logins", "users"
   add_foreign_key "subscriptions", "listservs"

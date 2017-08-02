@@ -5,7 +5,7 @@ module Api
       attributes :id, :title, :user_count, :author_name,
         :author_image_url, :published_at, :view_count, :commenter_count, :comment_count, 
         :parent_content_id, :content_id, :parent_content_type, :parent_event_instance_id,
-        :created_at, :updated_at, :initial_comment_author, :initial_comment_author_image_url
+        :created_at, :updated_at, :initial_comment_author, :initial_comment_author_image_url, :base_location_names
 
       def content_id
         object.id
@@ -78,6 +78,14 @@ module Api
 
       def initial_comment_author_image_url
         object.comments.first.created_by.try(:avatar).try(:url) if object.comments.present?
+      end
+
+      def base_location_names
+        names = object.base_locations.map(&:name)
+        if object.organization
+          names |= object.organization.base_locations.map(&:name)
+        end
+        names
       end
     end
   end

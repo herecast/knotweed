@@ -49,6 +49,7 @@ class BusinessLocation < ActiveRecord::Base
   serialize :hours, Array
 
   validates_presence_of :city, :state
+  validates :state, length: {is: 2}
 
   STATUS_CATEGORIES = [:approved, :new, :private]
 
@@ -105,6 +106,37 @@ class BusinessLocation < ActiveRecord::Base
 
   def protect_against_blank_hours
     update_column(:hours, nil) if hours == ""
+  end
+
+  def coordinates
+    [latitude, longitude]
+  end
+
+  def coordinates=coords
+    self.latitude, self.longitude = coords
+  end
+
+  def location
+    matching = location_matching_city_state
+    return matching if matching
+
+    nearest = nearest_location_within_10_miles
+    return nearest.try(:parent_city) || nearest
+  end
+
+  def location_matching_city_state
+    Location.where(
+      "lower(city) = lower(:city) AND lower(state) = lower(:state)",
+      city: city,
+      state: state
+    ).first
+  end
+
+  def nearest_location_within_10_miles
+    Location.within_radius_of(coordinates, 10).with_distance(
+      latitude: latitude,
+      longitude: longitude
+    ).order('distance ASC').first
   end
 
 end

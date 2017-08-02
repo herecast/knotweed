@@ -14,6 +14,11 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#images" } do
           %i.icon-reorder
           Images
+      %li
+        = link_to '#', class: 'green-boarder', data: { toggle: "tab", target: "#locations" } do
+          %i.icon-map-marker
+          Locations
+
       - if @content.id.present?
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#publish" } do
@@ -131,6 +136,15 @@
               .bar{ style: "width: 0%" }
         .row-fluid#image_list
           = render @content.images
+      .tab-pane#locations
+        .flex-grid
+          = f.fields_for :content_locations, f.object.content_locations.sort_by{|cl| cl.location.name} do |cl|
+            = render 'content_location_fields', f: cl
+          .links.card
+            = link_to_add_association '+ Add Location', f, :content_locations, class: 'btn btn-default'
+
+
+
       - if @content.id.present?
         .tab-pane#publish{ data: { no_turbolink: "" } }
           = render partial: 'contents/partials/publishing_tab', locals: { content: @content }

@@ -52,15 +52,18 @@ FactoryGirl.define do
           subtitle_override: evaluator.subtitle_override, description_override: evaluator.description_override
         e.event_instances << ei
       end
-      if ContentCategory.exists?(name: 'event')
-        e.content.content_category = ContentCategory.find_by name: 'event'
-      else
-        e.content.content_category = FactoryGirl.build :content_category, name: 'event'
-      end
-      e.content.published = evaluator.published
-      e.content.created_by = evaluator.created_by if evaluator.created_by.present?
 
-      e.content.locations = evaluator.locations if evaluator.locations
+      if e.content
+        if ContentCategory.exists?(name: 'event')
+          e.content.content_category = ContentCategory.find_by name: 'event'
+        else
+          e.content.content_category = FactoryGirl.build :content_category, name: 'event'
+        end
+        e.content.published = evaluator.published
+        e.content.created_by = evaluator.created_by if evaluator.created_by.present?
+
+        e.content.locations = evaluator.locations if evaluator.locations
+      end
     end
 
   end

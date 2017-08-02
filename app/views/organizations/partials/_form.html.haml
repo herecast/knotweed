@@ -173,7 +173,13 @@
             - @organization.contacts.each do |contact|
               = render "contacts/contact_row", contact: contact
       .tab-pane#locations
-        .row-fluid
+        .flex-grid
+          = f.fields_for :organization_locations, f.object.organization_locations.sort_by{|ol| ol.location.name} do |cl|
+            = render 'organization_location_fields', f: cl
+
+          .links.card
+            = link_to_add_association '+ Add Location', f, :organization_locations, class: 'btn btn-default'
+        -#.row-fluid
           .span8
             = text_field_tag :search_locations, nil, class: "span12", placeholder: "search available locations"
           .span4

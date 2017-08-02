@@ -16,7 +16,22 @@ module Api
         end
 
         if params[:location_id].present?
-          opts[:where][:all_loc_ids] = [Location.find_by_slug_or_id(params[:location_id]).id]
+          opts[:where][:or] ||= []
+          location = Location.find_by_slug_or_id(params[:location_id])
+
+          if params[:radius].present? && params[:radius].to_i > 0
+            locations_within_radius = Location.within_radius_of(location, params[:radius].to_i).map(&:id)
+
+            opts[:where][:or] << [
+              {my_town_only: false, all_loc_ids: locations_within_radius},
+              {my_town_only: true, all_loc_ids: location.id}
+            ]
+          else
+            opts[:where][:or] << [
+              {about_location_ids: [location.id]},
+              {base_location_ids: [location.id]}
+            ]
+          end
         else
           opts[:where][:all_loc_ids] = [Location::REGION_LOCATION_ID]
         end
@@ -86,7 +101,9 @@ module Api
       private
 
         def talk_params
-          new_params = params
+          new_params = ActionController::Parameters.new(
+            talk: params[:talk].to_h
+          )
           new_params[:talk].merge!(additional_attributes)
           new_params.require(:talk).permit(
             content_attributes: [
@@ -97,7 +114,9 @@ module Api
               :pubdate,
               :organization_id,
               :content_category_id,
-              location_ids: []
+              content_locations_attributes: [
+                :id, :location_type, :location_id
+              ]
             ]
           )
         end
@@ -106,14 +125,24 @@ module Api
           {
             content_attributes: {
               title: params[:talk][:title],
-              location_ids: [@current_api_user.location_id],
               authoremail: @current_api_user.try(:email),
               authors: @current_api_user.try(:name),
               raw_content: params[:talk][:content],
               pubdate: Time.zone.now,
               organization_id: params[:talk][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
-              content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id
-            }
+              content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id,
+              promote_radius: params[:talk][:promote_radius]
+            }.tap do |h|
+              if params[:talk][:content_locations].present?
+                h[:content_locations_attributes] = params[:talk][:content_locations].tap do |h|
+                  # translate slug to id
+                  h.each do |content_location|
+                    content_location[:location_id] = Location.find_by(slug: content_location[:location_id]).try(:id)
+                  end
+                end
+
+              end
+            end
           }
         end
 

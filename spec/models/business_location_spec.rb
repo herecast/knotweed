@@ -29,6 +29,8 @@ require 'spec_helper'
 describe BusinessLocation, :type => :model do
   include_examples 'Auditable', BusinessLocation
 
+  it { is_expected.to validate_length_of(:state).is_equal_to(2) }
+
   before do
 	  @business_location = FactoryGirl.create :business_location
   end
@@ -45,6 +47,109 @@ describe BusinessLocation, :type => :model do
       it "returns address with name" do
         @business_location.update_attribute(:locate_include_name, true)
         expect(@business_location.geocoding_address).to include(@business_location.name)
+      end
+    end
+  end
+
+  describe '#location' do
+    context 'when location exists with matching city and state' do
+      let!(:location) do
+        FactoryGirl.create :location
+      end
+
+      let!(:business_location) do
+        FactoryGirl.create :business_location,
+          city: location.city,
+          state: location.state
+      end
+
+      subject { business_location.location }
+
+      it 'returns the location record' do
+        expect(subject).to eql location
+      end
+
+      context 'case insensitive' do
+        before do
+          business_location.update city: location.city.upcase, state: location.state.downcase
+        end
+
+        it do
+          expect(subject).to eql location
+        end
+      end
+    end
+
+    context 'no matching city/state location' do
+      describe 'finds nearest location' do
+        let(:business_location) do
+          FactoryGirl.create :business_location, coordinates: [0, 0]
+        end
+
+        let!(:nearest) do
+          FactoryGirl.create :location,
+            city: 'nearborough',
+            coordinates: Geocoder::Calculations.random_point_near(
+              business_location.coordinates, 5, units: :mi
+            )
+        end
+
+        let!(:other) do
+          FactoryGirl.create :location,
+            coordinates: Geocoder::Calculations.endpoint(
+              business_location.coordinates,
+              90,
+              7, units: :mi
+            )
+        end
+
+        subject { business_location.location }
+
+        it do
+          expect(subject).to eql nearest
+        end
+
+        describe 'nearest location has parent which is not a region' do
+          let!(:parent) {
+            FactoryGirl.create :location,
+              city: 'parent town',
+              is_region: false,
+              consumer_active: true
+          }
+
+          before do
+            nearest.parents << parent
+            nearest.save!
+          end
+
+          it 'returns the parent' do
+            expect(subject).to eql parent
+          end
+        end
+      end
+
+      describe 'nearest location outside of 10 miles' do
+        let(:business_location) do
+          FactoryGirl.create :business_location, coordinates: [0, 0]
+        end
+
+        let!(:nearest) do
+          degrees = 90
+          distance = 11
+          FactoryGirl.create :location,
+            coordinates: Geocoder::Calculations.endpoint(
+              business_location.coordinates,
+              degrees,
+              distance,
+              units: :mi
+            )
+        end
+
+        subject { business_location.location }
+
+        it 'returns nil' do
+          expect(subject).to be nil
+        end
       end
     end
   end

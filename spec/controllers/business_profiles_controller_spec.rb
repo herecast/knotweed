@@ -117,7 +117,7 @@ describe BusinessProfilesController, :type => :controller do
           id: @bl.id,
           address: Faker::Address.street_address,
           city: Faker::Address.city,
-          state: Faker::Address.state
+          state: Faker::Address.state_abbr
         }
       }
     end
@@ -182,7 +182,7 @@ describe BusinessProfilesController, :type => :controller do
           name: Faker::Company.name,
           address: Faker::Address.street_address,
           city: Faker::Address.city,
-          state: Faker::Address.state
+          state: Faker::Address.state_abbr
         },
         content_attributes: {
           channel_type: 'BusinessProfile'

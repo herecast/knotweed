@@ -33,7 +33,7 @@ describe 'Talk', type: :request do
 
           it 'returns record json' do
             subject
-            expect(response_json).to match(
+            expect(response.body).to include_json(
               talk: {
                 id: record.id,
                 title: record.title,
@@ -54,7 +54,11 @@ describe 'Talk', type: :request do
                 parent_content_type: an_instance_of(String).or(be_nil),
                 author_email: record.created_by.email,
                 created_at: record.created_at.iso8601,
-                updated_at: record.updated_at.iso8601
+                updated_at: record.updated_at.iso8601,
+                base_location_names: record.base_locations.map(&:name),
+                content_locations: record.content_locations.map do |cl|
+                  cl.attributes.slice(:id, :location_type, :location_id)
+                end
               }
             )
           end

@@ -46,4 +46,5 @@ namespace :locations do
     end
 
   end
+
 end

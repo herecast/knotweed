@@ -52,7 +52,11 @@ describe 'Market Posts', type: :request do
               height: i.height,
               file_extension: i.file_extension
             })
-          })
+          }),
+          base_location_names: be_an(Array),
+          content_locations: market_post.base_locations.map do |cl|
+            cl.attributes.slice(:id, :location_type, :location_id)
+          end
         }))
     end
   end
@@ -66,7 +70,8 @@ describe 'Market Posts', type: :request do
       let(:valid_params) {
         {
           title: 'Test',
-          content: 'Body'
+          content: 'Body',
+          promote_radius: 25
         }
       }
 
@@ -95,10 +100,10 @@ describe 'Market Posts', type: :request do
     before do
       @loc1 = FactoryGirl.create :location
       @loc2 = FactoryGirl.create :location
-      @mps_loc1 = FactoryGirl.create_list :market_post, 3, locations: [@loc1]
-      @mps_loc2 = FactoryGirl.create_list :market_post, 3, locations: [@loc2]
-      @mp_mto_loc1 = FactoryGirl.create :market_post, locations: [@loc1], my_town_only: true
-      @mp_mto_loc2 = FactoryGirl.create :market_post, locations: [@loc2], my_town_only: true
+      @mps_loc1 = FactoryGirl.create_list :market_post, 3, base_locations: [@loc1]
+      @mps_loc2 = FactoryGirl.create_list :market_post, 3, base_locations: [@loc2]
+      @mp_mto_loc1 = FactoryGirl.create :market_post, base_locations: [@loc1], my_town_only: true
+      @mp_mto_loc2 = FactoryGirl.create :market_post, base_locations: [@loc2], my_town_only: true
     end
 
     let(:request_params) { {} }
@@ -110,28 +115,32 @@ describe 'Market Posts', type: :request do
     it 'matches expected output json' do
       subject
 
-      expect(response_json[:market_posts][0]).to match(
-        id: a_kind_of(Integer),
-        title: a_kind_of(String),
-        price: a_kind_of(String),
-        content: a_kind_of(String),
-        content_id: a_kind_of(Integer),
-        published_at: a_kind_of(String),
-        locate_address: a_kind_of(String),
-        can_edit: be_boolean,
-        has_contact_info: be_boolean,
-        my_town_only: be_boolean,
-        author_name: a_kind_of(String),
-        organization_id: a_kind_of(Integer),
-        created_at: a_kind_of(String),
-        updated_at: a_kind_of(String),
-        image_url: an_instance_of(String).or(be_nil),
-        contact_phone: a_kind_of(String).or(be_nil),
-        contact_email: a_kind_of(String).or(be_nil),
-        preferred_contact_method: a_kind_of(String).or(be_nil),
-        images: be_an(Array),
-        sold: be_boolean
-      )
+      expect(response.body).to include_json({
+        market_posts: [
+          id: a_kind_of(Integer),
+          title: a_kind_of(String),
+          price: a_kind_of(String),
+          content: a_kind_of(String),
+          content_id: a_kind_of(Integer),
+          published_at: a_kind_of(String),
+          locate_address: a_kind_of(String),
+          can_edit: be(true).or( be(false) ),
+          has_contact_info: be(true).or( be(false) ),
+          my_town_only: be(true).or( be(false) ),
+          author_name: a_kind_of(String),
+          organization_id: a_kind_of(Integer),
+          created_at: a_kind_of(String),
+          updated_at: a_kind_of(String),
+          image_url: an_instance_of(String).or(be_nil),
+          contact_phone: a_kind_of(String).or(be_nil),
+          contact_email: a_kind_of(String).or(be_nil),
+          preferred_contact_method: a_kind_of(String).or(be_nil),
+          images: be_an(Array),
+          sold: be(true).or( be(false) ),
+          base_location_names: be_an(Array),
+          content_locations: be_an(Array)
+        ]
+      })
     end
 
     it 'returns the correct number of total results' do
@@ -169,20 +178,62 @@ describe 'Market Posts', type: :request do
 
     end
 
+    describe 'searching for a location' do
+      let(:request_params) { { location_id: @loc2.id } }
+
+      it 'should respond with market posts based in that location' do
+        subject
+        market_ids = response_json[:market_posts].map{|m| m[:id]}
+        expect(market_ids).to include *@mps_loc2.map(&:id)
+        expect(market_ids).to_not include *@mps_loc1.map(&:id)
+      end
+
+      context 'with radius' do
+        let(:radius) { 20 }
+        let(:location_within_radius) {
+          FactoryGirl.create(:location,
+            coordinates: Geocoder::Calculations.random_point_near(
+              @loc2,
+              19, units: :mi
+            )
+          )
+        }
+        let(:request_params) { { location_id: @loc2.id, radius: 20 } }
+        let!(:near_post) { FactoryGirl.create :market_post, locations: [
+          location_within_radius,
+          FactoryGirl.create(:location)
+        ]}
+
+        it 'returns market posts located within radius' do
+          subject
+          market_ids = response_json[:market_posts].map{|m| m[:id]}
+          expect(market_ids).to include *@mps_loc2.map(&:id)
+          expect(market_ids).to include near_post.id
+        end
+
+        context 'with radius equal to zero' do
+          let!(:base_location_posts) {
+            FactoryGirl.create_list :market_post, 2, base_locations: [@loc2]
+          }
+          let!(:not_base_location_posts) {
+            FactoryGirl.create_list :market_post, 2, locations: [@loc2]
+          }
+          let(:request_params) { { location_id: @loc2.id, radius: 0 } }
+
+          it 'returns posts based in that location only' do
+            subject
+            market_ids = response_json[:market_posts].map{|m| m[:id]}
+            expect(market_ids).to include *base_location_posts.map(&:id)
+            expect(market_ids).to_not include *not_base_location_posts.map(&:id)
+          end
+        end
+      end
+    end
 
     context 'as signed in user' do
       subject { get '/api/v3/market_posts', request_params.merge({ format: :json }), auth_headers }
 
       describe 'default request (no params)' do
-        it 'should return all market posts without `my_town_only`' do
-          subject
-          expect(assigns(:market_posts)).to match_array((@mps_loc1+@mps_loc2+[@mp_mto_loc1]).map{|mp| mp.content})
-        end
-
-        it 'should not return `my_town_only` market posts from other towns' do
-          subject
-          expect(assigns(:market_posts)).to_not include @mp_mto_loc2.content
-        end
 
         context 'when user owns a market post' do
           let!(:owned_by_user) {
@@ -212,19 +263,6 @@ describe 'Market Posts', type: :request do
         end
       end
 
-      describe 'searching for a different location' do
-        let(:request_params) { { location_id: @loc2.id } }
-
-        it 'should not include `my_town_only` market posts' do
-          subject
-          expect(assigns(:market_posts)).to_not include @mp_mto_loc2.content
-        end
-
-        it 'should respond with non `my_town_only` market posts in that location' do
-          subject
-          expect(assigns(:market_posts)).to match_array(@mps_loc2.map{|mp| mp.content})
-        end
-      end
     end
   end
 

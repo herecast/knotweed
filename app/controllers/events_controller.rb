@@ -41,8 +41,11 @@ class EventsController < ApplicationController
     # add location where content originated from
     if params[:unchannelized_content_id].present?
       contents = Content.find(params[:unchannelized_content_id])
-      locations = Location.joins('LEFT JOIN locations_organizations on ' +
-                               'locations.id = locations_organizations.location_id ').where('locations_organizations.organization_id = ?', contents.organization_id)
+
+      locations = Location.joins(:organization_locations).merge(
+        OrganizationLocation.where(organization_id: contents.organization_id)
+      )
+
       if locations.present?
         locations.each do |location|
           if !location_ids.include?(location.id)

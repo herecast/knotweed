@@ -71,13 +71,13 @@ describe BusinessLocationsController, :type => :controller do
 
     context "when creation succeeds" do
       it "html: redirects to business locations" do
-        post :create, business_location: { address: 'fake', city: 'fake', state: 'fake' }
+        post :create, business_location: { address: 'fake', city: 'fake', state: 'VT' }
         expect(response.code).to eq '302'
         expect(response).to redirect_to business_locations_path
       end
 
       it "js: should respond with 200 status code" do
-        post :create, format: 'js', business_location: { address: 'fake', city: 'fake', state: 'fake' }
+        post :create, format: 'js', business_location: { address: 'fake', city: 'fake', state: 'VT' }
         expect(response.code).to eq '200'
       end
     end
@@ -88,13 +88,13 @@ describe BusinessLocationsController, :type => :controller do
       end
 
       it "html: renders new page" do
-        post :create, business_location: { address: 'fake', city: 'fake', state: 'fake' }
+        post :create, business_location: { address: 'fake', city: 'fake', state: 'VT' }
         expect(response).to render_template 'new'
       end
 
       it "js: responds with errors" do
         allow_any_instance_of(BusinessLocation).to receive(:errors).and_return ['error']
-        post :create, format: :js, business_location: { address: 'fake', city: 'fake', state: 'fake' }
+        post :create, format: :js, business_location: { address: 'fake', city: 'fake', state: 'VT' }
         expect(JSON.parse(response.body).length).to eq 1
       end
     end

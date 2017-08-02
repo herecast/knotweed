@@ -6,7 +6,7 @@ module Api
         :locate_address, :can_edit, :has_contact_info, :my_town_only,
         :author_name, :organization_id, :updated_at, :image_url, :contact_phone,
         :contact_email, :preferred_contact_method, :images, :created_at, :updated_at,
-        :sold
+        :sold, :base_location_names, :content_locations, :promote_radius
 
       root 'market_post'
 
@@ -101,6 +101,24 @@ module Api
           object.channel.sold
         else
           false
+        end
+      end
+
+      def base_location_names
+        names = object.base_locations.map(&:name)
+        if object.organization
+          names |= object.organization.base_locations.map(&:name)
+        end
+        names
+      end
+
+      def content_locations
+        object.content_locations.map do |l|
+          {
+            id: l.id,
+            location_type: l.location_type,
+            location_id: l.location.slug
+          }
         end
       end
     end

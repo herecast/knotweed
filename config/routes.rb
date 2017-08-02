@@ -153,6 +153,7 @@ Knotweed::Application.routes.draw do
       get '/venues', to: 'business_locations#index', as: :venues
       get '/venue_locations', to: 'business_locations#index', as: :venue_locations,
         defaults: { autocomplete: true, max_results: 5 }
+      get '/venues/:id/location', to: "business_locations#location"
 
       get '/locations/:id/closest', to: 'locations#closest', as: :closest
       get '/locations/locate', to: 'locations#locate'
@@ -190,6 +191,8 @@ Knotweed::Application.routes.draw do
       post '/users/resend_confirmation', to: 'users#resend_confirmation', as: :resend_confirmation
       post '/users/email_signin_link', to: 'users#email_signin_link', as: :email_signin_link
       resources 'images', only: [:create, :update, :destroy]
+
+      delete '/content_locations/:id', to: 'content_locations#destroy'
 
       resources 'business_profiles', only: [:index, :show, :create, :update], path: 'businesses'
       resources 'business_categories', only: [:index]

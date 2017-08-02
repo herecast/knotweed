@@ -46,10 +46,18 @@ class EventInstance < ActiveRecord::Base
           title: event.content.title,
           pubdate: event.content.pubdate,
           published: event.content.published,
-          all_loc_ids: event.content.all_loc_ids
+          all_loc_ids: event.content.all_loc_ids,
+          base_location_ids: event.content.base_locations.map(&:id),
+          about_location_ids: event.content.about_locations.map(&:id),
+          my_town_only: event.content.my_town_only
         })
+        if event.content.organization.present?
+          data[:base_location_ids] |= event.content.organization.base_locations.map(&:id)
+        end
       end
     end
+
+
     data
   end
 

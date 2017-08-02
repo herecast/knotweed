@@ -26,6 +26,7 @@ FactoryGirl.define do
     ignore do
       my_town_only false
       locations []
+      base_locations []
       published true
       organization nil
       created_by nil
@@ -44,16 +45,19 @@ FactoryGirl.define do
     content
 
     after(:build) do |e, evaluator|
-      e.content.my_town_only = evaluator.my_town_only
-      e.content.published = evaluator.published
-      e.content.locations = evaluator.locations
-      e.content.organization = evaluator.organization if evaluator.organization.present?
-      e.content.created_by = evaluator.created_by if evaluator.created_by.present?
-      e.content.title = evaluator.title if evaluator.title.present?
-      if ContentCategory.exists?(name: 'market')
-        e.content.content_category = ContentCategory.find_by name: 'market'
-      else
-        e.content.content_category = FactoryGirl.build :content_category, name: 'market'
+      if e.content
+        e.content.my_town_only = evaluator.my_town_only
+        e.content.published = evaluator.published
+        e.content.locations = evaluator.locations
+        e.content.base_locations = evaluator.base_locations
+        e.content.organization = evaluator.organization if evaluator.organization.present?
+        e.content.created_by = evaluator.created_by if evaluator.created_by.present?
+        e.content.title = evaluator.title if evaluator.title.present?
+        if ContentCategory.exists?(name: 'market')
+          e.content.content_category = ContentCategory.find_by name: 'market'
+        else
+          e.content.content_category = FactoryGirl.build :content_category, name: 'market'
+        end
       end
     end
   end

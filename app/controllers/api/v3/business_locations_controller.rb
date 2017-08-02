@@ -44,6 +44,17 @@ module Api
         end
       end
 
+      def location
+        biz_location = BusinessLocation.find(params[:id])
+        location = biz_location.location
+
+        if location.present?
+          render json: location, serializer: LocationSerializer
+        else
+          render json: {}, status: :not_found
+        end
+      end
+
     end
   end
 end

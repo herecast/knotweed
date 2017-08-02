@@ -71,6 +71,24 @@ describe Api::V3::EventsController, :type => :controller do
     end
   end
 
+  describe 'GET index', elasticsearch: true do
+    let(:organization) { FactoryGirl.create :organization }
+
+    let(:consumer_app) {
+      FactoryGirl.create :consumer_app,
+        organizations: [organization]
+    }
+
+    let(:headers) { {
+      'ACCEPT' => 'application/json',
+      'Consumer-App-Uri' => consumer_app.uri
+    } }
+
+    it_behaves_like "Location based index" do
+      let(:content_type) { :event }
+    end
+  end
+
   describe 'PUT update' do
     before do
       @event = FactoryGirl.create :event, created_by: @current_user
@@ -172,6 +190,35 @@ describe Api::V3::EventsController, :type => :controller do
         .to eq(@attrs_for_update[:schedules][0][:presenter_name])
     end
 
+    context 'with content location attributes' do
+      let(:locations) { FactoryGirl.create_list(:location, 3) }
+
+      before do
+        @attrs_for_update[:content_locations] = locations.map do |location|
+          { location_id: location.slug }
+        end
+      end
+
+      it 'allows nested content locations to be specified' do
+        subject
+        expect(response.status).to eql 200
+        expect(Content.last.locations.to_a).to include *locations
+      end
+
+      context 'base locations' do
+        before do
+          @attrs_for_update[:content_locations].each{|l| l[:location_type] = 'base'}
+        end
+
+        it 'allows nested location type to be specified as base' do
+          subject
+          expect(response.status).to eql 200
+          expect(Content.last.base_locations.to_a).to include *locations
+        end
+      end
+
+    end
+
   end
 
   describe 'PUT by admin' do
@@ -251,23 +298,6 @@ describe Api::V3::EventsController, :type => :controller do
       end
     end
 
-    it 'should assign the event to the current api user\'s location' do
-      subject
-      expect(assigns(:event).content.location_ids).to eq([@current_user.location_id])
-    end
-
-    it 'should assign the event to user location AND upper valley if extended_reach_enabled is true' do
-      ext_reach_attrs = @event_attrs.dup
-      ext_reach_attrs[:extended_reach_enabled] = true
-      # ensure that the region location actually exists...
-      location = FactoryGirl.create :location
-      stub_const("Location::REGION_LOCATION_ID", location.id)
-      post :create, format: :json, event: ext_reach_attrs, current_user_id: @current_user.id
-      expect(assigns(:event).content.location_ids.count).to eq(2)
-      expect(assigns(:event).content.location_ids.include?(@current_user.location_id)).to be_truthy
-      expect(assigns(:event).content.location_ids.include?(location.id)).to be_truthy
-    end
-
     it 'creates a venue with venue attributes given (instead of venue_id)' do
       with_venue_attrs = @event_attrs.dup
       with_venue_attrs[:venue] = {
@@ -285,13 +315,16 @@ describe Api::V3::EventsController, :type => :controller do
 
     context 'with listserv_id' do
       before do
-        @listserv = FactoryGirl.create :vc_listserv
+        @listserv = FactoryGirl.create :vc_listserv,
+            locations: [FactoryGirl.create(:location)]
         @event_attrs[:listserv_ids] = @listserv.id
       end
 
-      it 'creates content associated with users home community when enhancing though the listserv' do
-        expect{subject}.to change{Content.count}.by(1)
-        expect(assigns(:event).content.location_ids).to eq([@current_user.location_id])
+      it 'adds the listserv locations to the content record' do
+        subject
+        event_content = assigns(:event).content
+        expect(event_content.location_ids.count).to be > 0
+        expect(event_content.location_ids).to include(*@listserv.location_ids)
       end
     end
 
@@ -321,6 +354,35 @@ describe Api::V3::EventsController, :type => :controller do
         expect(AdMailer).to receive(:event_adveritising_request).with(@current_user, instance_of(Event)).and_return(mail)
         subject
       end
+    end
+
+    context 'with content location attributes' do
+      let(:locations) { FactoryGirl.create_list(:location, 3) }
+
+      before do
+        @event_attrs[:content_locations] = locations.map do |location|
+          { location_id: location.slug }
+        end
+      end
+
+      it 'allows nested content locations to be specified' do
+        subject
+        expect(response.status).to eql 201
+        expect(Content.last.locations.to_a).to include *locations
+      end
+
+      context 'base locations' do
+        before do
+          @event_attrs[:content_locations].each{|l| l[:location_type] = 'base'}
+        end
+
+        it 'allows nested location type to be specified as base' do
+          subject
+          expect(response.status).to eql 201
+          expect(Content.last.base_locations.to_a).to include *locations
+        end
+      end
+
     end
   end
 end

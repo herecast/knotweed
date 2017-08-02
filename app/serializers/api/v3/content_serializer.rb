@@ -9,7 +9,7 @@ module Api
         :event_instance_id, :parent_event_instance_id, :registration_deadline,
         :created_at, :updated_at, :redirect_url, :event_id, :cost, :avatar_url,
         :organization_profile_image_url, :biz_feed_public, :sunset_date, :campaign_start,
-        :campaign_end
+        :campaign_end, :base_location_names, :content_locations
 
       def content_id
         object.id
@@ -140,6 +140,20 @@ module Api
       def registration_deadline
         if object.channel_type == 'Event'
           object.channel.try(:registration_deadline)
+        end
+      end
+
+      def base_location_names
+        object.base_locations.map(&:name)
+      end
+
+      def content_locations
+        object.content_locations.map do |cl|
+          {
+            id: cl.id,
+            location_type: cl.location_type,
+            location_id: cl.location.slug
+          }
         end
       end
 

@@ -59,5 +59,52 @@ namespace :cleanup do
     Content.where("published = ? AND view_count > ?", false, 0).update_all(view_count: 0)
   end
 
+  desc "Update business locations to be 2 char abbr for state"
+  task :two_char_states_biz_locations => :environment do
+    def save_to_tempfile(url)
+      uri = URI.parse(url)
+      Net::HTTP.start(uri.host, uri.port, use_ssl: (uri.scheme == 'https')) do |http|
+        resp = http.get(uri.path)
+        file = Tempfile.new('zipcsv', Dir.tmpdir)
+        file.binmode
+        file.write(resp.body)
+        file.flush
+        file
+      end
+    end
+
+    # Get 2014 census data for postal code to state mapping
+    temp_file = save_to_tempfile("https://www.irs.gov/pub/irs-soi/14zpallnoagi.csv")
+    map = {}
+    # {'83854' => 'ID', ...}
+    CSV.foreach(temp_file.path, headers: true) do |row|
+      map[row['ZIPCODE'].to_i] = row['STATE']
+    end
+
+    failed = []
+    completed_count = 0
+    BusinessLocation.skip_callback(:commit, :after, :reindex_associations_async)
+
+    BusinessLocation.find_each do |bl|
+      begin
+        if bl.zip?
+          if state = map[ bl.zip.split('-').first.to_i ]
+            bl.update_attribute 'state', state
+            completed_count +=1
+            next
+          end
+        end
+      rescue Exception => e
+        logger.error(e)
+      end
+      failed << bl
+    end
+
+    puts "Done, #{completed_count} completed"
+    if failed.count > 0
+      puts "Failed BusinessLocation records: (#{failed.count})"
+      puts failed.map(&:id).join(', ')
+    end
+  end
 end
 

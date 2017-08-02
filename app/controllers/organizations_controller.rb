@@ -137,7 +137,8 @@ class OrganizationsController < ApplicationController
         :profile_ad_override, :consumer_app_ids => [], :location_ids => [],
         :business_location => [:name, :address, :venue_url, :city,
           :state, :zip, :phone, :email, :hours],
-        :business_profile => { :business_category_ids => [] }
+        :business_profile => { :business_category_ids => [] },
+        :organization_locations_attributes => [:id, :location_type, :location_id]
       )
     end
 

@@ -21,17 +21,13 @@ module Api
           opts[:where][:organization_id] = allowed_orgs.collect{|c| c.id}
         end
 
-        if params[:location_id].present?
-          opts[:where][:all_loc_ids] = [Location.find_by_slug_or_id(params[:location_id]).id]
-        else
-          @default_location_id = Location.find_by_city(Location::DEFAULT_LOCATION).id
-          opts[:where][:all_loc_ids] = [@default_location_id]
-        end
+        add_location_query(opts)
 
         query = params[:query].present? ? params[:query] : '*'
         @events = Content.search query, opts
 
-        render json: @events, each_serializer: ContentSerializer
+        render json: @events, each_serializer: ContentSerializer,
+          meta: {total: @events.total_entries}
       end
 
       def update
@@ -54,7 +50,10 @@ module Api
 
           schedule_data = params[:event].delete :schedules
           schedules = schedule_data.map{ |s| Schedule.build_from_ux_for_event(s, @event.id) }
-          event_hash = process_event_params(params[:event])
+
+          event_hash = ActionController::Parameters.new(
+            process_event_params(params[:event])
+          ).permit!
 
           if @event.update_with_schedules(event_hash, schedules)
             if listserv_ids.present?
@@ -96,7 +95,9 @@ module Api
         schedule_data = params[:event].delete :schedules
         schedules = schedule_data.map{ |s| Schedule.build_from_ux_for_event(s) }
 
-        event_hash = process_event_params(params[:event])
+        event_hash = ActionController::Parameters.new(
+          process_event_params(params[:event])
+        ).permit!
 
         @event = Event.new(event_hash)
         @event.content.organization_id = org_id
@@ -142,13 +143,22 @@ module Api
       # and translated hash of event data
       def process_event_params(e)
         include_upper_valley = e[:extended_reach_enabled]
-        location_ids = [@current_api_user.try(:location_id)]
-        location_ids.push Location::REGION_LOCATION_ID if include_upper_valley
         # have to parse out event.content parameters into the appropriate place
         new_e = { content_attributes: {} }
         new_e[:content_attributes][:raw_content] = e[:content] if e.has_key? :content
         new_e[:content_attributes][:title] = e[:title] if e.has_key? :title
-        new_e[:content_attributes][:location_ids] = location_ids.uniq
+
+        if(e[:content_locations].present?)
+          new_e[:content_attributes][:content_locations_attributes] = e[:content_locations].tap do |h|
+            # translate slug to id
+            h.each do |content_location|
+              content_location[:location_id] = Location.find_by(slug: content_location[:location_id]).try(:id)
+            end
+          end
+
+        end
+
+        new_e[:content_attributes][:promote_radius] = e[:promote_radius] if e.has_key? :promote_radius
 
         new_e[:cost] = e[:cost] if e.has_key? :cost
         new_e[:cost_type] = e[:cost_type]
@@ -190,6 +200,32 @@ module Api
       def contact_user_and_ad_team
         AdMailer.event_advertising_user_contact(@current_api_user).deliver_later
         AdMailer.event_adveritising_request(@current_api_user, @event).deliver_later
+      end
+
+      private
+      def add_location_query(opts)
+        if params[:location_id].present?
+          opts[:where][:or] ||= []
+          location = Location.find_by_slug_or_id(params[:location_id])
+
+          if params[:radius].present? && params[:radius].to_i > 0
+            locations_within_radius = Location.within_radius_of(location, params[:radius].to_i).map(&:id)
+
+            opts[:where][:or] << [
+              {my_town_only: false, all_loc_ids: locations_within_radius},
+              {my_town_only: true, all_loc_ids: location.id}
+            ]
+          else
+            opts[:where][:or] ||= []
+            opts[:where][:or] << [
+              {about_location_ids: [location.id]},
+              {base_location_ids: [location.id]}
+            ]
+          end
+        else
+          @default_location_id = Location.find_by_city(Location::DEFAULT_LOCATION).id
+          opts[:where][:all_loc_ids] = [@default_location_id]
+        end
       end
 
     end

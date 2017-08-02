@@ -87,6 +87,30 @@ FactoryGirl.define do
       }
     end
 
+    trait :event do
+      content_category {
+        ContentCategory.find_or_create_by({
+          name: 'event'
+        })
+      }
+
+      channel {
+        FactoryGirl.build :event, content: nil
+      }
+    end
+
+    trait :market_post do
+      content_category {
+        ContentCategory.find_or_create_by({
+          name: 'market'
+        })
+      }
+
+      channel {
+        FactoryGirl.build :market_post, content: nil
+      }
+    end
+
     trait :published do
       published true
       pubdate { Time.current }

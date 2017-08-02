@@ -263,6 +263,9 @@ class ContentsController < ApplicationController
         :url,
         :banner_ad_override,
         :sanitized_content,
+        content_locations_attributes: [
+          :id, :location_type, :location_id, :_destroy
+        ],
         organization_ids: [],
         similar_content_overrides: []
       )

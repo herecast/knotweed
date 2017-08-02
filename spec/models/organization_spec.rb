@@ -35,6 +35,36 @@ require 'spec_helper'
 
 describe Organization, :type => :model do
   it {is_expected.to have_db_column(:profile_title)}
+  it { is_expected.to have_many :organization_locations }
+  it { is_expected.to have_many :locations }
+
+  describe "#base_locations" do
+    let(:organization) { FactoryGirl.create :organization }
+    let(:non_base) { FactoryGirl.create_list :location, 3 }
+    let(:base) { FactoryGirl.create_list :location, 3 }
+
+    before do
+      non_base.each do |location|
+        OrganizationLocation.create(
+          organization: organization,
+          location: location
+        )
+      end
+
+      base.each do |location|
+        OrganizationLocation.create(
+          organization: organization,
+          location: location,
+          location_type: 'base'
+        )
+      end
+    end
+
+    it 'returns locations specified as "base"' do
+      expect(organization.base_locations).to include(*base)
+      expect(organization.base_locations).to_not include(*non_base)
+    end
+  end
 
   before do
     @organization = FactoryGirl.create(:organization)

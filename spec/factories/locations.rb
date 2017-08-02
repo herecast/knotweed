@@ -22,11 +22,11 @@ FactoryGirl.define do
   factory :location do
     zip { Faker::Address.zip }
     city { Faker::Address.city }
-    state { Faker::Address.state }
+    state { Faker::Address.state_abbr }
     county { Faker::Address.city }
     lat { Faker::Address.latitude }
     long { Faker::Address.longitude }
-    consumer_active false
+    consumer_active true
 
     trait :default do
       id Location::REGION_LOCATION_ID

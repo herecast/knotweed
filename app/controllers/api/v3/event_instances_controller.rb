@@ -13,8 +13,22 @@ module Api
         set_date_range
 
         if params[:location_id].present?
+          @opts[:where][:or] ||= []
           location = Location.find_by_slug_or_id(params[:location_id])
-          @opts[:where][:all_loc_ids] = [location.id]
+
+          if params[:radius].present? && params[:radius].to_i > 0
+            locations_within_radius = Location.within_radius_of(location, params[:radius].to_i).map(&:id)
+
+            @opts[:where][:or] << [
+              {my_town_only: false, all_loc_ids: locations_within_radius},
+              {my_town_only: true, all_loc_ids: location.id}
+            ]
+          else
+            @opts[:where][:or] << [
+              {base_location_ids: [location.id]},
+              {about_location_ids: [location.id]}
+            ]
+          end
         end
 
         if params[:category].present? && params[:category] != 'Everything'

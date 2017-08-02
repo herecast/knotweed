@@ -77,10 +77,7 @@ module Api
           render json: [], each_serializer: NewsSerializer and return
         end
 
-        if params[:location_id].present?
-          location = Location.find_by_slug_or_id params[:location_id]
-          opts[:where][:all_loc_ids] = location.id
-        end
+        add_location_query(opts) if params[:location_id].present?
 
         opts[:where][:root_content_category_id] = ContentCategory.find_by_name('news').id
 
@@ -135,21 +132,70 @@ module Api
       protected
 
       def news_params
-        params[:news][:raw_content] = params[:news].delete :content if params[:news].has_key? :content
-        params[:news][:pubdate] = params[:news].delete :published_at if params[:news].has_key? :published_at
-        author_name = params[:news].delete :author_name
-        if @news.present? # update scenario, news already exists and has an author who may not be the current user
-          params[:news][:authors_is_created_by] = true if @news.created_by.try(:name) == author_name
-        elsif author_name == @current_api_user.name # @news hasn't been persisted yet so has no created_by
-          # which means the current user IS the author
-          params[:news][:authors_is_created_by] = true
+        transformed_params.require(:news).permit(
+          :raw_content, :pubdate, :authors,
+          :organization_id, :title, :subtitle,
+          :authors_is_created_by,
+          :promote_base_location_id,
+          :promote_radius,
+          content_locations_attributes: [:id, :location_id, :location_type]
+        )
+      end
+
+      def transformed_params
+        ActionController::Parameters.new(params).tap do |h|
+          h[:news][:raw_content] = h[:news].delete :content if h[:news].has_key? :content
+          h[:news][:pubdate] = h[:news].delete :published_at if h[:news].has_key? :published_at
+          author_name = h[:news].delete :author_name
+
+          if @news.present? # update scenario, news already exists and has an author who may not be the current user
+            h[:news][:authors_is_created_by] = true if @news.created_by.try(:name) == author_name
+          elsif author_name == @current_api_user.name # @news hasn't been persisted yet so has no created_by
+            # which means the current user IS the author
+            h[:news][:authors_is_created_by] = true
+          end
+
+          unless h[:news][:authors_is_created_by]
+            h[:news][:authors_is_created_by] = false
+            h[:news][:authors] = author_name
+          end
+
+          if h[:news][:content_locations].present?
+            translate_content_locations_params h
+          end
         end
-        unless params[:news][:authors_is_created_by]
-          params[:news][:authors_is_created_by] = false
-          params[:news][:authors] = author_name
+      end
+
+      def add_location_query(opts)
+        if params[:location_id].present?
+          opts[:where][:or] ||= []
+          location = Location.find_by_slug_or_id params[:location_id]
+
+          if params[:radius].present? && params[:radius].to_i > 0
+            locations_within_radius = Location.within_radius_of(location, params[:radius].to_i).map(&:id)
+
+            opts[:where][:or] << [
+              {my_town_only: false, all_loc_ids: locations_within_radius},
+              {my_town_only: true, all_loc_ids: location.id}
+            ]
+          else
+            opts[:where][:or] << [
+              {about_location_ids: [location.id]},
+              {base_location_ids: [location.id]}
+            ]
+          end
         end
-        params.require(:news).permit(:raw_content, :pubdate, :authors,
-                      :organization_id, :title, :subtitle, :authors_is_created_by)
+      end
+
+      def translate_content_locations_params(data)
+        if data[:news][:content_locations]
+          data[:news][:content_locations_attributes] = data[:news].delete(:content_locations).tap do |h|
+            # translate slug to id
+            h.each do |content_location|
+              content_location[:location_id] = Location.find_by(slug: content_location[:location_id]).try(:id)
+            end
+          end
+        end
       end
 
     end

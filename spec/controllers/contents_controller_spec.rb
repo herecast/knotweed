@@ -188,6 +188,12 @@ describe ContentsController, type: :controller do
       url: 'http://empire.org',
       banner_ad_override: 34343,
       sanitized_content: 'Propaganda, probably',
+      content_locations_attributes: [
+        {
+          location_type: 'base',
+          location_id: FactoryGirl.create(:location).id
+        }
+      ],
       organization_ids: '12,15',
       similar_content_overrides: '234,235'
     } }
@@ -208,6 +214,9 @@ describe ContentsController, type: :controller do
         :url,
         :banner_ad_override,
         :sanitized_content,
+        content_locations_attributes: [
+          :id, :location_type, :location_id, :_destroy
+        ],
         organization_ids: [],
         similar_content_overrides: []
       ).for(:create, params: { content: content_params })

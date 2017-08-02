@@ -15,8 +15,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
         locations: [@default_location], published: true
       FactoryGirl.create :content, content_category: @market_cat,
         locations: [@other_location], published: true
-      FactoryGirl.create :content, content_category: @market_cat,
-        locations: [@third_location], published: true
       @old_post = FactoryGirl.create :content, content_category: @market_cat,
         locations: [@default_location], published: true, pubdate: 40.days.ago
     end
@@ -33,25 +31,8 @@ describe Api::V3::MarketPostsController, :type => :controller do
       expect(assigns(:market_posts)).not_to include(@old_post)
     end
 
-    it 'should allow querying by location_id' do
-      get :index, format: :json, location_id: @third_location.id
-      expect(assigns(:market_posts).count).to eql 1
-      expect(assigns(:market_posts).select{|c| c.locations.include? @third_location }.count).to eq(assigns(:market_posts).count)
-    end
-
-    it 'should allow querying by location_id as slug' do
-      get :index, format: :json, location_id: @third_location.slug
-      expect(assigns(:market_posts).count).to eql 1
-      expect(assigns(:market_posts).select{|c| c.locations.include? @third_location }.count).to eq(assigns(:market_posts).count)
-    end
-
-    describe 'querying with location_id=0' do
-      subject { get :index, location_id: 0 }
-
-      it 'should filter by Location::DEFAULT_LOCATION' do
-        subject
-        expect(assigns(:market_posts)).to match_array [@default_location_content]
-      end
+    it_behaves_like "Location based index" do
+      let(:content_type) { :market_post }
     end
 
     describe 'searching' do
@@ -109,35 +90,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
         subject
         expect(assigns(:market_posts).count).to eq(Content.where(content_category_id: @market_cat.id).
                                                where('pubdate > ?', 30.days.ago).count)
-      end
-    end
-
-    describe 'my_town_only restriction logic' do
-      before do
-        @mp1 = FactoryGirl.create :market_post, my_town_only: true,
-          locations: [@user.location]
-        @mp2 = FactoryGirl.create :market_post, my_town_only: true,
-          locations: [@default_location]
-      end
-
-      context 'signed in' do
-        before { api_authenticate user: @user }
-        it 'should return my_town_only content from the user\'s location' do
-          subject
-          expect(assigns(:market_posts)).to include(@mp1.content)
-        end
-
-        it 'should not return my_town_only content other locations' do
-          subject
-          expect(assigns(:market_posts)).to_not include(@mp2.content)
-        end
-      end
-
-      context 'not signed in' do
-        it 'should not return any my_town_only posts' do
-          subject
-          expect(assigns(:market_posts)).to_not include([@mp1, @mp2])
-        end
       end
     end
   end
@@ -302,21 +254,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
         end
       end
 
-      context 'with extended_reach_enabled true' do
-        before do
-          @attrs_for_update[:extended_reach_enabled] = true
-          @region_location = FactoryGirl.create :location
-          stub_const("Location::REGION_LOCATION_ID", @region_location.id)
-        end
-
-        it 'should update the market post with locations including REGION_LOCATION_ID' do
-          subject
-          expect(@market_post.reload.content.location_ids).to include(@region_location.id)
-        end
-      end
-
       context 'when marking a post as sold' do
-
         before do
           @content =  FactoryGirl.create :content
         end
@@ -327,6 +265,42 @@ describe Api::V3::MarketPostsController, :type => :controller do
             expect(@market_post.reload.sold).to eq true
           end
         end
+      end
+
+      context 'with content location attributes' do
+        let(:locations) { FactoryGirl.create_list(:location, 3) }
+
+        before do
+          @attrs_for_update[:content_locations] = locations.map do |location|
+            { location_id: location.slug }
+          end
+        end
+
+        it 'allows nested content locations to be specified' do
+          subject
+          expect(response.status).to eql 200
+          expect(Content.last.locations.to_a).to include *locations
+        end
+
+        context 'base locations' do
+          before do
+            @attrs_for_update[:content_locations].each{|l| l[:location_type] = 'base'}
+          end
+
+          it 'allows nested location type to be specified as base' do
+            subject
+            expect(response.status).to eql 200
+            expect(Content.last.base_locations.to_a).to include *locations
+          end
+        end
+
+        context 'when updating a market post with associated content' do
+          it 'updates the market post to sold' do
+            put :update, id: @market_post.content.id, market_post: @attrs_for_update.merge(sold: true)
+            expect(@market_post.reload.sold).to eq true
+          end
+        end
+
       end
 
     end
@@ -356,8 +330,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
           contact_email: 'fake@email.com',
           locate_address: '300 Main Street Norwich VT 05055',
           preferred_contact_method: 'phone',
-          status: 'selling',
-          my_town_only: true
+          status: 'selling'
         }
       end
 
@@ -377,20 +350,17 @@ describe Api::V3::MarketPostsController, :type => :controller do
         expect(assigns(:market_post).content.present?).to be true
       end
 
-      it 'should correctly set the my_town_only attribute' do
-        subject
-        expect(assigns(:market_post).content.my_town_only).to be true
-      end
-
       context 'with listserv_id' do
         before do
-          @listserv = FactoryGirl.create :vc_listserv
-          @basic_attrs[:listserv_id] = @listserv.id
+          @listserv = FactoryGirl.create :vc_listserv,
+            locations: [FactoryGirl.create(:location)]
+          @basic_attrs[:listserv_ids] = [@listserv.id]
         end
 
-        it 'creates content associated with users home community when enhancing through the listserv' do
-          expect{subject}.to change{Content.count}.by(1)
-          expect(assigns(:market_post).content.location_ids).to eq([@user.location_id])
+        it 'adds listserv locations to content' do
+          subject
+          expect(assigns(:market_post).content.location_ids.count).to be > 0
+          expect(assigns(:market_post).content.location_ids).to include(*@listserv.location_ids)
         end
       end
 

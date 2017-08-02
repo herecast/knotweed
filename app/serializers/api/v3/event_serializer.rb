@@ -10,7 +10,12 @@ module Api
         :registration_deadline, :registration_url,
         :registration_phone, :registration_email,
         :content_id,
-        :first_instance_id, :category, :owner_name, :can_edit
+        :first_instance_id, :category, :owner_name, :can_edit,
+        :base_location_names, :content_locations, :promote_radius
+
+      def promote_radius
+        object.content.promote_radius
+      end
 
       # this is funky but without it, active model serializer tries to use the URL helper
       # event_url instead of the attribute.
@@ -93,6 +98,24 @@ module Api
           context[:current_ability].can?(:manage, object.content)
         else
           false
+        end
+      end
+
+      def base_location_names
+        names = object.content.base_locations.map(&:name)
+        if object.content.organization
+          names |= object.content.organization.base_locations.map(&:name)
+        end
+        names
+      end
+
+      def content_locations
+        object.content.content_locations.map do |l|
+          {
+            id: l.id,
+            location_type: l.location_type,
+            location_id: l.location.slug
+          }
         end
       end
     end

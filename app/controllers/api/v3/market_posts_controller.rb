@@ -10,18 +10,7 @@ module Api
         opts[:where] = {
           pubdate: 30.days.ago..Time.zone.now
         }
-        # market local only restriction
-        # if a user is signed in, we allow showing "restricted content" if it's
-        # restricted to their location (and if other search params allow it to be
-        # included).
-        if user_signed_in?
-          opts[:where][:or] = [
-            [{my_town_only: false}, {all_loc_ids: [@current_user.location_id]}]
-          ]
-        else
-          # if a user is not signed in, we do not show location restricted content at all.
-          opts[:where][:my_town_only] = false
-        end
+
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 14
         opts[:where][:published] = 1 if @repository.present?
@@ -32,13 +21,23 @@ module Api
           opts[:where][:organization_id] = allowed_orgs.collect{|c| c.id}
         end
 
-        # Ember app passes location_id 0 for Upper Valley and an empty location_id
-        # for 'All Communities'
-        # the .present? condition is to deal with the parameter being empty
-        if params[:location_id].present? and params[:location_id] == '0'
-          opts[:where][:all_loc_ids] = [Location.find_by_city(Location::DEFAULT_LOCATION).id]
-        elsif params[:location_id].present?
-          opts[:where][:all_loc_ids] = [Location.find_by_slug_or_id(params[:location_id]).id]
+        if params[:location_id].present?
+          opts[:where][:or] ||= []
+          location = Location.find_by_slug_or_id(params[:location_id])
+
+          if params[:radius].present? && params[:radius].to_i > 0
+            locations_within_radius = Location.within_radius_of(location, params[:radius].to_i).map(&:id)
+
+            opts[:where][:or] << [
+              {my_town_only: false, all_loc_ids: locations_within_radius},
+              {my_town_only: true, all_loc_ids: location.id}
+            ]
+          else
+            opts[:where][:or] << [
+              {about_location_ids: [location.id]},
+              {base_location_ids: [location.id]}
+            ]
+          end
         end
 
         opts[:where][:root_content_category_id] = ContentCategory.find_by_name('market').id
@@ -124,6 +123,15 @@ module Api
           new_params = params
           attributes = @market_post.present? ? additional_update_attributes : additional_create_attributes
           new_params[:market_post].merge!(attributes)
+
+          if new_params[:market_post][:content_locations].present?
+            new_params[:market_post][:content_attributes][:content_locations_attributes] = new_params[:market_post].delete(:content_locations).tap do |h|
+              h.each do |content_location|
+                content_location[:location_id] = Location.find_by(slug: content_location[:location_id]).try(:id)
+              end
+            end
+          end
+
           new_params.require(:market_post).permit(
             :contact_email,
             :contact_phone,
@@ -148,7 +156,13 @@ module Api
               :timestamp,
               :organization_id,
               :my_town_only,
-              location_ids: []
+              :promote_radius,
+              location_ids: [],
+              content_locations_attributes: [
+                :id,
+                :location_type,
+                :location_id
+              ]
             ]
           )
         end
@@ -161,12 +175,11 @@ module Api
               raw_content: params[:market_post][:content],
               authoremail: @current_api_user.try(:email),
               authors: @current_api_user.try(:name),
-              location_ids: [@current_api_user.location_id],
               content_category_id: ContentCategory.find_or_create_by(name: 'market').id,
               pubdate: Time.zone.now,
               timestamp: Time.zone.now,
               organization_id: params[:market_post][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
-              my_town_only: params[:market_post].delete(:my_town_only)
+              promote_radius: params[:market_post].delete(:promote_radius)
             }
           }
         end
@@ -176,15 +189,11 @@ module Api
             cost: params[:market_post][:price],
             content_attributes: {
               id: params[:id],
-              location_ids: [@current_api_user.location_id],
               title: params[:market_post][:title],
-              raw_content: params[:market_post][:content]
+              raw_content: params[:market_post][:content],
+              promote_radius: params[:market_post].delete(:promote_radius)
             }
           }
-
-          if params[:market_post][:extended_reach_enabled].present?
-            additional_attributes[:content_attributes][:location_ids].push(Location::REGION_LOCATION_ID)
-          end
 
           additional_attributes
         end

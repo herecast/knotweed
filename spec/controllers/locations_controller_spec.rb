@@ -56,7 +56,7 @@ describe LocationsController, :type => :controller do
   describe "POST #create" do
     context "when creation succeeds" do
       it "html: redirects to locations" do
-        post :create, location: { city: 'fake', state: 'fake' }
+        post :create, location: { city: 'fake', state: 'VT' }
         expect(response.code).to eq '302'
         expect(response).to redirect_to locations_path
       end
@@ -68,7 +68,7 @@ describe LocationsController, :type => :controller do
       end
 
       it "html: renders new page" do
-        post :create, location: { city: 'fake', state: 'fake' }
+        post :create, location: { city: 'fake', state: 'VT' }
         expect(response).to render_template 'new'
       end
     end

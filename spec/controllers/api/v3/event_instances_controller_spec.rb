@@ -166,14 +166,19 @@ describe Api::V3::EventInstancesController, :type => :controller do
       let(:location_1) { FactoryGirl.create :location }
       let!(:event_location_1) {
         FactoryGirl.create :event,
-          locations: [location_1],
+          base_locations: [location_1],
+          start_date: 3.hours.from_now
+      }
+      let!(:event_location_3) {
+        FactoryGirl.create :event,
+          about_locations: [location_1],
           start_date: 3.hours.from_now
       }
 
       let(:location_2) { FactoryGirl.create :location }
       let!(:event_location_2) {
         FactoryGirl.create :event,
-          locations: [location_2],
+          base_locations: [location_2],
           start_date: 3.hours.from_now
       }
 
@@ -184,19 +189,55 @@ describe Api::V3::EventInstancesController, :type => :controller do
           subject
           expect(assigns(:event_instances)).to match [
             event_location_1.event_instances,
+            event_location_3.event_instances,
             event_location_2.event_instances
           ].flatten
         end
       end
 
       context 'location_id is specified' do
-        subject { get :index, location_id: location_1.slug }
+        subject { get :index, location_id: location_1.slug, days_ahead: 365 }
 
         it 'returns event instances from the specified location' do
           subject
-          expect(assigns(:event_instances)).to match [
-            event_location_1.event_instances
+          expect(assigns(:event_instances)).to include *[
+            event_location_1.event_instances,
+            event_location_3.event_instances
           ].flatten
+        end
+
+        context 'with radius specified' do
+          let(:radius) { 20 }
+          let!(:near_event) {
+            FactoryGirl.create :event, locations: [
+              FactoryGirl.create(:location, coordinates: Geocoder::Calculations.random_point_near(
+                location_1,
+                19, units: :mi
+              )),
+              FactoryGirl.create(:location)
+            ]
+          }
+
+          it 'returns event instances located within radius' do
+            get :index, location_id: location_1.slug, radius: radius, days_ahead: 365
+            expect(assigns(:event_instances).results).to include *near_event.event_instances
+          end
+
+          context 'My town only' do
+            let!(:near_event_only_one_location) {
+              FactoryGirl.create :event, locations: [
+                FactoryGirl.create(:location, coordinates: Geocoder::Calculations.random_point_near(
+                  location_1,
+                  19, units: :mi
+                ))
+              ]
+            }
+
+            it 'does not return events posted to a location within the radius if it is their only location' do
+              get :index, location_id: location_1.slug, radius: radius, days_ahead: 365
+              expect(assigns(:event_instances).results).to_not include *near_event_only_one_location.event_instances
+            end
+          end
         end
       end
     end

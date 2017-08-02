@@ -6,9 +6,11 @@ describe 'Events Endpoints', type: :request do
   let(:consumer_app) { FactoryGirl.create :consumer_app }
 
   describe 'events index', elasticsearch: true do
+    let(:non_default_location) { FactoryGirl.create(:location) }
     let!(:non_default_location_event) {
       FactoryGirl.create :event,
-        locations: [FactoryGirl.create(:location)]
+        base_locations: [non_default_location],
+        locations: [non_default_location]
     }
 
     before do
@@ -30,9 +32,8 @@ describe 'Events Endpoints', type: :request do
 
     it "returns events" do
       subject
-      expect(response_json).to match(
-        events: [
-          a_hash_including({
+      expect(response.body).to include_json(
+        events: [{
             id: @event.content.id,
             title: @event.content.title,
             image_url: nil,
@@ -56,9 +57,10 @@ describe 'Events Endpoints', type: :request do
             parent_content_type: nil,
             event_instance_id: @event.event_instances.first.id,
             parent_event_instance_id: nil,
-            registration_deadline: @event.registration_deadline
-          })
-        ]
+            registration_deadline: @event.registration_deadline,
+            base_location_names: @event.base_locations.map(&:name),
+            content_locations: @event.content_locations.map{|l| l.attributes.slice(:id, :location_type, :location_id)}
+          }]
       )
     end
 
@@ -72,7 +74,7 @@ describe 'Events Endpoints', type: :request do
     end
 
     context 'with location_id specified' do
-      it 'returns events from specified location only' do
+      it 'returns events based in specified location only' do
         get "/api/v3/events", {
           location_id: non_default_location_event.content.location_ids.first
         }, headers
@@ -81,6 +83,33 @@ describe 'Events Endpoints', type: :request do
 
         #expect(event_ids).to_not include @event.id
         expect(event_ids).to include non_default_location_event.content.id
+      end
+
+      context 'with radius specified' do
+        let(:location) { FactoryGirl.create :location }
+        let!(:located_event) { FactoryGirl.create :event, locations: [location] }
+        let(:radius) { 20 }
+        let(:location_within_radius) {
+          FactoryGirl.create(:location,
+            coordinates: Geocoder::Calculations.random_point_near(
+              location,
+              19, units: :mi
+            )
+          )
+        }
+        let!(:near_event) {
+          FactoryGirl.create :event, locations: [FactoryGirl.create(:location), location_within_radius] }
+
+        before do
+          consumer_app.organizations << located_event.organization
+          consumer_app.organizations << near_event.organization
+        end
+
+        it 'returns events located within radius' do
+          get "/api/v3/events", { location_id: location.id, radius: radius }, headers
+          event_ids = response_json[:events].map{|attrs| attrs[:id]}
+          expect(event_ids).to include(located_event.content.id, near_event.content.id)
+        end
       end
 
       context 'location_id is a slug' do
@@ -131,7 +160,7 @@ describe 'Events Endpoints', type: :request do
         put "/api/v3/events/#{schedule.event.id}", { event: put_params }, auth_headers
         expect(response.status).to eql 403
       end
-      
+
     end
   end
 end

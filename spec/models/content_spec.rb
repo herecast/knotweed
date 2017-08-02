@@ -58,6 +58,10 @@ require 'spec_helper'
 
 describe Content, :type => :model do
 
+  it { is_expected.to have_many 'content_locations' }
+  it { is_expected.to have_many 'locations' }
+  it { is_expected.to have_db_column :promote_radius }
+
   before { allow_any_instance_of(Promotion).to receive(:update_active_promotions).and_return(true) }
 
   include_examples 'Auditable', Content
@@ -229,6 +233,62 @@ describe Content, :type => :model do
           expect(subject.location).to eql subject.import_location.city
         end
       end
+    end
+  end
+
+  describe "#base_locations" do
+    let(:content) { FactoryGirl.create :content }
+    let(:non_base) { FactoryGirl.create_list :location, 3 }
+    let(:base) { FactoryGirl.create_list :location, 3 }
+
+    before do
+      non_base.each do |location|
+        ContentLocation.create(
+          content: content,
+          location: location
+        )
+      end
+
+      base.each do |location|
+        ContentLocation.create(
+          content: content,
+          location: location,
+          location_type: 'base'
+        )
+      end
+    end
+
+    it 'returns locations specified as "base"' do
+      expect(content.base_locations).to include(*base)
+      expect(content.base_locations).to_not include(*non_base)
+    end
+  end
+
+  describe "#about_locations" do
+    let(:content) { FactoryGirl.create :content }
+    let(:non_about) { FactoryGirl.create_list :location, 3 }
+    let(:about) { FactoryGirl.create_list :location, 3 }
+
+    before do
+      non_about.each do |location|
+        ContentLocation.create(
+          content: content,
+          location: location
+        )
+      end
+
+      about.each do |location|
+        ContentLocation.create(
+          content: content,
+          location: location,
+          location_type: 'about'
+        )
+      end
+    end
+
+    it 'returns locations specified as "about"' do
+      expect(content.about_locations).to include(*about)
+      expect(content.about_locations).to_not include(*non_about)
     end
   end
 
@@ -1169,6 +1229,54 @@ describe Content, :type => :model do
 
   end
 
+  describe 'one location detected' do
+    before do
+      @config = Hash.new
+      @config["username"] = 'subtextuvltest@gmail.com'
+      @config["password"] = 'RailRoad202'
+ 
+      parser_path = Dir.pwd + "/lib/parsers/"
+      require parser_path + "mail_extractor.rb"
+      @test_files_path = Dir.pwd + "/spec/fixtures/listserv_test_files"
+      FactoryGirl.create :location, city: 'Norwich', state: 'VT'
+    end
+
+    it 'should mark the content location as "base"' do
+      eml = Mail.read(@test_files_path+"/norwich.txt")
+      parsed_emails = convert_eml_to_hasharray(eml, @config)
+
+      content = Content.create_from_import_job(parsed_emails[0])
+      expect(content.content_locations.count).to eq(1)
+      expect(content.content_locations.first.location_type).to eql "base"
+    end
+
+  end
+
+  describe 'multiple locations detected' do
+    before do
+      @config = Hash.new
+      @config["username"] = 'subtextuvltest@gmail.com'
+      @config["password"] = 'RailRoad202'
+ 
+      parser_path = Dir.pwd + "/lib/parsers/"
+      require parser_path + "mail_extractor.rb"
+      @test_files_path = Dir.pwd + "/spec/fixtures/listserv_test_files"
+      FactoryGirl.create :location, city: 'Norwich', state: 'VT'
+      FactoryGirl.create :location, city: 'Corinth', state: 'VT'
+    end
+
+    it 'should not mark any content location as "base"' do
+      eml = Mail.read(@test_files_path+"/norwich.txt")
+      parsed_emails = convert_eml_to_hasharray(eml, @config)
+      parsed_emails[0]['content_locations'] << "Corinth, VT"
+
+      content = Content.create_from_import_job(parsed_emails[0])
+      expect(content.content_locations.count).to eq(2)
+      location_types = content.content_locations.map(&:location_type)
+      expect(location_types).to_not include "base"
+    end
+  end
+
   describe 'checking upper valley locations on import' do
 
     before do
@@ -1281,6 +1389,8 @@ describe Content, :type => :model do
       expect(content.locations.include?(@new_london)).to eq(true)
       expect(content.locations.include?(@strafford)).to eq(true)
 
+      # Should not set any as base
+      expect(content.content_locations.base.count).to eql 0
     end
   end
 

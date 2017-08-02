@@ -12,6 +12,10 @@ class SelectPromotionBanners
   end
 
   def call
+    if global_banner_override
+      return global_banner_override
+    end
+
     promotion_banner_loop
     get_random_promotion unless @banners.length == (@opts[:limit] || 1) || @not_run_of_site
     @banners
@@ -125,6 +129,33 @@ class SelectPromotionBanners
           add_promotion([banner, nil, 'active no inventory'])
         end
       end
+    end
+
+    def global_banner_override
+      feature = Feature.find_by(name: 'global-banner-override', active: true)
+
+      if feature
+        return @banners if @banners.any?
+
+        ids = JSON.parse(feature.options)
+        promos = Promotion.find(ids)
+
+        banners = promos.collect(&:promotable).select{|p| p.is_a? PromotionBanner}
+
+        if banners.count > 0
+          limit = @opts[:limit] || 1
+
+          while @banners.count < limit.to_i
+            @banners << [banners.sample, nil, 'global-banner-override']
+          end
+        end
+
+        return @banners
+      else
+        return nil;
+      end
+
+    rescue nil
     end
 
 end

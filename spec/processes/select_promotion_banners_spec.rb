@@ -284,6 +284,46 @@ RSpec.describe SelectPromotionBanners do
         expect(results).to eq []
       end
     end
+
+    context 'when feature flag is specifying an override' do
+      let!(:other_promos) {
+        FactoryGirl.create :promotion,
+          promotable: FactoryGirl.create(:promotion_banner)
+      }
+      let!(:promo) {
+        FactoryGirl.create :promotion,
+          promotable: FactoryGirl.create(:promotion_banner)
+      }
+      before do
+        Feature.create(
+          active: true,
+          name: 'global-banner-override',
+          options: "[#{promo.id}]"
+        )
+      end
+
+      subject do
+        SelectPromotionBanners.call()
+      end
+
+      it 'returns the banner for the promo override' do
+        expect(subject.first[0]).to eql promo.promotable
+      end
+
+      describe 'when multiple are asked for' do
+        let(:limit) { 5 }
+        subject do
+          SelectPromotionBanners.call(limit: limit)
+        end
+
+        it 'returns the same banner x times' do
+          expect(subject.count).to eql limit
+          subject.each do |result|
+            expect(result[0]).to eql promo.promotable
+          end
+        end
+      end
+    end
   end
 
 end

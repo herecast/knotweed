@@ -74,6 +74,8 @@ class Content < ActiveRecord::Base
       authors: author_name,
       pubdate: pubdate,
       all_loc_ids: all_loc_ids,
+      base_location_ids: base_locations.map(&:id),
+      about_location_ids: about_locations.map(&:id),
       organization_id: organization.try(:id),
       organization_name: organization.try(:name),
       published: published,
@@ -86,8 +88,19 @@ class Content < ActiveRecord::Base
       root_parent_id: root_parent_id,
       in_accepted_category: !(content_category.try(:name) == 'event' and channel_type != 'Event'),
       is_listserv_market_post: is_listserv_market_post?
-    }
+    }.tap do |data|
+
+      if content_type != :talk && organization.present?
+        data[:base_location_ids] |= organization.base_locations.map(&:id)
+      end
+
+    end
   end
+
+  def my_town_only
+    content_locations.count.eql? 1
+  end
+  alias_method :my_town_only?, :my_town_only
 
   def is_listserv_market_post?
     channel.nil? and (content_category.try(:name) == 'market' or content_category.try(:parent).try(:name) == 'market')
@@ -136,13 +149,43 @@ class Content < ActiveRecord::Base
   # contents, not the promotion of contents (which is handled through the promotion model).
   has_many :content_promotion_banner_loads
   has_many :promotion_banners, through: :content_promotion_banner_loads
+  has_many :content_locations
+  accepts_nested_attributes_for :content_locations, allow_destroy: true
+  has_many :locations, through: :content_locations
+
+  def base_locations
+    # merge query criteria
+    locations.merge(ContentLocation.base)
+  end
+
+  def base_locations=locs
+    locs.each do |l|
+      ContentLocation.find_or_initialize_by(
+        content: self,
+        location: l
+      ).base!
+    end
+  end
+
+  def about_locations
+    # merge query criteria
+    locations.merge(ContentLocation.about)
+  end
+
+  def about_locations=locs
+    locs.each do |l|
+      ContentLocation.find_or_initialize_by(
+        content: self,
+        location: l
+      ).about!
+    end
+  end
 
   has_many :organization_content_tags
   has_many :organizations, through: :organization_content_tags
 
   has_and_belongs_to_many :publish_records
   has_and_belongs_to_many :repositories, -> { uniq }, after_add: :mark_published
-  has_and_belongs_to_many :locations
 
   has_many :images, -> { order("images.primary DESC") }, as: :imageable, inverse_of: :imageable, dependent: :destroy
   accepts_nested_attributes_for :images, allow_destroy: true
@@ -477,6 +520,18 @@ class Content < ActiveRecord::Base
     content.updated_by = User.find_by_id(special_attrs['user_id'])
 
     content.save!
+
+    # set location as base if only one
+    if content.content_locations.count == 1
+      content.content_locations.first.update location_type: 'base'
+    else
+      # If this didn't originate here, then unset any base locations
+      # because we have multiple listserv locations
+      unless data['X-Original-Content-Id'].present? or data['X-Original-Event-Instance-Id'].present?
+        content.content_locations.update_all location_type: nil
+      end
+    end
+
 
     # this new_content_images array will contain a list of the images used in this content record
     new_content_images = []
@@ -1194,7 +1249,7 @@ class Content < ActiveRecord::Base
               terms: {
                 field: :root_parent_id,
                 order: { max_activity: :desc },
-                size: 1000
+                size: 10000
               },
               aggs: {
                 max_activity: { max: { field: :pubdate } }
@@ -1204,9 +1259,60 @@ class Content < ActiveRecord::Base
         }
       }
     }
+
+    # Transform searchkick's "where" into elasticsearch lingo.
     if opts[:where].present?
       conditions = opts[:where].map do |k,v|
-        if v.is_a? Array
+        if k.eql? :or
+          # Support :or like we do in other channel searches.
+          # Expected format:
+          # {
+          #   or: [[
+          #     {attribute: value},
+          #     {attribute: value}
+          #   ]]
+          # }
+          #
+          # becomes:
+          # {
+          #   bool: {
+          #     should: [
+          #       {in: {
+          #           attr_one: [val1, val2]
+          #       }},
+          #       {term: {
+          #         attr_two: val3
+          #       }}
+          #     ]
+          #   }
+          # }
+          {
+            bool: {
+              # Does not take into account other values in first array
+              # dimension.  Not sure when we'd actually use those.
+              should: v[0].map do |condition|
+                if condition.values.count > 1
+                  {bool: {
+                    must: condition.keys.map do |key|
+                      value = condition[key]
+                      if value.is_a? Array
+                        {in: {key => value}}
+                      else
+                        {term: {key => value}}
+                      end
+                    end
+                  }}
+                else
+                  if condition.values.first.is_a? Array
+                    {in: condition}
+                  else
+                    {term: condition}
+                  end
+                end
+              end
+            }
+          }
+        elsif v.is_a? Array
           { in: { k => v } }
         else
           { term: { k => v } }

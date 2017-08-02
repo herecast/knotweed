@@ -26,6 +26,58 @@ RSpec.describe 'Locations API Endpoints', type: :request do
         expect(response_json[:locations].find{|l| l[:id].eql? location.slug}).to match serialized
       end
     end
+
+    describe '?near= parameter' do
+      let(:location) { FactoryGirl.create :location, coordinates: [0, 0] }
+      let(:parameters) {
+        {
+          near: location.slug
+        }
+      }
+
+      subject { get "/api/v3/locations", parameters }
+
+      context 'no radius given' do
+        it 'responds with a 422' do
+          subject
+          expect(response.code).to eql "422"
+        end
+      end
+
+      context 'given a radius' do
+        let(:radius) { 20 }
+
+        before do
+          parameters[:radius] = radius
+        end
+
+        let!(:locations_within_radius) {
+          3.times.collect do
+            FactoryGirl.create :location, coordinates: Geocoder::Calculations.random_point_near(
+              location, radius, units: :mi
+            )
+          end
+        }
+
+        let!(:locations_outside_radius) {
+          FactoryGirl.create_list :location, 3, coordinates: [40, 40]
+        }
+
+        it 'responds with a 200' do
+          subject
+          expect(response.code).to eql "200"
+        end
+
+        it 'returns the locations within the radius of specified location id' do
+          subject
+          location_ids = response_json[:locations].map{|l| l[:id]}
+          expect(location_ids).to include *locations_within_radius.map(&:slug)
+          expect(location_ids).to_not include *locations_outside_radius.map(&:slug)
+        end
+      end
+
+    end
+
   end
 
   describe 'GET /api/v3/location/:id' do
