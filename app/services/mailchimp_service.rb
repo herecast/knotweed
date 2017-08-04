@@ -261,15 +261,19 @@ module MailchimpService
       total_clicks: 0
     }
     lds.each do |ld|
-      open_response  = detect_error(get("/reports/#{ld.mc_campaign_id}")).deep_symbolize_keys
-      click_response = detect_error(get("/reports/#{ld.mc_campaign_id}/click-details?count=100")).deep_symbolize_keys
-      click_info = click_response[:urls_clicked].find do |url_info|
-        url_info[:url].include?(promotion_banner.redirect_url)
-      end
-      formatted_response[:emails_sent]    += open_response[:emails_sent]
-      formatted_response[:opens_total]    += open_response[:opens][:opens_total]
-      if click_info.try(:[], :total_clicks).present?
-        formatted_response[:total_clicks] += click_info[:total_clicks]
+      begin
+        open_response  = detect_error(get("/reports/#{ld.mc_campaign_id}")).deep_symbolize_keys
+        click_response = detect_error(get("/reports/#{ld.mc_campaign_id}/click-details?count=100")).deep_symbolize_keys
+        click_info = click_response[:urls_clicked].find do |url_info|
+          url_info[:url].include?(promotion_banner.redirect_url)
+        end
+        formatted_response[:emails_sent]    += open_response[:emails_sent]
+        formatted_response[:opens_total]    += open_response[:opens][:opens_total]
+        if click_info.try(:[], :total_clicks).present?
+          formatted_response[:total_clicks] += click_info[:total_clicks]
+        end
+      rescue Exception => e
+        Rails.logger.info "Issue with Mailchimp response on PromotionBanner with id: #{promotion_banner.id}: #{e.inspect}"
       end
     end
     return formatted_response
