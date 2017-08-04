@@ -24,7 +24,6 @@
 FactoryGirl.define do
   factory :market_post do
     ignore do
-      my_town_only false
       locations []
       base_locations []
       published true
@@ -46,7 +45,6 @@ FactoryGirl.define do
 
     after(:build) do |e, evaluator|
       if e.content
-        e.content.my_town_only = evaluator.my_town_only
         e.content.published = evaluator.published
         e.content.locations = evaluator.locations
         e.content.base_locations = evaluator.base_locations

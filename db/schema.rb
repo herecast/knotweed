@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170720205022) do
+ActiveRecord::Schema.define(version: 20170803150120) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -356,7 +356,6 @@ ActiveRecord::Schema.define(version: 20170720205022) do
     t.integer  "banner_ad_override",        limit: 8
     t.integer  "root_parent_id",            limit: 8
     t.datetime "deleted_at"
-    t.boolean  "my_town_only",                          default: false
     t.boolean  "authors_is_created_by",                 default: false
     t.string   "subscriber_mc_identifier"
     t.boolean  "biz_feed_public"
@@ -635,9 +634,9 @@ ActiveRecord::Schema.define(version: 20170720205022) do
     t.string   "mc_segment_id"
     t.string   "title"
     t.string   "preheader"
-    t.integer  "promotion_ids",        default: [],              array: true
     t.integer  "content_ids",                                    array: true
     t.integer  "listserv_content_ids",                           array: true
+    t.integer  "promotion_ids",        default: [],              array: true
   end
 
   add_index "listserv_digests", ["listserv_id"], name: "index_listserv_digests_on_listserv_id", using: :btree
@@ -667,13 +666,13 @@ ActiveRecord::Schema.define(version: 20170720205022) do
     t.text     "digest_query"
     t.string   "template"
     t.string   "sponsored_by"
-    t.boolean  "display_subscribe",                       default: false
     t.string   "digest_subject"
     t.string   "digest_preheader"
+    t.boolean  "display_subscribe",                       default: false
     t.string   "list_type",                               default: "custom_list"
     t.string   "sender_name"
-    t.integer  "promotion_ids",                           default: [],                                        array: true
     t.string   "admin_email"
+    t.integer  "promotion_ids",                           default: [],                                        array: true
     t.string   "forwarding_email"
     t.boolean  "forward_for_processing",                  default: false
     t.integer  "post_threshold",                          default: 0
@@ -1090,7 +1089,7 @@ ActiveRecord::Schema.define(version: 20170720205022) do
     t.boolean  "skip_analytics",                     default: false
     t.string   "temp_password"
     t.boolean  "archived",                           default: false
-    t.string   "source"
+    t.string   "source",                 limit: 255
   end
 
   add_index "users", ["email"], name: "idx_16858_index_users_on_email", unique: true, using: :btree

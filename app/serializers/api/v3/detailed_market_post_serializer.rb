@@ -3,7 +3,7 @@ module Api
     class DetailedMarketPostSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :price, :content, :content_id, :published_at,
-        :locate_address, :can_edit, :has_contact_info, :my_town_only,
+        :locate_address, :can_edit, :has_contact_info,
         :author_name, :organization_id, :updated_at, :image_url, :contact_phone,
         :contact_email, :preferred_contact_method, :images, :created_at, :updated_at,
         :sold, :base_location_names, :content_locations, :promote_radius

@@ -34,7 +34,6 @@ describe 'Market Posts', type: :request do
           locate_address: market_post.locate_address,
           can_edit: be_boolean,
           has_contact_info: be_boolean,
-          my_town_only: be_boolean,
           author_name: a_kind_of(String).or(be_nil),
           organization_id: market_post.content.organization_id,
           updated_at: market_post.content.updated_at.try(:iso8601),
@@ -102,8 +101,8 @@ describe 'Market Posts', type: :request do
       @loc2 = FactoryGirl.create :location
       @mps_loc1 = FactoryGirl.create_list :market_post, 3, base_locations: [@loc1]
       @mps_loc2 = FactoryGirl.create_list :market_post, 3, base_locations: [@loc2]
-      @mp_mto_loc1 = FactoryGirl.create :market_post, base_locations: [@loc1], my_town_only: true
-      @mp_mto_loc2 = FactoryGirl.create :market_post, base_locations: [@loc2], my_town_only: true
+      @mp_mto_loc1 = FactoryGirl.create :market_post, base_locations: [@loc1]
+      @mp_mto_loc2 = FactoryGirl.create :market_post, base_locations: [@loc2]
     end
 
     let(:request_params) { {} }
@@ -126,7 +125,6 @@ describe 'Market Posts', type: :request do
           locate_address: a_kind_of(String),
           can_edit: be(true).or( be(false) ),
           has_contact_info: be(true).or( be(false) ),
-          my_town_only: be(true).or( be(false) ),
           author_name: a_kind_of(String),
           organization_id: a_kind_of(Integer),
           created_at: a_kind_of(String),
@@ -251,15 +249,6 @@ describe 'Market Posts', type: :request do
 
             expect(post[:can_edit]).to be true
           end
-        end
-      end
-
-      describe 'searching for the user\'s location' do
-        let(:request_params) { { location_id: user.location.id } } # @loc1
-
-        it 'should respond with all market posts from that location (including `my_town_only`)' do
-          subject
-          expect(assigns(:market_posts)).to match_array((@mps_loc1+[@mp_mto_loc1]).map{|mp| mp.content})
         end
       end
 
