@@ -16,6 +16,8 @@ task :backpublish => :environment do
 
   # required to serialize query params?
   @publish_job.save
-  PublishWorker.new.perform(@publish_job)
+  Searchkick.callbacks(false) do
+    PublishWorker.new.perform(@publish_job)
+  end
   @publish_job.destroy
 end
