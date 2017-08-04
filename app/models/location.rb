@@ -7,16 +7,26 @@
 #  city            :string(255)
 #  state           :string(255)
 #  county          :string(255)
-#  lat             :string(255)
-#  long            :string(255)
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  consumer_active :boolean          default(FALSE)
 #  is_region       :boolean          default(FALSE)
 #  slug            :string
+#  latitude            :float
+#  longitude           :float
 #
 
+require 'geocoder/stores/active_record'
+
 class Location < ActiveRecord::Base
+  def self.geocoder_options
+    {
+      latitude: :latitude,
+      longitude: :longitude
+    }
+  end
+  include Geocoder::Store::ActiveRecord #include query helpers
+
   # defaults to 77, the current production ID for "Upper Valley" location
   REGION_LOCATION_ID = Figaro.env.has_key?(:region_location_id) ? Figaro.env.region_location_id : 77
 
@@ -56,8 +66,8 @@ class Location < ActiveRecord::Base
     {
       id: id,
       location: {
-        lat: lat,
-        lon: long,
+        lat: latitude,
+        lon: longitude,
       },
       city: city,
       state: state,
@@ -82,12 +92,11 @@ class Location < ActiveRecord::Base
   end
 
   def coordinates=coords
-    self.lat,self.long = coords
+    self.latitude,self.longitude = coords
   end
 
   def coordinates
-    return nil unless self.lat? && self.long?
-    [self.lat.to_f,self.long.to_f]
+    [latitude, longitude].compact
   end
 
   alias_method :to_coordinates, :coordinates
@@ -96,24 +105,8 @@ class Location < ActiveRecord::Base
     coordinates.present?
   end
 
-  def latitude
-    return nil unless self.lat?
-    lat.to_f
-  end
-
-  def longitude
-    return nil unless self.long?
-    long.to_f
-  end
-
   def self.with_distance latitude:, longitude:
-    where('lat IS NOT NULL AND long IS NOT NULL')\
-    .where("lat <> '' AND long <> ''")\
-    .select(
-      "*,
-        #{sql_distance_calculation(latitude, longitude)} AS distance
-      "
-    )
+    select("*, #{distance_from_sql([latitude, longitude])} as distance")
   end
 
   def self.nearest_to_coords latitude:, longitude:
@@ -135,10 +128,7 @@ class Location < ActiveRecord::Base
   end
 
   def self.within_radius_of(point, radius)
-    latitude, longitude = Geocoder::Calculations.extract_coordinates(point)
-    where('lat IS NOT NULL AND long IS NOT NULL')\
-    .where("lat <> '' AND long <> ''")\
-    .where("#{sql_distance_calculation(latitude, longitude)} <= ?", radius)
+    geocoded.near(point, radius)
   end
 
   def self.get_ids_from_location_strings(loc_array)
@@ -194,7 +184,7 @@ class Location < ActiveRecord::Base
     opts =  {
       order: {
           _geo_distance: {
-            'location' => "#{lat},#{long}",
+            'location' => "#{latitude},#{longitude}",
             'order' => 'asc',
             'unit' => 'mi'
         }

@@ -34,8 +34,8 @@ class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
 
   def location
     {
-      latitude: object.user.location.lat,
-      longitude: object.user.location.long
+      latitude: object.user.location.latitude,
+      longitude: object.user.location.longitude
     }
   end
 
@@ -69,8 +69,7 @@ class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
 
     unless (object.user &&
         object.user.location &&
-        object.user.location.lat? &&
-        object.user.location.long?)
+        object.user.location.geocoded?)
       keys  = keys - [:location]
     end
 

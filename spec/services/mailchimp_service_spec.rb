@@ -75,8 +75,8 @@ RSpec.describe MailchimpService do
               email_address: subscription.email,
               status_if_new: 'subscribed',
               location: {
-                latitude: subscription.user.location.lat,
-                longitude: subscription.user.location.long
+                latitude: subscription.user.location.latitude,
+                longitude: subscription.user.location.longitude
               },
               merge_fields: {
                 FNAME: subscription.subscriber_name.split(/\s+/).first,
@@ -125,7 +125,7 @@ RSpec.describe MailchimpService do
 
         context 'when user account location has no lat/lng' do
           before do
-            user.location.update!(lat: nil, long: nil)
+            user.location.update!(latitude: nil, longitude: nil)
           end
 
           it 'does upsert on mailchimp api, without location key' do
@@ -275,8 +275,8 @@ RSpec.describe MailchimpService do
               email_address: subscription.email,
               status_if_new: 'subscribed',
               location: {
-                latitude: subscription.user.location.lat,
-                longitude: subscription.user.location.long
+                latitude: subscription.user.location.latitude,
+                longitude: subscription.user.location.longitude
               },
               merge_fields: {
                 FNAME: subscription.subscriber_name.split(/\s+/).first,
@@ -379,8 +379,8 @@ RSpec.describe MailchimpService do
               email_address: subscription.email,
               status_if_new: 'pending',
               location: {
-                latitude: subscription.user.location.lat,
-                longitude: subscription.user.location.long
+                latitude: subscription.user.location.latitude,
+                longitude: subscription.user.location.longitude
               },
               merge_fields: {
                 FNAME: subscription.subscriber_name.split(/\s+/).first,

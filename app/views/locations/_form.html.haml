@@ -6,8 +6,8 @@
         = subregion_select :location, :state, Carmen::Country.coded('US')
 
       = f.input :zip, input_html: { data: { mask: "99999" } }
-      = f.input :lat, label: "Latitude"
-      = f.input :long, label: "Longitude"
+      = f.input :latitude, label: "Latitude"
+      = f.input :longitude, label: "Longitude"
 
     .span6
       = f.input :slug

@@ -35,8 +35,8 @@ describe Api::V3::LocationsController, :type => :controller do
 
   describe 'GET closest', elasticsearch: true do
     let(:location) { FactoryGirl.create :location, consumer_active: true }
-    let(:inactive_location) { FactoryGirl.create :location, consumer_active: false, lat: location.lat,
-      long: location.long }
+    let(:inactive_location) { FactoryGirl.create :location, consumer_active: false, latitude: location.latitude,
+      longitude: location.longitude }
     let(:count) { 5 }
 
     before do
@@ -80,20 +80,20 @@ describe Api::V3::LocationsController, :type => :controller do
       let!(:nearest) {
         FactoryGirl.create :location,
           consumer_active: false,
-          lat: 0.5,
-          long: 0.5
+          latitude: 0.5,
+          longitude: 0.5
       }
       let!(:nearest_active) {
         FactoryGirl.create :location,
           consumer_active: true,
-          lat: 0.8,
-          long: 0.8
+          latitude: 0.8,
+          longitude: 0.8
       }
       let!(:furthest) {
         FactoryGirl.create :location,
           consumer_active: true,
-          lat: 1.2,
-          long: 1.2
+          latitude: 1.2,
+          longitude: 1.2
       }
 
       subject {

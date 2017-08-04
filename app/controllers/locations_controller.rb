@@ -55,8 +55,8 @@ class LocationsController < ApplicationController
         :zip,
         :slug,
         :county,
-        :lat,
-        :long,
+        :latitude,
+        :longitude,
         :consumer_active,
         :is_region
       )

@@ -66,7 +66,7 @@ module Api
           @location = Location.find_by_city Location::DEFAULT_LOCATION
         end
         @forecast = Rails.cache.fetch("forecast-#{@location.city}", expires_in: 30.minutes) do
-          ForecastIO.forecast(@location.lat, @location.long, params: {exclude: 'minutely,daily,hourly'})
+          ForecastIO.forecast(@location.latitude, @location.longitude, params: {exclude: 'minutely,daily,hourly'})
         end
 
         render 'api/v3/users/forecast', layout: false

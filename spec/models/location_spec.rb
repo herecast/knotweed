@@ -178,8 +178,8 @@ describe Location, :type => :model do
       # note, since `location` hasn't been called yet, this doesn't contain that record
       # so we don't have to worry about filtering it out
       locations_by_distance = Location.all.sort_by do |loc|
-        Geocoder::Calculations.distance_between([loc.lat.to_f,      loc.long.to_f],
-                                                [location.lat.to_f, location.long.to_f])
+        Geocoder::Calculations.distance_between(loc.coordinates,
+                                                location.coordinates)
       end
       expect(locations_by_distance).to eq location.closest
     end
@@ -195,9 +195,9 @@ describe Location, :type => :model do
       }
 
       context 'Locations exist varying distances away from coords' do
-        let!(:middle) { FactoryGirl.create :location, lat: 1.5, long: 1.5 }
-        let!(:nearest) { FactoryGirl.create :location, lat: 0.1, long: 1 }
-        let!(:furthest) { FactoryGirl.create :location, lat: 2, long: 2 }
+        let!(:middle) { FactoryGirl.create :location, latitude: 1.5, longitude: 1.5 }
+        let!(:nearest) { FactoryGirl.create :location, latitude: 0.1, longitude: 1 }
+        let!(:furthest) { FactoryGirl.create :location, latitude: 2, longitude: 2 }
 
         it 'locations in order of nearest first' do
           expect(subject.to_a).to match [nearest, middle, furthest]

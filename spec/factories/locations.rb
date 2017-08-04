@@ -7,8 +7,8 @@
 #  city            :string(255)
 #  state           :string(255)
 #  county          :string(255)
-#  lat             :string(255)
-#  long            :string(255)
+#  latitude            :float
+#  longitude           :float
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  consumer_active :boolean          default(FALSE)
@@ -24,15 +24,15 @@ FactoryGirl.define do
     city { Faker::Address.city }
     state { Faker::Address.state_abbr }
     county { Faker::Address.city }
-    lat { Faker::Address.latitude }
-    long { Faker::Address.longitude }
+    latitude { Faker::Address.latitude }
+    longitude { Faker::Address.longitude }
     consumer_active true
 
     trait :default do
       id Location::REGION_LOCATION_ID
       city Location::DEFAULT_LOCATION
-      lat Location::DEFAULT_LOCATION_COORDS[0]
-      long Location::DEFAULT_LOCATION_COORDS[1]
+      latitude Location::DEFAULT_LOCATION_COORDS[0]
+      longitude Location::DEFAULT_LOCATION_COORDS[1]
     end
   end
 end

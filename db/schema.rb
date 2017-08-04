@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170803150120) do
+ActiveRecord::Schema.define(version: 20170803160508) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -688,14 +688,16 @@ ActiveRecord::Schema.define(version: 20170803150120) do
     t.string   "city",            limit: 255
     t.string   "state",           limit: 255
     t.string   "county",          limit: 255
-    t.string   "lat",             limit: 255
-    t.string   "long",            limit: 255
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
     t.boolean  "consumer_active",             default: false
     t.boolean  "is_region",                   default: false
     t.string   "slug"
+    t.float    "latitude"
+    t.float    "longitude"
   end
+
+  add_index "locations", ["latitude", "longitude"], name: "index_locations_on_latitude_and_longitude", using: :btree
 
   create_table "locations_locations", id: false, force: :cascade do |t|
     t.integer "parent_id", limit: 8

@@ -325,9 +325,6 @@ describe Api::V3::NewsController, :type => :controller do
 
       it 'allows nested content locations to be specified' do
         subject
-        if response.status != 200
-          debugger
-        end
         expect(response.status).to eql 200
         expect(Content.last.locations.to_a).to include *locations
       end
