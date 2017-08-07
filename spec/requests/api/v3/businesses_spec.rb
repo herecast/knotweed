@@ -276,7 +276,8 @@ describe 'Businesses Endpoints', type: :request do
             lng: an_instance_of(Float)
           },
           has_rated: be_in([true, false]),
-          claimed: be_in([true, false])
+          claimed: be_in([true, false]),
+          biz_feed_active: be_in([true, false])
         )
       end
     end

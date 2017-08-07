@@ -27,7 +27,8 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           background_image_url: organization.background_image.url,
           twitter_handle: organization.twitter_handle,
           claimed: organization.business_locations.first.try(:business_profile).try(:claimed?) || false,
-          custom_links: nil
+          custom_links: nil,
+          biz_feed_active: organization.biz_feed_active
         }
       )
     end

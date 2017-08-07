@@ -804,6 +804,7 @@ ActiveRecord::Schema.define(version: 20170803160508) do
     t.string   "profile_ad_override", limit: 255
     t.jsonb    "custom_links"
     t.string   "twitter_handle"
+    t.boolean  "biz_feed_active",                 default: false
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree

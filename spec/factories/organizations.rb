@@ -29,6 +29,7 @@
 #  profile_ad_override :string(255)
 #  custom_links        :jsonb
 #  twitter_handle      :string
+#  biz_feed_active     :boolean          default(FALSE)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
@@ -36,5 +37,6 @@
 FactoryGirl.define do
   factory :organization do
     sequence(:name) {|n| "My Organization #{n}" }
+    biz_feed_active false
   end
 end

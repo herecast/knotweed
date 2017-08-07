@@ -5,7 +5,7 @@ module Api
       attributes :id, :organization_id, :name, :phone, :email, :website,
         :address, :city, :state, :zip, :has_retail_location, :coords, :service_radius,
         :hours, :details, :logo, :images, :category_ids, :feedback, :feedback_num,
-        :can_edit, :has_rated, :claimed
+        :can_edit, :has_rated, :claimed, :biz_feed_active
 
       def name
         object.business_location.name
@@ -75,6 +75,10 @@ module Api
       def feedback_num; object.feedback_count; end
 
       def claimed; object.claimed?; end
+
+      def biz_feed_active
+        object.organization.try(:biz_feed_active) if object.content.present?
+      end
     end
   end
 end

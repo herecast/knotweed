@@ -29,6 +29,7 @@
 #  profile_ad_override :string(255)
 #  custom_links        :jsonb
 #  twitter_handle      :string
+#  biz_feed_active     :boolean          default(FALSE)
 #
 
 class Organization < ActiveRecord::Base
