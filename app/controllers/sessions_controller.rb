@@ -42,7 +42,13 @@ class SessionsController < Devise::SessionsController
     fb_user_info[:extra_info][:age_range] = fb_user_info[:age_range]
     fb_user_info[:extra_info][:time_zone] = fb_user_info[:timezone]
     fb_user_info[:extra_info][:gender] = fb_user_info[:gender]
-    user = User.from_facebook_oauth(fb_user_info)
+
+    registration_attrs = {
+      location: Location.find_by_slug_or_id(params[:location_id])
+    }
+
+    user = User.from_facebook_oauth(fb_user_info, registration_attrs)
+
     if user.present? && user.persisted?
       sign_in user
       render json: { email: user.email, token: user.authentication_token }, status: :created

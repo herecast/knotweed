@@ -161,17 +161,18 @@ class User < ActiveRecord::Base
     end
   end
   
-  def self.from_facebook_oauth(auth)
-    location = Location.find_by(city: 'Hartford', state: 'VT')
+  def self.from_facebook_oauth(auth, registration_attributes = {})
     extra_info = {}
     user = User.find_by_email(auth[:email])
     if user.nil?
-      user = User.new(email: auth[:email], 
-                      password: Devise.friendly_token[0,20],
-                      name: auth[:name],
-                      nda_agreed_at: Time.zone.now,
-                      agreed_to_nda: true,
-                      location: location)
+      user = User.new({
+        email: auth[:email],
+        password: Devise.friendly_token[0,20],
+        name: auth[:name],
+        nda_agreed_at: Time.zone.now,
+        agreed_to_nda: true
+      }.merge(registration_attributes))
+
       if user.valid?
         user.skip_confirmation!
         SocialLogin.create(provider: auth[:provider], uid: auth[:id], extra_info: auth[:extra_info], user: user)

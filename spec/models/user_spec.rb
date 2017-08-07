@@ -292,9 +292,8 @@ describe User, :type => :model do
         expect(subject.location).to eq location
       end
     end
-  
+
   describe '.from_facebook_oauth' do
-    let!(:default_location) { FactoryGirl.create :location, city: 'Hartford', state: 'VT' }
     let(:facebook_response) {
       {
         email: "facebook_user@mail.com",
@@ -311,12 +310,12 @@ describe User, :type => :model do
                       gender: "male" }
       }
     }
-    
+
     subject { User.from_facebook_auth(facebook_response) }
 
     context 'when the user already exists' do
       let!(:existing_facebook_user) { FactoryGirl.create :user }
-      
+
       it 'returns the correct user' do
         auth = facebook_response.merge(email: existing_facebook_user.email)
         expect(User.from_facebook_oauth(auth)).to eq existing_facebook_user
@@ -327,7 +326,7 @@ describe User, :type => :model do
         before do
           @auth = facebook_response.merge(email: existing_user.email)
         end
-        
+
         it 'returns the correct user' do
           expect(User.from_facebook_oauth(@auth)).to eq existing_user
         end
@@ -350,22 +349,23 @@ describe User, :type => :model do
     end
 
     context 'when the user does not have an existing account' do
-      
+      let!(:location) { FactoryGirl.create :location }
+
       it 'creates a new user account' do
-        expect{ User.from_facebook_oauth(facebook_response) }.to change{ User.count }.by(1)
+        expect{ User.from_facebook_oauth(facebook_response, location: location) }.to change{ User.count }.by(1)
       end
 
       it 'sets the correct info for the new user' do
-        user = User.from_facebook_oauth(facebook_response)
+        user = User.from_facebook_oauth(facebook_response, location: location)
         expect(user.name).to eq facebook_response[:name]
         expect(user.email).to eq facebook_response[:email]
         expect(user.nda_agreed_at).to_not be_nil
         expect(user.agreed_to_nda).to eq true
-        expect(user.location).to eq default_location
+        expect(user.location).to eq location
       end
-      
+
       it 'confirms the new users account' do
-        user = User.from_facebook_oauth(facebook_response)
+        user = User.from_facebook_oauth(facebook_response, location: location)
         expect(user.confirmed?).to eq true
       end
     end

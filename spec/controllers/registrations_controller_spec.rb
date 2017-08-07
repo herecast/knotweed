@@ -18,9 +18,6 @@ describe RegistrationsController, :type => :controller do
 
   describe 'POST create' do
     context 'with format JSON' do
-      before(:each) do
-      end
-
       subject{ post :create, format: :json, user: @user_attributes }
 
       let(:user) { User.find_by_email(@user_attributes[:email]) }
@@ -35,7 +32,7 @@ describe RegistrationsController, :type => :controller do
         expect(user.nda_agreed_at.present?).to be true
         expect(user.agreed_to_nda).to be true
       end
-        
+
       it 'should not respond with authentication token' do
         subject
         expect(JSON.parse(response.body)).to_not eq({
@@ -59,11 +56,6 @@ describe RegistrationsController, :type => :controller do
         subject
         expect(user.confirmation_token).to_not be_nil
         expect(user.confirmation_sent_at).to_not be_nil
-      end
-
-      it 'should set a default location for the user' do
-        subject
-        expect(user.location).to eq default_location
       end
     end
 
