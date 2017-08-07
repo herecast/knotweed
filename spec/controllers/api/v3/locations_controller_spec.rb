@@ -31,6 +31,21 @@ describe Api::V3::LocationsController, :type => :controller do
         expect(assigns(:locations).select { |l| l.name.match 'Upper Valley' }.size).to eq(0)
       end
     end
+
+    context do
+      let(:location) do
+        FactoryGirl.create :location
+      end
+
+      before do
+        location.update_attribute :slug, nil
+      end
+
+      it 'does not include locations without a slug' do
+        subject
+        expect(assigns(:locations)).to_not include location
+      end
+    end
   end
 
   describe 'GET closest', elasticsearch: true do

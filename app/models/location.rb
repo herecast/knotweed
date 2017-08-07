@@ -58,7 +58,11 @@ class Location < ActiveRecord::Base
   scope :non_region, -> {
     where(is_region: false)
   }
-  
+
+  scope :with_slug, -> {
+    where("slug IS NOT NULL AND slug <> ''")
+  }
+
   searchkick callbacks: :async, index_prefix: Figaro.env.stack_name,
     batch_size: 100, locations: ["location"]
 

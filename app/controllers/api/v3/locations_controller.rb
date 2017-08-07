@@ -11,14 +11,14 @@ module Api
             radius = params[:radius].to_i
             location = Location.find_by_slug_or_id(params[:near])
 
-            @locations = Location.consumer_active.non_region.within_radius_of(location, radius)
+            @locations = Location.with_slug.consumer_active.non_region.within_radius_of(location, radius)
 
           else
             render json: {errors: ['radius must be specified']}, status: 422 and return
           end
         else # not a radius query
 
-          @locations = Location.consumer_active.not_upper_valley.order('city ASC')
+          @locations = Location.with_slug.consumer_active.not_upper_valley.order('city ASC')
         end
 
         render json: @locations, each_serializer: LocationSerializer
