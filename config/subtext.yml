@@ -6,7 +6,7 @@ default: &default
     advertising:    ads@subtext.org
     batch_jobs:     jobs@dailyuv.com
     listserv:       uppervalley-request@dailyuv.com
-    moderation:     flags@subtext.org
+    moderation:     dailyuv@subtext.org
     no_reply:       noreply@dailyuv.com
     notifications:  notifications@dailyuv.com
     support:        dailyuv@subtext.org
