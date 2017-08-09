@@ -1272,7 +1272,7 @@ describe Content, :type => :model do
       content = Content.create_from_import_job(parsed_emails[0])
       expect(content.content_locations.count).to eq(2)
       location_types = content.content_locations.map(&:location_type)
-      expect(location_types).to_not include "base"
+      expect(location_types).to all( eql("base"))
     end
   end
 
@@ -1367,7 +1367,7 @@ describe Content, :type => :model do
 
     end
 
-    it 'should be one post and two entries in contents_location for each listserv' do
+    it 'should be one post and two entries in content_locations for each listserv' do
 
       eml = Mail.read(@test_files_path+"/strafford.txt")
       parsed_emails = convert_eml_to_hasharray(eml, @config)
@@ -1388,8 +1388,8 @@ describe Content, :type => :model do
       expect(content.locations.include?(@new_london)).to eq(true)
       expect(content.locations.include?(@strafford)).to eq(true)
 
-      # Should not set any as base
-      expect(content.content_locations.base.count).to eql 0
+      # Should all as base
+      expect(content.content_locations.base.map(&:location_type)).to all( eql('base'))
     end
   end
 
@@ -1994,6 +1994,34 @@ describe Content, :type => :model do
     it "makes call to content splitting process" do
       expect(SplitContentForAdPlacement).to receive(:call).with(@content.sanitized_content)
       subject
+    end
+  end
+
+  describe 'my_town_only?' do
+    context 'multiple content locations, some as base' do
+      before do
+        subject.content_locations = [
+          FactoryGirl.build_stubbed(:content_location, location_type: 'base'),
+          FactoryGirl.build_stubbed(:content_location, location_type: nil)
+        ];
+      end
+
+      it 'is false' do
+        expect(subject.my_town_only?).to be false
+      end
+    end
+
+    context 'multiple content locations, all as base' do
+      before do
+        subject.content_locations = [
+          FactoryGirl.build_stubbed(:content_location, location_type: 'base'),
+          FactoryGirl.build_stubbed(:content_location, location_type: 'base')
+        ];
+      end
+
+      it 'is true' do
+        expect(subject.my_town_only?).to be true
+      end
     end
   end
 

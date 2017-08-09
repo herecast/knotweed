@@ -224,18 +224,27 @@ describe Api::V3::EventInstancesController, :type => :controller do
           end
 
           context 'My town only' do
-            let!(:near_event_only_one_location) {
-              FactoryGirl.create :event, locations: [
-                FactoryGirl.create(:location, coordinates: Geocoder::Calculations.random_point_near(
-                  location_1,
-                  19, units: :mi
-                ))
-              ]
+            let!(:near_event_my_town_only) {
+              FactoryGirl.create :event,
+                title: 'near, my-town-only',
+                locations: [
+                  FactoryGirl.create(:location, coordinates: Geocoder::Calculations.random_point_near(
+                    location_1,
+                    19, units: :mi
+                  ))
+                ]
             }
 
-            it 'does not return events posted to a location within the radius if it is their only location' do
+            before do
+              near_event_my_town_only.content.content_locations.each do |cl|
+                cl.update location_type: 'base'
+              end
+              EventInstance.reindex
+            end
+
+            it 'does not return events which are within radius, but my town only' do
               get :index, location_id: location_1.slug, radius: radius, days_ahead: 365
-              expect(assigns(:event_instances).results).to_not include *near_event_only_one_location.event_instances
+              expect(assigns(:event_instances).results).to_not include *near_event_my_town_only.event_instances
             end
           end
         end

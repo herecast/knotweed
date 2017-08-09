@@ -36,6 +36,7 @@ FactoryGirl.define do
       created_by nil
       published false
       locations nil
+      content_locations nil
     end
 
     content
@@ -63,6 +64,7 @@ FactoryGirl.define do
         e.content.created_by = evaluator.created_by if evaluator.created_by.present?
 
         e.content.locations = evaluator.locations if evaluator.locations
+        e.content.content_locations = evaluator.content_locations if evaluator.content_locations
       end
     end
 

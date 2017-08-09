@@ -21,7 +21,7 @@ module Api
 
             @opts[:where][:or] << [
               {my_town_only: false, all_loc_ids: locations_within_radius},
-              {my_town_only: true, all_loc_ids: location.id}
+              {my_town_only: true, all_loc_ids: [location.id]}
             ]
           else
             @opts[:where][:or] << [

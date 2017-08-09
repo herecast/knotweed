@@ -82,7 +82,7 @@ class Content < ActiveRecord::Base
       channel_id: channel_id,
       root_content_category_id: content_category.try(:parent_id) || content_category_id,
       content_category_id: content_category_id,
-      my_town_only: my_town_only,
+      my_town_only: my_town_only?,
       deleted: deleted_at.present?,
       root_parent_id: root_parent_id,
       in_accepted_category: !(content_category.try(:name) == 'event' and channel_type != 'Event'),
@@ -97,8 +97,9 @@ class Content < ActiveRecord::Base
   end
 
   def my_town_only
-    content_locations.count.eql? 1
+    content_locations.all?(&:base?)
   end
+
   alias_method :my_town_only?, :my_town_only
 
   def is_listserv_market_post?
@@ -520,17 +521,10 @@ class Content < ActiveRecord::Base
 
     content.save!
 
-    # set location as base if only one
-    if content.content_locations.count == 1
-      content.content_locations.first.update location_type: 'base'
-    else
-      # If this didn't originate here, then unset any base locations
-      # because we have multiple listserv locations
-      unless data['X-Original-Content-Id'].present? or data['X-Original-Event-Instance-Id'].present?
-        content.content_locations.update_all location_type: nil
-      end
+    # ensure all locations are base
+    content.content_locations.each do |cl|
+      cl.update location_type: 'base'
     end
-
 
     # this new_content_images array will contain a list of the images used in this content record
     new_content_images = []
