@@ -6,7 +6,7 @@ module Api
         @connection = ActiveRecord::Base.connection
         sanitize_dates
 
-        query = "SELECT (r.report_date - INTERVAL '5' HOUR) as \"Date\",
+        query = "SELECT DATE_TRUNC('day', r.report_date) as \"Date\",
             (CASE WHEN o.pay_directly = true THEN (CASE WHEN o.parent_id IS NOT NULL THEN (SELECT name FROM organizations WHERE id = o.parent_id) || ' from ' || o.name ELSE o.name END) ELSE u.name END) as \"Author\",
             (c.pubdate - INTERVAL '5' HOUR) as \"Publication Date\",
             c.title as \"Title\",
@@ -19,7 +19,7 @@ module Api
           INNER JOIN contents c ON c.id = r.content_id
           INNER JOIN users u on u.id = c.created_by
           INNER JOIN organizations o ON o.id = c.organization_id AND (r.view_count > 0 OR r.banner_click_count > 0)
-          WHERE (r.report_date - INTERVAL '5' HOUR) >= #{@start_date} AND (r.report_date - INTERVAL '5' HOUR) < #{@end_date}
+          WHERE DATE_TRUNC('day', r.report_date) >= #{@start_date} AND DATE_TRUNC('day', r.report_date) <= #{@end_date}
           ORDER BY \"Author\", c.title, report_date DESC;"
         @content_reports = @connection.execute(query)
 

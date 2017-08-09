@@ -10,7 +10,7 @@ describe Api::V3::ContentReportsController, type: :controller do
     @content_report.save
     @content.organization.update_attribute(:pay_rate_in_cents, 5)
   end
-  
+
   subject { get :index, start_date: '2015-01-01', end_date: '2017-01-01' }
 
   it "returns appropriate information" do
