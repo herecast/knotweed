@@ -171,4 +171,72 @@ describe Organization, :type => :model do
       }.not_to change{Organization.descendants_of(subject.id).count}
     end
   end
+
+  describe 'Updating locations or name, triggers a reindex of linked content' do
+    subject { FactoryGirl.create :organization }
+
+    describe 'adding locations' do
+      let(:location) { FactoryGirl.create :location }
+
+      it do
+        expect {
+          subject.organization_locations << OrganizationLocation.new(
+            location: location
+          )
+          subject.save!
+        }.to have_enqueued_job(ReindexOrganizationContentJob).with(subject)
+      end
+    end
+
+    describe 'updating locations' do
+      let(:location) { FactoryGirl.create :location }
+      before do
+        subject.organization_locations << OrganizationLocation.new(
+          location: location
+        )
+      end
+
+      it do
+        expect {
+          subject.update! organization_locations_attributes: [
+            subject.organization_locations.first.attributes.merge(
+              location_type: 'about'
+            )
+          ]
+        }.to have_enqueued_job(ReindexOrganizationContentJob).with(subject)
+      end
+    end
+
+    describe 'removing locations' do
+      let(:location) { FactoryGirl.create :location }
+
+      before do
+        subject.organization_locations << OrganizationLocation.new(
+          location: location
+        )
+      end
+
+      it do
+        expect {
+          subject.organization_locations.last.destroy
+        }.to have_enqueued_job(ReindexOrganizationContentJob).with(subject)
+      end
+    end
+
+    describe 'changing organization name' do
+      it do
+        expect {
+          subject.update! name: 'new org'
+        }.to have_enqueued_job(ReindexOrganizationContentJob).with(subject)
+      end
+    end
+
+    describe 'changing a non-dependent attribute' do
+      it 'does not trigger reindex' do
+        expect {
+          subject.update! website: 'http://dublin-brews.com'
+        }.to_not have_enqueued_job(ReindexOrganizationContentJob)
+      end
+    end
+  end
 end

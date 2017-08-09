@@ -73,6 +73,8 @@ class Organization < ActiveRecord::Base
 
   has_many :promotions, inverse_of: :organization
 
+  after_update :trigger_content_reindex!, if: :name_changed?
+
   mount_uploader :logo, ImageUploader
   mount_uploader :profile_image, ImageUploader
   mount_uploader :background_image, ImageUploader
@@ -146,13 +148,16 @@ class Organization < ActiveRecord::Base
 
   ransacker :include_child_organizations
 
+  def trigger_content_reindex!
+    ReindexOrganizationContentJob.perform_later self
+  end
+
   private
 
-    def twitter_handle_format
-      twitter_handle_regex = /^@([A-Za-z0-9_]+)$/
-      unless twitter_handle.blank? || !!twitter_handle_regex.match(twitter_handle)
-        errors.add(:twitter_handle, "Twitter handle must start with @. The handle may have letters, numbers and underscores, but no spaces.")
-      end
+  def twitter_handle_format
+    twitter_handle_regex = /^@([A-Za-z0-9_]+)$/
+    unless twitter_handle.blank? || !!twitter_handle_regex.match(twitter_handle)
+      errors.add(:twitter_handle, "Twitter handle must start with @. The handle may have letters, numbers and underscores, but no spaces.")
     end
-
+  end
 end
