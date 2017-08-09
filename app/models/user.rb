@@ -66,6 +66,8 @@ class User < ActiveRecord::Base
 
   after_update :update_subscriptions_locations
 
+  ransacker :social_login
+
   def managed_organization_id; Organization.with_role(:manager, self).first.try(:id); end
   def is_organization_manager?; managed_organization_id.present?; end
 

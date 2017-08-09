@@ -101,6 +101,20 @@ describe UsersController, :type => :controller do
             expect(assigns(:users)).to match_array [@user_1, @user_2]
           end
         end
+        
+        context 'when admin searches for Social Login' do
+          before do
+            SocialLogin.create(user_id: @user_1.id, provider: 'facebook', 
+                              uid: 1234)
+          end
+
+          subject { get :index, q: { social_login: 1 } }
+
+          it 'returns users with a social login' do
+            subject
+            expect(assigns(:users)).to match_array [@user_1]
+          end
+        end
       end
 
       context "when admin search finds no matches" do
@@ -122,6 +136,7 @@ describe UsersController, :type => :controller do
           expect(assigns(:users).length).to eq User.count
         end
       end
+
     end
   end
 

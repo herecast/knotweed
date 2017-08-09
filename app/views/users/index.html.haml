@@ -27,13 +27,21 @@
           .field.span2
             = f.label :archived_true, "Archived?"
             = f.check_box :archived_true
+          .field.span3
+            = f.label :social_login, "Display all Social Users"
+            = f.check_box :social_login, checked: session[:users_search].try(:[], :social_login) == '1'
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
 
-.span5
-  = paginate @users, window: 2 if @users.present?
-%h3 Users
+
+.row-fluid
+  .span5
+    = paginate @users, window: 2 if @users.present?
+  .span4
+    %h3 Users
+  .span3.user-table-count
+    %p Displaying #{((@page *25) - 25) + 1} - #{@page * 25 > @total_count ? @total_count : @page * 25} of #{@total_count} total users
 .span12
   %table.table.table-condensed
     %thead
@@ -55,7 +63,10 @@
           %td= user.created_at.try(:to_date)
           %td= user.roles.first.name.titleize unless user.roles.first.nil?
           %td= Organization.with_role(:manager, user).first.try(:name)
-          %td= user.source
+          - if user.social_logins.present?
+            %td= user.social_logins.first.provider
+          -else
+            %td= user.source
           %td= user.confirmed? ? "Yes" : "No"
           %td
             %a.btn-warning.btn.btn-mini{ href: edit_user_path(user), type: "button" } Edit

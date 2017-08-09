@@ -10,8 +10,20 @@ class UsersController < ApplicationController
       session[:users_search] = params[:q]
     end
 
-    @search = User.ransack(session[:users_search])
+    if display_social_users?
+      social_user_ids = SocialLogin.pluck(:user_id)
+      @search = User.ransack(id_in: social_user_ids)
+      @total_count = SocialLogin.count
+    else
+      @search = User.ransack(session[:users_search])
+      @total_count = User.count
+    end
     @search.sorts = 'created_at desc'
+    if params[:page].nil?
+      @page = 1
+    else
+      @page = params[:page].to_i
+    end
     @users = @search.result.page(params[:page]).per(25)
   end
 
@@ -122,6 +134,10 @@ class UsersController < ApplicationController
         new_subs =  params['listserv_id'].to_i - @user.subscriptions.map(&:listserv_id)
         new_subs.map!(&:to_i)
       end
+    end
+
+    def display_social_users?
+      params[:q].present? && params[:q][:social_login] == '1'
     end
 
 end
