@@ -2023,6 +2023,48 @@ describe Content, :type => :model do
         expect(subject.my_town_only?).to be true
       end
     end
+
+    context 'organization locations' do
+      before do
+        subject.organization = FactoryGirl.build :organization
+      end
+
+      describe 'when organization has non-base locations, and content does not' do
+        before do
+          subject.content_locations = [
+            FactoryGirl.build_stubbed(:content_location, location_type: 'base'),
+            FactoryGirl.build_stubbed(:content_location, location_type: 'base')
+          ];
+
+          subject.organization.organization_locations = [
+            FactoryGirl.build_stubbed(:organization_location, location_type: nil),
+            FactoryGirl.build_stubbed(:organization_location, location_type: nil)
+          ];
+        end
+
+        it 'is false' do
+          expect(subject.my_town_only?).to be false
+        end
+      end
+
+      describe 'when organization, and content has only base locations' do
+        before do
+          subject.content_locations = [
+            FactoryGirl.build_stubbed(:content_location, location_type: 'base'),
+            FactoryGirl.build_stubbed(:content_location, location_type: 'base')
+          ];
+
+          subject.organization.organization_locations = [
+            FactoryGirl.build_stubbed(:organization_location, location_type: 'base'),
+            FactoryGirl.build_stubbed(:organization_location, location_type: 'base')
+          ];
+        end
+
+        it 'is true' do
+          expect(subject.my_town_only?).to be true
+        end
+      end
+    end
   end
 
   private

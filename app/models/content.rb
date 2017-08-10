@@ -97,7 +97,14 @@ class Content < ActiveRecord::Base
   end
 
   def my_town_only
-    content_locations.all?(&:base?)
+    if organization.present?
+      [
+        content_locations,
+        organization.organization_locations
+      ].flatten.compact.all?(&:base?)
+    else
+      content_locations.all?(&:base?)
+    end
   end
 
   alias_method :my_town_only?, :my_town_only
