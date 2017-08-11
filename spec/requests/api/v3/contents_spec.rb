@@ -105,12 +105,26 @@ describe 'Contents Endpoints', type: :request do
                            created_by: user,
                            published: true,
                            deleted_at: Time.current}
+      let!(:old_news_content) { FactoryGirl.create :content,
+                                content_category: news_cat,
+                                created_by: user,
+                                pubdate: 2.days.ago,
+                                published: true }
+      let!(:recent_news_content) { FactoryGirl.create :content,
+                                  content_category: news_cat,
+                                  created_by: user,
+                                  published: true }
 
       it 'does not return deleted content' do
         get '/api/v3/dashboard', {}, auth_headers
         ids = response_json[:contents].map{|i| i['id']}
 
         expect(ids).to_not include(deleted_news.id)
+      end
+
+      it 'falls back to sorting on pubdate when trying to sort on start_date' do
+        get '/api/v3/dashboard', { page: 1, per_page: 8, sort: 'start_date ASC', channel_type: 'news' }, auth_headers
+        expect(response_json[:contents].first[:id]).to eq old_news_content.id
       end
     end
 

@@ -207,21 +207,59 @@ describe 'Promotion Banner Endpoints', type: :request do
 
   describe "GET /api/v3/promotion_banners" do
     before do
-      @promotion_banner = FactoryGirl.create :promotion_banner,
-        promotion_type: PromotionBanner::DIGEST
-      @promotion_banner.promotion.update_attribute :created_by, user
-      @results = { :opens_total => 219, :total_clickes => 5}
-
-      allow(MailchimpService).to receive(:get_report).and_return @results
+      @promotion = FactoryGirl.create :promotion, created_by: user
     end
+    let!(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: @promotion }
 
     subject { get '/api/v3/promotion_banners', {}, auth_headers }
 
     context "when promotion_type: Digest" do
+      before do
+        @promotion_banner = FactoryGirl.create :promotion_banner,
+          promotion_type: PromotionBanner::DIGEST
+        @promotion_banner.promotion.update_attribute :created_by, user
+        @results = { :opens_total => 219, :total_clickes => 5}
+
+        allow(MailchimpService).to receive(:get_report).and_return @results
+      end
+      
       it "returns an instance with mailchimp information" do
         subject
         expect(response_json[:promotion_banners].first[:impression_count]).to eq @results[:opens_total]
         expect(response_json[:promotion_banners].first[:click_count]).to eq @results[:total_clicks]
+      end
+    end
+
+    context 'when sorting by campaign_start date' do
+      before do
+        @older_promotion = FactoryGirl.create :promotion, created_by: user
+      end
+
+      let!(:older_promotion_banner) { FactoryGirl.create :promotion_banner, campaign_start: 2.weeks.ago, promotion: @older_promotion }
+      it 'includes the promotion description' do
+        get '/api/v3/promotion_banners', { page: 1, per_page: 8, sort: 'start_date DESC' }, auth_headers
+        expect(response_json[:promotion_banners].first).to match(
+          {
+            id: promotion_banner.id,
+            title: promotion_banner.promotion.content.title,
+            pubdate: promotion_banner.promotion.content.pubdate.try(:iso8601),
+            image_url: promotion_banner.banner_image.url,
+            redirect_url: promotion_banner.redirect_url,
+            campaign_start: promotion_banner.campaign_start.try(:iso8601),
+            campaign_end: promotion_banner.campaign_end.try(:iso8601),
+            max_impressions: promotion_banner.max_impressions,
+            impression_count: promotion_banner.impression_count,
+            click_count: promotion_banner.click_count,
+            content_type: 'promotion_banner',
+            description: promotion_banner.promotion.description,
+          }
+        )
+      end
+
+      it 'returns promotion_banners based on the campaign_start sort order' do
+        get '/api/v3/promotion_banners', { page: 1, per_page: 8, sort: 'start_date ASC' }, auth_headers
+        first_banner = response_json[:promotion_banners].first
+        expect(first_banner[:campaign_start]).to eq older_promotion_banner.campaign_start.iso8601
       end
     end
   end

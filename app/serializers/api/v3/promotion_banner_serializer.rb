@@ -4,7 +4,7 @@ module Api
 
       attributes :id, :title, :pubdate, :image_url, :redirect_url,
         :campaign_start, :campaign_end, :max_impressions, :impression_count,
-        :click_count, :content_type
+        :click_count, :content_type, :description
 
       def id; object.id; end
 
@@ -19,6 +19,10 @@ module Api
       def impression_count; object.impression_count; end
 
       def click_count; object.click_count; end
+
+      def description
+        object.promotion.description
+      end
 
     end
   end

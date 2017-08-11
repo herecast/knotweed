@@ -116,7 +116,8 @@ module Api
           sort_parts.select! do |pt|
             pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
           end
-          sort_parts.join(',').gsub('channel_type', 'root_category.name')
+          sort_query = sort_parts.join(',').gsub('channel_type', 'root_category.name')
+          sort_query.gsub('start_date', 'pubdate')
         end
     end
   end

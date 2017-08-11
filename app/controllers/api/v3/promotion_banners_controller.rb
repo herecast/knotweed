@@ -20,8 +20,14 @@ module Api
         else
           scope = scope.where('promotions.created_by = ?', @current_api_user.id)
         end
-        @promotion_banners = scope.order(sanitize_sort_parameter(params[:sort])).
+
+        if params[:sort].include?('start_date')
+        @promotion_banners = scope.order(sanitize_start_date_sort(params[:sort])).
           page(params[:page].to_i).per(params[:per_page].to_i)
+        else
+          @promotion_banners = scope.order(sanitize_sort_parameter(params[:sort])).
+            page(params[:page].to_i).per(params[:per_page].to_i)
+        end
 
         create_mocks_for_digest_ads
         render json: @promotion_banners, each_serializer: PromotionBannerSerializer
@@ -126,6 +132,16 @@ module Api
           pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
         end
         sort_parts.join(',').gsub(/(pubdate|title)/,'contents.\1').gsub('view_count','impression_count')
+      end
+
+      def sanitize_start_date_sort(sort)
+        sort_parts = sort.split(',')
+        sort_direction = sort_parts.last
+        if sort_direction.include?('ASC')
+          "campaign_start ASC"
+        elsif sort_direction.include?('DESC')
+          "campaign_start DESC"
+        end
       end
 
       def promo_created_by_user?
