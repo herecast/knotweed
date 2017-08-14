@@ -1739,6 +1739,17 @@ describe Content, :type => :model do
         expect(@content.similar_content(@repo)).to eq [@override1, @override2, @override3]
       end
     end
+
+    it 'returns contents in same order as DSP service' do
+      repo = FactoryGirl.build_stubbed :repository
+      content = FactoryGirl.build_stubbed :content
+      similar = FactoryGirl.create_list(:content, 8).shuffle
+      allow(DspService).to receive(:get_similar_content_ids).with(
+        content, 8, repo
+      ).and_return(similar.collect(&:id))
+
+      expect(content.similar_content(repo, 8).map(&:id)).to eql similar.map(&:id)
+    end
   end
 
   describe 'title=t' do

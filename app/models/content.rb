@@ -1195,7 +1195,9 @@ class Content < ActiveRecord::Base
       Content.where(id: similar_content_overrides).order('pubdate DESC').limit(num_similar).includes(:content_category)
     else
       similar_ids = DspService.get_similar_content_ids(self, num_similar, repo)
-      Content.where(id: similar_ids).includes(:content_category)
+      Content.where(id: similar_ids).includes(:content_category).sort_by do |content|
+        similar_ids.index(content.id)
+      end
     end
   end
 
