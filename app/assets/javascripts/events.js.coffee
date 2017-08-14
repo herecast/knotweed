@@ -3,14 +3,14 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 jQuery ->
-  $('form.event-form').on 'click', '.remove_fields', (event) ->
+  $('form.event-form').on 'click', '.association_remove_fields', (event) ->
     confirm('Delete this event instance?')
     if confirm
       $(this).prev('input[type=hidden]').val('1')
       $(this).closest('fieldset').hide()
       event.preventDefault()
 
-  $('form.event-form').on 'click', '.add_fields', (event) ->
+  $('form.event-form').on 'click', '.association_add_fields', (event) ->
     time = new Date().getTime()
     regexp = new RegExp($(this).data('id'), 'g')
     $(this).before($(this).data('fields').replace(regexp, time))
