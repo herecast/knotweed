@@ -35,7 +35,33 @@ class UgcSanitizer
   end
 
   def call
-    Sanitize.fragment(@raw_content, EMBER_SANITIZE_CONFIG)
+    strip_empty_vertical_space(
+      Sanitize.fragment(@raw_content, EMBER_SANITIZE_CONFIG)
+    )
+  end
+
+  protected
+  def strip_empty_vertical_space content
+    doc = Nokogiri::HTML.fragment(content)
+
+    # Remove empty span tags
+    doc.css('span').find_all{|p| all_children_are_blank?(p) }.each(&:remove)
+
+    # Remove empty P tags
+    doc.css('p').find_all{|p| all_children_are_blank?(p) }.each(&:remove)
+
+    # Remove multiple BR tags
+    doc.css('br + br + br').each(&:remove)
+
+    doc.to_s
+  end
+
+  def is_blank?(node)
+    (node.text? && node.content.strip == '') || (node.element? && node.name == 'br')
+  end
+
+  def all_children_are_blank?(node)
+    node.children.all?{|child| is_blank?(child) } 
   end
 
 end

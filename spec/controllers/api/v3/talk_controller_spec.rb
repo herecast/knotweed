@@ -42,7 +42,7 @@ describe Api::V3::TalkController, :type => :controller do
       end
     end
 
-    it_behaves_like "Location based index", focus: true do
+    it_behaves_like "Location based index" do
       let(:content_type) { :talk }
       let(:content_attrs) {
         {organization: @org}
