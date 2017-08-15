@@ -17,7 +17,11 @@ RSpec.describe 'Organizations::Contents API Endpoints', type: :request do
     let(:auth_headers) { auth_headers_for(user) }
 
     context "when no organization present" do
-      subject { get '/api/v3/organizations/1/contents' }
+      subject do
+        Timecop.travel(Time.current + 1.day)
+        get '/api/v3/organizations/1/contents'
+        Timecop.return
+      end
 
       it "returns not_found status" do
         subject
@@ -30,7 +34,11 @@ RSpec.describe 'Organizations::Contents API Endpoints', type: :request do
         @organization = FactoryGirl.create :organization
       end
 
-      subject { get "/api/v3/organizations/#{@organization.id}/contents" }
+      subject do
+        Timecop.travel(Time.current + 1.day)
+        get "/api/v3/organizations/#{@organization.id}/contents"
+        Timecop.return
+      end
 
       context 'when Organization has BusinessLocation with Events' do
         before do
@@ -113,6 +121,34 @@ RSpec.describe 'Organizations::Contents API Endpoints', type: :request do
         it "returns campaign items" do
           subject
           expect(parsed_results_count(response)).to eq 1
+        end
+      end
+
+      context "when Content is created but has no pubdate" do
+        before do
+          content = FactoryGirl.create :content,
+            organization_id: @organization.id
+          content.update_attribute(:pubdate, nil)
+          @news_category.contents << content
+        end
+
+        it "does not return nil pubdate items" do
+          subject
+          expect(parsed_results_count(response)).to eq 0
+        end
+      end
+
+      context "when Content is scheduled for future release" do
+        before do
+          content = FactoryGirl.create :content,
+            organization_id: @organization.id,
+            pubdate: Date.current + 5.days
+          @news_category.contents << content
+        end
+
+        it "it does not return future pubdate items" do
+          subject
+          expect(parsed_results_count(response)).to eq 0
         end
       end
     end

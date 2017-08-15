@@ -23,6 +23,7 @@ module Api
 
         organization_search = { organization_id: organization.id }
         opts[:where] = {}
+        opts[:where][:pubdate] = { lt: Time.current }
         opts[:where][:_or] = [
           { channel_type: 'MarketPost' }.merge(organization_search),
           { channel_type: 'Event' }.merge(organization_search),
