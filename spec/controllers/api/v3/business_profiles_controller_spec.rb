@@ -152,6 +152,8 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
         @search = 'AZSXDCFB123543'
         @result = BusinessProfile.first
         @result.business_location.update_attribute :name, @search
+        @result.reindex
+        BusinessProfile.searchkick_index.refresh
       end
 
       subject { get :index, query: @search }
@@ -190,6 +192,8 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
               longitude: Faker::Address.longitude
             )
           end
+          BusinessProfile.reindex
+          BusinessProfile.searchkick_index.refresh
         end
 
         it 'should return results within radius if specified' do
