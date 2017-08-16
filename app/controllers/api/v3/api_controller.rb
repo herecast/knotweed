@@ -57,8 +57,8 @@ module Api
         User.current = current_user
       end
 
-      def record_not_found
-        head :not_found
+      def record_not_found(error)
+        render json: {error: error.message}, status: :not_found
       end
 
       def meta_pagination_for(scope)

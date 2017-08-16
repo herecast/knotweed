@@ -36,6 +36,15 @@ describe Api::V3::EventInstancesController, :type => :controller do
       expect(inst["event_instance"]["comment_count"]).to eq(comment_count)
     end
 
+    context 'when instance cannot be found' do
+      it 'should return a 404 json response' do
+        get :show, format: :json, id: 9009
+        expect(response.status).to eql 404
+        expect(response.headers['Content-Type']).to include 'application/json'
+        expect(JSON.parse(response.body)).to match({"error" => an_instance_of(String)})
+      end
+    end
+
     describe 'ical_url' do
       before do
         @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
