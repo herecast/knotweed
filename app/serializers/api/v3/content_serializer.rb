@@ -3,13 +3,15 @@ module Api
     class ContentSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :image_url, :author_id, :author_name, :content_type,
-        :organization_id, :organization_name,
+        :organization_id, :organization_name, :subtitle, :venue_zip,
         :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count,
         :comment_count, :click_count, :parent_content_id, :content_id, :parent_content_type,
         :event_instance_id, :parent_event_instance_id, :registration_deadline,
-        :created_at, :updated_at, :redirect_url, :event_id, :cost, :avatar_url,
+        :created_at, :updated_at, :redirect_url, :event_id, :cost, :sold, :avatar_url,
         :organization_profile_image_url, :biz_feed_public, :sunset_date, :campaign_start,
-        :campaign_end, :base_location_names, :content_locations
+        :campaign_end, :base_location_names, :content_locations, :images, :can_edit,
+        :event_instances, :content_origin, :split_content, :cost_type, :contact_phone,
+        :contact_email, :venue_url
 
       def content_id
         object.id
@@ -26,6 +28,19 @@ module Api
           object.promotions.first.promotable.banner_image.try(:url)
         elsif object.images.present?
           object.images[0].image.url
+        end
+      end
+
+      def images
+        object.images.in_rendering_order.map do |img|
+          {
+            id: img.id,
+            image_url: img.image.url,
+            primary: img.primary ? 1 : 0,
+            width: img.width,
+            height: img.height,
+            file_extension: img.file_extension
+          }
         end
       end
 
@@ -52,6 +67,18 @@ module Api
       def venue_state
         if object.channel_type == 'Event'
           object.channel.try(:venue).try(:state)
+        end
+      end
+
+      def venue_zip
+        if object.channel_type == 'Event'
+          object.channel.try(:venue).try(:zip)
+        end
+      end
+
+      def venue_url
+        if object.channel_type == 'Event'
+          object.channel.try(:venue).try(:venue_url)
         end
       end
 
@@ -183,8 +210,12 @@ module Api
       end
 
       def cost
+        object.channel.try(:cost)
+      end
+
+      def sold
         if object.channel_type == 'MarketPost'
-          object.channel.cost
+          object.channel.sold
         end
       end
 
@@ -208,18 +239,71 @@ module Api
         end
       end
 
+      def can_edit
+        if context.present? && context[:current_ability].present?
+          context[:current_ability].can?(:manage, object)
+        else
+          false
+        end
+      end
+
+      def base_location
+        object.location
+      end
+
+      def content_origin
+        object.organization.try(:name) == 'Listserv' ? 'listserv' : 'ugc'
+      end
+
+      def event_instances
+        if object.channel_type == "Event"
+          object.channel.event_instances.map do |inst|
+            AbbreviatedEventInstanceSerializer.new(inst).serializable_hash
+          end
+        end
+      end
+
+      def split_content
+        object.split_content.tap { |head_and_tail|
+          head_and_tail[:head] = ImageUrlService.optimize_image_urls(html_text:      head_and_tail[:head],
+                                                                     default_width:  600,
+                                                                     default_height: 1800,
+                                                                     default_crop:   false)
+
+          head_and_tail[:tail] = ImageUrlService.optimize_image_urls(html_text:      head_and_tail[:tail],
+                                                                     default_width:  600,
+                                                                     default_height: 1800,
+                                                                     default_crop:   false)
+        }
+      end
+
+      def cost_type
+        if object.channel_type == 'Event'
+          object.channel.try(:cost_type)
+        end
+      end
+
+      def contact_phone
+        object.channel.try(:contact_phone)
+      end
+
+      def contact_email
+        object.channel.try(:contact_email)
+      end
+
       private
 
-      def isEvent
-        (object.channel_type == "Event") || (
-          object.parent.present? and
-          object.parent.channel_type == 'Event'
-        )
-      end
+        def isEvent
+          (object.channel_type == "Event") || (
+            object.parent.present? and
+            object.parent.channel_type == 'Event'
+          )
+        end
 
-      def campaign_content_category_id
-        ContentCategory.find_or_create_by(name: 'campaign').id
-      end
+        def campaign_content_category_id
+          ContentCategory.find_or_create_by(name: 'campaign').id
+        end
+
     end
   end
 end

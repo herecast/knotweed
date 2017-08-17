@@ -4,6 +4,67 @@ describe 'Contents Endpoints', type: :request do
   let(:user) { FactoryGirl.create :user }
   let(:auth_headers) { auth_headers_for(user) }
 
+  describe 'GET /api/v3/contents', elasticsearch: true do
+    let(:org) { FactoryGirl.create :organization }
+    let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
+    let(:headers) { {'ACCEPT' => 'application/json',
+                     'Consumer-App-Uri' => consumer_app.uri
+                  } }
+
+    before do
+      @news = FactoryGirl.create :content, :news, organization: org, published: true
+      @event = FactoryGirl.create :content, :event, organization: org, published: true
+      @market = FactoryGirl.create :content, :market_post, organization: org, published: true
+      @talk = FactoryGirl.create :content, :talk, organization: org, published: true
+      @comment = FactoryGirl.create :content, :talk, organization: org, channel_type: 'Comment', published: true
+    end
+
+    context "when no user logged in" do
+      subject { get "/api/v3/contents", {}, headers }
+
+      it "returns content in standard categories but NOT talk" do
+        subject
+        expect(response_json[:contents].length).to eq 3
+      end
+    end
+
+    context "when user logged in" do
+      subject { get "/api/v3/contents", {}, headers.merge(auth_headers) }
+
+      it "returns content in standard categories, including Talk for user location, but NOT comments" do
+        subject
+        expect(response_json[:contents].length).to eq 4
+      end
+    end
+  end
+
+  describe 'GET /api/v3/contents/:id' do
+    let(:org) { FactoryGirl.create :organization }
+    let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
+    let(:headers) { {'ACCEPT' => 'application/json',
+                     'Consumer-App-Uri' => consumer_app.uri
+                  } }
+    let(:content) { FactoryGirl.create :content, organization: org }
+
+    context "when no requesting app" do
+      subject { get "/api/v3/contents/#{content.id}" }
+
+      it 'does not return content' do
+        subject
+        expect(response_json).to eq({})
+      end
+    end
+
+    context "when appropriate requesting app" do
+      subject { get "/api/v3/contents/#{content.id}", {}, headers }
+
+      it "returns content record" do
+        subject
+        expect(response_json[:content]).not_to be nil
+      end
+    end
+  end
+
   describe 'GET /api/v3/contents/:id/metrics' do
     before do
       @content = FactoryGirl.create :content, created_by: user
@@ -136,7 +197,7 @@ describe 'Contents Endpoints', type: :request do
       market_post.created_by = user
       market_post.save!
     end
-      
+
       it 'displays their current items in the market' do
         get '/api/v3/dashboard', { channel_type: 'market' }, auth_headers
         post = response_json[:contents].first

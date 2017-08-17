@@ -128,7 +128,7 @@ class Content < ActiveRecord::Base
 
   def all_loc_ids
     locs = locations.pluck(:id)
-    if content_type != :talk && organization.present?
+    if content_type != :talk && organization.present? && organization.name != 'Listserv'
       locs += organization.locations.pluck(:id)
     end
     locs.uniq

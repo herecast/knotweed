@@ -159,7 +159,7 @@ Knotweed::Application.routes.draw do
       get '/locations/locate', to: 'locations#locate'
       resources :locations, only: [:index, :show]
 
-      resources 'contents', only: [:index]
+      resources :contents, only: [:index, :show, :create, :update]
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
       # specifying path here to avoid deprecating the frontend even though we've changed

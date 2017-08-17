@@ -1,7 +1,37 @@
 module Api
   module V3
     class ContentsController < ApiController
+      include SearchService
+
       before_filter :check_logged_in!, only:  [:moderate, :dashboard, :metrics]
+
+      def index
+        expires_in 1.minutes, public: true
+
+        @opts = {}
+        apply_standard_chronology_to_opts
+        apply_standard_categories_to_opts
+        apply_standard_locations_to_opts
+        apply_requesting_app_whitelist_to_opts
+        apply_eager_loading_content_associations_to_opts
+
+        @contents = Content.search('*', @opts)
+        render json: @contents, each_serializer: ContentSerializer,
+          meta: { total: @contents.total_entries, total_pages: total_pages },
+          context: { current_ability: current_ability }
+      end
+
+      def show
+        expires_in 1.minutes, public: true
+
+        @content = Content.find(params[:id])
+        if @requesting_app.present? && @requesting_app.organizations.include?(@content.organization)
+          render json: @content, serializer: ContentSerializer,
+            context: { current_ability: current_ability }
+        else
+          render json: {}, status: :not_found
+        end
+      end
 
       def similar_content
         expires_in 1.minutes, :public => true
@@ -110,6 +140,10 @@ module Api
       end
 
       protected
+
+        def total_pages
+          (@contents.total_entries/@opts[:per_page].to_f).ceil
+        end
 
         def sanitize_sort_parameter(sort)
           sort_parts = sort.split(',')
