@@ -3,7 +3,7 @@ module Api
     class NewsSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :image_url, :author_name, :author_id, :organization_name,
-        :organization_id, :published_at, :content, :created_at, :updated_at, :base_location_names
+        :organization_id, :published_at, :content, :created_at, :updated_at
 
       def image_url
         if object.images.present?
@@ -25,10 +25,6 @@ module Api
 
       def content
         object.sanitized_content
-      end
-
-      def base_location_names
-        object.base_locations.map(&:name) | object.organization.base_locations.map(&:name)
       end
     end
   end

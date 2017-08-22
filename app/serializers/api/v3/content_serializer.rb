@@ -9,9 +9,11 @@ module Api
         :event_instance_id, :parent_event_instance_id, :registration_deadline,
         :created_at, :updated_at, :redirect_url, :event_id, :cost, :sold, :avatar_url,
         :organization_profile_image_url, :biz_feed_public, :sunset_date, :campaign_start,
-        :campaign_end, :base_location_names, :content_locations, :images, :can_edit,
+        :campaign_end, :images, :can_edit,
         :event_instances, :content_origin, :split_content, :cost_type, :contact_phone,
         :contact_email, :venue_url
+
+      has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
 
       def content_id
         object.id
@@ -167,20 +169,6 @@ module Api
       def registration_deadline
         if object.channel_type == 'Event'
           object.channel.try(:registration_deadline)
-        end
-      end
-
-      def base_location_names
-        object.base_locations.map(&:name)
-      end
-
-      def content_locations
-        object.content_locations.map do |cl|
-          {
-            id: cl.id,
-            location_type: cl.location_type,
-            location_id: cl.location.slug
-          }
         end
       end
 

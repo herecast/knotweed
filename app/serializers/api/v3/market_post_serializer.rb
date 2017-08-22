@@ -23,7 +23,7 @@ module Api
     class MarketPostSerializer < ActiveModel::Serializer
 
       attributes :id, :title, :published_at, :image_url, :content_id,
-        :cost, :created_at, :updated_at, :sold, :base_location_names
+        :cost, :created_at, :updated_at, :sold
 
       def content_id
         object.id
@@ -53,14 +53,6 @@ module Api
         else
           false
         end
-      end
-
-      def base_location_names
-        names = object.base_locations.map(&:name)
-        if object.organization
-          names |= object.organization.base_locations.map(&:name)
-        end
-        names
       end
     end
   end

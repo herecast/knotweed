@@ -4,10 +4,11 @@ module Api
 
       attributes :id, :content_id, :admin_content_url, :content, :title, :subtitle,
         :author_name, :author_id, :organization_name, :organization_id, :published_at, :comment_count,
-        :is_sponsored_content, :created_at, :updated_at, :can_edit, :split_content, :base_location_names,
-        :content_locations, :promote_radius
+        :is_sponsored_content, :created_at, :updated_at, :can_edit, :split_content,
+        :promote_radius
 
       has_many :images
+      has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
 
       def content_id
         object.id
@@ -67,20 +68,6 @@ module Api
                                                                      default_height: 1800,
                                                                      default_crop:   false)
         }
-      end
-
-      def base_location_names
-        object.base_locations.map(&:name) | (object.organization.try(:base_locations) || []).map(&:name)
-      end
-
-      def content_locations
-        object.content_locations.map do |l|
-          {
-            id: l.id,
-            location_type: l.location_type,
-            location_id: l.location.slug
-          }
-        end
       end
     end
   end

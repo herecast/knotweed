@@ -58,7 +58,6 @@ describe 'Events Endpoints', type: :request do
             event_instance_id: @event.event_instances.first.id,
             parent_event_instance_id: nil,
             registration_deadline: @event.registration_deadline,
-            base_location_names: @event.base_locations.map(&:name),
             content_locations: @event.content_locations.map{|l| l.attributes.slice(:id, :location_type, :location_id)}
           }]
       )

@@ -11,7 +11,9 @@ module Api
         :registration_phone, :registration_email,
         :content_id,
         :first_instance_id, :category, :owner_name, :can_edit,
-        :base_location_names, :content_locations, :promote_radius
+        :promote_radius
+
+      has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
 
       def promote_radius
         object.content.promote_radius
@@ -101,22 +103,8 @@ module Api
         end
       end
 
-      def base_location_names
-        names = object.content.base_locations.map(&:name)
-        if object.content.organization
-          names |= object.content.organization.base_locations.map(&:name)
-        end
-        names
-      end
-
       def content_locations
-        object.content.content_locations.map do |l|
-          {
-            id: l.id,
-            location_type: l.location_type,
-            location_id: l.location.slug
-          }
-        end
+        object.content.content_locations
       end
     end
   end

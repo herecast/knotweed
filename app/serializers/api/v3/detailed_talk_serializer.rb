@@ -5,8 +5,10 @@ module Api
       attributes :id, :title, :content, :content_id, :image_url, :user_count,
         :author_name, :author_image_url, :image_width, :image_height, :image_file_extension, :published_at,
         :view_count, :commenter_count, :comment_count, :parent_content_id,
-        :parent_content_type, :author_email, :created_at, :updated_at, :base_location_names, :content_locations,
+        :parent_content_type, :author_email, :created_at, :updated_at, :content_locations,
         :promote_radius
+
+      has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
 
       def title
         object.sanitized_title
@@ -91,20 +93,6 @@ module Api
       def parent_content_type
         if object.parent.present?
           object.parent.root_content_category.name
-        end
-      end
-
-      def base_location_names
-        object.base_locations.map(&:name)
-      end
-
-      def content_locations
-        object.content_locations.map do |l|
-          {
-            id: l.id,
-            location_type: l.location_type,
-            location_id: l.location.slug
-          }
         end
       end
 

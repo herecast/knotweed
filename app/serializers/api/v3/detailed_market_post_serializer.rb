@@ -6,9 +6,11 @@ module Api
         :locate_address, :can_edit, :has_contact_info,
         :author_name, :organization_id, :updated_at, :image_url, :contact_phone,
         :contact_email, :preferred_contact_method, :images, :created_at, :updated_at,
-        :sold, :base_location_names, :content_locations, :promote_radius
+        :sold, :promote_radius
 
       root 'market_post'
+
+      has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
 
       def contact_phone
         object.try(:channel).try(:contact_phone)
@@ -101,24 +103,6 @@ module Api
           object.channel.sold
         else
           false
-        end
-      end
-
-      def base_location_names
-        names = object.base_locations.map(&:name)
-        if object.organization
-          names |= object.organization.base_locations.map(&:name)
-        end
-        names
-      end
-
-      def content_locations
-        object.content_locations.map do |l|
-          {
-            id: l.id,
-            location_type: l.location_type,
-            location_id: l.location.slug
-          }
         end
       end
     end

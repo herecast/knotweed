@@ -52,7 +52,6 @@ describe 'Market Posts', type: :request do
               file_extension: i.file_extension
             })
           }),
-          base_location_names: be_an(Array),
           content_locations: market_post.base_locations.map do |cl|
             cl.attributes.slice(:id, :location_type, :location_id)
           end
@@ -135,7 +134,6 @@ describe 'Market Posts', type: :request do
           preferred_contact_method: a_kind_of(String).or(be_nil),
           images: be_an(Array),
           sold: be(true).or( be(false) ),
-          base_location_names: be_an(Array),
           content_locations: be_an(Array)
         ]
       })

@@ -5,8 +5,7 @@ module Api
       attributes :id, :subtitle, :starts_at, :ends_at, :image_url,
         :venue_name, :venue_address, :venue_city, :venue_state, 
         :venue_zip, :presenter_name, :registration_deadline, :cost_type,
-        :created_at, :updated_at, :image_width, :image_height, :image_file_extension,
-        :base_location_names
+        :created_at, :updated_at, :image_width, :image_height, :image_file_extension
 
       SHARED_EVENT_ATTRIBUTES = [:title]
 
@@ -107,14 +106,6 @@ module Api
 
       def cost_type
         object.event.try(:cost_type)
-      end
-
-      def base_location_names
-        names = object.event.content.base_locations.map(&:name)
-        if object.event.content.organization
-          names |= object.event.content.organization.base_locations.map(&:name)
-        end
-        names
       end
 
     end

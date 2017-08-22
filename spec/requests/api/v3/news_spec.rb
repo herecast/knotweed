@@ -23,7 +23,6 @@ def news_schema(news)
       head: be_an_instance_of(String),
       tail: be_an_instance_of(String)
     },
-    base_location_names: news.base_locations.map(&:name),
     content_locations: news.content_locations.map{|l|
       l.attributes.slice(:id, :location_type, :location_id)
     },
