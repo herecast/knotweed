@@ -1451,7 +1451,6 @@ class Content < ActiveRecord::Base
   end
 
   ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS = [
-    "The Gardening Guy",
     "Dev Testbed",        # For testing on an FE
   ]
 
