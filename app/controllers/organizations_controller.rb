@@ -139,7 +139,7 @@ class OrganizationsController < ApplicationController
         :business_location => [:name, :address, :venue_url, :city,
           :state, :zip, :phone, :email, :hours],
         :business_profile => { :business_category_ids => [] },
-        :organization_locations_attributes => [:id, :location_type, :location_id]
+        :organization_locations_attributes => [:id, :location_type, :location_id, :_destroy]
       )
     end
 
