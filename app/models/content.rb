@@ -302,15 +302,7 @@ class Content < ActiveRecord::Base
   end
 
   def primary_image
-    if images.where(primary: true).present?
-      images.where(primary: true).first
-    elsif images.order('id asc').present?
-      images.order('id asc').first
-    elsif images.present?
-      images.first
-    else
-      nil
-    end
+    images.find(&:primary) or images.sort_by(&:id).first
   end
 
   def primary_image=(image)

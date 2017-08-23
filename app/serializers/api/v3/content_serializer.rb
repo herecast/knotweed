@@ -34,7 +34,7 @@ module Api
       end
 
       def images
-        object.images.in_rendering_order.map do |img|
+        object.images.sort_by{|i| [i.position, i.created_at]}.map do |img|
           {
             id: img.id,
             image_url: img.image.url,

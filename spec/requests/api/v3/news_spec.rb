@@ -120,9 +120,9 @@ describe 'News Endpoints', type: :request do
         expect{subject}.to change{Content.count}.by 1
       end
     end
-    
+
     describe "content sanitization" do
-    
+
       describe 'in-content img with style attributes' do
         let(:post_params) do
           {
@@ -131,7 +131,7 @@ describe 'News Endpoints', type: :request do
             published_at: nil
           }
         end
-        
+
         it "does not strip out style attribute" do
           subject
           response_content = response_json[:news][:content]
@@ -275,7 +275,7 @@ describe 'News Endpoints', type: :request do
             published_at: Time.current
           }
         end
-      
+
         it 'should not update content' do
           expect{subject}.to_not change{@content.reload.title}
         end
@@ -505,7 +505,7 @@ describe 'News Endpoints', type: :request do
 
     end
   end
-  
+
   describe 'can_edit' do
     let!(:news_cat) { FactoryGirl.create :content_category, name: 'news' }
     let!(:user) { FactoryGirl.create :user }
@@ -523,7 +523,7 @@ describe 'News Endpoints', type: :request do
     end
 
     context 'when ability does not allow to edit' do
-      let(:other_user) { FactoryGirl.create :user } 
+      let(:other_user) { FactoryGirl.create :user }
         let(:put_params) do
           {
             title: 'blerb',

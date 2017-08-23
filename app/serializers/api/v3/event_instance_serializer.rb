@@ -55,7 +55,7 @@ module Api
       def starts_at
         object.start_date
       end
-      
+
       def ends_at
         object.end_date
       end
@@ -63,7 +63,7 @@ module Api
       def venue_name
         object.event.venue.try(:name)
       end
-      
+
       def venue_address
         object.event.venue.try(:address)
       end

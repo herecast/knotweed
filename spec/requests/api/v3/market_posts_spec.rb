@@ -154,7 +154,7 @@ describe 'Market Posts', type: :request do
         @green_post = FactoryGirl.create :market_post, title: 'Green Color'
         @no_color_post = FactoryGirl.create :market_post, title: 'No color in this post'
       end
-      
+
       it 'responds to requrests using the "AND" modifier param' do
         get '/api/v3/market_posts', request_params.merge(query: 'color, post', query_modifier: "AND")
         expect(response_json[:market_posts].count).to eq 1
@@ -165,7 +165,7 @@ describe 'Market Posts', type: :request do
         get '/api/v3/market_posts', request_params.merge(query: 'Blue, Green, Red', query_modifier: "OR")
         expect(response_json[:market_posts].count).to eq 3
       end
-      
+
       it 'responds to requests using the "Match Phrase" modifier param' do
         get '/api/v3/market_posts', request_params.merge(query: "Blue Color", query_modifier: "Match Phrase")
         expect(response_json[:market_posts].count).to eq 1
@@ -270,7 +270,7 @@ describe 'Market Posts', type: :request do
     end
 
     context 'when ability does not allow to edit' do
-      let(:other_user) { FactoryGirl.create :user } 
+      let(:other_user) { FactoryGirl.create :user }
         let(:put_params) do
           {
             title: 'blerb',
@@ -291,12 +291,12 @@ describe 'Market Posts', type: :request do
         put "/api/v3/market_posts/#{market_post.content.id}", { news: put_params }, auth_headers
         expect(response.status).to eql 403
       end
-      
+
     end
 
     context 'when no market post object exists for content' do
       let(:listserv_content) { FactoryGirl.create :content, content_category: market_cat }
-      
+
       before do
         allow_any_instance_of(Ability).to receive(:can?).with(:manage, listserv_content).and_return(true)
       end
@@ -317,14 +317,14 @@ describe 'Market Posts', type: :request do
     let(:content) { FactoryGirl.create :content }
     let(:auth_headers) { auth_headers_for(user) }
     let(:market_post_params) do
-      { market_post: { 
-          contact_email: user.email, 
-          contact_phone: user.contact_phone, 
+      { market_post: {
+          contact_email: user.email,
+          contact_phone: user.contact_phone,
           content: market_post.content,
           sold: true,
-          title: "Sample market post with contnet", 
-          address: '123 fake', 
-          city: 'still needed?', 
+          title: "Sample market post with contnet",
+          address: '123 fake',
+          city: 'still needed?',
           zip: '19143'}
       }
     end

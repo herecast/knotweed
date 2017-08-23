@@ -11,6 +11,5 @@ describe Api::V3::MarketPostSerializer do
     it 'returns a cost field' do
       expect(serialized_object['market_post']['cost']).to eql @market_post.cost
     end
-
   end
 end

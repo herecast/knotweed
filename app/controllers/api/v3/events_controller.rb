@@ -14,7 +14,7 @@ module Api
         opts[:where] = {}
         opts[:where][:published] = 1 if @repository.present?
         opts[:where][:channel_type] = 'Event'
-        opts[:sql] = { include: [:images, :organization, :root_content_category] }
+        opts[:sql] = { include: [:images, :organization, :root_content_category, :locations] }
 
         if @requesting_app.present?
           allowed_orgs = @requesting_app.organizations
