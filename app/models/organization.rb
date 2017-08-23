@@ -96,8 +96,7 @@ class Organization < ActiveRecord::Base
   }
   scope :news_publishers, -> { where(org_type: %w[Publisher Publication Blog]) }
 
-  ORG_TYPE_OPTIONS = ["Ad Agency", "Business", "Community", "Educational", "Government", "Publisher", 'Publication',
-    'Blog']
+  ORG_TYPE_OPTIONS = ["Business", "Publisher", 'Publication', 'Blog']
   #validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
   BLOGGER_PAY_RATES = [0, 3, 5, 8]
 
