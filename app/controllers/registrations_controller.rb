@@ -10,8 +10,12 @@ class RegistrationsController < Devise::RegistrationsController
         }
         user.nda_agreed_at = Time.zone.now
         user.agreed_to_nda = true
-        user.save
-        render json: res, status: 201 and return
+
+        if user.save
+          render json: res, status: 201 and return
+        else
+          render json: {errors: user.errors}, status: 422 and return
+        end
       end
     end
   end

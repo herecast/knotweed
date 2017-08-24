@@ -57,6 +57,22 @@ describe RegistrationsController, :type => :controller do
         expect(user.confirmation_token).to_not be_nil
         expect(user.confirmation_sent_at).to_not be_nil
       end
+
+      describe 'invalid attributes' do
+        before do
+          @user_attributes.delete(:location_id)
+        end
+
+        it 'returns 422 status' do
+          subject
+          expect(response.status).to eql 422
+        end
+
+        it 'returns error messages in json' do
+          subject
+          expect(JSON.parse(response.body)).to have_key('errors')
+        end
+      end
     end
 
     context 'mailer tests' do
