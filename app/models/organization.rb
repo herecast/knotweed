@@ -151,6 +151,10 @@ class Organization < ActiveRecord::Base
     ReindexOrganizationContentJob.perform_later self
   end
 
+  def has_business_profile?
+    contents.where(channel_type: 'BusinessProfile').present?
+  end
+
   private
 
   def twitter_handle_format
