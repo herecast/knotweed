@@ -51,7 +51,7 @@ module Api
       end
 
       def content_type
-        object.root_content_category.try(:name)
+        object.content_type
       end
 
       def venue_name

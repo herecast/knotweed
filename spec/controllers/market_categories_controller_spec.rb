@@ -40,15 +40,18 @@ RSpec.describe MarketCategoriesController, type: :controller do
 
   describe "GET #edit", elasticsearch: true do
     let!(:persisted_market_category) { FactoryGirl.create :market_category, query: 'winter tires', query_modifier: 'AND' }
-    let!(:market_post_content) { FactoryGirl.create :content, title: 'Winter tires for sale', 
-      content_category: FactoryGirl.create(:content_category, name: 'market') }
-    let!(:market_post) { FactoryGirl.create :market_post, content: market_post_content }
-    
+    let!(:market_post_content) {
+      FactoryGirl.create :content,
+        :market_post,
+        published: true,
+        title: 'Winter tires for sale'
+    }
+
     it "assigns the requested market_category as @market_category" do
       get :edit, id: persisted_market_category
       expect(assigns(:market_category)).to eq(persisted_market_category)
     end
-    
+
     context "when query is nil" do
       let!(:empty_query_category) { FactoryGirl.create :market_category, query: nil }
 
@@ -70,7 +73,6 @@ RSpec.describe MarketCategoriesController, type: :controller do
         expect(assigns(:search_preview).count).to eq 1
         search_result = assigns(:search_preview).first
         expect(search_result).to eq market_post_content
-        expect(search_result.channel).to eq market_post
       end
 
       it 'sets the count field to the number of search results' do
@@ -81,10 +83,19 @@ RSpec.describe MarketCategoriesController, type: :controller do
 
     context 'when using a query modifier' do
       content_category = ContentCategory.where(name: 'market').first
-      let!(:tire_market_post_content) { FactoryGirl.create :content, title: 'Tire', content_category: content_category }
-      let!(:specific_tire_market_post_content) { FactoryGirl.create :content, title: 'Bridgestone Snow Tires', content_category: content_category }
-      let!(:tire_market_post) { FactoryGirl.create :market_post, content: tire_market_post_content }
-      let!(:specific_tire_market_post) { FactoryGirl.create :market_post, content: specific_tire_market_post_content }
+      let!(:tire_market_post_content) {
+        FactoryGirl.create :content,
+          :market_post,
+          published: true,
+          title: 'Tire'
+      }
+
+      let!(:specific_tire_market_post_content) {
+        FactoryGirl.create :content,
+          :market_post,
+          published: true,
+          title: 'Bridgestone Snow Tires'
+      }
 
       context 'when query modifier is "OR"' do
         it 'returns the correct results for the query modifier' do

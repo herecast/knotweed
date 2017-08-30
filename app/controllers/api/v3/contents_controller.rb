@@ -8,15 +8,14 @@ module Api
       def index
         expires_in 1.minutes, public: true
 
-        @opts = {}
+        @opts = {load: false}
         apply_standard_chronology_to_opts
         apply_standard_categories_to_opts
         apply_standard_locations_to_opts
         apply_requesting_app_whitelist_to_opts
-        apply_eager_loading_content_associations_to_opts
 
         @contents = Content.search('*', @opts)
-        render json: @contents, each_serializer: ContentSerializer,
+        render json: @contents, each_serializer: HashieMashes::FeedContentSerializer,
           meta: { total: @contents.total_entries, total_pages: total_pages },
           context: { current_ability: current_ability }
       end

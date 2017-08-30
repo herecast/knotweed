@@ -68,38 +68,30 @@ class Content < ActiveRecord::Base
   include Auditable
   include Incrementable
 
-  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.searchkick_index_prefix,
-    searchable: [:content, :title, :subtitle, :authors, :organization_name]
+  searchkick callbacks: :async,
+    batch_size: 100,
+    index_prefix: Figaro.env.searchkick_index_prefix,
+    searchable: [:content, :title, :subtitle, :author_name, :organization_name],
+    settings: {
+      analysis: {
+        analyzer: {
+          #@TODO! This changes in newer searchkick versions.
+          #see: https://github.com/ankane/searchkick/blob/master/lib/searchkick/index_options.rb
+          default_index: {
+            :char_filter=>["html_strip", "ampersand"]
+          }
+        }
+      }
+    }
+
+  def search_serializer
+    "SearchIndexing::#{content_type.to_s.capitalize}Serializer".constantize
+  rescue NameError, LoadError
+    SearchIndexing::ContentSerializer
+  end
 
   def search_data
-    {
-      content: strip_tags(raw_content),
-      title: title,
-      subtitle: subtitle,
-      authors: author_name,
-      pubdate: pubdate,
-      all_loc_ids: all_loc_ids,
-      base_location_ids: base_locations.map(&:id),
-      about_location_ids: about_locations.map(&:id),
-      organization_id: organization.try(:id),
-      organization_name: organization.try(:name),
-      published: published,
-      channel_type: channel_type,
-      channel_id: channel_id,
-      root_content_category_id: content_category.try(:parent_id) || content_category_id,
-      content_category_id: content_category_id,
-      my_town_only: my_town_only?,
-      deleted: deleted_at.present?,
-      root_parent_id: root_parent_id,
-      in_accepted_category: !(content_category.try(:name) == 'event' and channel_type != 'Event'),
-      is_listserv_market_post: is_listserv_market_post?
-    }.tap do |data|
-
-      if content_type != :talk && organization.present?
-        data[:base_location_ids] |= organization.base_locations.map(&:id)
-      end
-
-    end
+    search_serializer.new(self).serializable_hash
   end
 
   def my_town_only

@@ -11,11 +11,11 @@ describe Api::V3::MarketPostsController, :type => :controller do
       @other_location = FactoryGirl.create :location, city: 'Another City'
       @third_location = FactoryGirl.create :location, city: 'Different Again'
       @user = FactoryGirl.create :user, location: @other_location
-      @default_location_content = FactoryGirl.create :content, content_category: @market_cat,
+      @default_location_content = FactoryGirl.create :content, :market_post,
         locations: [@default_location], published: true
-      FactoryGirl.create :content, content_category: @market_cat,
+      FactoryGirl.create :content, :market_post,
         locations: [@other_location], published: true
-      @old_post = FactoryGirl.create :content, content_category: @market_cat,
+      @old_post = FactoryGirl.create :content, :market_post,
         locations: [@default_location], published: true, pubdate: 40.days.ago
     end
 

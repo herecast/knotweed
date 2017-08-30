@@ -37,6 +37,14 @@ describe Ability, :type => :model do
         @user.add_role :manager, @org
       end
 
+      let(:hashie_content_by_org) {
+        Hashie::Mash.new(_type: 'content', organization_id: @org.id)
+      }
+
+      let(:hashie_content_by_child_org) {
+        Hashie::Mash.new(_type: 'content', organization_id: @child.id)
+      }
+
       let(:user){ @user }
 
       it{ is_expected.to be_able_to(:access, :admin) }
@@ -44,6 +52,9 @@ describe Ability, :type => :model do
       it{ is_expected.to be_able_to(:manage, @child) }
       it{ is_expected.to be_able_to(:manage, @org_content) }
       it{ is_expected.to be_able_to(:manage, @child_content) }
+
+      it{ is_expected.to be_able_to(:manage, hashie_content_by_org) }
+      it{ is_expected.to be_able_to(:manage, hashie_content_by_child_org) }
     end
 
     context "when is an event manager" do
@@ -53,17 +64,22 @@ describe Ability, :type => :model do
         @event          = FactoryGirl.create :event
         @content        = FactoryGirl.create :content, created_by: @user
         @event.content.update_attribute(:content_category, @event_category)
-        
+
         @user.add_role :event_manager
       end
 
       let(:user){ @user }
 
+      let(:hashie_content_event) {
+        Hashie::Mash.new(_type: 'content', content_category_id: @event_category.id)
+      }
+
       it{ is_expected.to be_able_to(:access, :dashboard) }
       it{ is_expected.to be_able_to(:manage, @event.content) }
       it{ is_expected.to be_able_to(:manage, @event.venue) }
       it{ is_expected.to be_able_to(:manage, @content) }
-      
+
+      it{ is_expected.to be_able_to(:manage, hashie_content_event) }
     end
 
     context 'when is a regular user' do
@@ -75,8 +91,19 @@ describe Ability, :type => :model do
 
       let(:user){ @user }
 
+      let(:hashie_content_owned) {
+        Hashie::Mash.new(_type: 'content', created_by: {id: user.id})
+      }
+
+      let(:hashie_content_not_owned) {
+        Hashie::Mash.new(_type: 'content', created_by: {id: 9099809})
+      }
+
       it { is_expected.to be_able_to(:manage, @content) }
       it { is_expected.not_to be_able_to(:manage, @other_content) }
+
+      it{ is_expected.to be_able_to(:manage, hashie_content_owned) }
+      it{ is_expected.not_to be_able_to(:manage, hashie_content_not_owned) }
     end
   end
 end

@@ -10,11 +10,17 @@ class Ability
       can :access, :dashboard
     elsif user.has_role? :event_manager
       can :access, :dashboard
+
+      can :manage, Content, created_by: user
       # give access only to event category contents
       event_category = ContentCategory.find_or_create_by(name: "event")
       can :manage, Content, content_category_id: event_category.id
+
+      # Hashie::Mash is returned directly out of searchkick when {load: false}
+      can :manage, Hashie::Mash, _type: 'content', created_by: {id: user.id}
+      can :manage, Hashie::Mash, _type: 'content', content_category_id: event_category.id
+
       can :manage, BusinessLocation # for event venues
-      can :manage, Content, created_by: user
     else
       if user.roles.where(name: 'manager').count > 0
         managed_orgs = Organization.with_role(:manager, user)
@@ -28,11 +34,14 @@ class Ability
         org_ids = (parent_org_ids + managed_orgs.map{|o|o.get_all_children}.flatten.map{|o|o.id}).uniq
         can :manage, Organization, id: org_ids
         can :manage, Content, organization_id: org_ids
+        can :manage, Hashie::Mash, _type: 'content', organization_id: org_ids
+
         can :access, :admin if managed_orgs.present? # allow basic access if they have some management position
       end
 
       # all users can manage their own content
       can :manage, Content, created_by: user
+      can :manage, Hashie::Mash, _type: 'content', created_by: {id: user.id}
     end
   end
 end
