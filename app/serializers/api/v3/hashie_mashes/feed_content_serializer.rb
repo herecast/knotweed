@@ -72,7 +72,7 @@ module Api
         end
 
         def venue_zip
-          if is_event?
+          if is_event? && object.venue.present?
             # avoid using ruby's zip method
             object.venue[:zip]
           end
