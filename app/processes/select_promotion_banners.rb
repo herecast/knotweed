@@ -110,13 +110,6 @@ class SelectPromotionBanners
       end
 
       unless promotion_banners_needed == 0
-        banners = query.paid.has_inventory.limit(promotion_banners_needed).where.not(id: @exclude)
-        banners.each do |banner|
-          add_promotion([banner, nil, 'paid active'])
-        end
-      end
-
-      unless promotion_banners_needed == 0
         banners = query.has_inventory.limit(promotion_banners_needed).where.not(id: @exclude)
         banners.each do |banner|
           add_promotion([banner, nil, 'active'])
