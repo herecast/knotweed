@@ -27,9 +27,12 @@
 #  profile_image       :string(255)
 #  background_image    :string(255)
 #  profile_ad_override :string(255)
-#  custom_links        :jsonb
 #  twitter_handle      :string
+#  custom_links        :jsonb
 #  biz_feed_active     :boolean          default(FALSE)
+#  ad_sales_agent      :string
+#  ad_contact_nickname :string
+#  ad_contact_fullname :string
 #
 
 class Organization < ActiveRecord::Base

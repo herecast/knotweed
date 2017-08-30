@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170803160508) do
+ActiveRecord::Schema.define(version: 20170829192332) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -361,6 +361,10 @@ ActiveRecord::Schema.define(version: 20170803160508) do
     t.boolean  "biz_feed_public"
     t.datetime "sunset_date"
     t.integer  "promote_radius"
+    t.string   "ad_promotion_type"
+    t.datetime "ad_campaign_start"
+    t.datetime "ad_campaign_end"
+    t.integer  "ad_max_impressions"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree
@@ -805,6 +809,9 @@ ActiveRecord::Schema.define(version: 20170803160508) do
     t.jsonb    "custom_links"
     t.string   "twitter_handle"
     t.boolean  "biz_feed_active",                 default: false
+    t.string   "ad_sales_agent"
+    t.string   "ad_contact_nickname"
+    t.string   "ad_contact_fullname"
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree

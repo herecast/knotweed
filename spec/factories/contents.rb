@@ -51,6 +51,12 @@
 #  subscriber_mc_identifier  :string
 #  biz_feed_public           :boolean
 #  sunset_date               :datetime
+#  promote_radius            :integer
+#  removed                   :boolean
+#  ad_promotion_type         :string
+#  ad_campaign_start         :datetime
+#  ad_campaign_end           :datetime
+#  ad_max_impressions        :integer
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
