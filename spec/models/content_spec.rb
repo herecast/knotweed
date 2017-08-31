@@ -54,8 +54,8 @@
 #  promote_radius            :integer
 #  removed                   :boolean
 #  ad_promotion_type         :string
-#  ad_campaign_start         :datetime
-#  ad_campaign_end           :datetime
+#  ad_campaign_start         :date
+#  ad_campaign_end           :date
 #  ad_max_impressions        :integer
 #
 
@@ -1239,7 +1239,7 @@ describe Content, :type => :model do
       @config = Hash.new
       @config["username"] = 'subtextuvltest@gmail.com'
       @config["password"] = 'RailRoad202'
- 
+
       parser_path = Dir.pwd + "/lib/parsers/"
       require parser_path + "mail_extractor.rb"
       @test_files_path = Dir.pwd + "/spec/fixtures/listserv_test_files"
@@ -1262,7 +1262,7 @@ describe Content, :type => :model do
       @config = Hash.new
       @config["username"] = 'subtextuvltest@gmail.com'
       @config["password"] = 'RailRoad202'
- 
+
       parser_path = Dir.pwd + "/lib/parsers/"
       require parser_path + "mail_extractor.rb"
       @test_files_path = Dir.pwd + "/spec/fixtures/listserv_test_files"

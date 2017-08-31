@@ -54,8 +54,8 @@
 #  promote_radius            :integer
 #  removed                   :boolean
 #  ad_promotion_type         :string
-#  ad_campaign_start         :datetime
-#  ad_campaign_end           :datetime
+#  ad_campaign_start         :date
+#  ad_campaign_end           :date
 #  ad_max_impressions        :integer
 #
 

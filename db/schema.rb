@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170829192332) do
+ActiveRecord::Schema.define(version: 20170831151701) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -362,8 +362,8 @@ ActiveRecord::Schema.define(version: 20170829192332) do
     t.datetime "sunset_date"
     t.integer  "promote_radius"
     t.string   "ad_promotion_type"
-    t.datetime "ad_campaign_start"
-    t.datetime "ad_campaign_end"
+    t.date     "ad_campaign_start"
+    t.date     "ad_campaign_end"
     t.integer  "ad_max_impressions"
   end
 
