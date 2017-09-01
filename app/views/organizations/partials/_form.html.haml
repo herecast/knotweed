@@ -20,6 +20,9 @@
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#locations" } do
           Promote Locations
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#advertisers" } do
+          Advertisers
       - if @organization.id
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#managers" } do
@@ -27,9 +30,6 @@
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#issues" } do
             Issues
-        %li
-          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#promotions" } do
-            Promotions
     .tab-content
       .tab-pane.active.form-horizontal#details
         .row-fluid
@@ -199,6 +199,13 @@
               = link_to "select all", "#", id: "select-all-locs"
             .span2.text-left
               = link_to "deselect all", "#", id: "deselect-all-locs"
+      .tab-pane#advertisers
+        .row-fluid
+          %h2 Advertiser Information
+          .span6
+            = f.input :ad_sales_agent, label: 'Sales Agent'
+            = f.input :ad_contact_nickname, label: 'Contact Nickname'
+            = f.input :ad_contact_fullname, label: 'Contact Fullname'
       - if @organization.id
         .tab-pane#managers
           .row-fluid
@@ -257,8 +264,6 @@
                 = render "issues/issue_row", issue: issue
         .tab-pane#history
           histry
-        .tab-pane#promotions
-          = render "promotions/partials/promotions_tab", organization: @organization
 
       .form-actions
         = submit_tag "Submit and Create New Content Set", class: "btn btn-success", name: "add_content_set"

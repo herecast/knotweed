@@ -134,7 +134,7 @@ class OrganizationsController < ApplicationController
         :consumer_app_ids, :can_publish_news, :subscribe_url,
         :description, :banner_ad_override, :pay_rate_in_cents, :profile_title, :pay_directly,
         :can_publish_market, :can_publish_ads, :can_publish_talk, :can_publish_events,
-        :profile_ad_override, :biz_feed_active,
+        :profile_ad_override, :biz_feed_active, :ad_sales_agent, :ad_contact_nickname, :ad_contact_fullname,
         :consumer_app_ids => [], :location_ids => [],
         :business_location => [:name, :address, :venue_url, :city,
           :state, :zip, :phone, :email, :hours],
