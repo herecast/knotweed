@@ -26,4 +26,8 @@ class CampaignsController < ApplicationController
       @campaigns = []
     end
   end
+
+  def edit
+    @campaign = Content.find(params[:id])
+  end
 end

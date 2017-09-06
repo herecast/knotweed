@@ -80,7 +80,7 @@ RSpec.describe CampaignsController, type: :controller do
 
       it "returns active promotions" do
         subject
-        expect(assigns(:campaigns)).to match_array [@active_campaign] 
+        expect(assigns(:campaigns)).to match_array [@active_campaign]
       end
     end
 
@@ -96,6 +96,15 @@ RSpec.describe CampaignsController, type: :controller do
         subject
         expect(assigns(:campaigns)).to match_array [@boosted_campaign]
       end
+    end
+  end
+
+  describe "GET #edit" do
+    subject { get :edit, id: @campaigns.first.promotion.content.id }
+
+    it "returns ok status" do
+      subject
+      expect(response).to have_http_status :ok
     end
   end
 end
