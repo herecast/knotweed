@@ -151,6 +151,19 @@ RSpec.describe 'Organizations::Contents API Endpoints', type: :request do
           expect(parsed_results_count(response)).to eq 0
         end
       end
+
+      context "when Content is campaign with no promotion" do
+        before do
+          @campaign = FactoryGirl.create :content,
+            content_category_id: @campaign_category.id,
+            organization_id: @organization.id
+        end
+
+        it "returns Content record" do
+          subject
+          expect(parsed_results_count(response)).to eq 1
+        end
+      end
     end
   end
 end

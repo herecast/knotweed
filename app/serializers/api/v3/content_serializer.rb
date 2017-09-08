@@ -26,8 +26,8 @@ module Api
       end
 
       def image_url
-        if object.root_content_category_id == campaign_content_category_id
-          object.promotions.first.promotable.banner_image.try(:url)
+        if object.root_content_category_id == campaign_content_category_id && object.promotions.present?
+          object.promotions.first.try(:promotable).try(:banner_image).try(:url)
         elsif object.images.present?
           object.images[0].image.url
         end
@@ -120,7 +120,7 @@ module Api
 
       def view_count
         if object.root_content_category_id == campaign_content_category_id
-          object.promotions.includes(:promotable).first.promotable.try(:impression_count)
+          object.promotions.includes(:promotable).first.try(:promotable).try(:impression_count)
         elsif object.parent.present?
           object.parent_view_count
         else
@@ -146,7 +146,7 @@ module Api
 
       def click_count
         if object.root_content_category_id == campaign_content_category_id
-          object.promotions.first.promotable.try(:click_count)
+          object.promotions.first.try(:promotable).try(:click_count)
         end
       end
 
@@ -187,7 +187,7 @@ module Api
 
       def redirect_url
         if object.root_content_category_id == campaign_content_category_id
-          object.promotions.first.promotable.try(:redirect_url)
+          object.promotions.first.try(:promotable).try(:redirect_url)
         end
       end
 
@@ -217,13 +217,13 @@ module Api
 
       def campaign_start
         if object.root_content_category_id == campaign_content_category_id
-          object.promotions.first.promotable.try(:campaign_start)
+          object.promotions.first.try(:promotable).try(:campaign_start)
         end
       end
 
       def campaign_end
         if object.root_content_category_id == campaign_content_category_id
-          object.promotions.first.promotable.try(:campaign_end)
+          object.promotions.first.try(:promotable).try(:campaign_end)
         end
       end
 
