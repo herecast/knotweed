@@ -1,1 +1,8 @@
-Campaign editing will go here.
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-pencil
+        Campaign Content ID #{@content.id} #{@content.title}
+    .box-content
+      = render partial: "campaigns/partials/form", locals: { path: campaign_path }

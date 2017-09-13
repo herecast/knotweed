@@ -112,10 +112,7 @@ RSpec.describe 'Organizations::Contents API Endpoints', type: :request do
 
       context "when Organization owns Content in campaign category" do
         before do
-          content = FactoryGirl.create :content, organization_id: @organization.id
-          promotion_banner = FactoryGirl.create :promotion_banner
-          content.promotions << FactoryGirl.create(:promotion, promotable: promotion_banner)
-          @campaign_category.contents << content
+          content = FactoryGirl.create :content, :campaign, organization_id: @organization.id
         end
 
         it "returns campaign items" do
@@ -154,8 +151,7 @@ RSpec.describe 'Organizations::Contents API Endpoints', type: :request do
 
       context "when Content is campaign with no promotion" do
         before do
-          @campaign = FactoryGirl.create :content,
-            content_category_id: @campaign_category.id,
+          @campaign = FactoryGirl.create :content, :campaign,
             organization_id: @organization.id
         end
 

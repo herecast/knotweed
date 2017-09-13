@@ -13,43 +13,46 @@
       = search_form_for @search, url: campaigns_path do |f|
         .controls.controls-row
           .field.span3
-            = f.label :promotion_content_id_eq, "ID"
-            = f.text_field :promotion_content_id_eq, class: "span12"
+            = f.label :id_eq, "Campaign ID"
+            = f.text_field :id_eq, class: "span12"
           .field.span3
-            = f.label :promotion_organization_id_in, "Advertiser"
-            = f.collection_select :promotion_organization_id_in, Organization.all, :id, :name, {}, { multiple: true, class: "chosen-select" } 
-          .field.span2
-            = f.label :promotion_paid_eq, "Paid?"
-            = f.check_box :promotion_paid_eq
-          .field.span2
-            %label{ for: 'promotion_banners_active' } Active?
-            %input{ active_checkbox(@active) }
-          .field.span2
-            = f.label :boost_eq, "Boosted?"
-            = f.check_box :boost_eq
+            = f.label :organization_id_in, "Advertiser"
+            = f.collection_select :organization_id_in, Organization.all, :id, :name, {}, { multiple: true, class: "chosen-select" }
+          .field.span3
+            = f.label :ad_promotion_type_eq, 'Campaign Type'
+            = f.select :ad_promotion_type_eq, PromotionBanner::PROMOTION_TYPES, { include_blank: true }
+          .field.span3
+            = f.label :title_cont, 'Campaign Title'
+            = f.text_field :title_cont, class: "span12"
         .controls.controls-row
           .field.span3
-            = f.label :promotion_content_ad_promotion_type_eq, 'Promotion Type'
-            = f.select :promotion_content_ad_promotion_type_eq, PromotionBanner::PROMOTION_TYPES, { include_blank: true }
+            = f.label :organization_ad_sales_agent_cont, "Sales Agent"
+            = f.text_field :organization_ad_sales_agent_cont, class: "span12"
           .field.span3
-            = f.label :promotion_content_organization_ad_sales_agent_cont, "Sales Agent"
-            = f.text_field :promotion_content_organization_ad_sales_agent_cont, class: "span12"
+            = f.label :ad_campaign_start_gteq, "Campaign Start From"
+            = f.text_field :ad_campaign_start_gteq, type: :date, class: "span12"
           .field.span3
-            = f.label :promotion_content_ad_campaign_start_gteq, "Starts From"
-            = f.text_field :promotion_content_ad_campaign_start_gteq, type: :date, class: "span12"
-          .field.span3
-            = f.label :promotion_content_ad_campaign_start_lteq, "Until"
-            = f.text_field :promotion_content_ad_campaign_start_lteq, type: :date, class: "span12"
+            = f.label :ad_campaign_start_lteq, "To"
+            = f.text_field :ad_campaign_start_lteq, type: :date, class: "span12"
+          .field.span1
+            = f.label :promotions_paid_eq, "Paid?"
+            = f.check_box :promotions_paid_eq
+          .field.span1
+            %label{ for: 'promotion_banners_active' } Active?
+            %input{ active_checkbox(@active) }
+          .field.span1
+            = f.label :promotions_promotable_of_PromotionBanner_type_boost_eq, "Boosted?"
+            = f.check_box :promotions_promotable_of_PromotionBanner_type_boost_eq
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
 %table.table.table-striped.table-hover.table-condensed#campaign_index
   %thead
     %tr
-      %th Promotion Type
-      %th Content ID
+      %th Campaign Type
+      %th Campaign ID
       %th Advertiser
-      %th Campaign
+      %th Campaign Title
       %th Campaign Dates
       %th Sales Agent
       %th
@@ -58,13 +61,11 @@
     = paginate @campaigns, window: 2 if @campaigns.present?
   %body
     - @campaigns.each do |c|
-      - unless c.promotion.content.nil?
-        %tr
-          %td= c.promotion.content.ad_promotion_type
-          %td= c.promotion.content_id
-          %td{ style: "min-width: 150px" }= c.promotion.content.organization.try(:name)
-          %td= c.promotion.content.title
-          %td #{c.promotion.content.ad_campaign_start.try(:strftime, "%m/%d/%Y")}-#{c.promotion.content.ad_campaign_end.try(:strftime, "%m/%d/%Y")}
-          %td= c.promotion.content.organization.try(:ad_sales_agent)
-          %td= link_to "edit", edit_campaign_path(c.promotion.content, anchor: 'features'), class: "btn btn-warning btn-mini"
-          %td= link_to "creatives", edit_campaign_path(c.promotion.content, anchor: 'creatives'), class: "btn btn-warning btn-mini"
+      %tr
+        %td= c.ad_promotion_type
+        %td= c.id
+        %td{ style: "min-width: 150px" }= c.organization.try(:name)
+        %td= c.title
+        %td #{c.ad_campaign_start.try(:strftime, "%m/%d/%Y")}-#{c.ad_campaign_end.try(:strftime, "%m/%d/%Y")}
+        %td= c.organization.try(:ad_sales_agent)
+        %td= link_to "edit", edit_campaign_path(c), class: "btn btn-warning btn-mini"

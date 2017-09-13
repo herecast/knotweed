@@ -1,27 +1,28 @@
 - promotion ||= @promotion
-- organization ||= promotion.organization unless promotion.nil?
+- organization ||= promotion.content.organization unless promotion.nil?
 - ajax_submit ||= false
 - if organization.present?
-  %p Promotion for: #{link_to organization.name, edit_organization_path(organization)}
+  %p Advertiser: #{link_to organization.name, edit_organization_path(organization)}
 = simple_form_for (promotion.id ? promotion : [organization, promotion]) do |f|
   = f.error_notification
-
   .form-inputs
-    = f.input :description, input_html: { class: "input-block-level", rows: 5 }
+    %p="Title: #{promotion.content.title}"
+    = f.input :description, required: true, input_html: { class: "input-block-level", rows: 5 }
     = f.input :paid
     = f.simple_fields_for :promotable do |p|
       - if promotion.promotable.is_a? PromotionBanner
-        = p.input :sales_agent, placeholder: 'Initials, please (ie: HHH)'
-        = p.input :promotion_type, as: :select, collection: PromotionBanner::PROMOTION_TYPES
         = p.input :boost
-        = p.input :campaign_start, as: :date_picker, label: 'Campaign Start Date'
-        = p.input :campaign_end, as: :date_picker, label: 'Campaign End Date'
+        = p.input :campaign_start, as: :date_picker, label: 'Creative Start Date'
+        = p.input :campaign_end, as: :date_picker, label: 'Creative End Date'
         = p.input :daily_max_impressions, label: 'Daily Maximum Impressions'
         = p.input :max_impressions, label: 'Maximum Impressions'
         = p.input :cost_per_impression
         = p.input :cost_per_day
         = p.input :coupon_email_body, as: :text, label: 'Coupon Details'
-        = image_tag promotion.promotable.coupon_image_url if promotion.promotable.coupon_image.present?
+
+        - if promotion.promotable.coupon_image?
+          = p.input :remove_coupon_image, as: :boolean, label: "Remove coupon image?"
+          = image_tag promotion.promotable.coupon_image_url
         = p.input :coupon_image, as: :file, label: 'Coupon Image (aspect ratio: w360xh640)'
 
     - if promotion.promotable.present?
@@ -31,14 +32,15 @@
       - if promotion.promotable.is_a? PromotionListserv
         = g.association :listserv
       - elsif promotion.promotable.is_a? PromotionBanner
-        = image_tag promotion.promotable_banner_image.url if promotion.promotable_banner_image?
-        = g.input :banner_image
+        - if promotion.promotable_banner_image?
+          = image_tag promotion.promotable_banner_image.url, id: "promotion-current-banner-image"
+        - else
+          = image_tag "", id: 'promotion-preview-image'
+        = g.input :banner_image, label: 'Creative Image'
         - if @promotion.present? && (@promotion.promotable_type == 'PromotionBanner' && promotion.promotable.promotion_type == PromotionBanner::COUPON)
           %p= "Coupon Redirect is: #{@promotion.promotable.redirect_url}"
         - else
-          = g.input :redirect_url, label: 'Redirect url: If promotion type = Coupon, this will be overridden', input_html: { class: "input-block-level" }
-    = f.label :content
-    %label= promotion.content.try(:title)
+          = g.input :redirect_url, label: 'Redirect URL (overridden if Ad Type = Coupon)', input_html: { class: "input-block-level" }
     = f.input :content_id, as: :hidden
 
   .form-actions

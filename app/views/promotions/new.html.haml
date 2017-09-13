@@ -5,7 +5,3 @@
         Create a New Promotion 
     .box-content
       = render 'promotions/partials/form'
-
-      %p= link_to 'Back to Promotions List', organization_promotions_path(@promotion.organization)
-      - unless @promotion.content.nil?
-        %p= link_to 'Back to Content', content_path(@promotion.content)

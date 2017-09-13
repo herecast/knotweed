@@ -1,0 +1,53 @@
+= simple_form_for @content, url: path, html: { class: "form" } do |f|
+  = f.error_notification
+  .tabbable
+    %ul.nav.nav-tabs.nav-tabs-simple#edit_doctabs
+      %li{ class: "active" }
+        = link_to "#", class: 'green-border', data: { toggle: "tab", target: "#features" } do
+          %i.icon-info
+          Features
+      %li#contents_tab_link
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#doc_content" } do
+          %i.icon-reorder
+          Content
+      - if @content.persisted?
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#publish" } do
+            %i.icon-upload
+            Publish/Export
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#creatives" } do
+            %i.icon-eye-open
+            Creatives
+    .tab-content
+      .tab-pane.form-horizontal#features{ class: "active" }
+        .row-fluid
+          .span6
+            = f.hidden_field :content_category, value: ContentCategory.find_by_name('campaign')
+            = f.association :organization, input_html: { class: "chosen-select span12" }, label: "Advertiser"
+            = f.input :title, input_html: { class: "input-block-level" }, label: 'Campaign Title'
+            = f.input :pubdate, as: :datetime_picker, input_html: { value: @content.pubdate || Date.current }
+            = f.input :ad_promotion_type, collection: PromotionBanner::PROMOTION_TYPES, input_html: { class: "input-block-level" }, label: 'Ad type'
+            = f.input :ad_campaign_start, as: :date_picker, label: 'Campaign Start Date'
+            = f.input :ad_campaign_end, as: :date_picker, label: 'Campaign End Date'
+            = f.input :ad_max_impressions, input_html: { class: "input-block-level" }, label: "Total Ad Impressions"
+      .tab-pane#doc_content
+        .summernote-wrapper
+          = f.input :sanitized_content, as: :summernote, label: 'Content'
+      - if @content.id.present?
+        .tab-pane#publish{ data: { no_turbolink: "" } }
+          = render partial: 'contents/partials/publishing_tab', locals: { content: @content }
+      .tab-pane#creatives
+        = render "promotions/partials/promotions_tab", content: @content
+    .form-actions
+      = submit_tag nil, class: "btn btn-primary"
+      = submit_tag "Submit and continue with this record", class: "btn btn-success", name: "continue_editing"
+      - if @content.id.present? and !@content.quarantine
+        - if current_user.default_repository.present?
+          = link_to "Publish", publish_content_path(@content, "publish_to_dsp", current_user.default_repository.id),
+            class: "btn btn-primary publish-action-button"
+        - else
+          .has-tooltip.btn{ disabled: "disabled", data: { toggle: "tooltip", 
+            title: "You must select a default repository for your user account" } } Publish
+      = link_to "Cancel", :back, class: "btn cancel"
+

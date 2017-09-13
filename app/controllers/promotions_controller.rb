@@ -26,7 +26,7 @@ class PromotionsController < ApplicationController
     # redirect back from whence they came
     if params[:content_id].present?
       content = Content.find(params[:content_id]) unless params[:content_id].nil?
-      @promotion = Promotion.new organization: organization
+      @promotion = Promotion.new
       @promotion.content = content unless content.nil?
       if params[:promotable_type].present?
         if params[:promotable_type] == 'PromotionBanner'
@@ -54,11 +54,10 @@ class PromotionsController < ApplicationController
     @promotion = Promotion.new(promotion_params)
 
     pub = Organization.find params[:organization_id]
-    @promotion.organization = pub
 
     respond_to do |format|
       if @promotion.save
-        format.html { redirect_to @promotion, notice: 'Promotion was successfully created.' }
+        format.html { redirect_to edit_campaign_path(@promotion.content), notice: 'Promotion was successfully created.' }
         format.json { render json: @promotion, status: :created, location: @promotion }
       else
         format.html { render 'new', error: @promotion.errors.messages }
@@ -72,7 +71,7 @@ class PromotionsController < ApplicationController
 
     respond_to do |format|
       if @promotion.update_attributes(promotion_params)
-        format.html { redirect_to @promotion, notice: 'Promotion was successfully updated.' }
+        format.html { redirect_to edit_campaign_path(@promotion.content), notice: 'Promotion was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: "edit" }
@@ -92,7 +91,9 @@ class PromotionsController < ApplicationController
         :paid,
         promotable_attributes: [ :id, :boost, :campaign_start, :campaign_end, :daily_max_impressions,
           :max_impressions, :banner_image, :redirect_url, :promotion_type, :sales_agent,
-          :cost_per_impression, :cost_per_day, :coupon_email_body, :coupon_image ]
+          :cost_per_impression, :cost_per_day, :coupon_email_body, :coupon_image,
+          :remove_coupon_image, :remove_banner_image ],
+        content_attributes: [ :title ]
       )
     end
 

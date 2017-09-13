@@ -219,6 +219,7 @@ class Content < ActiveRecord::Base
 
   validates_presence_of :raw_content, :title, if: :is_event?
   validates_presence_of :raw_content, :title, if: :is_market_post?
+  validates_presence_of :organization_id, :title, :ad_promotion_type, :ad_campaign_start, :ad_campaign_end, if: :is_campaign?
 
   # check if it should be marked quarantined
   before_save :mark_quarantined
@@ -253,6 +254,9 @@ class Content < ActiveRecord::Base
   }
 
   scope :not_deleted, -> { where(deleted_at: nil) }
+
+  scope :ad_campaign_active, ->(date=Date.current) { where("ad_campaign_start <= ?", date)
+    .where("ad_campaign_end >= ?", date) }
 
   NEW_FORMAT = "New"
   EXPORT_FORMATS = [NEW_FORMAT]
@@ -1172,6 +1176,10 @@ class Content < ActiveRecord::Base
 
   def is_market_post?
     channel_type.present? and channel_type == "MarketPost"
+  end
+
+  def is_campaign?
+    content_category_id == ContentCategory.find_or_create_by(name: 'campaign').id
   end
 
   # Retrieves similar content (as configured in similar_content_overrides for sponsored content or determined by

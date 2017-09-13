@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PromotionsController, :type => :controller do 
+describe PromotionsController, :type => :controller do
   include Devise::TestHelpers
 
   before do
@@ -41,10 +41,11 @@ describe PromotionsController, :type => :controller do
   end
 
   describe "POST create" do
-    let (:options) do
-      { description: "Another bad promotion" }
-    end
+    let(:content) { FactoryGirl.create :content }
+    let(:options) { { description: "Another great promotion!", content_id: content.id } }
+
     subject { post :create, { promotion: options, organization_id: @org } }
+
     describe "with valid params" do
       it "creates a new Promotion" do
         expect { subject }.to change(Promotion, :count).by(1)
@@ -58,7 +59,7 @@ describe PromotionsController, :type => :controller do
 
       it "redirects to the created promotion" do
         subject
-        expect(response).to redirect_to(Promotion.last)
+        expect(response).to redirect_to edit_campaign_path(content)
       end
     end
 
@@ -81,6 +82,7 @@ describe PromotionsController, :type => :controller do
 
   describe "PUT update" do
     subject { put :update, { id: @promotion.to_param, promotion: params} }
+
     describe "with valid params" do
       let(:params) { { description: 'Another description' } }
 
@@ -97,7 +99,7 @@ describe PromotionsController, :type => :controller do
 
       it "redirects to the promotion" do
         subject
-        expect(response).to redirect_to(@promotion)
+        expect(response).to redirect_to edit_campaign_path(@promotion.content)
       end
     end
 
@@ -129,7 +131,6 @@ describe PromotionsController, :type => :controller do
 
         it "json: responds with 200 status code" do
           get :new, organization_id: @org.id, promotable_type: 'PromotionBanner', content_id: @content.id, format: :json
-          expect(JSON.parse(response.body)['organization_id']).to eq @org.id
           expect(response.code).to eq '200'
         end
       end

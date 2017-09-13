@@ -1,0 +1,8 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-plus
+        Add Campaign
+    .box-content
+      = render partial: "campaigns/partials/form", locals: { path: campaigns_path }

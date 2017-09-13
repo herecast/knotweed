@@ -5,14 +5,14 @@
   %thead
     %tr
       %th ID
-      %th Content
-      %th Class
       %th Description
+      %th Start
+      %th End
       %th Boost
       %th Paid
-      %th Active
+      %th Edit
   %tbody#promotion_list
-    - promotions.each do |promotion|
+    - promotions.order(id: :desc).each do |promotion|
       = render "promotions/partials/promotion_row", promotion: promotion
 - if controller_name == "contents" or controller_name == "events"
   = link_to "+ Create New PromotionBanner", 
@@ -23,5 +23,5 @@
     new_organization_promotion_path(organization_id: organization.id,
     content_id: content.id, promotable_type: 'PromotionListserv'),
     class: "btn btn-primary", disabled: !can_be_listserv_promoted(content)
--# If we can get ajax image uploading, render the form right here!
--# = render "promotions/partials/form", promotion: Promotion.new(organization: @organization), ajax_submit: true
+- if controller_name == 'campaigns' && content.organization.present?
+  = link_to "+ Create New Creative", new_organization_promotion_path(organization_id: organization.id, content_id: content.id, promotable_type: 'PromotionBanner'), class: "btn btn-primary"

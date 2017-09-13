@@ -120,5 +120,16 @@ FactoryGirl.define do
       published true
       pubdate { Time.current }
     end
+
+    trait :campaign do
+      ad_promotion_type 'ROS'
+      ad_campaign_start Date.yesterday
+      ad_campaign_end Date.tomorrow
+      content_category {
+        ContentCategory.find_or_create_by({
+          name: 'campaign'
+        })
+      }
+    end
   end
 end

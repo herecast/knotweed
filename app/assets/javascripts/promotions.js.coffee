@@ -6,3 +6,17 @@ jQuery ->
     url = $(this).data("submitUrl")
     data = $(this).parent().prev(".form-inputs").find("input, textarea").serialize()
     $.post(url, data, (data, textStatus, jqXHR) -> alert("success!" + data))
+
+  $("#promotion_promotable_attributes_banner_image").on 'change', ->
+    reader = new FileReader()
+    input = document.getElementById('promotion_promotable_attributes_banner_image')
+    $current = $('#promotion-current-banner-image')
+    if $current.length > 0
+      handle = (e) -> $current.attr('src', e.target.result)
+      reader.onload = handle
+      reader.readAsDataURL(input.files[0])
+    else
+      $el = $('#promotion-preview-image')
+      handle = (e) -> $el.attr('src', e.target.result)
+      reader.onload = handle
+      reader.readAsDataURL(input.files[0])

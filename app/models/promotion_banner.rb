@@ -44,8 +44,11 @@ class PromotionBanner < ActiveRecord::Base
   after_save :update_active_promotions
   after_destroy :update_active_promotions
 
-  validates_presence_of :promotion, :banner_image, :campaign_start, :campaign_end, :promotion_type
-  validates :max_impressions, numericality: {only_integer: true, greater_than: 0}, if: 'max_impressions.present?'
+  validates_presence_of :promotion, :banner_image, :campaign_start, :campaign_end
+  validates :max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: 'max_impressions.present?'
+  validates :daily_max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: 'daily_max_impressions.present?'
+  validates :cost_per_day, numericality: { greater_than: 0 }, if: 'cost_per_day.present?'
+  validates :cost_per_impression, numericality: { greater_than: 0 }, if: 'cost_per_impression.present?'
   validate :will_not_have_daily_and_per_impression_cost
   validate :if_coupon_must_have_coupon_image
 
@@ -124,6 +127,16 @@ class PromotionBanner < ActiveRecord::Base
     end
   end
 
+  def remove_coupon_image=(val)
+    coupon_image_will_change! if val
+    super
+  end
+
+  def remove_banner_image=(val)
+    banner_image_will_change! if val
+    super
+  end
+
   private
 
     def will_not_have_daily_and_per_impression_cost
@@ -156,4 +169,5 @@ class PromotionBanner < ActiveRecord::Base
     def has_total_impressions_left?
       max_impressions.present? ? impression_count < max_impressions : true
     end
+
 end

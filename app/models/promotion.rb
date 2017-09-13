@@ -36,6 +36,10 @@ class Promotion < ActiveRecord::Base
   # we can remove these two lines of code and the database column
 
   accepts_nested_attributes_for :promotable
+  accepts_nested_attributes_for :content
+
+  validates_presence_of :description, if: :is_creative?
+
   PROMOTABLE_TYPES = ['PromotionBanner']
 
   UPLOAD_ENDPOINT = "/statements"
@@ -47,6 +51,10 @@ class Promotion < ActiveRecord::Base
       self.promotable ||= self.promotable_type.constantize.new
       self.promotable.assign_attributes(attributes)
     end
+  end
+
+  def is_creative?
+    promotable_type == 'PromotionBanner'
   end
 
 end
