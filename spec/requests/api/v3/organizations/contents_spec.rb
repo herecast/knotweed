@@ -16,6 +16,37 @@ RSpec.describe 'Organizations::Contents API Endpoints', type: :request do
     let(:user) { FactoryGirl.create :user }
     let(:auth_headers) { auth_headers_for(user) }
 
+    context 'query' do
+      let(:organization) { FactoryGirl.create :organization }
+      let!(:content_not_matching) {
+        FactoryGirl.create :content,
+          :market_post,
+          :published,
+          title: 'Bambi',
+          organization: organization
+      }
+
+      let!(:content_matching) {
+        FactoryGirl.create :content,
+          :market_post,
+          :published,
+          title: 'Cinderella',
+          organization: organization
+      }
+
+      subject {
+        get "/api/v3/organizations/#{organization.id}/contents", {query: 'Cinderella'}
+      }
+
+      it 'returns the content matching the query' do
+        Timecop.travel(Time.current + 1.day) do
+          subject
+          expect(response_json[:contents].count).to eql 1
+          expect(response_json[:contents][0][:id]).to eql content_matching.id
+        end
+      end
+    end
+
     context "when no organization present" do
       subject do
         Timecop.travel(Time.current + 1.day)

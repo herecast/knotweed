@@ -38,7 +38,8 @@ module Api
           opts[:where][:all_loc_ids] = params[:location_id].to_i
         end
 
-        @contents = Content.search('*', opts)
+        query = params[:query].present? ? params[:query] : '*'
+        @contents = Content.search(query, opts)
 
         render json: @contents, each_serializer: ContentSerializer, meta: { total: @contents.total_entries }
       end
