@@ -34,7 +34,7 @@ module SearchService
         location = Location.find_by_slug_or_id params[:location_id]
 
         if params[:radius].present? && params[:radius].to_i > 0
-          locations_within_radius = Location.within_radius_of(location, params[:radius].to_i).map(&:id)
+          locations_within_radius = Location.non_region.within_radius_of(location, params[:radius].to_i).map(&:id)
 
           @opts[:where][:or] << [
             {my_town_only: false, all_loc_ids: locations_within_radius},

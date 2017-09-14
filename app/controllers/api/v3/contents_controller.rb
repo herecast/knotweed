@@ -14,7 +14,14 @@ module Api
         apply_standard_locations_to_opts
         apply_requesting_app_whitelist_to_opts
 
-        @contents = Content.search('*', @opts)
+        if params[:query].present?
+          # if query, sort by default: _score
+          @opts.delete(:order)
+          @contents = Content.search(params[:query], @opts)
+        else
+          @contents = Content.search('*', @opts)
+        end
+
         render json: @contents, each_serializer: HashieMashes::FeedContentSerializer,
           meta: { total: @contents.total_entries, total_pages: total_pages },
           context: { current_ability: current_ability }

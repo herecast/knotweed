@@ -357,6 +357,18 @@ describe 'Contents Endpoints', type: :request do
         })
       end
     end
+
+    context "when 'query' parameter is present" do
+      before do
+        @market_post = FactoryGirl.create :content, :market_post, title: news.title, organization: org, published: true
+      end
+
+      it 'returns items from all categories matching the query' do
+        get "/api/v3/contents", { query: news.title }, auth_headers
+        expect(response_json[:contents].length).to eq 2
+      end
+    end
+
   end
 
   describe 'GET /api/v3/contents/:id' do
