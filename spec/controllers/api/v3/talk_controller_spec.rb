@@ -53,7 +53,7 @@ describe Api::V3::TalkController, :type => :controller do
 
   describe 'GET show' do
     before do
-      @talk = FactoryGirl.create :content, content_category: @talk_cat, published: true
+      @talk = FactoryGirl.create :content, :talk, content_category: @talk_cat, published: true
       api_authenticate user: @user
     end
 
@@ -110,7 +110,7 @@ describe Api::V3::TalkController, :type => :controller do
 
   describe 'PUT update' do
     before do
-      @talk = FactoryGirl.create :comment
+      @talk = FactoryGirl.create(:content, :talk).channel
     end
 
     context 'not signed in' do
@@ -151,7 +151,11 @@ describe Api::V3::TalkController, :type => :controller do
     before do
       @basic_attrs = {
         title: 'Some Title Here',
-        content: 'Hello this is the body'
+        content: 'Hello this is the body',
+        content_locations: [{
+          location_id: FactoryGirl.create(:location).slug,
+          location_type: 'base'
+        }]
       }
     end
 

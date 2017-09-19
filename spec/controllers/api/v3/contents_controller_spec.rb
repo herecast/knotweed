@@ -15,10 +15,9 @@ describe Api::V3::ContentsController, :type => :controller do
       @content_id = @content.id
       # note, similar content is filtered by organization so we need to ensure this has
       # a organization that exists in the consumer app's list.
-      @market_cat = FactoryGirl.create :content_category, name: 'market'
+      #@market_cat = FactoryGirl.create :content_category, name: 'market'
       @sim_content1 = FactoryGirl.create :content, organization: @org
-      @sim_content2 = FactoryGirl.create :content, organization: @org,
-        content_category: @market_cat
+      @sim_content2 = FactoryGirl.create :content, :market_post, organization: @org
       request_body = {'articles'=>[{'id'=>"#{Content::BASE_URI}/#{@sim_content1.id}"},
         {'id'=>"#{Content::BASE_URI}/#{@sim_content2.id}"}]}.to_json
       stub_request(:get, /recommend\/contextual\?contentid=/).
@@ -75,9 +74,9 @@ describe Api::V3::ContentsController, :type => :controller do
 
     context 'when similar content contains events with instances in the past or future' do
       before do
-        @root_content = FactoryGirl.create :content, organization: @org
-        @content = FactoryGirl.create :content, organization: @org
-        other_content = FactoryGirl.create :content, organization: @org
+        @root_content = FactoryGirl.create :content, :located, organization: @org
+        @content = FactoryGirl.create :content, :located, organization: @org
+        other_content = FactoryGirl.create :content, :located, organization: @org
         event = FactoryGirl.create :event, skip_event_instance: true, content: @content
         other_event = FactoryGirl.create :event, skip_event_instance: true, content: other_content
         FactoryGirl.create :event_instance, event: other_event, start_date: 1.week.ago
@@ -174,6 +173,7 @@ describe Api::V3::ContentsController, :type => :controller do
           before do
             @org = FactoryGirl.create :organization
             @org_contents = FactoryGirl.create_list :content, 3,
+              :located,
               content_category_id: @news_cat.id, organization: @org
             @user.add_role :manager, @org
           end
@@ -192,6 +192,7 @@ describe Api::V3::ContentsController, :type => :controller do
             @child = FactoryGirl.create :organization, parent: @parent
             @user.add_role :manager, @parent
             @contents = FactoryGirl.create_list :content, 3,
+              :located,
               content_category_id: @news_cat.id, organization: @child
           end
 
@@ -212,14 +213,16 @@ describe Api::V3::ContentsController, :type => :controller do
           @event_cat = FactoryGirl.create :content_category, name: 'event'
 
           #@event = FactoryGirl.create :event, content_category: @event_cat
-          FactoryGirl.create_list :content, 5, 
+          FactoryGirl.create_list :content, 5,
+            :located,
             content_category: @news_cat, 
             published: true,
             created_by: @user
-          FactoryGirl.create_list :market_post, 5, 
+          FactoryGirl.create_list :market_post, 5,
             published: true,
             created_by: @user
           FactoryGirl.create_list :content, 5,
+            :located,
             content_category: @talk_cat,
             published: true,
             created_by: @user

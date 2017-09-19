@@ -76,7 +76,17 @@ FactoryGirl.define do
     authoremail 'fake@email.com'
     published false
 
+    trait :located do
+      content_locations {
+        [FactoryGirl.build(:content_location,  content: nil)]
+      }
+    end
+
     trait :talk do
+      located
+      channel {
+        FactoryGirl.build :comment, content: nil
+      }
       content_category {
         ContentCategory.find_or_create_by({
           name: 'talk_of_the_town'
@@ -85,6 +95,7 @@ FactoryGirl.define do
     end
 
     trait :news do
+      located
       content_category {
         ContentCategory.find_or_create_by({
           name: 'news'
@@ -93,6 +104,7 @@ FactoryGirl.define do
     end
 
     trait :event do
+      located
       content_category {
         ContentCategory.find_or_create_by({
           name: 'event'
@@ -105,6 +117,7 @@ FactoryGirl.define do
     end
 
     trait :market_post do
+      located
       content_category {
         ContentCategory.find_or_create_by({
           name: 'market'

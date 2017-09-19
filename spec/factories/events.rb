@@ -39,7 +39,7 @@ FactoryGirl.define do
       content_locations nil
     end
 
-    content
+    association :content, :event, channel: nil
     featured false
     association :venue, factory: :business_location
     contact_phone "888-888-8888"
@@ -63,8 +63,16 @@ FactoryGirl.define do
         e.content.published = evaluator.published
         e.content.created_by = evaluator.created_by if evaluator.created_by.present?
 
-        e.content.locations = evaluator.locations if evaluator.locations
-        e.content.content_locations = evaluator.content_locations if evaluator.content_locations
+        if evaluator.locations
+          e.content.content_locations = []
+          evaluator.locations.each do |location|
+            e.content.content_locations << ContentLocation.new(
+              location: location
+            )
+          end
+        elsif evaluator.content_locations
+          e.content.content_locations = evaluator.content_locations
+        end
       end
     end
 

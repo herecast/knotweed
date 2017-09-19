@@ -8,14 +8,27 @@ describe 'Events Endpoints', type: :request do
   describe 'events index', elasticsearch: true do
     let(:non_default_location) { FactoryGirl.create(:location) }
     let!(:non_default_location_event) {
-      FactoryGirl.create :event,
-        base_locations: [non_default_location],
-        locations: [non_default_location]
+      FactoryGirl.create(:content, :event, :published,
+        content_locations: [
+          FactoryGirl.create(:content_location,
+            location_type: 'base',
+            location: non_default_location
+          )
+        ]
+      ).channel
     }
 
     before do
       @location = FactoryGirl.create :location, city: Location::DEFAULT_LOCATION
-      @event = FactoryGirl.create :event, locations: [@location]
+      content = FactoryGirl.create :content, :event,
+        :published,
+        content_locations: [
+          ContentLocation.new(
+            location: @location,
+            location_type: 'base'
+          )
+        ]
+      @event = content.channel
 
       ContentCategory.first.update_attribute(:name, 'event')
       consumer_app.organizations << @event.content.organization

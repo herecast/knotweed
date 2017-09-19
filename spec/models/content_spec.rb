@@ -440,6 +440,10 @@ describe Content, :type => :model do
   end
 
   describe "create from import job" do
+    let(:import_job) {
+      FactoryGirl.create(:import_record).import_job
+    }
+
     before do
       # base_data is not enough to pass quarantine
       # need to add pubdate, organization to validate
@@ -459,12 +463,12 @@ describe Content, :type => :model do
 
     it "should create a new content with basic data passed by hash" do
       expect(Content.count).to eq(0)
-      content = Content.create_from_import_job(@base_data)
+      content = Content.create_from_import_job(@base_data, import_job)
       expect(Content.count).to eq(1)
     end
 
     it "should mark non-valid corpus entries as quarantined" do
-      content = Content.create_from_import_job(@base_data)
+      content = Content.create_from_import_job(@base_data, import_job)
       expect(content.quarantine).to eq(true)
     end
 
@@ -475,7 +479,7 @@ describe Content, :type => :model do
         "content" => "hello",
         "organization_id" => p.id
       })
-      content = Content.create_from_import_job(extra_data)
+      content = Content.create_from_import_job(extra_data, import_job)
       expect(content.quarantine).to eq(false)
     end
 
@@ -491,7 +495,7 @@ describe Content, :type => :model do
         "organization_id" => co.organization.id,
         "in_reply_to" => co.guid
       })
-      c2 = Content.create_from_import_job(extra_data)
+      c2 = Content.create_from_import_job(extra_data, import_job)
       expect(c2.parent).to eq(co)
     end
 
@@ -504,7 +508,7 @@ describe Content, :type => :model do
           "organization_id" => @parent.organization.id,
           "in_reply_to" => @parent.guid
         })
-        @child = Content.create_from_import_job extra_data
+        @child = Content.create_from_import_job extra_data, import_job
       end
       it "should refuse to set parent" do
         expect(@child.parent).to be_nil
@@ -520,7 +524,7 @@ describe Content, :type => :model do
           "organization_id" => @parent.organization.id,
           "in_reply_to" => @parent.guid
         })
-        @child = Content.create_from_import_job extra_data
+        @child = Content.create_from_import_job extra_data, import_job
       end
 
       it "should refuse to set the parent" do
@@ -532,14 +536,14 @@ describe Content, :type => :model do
     it "should overwrite any existing content with the same organization and source_content_id" do
       p = FactoryGirl.create(:organization)
       @base_data["organization_id"] = p.id
-      content_orig = Content.create_from_import_job(@base_data)
+      content_orig = Content.create_from_import_job(@base_data, import_job)
       orig_id = content_orig.id
       @new_data = {
         "title" => "Different Title",
         "source_content_id" => @base_data["source_content_id"],
         "organization_id" => @base_data["organization_id"]
       }
-      new_content = Content.create_from_import_job(@new_data)
+      new_content = Content.create_from_import_job(@new_data, import_job)
       expect(new_content.id).to eq(orig_id)
       expect(Content.count).to eq(1)
       db_content = Content.all.first
@@ -551,14 +555,14 @@ describe Content, :type => :model do
     it "should overwrite any existing content with the same guid" do
       p = FactoryGirl.create(:organization)
       @base_data["organization_id"] = p.id
-      c1 = Content.create_from_import_job(@base_data)
+      c1 = Content.create_from_import_job(@base_data, import_job)
       orig_id = c1.id
       @new_data = {
         "title" => "Different Title",
         "organization_id" => @base_data["organization_id"],
         "guid" => c1.guid
       }
-      c2 = Content.create_from_import_job(@new_data)
+      c2 = Content.create_from_import_job(@new_data, import_job)
       expect(Content.count).to eq(1)
       expect(Content.first.id).to eq(orig_id)
     end
@@ -577,13 +581,13 @@ describe Content, :type => :model do
                       source_category: 'Category',
                       content_category: 'Category 422',
                       content_locations: [FactoryGirl.create(:location).city] }
-        @c1 = Content.create_from_import_job(@orig_data)
+        @c1 = Content.create_from_import_job(@orig_data, import_job)
         @new_data = @orig_data.merge({source_content_id: @orig_data[:source_content_id] + '7',
                                     location: @orig_data[:location] + ' different',
                                     content_locations: [FactoryGirl.create(:location).city],
                                     guid: '53939itqjg3q0353jt',
                                     pubdate: DateTime.parse("1/2/2015 11:15:00")})
-        @c2 = Content.create_from_import_job(@new_data)
+        @c2 = Content.create_from_import_job(@new_data, import_job)
       end
 
       it 'should update the existing content, appending a new location to it' do
@@ -597,8 +601,8 @@ describe Content, :type => :model do
         before do
           @orig_data[:title] = '[Norwich ListServ] An amazing tale of muisical Genius'
           @new_data[:title] = '[Bedford Queue] An amazing tale of muisical Genius'
-          @c3 = Content.create_from_import_job(@orig_data)
-          @c4 = Content.create_from_import_job(@new_data)
+          @c3 = Content.create_from_import_job(@orig_data, import_job)
+          @c4 = Content.create_from_import_job(@new_data, import_job)
         end
 
         it 'should update the existing content, appending a new location to it' do
@@ -612,8 +616,8 @@ describe Content, :type => :model do
         before do
           @orig_data[:title] = '[Seagate] A gentle awakening'
           @new_data[:title] = 'A gentle awakening'
-          @c5 = Content.create_from_import_job @orig_data
-          @c6 = Content.create_from_import_job @new_data
+          @c5 = Content.create_from_import_job @orig_data, import_job
+          @c6 = Content.create_from_import_job @new_data, import_job
         end
 
         it 'we should update the existing content, appending a new location to it' do
@@ -627,8 +631,8 @@ describe Content, :type => :model do
         before do
           @orig_data[:title] = '[Norwich ListServ] Town Audit'
           @new_data[:title] = 'Re: [Norwich ListServ] Town Audit'
-          @c7 = Content.create_from_import_job(@orig_data)
-          @c8 = Content.create_from_import_job(@new_data)
+          @c7 = Content.create_from_import_job(@orig_data, import_job)
+          @c8 = Content.create_from_import_job(@new_data, import_job)
         end
 
         it 'should not update the existing content' do
@@ -643,7 +647,7 @@ describe Content, :type => :model do
     it "should overwrite any content but retain new category if category field is populated " do
       p = FactoryGirl.create(:organization)
       @base_data["organization_id"] = p.id
-      c1 = Content.create_from_import_job(@base_data)
+      c1 = Content.create_from_import_job(@base_data, import_job)
       c1.update_attribute :category, "Test Category"
       orig_id = c1.id
       @new_data = {
@@ -651,7 +655,7 @@ describe Content, :type => :model do
         "organization_id" => @base_data["organization_id"],
         "guid" => c1.guid
       }
-      c2 = Content.create_from_import_job(@new_data)
+      c2 = Content.create_from_import_job(@new_data, import_job)
       expect(Content.count).to eq(1)
       expect(Content.first.id).to eq(orig_id)
       expect(Content.first.category).to eq("Test Category")
@@ -660,7 +664,7 @@ describe Content, :type => :model do
     it "should not overwrite any fields not in the REIMPORT_FEATURES whitelist" do
       p = FactoryGirl.create(:organization)
       @base_data["organization_id"] = p.id
-      c1 = Content.create_from_import_job(@base_data)
+      c1 = Content.create_from_import_job(@base_data, import_job)
       c1.update_attribute :copyright, "ropycight" #an attribute that is not whitelisted for reimport
       @new_data = {
         "title" => "New Title",
@@ -668,7 +672,7 @@ describe Content, :type => :model do
         "guid" => c1.guid,
         "copyright" => "different" # an attribute that is not whitelisted
       }
-      Content.create_from_import_job(@new_data)
+      Content.create_from_import_job(@new_data, import_job)
       c1.reload
       expect(c1.title).to eq(@new_data["title"])
       expect(c1.copyright).to eq("ropycight") # original
@@ -677,39 +681,39 @@ describe Content, :type => :model do
     # check source logic
     it "should create organization if source is provided and it doesn't match existing organizations" do
       @base_data["source"] = "Test Organization"
-      content = Content.create_from_import_job(@base_data)
+      content = Content.create_from_import_job(@base_data, import_job)
       expect(content.organization.name).to eq("Test Organization")
     end
     it "should match an existing organization if source matches organization name and source_field not provided" do
       org = FactoryGirl.create(:organization)
       @base_data["source"] = org.name
-      content = Content.create_from_import_job(@base_data)
+      content = Content.create_from_import_job(@base_data, import_job)
       expect(content.organization).to eq(org)
     end
 
     # check location logic
     it "should create a new location if none is found" do
       @base_data["location"] = "Test Location"
-      content = Content.create_from_import_job(@base_data)
+      content = Content.create_from_import_job(@base_data, import_job)
       expect(content.import_location.city).to eq("Test Location")
     end
     it "should match existing locations by city" do
       loc = FactoryGirl.create(:import_location)
       @base_data["location"] = loc.city
-      content = Content.create_from_import_job(@base_data)
+      content = Content.create_from_import_job(@base_data, import_job)
       expect(content.import_location.city).to eq(loc.city)
     end
 
     # check issue/edition logic
     it "should create a new edition if none is found" do
       @base_data["edition"] = "Holiday Edition"
-      content = Content.create_from_import_job(@base_data)
+      content = Content.create_from_import_job(@base_data, import_job)
       expect(content.issue.issue_edition).to eq("Holiday Edition")
     end
     it "should assign the appropriate data to the newly created issue" do
       @base_data["edition"] = "Holiday Edition"
       @base_data["source"] = "Test org"
-      content = Content.create_from_import_job(@base_data)
+      content = Content.create_from_import_job(@base_data, import_job)
       expect(content.issue.issue_edition).to eq("Holiday Edition")
       expect(content.issue.publication_date).to eq(content.pubdate)
       expect(content.issue.organization).to eq(content.organization)
@@ -722,7 +726,7 @@ describe Content, :type => :model do
       @base_data["source"] = issue_1.organization.name
       @base_data["pubdate"] = pubdate
 
-      content = Content.create_from_import_job(@base_data)
+      content = Content.create_from_import_job(@base_data, import_job)
       expect(content.issue).to eq(issue_1)
     end
 
@@ -734,7 +738,7 @@ describe Content, :type => :model do
 
     it "should create an image record and copy the file to our CDN if 'image' is provided" do
       @base_data["image"] = "https://www.google.com/images/srpr/logo11w.png"
-      c = Content.create_from_import_job(@base_data)
+      c = Content.create_from_import_job(@base_data, import_job)
       expect(c.images.count).to eq(1)
       image = c.images.first
       expect(image.image.url.present?).to eq(true)
@@ -746,7 +750,7 @@ describe Content, :type => :model do
       it 'should set created_by and updated_by correctly for new imported content' do
         # @user created in auditable_shared_examples.rb included using include_examples 'Auditable', Content
         @base_data['user_id'] = @user.id
-        c = Content.create_from_import_job(@base_data)
+        c = Content.create_from_import_job(@base_data, import_job)
         expect(c.created_by).to eq(@user)
         expect(c.updated_by).to eq(@user)
       end
@@ -755,7 +759,7 @@ describe Content, :type => :model do
     # check primary image handling
     describe 'should handle primary images with NO images present' do
       before do
-        @c = Content.create_from_import_job(@base_data)
+        @c = Content.create_from_import_job(@base_data, import_job)
       end
 
       it 'should not have a primary image' do
@@ -768,7 +772,7 @@ describe Content, :type => :model do
         @base_data['images'] = [{'image' => 'https://www.google.com/images/srpr/logo11w.png'},
                                 {'image' => 'https://www.google.com/images/srpr/logo9w.png'},
                                 {'image' => 'https://www.google.com/images/srpr/logo7w.png'}]
-        @c = Content.create_from_import_job(@base_data)
+        @c = Content.create_from_import_job(@base_data, import_job)
       end
 
       it 'should have the right number of images' do
@@ -799,7 +803,7 @@ describe Content, :type => :model do
         expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo11w.png')).not_to be_nil
         @base_data['images'] = [{'image' => 'https://www.google.com/images/srpr/logo7w.png'},
                                 {'image' => 'https://www.google.com/images/srpr/logo9w.png'}]
-        @c = Content.create_from_import_job(@base_data)
+        @c = Content.create_from_import_job(@base_data, import_job)
         expect(@c.images.length).to eq 2
         expect(@c.images.find_by_source_url('https://www.google.com/images/srpr/logo11w.png')).to be_nil
       end
@@ -817,7 +821,7 @@ describe Content, :type => :model do
         @base_data['images'] = [{'image' => 'https://www.google.com/images/srpr/logo5w.png'},
                                 {'image' => 'https://www.google.com/images/srpr/logo6w.png'},
                                 {'image' => 'https://www.google.com/images/srpr/logo7w.png'}]
-        @c = Content.create_from_import_job(@base_data)
+        @c = Content.create_from_import_job(@base_data, import_job)
 
         # verify the resulting image array
         expect(@c.images.length).to eq 3
@@ -1451,9 +1455,9 @@ describe Content, :type => :model do
     let(:talk_category) { FactoryGirl.create :content_category, name: 'talk_of_the_town' }
     let(:discussion_category) { FactoryGirl.create :content_category, name: 'discussion' }
     before do
-      @content = FactoryGirl.create :content, content_category: talk_category
-      @comment_content1 = FactoryGirl.create :content, content_category: talk_category
-      @comment_content2 = FactoryGirl.create :content, content_category: talk_category
+      @content = FactoryGirl.create :content, :located, content_category: talk_category
+      @comment_content1 = FactoryGirl.create :content, :located, content_category: talk_category
+      @comment_content2 = FactoryGirl.create :content, :located, content_category: talk_category
       @comment1 = FactoryGirl.create :comment, content: @comment_content1
       @comment1.content.update_attributes(parent_id: @content.id, root_content_category_id: talk_category)
       @comment2 = FactoryGirl.create :comment, content: @comment_content2
@@ -1603,14 +1607,14 @@ describe Content, :type => :model do
   describe 'Content.talk_search', elasticsearch: true do
     before do
       @talk = FactoryGirl.create :content_category, name: 'talk_of_the_town'
-      @p1 = FactoryGirl.create :content, content_category: @talk, pubdate: 1.year.ago
-      @p2 = FactoryGirl.create :content, content_category: @talk, pubdate: 1.week.ago
-      @p3 = FactoryGirl.create :content, content_category: @talk, pubdate: 1.day.ago
-      @p1c1 = FactoryGirl.create :content, parent: @p1, content_category: @talk,
+      @p1 = FactoryGirl.create :content, :located, content_category: @talk, pubdate: 1.year.ago
+      @p2 = FactoryGirl.create :content, :located, content_category: @talk, pubdate: 1.week.ago
+      @p3 = FactoryGirl.create :content, :located, content_category: @talk, pubdate: 1.day.ago
+      @p1c1 = FactoryGirl.create :content, :located, parent: @p1, content_category: @talk,
         raw_content: 'VERY UNIQUE STRING @#$#%'
-      @p1c2 = FactoryGirl.create :content, parent: @p1c1, content_category: @talk,
+      @p1c2 = FactoryGirl.create :content, :located, parent: @p1c1, content_category: @talk,
         raw_content: 'DIFFSTRING912387'
-      @p2c1 = FactoryGirl.create :content, parent: @p2, content_category: @talk,
+      @p2c1 = FactoryGirl.create :content, :located, parent: @p2, content_category: @talk,
         raw_content: 'adsfdsafds', pubdate: 3.hours.ago
     end
 
@@ -1650,8 +1654,8 @@ describe Content, :type => :model do
 
   describe 'increment_view_count!' do
     before do
-      @published_content = FactoryGirl.create(:content, published: true)
-      @unpublished_content = FactoryGirl.create(:content, published: false)
+      @published_content = FactoryGirl.create(:content, :located, published: true)
+      @unpublished_content = FactoryGirl.create(:content, :located, published: false)
     end
 
     it 'should increment the view count' do
@@ -2133,6 +2137,47 @@ describe Content, :type => :model do
 
       it 'is SearchIndexing::ContentSerializer' do
         expect(subject.search_serializer).to eql SearchIndexing::ContentSerializer
+      end
+    end
+  end
+
+  describe 'validate content_locations for non-imported content' do
+    describe 'events, market, talk' do
+      [:event, :market, :talk].each do |type|
+        let(:subject) {
+          FactoryGirl.build_stubbed :content, type,
+            import_record_id: nil,
+            content_locations: []
+        }
+
+        it "requires at least one content location for #{type}" do
+          expect(subject).to_not be_valid
+          expect(subject.errors[:content_locations]).to include("must have at least one location")
+        end
+      end
+
+      describe 'news' do
+        let(:subject) {
+          FactoryGirl.build_stubbed :content, :news,
+            import_record_id: nil,
+            content_locations: []
+        }
+
+        it "does not require a content location for news"  do
+          expect(subject).to be_valid
+        end
+      end
+
+      describe 'not news or other channels' do
+        let(:subject) {
+          FactoryGirl.build_stubbed :content,
+            import_record_id: nil,
+            content_locations: []
+        }
+
+        it "does not require a content location"  do
+          expect(subject).to be_valid
+        end
       end
     end
   end

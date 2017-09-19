@@ -18,8 +18,11 @@ require 'spec_helper'
 
 describe EventInstance, :type => :model do
   before do
-    @content = FactoryGirl.create :content, raw_content: 'cool description'
-    @event = FactoryGirl.create :event, content: @content, subtitle: 'helpful subtitle'
+    content = FactoryGirl.create :content, :event,
+      raw_content: 'cool description',
+      subtitle: 'helpful subtitle'
+
+    @event = content.channel
   end
 
   describe 'search', elasticsearch: true do

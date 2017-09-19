@@ -28,8 +28,8 @@ require 'spec_helper'
 
 describe Event, :type => :model do
   before do
-    @content = FactoryGirl.create :content
-    @event = FactoryGirl.create :event, content: @content
+    @event = FactoryGirl.create :event
+    @content = @event.content
   end
 
   describe "method missing override" do

@@ -96,9 +96,6 @@ describe MarketPostsController, :type => :controller do
       end
 
       it 'filters by the content id' do
-        @market_post.content.id = rand(10..20)
-        @market_post.save
-
         @q[:content_id_in] = @market_post.content.id
         get :index, q: @q
         expect(assigns(:market_posts).length).to eq(1)

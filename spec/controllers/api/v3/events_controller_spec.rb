@@ -29,7 +29,12 @@ describe Api::V3::EventsController, :type => :controller do
       registration_deadline: 1.day.from_now,
       registration_url: 'http://www.google.com',
       registration_phone: '888-888-8888',
-      registration_email: 'test@fake.com'
+      registration_email: 'test@fake.com',
+      content_locations: [
+        {
+          location_id: FactoryGirl.create(:location).slug
+        }
+      ]
     }
   end
 

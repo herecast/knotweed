@@ -22,14 +22,6 @@ module Api
         object.id
       end
 
-      def id
-        if object.channel.present?
-          object.channel_id
-        else
-          object.id
-        end
-      end
-
       def image_url
         if object.images.present?
           object.images[0].image.url

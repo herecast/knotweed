@@ -15,7 +15,12 @@ shared_examples_for "Location based index" do
     let!(:base_located) {
       FactoryGirl.create :content, content_type,
         content_attributes.merge(
-          base_locations: [location],
+          content_locations: [
+            FactoryGirl.create(:content_location,
+              location_type: 'base',
+              location: location
+            )
+          ],
           published: true
         )
     }
@@ -23,7 +28,12 @@ shared_examples_for "Location based index" do
     let!(:about_located) {
       FactoryGirl.create :content, content_type,
         content_attributes.merge(
-          about_locations: [location],
+          content_locations: [
+            FactoryGirl.create(:content_location,
+              location_type: 'about',
+              location: location
+            )
+          ],
           published: true
         )
     }
@@ -31,7 +41,12 @@ shared_examples_for "Location based index" do
     let!(:standard_located) {
       FactoryGirl.create :content, content_type,
         content_attributes.merge(
-          locations: [location],
+          content_locations: [
+            FactoryGirl.create(:content_location,
+              location_type: nil,
+              location: location
+            )
+          ],
           published: true
         )
     }
@@ -84,8 +99,11 @@ shared_examples_for "Location based index" do
           FactoryGirl.create :content, content_type,
             content_attributes.merge(
               published: true,
-              base_locations: [
-                location_within_radius
+              content_locations: [
+                FactoryGirl.create(:content_location,
+                  location_type: 'base',
+                  location: location_within_radius
+                )
               ]
             )
         }

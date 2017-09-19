@@ -75,7 +75,10 @@ describe 'Talk', type: :request do
       let(:valid_params) {
         {
           title: 'Test',
-          content: 'Body'
+          content: 'Body',
+          content_locations: [{
+            location_id: FactoryGirl.create(:location).slug
+          }]
         }
       }
 

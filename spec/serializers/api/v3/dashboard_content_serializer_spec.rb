@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::V3::DashboardContentSerializer do
   before do
-    @content = FactoryGirl.create :content
+    @content = FactoryGirl.create :content, :located
   end
 
   let (:serialized_object) { JSON.parse(Api::V3::DashboardContentSerializer.new(@content, root: false).to_json) }
@@ -31,7 +31,7 @@ describe Api::V3::DashboardContentSerializer do
   context 'with a parent object' do
     before do
       @market_cat = FactoryGirl.create :content_category, name: 'market'
-      @parent = FactoryGirl.create :content, content_category: @market_cat,
+      @parent = FactoryGirl.create :content, :located, content_category: @market_cat,
         view_count: 25, comment_count: 19
       @content.update_attribute :parent_id, @parent.id
     end

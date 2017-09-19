@@ -16,13 +16,13 @@ describe ContentsHelper, type: :helper do
     end
 
     it 'should return /talk/#{content_id} for tott category' do
-      tott = FactoryGirl.create :content, content_category: @tott_cat
+      tott = FactoryGirl.create :content, :located, content_category: @tott_cat
       expect(helper.ux2_content_path(tott)).to eq("/talk/#{tott.id}")
     end
 
     context 'when content is in subscategory' do
       let(:subcategory) { FactoryGirl.create :content_category, parent: @market_cat }
-      let!(:content) { FactoryGirl.create :content, content_category: subcategory }
+      let!(:content) { FactoryGirl.create :content, :located, content_category: subcategory }
 
       it 'should with path matching parent category name' do
         expect(helper.ux2_content_path(content)).to eq("/market/#{content.id}")

@@ -24,8 +24,8 @@
 FactoryGirl.define do
   factory :market_post do
     ignore do
-      locations []
-      base_locations []
+      locations nil
+      base_locations nil
       published true
       organization nil
       created_by nil
@@ -46,8 +46,8 @@ FactoryGirl.define do
     after(:build) do |e, evaluator|
       if e.content
         e.content.published = evaluator.published
-        e.content.locations = evaluator.locations
-        e.content.base_locations = evaluator.base_locations
+        e.content.locations = evaluator.locations if evaluator.locations
+        e.content.base_locations = evaluator.base_locations if evaluator.base_locations
         e.content.organization = evaluator.organization if evaluator.organization.present?
         e.content.created_by = evaluator.created_by if evaluator.created_by.present?
         e.content.title = evaluator.title if evaluator.title.present?

@@ -154,9 +154,14 @@ class Content < ActiveRecord::Base
   # contents, not the promotion of contents (which is handled through the promotion model).
   has_many :content_promotion_banner_loads
   has_many :promotion_banners, through: :content_promotion_banner_loads
-  has_many :content_locations
+  has_many :content_locations, dependent: :destroy
   accepts_nested_attributes_for :content_locations, allow_destroy: true
   has_many :locations, through: :content_locations
+
+  validate :require_at_least_one_content_location, if: ->(c) {
+    !c.import_record_id? &&
+    [:talk, :market_post, :event].include?(c.content_type)
+  }
 
   def base_locations
     # merge query criteria
@@ -222,9 +227,9 @@ class Content < ActiveRecord::Base
   validates_presence_of :organization_id, :title, :ad_promotion_type, :ad_campaign_start, :ad_campaign_end, if: :is_campaign?
 
   # check if it should be marked quarantined
-  before_save :mark_quarantined
-  before_save :set_guid
-  before_save :set_root_content_category_id
+  before_validation :mark_quarantined
+  before_validation :set_guid
+  before_validation :set_root_content_category_id
 
   # this has to be after save to accomodate the situation
   # where we are creating new content with no parent
@@ -615,9 +620,9 @@ class Content < ActiveRecord::Base
 
   def set_root_content_category_id
     if content_category.present?
-      self.root_content_category_id = content_category.parent_id || content_category.id
+      self.root_content_category = content_category.parent || content_category
     else
-      self.root_content_category_id = nil
+      self.root_content_category = nil
     end
   end
 
@@ -1419,6 +1424,12 @@ class Content < ActiveRecord::Base
   end
 
   private
+
+  def require_at_least_one_content_location
+    unless content_locations.any?
+      errors.add(:content_locations, "must have at least one location")
+    end
+  end
 
   def update_subscriber_notification
     # Limit the blast radius.
