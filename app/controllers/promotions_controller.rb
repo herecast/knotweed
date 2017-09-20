@@ -26,7 +26,7 @@ class PromotionsController < ApplicationController
     # redirect back from whence they came
     if params[:content_id].present?
       content = Content.find(params[:content_id]) unless params[:content_id].nil?
-      @promotion = Promotion.new
+      @promotion = Promotion.new organization: organization
       @promotion.content = content unless content.nil?
       if params[:promotable_type].present?
         if params[:promotable_type] == 'PromotionBanner'
@@ -54,6 +54,7 @@ class PromotionsController < ApplicationController
     @promotion = Promotion.new(promotion_params)
 
     pub = Organization.find params[:organization_id]
+    @promotion.organization = pub
 
     respond_to do |format|
       if @promotion.save
