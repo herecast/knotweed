@@ -13,6 +13,4 @@
 - if @market_post.locate_address.present?
   %p Where: #{@market_post.locate_address}
 
-%p
-  See photos and details in
-  = link_to 'dailyUV\'s UVMarket', market_post_url_for_email(@market_post)
+%p= "More details here #{@market_post.content.short_link}"

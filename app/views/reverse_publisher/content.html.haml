@@ -1,6 +1,4 @@
 %p
   = Rinku.auto_link(@body).html_safe
 
-%p
-  See a full threaded discussion on
-  = link_to 'dailyUV.com', content_url_for_email(@content)
+%p= "More details here #{@content.short_link}"

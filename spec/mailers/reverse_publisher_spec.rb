@@ -14,7 +14,7 @@ end
 describe ReversePublisher, :type => :mailer do
   describe 'mail_content_to_listservs' do
     let(:content) {
-      FactoryGirl.create :content, authoremail: 'test@test.com', 
+      FactoryGirl.create :content, authoremail: 'test@test.com', short_link: 'http://bit.ly/12345',
         content_category: FactoryGirl.create(:content_category, name: 'news')
     }
     let(:listservs) {
@@ -34,7 +34,7 @@ describe ReversePublisher, :type => :mailer do
     # for the content based on whether or not Thread.current[:consumer_app] is set
 
     it 'should include the ux2 content path for @content' do
-      expect(subject.body.encoded).to include("#{consumer_app.uri}/news/#{content.id}")
+      expect(subject.body.encoded).to include("http://bit.ly/12345")
     end
 
     describe 'Event', inline_jobs: true do
@@ -45,6 +45,7 @@ describe ReversePublisher, :type => :mailer do
         FactoryGirl.create :event_instance, event: non_ugc_event, start_date: 2.weeks.ago, end_date: 1.week.ago, subtitle_override: 'interesting'
         FactoryGirl.create :event_instance, event: non_ugc_event, start_date: 1.days.from_now, end_date: 3.days.from_now, subtitle_override: 'go on'
         non_ugc_event.reload
+        content.update_attribute(:short_link, 'http://bit.ly/12345')
       end
 
       it_behaves_like "non-ugc event without schedules" do
@@ -55,6 +56,10 @@ describe ReversePublisher, :type => :mailer do
       context 'with recurring schedules' do
         let(:multi_event) { FactoryGirl.create :event, skip_event_instance: true }
         let(:content) { multi_event.content }
+
+        before do
+          content.update_attribute(:short_link, 'http://bit.ly/12345')
+        end
 
         let!(:schedule1) { FactoryGirl.create :schedule, event: multi_event, subtitle_override: 'no loco', recurrence: IceCube::Schedule.new(Time.zone.now + 1.hour, duration: 2.hours){ |s| s.add_recurrence_rule IceCube::Rule.daily.until(1.week.from_now) }.to_yaml }
 

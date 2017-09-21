@@ -157,6 +157,7 @@ describe Api::V3::TalkController, :type => :controller do
           location_type: 'base'
         }]
       }
+      allow(BitlyService).to receive(:create_short_link).with(any_args).and_return('http://bit.ly/12345')
     end
 
     subject { post :create, talk: @basic_attrs }

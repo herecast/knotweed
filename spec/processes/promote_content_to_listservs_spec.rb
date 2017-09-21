@@ -11,6 +11,8 @@ RSpec.describe PromoteContentToListservs do
     listservs.each do |ls|
       ls.update locations: [ FactoryGirl.create(:location) ]
     end
+    
+    allow(BitlyService).to receive(:create_short_link).with(any_args).and_return('http://bit.ly/12345')
   end
 
   context 'Given content, consumer_app, remote_ip, and *listservs, ' do
@@ -31,6 +33,11 @@ RSpec.describe PromoteContentToListservs do
       locations = listservs.collect(&:locations).flatten
       subject
       expect(content.reload.locations).to include(*locations)
+    end
+
+    it 'creates a bitly link and saves it to the content record' do
+      subject
+      expect(content.reload.short_link).to eq('http://bit.ly/12345')
     end
 
     context "When some are external" do

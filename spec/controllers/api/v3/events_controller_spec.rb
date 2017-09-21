@@ -246,6 +246,11 @@ describe Api::V3::EventsController, :type => :controller do
   end
 
   describe 'POST create' do
+    
+    before do
+      allow(BitlyService).to receive(:create_short_link).with(any_args).and_return('http://bit.ly/12345')
+    end
+
     subject { post :create, format: :json, event: @event_attrs, current_user_id: @current_user.id }
 
     it 'should create an event with a valid submission' do

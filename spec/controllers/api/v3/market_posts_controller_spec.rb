@@ -310,6 +310,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
   describe 'POST create' do
     before do
       @user = FactoryGirl.create :user
+      allow(BitlyService).to receive(:create_short_link).with(any_args).and_return('http://bit.ly/12345')
     end
 
     context 'not signed in' do

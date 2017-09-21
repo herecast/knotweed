@@ -53,6 +53,4 @@
       =link_to k, v
       %br
 
-%p
-  See all the colorful details on
-  = link_to 'dailyUV.com', event_url_for_email(@event)
+%p= "More details here #{@event.content.short_link}"
