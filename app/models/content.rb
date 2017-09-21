@@ -364,6 +364,11 @@ class Content < ActiveRecord::Base
     prefix = root_content_category.try(:name)
     # convert talk_of_the_town to talk
     prefix = 'talk' if prefix == 'talk_of_the_town'
+    if parent_id.present?
+      if channel_type == "Comment" && parent_id != id
+        prefix = 'comment'
+      end
+    end
     prefix.to_s.to_sym
   end
 

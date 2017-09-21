@@ -50,7 +50,7 @@ describe 'Contents Endpoints', type: :request do
         images: [FactoryGirl.build(:image, :primary)]
     }
     let!(:comment) {
-      FactoryGirl.create :content, :talk, organization: org, channel_type: 'Comment', published: true
+      FactoryGirl.create :content, :talk, organization: org, channel_type: 'Comment', published: true, parent_id: talk.id
     }
 
     it 'returns news content in expected format' do
@@ -284,10 +284,13 @@ describe 'Contents Endpoints', type: :request do
       pending "This section needs fixed, because the api is not returning talk (bug)"
 
       subject { get "/api/v3/contents", {}, headers.merge(auth_headers) }
+      let!(:talk_with_comment_channel) { FactoryGirl.create :content, :talk, channel_type: 'Comment' }
 
       it "returns content in standard categories, including Talk for user location, but NOT comments" do
         subject
+        content_ids = response_json[:contents].map{ |c| c[:id] }
         expect(response_json[:contents].length).to eq 4
+        expect(content_ids).to_not include(talk_with_comment_channel.id)
       end
 
       it 'returns talk content in expected format' do
