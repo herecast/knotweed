@@ -16,7 +16,7 @@ module Api
           :created_at, :updated_at, :event_id, :cost, :sold, :avatar_url,
           :organization_profile_image_url, :biz_feed_public, :sunset_date,
           :event_instances, :content_origin, :split_content, :cost_type, :contact_phone,
-          :images, :can_edit, :contact_email, :venue_url
+          :images, :can_edit, :contact_email, :venue_url, :organization_biz_feed_active
 
         has_many :content_locations, serializer: Api::V3::HashieMashes::ContentLocationSerializer
 
@@ -253,6 +253,10 @@ module Api
 
         def contact_email
           object.try(:contact_email)
+        end
+
+        def organization_biz_feed_active
+          !!object.organization.try(:biz_feed_active)
         end
 
         private
