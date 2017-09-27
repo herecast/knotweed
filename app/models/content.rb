@@ -53,11 +53,12 @@
 #  biz_feed_public           :boolean
 #  sunset_date               :datetime
 #  promote_radius            :integer
-#  removed                   :boolean
 #  ad_promotion_type         :string
 #  ad_campaign_start         :date
 #  ad_campaign_end           :date
 #  ad_max_impressions        :integer
+#  short_link                :string
+#  ad_invoiced_amount        :float
 #
 
 require 'fileutils'
@@ -162,6 +163,10 @@ class Content < ActiveRecord::Base
     !c.import_record_id? &&
     [:talk, :market_post, :event].include?(c.content_type)
   }
+
+  validate :if_ad_promotion_type_sponsored_must_have_ad_max_impressions
+  validate :ad_max_impressions_allows_all_creative_impressions
+  validates :ad_invoiced_amount, numericality: { greater_than: 0 }, if: 'ad_invoiced_amount.present?'
 
   def base_locations
     # merge query criteria
@@ -1433,6 +1438,23 @@ class Content < ActiveRecord::Base
   def require_at_least_one_content_location
     unless content_locations.any?
       errors.add(:content_locations, "must have at least one location")
+    end
+  end
+
+  def if_ad_promotion_type_sponsored_must_have_ad_max_impressions
+    if ad_promotion_type == PromotionBanner::SPONSORED && ad_max_impressions.nil?
+      errors.add(:ad_max_impressions, "For ad_promotion_type Sponsored, ad_max_impressions must be populated")
+    end
+  end
+
+  def ad_max_impressions_allows_all_creative_impressions
+    if ad_max_impressions.present?
+      creatives_total = promotions.reduce(0) do |sum, p|
+        sum += (p.promotable.try(:total_impressions_allowed) || 0)
+      end
+      if ad_max_impressions < creatives_total
+        errors.add(:ad_max_impressions, "Campaign max impressions cannot be fewer than total impressions in creatives")
+      end
     end
   end
 

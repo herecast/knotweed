@@ -51,6 +51,7 @@ class PromotionBanner < ActiveRecord::Base
   validates :cost_per_impression, numericality: { greater_than: 0 }, if: 'cost_per_impression.present?'
   validate :will_not_have_daily_and_per_impression_cost
   validate :if_coupon_must_have_coupon_image
+  validate :daily_max_impressions_within_campaign_max_impressions
 
   OVER_DELIVERY_PERCENTAGE = 0.15
 
@@ -137,6 +138,10 @@ class PromotionBanner < ActiveRecord::Base
     super
   end
 
+  def total_impressions_allowed
+    ((campaign_end - campaign_start).to_i + 1) * (daily_max_impressions || 0)
+  end
+
   private
 
     def will_not_have_daily_and_per_impression_cost
@@ -148,6 +153,21 @@ class PromotionBanner < ActiveRecord::Base
     def if_coupon_must_have_coupon_image
       if promotion_type == COUPON && coupon_image.file.blank?
         errors.add(:coupon_image, 'type coupon must have coupon image')
+      end
+    end
+
+    def daily_max_impressions_within_campaign_max_impressions
+      creatives = [self]
+      promotion.content.promotions.where.not(promotable_id: self.id).each do |p|
+        creatives << p.promotable
+      end
+      creatives_total = creatives.reduce(0) do |sum, pb|
+        sum += pb.total_impressions_allowed unless pb.nil?
+      end
+      if promotion.content.ad_max_impressions.present?
+        if (creatives_total || 0) > promotion.content.ad_max_impressions
+          errors.add(:daily_max_impressions, 'too many impressions allowed on Campaign')
+        end
       end
     end
 

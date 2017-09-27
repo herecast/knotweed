@@ -31,6 +31,7 @@
             = f.input :ad_campaign_start, as: :date_picker, label: 'Campaign Start Date'
             = f.input :ad_campaign_end, as: :date_picker, label: 'Campaign End Date'
             = f.input :ad_max_impressions, input_html: { class: "input-block-level" }, label: "Total Ad Impressions"
+            = f.input :ad_invoiced_amount, input_html: { class: "input-block-level" }, label: "Invoiced Amount"
       .tab-pane#doc_content
         .summernote-wrapper
           = f.input :sanitized_content, as: :summernote, label: 'Content'

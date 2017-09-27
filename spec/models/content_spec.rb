@@ -52,11 +52,12 @@
 #  biz_feed_public           :boolean
 #  sunset_date               :datetime
 #  promote_radius            :integer
-#  removed                   :boolean
 #  ad_promotion_type         :string
 #  ad_campaign_start         :date
 #  ad_campaign_end           :date
 #  ad_max_impressions        :integer
+#  short_link                :string
+#  ad_invoiced_amount        :float
 #
 
 require 'spec_helper'
@@ -71,6 +72,32 @@ describe Content, :type => :model do
   before { allow_any_instance_of(Promotion).to receive(:update_active_promotions).and_return(true) }
 
   include_examples 'Auditable', Content
+
+  describe "validation" do
+    context "when ad_promotion_type = sponsored" do
+      it "ad_max_impressions must be populated" do
+        content = FactoryGirl.build :content,
+          ad_promotion_type: PromotionBanner::SPONSORED,
+          ad_max_impressions: nil
+        expect(content).not_to be_valid
+      end
+    end
+
+    context "when ad_max_impressions is too few for the creatives" do
+      before do
+        @promotion_banner = FactoryGirl.create :promotion_banner,
+          campaign_start: Date.today,
+          campaign_end: Date.tomorrow,
+          daily_max_impressions: 15
+      end
+
+      it "is not valid" do
+        content = @promotion_banner.promotion.content
+        content.ad_max_impressions = 10
+        expect(content).not_to be_valid
+      end
+    end
+  end
 
   describe '#update_category_from_annotations' do
     let (:new_category) { 'RandomCategory' }

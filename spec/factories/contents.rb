@@ -52,11 +52,12 @@
 #  biz_feed_public           :boolean
 #  sunset_date               :datetime
 #  promote_radius            :integer
-#  removed                   :boolean
 #  ad_promotion_type         :string
 #  ad_campaign_start         :date
 #  ad_campaign_end           :date
 #  ad_max_impressions        :integer
+#  short_link                :string
+#  ad_invoiced_amount        :float
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

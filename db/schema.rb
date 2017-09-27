@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170912161028) do
+ActiveRecord::Schema.define(version: 20170925154028) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -366,6 +366,7 @@ ActiveRecord::Schema.define(version: 20170912161028) do
     t.date     "ad_campaign_end"
     t.integer  "ad_max_impressions"
     t.string   "short_link"
+    t.float    "ad_invoiced_amount"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree
@@ -813,6 +814,8 @@ ActiveRecord::Schema.define(version: 20170912161028) do
     t.string   "ad_sales_agent"
     t.string   "ad_contact_nickname"
     t.string   "ad_contact_fullname"
+    t.string   "profile_sales_agent"
+    t.string   "blog_contact_name"
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
@@ -851,6 +854,7 @@ ActiveRecord::Schema.define(version: 20170912161028) do
     t.integer  "location_id"
   end
 
+  add_index "promotion_banner_metrics", ["content_id"], name: "index_promotion_banner_metrics_on_content_id", using: :btree
   add_index "promotion_banner_metrics", ["created_at"], name: "index_promotion_banner_metrics_on_created_at", using: :btree
   add_index "promotion_banner_metrics", ["event_type"], name: "index_promotion_banner_metrics_on_event_type", using: :btree
   add_index "promotion_banner_metrics", ["promotion_banner_id"], name: "index_promotion_banner_metrics_on_promotion_banner_id", using: :btree

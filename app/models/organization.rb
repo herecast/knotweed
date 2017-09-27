@@ -33,6 +33,8 @@
 #  ad_sales_agent      :string
 #  ad_contact_nickname :string
 #  ad_contact_fullname :string
+#  profile_sales_agent :string
+#  blog_contact_name   :string
 #
 
 class Organization < ActiveRecord::Base

@@ -37,6 +37,7 @@
             = f.input :name, input_html: { class: "input-block-level" }
             = f.input :org_type, collection: Organization::ORG_TYPE_OPTIONS, label: "Organization Type"
             = f.input :pay_rate_in_cents, collection: Organization::BLOGGER_PAY_RATES.map { |r| ["#{r} cents per click", r] }.insert(0, ['Select a pay rate', nil]), label: 'Blogger pay rate', include_blank: false
+            = f.input :blog_contact_name, label: "Blogger Contact Name"
             = f.input :pay_directly, input_html: { class: 'input-block-level' }
             = f.association :consumer_apps, input_html: { class: "chosen-select input-block-level" }
             = f.association :parent, collection: Organization.where.not(id: @organization.id), label: "Parent Organization (Syndication)",
@@ -206,6 +207,7 @@
             = f.input :ad_sales_agent, label: 'Sales Agent'
             = f.input :ad_contact_nickname, label: 'Contact Nickname'
             = f.input :ad_contact_fullname, label: 'Contact Fullname'
+            = f.input :profile_sales_agent, label: 'Profile Sales Agent'
       - if @organization.id
         .tab-pane#managers
           .row-fluid
