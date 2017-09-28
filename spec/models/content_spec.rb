@@ -1485,11 +1485,11 @@ describe Content, :type => :model do
     before do
       @content = FactoryGirl.create :content, :located, content_category: talk_category
       @comment_content1 = FactoryGirl.create :content, :located, content_category: talk_category
-      @comment_content2 = FactoryGirl.create :content, :located, content_category: talk_category
+      @comment_content2 = FactoryGirl.create :content, :located, content_category: discussion_category
       @comment1 = FactoryGirl.create :comment, content: @comment_content1
-      @comment1.content.update_attributes(parent_id: @content.id, root_content_category_id: talk_category)
+      @comment1.content.update_attributes parent_id: @content.id
       @comment2 = FactoryGirl.create :comment, content: @comment_content2
-      @comment2.content.update_attributes(parent_id: @content.id, root_content_category_id: discussion_category)
+      @comment2.content.update_attributes parent_id: @content.id
     end
 
     it 'returns content records of comments associated to a talk item' do
@@ -1554,6 +1554,29 @@ describe Content, :type => :model do
 
   end
 
+  describe 'setting content category sets root content category' do
+    before do
+      @cat = FactoryGirl.create :content_category
+      @content = FactoryGirl.build :content, content_category: nil
+    end
+
+    subject {
+      @content.content_category = @cat
+    }
+
+    describe 'set_root_content_category_id' do
+      it 'should set root_content_category_id' do
+        expect{subject}.to change{@content.root_content_category_id}.to @cat.id
+      end
+
+      it 'should set root_content_category_id appropriately if the category is not the root' do
+        cat2 = FactoryGirl.create :content_category
+        @cat.update_attribute :parent_id, cat2.id
+        expect{subject}.to change{@content.root_content_category_id}.to cat2.id
+      end
+    end
+  end
+
   describe 'callbacks for denormalized attributes' do
     before do
       @parent = FactoryGirl.create :content
@@ -1563,17 +1586,6 @@ describe Content, :type => :model do
 
     subject { @content.save }
 
-    describe 'set_root_content_category_id' do
-      it 'should set root_content_category_id' do
-        expect{subject}.to change{@content.root_content_category_id}.to @cat.id
-      end
-
-      it 'should set root_content_category_id appropriately if the categoryt is not the root' do
-        cat2 = FactoryGirl.create :content_category
-        @cat.update_attribute :parent_id, cat2.id
-        expect{subject}.to change{@content.root_content_category_id}.to cat2.id
-      end
-    end
 
     describe 'set_root_parent_id' do
       it 'should set root_parent_id' do

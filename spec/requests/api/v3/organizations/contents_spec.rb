@@ -119,8 +119,7 @@ RSpec.describe 'Organizations::Contents API Endpoints', type: :request do
 
       context "when Organization owns Content in talk category" do
         before do
-          content = FactoryGirl.create :content, organization_id: @organization.id
-          @talk_category.contents << content
+          FactoryGirl.create :content, :talk, organization_id: @organization.id
         end
 
         it "returns talk items" do
@@ -131,8 +130,7 @@ RSpec.describe 'Organizations::Contents API Endpoints', type: :request do
 
       context "when Organization owns Content in news category" do
         before do
-          content = FactoryGirl.create :content, organization_id: @organization.id
-          @news_category.contents << content
+          FactoryGirl.create :content, :news, organization_id: @organization.id
         end
 
         it "returns news items" do

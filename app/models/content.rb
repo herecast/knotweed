@@ -232,9 +232,8 @@ class Content < ActiveRecord::Base
   validates_presence_of :organization_id, :title, :ad_promotion_type, :ad_campaign_start, :ad_campaign_end, if: :is_campaign?
 
   # check if it should be marked quarantined
-  before_validation :mark_quarantined
-  before_validation :set_guid
-  before_validation :set_root_content_category_id
+  before_save :mark_quarantined
+  before_save :set_guid
 
   # this has to be after save to accomodate the situation
   # where we are creating new content with no parent
@@ -634,6 +633,18 @@ class Content < ActiveRecord::Base
     else
       self.root_content_category = nil
     end
+  end
+
+  def content_category_id=id
+    super(id)
+    set_root_content_category_id
+    id
+  end
+
+  def content_category=cat
+    super(cat)
+    set_root_content_category_id
+    cat
   end
 
   def set_root_parent_id
