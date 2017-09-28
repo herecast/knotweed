@@ -22,11 +22,27 @@ class Comment < ActiveRecord::Base
     comment.content.save
   end
 
-  after_create do |comment|
+  after_create :increase_comment_stats
+
+  def increase_comment_stats
     unless content.parent.blank?
-      content.parent.increment_integer_attr!(:comment_count)
+      new_comment_count = content.parent.comment_count + 1
+      content.parent.update_attribute(:comment_count, new_comment_count)
       unless Content.where('parent_id=? and created_by=? and id!= ?', content.parent, content.created_by, content.id).exists?
-        content.parent.increment_integer_attr!(:commenter_count) 
+        new_commenter_count = content.parent.commenter_count + 1
+        content.parent.update_attribute(:commenter_count, new_commenter_count)
+      end
+      content.parent.save
+    end
+  end
+
+  def decrease_comment_stats
+    unless content.parent.blank?
+      new_comment_count = content.parent.comment_count - 1
+      content.parent.update_attribute(:comment_count, new_comment_count)
+      unless Content.where('parent_id=? and created_by=? and id!= ?', content.parent, content.created_by, content.id).exists?
+        new_commenter_count = content.parent.commenter_count - 1
+        content.parent.update_attribute(:commenter_count, new_commenter_count)
       end
       content.parent.save
     end

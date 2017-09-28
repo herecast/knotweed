@@ -51,6 +51,17 @@
           = link_to new_campaign_path do
             %i.icon-plus
             %span Create New
+- if can? :read, Comment
+  %li
+    = link_to comments_path do
+      %i.icon-comment
+      %span Comments
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{ controller_name == "comments" ? "in" : "" }" }
+      %li{ class: current_page?(comments_path) ? "active" : "" }
+        = link_to comments_path do
+          %i.icon-tasks
+          %span Search
 - if can? :read, Event
   %li
     = link_to events_path do

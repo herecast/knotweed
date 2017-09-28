@@ -75,4 +75,49 @@ describe Comment, :type => :model do
       expect(@parent.commenter_count).to eq(count)
     end
   end
+
+  describe "#decrease_comment_stats" do
+    before do
+      @user = FactoryGirl.create :user
+      @parent_content = FactoryGirl.create :content
+      @comment = FactoryGirl.create :comment,
+        deleted_at: Date.yesterday
+      @comment.update_attributes!(
+        parent_id: @parent_content.id,
+        created_by: @user
+      )
+    end
+
+    context "when deleted comment auther has only written one comment on article" do
+      subject { @comment.decrease_comment_stats }
+
+      it "decreases parent comment_count and commenter_count" do
+        expect{ subject }.to change{
+          @comment.parent.reload.comment_count
+        }.by(-1).and change{
+          @comment.parent.reload.commenter_count
+        }.by(-1)
+      end
+    end
+
+    context "when deleted comment auther has written multiple comments on article" do
+      before do
+        @comment_two = FactoryGirl.create :comment
+        @comment_two.update_attributes!(
+          parent_id: @parent_content.id,
+          created_by: @user
+        )
+      end
+
+      subject { @comment.decrease_comment_stats }
+
+      it "decreases parent comment_count but not commenter_count" do
+        expect{ subject }.to change{
+          @comment.parent.reload.comment_count
+        }.by(-1).and change{
+          @comment.parent.reload.commenter_count
+        }.by(0)
+      end
+    end
+  end
 end

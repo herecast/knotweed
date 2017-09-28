@@ -1,0 +1,47 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-search
+        Find Comments
+      .actions
+        %a.btn.box-remove.btn-mini.btn-link{ href: "#" }
+          %i.icon-remove
+        %a.btn.box-collapse.btn-mini.btn-link{ href: "#" }
+          %i
+    .box-content
+      = search_form_for @search, url: comments_path do |f|
+        .controls.controls-row
+          .field.span2
+            = f.label :parent_id_eq, "Parent Content ID"
+            = f.text_field :parent_id_eq, class: "span12"
+          .field.span4
+            = f.label :authors_cont, "Author"
+            = f.text_field :authors_cont, class: "span12"
+        .form-actions
+          = f.submit "Search", class: "btn btn-primary"
+          = f.submit "Reset", name: "reset", class: "btn"
+%table.table.table-striped.table-hover.table-condensed#contents_index
+  %thead
+    %tr
+      %th Content ID
+      %th Parent Content ID
+      %th Author
+      %th Content
+      %th
+  .span5
+    = page_entries_info @comments if @comments.present?
+    = paginate @comments, window: 2 if @comments.present?
+  %tbody
+    - @comments.each do |c|
+      %tr
+        %td= c.id
+        %td= c.parent_id
+        %td= c.authors
+        %td= sanitize_comment_content(c.sanitized_content)
+        %td
+          - if c.deleted_at.nil?
+            = link_to "Hide", comment_path(c), method: :delete, class: "btn btn-mini btn-warning"
+          - else
+            = link_to "Unhide", comment_path(c), method: :put, class: "btn btn-mini btn-danger"
+

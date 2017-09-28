@@ -40,6 +40,7 @@ Knotweed::Application.routes.draw do
     get "contents/parent_options", to: "contents#parent_select_options", as: :parent_select_options
     resources :contents
     resources :campaigns, except: [:show, :destroy]
+    resources :comments, only: [:index, :update, :destroy]
     get "issues/select_options", to: "issues#select_options", as: :issue_select_options
     get "organizations/business_location_options", to: "organizations#business_location_options", as: :business_location_options
     resources :market_posts, except: [:destroy]

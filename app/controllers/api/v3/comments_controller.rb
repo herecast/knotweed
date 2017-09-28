@@ -15,8 +15,8 @@ module Api
           else
             result_list = root.comments
           end
-            @comments << result_list
-            get_all_comments result_list
+            @comments << result_list.not_deleted
+            get_all_comments result_list.not_deleted
             @comments.flatten!
             @comments.sort! { |a,b| b.pubdate <=> a.pubdate }
         end
