@@ -97,7 +97,8 @@ describe 'Contents Endpoints', type: :request do
               primary: (image.primary? ? 1 : 0),
               width: image.width,
               height: image.height,
-              file_extension: image.file_extension
+              file_extension: image.file_extension,
+              caption: image.caption
             }
           end,
         can_edit: false,
@@ -165,7 +166,8 @@ describe 'Contents Endpoints', type: :request do
               primary: (image.primary? ? 1 : 0),
               width: image.width,
               height: image.height,
-              file_extension: image.file_extension
+              file_extension: image.file_extension,
+              caption: image.caption
             }
           end,
         can_edit: false,
@@ -245,7 +247,8 @@ describe 'Contents Endpoints', type: :request do
               primary: (image.primary? ? 1 : 0),
               width: image.width,
               height: image.height,
-              file_extension: image.file_extension
+              file_extension: image.file_extension,
+              caption: image.caption
             }
           end,
         can_edit: false,

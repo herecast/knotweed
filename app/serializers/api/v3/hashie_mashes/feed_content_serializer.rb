@@ -44,7 +44,8 @@ module Api
               primary: img.primary ? 1 : 0,
               width: img.width,
               height: img.height,
-              file_extension: img.file_extension
+              file_extension: img.file_extension,
+              caption: img.caption
             }
           end
         end
