@@ -97,6 +97,22 @@ describe PromotionBanner, :type => :model do
         expect(promotion_banner).not_to be_valid
       end
     end
+
+    context "when promotion_type is profile_page or promotional_services" do
+      before do
+        @promotion_banner = FactoryGirl.build :promotion_banner,
+          campaign_start: Date.today,
+          campaign_end: Date.tomorrow,
+          banner_image: nil
+      end
+
+      it "does not need banner_image to be valid" do
+        [PromotionBanner::PROFILE_PAGE, PromotionBanner::PROMOTION_SERVICES].each do |type|
+          @promotion_banner.promotion_type = type
+          expect(@promotion_banner).to be_valid
+        end
+      end
+    end
   end
 
   describe 'scope :for_content' do

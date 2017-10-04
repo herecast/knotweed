@@ -44,11 +44,12 @@ class PromotionBanner < ActiveRecord::Base
   after_save :update_active_promotions
   after_destroy :update_active_promotions
 
-  validates_presence_of :promotion, :banner_image, :campaign_start, :campaign_end
+  validates_presence_of :promotion, :campaign_start, :campaign_end
   validates :max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: 'max_impressions.present?'
   validates :daily_max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: 'daily_max_impressions.present?'
   validates :cost_per_day, numericality: { greater_than: 0 }, if: 'cost_per_day.present?'
   validates :cost_per_impression, numericality: { greater_than: 0 }, if: 'cost_per_impression.present?'
+  validate :presence_of_banner_image_if_necessary
   validate :will_not_have_daily_and_per_impression_cost
   validate :if_coupon_must_have_coupon_image
   validate :daily_max_impressions_within_campaign_max_impressions
@@ -90,7 +91,10 @@ class PromotionBanner < ActiveRecord::Base
   DIGEST = "Digest"
   NATIVE = "Native"
   COUPON = "Coupon"
-  PROMOTION_TYPES = [RUN_OF_SITE, SPONSORED, DIGEST, NATIVE, COUPON]
+  PROFILE_PAGE = "Profile Page"
+  PROMOTION_SERVICES = "Promotion Services"
+
+  PROMOTION_TYPES = [RUN_OF_SITE, SPONSORED, DIGEST, NATIVE, COUPON, PROFILE_PAGE, PROMOTION_SERVICES]
 
   scope :run_of_site, -> { where(promotion_type: [RUN_OF_SITE, COUPON]) }
 
@@ -139,7 +143,11 @@ class PromotionBanner < ActiveRecord::Base
   end
 
   def total_impressions_allowed
-    ((campaign_end - campaign_start).to_i + 1) * (daily_max_impressions || 0)
+    if campaign_start.present? && campaign_end.present?
+      ((campaign_end - campaign_start).to_i + 1) * (daily_max_impressions || 0)
+    else
+      0
+    end
   end
 
   private
@@ -167,6 +175,14 @@ class PromotionBanner < ActiveRecord::Base
       if promotion.content.ad_max_impressions.present?
         if (creatives_total || 0) > promotion.content.ad_max_impressions
           errors.add(:daily_max_impressions, 'too many impressions allowed on Campaign')
+        end
+      end
+    end
+
+    def presence_of_banner_image_if_necessary
+      unless [PROMOTION_SERVICES, PROFILE_PAGE].include?(promotion_type)
+        unless banner_image.present?
+          errors.add(:banner_image, 'creative must have banner image')
         end
       end
     end
