@@ -29,10 +29,17 @@ require 'spec_helper'
 describe BusinessLocation, :type => :model do
   include_examples 'Auditable', BusinessLocation
 
-  it { is_expected.to validate_length_of(:state).is_equal_to(2) }
-
   before do
 	  @business_location = FactoryGirl.create :business_location
+  end
+
+  describe "validation" do
+    context "when state is present" do
+      it "must be two-letters long" do
+        business_location = FactoryGirl.build :business_location, state: '123'
+        expect(business_location).not_to be_valid
+      end
+    end
   end
 
   describe "#select_option_label" do

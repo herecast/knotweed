@@ -48,8 +48,7 @@ class BusinessLocation < ActiveRecord::Base
 
   serialize :hours, Array
 
-  validates_presence_of :city, :state
-  validates :state, length: {is: 2}
+  validate :state_length_if_present
 
   STATUS_CATEGORIES = [:approved, :new, :private]
 
@@ -138,5 +137,13 @@ class BusinessLocation < ActiveRecord::Base
       longitude: longitude
     ).order('distance ASC').first
   end
+
+  private
+
+    def state_length_if_present
+      if state.present? && state.length != 2
+        errors.add(:state, 'State must be two-letter abbreviation')
+      end
+    end
 
 end
