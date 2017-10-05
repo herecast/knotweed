@@ -8,16 +8,21 @@ describe ContentsHelper, type: :helper do
       @news_cat = FactoryGirl.create :content_category, name: 'news'
     end
 
-    it 'should return /#{cat_name}/#{content_id} for any non-talk category' do
-      market = FactoryGirl.create :content, content_category: @market_cat
-      expect(helper.ux2_content_path(market)).to eq("/market/#{market.id}")
-      news = FactoryGirl.create :content, content_category: @news_cat
-      expect(helper.ux2_content_path(news)).to eq("/news/#{news.id}")
+    it 'should return /feed/#{content_id} for any non-talk category' do
+      market = FactoryGirl.create :content, :market_post
+      expect(helper.ux2_content_path(market)).to eq("/feed/#{market.id}")
+      news = FactoryGirl.create :content, :news
+      expect(helper.ux2_content_path(news)).to eq("/feed/#{news.id}")
     end
 
-    it 'should return /talk/#{content_id} for tott category' do
-      tott = FactoryGirl.create :content, :located, content_category: @tott_cat
-      expect(helper.ux2_content_path(tott)).to eq("/talk/#{tott.id}")
+    it 'should return /feed/#{content_id} for tott category' do
+      tott = FactoryGirl.create :content, :talk
+      expect(helper.ux2_content_path(tott)).to eq("/feed/#{tott.id}")
+    end
+
+    it 'should return /feed/#{content_id}/{first_event_instance_id} for an event' do
+      content = FactoryGirl.create :content, :event
+      expect(helper.ux2_content_path(content)).to eql "/feed/#{content.id}/#{content.channel.next_or_first_instance.id}"
     end
 
     context 'when content is in subscategory' do
@@ -25,7 +30,7 @@ describe ContentsHelper, type: :helper do
       let!(:content) { FactoryGirl.create :content, :located, content_category: subcategory }
 
       it 'should with path matching parent category name' do
-        expect(helper.ux2_content_path(content)).to eq("/market/#{content.id}")
+        expect(helper.ux2_content_path(content)).to eq("/feed/#{content.id}")
       end
     end
 

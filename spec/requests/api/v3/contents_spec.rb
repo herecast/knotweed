@@ -377,6 +377,26 @@ describe 'Contents Endpoints', type: :request do
       end
     end
 
+    context 'content_type parameter' do
+      [:market_post, :news, :event, :talk].each do |content_type|
+        describe "?content_type=#{content_type}" do
+          before do
+            get "/api/v3/contents", {
+              content_type: content_type
+            }, headers
+          end
+
+          it "returns only #{content_type} content" do
+            content_types = response_json[:contents].map do |data|
+              data[:content_type]
+            end
+
+            expect(content_types).to all eql content_type.to_s
+          end
+        end
+      end
+    end
+
   end
 
   describe 'GET /api/v3/contents/:id' do

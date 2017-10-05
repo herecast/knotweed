@@ -14,6 +14,10 @@ module Api
         apply_standard_locations_to_opts
         apply_requesting_app_whitelist_to_opts
 
+        if params[:content_type].present?
+          @opts[:where][:content_type] = params[:content_type]
+        end
+
         if params[:query].present?
           # if query, sort by default: _score
           @opts.delete(:order)

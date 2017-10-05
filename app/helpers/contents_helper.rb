@@ -26,7 +26,7 @@ module ContentsHelper
   end
 
   def ux2_content_path(content)
-    content.channel_type == "Event" ? "/events/#{content.channel.event_instances.first.id}" : "/#{content.content_type.to_s}/#{content.id}"
+    content.channel_type == "Event" ? "/feed/#{content.id}/#{content.channel.next_or_first_instance.id}" : "/feed/#{content.id}"
   end
 
   def content_url_for_email(content)

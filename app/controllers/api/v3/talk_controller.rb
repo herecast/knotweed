@@ -81,7 +81,7 @@ module Api
           render json: @talk.content, serializer: TalkSerializer,
             status: 201
         else
-          head :unprocessable_entity
+          render json: {errors: @talk.content.errors}, status: :unprocessable_entity
         end
       end
 
@@ -94,7 +94,7 @@ module Api
         if Image.create(image: image_data, imageable: @content)
           render json: @content, serializer: TalkSerializer, status: 200
         else
-          head :unprocessable_entity
+          render json: {errors: @talk.content.errors}, status: :unprocessable_entity
         end
       end
 
