@@ -426,4 +426,71 @@ describe Api::V3::ContentsController, :type => :controller do
       end
     end
   end
+
+  describe 'GET index', elasticsearch: true do
+    before do
+      %w(news event market talk_of_the_town).each do |name|
+        ContentCategory.create! name: name
+      end
+    end
+
+    let(:org) {
+      FactoryGirl.create :organization
+    }
+
+    let(:consumer_app) {
+      FactoryGirl.create :consumer_app, organizations: [org]
+    }
+
+    let(:headers) {
+      {'ACCEPT' => 'application/json',
+       'Consumer-App-Uri' => consumer_app.uri}
+    }
+
+    let(:locations) {
+      FactoryGirl.create_list(:location, 2)
+    }
+
+    let(:queryParams) {
+      {location_id: locations.first.slug}
+    }
+
+    subject { get :index, queryParams, headers }
+
+    describe 'sorted by latest activity' do
+      let!(:content1) {
+        FactoryGirl.create :content, :news,
+          published: true,
+          base_locations: locations,
+          pubdate: 3.days.ago
+      }
+
+      let!(:content2) {
+        FactoryGirl.create :content, :news,
+          published: true,
+          base_locations: locations,
+          pubdate: 2.days.ago
+      }
+
+      let!(:content3) {
+        FactoryGirl.create :content, :news,
+          published: true,
+          base_locations: locations,
+          pubdate: 1.days.ago
+      }
+
+      let!(:comment) {
+        FactoryGirl.create :content, :comment,
+          parent: content1
+      }
+
+      it do
+        subject
+        result_ids = assigns(:contents).map(&:id)
+
+        expect(result_ids).to eql [content1.id, content3.id, content2.id]
+      end
+
+    end
+  end
 end

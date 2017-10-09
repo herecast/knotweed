@@ -130,6 +130,14 @@ FactoryGirl.define do
       }
     end
 
+    trait :comment do
+      channel_type 'Comment'
+
+      channel {
+        FactoryGirl.build :comment, content: nil
+      }
+    end
+
     trait :published do
       published true
       pubdate { Time.current }

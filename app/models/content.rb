@@ -210,6 +210,7 @@ class Content < ActiveRecord::Base
   delegate :name, to: :organization, prefix: true, allow_nil: true
 
   belongs_to :parent, class_name: "Content"
+  belongs_to :root_parent, class_name: self.name
   delegate :view_count, :comment_count, :commenter_count, to: :parent, prefix: true
   has_many :children, class_name: "Content", foreign_key: "parent_id"
 
@@ -1237,6 +1238,17 @@ class Content < ActiveRecord::Base
   def talk_comments
     children.where(root_content_category_id: [ContentCategory.find_by_name('discussion'), ContentCategory.find_by_name('talk_of_the_town').id])
   end
+=begin
+  def increment_comment_counters!
+    unless parent.blank?
+      parent.increment_integer_attr!(:comment_count)
+      unless Content.where('parent_id=? and created_by=? and id!= ?', parent, created_by, id).exists?
+        parent.increment_integer_attr!(:commenter_count) 
+      end
+      parent.save
+    end
+  end
+=end
 
   # generates an elasticsearch query for the ApiV3 talk index controller
   #

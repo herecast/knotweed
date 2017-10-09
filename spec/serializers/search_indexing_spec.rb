@@ -39,6 +39,7 @@ describe 'Content seralization for elasticsearch indexing' do
         parent_id: content.parent_id,
         parent_content_type: content.parent.present? ? content.parent.content_category.name : nil,
         sunset_date: content.sunset_date,
+        latest_activity: content.latest_activity,
         organization: {
           id: content.organization.id,
           name: content.organization.name,
@@ -78,6 +79,30 @@ describe 'Content seralization for elasticsearch indexing' do
           }
         end
       )
+    end
+
+    it 'includes top 6 comments if there are any' do
+      content.children = FactoryGirl.create_list :content, 7, :comment,
+        parent: content,
+        created_by: FactoryGirl.create(:user)
+
+      expect(subject).to include({
+        comments: content.children.sort_by(&:pubdate).reverse.take(6).map do |comment|
+          {
+            id: comment.channel_id || comment.id,
+            title: comment.title,
+            content: comment.sanitized_content,
+            published_at: comment.pubdate,
+            content_id: comment.id,
+            parent_content_id: content.id,
+            created_by: {
+              id: comment.created_by.id,
+              name: comment.created_by.name,
+              avatar_url: comment.created_by.avatar_url
+            }
+          }
+        end
+      })
     end
   end
 

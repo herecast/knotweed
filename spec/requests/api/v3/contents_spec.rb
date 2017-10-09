@@ -1,10 +1,110 @@
 require 'spec_helper'
 
+
+
 describe 'Contents Endpoints', type: :request do
   let(:user) { FactoryGirl.create :user }
   let(:auth_headers) { auth_headers_for(user) }
 
   describe 'GET /api/v3/contents', elasticsearch: true do
+    shared_examples_for 'JSON schema for all Content' do
+      it 'has the expected fields for all content' do
+        do_request
+
+        expect(subject).to include({
+          id: content.id,
+          title: content.title,
+          image_url: content.images[0].url,
+          author_id: content.created_by.id,
+          author_name: content.author_name,
+          content_type: content.content_type.to_s,
+          organization_id: org.id,
+          organization_name: org.name,
+          subtitle: content.subtitle,
+          published_at: content.pubdate.iso8601,
+          content: content.sanitized_content,
+          view_count: content.view_count,
+          commenter_count: content.commenter_count,
+          comment_count: content.comment_count,
+          comments: content.comments.map do |comment|
+              {
+                id: comment.channel.try(:id) || comment.id,
+                content_id: comment.id,
+                title: comment.sanitized_title,
+                content: comment.sanitized_content,
+                parent_content_id: comment.parent_id,
+                published_at: comment.pubdate.iso8601,
+                user_id: comment.created_by.try(:id),
+                user_name: comment.created_by.try(:name),
+                user_image_url: comment.created_by.try(:avatar).try(:url)
+              }
+          end,
+          parent_content_id: nil,
+          content_id: content.id,
+          parent_content_type: nil,
+          created_at: content.created_at.iso8601,
+          updated_at: content.updated_at.iso8601,
+          avatar_url: content.created_by.avatar_url,
+          organization_profile_image_url: nil,
+          biz_feed_public: content.biz_feed_public?,
+          sunset_date: content.sunset_date.try(:iso8601),
+          images: content.images.map do |image|
+              {
+                id: image.id,
+                image_url: image.image.url,
+                primary: (image.primary? ? 1 : 0),
+                width: image.width,
+                height: image.height,
+                file_extension: image.file_extension,
+                caption: image.caption
+              }
+            end,
+          can_edit: be(true).or(be(false)),
+          content_origin: 'ugc',
+          split_content: a_hash_including({
+            head: an_instance_of(String),
+            tail: an_instance_of(String)
+          }),
+          content_locations: content.content_locations.map do |cl|
+            {
+              id: cl.id,
+              location_id: cl.location.slug,
+              location_type: cl.location_type,
+              location_name: cl.location.name
+            }
+          end
+        })
+      end
+
+      context 'when comments exist' do
+        let!(:comments) {
+          content.children = FactoryGirl.create_list :content, 7, :comment,
+          created_by: FactoryGirl.create(:user),
+          parent: content
+        }
+
+        it 'embeds the last 6 comments' do
+          do_request
+          expect(subject).to include({
+            comments: comments.sort_by(&:pubdate).reverse.take(6).map do |comment|
+              {
+                id: comment.channel.try(:id) || comment.id,
+                content_id: comment.id,
+                title: comment.sanitized_title,
+                content: comment.sanitized_content,
+                parent_content_id: comment.parent_id,
+                published_at: comment.pubdate.iso8601,
+                user_id: comment.created_by.id,
+                user_name: comment.created_by.name,
+                user_image_url: comment.created_by.avatar.url
+              }
+            end
+          })
+        end
+      end
+
+    end
+
     let(:org) { FactoryGirl.create :organization }
     let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
     let(:headers) { {'ACCEPT' => 'application/json',
@@ -50,319 +150,116 @@ describe 'Contents Endpoints', type: :request do
         images: [FactoryGirl.build(:image, :primary)]
     }
     let!(:comment) {
-      FactoryGirl.create :content, :talk, organization: org, channel_type: 'Comment', published: true, parent_id: talk.id
+      FactoryGirl.create :content, :comment, organization: org,
+        published: true, parent_id: talk.id
     }
 
-    it 'returns news content in expected format' do
-      get "/api/v3/contents", {}, headers
-      serialized_news = response_json[:contents].find{|i| i[:content_type] == 'news'}
+    context 'news content' do
+      let(:do_request) {
+        get "/api/v3/contents", {}, headers
+      }
 
-      expect(serialized_news).to include({
-        id: news.id,
-        title: news.title,
-        image_url: news.images[0].url,
-        author_id: news.created_by.id,
-        author_name: news.author_name,
-        content_type: 'news',
-        organization_id: org.id,
-        organization_name: org.name,
-        subtitle: news.subtitle,
-        venue_zip: nil,
-        published_at: news.pubdate.iso8601,
-        starts_at: nil,
-        ends_at: nil,
-        content: news.sanitized_content,
-        view_count: news.view_count,
-        commenter_count: 0,
-        comment_count: 0,
-        parent_content_id: nil,
-        content_id: news.id,
-        parent_content_type: nil,
-        event_instance_id: nil,
-        parent_event_instance_id: nil,
-        registration_deadline: nil,
-        created_at: news.created_at.iso8601,
-        updated_at: news.updated_at.iso8601,
-        event_id: nil,
-        cost: nil,
-        sold: nil,
-        avatar_url: news.created_by.avatar_url,
-        organization_profile_image_url: nil,
-        biz_feed_public: news.biz_feed_public?,
-        sunset_date: news.sunset_date.try(:iso8601),
-        images: news.images.map do |image|
-            {
-              id: image.id,
-              image_url: image.image.url,
-              primary: (image.primary? ? 1 : 0),
-              width: image.width,
-              height: image.height,
-              file_extension: image.file_extension,
-              caption: image.caption
-            }
-          end,
-        can_edit: false,
-        event_instances: nil,
-        content_origin: 'ugc',
-        split_content: a_hash_including({
-          head: an_instance_of(String),
-          tail: an_instance_of(String)
-        }),
-        cost_type: nil,
-        contact_phone: nil,
-        contact_email: nil,
-        venue_url: nil,
-        content_locations: news.content_locations.map do |cl|
-          {
-            id: cl.id,
-            location_id: cl.location.slug,
-            location_type: cl.location_type,
-            location_name: cl.location.name
-          }
-        end
-      })
+      subject {
+        response_json[:contents].find{|i| i[:content_type] == 'news'}
+      }
+
+      it_behaves_like 'JSON schema for all Content' do
+        let(:content) { news }
+      end
     end
 
-    it 'returns events content in expected format' do
-      get "/api/v3/contents", {}, headers
-      serialized_event = response_json[:contents].find{|i| i[:content_type] == 'event'}
+    context 'event content' do
+      let(:do_request) {
+        get "/api/v3/contents", {}, headers
+      }
 
-      expect(serialized_event).to include({
-        id: event.id,
-        title: event.title,
-        image_url: event.images[0].url,
-        author_id: event.created_by.id,
-        author_name: event.author_name,
-        content_type: 'event',
-        organization_id: org.id,
-        organization_name: org.name,
-        subtitle: event.subtitle,
-        published_at: event.pubdate.iso8601,
-        starts_at: event.channel.next_or_first_instance.start_date.try(:iso8601),
-        ends_at: event.channel.next_or_first_instance.end_date.try(:iso8601),
-        content: event.sanitized_content,
-        view_count: event.view_count,
-        commenter_count: 0,
-        comment_count: 0,
-        parent_content_id: nil,
-        content_id: event.id,
-        parent_content_type: nil,
-        event_instance_id: event.channel.next_or_first_instance.id,
-        parent_event_instance_id: nil,
-        registration_deadline: nil,
-        created_at: event.created_at.iso8601,
-        updated_at: event.updated_at.iso8601,
-        event_id: event.channel.id,
-        cost: event.channel.cost,
-        sold: nil,
-        avatar_url: event.created_by.avatar_url,
-        organization_profile_image_url: nil,
-        biz_feed_public: event.biz_feed_public?,
-        sunset_date: event.sunset_date.try(:iso8601),
-        images: event.images.map do |image|
+      subject {
+        response_json[:contents].find{|i| i[:content_type] == 'event'}
+      }
+
+      it_behaves_like 'JSON schema for all Content' do
+        let(:content) { event }
+      end
+
+      it 'additional event related fields' do
+        do_request
+        expect(subject).to include({
+          starts_at: event.channel.next_or_first_instance.start_date.try(:iso8601),
+          ends_at: event.channel.next_or_first_instance.end_date.try(:iso8601),
+          event_instance_id: event.channel.next_or_first_instance.id,
+          parent_event_instance_id: nil,
+          registration_deadline: nil,
+          event_id: event.channel.id,
+          cost: event.channel.cost,
+          event_instances: event.channel.event_instances.map do |ei|
             {
-              id: image.id,
-              image_url: image.image.url,
-              primary: (image.primary? ? 1 : 0),
-              width: image.width,
-              height: image.height,
-              file_extension: image.file_extension,
-              caption: image.caption
+              id: ei.id,
+              subtitle: ei.subtitle_override,
+              starts_at: ei.start_date.try(:iso8601),
+              ends_at: ei.end_date.try(:iso8601),
+              presenter_name: ei.presenter_name
             }
           end,
-        can_edit: false,
-        event_instances: event.channel.event_instances.map do |ei|
-          {
-            id: ei.id,
-            subtitle: ei.subtitle_override,
-            starts_at: ei.start_date.try(:iso8601),
-            ends_at: ei.end_date.try(:iso8601),
-            presenter_name: ei.presenter_name
-          }
-        end,
-        content_origin: 'ugc',
-        split_content: a_hash_including({
-          head: an_instance_of(String),
-          tail: an_instance_of(String)
-        }),
-        cost_type: event.channel.cost_type,
-        contact_phone: event.channel.contact_phone,
-        contact_email: event.channel.contact_email,
-        venue_name: event.channel.venue.name,
-        venue_address: event.channel.venue.address,
-        venue_city: event.channel.venue.city,
-        venue_state: event.channel.venue.state,
-        venue_zip: event.channel.venue.zip,
-        venue_url: event.channel.venue.venue_url,
-        content_locations: event.content_locations.map do |cl|
-          {
-            id: cl.id,
-            location_id: cl.location.slug,
-            location_type: cl.location_type,
-            location_name: cl.location.name
-          }
-        end
-      })
+          contact_phone: event.channel.contact_phone,
+          contact_email: event.channel.contact_email,
+          venue_name: event.channel.venue.name,
+          venue_address: event.channel.venue.address,
+          venue_city: event.channel.venue.city,
+          venue_state: event.channel.venue.state,
+          venue_zip: event.channel.venue.zip,
+          venue_url: event.channel.venue.venue_url,
+        })
+
+      end
     end
 
-    it 'returns market content in expected format' do
-      get "/api/v3/contents", {}, headers
-      serialized_market = response_json[:contents].find{|i| i[:content_type] == 'market'}
+    context 'market content' do
+      let(:do_request) {
+        get "/api/v3/contents", {}, headers
+      }
 
-      expect(serialized_market).to include({
-        id: market.id,
-        title: market.title,
-        image_url: market.images[0].url,
-        author_id: market.created_by.id,
-        author_name: market.author_name,
-        content_type: 'market',
-        organization_id: org.id,
-        organization_name: org.name,
-        subtitle: market.subtitle,
-        published_at: market.pubdate.iso8601,
-        starts_at: nil,
-        ends_at: nil,
-        content: market.sanitized_content,
-        view_count: market.view_count,
-        commenter_count: 0,
-        comment_count: 0,
-        parent_content_id: nil,
-        content_id: market.id,
-        parent_content_type: nil,
-        parent_event_instance_id: nil,
-        registration_deadline: nil,
-        created_at: market.created_at.iso8601,
-        updated_at: market.updated_at.iso8601,
-        event_id: nil,
-        cost: market.channel.cost,
-        sold: market.channel.sold,
-        avatar_url: market.created_by.avatar_url,
-        organization_profile_image_url: nil,
-        biz_feed_public: market.biz_feed_public?,
-        sunset_date: market.sunset_date.try(:iso8601),
-        images: market.images.map do |image|
-            {
-              id: image.id,
-              image_url: image.image.url,
-              primary: (image.primary? ? 1 : 0),
-              width: image.width,
-              height: image.height,
-              file_extension: image.file_extension,
-              caption: image.caption
-            }
-          end,
-        can_edit: false,
-        event_instances: nil,
-        content_origin: 'ugc',
-        split_content: a_hash_including({
-          head: an_instance_of(String),
-          tail: an_instance_of(String)
-        }),
-        cost_type: nil,
-        contact_phone: market.channel.contact_phone,
-        contact_email: market.channel.contact_email,
-        venue_zip: nil,
-        venue_url: nil,
-        content_locations: market.content_locations.map do |cl|
-          {
-            id: cl.id,
-            location_id: cl.location.slug,
-            location_type: cl.location_type,
-            location_name: cl.location.name
-          }
-        end
-      })
+      subject {
+        response_json[:contents].find{|i| i[:content_type] == 'market'}
+      }
+
+      it_behaves_like 'JSON schema for all Content' do
+        let(:content) { market }
+      end
+
+      it 'has additional market related fields' do
+        do_request
+        expect(subject).to include({
+          cost: market.channel.cost,
+          sold: market.channel.sold,
+          contact_phone: market.channel.contact_phone,
+          contact_email: market.channel.contact_email,
+        })
+      end
     end
 
     context "when no user logged in" do
-      subject { get "/api/v3/contents", {}, headers }
+      before do
+        get "/api/v3/contents", {}, headers
+      end
 
       it "returns content in standard categories but NOT talk" do
-        subject
         expect(response_json[:contents].length).to eq 3
       end
     end
 
-    context "when user logged in", skip: true do
-      pending "This section needs fixed, because the api is not returning talk (bug)"
+    context "when user logged in" do
+      context 'returning talk content' do
+        let(:do_request) {
+          get "/api/v3/contents", {}, headers.merge(auth_headers)
+        }
 
-      subject { get "/api/v3/contents", {}, headers.merge(auth_headers) }
-      let!(:talk_with_comment_channel) { FactoryGirl.create :content, :talk, channel_type: 'Comment' }
+        subject {
+          response_json[:contents].find{|i| i[:content_type] == 'talk'}
+        }
 
-      it "returns content in standard categories, including Talk for user location, but NOT comments" do
-        subject
-        content_ids = response_json[:contents].map{ |c| c[:id] }
-        expect(response_json[:contents].length).to eq 4
-        expect(content_ids).to_not include(talk_with_comment_channel.id)
-      end
-
-      it 'returns talk content in expected format' do
-        subject
-        serialized_talk = response_json[:contents].find{|i| i[:content_type] == 'talk'}
-
-        expect(serialized_talk).to include({
-          id: talk.id,
-          title: talk.title,
-          image_url: talk.images[0].url,
-          author_id: talk.created_by.id,
-          author_name: talk.author_name,
-          content_type: 'talk',
-          organization_id: org.id,
-          organization_name: org.name,
-          subtitle: talk.subtitle,
-          venue_zip: nil,
-          published_at: talk.pubdate.iso8601,
-          starts_at: nil,
-          ends_at: nil,
-          content: talk.sanitized_content,
-          view_count: talk.view_count,
-          commenter_count: 0,
-          comment_count: 0,
-          parent_content_id: nil,
-          content_id: talk.id,
-          parent_content_type: nil,
-          event_instance_id: nil,
-          parent_event_instance_id: nil,
-          registration_deadline: nil,
-          created_at: talk.created_at.iso8601,
-          updated_at: talk.updated_at.iso8601,
-          event_id: nil,
-          cost: nil,
-          sold: nil,
-          avatar_url: talk.created_by.avatar_url,
-          organization_profile_image_url: nil,
-          biz_feed_public: talk.biz_feed_public?,
-          sunset_date: talk.sunset_date.try(:iso8601),
-          images: talk.images.map do |image|
-              {
-                id: image.id,
-                image_url: image.image.url,
-                primary: (image.primary? ? 1 : 0),
-                width: image.width,
-                height: image.height,
-                file_extension: image.file_extension
-              }
-            end,
-          can_edit: true,
-          event_instances: nil,
-          content_origin: 'ugc',
-          split_content: a_hash_including({
-            head: an_instance_of(String),
-            tail: an_instance_of(String)
-          }),
-          cost_type: nil,
-          contact_phone: nil,
-          contact_email: nil,
-          venue_url: nil,
-          content_locations: talk.content_locations.map do |cl|
-            {
-              id: cl.id,
-              location_id: cl.location.slug,
-              location_type: cl.location_type,
-              location_name: cl.location.name
-            }
-          end
-        })
+        it_behaves_like 'JSON schema for all Content' do
+          let(:content) { talk.reload }
+        end
       end
     end
 

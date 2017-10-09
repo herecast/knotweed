@@ -146,6 +146,11 @@ describe Api::V3::CommentsController, :type => :controller do
       expect(assigns(:comment).content.parent).to eq(@event.content)
       expect(assigns(:comment).organization.name).to eq('From DailyUV')
     end
+
+    it 'sets the origin to UGC' do
+      subject
+      expect(assigns(:comment).content.origin).to eql Content::UGC_ORIGIN
+    end
   end
 
   private

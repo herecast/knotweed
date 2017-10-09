@@ -2222,6 +2222,59 @@ describe Content, :type => :model do
     end
   end
 
+  describe '#latest_activity' do
+    # Not sure why, but reloads are necessary here.
+    # The difference between rails' in-memory view of the timestamp and
+    # the database's view of the timestamp are microseconds apart.
+    #
+    # We don't currently care about this level of precision for
+    # latest activity anyway.
+    subject { FactoryGirl.create :content, pubdate: 2.days.ago }
+
+    it 'is initially the pubdate time' do
+      subject.reload
+      expect(subject.latest_activity).to eql subject.pubdate
+    end
+
+    context 'comment posted' do
+      let!(:comment) {
+        FactoryGirl.create :content, :comment, parent: subject
+      }
+
+      it 'is the pubdate of the comment' do
+        subject.reload
+        comment.reload
+        expect(subject.latest_activity).to eql comment.pubdate
+      end
+    end
+  end
+
+  describe "creating a comment, reindexes it's root parent" do
+    let!(:root_parent) { FactoryGirl.create :content }
+
+    it 'does not reindex when root_parent is self' do
+      self_content = FactoryGirl.build :content
+      expect(self_content).to receive(:reindex_async).exactly(1).times
+      self_content.save!
+    end
+
+    it 'child' do
+      expect(root_parent).to receive(:reindex_async)
+      FactoryGirl.create :content, :comment, parent: root_parent
+    end
+
+    it 'grandchild' do
+      child = FactoryGirl.create :content, :comment, parent: root_parent
+
+      grandchild = FactoryGirl.build :content, :comment, parent: child
+      # to ensure same instance as in test stub
+      allow(grandchild).to receive(:root_parent).and_return(root_parent)
+      expect(root_parent).to receive(:reindex_async)
+
+      grandchild.save!
+    end
+  end
+
   private
 
     def get_body_from_file(filename)

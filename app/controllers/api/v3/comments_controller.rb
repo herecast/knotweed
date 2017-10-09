@@ -25,6 +25,7 @@ module Api
 
       def create
         @comment = Comment.new(comment_params)
+        @comment.content.origin = Content::UGC_ORIGIN
         if @comment.save
           if @repository.present?
             PublishContentJob.perform_later(@comment.content, @repository, Content::DEFAULT_PUBLISH_METHOD)

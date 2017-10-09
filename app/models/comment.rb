@@ -48,6 +48,11 @@ class Comment < ActiveRecord::Base
     end
   end
 
+  after_commit do
+    # the point of this is to update the latest_activity in the search index
+    content.root_parent.reindex_async
+  end
+
   def method_missing(method, *args, &block)
     if respond_to_without_attributes?(method)
       send(method, *args, &block)

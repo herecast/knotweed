@@ -3,7 +3,7 @@ module SearchService
 
   def apply_standard_chronology_to_opts
     eval_in_controller_context do
-      @opts[:order] = { pubdate: :desc }
+      @opts[:order] = { latest_activity: :desc }
       @opts[:page] = params[:page] || 1
       @opts[:per_page] = params[:per_page] || 12
       @opts[:where][:pubdate] = 5.years.ago..Time.zone.now

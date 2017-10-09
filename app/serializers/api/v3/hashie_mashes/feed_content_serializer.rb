@@ -19,6 +19,7 @@ module Api
           :images, :can_edit, :contact_email, :venue_url, :organization_biz_feed_active
 
         has_many :content_locations, serializer: Api::V3::HashieMashes::ContentLocationSerializer
+        has_many :comments, serializer: Api::V3::HashieMashes::CommentSerializer
 
         def content_id
           object.id

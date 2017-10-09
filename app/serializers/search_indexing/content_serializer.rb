@@ -8,12 +8,18 @@ module SearchIndexing
       :organization_id, :organization_name, :created_at, :updated_at, :biz_feed_public
 
     attributes :view_count, :commenter_count, :comment_count, :parent_id,
-      :parent_content_type, :sunset_date
+      :parent_content_type, :sunset_date, :latest_activity
 
     has_many :images, serializer: SearchIndexing::ImageSerializer
     has_many :content_locations, serializer: SearchIndexing::ContentLocationSerializer
+    has_many :comments, serializer: SearchIndexing::CommentSerializer
+
     has_one :created_by, serializer: SearchIndexing::CreatedBySerializer
     has_one :organization, serializer: SearchIndexing::OrganizationSerializer
+
+    def comments
+      object.children.sort_by(&:pubdate).reverse.take(6)
+    end
 
     def organization_name
       object.organization.try(:name)
