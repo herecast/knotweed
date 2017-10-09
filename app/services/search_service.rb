@@ -23,7 +23,11 @@ module SearchService
   def apply_standard_categories_to_opts
     eval_in_controller_context do
       @opts[:where][:root_content_category_id] = standard_category_ids
-      @opts[:where][:content_type] = { not: :comment }
+      @opts[:where][:or] ||= []
+      @opts[:where][:or] << [
+        {content_type: ['news', 'market', 'talk']},
+        {content_type: 'event', "organization.name" => {not: 'Listserv'}}
+      ]
     end
   end
 

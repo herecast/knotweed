@@ -8,6 +8,71 @@ describe Api::V3::ContentsController, :type => :controller do
     @consumer_app.organizations = [@org]
   end
 
+  describe 'GET index', elasticsearch: true do
+    let(:listserv_org) {
+      FactoryGirl.create :organization, name: 'Listserv'
+    }
+    before do
+      FactoryGirl.create(:content_category, name: 'event')
+      FactoryGirl.create(:content_category, name: 'market')
+      FactoryGirl.create(:content_category, name: 'news')
+      FactoryGirl.create(:content_category, name: 'talk_of_the_town')
+
+      @consumer_app.organizations << listserv_org
+    end
+
+    let(:headers) { {
+      'ACCEPT' => 'application/json',
+      'Consumer-App-Uri' => @consumer_app.uri
+    } }
+
+    describe 'events' do
+      let(:location) {
+        FactoryGirl.create(:location)
+      }
+
+
+      let!(:ugc_event) {
+        FactoryGirl.create(:content, :event, :published,
+          organization: @org,
+          content_locations: [
+            FactoryGirl.create(:content_location,
+              location: location,
+              location_type: 'base'
+            )
+          ]
+        )
+      }
+
+      let!(:listserv_event) {
+        FactoryGirl.create(:content, :event, :published,
+          organization: listserv_org,
+          content_locations: [
+            FactoryGirl.create(:content_location,
+              location: location,
+              location_type: 'base'
+            )
+          ],
+          channel: nil
+        )
+      }
+
+      it 'returns UGC events' do
+        get :index, {location_id: location.slug}, headers
+
+        records = assigns(:contents)
+        expect(records.map(&:id)).to include(ugc_event.id)
+      end
+
+      it 'does not return listserv events' do
+        get :index, {location_id: location.slug}, headers
+
+        records = assigns(:contents)
+        expect(records.map(&:id)).to_not include(listserv_event.id)
+      end
+    end
+  end
+
   describe 'GET similar_content' do
     before do
       ENV['sim_stack_categories'] = nil

@@ -1,7 +1,7 @@
 module SearchIndexing
   class ContentSerializer < ActiveModel::Serializer
     attributes :id, :title, :subtitle, :content, :author_name, :pubdate,
-      :all_loc_ids, :base_location_ids, :about_location_ids,
+      :all_loc_ids, :base_location_ids, :about_location_ids, :origin,
       :published, :channel_type, :channel_id, :content_type,
       :root_content_category_id, :content_category_id, :my_town_only, :deleted,
       :root_parent_id, :in_accepted_category, :is_listserv_market_post,
