@@ -84,56 +84,31 @@ RSpec.describe 'Content Impressions' do
       stub_request(:post, consumer_app.repository.recommendation_endpoint + '/user')
     end
 
-    context 'given a content id for news' do
-      let(:news) { FactoryGirl.create :content, :news }
+    [:news, :talk, :market_post, :event].each do |type|
+      context "given a content id for #{type.to_s}" do
+        let(:record) { FactoryGirl.create :content, type }
 
-      subject {
-        post "/api/v3/metrics/contents/#{news.id}/impressions",
-          context_data,
-          headers
-      }
+        subject {
+          post "/api/v3/metrics/contents/#{record.id}/impressions",
+            context_data,
+            headers
+        }
 
-      it 'returns 202 status' do
-        subject
-        expect(response.status).to eql 202
-      end
-
-      it 'records a content metric impression' do
-        date = Date.current
-
-        expect(RecordContentMetric).to receive(:call).with(
-          content,
-          'impression',
-          date.to_s,
-          a_hash_including({
-            user_agent: user_agent,
-            user_ip: remote_ip,
-            client_id: context_data[:client_id],
-            location_id: location.id
-          })
-        )
-
-        subject
-      end
-
-      context 'user is signed in' do
-        let(:user) { FactoryGirl.create(:user) }
-
-        before do
-          headers.merge! auth_headers_for(user)
+        it 'returns 202 status' do
+          subject
+          expect(response.status).to eql 202
         end
 
         it 'records a content metric impression' do
           date = Date.current
 
           expect(RecordContentMetric).to receive(:call).with(
-            content,
+            record,
             'impression',
             date.to_s,
             a_hash_including({
               user_agent: user_agent,
               user_ip: remote_ip,
-              user_id: user.id,
               client_id: context_data[:client_id],
               location_id: location.id
             })
@@ -142,113 +117,51 @@ RSpec.describe 'Content Impressions' do
           subject
         end
 
-        context 'analytics_blocked for user' do
+        context 'user is signed in' do
+          let(:user) { FactoryGirl.create(:user) }
+
           before do
-            user.update skip_analytics: true
+            headers.merge! auth_headers_for(user)
           end
 
-          it 'does not record a content metric impression' do
-            expect(RecordContentMetric).to_not receive(:call)
+          it 'records a content metric impression' do
+            date = Date.current
+
+            expect(RecordContentMetric).to receive(:call).with(
+              record,
+              'impression',
+              date.to_s,
+              a_hash_including({
+                user_agent: user_agent,
+                user_ip: remote_ip,
+                user_id: user.id,
+                client_id: context_data[:client_id],
+                location_id: location.id
+              })
+            )
 
             subject
           end
+
+          context 'analytics_blocked for user' do
+            before do
+              user.update skip_analytics: true
+            end
+
+            it 'does not record a content metric impression' do
+              expect(RecordContentMetric).to_not receive(:call)
+
+              subject
+            end
+          end
+        end
+
+
+        include_examples 'DSP visit recording' do
+          let(:content) { record }
         end
       end
 
-
-      include_examples 'DSP visit recording' do
-        let(:content) { news }
-      end
-    end
-
-    context 'given a talk content id' do
-      let(:talk) { FactoryGirl.create :content, :talk }
-
-      subject {
-        post "/api/v3/metrics/contents/#{talk.id}/impressions",
-          context_data,
-          headers
-      }
-
-      it 'returns 202 status' do
-        subject
-        expect(response.status).to eql 202
-      end
-
-      # This constraint should eventually be removed
-      it 'does not record a content metric impression' do
-        expect(RecordContentMetric).to_not receive(:call)
-
-        subject
-      end
-
-      it 'does increment the content view count' do
-        expect{subject}.to change{talk.reload.view_count}.by(1)
-      end
-
-      include_examples 'DSP visit recording' do
-        let(:content) { talk }
-      end
-    end
-
-    context 'given a market content id' do
-      let(:market_content) { FactoryGirl.create(:market_post).content }
-
-      subject {
-        post "/api/v3/metrics/contents/#{market_content.id}/impressions",
-          context_data,
-          headers
-      }
-
-      it 'returns 202 status' do
-        subject
-        expect(response.status).to eql 202
-      end
-
-      # This constraint should eventually be removed
-      it 'does not record a content metric impression' do
-        expect(RecordContentMetric).to_not receive(:call)
-
-        subject
-      end
-
-      it 'does increment the content view count' do
-        expect{subject}.to change{market_content.reload.view_count}.by(1)
-      end
-
-      include_examples 'DSP visit recording' do
-        let(:content) { market_content }
-      end
-    end
-
-    context 'given an event content id' do
-      let(:event_content) { FactoryGirl.create(:event).content }
-
-      subject {
-        post "/api/v3/metrics/contents/#{event_content.id}/impressions",
-          context_data,
-          headers
-      }
-
-      it 'returns 202 status' do
-        subject
-        expect(response.status).to eql 202
-      end
-
-      # This constraint should eventually be removed
-      it 'does not record a content metric impression' do
-        expect(RecordContentMetric).to_not receive(:call)
-
-        subject
-      end
-
-      it 'does increment the content view count' do
-        expect{subject}.to change{event_content.reload.view_count}.by(1)
-      end
-
-      include_examples 'DSP visit recording' do
-        let(:content) { event_content }
-      end
     end
   end
 end

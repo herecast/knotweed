@@ -6,16 +6,12 @@ module Api
         content = Content.not_deleted.find params[:id]
 
         unless analytics_blocked?
-          if content.content_type == :news
-            BackgroundJob.perform_later("RecordContentMetric", "call",
-              content,
-              'impression',
-              Date.current.to_s,
-              content_metric_params
-            )
-          else
-            content.increment!(:view_count)
-          end
+          BackgroundJob.perform_later("RecordContentMetric", "call",
+            content,
+            'impression',
+            Date.current.to_s,
+            content_metric_params
+          )
 
           if @repository.present?
             if params[:client_id] || user_signed_in?
