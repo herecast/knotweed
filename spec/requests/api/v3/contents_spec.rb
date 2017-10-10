@@ -294,6 +294,35 @@ describe 'Contents Endpoints', type: :request do
       end
     end
 
+    context "when radius param == 'me'" do
+      before do
+        @owning_user = FactoryGirl.create :user
+        FactoryGirl.create :content, :news,
+          created_by: @owning_user,
+          organization: org,
+          published: true
+      end
+
+      context "when no user logged in" do
+        subject { get "/api/v3/contents", { radius: 'me' } }
+
+        it "returns only current user's content" do
+          subject
+          expect(response).to have_http_status :ok
+          expect(response_json[:contents].length).to eq 0
+        end
+      end
+
+      context "when user logged in" do
+        subject { get "/api/v3/contents", { radius: 'me' }, headers.merge(auth_headers_for(@owning_user)) }
+
+        it "returns only current user's content" do
+          subject
+          expect(response_json[:contents].length).to eq 1
+        end
+      end
+    end
+
   end
 
   describe 'GET /api/v3/contents/:id' do

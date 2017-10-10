@@ -33,7 +33,9 @@ module SearchService
 
   def apply_standard_locations_to_opts
     eval_in_controller_context do
-      if params[:location_id].present?
+      if params[:radius] == 'me'
+        @opts[:where]['created_by.id'] = current_user.id
+      elsif params[:location_id].present?
         @opts[:where][:or] ||= []
         location = Location.find_by_slug_or_id params[:location_id]
 

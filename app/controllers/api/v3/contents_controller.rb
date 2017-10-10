@@ -6,7 +6,8 @@ module Api
       before_filter :check_logged_in!, only:  [:moderate, :dashboard, :metrics]
 
       def index
-        expires_in 1.minutes, public: true
+        expires_in 1.minutes, public: true unless params[:radius] == 'me'
+        render json: [], status: :ok and return if params[:radius] == 'me' && current_user.nil?
 
         @opts = {load: false}
         apply_standard_chronology_to_opts
