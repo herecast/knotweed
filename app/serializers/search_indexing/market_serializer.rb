@@ -16,7 +16,11 @@ module SearchIndexing
     end
 
     def contact_email
-      object.channel.try :contact_email
+      if object.channel.present?
+        object.channel.try(:contact_email)
+      else
+        object.authoremail
+      end
     end
   end
 end

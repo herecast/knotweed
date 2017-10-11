@@ -277,7 +277,13 @@ module Api
       end
 
       def contact_email
-        object.channel.try(:contact_email)
+        if [:market, :event].include? object.content_type
+          if object.channel.present?
+            object.channel.try(:contact_email)
+          else
+            object.authoremail
+          end
+        end
       end
 
       def organization_biz_feed_active

@@ -146,6 +146,12 @@ describe 'Content seralization for elasticsearch indexing' do
         contact_email: content.channel.contact_email
       )
     end
+
+    it 'will return authoremail if no channel.contact_email' do
+      content.authoremail = "jabba@hut.com"
+      content.channel = nil
+      expect(subject[:contact_email]).to eql content.authoremail
+    end
   end
 
   describe 'Event content' do
