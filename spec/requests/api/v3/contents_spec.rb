@@ -294,7 +294,7 @@ describe 'Contents Endpoints', type: :request do
       end
     end
 
-    context "when radius param == 'me'" do
+    context "when radius param == 'myStuff'" do
       before do
         @owning_user = FactoryGirl.create :user
         FactoryGirl.create :content, :news,
@@ -304,7 +304,7 @@ describe 'Contents Endpoints', type: :request do
       end
 
       context "when no user logged in" do
-        subject { get "/api/v3/contents", { radius: 'me' } }
+        subject { get "/api/v3/contents", { radius: 'myStuff' } }
 
         it "returns only current user's content" do
           subject
@@ -314,7 +314,7 @@ describe 'Contents Endpoints', type: :request do
       end
 
       context "when user logged in" do
-        subject { get "/api/v3/contents", { radius: 'me' }, headers.merge(auth_headers_for(@owning_user)) }
+        subject { get "/api/v3/contents", { radius: 'myStuff' }, headers.merge(auth_headers_for(@owning_user)) }
 
         it "returns only current user's content" do
           subject

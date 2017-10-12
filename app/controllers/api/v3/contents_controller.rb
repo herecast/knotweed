@@ -6,8 +6,8 @@ module Api
       before_filter :check_logged_in!, only:  [:moderate, :dashboard, :metrics]
 
       def index
-        expires_in 1.minutes, public: true unless params[:radius] == 'me'
-        render json: [], status: :ok and return if params[:radius] == 'me' && current_user.nil?
+        expires_in 1.minutes, public: true unless is_my_stuff_request?
+        render json: [], status: :ok and return if is_my_stuff_request? && current_user.nil?
 
         @opts = {load: false}
         apply_standard_chronology_to_opts
@@ -163,6 +163,10 @@ module Api
           end
           sort_query = sort_parts.join(',').gsub('channel_type', 'root_category.name')
           sort_query.gsub('start_date', 'pubdate')
+        end
+
+        def is_my_stuff_request?
+          ['me', 'my_stuff', 'mystuff'].include?(params[:radius].to_s.downcase)
         end
     end
   end

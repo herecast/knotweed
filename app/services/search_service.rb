@@ -33,7 +33,8 @@ module SearchService
 
   def apply_standard_locations_to_opts
     eval_in_controller_context do
-      if params[:radius] == 'me'
+
+      if is_my_stuff_request?
         @opts[:where]['created_by.id'] = current_user.id
       elsif params[:location_id].present?
         @opts[:where][:or] ||= []
