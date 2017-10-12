@@ -1,7 +1,5 @@
 require 'spec_helper'
 
-include ContentsHelper
-
 describe MarketPostsHelper, type: :helper do
   describe '#market_contact_display' do
     let(:market_post) {MarketPost.new}
@@ -47,14 +45,14 @@ describe MarketPostsHelper, type: :helper do
     subject { helper.market_post_url_for_email(market_post) }
 
     let(:content_path) { ux2_content_path(market_post.content) }
-    let(:utm_string) { "?utm_medium=email&utm_source=rev-pub&utm_campaign=20151201&utm_content=#{content_path}" }
+    let(:utm_string) { "?utm_medium=email&utm_source=rev-pub&utm_content=#{ux2_content_path(market_post.content)}" }
 
     context 'consumer_app set from request' do
       let(:consumer_app) { double(uri: 'http://my-uri.example') }
       before { allow(ConsumerApp).to receive(:current).and_return(consumer_app) }
 
       it 'uses consumer app uri' do
-        expect(subject).to eql "#{consumer_app.uri}/market/#{market_post.content.id}"
+        expect(subject).to eql "#{consumer_app.uri}/feed/#{market_post.content.id}#{utm_string}"
       end
     end
 
@@ -65,7 +63,7 @@ describe MarketPostsHelper, type: :helper do
       end
 
       it 'uses @base_uri, and market_post.content.id' do
-        expect(subject).to eql "#{@base_uri}/market/#{market_post.content.id}"
+        expect(subject).to eql "#{@base_uri}/feed/#{market_post.content.id}#{utm_string}"
       end
     end
 

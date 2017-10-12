@@ -29,8 +29,14 @@ module ContentsHelper
     content.channel_type == "Event" ? "/feed/#{content.id}/#{content.channel.next_or_first_instance.id}" : "/feed/#{content.id}"
   end
 
+  def event_feed_content_path(content)
+    event = content.channel
+    utm_string = "?utm_medium=email&utm_source=rev-pub&utm_content=#{ux2_content_path(content)}"
+    "#{ux2_content_path(content)}?eventInstanceId=#{event.next_or_first_instance.id}#{utm_string}"
+  end
+
   def content_url_for_email(content)
-    utm_string = "?utm_medium=email&utm_source=rev-pub&utm_campaign=20151201&utm_content=#{ux2_content_path(content)}"
+    utm_string = "?utm_medium=email&utm_source=rev-pub&utm_content=#{ux2_content_path(content)}"
     if ConsumerApp.current.present?
       url = "#{ConsumerApp.current.uri}#{ux2_content_path(content)}#{utm_string}"
     elsif ConsumerApp.default.present?

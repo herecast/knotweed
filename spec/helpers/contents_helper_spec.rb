@@ -1,39 +1,14 @@
 require 'spec_helper' 
 
 describe ContentsHelper, type: :helper do
-  describe '#ux2_content_path' do
-    before do
-      @market_cat = FactoryGirl.create :content_category, name: 'market'
-      @tott_cat = FactoryGirl.create :content_category, name: 'talk_of_the_town'
-      @news_cat = FactoryGirl.create :content_category, name: 'news'
+
+  describe 'event_feed_content_path' do
+    let(:event) { FactoryGirl.create :event }
+    let(:utm_string) {"?utm_medium=email&utm_source=rev-pub&utm_content=#{ux2_content_path(event.content)}" }
+    
+    it 'should return /feed/#{content_id}?eventInstanceid=#{event_instance_id}' do
+      expect(helper.event_feed_content_path(event.content)).to eq "#{ux2_content_path(event.content)}?eventInstanceId=#{event.next_instance.id}#{utm_string}"
     end
-
-    it 'should return /feed/#{content_id} for any non-talk category' do
-      market = FactoryGirl.create :content, :market_post
-      expect(helper.ux2_content_path(market)).to eq("/feed/#{market.id}")
-      news = FactoryGirl.create :content, :news
-      expect(helper.ux2_content_path(news)).to eq("/feed/#{news.id}")
-    end
-
-    it 'should return /feed/#{content_id} for tott category' do
-      tott = FactoryGirl.create :content, :talk
-      expect(helper.ux2_content_path(tott)).to eq("/feed/#{tott.id}")
-    end
-
-    it 'should return /feed/#{content_id}/{first_event_instance_id} for an event' do
-      content = FactoryGirl.create :content, :event
-      expect(helper.ux2_content_path(content)).to eql "/feed/#{content.id}/#{content.channel.next_or_first_instance.id}"
-    end
-
-    context 'when content is in subscategory' do
-      let(:subcategory) { FactoryGirl.create :content_category, parent: @market_cat }
-      let!(:content) { FactoryGirl.create :content, :located, content_category: subcategory }
-
-      it 'should with path matching parent category name' do
-        expect(helper.ux2_content_path(content)).to eq("/feed/#{content.id}")
-      end
-    end
-
   end
 
   describe '#search_field_value' do
@@ -117,7 +92,7 @@ describe ContentsHelper, type: :helper do
     let(:content) { FactoryGirl.create :content }
     subject { helper.content_url_for_email(content) }
     let(:content_path) { ux2_content_path(content) }
-    let(:utm_string) { "?utm_medium=email&utm_source=rev-pub&utm_campaign=20151201&utm_content=#{content_path}" }
+    let(:utm_string) { "?utm_medium=email&utm_source=rev-pub&utm_content=#{content_path}" }
 
     context 'consumer_app set from request' do
       let(:consumer_app) { double(uri: 'http://my-uri.example') }
