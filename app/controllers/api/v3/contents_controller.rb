@@ -20,11 +20,17 @@ module Api
         end
 
         if params[:query].present?
-          # if query, sort by default: _score
           @opts.delete(:order)
+          @opts[:boost_by_distance] = {
+                    field: :created_at,
+                    origin: Time.zone.now,
+                    scale: '60d',
+                    offset: '7d',
+                    decay: 0.25
+                  }
           @contents = Content.search(params[:query], @opts)
         else
-          @contents = Content.search('*', @opts)
+          @contents = Content.search("*", @opts)
         end
 
         render json: @contents, each_serializer: HashieMashes::FeedContentSerializer,
