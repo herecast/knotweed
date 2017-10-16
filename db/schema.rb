@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171010175538) do
+ActiveRecord::Schema.define(version: 20171010202737) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -843,6 +843,27 @@ ActiveRecord::Schema.define(version: 20171010175538) do
     t.datetime "updated_at",              null: false
   end
 
+  create_table "profile_metrics", force: :cascade do |t|
+    t.integer  "organization_id"
+    t.integer  "location_id"
+    t.integer  "user_id"
+    t.integer  "content_id"
+    t.string   "event_type"
+    t.string   "user_ip"
+    t.string   "user_agent"
+    t.string   "client_id"
+    t.boolean  "location_confirmed"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "profile_metrics", ["client_id"], name: "index_profile_metrics_on_client_id", using: :btree
+  add_index "profile_metrics", ["content_id"], name: "index_profile_metrics_on_content_id", using: :btree
+  add_index "profile_metrics", ["event_type"], name: "index_profile_metrics_on_event_type", using: :btree
+  add_index "profile_metrics", ["location_id"], name: "index_profile_metrics_on_location_id", using: :btree
+  add_index "profile_metrics", ["organization_id"], name: "index_profile_metrics_on_organization_id", using: :btree
+  add_index "profile_metrics", ["user_id"], name: "index_profile_metrics_on_user_id", using: :btree
+
   create_table "promotion_banner_metrics", force: :cascade do |t|
     t.integer  "promotion_banner_id"
     t.string   "event_type"
@@ -1154,6 +1175,10 @@ ActiveRecord::Schema.define(version: 20171010175538) do
   add_foreign_key "organization_content_tags", "organizations"
   add_foreign_key "organization_locations", "locations"
   add_foreign_key "organization_locations", "organizations"
+  add_foreign_key "profile_metrics", "contents"
+  add_foreign_key "profile_metrics", "locations"
+  add_foreign_key "profile_metrics", "organizations"
+  add_foreign_key "profile_metrics", "users"
   add_foreign_key "sign_in_tokens", "users"
   add_foreign_key "social_logins", "users"
   add_foreign_key "subscriptions", "listservs"
