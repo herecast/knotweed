@@ -17,6 +17,12 @@
 class ContentMetric < ActiveRecord::Base
   belongs_to :location#remove comment for Rails 5#, optional: true
   belongs_to :user#remove comment for Rails 5#, optional: true
+  belongs_to :content
+  belongs_to :organization#remove comment for Rails 5#, optional: true
 
   validates_presence_of :content_id
+
+  before_create do
+    self.organization = content.organization
+  end
 end

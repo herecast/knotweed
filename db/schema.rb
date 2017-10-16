@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170925154028) do
+ActiveRecord::Schema.define(version: 20171010175538) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -262,11 +262,19 @@ ActiveRecord::Schema.define(version: 20170925154028) do
     t.integer  "user_id"
     t.string   "user_agent"
     t.string   "user_ip"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
     t.string   "client_id"
     t.integer  "location_id"
+    t.integer  "organization_id"
   end
+
+  add_index "content_metrics", ["client_id"], name: "index_content_metrics_on_client_id", using: :btree
+  add_index "content_metrics", ["content_id"], name: "index_content_metrics_on_content_id", using: :btree
+  add_index "content_metrics", ["event_type"], name: "index_content_metrics_on_event_type", using: :btree
+  add_index "content_metrics", ["location_id"], name: "index_content_metrics_on_location_id", using: :btree
+  add_index "content_metrics", ["organization_id"], name: "index_content_metrics_on_organization_id", using: :btree
+  add_index "content_metrics", ["user_id"], name: "index_content_metrics_on_user_id", using: :btree
 
   create_table "content_promotion_banner_loads", force: :cascade do |t|
     t.integer  "content_id"
