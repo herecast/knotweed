@@ -104,9 +104,9 @@ RSpec.describe 'Content Impressions' do
 
           expect(RecordContentMetric).to receive(:call).with(
             record,
-            'impression',
-            date.to_s,
             a_hash_including({
+              event_type: 'impression',
+              current_date: date.to_s,
               user_agent: user_agent,
               user_ip: remote_ip,
               client_id: context_data[:client_id],
@@ -129,9 +129,9 @@ RSpec.describe 'Content Impressions' do
 
             expect(RecordContentMetric).to receive(:call).with(
               record,
-              'impression',
-              date.to_s,
               a_hash_including({
+                event_type: 'impression',
+                current_date: date.to_s,
                 user_agent: user_agent,
                 user_ip: remote_ip,
                 user_id: user.id,

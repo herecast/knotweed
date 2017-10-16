@@ -7,7 +7,11 @@ RSpec.describe RecordContentMetric do
   end
 
   describe "::call" do
-    subject { RecordContentMetric.call(@news, 'dummy', Date.current.to_s) }
+    subject { RecordContentMetric.call(@news, {
+      event_type: 'dummy',
+      current_date: Date.current.to_s
+    }) }
+
     context "when no current report available" do
       it "creates content report" do
         expect{ subject }.to change{
@@ -29,7 +33,10 @@ RSpec.describe RecordContentMetric do
     end
 
     context "with event_type: impression" do
-      subject { RecordContentMetric.call(@news, 'impression', Date.current.to_s) }
+      subject { RecordContentMetric.call(@news, {
+        event_type: 'impression',
+        current_date: Date.current.to_s
+      }) }
 
       it "creates impression metric" do
         expect{ subject }.to change{
@@ -50,7 +57,10 @@ RSpec.describe RecordContentMetric do
     end
 
     context "with event_type: click" do
-      subject { RecordContentMetric.call(@news, 'click', Date.current.to_s) }
+      subject { RecordContentMetric.call(@news, {
+        event_type: 'click',
+        current_date: Date.current.to_s
+      }) }
 
       it "creates click metric" do
         expect{ subject }.to change{

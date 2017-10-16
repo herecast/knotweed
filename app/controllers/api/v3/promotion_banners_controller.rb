@@ -78,15 +78,7 @@ module Api
         @banner = PromotionBanner.find_by_id params[:promotion_banner_id]
         if @banner.present?
           record_promotion_banner_metric(@banner, 'click')
-          unless analytics_blocked?
-            @content = Content.find_by_id params[:content_id]
-            if @content.present?
-              BackgroundJob.perform_later('RecordContentMetric', 'call', @content, 'click', Date.current.to_s,
-                user_id:    @current_api_user.try(:id),
-                client_id: params[:client_id]
-              )
-            end
-          end
+          record_content_metric('click')
           render json: {}, status: :ok
         else
           head :unprocessable_entity and return
@@ -196,6 +188,26 @@ module Api
           end
 
           BackgroundJob.perform_later('RecordPromotionBannerMetric', 'call', data)
+        end
+      end
+
+      def record_content_metric(event_type)
+        unless analytics_blocked?
+          @content = Content.find_by_id params[:content_id]
+          if @content.present?
+            opts = {
+              event_type:   event_type,
+              current_date: Date.current.to_s,
+              user_id:      @current_api_user.try(:id),
+              client_id:    params[:client_id]
+            }.tap do |data|
+              if params[:location_id].present?
+                data[:location_id] = Location.find_by_slug_or_id(params[:location_id]).try(:id)
+              end
+            end
+
+            BackgroundJob.perform_later('RecordContentMetric', 'call', @content, opts)
+          end
         end
       end
 

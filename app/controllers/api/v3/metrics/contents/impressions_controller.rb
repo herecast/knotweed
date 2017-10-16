@@ -3,20 +3,15 @@ module Api
     class Metrics::Contents::ImpressionsController < ApiController
 
       def create
-        content = Content.not_deleted.find params[:id]
+        @content = Content.not_deleted.find params[:id]
 
         unless analytics_blocked?
-          BackgroundJob.perform_later("RecordContentMetric", "call",
-            content,
-            'impression',
-            Date.current.to_s,
-            content_metric_params
-          )
+          BackgroundJob.perform_later("RecordContentMetric", "call", @content, content_metric_params)
 
           if @repository.present?
             if params[:client_id] || user_signed_in?
               BackgroundJob.perform_later("DspService", "record_user_visit",
-                content,
+                @content,
                 @current_api_user.try(:email) || params[:client_id],
                 @repository
               ) unless analytics_blocked?
@@ -30,10 +25,12 @@ module Api
       private
       def content_metric_params
         data = {
-          user_id:    @current_api_user.try(:id),
-          user_agent: request.user_agent,
-          user_ip:    request.remote_ip,
-          client_id: params[:client_id]
+          event_type:   'impression',
+          current_date: Date.current.to_s,
+          user_id:      @current_api_user.try(:id),
+          user_agent:   request.user_agent,
+          user_ip:      request.remote_ip,
+          client_id:    params[:client_id]
         }
 
         if params[:location_id].present?

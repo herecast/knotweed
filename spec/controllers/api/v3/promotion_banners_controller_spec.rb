@@ -299,8 +299,13 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         })
       )
       expect(BackgroundJob).to receive(:perform_later).with(
-        'RecordContentMetric', 'call', @content, 'click', Date.current.to_s,
-          { user_id: nil, client_id: 'ClientId@' }
+        'RecordContentMetric', 'call', @content, {
+          event_type: 'click',
+          current_date: Date.current.to_s,
+          user_id: nil,
+          client_id: 'ClientId@',
+          location_id: location.id
+        }
       )
       subject
     end
