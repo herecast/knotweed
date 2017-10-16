@@ -137,6 +137,8 @@ Knotweed::Application.routes.draw do
       resources 'events', only: [:create, :show, :update, :index]
       post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
       post 'promotion_banners/:promotion_banner_id/track_click', to: 'promotion_banners#track_click', as: :track_click
+      post 'promotion_banners/:promotion_banner_id/track_load', to: 'promotion_banners#track_load', as: :track_load
+
       post 'promotion_banners/:id/impression', to: 'promotion_banners#track_impression', as: :track_impression
       get '/promotion_banners/:id/metrics', to: 'promotion_banners#metrics',
         as: :promotion_banner_metrics

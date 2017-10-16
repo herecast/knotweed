@@ -43,22 +43,32 @@ module Api
         opts[:repository]      = @repository
 
         conditionally_prime_daily_ad_reports
-        @promotion_banners = SelectPromotionBanners.call(opts)
+        @selected_promotion_banners = SelectPromotionBanners.call(opts)
 
-        log_promotion_banner_loads
-        @promotion_banners = @promotion_banners.map{ |promo| promo.first }
-
-        render json:  @promotion_banners, root: :promotions,
-          each_serializer: RelatedPromotionSerializer
+        render json:  @selected_promotion_banners, root: :promotions,
+          each_serializer: SelectedPromotionSerializer
       end
 
       def track_impression
         @banner = PromotionBanner.find params[:id]
         if @banner.present?
-          record_promotion_banner_metric([@banner], 'impression')
+          record_promotion_banner_metric(@banner, 'impression')
           render json: {}, status: :ok
         else
           render json: {}, status: :bad_request
+        end
+      end
+
+      def track_load
+        # use find_by_id because we want a return of nil instead
+        # of causing an exception with find
+        @banner = PromotionBanner.find_by_id params[:promotion_banner_id]
+        if @banner.present?
+          record_promotion_banner_metric(@banner, 'load')
+
+          render json: {}, status: :ok
+        else
+          head :unprocessable_entity and return
         end
       end
 
@@ -67,7 +77,7 @@ module Api
         # of causing an exception with find
         @banner = PromotionBanner.find_by_id params[:promotion_banner_id]
         if @banner.present?
-          record_promotion_banner_metric([@banner], 'click')
+          record_promotion_banner_metric(@banner, 'click')
           unless analytics_blocked?
             @content = Content.find_by_id params[:content_id]
             if @content.present?
@@ -161,13 +171,7 @@ module Api
         end
       end
 
-      def log_promotion_banner_loads
-        @promotion_banners.each do |promotion_banner_packet|
-          record_promotion_banner_metric(promotion_banner_packet, 'load')
-        end
-      end
-
-      def record_promotion_banner_metric(promotion_banner_packet, event_type)
+      def record_promotion_banner_metric(promotion_banner, event_type)
         unless analytics_blocked?
           data = {
             content_id:          params[:content_id],
@@ -175,9 +179,10 @@ module Api
             current_date:        Date.current.to_s,
             user_id:             @current_api_user.try(:id),
             client_id:           params[:client_id],
-            promotion_banner_id: promotion_banner_packet[0].id,
-            select_score:        promotion_banner_packet[1],
-            select_method:       promotion_banner_packet[2],
+            promotion_banner_id: promotion_banner.id,
+            select_score:        params[:select_score],
+            select_method:       params[:select_method],
+            load_time:           params[:load_time],
             user_agent:          request.user_agent,
             user_ip:             request.remote_ip,
             gtm_blocked:         params[:gtm_blocked] == true,

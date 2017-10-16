@@ -1,7 +1,7 @@
 module Api
   module V3
-    class RelatedPromotionSerializer < ActiveModel::Serializer
-      attributes :id, :image_url, :redirect_url, :organization_name, :promotion_id, :title
+    class SelectedPromotionSerializer < ActiveModel::Serializer
+      attributes :id, :image_url, :redirect_url, :organization_name, :promotion_id, :title, :select_score, :select_method
 
       def organization_name
         object.promotion.organization.try(:name)

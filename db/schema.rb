@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171010202737) do
+ActiveRecord::Schema.define(version: 20171013184227) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -881,6 +881,7 @@ ActiveRecord::Schema.define(version: 20171010202737) do
     t.string   "page_placement"
     t.string   "client_id"
     t.integer  "location_id"
+    t.float    "load_time"
   end
 
   add_index "promotion_banner_metrics", ["content_id"], name: "index_promotion_banner_metrics_on_content_id", using: :btree

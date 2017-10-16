@@ -28,6 +28,7 @@ class RecordPromotionBannerMetric
         promotion_banner_id: @opts[:promotion_banner_id],
         select_score:        @opts[:select_score],
         select_method:       @opts[:select_method],
+        load_time:           @opts[:load_time],
         user_agent:          @opts[:user_agent],
         user_ip:             @opts[:user_ip],
         gtm_blocked:         @opts[:gtm_blocked],

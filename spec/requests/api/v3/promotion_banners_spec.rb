@@ -120,7 +120,7 @@ describe 'Promotion Banner Endpoints', type: :request do
     end
   end
 
-  describe 'GET /api/v3/promotion' do
+  describe 'GET /api/v3/promotions' do
     let(:organization) { FactoryGirl.create :organization }
 
     context 'with existing content and related promotion;' do
@@ -132,15 +132,16 @@ describe 'Promotion Banner Endpoints', type: :request do
 
       it 'returns promotion json' do
         subject
-        expect(response_json).to match(
-          promotions: [{
+        expect(response_json[:promotions].first).to match({
             id: banner.id,
             image_url: banner.banner_image.url,
             redirect_url: banner.redirect_url,
             organization_name: organization.name,
             promotion_id: promo.id,
-            title: promo.content.title
-          }]
+            title: promo.content.title,
+            select_score: be_an_instance_of(Float).or(be_nil),
+            select_method: "sponsored_content"
+          }
         )
       end
     end
@@ -162,7 +163,9 @@ describe 'Promotion Banner Endpoints', type: :request do
             redirect_url: banner.redirect_url,
             organization_name: nil,
             promotion_id: promo.id,
-            title: promo.content.title
+            title: promo.content.title,
+            select_score: be_an_instance_of(Float).or(be_nil),
+            select_method: 'sponsored_content'
           }]
         )
       end
@@ -184,7 +187,9 @@ describe 'Promotion Banner Endpoints', type: :request do
           redirect_url: banner.redirect_url,
           organization_name: an_instance_of(String) | be_nil,
           promotion_id: banner.promotion.id,
-          title: banner.promotion.content.title
+          title: banner.promotion.content.title,
+          select_score: be_an_instance_of(Float).or(be_nil),
+          select_method: "sponsored_content"
         }]
       )
     end
@@ -222,7 +227,7 @@ describe 'Promotion Banner Endpoints', type: :request do
 
         allow(MailchimpService).to receive(:get_report).and_return @results
       end
-      
+
       it "returns an instance with mailchimp information" do
         subject
         expect(response_json[:promotion_banners].first[:impression_count]).to eq @results[:opens_total]

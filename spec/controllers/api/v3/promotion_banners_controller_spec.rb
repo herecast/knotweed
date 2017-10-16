@@ -104,15 +104,10 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         Rails.cache.clear
       end
 
-      it "runs background job to clear daily impressions and to record 'load' event" do
+      it "runs background job to clear daily impressions" do
         ENV['STACK_NAME'] = "knotweed-production"
         expect(BackgroundJob).to receive(:perform_later).with(
           "PrimeDailyPromotionBannerReports", "call", Date.current.to_s, true
-        )
-        expect(BackgroundJob).to receive(:perform_later).with(
-          "RecordPromotionBannerMetric", "call", hash_including({
-            promotion_banner_id: @pb.id
-          })
         )
         subject
       end
@@ -123,11 +118,6 @@ describe Api::V3::PromotionBannersController, :type => :controller do
           expect(BackgroundJob).to receive(:perform_later).with(
             "PrimeDailyPromotionBannerReports", "call", Date.current.to_s, false
           )
-          expect(BackgroundJob).to receive(:perform_later).with(
-          "RecordPromotionBannerMetric", "call", hash_including({
-            promotion_banner_id: @pb.id
-          })
-        )
           subject
         end
       end
@@ -138,35 +128,10 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         Rails.cache.write('most_recent_reset_time', Date.yesterday)
       end
 
-      it "runs background job to clear daily impressions and to record 'load' event" do
+      it "runs background job to clear daily impressions" do
         ENV['STACK_NAME'] = "knotweed-production"
         expect(BackgroundJob).to receive(:perform_later).with(
           "PrimeDailyPromotionBannerReports", "call", Date.current.to_s, true
-        )
-        expect(BackgroundJob).to receive(:perform_later).with(
-          "RecordPromotionBannerMetric", "call", hash_including({
-            promotion_banner_id: @pb.id
-          })
-        )
-        subject
-      end
-    end
-
-    context "when most_recent_reset_time is from current day" do
-      before do
-        Rails.cache.write('most_recent_reset_time', Date.current)
-      end
-
-      subject { get :show, format: :json,
-              promotion_id: @promo.id, consumer_app_uri: @consumer_app.uri }
-
-      it "records 'load' event" do
-        expect(BackgroundJob).to receive(:perform_later).with(
-          "RecordPromotionBannerMetric", "call", hash_including({
-            event_type: 'load',
-            user_id: nil,
-            promotion_banner_id: @pb.id
-          })
         )
         subject
       end
@@ -195,7 +160,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
       it 'should respond with the banner specified by the banner_ad_override' do
         subject
-        expect(assigns(:promotion_banners).first).to eq @pb2
+        expect(assigns(:selected_promotion_banners).first.promotion_banner).to eq @pb2
       end
     end
 
@@ -245,6 +210,57 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         )
         subject
       end
+    end
+  end
+
+  describe 'post track_load' do
+    let(:location) { FactoryGirl.create :location }
+    before do
+      @banner = FactoryGirl.create :promotion_banner
+      @content = FactoryGirl.create :content
+      @content.promotion_banners = [@banner]
+    end
+
+    let(:post_params) {
+      {
+        promotion_banner_id: @banner.id,
+        content_id: @content.id,
+        client_id: 'ClientId@',
+        user_id: 99,
+        location_id: location.slug,
+        select_score: 1.9,
+        select_method: 'sponsored_content',
+        load_time: 0.9832
+      }
+    }
+
+    subject {
+      post :track_load,
+        post_params.merge(
+          format: :json
+        )
+    }
+
+    it 'should respond with 200' do
+      subject
+      expect(response.status).to eq 200
+    end
+
+    it "calls record_promotion_banner_metric with 'load'" do
+      expect(BackgroundJob).to receive(:perform_later).with(
+        "RecordPromotionBannerMetric", "call", hash_including({
+          event_type: 'load',
+          client_id: 'ClientId@',
+          location_id: location.id,
+          promotion_banner_id: @banner.id,
+          current_date: Date.current.to_s,
+          content_id: @content.id,
+          load_time: post_params[:load_time],
+          select_score: 1.9,
+          select_method: 'sponsored_content'
+        })
+      )
+      subject
     end
   end
 

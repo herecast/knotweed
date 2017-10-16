@@ -40,17 +40,23 @@ class SelectPromotionBanners
       (@opts[:limit].try(:to_i) || 1) - @banners.length
     end
 
-    def add_promotion(set)
-      unless @exclude.include? set[0].id
-        @banners << set
-        @exclude << set[0].id
+    def add_promotion(selected_promo)
+      if selected_promo.try(:promotion_banner)
+        unless @exclude.include? selected_promo.id
+          @banners << selected_promo
+          @exclude << selected_promo.id
+        end
       end
     end
 
     def get_direct_promotion(promotion_id)
       promotion = Promotion.find_by(id: promotion_id)
       if promotion && promotion.promotable.is_a?(PromotionBanner) && promotion.promotable.active_with_inventory?
-        add_promotion([promotion.promotable, nil, 'sponsored_content'])
+        add_promotion(SelectedPromotionBanner.new(
+          promotion.promotable,
+          select_score: nil,
+          select_method: 'sponsored_content'
+        ))
       else
         @not_run_of_site = false
         get_random_promotion
@@ -80,7 +86,11 @@ class SelectPromotionBanners
                                       .first
             end
             if banner.present?
-              add_promotion([banner, result['score'].try(:to_s), 'relevance'])
+              add_promotion(SelectedPromotionBanner.new(
+                banner,
+                select_score: result['score'].try(:to_s),
+                select_method: 'relevance'
+              ))
             end
           end
         end
@@ -93,7 +103,11 @@ class SelectPromotionBanners
         ids = organization.banner_ad_override.split(/,[\s]*?/)
         banner = PromotionBanner.for_promotions(ids).active.has_inventory.order('random()').first
         if banner.present?
-          add_promotion([banner, nil, 'sponsored_content'])
+          add_promotion(SelectedPromotionBanner.new(
+            banner,
+            select_score: nil,
+            select_method: 'sponsored_content'
+          ))
         else
           @not_run_of_site = false
           get_related_promotion
@@ -106,20 +120,32 @@ class SelectPromotionBanners
 
       banners = query.boost.has_inventory.limit(promotion_banners_needed).where.not(id: @exclude)
       banners.each do |banner|
-        add_promotion([banner, nil, 'boost'])
+        add_promotion(SelectedPromotionBanner.new(
+          banner,
+          select_score: nil,
+          select_method: 'boost'
+        ))
       end
 
       unless promotion_banners_needed == 0
         banners = query.has_inventory.limit(promotion_banners_needed).where.not(id: @exclude)
         banners.each do |banner|
-          add_promotion([banner, nil, 'active'])
+          add_promotion(SelectedPromotionBanner.new(
+            banner,
+            select_score: nil,
+            select_method: 'active'
+          ))
         end
       end
 
       unless promotion_banners_needed == 0
         banners = query.limit(promotion_banners_needed).where.not(id: @exclude)
         banners.each do |banner|
-          add_promotion([banner, nil, 'active no inventory'])
+          add_promotion(SelectedPromotionBanner.new(
+            banner,
+            select_score: nil,
+            select_method: 'active no inventory'
+          ))
         end
       end
     end
@@ -139,7 +165,11 @@ class SelectPromotionBanners
           limit = @opts[:limit] || 1
 
           while @banners.count < limit.to_i
-            @banners << [banners.sample, nil, 'global-banner-override']
+            @banners << SelectedPromotionBanner.new(
+              banners.sample,
+              select_score: nil,
+              select_method: 'global-banner-override'
+            )
           end
         end
 

@@ -20,7 +20,7 @@ RSpec.describe SelectPromotionBanners do
 
       it "returns promotion_banner related to promotion" do
         results = subject
-        expect(results.first[0]).to eq @promotion_banner
+        expect(results.first.promotion_banner).to eq @promotion_banner
       end
     end
 
@@ -40,7 +40,7 @@ RSpec.describe SelectPromotionBanners do
 
         it 'returns promo override\'s banner' do
           results = subject
-          expect(results.first[0]).to eql override_banner
+          expect(results.first.promotion_banner).to eql override_banner
         end
 
         it 'does not query SPARQL::Client' do
@@ -60,7 +60,7 @@ RSpec.describe SelectPromotionBanners do
         end
 
         it 'returns a banner from the csv override property' do
-          expect(subject.first[0]).to eq banner_ad1
+          expect(subject.first.promotion_banner).to eq banner_ad1
         end
 
         context 'that is inactive' do
@@ -71,7 +71,7 @@ RSpec.describe SelectPromotionBanners do
           end
 
           it 'not respond with that banner' do
-            expect(subject).to_not include @inactive_banner
+            expect(subject.map(&:promotion_banner)).to_not include @inactive_banner
           end
         end
 
@@ -110,9 +110,9 @@ RSpec.describe SelectPromotionBanners do
 
           it 'will return results for one of the promotion banners' do
             results = subject
-            expect(results.first[0]).to eql promo_banner
-            expect(results.first.second).to eql score
-            expect(results.first.third).to eql 'relevance'
+            expect(results.first.promotion_banner).to eql promo_banner
+            expect(results.first.select_score).to eql score
+            expect(results.first.select_method).to eql 'relevance'
           end
         end
       end
@@ -173,7 +173,7 @@ RSpec.describe SelectPromotionBanners do
 
       it "returns promoted banner" do
         results = subject
-        expect(results.first[0].id).to eq @org_banner.id
+        expect(results.first.id).to eq @org_banner.id
       end
     end
 
@@ -197,7 +197,7 @@ RSpec.describe SelectPromotionBanners do
 
         it "returns coupon" do
           results = subject
-          expect(results.first[0]).to eq @promotion_banner
+          expect(results.first.promotion_banner).to eq @promotion_banner
         end
       end
 
@@ -208,7 +208,7 @@ RSpec.describe SelectPromotionBanners do
 
         it "gets a random boosted promotion banner" do
           results = subject
-          expect(results.first[0]).to eq @promotion_banner
+          expect(results.first.promotion_banner).to eq @promotion_banner
         end
       end
 
@@ -219,7 +219,7 @@ RSpec.describe SelectPromotionBanners do
 
         it "gets a random active with inventory promotion banner" do
           results = subject
-          expect(results.first[0]).to eq @promotion_banner
+          expect(results.first.promotion_banner).to eq @promotion_banner
         end
       end
 
@@ -227,7 +227,7 @@ RSpec.describe SelectPromotionBanners do
         let!(:banner) { FactoryGirl.create :promotion_banner, :active, daily_max_impressions: 5, daily_impression_count: 6 }
 
         it "gets active, no inventory ad" do
-          expect(subject.first[0]).to eq banner
+          expect(subject.first.promotion_banner).to eq banner
         end
       end
 
@@ -263,7 +263,7 @@ RSpec.describe SelectPromotionBanners do
       it "returns the specified number of promotion banners" do
         results = subject
         expect(results.length).to eq 4
-        expect(results.map{ |r| r.first.id}).to_not include(@promotion_banner5.id)
+        expect(results.map{ |r| r.promotion_banner.id}).to_not include(@promotion_banner5.id)
       end
     end
 
@@ -307,7 +307,7 @@ RSpec.describe SelectPromotionBanners do
       end
 
       it 'returns the banner for the promo override' do
-        expect(subject.first[0]).to eql promo.promotable
+        expect(subject.first.promotion_banner).to eql promo.promotable
       end
 
       describe 'when multiple are asked for' do
@@ -319,7 +319,7 @@ RSpec.describe SelectPromotionBanners do
         it 'returns the same banner x times' do
           expect(subject.count).to eql limit
           subject.each do |result|
-            expect(result[0]).to eql promo.promotable
+            expect(result.promotion_banner).to eql promo.promotable
           end
         end
       end
