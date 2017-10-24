@@ -32,7 +32,7 @@ describe 'Content seralization for elasticsearch indexing' do
         organization_name: content.organization.name,
         created_at: content.created_at,
         updated_at: content.updated_at,
-        biz_feed_public: content.biz_feed_public?,
+        biz_feed_public: content.biz_feed_public,
         view_count: content.view_count || content.parent_view_count,
         commenter_count: content.commenter_count,
         comment_count: content.comment_count,

@@ -16,7 +16,8 @@ module Api
           :created_at, :updated_at, :event_id, :cost, :sold, :avatar_url,
           :organization_profile_image_url, :biz_feed_public, :sunset_date,
           :event_instances, :content_origin, :split_content, :cost_type, :contact_phone,
-          :images, :can_edit, :contact_email, :venue_url, :organization_biz_feed_active
+          :images, :can_edit, :contact_email, :venue_url, :organization_biz_feed_active,
+          :campaign_start, :campaign_end
 
         has_many :content_locations, serializer: Api::V3::HashieMashes::ContentLocationSerializer
         has_many :comments, serializer: Api::V3::HashieMashes::CommentSerializer
@@ -197,7 +198,7 @@ module Api
         end
 
         def organization_profile_image_url
-          object.organization.try(:profile_image_url)
+          object.organization.try(:profile_image_url) || object.organization.try(:logo_url)
         end
 
         def organization_name
@@ -259,6 +260,14 @@ module Api
 
         def organization_biz_feed_active
           !!object.organization.try(:biz_feed_active)
+        end
+
+        def campaign_start
+          object.campaign_start
+        end
+
+        def campaign_end
+          object.campaign_end
         end
 
         private

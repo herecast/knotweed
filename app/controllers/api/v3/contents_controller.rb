@@ -14,6 +14,7 @@ module Api
         apply_standard_categories_to_opts
         apply_standard_locations_to_opts
         apply_requesting_app_whitelist_to_opts
+        conditionally_apply_organization_search_opts if params[:organization_id].present?
 
         if params[:content_type].present?
           @opts[:where][:content_type] = params[:content_type]
@@ -49,6 +50,16 @@ module Api
             context: { current_ability: current_ability }
         else
           render json: {}, status: :not_found
+        end
+      end
+
+      def update
+        @content = Content.find(params[:id])
+        authorize! :update, @content
+        if @content.update_attributes(content_params)
+          render json: @content, status: :ok
+        else
+          render json: {}, status: :bad_request
         end
       end
 
@@ -159,6 +170,10 @@ module Api
       end
 
       protected
+
+        def content_params
+          params.require(:content).permit(:biz_feed_public, :sunset_date)
+        end
 
         def total_pages
           (@contents.total_entries/@opts[:per_page].to_f).ceil

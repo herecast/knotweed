@@ -69,6 +69,7 @@ class Organization < ActiveRecord::Base
   has_many :import_jobs
   has_many :issues
   has_many :business_locations
+  has_many :venue_events, through: :business_locations, source: :events
   has_many :organization_locations
   accepts_nested_attributes_for :organization_locations, allow_destroy: true
   has_many :locations, through: :organization_locations
@@ -158,6 +159,11 @@ class Organization < ActiveRecord::Base
 
   def has_business_profile?
     contents.where(channel_type: 'BusinessProfile').present?
+  end
+
+  def venue_event_ids
+    # remove conditional after rails 5 upgrade
+    association(:venue_events).loaded? ? venue_events.map(&:id) : venue_events.pluck(:id)
   end
 
   private

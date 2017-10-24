@@ -2,9 +2,11 @@ require 'spec_helper'
 
 RSpec.describe 'Organizations Endpoints', type: :request do
   describe 'GET /api/v3/organizations/:id' do
-    let!(:organization) { FactoryGirl.create :organization }
+    let!(:organization) { FactoryGirl.create(:organization) }
+    let!(:business_location) { FactoryGirl.create(:business_location) }
 
     it 'responds with organization json' do
+      organization.business_locations << business_location
       get "/api/v3/organizations/#{organization.id}"
       expect(response_json).to match(
         organization: {
@@ -28,7 +30,15 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           twitter_handle: organization.twitter_handle,
           claimed: organization.business_locations.first.try(:business_profile).try(:claimed?) || false,
           custom_links: nil,
-          biz_feed_active: organization.biz_feed_active
+          biz_feed_active: organization.biz_feed_active,
+          phone: organization.business_locations.first.phone,
+          website: organization.business_locations.first.venue_url,
+          hours: organization.business_locations.first.hours,
+          email: organization.business_locations.first.email,
+          address: organization.business_locations.first.address,
+          city: organization.business_locations.first.city,
+          state: organization.business_locations.first.state,
+          zip: organization.business_locations.first.zip
         }
       )
     end

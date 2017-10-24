@@ -22,12 +22,13 @@ module SearchService
 
   def apply_standard_categories_to_opts
     eval_in_controller_context do
-      @opts[:where][:root_content_category_id] = standard_category_ids
       @opts[:where][:or] ||= []
-      @opts[:where][:or] << [
-        {content_type: ['news', 'market', 'talk']},
+      content_types = ['news', 'market', 'talk']
+      or_options = [
+        {content_type: content_types},
         {content_type: 'event', "organization.name" => {not: 'Listserv'}}
       ]
+      @opts[:where][:or] << or_options
     end
   end
 
@@ -63,6 +64,36 @@ module SearchService
     end
   end
 
+  def conditionally_apply_organization_search_opts
+    eval_in_controller_context do
+
+      @opts[:where][:biz_feed_public] == true
+
+      organization = Organization.find(params[:organization_id])
+
+      org_tagged_content_ids = organization.tagged_contents.pluck(:id)
+      @opts[:where][:or] ||= []
+      @opts[:where][:or] << [
+        { organization_id: organization.id },
+        { channel_id: organization.venue_event_ids, channel_type: 'Event' },
+        { id: org_tagged_content_ids }
+      ]
+
+      if params['show'] == 'everything'
+        @opts[:where].delete(:pubdate)
+        @opts[:where].delete(:biz_feed_public)
+        @opts[:where].delete(:published)
+      elsif params['show'] == 'hidden'
+        @opts[:where][:biz_feed_public] = false
+        @opts[:where].delete(:published)
+      elsif params['show'] == 'draft'
+        @opts[:where][:pubdate] = nil
+        @opts[:where].delete(:published)
+      end
+
+    end
+  end
+
   private
 
     def eval_in_controller_context
@@ -70,14 +101,6 @@ module SearchService
         raise UninitializedOpts if @opts == nil
         @opts[:where] ||= {}
         yield
-      end
-    end
-
-    def standard_category_ids
-      categories = %w(market event news)
-      categories << 'talk_of_the_town' if @current_user.present?
-      categories.map do |cat|
-        ContentCategory.find_by_name(cat).id
       end
     end
 

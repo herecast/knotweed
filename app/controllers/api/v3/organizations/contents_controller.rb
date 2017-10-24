@@ -7,7 +7,7 @@ module Api
 
         organization = Organization.find(params[:organization_id])
 
-        opts = {}
+        opts = { load: false }
         opts[:order] = { pubdate: :desc }
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 12
@@ -41,7 +41,7 @@ module Api
         query = params[:query].present? ? params[:query] : '*'
         @contents = Content.search(query, opts)
 
-        render json: @contents, each_serializer: ContentSerializer, meta: { total: @contents.total_entries }
+        render json: @contents, each_serializer: HashieMashes::FeedContentSerializer, meta: { total: @contents.total_entries }
       end
 
       def update

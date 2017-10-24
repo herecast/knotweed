@@ -5,7 +5,8 @@ module SearchIndexing
       :published, :channel_type, :channel_id, :content_type,
       :root_content_category_id, :content_category_id, :my_town_only, :deleted,
       :root_parent_id, :in_accepted_category, :is_listserv_market_post,
-      :organization_id, :organization_name, :created_at, :updated_at, :biz_feed_public
+      :organization_id, :organization_name, :created_at, :updated_at, :biz_feed_public,
+      :campaign_start, :campaign_end
 
     attributes :view_count, :commenter_count, :comment_count, :parent_id,
       :parent_content_type, :sunset_date, :latest_activity
@@ -37,10 +38,6 @@ module SearchIndexing
 
     def about_location_ids
       object.about_locations.map(&:id)
-    end
-
-    def biz_feed_public
-      object.biz_feed_public?
     end
 
     def is_listserv_market_post
@@ -95,6 +92,14 @@ module SearchIndexing
       else
         object.view_count
       end
+    end
+
+    def campaign_start
+      object.ad_campaign_start
+    end
+
+    def campaign_end
+      object.ad_campaign_end
     end
   end
 end

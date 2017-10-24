@@ -46,7 +46,7 @@ describe 'Contents Endpoints', type: :request do
           updated_at: content.updated_at.iso8601,
           avatar_url: content.created_by.avatar_url,
           organization_profile_image_url: nil,
-          biz_feed_public: content.biz_feed_public?,
+          biz_feed_public: content.biz_feed_public,
           sunset_date: content.sunset_date.try(:iso8601),
           images: content.images.map do |image|
               {
@@ -61,6 +61,8 @@ describe 'Contents Endpoints', type: :request do
             end,
           can_edit: be(true).or(be(false)),
           content_origin: 'ugc',
+          campaign_start: content.ad_campaign_start,
+          campaign_end: content.ad_campaign_end,
           split_content: a_hash_including({
             head: an_instance_of(String),
             tail: an_instance_of(String)
@@ -242,8 +244,8 @@ describe 'Contents Endpoints', type: :request do
         get "/api/v3/contents", {}, headers
       end
 
-      it "returns content in standard categories but NOT talk" do
-        expect(response_json[:contents].length).to eq 3
+      it "returns content in standard categories including talk" do
+        expect(response_json[:contents].length).to eq 4
       end
     end
 
@@ -490,6 +492,182 @@ describe 'Contents Endpoints', type: :request do
         post = response_json[:contents].first
         expect(post[:title]).to eq(post_content.title)
         expect(post[:sold]).to eq true
+      end
+    end
+  end
+
+  describe "organization_id param present", elasticsearch: true do
+    before do
+      @organization = FactoryGirl.create :organization
+      @other_organization = FactoryGirl.create :organization
+    end
+
+    subject do
+      Timecop.travel(Time.current + 1.day)
+      get "/api/v3/contents?organization_id=#{@organization.id}"
+      Timecop.return
+    end
+
+    context 'when Organization has BusinessLocation with Events' do
+      before do
+        business_location = FactoryGirl.create :business_location
+        @organization.business_locations << business_location
+        @event = FactoryGirl.create :event, venue_id: business_location.id
+        FactoryGirl.create :content, :market_post, organization_id: @other_organization.id
+      end
+
+      it "returns Events" do
+        subject
+        expect(response_json[:contents].length).to eq 1
+        expect(response_json[:contents][0][:id]).to eq @event.content.id
+      end
+    end
+
+    context "when Organization has tagged Content" do
+      before do
+        @tagged_content = FactoryGirl.create :content, :market_post
+        FactoryGirl.create :content, :market_post, organization_id: @other_organization.id
+        @organization.tagged_contents << @tagged_content
+      end
+
+      it "returns tagged Content" do
+        subject
+        expect(response_json[:contents].length).to eq 1
+        expect(response_json[:contents][0][:id]).to eq @tagged_content.id
+      end
+    end
+
+    context "when Organization owns Market Posts" do
+      before do
+        @market_post = FactoryGirl.create :content, :market_post, organization_id: @organization.id
+        FactoryGirl.create :content, :market_post, organization_id: @other_organization.id
+      end
+
+      it "returns the Market Posts" do
+        subject
+        expect(response_json[:contents].length).to eq 1
+        expect(response_json[:contents][0][:id]).to eq @market_post.id
+      end
+    end
+
+    context "when Organization owns Events" do
+      before do
+        @event = FactoryGirl.create :content, :event, organization_id: @organization.id
+        FactoryGirl.create :content, :event, organization_id: @other_organization.id
+      end
+
+      it "returns the Events" do
+        subject
+        expect(response_json[:contents].length).to eq 1
+        expect(response_json[:contents][0][:id]).to eq @event.id
+      end
+    end
+
+    context "when Organization owns Content in talk category" do
+      before do
+        @talk = FactoryGirl.create :content, :talk, organization_id: @organization.id
+        FactoryGirl.create :content, :talk, organization_id: @other_organization.id
+      end
+
+      it "returns talk items" do
+        subject
+        expect(response_json[:contents].length).to eq 1
+        expect(response_json[:contents][0][:id]).to eq @talk.id
+      end
+    end
+
+    context "when Organization owns Content in news category" do
+      before do
+        @news = FactoryGirl.create :content, :news, organization_id: @organization.id
+        FactoryGirl.create :content, :news, organization_id: @other_organization.id
+      end
+
+      it "returns news items" do
+        subject
+        expect(response_json[:contents].length).to eq 1
+        expect(response_json[:contents][0][:id]).to eq @news.id
+      end
+    end
+
+    context "when Content is created but has no pubdate" do
+      before do
+        content = FactoryGirl.create :content, :news,
+          organization_id: @organization.id
+        content.update_attribute(:pubdate, nil)
+      end
+
+      it "does not return nil pubdate items" do
+        subject
+        expect(response_json[:contents].length).to eq 0
+      end
+    end
+
+    context "when Content is scheduled for future release" do
+      before do
+        content = FactoryGirl.create :content, :news,
+          organization_id: @organization.id,
+          pubdate: Date.current + 5.days
+      end
+
+      it "it does not return future pubdate items" do
+        subject
+        expect(response_json[:contents].length).to eq 0
+      end
+    end
+
+    describe "additional params" do
+      before do
+        @organization = FactoryGirl.create :organization
+        @hidden_content = FactoryGirl.create :content, :news,
+          biz_feed_public: false,
+          organization_id: @organization.id
+        @draft_content = FactoryGirl.create :content, :news,
+          organization_id: @organization.id
+        @draft_content.update_attribute(:pubdate, nil)
+        @regular_content = FactoryGirl.create :content, :news,
+          biz_feed_public: true,
+          organization_id: @organization.id
+      end
+
+      describe "?show=everything" do
+        subject do
+          Timecop.travel(Time.current + 1.day)
+          get "/api/v3/contents?organization_id=#{@organization.id}&show=everything"
+          Timecop.return
+        end
+
+        it "returns drafts, hidden content and regular content" do
+          subject
+          expect(response_json[:contents].length).to eq 3
+        end
+      end
+
+      describe "?show=hidden" do
+        subject do
+          Timecop.travel(Time.current + 1.day)
+          get "/api/v3/contents?organization_id=#{@organization.id}&show=hidden"
+          Timecop.return
+        end
+
+        it "returns biz_feed_public: false contents" do
+          subject
+          expect(response_json[:contents].length).to eq 1
+          expect(response_json[:contents][0][:id]).to eq @hidden_content.id
+        end
+      end
+
+      describe "?show=drafts" do
+        subject do
+          Timecop.travel(Time.current + 1.day)
+          get "/api/v3/contents?organization_id=#{@organization.id}&show=draft"
+          Timecop.return
+        end
+
+        it "returns drafts only" do
+          subject
+          expect(response_json[:contents].length).to eq 1
+          expect(response_json[:contents][0][:id]).to eq @draft_content.id
+        end
       end
     end
   end
