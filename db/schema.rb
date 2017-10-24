@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171013184227) do
+ActiveRecord::Schema.define(version: 20171018144840) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -375,6 +375,7 @@ ActiveRecord::Schema.define(version: 20171013184227) do
     t.integer  "ad_max_impressions"
     t.string   "short_link"
     t.float    "ad_invoiced_amount"
+    t.datetime "first_served_at"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree

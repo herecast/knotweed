@@ -33,6 +33,8 @@ module Api
           @contents = Content.search("*", @opts)
         end
 
+        assign_first_served_at_to_new_contents
+
         render json: @contents, each_serializer: HashieMashes::FeedContentSerializer,
           meta: { total: @contents.total_entries, total_pages: total_pages },
           context: { current_ability: current_ability }
@@ -160,6 +162,13 @@ module Api
 
         def total_pages
           (@contents.total_entries/@opts[:per_page].to_f).ceil
+        end
+
+        def assign_first_served_at_to_new_contents
+          BackgroundJob.perform_later('AssignFirstServedAtToNewContent', 'call',
+            content_ids: @contents.map(&:id),
+            current_time: Time.current.to_s
+          )
         end
 
         def sanitize_sort_parameter(sort)

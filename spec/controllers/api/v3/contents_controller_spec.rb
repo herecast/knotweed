@@ -70,6 +70,17 @@ describe Api::V3::ContentsController, :type => :controller do
         records = assigns(:contents)
         expect(records.map(&:id)).to_not include(listserv_event.id)
       end
+
+      it 'calls AssignFirstServedAtToNewContent' do
+        expect(BackgroundJob).to receive(:perform_later).with(
+          'AssignFirstServedAtToNewContent',
+          'call',
+          content_ids: instance_of(Array),
+          current_time: Time.current.to_s
+        )
+
+        get :index, {location_id: location.slug}, headers
+      end
     end
   end
 
@@ -177,11 +188,11 @@ describe Api::V3::ContentsController, :type => :controller do
 
   describe 'POST /contents/:id/moderate' do
     subject { post :moderate, id: @content.id, flag_type: 'Inappropriate' }
-     
+
     before do
       @content = FactoryGirl.create :content
       @user = FactoryGirl.create :user
-      
+
       api_authenticate user: @user
     end
 
@@ -280,7 +291,7 @@ describe Api::V3::ContentsController, :type => :controller do
           #@event = FactoryGirl.create :event, content_category: @event_cat
           FactoryGirl.create_list :content, 5,
             :located,
-            content_category: @news_cat, 
+            content_category: @news_cat,
             published: true,
             created_by: @user
           FactoryGirl.create_list :market_post, 5,
@@ -291,7 +302,7 @@ describe Api::V3::ContentsController, :type => :controller do
             content_category: @talk_cat,
             published: true,
             created_by: @user
-          FactoryGirl.create_list :event, 5, 
+          FactoryGirl.create_list :event, 5,
             published: true,
             created_by: @user
         end
@@ -301,9 +312,9 @@ describe Api::V3::ContentsController, :type => :controller do
           # created_by automatically set by auditable mixin
           not_user_content.update_attribute(:created_by, nil)
           subject
-          all_content = assigns(:contents) 
-          user_content_only = all_content.select{|c| c.created_by == @user} 
-          expect(all_content).to_not include(not_user_content) 
+          all_content = assigns(:contents)
+          user_content_only = all_content.select{|c| c.created_by == @user}
+          expect(all_content).to_not include(not_user_content)
           expect(all_content.collect(&:id)).to eql user_content_only.collect(&:id)
         end
 
@@ -354,9 +365,9 @@ describe Api::V3::ContentsController, :type => :controller do
           it 'should return only news content'  do
             category_ids = assigns(:contents).collect(&:root_content_category_id)
             expect(category_ids.uniq.count).to eq 1
-            expect(category_ids.uniq.first).to eq @news_cat.id 
+            expect(category_ids.uniq.first).to eq @news_cat.id
           end
-        end 
+        end
         context 'allow filtering by events' do
           before do
             get :dashboard, channel_type: 'events'
@@ -365,7 +376,7 @@ describe Api::V3::ContentsController, :type => :controller do
           it 'should return only events content' do
             category_ids = assigns(:contents).collect(&:root_content_category_id)
             expect(category_ids.uniq.count).to eq 1
-            expect(category_ids.uniq.first).to eq @event_cat.id 
+            expect(category_ids.uniq.first).to eq @event_cat.id
           end
         end
 
@@ -377,7 +388,7 @@ describe Api::V3::ContentsController, :type => :controller do
           it 'should return only talk content' do
             category_ids = assigns(:contents).collect(&:root_content_category_id)
             expect(category_ids.uniq.count).to eq 1
-            expect(category_ids.uniq.first).to eq @talk_cat.id 
+            expect(category_ids.uniq.first).to eq @talk_cat.id
           end
         end
 
@@ -389,7 +400,7 @@ describe Api::V3::ContentsController, :type => :controller do
           it 'should return only market content' do
             category_ids = assigns(:contents).collect(&:root_content_category_id)
             expect(category_ids.uniq.count).to eq 1
-            expect(category_ids.uniq.first).to eq @market_cat.id 
+            expect(category_ids.uniq.first).to eq @market_cat.id
           end
         end
       end
