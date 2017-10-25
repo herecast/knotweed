@@ -167,6 +167,12 @@ describe UsersController, :type => :controller do
         subject
         expect(response.code).to eq '302'
       end
+
+      it 'allows receive_comment_alerts to be updated' do
+        put :update, id: @user.id, user: { receive_comment_alerts: false }
+        @user.reload
+        expect(@user.receive_comment_alerts).to eq false
+      end
     end
 
     context "when unsuccessful save" do

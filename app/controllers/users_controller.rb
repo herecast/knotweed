@@ -101,7 +101,7 @@ class UsersController < ApplicationController
 
     def user_params
       new_params = params.require(:user).permit(:name, :email, :password,
-        :location_id, :archived, roles: [:admin,:event_manager,:blogger])
+        :location_id, :archived, :receive_comment_alerts, roles: [:admin,:event_manager,:blogger])
       if new_params[:roles].present?
         new_params[:role_ids] = []
         new_params[:roles].each do |k,v|

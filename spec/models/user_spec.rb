@@ -37,6 +37,7 @@
 #  temp_password          :string
 #  archived               :boolean          default(FALSE)
 #  source                 :string
+#  receive_comment_alerts :bolean           default(FALSE)
 #
 
 require 'spec_helper'

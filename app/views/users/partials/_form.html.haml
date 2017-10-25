@@ -42,6 +42,8 @@
           - Organization.all.each do |o|
             %option{ value: "#{o.id}" } #{o.name}
   .row-fluid
+    = f.input :receive_comment_alerts, class: 'checkbox-label-control'
+  .row-fluid
     -if @user.persisted?
       %h4 Subscriptions
       - @digests.each do |digest|

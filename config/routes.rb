@@ -152,6 +152,7 @@ Knotweed::Application.routes.draw do
 
       resources :event_categories, only: :index
       resources 'comments', only: [:index, :create]
+      post '/comments/unsubscribe_from_alerts', to: 'comments#unsubscribe_webhook'
       resources 'listservs', only: [:show,:index]
       get '/venues', to: 'business_locations#index', as: :venues
       get '/venue_locations', to: 'business_locations#index', as: :venue_locations,

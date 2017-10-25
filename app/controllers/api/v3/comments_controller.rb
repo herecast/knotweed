@@ -31,6 +31,8 @@ module Api
             PublishContentJob.perform_later(@comment.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
           end
 
+          CommentAlert.call(@comment)
+
           render json: @comment.content, serializer: SingleCommentSerializer,
             status: 201, root: 'comment'
         else

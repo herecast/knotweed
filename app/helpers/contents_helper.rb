@@ -48,6 +48,19 @@ module ContentsHelper
     url
   end
 
+  def comment_alert_url(content)
+    utm_string = "?utm_medium=email&utm_source=comment-alert&utm_content=#{ux2_content_path(content)}"
+    if ConsumerApp.current.present?
+      url = "#{ConsumerApp.current.uri}#{ux2_content_path(content)}#{utm_string}"
+    elsif ConsumerApp.default.present?
+      url = "#{ConsumerApp.default.uri}#{ux2_content_path(content)}#{utm_string}"
+    else
+      url = "#{ux2_content_path(content)}#{utm_string}"
+    end
+
+    url
+  end
+
   # Returns "dailyUV/my-org" given a full URL like "http://www.dailyUV.com/organizations/3456-my-org".
   def organization_url_label(url)
     # URI.parse requires a scheme in the URL if the rest of this method is to work.

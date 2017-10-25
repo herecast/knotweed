@@ -111,9 +111,11 @@ describe Api::V3::CommentsController, :type => :controller do
 
   describe 'POST create' do
     before do
-      @event = FactoryGirl.create :event
-      @user = FactoryGirl.create :user
-      api_authenticate user: @user
+      @parent_user = FactoryGirl.create :user, receive_comment_alerts: true
+      @commenting_user = FactoryGirl.create :user
+      @event_content = FactoryGirl.create :content, :located, created_by: @parent_user
+      @event = FactoryGirl.create :event, content: @event_content
+      api_authenticate user: @commenting_user
     end
 
     subject { post :create, comment: { content: 'fake', parent_content_id: @event.content.id } }
@@ -150,6 +152,15 @@ describe Api::V3::CommentsController, :type => :controller do
     it 'sets the origin to UGC' do
       subject
       expect(assigns(:comment).content.origin).to eql Content::UGC_ORIGIN
+    end
+
+    it 'fires CommentAlert process to send email alert' do
+      expect(CommentAlert).to receive(:call).with(an_instance_of(Comment))
+      subject
+    end
+
+    it 'enques the notification email' do
+      expect{ subject }.to change{ActiveJob::Base.queue_adapter.enqueued_jobs.size}.by(1)
     end
   end
 

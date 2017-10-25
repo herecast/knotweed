@@ -1136,6 +1136,7 @@ ActiveRecord::Schema.define(version: 20171018144840) do
     t.string   "temp_password"
     t.boolean  "archived",                           default: false
     t.string   "source",                 limit: 255
+    t.boolean  "receive_comment_alerts",             default: false
   end
 
   add_index "users", ["email"], name: "idx_16858_index_users_on_email", unique: true, using: :btree

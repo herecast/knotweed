@@ -1,0 +1,9 @@
+%p 
+  On #{@comment.created_at.strftime('%A, %B %d %Y at %l:%M%P')}, #{@comment.created_by.name} commented on your post '#{link_to @parent_content.title, comment_alert_url(@parent_content)}':
+
+%p
+  '#{@comment.content.raw_content}'
+
+%p
+  #{link_to 'View/respond to the comment', comment_alert_url(@comment.content)} on DailyUV or #{mail_to "dailyuv@subtext.org", 'unsubscribe', subject: 'Unsubscribe from comment alerts', body: 'Please unsubscribe this user from future comment alerts: ' + edit_user_url(@parent_content.created_by.id)}
+
