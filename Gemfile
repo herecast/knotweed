@@ -36,6 +36,7 @@ gem 'httparty'
 gem 'icalendar'
 gem 'ice_cube'
 gem 'inky-rb', require: 'inky'                        # DSL for email templates
+gem 'intercom', '~> 3.5.21'
 gem 'jbuilder'
 gem 'joiner'
 gem 'jquery-datatables-rails'

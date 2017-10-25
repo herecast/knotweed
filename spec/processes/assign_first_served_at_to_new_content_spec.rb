@@ -25,5 +25,50 @@ RSpec.describe AssignFirstServedAtToNewContent do
         @content_two.reload.first_served_at
       }
     end
+
+    context "when PRODUCTION_MESSAGING_ENABLED is set to true" do
+      before do
+        ENV['PRODUCTION_MESSAGING_ENABLED'] = 'true'
+        @news = FactoryGirl.create :content, :news
+        @market = FactoryGirl.create :content, :market_post
+      end
+
+      subject do
+        AssignFirstServedAtToNewContent.call(
+          content_ids: [@news.id],
+          current_time: @current_time
+        )
+      end
+
+      context "when content type is news" do
+        it "pings Intercom service" do
+          expect(IntercomService).to receive(
+            :send_published_content_event
+          ).with(@news)
+          subject
+        end
+      end
+
+      context "when content type is NOT news" do
+        subject do
+          AssignFirstServedAtToNewContent.call(
+            content_ids: [@market.id],
+            current_time: @current_time
+          )
+        end
+
+        it "does NOT ping Intercom service" do
+          expect(IntercomService).not_to receive(:send_published_content_event)
+          subject
+        end
+      end
+    end
+
+    context "when PRODUCTION_MESSAGING_ENABLED is NOT set or blank" do
+      it "does NOT ping Intercom service" do
+        expect(IntercomService).not_to receive(:send_published_content_event)
+        subject
+      end
+    end
   end
 end

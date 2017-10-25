@@ -10,6 +10,11 @@ class AssignFirstServedAtToNewContent
   end
 
   def call
-    @contents.where(first_served_at: nil).update_all(first_served_at: @current_time)
+    @contents.where(first_served_at: nil).each do |content|
+      content.update_attribute(:first_served_at, @current_time)
+      if content.content_type == :news && ENV['PRODUCTION_MESSAGING_ENABLED'] == "true"
+        IntercomService.send_published_content_event(content)
+      end
+    end
   end
 end
