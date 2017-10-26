@@ -1243,7 +1243,7 @@ class Content < ActiveRecord::Base
     unless parent.blank?
       parent.increment_integer_attr!(:comment_count)
       unless Content.where('parent_id=? and created_by=? and id!= ?', parent, created_by, id).exists?
-        parent.increment_integer_attr!(:commenter_count) 
+        parent.increment_integer_attr!(:commenter_count)
       end
       parent.save
     end
@@ -1454,6 +1454,10 @@ class Content < ActiveRecord::Base
 
   def split_content
     SplitContentForAdPlacement.call(sanitized_content)
+  end
+
+  def embedded_ad?
+    !!organization.embedded_ad
   end
 
   private

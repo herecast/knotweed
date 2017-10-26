@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171018144840) do
+ActiveRecord::Schema.define(version: 20171023174248) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -825,6 +825,7 @@ ActiveRecord::Schema.define(version: 20171018144840) do
     t.string   "ad_contact_fullname"
     t.string   "profile_sales_agent"
     t.string   "blog_contact_name"
+    t.boolean  "embedded_ad",                    default: false
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree

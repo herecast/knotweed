@@ -11,7 +11,7 @@ module Api
         :organization_profile_image_url, :biz_feed_public, :sunset_date, :campaign_start,
         :campaign_end, :images, :can_edit,
         :event_instances, :content_origin, :split_content, :cost_type, :contact_phone,
-        :contact_email, :venue_url, :organization_biz_feed_active
+        :contact_email, :venue_url, :organization_biz_feed_active, :embedded_ad
 
       has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
 
@@ -288,6 +288,10 @@ module Api
 
       def organization_biz_feed_active
         !!object.organization.try(:biz_feed_active)
+      end
+
+      def embedded_ad
+        object.embedded_ad?
       end
 
       private

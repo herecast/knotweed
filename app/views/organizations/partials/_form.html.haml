@@ -44,6 +44,7 @@
               input_html: { class: "input-block-level chosen-select-single-deselect" }, include_blank: true
             = f.input :subscribe_url, input_html: { class: 'input-block-level' }
             = f.input :twitter_handle
+            = f.input :embedded_ad, as: :boolean
             - if @organization.has_business_profile?
               = f.input :biz_feed_active, as: :boolean
             - else
