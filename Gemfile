@@ -74,6 +74,7 @@ gem 'sidekiq-scheduler'
 gem 'sidekiq-unique-jobs'
 gem "simple_form"
 gem 'sinatra', require: false # for sidekiq/web
+gem "slack-notifier", '~> 2.3.1'
 gem 'sparql-client', '~> 1.1'                       # Have not yet tested the next major version
 gem 'sshkit'
 gem 'summernote-rails'

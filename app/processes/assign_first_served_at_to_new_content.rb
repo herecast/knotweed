@@ -14,6 +14,7 @@ class AssignFirstServedAtToNewContent
       content.update_attribute(:first_served_at, @current_time)
       if content.content_type == :news && ENV['PRODUCTION_MESSAGING_ENABLED'] == "true"
         IntercomService.send_published_content_event(content)
+        SlackService.send_published_content_notification(content)
       end
     end
   end

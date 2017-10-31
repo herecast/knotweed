@@ -9,6 +9,12 @@ RSpec.describe AssignFirstServedAtToNewContent do
       @content_two = FactoryGirl.create :content,
         first_served_at: Date.yesterday
       @current_time = Time.current.to_s
+      allow(SlackService).to receive(
+        :send_published_content_notification
+      ).and_return(true)
+      allow(IntercomService).to receive(
+        :send_published_content_event
+      ).and_return(true)
     end
 
     subject do
@@ -47,6 +53,13 @@ RSpec.describe AssignFirstServedAtToNewContent do
           ).with(@news)
           subject
         end
+
+        it "pings Slack service" do
+          expect(SlackService).to receive(
+            :send_published_content_notification
+          ).with(@news)
+          subject
+        end
       end
 
       context "when content type is NOT news" do
@@ -61,12 +74,22 @@ RSpec.describe AssignFirstServedAtToNewContent do
           expect(IntercomService).not_to receive(:send_published_content_event)
           subject
         end
+
+        it "does NOT ping Slack service" do
+          expect(SlackService).not_to receive(:send_published_content_notification)
+          subject
+        end
       end
     end
 
     context "when PRODUCTION_MESSAGING_ENABLED is NOT set or blank" do
       it "does NOT ping Intercom service" do
         expect(IntercomService).not_to receive(:send_published_content_event)
+        subject
+      end
+
+      it "does NOT ping Slack service" do
+        expect(SlackService).not_to receive(:send_published_content_notification)
         subject
       end
     end
