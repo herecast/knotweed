@@ -19,7 +19,7 @@ module SearchIndexing
     has_one :organization, serializer: SearchIndexing::OrganizationSerializer
 
     def comments
-      object.children.sort_by(&:pubdate).reverse.take(6)
+      object.children.to_a.select(&:pubdate).sort_by(&:pubdate).reverse.take(6)
     end
 
     def organization_name
@@ -81,7 +81,7 @@ module SearchIndexing
     end
 
     def parent_content_type
-      if object.parent.present?
+      if object.parent.present? and object.parent.root_content_category.present?
         object.parent.root_content_category.name
       end
     end

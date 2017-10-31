@@ -7,50 +7,6 @@ describe Api::V3::TalkController, :type => :controller do
     @user = FactoryGirl.create :user, location: @other_location
   end
 
-  describe 'GET index', elasticsearch: true do
-    before do
-      @default_location = FactoryGirl.create :location,
-        id: Location::REGION_LOCATION_ID,
-        city: Location::DEFAULT_LOCATION
-      @third_location = FactoryGirl.create :location, city: 'Different Again'
-      FactoryGirl.create_list :content, 3, :talk,
-        locations: [@default_location], published: true
-      FactoryGirl.create_list :content, 5, :talk,
-        locations: [@other_location], base_locations: [@other_location], published: true
-      FactoryGirl.create_list :content, 2, :talk,
-        locations: [@other_location], about_locations: [@other_location], published: true
-      FactoryGirl.create_list :content, 4, :talk,
-        locations: [@third_location], published: true
-    end
-
-    subject { get :index }
-
-    context 'with consumer app provided' do
-      before do
-        @consumer_app = FactoryGirl.create :consumer_app
-        # need to identify a talk item that will show up with the automatic location filter
-        @talk_item = @default_location.contents.where(content_category_id: @talk_cat).first
-        @org = @talk_item.organization
-        @consumer_app.organizations << @org
-      end
-
-      subject { get :index, consumer_app_uri: @consumer_app.uri }
-
-      it 'should filter by the app\'s organizations' do
-        subject
-        expect(assigns(:talk)[:results].to_a).to eq([@talk_item])
-      end
-    end
-
-    it_behaves_like "Location based index" do
-      let(:content_type) { :talk }
-      let(:content_attrs) {
-        {organization: @org}
-      }
-      let(:assigned_var) { assigns(:talk)[:results] }
-    end
-  end
-
   describe 'GET show' do
     before do
       @talk = FactoryGirl.create :content, :talk, content_category: @talk_cat, published: true

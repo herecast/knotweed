@@ -18,7 +18,7 @@
 #== Schema Information
 #
 # Table name: market_categories
-# 
+#
 # id                  :integer
 # name                :string
 # query               :string
@@ -36,7 +36,7 @@ class MarketCategory < ActiveRecord::Base
 
   mount_uploader :category_image, ImageUploader
   mount_uploader :detail_page_banner, ImageUploader
-  
+
   scope :trending, -> { where(trending: true) }
   scope :featured, -> { where(featured: true) }
 
@@ -48,7 +48,7 @@ class MarketCategory < ActiveRecord::Base
       root_content_category_id: ContentCategory.find_by_name('market').id,
       published: 1,
     }
-    opts[:include] = [:channel]
+    opts[:includes] = [:channel]
     opts
   end
 
@@ -96,11 +96,11 @@ class MarketCategory < ActiveRecord::Base
       self.errors[:featured] << "can only be true for 6 categories"
     end
   end
-  
+
   def featured_changed_to_true?
     featured_changed? && featured_change[1]
   end
-  
+
   def trending_changed_to_true?
     trending_changed? && trending_change[1]
   end

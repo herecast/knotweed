@@ -70,7 +70,7 @@ class Content < ActiveRecord::Base
   include Incrementable
 
   searchkick callbacks: :async,
-    batch_size: 100,
+    batch_size: 750,
     index_prefix: Figaro.env.searchkick_index_prefix,
     searchable: [:content, :title, :subtitle, :author_name, :organization_name],
     settings: {
@@ -78,12 +78,27 @@ class Content < ActiveRecord::Base
         analyzer: {
           #@TODO! This changes in newer searchkick versions.
           #see: https://github.com/ankane/searchkick/blob/master/lib/searchkick/index_options.rb
-          default_index: {
+          searchkick_index: {
             :char_filter=>["html_strip", "ampersand"]
           }
         }
       }
     }
+
+  scope :search_import, -> {
+    includes(:root_content_category,
+             :children,
+             :images,
+             :locations,
+             :base_locations,
+             :about_locations,
+             content_category: [:parent],
+             organization: [:locations, :base_locations, :organization_locations])
+      .select('contents.*, COALESCE((select max(pubdate) from contents c2 where c2.root_parent_id = contents.root_parent_id), pubdate) as latest_activity_cached')
+      .where('organization_id NOT IN (4,5,328)')
+      .where(published: true)
+      .where('root_content_category_id > 0')
+  }
 
   def search_serializer
     "SearchIndexing::#{content_type.to_s.capitalize}Serializer".constantize
@@ -126,9 +141,20 @@ class Content < ActiveRecord::Base
   end
 
   def all_loc_ids
-    locs = locations.pluck(:id)
+    # this is to work around a bug https://github.com/rails/rails/pull/25976 which is fixed
+    # in rails 5.0.1. pluck() prevents previously loaded includes from being used
+    if association(:locations).loaded?
+      locs = locations.map(&:id)
+    else
+      locs = locations.pluck(:id)
+    end
     if content_type != :talk && organization.present? && organization.name != 'Listserv'
-      locs += organization.locations.pluck(:id)
+      # same work-around here - remove when rails is upgraded
+      if association(:locations).loaded?
+        locs += organization.locations.map(&:id)
+      else
+        locs += organization.locations.pluck(:id)
+      end
     end
     locs.uniq
   end
@@ -158,6 +184,10 @@ class Content < ActiveRecord::Base
   has_many :content_locations, dependent: :destroy
   accepts_nested_attributes_for :content_locations, allow_destroy: true
   has_many :locations, through: :content_locations
+  has_many :base_locations, -> { where('"content_locations"."location_type" = \'base\'') },
+           through: :content_locations, source: :location
+  has_many :about_locations, -> { where('"content_locations"."location_type" = \'about\'') },
+           through: :content_locations, source: :location
 
   validate :require_at_least_one_content_location, if: ->(c) {
     !c.import_record_id? &&
@@ -168,11 +198,6 @@ class Content < ActiveRecord::Base
   validate :ad_max_impressions_allows_all_creative_impressions
   validates :ad_invoiced_amount, numericality: { greater_than: 0 }, if: 'ad_invoiced_amount.present?'
 
-  def base_locations
-    # merge query criteria
-    locations.merge(ContentLocation.base)
-  end
-
   def base_locations=locs
     locs.each do |l|
       ContentLocation.find_or_initialize_by(
@@ -180,11 +205,6 @@ class Content < ActiveRecord::Base
         location: l
       ).base!
     end
-  end
-
-  def about_locations
-    # merge query criteria
-    locations.merge(ContentLocation.about)
   end
 
   def about_locations=locs
@@ -1073,7 +1093,11 @@ class Content < ActiveRecord::Base
         end
         text = text.delete_if {|t| t.empty? or t.blank?}
         new_node = Nokogiri::HTML.fragment("<p>#{text.shift}</p>")
-        e = e.replace(new_node)
+        begin
+          e = e.replace(new_node)
+        rescue ArgumentError
+          logger.warn("failed to replace some <p> tags for #{id}")
+        end
         text.reverse_each { |t| e.after("<p>#{t}</p>") }
       end
     end
@@ -1250,127 +1274,11 @@ class Content < ActiveRecord::Base
   end
 =end
 
-  # generates an elasticsearch query for the ApiV3 talk index controller
-  #
-  # @param query [String] the search query string if present
-  # @param opts [Hash] options beyond the default Talk query options that need to be included
-  # @return [Hash] containing results: ActiveRecord::Relation, total: integer
-  def self.talk_search(query=nil, opts={})
-    per_page = opts.delete(:per_page) || 24
-    page = opts.delete(:page) || 1
-
-    search_query =
-      { match:
-        { _all:
-          {
-            query: query || '',
-            operator: 'and',
-            zero_terms_query: 'all'
-          }
-        }
-      }
-
-    body = {
-      query: search_query,
-      size: 0,
-      aggs: {
-        parents: {
-          filter: {
-            bool: {
-              must: [
-                { term: { root_content_category_id: ContentCategory.find_by_name('talk_of_the_town').id } }
-              ]
-            }
-          },
-          aggs: {
-            parents: {
-              terms: {
-                field: :root_parent_id,
-                order: { max_activity: :desc },
-                size: 10000
-              },
-              aggs: {
-                max_activity: { max: { field: :pubdate } }
-              }
-            },
-          },
-        }
-      }
-    }
-
-    # Transform searchkick's "where" into elasticsearch lingo.
-    if opts[:where].present?
-      conditions = opts[:where].map do |k,v|
-        if k.eql? :or
-          # Support :or like we do in other channel searches.
-          # Expected format:
-          # {
-          #   or: [[
-          #     {attribute: value},
-          #     {attribute: value}
-          #   ]]
-          # }
-          #
-          # becomes:
-          # {
-          #   bool: {
-          #     should: [
-          #       {in: {
-          #           attr_one: [val1, val2]
-          #       }},
-          #       {term: {
-          #         attr_two: val3
-          #       }}
-          #     ]
-          #   }
-          # }
-          {
-            bool: {
-              # Does not take into account other values in first array
-              # dimension.  Not sure when we'd actually use those.
-              should: v[0].map do |condition|
-                if condition.values.count > 1
-                  {bool: {
-                    must: condition.keys.map do |key|
-                      value = condition[key]
-                      if value.is_a? Array
-                        {in: {key => value}}
-                      else
-                        {term: {key => value}}
-                      end
-                    end
-                  }}
-                else
-                  if condition.values.first.is_a? Array
-                    {in: condition}
-                  else
-                    {term: condition}
-                  end
-                end
-              end
-            }
-          }
-        elsif v.is_a? Array
-          { in: { k => v } }
-        else
-          { term: { k => v } }
-        end
-      end
-      body[:aggs][:parents][:filter][:bool][:must] += conditions
-    end
-
-    initial_query = Content.search(body: body)
-    resulting_ids = initial_query.response['aggregations']['parents']['parents']['buckets'].map{ |obj| obj['key'] }
-
-    paged_ids = resulting_ids.slice((page.to_i-1)*per_page.to_i, per_page.to_i)
-
-    { results: Content.where(id: paged_ids), total: resulting_ids.count }
-  end
-
   # returns latest pubdate of a given thread
   # @return [Datetime] latest pubdate in a given thread
+  # TODO - investigate postgres window functions as a replacement for this
   def latest_activity
-    Content.where(root_parent_id: self.root_parent_id).maximum(:pubdate)
+    self.try(:latest_activity_cached) || Content.where(root_parent_id: self.root_parent_id).maximum(:pubdate)
   end
 
   def is_sponsored_content?

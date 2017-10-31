@@ -1,6 +1,7 @@
 require "typhoeus/adapters/faraday"
 require "faraday_middleware/aws_signers_v4"
 Ethon.logger = Logger.new("/dev/null")
+Searchkick.redis = ConnectionPool.new { Redis.new }
 Searchkick.client = Elasticsearch::Client.new(
   url: ENV["ELASTICSEARCH_URL"],
   transport_options: {request: {timeout: 60}},

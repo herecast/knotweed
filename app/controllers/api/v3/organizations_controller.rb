@@ -32,7 +32,7 @@ module Api
           opts = {}
           opts[:where] = {}
           opts[:page] = params[:page] || 1
-          opts[:include] = [:business_locations]
+          opts[:includes] = [:business_locations]
 
           if @requesting_app.present?
             opts[:where][:consumer_app_ids] = [@requesting_app.id]

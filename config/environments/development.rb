@@ -40,4 +40,5 @@ Knotweed::Application.configure do
   config.active_record.raise_in_transactional_callbacks = true
 
   config.action_mailer.delivery_method = :letter_opener
+  ActiveRecordQueryTrace.enabled = true
 end

@@ -68,7 +68,7 @@ gem "rubypress"
 gem "rubyzip"
 gem 'sanitize'
 gem 'sass-rails'
-gem 'searchkick', '~> 1.3'                          # Have not yet tested the next major version
+gem 'searchkick', '~> 2.3'                          # Have not yet tested the next major version
 gem 'sidekiq'
 gem 'sidekiq-scheduler'
 gem 'sidekiq-unique-jobs'
@@ -93,6 +93,8 @@ group :development, :test do
   gem "rspec-rails"
   gem 'spring'
   gem 'spring-commands-rspec'
+  gem 'active_record_query_trace'
+  gem 'ruby-prof'
 end
 
 group :test do

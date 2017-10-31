@@ -4,43 +4,6 @@ module Api
 
       before_filter :check_logged_in!, only: [:create, :update]
 
-      def index
-        expires_in 1.minutes, public: true
-        opts = { where: {} }
-        opts[:page] = params[:page] || 1
-        opts[:per_page] = params[:per_page] || 14
-        opts[:where][:published] = 1 if @repository.present?
-        if @requesting_app.present?
-          allowed_orgs = @requesting_app.organizations
-          opts[:where][:organization_id] = allowed_orgs.collect{|c| c.id}
-        end
-
-        if params[:location_id].present?
-          opts[:where][:or] ||= []
-          location = Location.find_by_slug_or_id(params[:location_id])
-
-          if params[:radius].present? && params[:radius].to_i > 0
-            locations_within_radius = Location.within_radius_of(location, params[:radius].to_i).map(&:id)
-
-            opts[:where][:or] << [
-              {my_town_only: false, all_loc_ids: locations_within_radius},
-              {my_town_only: true, all_loc_ids: location.id}
-            ]
-          else
-            opts[:where][:or] << [
-              {about_location_ids: [location.id]},
-              {base_location_ids: [location.id]}
-            ]
-          end
-        else
-          opts[:where][:all_loc_ids] = [Location::REGION_LOCATION_ID]
-        end
-
-        @talk = Content.talk_search(params[:query], opts)
-
-        render json: @talk[:results], each_serializer: TalkSerializer, meta: { total: @talk[:total] }
-      end
-
       def show
         @talk = Content.find params[:id]
         if @requesting_app.present?

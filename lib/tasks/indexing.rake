@@ -11,10 +11,9 @@ namespace :indexing do
   end
 
   task :full_reindex_content => :environment do
-    Content.where('organization_id NOT IN (4,5,328)')\
-      .where(published: true)\
-      .where('root_content_category_id > 0')\
-      .find_each(&:reindex_async)
+    index_name = Content.reindex(async: {wait: true}, refresh_interval: "30s")
+    puts "Reindexing last hour"
+    Content.search_import.where('contents.updated_at > ?', 2.hours.ago).each(&:reindex_async)
     puts "Operation completed"
   end
 end
