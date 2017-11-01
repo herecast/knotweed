@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171023174248) do
+ActiveRecord::Schema.define(version: 20171030200106) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -825,7 +825,7 @@ ActiveRecord::Schema.define(version: 20171023174248) do
     t.string   "ad_contact_fullname"
     t.string   "profile_sales_agent"
     t.string   "blog_contact_name"
-    t.boolean  "embedded_ad",                    default: false
+    t.boolean  "embedded_ad",                     default: false
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
@@ -1137,7 +1137,7 @@ ActiveRecord::Schema.define(version: 20171023174248) do
     t.string   "temp_password"
     t.boolean  "archived",                           default: false
     t.string   "source",                 limit: 255
-    t.boolean  "receive_comment_alerts",             default: false
+    t.boolean  "receive_comment_alerts",             default: true
   end
 
   add_index "users", ["email"], name: "idx_16858_index_users_on_email", unique: true, using: :btree
