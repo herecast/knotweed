@@ -17,10 +17,15 @@ module SlackService
   }
 
   def send_published_content_notification(content)
-    text = "#{content.organization.name} has published a post called #{content.title}: https://dailyuv.com/feed/#{content.id}"
+    text = "<@jsensenich> #{content.organization.name} has published a post!"
     notifier = Slack::Notifier.new(WEBHOOK_URLS[:socialmedia])
     opts = {
-      text: text
+      text: text,
+      attachments: [{
+        title: content.title,
+        text: "https://dailyuv.com/feed/#{content.id}",
+        color: "3CB371"
+      }]
     }.merge(BOTS[:piggy])
     notifier.post(opts)
   end
