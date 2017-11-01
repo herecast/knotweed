@@ -120,7 +120,7 @@ module Api
             { business_location_name: :asc }
           ]
         end
-        
+
         def geodist_clause
           if @coords.present?
             {
@@ -172,7 +172,7 @@ module Api
               :id,
               :title,
               :raw_content,
-              organization_attributes: [ :id ]
+              organization_attributes: [ :id, :description ]
             ],
             business_location_attributes: [
               :id,
@@ -200,7 +200,9 @@ module Api
               content_attributes: {
                 title: params[:business][:name],
                 raw_content: params[:business][:details],
-                organization_attributes: {}
+                organization_attributes: {
+                  description: params[:business][:details]
+                }
               },
               business_location_attributes: params[:business].slice(
                 :name, :phone, :email, :address, :city, :state, :zip, :hours, :service_radius

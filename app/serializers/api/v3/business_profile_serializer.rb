@@ -22,7 +22,7 @@ module Api
       end
 
       def details
-        object.content.sanitized_content if object.content.present?
+        object.organization.try(:description) if object.content.present?
       end
 
       def images
