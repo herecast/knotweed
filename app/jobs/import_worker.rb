@@ -97,6 +97,7 @@ class ImportWorker < ApplicationJob
         connection.delete_object(Figaro.env.imports_bucket, key)
       rescue StandardError => bang
         log(:error, "failed to parse #{path}: #{bang}")
+        log(:error, "backtrace for #{path}: #{bang.backtrace.join("\n")}")
       end
     end
     data
@@ -155,6 +156,7 @@ class ImportWorker < ApplicationJob
         end
       rescue StandardError => bang
         log(:error, "failed to process content #{article['title']}: #{bang}")
+        log(:error, "stacktrace for #{article['title']}: #{bang.backtrace.join("\n")}")
         failures += 1
       end
     end
@@ -202,9 +204,9 @@ class ImportWorker < ApplicationJob
     log(:info, "#{@import_job.inspect}")
 
     # in order to maintain continuity with the interface and existing import job behavior,
-    # we aren't allowing any exceptions to bubble up into Sidekiq. This is really not 
+    # we aren't allowing any exceptions to bubble up into Sidekiq. This is really not
     # the best use of Sidekiq, but coming up with another strategy would be substantially
-    # more work and would probalby have to involve rewriting the parsers so that each 
+    # more work and would probalby have to involve rewriting the parsers so that each
     # job run is more atomic and we don't have to worry about it retrying. SO since we're
     # about to rewrite the email import stuff out of this code anyway, I am explicitly NOT
     # raising the exception
