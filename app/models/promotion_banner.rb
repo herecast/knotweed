@@ -36,7 +36,10 @@ class PromotionBanner < ActiveRecord::Base
 
   mount_uploader :banner_image, ImageUploader
   mount_uploader :coupon_image, ImageUploader
-  skip_callback :commit, :after, :remove_previously_stored_banner_image, :remove_previously_stored_coupon_image
+  skip_callback :commit, :after, :remove_previously_stored_banner_image,
+                                 :remove_previously_stored_coupon_image,
+                                 :remove_banner_image!,
+                                 :remove_coupon_image!
 
   UPLOAD_ENDPOINT = "/statements"
 

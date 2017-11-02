@@ -88,7 +88,10 @@ class Organization < ActiveRecord::Base
   mount_uploader :background_image, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_logo,
                                  :remove_previously_stored_profile_image,
-                                 :remove_previously_stored_background_image
+                                 :remove_previously_stored_background_image,
+                                 :remove_logo!,
+                                 :remove_profile_image!,
+                                 :remove_background_image!
 
   scope :alphabetical, -> { order("organizations.name ASC") }
   default_scope { self.alphabetical }

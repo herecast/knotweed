@@ -48,7 +48,8 @@ class User < ActiveRecord::Base
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
   mount_uploader :avatar, ImageUploader
-  skip_callback :commit, :after, :remove_previously_stored_avatar
+  skip_callback :commit, :after, :remove_previously_stored_avatar,
+                                 :remove_avatar!
 
   accepts_nested_attributes_for :subscriptions
 
@@ -163,7 +164,7 @@ class User < ActiveRecord::Base
       super lid
     end
   end
-  
+
   def self.from_facebook_oauth(auth, registration_attributes = {})
     extra_info = {}
     user = User.find_by_email(auth[:email])
