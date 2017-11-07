@@ -3,7 +3,7 @@ module Api
     class LocationsController < ApiController
 
       def index
-        expires_in 1.minute, public: true
+        expires_in 1.hour, public: true
 
         if params[:near].present?
           if params[:radius].present?
@@ -33,6 +33,8 @@ module Api
       end
 
       def show
+        expires_in 1.hour, public: true
+
         @location = Location.find_by_slug_or_id(params[:id])
         if @location.present?
           render json: @location, serializer: LocationSerializer
