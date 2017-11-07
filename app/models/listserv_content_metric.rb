@@ -15,6 +15,10 @@
 #  enhance_link_clicked :boolean          default(FALSE)
 #  step_reached         :string
 #
+# Indexes
+#
+#  index_listserv_content_metrics_on_listserv_content_id  (listserv_content_id)
+#
 
 class ListservContentMetric < ActiveRecord::Base
   belongs_to :listserv_content

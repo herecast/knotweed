@@ -60,6 +60,27 @@
 #  short_link                :string
 #  ad_invoiced_amount        :float
 #
+# Indexes
+#
+#  idx_16527_authors                                     (authors)
+#  idx_16527_categories                                  (source_category)
+#  idx_16527_content_category_id                         (content_category_id)
+#  idx_16527_guid                                        (guid)
+#  idx_16527_import_record_id                            (import_record_id)
+#  idx_16527_index_contents_on_authoremail               (authoremail)
+#  idx_16527_index_contents_on_channel_id                (channel_id)
+#  idx_16527_index_contents_on_channel_type              (channel_type)
+#  idx_16527_index_contents_on_channelized_content_id    (channelized_content_id)
+#  idx_16527_index_contents_on_created_by                (created_by)
+#  idx_16527_index_contents_on_parent_id                 (parent_id)
+#  idx_16527_index_contents_on_published                 (published)
+#  idx_16527_index_contents_on_root_content_category_id  (root_content_category_id)
+#  idx_16527_index_contents_on_root_parent_id            (root_parent_id)
+#  idx_16527_location_id                                 (import_location_id)
+#  idx_16527_pubdate                                     (pubdate)
+#  idx_16527_source_id                                   (organization_id)
+#  idx_16527_title                                       (title)
+#
 
 require 'fileutils'
 require 'builder'

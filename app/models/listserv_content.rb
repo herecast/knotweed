@@ -22,6 +22,24 @@
 #  deleted_at                 :datetime
 #  deleted_by                 :string
 #
+# Indexes
+#
+#  index_listserv_contents_on_content_category_id  (content_category_id)
+#  index_listserv_contents_on_content_id           (content_id)
+#  index_listserv_contents_on_deleted_at           (deleted_at)
+#  index_listserv_contents_on_key                  (key)
+#  index_listserv_contents_on_listserv_id          (listserv_id)
+#  index_listserv_contents_on_subscription_id      (subscription_id)
+#  index_listserv_contents_on_user_id              (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_25febf0182  (listserv_id => listservs.id)
+#  fk_rails_2794d1f01f  (subscription_id => subscriptions.id)
+#  fk_rails_45ef624a2e  (content_category_id => content_categories.id)
+#  fk_rails_fb887919cf  (content_id => contents.id)
+#  fk_rails_fe981c1989  (user_id => users.id)
+#
 
 class ListservContent < ActiveRecord::Base
   acts_as_paranoid column: :deleted_at

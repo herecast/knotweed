@@ -9,6 +9,10 @@
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #
+# Indexes
+#
+#  idx_16494_index_consumer_apps_on_uri  (uri) UNIQUE
+#
 
 class ConsumerApp < ActiveRecord::Base
   has_and_belongs_to_many :wufoo_forms

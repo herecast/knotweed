@@ -44,6 +44,7 @@ require 'spec_helper'
 
 describe User, :type => :model do
   it{ is_expected.to respond_to(:temp_password, :temp_password=) }
+  it{ is_expected.to have_db_column(:location_confirmed).of_type(:boolean) }
 
   before(:each) do
     location = FactoryGirl.create :location

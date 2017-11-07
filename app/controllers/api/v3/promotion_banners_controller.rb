@@ -185,6 +185,7 @@ module Api
           if params[:location_id].present?
             location = Location.find_by_slug_or_id(params[:location_id])
             data[:location_id] = location.try(:id)
+            data[:location_confirmed] = ['1', 1, 'true', true].include?(params[:location_confirmed])
           end
 
           BackgroundJob.perform_later('RecordPromotionBannerMetric', 'call', data)

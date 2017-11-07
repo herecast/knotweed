@@ -36,7 +36,7 @@
 #  skip_analytics         :boolean          default(FALSE)
 #  temp_password          :string
 #  archived               :boolean          default(FALSE)
-#  source                 :string
+#  source                 :string(255)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

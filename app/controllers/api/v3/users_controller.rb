@@ -35,6 +35,11 @@ module Api
             location = Location.find_by_slug_or_id(params[:current_user][:location_id])
             @current_api_user.location = location
           end
+
+          if params[:current_user][:location_confirmed].present?
+            @current_api_user.location_confirmed = [true, 'true', 1, '1'].include? params[:current_user][:location_confirmed]
+          end
+
           @current_api_user.email =  params[:current_user][:email] if params[:current_user][:email].present?
           if params[:current_user][:password].present? && 
             params[:current_user][:password_confirmation].present?

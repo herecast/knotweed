@@ -22,6 +22,14 @@
 #  content_ids          :integer          is an Array
 #  listserv_content_ids :integer          is an Array
 #
+# Indexes
+#
+#  index_listserv_digests_on_listserv_id  (listserv_id)
+#
+# Foreign Keys
+#
+#  fk_rails_386f862ec4  (listserv_id => listservs.id)
+#
 
 class ListservDigest < ActiveRecord::Base
   belongs_to :listserv

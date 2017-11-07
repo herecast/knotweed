@@ -7,13 +7,13 @@
 #  city            :string(255)
 #  state           :string(255)
 #  county          :string(255)
-#  latitude            :float
-#  longitude           :float
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  consumer_active :boolean          default(FALSE)
 #  is_region       :boolean          default(FALSE)
 #  slug            :string
+#  latitude        :float
+#  longitude       :float
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

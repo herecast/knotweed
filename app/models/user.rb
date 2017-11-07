@@ -39,6 +39,12 @@
 #  source                 :string
 #  receive_comment_alerts :boolean          default(FALSE)
 #
+# Indexes
+#
+#  idx_16858_index_users_on_email                 (email) UNIQUE
+#  idx_16858_index_users_on_public_id             (public_id) UNIQUE
+#  idx_16858_index_users_on_reset_password_token  (reset_password_token) UNIQUE
+#
 
 class User < ActiveRecord::Base
 

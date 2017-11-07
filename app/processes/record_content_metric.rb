@@ -25,7 +25,8 @@ class RecordContentMetric
         user_agent:  @opts[:user_agent],
         user_ip:     @opts[:user_ip],
         client_id:   @opts[:client_id],
-        location_id: @opts[:location_id]
+        location_id: @opts[:location_id],
+        location_confirmed: @opts[:location_confirmed] || false
       )
     end
 

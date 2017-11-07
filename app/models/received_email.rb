@@ -15,6 +15,11 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #
+# Indexes
+#
+#  index_received_emails_on_file_uri                   (file_uri)
+#  index_received_emails_on_record_type_and_record_id  (record_type,record_id)
+#
 
 require 'open-uri-s3'
 

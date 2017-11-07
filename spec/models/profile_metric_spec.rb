@@ -1,3 +1,21 @@
+# == Schema Information
+#
+# Table name: profile_metrics
+#
+#  id                 :integer          not null, primary key
+#  organization_id    :integer
+#  location_id        :integer
+#  user_id            :integer
+#  content_id         :integer
+#  event_type         :string
+#  user_ip            :string
+#  user_agent         :string
+#  client_id          :string
+#  location_confirmed :boolean
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#
+
 require 'rails_helper'
 
 RSpec.describe ProfileMetric, type: :model do

@@ -16,6 +16,15 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #
+# Indexes
+#
+#  idx_16657_city            (city)
+#  idx_16657_link_name       (link_name)
+#  idx_16657_link_name_full  (link_name_full)
+#  idx_16657_state           (state)
+#  idx_16657_status          (status)
+#  idx_16657_usgs_id         (usgs_id)
+#
 
 class ImportLocation < ActiveRecord::Base
   

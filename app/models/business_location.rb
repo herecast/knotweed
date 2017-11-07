@@ -23,6 +23,12 @@
 #  updated_by          :integer
 #  service_radius      :decimal(10, )
 #
+# Indexes
+#
+#  idx_16441_index_business_locations_on_city        (city)
+#  idx_16441_index_business_locations_on_created_by  (created_by)
+#  idx_16441_index_business_locations_on_name        (name)
+#
 
 class BusinessLocation < ActiveRecord::Base
   extend Enumerize

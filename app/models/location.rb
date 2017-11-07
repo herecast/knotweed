@@ -12,8 +12,12 @@
 #  consumer_active :boolean          default(FALSE)
 #  is_region       :boolean          default(FALSE)
 #  slug            :string
-#  latitude            :float
-#  longitude           :float
+#  latitude        :float
+#  longitude       :float
+#
+# Indexes
+#
+#  index_locations_on_latitude_and_longitude  (latitude,longitude)
 #
 
 require 'geocoder/stores/active_record'

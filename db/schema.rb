@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171030200106) do
+ActiveRecord::Schema.define(version: 20171103201030) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -262,11 +262,12 @@ ActiveRecord::Schema.define(version: 20171030200106) do
     t.integer  "user_id"
     t.string   "user_agent"
     t.string   "user_ip"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
     t.string   "client_id"
     t.integer  "location_id"
     t.integer  "organization_id"
+    t.boolean  "location_confirmed", default: false
   end
 
   add_index "content_metrics", ["client_id"], name: "index_content_metrics_on_client_id", using: :btree
@@ -875,8 +876,8 @@ ActiveRecord::Schema.define(version: 20171030200106) do
     t.integer  "user_id"
     t.string   "location"
     t.string   "page_url"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
     t.boolean  "gtm_blocked"
     t.string   "user_agent"
     t.string   "user_ip"
@@ -884,6 +885,7 @@ ActiveRecord::Schema.define(version: 20171030200106) do
     t.string   "client_id"
     t.integer  "location_id"
     t.float    "load_time"
+    t.boolean  "location_confirmed",  default: false
   end
 
   add_index "promotion_banner_metrics", ["content_id"], name: "index_promotion_banner_metrics_on_content_id", using: :btree
@@ -1138,6 +1140,7 @@ ActiveRecord::Schema.define(version: 20171030200106) do
     t.boolean  "archived",                           default: false
     t.string   "source",                 limit: 255
     t.boolean  "receive_comment_alerts",             default: true
+    t.boolean  "location_confirmed",                 default: false
   end
 
   add_index "users", ["email"], name: "idx_16858_index_users_on_email", unique: true, using: :btree

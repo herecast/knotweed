@@ -13,6 +13,15 @@
 #  preheader     :string
 #  promotion_ids :integer          default([]), is an Array
 #
+# Indexes
+#
+#  index_campaigns_on_community_ids  (community_ids)
+#  index_campaigns_on_listserv_id    (listserv_id)
+#
+# Foreign Keys
+#
+#  fk_rails_ac529cad68  (listserv_id => listservs.id)
+#
 
 class Campaign < ActiveRecord::Base
   include HasPromotionForBanner

@@ -14,6 +14,10 @@
 #  updated_at     :datetime         not null
 #  page_url_field :string(255)
 #
+# Indexes
+#
+#  idx_16881_index_wufoo_forms_on_controller_and_action_and_active  (controller,action,active) UNIQUE
+#
 
 class WufooForm < ActiveRecord::Base
   has_and_belongs_to_many :consumer_apps

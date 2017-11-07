@@ -20,6 +20,16 @@
 #  email_type           :string           default("html")
 #  mc_unsubscribed_at   :datetime
 #
+# Indexes
+#
+#  index_subscriptions_on_listserv_id  (listserv_id)
+#  index_subscriptions_on_user_id      (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_7de388d95b  (listserv_id => listservs.id)
+#  fk_rails_933bdff476  (user_id => users.id)
+#
 
 class Subscription < ActiveRecord::Base
   belongs_to :user

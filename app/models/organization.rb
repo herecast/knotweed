@@ -36,6 +36,10 @@
 #  profile_sales_agent :string
 #  blog_contact_name   :string
 #
+# Indexes
+#
+#  idx_16739_index_publications_on_name  (name) UNIQUE
+#
 
 class Organization < ActiveRecord::Base
 

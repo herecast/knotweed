@@ -29,6 +29,7 @@ RSpec.describe 'User API Endpoints', type: :request do
             created_at: user.created_at.iso8601,
             location_id: user.location.slug,
             location: user.location.name,
+            location_confirmed: user.location_confirmed?,
             listserv_id: an_instance_of(String).or(be_nil),
             listserv_name: an_instance_of(String).or(be_nil),
             test_group: an_instance_of(String).or(be_nil),

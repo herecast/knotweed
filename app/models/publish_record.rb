@@ -9,6 +9,10 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #
+# Indexes
+#
+#  idx_16811_index_publish_records_on_publish_job_id  (publish_job_id)
+#
 
 class PublishRecord < ActiveRecord::Base
   belongs_to :publish_job

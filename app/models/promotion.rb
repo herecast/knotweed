@@ -16,6 +16,12 @@
 #  updated_by      :integer
 #  share_platform  :string
 #
+# Indexes
+#
+#  idx_16765_index_promotions_on_content_id      (content_id)
+#  idx_16765_index_promotions_on_created_by      (created_by)
+#  idx_16765_index_promotions_on_publication_id  (organization_id)
+#
 
 class Promotion < ActiveRecord::Base
   include Auditable

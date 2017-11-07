@@ -32,7 +32,7 @@ describe Api::V3::UsersController, :type => :controller do
 
       it 'should return expected fields' do
        desired = expected_user_response @user 
-       expect(JSON.parse(response.body)).to eq desired
+       expect(JSON.parse(response.body)).to match desired
       end
     end
 
@@ -80,6 +80,7 @@ describe Api::V3::UsersController, :type => :controller do
                           user_id: @user.id.to_s,
                           name: 'Skye Bill',
                           location_id: location.slug ,
+                          location_confirmed: true,
                           email: 'skye@bill.com',
                           password: 'snever4aet3',
                           password_confirmation: 'snever4aet3',
@@ -94,8 +95,9 @@ describe Api::V3::UsersController, :type => :controller do
           updated_user = assigns(:current_api_user)
           expect(updated_user.name).to eq @new_data[:current_user][:name]
           expect(updated_user.location).to eq Location.find_by_slug_or_id @new_data[:current_user][:location_id]
+          expect(updated_user.location_confirmed?).to be true
           expect(updated_user.public_id).to eq @new_data[:current_user][:public_id]
-          
+
           expect(updated_user.unconfirmed_email).to eq @new_data[:current_user][:email]
           expect(updated_user.encrypted_password).not_to eq @new_data[:current_user][:encrypted_password]
           expect(response.code).to eq '200'
@@ -103,8 +105,8 @@ describe Api::V3::UsersController, :type => :controller do
 
         it 'should respond with current_user GET data' do
           #change the test user name to editted name before comparison
-          @user.name = @new_data[:current_user][:name]  
-          expect(JSON.parse(response.body)).to eq expected_user_response @user
+          @user.name = @new_data[:current_user][:name]
+          expect(JSON.parse(response.body)).to match expected_user_response @user.reload
         end
 
       end
@@ -402,6 +404,7 @@ describe Api::V3::UsersController, :type => :controller do
           created_at: user.created_at.iso8601,
           location_id: user.location.slug,
           location: user.location.name,
+          location_confirmed: user.location_confirmed,
           listserv_name: user.location.listserv.name,
           listserv_id: user.location.listserv.id,
           test_group: user.test_group,

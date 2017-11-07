@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: content_locations
+#
+#  id            :integer          not null, primary key
+#  content_id    :integer
+#  location_id   :integer
+#  location_type :string
+#  created_at    :datetime
+#  updated_at    :datetime
+#
+
 require 'rails_helper'
 
 RSpec.describe ContentLocation, type: :model do
