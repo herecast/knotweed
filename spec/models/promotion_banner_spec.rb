@@ -61,43 +61,6 @@ describe PromotionBanner, :type => :model do
       end
     end
 
-    context "when PromotionBanner has too many possible impressions for Campaign" do
-      before do
-        @promotion_banner = FactoryGirl.create :promotion_banner,
-          campaign_start: Date.today,
-          campaign_end: Date.tomorrow,
-          daily_max_impressions: 1
-        @promotion_banner.promotion.content.update_attributes!(
-          content_category: ContentCategory.find_or_create_by({ name: 'campaign' }),
-          ad_campaign_start: Date.yesterday,
-          ad_campaign_end: Date.tomorrow,
-          ad_max_impressions: 100,
-          ad_promotion_type: 'ROS'
-        )
-        promotion_banner_two = FactoryGirl.create :promotion_banner,
-          campaign_start: Date.yesterday,
-          campaign_end: Date.today,
-          daily_max_impressions: 40
-        promotion_banner_two.promotion.update_attribute(
-          :content_id, @promotion_banner.promotion.content.id
-        )
-        @promotion_banner.promotion.update_attributes!(
-          promotable_type: 'PromotionBanner',
-          promotable_id: @promotion_banner.id
-        )
-        promotion_banner_two.promotion.update_attributes!(
-          promotable_type: 'PromotionBanner',
-          promotable_id: promotion_banner_two.id
-        )
-      end
-
-      it "is not valid" do
-        promotion_banner = @promotion_banner.reload
-        promotion_banner.daily_max_impressions = 20
-        expect(promotion_banner).not_to be_valid
-      end
-    end
-
     context "when promotion_type is profile_page or promotional_services" do
       before do
         @promotion_banner = FactoryGirl.build :promotion_banner,

@@ -45,8 +45,7 @@ describe Api::V3::PromotionBannerReportsController, type: :controller do
         "daily_reports" => {
           Date.today.strftime("%D") => 0,
           1.day.ago.strftime("%D") => @pbr.impression_count,
-          2.days.ago.strftime("%D") => @other_pbr.impression_count,
-          3.days.ago.strftime("%D") => 0
+          2.days.ago.strftime("%D") => @other_pbr.impression_count
         }
       })
     end

@@ -82,21 +82,6 @@ describe Content, :type => :model do
         expect(content).not_to be_valid
       end
     end
-
-    context "when ad_max_impressions is too few for the creatives" do
-      before do
-        @promotion_banner = FactoryGirl.create :promotion_banner,
-          campaign_start: Date.today,
-          campaign_end: Date.tomorrow,
-          daily_max_impressions: 15
-      end
-
-      it "is not valid" do
-        content = @promotion_banner.promotion.content
-        content.ad_max_impressions = 10
-        expect(content).not_to be_valid
-      end
-    end
   end
 
   describe '#update_category_from_annotations' do

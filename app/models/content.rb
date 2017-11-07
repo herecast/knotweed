@@ -195,7 +195,6 @@ class Content < ActiveRecord::Base
   }
 
   validate :if_ad_promotion_type_sponsored_must_have_ad_max_impressions
-  validate :ad_max_impressions_allows_all_creative_impressions
   validates :ad_invoiced_amount, numericality: { greater_than: 0 }, if: 'ad_invoiced_amount.present?'
 
   def base_locations=locs
@@ -1379,17 +1378,6 @@ class Content < ActiveRecord::Base
   def if_ad_promotion_type_sponsored_must_have_ad_max_impressions
     if ad_promotion_type == PromotionBanner::SPONSORED && ad_max_impressions.nil?
       errors.add(:ad_max_impressions, "For ad_promotion_type Sponsored, ad_max_impressions must be populated")
-    end
-  end
-
-  def ad_max_impressions_allows_all_creative_impressions
-    if ad_max_impressions.present?
-      creatives_total = promotions.reduce(0) do |sum, p|
-        sum += (p.promotable.try(:total_impressions_allowed) || 0)
-      end
-      if ad_max_impressions < creatives_total
-        errors.add(:ad_max_impressions, "Campaign max impressions cannot be fewer than total impressions in creatives")
-      end
     end
   end
 
