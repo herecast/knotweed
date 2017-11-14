@@ -2,7 +2,7 @@ module FacebookService
   include HTTParty
   extend self
 
-  base_uri "https://graph.facebook.com/v2.9/me"
+  base_uri "https://graph.facebook.com/v2.11/me"
 
   def get_user_info(access_token)
     options = { fields: "email, name, verified, age_range, timezone, gender",
