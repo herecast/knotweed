@@ -17,7 +17,7 @@ module Api
           :organization_profile_image_url, :biz_feed_public, :sunset_date,
           :event_instances, :content_origin, :split_content, :cost_type, :contact_phone,
           :images, :can_edit, :contact_email, :venue_url, :organization_biz_feed_active,
-          :campaign_start, :campaign_end
+          :campaign_start, :campaign_end, :click_count, :redirect_url
 
         has_many :content_locations, serializer: Api::V3::HashieMashes::ContentLocationSerializer
         has_many :comments, serializer: Api::V3::HashieMashes::CommentSerializer
@@ -33,7 +33,9 @@ module Api
         end
 
         def image_url
-          if object.images.present?
+          if object.promotable_image_url.present?
+            object.promotable_image_url
+          elsif object.images.present?
             object.images[0].image_url
           end
         end
@@ -124,14 +126,6 @@ module Api
           end
         end
 
-        def view_count
-          if object.parent_id
-            object.parent_view_count
-          else
-            object.view_count
-          end
-        end
-
         def commenter_count
           if object.parent_id
             object.parent_commenter_count
@@ -146,6 +140,10 @@ module Api
           else
             object.comment_count
           end
+        end
+
+        def click_count
+          object.click_count
         end
 
         def parent_content_id
@@ -268,6 +266,10 @@ module Api
 
         def campaign_end
           object.campaign_end
+        end
+
+        def redirect_url
+          object.redirect_url
         end
 
         private

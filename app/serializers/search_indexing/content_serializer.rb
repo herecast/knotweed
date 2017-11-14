@@ -6,7 +6,8 @@ module SearchIndexing
       :root_content_category_id, :content_category_id, :my_town_only, :deleted,
       :root_parent_id, :in_accepted_category, :is_listserv_market_post,
       :organization_id, :organization_name, :created_at, :updated_at, :biz_feed_public,
-      :campaign_start, :campaign_end
+      :campaign_start, :campaign_end, :promotable_image_url, :click_count,
+      :redirect_url
 
     attributes :view_count, :commenter_count, :comment_count, :parent_id,
       :parent_content_type, :sunset_date, :latest_activity
@@ -87,10 +88,18 @@ module SearchIndexing
     end
 
     def view_count
-      if object.parent.present?
+      if is_campaign_content?
+        object.promotions.includes(:promotable).first.try(:promotable).try(:impression_count)
+      elsif object.parent.present?
         object.parent_view_count
       else
         object.view_count
+      end
+    end
+
+    def click_count
+      if is_campaign_content?
+        object.promotions.first.try(:promotable).try(:click_count)
       end
     end
 
@@ -101,5 +110,28 @@ module SearchIndexing
     def campaign_end
       object.ad_campaign_end
     end
+
+    def promotable_image_url
+      if is_campaign_content?
+        object.promotions.first.try(:promotable).try(:banner_image).try(:url)
+      end
+    end
+
+    def redirect_url
+      if is_campaign_content?
+        object.promotions.first.try(:promotable).try(:redirect_url)
+      end
+    end
+
+    private
+
+      def campaign_content_category_id
+        ContentCategory.find_or_create_by(name: 'campaign').id
+      end
+
+      def is_campaign_content?
+        object.root_content_category_id == campaign_content_category_id && object.promotions.present?
+      end
+
   end
 end
