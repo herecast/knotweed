@@ -24,6 +24,7 @@ module SearchService
     eval_in_controller_context do
       @opts[:where][:or] ||= []
       content_types = ['news', 'market', 'talk']
+      content_types << 'campaign' if params[:organization_id].present?
       or_options = [
         {content_type: content_types},
         {content_type: 'event', "organization.name" => {not: 'Listserv'}}
@@ -67,7 +68,7 @@ module SearchService
   def conditionally_apply_organization_search_opts
     eval_in_controller_context do
 
-      @opts[:where][:biz_feed_public] == true
+      @opts[:where][:biz_feed_public] = [true, nil]
 
       organization = Organization.find(params[:organization_id])
 
@@ -77,6 +78,11 @@ module SearchService
         { organization_id: organization.id },
         { channel_id: organization.venue_event_ids, channel_type: 'Event' },
         { id: org_tagged_content_ids }
+      ]
+
+      @opts[:where][:or] << [
+        { sunset_date: nil },
+        { sunset_date: { lt: Date.current } }
       ]
 
       if params['show'] == 'everything'

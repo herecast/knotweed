@@ -48,6 +48,9 @@
             = f.input :subtext_certified, as: :boolean
             - if @organization.has_business_profile?
               = f.input :biz_feed_active, as: :boolean
+              = f.input :contact_card_active, as: :boolean
+              = f.input :description_card_active, as: :boolean
+              = f.input :hours_card_active, as: :boolean
             - else
               %p
                 Organization must have

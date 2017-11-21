@@ -119,7 +119,7 @@ module Api
         end
 
         def content
-          if object.content.match(/No content found/)
+          if object.content.try(:match, /No content found/)
             ""
           else
             object.content
@@ -280,6 +280,10 @@ module Api
 
           def is_market?
             object.content_type.to_s == 'market'
+          end
+
+          def campaign_content_category_id
+            ContentCategory.find_or_create_by(name: 'campaign').id
           end
 
       end

@@ -213,7 +213,7 @@ module Api
       end
 
       def organization_profile_image_url
-        object.organization.try(:profile_image_url)
+        object.organization.try(:profile_image_url) || object.organization.try(:logo_url)
       end
 
       def campaign_start

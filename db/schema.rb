@@ -829,6 +829,9 @@ ActiveRecord::Schema.define(version: 20171103201030) do
     t.boolean  "embedded_ad",                     default: false
     t.boolean  "subtext_certified",               default: false
     t.string   "services"
+    t.boolean  "contact_card_active",             default: true
+    t.boolean  "description_card_active",         default: true
+    t.boolean  "hours_card_active",               default: true
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree

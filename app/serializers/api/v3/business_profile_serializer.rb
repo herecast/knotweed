@@ -22,8 +22,10 @@ module Api
       end
 
       def details
-        if object.content.present?
-          object.organization.try(:description) || object.content.sanitized_content
+        if object.content.present? && object.organization.try(:description).present?
+          object.organization.try(:description)
+        elsif object.content.present?
+          object.content.sanitized_content
         end
       end
 

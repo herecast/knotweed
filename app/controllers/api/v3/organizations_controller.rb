@@ -9,7 +9,9 @@ module Api
         @organization = Organization.find(params[:id])
         authorize! :update, @organization
 
-        if @organization.update organization_params
+        if @organization.update(organization_params)
+          conditionally_create_business_profile
+          update_business_location
           add_custom_links if params[:organization].key?(:custom_links)
           render json: @organization, serializer: OrganizationSerializer,
             status: 204
@@ -74,12 +76,41 @@ module Api
           :logo,
           :background_image,
           :profile_image,
-          :twitter_handle
+          :twitter_handle,
+          :contact_card_active,
+          :description_card_active,
+          :hours_card_active
         )
+      end
+
+      def business_location_params
+        params.require(:organization).permit(
+          :phone,
+          :email,
+          :address,
+          :city,
+          :state,
+          :zip,
+          hours: []
+        ).tap do |attrs|
+          unless params[:organization][:website].nil?
+            attrs[:venue_url] = params[:organization][:website]
+          end
+        end
       end
 
       def add_custom_links
         @organization.update_attribute(:custom_links, params[:organization][:custom_links])
+      end
+
+      def conditionally_create_business_profile
+        if @organization.business_locations.empty?
+          CreateBusinessProfileRelationship.call(org_name: @organization.name)
+        end
+      end
+
+      def update_business_location
+        @organization.business_locations.first.update_attributes(business_location_params)
       end
 
     end

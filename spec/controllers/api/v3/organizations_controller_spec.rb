@@ -108,13 +108,13 @@ describe Api::V3::OrganizationsController, :type => :controller do
     end
 
     let(:put_params) do
-      { 
+      {
         id: @org.id,
         format: :json,
         organization: {
           name: 'New Name',
           description: Faker::Lorem.sentence(2),
-          logo: fixture_file_upload('/photo.jpg', 'image/jpg') 
+          logo: fixture_file_upload('/photo.jpg', 'image/jpg')
         }
       }
     end
@@ -148,6 +148,32 @@ describe Api::V3::OrganizationsController, :type => :controller do
 
       it 'should update name' do
         expect{subject}.to change{@org.reload.name}
+      end
+
+      context "when BusinessLocation params are present" do
+        before do
+          @business_location = FactoryGirl.create :business_location, venue_url: 'https://old.venue'
+          @org.business_locations << @business_location
+          @new_venue_url = 'https://new.venue'
+        end
+
+        let(:new_put_params) do
+          {
+            id: @org.id,
+            format: :json,
+            organization: {
+              website: @new_venue_url
+            }
+          }
+        end
+
+        subject { put :update, new_put_params }
+
+        it "updates BusinessLocation" do
+          expect{ subject }.to change{
+            @org.reload.business_locations.first.venue_url
+          }.to @new_venue_url
+        end
       end
     end
 

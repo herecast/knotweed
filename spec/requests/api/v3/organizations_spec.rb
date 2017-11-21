@@ -15,7 +15,6 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           profile_title: organization.profile_title || organization.name,
           can_publish_news: organization.can_publish_news,
           subscribe_url: organization.subscribe_url,
-          logo_url: organization.logo_url,
           business_profile_id: a_kind_of(Fixnum).or(be_nil),
           description: organization.description,
           org_type: organization.org_type,
@@ -40,7 +39,10 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           state: organization.business_locations.first.state,
           zip: organization.business_locations.first.zip,
           subtext_certified: organization.subtext_certified,
-          services: organization.services
+          services: organization.services,
+          contact_card_active: organization.contact_card_active,
+          description_card_active: organization.description_card_active,
+          hours_card_active: organization.hours_card_active
         }
       )
     end
