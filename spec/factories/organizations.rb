@@ -35,6 +35,8 @@
 #  ad_contact_fullname :string
 #  profile_sales_agent :string
 #  blog_contact_name   :string
+#  subtext_certified   :boolean          default(FALSE)
+#  services            :string
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

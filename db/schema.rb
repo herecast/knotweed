@@ -827,6 +827,8 @@ ActiveRecord::Schema.define(version: 20171103201030) do
     t.string   "profile_sales_agent"
     t.string   "blog_contact_name"
     t.boolean  "embedded_ad",                     default: false
+    t.boolean  "subtext_certified",               default: false
+    t.string   "services"
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree

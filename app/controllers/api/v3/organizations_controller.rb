@@ -38,9 +38,13 @@ module Api
             opts[:where][:consumer_app_ids] = [@requesting_app.id]
           end
 
-          # only use organizations associated with news content
-          news_cat = ContentCategory.find_by_name 'news'
-          opts[:where][:content_category_ids] = [news_cat.id]
+          if params[:subtext_certified] == "true"
+            opts[:where][:subtext_certified] = 1
+          else
+            # only use organizations associated with news content
+            news_cat = ContentCategory.find_by_name 'news'
+            opts[:where][:content_category_ids] = [news_cat.id]
+          end
 
           query = params[:query].blank? ? '*' : params[:query]
 

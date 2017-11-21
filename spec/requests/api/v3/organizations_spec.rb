@@ -38,7 +38,9 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           address: organization.business_locations.first.address,
           city: organization.business_locations.first.city,
           state: organization.business_locations.first.state,
-          zip: organization.business_locations.first.zip
+          zip: organization.business_locations.first.zip,
+          subtext_certified: organization.subtext_certified,
+          services: organization.services
         }
       )
     end
@@ -157,6 +159,21 @@ RSpec.describe 'Organizations Endpoints', type: :request do
         it 'is false' do
           expect(subject).to eql false
         end
+      end
+    end
+
+    describe "?subtext_certified", elasticsearch: :true do
+      before do
+        @non_promoter = FactoryGirl.create :organization, subtext_certified: false
+        @promoter = FactoryGirl.create :organization, subtext_certified: true
+      end
+
+      subject { get '/api/v3/organizations?subtext_certified=true' }
+
+      it "returns subtext_certified Organizations" do
+        subject
+        expect(response_json[:organizations].length).to eq 1
+        expect(response_json[:organizations][0][:id]).to eq @promoter.id
       end
     end
   end

@@ -45,6 +45,7 @@
             = f.input :subscribe_url, input_html: { class: 'input-block-level' }
             = f.input :twitter_handle
             = f.input :embedded_ad, as: :boolean
+            = f.input :subtext_certified, as: :boolean
             - if @organization.has_business_profile?
               = f.input :biz_feed_active, as: :boolean
             - else
@@ -67,6 +68,7 @@
           .row-fluid
             .span5
               = f.input :profile_title, input_html: { class: "input-block-level" }
+              = f.input :services, input_html: { class: "input-block-level" }
               = f.input :subscribe_url, input_html: { class: "input-block-level" }
               = label_tag "Logo"
               = image_tag(@organization.logo.url) if @organization.logo?
@@ -81,6 +83,7 @@
           = simple_fields_for business_location do |g|
             .row-fluid
               .span6
+                = f.input :services, input_html: { class: "input-block-level" }
                 = g.hidden_field :business_location_id, value: business_location.id
                 = g.input :name, input_html: { class: "input-block-level" }
                 = g.input :email, input_html: { class: "input-block-level" }

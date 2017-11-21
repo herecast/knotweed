@@ -6,8 +6,8 @@ module Api
         :business_profile_id, :description, :org_type, :can_edit, :profile_title,
         :can_publish_events, :can_publish_market, :can_publish_talk, :can_publish_ads,
         :profile_ad_override, :profile_image_url, :background_image_url, :claimed,
-        :twitter_handle, :custom_links, :biz_feed_active, :phone, :website,
-        :hours, :email, :address, :city, :state, :zip
+        :twitter_handle, :custom_links, :biz_feed_active, :subtext_certified, :services,
+        :phone, :website, :hours, :email, :address, :city, :state, :zip
 
       def logo_url; object.logo.url if object.logo.present?; end
 

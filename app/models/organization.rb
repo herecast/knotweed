@@ -35,6 +35,8 @@
 #  ad_contact_fullname :string
 #  profile_sales_agent :string
 #  blog_contact_name   :string
+#  subtext_certified   :boolean          default(FALSE)
+#  services            :string
 #
 # Indexes
 #
@@ -50,7 +52,8 @@ class Organization < ActiveRecord::Base
     {
       name: name,
       consumer_app_ids: consumer_apps.pluck(:id),
-      content_category_ids: contents.pluck(:root_content_category_id).uniq
+      content_category_ids: contents.pluck(:root_content_category_id).uniq,
+      subtext_certified: subtext_certified
     }
   end
 
