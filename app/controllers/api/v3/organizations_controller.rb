@@ -42,6 +42,7 @@ module Api
 
           if params[:subtext_certified] == "true"
             opts[:where][:subtext_certified] = 1
+            opts[:order] = { name: :asc }
           else
             # only use organizations associated with news content
             news_cat = ContentCategory.find_by_name 'news'
