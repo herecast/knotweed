@@ -11,6 +11,7 @@ class CreateBusinessProfileRelationship
 
   def call
     conditionally_build_business_profile
+    ensure_business_location_hours_are_valid
     @content = Content.find_or_create_by(channel_id: @business_profile.id, channel_type: 'BusinessProfile')
     @organization = @content.organization || Organization.find_or_create_by(name: @org_name)
     update_default_content_attributes
@@ -26,6 +27,12 @@ class CreateBusinessProfileRelationship
       if @business_profile.nil?
         business_location = BusinessLocation.create(name: @org_name)
         @business_profile = business_location.create_business_profile
+      end
+    end
+
+    def ensure_business_location_hours_are_valid
+      if @business_profile.business_location.hours == ''
+        @business_profile.business_location.update_column(:hours, nil)
       end
     end
 

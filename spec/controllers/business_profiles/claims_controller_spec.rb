@@ -12,6 +12,11 @@ describe BusinessProfiles::ClaimsController, type: :controller do
     subject { post :create, id: @business_profile }
 
     context "when successful" do
+      it "makes call to business profile structure service" do
+        expect(CreateBusinessProfileRelationship).to receive(:call)
+        subject
+      end
+
       it "creates structure for claimed business" do
         subject
         @business_profile.reload

@@ -40,11 +40,11 @@ class BusinessProfilesController < ApplicationController
     @business_profile = BusinessProfile.new(business_profile_params)
     authorize! :create, @business_profile
     if @business_profile.save
-      @business_profile.update_attribute(:existence, 1.0)
-      organization = Organization.create(name: params[:business_profile][:business_location_attributes][:name], org_type: 'Business')
-      ConsumerApp.all.each { |ca| organization.consumer_apps << ca }
-      @business_profile.content.update_attribute(:organization_id, organization.id)
-      @business_profile.business_location.update_attribute(:organization_id, organization.id)
+      CreateBusinessProfileRelationship.call({
+        business_profile: @business_profile,
+        org_name: params[:business_profile][:business_location_attributes][:name]
+      })
+
       flash[:notice] = "Created business profile with id #{@business_profile.id}"
       redirect_to form_submit_redirect_path(@business_profile.id)
     else

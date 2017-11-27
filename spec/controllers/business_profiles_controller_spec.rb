@@ -205,6 +205,11 @@ describe BusinessProfilesController, :type => :controller do
       expect(BusinessProfile.last.claimed?).to be true
     end
 
+    it 'makes call to create business profile relationship' do
+      expect(CreateBusinessProfileRelationship).to receive(:call)
+      subject
+    end
+
     context "when create fails" do
       before do
         allow_any_instance_of(BusinessProfile).to receive(:save).and_return false
