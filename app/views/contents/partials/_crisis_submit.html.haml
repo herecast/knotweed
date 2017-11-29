@@ -1,0 +1,4 @@
+- if content.removed
+  = link_to "Republish Content", content_removals_path(content_id: content.id, type: type), class: "btn btn-warning", method: :delete
+- else
+  = link_to "Remove Content", content_removals_path(content_id: content.id, type: type), class: "btn btn-danger", method: :create, data: { confirm: "Are you sure you want to remove this Content?" }

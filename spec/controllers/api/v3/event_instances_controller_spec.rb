@@ -104,6 +104,24 @@ describe Api::V3::EventInstancesController, :type => :controller do
         end
       end
     end
+
+    context "when related content has been removed" do
+      before do
+        @event = FactoryGirl.create(:event, published: true)
+        @event.content.update_attribute(:removed, true)
+        @instance = @event.next_or_first_instance
+        allow(CreateAlternateContent).to receive(:call).and_return(@event.content)
+      end
+
+      subject { get :show, id: @instance.id }
+
+      it "makes call to create alternate content" do
+        expect(CreateAlternateContent).to receive(:call).with(
+          @instance.event.content
+        )
+        subject
+      end
+    end
   end
 
   describe 'GET ics' do
@@ -129,7 +147,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
         @e_future = FactoryGirl.create(:event, start_date: 1.day.from_now).next_or_first_instance
         @e_current = FactoryGirl.create(:event, start_date: Date.current).next_or_first_instance
       end
-      
+
       context ' when start_date is passed without category' do
         it 'returns events on the start date' do
           get :index

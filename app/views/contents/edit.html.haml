@@ -1,8 +1,14 @@
 .row-fluid
-  .span12.box.bordered-box.blue-border 
-    .box-header.blue-background
-      .title
-        %i.icon-pencil
-        Content ID #{@content.id} #{@content.title}
+  .span12.box.bordered-box.blue-border
+    - if @content.removed
+      .box-header.red-background
+        .title
+          %i.icon-pencil
+          Content Removed! ID #{@content.id} #{@content.title}
+    - else
+      .box-header.blue-background
+        .title
+          %i.icon-pencil
+          Content ID #{@content.id} #{@content.title}
     .box-content
       = render partial: "contents/partials/form"

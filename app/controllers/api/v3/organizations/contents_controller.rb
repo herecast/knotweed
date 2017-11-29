@@ -8,6 +8,7 @@ module Api
         organization = Organization.find(params[:organization_id])
 
         opts = { load: false }
+        opts[:where] = { removed: { not: true } }
         opts[:order] = { pubdate: :desc }
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 12

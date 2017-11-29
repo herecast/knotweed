@@ -55,7 +55,8 @@ class EventInstance < ActiveRecord::Base
           all_loc_ids: event.content.all_loc_ids,
           base_location_ids: event.content.base_locations.map(&:id),
           about_location_ids: event.content.about_locations.map(&:id),
-          my_town_only: event.content.my_town_only
+          my_town_only: event.content.my_town_only,
+          removed: event.content.removed
         })
         if event.content.organization.present?
           data[:base_location_ids] |= event.content.organization.base_locations.map(&:id)

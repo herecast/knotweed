@@ -170,6 +170,7 @@
         - else
           .has-tooltip.btn{ disabled: "disabled", data: { toggle: "tooltip", 
             title: "You must select a default repository for your user account" } } Publish
+      = render 'contents/partials/crisis_submit', content: @content, type: 'content'
       = link_to "Cancel", :back, class: "btn cancel"
 
 - if @content.published?

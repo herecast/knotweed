@@ -377,6 +377,7 @@ ActiveRecord::Schema.define(version: 20171103201030) do
     t.string   "short_link"
     t.float    "ad_invoiced_amount"
     t.datetime "first_served_at"
+    t.boolean  "removed",                               default: false
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree

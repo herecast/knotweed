@@ -7,7 +7,7 @@ module SearchIndexing
       :root_parent_id, :in_accepted_category, :is_listserv_market_post,
       :organization_id, :organization_name, :created_at, :updated_at, :biz_feed_public,
       :campaign_start, :campaign_end, :promotable_image_url, :click_count,
-      :redirect_url
+      :redirect_url, :removed
 
     attributes :view_count, :commenter_count, :comment_count, :parent_id,
       :parent_content_type, :sunset_date, :latest_activity

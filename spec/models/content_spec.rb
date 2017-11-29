@@ -58,6 +58,7 @@
 #  ad_max_impressions        :integer
 #  short_link                :string
 #  ad_invoiced_amount        :float
+#  removed                   :boolean          default(FALSE)
 #
 
 require 'spec_helper'

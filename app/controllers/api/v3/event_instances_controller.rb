@@ -10,6 +10,7 @@ module Api
         @opts[:page] = params[:page] || 1
         @opts[:where] = {}
         @opts[:where][:published] = 1 if @repository.present?
+        @opts[:where][:removed] = { not: true }
         set_date_range
 
         if params[:location_id].present?
@@ -44,12 +45,15 @@ module Api
 
       def show
         @event_instance = EventInstance.find(params[:id])
-        @content = @event_instance.event.content
         if @current_api_user.present?
           url = edit_event_url(@event_instance.event) if @current_api_user.has_role? :admin
         end
         if @requesting_app.present?
           ical_url = @requesting_app.uri + event_instances_ics_path(params[:id])
+        end
+
+        if @event_instance.event.content.removed?
+          update_event_instance_as_removed
         end
 
         if request.headers['HTTP_ACCEPT'] == 'text/calendar'
@@ -72,6 +76,14 @@ module Api
             end_date = start_date + 1.day
           end
           @opts[:where][:start_date] = start_date..end_date
+        end
+
+        def update_event_instance_as_removed
+          dupe = CreateAlternateContent.call(@event_instance.event.content)
+          @event_instance.event.define_singleton_method(:content) { dupe }
+          [:venue, :contact_phone, :contact_email, :event_url].each do |sym|
+            @event_instance.event.define_singleton_method(sym) { nil }
+          end
         end
 
     end

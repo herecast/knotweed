@@ -10,6 +10,7 @@ module Api
         render json: [], status: :ok and return if is_my_stuff_request? && current_user.nil?
 
         @opts = {load: false}
+        @opts[:where] = { removed: { not: true } }
         apply_standard_chronology_to_opts
         apply_standard_categories_to_opts
         apply_standard_locations_to_opts
@@ -46,6 +47,7 @@ module Api
 
         @content = Content.find(params[:id])
         if @requesting_app.present? && @requesting_app.organizations.include?(@content.organization)
+          @content = @content.removed == true ? CreateAlternateContent.call(@content) : @content
           render json: @content, serializer: ContentSerializer,
             context: { current_ability: current_ability }
         else

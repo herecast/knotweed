@@ -159,6 +159,7 @@
       = submit_tag nil, class: "btn btn-primary"
       = submit_tag "Submit and continue with this record", class: "btn btn-success", name: "continue_editing"
       = submit_tag "Submit and add new", class: "btn btn-success", name: "create_new"
+      = render 'contents/partials/crisis_submit', content: @event.content, type: 'events'
       = link_to "Cancel", :back, class: "btn cancel"
 
 - if @event.published?

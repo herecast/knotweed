@@ -133,6 +133,7 @@
         = hidden_field_tag :page, params[:page]
         = submit_tag "Submit and go to next record", class: "btn btn-success", name: "next_record"
       = submit_tag "Submit and add new", class: "btn btn-success", name: "create_new"
+      = render 'contents/partials/crisis_submit', content: @market_post.content, type: 'market_posts'
       = link_to "Cancel", :back, class: "btn cancel"
 
 - if @market_post.published?

@@ -1,8 +1,14 @@
 .row-fluid
   .span12.box.bordered-box.blue-border 
-    .box-header.blue-background
-      .title
-        %i.icon-pencil
-          Event ID #{@event.id} #{@event.title}, Content ID #{@event.content.id}
+    - if @event.content.removed
+      .box-header.red-background
+        .title
+          %i.icon-pencil
+            Event Removed! ID #{@event.id} #{@event.title}, Content ID #{@event.content.id}
+    - else
+      .box-header.blue-background
+        .title
+          %i.icon-pencil
+            Event ID #{@event.id} #{@event.title}, Content ID #{@event.content.id}
     .box-content
       = render partial: "events/partials/form"

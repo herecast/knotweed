@@ -52,6 +52,7 @@ module Api
         opts = Content.default_search_opts
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 12
+        opts[:where] = { removed: { not: true } }
         opts[:where][:published] = 1 if @repository.present?
 
         if @requesting_app.present?

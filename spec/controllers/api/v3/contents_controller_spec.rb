@@ -84,6 +84,24 @@ describe Api::V3::ContentsController, :type => :controller do
     end
   end
 
+  describe 'GET #show' do
+    before do
+      @content = FactoryGirl.create :content, :news,
+        removed: true,
+        organization: @org
+      allow(CreateAlternateContent).to receive(:call).and_return(@content)
+    end
+
+    subject { get :show, { id: @content.id, consumer_app_uri: @consumer_app.uri } }
+
+    it "makes call to create alternate content" do
+      expect(CreateAlternateContent).to receive(:call).with(
+        @content
+      )
+      subject
+    end
+  end
+
   describe 'GET similar_content' do
     before do
       ENV['sim_stack_categories'] = nil
