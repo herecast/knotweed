@@ -30,6 +30,9 @@
             = f.label :consumer_apps_id_in, "Consumer Apps"
             = f.collection_select :consumer_apps_id_in, ConsumerApp.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
+            = f.label :pay_for_content_true, "Paid for content?"
+            = f.check_box :pay_for_content_true
+          .field.span3
             = f.label :show_news_publishers, "Display Can-Publish-News Only"
             - if params[:q].present? && session[:organizations_search]
               = f.check_box :show_news_publishers, checked: params[:q][:show_news_publishers] == "1" ? true : false

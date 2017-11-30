@@ -16,7 +16,6 @@
 #  can_publish_news        :boolean          default(FALSE)
 #  subscribe_url           :string(255)
 #  description             :text
-#  pay_rate_in_cents       :integer          default(0)
 #  banner_ad_override      :string(255)
 #  profile_title           :string(255)
 #  pay_directly            :boolean          default(FALSE)
@@ -41,6 +40,7 @@
 #  contact_card_active     :boolean          default(TRUE)
 #  description_card_active :boolean          default(TRUE)
 #  hours_card_active       :boolean          default(TRUE)
+#  pay_for_content         :boolean          default(FALSE)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

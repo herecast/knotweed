@@ -136,7 +136,7 @@ class OrganizationsController < ApplicationController
         :can_publish_market, :can_publish_ads, :can_publish_talk, :can_publish_events,
         :profile_ad_override, :biz_feed_active, :ad_sales_agent, :ad_contact_nickname, :ad_contact_fullname,
         :blog_contact_name, :profile_sales_agent, :embedded_ad, :subtext_certified, :services,
-        :contact_card_active, :description_card_active, :hours_card_active,
+        :contact_card_active, :description_card_active, :hours_card_active, :pay_for_content,
         :consumer_app_ids => [], :location_ids => [],
         :business_location => [:name, :address, :venue_url, :city,
           :state, :zip, :phone, :email, :hours],

@@ -8,7 +8,6 @@ describe Api::V3::ContentReportsController, type: :controller do
       created_by: @user
     @content_report.content = @content
     @content_report.save
-    @content.organization.update_attribute(:pay_rate_in_cents, 5)
   end
 
   subject { get :index, start_date: '2015-01-01', end_date: '2017-01-01' }
@@ -25,7 +24,7 @@ describe Api::V3::ContentReportsController, type: :controller do
       "Views" => @content_report.view_count.to_s,
       "Ad Clicks" => @content_report.banner_click_count.to_s,
       "Comments" => "0",
-      "Payment" => ('%.2f' % ((@content_report.view_count + @content_report.banner_click_count)*0.05)).to_s,
+      "Paid for content?" => 'f',
       "Title + PubDate" => "#{@content_report.content.title} (#{@content_report.content.pubdate.strftime('%Y-%m-%d %H:%M:%S')})"
     })
   end

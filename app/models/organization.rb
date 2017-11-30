@@ -16,7 +16,6 @@
 #  can_publish_news        :boolean          default(FALSE)
 #  subscribe_url           :string(255)
 #  description             :text
-#  pay_rate_in_cents       :integer          default(0)
 #  banner_ad_override      :string(255)
 #  profile_title           :string(255)
 #  pay_directly            :boolean          default(FALSE)
@@ -41,6 +40,7 @@
 #  contact_card_active     :boolean          default(TRUE)
 #  description_card_active :boolean          default(TRUE)
 #  hours_card_active       :boolean          default(TRUE)
+#  pay_for_content         :boolean          default(FALSE)
 #
 # Indexes
 #
@@ -120,7 +120,6 @@ class Organization < ActiveRecord::Base
 
   ORG_TYPE_OPTIONS = ["Business", "Publisher", 'Publication', 'Blog']
   #validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
-  BLOGGER_PAY_RATES = [0, 3, 5, 8]
 
   validates_uniqueness_of :name
   validates_presence_of :name

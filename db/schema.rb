@@ -808,7 +808,6 @@ ActiveRecord::Schema.define(version: 20171109202831) do
     t.boolean  "can_publish_news",                    default: false
     t.string   "subscribe_url",           limit: 255
     t.text     "description"
-    t.integer  "pay_rate_in_cents",       limit: 8,   default: 0
     t.string   "banner_ad_override",      limit: 255
     t.string   "profile_title",           limit: 255
     t.boolean  "pay_directly",                        default: false
@@ -833,6 +832,7 @@ ActiveRecord::Schema.define(version: 20171109202831) do
     t.boolean  "contact_card_active",                 default: true
     t.boolean  "description_card_active",             default: true
     t.boolean  "hours_card_active",                   default: true
+    t.boolean  "pay_for_content",                     default: false
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
