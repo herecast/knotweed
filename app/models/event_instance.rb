@@ -21,10 +21,15 @@
 #
 
 class EventInstance < ActiveRecord::Base
-  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.searchkick_index_prefix,
-    searchable: [:content, :title, :subtitle_override, :event_category, :venue, :venue_name]
+  searchkick callbacks: :async,
+    batch_size: 100,
+    index_prefix: Figaro.env.searchkick_index_prefix,
+    searchable: [:content, :title, :subtitle, :event_category, :venue_city, :venue_name]
 
   belongs_to :event
+  delegate :created_by, :organization, :organization_id,
+    to: :event
+
   belongs_to :schedule
 
   # it was requested to only have end time, not end date.
@@ -32,40 +37,41 @@ class EventInstance < ActiveRecord::Base
   # that needs to be combined with the date from start_date into a full date.
   before_save :process_end_time
 
+  has_many :other_instances,
+# cannot eager load if we include this
+#    ->(instance) { where("id <> ?", instance.id) },
+    class_name: 'EventInstance',
+    foreign_key: 'event_id',
+    primary_key: 'event_id'
+
+
   validates_presence_of :start_date
   validate :end_date_after_start_date
 
+  scope :search_import, -> {
+    includes(
+      :other_instances,
+      {
+        event:  [
+          {
+            content: [
+              :created_by,
+              :organization,
+              {content_locations: :location},
+              {comments: :created_by},
+              :images
+            ]
+          },
+          :venue
+        ]
+      }
+    ).joins(event: :content)\
+      .where('contents.published = ?', true)\
+      .where('contents.root_content_category_id > 0')
+  }
+
   def search_data
-    data = {
-      subtitle_override: subtitle_override,
-      start_date: start_date
-    }
-    if event.present?
-      data[:event_category] = event.event_category
-      if event.venue.present?
-        data[:venue] = event.venue.city
-        data[:venue_name] = event.venue.name
-      end
-      if event.content.present?
-        data.merge!({
-          content: strip_tags(event.content.raw_content),
-          title: event.content.title,
-          pubdate: event.content.pubdate,
-          published: event.content.published,
-          all_loc_ids: event.content.all_loc_ids,
-          base_location_ids: event.content.base_locations.map(&:id),
-          about_location_ids: event.content.about_locations.map(&:id),
-          my_town_only: event.content.my_town_only,
-          removed: event.content.removed
-        })
-        if event.content.organization.present?
-          data[:base_location_ids] |= event.content.organization.base_locations.map(&:id)
-        end
-      end
-    end
-
-
-    data
+    SearchIndexing::DetailedEventInstanceSerializer.new(self).serializable_hash
   end
 
   # takes the end_date and automatically sets it to the same date as start_date,
@@ -113,6 +119,11 @@ class EventInstance < ActiveRecord::Base
     cal.add_event ics_event_attributes
     cal.to_ical
   end
+
+  def self.active_dates
+    self.group('DATE(start_date)').count
+  end
+
 
   private
 

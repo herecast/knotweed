@@ -147,6 +147,7 @@ Knotweed::Application.routes.draw do
       resources 'promotion_banners', only: [:index]
       get '/promotions', to: 'promotion_banners#show'
       get '/promotions/:promotion_id', to: 'promotion_banners#show'
+      get '/event_instances/active_dates', to: 'event_instances#active_dates'
       resources 'event_instances', only: [:index, :show]
 
       #deprecated

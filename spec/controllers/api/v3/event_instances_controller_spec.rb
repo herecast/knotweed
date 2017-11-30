@@ -57,54 +57,6 @@ describe Api::V3::EventInstancesController, :type => :controller do
       end
     end
 
-    describe 'can_edit' do
-      before do
-        @location = FactoryGirl.create :location, city: 'Another City'
-        @user = FactoryGirl.create :user, location: @location
-        @event.content.update_attribute(:created_by, @user)
-      end
-
-      subject { get :show, id: @inst.id, format: :json}
-      let(:can_edit) { JSON.parse(response.body)['event_instance']['can_edit'] }
-
-      it 'should be true for content author' do
-        api_authenticate user: @user
-        subject
-        expect(can_edit).to eq(true)
-      end
-      it 'should be false for a different user' do
-        @location = FactoryGirl.create :location, city: 'Another City'
-        @different_user = FactoryGirl.create :user, location: @location
-        api_authenticate user: @different_user
-        subject
-        expect(can_edit).to eq(false)
-      end
-      it 'should be false when a user is not logged in' do
-        subject
-        expect(can_edit).to eq(false)
-      end
-
-      context 'when user is admin' do
-        before do
-          @user = FactoryGirl.create :admin
-          api_authenticate user: @user
-        end
-        it 'should be true' do
-          subject
-          expect(can_edit).to be_truthy
-        end
-      end
-
-      context "when event does not have a schedule" do
-        it "returns false" do
-          api_authenticate user: @user
-          @inst.update_attribute(:schedule_id, nil)
-          subject
-          expect(can_edit).to be false
-        end
-      end
-    end
-
     context "when related content has been removed" do
       before do
         @event = FactoryGirl.create(:event, published: true)
@@ -143,22 +95,24 @@ describe Api::V3::EventInstancesController, :type => :controller do
   describe 'GET index', elasticsearch: true do
     describe 'date filters' do
       before do
-        @e_past = FactoryGirl.create(:event, start_date: 3.days.ago).next_or_first_instance
-        @e_future = FactoryGirl.create(:event, start_date: 1.day.from_now).next_or_first_instance
-        @e_current = FactoryGirl.create(:event, start_date: Date.current).next_or_first_instance
+        @e_past = FactoryGirl.create(:event, published: true, start_date: 3.days.ago).next_or_first_instance
+        @e_future = FactoryGirl.create(:event, published: true, start_date: 1.day.from_now).next_or_first_instance
+        @e_current = FactoryGirl.create(:event, published: true, start_date: Time.current + 1.minute).next_or_first_instance
       end
 
-      context ' when start_date is passed without category' do
-        it 'returns events on the start date' do
-          get :index
-          expect(assigns(:event_instances)).to match_array([@e_current])
+      context ' when start_date is passed' do
+        it 'returns events on or after the start date' do
+          get :index, {start_date: Date.current}
+          result_ids = assigns(:event_instances).collect(&:id)
+          expect(result_ids).to match_array([@e_current.id, @e_future.id])
         end
       end
 
       context 'when end_date is passed' do
         it 'should limit results by the passed days_ahead' do
-          get :index, days_ahead: 2
-          expect(assigns(:event_instances)).to match_array([@e_current, @e_future])
+          get :index, end_date: Time.current + 1.minute
+          result_ids = assigns(:event_instances).collect(&:id)
+          expect(result_ids).to match_array([@e_current.id])
         end
       end
 
@@ -170,22 +124,40 @@ describe Api::V3::EventInstancesController, :type => :controller do
         it "returns total event instances matching search criteria" do
           subject
           payload = JSON.parse(response.body)
-          expect(payload['meta']['total']).to eq 1
+          expect(payload['meta']['total']).to eq 2
         end
       end
-    end
 
-    context 'when category param present' do
-      before do
-        allow(GetEventsByCategories).to receive(:call).and_return []
-        @category_param = { category: 'movies' }
-      end
+      describe 'Paging' do
+        context 'Given start_date, page, per_page' do
+          let(:start_date) { 3.days.from_now - 1.hour }
+          let(:page) { 2 }
+          let(:per_page) { 1 }
 
-      subject { get :index, @category_param }
+          subject { get :index, start_date: start_date, page: page, per_page: 1 }
 
-      it 'calls GetEventsByCategories with category param' do
-        expect(GetEventsByCategories).to receive(:call).with(@category_param[:category], any_args)
-        subject
+          before do
+            FactoryGirl.create_list :event_instance, 2,
+              published: true,
+              start_date: 3.days.from_now
+
+            @records_for_page = FactoryGirl.create_list :event_instance, 3,
+              published: true,
+              start_date: 4.days.from_now
+
+            FactoryGirl.create_list :event_instance, 3,
+              published: true,
+              start_date: 5.days.from_now
+          end
+
+          it 'should page by day, not records' do
+            subject
+            expect(assigns(:event_instances).length).to eql 3
+            expect(assigns(:event_instances).map(&:id)).to include(*@records_for_page.map(&:id))
+
+            expect(JSON.parse(response.body)['meta']['total_pages']).to eql 3
+          end
+        end
       end
     end
 
@@ -193,11 +165,13 @@ describe Api::V3::EventInstancesController, :type => :controller do
       let(:location_1) { FactoryGirl.create :location }
       let!(:event_location_1) {
         FactoryGirl.create :event,
+          published: true,
           base_locations: [location_1],
           start_date: 3.hours.from_now
       }
       let!(:event_location_3) {
         FactoryGirl.create :event,
+          published: true,
           about_locations: [location_1],
           start_date: 3.hours.from_now
       }
@@ -205,6 +179,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
       let(:location_2) { FactoryGirl.create :location }
       let!(:event_location_2) {
         FactoryGirl.create :event,
+          published: true,
           base_locations: [location_2],
           start_date: 3.hours.from_now
       }
@@ -214,40 +189,45 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
         it 'returns event instances from all locations' do
           subject
-          expect(assigns(:event_instances)).to match [
-            event_location_1.event_instances,
-            event_location_3.event_instances,
-            event_location_2.event_instances
+          result_ids = assigns(:event_instances).map(&:id)
+          expect(result_ids).to match [
+            event_location_1.event_instances.map(&:id),
+            event_location_3.event_instances.map(&:id),
+            event_location_2.event_instances.map(&:id)
           ].flatten
         end
       end
 
       context 'location_id is specified' do
-        subject { get :index, location_id: location_1.slug, days_ahead: 365 }
+        subject { get :index, location_id: location_1.slug }
 
         it 'returns event instances from the specified location' do
           subject
-          expect(assigns(:event_instances)).to include *[
-            event_location_1.event_instances,
-            event_location_3.event_instances
+          results_ids = assigns(:event_instances).map(&:id)
+          expect(results_ids).to include *[
+            event_location_1.event_instances.map(&:id),
+            event_location_3.event_instances.map(&:id)
           ].flatten
         end
 
         context 'with radius specified' do
           let(:radius) { 20 }
           let!(:near_event) {
-            FactoryGirl.create :event, locations: [
-              FactoryGirl.create(:location, coordinates: Geocoder::Calculations.random_point_near(
-                location_1,
-                19, units: :mi
-              )),
-              FactoryGirl.create(:location)
-            ]
+            FactoryGirl.create :event,
+              published: true,
+              locations: [
+                FactoryGirl.create(:location, coordinates: Geocoder::Calculations.random_point_near(
+                  location_1,
+                  19, units: :mi
+                )),
+                FactoryGirl.create(:location)
+              ]
           }
 
           it 'returns event instances located within radius' do
             get :index, location_id: location_1.slug, radius: radius, days_ahead: 365
-            expect(assigns(:event_instances).results).to include *near_event.event_instances
+            results_ids = assigns(:event_instances).map(&:id)
+            expect(results_ids).to include *near_event.event_instances.map(&:id)
           end
 
           context 'My town only' do
@@ -278,18 +258,6 @@ describe Api::V3::EventInstancesController, :type => :controller do
       end
     end
 
-
-    describe 'pagination' do
-      before do
-        @count = 5
-        FactoryGirl.create_list :event, @count, start_date: Date.current
-      end
-
-      it 'should return paginated results' do
-        get :index, per_page: @count - 1
-        expect(assigns(:event_instances).length).to eq(@count -1)
-      end
-    end
   end
 
 end

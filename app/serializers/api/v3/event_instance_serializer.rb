@@ -1,23 +1,113 @@
 module Api
   module V3
     class EventInstanceSerializer < ActiveModel::Serializer
-
-      attributes :id, :subtitle, :starts_at, :ends_at, :image_url,
-        :venue_name, :venue_address, :venue_city, :venue_state, 
+      attributes :id, :title, :subtitle, :starts_at, :ends_at, :image_url,
+        :venue_name, :venue_address, :venue_city, :venue_state, :venue_url,
+        :venue_longitude, :venue_latitude, :venue_locate_name,
         :venue_zip, :presenter_name, :registration_deadline, :cost_type,
-        :created_at, :updated_at, :image_width, :image_height, :image_file_extension
+        :created_at, :updated_at, :image_width, :image_height, :image_file_extension,
+        :author_id, :author_name, :avatar_url, :organization_id, :organization_name, :organization_profile_image_url, :organization_biz_feed_active, :published_at, 
+        :content,
+        :content_id, :comment_count, :cost, :contact_email, :contact_phone, :updated_at, :event_id, :ical_url, :can_edit
 
-      SHARED_EVENT_ATTRIBUTES = [:title]
+      has_many :comments, serializer: Api::V3::CommentSerializer
+      has_many :event_instances, serializer: Api::V3::RelatedEventInstanceSerializer
+      has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
+      def ical_url
+        context[:ical_url] if context.present?
+      end
 
-      SHARED_EVENT_ATTRIBUTES.each do |w|
-        define_method(w) do
-          object.event.send(w)
+      def can_edit
+        if context.present? && context[:current_ability].present?
+          context[:current_ability].can?(:manage, object)
+        else
+          false
         end
       end
 
-      def filter(keys)
-        keys += SHARED_EVENT_ATTRIBUTES
-        keys
+      def event_instances
+        object.other_instances
+      end
+
+      def content_locations
+        object.event.content.content_locations
+      end
+
+      def comments
+        object.event.content.comments
+      end
+
+      def cost
+        object.event.cost
+      end
+
+      def cost_type
+        object.event.cost_type
+      end
+
+      def updated_at
+        object.event.content.updated_at
+      end
+
+      def contact_email
+        object.event.contact_email
+      end
+
+      def contact_phone
+        object.event.contact_phone
+      end
+
+      def event_id
+        object.event.id
+      end
+
+      def title
+        object.event.title
+      end
+
+      def published_at
+        object.event.content.pubdate
+      end
+
+      def content
+        object.event.content.sanitized_content
+      end
+
+      def content_id
+        object.event.content.id
+      end
+
+      def comment_count
+        object.event.content.comment_count
+      end
+
+      def author_id
+        object.event.content.created_by.try :id
+      end
+
+      def author_name
+        object.event.content.created_by.try :name
+      end
+
+      def avatar_url
+        object.event.content.created_by.try :avatar_url
+      end
+
+      def organization_biz_feed_active
+        object.event.content.organization.try :biz_feed_active
+      end
+
+      def organization_id
+        object.event.content.organization.try :id
+      end
+
+      def organization_name
+        object.event.content.organization.try :name
+      end
+
+      def organization_profile_image_url
+        object.event.content.organization.try(:profile_image_url) ||
+          object.event.content.organization.try(:logo_url)
       end
 
       def subtitle

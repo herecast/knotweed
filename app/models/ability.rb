@@ -35,6 +35,7 @@ class Ability
         can :manage, Organization, id: org_ids
         can :manage, Content, organization_id: org_ids
         can :manage, Hashie::Mash, _type: 'content', organization_id: org_ids
+        can :manage, Hashie::Mash, _type: 'event_instance', organization_id: org_ids
 
         can :access, :admin if managed_orgs.present? # allow basic access if they have some management position
       end
@@ -42,6 +43,7 @@ class Ability
       # all users can manage their own content
       can :manage, Content, created_by: user
       can :manage, Hashie::Mash, _type: 'content', created_by: {id: user.id}
+      can :manage, Hashie::Mash, _type: 'event_instance', created_by: {id: user.id}
     end
   end
 end

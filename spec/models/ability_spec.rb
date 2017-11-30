@@ -45,6 +45,14 @@ describe Ability, :type => :model do
         Hashie::Mash.new(_type: 'content', organization_id: @child.id)
       }
 
+      let(:hashie_event_instance_by_org) {
+        Hashie::Mash.new(_type: 'event_instance', organization_id: @org.id)
+      }
+
+      let(:hashie_event_instance_by_child_org) {
+        Hashie::Mash.new(_type: 'event_instance', organization_id: @child.id)
+      }
+
       let(:user){ @user }
 
       it{ is_expected.to be_able_to(:access, :admin) }
@@ -55,6 +63,8 @@ describe Ability, :type => :model do
 
       it{ is_expected.to be_able_to(:manage, hashie_content_by_org) }
       it{ is_expected.to be_able_to(:manage, hashie_content_by_child_org) }
+      it{ is_expected.to be_able_to(:manage, hashie_event_instance_by_org) }
+      it{ is_expected.to be_able_to(:manage, hashie_event_instance_by_child_org) }
     end
 
     context "when is an event manager" do
@@ -99,11 +109,21 @@ describe Ability, :type => :model do
         Hashie::Mash.new(_type: 'content', created_by: {id: 9099809})
       }
 
+      let(:hashie_instance_owned) {
+        Hashie::Mash.new(_type: 'event_instance', created_by: {id: user.id})
+      }
+
+      let(:hashie_instance_not_owned) {
+        Hashie::Mash.new(_type: 'event_instance', created_by: {id: 9099809})
+      }
+
       it { is_expected.to be_able_to(:manage, @content) }
       it { is_expected.not_to be_able_to(:manage, @other_content) }
 
       it{ is_expected.to be_able_to(:manage, hashie_content_owned) }
       it{ is_expected.not_to be_able_to(:manage, hashie_content_not_owned) }
+      it{ is_expected.to be_able_to(:manage, hashie_instance_owned) }
+      it{ is_expected.not_to be_able_to(:manage, hashie_instance_not_owned) }
     end
   end
 end

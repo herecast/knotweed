@@ -254,6 +254,9 @@ class Content < ActiveRecord::Base
   belongs_to :root_parent, class_name: self.name
   delegate :view_count, :comment_count, :commenter_count, to: :parent, prefix: true
   has_many :children, class_name: "Content", foreign_key: "parent_id"
+  has_many :comments, -> {
+    where('channel_type = ?', 'Comment')
+  }, class_name: "Content", foreign_key: "parent_id"
 
   has_many :promotions
 
@@ -1275,10 +1278,6 @@ class Content < ActiveRecord::Base
     CGI.escape(BASE_URI + "/#{id}")
   end
 
-  # NOTE: returns the content records of child comments, NOT the comment records.
-  def comments
-    children.where(channel_type: 'Comment')
-  end
 
   def talk_comments
     children.where(root_content_category_id: [ContentCategory.find_by_name('discussion'), ContentCategory.find_by_name('talk_of_the_town').id])

@@ -61,13 +61,13 @@ describe Comment, :type => :model do
       expect(@parent.commenter_count).to eq(count + 1)
     end
 
-    it "should not increase the counter commenters" do
-      User.current=@user
+    it "should not increase the counter commenters, if same user" do
       count = @parent.commenter_count
-      @content = FactoryGirl.create :content
+      @content = FactoryGirl.create :content, created_by: @user
       @content.parent = @parent
       @content.save
-      @content = FactoryGirl.create :content
+
+      @content = FactoryGirl.create :content, created_by: @user
       @content.parent = @parent
       @content.save
       FactoryGirl.create :comment, content: @content

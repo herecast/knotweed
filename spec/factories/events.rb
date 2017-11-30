@@ -34,12 +34,32 @@ FactoryGirl.define do
       description_override nil
       skip_event_instance false
       created_by nil
-      published false
+      published true
       locations nil
       content_locations nil
     end
 
-    association :content, :event, channel: nil
+    content {
+      FactoryGirl.build(:content, :event, {
+        channel: nil,
+        published: published
+      }.tap do |attrs|
+        if created_by
+          attrs[:created_by] = created_by
+        end
+
+        if locations
+          attrs[:content_locations] = locations.map do |location|
+            ContentLocation.new(
+              location: location
+            )
+          end
+        elsif content_locations
+          attrs[:content_locations] = content_locations
+        end
+      end)
+    }
+
     featured false
     association :venue, factory: :business_location
     contact_phone "888-888-8888"
@@ -49,32 +69,12 @@ FactoryGirl.define do
 
     after(:build) do |e, evaluator|
       unless evaluator.skip_event_instance
-        ei = FactoryGirl.create :event_instance, start_date: evaluator.start_date,
+        ei = FactoryGirl.build :event_instance,
+          event: e,
+          start_date: evaluator.start_date,
           subtitle_override: evaluator.subtitle_override, description_override: evaluator.description_override
         e.event_instances << ei
       end
-
-      if e.content
-        if ContentCategory.exists?(name: 'event')
-          e.content.content_category = ContentCategory.find_by name: 'event'
-        else
-          e.content.content_category = FactoryGirl.build :content_category, name: 'event'
-        end
-        e.content.published = evaluator.published
-        e.content.created_by = evaluator.created_by if evaluator.created_by.present?
-
-        if evaluator.locations
-          e.content.content_locations = []
-          evaluator.locations.each do |location|
-            e.content.content_locations << ContentLocation.new(
-              location: location
-            )
-          end
-        elsif evaluator.content_locations
-          e.content.content_locations = evaluator.content_locations
-        end
-      end
     end
-
   end
 end

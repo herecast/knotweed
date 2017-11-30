@@ -5,7 +5,7 @@ describe Api::V3::DashboardContentSerializer do
     @content = FactoryGirl.create :content, :located
   end
 
-  let (:serialized_object) { JSON.parse(Api::V3::DashboardContentSerializer.new(@content, root: false).to_json) }
+  let (:serialized_object) { JSON.parse(Api::V3::DashboardContentSerializer.new(@content.reload, root: false).to_json) }
 
   [:id,
    :title,

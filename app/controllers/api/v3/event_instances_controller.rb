@@ -3,44 +3,27 @@ module Api
     class EventInstancesController < ApiController
 
       def index
-        expires_in 1.minutes, public: true
-        @opts = {}
-        @opts[:order] = { start_date: :asc }
-        @opts[:per_page] = params[:per_page]
-        @opts[:page] = params[:page] || 1
-        @opts[:where] = {}
-        @opts[:where][:published] = 1 if @repository.present?
-        @opts[:where][:removed] = { not: true }
-        set_date_range
+#        expires_in 1.minutes, public: true
+        opts = {load: false}
+        opts[:order] = { starts_at: :asc }
+        opts[:where] = {}
+        opts[:where][:published] = 1 if @repository.present?
+        opts[:where][:removed] = { not: true }
 
-        if params[:location_id].present?
-          @opts[:where][:or] ||= []
-          location = Location.find_by_slug_or_id(params[:location_id])
+        apply_date_and_paging opts
+        apply_query_location_filters opts
 
-          if params[:radius].present? && params[:radius].to_i > 0
-            locations_within_radius = Location.within_radius_of(location, params[:radius].to_i).map(&:id)
+        query = params[:query].present? ? params[:query] : "*"
+        total_pages = _active_dates.count
 
-            @opts[:where][:or] << [
-              {my_town_only: false, all_loc_ids: locations_within_radius},
-              {my_town_only: true, all_loc_ids: [location.id]}
-            ]
-          else
-            @opts[:where][:or] << [
-              {base_location_ids: [location.id]},
-              {about_location_ids: [location.id]}
-            ]
-          end
-        end
+        @event_instances = EventInstance.search(query, opts)
 
-        if params[:category].present? && params[:category] != 'Everything'
-          @event_instances = GetEventsByCategories.call(params[:category], @opts)
-        else
-          query = params[:query].present? ? params[:query] : "*"
-          @event_instances = EventInstance.search(query, @opts)
-        end
-
-        render json: @event_instances, each_serializer: EventInstanceSerializer,
-          meta: { total: @event_instances.try(:total_entries) || @event_instances.count }
+        render json: @event_instances, each_serializer: HashieMashes::DetailedEventInstanceSerializer,
+          meta: {
+            count: @event_instances.count,
+            total: @event_instances.try(:total_count) || @event_instances.count,
+            total_pages: total_pages
+          }
       end
 
       def show
@@ -59,23 +42,115 @@ module Api
         if request.headers['HTTP_ACCEPT'] == 'text/calendar'
           render text: @event_instance.to_ics
         else
-          render json: @event_instance, root: 'event_instance', serializer: DetailedEventInstanceSerializer,
+          render json: @event_instance, root: 'event_instance', serializer: EventInstanceSerializer,
             context: { current_ability: current_ability, admin_content_url: url, ical_url: ical_url }
         end
       end
 
+      def active_dates
+        expires_in 1.minutes, public: true
+        render json: {active_dates: _active_dates}.to_json, root: 'active_dates'
+      end
+
       private
 
-        def set_date_range
-          start_date = Chronic.parse(params[:date_start]).try(:beginning_of_day) || Date.current.beginning_of_day
-          if params[:days_ahead].present?
-            end_date = start_date + params[:days_ahead].to_i.days
-          elsif params[:category].present?
-            end_date = start_date + 7.days
-          else
-            end_date = start_date + 1.day
+        def _active_dates
+          @_active_dates ||= begin
+            opts = {load: false, limit: 0}
+            opts[:where] = {}
+            opts[:where][:published] = 1 if @repository.present?
+            apply_query_date_range opts
+            apply_query_location_filters opts
+
+            requested_start = (params[:start_date].present? ? DateTime.parse(params[:start_date]) : DateTime.now)
+            timezone_offset = params[:start_date].present? ? requested_start.zone : Time.zone.now.strftime('%z')
+
+            # Searchkick doesn't let this pass through directly
+            # unless we use body_options
+            opts[:body_options] ={
+              aggs: {
+                records_by_date: {
+                  date_histogram: {
+                    field: :starts_at,
+                    interval: :day,
+                    time_zone: timezone_offset,
+                    format: "yyyy-MM-dd"
+                  }
+                }
+              }
+            }
+
+            query = params[:query].present? ? params[:query] : "*"
+
+            results = EventInstance.search(query, opts).aggs['records_by_date']['buckets']
+
+            mapped_results = results.select do |result|
+              result['doc_count'] > 0
+            end.map do |result|
+              EventInstanceActiveDate.new(
+                date: result['key_as_string'],
+                count: result['doc_count']
+              )
+            end.sort_by(&:date)
+            mapped_results
           end
-          @opts[:where][:start_date] = start_date..end_date
+        end
+
+        def apply_query_date_range(opts)
+          if params[:start_date].present?
+            start_date = Time.parse(params[:start_date])
+          end
+
+          start_date ||= Time.current
+
+          if params[:end_date].present?
+            end_date = Time.parse(params[:end_date])
+          else
+            end_date = (start_date + 1.year).end_of_month
+          end
+          opts[:where][:starts_at] = start_date..end_date
+        end
+
+        def apply_date_and_paging(opts)
+          requested_start = (params[:start_date].present? ? DateTime.parse(params[:start_date]) : DateTime.now)
+          timezone_offset = params[:start_date].present? ? requested_start.zone : Time.zone.now.strftime('%Z')
+
+          page = (params[:page] || 1).to_i
+          per_page = (params[:per_page] || 10).to_i
+
+          day_offset = (page - 1) * per_page
+          day_window = _active_dates.map(&:date).slice(day_offset, per_page)
+
+          start_date = (
+            day_window.first || DateTime.now
+          ).to_datetime.change(offset: timezone_offset)
+
+          end_date = (
+            day_window.last || DateTime.now
+          ).to_datetime.change(offset: timezone_offset)
+
+          opts[:where][:starts_at] = start_date.beginning_of_day..end_date.end_of_day
+        end
+
+        def apply_query_location_filters(opts)
+          if params[:location_id].present?
+            opts[:where][:or] ||= []
+            location = Location.find_by_slug_or_id(params[:location_id])
+
+            if params[:radius].present? && params[:radius].to_i > 0
+              locations_within_radius = Location.within_radius_of(location, params[:radius].to_i).map(&:id)
+
+              opts[:where][:or] << [
+                {my_town_only: false, all_loc_ids: locations_within_radius},
+                {my_town_only: true, all_loc_ids: [location.id]}
+              ]
+            else
+              opts[:where][:or] << [
+                {base_location_ids: [location.id]},
+                {about_location_ids: [location.id]}
+              ]
+            end
+          end
         end
 
         def update_event_instance_as_removed

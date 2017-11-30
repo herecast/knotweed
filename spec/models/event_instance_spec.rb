@@ -19,6 +19,7 @@ require 'spec_helper'
 describe EventInstance, :type => :model do
   before do
     content = FactoryGirl.create :content, :event,
+      published: true,
       raw_content: 'cool description',
       subtitle: 'helpful subtitle'
 
@@ -31,7 +32,7 @@ describe EventInstance, :type => :model do
       @event.save
       EventInstance.reindex
     end
-    
+
     subject { EventInstance.search(search_term) }
 
     describe 'by venue name' do
@@ -41,7 +42,7 @@ describe EventInstance, :type => :model do
         expect(subject).to match_array(@event.event_instances)
       end
     end
-    
+
   end
 
   describe "validation" do

@@ -16,4 +16,17 @@ namespace :indexing do
     Content.search_import.where('contents.updated_at > ?', 2.hours.ago).each(&:reindex_async)
     puts "Operation completed"
   end
+
+  task :rebuild_event_instance_index => :environment do
+    EventInstance.reindex import: false
+    EventInstance.search_import\
+      .where('start_date >= ?', Time.current).find_each(&:reindex)
+  end
+
+  task :full_reindex_event_instances => :environment do
+    index_name = EventInstance.reindex(async: {wait: true}, refresh_interval: "30s")
+    puts "Reindexing last hour"
+    EventInstance.search_import.where('event_instances.updated_at > ?', 2.hours.ago).each(&:reindex_async)
+    puts "Operation completed"
+  end
 end

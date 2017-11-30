@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171103201030) do
+ActiveRecord::Schema.define(version: 20171109202831) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -795,44 +795,44 @@ ActiveRecord::Schema.define(version: 20171103201030) do
   add_index "organization_locations", ["organization_id"], name: "index_organization_locations_on_organization_id", using: :btree
 
   create_table "organizations", id: :bigserial, force: :cascade do |t|
-    t.string   "name",                limit: 255
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
-    t.string   "logo",                limit: 255
-    t.integer  "organization_id",     limit: 8
-    t.string   "website",             limit: 255
+    t.string   "name",                    limit: 255
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+    t.string   "logo",                    limit: 255
+    t.integer  "organization_id",         limit: 8
+    t.string   "website",                 limit: 255
     t.text     "notes"
-    t.integer  "parent_id",           limit: 8
-    t.string   "org_type",            limit: 255
-    t.boolean  "can_reverse_publish",             default: false
-    t.boolean  "can_publish_news",                default: false
-    t.string   "subscribe_url",       limit: 255
+    t.integer  "parent_id",               limit: 8
+    t.string   "org_type",                limit: 255
+    t.boolean  "can_reverse_publish",                 default: false
+    t.boolean  "can_publish_news",                    default: false
+    t.string   "subscribe_url",           limit: 255
     t.text     "description"
-    t.integer  "pay_rate_in_cents",   limit: 8,   default: 0
-    t.string   "banner_ad_override",  limit: 255
-    t.string   "profile_title",       limit: 255
-    t.boolean  "pay_directly",                    default: false
-    t.boolean  "can_publish_events",              default: false
-    t.boolean  "can_publish_market",              default: false
-    t.boolean  "can_publish_talk",                default: false
-    t.boolean  "can_publish_ads",                 default: false
-    t.string   "profile_image",       limit: 255
-    t.string   "background_image",    limit: 255
-    t.string   "profile_ad_override", limit: 255
+    t.integer  "pay_rate_in_cents",       limit: 8,   default: 0
+    t.string   "banner_ad_override",      limit: 255
+    t.string   "profile_title",           limit: 255
+    t.boolean  "pay_directly",                        default: false
+    t.boolean  "can_publish_events",                  default: false
+    t.boolean  "can_publish_market",                  default: false
+    t.boolean  "can_publish_talk",                    default: false
+    t.boolean  "can_publish_ads",                     default: false
+    t.string   "profile_image",           limit: 255
+    t.string   "background_image",        limit: 255
+    t.string   "profile_ad_override",     limit: 255
     t.jsonb    "custom_links"
     t.string   "twitter_handle"
-    t.boolean  "biz_feed_active",                 default: false
+    t.boolean  "biz_feed_active",                     default: false
     t.string   "ad_sales_agent"
     t.string   "ad_contact_nickname"
     t.string   "ad_contact_fullname"
     t.string   "profile_sales_agent"
     t.string   "blog_contact_name"
-    t.boolean  "embedded_ad",                     default: false
-    t.boolean  "subtext_certified",               default: false
+    t.boolean  "embedded_ad",                         default: false
+    t.boolean  "subtext_certified",                   default: false
     t.string   "services"
-    t.boolean  "contact_card_active",             default: true
-    t.boolean  "description_card_active",         default: true
-    t.boolean  "hours_card_active",               default: true
+    t.boolean  "contact_card_active",                 default: true
+    t.boolean  "description_card_active",             default: true
+    t.boolean  "hours_card_active",                   default: true
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree

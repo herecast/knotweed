@@ -19,7 +19,7 @@ then
     die "The aws command must be in your PATH and credentials must be configured. This is needed to retrieve the docker image for dor"
 fi
 
-if ! creds=$(aws ecr get-login --region us-east-1); then
+if ! creds=$(aws ecr get-login --region us-east-1 --no-include-email); then
     die "Failed to get ECR credentials needed to retrieve image"
 fi
 eval $creds &>/dev/null

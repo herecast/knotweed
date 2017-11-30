@@ -27,7 +27,7 @@ shared_examples 'Auditable' do |model|
 
   describe 'created_by' do
     it "should set updated and created by when a #{model.to_s} is created" do
-      obj = FactoryGirl.create model_symbol
+      obj = FactoryGirl.create model_symbol, created_by: nil
       expect(obj.created_by).to eq(@user)
       expect(obj.updated_by).to eq(@user)
     end

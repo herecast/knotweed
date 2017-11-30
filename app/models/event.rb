@@ -36,6 +36,8 @@ class Event < ActiveRecord::Base
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
   validates_associated :content
+  delegate :created_by, :organization, :organization_id,
+    to: :content
 
   has_one :source, through: :content, class_name: "Organization", foreign_key: "organization_id"
   has_one :content_category, through: :content
