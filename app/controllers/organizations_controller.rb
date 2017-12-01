@@ -6,6 +6,7 @@ class OrganizationsController < ApplicationController
     if params[:reset]
       session[:organizations_search] = nil
     elsif params[:q].present?
+      params[:q].delete(:pay_for_content_true) if params[:q][:pay_for_content_true] == '0'
       session[:organizations_search] = params[:q]
     end
     @search = Organization.ransack(session[:organizations_search])
