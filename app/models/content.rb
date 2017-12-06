@@ -59,7 +59,9 @@
 #  ad_max_impressions        :integer
 #  short_link                :string
 #  ad_invoiced_amount        :float
+#  first_served_at           :datetime
 #  removed                   :boolean          default(FALSE)
+#  ugc_job                   :string
 #
 # Indexes
 #

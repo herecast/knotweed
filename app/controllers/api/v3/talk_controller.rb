@@ -77,6 +77,7 @@ module Api
               :pubdate,
               :organization_id,
               :content_category_id,
+              :ugc_job,
               content_locations_attributes: [
                 :id, :location_type, :location_id
               ]
@@ -94,7 +95,8 @@ module Api
               pubdate: Time.zone.now,
               organization_id: params[:talk][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
               content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id,
-              promote_radius: params[:talk][:promote_radius]
+              promote_radius: params[:talk][:promote_radius],
+              ugc_job: params[:talk][:ugc_job]
             }.tap do |h|
               if params[:talk][:content_locations].present?
                 h[:content_locations_attributes] = params[:talk][:content_locations].tap do |h|

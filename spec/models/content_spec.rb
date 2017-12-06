@@ -69,6 +69,7 @@ describe Content, :type => :model do
   it { is_expected.to have_many 'locations' }
   it { is_expected.to have_db_column :promote_radius }
   it { is_expected.to have_db_column(:short_link).of_type(:string) }
+  it { is_expected.to have_db_column(:ugc_job).of_type(:string) }
 
   before { allow_any_instance_of(Promotion).to receive(:update_active_promotions).and_return(true) }
 

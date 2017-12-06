@@ -246,9 +246,10 @@ describe Api::V3::EventsController, :type => :controller do
   end
 
   describe 'POST create' do
-    
     before do
       allow(BitlyService).to receive(:create_short_link).with(any_args).and_return('http://bit.ly/12345')
+
+      @event_attrs[:ugc_job] = "Schedule a yoga class"
     end
 
     subject { post :create, format: :json, event: @event_attrs, current_user_id: @current_user.id }
@@ -259,6 +260,7 @@ describe Api::V3::EventsController, :type => :controller do
       expect(Event.count).to eq(1)
       expect(assigns(:event).event_instances.count).to eq(1)
       expect(assigns(:event).content.title).to eq(@event_attrs[:title])
+      expect(assigns(:event).content.ugc_job).to eq(@event_attrs[:ugc_job])
     end
 
     context 'should respond with a 401 if user is not authenticated' do

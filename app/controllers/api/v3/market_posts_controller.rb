@@ -157,6 +157,7 @@ module Api
               :organization_id,
               :my_town_only,
               :promote_radius,
+              :ugc_job,
               location_ids: [],
               content_locations_attributes: [
                 :id,
@@ -179,7 +180,8 @@ module Api
               pubdate: Time.zone.now,
               timestamp: Time.zone.now,
               organization_id: params[:market_post][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
-              promote_radius: params[:market_post].delete(:promote_radius)
+              promote_radius: params[:market_post].delete(:promote_radius),
+              ugc_job: params[:market_post][:ugc_job]
             }
           }
         end

@@ -69,6 +69,7 @@ describe 'Market Posts', type: :request do
         {
           title: 'Test',
           content: 'Body',
+          ugc_job: 'Sell my bike',
           promote_radius: 25
         }
       }
@@ -84,6 +85,10 @@ describe 'Market Posts', type: :request do
         expect{ subject }.to change{
           MarketPost.count
         }.by(1)
+
+        content = Content.last
+        expect(content.title).to eq 'Test'
+        expect(content.ugc_job).to eq 'Sell my bike'
       end
 
       it 'returns a content_id in json' do

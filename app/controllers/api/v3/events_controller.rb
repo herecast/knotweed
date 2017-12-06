@@ -147,6 +147,7 @@ module Api
         new_e = { content_attributes: {} }
         new_e[:content_attributes][:raw_content] = e[:content] if e.has_key? :content
         new_e[:content_attributes][:title] = e[:title] if e.has_key? :title
+        new_e[:content_attributes][:ugc_job] = e[:ugc_job] if e.has_key? :ugc_job
 
         if(e[:content_locations].present?)
           new_e[:content_attributes][:content_locations_attributes] = e[:content_locations].tap do |h|

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171109202831) do
+ActiveRecord::Schema.define(version: 20171206140851) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -378,6 +378,7 @@ ActiveRecord::Schema.define(version: 20171109202831) do
     t.float    "ad_invoiced_amount"
     t.datetime "first_served_at"
     t.boolean  "removed",                               default: false
+    t.string   "ugc_job"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree
@@ -651,9 +652,9 @@ ActiveRecord::Schema.define(version: 20171109202831) do
     t.string   "mc_segment_id"
     t.string   "title"
     t.string   "preheader"
+    t.integer  "promotion_ids",        default: [],              array: true
     t.integer  "content_ids",                                    array: true
     t.integer  "listserv_content_ids",                           array: true
-    t.integer  "promotion_ids",        default: [],              array: true
   end
 
   add_index "listserv_digests", ["listserv_id"], name: "index_listserv_digests_on_listserv_id", using: :btree
@@ -683,13 +684,13 @@ ActiveRecord::Schema.define(version: 20171109202831) do
     t.text     "digest_query"
     t.string   "template"
     t.string   "sponsored_by"
+    t.boolean  "display_subscribe",                       default: false
     t.string   "digest_subject"
     t.string   "digest_preheader"
-    t.boolean  "display_subscribe",                       default: false
     t.string   "list_type",                               default: "custom_list"
     t.string   "sender_name"
-    t.string   "admin_email"
     t.integer  "promotion_ids",                           default: [],                                        array: true
+    t.string   "admin_email"
     t.string   "forwarding_email"
     t.boolean  "forward_for_processing",                  default: false
     t.integer  "post_threshold",                          default: 0
@@ -818,8 +819,8 @@ ActiveRecord::Schema.define(version: 20171109202831) do
     t.string   "profile_image",           limit: 255
     t.string   "background_image",        limit: 255
     t.string   "profile_ad_override",     limit: 255
-    t.jsonb    "custom_links"
     t.string   "twitter_handle"
+    t.jsonb    "custom_links"
     t.boolean  "biz_feed_active",                     default: false
     t.string   "ad_sales_agent"
     t.string   "ad_contact_nickname"
@@ -1144,7 +1145,7 @@ ActiveRecord::Schema.define(version: 20171109202831) do
     t.boolean  "skip_analytics",                     default: false
     t.string   "temp_password"
     t.boolean  "archived",                           default: false
-    t.string   "source",                 limit: 255
+    t.string   "source"
     t.boolean  "receive_comment_alerts",             default: true
     t.boolean  "location_confirmed",                 default: false
   end
@@ -1174,6 +1175,66 @@ ActiveRecord::Schema.define(version: 20171109202831) do
   end
 
   add_index "wufoo_forms", ["controller", "action", "active"], name: "idx_16881_index_wufoo_forms_on_controller_and_action_and_active", unique: true, using: :btree
+
+  create_table "x_content_campaigns", id: false, force: :cascade do |t|
+    t.integer  "id",                        limit: 8
+    t.string   "title",                     limit: 255
+    t.string   "subtitle",                  limit: 255
+    t.string   "authors",                   limit: 255
+    t.text     "raw_content"
+    t.integer  "issue_id",                  limit: 8
+    t.integer  "import_location_id",        limit: 8
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "copyright",                 limit: 255
+    t.string   "guid",                      limit: 255
+    t.datetime "pubdate"
+    t.string   "source_category",           limit: 255
+    t.string   "topics",                    limit: 255
+    t.string   "url",                       limit: 255
+    t.string   "origin",                    limit: 255
+    t.string   "language",                  limit: 255
+    t.string   "page",                      limit: 255
+    t.string   "authoremail",               limit: 255
+    t.integer  "organization_id",           limit: 8
+    t.boolean  "quarantine"
+    t.string   "doctype",                   limit: 255
+    t.datetime "timestamp"
+    t.string   "contentsource",             limit: 255
+    t.integer  "import_record_id",          limit: 8
+    t.string   "source_content_id",         limit: 255
+    t.integer  "parent_id",                 limit: 8
+    t.integer  "content_category_id",       limit: 8
+    t.boolean  "category_reviewed"
+    t.boolean  "has_event_calendar"
+    t.integer  "channelized_content_id",    limit: 8
+    t.boolean  "published"
+    t.string   "channel_type",              limit: 255
+    t.integer  "channel_id",                limit: 8
+    t.integer  "root_content_category_id",  limit: 8
+    t.integer  "view_count",                limit: 8
+    t.integer  "comment_count",             limit: 8
+    t.integer  "commenter_count",           limit: 8
+    t.integer  "created_by",                limit: 8
+    t.integer  "updated_by",                limit: 8
+    t.integer  "banner_click_count",        limit: 8
+    t.text     "similar_content_overrides"
+    t.integer  "banner_ad_override",        limit: 8
+    t.integer  "root_parent_id",            limit: 8
+    t.datetime "deleted_at"
+    t.boolean  "authors_is_created_by"
+    t.string   "subscriber_mc_identifier"
+    t.boolean  "biz_feed_public"
+    t.datetime "sunset_date"
+    t.integer  "promote_radius"
+    t.string   "ad_promotion_type"
+    t.date     "ad_campaign_start"
+    t.date     "ad_campaign_end"
+    t.integer  "ad_max_impressions"
+    t.string   "short_link"
+    t.float    "ad_invoiced_amount"
+    t.datetime "first_served_at"
+  end
 
   add_foreign_key "campaigns", "listservs"
   add_foreign_key "content_locations", "contents"

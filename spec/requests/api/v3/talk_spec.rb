@@ -76,6 +76,7 @@ describe 'Talk', type: :request do
         {
           title: 'Test',
           content: 'Body',
+          ugc_job: "Make a long winded speach",
           content_locations: [{
             location_id: FactoryGirl.create(:location).slug
           }]
@@ -93,6 +94,10 @@ describe 'Talk', type: :request do
         expect{ subject }.to change{
           Comment.count
         }.by(1)
+
+        content = Content.last
+        expect(content.title).to eql 'Test'
+        expect(content.ugc_job).to eql 'Make a long winded speach'
       end
 
       it 'returns a content_id in json' do

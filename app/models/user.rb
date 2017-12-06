@@ -37,7 +37,8 @@
 #  temp_password          :string
 #  archived               :boolean          default(FALSE)
 #  source                 :string
-#  receive_comment_alerts :boolean          default(FALSE)
+#  receive_comment_alerts :boolean          default(TRUE)
+#  location_confirmed     :boolean          default(FALSE)
 #
 # Indexes
 #
