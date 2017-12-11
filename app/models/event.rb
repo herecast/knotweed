@@ -170,4 +170,8 @@ class Event < ActiveRecord::Base
     end
   end
 
+  def event_instance_ids
+    event_instances.pluck(:id)
+  end
+
 end

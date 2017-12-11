@@ -41,6 +41,7 @@ Knotweed::Application.routes.draw do
     resources :contents
     post "content/removals", to: "contents/removals#create"
     delete "content/removals", to: "contents/removals#destroy"
+    post "content/facebook_scraping", to: "contents/facebook_scrapings#create"
     resources :campaigns, except: [:show, :destroy]
     resources :comments, only: [:index, :update, :destroy]
     get "issues/select_options", to: "issues#select_options", as: :issue_select_options

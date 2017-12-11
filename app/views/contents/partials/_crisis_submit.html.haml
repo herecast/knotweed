@@ -1,3 +1,4 @@
+= link_to "Facebook Scrape", content_facebook_scraping_path(content_id: content.id), class: "btn btn-warning", method: :post
 - if content.removed
   = link_to "Republish Content", content_removals_path(content_id: content.id, type: type), class: "btn btn-warning", method: :delete
 - else
