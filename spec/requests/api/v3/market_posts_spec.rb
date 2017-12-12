@@ -9,7 +9,10 @@ describe 'Market Posts', type: :request do
 
   describe 'GET /api/v3/market_posts/:id' do
     let(:organization) { FactoryGirl.create :organization, name: "TESTORG" }
-    let(:market_post) { FactoryGirl.create :market_post }
+    let(:market_post) {
+      FactoryGirl.create :market_post,
+        base_locations: [FactoryGirl.create(:location)]
+    }
     let(:headers) { {
       'ACCEPT' => 'application/json',
       'Consumer-App-Uri' => consumer_app.uri
@@ -23,8 +26,8 @@ describe 'Market Posts', type: :request do
 
     it 'returns all public attributes in correct schema' do
       get "/api/v3/market_posts/#{market_post.content.id}.json", {}, headers
-      expect(response_json).to match(
-        market_post: a_hash_including({
+      expect(response.body).to include_json(
+        market_post: {
           id: market_post.id,
           title: market_post.content.sanitized_title,
           price: market_post.cost,
@@ -32,30 +35,39 @@ describe 'Market Posts', type: :request do
           content_id: market_post.content.id,
           published_at: market_post.pubdate.try(:iso8601),
           locate_address: market_post.locate_address,
-          can_edit: be_boolean,
-          has_contact_info: be_boolean,
+          can_edit: be(true).or(be(false)),
+          has_contact_info: be(true).or(be(false)),
           author_name: a_kind_of(String).or(be_nil),
           organization_id: market_post.content.organization_id,
-          updated_at: market_post.content.updated_at.try(:iso8601),
           image_url: an_instance_of(String).or(be_nil),
           contact_phone: market_post.contact_phone,
           contact_email: market_post.contact_email,
           preferred_contact_method: market_post.preferred_contact_method,
-          sold: market_post.sold,
-          images: match_array(market_post.images.collect{|i|
-            a_hash_matching({
+          images: market_post.images.collect{|i|
+            {
               id: i.id,
               image_url: i.image_url,
               primary: be(1).or(be(0)),
               width: i.width,
               height: i.height,
               file_extension: i.file_extension
-            })
-          }),
-          content_locations: market_post.base_locations.map do |cl|
-            cl.attributes.slice(:id, :location_type, :location_id)
+            }
+          },
+          created_at: market_post.content.created_at.try(:iso8601),
+          updated_at: market_post.content.updated_at.try(:iso8601),
+          sold: market_post.sold,
+          promote_radius: market_post.promote_radius,
+          ugc_base_location_id: market_post.base_locations.first.try(:slug),
+          content_locations: market_post.content_locations.map do |cl|
+              {
+                id: cl.id,
+                location_id: cl.location.slug,
+                location_type: cl.location_type,
+                location_name: cl.location.name
+              }
           end
-        }))
+        }
+      )
     end
   end
 
@@ -70,7 +82,8 @@ describe 'Market Posts', type: :request do
           title: 'Test',
           content: 'Body',
           ugc_job: 'Sell my bike',
-          promote_radius: 25
+          promote_radius: 25,
+          ugc_base_location_id: FactoryGirl.create(:location).id
         }
       }
 

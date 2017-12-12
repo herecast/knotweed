@@ -11,9 +11,14 @@ module Api
         :registration_phone, :registration_email,
         :content_id,
         :first_instance_id, :category, :owner_name, :can_edit,
-        :promote_radius
+        :promote_radius,
+        :ugc_base_location_id
 
       has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
+
+      def ugc_base_location_id
+        object.content.content_locations.select(&:base?).first.try(:location).try(:slug)
+      end
 
       def promote_radius
         object.content.promote_radius

@@ -55,6 +55,8 @@ module Api
             process_event_params(params[:event])
           ).permit!
 
+          update_locations @event
+
           if @event.update_with_schedules(event_hash, schedules)
             if listserv_ids.present?
               # reverse publish to specified listservs
@@ -100,6 +102,9 @@ module Api
         ).permit!
 
         @event = Event.new(event_hash)
+
+        update_locations @event
+
         @event.content.organization_id = org_id
         @event.content.images = [Image.create(image: image_data)] if image_data.present?
         if @event.save_with_schedules(schedules)
@@ -148,16 +153,6 @@ module Api
         new_e[:content_attributes][:raw_content] = e[:content] if e.has_key? :content
         new_e[:content_attributes][:title] = e[:title] if e.has_key? :title
         new_e[:content_attributes][:ugc_job] = e[:ugc_job] if e.has_key? :ugc_job
-
-        if(e[:content_locations].present?)
-          new_e[:content_attributes][:content_locations_attributes] = e[:content_locations].tap do |h|
-            # translate slug to id
-            h.each do |content_location|
-              content_location[:location_id] = Location.find_by(slug: content_location[:location_id]).try(:id)
-            end
-          end
-
-        end
 
         new_e[:content_attributes][:promote_radius] = e[:promote_radius] if e.has_key? :promote_radius
 
@@ -226,6 +221,20 @@ module Api
         else
           @default_location_id = Location.find_by_city(Location::DEFAULT_LOCATION).id
           opts[:where][:all_loc_ids] = [@default_location_id]
+        end
+      end
+
+      def location_params
+        params[:event].slice(:promote_radius, :ugc_base_location_id)
+      end
+
+      def update_locations model
+        if location_params[:promote_radius].present? &&
+            location_params[:ugc_base_location_id].present?
+
+          UpdateContentLocations.call model.content,
+            promote_radius: location_params[:promote_radius].to_i,
+            base_locations: [Location.find_by_slug_or_id(location_params[:ugc_base_location_id])]
         end
       end
 

@@ -108,10 +108,8 @@ describe Api::V3::TalkController, :type => :controller do
       @basic_attrs = {
         title: 'Some Title Here',
         content: 'Hello this is the body',
-        content_locations: [{
-          location_id: FactoryGirl.create(:location).slug,
-          location_type: 'base'
-        }]
+        promote_radius: 10,
+        ugc_base_location_id: FactoryGirl.create(:location).slug
       }
       allow(BitlyService).to receive(:create_short_link).with(any_args).and_return('http://bit.ly/12345')
     end
@@ -172,31 +170,18 @@ describe Api::V3::TalkController, :type => :controller do
         end
       end
 
-      context 'With locations' do
-        let(:locations) { FactoryGirl.create_list(:location, 3) }
-
+      context 'with promotion location information' do
+        let(:radius) { 20 }
+        let(:location) { FactoryGirl.create(:location) }
         before do
-          @basic_attrs[:content_locations] = locations.map do |location|
-            { location_id: location.slug }
-          end
+          @basic_attrs[:promote_radius] = radius
+          @basic_attrs[:ugc_base_location_id] = location.slug
         end
 
-        it 'allows nested content locations to be specified' do
+        it 'runs content through UpdateContentLocations process' do
+          expect(UpdateContentLocations).to receive(:call).with(instance_of(Content), promote_radius: radius, base_locations: [location])
+
           subject
-          expect(response.status).to eql 201
-          expect(Content.last.locations.to_a).to include *locations
-        end
-
-        context 'base locations' do
-          before do
-            @basic_attrs[:content_locations].each{|l| l[:location_type] = 'base'}
-          end
-
-          it 'allows nested location type to be specified as base' do
-            subject
-            expect(response.status).to eql 201
-            expect(Content.last.base_locations.to_a).to include *locations
-          end
         end
       end
 

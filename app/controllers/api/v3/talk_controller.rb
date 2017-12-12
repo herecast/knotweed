@@ -25,6 +25,14 @@ module Api
 
       def create
         @talk = Comment.new(talk_params)
+
+        if location_params[:promote_radius].present? &&
+            location_params[:ugc_base_location_id].present?
+          UpdateContentLocations.call @talk.content,
+            promote_radius: location_params[:promote_radius].to_i,
+            base_locations: [Location.find_by_slug_or_id(location_params[:ugc_base_location_id])]
+        end
+
         if @talk.save
           listserv_id = params[:talk][:listserv_id]
           if listserv_id.present?
@@ -68,6 +76,8 @@ module Api
             talk: params[:talk].to_h
           )
           new_params[:talk].merge!(additional_attributes)
+          new_params[:talk].delete(:promote_radius)
+          new_params[:talk].delete(:ugc_base_location_id)
           new_params.require(:talk).permit(
             content_attributes: [
               :title,
@@ -77,12 +87,13 @@ module Api
               :pubdate,
               :organization_id,
               :content_category_id,
-              :ugc_job,
-              content_locations_attributes: [
-                :id, :location_type, :location_id
-              ]
+              :ugc_job
             ]
           )
+        end
+
+        def location_params
+          params[:talk].slice(:promote_radius, :ugc_base_location_id)
         end
 
         def additional_attributes
@@ -97,17 +108,7 @@ module Api
               content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id,
               promote_radius: params[:talk][:promote_radius],
               ugc_job: params[:talk][:ugc_job]
-            }.tap do |h|
-              if params[:talk][:content_locations].present?
-                h[:content_locations_attributes] = params[:talk][:content_locations].tap do |h|
-                  # translate slug to id
-                  h.each do |content_location|
-                    content_location[:location_id] = Location.find_by(slug: content_location[:location_id]).try(:id)
-                  end
-                end
-
-              end
-            end
+            }
           }
         end
 

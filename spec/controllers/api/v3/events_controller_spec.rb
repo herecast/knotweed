@@ -30,11 +30,8 @@ describe Api::V3::EventsController, :type => :controller do
       registration_url: 'http://www.google.com',
       registration_phone: '888-888-8888',
       registration_email: 'test@fake.com',
-      content_locations: [
-        {
-          location_id: FactoryGirl.create(:location).slug
-        }
-      ]
+      promote_radius: 10,
+      ugc_base_location_id: FactoryGirl.create(:location).slug
     }
   end
 
@@ -195,34 +192,20 @@ describe Api::V3::EventsController, :type => :controller do
         .to eq(@attrs_for_update[:schedules][0][:presenter_name])
     end
 
-    context 'with content location attributes' do
-      let(:locations) { FactoryGirl.create_list(:location, 3) }
-
-      before do
-        @attrs_for_update[:content_locations] = locations.map do |location|
-          { location_id: location.slug }
-        end
-      end
-
-      it 'allows nested content locations to be specified' do
-        subject
-        expect(response.status).to eql 200
-        expect(Content.last.locations.to_a).to include *locations
-      end
-
-      context 'base locations' do
+      context 'with promotion location information' do
+        let(:radius) { 20 }
+        let(:location) { FactoryGirl.create(:location) }
         before do
-          @attrs_for_update[:content_locations].each{|l| l[:location_type] = 'base'}
+          @attrs_for_update[:promote_radius] = radius
+          @attrs_for_update[:ugc_base_location_id] = location.slug
         end
 
-        it 'allows nested location type to be specified as base' do
+        it 'runs content through UpdateContentLocations process' do
+          expect(UpdateContentLocations).to receive(:call).with(@event.content, promote_radius: radius, base_locations: [location])
+
           subject
-          expect(response.status).to eql 200
-          expect(Content.last.base_locations.to_a).to include *locations
         end
       end
-
-    end
 
   end
 
@@ -368,33 +351,19 @@ describe Api::V3::EventsController, :type => :controller do
       end
     end
 
-    context 'with content location attributes' do
-      let(:locations) { FactoryGirl.create_list(:location, 3) }
-
+    context 'with promotion location information' do
+      let(:radius) { 20 }
+      let(:location) { FactoryGirl.create(:location) }
       before do
-        @event_attrs[:content_locations] = locations.map do |location|
-          { location_id: location.slug }
-        end
+        @event_attrs[:promote_radius] = radius
+        @event_attrs[:ugc_base_location_id] = location.slug
       end
 
-      it 'allows nested content locations to be specified' do
+      it 'runs content through UpdateContentLocations process' do
+        expect(UpdateContentLocations).to receive(:call).with(instance_of(Content), promote_radius: radius, base_locations: [location])
+
         subject
-        expect(response.status).to eql 201
-        expect(Content.last.locations.to_a).to include *locations
       end
-
-      context 'base locations' do
-        before do
-          @event_attrs[:content_locations].each{|l| l[:location_type] = 'base'}
-        end
-
-        it 'allows nested location type to be specified as base' do
-          subject
-          expect(response.status).to eql 201
-          expect(Content.last.base_locations.to_a).to include *locations
-        end
-      end
-
     end
   end
 end

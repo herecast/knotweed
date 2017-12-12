@@ -267,32 +267,20 @@ describe Api::V3::MarketPostsController, :type => :controller do
         end
       end
 
-      context 'with content location attributes' do
-        let(:locations) { FactoryGirl.create_list(:location, 3) }
-
+      context 'with promotion location information' do
+        let(:radius) { 20 }
+        let(:location) { FactoryGirl.create(:location) }
         before do
-          @attrs_for_update[:content_locations] = locations.map do |location|
-            { location_id: location.slug }
-          end
+          @attrs_for_update[:promote_radius] = radius
+          @attrs_for_update[:ugc_base_location_id] = location.slug
         end
 
-        it 'allows nested content locations to be specified' do
+        it 'runs content through UpdateContentLocations process' do
+          expect(UpdateContentLocations).to receive(:call).with(@market_post.content, promote_radius: radius, base_locations: [location])
+
           subject
-          expect(response.status).to eql 200
-          expect(Content.last.locations.to_a).to include *locations
         end
-
-        context 'base locations' do
-          before do
-            @attrs_for_update[:content_locations].each{|l| l[:location_type] = 'base'}
-          end
-
-          it 'allows nested location type to be specified as base' do
-            subject
-            expect(response.status).to eql 200
-            expect(Content.last.base_locations.to_a).to include *locations
-          end
-        end
+      end
 
         context 'when updating a market post with associated content' do
           it 'updates the market post to sold' do
@@ -301,7 +289,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
           end
         end
 
-      end
 
     end
 
@@ -374,6 +361,21 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
         it 'should queue PublishContentJob' do
           expect{subject}.to have_enqueued_job(PublishContentJob)
+        end
+      end
+
+      context 'with promotion location information' do
+        let(:radius) { 20 }
+        let(:location) { FactoryGirl.create(:location) }
+        before do
+          @basic_attrs[:promote_radius] = radius
+          @basic_attrs[:ugc_base_location_id] = location.slug
+        end
+
+        it 'runs content through UpdateContentLocations process' do
+          expect(UpdateContentLocations).to receive(:call).with(instance_of(Content), promote_radius: radius, base_locations: [location])
+
+          subject
         end
       end
 

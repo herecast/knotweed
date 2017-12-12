@@ -56,6 +56,9 @@ module Api
 
       def create
         @market_post = MarketPost.new(market_post_params)
+
+        update_locations @market_post
+
         if @market_post.save
           listserv_ids = params[:market_post][:listserv_ids] || []
           if listserv_ids.any?
@@ -80,6 +83,9 @@ module Api
       def update
         @market_post = Content.find(params[:id]).channel
         authorize! :manage, @market_post.content
+
+        update_locations @market_post
+
         if @market_post.update_attributes(market_post_params)
           listserv_ids = params[:market_post][:listserv_ids] || []
           if listserv_ids.any?
@@ -120,9 +126,11 @@ module Api
       private
 
         def market_post_params
-          new_params = params
+          new_params = params.dup
           attributes = @market_post.present? ? additional_update_attributes : additional_create_attributes
           new_params[:market_post].merge!(attributes)
+
+          new_params.delete(:ugc_base_location_id)
 
           if new_params[:market_post][:content_locations].present?
             new_params[:market_post][:content_attributes][:content_locations_attributes] = new_params[:market_post].delete(:content_locations).tap do |h|
@@ -159,11 +167,6 @@ module Api
               :promote_radius,
               :ugc_job,
               location_ids: [],
-              content_locations_attributes: [
-                :id,
-                :location_type,
-                :location_id
-              ]
             ]
           )
         end
@@ -180,7 +183,6 @@ module Api
               pubdate: Time.zone.now,
               timestamp: Time.zone.now,
               organization_id: params[:market_post][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
-              promote_radius: params[:market_post].delete(:promote_radius),
               ugc_job: params[:market_post][:ugc_job]
             }
           }
@@ -200,6 +202,10 @@ module Api
           additional_attributes
         end
 
+        def location_params
+          params[:market_post].slice(:promote_radius, :ugc_base_location_id)
+        end
+
         def set_modifier_for_category(modifier)
           case modifier
             when "OR"
@@ -216,6 +222,16 @@ module Api
             query.split(/[,\s]+/).join(" ")
           else
             query
+          end
+        end
+
+        def update_locations post
+          if location_params[:promote_radius].present? &&
+              location_params[:ugc_base_location_id].present?
+
+            UpdateContentLocations.call post.content,
+              promote_radius: location_params[:promote_radius].to_i,
+              base_locations: [Location.find_by_slug_or_id(location_params[:ugc_base_location_id])]
           end
         end
     end

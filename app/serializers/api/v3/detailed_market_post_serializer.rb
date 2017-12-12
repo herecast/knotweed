@@ -4,13 +4,17 @@ module Api
 
       attributes :id, :title, :price, :content, :content_id, :published_at,
         :locate_address, :can_edit, :has_contact_info,
-        :author_name, :organization_id, :updated_at, :image_url, :contact_phone,
+        :author_name, :organization_id, :image_url, :contact_phone,
         :contact_email, :preferred_contact_method, :images, :created_at, :updated_at,
-        :sold, :promote_radius
+        :sold, :promote_radius, :ugc_base_location_id
 
       root 'market_post'
 
       has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
+
+      def ugc_base_location_id
+        object.content_locations.select(&:base?).first.try(:location).try(:slug)
+      end
 
       def contact_phone
         object.try(:channel).try(:contact_phone)

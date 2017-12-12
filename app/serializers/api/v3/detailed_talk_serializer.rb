@@ -6,9 +6,13 @@ module Api
         :author_name, :author_image_url, :image_width, :image_height, :image_file_extension, :published_at,
         :view_count, :commenter_count, :comment_count, :parent_content_id,
         :parent_content_type, :author_email, :created_at, :updated_at, :content_locations,
-        :promote_radius
+        :promote_radius, :ugc_base_location_id
 
       has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
+
+      def ugc_base_location_id
+        object.content_locations.select(&:base?).first.try(:location).try(:slug)
+      end
 
       def title
         object.sanitized_title

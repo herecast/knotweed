@@ -24,7 +24,7 @@ describe 'Talk', type: :request do
             FactoryGirl.create :location, :default
           }
           before do
-            record.update locations: [default_location]
+            record.update base_locations: [default_location]
           end
 
           it 'returns 200' do
@@ -55,6 +55,7 @@ describe 'Talk', type: :request do
                 author_email: record.created_by.email,
                 created_at: record.created_at.iso8601,
                 updated_at: record.updated_at.iso8601,
+                ugc_base_location_id: record.base_locations.first.try(:slug),
                 content_locations: record.content_locations.map do |cl|
                   cl.attributes.slice(:id, :location_type, :location_id)
                 end
@@ -77,9 +78,8 @@ describe 'Talk', type: :request do
           title: 'Test',
           content: 'Body',
           ugc_job: "Make a long winded speach",
-          content_locations: [{
-            location_id: FactoryGirl.create(:location).slug
-          }]
+          promote_radius: 10,
+          ugc_base_location_id: FactoryGirl.create(:location).slug
         }
       }
 
