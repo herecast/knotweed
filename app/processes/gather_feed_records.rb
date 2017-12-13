@@ -52,13 +52,15 @@ class GatherFeedRecords
       if @params[:query].present? && @params[:content_type] != 'organization' && @params[:organization_id].blank?
         ['Publishers', 'Businesses'].each do |type|
           carousel = Carousel.new(organization_type: type, query: query)
-          @records.insert(0,
-            FeedItem.new(
-              model_type: 'carousel',
-              id: carousel.id,
-              carousel: carousel
+          if carousel.organizations.count > 0
+            @records.insert(0,
+              FeedItem.new(
+                model_type: 'carousel',
+                id: carousel.id,
+                carousel: carousel
+              )
             )
-          )
+          end
         end
       end
     end

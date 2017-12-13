@@ -1,11 +1,9 @@
 class Carousel
   attr_reader :id,
-    :type,
     :query,
     :organizations,
     :carousel_type,
-    :title,
-    :model_type
+    :title
 
   alias :read_attribute_for_serialization :send
 

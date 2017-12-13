@@ -46,11 +46,9 @@ class FeedContentVanillaSerializer
       if raw_carousel.present?
         {
           id: raw_carousel.id,
-          type: raw_carousel.type,
           query: raw_carousel.query,
           carousel_type: raw_carousel.carousel_type,
           title: raw_carousel.title,
-          model_type: raw_carousel.model_type,
           organizations: carousel_organizations(raw_carousel.organizations)
         }
       end

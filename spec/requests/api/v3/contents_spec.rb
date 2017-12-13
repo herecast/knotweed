@@ -268,6 +268,8 @@ describe 'Contents Endpoints', type: :request do
     context "when 'query' parameter is present" do
       before do
         @market_post = FactoryGirl.create :content, :market_post, title: news.title, organization: org, published: true
+        @organization = FactoryGirl.create :organization, name: news.title, org_type: 'Business'
+        @second_organization = FactoryGirl.create :organization, name: "#{news.title} 2", org_type: 'Blog'
       end
 
       subject { get "/api/v3/contents", { query: news.title }, auth_headers }
@@ -282,6 +284,18 @@ describe 'Contents Endpoints', type: :request do
         subject
         collections = response_json[:feed_items].select{ |i| i[:model_type] == 'carousel'}
         expect(collections.length).to eq 2
+      end
+
+      context "when one carousel returns no Organizations" do
+        before do
+          @second_organization.update_attribute(:name, 'non-search')
+        end
+
+        it "call only returns carousel with Organizations" do
+          subject
+          collections = response_json[:feed_items].select{ |i| i[:model_type] == 'carousel'}
+          expect(collections.length).to eq 1
+        end
       end
     end
 
