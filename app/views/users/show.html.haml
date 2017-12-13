@@ -13,12 +13,10 @@
           %p <b>Location:</b> #{@user.location.try(:city)}, #{@user.location.try(:state)}
         .span4
           %h4 Roles
-          %p
-            = 'Admin' if @user.roles.include?(Role.get('admin'))
-          %p
-            = 'Event Manager' if @user.roles.include?(Role.get('event_manager'))
-          %p
-            = 'Blogger' if @user.roles.include?(Role.get('blogger'))
+          - Role.non_resource_roles.each do |role|
+            - if @user.roles.include?(role)
+              %p
+                = role.pretty_name
         .span4
           %h4 Managed Organizations
           - @user.managed_organizations.each do |org|

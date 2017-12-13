@@ -1132,7 +1132,6 @@ ActiveRecord::Schema.define(version: 20171206140851) do
     t.integer  "default_repository_id",  limit: 8
     t.datetime "nda_agreed_at"
     t.boolean  "agreed_to_nda",                      default: false
-    t.boolean  "admin",                              default: false
     t.string   "contact_phone",          limit: 255
     t.string   "contact_email",          limit: 255
     t.string   "contact_url",            limit: 255

@@ -101,10 +101,24 @@ describe UsersController, :type => :controller do
             expect(assigns(:users)).to match_array [@user_1, @user_2]
           end
         end
-        
+
+        context "when search by roles" do
+          before do
+            @role = FactoryGirl.create :role, name: 'jedi'
+            @user_1.roles << @role
+          end
+
+          subject { get :index, q: { roles: { @role.name => 'on' } } }
+
+          it "returns Users with selected Role" do
+            subject
+            expect(assigns(:users)).to match_array [@user_1]
+          end
+        end
+
         context 'when admin searches for Social Login' do
           before do
-            SocialLogin.create(user_id: @user_1.id, provider: 'facebook', 
+            SocialLogin.create(user_id: @user_1.id, provider: 'facebook',
                               uid: 1234)
           end
 

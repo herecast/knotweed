@@ -10,15 +10,24 @@ class UsersController < ApplicationController
       session[:users_search] = params[:q]
     end
 
+    if session[:users_search].try(:[], :roles).present?
+      role_ids = session[:users_search][:roles].map { |key, value| Role.get(key.to_s).id if value == 'on'}
+      scope = User.joins(:roles).where(roles: {id: role_ids})
+    else
+      scope = User
+    end
+
     if display_social_users?
       social_user_ids = SocialLogin.pluck(:user_id)
-      @search = User.ransack(id_in: social_user_ids)
+      @search = scope.ransack(id_in: social_user_ids)
       @total_count = SocialLogin.count
     else
-      @search = User.ransack(session[:users_search])
-      @total_count = User.count
+      @search = scope.ransack(session[:users_search])
     end
+
     @search.sorts = 'created_at desc'
+    @total_count = @search.result.count
+
     if params[:page].nil?
       @page = 1
     else
@@ -43,7 +52,6 @@ class UsersController < ApplicationController
     @user.skip_reconfirmation!
     params[:user].delete(:password) if params[:user][:password].blank?
     if @user.update_attributes(user_params)
-      process_user_roles
       process_user_organizations
       redirect_to @user, :notice => "User updated."
     else
@@ -86,7 +94,6 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     authorize! :create, @user
-    process_user_roles
     process_user_organizations
     if @user.save
       flash[:notice] = "User created."
@@ -100,25 +107,21 @@ class UsersController < ApplicationController
   private
 
     def user_params
-      new_params = params.require(:user).permit(:name, :email, :password, :location_confirmed,
-        :location_id, :archived, :receive_comment_alerts, roles: [:admin,:event_manager,:blogger])
-      if new_params[:roles].present?
-        new_params[:role_ids] = []
-        new_params[:roles].each do |k,v|
-          new_params[:role_ids] << Role.get(k.to_s).id if v == 'on'
-        end
-        new_params.delete :roles
-      end
-      new_params
-    end
-
-    def process_user_roles
-      if params[:user].has_key? :roles
-        @user.roles.clear
-        ['admin', 'event_manager', 'blogger'].each do |role|
-          if params[:user][:roles][role].present? and params[:user][:roles][role] == 'on'
-            @user.roles << Role.find_by(name: role)
+      params.require(:user).permit(
+        :name,
+        :email,
+        :password,
+        :location_confirmed,
+        :location_id,
+        :archived,
+        :receive_comment_alerts
+      ).tap do |attrs|
+        if params[:user][:roles].present?
+          attrs[:role_ids] = params[:user][:roles].map do |key, value|
+            Role.get(key.to_s).id if value == 'on'
           end
+        else
+          attrs[:role_ids] = []
         end
       end
     end

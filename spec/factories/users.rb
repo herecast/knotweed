@@ -23,7 +23,6 @@
 #  default_repository_id  :integer
 #  nda_agreed_at          :datetime
 #  agreed_to_nda          :boolean          default(FALSE)
-#  admin                  :boolean          default(FALSE)
 #  contact_phone          :string(255)
 #  contact_email          :string(255)
 #  contact_url            :string(255)

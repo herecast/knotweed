@@ -20,15 +20,11 @@
         = f.input :location_id, collection: Location.where(consumer_active: true), label: false, selected: @user.location.present? ? @user.location.id : nil, include_blank: true
         = f.input :location_confirmed, label: 'Location Confirmed?'
         %h4 Roles
-        .row-fluid
-          %input{ type: :checkbox, id: 'user_roles_admin', name: "user[roles][admin]", class: 'checkbox-control', checked: @user.roles.include?(Role.get('admin')) }
-          %label{ for: 'user_roles_admin', class: 'checkbox-label-control' } Admin
-        .row-fluid
-          %input{ type: :checkbox, id: 'user_roles_event_manager', name: "user[roles][event_manager]", class: 'checkbox-control', checked: @user.roles.include?(Role.get('event_manager')) }
-          %label{ for: 'user_roles_event_manager', class: 'checkbox-label-control' } Event Manager
-        .row-fluid
-          %input{ type: :checkbox, id: 'user_roles_blogger', name: "user[roles][blogger]", class: 'checkbox-control', checked: @user.roles.include?(Role.get('blogger')) }
-          %label{ for: 'user_roles_blogger', class: 'checkbox-label-control' } Blogger
+        - Role.non_resource_roles.each do |role|
+          .row-fluid
+            %input{ type: :checkbox, id: "user_roles_#{role.name}", name: "user[roles][#{role.name}]", class: 'checkbox-control', checked: @user.roles.include?(role) }
+            %label{ for: "user_roles_#{role.name}", class: 'checkbox-label-control' }
+              = role.pretty_name
       %h4 Managed Organizations
       #organization-selectors.row-fluid
         - if @organizations.present?
