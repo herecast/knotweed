@@ -17,7 +17,7 @@ module Api
       def background_image_url; object.background_image.url if object.background_image.present?; end
 
       def business_profile_id
-        bp_content= object.contents.where(channel_type: 'BusinessProfile').first
+        bp_content = object.contents.where(channel_type: 'BusinessProfile').first
         if bp_content.present?
           bp_content.channel_id
         end
@@ -78,7 +78,7 @@ module Api
       private
 
         def business_location
-          object.business_locations.first
+          object.business_locations.try(:first)
         end
 
     end

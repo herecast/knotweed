@@ -49,12 +49,18 @@
 
 class Organization < ActiveRecord::Base
 
-  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.searchkick_index_prefix
+  searchkick callbacks: :async,
+    batch_size: 100,
+    index_prefix: Figaro.env.searchkick_index_prefix,
+    searchable: [:name]
+
   ransacker :show_news_publishers
 
   def search_data
     {
       name: name,
+      org_type: org_type,
+      biz_feed_active: biz_feed_active,
       consumer_app_ids: consumer_apps.pluck(:id),
       content_category_ids: contents.pluck(:root_content_category_id).uniq,
       subtext_certified: subtext_certified

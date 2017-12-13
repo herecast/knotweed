@@ -162,7 +162,7 @@ describe 'Contents Endpoints', type: :request do
       }
 
       subject {
-        response_json[:contents].find{|i| i[:content_type] == 'news'}
+        response_json[:feed_items].find{|i| i[:feed_content][:content_type] == 'news'}[:feed_content]
       }
 
       it_behaves_like 'JSON schema for all Content' do
@@ -176,7 +176,7 @@ describe 'Contents Endpoints', type: :request do
       }
 
       subject {
-        response_json[:contents].find{|i| i[:content_type] == 'event'}
+        response_json[:feed_items].find{|i| i[:feed_content][:content_type] == 'event'}[:feed_content]
       }
 
       it_behaves_like 'JSON schema for all Content' do
@@ -221,7 +221,7 @@ describe 'Contents Endpoints', type: :request do
       }
 
       subject {
-        response_json[:contents].find{|i| i[:content_type] == 'market'}
+        response_json[:feed_items].find{|i| i[:feed_content][:content_type] == 'market'}[:feed_content]
       }
 
       it_behaves_like 'JSON schema for all Content' do
@@ -245,7 +245,7 @@ describe 'Contents Endpoints', type: :request do
       end
 
       it "returns content in standard categories including talk" do
-        expect(response_json[:contents].length).to eq 4
+        expect(response_json[:feed_items].length).to eq 4
       end
     end
 
@@ -256,7 +256,7 @@ describe 'Contents Endpoints', type: :request do
         }
 
         subject {
-          response_json[:contents].find{|i| i[:content_type] == 'talk'}
+          response_json[:feed_items].find{|i| i[:feed_content][:content_type] == 'talk'}[:feed_content]
         }
 
         it_behaves_like 'JSON schema for all Content' do
@@ -270,9 +270,18 @@ describe 'Contents Endpoints', type: :request do
         @market_post = FactoryGirl.create :content, :market_post, title: news.title, organization: org, published: true
       end
 
+      subject { get "/api/v3/contents", { query: news.title }, auth_headers }
+
       it 'returns items from all categories matching the query' do
-        get "/api/v3/contents", { query: news.title }, auth_headers
-        expect(response_json[:contents].length).to eq 2
+        subject
+        feed_contents = response_json[:feed_items].select{ |i| i[:model_type] == 'feed_content'}
+        expect(feed_contents.length).to eq 2
+      end
+
+      it "returns two Organization collections" do
+        subject
+        collections = response_json[:feed_items].select{ |i| i[:model_type] == 'carousel'}
+        expect(collections.length).to eq 2
       end
     end
 
@@ -286,8 +295,8 @@ describe 'Contents Endpoints', type: :request do
           end
 
           it "returns only #{content_type} content" do
-            content_types = response_json[:contents].map do |data|
-              data[:content_type]
+            content_types = response_json[:feed_items].map do |data|
+              data[:feed_content][:content_type]
             end
 
             expect(content_types).to all eql content_type.to_s
@@ -311,7 +320,7 @@ describe 'Contents Endpoints', type: :request do
         it "returns only current user's content" do
           subject
           expect(response).to have_http_status :ok
-          expect(response_json[:contents].length).to eq 0
+          expect(response_json[:feed_items].length).to eq 0
         end
       end
 
@@ -320,7 +329,7 @@ describe 'Contents Endpoints', type: :request do
 
         it "returns only current user's content" do
           subject
-          expect(response_json[:contents].length).to eq 1
+          expect(response_json[:feed_items].length).to eq 1
         end
       end
     end
@@ -518,8 +527,8 @@ describe 'Contents Endpoints', type: :request do
 
       it "returns Events" do
         subject
-        expect(response_json[:contents].length).to eq 1
-        expect(response_json[:contents][0][:id]).to eq @event.content.id
+        expect(response_json[:feed_items].length).to eq 1
+        expect(response_json[:feed_items][0][:feed_content][:id]).to eq @event.content.id
       end
     end
 
@@ -532,8 +541,8 @@ describe 'Contents Endpoints', type: :request do
 
       it "returns tagged Content" do
         subject
-        expect(response_json[:contents].length).to eq 1
-        expect(response_json[:contents][0][:id]).to eq @tagged_content.id
+        expect(response_json[:feed_items].length).to eq 1
+        expect(response_json[:feed_items][0][:feed_content][:id]).to eq @tagged_content.id
       end
     end
 
@@ -545,8 +554,8 @@ describe 'Contents Endpoints', type: :request do
 
       it "returns the Market Posts" do
         subject
-        expect(response_json[:contents].length).to eq 1
-        expect(response_json[:contents][0][:id]).to eq @market_post.id
+        expect(response_json[:feed_items].length).to eq 1
+        expect(response_json[:feed_items][0][:feed_content][:id]).to eq @market_post.id
       end
     end
 
@@ -558,8 +567,8 @@ describe 'Contents Endpoints', type: :request do
 
       it "returns the Events" do
         subject
-        expect(response_json[:contents].length).to eq 1
-        expect(response_json[:contents][0][:id]).to eq @event.id
+        expect(response_json[:feed_items].length).to eq 1
+        expect(response_json[:feed_items][0][:feed_content][:id]).to eq @event.id
       end
     end
 
@@ -571,8 +580,8 @@ describe 'Contents Endpoints', type: :request do
 
       it "returns talk items" do
         subject
-        expect(response_json[:contents].length).to eq 1
-        expect(response_json[:contents][0][:id]).to eq @talk.id
+        expect(response_json[:feed_items].length).to eq 1
+        expect(response_json[:feed_items][0][:feed_content][:id]).to eq @talk.id
       end
     end
 
@@ -584,8 +593,8 @@ describe 'Contents Endpoints', type: :request do
 
       it "returns news items" do
         subject
-        expect(response_json[:contents].length).to eq 1
-        expect(response_json[:contents][0][:id]).to eq @news.id
+        expect(response_json[:feed_items].length).to eq 1
+        expect(response_json[:feed_items][0][:feed_content][:id]).to eq @news.id
       end
     end
 
@@ -598,7 +607,7 @@ describe 'Contents Endpoints', type: :request do
 
       it "does not return nil pubdate items" do
         subject
-        expect(response_json[:contents].length).to eq 0
+        expect(response_json[:feed_items].length).to eq 0
       end
     end
 
@@ -611,7 +620,7 @@ describe 'Contents Endpoints', type: :request do
 
       it "it does not return future pubdate items" do
         subject
-        expect(response_json[:contents].length).to eq 0
+        expect(response_json[:feed_items].length).to eq 0
       end
     end
 
@@ -638,7 +647,7 @@ describe 'Contents Endpoints', type: :request do
 
         it "returns drafts, hidden content and regular content" do
           subject
-          expect(response_json[:contents].length).to eq 3
+          expect(response_json[:feed_items].length).to eq 3
         end
       end
 
@@ -651,8 +660,8 @@ describe 'Contents Endpoints', type: :request do
 
         it "returns biz_feed_public: false contents" do
           subject
-          expect(response_json[:contents].length).to eq 1
-          expect(response_json[:contents][0][:id]).to eq @hidden_content.id
+          expect(response_json[:feed_items].length).to eq 1
+          expect(response_json[:feed_items][0][:feed_content][:id]).to eq @hidden_content.id
         end
       end
 
@@ -665,8 +674,8 @@ describe 'Contents Endpoints', type: :request do
 
         it "returns drafts only" do
           subject
-          expect(response_json[:contents].length).to eq 1
-          expect(response_json[:contents][0][:id]).to eq @draft_content.id
+          expect(response_json[:feed_items].length).to eq 1
+          expect(response_json[:feed_items][0][:feed_content][:id]).to eq @draft_content.id
         end
       end
     end

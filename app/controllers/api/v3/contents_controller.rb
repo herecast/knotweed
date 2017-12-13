@@ -1,45 +1,27 @@
 module Api
   module V3
     class ContentsController < ApiController
-      include SearchService
-
       before_filter :check_logged_in!, only:  [:moderate, :dashboard, :metrics]
 
       def index
         expires_in 1.minutes, public: true unless is_my_stuff_request?
-        render json: [], status: :ok and return if is_my_stuff_request? && current_user.nil?
+        render json: { feed_items: [] }, status: :ok and return if is_my_stuff_request? && current_user.nil?
 
-        @opts = {load: false}
-        @opts[:where] = { removed: { not: true } }
-        apply_standard_chronology_to_opts
-        apply_standard_categories_to_opts
-        apply_standard_locations_to_opts
-        apply_requesting_app_whitelist_to_opts
-        conditionally_apply_organization_search_opts if params[:organization_id].present?
+        @result_object = GatherFeedRecords.call(
+          params: params,
+          requesting_app: @requesting_app,
+          current_user: current_user
+        )
 
-        if params[:content_type].present?
-          @opts[:where][:content_type] = params[:content_type]
-        end
-
-        if params[:query].present?
-          @opts.delete(:order)
-          @opts[:boost_by_distance] = {
-                    field: :created_at,
-                    origin: Time.zone.now,
-                    scale: '60d',
-                    offset: '7d',
-                    decay: 0.25
-                  }
-          @contents = Content.search(params[:query], @opts)
-        else
-          @contents = Content.search("*", @opts)
-        end
-
-        assign_first_served_at_to_new_contents
-
-        render json: @contents, each_serializer: HashieMashes::FeedContentSerializer,
-          meta: { total: @contents.total_entries, total_pages: total_pages },
-          context: { current_ability: current_ability }
+        render json: FeedContentVanillaSerializer.call(
+          records: @result_object[:records],
+          opts: { context: { current_ability: current_ability } }
+        ).merge(
+          meta: {
+            total: @result_object[:total_entries],
+            total_pages: total_pages
+          }
+        )
       end
 
       def show
@@ -177,15 +159,12 @@ module Api
           params.require(:content).permit(:biz_feed_public, :sunset_date)
         end
 
-        def total_pages
-          (@contents.total_entries/@opts[:per_page].to_f).ceil
+        def per_page
+          params[:per_page] || 20
         end
 
-        def assign_first_served_at_to_new_contents
-          BackgroundJob.perform_later('AssignFirstServedAtToNewContent', 'call',
-            content_ids: @contents.map(&:id),
-            current_time: Time.current.to_s
-          )
+        def total_pages
+          @result_object[:total_entries].present? ? (@result_object[:total_entries]/per_page.to_f).ceil : nil
         end
 
         def sanitize_sort_parameter(sort)
