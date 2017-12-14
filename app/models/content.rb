@@ -1390,6 +1390,10 @@ class Content < ActiveRecord::Base
     !!organization.embedded_ad
   end
 
+  def ok_to_send_alert?
+    self.created_by&.receive_comment_alerts && created_by.present?
+  end
+
   private
 
   def require_at_least_one_content_location

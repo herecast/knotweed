@@ -11,6 +11,7 @@ RSpec.describe CommentAlert do
   let(:comment2) { FactoryGirl.create :content, :talk, parent_id: no_alert_content.id }
   let(:listserv_comment) { FactoryGirl.create :content, :talk, parent_id: listserv_parent_content.id }
   let(:author_comment) { FactoryGirl.create :content, :talk, created_by: parent_content_owner }
+  let(:no_owner_content) { FactoryGirl.create :content, :talk, created_by: nil }
 
   subject { described_class.call(comment, parent_content)}
 
@@ -47,6 +48,13 @@ RSpec.describe CommentAlert do
       it 'does not attempt to send an email' do
          expect(CommentAlertMailer).to_not receive(:alert_parent_content_owner).with(author_comment, parent_content)
          CommentAlert.call(author_comment)
+      end
+    end
+
+    context 'when parent content does not have created_by' do
+      it 'does not attempt to send an email' do
+         expect(CommentAlertMailer).to_not receive(:alert_parent_content_owner).with(author_comment, no_owner_content)
+         CommentAlert.call(no_owner_content)
       end
     end
     
