@@ -72,6 +72,7 @@ module Api
           end
 
           PublishContentJob.perform_later(@market_post.content, @repository, Content::DEFAULT_PUBLISH_METHOD) if @repository.present?
+          cache_with_facebook
 
           render json: @market_post.content, serializer: DetailedMarketPostSerializer,
             status: 201, context: { current_ability: current_ability }
@@ -99,6 +100,7 @@ module Api
           end
 
           PublishContentJob.perform_later(@market_post.content, @repository, Content::DEFAULT_PUBLISH_METHOD) if @repository.present?
+          cache_with_facebook
 
           render json: @market_post.content, status: 200,
             serializer: DetailedMarketPostSerializer, context: { current_ability: current_ability }
@@ -234,6 +236,11 @@ module Api
               base_locations: [Location.find_by_slug_or_id(location_params[:ugc_base_location_id])]
           end
         end
+
+        def cache_with_facebook
+          BackgroundJob.perform_later('FacebookService', 'rescrape_url', @market_post.content)
+        end
+
     end
   end
 end

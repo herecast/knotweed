@@ -247,7 +247,7 @@ describe Api::V3::NewsController, :type => :controller do
     end
   end
 
-  describe 'POST' do
+  describe 'POST #create' do
     let(:user) { FactoryGirl.create :user }
     before do
       api_authenticate user: user
@@ -265,6 +265,14 @@ describe Api::V3::NewsController, :type => :controller do
     end
 
     subject { post :create, {news: news_params} }
+
+    it 'makes call to Facebook service' do
+      allow(BackgroundJob).to receive(:perform_later).and_return true
+      expect(BackgroundJob).to receive(:perform_later).with(
+        'FacebookService', 'rescrape_url', any_args
+      )
+      subject
+    end
 
     context 'With locations' do
       let(:locations) { FactoryGirl.create_list(:location, 3) }
@@ -294,7 +302,7 @@ describe Api::V3::NewsController, :type => :controller do
     end
   end
 
-  describe 'PUT' do
+  describe 'PUT #update' do
     let(:user) { FactoryGirl.create :user }
     before do
       api_authenticate user: user
@@ -314,6 +322,14 @@ describe Api::V3::NewsController, :type => :controller do
     let(:news) { FactoryGirl.create(:content, :news, created_by: user) }
 
     subject { put :update, {id: news.id, news: news_params} }
+
+    it 'makes call to Facebook service' do
+      allow(BackgroundJob).to receive(:perform_later).and_return true
+      expect(BackgroundJob).to receive(:perform_later).with(
+        'FacebookService', 'rescrape_url', news
+      )
+      subject
+    end
 
     context 'With locations' do
       let(:locations) { FactoryGirl.create_list(:location, 3) }

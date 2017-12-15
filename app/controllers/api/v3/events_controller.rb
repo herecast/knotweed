@@ -72,6 +72,8 @@ module Api
               PublishContentJob.perform_later(@event.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
             end
 
+            cache_with_facebook
+
             render json: @event, serializer: EventSerializer,  status: 200, context: { current_ability: current_ability }
           else
             render json: {
@@ -124,6 +126,8 @@ module Api
           if @repository.present?
             PublishContentJob.perform_later(@event.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
           end
+
+          cache_with_facebook
 
           render json: @event, status: 201, serializer: EventSerializer, context: { current_ability: current_ability }
         else
@@ -236,6 +240,10 @@ module Api
             promote_radius: location_params[:promote_radius].to_i,
             base_locations: [Location.find_by_slug_or_id(location_params[:ugc_base_location_id])]
         end
+      end
+
+      def cache_with_facebook
+        BackgroundJob.perform_later('FacebookService', 'rescrape_url', @event.content)
       end
 
     end

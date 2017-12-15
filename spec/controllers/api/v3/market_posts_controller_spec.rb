@@ -205,6 +205,14 @@ describe Api::V3::MarketPostsController, :type => :controller do
         api_authenticate user: @user
       end
 
+      it 'makes call to Facebook service' do
+        allow(BackgroundJob).to receive(:perform_later).and_return true
+        expect(BackgroundJob).to receive(:perform_later).with(
+          'FacebookService', 'rescrape_url', @market_post.content
+        )
+        subject
+      end
+
       it 'should update the market post\'s attributes' do
         expect{subject}.to change{@market_post.reload.cost}.to @attrs_for_update[:price]
       end
@@ -323,6 +331,14 @@ describe Api::V3::MarketPostsController, :type => :controller do
       end
 
       subject { post :create, market_post: @basic_attrs }
+
+      it 'makes call to Facebook service' do
+        allow(BackgroundJob).to receive(:perform_later).and_return true
+        expect(BackgroundJob).to receive(:perform_later).with(
+          'FacebookService', 'rescrape_url', any_args
+        )
+        subject
+      end
 
       it 'should respond with 201' do
         subject

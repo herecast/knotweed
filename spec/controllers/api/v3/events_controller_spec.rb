@@ -177,6 +177,14 @@ describe Api::V3::EventsController, :type => :controller do
       expect(@event.registration_url).to eq(@attrs_for_update[:registration_url])
     end
 
+    it 'makes call to Facebook service' do
+      allow(BackgroundJob).to receive(:perform_later).and_return true
+      expect(BackgroundJob).to receive(:perform_later).with(
+        'FacebookService', 'rescrape_url', @event.content
+      )
+      subject
+    end
+
     it 'should update the associated content attributes' do
       subject
       @event.reload
@@ -244,6 +252,14 @@ describe Api::V3::EventsController, :type => :controller do
       expect(assigns(:event).event_instances.count).to eq(1)
       expect(assigns(:event).content.title).to eq(@event_attrs[:title])
       expect(assigns(:event).content.ugc_job).to eq(@event_attrs[:ugc_job])
+    end
+
+    it 'makes call to Facebook service' do
+      allow(BackgroundJob).to receive(:perform_later).and_return true
+      expect(BackgroundJob).to receive(:perform_later).with(
+        'FacebookService', 'rescrape_url', any_args
+      )
+      subject
     end
 
     context 'should respond with a 401 if user is not authenticated' do
