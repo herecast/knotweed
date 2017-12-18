@@ -15,6 +15,12 @@ RSpec.describe AssignFirstServedAtToNewContent do
       allow(IntercomService).to receive(
         :send_published_content_event
       ).and_return(true)
+      allow(IntercomService).to receive(
+        :send_published_storyteller_content_alert
+      ).and_return(true)
+      allow(SlackService).to receive(
+        :send_storyteller_post_notification
+      ).and_return(true)
     end
 
     subject do
@@ -60,6 +66,13 @@ RSpec.describe AssignFirstServedAtToNewContent do
           ).with(@news)
           subject
         end
+
+        context "when created_by User is NOT Storyteller" do
+          it "does NOT make Storyteller call to IntercomService" do
+            expect(IntercomService).not_to receive(:send_published_storyteller_content_alert)
+            subject
+          end
+        end
       end
 
       context "when content type is NOT news" do
@@ -80,17 +93,56 @@ RSpec.describe AssignFirstServedAtToNewContent do
           subject
         end
       end
+
+      context "when created_by User is Storyteller" do
+        before do
+          @user = FactoryGirl.create :user
+          @user.add_role(:storyteller)
+          @news = FactoryGirl.create :content, :news, first_served_at: nil
+          @old_news = FactoryGirl.create :content, :news, first_served_at: Date.yesterday
+          @event = FactoryGirl.create :content, :event, first_served_at: nil
+          @market_post = FactoryGirl.create :content, :market_post, first_served_at: nil
+          @talk = FactoryGirl.create :content, :talk, first_served_at: nil
+          @contents = [@news, @old_news, @event, @market_post, @talk]
+          @contents.each { |c| c.update_attributes(created_by: @user) }
+        end
+
+        subject { AssignFirstServedAtToNewContent.call(content_ids: @contents.map(&:id), current_time: Time.current.to_s) }
+
+        it "calls to Intercom service for new posts" do
+          expect(IntercomService).to receive(
+            :send_published_storyteller_content_alert
+          ).exactly(4).times
+          subject
+        end
+
+        it "calls to Slack service for new posts" do
+          expect(SlackService).to receive(
+            :send_storyteller_post_notification
+          ).exactly(4).times
+          subject
+        end
+      end
     end
 
     context "when PRODUCTION_MESSAGING_ENABLED is NOT set or blank" do
-      it "does NOT ping Intercom service" do
+      it "does NOT ping Intercom about published News posts" do
         expect(IntercomService).not_to receive(:send_published_content_event)
         subject
       end
 
-      it "does NOT ping Slack service" do
+      it "does NOT ping Intercom about storytellers" do
+        expect(IntercomService).not_to receive(:send_published_storyteller_content_alert)
+        subject
+      end
+
+      it "does NOT ping Slack service about published News posts" do
         expect(SlackService).not_to receive(:send_published_content_notification)
         subject
+      end
+
+      it "does NOT ping Slack service about storytellers" do
+        expect(SlackService).not_to receive(:send_storyteller_post_notification)
       end
     end
   end
