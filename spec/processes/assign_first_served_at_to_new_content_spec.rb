@@ -97,7 +97,7 @@ RSpec.describe AssignFirstServedAtToNewContent do
       context "when created_by User is Storyteller" do
         before do
           @user = FactoryGirl.create :user
-          @user.add_role(:storyteller)
+          @user.add_role(:promoter)
           @news = FactoryGirl.create :content, :news, first_served_at: nil
           @old_news = FactoryGirl.create :content, :news, first_served_at: Date.yesterday
           @event = FactoryGirl.create :content, :event, first_served_at: nil
