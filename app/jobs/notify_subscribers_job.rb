@@ -6,7 +6,8 @@ class NotifySubscribersJob < ApplicationJob
   include ContentsHelper
   include EmailTemplateHelper
 
-  ERB_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/notification.html.erb"
+  ERB_NEWS_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/notification.html.erb"
+  ERB_BUSINESS_POST_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/organization_notification.html.erb"
 
   def perform(post_id)
     post = Content.find_by(id: post_id)
@@ -57,10 +58,14 @@ class NotifySubscribersJob < ApplicationJob
     return unless post.subscriber_mc_identifier
 
     # Synchronize the campaign's HTML content, settings, and schedule with the post.
+    path = post.organization.org_type == 'Business' ? ERB_BUSINESS_POST_TEMPLATE_PATH : ERB_NEWS_TEMPLATE_PATH
     notification_html = generate_html(post.title,
                                       post.organization_name,
-                                      url_for_consumer_app("/organizations/#{post.organization_id}"),
-                                      url_for_consumer_app(ux2_content_path(post)))
+                                      url_for_consumer_app("/profile/#{post.organization_id}"),
+                                      url_for_consumer_app(ux2_content_path(post)),
+                                      post.organization.background_image_url,
+                                      content_excerpt(post),
+                                      path)
     SubscriptionsMailchimpClient.update_campaign(campaign_identifier: post.subscriber_mc_identifier,
                                                  subject:         campaign_subject(post),
                                                  title:           post.title,
@@ -93,10 +98,10 @@ class NotifySubscribersJob < ApplicationJob
     end
   end
 
-  def generate_html(title, organization_name, organization_url, post_url)
-    @title, @organization_name, @organization_url, @post_url =
-      title, organization_name, organization_url, post_url
-    ERB.new(File.read(ERB_TEMPLATE_PATH)).result(binding)
+  def generate_html(title, organization_name, organization_url, post_url, banner_image_url, excerpt, path)
+    @title, @organization_name, @organization_url, @post_url, @banner_image_url, @excerpt =
+      title, organization_name, organization_url, post_url, banner_image_url, excerpt
+    ERB.new(File.read(path)).result(binding)
   end
 end
 

@@ -1409,11 +1409,14 @@ class Content < ActiveRecord::Base
   end
 
   def update_subscriber_notification
-    # Limit the blast radius.
+    # Limit News blast radius.
     return if outside_subscriber_notification_blast_radius?
 
+    # Limit Business post blast radius.
+    return if outside_business_subscriber_notification_blast_radius?
+
     # Currently, we only notify news subscribers.
-    return unless root_content_category_id && root_content_category_id == ContentCategory.find_by_name('news')&.id
+    return unless is_news? || is_business_post?
 
     # We only update subscriber notification campaigns for published items.
     return unless published
@@ -1436,11 +1439,25 @@ class Content < ActiveRecord::Base
     true
   end
 
+  def is_news?
+    root_content_category_id && root_content_category_id == ContentCategory.find_by_name('news')&.id
+  end
+
+  def is_business_post?
+    organization.org_type == 'Business'
+  end
+
   ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS = [
     "Dev Testbed",        # For testing on an FE
   ]
 
   def outside_subscriber_notification_blast_radius?
     ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.include?(organization_name)
+  end
+
+  BUSINESS_WHITELIST_FOR_NOTIFICATIONS = ['Parker Agency', 'DailyUV']
+
+  def outside_business_subscriber_notification_blast_radius?
+    content_type != :news && !BUSINESS_WHITELIST_FOR_NOTIFICATIONS.include?(organization_name)
   end
 end

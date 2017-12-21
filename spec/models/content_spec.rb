@@ -405,6 +405,26 @@ describe Content, :type => :model do
       @content.repositories << @prod_repo
     end
 
+    context "when Organization is Business in whitelist" do
+      it "sends notification for Business published item" do
+        organization = FactoryGirl.create :organization, name: Content::BUSINESS_WHITELIST_FOR_NOTIFICATIONS.first, org_type: 'Business'
+        @content = FactoryGirl.create(:content, :event, published: true, organization: organization)
+        expect(@content.send(:outside_business_subscriber_notification_blast_radius?)).to eq false
+        expect(NotifySubscribersJob).to receive(:perform_later)
+        @content.update_attribute(:title, "#{@content.title}-1")
+      end
+    end
+
+    context "when Organization is Business NOT in whitelist" do
+      it "does NOT send notification for published item" do
+        organization = FactoryGirl.create :organization, name: 'Non-existent', org_type: 'Business'
+        @content = FactoryGirl.create(:content, :event, published: true, organization: organization)
+        expect(@content.send(:outside_business_subscriber_notification_blast_radius?)).to eq true
+        expect(NotifySubscribersJob).not_to receive(:perform_later)
+        @content.update_attribute(:title, "#{@content.title}-1")
+      end
+    end
+
     context "organization is outside of blast radius" do
       it "does not send notification to subscribers" do
         org = FactoryGirl.create(:organization, name: Content::ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.first)

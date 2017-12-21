@@ -72,4 +72,9 @@ module ContentsHelper
     org_label = uri.path.to_s.sub('/organizations', '').split('/').find_all { |c| c.present? }.first.to_s.sub(/^\d+\-/, '')
     [host_label, org_label].find_all { |c| c.present? }.join('/')
   end
+
+  def content_excerpt(content)
+    stripped_content = strip_tags(content.raw_content.gsub('<br>', ' '))
+    excerpt(stripped_content, stripped_content[0], radius: 280)
+  end
 end
