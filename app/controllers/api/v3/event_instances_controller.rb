@@ -9,15 +9,16 @@ module Api
         opts[:where] = {}
         opts[:where][:published] = 1 if @repository.present?
         opts[:where][:removed] = { not: true }
+        opts[:page] = params[:page] || 1
+        opts[:per_page] = params[:per_page] || 20
 
-        apply_date_and_paging opts
+        apply_date_query opts
         apply_query_location_filters opts
 
         query = params[:query].present? ? params[:query] : "*"
-        total_pages = _active_dates.count
-
         @event_instances = EventInstance.search(query, opts)
 
+        total_pages = (@event_instances.total_count || 100) / opts[:per_page].to_i
         render json: @event_instances, each_serializer: HashieMashes::DetailedEventInstanceSerializer,
           meta: {
             count: @event_instances.count,
@@ -111,25 +112,15 @@ module Api
           opts[:where][:starts_at] = start_date..end_date
         end
 
-        def apply_date_and_paging(opts)
-          requested_start = (params[:start_date].present? ? DateTime.parse(params[:start_date]) : DateTime.now)
-          timezone_offset = params[:start_date].present? ? requested_start.zone : Time.zone.now.strftime('%Z')
+        def apply_date_query(opts)
+          start_date = (params[:start_date].present? ? DateTime.parse(params[:start_date]) : DateTime.now)
+          end_date = (params[:end_date].present? ? DateTime.parse(params[:end_date]) : nil)
 
-          page = (params[:page] || 1).to_i
-          per_page = (params[:per_page] || 10).to_i
-
-          day_offset = (page - 1) * per_page
-          day_window = _active_dates.map(&:date).slice(day_offset, per_page)
-
-          start_date = (
-            day_window.first || DateTime.now
-          ).to_datetime.change(offset: timezone_offset)
-
-          end_date = (
-            day_window.last || DateTime.now
-          ).to_datetime.change(offset: timezone_offset)
-
-          opts[:where][:starts_at] = start_date.beginning_of_day..end_date.end_of_day
+          if end_date.present?
+            opts[:where][:starts_at] = start_date.beginning_of_day..end_date.end_of_day
+          else
+            opts[:where][:starts_at] = {gte: start_date}
+          end
         end
 
         def apply_query_location_filters(opts)

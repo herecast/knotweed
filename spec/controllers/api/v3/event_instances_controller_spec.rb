@@ -109,7 +109,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
       end
 
       context 'when end_date is passed' do
-        it 'should limit results by the passed days_ahead' do
+        it 'should limit results by the end date' do
           get :index, end_date: Time.current + 1.minute
           result_ids = assigns(:event_instances).collect(&:id)
           expect(result_ids).to match_array([@e_current.id])
@@ -125,38 +125,6 @@ describe Api::V3::EventInstancesController, :type => :controller do
           subject
           payload = JSON.parse(response.body)
           expect(payload['meta']['total']).to eq 2
-        end
-      end
-
-      describe 'Paging' do
-        context 'Given start_date, page, per_page' do
-          let(:start_date) { 3.days.from_now - 1.hour }
-          let(:page) { 2 }
-          let(:per_page) { 1 }
-
-          subject { get :index, start_date: start_date, page: page, per_page: 1 }
-
-          before do
-            FactoryGirl.create_list :event_instance, 2,
-              published: true,
-              start_date: 3.days.from_now
-
-            @records_for_page = FactoryGirl.create_list :event_instance, 3,
-              published: true,
-              start_date: 4.days.from_now
-
-            FactoryGirl.create_list :event_instance, 3,
-              published: true,
-              start_date: 5.days.from_now
-          end
-
-          it 'should page by day, not records' do
-            subject
-            expect(assigns(:event_instances).length).to eql 3
-            expect(assigns(:event_instances).map(&:id)).to include(*@records_for_page.map(&:id))
-
-            expect(JSON.parse(response.body)['meta']['total_pages']).to eql 3
-          end
         end
       end
     end
