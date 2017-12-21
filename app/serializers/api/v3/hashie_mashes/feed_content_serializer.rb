@@ -16,7 +16,7 @@ module Api
           :created_at, :updated_at, :event_id, :cost, :sold, :avatar_url,
           :organization_profile_image_url, :biz_feed_public, :sunset_date,
           :event_instances, :content_origin, :split_content, :cost_type, :contact_phone,
-          :images, :can_edit, :contact_email, :venue_url, :organization_biz_feed_active,
+          :images, :contact_email, :venue_url, :organization_biz_feed_active,
           :campaign_start, :campaign_end, :click_count, :redirect_url
 
         has_many :content_locations, serializer: Api::V3::HashieMashes::ContentLocationSerializer
@@ -201,14 +201,6 @@ module Api
 
         def organization_name
           object.organization.name
-        end
-
-        def can_edit
-          if context.present? && context[:current_ability].present?
-            context[:current_ability].can?(:manage, object)
-          else
-            false
-          end
         end
 
         def base_location

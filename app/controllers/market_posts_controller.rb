@@ -15,7 +15,7 @@ class MarketPostsController < ApplicationController
     if session[:market_posts_search].present?
       @search.sorts = 'created_at desc'
       @market_posts = @search.result(distinct: true).page(params[:page]).per(100)
-      @market_posts = @market_posts.accessible_by(current_ability)
+      @market_posts = @market_posts
     else
       @market_posts = []
     end

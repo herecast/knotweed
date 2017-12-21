@@ -17,7 +17,6 @@ class CommentsController < ApplicationController
         .order("created_at DESC")
         .page(params[:page])
         .per(25)
-        .accessible_by(current_ability)
     else
       @comments = []
     end

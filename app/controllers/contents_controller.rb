@@ -28,7 +28,7 @@ class ContentsController < ApplicationController
       Ransack::Visitor.new.accept(search.base)
     }
 
-    @content_categories = ContentCategory.accessible_by(current_ability)
+    @content_categories = ContentCategory
     if session[:contents_search].present?
       if session[:contents_search][:locations_id_in].all?(&:blank?)
         @contents = Content.joins(shared_context.join_sources)
@@ -40,7 +40,6 @@ class ContentsController < ApplicationController
         .where(shared_conditions.reduce(&:or))
         .order("pubdate DESC").page(params[:page])
         .per(100)
-        .accessible_by(current_ability)
     else
       @contents = []
     end
@@ -124,7 +123,6 @@ class ContentsController < ApplicationController
 
   def update
     @content = Content.find(params[:id])
-    authorize! :update, @content
 
     # if only param is has_event_calendar, this is an ajax call from contents#index
     # in that case, we don't need to render anything -- just return status

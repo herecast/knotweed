@@ -9,7 +9,7 @@ module Api
         :event_instance_id, :parent_event_instance_id, :registration_deadline,
         :created_at, :updated_at, :redirect_url, :event_id, :cost, :sold, :avatar_url,
         :organization_profile_image_url, :biz_feed_public, :sunset_date, :campaign_start,
-        :campaign_end, :images, :can_edit,
+        :campaign_end, :images,
         :event_instances, :content_origin, :split_content, :cost_type, :contact_phone,
         :contact_email, :venue_url, :organization_biz_feed_active, :embedded_ad
 
@@ -225,14 +225,6 @@ module Api
       def campaign_end
         if object.root_content_category_id == campaign_content_category_id
           object.promotions.first.try(:promotable).try(:campaign_end)
-        end
-      end
-
-      def can_edit
-        if context.present? && context[:current_ability].present?
-          context[:current_ability].can?(:manage, object)
-        else
-          false
         end
       end
 

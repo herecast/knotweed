@@ -11,7 +11,7 @@ class LocationsController < ApplicationController
 
     @search = Location.order('city ASC').ransack(session[:locations_search])
 
-    @locations = @search.result(distinct: true).page(params[:page]).per(100).accessible_by(current_ability)
+    @locations = @search.result(distinct: true).page(params[:page]).per(100)
   end
 
   def edit

@@ -11,7 +11,7 @@ class BusinessLocationsController < ApplicationController
 
     @search = BusinessLocation.ransack(session[:business_locations_search])
 
-    @business_locations = @search.result(distinct: true).page(params[:page]).per(100).accessible_by(current_ability)
+    @business_locations = @search.result(distinct: true).page(params[:page]).per(100)
   end
 
   def edit

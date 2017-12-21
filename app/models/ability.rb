@@ -7,7 +7,14 @@ class Ability
     
     if user.has_role? :admin # super admin, unscoped to a resource
       can :manage, :all
+      cannot :crud, Content
+      can :crud, Content do |content|
+        user.managed_organizations.map(&:id).include?(content.organization_id)
+      end
+      can :crud, Content, created_by: user
       can :access, :dashboard
+      can :access, :rails_admin
+      can :access, :admin
     elsif user.has_role? :event_manager
       can :access, :dashboard
 

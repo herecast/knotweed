@@ -19,7 +19,7 @@ class EventsController < ApplicationController
     if session[:events_search].present?
       @event_instances = @search.result(distinct: true)
         .joins(event: :content).order("start_date DESC").page(params[:page]).per(100)
-      @event_instances = @event_instances.accessible_by(current_ability)
+      @event_instances = @event_instances
     else
       @event_instances = []
     end

@@ -19,7 +19,7 @@ describe BusinessLocationsController, :type => :controller do
       subject { get :index, reset: true }
 
       it "returns no business locations" do
-        allow_any_instance_of(Ransack::Search).to receive_message_chain(:result, :page, :per, :accessible_by).and_return []
+        allow_any_instance_of(Ransack::Search).to receive_message_chain(:result, :page, :per).and_return []
         subject
         expect(assigns(:business_locations)).to eq []
       end
@@ -32,7 +32,7 @@ describe BusinessLocationsController, :type => :controller do
       subject { get :index, query }
 
       it "returns results" do
-        Ransack::Search.any_instance.stub_chain(:result, :page, :per, :accessible_by) { results }
+        Ransack::Search.any_instance.stub_chain(:result, :page, :per) { results }
         subject
         expect(assigns(:business_locations)).to eq results
       end

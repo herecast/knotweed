@@ -236,6 +236,7 @@ Knotweed::Application.routes.draw do
       get '/promotion_banner_reports/daily_report', to: 'promotion_banner_reports#show_daily_report'
 
       post '/metrics/contents/:id/impressions', to: 'metrics/contents/impressions#create'
+      resources :content_permissions, only: :index
       post '/metrics/profiles/:id/impressions', to: 'metrics/profiles#impression'
       post '/metrics/profiles/:id/clicks', to: 'metrics/profiles#click'
     end

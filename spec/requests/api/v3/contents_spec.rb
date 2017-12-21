@@ -59,7 +59,6 @@ describe 'Contents Endpoints', type: :request do
                 caption: image.caption
               }
             end,
-          can_edit: be(true).or(be(false)),
           content_origin: 'ugc',
           campaign_start: content.ad_campaign_start,
           campaign_end: content.ad_campaign_end,

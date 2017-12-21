@@ -16,7 +16,7 @@ class BusinessProfilesController < ApplicationController
 
     if session[:business_profiles_search].present?
       @business_profiles = @search.result(distinct: true).page(params[:page]).per(100)
-      @business_profiles = @business_profiles.accessible_by(current_ability)
+      @business_profiles = @business_profiles
     else
       @business_profiles = []
     end

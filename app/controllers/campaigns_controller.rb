@@ -20,7 +20,6 @@ class CampaignsController < ApplicationController
         .order("created_at DESC")
         .page(params[:page])
         .per(25)
-        .accessible_by(current_ability)
         .includes(:organization, promotions: [:promotable])
       @campaigns = @campaigns.ad_campaign_active if @active
     else
