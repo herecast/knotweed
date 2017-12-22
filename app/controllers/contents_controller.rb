@@ -28,7 +28,7 @@ class ContentsController < ApplicationController
       Ransack::Visitor.new.accept(search.base)
     }
 
-    @content_categories = ContentCategory
+    @content_categories = ContentCategory.all
     if session[:contents_search].present?
       if session[:contents_search][:locations_id_in].all?(&:blank?)
         @contents = Content.joins(shared_context.join_sources)
