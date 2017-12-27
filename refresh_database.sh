@@ -75,6 +75,11 @@ then
     docker run -t -i --rm --net=host "${docker_args[@]}" 465559955196.dkr.ecr.us-east-1.amazonaws.com/dor:$DOR_BRANCH refresh-database "${args[@]}"
 elif [[ $(uname -s) == 'Darwin' ]] # this can be removed once socket sharing support is added to docker on mac
 then
+    if ! type -P virtualenv >/dev/null; then
+        sudo pip install virtualenv
+    fi
+    virtualenv /tmp/dor_venv
+    . /tmp/dor_venv/bin/activate
     if ! pip install --process-dependency-links -e git+ssh://git@github.com/subtextmedia/dor@$DOR_BRANCH#egg=dor
     then
         die 'failed to install dor'
