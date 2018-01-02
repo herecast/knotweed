@@ -108,11 +108,7 @@ module Api
       end
 
       def content
-        if object.sanitized_content.match(/No content found/)
-          ""
-        else
-          object.sanitized_content
-        end
+        object.sanitized_content
       end
 
       def title
