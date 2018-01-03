@@ -12,6 +12,7 @@ class GatherFeedRecords
   end
 
   def call
+    return empty_payload if org_present_and_biz_feed_inactive
     do_search if @params[:content_type] != 'organization'
     create_content_array
     conditionally_add_carousels
@@ -171,6 +172,16 @@ class GatherFeedRecords
 
     def query
       @params[:query].present? ? @params[:query] : '*'
+    end
+
+    def empty_payload
+      { records: [], total_entries: 0 }
+    end
+
+    def org_present_and_biz_feed_inactive
+      return false unless @params[:organization_id].present?
+      organization = Organization.find(@params[:organization_id])
+      organization.org_type == 'Business' && !organization.biz_feed_active
     end
 
     def assign_first_served_at_to_new_contents

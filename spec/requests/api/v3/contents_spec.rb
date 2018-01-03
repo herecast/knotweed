@@ -637,6 +637,28 @@ describe 'Contents Endpoints', type: :request do
       end
     end
 
+    context "when Organization is type: Business and biz feed inactive" do
+      before do
+        @inactive_organization = FactoryGirl.create :organization,
+          org_type: 'Business',
+          biz_feed_active: false
+        FactoryGirl.create :content, :news,
+          organization_id: @inactive_organization.id,
+          biz_feed_public: true
+      end
+
+      subject do
+        Timecop.travel(Time.current + 1.day)
+        get "/api/v3/contents?organization_id=#{@inactive_organization.id}"
+        Timecop.return
+      end
+
+      it "it returns empty payload" do
+        subject
+        expect(response_json[:feed_items].length).to eq 0
+      end
+    end
+
     describe "additional params" do
       before do
         @organization = FactoryGirl.create :organization
