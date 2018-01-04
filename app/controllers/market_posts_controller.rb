@@ -118,7 +118,17 @@ class MarketPostsController < ApplicationController
           :title,
           :raw_content,
           organization_ids: [],
-          images_attributes: [ :id, :image ] ]
+          images_attributes: [
+            :id,
+            :image
+          ],
+          content_locations_attributes: [
+            :id,
+            :location_type,
+            :location_id,
+            :_destroy
+          ]
+        ]
       )
     end
 

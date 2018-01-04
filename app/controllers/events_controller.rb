@@ -197,7 +197,14 @@ class EventsController < ApplicationController
         :cost_type,
         :cost,
         :registration_deadline,
-        event_instances_attributes: [ :start_date, :end_date, :subtitle_override, :presenter_name, :id, :_destroy ],
+        event_instances_attributes: [
+          :start_date,
+          :end_date,
+          :subtitle_override,
+          :presenter_name,
+          :id,
+          :_destroy
+        ],
         content_attributes: [
           :content_category_id,
           :category_reviewed,
@@ -211,7 +218,16 @@ class EventsController < ApplicationController
           :raw_content,
           :title,
           organization_ids: [],
-          image_attributes: [ :id ] ]
+          image_attributes: [
+            :id
+          ],
+          content_locations_attributes: [
+            :id,
+            :location_type,
+            :location_id,
+            :_destroy
+          ]
+        ]
       )
     end
 

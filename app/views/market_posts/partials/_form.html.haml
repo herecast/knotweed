@@ -10,6 +10,10 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#market_posts" } do
           %i.icon-reorder
           Market Post
+      %li
+        = link_to '#', class: 'green-boarder', data: { toggle: "tab", target: "#locations" } do
+          %i.icon-map-marker
+          Locations
       - if @market_post.id.present?
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#publish" } do
@@ -112,7 +116,13 @@
                     src: "https://www.google.com/maps/embed/v1/place?key=AIzaSyBY8KLZXqpXrMbEorrQWjEuQjl7yO3sVAc&q=#{addr}" }
                 - else
                   %iframe#confirm_location_map{ data: { base_src_url: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=" } }
-
+      .tab-pane#locations
+        .flex-grid
+          = f.simple_fields_for :content do |g|
+            = g.fields_for :content_locations, g.object.content_locations.sort_by{|cl| cl.location.name} do |cl|
+              = render 'contents/content_location_fields', f: cl
+            .links.card
+              = link_to_add_association '+ Add Location', g, :content_locations, class: 'btn btn-default', partial: 'contents/content_location_fields'
 
       - if @market_post.id.present?
         .tab-pane#publish{ data: { no_turbolink: "" } }

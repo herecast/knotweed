@@ -10,6 +10,10 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#calendar" } do
           %i.icon-reorder
           Calendar
+      %li
+        = link_to '#', class: 'green-boarder', data: { toggle: "tab", target: "#locations" } do
+          %i.icon-map-marker
+          Locations
       - if @event.id.present?
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#publish" } do
@@ -146,6 +150,13 @@
                 .span6= g.text_field "#{k}", value: v, class: "span12"
                 .span1
                   .btn.btn-danger.remove-serialized-field X
+      .tab-pane#locations
+        .flex-grid
+          = f.simple_fields_for :content do |g|
+            = g.fields_for :content_locations, g.object.content_locations.sort_by{|cl| cl.location.name} do |cl|
+              = render 'contents/content_location_fields', f: cl
+            .links.card
+              = link_to_add_association '+ Add Location', g, :content_locations, class: 'btn btn-default', partial: 'contents/content_location_fields'
       - if @event.id.present?
         .tab-pane#publish{ data: { no_turbolink: "" } }
           = render partial: 'contents/partials/publishing_tab', locals: { content: @event.content }
