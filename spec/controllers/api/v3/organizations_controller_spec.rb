@@ -142,10 +142,6 @@ describe Api::V3::OrganizationsController, :type => :controller do
         expect{subject}.to change{@org.reload.description}
       end
 
-      it 'should update logo' do
-        expect{subject}.to change{@org.reload.logo.url}
-      end
-
       it 'should update name' do
         expect{subject}.to change{@org.reload.name}
       end

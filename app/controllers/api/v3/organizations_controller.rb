@@ -74,7 +74,6 @@ module Api
           :profile_title,
           :description,
           :subscribe_url,
-          :logo,
           :background_image,
           :profile_image,
           :twitter_handle,
