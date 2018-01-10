@@ -16,9 +16,11 @@ module FacebookService
     if content.channel_type == 'Event'
       content.channel.event_instance_ids.each do |eiid|
         detect_error(post "#{base_uri}/#{query_line}&id=http://#{ENV['DEFAULT_CONSUMER_HOST']}/feed/#{content.id}/#{eiid}")
+        detect_error(post "#{base_uri}/#{query_line}&id=http://#{ENV['DEFAULT_CONSUMER_HOST']}/profile/#{content.organization_id}/#{content.id}/#{eiid}")
       end
     else
       detect_error(post "#{base_uri}/#{query_line}&id=http://#{ENV['DEFAULT_CONSUMER_HOST']}/feed/#{content.id}")
+      detect_error(post "#{base_uri}/#{query_line}&id=http://#{ENV['DEFAULT_CONSUMER_HOST']}/profile/#{content.organization_id}/#{content.id}")
     end
   end
 
