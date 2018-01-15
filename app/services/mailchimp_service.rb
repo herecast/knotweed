@@ -252,32 +252,14 @@ module MailchimpService
     end
   end
 
-  def get_report(promotion_banner)
-    promotion_id = promotion_banner.promotion.id
-    lds = ListservDigest.where("promotion_ids && '{?}'", promotion_id)
-    formatted_response = {
-      emails_sent:   0,
-      opens_total:  0,
-      total_clicks: 0
-    }
-    lds.each do |ld|
-      begin
-        open_response  = detect_error(get("/reports/#{ld.mc_campaign_id}")).deep_symbolize_keys
-        click_response = detect_error(get("/reports/#{ld.mc_campaign_id}/click-details?count=100")).deep_symbolize_keys
-        click_info = click_response[:urls_clicked].find do |url_info|
-          url_info[:url].include?(promotion_banner.redirect_url)
-        end
-        formatted_response[:emails_sent]    += open_response[:emails_sent]
-        formatted_response[:opens_total]    += open_response[:opens][:opens_total]
-        if click_info.try(:[], :total_clicks).present?
-          formatted_response[:total_clicks] += click_info[:total_clicks]
-        end
-      rescue Exception => e
-        Rails.logger.info "Issue with Mailchimp response on PromotionBanner with id: #{promotion_banner.id}: #{e.inspect}"
-      end
-    end
-    return formatted_response
+  def get_campaign_report campaign_id
+    detect_error(get("/reports/#{campaign_id}")).deep_symbolize_keys
   end
+
+  def get_campaign_clicks_report campaign_id
+    detect_error(get("/reports/#{campaign_id}/click-details")).deep_symbolize_keys
+  end
+
 
   protected
   def detect_error(response)

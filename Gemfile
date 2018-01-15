@@ -90,7 +90,6 @@ group :development, :test do
   gem 'guard', require: false
   gem 'guard-rspec', require:false
   gem 'rspec'
-  gem 'rspec-activejob'
   gem "rspec-rails"
   gem 'spring'
   gem 'spring-commands-rspec'

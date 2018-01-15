@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171206140851) do
+ActiveRecord::Schema.define(version: 20180112173312) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "hstore"
 
   create_table "ad_metrics", force: :cascade do |t|
     t.string   "campaign"
@@ -655,6 +656,10 @@ ActiveRecord::Schema.define(version: 20171206140851) do
     t.integer  "promotion_ids",        default: [],              array: true
     t.integer  "content_ids",                                    array: true
     t.integer  "listserv_content_ids",                           array: true
+    t.integer  "emails_sent",          default: 0,  null: false
+    t.integer  "opens_total",          default: 0,  null: false
+    t.hstore   "link_clicks",          default: {}, null: false
+    t.datetime "last_mc_report"
   end
 
   add_index "listserv_digests", ["listserv_id"], name: "index_listserv_digests_on_listserv_id", using: :btree
@@ -936,6 +941,10 @@ ActiveRecord::Schema.define(version: 20171206140851) do
     t.text     "coupon_email_body"
     t.string   "coupon_image"
     t.string   "sales_agent"
+    t.integer  "digest_clicks",                      default: 0,     null: false
+    t.integer  "digest_opens",                       default: 0,     null: false
+    t.integer  "digest_emails",                      default: 0,     null: false
+    t.datetime "digest_metrics_updated"
   end
 
   create_table "promotion_listservs", id: :bigserial, force: :cascade do |t|

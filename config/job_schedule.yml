@@ -2,19 +2,15 @@ schedule_listserv_digests:
   cron: "0 0 * * *"
   class: 'ScheduleListservDigestsJob'
   description: "Schedule Listserv Digests for the day."
-market_category_count:
-  cron: "0 0 * * *"
-  class: 'UpdateMarketCategoriesCountJob'
-  description: "Update result count for market category search results"
 remove_expired_tokens:
   cron: "0 0 * * 0"
   class: 'RemoveExpiredTokens'
   description: "Remove expired tokens"
-register_temp_users:
-  cron: "0 0 * * *"
-  class: 'RegisterTempUsersJob'
-  description: 'Registers users captures in TempUserCapture table'
 make_sunsetted_content_private:
   cron: "1 0 * * *"
   class: 'MakeSunsettedContentPrivate'
   description: 'Make sunsetted Content private'
+update_promotion_metrics:
+  cron: "0 0,12 * * *"
+  class: 'SchedulePromotionMetricsUpdateJob'
+  description: 'Fetch and persist mailchimp promotion metrics at 12:00AM/12:00PM daily'

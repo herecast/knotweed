@@ -41,6 +41,11 @@ RSpec.describe ListservDigest, type: :model do
   it { is_expected.to have_db_column(:preheader).of_type(:string) }
   it { is_expected.to have_db_column(:promotion_ids)}
 
+  it { is_expected.to have_db_column(:emails_sent).of_type(:integer)}
+  it { is_expected.to have_db_column(:opens_total).of_type(:integer)}
+  it { is_expected.to have_db_column(:last_mc_report).of_type(:datetime)}
+  it { is_expected.to have_db_column(:link_clicks).of_type(:hstore)}
+
   it { is_expected.to belong_to(:listserv) }
 
   it { is_expected.to respond_to :listserv_contents }

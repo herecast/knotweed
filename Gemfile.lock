@@ -568,9 +568,6 @@ GEM
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
       rspec-mocks (~> 3.5.0)
-    rspec-activejob (0.6.1)
-      activejob (>= 4.2)
-      rspec-mocks
     rspec-core (3.5.4)
       rspec-support (~> 3.5.0)
     rspec-expectations (3.5.0)
@@ -788,7 +785,6 @@ DEPENDENCIES
   rinku (~> 1.7)
   rolify
   rspec
-  rspec-activejob
   rspec-json_expectations
   rspec-rails
   rspec_boolean
@@ -827,4 +823,4 @@ RUBY VERSION
    ruby 2.3.3p222
 
 BUNDLED WITH
-   1.14.6
+   1.16.1

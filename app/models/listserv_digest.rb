@@ -107,4 +107,8 @@ class ListservDigest < ActiveRecord::Base
       []
     end
   end
+
+  def clicks_for_promo promotion
+    (link_clicks[promotion.promotable.redirect_url] || 0).to_i
+  end
 end

@@ -23,6 +23,7 @@
 #  coupon_email_body      :text
 #  coupon_image           :string
 #  sales_agent            :string
+#  digest_emails          :integer
 #
 
 FactoryGirl.define do
@@ -39,8 +40,10 @@ FactoryGirl.define do
     campaign_end 2.days.from_now
     max_impressions 1000
     daily_max_impressions 100
-    impression_count 0
+    impression_count 5
+    click_count 3
     daily_impression_count 0
+    digest_emails 2
     banner_image { File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg')) }
 
     promotion_type PromotionBanner::RUN_OF_SITE # default

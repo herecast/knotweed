@@ -30,6 +30,10 @@ require 'spec_helper'
 describe PromotionBanner, :type => :model do
 
   it {is_expected.to have_db_column(:load_count).of_type(:integer).with_options(default:0)}
+  it {is_expected.to have_db_column(:digest_clicks).of_type(:integer).with_options(default:0)}
+  it {is_expected.to have_db_column(:digest_opens).of_type(:integer).with_options(default:0)}
+  it {is_expected.to have_db_column(:digest_emails).of_type(:integer).with_options(default:0)}
+  it {is_expected.to have_db_column(:digest_metrics_updated).of_type(:datetime)}
 
   describe 'validation' do
     context "when no banner image present" do

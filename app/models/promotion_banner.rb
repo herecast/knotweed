@@ -23,6 +23,9 @@
 #  coupon_email_body      :text
 #  coupon_image           :string
 #  sales_agent            :string
+#  digest_emails     :integer          default(0)
+#  digest_clicks     :integer          default(0)
+#  digest_opens      :integer          default(0)
 #
 
 class PromotionBanner < ActiveRecord::Base
