@@ -12,9 +12,10 @@ class GatherFeedRecords
   end
 
   def call
-    return empty_payload if org_present_and_biz_feed_inactive
+    return empty_payload if org_present_and_biz_feed_inactive? || listserv_request_without_location?
     do_search if @params[:content_type] != 'organization'
     create_content_array
+    conditionally_add_listserv_carousel
     conditionally_add_carousels
     return { records: @records, total_entries: @total_entries }
   end
@@ -32,35 +33,30 @@ class GatherFeedRecords
         organizations = Organization.search(query, organization_opts)
         @total_entries = organizations.total_entries
         @records = organizations.map do |organization|
-          FeedItem.new(
-            model_type: 'organization',
-            id: organization.id,
-            organization: organization
-          )
+          FeedItem.new(organization)
         end
       else
         @records = @contents.map do |content|
-          FeedItem.new(
-            model_type: 'feed_content',
-            id: content.id,
-            feed_content: content
-          )
+          FeedItem.new(content)
+        end
+      end
+    end
+
+    def conditionally_add_listserv_carousel
+      unless no_listserv_carousel_required?
+        carousel = Carousels::ListservCarousel.new(location_id: @params[:location_id])
+        if carousel.feed_contents.count > 0
+          @records.insert(2, FeedItem.new(carousel))
         end
       end
     end
 
     def conditionally_add_carousels
-      if @params[:query].present? && @params[:content_type] != 'organization' && @params[:organization_id].blank?
+      if first_page_of_standard_search_request?
         ['Publishers', 'Businesses'].each do |type|
-          carousel = Carousel.new(organization_type: type, query: query)
+          carousel = Carousels::OrganizationCarousel.new(title: type, query: query)
           if carousel.organizations.count > 0
-            @records.insert(0,
-              FeedItem.new(
-                model_type: 'carousel',
-                id: carousel.id,
-                carousel: carousel
-              )
-            )
+            @records.insert(0, FeedItem.new(carousel))
           end
         end
       end
@@ -83,10 +79,18 @@ class GatherFeedRecords
         }
       }.tap do |attrs|
         attrs[:where][:published] = true if @repository.present?
-        attrs[:where][:content_type] = @params[:content_type] if @params[:content_type].present?
-        attrs[:where][:organization_id] = @requesting_app.organizations.pluck(:id) if @requesting_app.present?
 
-        if ['me', 'my_stuff', 'mystuff'].include?(@params[:radius].to_s.downcase)
+        if @params[:content_type].present? && @params[:content_type] == 'listserv'
+          attrs[:where][:organization_id] = Organization::LISTSERV_ORG_ID
+        elsif @params[:content_type].present?
+          attrs[:where][:organization_id] = @requesting_app.organizations.pluck(:id) if @requesting_app.present?
+          attrs[:where][:content_type] = @params[:content_type]
+        else
+          attrs[:where][:organization_id] = { not: Organization::LISTSERV_ORG_ID } unless listserv_org_request?
+        end
+
+
+        if my_stuff_request?
           attrs[:where]['created_by.id'] = @current_user.id
         elsif @params[:location_id].present?
           location = Location.find_by_slug_or_id @params[:location_id]
@@ -158,12 +162,16 @@ class GatherFeedRecords
 
     def organization_opts
       {
-        page: @params[:page] || 1,
-        per_page: @params[:per_page] || 20,
+        page: page,
+        per_page: per_page,
         where: {
           org_type: ['Blog', 'Publisher', 'Publication', 'Business']
         }
       }
+    end
+
+    def page
+      @params[:page].present? ? @params[:page].to_i : 1
     end
 
     def per_page
@@ -178,10 +186,37 @@ class GatherFeedRecords
       { records: [], total_entries: 0 }
     end
 
-    def org_present_and_biz_feed_inactive
+    def org_present_and_biz_feed_inactive?
       return false unless @params[:organization_id].present?
       organization = Organization.find(@params[:organization_id])
       organization.org_type == 'Business' && !organization.biz_feed_active
+    end
+
+    def listserv_request_without_location?
+      listserv_org_request? && @params[:location_id].blank?
+    end
+
+    def first_page_of_standard_search_request?
+      @params[:query].present? &&
+        @params[:content_type] != 'organization' &&
+        @params[:organization_id].blank? &&
+        page == 1
+    end
+
+    def no_listserv_carousel_required?
+      @params[:content_type].present? ||
+        @params[:query].present? ||
+        @params[:organization_id].present? ||
+        my_stuff_request? ||
+        page > 1
+    end
+
+    def listserv_org_request?
+      @params[:organization_id].to_i == Organization::LISTSERV_ORG_ID
+    end
+
+    def my_stuff_request?
+      ['me', 'my_stuff', 'mystuff'].include?(@params[:radius].to_s.downcase)
     end
 
     def assign_first_served_at_to_new_contents

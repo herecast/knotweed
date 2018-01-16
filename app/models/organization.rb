@@ -41,6 +41,8 @@
 #  description_card_active :boolean          default(TRUE)
 #  hours_card_active       :boolean          default(TRUE)
 #  pay_for_content         :boolean          default(FALSE)
+#  special_link_url        :string
+#  special_link_text       :string
 #
 # Indexes
 #
@@ -131,6 +133,8 @@ class Organization < ActiveRecord::Base
   validates_presence_of :name
   validates :logo, :image_minimum_size => true
   validate :twitter_handle_format
+
+  LISTSERV_ORG_ID = 447
 
   def self.parent_pubs
     ids = self.where("parent_id IS NOT NULL").select(:parent_id, :name).uniq.map { |p| p.parent_id }

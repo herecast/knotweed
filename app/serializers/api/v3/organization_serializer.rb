@@ -8,7 +8,8 @@ module Api
         :profile_ad_override, :profile_image_url, :background_image_url, :claimed,
         :twitter_handle, :custom_links, :biz_feed_active, :phone, :website,
         :hours, :email, :address, :city, :state, :zip, :subtext_certified, :services,
-        :contact_card_active, :description_card_active, :hours_card_active
+        :contact_card_active, :description_card_active, :hours_card_active,
+        :special_link_url, :special_link_text
 
       def profile_image_url
        object.profile_image_url || object.logo_url

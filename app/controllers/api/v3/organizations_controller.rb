@@ -79,7 +79,9 @@ module Api
           :twitter_handle,
           :contact_card_active,
           :description_card_active,
-          :hours_card_active
+          :hours_card_active,
+          :special_link_url,
+          :special_link_text
         )
       end
 

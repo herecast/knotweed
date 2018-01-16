@@ -208,7 +208,7 @@ module Api
         end
 
         def content_origin
-          object.organization.try(:name) == 'Listserv' ? 'listserv' : 'ugc'
+          object.organization&.id == Organization::LISTSERV_ORG_ID ? 'listserv' : 'ugc'
         end
 
         def event_instances

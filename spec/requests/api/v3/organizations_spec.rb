@@ -42,7 +42,9 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           services: organization.services,
           contact_card_active: organization.contact_card_active,
           description_card_active: organization.description_card_active,
-          hours_card_active: organization.hours_card_active
+          hours_card_active: organization.hours_card_active,
+          special_link_url: organization.special_link_url,
+          special_link_text: organization.special_link_text
         }
       )
     end

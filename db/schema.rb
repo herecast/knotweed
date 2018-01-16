@@ -839,6 +839,8 @@ ActiveRecord::Schema.define(version: 20180112173312) do
     t.boolean  "description_card_active",             default: true
     t.boolean  "hours_card_active",                   default: true
     t.boolean  "pay_for_content",                     default: false
+    t.string   "special_link_url"
+    t.string   "special_link_text"
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree

@@ -172,6 +172,8 @@ class OrganizationsController < ApplicationController
         :description_card_active,
         :hours_card_active,
         :pay_for_content,
+        :special_link_url,
+        :special_link_text,
         :consumer_app_ids => [],
         :location_ids => [],
         :business_location => [

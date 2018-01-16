@@ -43,6 +43,8 @@
             = f.association :parent, collection: Organization.where.not(id: @organization.id), label: "Parent Organization (Syndication)",
               input_html: { class: "input-block-level chosen-select-single-deselect" }, include_blank: true
             = f.input :subscribe_url, input_html: { class: 'input-block-level' }
+            = f.input :special_link_url, input_html: { class: 'input-block-level' }
+            = f.input :special_link_text, input_html: { class: 'input-block-level' }
             = f.input :twitter_handle
             = f.input :embedded_ad, as: :boolean
             = f.input :subtext_certified, as: :boolean

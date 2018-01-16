@@ -49,7 +49,9 @@ class FeedContentVanillaSerializer
           query: raw_carousel.query,
           carousel_type: raw_carousel.carousel_type,
           title: raw_carousel.title,
-          organizations: carousel_organizations(raw_carousel.organizations)
+          organizations: carousel_organizations(raw_carousel.organizations),
+          feed_contents: carousel_feed_contents(raw_carousel.feed_contents),
+          query_params: raw_carousel.query_params
         }
       end
     end
@@ -57,6 +59,12 @@ class FeedContentVanillaSerializer
     def carousel_organizations(raw_organizations)
       raw_organizations.map do |raw_organization|
         Api::V3::OrganizationSerializer.new(raw_organization).as_json['organization']
+      end
+    end
+
+    def carousel_feed_contents(raw_feed_contents)
+      raw_feed_contents.map do |raw_feed_content|
+        Api::V3::HashieMashes::FeedContentSerializer.new(raw_feed_content, @opts).as_json['feed_content']
       end
     end
 

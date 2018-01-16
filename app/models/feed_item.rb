@@ -5,13 +5,24 @@ class FeedItem
     :carousel,
     :organization
 
-  alias :read_attribute_for_serialization :send
+    def initialize(object)
+      @id = object.id
+      set_model_type(object)
+    end
 
-  def initialize(model_type:, id:, **opts)
-    @model_type   = model_type
-    @id           = id
-    @feed_content = opts[:feed_content]
-    @carousel     = opts[:carousel]
-    @organization = opts[:organization]
+    private
+
+      def set_model_type(object)
+        if object.class.to_s.include?('Carousel')
+          @model_type = 'carousel'
+          @carousel = object
+        elsif object.class == Hashie::Mash
+          @model_type = 'feed_content'
+          @feed_content = object
+        elsif object.class == Organization
+          @model_type = 'organization'
+          @organization = object
+        end
+      end
+
   end
-end
