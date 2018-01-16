@@ -3,7 +3,7 @@ class Carousels::ListservCarousel < Carousel
   def initialize(**args)
     super
     @location      = Location.find_by_slug_or_id(args[:location_id])
-    @title         = "#{@location&.city} Community Discussion"
+    @title         = "#{@location&.city} Community Discussion List"
     @carousel_type = 'feed_content'
     @query_params  = { organization_id: Organization::LISTSERV_ORG_ID }
     find_feed_contents
