@@ -19,15 +19,15 @@
             = f.label :organization_id_in, "Advertiser"
             = f.collection_select :organization_id_in, Organization.all, :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
-            = f.label :ad_promotion_type_eq, 'Campaign Type'
-            = f.select :ad_promotion_type_eq, PromotionBanner::PROMOTION_TYPES, { include_blank: true }
+            = f.label :ad_promotion_type_in, 'Campaign Type'
+            = f.select :ad_promotion_type_in, PromotionBanner::PROMOTION_TYPES, {}, { multiple: true, class: "chosen-select" }
           .field.span3
             = f.label :title_cont, 'Campaign Title'
             = f.text_field :title_cont, class: "span12"
         .controls.controls-row
           .field.span3
-            = f.label :organization_ad_sales_agent_cont, "Sales Agent"
-            = f.text_field :organization_ad_sales_agent_cont, class: "span12"
+            = f.label :ad_sales_agent_in, "Sales Agent"
+            = f.select :ad_sales_agent_in, User.sales_agents.map{ |u| [u.name, u.id] }, {}, { multiple: true, class: "chosen-select" }
           .field.span3
             = f.label :ad_campaign_start_gteq, "Campaign Start From"
             = f.text_field :ad_campaign_start_gteq, type: :date, class: "span12"
@@ -43,6 +43,16 @@
           .field.span1
             = f.label :promotions_promotable_of_PromotionBanner_type_boost_eq, "Boosted?"
             = f.check_box :promotions_promotable_of_PromotionBanner_type_boost_eq
+        .control.controls-row
+          .field.span3
+            = f.label :ad_invoice_paid_eq, "Invoice Paid?"
+            = f.select :ad_invoice_paid_eq, [['Paid', true], ['Unpaid', false]], include_blank: 'All'
+          .field.span3
+            = f.label :ad_commission_paid_eq, "Commission Paid?"
+            = f.select :ad_commission_paid_eq, [['Paid', true], ['Unpaid', false]], include_blank: 'All'
+          .field.span3
+            = f.label :ad_services_paid_eq, "Services Paid?"
+            = f.select :ad_services_paid_eq, [['Paid', true], ['Unpaid', false]], include_blank: 'All'
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
@@ -55,6 +65,9 @@
       %th Campaign Title
       %th Campaign Dates
       %th Sales Agent
+      %th Invoice Paid
+      %th Commission Paid
+      %th Services Paid
       %th
   .span5
     = page_entries_info @campaigns if @campaigns.present?
@@ -67,5 +80,14 @@
         %td{ style: "min-width: 150px" }= c.organization.try(:name)
         %td= c.title
         %td #{c.ad_campaign_start.try(:strftime, "%m/%d/%Y")}-#{c.ad_campaign_end.try(:strftime, "%m/%d/%Y")}
-        %td= c.organization.try(:ad_sales_agent)
+        %td= User.find_by(id: c.ad_sales_agent)&.name
+        %td
+          = form_for c, url: campaign_path(id: c.id), method: :patch do |f|
+            = f.check_box :ad_invoice_paid, class: 'ad-status-change-checkbox'
+        %td
+          = form_for c, url: campaign_path(id: c.id), method: :patch do |f|
+            = f.check_box :ad_commission_paid, class: 'ad-status-change-checkbox'
+        %td
+          = form_for c, url: campaign_path(id: c.id), method: :patch do |f|
+            = f.check_box :ad_services_paid, class: 'ad-status-change-checkbox'
         %td= link_to "edit", edit_campaign_path(c), class: "btn btn-warning btn-mini"

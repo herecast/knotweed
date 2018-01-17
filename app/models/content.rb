@@ -62,6 +62,12 @@
 #  first_served_at           :datetime
 #  removed                   :boolean          default(FALSE)
 #  ugc_job                   :string
+#  ad_invoice_paid           :boolean
+#  ad_commission_amount      :float
+#  ad_commission_paid        :boolean
+#  ad_services_amount        :float
+#  ad_services_paid          :boolean
+#  ad_sales_agent            :integer
 #
 # Indexes
 #
@@ -220,6 +226,8 @@ class Content < ActiveRecord::Base
 
   validate :if_ad_promotion_type_sponsored_must_have_ad_max_impressions
   validates :ad_invoiced_amount, numericality: { greater_than: 0 }, if: 'ad_invoiced_amount.present?'
+  validates :ad_commission_amount, numericality: { greater_than: 0 }, if: 'ad_commission_amount.present?'
+  validates :ad_services_amount, numericality: { greater_than: 0 }, if: 'ad_services_amount.present?'
 
   def base_locations=locs
     locs.each do |l|

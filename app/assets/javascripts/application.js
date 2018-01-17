@@ -42,6 +42,7 @@
 //= require contents
 //= require dashboard
 //= require business_locations
+//= require campaigns
 //= require events
 //= require market_posts
 //= require users

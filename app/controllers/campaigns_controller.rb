@@ -70,7 +70,13 @@ class CampaignsController < ApplicationController
         :ad_campaign_end,
         :ad_max_impressions,
         :sanitized_content,
-        :ad_invoiced_amount
+        :ad_invoiced_amount,
+        :ad_invoice_paid,
+        :ad_commission_amount,
+        :ad_commission_paid,
+        :ad_services_amount,
+        :ad_services_paid,
+        :ad_sales_agent
       )
     end
 

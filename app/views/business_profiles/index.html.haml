@@ -68,4 +68,5 @@
           - else
             = link_to "claim", business_profiles_claims_path(id: c.id), method: :post, class: "btn btn-mini btn-warning"
         %td
-          = render partial: 'business_profiles/partials/archive_form', locals: { business: c }
+          = form_for c, url: campaign_path(id: c.id), method: :patch do |f|
+            = f.check_box :ad_invoice_paid, class: 'ad-status-change-checkbox', "data-id" => c.id

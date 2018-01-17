@@ -98,8 +98,26 @@ class PromotionBanner < ActiveRecord::Base
   COUPON = "Coupon"
   PROFILE_PAGE = "Profile Page"
   PROMOTION_SERVICES = "Promotion Services"
+  PACKAGE_LAUNCH = "Package: Launch"
+  PACKAGE_MAINTENANCE = "Package: Maintenance"
+  PACKAGE_PLUS = "Package: Plus"
+  PACKAGE_PRESENCE = "Package: Presence"
+  PACKAGE_PROMINENCE = "Package: Prominence"
 
-  PROMOTION_TYPES = [RUN_OF_SITE, SPONSORED, DIGEST, NATIVE, COUPON, PROFILE_PAGE, PROMOTION_SERVICES]
+  PROMOTION_TYPES = [
+    RUN_OF_SITE,
+    SPONSORED,
+    DIGEST,
+    NATIVE,
+    COUPON,
+    PROFILE_PAGE,
+    PROMOTION_SERVICES,
+    PACKAGE_LAUNCH,
+    PACKAGE_MAINTENANCE,
+    PACKAGE_PLUS,
+    PACKAGE_PRESENCE,
+    PACKAGE_PROMINENCE
+  ]
 
   scope :run_of_site, -> { where(promotion_type: [RUN_OF_SITE, COUPON]) }
 

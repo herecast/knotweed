@@ -81,6 +81,8 @@ class User < ActiveRecord::Base
 
   default_scope { order('id ASC') }
 
+  scope :sales_agents, ->{ joins(:roles).where(roles: { name: 'sales agent' } ) }
+
   def managed_organizations
     Organization.with_role(:manager, self)
   end

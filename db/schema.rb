@@ -380,6 +380,12 @@ ActiveRecord::Schema.define(version: 20180112173312) do
     t.datetime "first_served_at"
     t.boolean  "removed",                               default: false
     t.string   "ugc_job"
+    t.boolean  "ad_invoice_paid",                       default: false
+    t.float    "ad_commission_amount"
+    t.boolean  "ad_commission_paid",                    default: false
+    t.float    "ad_services_amount"
+    t.boolean  "ad_services_paid",                      default: false
+    t.integer  "ad_sales_agent"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree
