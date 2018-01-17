@@ -5,8 +5,6 @@ RSpec.describe GatherFeedRecords, elasticsearch: true do
   describe "::call" do
     before do
       @content = FactoryGirl.create :content, :news
-      @organization = FactoryGirl.create :organization
-      @contents = Content.search('*', { load: false })
     end
 
     let(:params) do
@@ -25,9 +23,7 @@ RSpec.describe GatherFeedRecords, elasticsearch: true do
       response = subject
       expect(response[:records][0].to_json).to include_json({
         model_type: "feed_content",
-        id: @content.id,
-        carousel: nil,
-        organization: nil
+        id: @content.id
       })
       expect(response[:records][0].feed_content.id).to eq @content.id
     end
