@@ -72,7 +72,6 @@ module Api
           end
 
           PublishContentJob.perform_later(@market_post.content, @repository, Content::DEFAULT_PUBLISH_METHOD) if @repository.present?
-          cache_with_facebook
 
           render json: @market_post.content, serializer: DetailedMarketPostSerializer,
             status: 201, context: { current_ability: current_ability }

@@ -220,7 +220,7 @@ class GatherFeedRecords
     end
 
     def assign_first_served_at_to_new_contents
-      BackgroundJob.perform_later('AssignFirstServedAtToNewContent', 'call',
+      BackgroundJob.perform_later('AlertProductTeamOfNewContent', 'call',
         content_ids: @contents.map(&:id),
         current_time: Time.current.to_s
       )

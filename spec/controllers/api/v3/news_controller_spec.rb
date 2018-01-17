@@ -266,14 +266,6 @@ describe Api::V3::NewsController, :type => :controller do
 
     subject { post :create, {news: news_params} }
 
-    it 'makes call to Facebook service' do
-      allow(BackgroundJob).to receive(:perform_later).and_return true
-      expect(BackgroundJob).to receive(:perform_later).with(
-        'FacebookService', 'rescrape_url', any_args
-      )
-      subject
-    end
-
     context 'With locations' do
       let(:locations) { FactoryGirl.create_list(:location, 3) }
       before do
@@ -329,6 +321,20 @@ describe Api::V3::NewsController, :type => :controller do
         'FacebookService', 'rescrape_url', news
       )
       subject
+    end
+
+    context "when pubdate is in future" do
+      before do
+        @news_params = news_params
+        @news_params[:published_at] = Date.tomorrow
+      end
+
+      subject { put :update, {id: news.id, news: news_params} }
+
+      it "does not call to Facebook service" do
+        expect(BackgroundJob).not_to receive(:perform_later)
+        subject
+      end
     end
 
     context 'With locations' do

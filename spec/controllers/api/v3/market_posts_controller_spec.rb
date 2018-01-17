@@ -332,14 +332,6 @@ describe Api::V3::MarketPostsController, :type => :controller do
 
       subject { post :create, market_post: @basic_attrs }
 
-      it 'makes call to Facebook service' do
-        allow(BackgroundJob).to receive(:perform_later).and_return true
-        expect(BackgroundJob).to receive(:perform_later).with(
-          'FacebookService', 'rescrape_url', any_args
-        )
-        subject
-      end
-
       it 'should respond with 201' do
         subject
         expect(response.code).to eq('201')

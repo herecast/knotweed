@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe AssignFirstServedAtToNewContent do
+RSpec.describe AlertProductTeamOfNewContent do
   RSpec::Matchers.define_negated_matcher :not_change, :change
 
   describe '::call' do
@@ -21,10 +21,13 @@ RSpec.describe AssignFirstServedAtToNewContent do
       allow(SlackService).to receive(
         :send_storyteller_post_notification
       ).and_return(true)
+      allow(FacebookService).to receive(
+        :rescrape_url
+      ).and_return(true)
     end
 
     subject do
-      AssignFirstServedAtToNewContent.call(
+      AlertProductTeamOfNewContent.call(
         content_ids: [@content_one.id, @content_two.id],
         current_time: @current_time
       )
@@ -40,16 +43,21 @@ RSpec.describe AssignFirstServedAtToNewContent do
 
     context "when PRODUCTION_MESSAGING_ENABLED is set to true" do
       before do
-        ENV['PRODUCTION_MESSAGING_ENABLED'] = 'true'
+        allow(Figaro.env).to receive(:production_messaging_enabled).and_return('true')
         @news = FactoryGirl.create :content, :news
         @market = FactoryGirl.create :content, :market_post
       end
 
       subject do
-        AssignFirstServedAtToNewContent.call(
+        AlertProductTeamOfNewContent.call(
           content_ids: [@news.id],
           current_time: @current_time
         )
+      end
+
+      it "pings Facebook service to scrape URL" do
+        expect(FacebookService).to receive(:rescrape_url).with(@news)
+        subject
       end
 
       context "when content type is news" do
@@ -77,10 +85,15 @@ RSpec.describe AssignFirstServedAtToNewContent do
 
       context "when content type is NOT news" do
         subject do
-          AssignFirstServedAtToNewContent.call(
+          AlertProductTeamOfNewContent.call(
             content_ids: [@market.id],
             current_time: @current_time
           )
+        end
+
+        it "pings Facebook service to scrape URL" do
+          expect(FacebookService).to receive(:rescrape_url).with(@market)
+          subject
         end
 
         it "does NOT ping Intercom service" do
@@ -107,7 +120,7 @@ RSpec.describe AssignFirstServedAtToNewContent do
           @contents.each { |c| c.update_attributes(created_by: @user) }
         end
 
-        subject { AssignFirstServedAtToNewContent.call(content_ids: @contents.map(&:id), current_time: Time.current.to_s) }
+        subject { AlertProductTeamOfNewContent.call(content_ids: @contents.map(&:id), current_time: Time.current.to_s) }
 
         it "calls to Intercom service for new posts" do
           expect(IntercomService).to receive(
@@ -126,6 +139,11 @@ RSpec.describe AssignFirstServedAtToNewContent do
     end
 
     context "when PRODUCTION_MESSAGING_ENABLED is NOT set or blank" do
+      it "does NOT ping Facebook service to rescrape" do
+        expect(FacebookService).not_to receive(:rescrape_url)
+        subject
+      end
+
       it "does NOT ping Intercom about published News posts" do
         expect(IntercomService).not_to receive(:send_published_content_event)
         subject

@@ -127,8 +127,6 @@ module Api
             PublishContentJob.perform_later(@event.content, @repository, Content::DEFAULT_PUBLISH_METHOD)
           end
 
-          cache_with_facebook
-
           render json: @event, status: 201, serializer: EventSerializer, context: { current_ability: current_ability }
         else
           render json: {

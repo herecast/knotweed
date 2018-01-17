@@ -1,4 +1,4 @@
-class AssignFirstServedAtToNewContent
+class AlertProductTeamOfNewContent
 
   def self.call(*args)
     self.new(*args).call
@@ -12,7 +12,8 @@ class AssignFirstServedAtToNewContent
   def call
     @contents.where(first_served_at: nil).each do |content|
       content.update_attribute(:first_served_at, @current_time)
-      if ENV['PRODUCTION_MESSAGING_ENABLED'] == "true"
+      if Figaro.env.production_messaging_enabled == "true"
+        FacebookService.rescrape_url(content)
         if content.content_type == :news
           IntercomService.send_published_content_event(content)
           SlackService.send_published_content_notification(content)

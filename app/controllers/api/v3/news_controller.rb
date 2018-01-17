@@ -12,8 +12,6 @@ module Api
             PublishContentJob.perform_later(@news, @repository, Content::DEFAULT_PUBLISH_METHOD)
           end
 
-          cache_with_facebook
-
           render json: @news, serializer: DetailedNewsSerializer, root: 'news',
             status: 201
         else
@@ -41,7 +39,7 @@ module Api
               PublishContentJob.perform_later(@news, @repository, Content::DEFAULT_PUBLISH_METHOD)
             end
 
-            cache_with_facebook
+            conditionally_cache_with_facebook
 
             render json: @news, serializer: DetailedNewsSerializer, root: 'news',
               status: 200
@@ -203,8 +201,10 @@ module Api
         end
       end
 
-      def cache_with_facebook
-        BackgroundJob.perform_later('FacebookService', 'rescrape_url', @news)
+      def conditionally_cache_with_facebook
+        if @news.pubdate.present? && @news.pubdate < Time.current
+          BackgroundJob.perform_later('FacebookService', 'rescrape_url', @news)
+        end
       end
 
     end

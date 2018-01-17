@@ -16,7 +16,6 @@ RSpec.describe GatherFeedRecords, elasticsearch: true do
     subject do
       GatherFeedRecords.call(
         params: params,
-        current_ability: nil,
         requesting_app: nil,
         current_user: nil
       )
@@ -24,13 +23,19 @@ RSpec.describe GatherFeedRecords, elasticsearch: true do
 
     it "returns restructured payload" do
       response = subject
-      expect(response[:feed_items][0].to_json).to include_json({
+      expect(response[:records][0].to_json).to include_json({
         model_type: "feed_content",
         id: @content.id,
         carousel: nil,
         organization: nil
       })
-      expect(response[:feed_items][0].feed_content.id).to eq @content.id
+      expect(response[:records][0].feed_content.id).to eq @content.id
+    end
+
+    it "alerts product team of new content" do
+      allow(BackgroundJob).to receive(:perform_later).with('AlertProductTeamOfNewContent').and_return true
+      expect(BackgroundJob).to receive(:perform_later).with('AlertProductTeamOfNewContent', 'call', any_args)
+      subject
     end
   end
 end
