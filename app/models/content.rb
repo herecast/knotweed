@@ -1467,7 +1467,9 @@ class Content < ActiveRecord::Base
     ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.include?(organization_name)
   end
 
-  BUSINESS_WHITELIST_FOR_NOTIFICATIONS = ['Parker Agency', 'DailyUV']
+  BUSINESS_WHITELIST_FOR_NOTIFICATIONS = [
+    'Parker Agency', 'DailyUV', 'Country Cobbler', 'The Skinny Pancake - Hanover, NH'
+  ]
 
   def outside_business_subscriber_notification_blast_radius?
     content_type != :news && !BUSINESS_WHITELIST_FOR_NOTIFICATIONS.include?(organization_name)

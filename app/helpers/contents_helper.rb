@@ -75,6 +75,6 @@ module ContentsHelper
 
   def content_excerpt(content)
     stripped_content = strip_tags(content.raw_content.gsub('<br>', ' '))
-    excerpt(stripped_content, stripped_content[0], radius: 280)
+    excerpt(stripped_content, stripped_content[0], radius: 105)
   end
 end
