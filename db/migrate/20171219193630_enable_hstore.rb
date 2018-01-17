@@ -3,7 +3,7 @@ class EnableHstore < ActiveRecord::Migration
   def up
 
     begin
-      execute "CREATE EXTENSION IF NOT EXIST hstore"
+      execute "CREATE EXTENSION IF NOT EXISTS hstore"
     rescue
       # it's okay! prod needs to have this done manually
       puts "Your postgresql environment requires a super user to enable the hstore extension!"

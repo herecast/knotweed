@@ -50,6 +50,10 @@
 #
 
 class Organization < ActiveRecord::Base
+  ORG_TYPE_OPTIONS = ["Business", "Publisher", 'Publication', 'Blog']
+
+  LISTSERV_ORG_ID = 447
+  LISTSERV_ORG_NAME = "Listserv"
 
   searchkick callbacks: :async,
     batch_size: 100,
@@ -126,15 +130,12 @@ class Organization < ActiveRecord::Base
   }
   scope :news_publishers, -> { where(org_type: %w[Publisher Publication Blog]) }
 
-  ORG_TYPE_OPTIONS = ["Business", "Publisher", 'Publication', 'Blog']
   #validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
 
   validates_uniqueness_of :name
   validates_presence_of :name
   validates :logo, :image_minimum_size => true
   validate :twitter_handle_format
-
-  LISTSERV_ORG_ID = 447
 
   def self.parent_pubs
     ids = self.where("parent_id IS NOT NULL").select(:parent_id, :name).uniq.map { |p| p.parent_id }

@@ -157,6 +157,10 @@ class Content < ActiveRecord::Base
     channel.nil? and (content_category.try(:name) == 'market' or content_category.try(:parent).try(:name) == 'market')
   end
 
+  def is_listserv?
+    organization_id == Organization::LISTSERV_ORG_ID
+  end
+
   def should_index?
     deleted_at.blank?
   end

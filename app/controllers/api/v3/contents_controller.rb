@@ -28,6 +28,11 @@ module Api
         expires_in 1.minutes, public: true
 
         @content = Content.find(params[:id])
+        if @content.is_listserv? && !user_signed_in?
+          render json: {}, status: :unauthorized
+          return
+        end
+
         if @requesting_app.present? && @requesting_app.organizations.include?(@content.organization)
           @content = @content.removed == true ? CreateAlternateContent.call(@content) : @content
           render json: @content, serializer: ContentSerializer,

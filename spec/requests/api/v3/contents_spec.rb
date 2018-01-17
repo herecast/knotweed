@@ -431,6 +431,40 @@ describe 'Contents Endpoints', type: :request do
         expect(response_json[:content]).not_to be nil
       end
     end
+
+    describe 'when content requested is of listserv origin' do
+      let(:listserv_org) {
+        FactoryGirl.create(:organization,
+          id: Organization::LISTSERV_ORG_ID
+        )
+      }
+      before do
+        consumer_app.update organizations: [listserv_org]
+        content.update organization: listserv_org
+      end
+
+      subject { get "/api/v3/contents/#{content.id}", {}, headers }
+
+      context 'user is not signed in' do
+        it 'returns a 401 status' do
+          subject
+          expect(response.code).to eql "401"
+        end
+      end
+
+      context 'user is signed in' do
+        let(:user) { FactoryGirl.create :user }
+        let(:auth_headers) { auth_headers_for(user) }
+        before do
+          headers.merge! auth_headers
+        end
+
+        it 'returns a 200 status' do
+          subject
+          expect(response.code).to eql "200"
+        end
+      end
+    end
   end
 
   describe 'GET /api/v3/contents/:id/metrics' do
