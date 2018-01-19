@@ -62,11 +62,11 @@
 #  first_served_at           :datetime
 #  removed                   :boolean          default(FALSE)
 #  ugc_job                   :string
-#  ad_invoice_paid           :boolean
+#  ad_invoice_paid           :boolean          default(FALSE)
 #  ad_commission_amount      :float
-#  ad_commission_paid        :boolean
+#  ad_commission_paid        :boolean          default(FALSE)
 #  ad_services_amount        :float
-#  ad_services_paid          :boolean
+#  ad_services_paid          :boolean          default(FALSE)
 #  ad_sales_agent            :integer
 #
 # Indexes
@@ -322,6 +322,12 @@ class Content < ActiveRecord::Base
   }
 
   scope :not_deleted, -> { where(deleted_at: nil) }
+  scope :not_removed, -> { where(removed: false) }
+  scope :not_listserv, -> { where("organization_id <> ?", Organization::LISTSERV_ORG_ID) }
+  scope :only_categories, ->(names) {
+    joins("JOIN content_categories AS category ON root_content_category_id = category.id")\
+    .where("category.name IN (?)", names)
+  }
 
   scope :ad_campaign_active, ->(date=Date.current) { where("ad_campaign_start <= ?", date)
     .where("ad_campaign_end >= ?", date) }

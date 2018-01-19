@@ -149,6 +149,8 @@ Knotweed::Application.routes.draw do
       get '/promotions', to: 'promotion_banners#show'
       get '/promotions/:promotion_id', to: 'promotion_banners#show'
       get '/event_instances/active_dates', to: 'event_instances#active_dates'
+      get '/event_instances/sitemap_ids', to: 'event_instances#sitemap_ids'
+
       resources 'event_instances', only: [:index, :show]
 
       #deprecated
@@ -167,6 +169,7 @@ Knotweed::Application.routes.draw do
       get '/locations/locate', to: 'locations#locate'
       resources :locations, only: [:index, :show]
 
+      get '/contents/sitemap_ids', to: 'contents#sitemap_ids'
       resources :contents, only: [:index, :show, :create, :update]
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
@@ -182,6 +185,7 @@ Knotweed::Application.routes.draw do
         post   '/:organization_id/contents/:content_id/tags', to: "contents/tags#create"
         delete '/:organization_id/contents/:content_id/tags', to: "contents/tags#destroy"
       end
+      get '/organizations/sitemap_ids', to: 'organizations#sitemap_ids'
       resources 'organizations', only: [:index, :show, :update]
       resources 'news'
 

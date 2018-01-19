@@ -21,6 +21,10 @@
 #  promotion_ids        :integer          default([]), is an Array
 #  content_ids          :integer          is an Array
 #  listserv_content_ids :integer          is an Array
+#  emails_sent          :integer          default(0), not null
+#  opens_total          :integer          default(0), not null
+#  link_clicks          :hstore           default({}), not null
+#  last_mc_report       :datetime
 #
 # Indexes
 #

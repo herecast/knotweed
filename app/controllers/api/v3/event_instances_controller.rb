@@ -27,6 +27,23 @@ module Api
           }
       end
 
+      def sitemap_ids
+        data = EventInstance.joins(event: :content).merge(
+          Content.published.not_deleted.not_listserv.not_removed
+        ).order('start_date DESC')\
+          .limit(50_000)\
+          .select('event_instances.id as id, contents.id as content_id')
+
+        render json: {
+          instances: data.map do |instance|
+            {
+              id: instance.id,
+              content_id: instance.content_id
+            }
+          end
+        }
+      end
+
       def show
         @event_instance = EventInstance.find(params[:id])
         if @current_api_user.present?

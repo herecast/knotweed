@@ -207,4 +207,46 @@ describe 'Event Instance endpoints', type: :request do
       end
     end
   end
+
+  describe 'GET /api/v3/event_instances/sitemap_ids' do
+    let!(:instance1) {
+      FactoryGirl.create :event_instance
+    }
+    let!(:instance2) {
+      FactoryGirl.create :event_instance
+    }
+
+    subject do
+      get '/api/v3/event_instances/sitemap_ids'
+      response_json
+    end
+
+    it 'returns expected id, and content_ids for each record' do
+      expect(subject[:instances]).to include({
+        id: instance1.id,
+        content_id: instance1.event.content.id
+      }, {
+        id: instance2.id,
+        content_id: instance2.event.content.id
+      })
+    end
+
+    it 'does not include instance if content is listerv' do
+      instance1.event.content.update organization_id: Organization::LISTSERV_ORG_ID
+      ids = subject[:instances].map{|d| d[:id]}
+      expect(ids).to_not include instance1.id
+    end
+
+    it 'does not include instance if content is not published' do
+      instance1.event.content.update published: false
+      ids = subject[:instances].map{|d| d[:id]}
+      expect(ids).to_not include instance1.id
+    end
+
+    it 'does not include instance if content is removed' do
+      instance1.event.content.update removed: true
+      ids = subject[:instances].map{|d| d[:id]}
+      expect(ids).to_not include instance1.id
+    end
+  end
 end

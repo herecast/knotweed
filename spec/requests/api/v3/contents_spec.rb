@@ -806,4 +806,52 @@ describe 'Contents Endpoints', type: :request do
       end
     end
   end
+
+  describe 'GET /api/v3/contents/sitemap_ids' do
+    let!(:event) {
+      FactoryGirl.create :content, :event, :published
+    }
+    let!(:talk) {
+      FactoryGirl.create :content, :talk, :published
+    }
+    let!(:market_post) {
+      FactoryGirl.create :content, :market_post, :published
+    }
+    let!(:news) {
+      FactoryGirl.create :content, :news, :published
+    }
+
+    let(:query_params) { {} }
+
+    subject do
+      get '/api/v3/contents/sitemap_ids', query_params
+      response_json
+    end
+
+    it 'returns the ids of the contents as expected (not events by default)' do
+      expect(subject[:content_ids]).to include *[talk, market_post, news].map(&:id)
+      expect(subject[:content_ids]).to_not include event.id
+    end
+
+    it 'does not include listserv content' do
+      market_post.update organization_id: Organization::LISTSERV_ORG_ID
+      expect(subject[:content_ids]).to_not include market_post.id
+    end
+
+    it 'allows specifying type separated by comma' do
+      query_params[:type] = 'news,market'
+      expect(subject[:content_ids]).to include *[news.id, market_post.id]
+      expect(subject[:content_ids]).to_not include talk.id
+    end
+
+    it 'does not include content if not published' do
+      news.update published: false
+      expect(subject[:content_ids]).to_not include news.id
+    end
+
+    it 'does not include content removed' do
+      news.update removed: true
+      expect(subject[:content_ids]).to_not include news.id
+    end
+  end
 end

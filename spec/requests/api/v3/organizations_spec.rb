@@ -219,4 +219,59 @@ RSpec.describe 'Organizations Endpoints', type: :request do
       end
     end
   end
+
+  describe 'GET /api/v3/organizations/sitemap_ids' do
+    let!(:org_biz) {
+      FactoryGirl.create :organization,
+        org_type: 'Business',
+        biz_feed_active: true
+    }
+    let!(:org_publisher) {
+      FactoryGirl.create :organization,
+        org_type: 'Publisher',
+        can_publish_news: true
+    }
+    let!(:org_blog) {
+      FactoryGirl.create :organization,
+        org_type: 'Blog',
+        can_publish_news: true
+    }
+    let!(:org_publication) {
+      FactoryGirl.create :organization,
+        org_type: 'Publication',
+        can_publish_news: true
+    }
+    let!(:org_listserv) {
+      FactoryGirl.create :organization,
+        id: Organization::LISTSERV_ORG_ID,
+        org_type: 'Publisher',
+        biz_feed_active: true,
+        can_publish_news: true
+    }
+
+    subject do
+      get '/api/v3/organizations/sitemap_ids'
+      response_json
+    end
+
+    it 'does not return listserv' do
+      expect(subject[:organization_ids]).to_not include org_listserv.id
+    end
+
+    it 'includes expected ids' do
+      expect(subject[:organization_ids]).to include *[org_biz, org_publisher, org_blog, org_publication].map(&:id)
+    end
+
+    it 'does not include business with biz_feed_active=false' do
+      org_biz.update biz_feed_active: false
+      expect(subject[:organization_ids]).to_not include org_biz.id
+    end
+
+    it 'does not include publishing organizations with can_publish_news=false' do
+      publisher_orgs = [org_publisher, org_blog, org_publication]
+      publisher_orgs.each {|org| org.update can_publish_news: false}
+
+      expect(subject[:organization_ids]).to_not include *publisher_orgs.map(&:id)
+    end
+  end
 end
