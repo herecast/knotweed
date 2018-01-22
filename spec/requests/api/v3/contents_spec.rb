@@ -808,17 +808,21 @@ describe 'Contents Endpoints', type: :request do
   end
 
   describe 'GET /api/v3/contents/sitemap_ids' do
+    let!(:org) { FactoryGirl.create :organization }
+    let!(:alt_org) { FactoryGirl.create :organization }
+    let!(:consumer_app) { FactoryGirl.create :consumer_app_dailyuv, organizations: [org] }
+
     let!(:event) {
-      FactoryGirl.create :content, :event, :published
+      FactoryGirl.create :content, :event, :published, organization: org
     }
     let!(:talk) {
-      FactoryGirl.create :content, :talk, :published
+      FactoryGirl.create :content, :talk, :published, organization: org
     }
     let!(:market_post) {
-      FactoryGirl.create :content, :market_post, :published
+      FactoryGirl.create :content, :market_post, :published, organization: org
     }
     let!(:news) {
-      FactoryGirl.create :content, :news, :published
+      FactoryGirl.create :content, :news, :published, organization: org
     }
 
     let(:query_params) { {} }
@@ -852,6 +856,11 @@ describe 'Contents Endpoints', type: :request do
     it 'does not include content removed' do
       news.update removed: true
       expect(subject[:content_ids]).to_not include news.id
+    end
+
+    it 'does not include non-dailyuv content' do
+      event.update organization_id: alt_org.id
+      expect(subject[:content_ids]).to_not include event.id
     end
   end
 end

@@ -324,6 +324,7 @@ class Content < ActiveRecord::Base
   scope :not_deleted, -> { where(deleted_at: nil) }
   scope :not_removed, -> { where(removed: false) }
   scope :not_listserv, -> { where("organization_id <> ?", Organization::LISTSERV_ORG_ID) }
+  scope :is_dailyuv, -> { where(organization_id: ConsumerApp.find_by_name('Daily UV').organizations) }
   scope :only_categories, ->(names) {
     joins("JOIN content_categories AS category ON root_content_category_id = category.id")\
     .where("category.name IN (?)", names)

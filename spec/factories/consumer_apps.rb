@@ -17,4 +17,8 @@ FactoryGirl.define do
     name "Test App"
     sequence(:uri) { |n| "http://23.92.16.#{n}" }
   end
+  factory :consumer_app_dailyuv, class: ConsumerApp do
+    name "Daily UV"
+    sequence(:uri) { |n| "http://25.92.16.#{n}" }
+  end
 end

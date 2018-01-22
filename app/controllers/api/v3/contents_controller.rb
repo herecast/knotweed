@@ -34,7 +34,7 @@ module Api
           end
         end
 
-        content_ids = Content.published.not_deleted.not_listserv.not_removed\
+        content_ids = Content.published.not_deleted.not_listserv.not_removed.is_dailyuv\
           .only_categories(types)\
           .order('pubdate DESC')\
           .limit(50_000)\
