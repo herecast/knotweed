@@ -76,7 +76,8 @@ class CampaignsController < ApplicationController
         :ad_commission_paid,
         :ad_services_amount,
         :ad_services_paid,
-        :ad_sales_agent
+        :ad_sales_agent,
+        :ad_promoter
       )
     end
 

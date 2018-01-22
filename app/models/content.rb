@@ -68,6 +68,7 @@
 #  ad_services_amount        :float
 #  ad_services_paid          :boolean          default(FALSE)
 #  ad_sales_agent            :integer
+#  ad_promoter               :integer
 #
 # Indexes
 #
@@ -280,6 +281,8 @@ class Content < ActiveRecord::Base
   # mapping to content record that represents the channelized content
   belongs_to :channelized_content, class_name: "Content"
   has_one :unchannelized_original, class_name: "Content", foreign_key: "channelized_content_id"
+  has_one :sales_agent, class_name: 'User', primary_key: "ad_sales_agent", foreign_key: "id"
+  has_one :promoter, class_name: 'User', primary_key: "ad_promoter", foreign_key: "id"
 
   serialize :similar_content_overrides, Array
 

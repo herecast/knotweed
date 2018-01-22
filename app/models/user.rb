@@ -82,6 +82,7 @@ class User < ActiveRecord::Base
   default_scope { order('id ASC') }
 
   scope :sales_agents, ->{ joins(:roles).where(roles: { name: 'sales agent' } ) }
+  scope :promoters, ->{ joins(:roles).where(roles: { name: 'promoter' } ) }
 
   def managed_organizations
     Organization.with_role(:manager, self)
@@ -200,6 +201,10 @@ class User < ActiveRecord::Base
 
   def unique_roles
     roles.map{ |r| r.pretty_name }.uniq
+  end
+
+  def name_with_email
+    "#{name} (#{email})"
   end
 
   private

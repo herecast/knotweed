@@ -30,7 +30,8 @@
             = f.input :ad_promotion_type, collection: PromotionBanner::PROMOTION_TYPES, input_html: { class: "input-block-level" }, label: 'Ad type'
             = f.input :ad_campaign_start, as: :date_picker, label: 'Campaign Start Date'
             = f.input :ad_campaign_end, as: :date_picker, label: 'Campaign End Date'
-            = f.input :ad_sales_agent, collection: User.sales_agents, input_html: { class: "input-block-level" }, label: 'Sales agents'
+            = f.input :ad_sales_agent, collection: User.sales_agents.map { |u| [u.name_with_email, u.id ] }, input_html: { class: "input-block-level" }, label: 'Sales agent'
+            = f.input :ad_promoter, collection: User.promoters.map { |u| [u.name_with_email, u.id ] }, input_html: { class: "input-block-level" }, label: 'Promoter'
             = f.input :ad_max_impressions, input_html: { class: "input-block-level" }, label: "Total Ad Impressions"
             = f.input :ad_invoiced_amount, input_html: { class: "input-block-level" }, label: "Invoiced Amount"
             = f.input :ad_invoice_paid, as: :boolean, label: "Invoice Paid"
