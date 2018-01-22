@@ -10,7 +10,7 @@ module SearchIndexing
       :redirect_url, :removed
 
     attributes :view_count, :commenter_count, :comment_count, :parent_id,
-      :parent_content_type, :sunset_date, :latest_activity
+      :parent_content_type, :sunset_date, :latest_activity, :content_category_name
 
     has_many :images, serializer: SearchIndexing::ImageSerializer
     has_many :content_locations, serializer: SearchIndexing::ContentLocationSerializer
@@ -25,6 +25,10 @@ module SearchIndexing
 
     def organization_name
       object.organization.try(:name)
+    end
+
+    def content_category_name
+      object.content_category.try(:name)
     end
 
     def base_location_ids
@@ -125,12 +129,8 @@ module SearchIndexing
 
     private
 
-      def campaign_content_category_id
-        ContentCategory.find_or_create_by(name: 'campaign').id
-      end
-
       def is_campaign_content?
-        object.root_content_category_id == campaign_content_category_id && object.promotions.present?
+        object.root_content_category.try(:name) == 'campaign' && object.promotions.present?
       end
 
   end

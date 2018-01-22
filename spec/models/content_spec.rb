@@ -1729,7 +1729,7 @@ describe Content, :type => :model do
     end
   end
 
-  describe 'similar_content' do
+  describe 'similar_content', elasticsearch: true do
     context 'with similar_content_overrides present' do
       before do
         @override3 = FactoryGirl.create :content, pubdate: 1.week.ago
@@ -1746,7 +1746,10 @@ describe Content, :type => :model do
       end
 
       it 'should return the contents in pubdate DESC order' do
-        expect(@content.similar_content(@repo)).to eq [@override1, @override2, @override3]
+        expect(@content.similar_content(@repo).to_a).to eq Content.search('*',
+                                                                          where: {id: @ids},
+                                                                          load: false,
+                                                                          order: {pubdate: :desc}).to_a
       end
     end
 

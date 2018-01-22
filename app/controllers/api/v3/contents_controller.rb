@@ -79,14 +79,17 @@ module Api
         # (Rails 4.1 deprecated calling mutating methods directly on ActiveRecord
         # Relations)
         @contents = @content.similar_content(@repository, 20).to_a
-
         # filter by organization
         if @requesting_app.present?
-          @contents.select!{ |c| @requesting_app.organizations.include? c.organization }
+          requesting_app_orgs = @requesting_app.organizations.to_a
+          @contents.select!{ |c| requesting_app_orgs.map(&:id).include? c.organization.id }
         end
 
         # remove records that are events with no future instances
-        @contents.reject!{ |c| c.channel_type == 'Event' && c.channel.next_instance.blank?}
+        @contents.reject! do |c|
+          c.channel_type == 'Event' &&
+            c.event_instances.all? { |ei| ei.start_date <= Time.zone.now }
+        end
 
         # remove drafts and future scheduled content
         @contents.reject!{ |c| c.pubdate.nil? or c.pubdate >= Time.zone.now }
@@ -95,16 +98,15 @@ module Api
         # the same way that the consumer app filters it.
         if Figaro.env.sim_stack_categories?
           @contents.select! do |c|
-            name = c.content_category.try(:name)
+            name = c.content_category_name
             name && Figaro.env.sim_stack_categories.include?(name)
           end
         end
 
         @contents = @contents.slice(0,8)
 
-        render json: @contents, each_serializer: ContentSerializer,
+        render json: @contents, each_serializer: HashieMashes::FeedContentSerializer,
           root: 'similar_content', consumer_app_base_uri: @requesting_app.try(:uri)
-
       end
 
       def moderate

@@ -26,7 +26,7 @@ describe Api::V3::ContentsController, :type => :controller do
     end
   end
 
-  describe 'GET similar_content' do
+  describe 'GET similar_content', elasticsearch: true do
     before do
       ENV['sim_stack_categories'] = nil
       @content = FactoryGirl.create(:content)
@@ -35,7 +35,9 @@ describe Api::V3::ContentsController, :type => :controller do
       # a organization that exists in the consumer app's list.
       #@market_cat = FactoryGirl.create :content_category, name: 'market'
       @sim_content1 = FactoryGirl.create :content, organization: @org
+      @sim_content1_es = Content.search('*', where: {id: @sim_content1.id}, load: false).first
       @sim_content2 = FactoryGirl.create :content, :market_post, organization: @org
+      @sim_content2_es = Content.search('*', where: {id: @sim_content2.id}, load: false).first
       request_body = {'articles'=>[{'id'=>"#{Content::BASE_URI}/#{@sim_content1.id}"},
         {'id'=>"#{Content::BASE_URI}/#{@sim_content2.id}"}]}.to_json
       stub_request(:get, /recommend\/contextual\?contentid=/).
@@ -59,13 +61,13 @@ describe Api::V3::ContentsController, :type => :controller do
 
       it 'should only return similar content in that category' do
         subject
-        expect(assigns(:contents)).to eq([@sim_content2])
+        expect(assigns(:contents).map(&:id)).to eq([@sim_content2.id])
       end
     end
 
     it 'responds with relation of similar content' do
       subject
-      expect(assigns(:contents)).to match_array([@sim_content1, @sim_content2])
+      expect(assigns(:contents)).to match_array([@sim_content1_es, @sim_content2_es])
     end
 
     describe 'drafts' do
@@ -92,24 +94,38 @@ describe Api::V3::ContentsController, :type => :controller do
 
     context 'when similar content contains events with instances in the past or future' do
       before do
-        @root_content = FactoryGirl.create :content, :located, organization: @org
-        @content = FactoryGirl.create :content, :located, organization: @org
-        other_content = FactoryGirl.create :content, :located, organization: @org
-        event = FactoryGirl.create :event, skip_event_instance: true, content: @content
-        other_event = FactoryGirl.create :event, skip_event_instance: true, content: other_content
+        event_category = FactoryGirl.create :content_category, :event
+        @root_content = FactoryGirl.create :content,
+          :located,
+          organization: @org
+        @future_content = FactoryGirl.create :content,
+          :located,
+          content_category: event_category,
+          organization: @org
+        @past_content = FactoryGirl.create :content,
+          :located,
+          content_category: event_category,
+          organization: @org
+        event = FactoryGirl.create :event, skip_event_instance: true, content: @future_content
+        other_event = FactoryGirl.create :event, skip_event_instance: true, content: @past_content
         FactoryGirl.create :event_instance, event: other_event, start_date: 1.week.ago
         FactoryGirl.create :event_instance, event: event, start_date: 1.month.ago
         FactoryGirl.create :event_instance, event: event, start_date: 1.week.from_now
         FactoryGirl.create :event_instance, event: event, start_date: 1.month.from_now
-        @sim_content = [@content, other_content]
-        allow_any_instance_of(Content).to receive(:similar_content).with(@repo, 20).and_return(@sim_content)
+        @future_content.reload.reindex
+        @past_content.reload.reindex
+
+        @sim_content = Content.search('*', where: {id: [@future_content.id, @past_content.id]}, load: false).to_a
+
+        allow_any_instance_of(Content).to receive(:similar_content).with(@repo, 20, any_args).and_return(@sim_content)
       end
 
       subject { get :similar_content, format: :json, id: @root_content.id, consumer_app_uri: @consumer_app.uri }
 
       it 'should response with events that have instances in the future' do
         subject
-        expect(assigns(:contents)).to eq [@content]
+        returned_ids = assigns(:contents).map(&:id)
+        expect(returned_ids).to eql [@future_content.id]
       end
     end
 
@@ -117,13 +133,17 @@ describe Api::V3::ContentsController, :type => :controller do
       before do
         @content.content_category_id = FactoryGirl.create(:content_category, name: 'sponsored_content').id
         @some_similar_contents = FactoryGirl.create_list(:content, 3, organization: @org)
+        @some_similar_contents_es = Content.search('*',
+                                                   where: {id: @some_similar_contents.map(&:id)},
+                                                   order: {pubdate: :desc},
+                                                   load: false)
         @content.similar_content_overrides = @some_similar_contents.map{|c| c.id}
         @content.save
       end
 
       it 'should respond with the contents defined by similar_content_overrides' do
         subject
-        expect(assigns(:contents)).to match_array(@some_similar_contents)
+        expect(assigns(:contents)).to match_array(@some_similar_contents_es)
       end
     end
   end

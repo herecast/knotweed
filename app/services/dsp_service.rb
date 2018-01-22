@@ -15,10 +15,10 @@ module DspService
 
   # override post method here to insert auth config
   def post(dest, options)
-    options.merge!({ :basic_auth => 
+    options.merge!({ :basic_auth =>
                       { username: Figaro.env.ontotext_api_username,
                         password: Figaro.env.ontotext_api_password },
-                     :timeout => 10*60 }) 
+                     :timeout => 10*60 })
     super(dest, options)
   end
 
@@ -62,7 +62,7 @@ module DspService
       content.update_category_from_annotations(annotate_resp)
       rec_doc = create_recommendation_doc_from_annotations(content, annotate_resp)
 
-      response = post(repo.recommendation_endpoint + "/content?key=#{Figaro.env.ontotext_recommend_key}", 
+      response = post(repo.recommendation_endpoint + "/content?key=#{Figaro.env.ontotext_recommend_key}",
           { headers: { "Content-type" => "application/json",
                        "Accept" => "application/json" },
             body: [rec_doc].to_json } )
@@ -148,7 +148,7 @@ module DspService
   def get_similar_content_ids(content, num_similar=8, repo=Repository.production_repo, has_image: nil)
     # note -- the "category" method being called on self here
     # returns the text label of the associated content_category
-    # filters by parent_category for the given content_category
+    # filters by parent_category for the given content_category-
     if ["market", "offered", "wanted", "for_free", "sale_event"].include? content.category
       extra_param = "&recency=30&filter=parent_category:market"
     elsif ["event"].include? content.category
@@ -206,7 +206,7 @@ module DspService
   # Extracts mentions (e.g. Person, Organization, Keyphrases) from full annotations
   def extract_mentions_from_annotations(annotations)
     mentions = []
-    annotations['annotation-sets'].each do |s| 
+    annotations['annotation-sets'].each do |s|
       s['annotation'].each do |a|
         value = nil
         a['feature-set'].each do |feature|

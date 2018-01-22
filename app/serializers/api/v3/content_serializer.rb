@@ -26,7 +26,7 @@ module Api
       end
 
       def image_url
-        if object.root_content_category_id == campaign_content_category_id && object.promotions.present?
+        if object.root_content_category.name == 'campaign' && object.promotions.present?
           object.promotions.first.try(:promotable).try(:banner_image).try(:url)
         elsif object.images.present?
           object.images[0].image.url
@@ -116,7 +116,7 @@ module Api
       end
 
       def view_count
-        if object.root_content_category_id == campaign_content_category_id
+        if object.root_content_category.name == 'campaign'
           object.promotions.includes(:promotable).first.try(:promotable).try(:impression_count)
         elsif object.parent.present?
           object.parent_view_count
@@ -142,7 +142,7 @@ module Api
       end
 
       def click_count
-        if object.root_content_category_id == campaign_content_category_id
+        if object.root_content_category.name == 'campaign'
           object.promotions.first.try(:promotable).try(:click_count)
         end
       end
@@ -183,7 +183,7 @@ module Api
       end
 
       def redirect_url
-        if object.root_content_category_id == campaign_content_category_id
+        if object.root_content_category.name == 'campaign'
           object.promotions.first.try(:promotable).try(:redirect_url)
         end
       end
@@ -213,13 +213,13 @@ module Api
       end
 
       def campaign_start
-        if object.root_content_category_id == campaign_content_category_id
+        if object.root_content_category.name == 'campaign'
           object.promotions.first.try(:promotable).try(:campaign_start)
         end
       end
 
       def campaign_end
-        if object.root_content_category_id == campaign_content_category_id
+        if object.root_content_category.name == 'campaign'
           object.promotions.first.try(:promotable).try(:campaign_end)
         end
       end
@@ -290,11 +290,6 @@ module Api
             object.parent.channel_type == 'Event'
           )
         end
-
-        def campaign_content_category_id
-          ContentCategory.find_or_create_by(name: 'campaign').id
-        end
-
     end
   end
 end

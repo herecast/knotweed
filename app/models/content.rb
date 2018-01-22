@@ -1285,10 +1285,22 @@ class Content < ActiveRecord::Base
   # @return [Array<Content>] list of similar content
   def similar_content(repo, num_similar=8)
     if similar_content_overrides.present?
-      Content.where(id: similar_content_overrides).order('pubdate DESC').limit(num_similar).includes(:content_category)
+      Content.search('*',
+                     where: {id: similar_content_overrides},
+                     order: {pubdate: :desc},
+                     limit: num_similar,
+                     load: false).to_a
     else
       similar_ids = DspService.get_similar_content_ids(self, num_similar, repo)
-      Content.where(id: similar_ids).includes(:content_category).sort_by do |content|
+      c = Content.search('*', where: {id: similar_ids}, load: false)
+      # filter out comments - they will blow up the sort_by list and we don't want them
+      c = c.to_a.reject do |content|
+        content.content_id.present? &&
+          content.parent_content_id.present? &&
+          content.content_id != content.parent_content_id
+      end
+
+      c.sort_by do |content|
         similar_ids.index(content.id)
       end
     end
