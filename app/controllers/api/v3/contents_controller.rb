@@ -35,6 +35,7 @@ module Api
         end
 
         content_ids = Content.published.not_deleted.not_listserv.not_removed.is_dailyuv\
+          .where('pubdate <= ?', Time.zone.now)
           .only_categories(types)\
           .order('pubdate DESC')\
           .limit(50_000)\

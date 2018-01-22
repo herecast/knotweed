@@ -853,6 +853,16 @@ describe 'Contents Endpoints', type: :request do
       expect(subject[:content_ids]).to_not include news.id
     end
 
+    it 'does not include content if pubdate is null' do
+      news.update pubdate: nil
+      expect(subject[:content_ids]).to_not include news.id
+    end
+
+    it 'does not include content if pubdate is in the future' do
+      news.update pubdate: Time.zone.now.tomorrow
+      expect(subject[:content_ids]).to_not include news.id
+    end
+
     it 'does not include content removed' do
       news.update removed: true
       expect(subject[:content_ids]).to_not include news.id

@@ -29,7 +29,7 @@ module Api
 
       def sitemap_ids
         data = EventInstance.joins(event: :content).merge(
-          Content.published.not_deleted.not_listserv.not_removed
+          Content.published.not_deleted.not_listserv.not_removed.is_dailyuv.where('pubdate <= ?', Time.zone.now)
         ).order('start_date DESC')\
           .limit(50_000)\
           .select('event_instances.id as id, contents.id as content_id')
