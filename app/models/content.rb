@@ -328,9 +328,14 @@ class Content < ActiveRecord::Base
   scope :not_removed, -> { where(removed: false) }
   scope :not_listserv, -> { where("organization_id <> ?", Organization::LISTSERV_ORG_ID) }
   scope :is_dailyuv, -> { where(organization_id: ConsumerApp.find_by_name('Daily UV').organizations) }
+  scope :not_comment, -> { where(parent_id: nil) }
   scope :only_categories, ->(names) {
     joins("JOIN content_categories AS category ON root_content_category_id = category.id")\
     .where("category.name IN (?)", names)
+  }
+  # not checking for org base locations is intentional
+  scope :not_all_base_locations, -> {
+    where("EXISTS(select 1 from content_locations where content_id = contents.id AND (location_type != 'base' OR location_type IS NULL)) OR NOT EXISTS(select 1 from content_locations where content_id = contents.id)")
   }
 
   scope :ad_campaign_active, ->(date=Date.current) { where("ad_campaign_start <= ?", date)

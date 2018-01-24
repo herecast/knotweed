@@ -810,6 +810,8 @@ describe 'Contents Endpoints', type: :request do
   describe 'GET /api/v3/contents/sitemap_ids' do
     let!(:org) { FactoryGirl.create :organization }
     let!(:alt_org) { FactoryGirl.create :organization }
+    let!(:location) { FactoryGirl.create(:location)}
+
     let!(:consumer_app) { FactoryGirl.create :consumer_app_dailyuv, organizations: [org] }
 
     let!(:event) {
@@ -824,6 +826,13 @@ describe 'Contents Endpoints', type: :request do
     let!(:news) {
       FactoryGirl.create :content, :news, :published, organization: org
     }
+    let!(:comment) {
+      FactoryGirl.create :comment
+    }
+
+    before do
+      comment.content.update organization: org
+    end
 
     let(:query_params) { {} }
 
@@ -832,9 +841,16 @@ describe 'Contents Endpoints', type: :request do
       response_json
     end
 
-    it 'returns the ids of the contents as expected (not events by default)' do
+    it 'returns the ids of the contents as expected (not events or comments by default)' do
       expect(subject[:content_ids]).to include *[talk, market_post, news].map(&:id)
       expect(subject[:content_ids]).to_not include event.id
+      expect(subject[:content_ids]).to_not include comment.content.id
+    end
+
+    it 'does not return content that does not have at least one content_location that is not base' do
+      news.update locations: []
+      news.update base_locations: [location]
+      expect(subject[:content_ids]).to_not include news.id
     end
 
     it 'does not include listserv content' do

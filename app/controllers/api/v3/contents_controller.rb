@@ -34,12 +34,18 @@ module Api
           end
         end
 
-        content_ids = Content.published.not_deleted.not_listserv.not_removed.is_dailyuv\
-          .where('pubdate <= ?', Time.zone.now)
-          .only_categories(types)\
-          .order('pubdate DESC')\
-          .limit(50_000)\
-          .pluck(:id)
+        content_ids = Content.published
+                      .not_deleted
+                      .not_listserv
+                      .not_removed
+                      .is_dailyuv
+                      .not_comment
+                      .not_all_base_locations
+                      .where('pubdate <= ?', Time.zone.now)
+                      .only_categories(types)
+                      .order('pubdate DESC')
+                      .limit(50_000)
+                      .pluck(:id)
 
         render json: {content_ids: content_ids}
       end
