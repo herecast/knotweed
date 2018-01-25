@@ -7,9 +7,9 @@ module Api
         :can_publish_events, :can_publish_market, :can_publish_talk, :can_publish_ads,
         :profile_ad_override, :profile_image_url, :background_image_url, :claimed,
         :twitter_handle, :custom_links, :biz_feed_active, :phone, :website,
-        :hours, :email, :address, :city, :state, :zip, :subtext_certified, :services,
+        :hours, :email, :address, :city, :state, :zip, :certified_storyteller, :services,
         :contact_card_active, :description_card_active, :hours_card_active,
-        :special_link_url, :special_link_text
+        :special_link_url, :special_link_text, :certified_social, :desktop_image_url
 
       def profile_image_url
        object.profile_image_url || object.logo_url

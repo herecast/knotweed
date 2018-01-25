@@ -133,7 +133,7 @@ class GatherFeedRecords
 
           attrs[:where][:or] << [
             { sunset_date: nil },
-            { sunset_date: { lt: Date.current } }
+            { sunset_date: { gt: Date.current } }
           ]
 
           organization_show_options[@params['show']].call(attrs) if @params['show'].present?
@@ -164,8 +164,8 @@ class GatherFeedRecords
     def organization_show_options
       {
         'everything' => ->(attrs) { [:pubdate, :biz_feed_public, :published].each { |k| attrs[:where].delete(k) } },
-        'hidden' => ->(attrs) { attrs.delete(:published); attrs[:where][:biz_feed_public] = false },
-        'draft' => ->(attrs) { attrs.delete(:published); attrs[:where][:pubdate] = nil }
+        'hidden' => ->(attrs) { attrs[:where].delete(:published); attrs[:where][:biz_feed_public] = false },
+        'draft' => ->(attrs) { attrs[:where].delete(:published); attrs[:where][:pubdate] = nil }
       }
     end
 

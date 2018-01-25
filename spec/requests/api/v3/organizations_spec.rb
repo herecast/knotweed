@@ -38,13 +38,15 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           city: organization.business_locations.first.city,
           state: organization.business_locations.first.state,
           zip: organization.business_locations.first.zip,
-          subtext_certified: organization.subtext_certified,
+          certified_storyteller: organization.certified_storyteller,
           services: organization.services,
           contact_card_active: organization.contact_card_active,
           description_card_active: organization.description_card_active,
           hours_card_active: organization.hours_card_active,
           special_link_url: organization.special_link_url,
-          special_link_text: organization.special_link_text
+          special_link_text: organization.special_link_text,
+          certified_social: organization.certified_social,
+          desktop_image_url: organization.desktop_image_url
         }
       )
     end
@@ -166,18 +168,53 @@ RSpec.describe 'Organizations Endpoints', type: :request do
       end
     end
 
-    describe "?subtext_certified", elasticsearch: :true do
-      before do
-        @non_promoter = FactoryGirl.create :organization, subtext_certified: false
-        @promoter = FactoryGirl.create :organization, subtext_certified: true
+    describe "?certified_[storyteller, social]", elasticsearch: :true do
+      context "when searching for certified_storyteller" do
+        before do
+          @non_storyteller = FactoryGirl.create :organization, certified_storyteller: false
+          @storyteller = FactoryGirl.create :organization, certified_storyteller: true
+        end
+
+        subject { get '/api/v3/organizations?certified_storyteller=true' }
+
+        it "returns certified_storyteller Organizations" do
+          subject
+          expect(response_json[:organizations].length).to eq 1
+          expect(response_json[:organizations][0][:id]).to eq @storyteller.id
+        end
       end
 
-      subject { get '/api/v3/organizations?subtext_certified=true' }
+      context "when searching for certified_social" do
+        before do
+          @non_social = FactoryGirl.create :organization, certified_social: false
+          @social = FactoryGirl.create :organization, certified_social: true
+        end
 
-      it "returns subtext_certified Organizations" do
-        subject
-        expect(response_json[:organizations].length).to eq 1
-        expect(response_json[:organizations][0][:id]).to eq @promoter.id
+        subject { get '/api/v3/organizations?certified_social=true' }
+
+        it "returns certified_social Organizations" do
+          subject
+          expect(response_json[:organizations].length).to eq 1
+          expect(response_json[:organizations][0][:id]).to eq @social.id
+        end
+      end
+
+      context "when searching for certified_social and certified_storyteller" do
+        before do
+          @social = FactoryGirl.create :organization, certified_social: true
+          @storyteller = FactoryGirl.create :organization, certified_storyteller: true
+          @non_certified = FactoryGirl.create :organization,
+            certified_social: false,
+            certified_storyteller: false
+        end
+
+        subject { get '/api/v3/organizations?certified_social=true&certified_storyteller=true' }
+
+        it "returns certified_social and certified_storyteller Organizations" do
+          subject
+          expect(response_json[:organizations].length).to eq 2
+          expect(response_json[:organizations].map { |o| o[:id] }).to match_array([@social.id, @storyteller.id])
+        end
       end
     end
   end

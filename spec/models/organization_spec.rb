@@ -35,12 +35,14 @@
 #  profile_sales_agent     :string
 #  blog_contact_name       :string
 #  embedded_ad             :boolean          default(FALSE)
-#  subtext_certified       :boolean          default(FALSE)
+#  certified_storyteller   :boolean          default(FALSE)
 #  services                :string
 #  contact_card_active     :boolean          default(TRUE)
 #  description_card_active :boolean          default(TRUE)
 #  hours_card_active       :boolean          default(TRUE)
 #  pay_for_content         :boolean          default(FALSE)
+#  certified_social        :boolean          default(FALSE)
+#  desktop_image           :string
 #
 
 require 'spec_helper'

@@ -47,7 +47,8 @@
             = f.input :special_link_text, input_html: { class: 'input-block-level' }
             = f.input :twitter_handle
             = f.input :embedded_ad, as: :boolean
-            = f.input :subtext_certified, as: :boolean
+            = f.input :certified_storyteller, as: :boolean
+            = f.input :certified_social, as: :boolean
             - if @organization.has_business_profile?
               = f.input :biz_feed_active, as: :boolean
               = f.input :contact_card_active, as: :boolean
@@ -160,6 +161,16 @@
               = f.input :background_image, label: false
             .span3.form-horizontal
               = f.input :remote_background_image_url, label: "OR Upload from URL:"
+        .desktop-image
+          = label_tag "Desktop Image"
+          = image_tag(@organization.desktop_image.url, style: "max-width: 400px;") if @organization.desktop_image?
+          - if @organization.desktop_image?
+            = f.input :remove_desktop_image, as: :boolean, label: "Remove Desktop Image?"
+          .row-fluid
+            .span1
+              = f.input :desktop_image, label: false
+            .span3.form-horizontal
+              = f.input :remote_desktop_image_url, label: "OR Upload from URL:"
       .tab-pane#contacts
         .pull-right
           = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { form_url: new_contact_path(Organization, @organization.id) }, id: "new_contact_button"

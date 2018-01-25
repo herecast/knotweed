@@ -17,6 +17,13 @@ module Api
           else
             head :no_content and return
           end
+        elsif params[:content_id].present?
+          content = Content.find(params[:content_id])
+          if current_ability.can? :manage, content.organization
+            scope = scope.where('contents.id = ?', content.id)
+          else
+            head :no_content and return
+          end
         else
           scope = scope.where('promotions.created_by = ?', @current_api_user.id)
         end

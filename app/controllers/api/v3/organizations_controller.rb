@@ -31,27 +31,19 @@ module Api
           end
           @organizations = @organizations.where(id: params[:ids])
         else
-          opts = {}
-          opts[:where] = {}
-          opts[:page] = params[:page] || 1
-          opts[:includes] = [:business_locations]
+          @opts = {}
+          @opts[:where] = {}
+          @opts[:page] = params[:page] || 1
+          @opts[:includes] = [:business_locations]
 
           if @requesting_app.present?
-            opts[:where][:consumer_app_ids] = [@requesting_app.id]
+            @opts[:where][:consumer_app_ids] = [@requesting_app.id]
           end
 
-          if params[:subtext_certified] == "true"
-            opts[:where][:subtext_certified] = 1
-            opts[:order] = { name: :asc }
-          else
-            # only use organizations associated with news content
-            news_cat = ContentCategory.find_by_name 'news'
-            opts[:where][:content_category_ids] = [news_cat.id]
-          end
-
+          manage_certified_orgs
           query = params[:query].blank? ? '*' : params[:query]
 
-          @organizations = Organization.search query, opts
+          @organizations = Organization.search query, @opts
         end
 
         render json: @organizations, each_serializer: OrganizationSerializer, context: { current_ability: current_ability }
@@ -90,6 +82,7 @@ module Api
           :subscribe_url,
           :background_image,
           :profile_image,
+          :desktop_image,
           :twitter_handle,
           :contact_card_active,
           :description_card_active,
@@ -127,6 +120,26 @@ module Api
 
       def update_business_location
         @organization.business_locations.first.update_attributes(business_location_params)
+      end
+
+      def manage_certified_orgs
+        if params[:certified_storyteller] == "true" && params[:certified_social] == "true"
+          @opts[:where][:or] = [[
+            { certified_social: 1 },
+            { certified_storyteller: 1 }
+          ]]
+          @opts[:order] = { name: :asc }
+        elsif params[:certified_storyteller] == "true"
+          @opts[:where][:certified_storyteller] = 1
+          @opts[:order] = { name: :asc }
+        elsif params[:certified_social] == "true"
+          @opts[:where][:certified_social] = 1
+          @opts[:order] = { name: :asc }
+        else
+          # only use organizations associated with news content
+          news_cat = ContentCategory.find_by_name 'news'
+          @opts[:where][:content_category_ids] = [news_cat.id]
+        end
       end
 
     end

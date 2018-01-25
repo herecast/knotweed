@@ -35,7 +35,7 @@
 #  profile_sales_agent     :string
 #  blog_contact_name       :string
 #  embedded_ad             :boolean          default(FALSE)
-#  subtext_certified       :boolean          default(FALSE)
+#  certified_storyteller   :boolean          default(FALSE)
 #  services                :string
 #  contact_card_active     :boolean          default(TRUE)
 #  description_card_active :boolean          default(TRUE)
@@ -43,6 +43,8 @@
 #  pay_for_content         :boolean          default(FALSE)
 #  special_link_url        :string
 #  special_link_text       :string
+#  certified_social        :boolean          default(FALSE)
+#  desktop_image           :string
 #
 # Indexes
 #
@@ -69,7 +71,8 @@ class Organization < ActiveRecord::Base
       biz_feed_active: biz_feed_active,
       consumer_app_ids: consumer_apps.pluck(:id),
       content_category_ids: contents.pluck(:root_content_category_id).uniq,
-      subtext_certified: subtext_certified
+      certified_storyteller: certified_storyteller,
+      certified_social: certified_social
     }
   end
 
@@ -109,12 +112,15 @@ class Organization < ActiveRecord::Base
   mount_uploader :logo, ImageUploader
   mount_uploader :profile_image, ImageUploader
   mount_uploader :background_image, ImageUploader
+  mount_uploader :desktop_image, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_logo,
                                  :remove_previously_stored_profile_image,
                                  :remove_previously_stored_background_image,
+                                 :remove_previously_stored_desktop_image,
                                  :remove_logo!,
                                  :remove_profile_image!,
-                                 :remove_background_image!
+                                 :remove_background_image!,
+                                 :remove_desktop_image!
 
   scope :alphabetical, -> { order("organizations.name ASC") }
   default_scope { self.alphabetical }

@@ -303,6 +303,8 @@ class Content < ActiveRecord::Base
 
   after_save :update_subscriber_notification
 
+  after_create :hide_campaign_from_public_view
+
   # channel relationships
   belongs_to :channel, polymorphic: true, inverse_of: :content
 
@@ -1500,5 +1502,11 @@ class Content < ActiveRecord::Base
 
   def outside_business_subscriber_notification_blast_radius?
     content_type != :news && !BUSINESS_WHITELIST_FOR_NOTIFICATIONS.include?(organization_name)
+  end
+
+  def hide_campaign_from_public_view
+    if root_content_category_id == ContentCategory.find_or_create_by(name: 'campaign').id
+      update_attribute(:biz_feed_public, false)
+    end
   end
 end
