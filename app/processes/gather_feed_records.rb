@@ -9,6 +9,7 @@ class GatherFeedRecords
     @requesting_app  = requesting_app
     @repository      = requesting_app.try(:repository)
     @current_user    = current_user
+    update_content_type
   end
 
   def call
@@ -21,6 +22,14 @@ class GatherFeedRecords
   end
 
   private
+
+    def update_content_type
+      if @params[:content_type] == 'stories'
+        @params[:content_type] = 'news'
+      elsif @params[:content_type] == 'calendar'
+        @params[:content_type] = 'event'
+      end
+    end
 
     def do_search
       @contents = Content.search(query, content_opts)
