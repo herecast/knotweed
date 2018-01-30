@@ -9,20 +9,52 @@ describe Api::V3::ContentsController, :type => :controller do
   end
 
   describe 'GET #show' do
-    before do
-      @content = FactoryGirl.create :content, :news,
-        removed: true,
-        organization: @org
-      allow(CreateAlternateContent).to receive(:call).and_return(@content)
+    context "when content is removed" do
+      before do
+        @content = FactoryGirl.create :content, :news,
+          removed: true,
+          organization: @org
+        allow(CreateAlternateContent).to receive(:call).and_return(@content)
+      end
+
+      subject { get :show, { id: @content.id, consumer_app_uri: @consumer_app.uri } }
+
+      it "makes call to create alternate content" do
+        expect(CreateAlternateContent).to receive(:call).with(
+          @content
+        )
+        subject
+      end
     end
 
-    subject { get :show, { id: @content.id, consumer_app_uri: @consumer_app.uri } }
+    context "when content is draft" do
+      before do
+        @content = FactoryGirl.create :content, :news,
+          pubdate: nil,
+          organization: @org
+      end
 
-    it "makes call to create alternate content" do
-      expect(CreateAlternateContent).to receive(:call).with(
-        @content
-      )
-      subject
+      subject { get :show, { id: @content.id, consumer_app_uri: @consumer_app.uri } }
+
+      it "returns not_found status" do
+        subject
+        expect(response).to have_http_status :not_found
+      end
+    end
+
+    context "when content is scheduled to be published" do
+      before do
+        @content = FactoryGirl.create :content, :news,
+          pubdate: Date.tomorrow,
+          organization: @org
+      end
+
+      subject { get :show, { id: @content.id, consumer_app_uri: @consumer_app.uri } }
+
+      it "returns not_found status" do
+        subject
+        expect(response).to have_http_status :not_found
+      end
     end
   end
 

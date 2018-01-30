@@ -59,7 +59,7 @@ module Api
           return
         end
 
-        if @requesting_app.present? && @requesting_app.organizations.include?(@content.organization)
+        if whitelisted_with_requesting_app? && has_pubdate_in_past?
           @content = @content.removed == true ? CreateAlternateContent.call(@content) : @content
           render json: @content, serializer: ContentSerializer,
             context: { current_ability: current_ability }
@@ -212,6 +212,15 @@ module Api
         def is_my_stuff_request?
           ['me', 'my_stuff', 'mystuff'].include?(params[:radius].to_s.downcase)
         end
+
+        def whitelisted_with_requesting_app?
+          @requesting_app.present? && @requesting_app.organizations.include?(@content.organization)
+        end
+
+        def has_pubdate_in_past?
+          @content.pubdate.present? && @content.pubdate < Time.current
+        end
+
     end
   end
 end
