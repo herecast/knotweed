@@ -25,13 +25,7 @@ module Api
 
       def create
         @talk = Comment.new(talk_params)
-
-        if location_params[:promote_radius].present? &&
-            location_params[:ugc_base_location_id].present?
-          UpdateContentLocations.call @talk.content,
-            promote_radius: location_params[:promote_radius].to_i,
-            base_locations: [Location.find_by_slug_or_id(location_params[:ugc_base_location_id])]
-        end
+        manage_location_attributes
 
         if @talk.save
           listserv_id = params[:talk][:listserv_id]
@@ -59,10 +53,20 @@ module Api
       # NOTE, as of now, this method is ONLY for image uploading
       def update
         @content = Content.find(params[:id])
-        image_data = params[:talk].delete :image
         # clear out existing images since we are only set up to have one right now
+        image_data = params[:talk].delete :image
         @content.images.destroy_all if image_data.present?
-        if Image.create(image: image_data, imageable: @content)
+        @talk = @content.channel
+        manage_location_attributes
+
+        if params[:talk].present?
+          if @content.update_attributes(talk_update_params)
+            Image.create(image: image_data, imageable: @content) if image_data.present?
+            render json: @content, serializer: TalkSerializer, status: 200
+          else
+            render json: {}, status: :unprocessable_entity
+          end
+        elsif Image.create(image: image_data, imageable: @content)
           render json: @content, serializer: TalkSerializer, status: 200
         else
           render json: {errors: @talk.content.errors}, status: :unprocessable_entity
@@ -110,6 +114,27 @@ module Api
               ugc_job: params[:talk][:ugc_job]
             }
           }
+        end
+
+        def talk_update_params
+          new_params = ActionController::Parameters.new(
+            content: params[:talk]
+          )
+          new_params[:content][:raw_content] = new_params[:content].delete(:content)
+          new_params.require(:content).permit(
+            :title,
+            :raw_content,
+            :promote_radius
+          )
+        end
+
+        def manage_location_attributes
+          if location_params[:promote_radius].present? &&
+              location_params[:ugc_base_location_id].present?
+            UpdateContentLocations.call @talk.content,
+              promote_radius: location_params[:promote_radius].to_i,
+              base_locations: [Location.find_by_slug_or_id(location_params[:ugc_base_location_id])]
+          end
         end
 
     end

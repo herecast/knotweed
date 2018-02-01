@@ -66,7 +66,11 @@ describe Api::V3::TalkController, :type => :controller do
 
   describe 'PUT update' do
     before do
-      @talk = FactoryGirl.create(:content, :talk).channel
+      content = FactoryGirl.create :content, :talk,
+        title: "Original Title",
+        raw_content: "Original Raw Content",
+        promote_radius: 50
+      @talk = content.channel
     end
 
     context 'not signed in' do
@@ -98,7 +102,32 @@ describe Api::V3::TalkController, :type => :controller do
         expect(assigns(:content).reload.images.present?).to eq(true)
       end
 
+      context "when non-image params for update" do
+        let(:new_title) { "Han's Journey: A Memoir" }
+        let(:new_content) { "We begin in Tatooine..." }
+        let(:new_promote_radius) { 20 }
 
+        let(:talk_params) {
+          {
+            title: new_title,
+            content: new_content,
+            promote_radius: new_promote_radius
+          }
+        }
+
+
+        subject { put :update, id: @talk.content.id, talk: talk_params }
+
+        it "updates record" do
+          expect{ subject }.to change{
+            @talk.content.reload.title
+          }.to(new_title).and change{
+            @talk.content.raw_content
+          }.to(new_content).and change{
+            @talk.content.promote_radius
+          }.to new_promote_radius
+        end
+      end
     end
   end
 

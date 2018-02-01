@@ -472,139 +472,94 @@ describe 'Contents Endpoints', type: :request do
       @content = FactoryGirl.create :content, created_by: user
     end
 
-    it 'returns daily view counts' do
-      (2.days.ago.to_date..Date.current).each do |date|
-        FactoryGirl.create(:content_report, content: @content, report_date: date)
+    context "when no start_date or end_date" do
+      subject { get "/api/v3/contents/#{@content.id}/metrics", {}, auth_headers }
+
+      it "returns bad_request status" do
+        subject
+        expect(response.status).to eql 400
       end
-
-      get "/api/v3/contents/#{@content.id}/metrics", {}, auth_headers
-      expect(response.status).to eql 200
-
-      expect(response_json[:content_metrics][:daily_view_counts]).to_not be_empty
     end
 
-    context 'Given 40 days of metrics data exist;' do
+    context "when start_date and end_date present" do
       before do
-        (40.days.ago.to_date..Date.current).each do |date|
+        date_range = (2.days.ago.to_date..Date.current)
+        @start_date = date_range.first.to_s
+        @end_date = date_range.last.to_s
+        date_range.each do |date|
           FactoryGirl.create(:content_report, content: @content, report_date: date)
         end
       end
 
+      let(:expected_response) {{
+        id: @content.id,
+        title: @content.title,
+        image_url: @content.primary_image&.image_url,
+        view_count: 0,
+        comment_count: 0,
+        comments: [],
+        promo_click_thru_count: @content.banner_click_count,
+        daily_view_counts: @content.content_reports.map{ |cr|
+          cr.view_count_hash
+        },
+        daily_promo_click_thru_counts: @content.content_reports.map{ |cr|
+          cr.banner_click_hash
+        }
+      }}
+
+      subject { get "/api/v3/contents/#{@content.id}/metrics?start_date=#{@start_date}&end_date=#{@end_date}", {}, auth_headers }
+
+      it 'returns daily view counts' do
+        subject
+        expect(response_json[:content_metrics]).to include expected_response
+      end
+    end
+
+    context 'Given 40 days of metrics data exist;' do
+      before do
+        date_range = (40.days.ago.to_date..Date.current)
+        @start_date = date_range.first.to_s
+        @end_date = date_range.last.to_s
+        date_range.each do |date|
+          FactoryGirl.create(:content_report, content: @content, report_date: date)
+        end
+      end
+
+      subject { get "/api/v3/contents/#{@content.id}/metrics?start_date=#{@start_date}&end_date=#{@end_date}", {}, auth_headers }
+
       it 'returns all daily_view_counts by default' do
-        get "/api/v3/contents/#{@content.id}/metrics", {}, auth_headers
+        subject
         view_counts = response_json[:content_metrics][:daily_view_counts]
         expect(view_counts.count).to eql @content.content_reports.count
       end
 
       it 'returns all daily_promo_click_thru_counts by default' do
-        get "/api/v3/contents/#{@content.id}/metrics", {}, auth_headers
+        subject
         view_counts = response_json[:content_metrics][:daily_promo_click_thru_counts]
         expect(view_counts.count).to eql @content.content_reports.count
       end
 
       it 'orders daily_view_counts ASC on report_date' do
-        get "/api/v3/contents/#{@content.id}/metrics", {}, auth_headers
-
+        subject
         view_counts = response_json[:content_metrics][:daily_view_counts]
         report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
         sorted_dates = report_dates.sort
         expect(report_dates).to eql sorted_dates
       end
 
-      context 'given a start_date parameter' do
-        let(:start_date) { 25.days.ago.to_date }
+      context "when days are missing reports" do
+        before do
+          ContentReport.all[10..12].each { |cr| cr.delete }
+          @expected_nuber_of_reports = 41
+        end
 
-        it 'returns daily_view_counts on or after the start_date' do
-          get "/api/v3/contents/#{@content.id}/metrics", {
-            start_date: start_date.to_date.to_s
-          }, auth_headers
+        it "returns expected number of daily reports" do
+          subject
           view_counts = response_json[:content_metrics][:daily_view_counts]
-          report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
-          expect(report_dates).to satisfy{|dates| dates.all?{|d| d >= start_date}}
+          expect(view_counts.count).to eql @expected_nuber_of_reports
+          click_counts = response_json[:content_metrics][:daily_promo_click_thru_counts]
+          expect(click_counts.count).to eql @expected_nuber_of_reports
         end
-
-        it 'returns daily_promo_click_thru_counts on or after the start_date' do
-          get "/api/v3/contents/#{@content.id}/metrics", {
-            start_date: start_date.to_date.to_s
-          }, auth_headers
-          view_counts = response_json[:content_metrics][:daily_promo_click_thru_counts]
-          report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
-          expect(report_dates).to satisfy{|dates| dates.all?{|d| d >= start_date}}
-        end
-
-        context 'given a end_date parameter' do
-          let(:end_date) { 2.days.ago.to_date }
-
-          it 'returns daily_view_counts between start_date and end_date' do
-            get "/api/v3/contents/#{@content.id}/metrics", {
-              start_date: start_date.to_date.to_s,
-              end_date: end_date.to_date.to_s
-            }, auth_headers
-            view_counts = response_json[:content_metrics][:daily_view_counts]
-            report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
-            expect(report_dates).to satisfy{|dates| dates.all?{|d| d.between?(start_date, end_date)}}
-          end
-
-          it 'returns daily_promo_click_thru_counts between start_date and end_date' do
-            get "/api/v3/contents/#{@content.id}/metrics", {
-              start_date: start_date.to_date.to_s,
-              end_date: end_date.to_date.to_s
-            }, auth_headers
-            view_counts = response_json[:content_metrics][:daily_promo_click_thru_counts]
-            report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
-            expect(report_dates).to satisfy{|dates| dates.all?{|d| d.between?(start_date, end_date)}}
-          end
-        end
-      end
-    end
-  end
-
-  describe 'GET /api/v3/dashboard' do
-    let(:news_cat) { ContentCategory.find_or_create_by name: 'news' }
-    let(:market_cat) { ContentCategory.find_or_create_by name: 'market' }
-    context 'user has deleted content' do
-      let!(:deleted_news) { FactoryGirl.create :content,
-                           content_category: news_cat,
-                           created_by: user,
-                           published: true,
-                           deleted_at: Time.current}
-      let!(:old_news_content) { FactoryGirl.create :content,
-                                content_category: news_cat,
-                                created_by: user,
-                                pubdate: 2.days.ago,
-                                published: true }
-      let!(:recent_news_content) { FactoryGirl.create :content,
-                                  content_category: news_cat,
-                                  created_by: user,
-                                  published: true }
-
-      it 'does not return deleted content' do
-        get '/api/v3/dashboard', {}, auth_headers
-        ids = response_json[:contents].map{|i| i['id']}
-
-        expect(ids).to_not include(deleted_news.id)
-      end
-
-      it 'falls back to sorting on pubdate when trying to sort on start_date' do
-        get '/api/v3/dashboard', { page: 1, per_page: 8, sort: 'start_date ASC', channel_type: 'news' }, auth_headers
-        expect(response_json[:contents].first[:id]).to eq old_news_content.id
-      end
-    end
-
-    context 'user is selling items in the market' do
-      let!(:post_content) { FactoryGirl.create :content, published: true, content_category: market_cat }
-      let!(:market_post) { FactoryGirl.create :market_post, content: post_content, sold: true }
-
-    before do
-      market_post.created_by = user
-      market_post.save!
-    end
-
-      it 'displays their current items in the market' do
-        get '/api/v3/dashboard', { channel_type: 'market' }, auth_headers
-        post = response_json[:contents].first
-        expect(post[:title]).to eq(post_content.title)
-        expect(post[:sold]).to eq true
       end
     end
   end
@@ -762,6 +717,9 @@ describe 'Contents Endpoints', type: :request do
         @regular_content = FactoryGirl.create :content, :news,
           biz_feed_public: true,
           organization_id: @organization.id
+        @scheduled_content = FactoryGirl.create :content, :news,
+          organization_id: @organization.id,
+          pubdate: 3.days.from_now
       end
 
       describe "?show=everything" do
@@ -771,9 +729,9 @@ describe 'Contents Endpoints', type: :request do
           Timecop.return
         end
 
-        it "returns drafts, hidden content and regular content" do
+        it "returns drafts, scheduled content, hidden content and regular content" do
           subject
-          expect(response_json[:feed_items].length).to eq 3
+          expect(response_json[:feed_items].length).to eq 4
         end
       end
 
@@ -798,10 +756,11 @@ describe 'Contents Endpoints', type: :request do
           Timecop.return
         end
 
-        it "returns drafts only" do
+        it "returns drafts and scheduled posts only" do
           subject
-          expect(response_json[:feed_items].length).to eq 1
-          expect(response_json[:feed_items][0][:feed_content][:id]).to eq @draft_content.id
+          expect(response_json[:feed_items].length).to eq 2
+          content_ids = response_json[:feed_items].map { |c| c[:feed_content][:id] }
+          expect(content_ids).to match_array [@draft_content.id, @scheduled_content.id]
         end
       end
     end

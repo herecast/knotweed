@@ -5,7 +5,8 @@ describe Api::V3::ContentMetricsSerializer do
     @content = FactoryGirl.create :content
   end
 
-  let (:serialized_object) { JSON.parse(Api::V3::ContentMetricsSerializer.new(@content, root: false).to_json) }
+  let(:context_for_request) { { start_date: Date.yesterday.to_s, end_date: Date.today.to_s } }
+  let(:serialized_object) { JSON.parse(Api::V3::ContentMetricsSerializer.new(@content, root: false, context: context_for_request).to_json) }
 
   describe 'comments' do
     before do

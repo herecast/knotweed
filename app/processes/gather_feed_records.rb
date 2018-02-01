@@ -165,7 +165,14 @@ class GatherFeedRecords
       {
         'everything' => ->(attrs) { [:pubdate, :biz_feed_public, :published].each { |k| attrs[:where].delete(k) } },
         'hidden' => ->(attrs) { attrs[:where].delete(:published); attrs[:where][:biz_feed_public] = false },
-        'draft' => ->(attrs) { attrs[:where].delete(:published); attrs[:where][:pubdate] = nil }
+        'draft' => ->(attrs) do
+          attrs[:where].delete(:published)
+          attrs[:where].delete(:pubdate)
+          attrs[:where][:or] << [
+            { pubdate: nil },
+            { pubdate: { gt: Time.current } }
+          ]
+        end
       }
     end
 

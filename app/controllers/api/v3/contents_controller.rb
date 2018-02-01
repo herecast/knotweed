@@ -72,6 +72,7 @@ module Api
         @content = Content.find(params[:id])
         authorize! :update, @content
         if @content.update_attributes(content_params)
+          update_sold_attribute
           render json: @content, status: :ok
         else
           render json: {}, status: :bad_request
@@ -123,73 +124,24 @@ module Api
         head :no_content
       end
 
-      # returns all types of content
-      def dashboard
-        params[:sort] ||= 'pubdate DESC'
-        params[:page] ||= 1
-        params[:per_page] ||= 12
-
-        if params[:organization_id].present? and can? :manage, Organization.find(params[:organization_id])
-          org_id = params[:organization_id]
-          hierarchical_org_ids = Organization.descendants_of(org_id).news_publishers.pluck(:id) + [org_id]
-          scope = Content.where(organization_id: hierarchical_org_ids)
-        else
-          scope = Content.where(created_by: @current_api_user)
-        end
-
-        scope = scope.not_deleted
-
-        @news_cat = ContentCategory.find_or_create_by(name: 'news')
-        @talk_cat = ContentCategory.find_or_create_by(name: 'talk_of_the_town')
-        @market_cat = ContentCategory.find_or_create_by(name: 'market')
-
-        if params[:channel_type] == 'news'
-          scope = scope.where(root_content_category_id: @news_cat.id)
-        elsif params[:channel_type] == 'events'
-          scope = scope.where(channel_type: 'Event')
-        elsif params[:channel_type] == 'talk'
-          scope = scope.where(root_content_category_id: @talk_cat.id)
-        elsif params[:channel_type] == 'market'
-          scope = scope.where(root_content_category_id: @market_cat.id)
-        else # default -- include any of the above
-          scope = scope.where("root_content_category_id IN (?) OR channel_type = 'Event'", [@news_cat.id, @talk_cat.id, @market_cat.id])
-        end
-
-        sort_by = sanitize_sort_parameter(params[:sort])
-
-        if sort_by.include?('root_category')
-          scope = scope.joins('
-            join content_categories as root_category
-                on root_category.id = contents.root_content_category_id')
-        end
-
-        # if requested to sort by pubdate, sort is actually fairly complex because
-        # we want drafts to appear based on their created_by in the midst of published
-        # content sorted by pubdate
-        if sort_by.include? 'pubdate'
-          scope = scope.select("CASE WHEN pubdate IS NULL THEN updated_at ELSE pubdate END as sort_date, contents.*")
-          sort_by.gsub!('pubdate', 'sort_date')
-        end
-
-        @contents = scope.if_event_only_when_instances
-                         .order(sort_by)
-                         .page(params[:page].to_i)
-                         .per(params[:per_page].to_i)
-
-        render json: @contents, each_serializer: DashboardContentSerializer
-      end
-
       def metrics
         @content = Content.find(params[:id])
         authorize! :manage, @content
-        render json: @content, serializer: ContentMetricsSerializer,
-          context: {start_date: params[:start_date], end_date: params[:end_date]}
+        if params[:start_date].present? && params[:end_date].present?
+          render json: @content, serializer: ContentMetricsSerializer,
+            context: {start_date: params[:start_date], end_date: params[:end_date]}
+        else
+          render json: {}, status: :bad_request
+        end
       end
 
       protected
 
         def content_params
-          params.require(:content).permit(:biz_feed_public, :sunset_date)
+          params.require(:content).permit(
+            :biz_feed_public,
+            :sunset_date
+          )
         end
 
         def per_page
@@ -219,6 +171,12 @@ module Api
 
         def has_pubdate_in_past?
           @content.pubdate.present? && @content.pubdate < Time.current
+        end
+
+        def update_sold_attribute
+          if !params[:content][:sold].nil? && @content.channel_type == 'MarketPost'
+            @content.channel.update_attribute(:sold, params[:content][:sold])
+          end
         end
 
     end

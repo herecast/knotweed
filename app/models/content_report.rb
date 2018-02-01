@@ -17,4 +17,18 @@
 
 class ContentReport < ActiveRecord::Base
   belongs_to :content
+
+  def view_count_hash
+    {
+      report_date: report_date.to_s,
+      view_count: view_count || 0
+    }
+  end
+
+  def banner_click_hash
+    {
+      report_date: report_date.to_s,
+      banner_click_count: banner_click_count || 0
+    }
+  end
 end

@@ -21,34 +21,44 @@ module Api
         object.banner_click_count
       end
 
-      def content_reports
-        scope = object.content_reports.order('report_date ASC')
-        if context.present? && context[:start_date].present?
-          scope = scope.where('report_date >= ?', context[:start_date])
-          if context[:end_date].present?
-            scope = scope.where('report_date <= ?', context[:end_date])
-          end
-        end
-        scope
-      end
-
       def daily_view_counts
-        content_reports.map do |report|
-          {
-            report_date: report.report_date,
-            view_count: report.view_count
-          }
+        date_range.map do |date|
+          report_match = content_reports.find{ |cr| cr.report_date.to_date == date }
+          if report_match.present?
+            report_match.view_count_hash
+          else
+            {
+              report_date: Time.parse(date.to_s),
+              view_count: 0
+            }
+          end
         end
       end
 
       def daily_promo_click_thru_counts
-        content_reports.map do |report|
-          {
-            report_date: report.report_date,
-            banner_click_count: report.banner_click_count
-          }
+        date_range.map do |date|
+          report_match = content_reports.find{ |cr| cr.report_date.to_date == date }
+          if report_match.present?
+            report_match.banner_click_hash
+          else
+            {
+              report_date: Time.parse(date.to_s),
+              banner_click_count: 0
+            }
+          end
         end
       end
+
+      private
+
+        def date_range
+          (Date.parse(context[:start_date])..Date.parse(context[:end_date]))
+        end
+
+        def content_reports
+          @content_reports ||= object.content_reports.where("report_date >= ?", context[:start_date])
+                                .where("report_date <= ?", Date.parse(context[:end_date]) + 1)
+        end
 
     end
   end
