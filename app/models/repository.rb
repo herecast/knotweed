@@ -27,7 +27,7 @@ class Repository < ActiveRecord::Base
   PRODUCTION_REPOSITORY_ID = Figaro.env.production_repository_id? ? Figaro.env.production_repository_id.to_i : 3
 
   def self.production_repo
-    Repository.find(PRODUCTION_REPOSITORY_ID)
+    Repository.find_by(id: PRODUCTION_REPOSITORY_ID)
   end
 
 end

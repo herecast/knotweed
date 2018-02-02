@@ -40,7 +40,11 @@ module Api
           @requesting_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
         end
         ConsumerApp.current = @requesting_app if @requesting_app.present?
-        @repository = @requesting_app.repository if @requesting_app.present?
+        if @requesting_app.present?
+          @repository = @requesting_app.repository
+        else
+          @repository = Repository.production_repo
+        end
       end
 
       def authenticate_user_from_token!
