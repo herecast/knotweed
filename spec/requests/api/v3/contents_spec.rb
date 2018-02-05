@@ -294,6 +294,12 @@ describe 'Contents Endpoints', type: :request do
         @market_post = FactoryGirl.create :content, :market_post, title: news.title, organization: org, published: true
         @organization = FactoryGirl.create :organization, name: news.title, org_type: 'Business'
         @second_organization = FactoryGirl.create :organization, name: "#{news.title} 2", org_type: 'Blog'
+        @archived_business = FactoryGirl.create :organization, name: "#{news.title} 3",
+          org_type: 'Business',
+          archived: true
+        @archived_publisher = FactoryGirl.create :organization, name: "#{news.title} 4",
+          org_type: 'Blog',
+          archived: true
       end
 
       subject { get "/api/v3/contents", { query: news.title }, auth_headers }
@@ -308,6 +314,20 @@ describe 'Contents Endpoints', type: :request do
         subject
         collections = response_json[:feed_items].select{ |i| i[:model_type] == 'carousel'}
         expect(collections.length).to eq 2
+      end
+
+      it "does not return archived businesses" do
+        subject
+        carousels = response_json[:feed_items].select{ |i| i[:model_type] == 'carousel' }
+        business_carousel = carousels.find{ |c| c[:carousel][:title] == 'Businesses' }
+        expect(business_carousel[:carousel][:organizations].map{ |o| o[:id] }).not_to include @archived_business.id
+      end
+
+      it "does not return archived publishers" do
+        subject
+        carousels = response_json[:feed_items].select{ |i| i[:model_type] == 'carousel' }
+        business_carousel = carousels.find{ |c| c[:carousel][:title] == 'Publishers' }
+        expect(business_carousel[:carousel][:organizations].map{ |o| o[:id] }).not_to include @archived_publisher.id
       end
 
       it "does not call to Carousels::ListservCarousel" do

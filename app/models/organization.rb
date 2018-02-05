@@ -45,6 +45,7 @@
 #  special_link_text       :string
 #  certified_social        :boolean          default(FALSE)
 #  desktop_image           :string
+#  archived                :boolean          default(FALSE)
 #
 # Indexes
 #
@@ -72,7 +73,8 @@ class Organization < ActiveRecord::Base
       consumer_app_ids: consumer_apps.pluck(:id),
       content_category_ids: contents.pluck(:root_content_category_id).uniq,
       certified_storyteller: certified_storyteller,
-      certified_social: certified_social
+      certified_social: certified_social,
+      archived: archived
     }
   end
 

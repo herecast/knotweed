@@ -177,6 +177,7 @@ class OrganizationsController < ApplicationController
         :special_link_url,
         :special_link_text,
         :certified_social,
+        :archived,
         :consumer_app_ids => [],
         :location_ids => [],
         :business_location => [

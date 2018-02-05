@@ -44,6 +44,9 @@
               = f.check_box :include_child_organizations, checked: params[:q][:include_child_organizations] == "1" ? true : false
             - else
               = f.check_box :include_child_organizations, checked: false
+          .field.span3
+            = f.label :archived_eq, "Archived?"
+            = f.check_box :archived_eq
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
@@ -56,6 +59,7 @@
       %th Parent
       %th # Imported
       %th 
+      %th Archive(d)
   %span5
     = page_entries_info @organizations if @organizations.present?
     = paginate @organizations, window: 2 if @organizations.present?
@@ -76,3 +80,6 @@
         %td
           = link_to "content", contents_path(q: { organization_id_in: organization.id }), class: "btn btn-mini btn-info"
           = link_to "content sets", content_sets_path(q: { organization_id_in: organization.id }), class: "btn btn-mini btn-success"
+        %td
+          = form_for organization do |f|
+            = f.check_box :archived, as: :boolean, class: 'archive-checkbox'

@@ -17,7 +17,8 @@ class Carousels::OrganizationCarousel < Carousel
     def publishers_opts
       {
         where: {
-          org_type: ['Blog', 'Publisher', 'Publication']
+          org_type: ['Blog', 'Publisher', 'Publication'],
+          archived: { in: [false, nil] }
         }
       }
     end
@@ -25,7 +26,8 @@ class Carousels::OrganizationCarousel < Carousel
     def businesses_opts
       {
         where: {
-          org_type: 'Business'
+          org_type: 'Business',
+          archived: { in: [false, nil] }
         },
         boost_where: {
           biz_feed_active: true

@@ -112,3 +112,7 @@ jQuery ->
       </div>'
   $(document).on 'click', '.remove-hours-field', ->
     $(this).parents('.row-fluid').first().remove()
+
+jQuery ->
+  $('.archive-checkbox').on 'click', ->
+    $(this).parent().submit();

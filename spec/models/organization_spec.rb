@@ -43,6 +43,7 @@
 #  pay_for_content         :boolean          default(FALSE)
 #  certified_social        :boolean          default(FALSE)
 #  desktop_image           :string
+#  archived                :boolean          default(FALSE)
 #
 
 require 'spec_helper'
