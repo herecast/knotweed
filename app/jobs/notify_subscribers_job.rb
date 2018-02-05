@@ -8,6 +8,7 @@ class NotifySubscribersJob < ApplicationJob
 
   ERB_NEWS_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/notification.html.erb"
   ERB_BUSINESS_POST_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/organization_notification.html.erb"
+  ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/feature_notification.html.erb"
 
   def perform(post_id)
     post = Content.find_by(id: post_id)
@@ -38,7 +39,11 @@ class NotifySubscribersJob < ApplicationJob
   end
 
   def campaign_subject(post)
-    "See the new post from #{post.organization_name}"
+    if post.organization.feature_notification_org?
+      "New DailyUV Features!"
+    else
+      "See the new post from #{post.organization_name}"
+    end
   end
 
   def needs_new_campaign(post)
@@ -58,7 +63,7 @@ class NotifySubscribersJob < ApplicationJob
     return unless post.subscriber_mc_identifier
 
     # Synchronize the campaign's HTML content, settings, and schedule with the post.
-    path = post.organization.org_type == 'Business' ? ERB_BUSINESS_POST_TEMPLATE_PATH : ERB_NEWS_TEMPLATE_PATH
+    path = appropriate_template_path(post.organization)
     notification_html = generate_html(post.title,
                                       post.organization_name,
                                       url_for_consumer_app("/profile/#{post.organization_id}"),
@@ -85,6 +90,16 @@ class NotifySubscribersJob < ApplicationJob
       # MailChimp is fussy about schedules being on the quarter-hour (e.g. hh:00, hh:15, hh:30, or hh:45).
       send_at = next_quarter_hour(future_campaign_send_at)
       SubscriptionsMailchimpClient.schedule_campaign(campaign_identifier: post.subscriber_mc_identifier, send_at: send_at)
+    end
+  end
+
+  def appropriate_template_path(organization)
+    if organization.feature_notification_org?
+      ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH
+    elsif organization.org_type == 'Business'
+      ERB_BUSINESS_POST_TEMPLATE_PATH
+    else
+      ERB_NEWS_TEMPLATE_PATH
     end
   end
 

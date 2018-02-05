@@ -405,6 +405,16 @@ describe Content, :type => :model do
       @content.repositories << @prod_repo
     end
 
+    context "when feature notification org creates news" do
+      let(:org_for_feature_notification) { FactoryGirl.create :organization, feature_notification_org: true }
+
+      it "calls to NotifySubscribersJob" do
+        content = FactoryGirl.create :content, :news, organization_id: org_for_feature_notification.id
+        expect(NotifySubscribersJob).to receive(:perform_later)
+        content.repositories << @prod_repo
+      end
+    end
+
     context "when Organization is Business in whitelist" do
       it "sends notification for Business published item" do
         organization = FactoryGirl.create :organization, name: Content::BUSINESS_WHITELIST_FOR_NOTIFICATIONS.first, org_type: 'Business'

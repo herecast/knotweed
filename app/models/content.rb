@@ -1457,7 +1457,7 @@ class Content < ActiveRecord::Base
     return if outside_business_subscriber_notification_blast_radius?
 
     # Currently, we only notify news subscribers.
-    return unless is_news? || is_business_post?
+    return unless is_news? || is_business_post? || is_feature_notification?
 
     # We only update subscriber notification campaigns for published items.
     return unless published
@@ -1486,6 +1486,10 @@ class Content < ActiveRecord::Base
 
   def is_business_post?
     organization.org_type == 'Business'
+  end
+
+  def is_feature_notification?
+    organization.feature_notification_org?
   end
 
   ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS = [
