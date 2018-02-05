@@ -10,7 +10,11 @@ class AlertProductTeamOfNewContent
   end
 
   def call
-    @contents.where(first_served_at: nil).each do |content|
+    @contents = @contents.where(first_served_at: nil)
+                         .where.not(pubdate: nil)
+                         .where('pubdate < ?', Time.current)
+
+    @contents.each do |content|
       content.update_attribute(:first_served_at, @current_time)
       if Figaro.env.production_messaging_enabled == "true"
         FacebookService.rescrape_url(content)

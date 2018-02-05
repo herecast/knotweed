@@ -8,6 +8,10 @@ RSpec.describe AlertProductTeamOfNewContent do
       @content_one = FactoryGirl.create :content
       @content_two = FactoryGirl.create :content,
         first_served_at: Date.yesterday
+      @draft_content = FactoryGirl.create :content,
+        pubdate: nil
+      @scheduled_content = FactoryGirl.create :content,
+        pubdate: Date.tomorrow
       @current_time = Time.current.to_s
       allow(SlackService).to receive(
         :send_published_content_notification
@@ -28,7 +32,7 @@ RSpec.describe AlertProductTeamOfNewContent do
 
     subject do
       AlertProductTeamOfNewContent.call(
-        content_ids: [@content_one.id, @content_two.id],
+        content_ids: [@content_one.id, @content_two.id, @draft_content, @scheduled_content],
         current_time: @current_time
       )
     end
@@ -38,6 +42,18 @@ RSpec.describe AlertProductTeamOfNewContent do
         @content_one.reload.first_served_at.to_s
       }.to(@current_time).and not_change{
         @content_two.reload.first_served_at
+      }
+    end
+
+    it "does not update draft content" do
+      expect{ subject }.not_to change{
+        @draft_content.reload.first_served_at
+      }
+    end
+
+    it "does not update scheduled content" do
+      expect{ subject }.not_to change{
+        @scheduled_content.reload.first_served_at
       }
     end
 
