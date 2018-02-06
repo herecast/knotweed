@@ -2,7 +2,7 @@ module Api
   module V3
     class DetailedMarketPostSerializer < ActiveModel::Serializer
 
-      attributes :id, :title, :price, :content, :content_id, :published_at,
+      attributes :id, :title, :cost, :content, :content_id, :published_at,
         :locate_address, :can_edit, :has_contact_info,
         :author_name, :organization_id, :image_url, :contact_phone,
         :contact_email, :preferred_contact_method, :images, :created_at, :updated_at,
@@ -32,7 +32,7 @@ module Api
         object.try(:channel).try(:preferred_contact_method)
       end
 
-      def price
+      def cost
         object.try(:channel).try(:cost)
       end
 

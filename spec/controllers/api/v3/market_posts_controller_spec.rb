@@ -184,7 +184,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
       @market_post = FactoryGirl.create :market_post, created_by: @user
       @attrs_for_update = {
         title: 'This is a changed title',
-        price: 'New low price',
+        cost: 'New low price',
         content: 'Hoth'
       }
     end
@@ -214,7 +214,7 @@ describe Api::V3::MarketPostsController, :type => :controller do
       end
 
       it 'should update the market post\'s attributes' do
-        expect{subject}.to change{@market_post.reload.cost}.to @attrs_for_update[:price]
+        expect{subject}.to change{@market_post.reload.cost}.to @attrs_for_update[:cost]
       end
 
       it 'should update the associated content\'s attributes' do

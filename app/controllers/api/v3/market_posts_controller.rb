@@ -174,7 +174,7 @@ module Api
 
         def additional_create_attributes
           {
-            cost: params[:market_post][:price],
+            cost: params[:market_post][:cost],
             content_attributes: {
               title: params[:market_post][:title],
               raw_content: params[:market_post][:content],
@@ -191,7 +191,7 @@ module Api
 
         def additional_update_attributes
           additional_attributes = {
-            cost: params[:market_post][:price],
+            cost: params[:market_post][:cost],
             content_attributes: {
               id: params[:id],
               title: params[:market_post][:title],

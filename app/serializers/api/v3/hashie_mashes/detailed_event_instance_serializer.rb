@@ -9,9 +9,13 @@ module Api
           :created_at, :updated_at, :image_width, :image_height, :image_file_extension,
           :author_id, :author_name, :avatar_url, :organization_id, :organization_name, :organization_profile_image_url, :organization_biz_feed_active, :published_at, 
           :content,
-          :content_id, :comment_count, :cost, :contact_email, :contact_phone, :updated_at, :event_id, :ical_url, :can_edit
+          :content_id, :comment_count, :cost, :contact_email, :contact_phone, :updated_at, :event_id, :ical_url, :can_edit, :event_url
 
         attributes :comments, :event_instances, :content_locations
+
+        def event_url
+          object[:event_url]
+        end
 
         def ical_url
           context[:ical_url] if context.present?

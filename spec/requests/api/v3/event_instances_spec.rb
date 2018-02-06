@@ -17,6 +17,7 @@ def serialized_event_instance(event_instance)
   cost_type: event_instance.event.cost_type,
   ends_at: event_instance.end_date.try(:iso8601),
   event_id: event_instance.event.id,
+  event_url: event_instance.event.event_url,
   event_instances: [],
   id: event_instance.id,
   image_file_extension: event_instance.event.content.images.first.try(:image).try(:file_extension),

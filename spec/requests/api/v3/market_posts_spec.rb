@@ -30,7 +30,7 @@ describe 'Market Posts', type: :request do
         market_post: {
           id: market_post.id,
           title: market_post.content.sanitized_title,
-          price: market_post.cost,
+          cost: market_post.cost,
           content: market_post.content.sanitized_content,
           content_id: market_post.content.id,
           published_at: market_post.pubdate.try(:iso8601),
@@ -135,7 +135,7 @@ describe 'Market Posts', type: :request do
         market_posts: [
           id: a_kind_of(Integer),
           title: a_kind_of(String),
-          price: a_kind_of(String),
+          cost: a_kind_of(String),
           content: a_kind_of(String),
           content_id: a_kind_of(Integer),
           published_at: a_kind_of(String),
