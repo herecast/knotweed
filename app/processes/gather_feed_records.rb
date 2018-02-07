@@ -54,7 +54,7 @@ class GatherFeedRecords
     def conditionally_add_listserv_carousel
       unless no_listserv_carousel_required?
         carousel = Carousels::ListservCarousel.new(location_id: @params[:location_id])
-        if carousel.feed_contents.count > 0
+        if carousel.contents.count > 0
           @records.insert(2, FeedItem.new(carousel))
         end
       end

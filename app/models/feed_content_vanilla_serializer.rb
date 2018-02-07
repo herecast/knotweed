@@ -23,16 +23,16 @@ class FeedContentVanillaSerializer
         {
           id: record.id,
           model_type: record.model_type,
-          feed_content: feed_content(record.feed_content),
+          content: content(record.content),
           organization: organization(record.organization),
           carousel: carousel(record.carousel)
         }
       end
     end
 
-    def feed_content(raw_feed_content)
-      if raw_feed_content.present?
-        Api::V3::HashieMashes::FeedContentSerializer.new(raw_feed_content, @opts).as_json['feed_content']
+    def content(raw_content)
+      if raw_content.present?
+        Api::V3::HashieMashes::ContentSerializer.new(raw_content, @opts).as_json['content']
       end
     end
 
@@ -50,7 +50,7 @@ class FeedContentVanillaSerializer
           carousel_type: raw_carousel.carousel_type,
           title: raw_carousel.title,
           organizations: carousel_organizations(raw_carousel.organizations),
-          feed_contents: carousel_feed_contents(raw_carousel.feed_contents),
+          contents: carousel_contents(raw_carousel.contents),
           query_params: raw_carousel.query_params
         }
       end
@@ -62,9 +62,9 @@ class FeedContentVanillaSerializer
       end
     end
 
-    def carousel_feed_contents(raw_feed_contents)
-      raw_feed_contents.map do |raw_feed_content|
-        Api::V3::HashieMashes::FeedContentSerializer.new(raw_feed_content, @opts).as_json['feed_content']
+    def carousel_contents(raw_contents)
+      raw_contents.map do |raw_content|
+        Api::V3::HashieMashes::ContentSerializer.new(raw_content, @opts).as_json['content']
       end
     end
 

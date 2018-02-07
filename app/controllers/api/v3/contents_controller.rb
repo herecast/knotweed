@@ -3,27 +3,6 @@ module Api
     class ContentsController < ApiController
       before_filter :check_logged_in!, only:  [:moderate, :dashboard, :metrics]
 
-      def index
-        expires_in 1.minutes, public: true unless is_my_stuff_request?
-        render json: { feed_items: [] }, status: :ok and return if is_my_stuff_request? && current_user.nil?
-
-        @result_object = GatherFeedRecords.call(
-          params: params,
-          requesting_app: @requesting_app,
-          current_user: current_user
-        )
-
-        render json: FeedContentVanillaSerializer.call(
-          records: @result_object[:records],
-          opts: { context: { current_ability: current_ability } }
-        ).merge(
-          meta: {
-            total: @result_object[:total_entries],
-            total_pages: total_pages
-          }
-        )
-      end
-
       # For usage in sitemap generation
       def sitemap_ids
         types=(params[:type] || "news,market,talk").split(/,\s*/).map do |type|
@@ -49,6 +28,7 @@ module Api
 
         render json: {content_ids: content_ids}
       end
+
 
       def show
         expires_in 1.minutes, public: true
@@ -113,7 +93,7 @@ module Api
 
         @contents = @contents.slice(0,8)
 
-        render json: @contents, each_serializer: HashieMashes::FeedContentSerializer,
+        render json: @contents, each_serializer: HashieMashes::ContentSerializer,
           root: 'similar_content', consumer_app_base_uri: @requesting_app.try(:uri)
       end
 
@@ -144,14 +124,6 @@ module Api
           )
         end
 
-        def per_page
-          params[:per_page] || 20
-        end
-
-        def total_pages
-          @result_object[:total_entries].present? ? (@result_object[:total_entries]/per_page.to_f).ceil : nil
-        end
-
         def sanitize_sort_parameter(sort)
           sort_parts = sort.split(',')
           sort_parts.select! do |pt|
@@ -159,10 +131,6 @@ module Api
           end
           sort_query = sort_parts.join(',').gsub('channel_type', 'root_category.name')
           sort_query.gsub('start_date', 'pubdate')
-        end
-
-        def is_my_stuff_request?
-          ['me', 'my_stuff', 'mystuff'].include?(params[:radius].to_s.downcase)
         end
 
         def whitelisted_with_requesting_app?

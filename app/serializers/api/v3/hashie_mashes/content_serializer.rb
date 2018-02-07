@@ -7,7 +7,7 @@
 module Api
   module V3
     module HashieMashes
-      class FeedContentSerializer < HashieMashSerializer
+      class ContentSerializer < HashieMashSerializer
         attributes :id, :title, :image_url, :author_id, :author_name, :content_type,
           :organization_id, :organization_name, :subtitle, :venue_zip,
           :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count,

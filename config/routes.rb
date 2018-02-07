@@ -170,7 +170,10 @@ Knotweed::Application.routes.draw do
       resources :locations, only: [:index, :show]
 
       get '/contents/sitemap_ids', to: 'contents#sitemap_ids'
-      resources :contents, only: [:index, :show, :create, :update]
+
+      get '/feed', to: 'feed#index'
+      resources :contents, only: [:show, :create, :update]
+
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
       # specifying path here to avoid deprecating the frontend even though we've changed
@@ -180,7 +183,6 @@ Knotweed::Application.routes.draw do
         post '/:content_id/promotions', to: "promotions#create"
       end
       namespace :organizations do
-        get    '/:organization_id/contents',                  to: "contents#index"
         put    '/:organization_id/contents/:content_id',      to: "contents#update"
         post   '/:organization_id/contents/:content_id/tags', to: "contents/tags#create"
         delete '/:organization_id/contents/:content_id/tags', to: "contents/tags#destroy"

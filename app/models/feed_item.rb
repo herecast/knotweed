@@ -1,7 +1,7 @@
 class FeedItem
   attr_reader :model_type,
     :id,
-    :feed_content,
+    :content,
     :carousel,
     :organization
 
@@ -17,8 +17,8 @@ class FeedItem
           @model_type = 'carousel'
           @carousel = object
         elsif object.class == Hashie::Mash
-          @model_type = 'feed_content'
-          @feed_content = object
+          @model_type = 'content'
+          @content = object
         elsif object.class == Organization
           @model_type = 'organization'
           @organization = object

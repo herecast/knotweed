@@ -2,7 +2,7 @@ class Carousel
   attr_reader :id,
     :query,
     :organizations,
-    :feed_contents,
+    :contents,
     :carousel_type,
     :title,
     :query_params
@@ -10,7 +10,7 @@ class Carousel
   def initialize(**args)
     @id            = object_id
     @organizations = []
-    @feed_contents = []
+    @contents = []
   end
 
   private

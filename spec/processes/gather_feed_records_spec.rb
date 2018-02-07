@@ -22,10 +22,10 @@ RSpec.describe GatherFeedRecords, elasticsearch: true do
     it "returns restructured payload" do
       response = subject
       expect(response[:records][0].to_json).to include_json({
-        model_type: "feed_content",
+        model_type: "content",
         id: @content.id
       })
-      expect(response[:records][0].feed_content.id).to eq @content.id
+      expect(response[:records][0].content.id).to eq @content.id
     end
 
     it "alerts product team of new content" do

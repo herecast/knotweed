@@ -4,15 +4,15 @@ class Carousels::ListservCarousel < Carousel
     super
     @location      = Location.find_by_slug_or_id(args[:location_id])
     @title         = "#{@location&.city} Community Discussion List"
-    @carousel_type = 'feed_content'
+    @carousel_type = 'content'
     @query_params  = { organization_id: Organization::LISTSERV_ORG_ID }
-    find_feed_contents
+    find_contents
   end
 
   private
 
-    def find_feed_contents
-      @feed_contents = Content.search('*', opts.merge(listserv_opts))
+    def find_contents
+      @contents = Content.search('*', opts.merge(listserv_opts))
     end
 
     def listserv_opts
