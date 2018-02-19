@@ -29,6 +29,7 @@
       %th Author
       %th Content
       %th
+      %th
   .span5
     = page_entries_info @comments if @comments.present?
     = paginate @comments, window: 2 if @comments.present?
@@ -39,6 +40,7 @@
         %td= c.parent_id
         %td= c.authors
         %td= sanitize_comment_content(c.sanitized_content)
+        %td= link_to 'See User', c.created_by, class: 'btn btn-mini btn-success'
         %td
           - if c.deleted_at.nil?
             = link_to "Hide", comment_path(c), method: :delete, class: "btn btn-mini btn-warning"
