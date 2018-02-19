@@ -59,6 +59,7 @@
 #  short_link                :string
 #  ad_invoiced_amount        :float
 #  removed                   :boolean          default(FALSE)
+#  latest_activity           :datetime
 #
 
 require 'spec_helper'
@@ -2195,16 +2196,18 @@ describe Content, :type => :model do
   end
 
   describe '#latest_activity' do
-    # Not sure why, but reloads are necessary here.
-    # The difference between rails' in-memory view of the timestamp and
-    # the database's view of the timestamp are microseconds apart.
-    #
-    # We don't currently care about this level of precision for
-    # latest activity anyway.
-    subject { FactoryGirl.create :content, pubdate: 2.days.ago }
+    before do
+      Timecop.freeze
+    end
+
+    after do
+      Timecop.return
+    end
+
+    subject { FactoryGirl.create :content }
 
     it 'is initially the pubdate time' do
-      subject.reload
+      subject
       expect(subject.latest_activity).to eql subject.pubdate
     end
 
@@ -2214,9 +2217,48 @@ describe Content, :type => :model do
       }
 
       it 'is the pubdate of the comment' do
-        subject.reload
-        comment.reload
+        subject
+        comment
         expect(subject.latest_activity).to eql comment.pubdate
+      end
+    end
+
+    context 'market post marked sold' do
+      before do
+        @market_post = FactoryGirl.create :market_post, sold: false, pubdate: 2.days.ago
+      end
+
+      subject { @market_post.update_attribute(:sold, true) }
+
+      it "updates latest_activity to current time" do
+        subject
+        expect(@market_post.latest_activity).to eql Time.now
+      end
+    end
+
+    context "when publisher schedules news post" do
+      let(:scheduled_pubdate) { 3.days.from_now }
+
+      subject { FactoryGirl.create :content, :news, pubdate: scheduled_pubdate }
+
+      it "latest_activity is scheduled time" do
+        expect(subject.latest_activity).to eql scheduled_pubdate
+      end
+    end
+
+    context 'when draft News gets a pubdate' do
+      before do
+        @draft_news = FactoryGirl.create :content, :news, pubdate: nil
+      end
+
+      let(:new_pubdate) { 2.days.from_now }
+
+      subject { @draft_news.update_attribute(:pubdate, new_pubdate) }
+
+      it "updates latest_activity to pubdate" do
+        expect{ subject }.to change{
+          @draft_news.latest_activity
+        }.to new_pubdate
       end
     end
   end

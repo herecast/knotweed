@@ -69,6 +69,7 @@
 #  ad_services_paid          :boolean          default(FALSE)
 #  ad_sales_agent            :integer
 #  ad_promoter               :integer
+#  latest_activity           :datetime
 #
 # Indexes
 #
@@ -100,6 +101,20 @@ class Content < ActiveRecord::Base
   include Auditable
   include Incrementable
 
+  before_create :set_latest_activity
+  def set_latest_activity
+    self.latest_activity = pubdate.present? ? pubdate : Time.current
+  end
+
+  before_save :conditionally_update_latest_activity
+  def conditionally_update_latest_activity
+    if channel_type == 'MarketPost' && channel.sold_changed?
+      self.latest_activity = Time.current
+    elsif content_type == :news && pubdate_changed?
+      self.latest_activity = pubdate
+    end
+  end
+
   searchkick callbacks: :async,
     batch_size: 750,
     index_prefix: Figaro.env.searchkick_index_prefix,
@@ -125,7 +140,6 @@ class Content < ActiveRecord::Base
              :about_locations,
              content_category: [:parent],
              organization: [:locations, :base_locations, :organization_locations])
-      .select('contents.*, COALESCE((select max(pubdate) from contents c2 where c2.root_parent_id = contents.root_parent_id), pubdate) as latest_activity_cached')
       .where('organization_id NOT IN (4,5,328)')
       .where(published: true)
       .where('root_content_category_id > 0')
@@ -1324,24 +1338,6 @@ class Content < ActiveRecord::Base
 
   def talk_comments
     children.where(root_content_category_id: [ContentCategory.find_by_name('discussion'), ContentCategory.find_by_name('talk_of_the_town').id])
-  end
-=begin
-  def increment_comment_counters!
-    unless parent.blank?
-      parent.increment_integer_attr!(:comment_count)
-      unless Content.where('parent_id=? and created_by=? and id!= ?', parent, created_by, id).exists?
-        parent.increment_integer_attr!(:commenter_count)
-      end
-      parent.save
-    end
-  end
-=end
-
-  # returns latest pubdate of a given thread
-  # @return [Datetime] latest pubdate in a given thread
-  # TODO - investigate postgres window functions as a replacement for this
-  def latest_activity
-    self.try(:latest_activity_cached) || Content.where(root_parent_id: self.root_parent_id).maximum(:pubdate)
   end
 
   def is_sponsored_content?

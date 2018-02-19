@@ -59,6 +59,7 @@
 #  short_link                :string
 #  ad_invoiced_amount        :float
 #  removed                   :boolean          default(FALSE)
+#  latest_activity           :datetime
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
