@@ -1501,7 +1501,37 @@ class Content < ActiveRecord::Base
   end
 
   BUSINESS_WHITELIST_FOR_NOTIFICATIONS = [
-    'Parker Agency', 'DailyUV', 'Country Cobbler', 'The Skinny Pancake - Hanover, NH'
+    'Parker Agency',
+    'DailyUV',
+    'Country Cobbler',
+    'The Skinny Pancake - Hanover, NH',
+    'Cioffredi & Associates',
+    'Town of Hartford',
+    "Dan & Whit's General Store",
+    'Homevues',
+    'Lebanon Opera House',
+    'Upper Valley Food Co-op',
+    'Upper Valley Haven',
+    'Wicked Awesome BBQ',
+    'Flourish Beauty Lab',
+    'AVA Gallery and Art Center',
+    'Bikram Yoga Upper Valley',
+    'Dartmouth Hitchcock Aging Resource Center',
+    'OSHER@Dartmouth',
+    'Peraza Dermatology Group',
+    'Town of Norwich',
+    'Woodstock History Center',
+    'InfuseMe',
+    'Local First Alliance',
+    'Norwich Bookstore',
+    'Simple Energy',
+    'CATV 8-10',
+    'The Co-op Food Stores',
+    'ArtisTree',
+    'River Valley Community College',
+    'HP Roofing',
+    'Hartford Area Career and Technology Center',
+    'COVER'
   ]
 
   def outside_business_subscriber_notification_blast_radius?
