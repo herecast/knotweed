@@ -8,23 +8,60 @@ module Api
   module V3
     module HashieMashes
       class ContentSerializer < HashieMashSerializer
-        attributes :id, :title, :image_url, :author_id, :author_name, :content_type,
-          :organization_id, :organization_name, :subtitle, :venue_zip,
-          :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count,
-          :comment_count, :parent_content_id, :content_id, :parent_content_type,
-          :event_instance_id, :parent_event_instance_id, :registration_deadline,
-          :created_at, :updated_at, :event_id, :cost, :sold, :avatar_url,
-          :organization_profile_image_url, :biz_feed_public, :sunset_date,
-          :event_instances, :content_origin, :split_content, :cost_type, :contact_phone,
-          :images, :contact_email, :venue_url, :organization_biz_feed_active,
-          :campaign_start, :campaign_end, :click_count, :redirect_url
-
-        has_many :content_locations, serializer: Api::V3::HashieMashes::ContentLocationSerializer
-        has_many :comments, serializer: Api::V3::HashieMashes::CommentSerializer
-
-        def content_id
-          object.id
-        end
+        attributes :id,
+        :author_id,
+        :author_name,
+        :avatar_url,
+        :biz_feed_public,
+        :campaign_end,
+        :campaign_start,
+        :click_count,
+        :comments,
+        :comment_count,
+        :commenter_count,
+        :contact_email,
+        :contact_phone,
+        :content,
+        :content_locations,
+        :content_origin,
+        :content_type,
+        :cost,
+        :cost_type,
+        :created_at,
+        :embedded_ad,
+        :ends_at,
+        :event_url,
+        :event_instance_id,
+        :event_instances,
+        :images,
+        :image_url,
+        :organization_biz_feed_active,
+        :organization_id,
+        :organization_name,
+        :organization_profile_image_url,
+        :parent_content_id,
+        :parent_content_type,
+        :parent_event_instance_id,
+        :promote_radius,
+        :published_at,
+        :redirect_url,
+        :registration_deadline,
+        :schedules,
+        :sold,
+        :split_content,
+        :starts_at,
+        :subtitle,
+        :sunset_date,
+        :title,
+        :ugc_base_location_id,
+        :updated_at,
+        :venue_address,
+        :venue_city,
+        :venue_name,
+        :venue_state,
+        :venue_url,
+        :venue_zip,
+        :view_count
 
         def event_instance_id
           if is_event?
@@ -32,90 +69,38 @@ module Api
           end
         end
 
+        # do not delete. It gets confused with url helper methods.
         def image_url
-          if object.promotable_image_url.present?
-            object.promotable_image_url
-          elsif object.images.present?
-            object.images[0].image_url
-          end
+          object.image_url
+        end
+
+        def event_url
+          object.event_url
         end
 
         def images
-          object.images.sort_by{|i| [i.position, i.created_at]}.map do |img|
-            {
-              id: img.id,
-              image_url: img.image_url,
-              primary: img.primary ? 1 : 0,
-              width: img.width,
-              height: img.height,
-              file_extension: img.file_extension,
-              caption: img.caption
-            }
-          end
-        end
-
-        def author_id
-          object.created_by.try(:id)
-        end
-
-        def venue_name
-          if is_event?
-            object.venue.try(:name)
-          end
-        end
-
-        def venue_city
-          if is_event?
-            object.venue.try(:city)
-          end
-        end
-
-        def venue_state
-          if is_event?
-            object.venue.try(:state)
-          end
-        end
-
-        def venue_zip
-          if is_event? && object.venue.present?
-            # avoid using ruby's zip method
-            object.venue[:zip]
-          end
-        end
-
-        def venue_url
-          if is_event?
-            object.venue.try(:venue_url)
-          end
-        end
-
-        def venue_address
-          if is_event?
-            object.venue.try(:address)
-          end
+          object.images
         end
 
         def next_or_first_instance
-          instances_by_start_date = object.event_instances.sort_by(&:start_date)
+          instances_by_start_date = (object.event_instances || []).sort_by{|inst|
+            DateTime.parse(inst.starts_at)
+          }
           instances_by_start_date.find do |instance|
-            instance.start_date >= Time.zone.now
+            DateTime.parse(instance.starts_at) >= Time.zone.now
           end || instances_by_start_date.first
         end
 
         def starts_at
           if is_event?
-            next_or_first_instance.try(:start_date)
+            next_or_first_instance.try(:starts_at)
           end
         end
 
         def ends_at
           if is_event?
-            next_or_first_instance.try(:end_date)
+            next_or_first_instance.try(:ends_at)
           end
-        end
-
-        def published_at
-          object.pubdate
         end
 
         def content
@@ -123,99 +108,6 @@ module Api
             ""
           else
             object.content
-          end
-        end
-
-        def commenter_count
-          if object.parent_id
-            object.parent_commenter_count
-          else
-            object.commenter_count
-          end
-        end
-
-        def comment_count
-          if object.parent_id
-            object.parent_comment_count
-          else
-            object.comment_count
-          end
-        end
-
-        def click_count
-          object.click_count
-        end
-
-        def parent_content_id
-          object.parent_id
-        end
-
-        def parent_event_instance_id
-          if object.parent.present? and object.parent.channel_type == 'Event'
-            object.parent.channel.event_instances.first.id
-          end
-        end
-
-        def registration_deadline
-          if is_event?
-            object.try(:registration_deadline)
-          end
-        end
-
-        def filter(keys)
-
-          if is_event?
-            return keys | %w(
-              event_instance_id venue_name venue_address
-              venue_city venue_state parent_event_instance_id
-              registration_deadline
-            )
-          end
-
-          keys
-        end
-
-        def event_id
-          if is_event?
-            object.channel_id
-          end
-        end
-
-        def cost
-          object.try(:cost)
-        end
-
-        def sold
-          if is_market?
-            object.sold
-          end
-        end
-
-        def avatar_url
-          object.created_by.try(:avatar_url)
-        end
-
-        def organization_profile_image_url
-          object.organization.try(:profile_image_url) || object.organization.try(:logo_url)
-        end
-
-        def organization_name
-          object.organization.name
-        end
-
-        def base_location
-          object.location
-        end
-
-        def content_origin
-          object.organization&.id == Organization::LISTSERV_ORG_ID ? 'listserv' : 'ugc'
-        end
-
-        def event_instances
-          if is_event?
-            object.event_instances.map do |inst|
-              Api::V3::HashieMashes::EventInstanceSerializer.new(inst).serializable_hash
-            end
           end
         end
 
@@ -234,48 +126,10 @@ module Api
           end
         end
 
-        def cost_type
-          if is_event?
-            object.try(:cost_type)
-          end
-        end
-
-        def contact_phone
-          object.try(:contact_phone)
-        end
-
-        def contact_email
-          object.try(:contact_email)
-        end
-
-        def organization_biz_feed_active
-          !!object.organization.try(:biz_feed_active)
-        end
-
-        def campaign_start
-          object.campaign_start
-        end
-
-        def campaign_end
-          object.campaign_end
-        end
-
-        def redirect_url
-          object.redirect_url
-        end
-
         private
 
           def is_event?
             object.content_type.to_s == 'event'
-          end
-
-          def is_market?
-            object.content_type.to_s == 'market'
-          end
-
-          def campaign_content_category_id
-            ContentCategory.find_or_create_by(name: 'campaign').id
           end
 
       end

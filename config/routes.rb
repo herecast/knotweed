@@ -137,8 +137,6 @@ Knotweed::Application.routes.draw do
     namespace :v3, defaults: {format: 'json'} do
       get '/current_user', to: 'users#show'
       put '/current_user', to: 'users#update'
-      resources 'events', only: [:create, :show, :update, :index]
-      post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
       post 'promotion_banners/:promotion_banner_id/track_click', to: 'promotion_banners#track_click', as: :track_click
       post 'promotion_banners/:promotion_banner_id/track_load', to: 'promotion_banners#track_load', as: :track_load
 
@@ -169,11 +167,11 @@ Knotweed::Application.routes.draw do
       get '/locations/locate', to: 'locations#locate'
       resources :locations, only: [:index, :show]
 
-      get '/contents/sitemap_ids', to: 'contents#sitemap_ids'
-
       get '/feed', to: 'feed#index'
-      resources :contents, only: [:show, :create, :update]
 
+      get '/contents/sitemap_ids', to: 'contents#sitemap_ids'
+      resources :contents, only: [:show, :create, :update]
+      post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
       # specifying path here to avoid deprecating the frontend even though we've changed
@@ -189,22 +187,18 @@ Knotweed::Application.routes.draw do
       end
       get '/organizations/sitemap_ids', to: 'organizations#sitemap_ids'
       resources 'organizations', only: [:index, :show, :update]
-      resources 'news'
 
       # deprecated
       post '/news/:id/impressions', to: 'metrics/contents/impressions#create'
 
-      resources 'talk', only: [:index, :show, :create, :update]
-      resources 'market_posts', only: [:index, :show, :create, :update]
-      get '/market_posts/:id/contact', to: 'market_posts#contact', as: :market_post_contact
       get '/weather', to: 'users#weather', as: :weather
       post '/users/logout', to: 'users#logout', as: :logout
       get '/user', to: 'users#verify'
-      get '/dashboard', to: 'contents#dashboard', as: :dashboard
       post '/users/email_confirmation', to: 'users#email_confirmation', as: :email_confirmation
       post '/users/resend_confirmation', to: 'users#resend_confirmation', as: :resend_confirmation
       post '/users/email_signin_link', to: 'users#email_signin_link', as: :email_signin_link
       resources 'images', only: [:create, :update, :destroy]
+      post '/images/upsert', to: 'images#upsert'
 
       delete '/content_locations/:id', to: 'content_locations#destroy'
 

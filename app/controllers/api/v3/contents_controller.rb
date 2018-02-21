@@ -1,7 +1,7 @@
 module Api
   module V3
     class ContentsController < ApiController
-      before_filter :check_logged_in!, only:  [:moderate, :dashboard, :metrics]
+      before_action :check_logged_in!, except:  [:sitemap_ids, :show, :similar_content]
 
       # For usage in sitemap generation
       def sitemap_ids
@@ -29,6 +29,34 @@ module Api
         render json: {content_ids: content_ids}
       end
 
+      def create
+        content_type = params[:content][:content_type]
+
+        begin
+          create_process = "Ugc::Create#{content_type.classify}".constantize
+        rescue NameError
+          render json: {error: 'unknown content type'}, status: :unprocessable_entity
+          return
+        end
+
+        @content = create_process.call(params,
+          user_scope: current_user,
+          repository: @repository
+        )
+
+        if @content.valid?
+          publish @content
+          promote_to_listservs @content
+          rescrape_facebook @content
+
+          render json: @content, serializer: ContentSerializer, status: :created
+        else
+          render json: @content.errors, status: :unprocessable_entity
+        end
+
+      rescue Ugc::ValidationError => e
+        render json: {errors: [e.message]}, status: :unprocessable_entity
+      end
 
       def show
         expires_in 1.minutes, public: true
@@ -39,7 +67,7 @@ module Api
           return
         end
 
-        if whitelisted_with_requesting_app? && has_pubdate_in_past?
+        if whitelisted_with_requesting_app? && has_pubdate_in_past_or_can_edit?
           @content = @content.removed == true ? CreateAlternateContent.call(@content) : @content
           render json: @content, serializer: ContentSerializer,
             context: { current_ability: current_ability }
@@ -51,12 +79,31 @@ module Api
       def update
         @content = Content.find(params[:id])
         authorize! :update, @content
-        if @content.update_attributes(content_params)
-          update_sold_attribute
-          render json: @content, status: :ok
-        else
-          render json: {}, status: :bad_request
+
+        begin
+          update_process = "Ugc::Update#{@content.content_type.to_s.classify}".constantize
+        rescue NameError
+          render json: {error: 'unknown content type'}, status: :unprocessable_entity
+          return
         end
+
+        success = update_process.call(@content, params,
+          repository: @repository,
+          user_scope: current_user
+        )
+
+        if success
+          publish @content
+          promote_to_listservs @content
+          rescrape_facebook @content
+
+          render json: @content, serializer: ContentSerializer, status: :ok
+        else
+          render json: @content.errors, status: :unprocessable_entity
+        end
+
+      rescue Ugc::ValidationError => e
+        render json: {errors: [e.message]}, status: :unprocessable_entity
       end
 
       def similar_content
@@ -70,17 +117,17 @@ module Api
         # filter by organization
         if @requesting_app.present?
           requesting_app_orgs = @requesting_app.organizations.to_a
-          @contents.select!{ |c| requesting_app_orgs.map(&:id).include? c.organization.id }
+          @contents.select!{ |c| requesting_app_orgs.map(&:id).include? c.organization_id }
         end
 
         # remove records that are events with no future instances
         @contents.reject! do |c|
           c.channel_type == 'Event' &&
-            c.event_instances.all? { |ei| ei.start_date <= Time.zone.now }
+            c.event_instances.all? { |ei| Chronic.parse(ei.starts_at) <= Time.zone.now }
         end
 
         # remove drafts and future scheduled content
-        @contents.reject!{ |c| c.pubdate.nil? or c.pubdate >= Time.zone.now }
+        @contents.reject!{ |c| c.published_at.blank? or Chronic.parse(c.published_at) >= Time.zone.now }
 
         # This is a Bad temporary hack to allow filtering the sim stack provided by apiv2
         # the same way that the consumer app filters it.
@@ -116,37 +163,40 @@ module Api
       end
 
       protected
-
-        def content_params
-          params.require(:content).permit(
-            :biz_feed_public,
-            :sunset_date
-          )
-        end
-
-        def sanitize_sort_parameter(sort)
-          sort_parts = sort.split(',')
-          sort_parts.select! do |pt|
-            pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
-          end
-          sort_query = sort_parts.join(',').gsub('channel_type', 'root_category.name')
-          sort_query.gsub('start_date', 'pubdate')
-        end
-
         def whitelisted_with_requesting_app?
           @requesting_app.present? && @requesting_app.organizations.include?(@content.organization)
         end
 
-        def has_pubdate_in_past?
+        def has_pubdate_in_past_or_can_edit?
+          return true if can? :manage, @content
           @content.pubdate.present? && @content.pubdate < Time.current
         end
 
-        def update_sold_attribute
-          if !params[:content][:sold].nil? && @content.channel_type == 'MarketPost'
-            @content.channel.update_attribute(:sold, params[:content][:sold])
+        def publish content
+          if @repository.present? and content.pubdate.present? # don't publish drafts
+            PublishContentJob.perform_later(content, @repository, Content::DEFAULT_PUBLISH_METHOD)
           end
         end
 
+        def promote_to_listservs content
+          listserv_ids = params[:content][:listserv_ids] || []
+
+          if listserv_ids.any? && @requesting_app
+            # reverse publish to specified listservs
+            PromoteContentToListservs.call(
+              content,
+              @requesting_app,
+              request.remote_ip,
+              *Listserv.where(id: listserv_ids)
+            )
+          end
+        end
+
+        def rescrape_facebook content
+          if content.pubdate.present? && content.pubdate < Time.current
+            BackgroundJob.perform_later('FacebookService', 'rescrape_url', content)
+          end
+        end
     end
   end
 end

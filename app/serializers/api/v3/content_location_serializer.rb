@@ -1,7 +1,10 @@
 module Api
   module V3
     class ContentLocationSerializer < ActiveModel::Serializer
-      attributes :id, :location_id, :location_type, :location_name
+      attributes :id,
+        :location_id,
+        :location_name,
+        :location_type
 
       def location_id
         object.location.slug

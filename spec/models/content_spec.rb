@@ -2102,58 +2102,6 @@ describe Content, :type => :model do
     end
   end
 
-  describe 'search_serializer' do
-    context 'when is talk' do
-      before do
-        allow(subject).to receive(:content_type).and_return(:talk)
-      end
-
-      it 'is SearchIndexing::TalkSerializer' do
-        expect(subject.search_serializer).to eql SearchIndexing::TalkSerializer
-      end
-    end
-
-    context 'when is news' do
-      before do
-        allow(subject).to receive(:content_type).and_return(:news)
-      end
-
-      it 'is SearchIndexing::NewsSerializer' do
-        expect(subject.search_serializer).to eql SearchIndexing::NewsSerializer
-      end
-    end
-
-    context 'when is event' do
-      before do
-        allow(subject).to receive(:content_type).and_return(:event)
-      end
-
-      it 'is SearchIndexing::EventSerializer' do
-        expect(subject.search_serializer).to eql SearchIndexing::EventSerializer
-      end
-    end
-
-    context 'when is market post' do
-      before do
-        allow(subject).to receive(:content_type).and_return(:market)
-      end
-
-      it 'is SearchIndexing::MarketSerializer' do
-        expect(subject.search_serializer).to eql SearchIndexing::MarketSerializer
-      end
-    end
-
-    context 'when type is something else' do
-      before do
-        allow(subject).to receive(:content_type).and_return(:blog_comment_madeup_type)
-      end
-
-      it 'is SearchIndexing::ContentSerializer' do
-        expect(subject.search_serializer).to eql SearchIndexing::ContentSerializer
-      end
-    end
-  end
-
   describe 'validate content_locations for non-imported content' do
     describe 'events, market, talk' do
       [:event, :market, :talk].each do |type|

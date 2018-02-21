@@ -134,13 +134,23 @@ describe Api::V3::EventInstancesController, :type => :controller do
       let!(:event_location_1) {
         FactoryGirl.create :event,
           published: true,
-          base_locations: [location_1],
+          content_locations: [
+            ContentLocation.new(
+              location: location_1,
+              location_type: 'base'
+            )
+          ],
           start_date: 3.hours.from_now
       }
       let!(:event_location_3) {
         FactoryGirl.create :event,
           published: true,
-          about_locations: [location_1],
+          content_locations: [
+            ContentLocation.new(
+              location: location_1,
+              location_type: 'about'
+            )
+          ],
           start_date: 3.hours.from_now
       }
 
@@ -148,7 +158,12 @@ describe Api::V3::EventInstancesController, :type => :controller do
       let!(:event_location_2) {
         FactoryGirl.create :event,
           published: true,
-          base_locations: [location_2],
+          content_locations: [
+            ContentLocation.new(
+              location: location_1,
+              location_type: 'base'
+            )
+          ],
           start_date: 3.hours.from_now
       }
 

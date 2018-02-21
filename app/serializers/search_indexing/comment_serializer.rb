@@ -1,8 +1,14 @@
 module SearchIndexing
   class CommentSerializer < ::ActiveModel::Serializer
-      attributes :id, :title, :content, :published_at, :content_id, :parent_content_id
-
-      has_one :created_by, serializer: SearchIndexing::CreatedBySerializer
+      attributes :id,
+        :content,
+        :content_id,
+        :parent_content_id,
+        :published_at,
+        :title,
+        :user_id,
+        :user_image_url,
+        :user_name
 
       def id
         if object.channel.present?
@@ -30,6 +36,18 @@ module SearchIndexing
 
       def published_at
         object.pubdate
+      end
+
+      def user_id
+        object.created_by.try :id
+      end
+
+      def user_name
+        object.created_by.try :name
+      end
+
+      def user_image_url
+        object.created_by.try :avatar_url
       end
   end
 end

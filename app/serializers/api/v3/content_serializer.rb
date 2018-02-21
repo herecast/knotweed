@@ -1,48 +1,92 @@
 module Api
   module V3
     class ContentSerializer < ActiveModel::Serializer
-
-      attributes :id, :title, :image_url, :author_id, :author_name, :content_type,
-        :organization_id, :organization_name, :subtitle, :venue_zip,
-        :published_at, :starts_at, :ends_at, :content, :view_count, :commenter_count,
-        :comment_count, :click_count, :parent_content_id, :content_id, :parent_content_type,
-        :event_instance_id, :parent_event_instance_id, :registration_deadline,
-        :created_at, :updated_at, :redirect_url, :event_id, :cost, :sold, :avatar_url,
-        :organization_profile_image_url, :biz_feed_public, :sunset_date, :campaign_start,
-        :campaign_end, :images,
-        :event_instances, :content_origin, :split_content, :cost_type, :contact_phone,
-        :contact_email, :venue_url, :organization_biz_feed_active, :embedded_ad
+      attributes :id,
+        :author_id,
+        :author_name,
+        :avatar_url,
+        :biz_feed_public,
+        :campaign_end,
+        :campaign_start,
+        :click_count,
+        :comment_count,
+        :commenter_count,
+        :contact_email,
+        :contact_phone,
+        :content,
+        :content_locations,
+        :content_origin,
+        :content_type,
+        :cost,
+        :cost_type,
+        :created_at,
+        :embedded_ad,
+        :ends_at,
+        :event_url,
+        :event_instance_id,
+        :event_instances,
+        :images,
+        :image_url,
+        :organization_biz_feed_active,
+        :organization_id,
+        :organization_name,
+        :organization_profile_image_url,
+        :parent_content_id,
+        :parent_content_type,
+        :parent_event_instance_id,
+        :promote_radius,
+        :published_at,
+        :redirect_url,
+        :registration_deadline,
+        :schedules,
+        :sold,
+        :split_content,
+        :starts_at,
+        :subtitle,
+        :sunset_date,
+        :title,
+        :ugc_base_location_id,
+        :updated_at,
+        :venue_address,
+        :venue_city,
+        :venue_name,
+        :venue_state,
+        :venue_url,
+        :venue_zip,
+        :view_count
 
       has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
 
-      def content_id
-        object.id
-      end
-
       def event_instance_id
         if object.channel_type == 'Event'
-          object.channel.next_or_first_instance.try(:id)
+          object.channel.try(:next_or_first_instance).try(:id)
         end
       end
 
       def image_url
-        if object.root_content_category.name == 'campaign' && object.promotions.present?
+        if object.root_content_category.try(:name) == 'campaign' && object.promotions.present?
           object.promotions.first.try(:promotable).try(:banner_image).try(:url)
         elsif object.images.present?
           object.images[0].image.url
         end
       end
 
+      def event_url
+        object.channel.try(:event_url)
+      end
+
       def images
-        object.images.sort_by{|i| [i.position, i.created_at]}.map do |img|
+        object.images.sort_by{|i| [i.position.to_i, i.created_at]}.map do |img|
           {
             id: img.id,
-            image_url: img.image.url,
-            primary: img.primary ? 1 : 0,
-            width: img.width,
-            height: img.height,
+            caption: img.caption,
+            content_id: img.imageable_id,
             file_extension: img.file_extension,
-            caption: img.caption
+            height: img.height,
+            image_url: img.image.url,
+            position: img.position,
+            primary: img.primary? ? 1 : 0,
+            width: img.width
           }
         end
       end
@@ -93,13 +137,18 @@ module Api
 
       def starts_at
         if object.channel_type == 'Event'
-          object.channel.next_or_first_instance.try(:start_date)
+          object.channel.try(:next_or_first_instance).try(:start_date)
         end
       end
 
+      def event_url
+        if object.channel_type == 'Event'
+          object.channel.try(:event_url)
+        end
+      end
       def ends_at
         if object.channel_type == 'Event'
-          object.channel.next_or_first_instance.try(:end_date)
+          object.channel.try(:next_or_first_instance).try(:end_date)
         end
       end
 
@@ -116,7 +165,7 @@ module Api
       end
 
       def view_count
-        if object.root_content_category.name == 'campaign'
+        if object.root_content_category.try(:name) == 'campaign'
           object.promotions.includes(:promotable).first.try(:promotable).try(:impression_count)
         elsif object.parent.present?
           object.parent_view_count
@@ -142,7 +191,7 @@ module Api
       end
 
       def click_count
-        if object.root_content_category.name == 'campaign'
+        if object.root_content_category.try(:name) == 'campaign'
           object.promotions.first.try(:promotable).try(:click_count)
         end
       end
@@ -153,12 +202,12 @@ module Api
 
       def parent_event_instance_id
         if object.parent.present? and object.parent.channel_type == 'Event'
-          object.parent.channel.event_instances.first.id
+          object.parent.channel.try(:event_instances).try(:first).try(:id)
         end
       end
 
       def parent_content_type
-        if object.parent.present?
+        if object.parent.present? and object.parent.root_content_category.present?
           object.parent.root_content_category.name
         end
       end
@@ -169,28 +218,9 @@ module Api
         end
       end
 
-      def filter(keys)
-
-        if isEvent
-          return keys | %w(
-            event_instance_id venue_name venue_address
-            venue_city venue_state parent_event_instance_id
-            registration_deadline
-          )
-        end
-
-        keys
-      end
-
       def redirect_url
-        if object.root_content_category.name == 'campaign'
+        if object.root_content_category.try(:name) == 'campaign'
           object.promotions.first.try(:promotable).try(:redirect_url)
-        end
-      end
-
-      def event_id
-        if object.channel_type == 'Event'
-          object.channel.id
         end
       end
 
@@ -200,7 +230,7 @@ module Api
 
       def sold
         if object.channel_type == 'MarketPost'
-          object.channel.sold
+          object.channel.try(:sold)
         end
       end
 
@@ -212,16 +242,16 @@ module Api
         object.organization.try(:profile_image_url) || object.organization.try(:logo_url)
       end
 
+      def organization_name
+        object.organization.try :name
+      end
+
       def campaign_start
-        if object.root_content_category.name == 'campaign'
-          object.promotions.first.try(:promotable).try(:campaign_start)
-        end
+        object.ad_campaign_start
       end
 
       def campaign_end
-        if object.root_content_category.name == 'campaign'
-          object.promotions.first.try(:promotable).try(:campaign_end)
-        end
+        object.ad_campaign_end
       end
 
       def base_location
@@ -234,25 +264,27 @@ module Api
 
       def event_instances
         if object.channel_type == "Event"
-          object.channel.event_instances.map do |inst|
+          (object.channel.try(:event_instances) || []).map do |inst|
             AbbreviatedEventInstanceSerializer.new(inst).serializable_hash
           end
         end
       end
 
       def split_content
-        object.split_content.tap { |head_and_tail|
-          head_and_tail[:head] = ImageUrlService.optimize_image_urls(html_text:      head_and_tail[:head],
-                                                                     default_width:  600,
-                                                                     default_height: 1800,
-                                                                     default_crop:   false)
-
-          head_and_tail[:tail] = ImageUrlService.optimize_image_urls(html_text:      head_and_tail[:tail],
-                                                                     default_width:  600,
-                                                                     default_height: 1800,
-                                                                     default_crop:   false)
-        }
+        SplitContentForAdPlacement.call(
+          ImageUrlService.optimize_image_urls(
+            html_text: content,
+            default_width:  600,
+            default_height: 1800,
+            default_crop:   false
+          )
+        ).tap do |h|
+          if h[:tail].nil?
+            h[:tail] = ""
+          end
+        end
       end
+
 
       def cost_type
         if object.channel_type == 'Event'
@@ -280,6 +312,16 @@ module Api
 
       def embedded_ad
         object.embedded_ad?
+      end
+
+      def ugc_base_location_id
+        object.content_locations.to_a.select(&:base?).first.try(:location).try(:slug)
+      end
+
+      def schedules
+        if isEvent
+          object.channel.try(:schedules).try(:map, &:to_ux_format)
+        end
       end
 
       private

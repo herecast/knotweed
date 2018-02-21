@@ -133,11 +133,13 @@ class Content < ActiveRecord::Base
 
   scope :search_import, -> {
     includes(:root_content_category,
+             :content_category,
              :children,
+             :promotions,
              :images,
-             :locations,
-             :base_locations,
-             :about_locations,
+             :created_by,
+             parent: [:root_content_category],
+             content_locations: [:location],
              content_category: [:parent],
              organization: [:locations, :base_locations, :organization_locations])
       .where('organization_id NOT IN (4,5,328)')
@@ -146,8 +148,6 @@ class Content < ActiveRecord::Base
   }
 
   def search_serializer
-    "SearchIndexing::#{content_type.to_s.capitalize}Serializer".constantize
-  rescue NameError, LoadError
     SearchIndexing::ContentSerializer
   end
 
@@ -194,13 +194,17 @@ class Content < ActiveRecord::Base
     # in rails 5.0.1. pluck() prevents previously loaded includes from being used
     if association(:locations).loaded?
       locs = locations.map(&:id)
+    elsif association(:content_locations).loaded?
+      locs = content_locations.map(&:location_id)
     else
       locs = locations.pluck(:id)
     end
     if content_type != :talk && organization.present? && organization.name != 'Listserv'
       # same work-around here - remove when rails is upgraded
-      if association(:locations).loaded?
+      if organization.association(:locations).loaded?
         locs += organization.locations.map(&:id)
+      elsif organization.association(:organization_locations).loaded?
+        locs = organization.organization_locations.map(&:location_id)
       else
         locs += organization.locations.pluck(:id)
       end
@@ -1424,7 +1428,7 @@ class Content < ActiveRecord::Base
   end
 
   def embedded_ad?
-    !!organization.embedded_ad
+    !!(organization.present? && organization.embedded_ad)
   end
 
   def ok_to_send_alert?

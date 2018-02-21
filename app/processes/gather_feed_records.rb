@@ -100,7 +100,7 @@ class GatherFeedRecords
 
 
         if my_stuff_request?
-          attrs[:where]['created_by.id'] = @current_user.id
+          attrs[:where]['created_by_id'] = @current_user.id
         elsif @params[:location_id].present?
           location = Location.find_by_slug_or_id @params[:location_id]
 
@@ -157,7 +157,7 @@ class GatherFeedRecords
       content_types << 'campaign' if @params[:organization_id].present?
       [
         {content_type: content_types},
-        {content_type: 'event', "organization.name" => {not: 'Listserv'}}
+        {content_type: 'event', "organization_id" => {not: Organization::LISTSERV_ORG_ID}}
       ]
     end
 

@@ -12,67 +12,96 @@ describe 'Feed endpoints', type: :request do
 
         expect(subject).to include({
           id: content.id,
-          title: content.title,
-          image_url: content.images[0].url,
           author_id: content.created_by.id,
           author_name: content.author_name,
-          content_type: content.content_type.to_s,
-          organization_id: org.id,
-          organization_name: org.name,
-          subtitle: content.subtitle,
-          published_at: content.pubdate.iso8601,
-          content: content.sanitized_content,
-          view_count: content.view_count,
-          commenter_count: content.commenter_count,
-          comment_count: content.comment_count,
+          avatar_url: content.created_by.avatar_url,
+          biz_feed_public: content.biz_feed_public,
+          campaign_end: content.ad_campaign_end,
+          campaign_start: content.ad_campaign_start,
+          click_count: an_instance_of(Fixnum).or(be_nil),
+          comment_count: an_instance_of(Fixnum).or(be_nil),
+          commenter_count: an_instance_of(Fixnum).or(be_nil),
           comments: content.comments.map do |comment|
               {
                 id: comment.channel.try(:id) || comment.id,
-                content_id: comment.id,
-                title: comment.sanitized_title,
                 content: comment.sanitized_content,
+                content_id: comment.id,
                 parent_content_id: comment.parent_id,
                 published_at: comment.pubdate.iso8601,
+                title: comment.sanitized_title,
                 user_id: comment.created_by.try(:id),
+                user_image_url: comment.created_by.try(:avatar).try(:url),
                 user_name: comment.created_by.try(:name),
-                user_image_url: comment.created_by.try(:avatar).try(:url)
               }
           end,
-          parent_content_id: nil,
-          content_id: content.id,
-          parent_content_type: nil,
-          created_at: content.created_at.iso8601,
-          updated_at: content.updated_at.iso8601,
-          avatar_url: content.created_by.avatar_url,
-          organization_profile_image_url: nil,
-          biz_feed_public: content.biz_feed_public,
-          sunset_date: content.sunset_date.try(:iso8601),
-          images: content.images.map do |image|
-              {
-                id: image.id,
-                image_url: image.image.url,
-                primary: (image.primary? ? 1 : 0),
-                width: image.width,
-                height: image.height,
-                file_extension: image.file_extension,
-                caption: image.caption
-              }
-            end,
-          content_origin: 'ugc',
-          campaign_start: content.ad_campaign_start,
-          campaign_end: content.ad_campaign_end,
-          split_content: a_hash_including({
-            head: an_instance_of(String),
-            tail: an_instance_of(String)
-          }),
+          contact_email: an_instance_of(String).or(be_nil),
+          contact_phone: an_instance_of(String).or(be_nil),
+          content: content.sanitized_content,
           content_locations: content.content_locations.map do |cl|
             {
               id: cl.id,
               location_id: cl.location.slug,
-              location_type: cl.location_type,
-              location_name: cl.location.name
+              location_name: cl.location.name,
+              location_type: cl.location_type
             }
-          end
+          end,
+          content_origin: 'ugc',
+          content_type: content.content_type.to_s,
+          cost: an_instance_of(String).or(be_nil),
+          cost_type: an_instance_of(String).or(be_nil),
+          created_at: content.created_at.iso8601,
+          embedded_ad: content.embedded_ad?,
+          ends_at: an_instance_of(String).or(be_nil),
+          event_url: an_instance_of(String).or(be_nil),
+          event_instance_id: an_instance_of(Fixnum).or(be_nil),
+          event_instances: an_instance_of(Array).or(be_nil),
+          images: content.images.map do |image|
+            {
+              id: image.id,
+              caption: image.caption,
+              content_id: image.imageable_id,
+              file_extension: image.file_extension,
+              height: image.height,
+              image_url: image.image.url,
+              position: image.position,
+              primary: (image.primary? ? 1 : 0),
+              width: image.width
+            }
+          end,
+          image_url: content.images[0].url,
+          organization_biz_feed_active: org.biz_feed_active,
+          organization_id: org.id,
+          organization_name: org.name,
+          organization_profile_image_url: nil,
+
+          # @TODO: parent fields should be revisited, do we need them?
+          parent_content_id: content.parent_id,
+          parent_content_type: content.parent.try(:content_type),
+          parent_event_instance_id: an_instance_of(Fixnum).or(be_nil),
+
+          promote_radius: content.promote_radius,
+          published_at: content.pubdate.iso8601,
+          redirect_url: an_instance_of(String).or(be_nil),
+          registration_deadline: an_instance_of(String).or(be_nil),
+          schedules: an_instance_of(Array).or(be_nil),
+          sold: content.channel.try(:sold),
+          split_content: a_hash_including({
+            head: an_instance_of(String),
+            tail: an_instance_of(String)
+          }),
+          starts_at: an_instance_of(String).or(be_nil),
+          subtitle: content.subtitle,
+          sunset_date: content.sunset_date.try(:iso8601),
+          title: content.sanitized_title,
+          ugc_base_location_id: content.base_locations.map(&:slug).first,
+          updated_at: content.updated_at.iso8601,
+          venue_address: an_instance_of(String).or(be_nil),
+          venue_city: an_instance_of(String).or(be_nil),
+          venue_name: an_instance_of(String).or(be_nil),
+          venue_state: an_instance_of(String).or(be_nil),
+          venue_url: an_instance_of(String).or(be_nil),
+          venue_zip: an_instance_of(String).or(be_nil),
+          view_count: content.view_count
         })
       end
 
@@ -189,7 +218,6 @@ describe 'Feed endpoints', type: :request do
           event_instance_id: event.channel.next_or_first_instance.id,
           parent_event_instance_id: nil,
           registration_deadline: nil,
-          event_id: event.channel.id,
           cost: event.channel.cost,
           event_instances: event.channel.event_instances.map do |ei|
             {
