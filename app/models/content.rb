@@ -143,7 +143,6 @@ class Content < ActiveRecord::Base
              content_category: [:parent],
              organization: [:locations, :base_locations, :organization_locations])
       .where('organization_id NOT IN (4,5,328)')
-      .where(published: true)
       .where('root_content_category_id > 0')
   }
 
