@@ -64,7 +64,7 @@ describe 'Feed endpoints', type: :request do
               height: image.height,
               image_url: image.image.url,
               position: image.position,
-              primary: (image.primary? ? 1 : 0),
+              primary: image.primary?,
               width: image.width
             }
           end,

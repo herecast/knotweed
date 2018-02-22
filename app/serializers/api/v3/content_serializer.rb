@@ -85,7 +85,7 @@ module Api
             height: img.height,
             image_url: img.image.url,
             position: img.position,
-            primary: img.primary? ? 1 : 0,
+            primary: img.primary?,
             width: img.width
           }
         end
