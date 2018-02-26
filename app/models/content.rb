@@ -188,24 +188,26 @@ class Content < ActiveRecord::Base
     }
   end
 
-  def all_loc_ids
+  def all_loc_slugs
     # this is to work around a bug https://github.com/rails/rails/pull/25976 which is fixed
     # in rails 5.0.1. pluck() prevents previously loaded includes from being used
     if association(:locations).loaded?
-      locs = locations.map(&:id)
+      locs = locations.map(&:slug)
     elsif association(:content_locations).loaded?
-      locs = content_locations.map(&:location_id)
+      locs = content_locations.map{|cl| cl.location.slug}
     else
-      locs = locations.pluck(:id)
+      locs = locations.pluck(:slug)
     end
     if content_type != :talk && organization.present? && organization.name != 'Listserv'
       # same work-around here - remove when rails is upgraded
       if organization.association(:locations).loaded?
-        locs += organization.locations.map(&:id)
+        locs += organization.locations.map(&:slug)
       elsif organization.association(:organization_locations).loaded?
-        locs = organization.organization_locations.map(&:location_id)
+        locs = organization.organization_locations.map do |ol|
+          ol.location.slug
+        end
       else
-        locs += organization.locations.pluck(:id)
+        locs += organization.locations.pluck(:slug)
       end
     end
     locs.uniq

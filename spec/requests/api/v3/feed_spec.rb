@@ -15,6 +15,7 @@ describe 'Feed endpoints', type: :request do
           author_id: content.created_by.id,
           author_name: content.author_name,
           avatar_url: content.created_by.avatar_url,
+          base_location_ids: content.base_locations.map(&:id),
           biz_feed_public: content.biz_feed_public,
           campaign_end: content.ad_campaign_end,
           campaign_start: content.ad_campaign_start,
@@ -37,14 +38,6 @@ describe 'Feed endpoints', type: :request do
           contact_email: an_instance_of(String).or(be_nil),
           contact_phone: an_instance_of(String).or(be_nil),
           content: content.sanitized_content,
-          content_locations: content.content_locations.map do |cl|
-            {
-              id: cl.id,
-              location_id: cl.location.slug,
-              location_name: cl.location.name,
-              location_type: cl.location_type
-            }
-          end,
           content_origin: 'ugc',
           content_type: content.content_type.to_s,
           cost: an_instance_of(String).or(be_nil),
@@ -93,7 +86,7 @@ describe 'Feed endpoints', type: :request do
           subtitle: content.subtitle,
           sunset_date: content.sunset_date.try(:iso8601),
           title: content.sanitized_title,
-          ugc_base_location_id: content.base_locations.map(&:slug).first,
+          location_id: content.base_locations.map(&:slug).first,
           updated_at: content.updated_at.iso8601,
           venue_address: an_instance_of(String).or(be_nil),
           venue_city: an_instance_of(String).or(be_nil),

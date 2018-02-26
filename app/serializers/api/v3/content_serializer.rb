@@ -5,6 +5,7 @@ module Api
         :author_id,
         :author_name,
         :avatar_url,
+        :base_location_ids,
         :biz_feed_public,
         :campaign_end,
         :campaign_start,
@@ -14,7 +15,6 @@ module Api
         :contact_email,
         :contact_phone,
         :content,
-        :content_locations,
         :content_origin,
         :content_type,
         :cost,
@@ -45,7 +45,7 @@ module Api
         :subtitle,
         :sunset_date,
         :title,
-        :ugc_base_location_id,
+        :location_id,
         :updated_at,
         :venue_address,
         :venue_city,
@@ -54,8 +54,6 @@ module Api
         :venue_url,
         :venue_zip,
         :view_count
-
-      has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
 
       def event_instance_id
         if object.channel_type == 'Event'
@@ -254,10 +252,6 @@ module Api
         object.ad_campaign_end
       end
 
-      def base_location
-        object.location
-      end
-
       def content_origin
         object.organization&.id == Organization::LISTSERV_ORG_ID ? 'listserv' : 'ugc'
       end
@@ -314,7 +308,24 @@ module Api
         object.embedded_ad?
       end
 
-      def ugc_base_location_id
+    def base_location_ids
+      if object.association(:content_locations).loaded?
+        base_ids = object.content_locations.select(&:base?).map do |cl|
+          cl.location.slug
+        end
+      else
+        base_ids = object.base_locations.map(&:slug)
+      end
+
+      if object.organization.present?
+        base_ids |= object.organization.base_locations.consumer_active.map(&:slug)
+      end
+
+      # in case any locations are selected without slugs.
+      base_ids.compact.uniq
+    end
+
+      def location_id
         object.content_locations.to_a.select(&:base?).first.try(:location).try(:slug)
       end
 

@@ -15,19 +15,19 @@ module SearchIndexing
     end
 
     def all_loc_ids
-      object.event.content.all_loc_ids
+      object.event.content.all_loc_slugs
     end
 
     def base_location_ids
-      ids = object.event.content.base_locations.map(&:id)
+      ids = object.event.content.base_locations.map(&:slug)
       if object.event.organization.present?
-        ids |= object.event.content.organization.base_locations.map(&:id)
+        ids |= object.event.content.organization.base_locations.map(&:slug)
       end
-      ids
+      ids.compact.uniq
     end
 
     def about_location_ids
-      object.event.content.about_locations.map(&:id)
+      object.event.content.about_locations.map(&:slug)
     end
 
     def my_town_only

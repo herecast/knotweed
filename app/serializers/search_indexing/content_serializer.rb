@@ -2,7 +2,6 @@ module SearchIndexing
   class ContentSerializer < ::Api::V3::ContentSerializer
     attributes :all_loc_ids,
       :about_location_ids,
-      :base_location_ids,
       :channel_id,
       :channel_type,
       :content_category_id,
@@ -31,25 +30,17 @@ module SearchIndexing
       object.content_category.try(:name)
     end
 
-    def base_location_ids
-      if object.association(:content_locations).loaded?
-        base_ids = object.content_locations.select(&:base?).map(&:location_id)
-      else
-        base_ids = object.base_locations.map(&:id)
-      end
-
-      if object.organization.present?
-        base_ids |= object.organization.base_locations.map(&:id)
-      end
-
-      base_ids.uniq
+    def all_loc_ids
+      object.all_loc_slugs
     end
 
     def about_location_ids
       if object.association(:content_locations).loaded?
-        about_ids = object.content_locations.select(&:about?).map(&:location_id)
+        about_ids = object.content_locations.select(&:about?).map do |cl|
+          cl.location.slug
+        end
       else
-        about_ids = object.about_locations.map(&:id)
+        about_ids = object.about_locations.map(&:slug)
       end
       about_ids.uniq
     end

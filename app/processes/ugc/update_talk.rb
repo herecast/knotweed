@@ -34,16 +34,16 @@ module Ugc
       end
 
       def location_params
-        @params[:content].slice(:promote_radius, :ugc_base_location_id)
+        @params[:content].slice(:promote_radius, :location_id)
       end
 
       def manage_location_attributes talk
         if location_params[:promote_radius].present? &&
-            location_params[:ugc_base_location_id].present?
+            location_params[:location_id].present?
 
           UpdateContentLocations.call talk.content,
             promote_radius: location_params[:promote_radius].to_i,
-            base_locations: [Location.find_by_slug_or_id(location_params[:ugc_base_location_id])]
+            base_locations: [Location.find_by_slug_or_id(location_params[:location_id])]
         end
       end
   end

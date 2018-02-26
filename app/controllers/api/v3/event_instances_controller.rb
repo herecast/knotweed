@@ -152,16 +152,16 @@ module Api
             location = Location.find_by_slug_or_id(params[:location_id])
 
             if params[:radius].present? && params[:radius].to_i > 0
-              locations_within_radius = Location.within_radius_of(location, params[:radius].to_i).map(&:id)
+              locations_within_radius = Location.within_radius_of(location, params[:radius].to_i).map(&:slug)
 
               opts[:where][:or] << [
                 {my_town_only: false, all_loc_ids: locations_within_radius},
-                {my_town_only: true, all_loc_ids: [location.id]}
+                {my_town_only: true, all_loc_ids: [location.slug]}
               ]
             else
               opts[:where][:or] << [
-                {base_location_ids: [location.id]},
-                {about_location_ids: [location.id]}
+                {base_location_ids: [location.slug]},
+                {about_location_ids: [location.slug]}
               ]
             end
           end

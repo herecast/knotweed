@@ -58,7 +58,7 @@ def content_response_schema(record)
       subtitle: record.subtitle,
       sunset_date: record.sunset_date.try(:iso8601),
       title: record.title,
-      ugc_base_location_id: record.base_locations.first.try(:slug),
+      location_id: record.base_locations.first.try(:slug),
 
       # random failures due to database time vs rails time
 #      updated_at: record.updated_at.iso8601,
@@ -409,7 +409,7 @@ describe 'Contents Endpoints', type: :request do
                 title: "TFK",
                 content: "<p>Oxygen: Inhale</p>",
                 promote_radius: 10,
-                ugc_base_location_id: FactoryGirl.create(:location).slug
+                location_id: FactoryGirl.create(:location).slug
               }
             }
 
@@ -454,7 +454,7 @@ describe 'Contents Endpoints', type: :request do
                 title: "TFK",
                 sold: false,
                 ugc_job: 'Sell or give something away',
-                ugc_base_location_id: FactoryGirl.create(:location).slug
+                location_id: FactoryGirl.create(:location).slug
               }
             }
 
@@ -502,7 +502,7 @@ describe 'Contents Endpoints', type: :request do
                 promote_radius: 10,
                 venue_id: business_location.id,
                 contact_email: 'test@test.com',
-                ugc_base_location_id: FactoryGirl.create(:location).slug,
+                location_id: FactoryGirl.create(:location).slug,
                 schedules: [
                   {
                     days_of_week: [],
@@ -779,7 +779,7 @@ describe 'Contents Endpoints', type: :request do
                 cost: "$10",
                 promote_radius: 10,
                 contact_email: 'john@galilee.com',
-                ugc_base_location_id: FactoryGirl.create(:location).slug
+                location_id: FactoryGirl.create(:location).slug
               }
             }
 
@@ -806,7 +806,7 @@ describe 'Contents Endpoints', type: :request do
                     cost: '$10',
                     promote_radius: valid_market_params[:promote_radius],
                     title: valid_market_params[:title],
-                    ugc_base_location_id: valid_market_params[:ugc_base_location_id]
+                    location_id: valid_market_params[:location_id]
                   }
                 )
               )

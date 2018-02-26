@@ -265,7 +265,7 @@ describe Api::V3::ContentsController, :type => :controller do
           content_type: 'market',
           content: 'Test Content',
           promote_radius: 10,
-          ugc_base_location_id: location.slug
+          location_id: location.slug
         }
       }
 
@@ -371,7 +371,7 @@ describe Api::V3::ContentsController, :type => :controller do
               promote_radius: 10,
               venue_id: business_location.id,
               contact_email: 'test@test.com',
-              ugc_base_location_id: FactoryGirl.create(:location).slug,
+              location_id: FactoryGirl.create(:location).slug,
               schedules: [
                 {
                   days_of_week: [],
@@ -459,7 +459,7 @@ describe Api::V3::ContentsController, :type => :controller do
           title: 'Test title',
           content: 'Test Content',
           promote_radius: 10,
-          ugc_base_location_id: location.slug
+          location_id: location.slug
         }
       }
 

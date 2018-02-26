@@ -29,7 +29,7 @@ module Ugc
         attributes = additional_update_attributes
         new_params[:content].merge!(attributes)
 
-        new_params.delete(:ugc_base_location_id)
+        new_params.delete(:location_id)
 
         new_params.require(:content).permit(
           :contact_email,
@@ -77,16 +77,16 @@ module Ugc
       end
 
       def location_params
-        @params[:content].slice(:promote_radius, :ugc_base_location_id)
+        @params[:content].slice(:promote_radius, :location_id)
       end
 
       def update_locations post
         if location_params[:promote_radius].present? &&
-            location_params[:ugc_base_location_id].present?
+            location_params[:location_id].present?
 
           UpdateContentLocations.call post.content,
             promote_radius: location_params[:promote_radius].to_i,
-            base_locations: [Location.find_by_slug_or_id(location_params[:ugc_base_location_id])]
+            base_locations: [Location.find_by_slug_or_id(location_params[:location_id])]
         end
       end
   end
