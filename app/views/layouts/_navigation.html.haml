@@ -399,3 +399,35 @@
     = link_to temp_users_path do
       %i.icon-male
       %span Temp Users
+- if can? :read, Report
+  %li
+    = link_to reports_path do
+      %i.icon-book
+      %span Reports
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == 'reports' ? 'in' : '' }" }
+      %li{ class: current_page?(reports_path) ? 'active' : ''}
+        = link_to reports_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, Report
+        %li{ class: current_page?(new_report_path) ? "active" : "" }
+          = link_to new_report_path do
+            %i.icon-plus
+            %span Create New
+- if can? :read, ReportJob
+  %li
+    = link_to report_jobs_path do
+      %i.icon-book
+      %span Report Jobs
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == 'report_jobs' ? 'in' : '' }" }
+      %li{ class: current_page?(report_jobs_path) ? 'active' : ''}
+        = link_to report_jobs_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, ReportJob
+        %li{ class: current_page?(new_report_job_path) ? "active" : "" }
+          = link_to new_report_job_path do
+            %i.icon-plus
+            %span Create New

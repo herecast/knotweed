@@ -14,6 +14,10 @@
       - unless @user.persisted?
         = f.input :password
       = f.input :archived, label: 'Archived?', hint: 'Note: archived users cannot log in.'
+      = f.input :fullname
+      = f.input :nickname
+      = f.input :epayment, label: 'Epayment setup?'
+      = f.input :w9, label: 'W9 received?'
     .span5
       .row-fluid
         %h4 Location

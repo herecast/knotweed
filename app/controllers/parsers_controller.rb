@@ -62,7 +62,7 @@ class ParsersController < ApplicationController
         :name,
         :description,
         :parameter,
-        parameters_attributes: []
+        parameters_attributes: [:name, :_destroy, :id]
       )
     end
   

@@ -35,7 +35,19 @@
 #  skip_analytics         :boolean          default(FALSE)
 #  temp_password          :string
 #  archived               :boolean          default(FALSE)
-#  source                 :string(255)
+#  source                 :string
+#  receive_comment_alerts :boolean          default(TRUE)
+#  location_confirmed     :boolean          default(FALSE)
+#  fullname               :string
+#  nickname               :string
+#  epayment               :boolean          default(FALSE)
+#  w9                     :boolean          default(FALSE)
+#
+# Indexes
+#
+#  idx_16858_index_users_on_email                 (email) UNIQUE
+#  idx_16858_index_users_on_public_id             (public_id) UNIQUE
+#  idx_16858_index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

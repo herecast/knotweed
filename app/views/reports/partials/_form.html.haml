@@ -1,0 +1,95 @@
+= simple_form_for @report, html: { class: "form" } do |f|
+  = f.error_notification
+  .tabbable
+    %ul.nav.nav-tabs.nav-tabs-simple#edit_report_tabs
+      %li.active
+        = link_to '#', class: 'green-border', data: { toggle: "tab", target: "#details" } do
+          Details
+      - if @report.id
+        %li
+          = link_to '#', class: 'green-border', data: { toggle: "tab", target: "#recipients" } do
+            Recipients
+  .tab-content
+    .tab-pane.active#details
+      .form-column
+        = f.input :title
+        = f.input :report_path
+        = f.input :output_file_name
+        = f.input :output_formats_review, placeholder: 'PDF,HTML'
+        = f.input :output_formats_send, placeholder: 'PDF,HTML'
+        = f.input :email_subject, placeholder: "Payment Report From Subtext"
+        = f.input :repository_folder, hint: "Output location for reviewing reports."
+        = f.input :overwrite_files
+        = f.input :alert_recipients, placeholder: "johno@subtext.org,other_person@subtext.org"
+        = f.input :cc_email
+        = f.input :bcc_email
+        = f.input :notes
+
+      #report_params.form-column
+        %button#add-to-report_params.btn Add Parameter
+        .existing-fields-for-report_params
+          = f.simple_fields_for :report_params do |param_form|
+            .row-fluid.report-param
+              = param_form.input :param_name, wrapper_html: { class: 'span4' }
+              = param_form.input :param_value, wrapper_html: { class: 'span4' }
+              = param_form.input :report_param_type, wrapper_html: { class: 'span3' },
+                label: 'Param type', include_blank: false
+              %span.span1.close &times;
+              = param_form.input :_destroy, as: :hidden, value: false
+      #fields-for-report_params.numerous
+        = f.simple_fields_for :report_params, ReportParam.new, child_index: "replace_this" do |param_form|
+          = param_form.input :param_name, wrapper_html: { class: 'span4' }
+          = param_form.input :param_value, wrapper_html: { class: 'span4' }
+          = param_form.input :report_param_type, wrapper_html: { class: 'span3' },
+            label: 'Param type', include_blank: false
+          %span.span1.close.numerous-remove &times;
+
+    - if @report.id
+      .tab-pane#recipients
+        %h2 Recipients
+        %table.table.table-striped.table-hover.table-condensed.report-recipients-table
+          %thead
+            %tr
+              %th User ID
+              %th Name
+              %th Email
+              %th Role
+              %th Alternative Emails
+              %th
+          %tbody
+            - @report.report_recipients.each do |rr|
+              = render partial: 'report_recipients/partials/row',
+                locals: { report_recipient: rr }
+        %hr
+        %h2 Search Users
+        %span Note: users must be associated with a role to be selected as a report recipient.
+        %table.table.table-striped.table-hover.data-table
+          %thead
+            %tr
+              %th ID
+              %th Name
+              %th Email
+              %th Role
+              %th
+          %tbody
+            - @users.each do |user|
+              %tr{ class: "user-#{user.id}" }
+                %td= user.id
+                %td= user.name
+                %td= user.email
+                %td= user.roles.map(&:pretty_name).uniq.join(',')
+                %td
+                  = link_to '+ Add', '#',
+                    class: "btn btn-small btn-success recipient-action-link #{@recipient_user_ids.include?(user.id) ? 'disabled' : ''}",
+                    data: { form_url: new_report_recipient_path({ report_id: @report.id,
+                            user_id: user.id }) }
+
+  .form-actions
+    = f.submit class: "btn btn-primary"
+
+.modal.fade.modal-hack#report_recipient_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Report Recipient
+  .modal-body
+    Loading...   

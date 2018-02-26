@@ -36,7 +36,18 @@
 #  temp_password          :string
 #  archived               :boolean          default(FALSE)
 #  source                 :string
-#  receive_comment_alerts :bolean           default(FALSE)
+#  receive_comment_alerts :boolean          default(TRUE)
+#  location_confirmed     :boolean          default(FALSE)
+#  fullname               :string
+#  nickname               :string
+#  epayment               :boolean          default(FALSE)
+#  w9                     :boolean          default(FALSE)
+#
+# Indexes
+#
+#  idx_16858_index_users_on_email                 (email) UNIQUE
+#  idx_16858_index_users_on_public_id             (public_id) UNIQUE
+#  idx_16858_index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 
 require 'spec_helper'

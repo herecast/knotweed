@@ -130,6 +130,16 @@ Knotweed::Application.routes.draw do
     delete '/temp_user/:id', to: 'temp_user_capture#destroy', as: :delete_temp_user
 
     get '/sidekiq_wrapper', to: 'sidekiq_wrapper#index'
+
+    resources :reports, except: [:show, :destroy] do
+      resources :generations, only: [:create], controller: 'reports/generations'
+    end
+    resources :report_jobs, except: [:show, :destroy] do
+      resources :runs, only: [:create], controller: 'report_jobs/runs'
+    end
+
+    resources :report_recipients, except: [:index]
+    resources :report_job_recipients, except: [:index, :create, :new]
   end
 
   # API

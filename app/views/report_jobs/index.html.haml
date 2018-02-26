@@ -1,0 +1,44 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-search
+        Report Jobs
+      .actions
+        %a.btn.box-remove.btn-mini.btn-link{ href: "#" }
+          %i.icon-remove
+        %a.btn.box-collapse.btn-mini.btn-link{ href: "#" }
+          %i
+    .box-content
+      = search_form_for @search, url: report_jobs_path do |f|
+        .controls.controls-row
+          .field.span3
+            = f.label :report_id_eq, 'Report'
+            = f.collection_select :report_id_eq, Report.accessible_by(current_ability),
+              :id, :title, include_blank: true
+        .form-actions
+          = f.submit "Search", class: "btn btn-primary"
+          = link_to "Reset", report_jobs_path, class: "btn"
+
+%table.table.table-striped.table-bordered.table-condensed
+  %thead
+    %tr
+      %th ID
+      %th Report Title
+      %th Review Date
+      %th Sent Date
+      %th
+  %span5
+    = page_entries_info @report_jobs if @report_jobs.present?
+    = paginate @report_jobs, window: 2 if @report_jobs.present?
+  %tbody
+    - @report_jobs.each do |rj|
+      %tr{ class: "report_job-#{rj.id}" }
+        %td= rj.id
+        %td= link_to rj.report.title, edit_report_path(rj.report)
+        %td= rj.report_review_date.try(:strftime, '%m/%d/%Y %l:%M %p')
+        %td= rj.report_sent_date.try(:strftime, '%m/%d/%Y %l:%M %p')
+        %td
+          = link_to "Edit", edit_report_job_path(rj), class: "btn btn-warning btn-small"
+          = link_to "Run As Review", report_job_runs_path(rj, review_type: 'review'), method: :post, class: "btn btn-info btn-small"
+          = link_to "Run Final", report_job_runs_path(rj, review_type: 'final'), method: :post, class: "btn btn-danger btn-small"

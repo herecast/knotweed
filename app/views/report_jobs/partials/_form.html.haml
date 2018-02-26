@@ -1,0 +1,55 @@
+= simple_form_for @report_job, html: { class: "form" } do |f|
+  = f.error_notification
+  .tabbable
+    %ul.nav.nav-tabs.nav-tabs-simple#edit_report_job_tabs
+      %li.active
+        = link_to 'Details', '#', class: 'green-border', data: { toggle: "tab", target: "#details" }
+        - if @report_job.id
+          %li
+            = link_to 'Recipients', '#', class: 'green-border', data: { toggle: "tab", target: "#recipients" }
+  .tab-content
+    .tab-pane.active#details
+      .form-column
+        = f.association :report, label_method: :title 
+        = f.input :description
+      #report_job_params.form-column
+        %button#add-to-report_job_params.btn Add Parameter
+        .existing-fields-for-report_job_params
+          = f.simple_fields_for :report_job_params do |param_form|
+            .row-fluid.report-job-param
+              = param_form.input :param_name, wrapper_html: { class: 'span5' }
+              = param_form.input :param_value, wrapper_html: { class: 'span5' }
+              %span.span2.close &times;
+              = param_form.input :_destroy, as: :hidden, value: false
+      #fields-for-report_job_params.numerous
+        = f.simple_fields_for :report_job_params, ReportJobParam.new, child_index: "replace_this" do |param_form|
+          = param_form.input :param_name, wrapper_html: { class: 'span5' }
+          = param_form.input :param_value, wrapper_html: { class: 'span5' }
+          %span.span2.close.numerous-remove &times;
+
+    - if @report_job.id
+      .tab-pane#recipients
+        %h2 Recipients
+        %table.table.table-striped.table-hover.table-condensed.report-recipients-table
+          %thead
+            %tr
+              %th User ID
+              %th Name
+              %th Email
+              %th Role
+              %th Alternative Emails
+              %th Params
+              %th
+          %tbody
+            - @report_job.report_job_recipients.each do |rjr|
+              = render partial: 'report_job_recipients/partials/row', locals: { rjr: rjr }
+
+  .form-actions
+    = f.submit class: "btn btn-primary"
+
+.modal.fade.modal-hack#report_job_recipient_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Report Job Recipient
+  .modal-body
+    Loading...   

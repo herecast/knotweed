@@ -1,0 +1,16 @@
+%tr{ class: "report-job-recipient-#{rjr.id}" }
+  %td= rjr.report_recipient.user.id
+  %td= rjr.report_recipient.user.name
+  %td= rjr.report_recipient.user.email
+  %td= rjr.report_recipient.user.roles.map(&:pretty_name).uniq.join(',')
+  %td= rjr.report_recipient.alternative_emails
+  %td
+    - rjr.report_job_params.each do |p|
+      %strong #{p.param_name}:
+      = p.param_value + ","
+  %td
+    = link_to "#", class: "recipient-action-link btn btn-warning btn-small",
+      data: { form_url: edit_report_job_recipient_path(rjr) } do
+      %i.icon-pencil
+    = link_to 'X', report_job_recipient_path(rjr), method: :delete, remote: true,
+      class: 'btn btn-small btn-danger', data: { confirm: 'Are you sure?' }

@@ -114,7 +114,11 @@ class UsersController < ApplicationController
         :location_confirmed,
         :location_id,
         :archived,
-        :receive_comment_alerts
+        :receive_comment_alerts,
+        :fullname,
+        :nickname,
+        :epayment,
+        :w9
       ).tap do |attrs|
         if params[:user][:roles].present?
           attrs[:role_ids] = params[:user][:roles].map do |key, value|

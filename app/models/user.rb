@@ -38,6 +38,10 @@
 #  source                 :string
 #  receive_comment_alerts :boolean          default(TRUE)
 #  location_confirmed     :boolean          default(FALSE)
+#  fullname               :string
+#  nickname               :string
+#  epayment               :boolean          default(FALSE)
+#  w9                     :boolean          default(FALSE)
 #
 # Indexes
 #
@@ -48,6 +52,7 @@
 
 class User < ActiveRecord::Base
 
+  has_many :report_recipients
   has_many :notifiers
   has_many :subscriptions
   has_many :social_logins

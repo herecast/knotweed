@@ -1,0 +1,19 @@
+%table.table.table-striped.table-bordered.table-condensed
+  %thead
+    %tr
+      %th ID
+      %th Title
+      %th Report Path
+      %th # Report Jobs
+      %th
+  %tbody
+    - @reports.each do |report|
+      %tr{ class: "report-#{report.id}" }
+        %td= report.id
+        %td= link_to report.title, edit_report_path(report)
+        %td= report.report_path
+        %td= link_to report.report_jobs.count, report_jobs_path(q: { report_id_eq: report.id })
+        %td
+          = link_to "Edit", edit_report_path(report), class: "btn btn-warning btn-small"
+          = link_to "Generate Job", report_generations_path(report),
+              method: :post, class: "btn btn-primary btn-small"

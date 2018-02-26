@@ -1,0 +1,2 @@
+$(".report-recipient-#{@report_recipient.id}").after("#{ j render 'report_recipients/partials/row', report_recipient: @report_recipient }");
+$(".report-recipient-#{@report_recipient.id}").first().remove();

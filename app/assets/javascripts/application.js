@@ -50,3 +50,5 @@
 //= require summernote
 //= require summernote_editor
 //= require cocoon
+//= require reports
+//= require report_jobs
