@@ -50,6 +50,7 @@ module Ugc
             :raw_content,
             :authoremail,
             :authors,
+            :biz_feed_public,
             :content_category_id,
             :pubdate,
             :timestamp,
@@ -67,6 +68,7 @@ module Ugc
           cost: @params[:content][:cost],
           content_attributes: {
             id: @params[:id],
+            biz_feed_public: @params[:content][:biz_feed_public],
             title: @params[:content][:title],
             raw_content: @params[:content][:content],
             promote_radius: @params[:content].delete(:promote_radius)

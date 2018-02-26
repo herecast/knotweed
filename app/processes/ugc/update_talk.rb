@@ -27,6 +27,7 @@ module Ugc
         new_params[:content][:raw_content] = new_params[:content].delete(:content)
         new_params.require(:content).permit(
           :title,
+          :biz_feed_public,
           :raw_content,
           :promote_radius
         )

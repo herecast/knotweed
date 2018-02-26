@@ -31,6 +31,7 @@ module Ugc
         transformed_params.require(:content).permit(
           :authors,
           :authors_is_created_by,
+          :biz_feed_public,
           :organization_id,
           :promote_base_location_id,
           :promote_radius,

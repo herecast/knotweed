@@ -614,6 +614,7 @@ describe 'Contents Endpoints', type: :request do
             let(:valid_news_params) {
               {
                 title: "A distinguished article, revised",
+                biz_feed_public: false,
                 content: "<p>Once upon a time...</p>",
                 author_name: "Fred"
               }
@@ -634,6 +635,7 @@ describe 'Contents Endpoints', type: :request do
                 content_response_schema(content).deep_merge(
                   content: {
                     author_name: valid_news_params[:author_name],
+                    biz_feed_public: false,
                     title: valid_news_params[:title],
                     # @TODO: make sanitization more sane, it's wrapping
                     # and additional <p> here.
@@ -771,6 +773,7 @@ describe 'Contents Endpoints', type: :request do
           context 'valid params' do
             let(:valid_market_params) {
               {
+                biz_feed_public: false,
                 title: "Casting Crowns",
                 content: "<p>Come to the Well</p>",
                 cost: "$10",
@@ -794,6 +797,7 @@ describe 'Contents Endpoints', type: :request do
               expect(response.body).to include_json(
                 content_response_schema(content).deep_merge(
                   content: {
+                    biz_feed_public: false,
                     # @TODO: make sanitization more sane, it's wrapping
                     # and additional <p> here.
                     #content: valid_market_params[:content],
@@ -817,7 +821,8 @@ describe 'Contents Endpoints', type: :request do
             let(:valid_talk_params) {
               {
                 title: "TFK",
-                content: "<p>Oxygen: Inhale</p>"
+                content: "<p>Oxygen: Inhale</p>",
+                biz_feed_public: false,
               }
             }
 
@@ -835,6 +840,7 @@ describe 'Contents Endpoints', type: :request do
               expect(response.body).to include_json(
                 content_response_schema(Content.last).deep_merge(
                   content: {
+                    biz_feed_public: false,
                     title: valid_talk_params[:title],
                     # @TODO: make sanitization more sane, it's wrapping
                     # and additional <p> here.
@@ -853,6 +859,7 @@ describe 'Contents Endpoints', type: :request do
           context 'valid params' do
             let(:valid_event_params) {
               {
+                biz_feed_public: false,
                 title: "Concert",
                 content: "<p>Tickets for sale a the doors</p>",
                 cost: "$10",
@@ -890,6 +897,7 @@ describe 'Contents Endpoints', type: :request do
                 subject
                 response_data = content_response_schema(content.reload).deep_merge(
                   content: {
+                    biz_feed_public: false,
                     title: valid_event_params[:title],
                     promote_radius: valid_event_params[:promote_radius],
                     contact_email: valid_event_params[:contact_email],

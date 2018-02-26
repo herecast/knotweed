@@ -52,6 +52,7 @@ module Ugc
             :id,
             :title,
             :raw_content,
+            :biz_feed_public,
             :authoremail,
             :authors,
             :content_category_id,
@@ -72,6 +73,7 @@ module Ugc
           content_attributes: {
             title: @params[:content][:title],
             raw_content: @params[:content][:content],
+            biz_feed_public: @params[:content][:biz_feed_public],
             authoremail: @current_user.try(:email),
             authors: @current_user.try(:name),
             content_category_id: market_category.id,
