@@ -25,8 +25,8 @@ class Carousels::ListservCarousel < Carousel
           },
           or: [
             [
-              {about_location_ids: [@location&.id]},
-              {base_location_ids: [@location&.id]}
+              {about_location_ids: [@location&.slug]},
+              {base_location_ids: [@location&.slug]}
             ]
           ]
         },
