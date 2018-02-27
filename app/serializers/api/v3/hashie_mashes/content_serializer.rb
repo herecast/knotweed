@@ -49,7 +49,6 @@ module Api
         :registration_deadline,
         :schedules,
         :sold,
-        :split_content,
         :starts_at,
         :subtitle,
         :sunset_date,
@@ -111,21 +110,6 @@ module Api
             ""
           else
             object.content
-          end
-        end
-
-        def split_content
-          SplitContentForAdPlacement.call(
-            ImageUrlService.optimize_image_urls(
-              html_text: content,
-              default_width:  600,
-              default_height: 1800,
-              default_crop:   false
-            )
-          ).tap do |h|
-            if h[:tail].nil?
-              h[:tail] = ""
-            end
           end
         end
 

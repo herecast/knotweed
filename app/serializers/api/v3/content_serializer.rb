@@ -265,20 +265,21 @@ module Api
       end
 
       def split_content
-        SplitContentForAdPlacement.call(
-          ImageUrlService.optimize_image_urls(
-            html_text: content,
-            default_width:  600,
-            default_height: 1800,
-            default_crop:   false
-          )
-        ).tap do |h|
-          if h[:tail].nil?
-            h[:tail] = ""
+        if object.embedded_ad?
+          SplitContentForAdPlacement.call(
+            ImageUrlService.optimize_image_urls(
+              html_text: content,
+              default_width:  600,
+              default_height: 1800,
+              default_crop:   false
+            )
+          ).tap do |h|
+            if h[:tail].nil?
+              h[:tail] = ""
+            end
           end
         end
       end
-
 
       def cost_type
         if object.channel_type == 'Event'

@@ -78,10 +78,6 @@ describe 'Feed endpoints', type: :request do
           registration_deadline: an_instance_of(String).or(be_nil),
           schedules: an_instance_of(Array).or(be_nil),
           sold: content.channel.try(:sold),
-          split_content: a_hash_including({
-            head: an_instance_of(String),
-            tail: an_instance_of(String)
-          }),
           starts_at: an_instance_of(String).or(be_nil),
           subtitle: content.subtitle,
           sunset_date: content.sunset_date.try(:iso8601),

@@ -49,11 +49,7 @@ def content_response_schema(record)
       #schedules: [],
 
       sold: record.channel.try(:sold),
-
-      # not supported by include_json().
-      # will change to a different calculation anyway.
-      #split_content: kind_of(:string),
-      #
+      split_content: nil,
       starts_at: record.channel.try(:next_or_first_instance).try(:start_date).try(:iso8601),
       subtitle: record.subtitle,
       sunset_date: record.sunset_date.try(:iso8601),
@@ -73,7 +69,6 @@ def content_response_schema(record)
     }
   }
 end
-
 
 describe 'Contents Endpoints', type: :request do
   before { FactoryGirl.create :organization, name: 'Listserv' }
@@ -108,6 +103,20 @@ describe 'Contents Endpoints', type: :request do
       it 'matches the expect json schema' do
         subject
         expect(response.body).to include_json(content_response_schema(content))
+      end
+
+      context "when content organization has embedded_ad: true" do
+        let(:organization) { FactoryGirl.create :organization, embedded_ad: true }
+        let(:content) { FactoryGirl.create :content, :news, organization: organization }
+
+        before { consumer_app.organizations << organization }
+
+        it 'returns record with split content' do
+          subject
+          response_split_content = response_json[:content][:split_content]
+          expect(response_split_content.key?(:head)).to be true
+          expect(response_split_content.key?(:head)).to be true
+        end
       end
     end
 

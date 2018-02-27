@@ -2017,21 +2017,6 @@ describe Content, :type => :model do
     end
   end
 
-  describe "#split_content" do
-    before do
-      @content = FactoryGirl.create :content
-      allow_any_instance_of(SplitContentForAdPlacement).to receive(:call)
-        .and_return(true)
-    end
-
-    subject { @content.split_content }
-
-    it "makes call to content splitting process" do
-      expect(SplitContentForAdPlacement).to receive(:call).with(@content.sanitized_content)
-      subject
-    end
-  end
-
   describe 'my_town_only?' do
     context 'multiple content locations, some as base' do
       before do
