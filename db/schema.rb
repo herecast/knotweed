@@ -853,6 +853,7 @@ ActiveRecord::Schema.define(version: 20180226164614) do
     t.string   "desktop_image"
     t.boolean  "archived",                             default: false
     t.boolean  "feature_notification_org",             default: false
+    t.boolean  "standard_ugc_org",                     default: false
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree

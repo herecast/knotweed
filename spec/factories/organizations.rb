@@ -47,6 +47,7 @@
 #  desktop_image            :string
 #  archived                 :boolean          default(FALSE)
 #  feature_notification_org :boolean          default(FALSE)
+#  standard_ugc_org         :boolean          default(FALSE)
 #
 # Indexes
 #

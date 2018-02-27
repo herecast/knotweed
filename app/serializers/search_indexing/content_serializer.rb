@@ -7,6 +7,8 @@ module SearchIndexing
       :content_category_id,
       :content_category_name,
       :created_by_id,
+      :created_by_image_url,
+      :created_by_name,
       :deleted,
       :in_accepted_category,
       :is_listserv_market_post,
@@ -59,6 +61,14 @@ module SearchIndexing
 
     def created_by_id
       object.created_by.try(:id)
+    end
+
+    def created_by_image_url
+      object.created_by.try(:avatar_url)
+    end
+
+    def created_by_name
+      object.created_by.try(:name)
     end
 
     # do not include split content in index

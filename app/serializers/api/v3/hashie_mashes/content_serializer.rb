@@ -55,6 +55,9 @@ module Api
         :sunset_date,
         :title,
         :updated_at,
+        :user_id,
+        :user_image_url,
+        :user_name,
         :venue_address,
         :venue_city,
         :venue_name,
@@ -124,6 +127,18 @@ module Api
               h[:tail] = ""
             end
           end
+        end
+
+        def user_id
+          object.created_by_id
+        end
+
+        def user_image_url
+          object.created_by_image_url
+        end
+
+        def user_name
+          object.created_by_name
         end
 
         private

@@ -72,36 +72,12 @@ class GatherFeedRecords
     end
 
     def content_opts
-      {
-        load: false,
-        order: {
-          latest_activity: :desc
-        },
-        page: @params[:page] || 1,
-        per_page: per_page,
-        where: {
-          pubdate: 5.years.ago..Time.zone.now,
-          or: [category_options],
-          removed: {
-            not: true
-          }
-        }
-      }.tap do |attrs|
-        attrs[:where][:published] = true if @repository.present?
-
-        if @params[:content_type].present? && @params[:content_type] == 'listserv'
-          attrs[:where][:organization_id] = Organization::LISTSERV_ORG_ID
-        elsif @params[:content_type].present?
-          attrs[:where][:organization_id] = @requesting_app.organizations.pluck(:id) if @requesting_app.present?
-          attrs[:where][:content_type] = @params[:content_type]
-        else
-          attrs[:where][:organization_id] = { not: Organization::LISTSERV_ORG_ID } unless listserv_org_request?
-        end
-
-
-        if my_stuff_request?
-          attrs[:where]['created_by_id'] = @current_user.id
-        elsif @params[:location_id].present?
+      ContentSearch.standard_query({
+        params: @params,
+        requesting_app: @requesting_app,
+        repository: @repository
+      }).tap do |attrs|
+        if @params[:location_id].present?
           location = Location.find_by_slug_or_id @params[:location_id]
 
           if @params[:radius].present? && @params[:radius].to_i > 0
@@ -118,62 +94,7 @@ class GatherFeedRecords
             ]
           end
         end
-
-        if @params[:organization_id].present?
-          attrs[:where][:biz_feed_public] = [true, nil]
-
-          organization = Organization.find(@params[:organization_id])
-
-          org_tagged_content_ids = organization.tagged_contents.pluck(:id)
-          attrs[:where][:or] << [
-            { organization_id: organization.id },
-            { channel_id: organization.venue_event_ids, channel_type: 'Event' },
-            { id: org_tagged_content_ids }
-          ]
-
-          attrs[:where][:or] << [
-            { sunset_date: nil },
-            { sunset_date: { gt: Date.current } }
-          ]
-
-          organization_show_options[@params['show']].call(attrs) if @params['show'].present?
-        end
-
-        if @params[:query].present?
-          attrs.delete(:order)
-          attrs[:boost_by_distance] = {
-            field: :created_at,
-            origin: Time.zone.now,
-            scale: '60d',
-            offset: '7d',
-            decay: 0.25
-          }
-        end
       end
-    end
-
-    def category_options
-      content_types = ['news', 'market', 'talk']
-      content_types << 'campaign' if @params[:organization_id].present?
-      [
-        {content_type: content_types},
-        {content_type: 'event', "organization_id" => {not: Organization::LISTSERV_ORG_ID}}
-      ]
-    end
-
-    def organization_show_options
-      {
-        'everything' => ->(attrs) { [:pubdate, :biz_feed_public, :published].each { |k| attrs[:where].delete(k) } },
-        'hidden' => ->(attrs) { attrs[:where].delete(:published); attrs[:where][:biz_feed_public] = false },
-        'draft' => ->(attrs) do
-          attrs[:where].delete(:published)
-          attrs[:where].delete(:pubdate)
-          attrs[:where][:or] << [
-            { pubdate: nil },
-            { pubdate: { gt: Time.current } }
-          ]
-        end
-      }
     end
 
     def organization_opts

@@ -408,41 +408,6 @@ describe 'Feed endpoints', type: :request do
         end
       end
     end
-
-    context "when radius param == 'myStuff'" do
-      before do
-        @owning_user = FactoryGirl.create :user
-        FactoryGirl.create :content, :news,
-          created_by: @owning_user,
-          organization: org,
-          published: true
-      end
-
-      context "when no user logged in" do
-        subject { get "/api/v3/feed", { radius: 'myStuff' } }
-
-        it "returns only current user's content" do
-          subject
-          expect(response).to have_http_status :ok
-          expect(response_json[:feed_items].length).to eq 0
-        end
-
-        it "does not call to Carousels::ListservCarousel" do
-          expect(Carousels::ListservCarousel).not_to receive(:new)
-          subject
-        end
-      end
-
-      context "when user logged in" do
-        subject { get "/api/v3/feed", { radius: 'myStuff' }, headers.merge(auth_headers_for(@owning_user)) }
-
-        it "returns only current user's content" do
-          subject
-          expect(response_json[:feed_items].length).to eq 1
-        end
-      end
-    end
-
   end
 
   describe "organization_id param present", elasticsearch: true do

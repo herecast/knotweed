@@ -135,7 +135,7 @@ FactoryGirl.define do
 
     trait :comment do
       channel_type 'Comment'
-
+      parent_id 0
       channel {
         FactoryGirl.build :comment, content: nil
       }
