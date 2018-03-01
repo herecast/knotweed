@@ -1,36 +1,117 @@
 module Api
   module V3
     class EventInstanceSerializer < ActiveModel::Serializer
-      attributes :id, :title, :subtitle, :starts_at, :ends_at, :image_url,
-        :venue_name, :venue_address, :venue_city, :venue_state, :venue_url,
-        :venue_longitude, :venue_latitude, :venue_locate_name,
-        :venue_zip, :presenter_name, :registration_deadline, :cost_type,
-        :created_at, :updated_at, :image_width, :image_height, :image_file_extension,
-        :author_id, :author_name, :avatar_url, :organization_id, :organization_name, :organization_profile_image_url, :organization_biz_feed_active, :published_at, 
+      attributes :id,
+        :author_id,
+        :author_name,
+        :avatar_url,
+        :base_location_ids,
+        :biz_feed_public,
+        :comment_count,
+        :commenter_count,
+        :contact_email,
+        :contact_phone,
         :content,
-        :content_id, :comment_count, :cost, :contact_email, :contact_phone, :updated_at, :event_id, :event_url, :ical_url, :can_edit
+        :content_id,
+        :content_origin,
+        :cost,
+        :cost_type,
+        :created_at,
+        :ends_at,
+        :event_id,
+        :event_url,
+        :ical_url,
+        :images,
+        :image_url,
+        :location_id,
+        :organization_biz_feed_active,
+        :organization_id,
+        :organization_name,
+        :organization_profile_image_url,
+        :presenter_name,
+        :promote_radius,
+        :published_at,
+        :registration_deadline,
+        :split_content,
+        :starts_at,
+        :subtitle,
+        :title,
+        :updated_at,
+        :venue_address,
+        :venue_city,
+        :venue_latitude,
+        :venue_longitude,
+        :venue_name,
+        :venue_state,
+        :venue_url,
+        :venue_zip
 
       has_many :comments, serializer: Api::V3::CommentSerializer
       has_many :event_instances, serializer: Api::V3::RelatedEventInstanceSerializer
-      has_many :content_locations, serializer: Api::V3::ContentLocationSerializer
+
+      def split_content
+        if object.event.content.embedded_ad?
+          SplitContentForAdPlacement.call(
+            ImageUrlService.optimize_image_urls(
+              html_text: content,
+              default_width:  600,
+              default_height: 1800,
+              default_crop:   false
+            )
+          ).tap do |h|
+            if h[:tail].nil?
+              h[:tail] = ""
+            end
+          end
+        end
+      end
+
+      def promote_radius
+        object.event.content.promote_radius
+      end
+
+      def location_id
+        object.event.content.content_locations.to_a.select(&:base?).first.try(:location).try(:slug)
+      end
+
+      def images
+        object.event.content.images.sort_by{|i| [i.position.to_i, i.created_at]}.map do |img|
+          {
+            id: img.id,
+            caption: img.caption,
+            content_id: img.imageable_id,
+            file_extension: img.file_extension,
+            height: img.height,
+            image_url: img.image.url,
+            position: img.position,
+            primary: img.primary?,
+            width: img.width
+          }
+        end
+      end
+
+      def created_at
+        object.event.content.created_at
+      end
+
+      def content_origin
+        object.event.content.organization&.id == Organization::LISTSERV_ORG_ID ? 'listserv' : 'ugc'
+      end
+
+      def biz_feed_public
+        object.event.content.biz_feed_public
+      end
+
+      def base_location_ids
+        object.event.content.base_locations.map(&:slug)
+      end
+
       def ical_url
         context[:ical_url] if context.present?
       end
 
-      def can_edit
-        if context.present? && context[:current_ability].present?
-          context[:current_ability].can?(:manage, object)
-        else
-          false
-        end
-      end
-
       def event_instances
         object.other_instances
-      end
-
-      def content_locations
-        object.event.content.content_locations
       end
 
       def comments
@@ -83,6 +164,10 @@ module Api
 
       def comment_count
         object.event.content.comment_count
+      end
+
+      def commenter_count
+        object.event.content.commenter_count
       end
 
       def author_id

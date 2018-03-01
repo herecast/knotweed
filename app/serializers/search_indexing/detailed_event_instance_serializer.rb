@@ -33,9 +33,5 @@ module SearchIndexing
     def my_town_only
       object.event.content.my_town_only
     end
-
-    def filter(keys)
-      keys - [:can_edit]
-    end
   end
 end

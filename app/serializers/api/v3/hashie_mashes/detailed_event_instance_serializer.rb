@@ -2,16 +2,52 @@ module Api
   module V3
     module HashieMashes
       class DetailedEventInstanceSerializer < HashieMashSerializer
-        attributes :id, :title, :subtitle, :starts_at, :ends_at, :image_url,
-          :venue_name, :venue_address, :venue_city, :venue_state, :venue_url,
-          :venue_longitude, :venue_latitude, :venue_locate_name,
-          :venue_zip, :presenter_name, :registration_deadline, :cost_type,
-          :created_at, :updated_at, :image_width, :image_height, :image_file_extension,
-          :author_id, :author_name, :avatar_url, :organization_id, :organization_name, :organization_profile_image_url, :organization_biz_feed_active, :published_at, 
-          :content,
-          :content_id, :comment_count, :cost, :contact_email, :contact_phone, :updated_at, :event_id, :ical_url, :can_edit, :event_url
-
-        attributes :comments, :event_instances, :content_locations
+        attributes :id,
+        :author_id,
+        :author_name,
+        :avatar_url,
+        :base_location_ids,
+        :biz_feed_public,
+        :comments,
+        :comment_count,
+        :commenter_count,
+        :contact_email,
+        :contact_phone,
+        :content,
+        :content_id,
+        :content_origin,
+        :cost,
+        :cost_type,
+        :created_at,
+        :ends_at,
+        :event_id,
+        :event_instances,
+        :event_url,
+        :ical_url,
+        :images,
+        :image_url,
+        :location_id,
+        :organization_biz_feed_active,
+        :organization_id,
+        :organization_name,
+        :organization_profile_image_url,
+        :presenter_name,
+        :promote_radius,
+        :published_at,
+        :registration_deadline,
+        :split_content,
+        :starts_at,
+        :subtitle,
+        :title,
+        :updated_at,
+        :venue_address,
+        :venue_city,
+        :venue_latitude,
+        :venue_longitude,
+        :venue_name,
+        :venue_state,
+        :venue_url,
+        :venue_zip
 
         def event_url
           object[:event_url]
@@ -23,14 +59,6 @@ module Api
 
         def image_url
           object[:image_url]
-        end
-
-        def can_edit
-          if context.present? && context[:current_ability].present?
-            context[:current_ability].can?(:manage, object)
-          else
-            false
-          end
         end
       end
     end
