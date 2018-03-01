@@ -29,4 +29,11 @@ namespace :indexing do
     EventInstance.search_import.where('event_instances.updated_at > ?', 2.hours.ago).each(&:reindex_async)
     puts "Operation completed"
   end
+
+  task :full_reindex_business_profile => :environment do
+    index_name = BusinessProfile.reindex(async: {wait: true}, refresh_interval: "30s")
+    puts "Reindexing last hour"
+    BusinessProfile.where('updated_at > ?', 2.hours.ago).each(&:reindex_async)
+    puts "Operation completed"
+  end
 end
