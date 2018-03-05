@@ -69,7 +69,7 @@ module Api
         def base_location_name
           if object.base_locations_array.present?
             location_name = object.base_locations_array[0][:name]
-            if context[:location_id].present?
+            if context.present? && context[:location_id].present?
               base_location = object.base_locations_array.find{ |bl| bl[:slug] == context[:location_id] }
               location_name = base_location.name if base_location.present?
             end
