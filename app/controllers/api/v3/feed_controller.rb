@@ -13,7 +13,7 @@ module Api
 
         render json: FeedContentVanillaSerializer.call(
           records: @result_object[:records],
-          opts: { context: { current_ability: current_ability } }
+          opts: { context: { current_ability: current_ability, location_id: params[:location_id] } }
         ).merge(
           meta: {
             total: @result_object[:total_entries],

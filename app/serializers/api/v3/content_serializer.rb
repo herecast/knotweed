@@ -6,6 +6,7 @@ module Api
         :author_name,
         :avatar_url,
         :base_location_ids,
+        :base_locations_array,
         :biz_feed_public,
         :campaign_end,
         :campaign_start,
@@ -309,22 +310,18 @@ module Api
         object.embedded_ad?
       end
 
-    def base_location_ids
-      if object.association(:content_locations).loaded?
-        base_ids = object.content_locations.select(&:base?).map do |cl|
-          cl.location.slug
+      def base_location_ids
+        base_locations.map(&:slug).compact
+      end
+
+      def base_locations_array
+        base_locations.map do |bl|
+          {
+            slug: bl.slug,
+            name: bl.pretty_name
+          }
         end
-      else
-        base_ids = object.base_locations.map(&:slug)
       end
-
-      if object.organization.present?
-        base_ids |= object.organization.base_locations.consumer_active.map(&:slug)
-      end
-
-      # in case any locations are selected without slugs.
-      base_ids.compact.uniq
-    end
 
       def location_id
         object.content_locations.to_a.select(&:base?).first.try(:location).try(:slug)
@@ -344,6 +341,15 @@ module Api
             object.parent.channel_type == 'Event'
           )
         end
+
+        def base_locations
+          if object.organization.present?
+            object.base_locations |= object.organization.base_locations.consumer_active
+          else
+            object.base_locations
+          end
+        end
+
     end
   end
 end

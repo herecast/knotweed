@@ -99,6 +99,12 @@ class Location < ActiveRecord::Base
     "#{try(:city)} #{try(:state)}"
   end
 
+  def pretty_name
+    unless city.nil? || state.nil?
+      "#{city}, #{state}"
+    end
+  end
+
   def coordinates=coords
     self.latitude,self.longitude = coords
   end
@@ -224,9 +230,9 @@ class Location < ActiveRecord::Base
   private
   def self.sql_distance_calculation(latitude, longitude)
     "( 3959 * acos( cos( radians(#{sanitize(latitude)}::float8) ) *
-            cos( radians( locations.lat::float8 ) ) * 
+            cos( radians( locations.lat::float8 ) ) *
           cos( radians( locations.long::float8 ) - radians(#{sanitize(longitude)}::float8) ) +
-          sin( radians(#{sanitize(latitude)}::float8) ) * 
+          sin( radians(#{sanitize(latitude)}::float8) ) *
           sin( radians( locations.lat::float8 ) ) )
         )"
   end
