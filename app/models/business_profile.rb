@@ -25,7 +25,7 @@
 
 class BusinessProfile < ActiveRecord::Base
 
-  searchkick locations: ['location'], callbacks: :async, batch_size: 100,
+  searchkick locations: ['location'], callbacks: :async, batch_size: 1000,
     index_prefix: Figaro.env.searchkick_index_prefix, match: :word_start,
     searchable: [:category_names, :title, :content, :business_location_name,
                  :business_location_city]
@@ -58,6 +58,17 @@ class BusinessProfile < ActiveRecord::Base
       })
     end
     index
+  end
+
+  scope :search_import, -> {
+    includes(:content,
+             :business_location,
+             :business_categories)
+      .where('archived = false')
+  }
+
+  def should_index?
+    archived == false
   end
 
   has_one :content, as: :channel, dependent: :destroy

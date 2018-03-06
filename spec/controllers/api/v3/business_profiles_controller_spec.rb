@@ -69,9 +69,9 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
           { business_location_name: :asc }
         ]
       end
-      
+
       let(:geodist_clause) do
-        { 
+        {
           _geo_distance: {
             'location' => Location::DEFAULT_LOCATION_COORDS.join(','),
             'order' => 'asc',
