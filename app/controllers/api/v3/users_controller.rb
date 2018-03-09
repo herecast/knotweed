@@ -2,64 +2,26 @@ require 'icalendar/tzinfo'
 module Api
   module V3
     class UsersController < ApiController
-      
-      before_filter :check_logged_in!, only: [:show, :update, :logout] 
+      before_filter :check_logged_in!, only: [:show, :update, :logout]
+      before_filter :check_correct_user, only: :update
 
       def show
-        if @current_api_user.present? 
-          if @requesting_app.present?
-            events_ical_url = @requesting_app.uri + user_event_instances_ics_path(public_id: @current_api_user.public_id.to_s)
-          end
-          render json: @current_api_user, serializer: UserSerializer,
-            root: 'current_user',  status: 200, events_ical_url: events_ical_url,
-            context: { current_ability: current_ability,
-                       consumer_app: @requesting_app }
-        else
-          render json: { errors: 'User not logged in' }, status: 401
+        if @requesting_app.present?
+          events_ical_url = @requesting_app.uri + user_event_instances_ics_path(public_id: @current_api_user.public_id.to_s)
         end
+        render json: @current_api_user, serializer: UserSerializer,
+          root: 'current_user',  status: 200, events_ical_url: events_ical_url,
+          context: { current_ability: current_ability,
+                     consumer_app: @requesting_app }
       end
 
       def update
-
-        if @current_api_user.present?
-          
-          #security check in case the user token is stolen, the user id must be
-          #stolen as well
-          if params[:current_user][:user_id].to_i != @current_api_user.id
-            head :unprocessable_entity and return
-          end
-          
-          @current_api_user.name = 
-            params[:current_user][:name] if params[:current_user][:name].present?
-          if params[:current_user][:location_id].present?
-            location = Location.find_by_slug_or_id(params[:current_user][:location_id])
-            @current_api_user.location = location
-          end
-
-          if params[:current_user][:location_confirmed].present?
-            @current_api_user.location_confirmed = [true, 'true', 1, '1'].include? params[:current_user][:location_confirmed]
-          end
-
-          @current_api_user.email =  params[:current_user][:email] if params[:current_user][:email].present?
-          if params[:current_user][:password].present? && 
-            params[:current_user][:password_confirmation].present?
-            @current_api_user.password = params[:current_user][:password]
-            @current_api_user.password_confirmation =
-              params[:current_user][:password_confirmation]
-          end
-
-          @current_api_user.avatar = params[:current_user][:image] if params[:current_user][:image].present?
-          @current_api_user.public_id = params[:current_user][:public_id] if params[:current_user][:public_id].present?
-
-          if @current_api_user.save 
-            render json: @current_api_user, serializer: UserSerializer, root: 'current_user', status: 200,
-              context: { current_ability: current_ability,
-                         consumer_app: @requesting_app }
-          else
-            render json: { error: "Current User update failed", messages:  @current_api_user.errors.full_messages }, status: 422
-          end
+        if @current_api_user.update_attributes(current_user_params)
+          render json: @current_api_user, serializer: UserSerializer, root: 'current_user', status: 200,
+            context: { current_ability: current_ability,
+                       consumer_app: @requesting_app }
         else
-          render json: { errors: 'User not logged in' }, status: 401
+          render json: { error: "Current User update failed", messages:  @current_api_user.errors.full_messages }, status: 422
         end
       end
 
@@ -81,7 +43,7 @@ module Api
         sign_out @current_api_user
         @current_api_user.reset_authentication_token
         if @current_api_user.save
-           res =  :ok 
+           res =  :ok
         else
            res = :unprocessable_entity
         end
@@ -118,7 +80,7 @@ module Api
         end
       end
 
-      def events 
+      def events
         user = User.find_by_public_id params[:public_id]
         if user
           cal = Icalendar::Calendar.new
@@ -126,7 +88,7 @@ module Api
           tz = TZInfo::Timezone.get tzid
           schedules = Schedule.joins(event: :content).where('contents.created_by = ?', user.id)
           if schedules.present?
-            cal.add_timezone tz.ical_timezone schedules.first.schedule.start_time.to_datetime 
+            cal.add_timezone tz.ical_timezone schedules.first.schedule.start_time.to_datetime
           end
           schedules.each do |schedule|
             cal.add_event schedule.to_icalendar_event
@@ -157,6 +119,33 @@ module Api
           render json: {error: 'email does not match an existing user'}, status: 422
         end
       end
+
+      private
+
+        def current_user_params
+          params.require(:current_user).permit(
+            :name,
+            :email,
+            :public_id,
+            :location_confirmed,
+            :password,
+            :password_confirmation,
+            :has_had_bookmarks
+          ).tap do |attrs|
+            if params[:current_user][:location_id].present?
+              location = Location.find_by_slug_or_id(params[:current_user][:location_id])
+              attrs[:location_id] = location.id
+            end
+            attrs[:avatar] = params[:current_user][:image] if params[:current_user][:image].present?
+          end
+        end
+
+        def check_correct_user
+          if params[:current_user][:user_id].to_i != @current_api_user.id
+            render json: {}, status: :unprocessable_entity
+          end
+        end
+
     end
   end
 end

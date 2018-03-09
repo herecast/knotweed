@@ -74,6 +74,26 @@ describe 'My Stuff endpoint', type: :request do
             end
           end
         end
+
+        describe "?bookmarked" do
+          context "when request is bookmarked: true" do
+            before do
+              @non_bookmarked_content = FactoryGirl.create :content, :news
+              @bookmarked_content = FactoryGirl.create :content, :news
+              FactoryGirl.create :user_bookmark,
+                user_id: @owning_user.id,
+                content_id: @bookmarked_content.id
+            end
+
+            subject { get "/api/v3/users/#{@owning_user.id}/contents?bookmarked=true", {}, user_headers }
+
+            it "returns user bookmarked content" do
+              subject
+              expect(response_json[:feed_items].length).to eq 1
+              expect(response_json[:feed_items][0][:content][:id]).to eq @bookmarked_content.id
+            end
+          end
+        end
       end
     end
   end

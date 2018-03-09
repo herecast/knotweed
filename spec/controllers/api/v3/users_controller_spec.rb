@@ -13,7 +13,7 @@ describe Api::V3::UsersController, :type => :controller do
 
     describe 'when api user signed in' do
       before do
-        google_logo_stub 
+        google_logo_stub
 
         listserv = FactoryGirl.create :listserv
         location = FactoryGirl.create :location, listservs: [listserv], \
@@ -31,7 +31,7 @@ describe Api::V3::UsersController, :type => :controller do
       end
 
       it 'should return expected fields' do
-       desired = expected_user_response @user 
+       desired = expected_user_response @user
        expect(JSON.parse(response.body)).to match desired
       end
     end
@@ -58,7 +58,7 @@ describe Api::V3::UsersController, :type => :controller do
                         }
                       }
         end
-        
+
         subject! { put :update, @new_data }
 
         it 'should not update user' do
@@ -66,7 +66,7 @@ describe Api::V3::UsersController, :type => :controller do
           expect(assigns(:current_api_user).name).to eq @user.name
           expect(assigns(:current_api_user).name).not_to eq @new_data[:current_user][:name]
         end
-      end 
+      end
 
       describe 'change user attributes' do
         before do
@@ -89,7 +89,7 @@ describe Api::V3::UsersController, :type => :controller do
                       }
         end
 
-        subject! { put :update, @new_data } 
+        subject! { put :update, @new_data }
 
         it 'should update fields' do
           updated_user = assigns(:current_api_user)
@@ -125,13 +125,13 @@ describe Api::V3::UsersController, :type => :controller do
                       }
         end
 
-        subject! { put :update, @new_data } 
+        subject! { put :update, @new_data }
 
         it 'should not update all fields' do
           updated_user = assigns(:current_api_user)
           expect(updated_user.name).to eq @new_data[:current_user][:name]
           expect(updated_user.location).to eq Location.find @new_data[:current_user][:location_id]
-          
+
           expect(updated_user.email).to eq @user.email
           expect(updated_user.encrypted_password).to eq @user.encrypted_password
           expect(response.code).to eq '200'
@@ -152,7 +152,7 @@ describe Api::V3::UsersController, :type => :controller do
                       }
         end
 
-        subject! { put :update, @new_data } 
+        subject! { put :update, @new_data }
 
         it 'should provide appropriate reponse' do
           updated_user = assigns(:current_api_user)
@@ -163,15 +163,11 @@ describe Api::V3::UsersController, :type => :controller do
 
       describe 'set user avatar' do
         before do
-          @user = FactoryGirl.create :user
-          # just in case this gets set in the factory in the future
-          @user.avatar = nil
-          @user.save
-
+          @user = FactoryGirl.create :user, avatar: nil
           api_authenticate user: @user
         end
 
-        subject! { put :update, format: :json, current_user: {user_id: @user.id.to_s, image: file} }
+        subject! { put :update, format: :json, current_user: {user_id: @user.id, image: file} }
 
         context "when image is improper type" do
           let!(:file) { fixture_file_upload('/bad_upload_file.json', 'application/javascript') }
@@ -227,7 +223,7 @@ describe Api::V3::UsersController, :type => :controller do
       end
     end
   end
-  
+
   describe 'GET events' do
     context 'with valid public id' do
       before do
@@ -236,7 +232,7 @@ describe Api::V3::UsersController, :type => :controller do
         event = FactoryGirl.create :event, created_by: user
         FactoryGirl.create :schedule, event: event
       end
-      
+
       subject! { get :events, format: :ics, public_id: @public_id }
 
       it 'should return ics data' do
@@ -255,10 +251,10 @@ describe Api::V3::UsersController, :type => :controller do
       it { expect(@response.status).to eq 404 }
     end
   end
-   
+
   describe 'ical url' do
     context 'when user has public id'  do
-      before do 
+      before do
         @user = FactoryGirl.create :user, public_id: 'sorlara'
         @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
         api_authenticate user: @user, consumer_app: @consumer
@@ -272,7 +268,7 @@ describe Api::V3::UsersController, :type => :controller do
     end
 
     context 'when user has no public id' do
-      before do 
+      before do
         @user = FactoryGirl.create :user, public_id: ''
         @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
         api_authenticate user: @user, consumer_app: @consumer
@@ -287,7 +283,7 @@ describe Api::V3::UsersController, :type => :controller do
   end
 
   describe 'POST logout' do
-    context do 
+    context do
       before do
         @user = FactoryGirl.create :user
         api_authenticate user: @user
@@ -312,11 +308,11 @@ describe Api::V3::UsersController, :type => :controller do
       subject! { post :logout , format: :json}
 
       it 'should change authentication token' do
-        expect(@user.reload.authentication_token).not_to eq @orig_token 
+        expect(@user.reload.authentication_token).not_to eq @orig_token
       end
     end
   end
-  
+
   describe 'POST email_confirmation' do
     include ActiveJob::TestHelper
     before do
@@ -326,7 +322,7 @@ describe Api::V3::UsersController, :type => :controller do
     context 'with valid confirmation token' do
       # we have to call instance_variable_get to pull the raw token that's included in the email. confirmation_token in the DB is the encrypted version.
       subject! { post :email_confirmation, confirmation_token: @user.instance_variable_get(:@raw_confirmation_token), format: :json}
-      
+
       it 'should respond with auth token' do
         expect(JSON.parse(response.body)).to eq({token: @user.authentication_token,
                                              email: @user.email
@@ -352,7 +348,7 @@ describe Api::V3::UsersController, :type => :controller do
 
     context 'with invalid confirmation token' do
       subject! { post :email_confirmation, confirmation_token: 'fake', format: :json }
-      
+
       it 'should respond with 404' do
         expect(response.status).to eq 404
       end
@@ -363,7 +359,7 @@ describe Api::V3::UsersController, :type => :controller do
     before do
       @user = FactoryGirl.create :user, confirmed_at: nil
     end
-    
+
     context 'with a valid unconfirmed account' do
       subject { post :resend_confirmation, user: { email: @user.email } }
 
@@ -397,7 +393,8 @@ describe Api::V3::UsersController, :type => :controller do
   private
 
     def expected_user_response(user)
-       { current_user: {
+      { current_user:
+        {
           id: user.id,
           name: user.name,
           email: user.email,
@@ -412,7 +409,9 @@ describe Api::V3::UsersController, :type => :controller do
           skip_analytics: false,
           events_ical_url: nil,
           can_publish_news: false,
-          managed_organization_ids: []}.stringify_keys,
+          managed_organization_ids: [],
+          has_had_bookmarks: user.has_had_bookmarks
         }.stringify_keys
+      }.stringify_keys
     end
 end

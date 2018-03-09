@@ -37,8 +37,8 @@ RSpec.describe 'User API Endpoints', type: :request do
             events_ical_url: an_instance_of(String).or(be_nil),
             skip_analytics: user.skip_analytics,
             managed_organization_ids: an_instance_of(Array),
-            can_publish_news: user.can_publish_news?
-
+            can_publish_news: user.can_publish_news?,
+            has_had_bookmarks: user.has_had_bookmarks
           }
         })
       end
@@ -79,8 +79,8 @@ RSpec.describe 'User API Endpoints', type: :request do
     context 'with token in json payload' do
       let(:token) { SecureRandom.hex(10) }
 
-      subject { 
-        post "/api/v3/users/sign_in_with_token", 
+      subject {
+        post "/api/v3/users/sign_in_with_token",
           {token: token}.to_json,
           json_headers
       }
@@ -128,7 +128,7 @@ RSpec.describe 'User API Endpoints', type: :request do
         FactoryGirl.create :user
       }
 
-      subject { 
+      subject {
         post "/api/v3/users/email_signin_link",
           {email: user.email}.to_json,
           json_headers
@@ -153,7 +153,7 @@ RSpec.describe 'User API Endpoints', type: :request do
     end
 
     context 'Given an email which does not match a user account' do
-      subject { 
+      subject {
         post "/api/v3/users/email_signin_link",
           {email: "notauser@somewhere.com"}.to_json,
           json_headers

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180227164016) do
+ActiveRecord::Schema.define(version: 20180306152739) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1201,6 +1201,20 @@ ActiveRecord::Schema.define(version: 20180227164016) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "user_bookmarks", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "content_id"
+    t.integer  "event_instance_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.boolean  "read"
+    t.datetime "deleted_at"
+  end
+
+  add_index "user_bookmarks", ["content_id"], name: "index_user_bookmarks_on_content_id", using: :btree
+  add_index "user_bookmarks", ["deleted_at"], name: "index_user_bookmarks_on_deleted_at", using: :btree
+  add_index "user_bookmarks", ["user_id"], name: "index_user_bookmarks_on_user_id", using: :btree
+
   create_table "user_wufoo_forms", id: false, force: :cascade do |t|
     t.integer "user_id",       limit: 8
     t.integer "wufoo_form_id", limit: 8
@@ -1248,6 +1262,7 @@ ActiveRecord::Schema.define(version: 20180227164016) do
     t.string   "nickname"
     t.boolean  "epayment",                           default: false
     t.boolean  "w9",                                 default: false
+    t.boolean  "has_had_bookmarks",                  default: false
   end
 
   add_index "users", ["email"], name: "idx_16858_index_users_on_email", unique: true, using: :btree
@@ -1357,4 +1372,6 @@ ActiveRecord::Schema.define(version: 20180227164016) do
   add_foreign_key "social_logins", "users"
   add_foreign_key "subscriptions", "listservs"
   add_foreign_key "subscriptions", "users"
+  add_foreign_key "user_bookmarks", "contents"
+  add_foreign_key "user_bookmarks", "users"
 end

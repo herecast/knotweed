@@ -42,6 +42,7 @@
 #  nickname               :string
 #  epayment               :boolean          default(FALSE)
 #  w9                     :boolean          default(FALSE)
+#  has_had_bookmarks      :boolean          default(FALSE)
 #
 # Indexes
 #
@@ -56,6 +57,7 @@ class User < ActiveRecord::Base
   has_many :notifiers
   has_many :subscriptions
   has_many :social_logins
+  has_many :user_bookmarks
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
   mount_uploader :avatar, ImageUploader

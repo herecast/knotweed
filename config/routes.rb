@@ -147,9 +147,12 @@ Knotweed::Application.routes.draw do
     namespace :v3, defaults: {format: 'json'} do
       get '/current_user', to: 'users#show'
       put '/current_user', to: 'users#update'
-      get '/users/:id/contents', to: 'users/contents#index'
-      get '/users/:id/comments', to: 'users/comments#index'
       post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
+      namespace :users do
+        resources :bookmarks, except: [:show, :new, :edit], path: '/:user_id/bookmarks'
+        resources :comments, only: :index, path: '/:id/comments'
+        resources :contents, only: :index, path: '/:id/contents'
+      end
       post 'promotion_banners/:promotion_banner_id/track_click', to: 'promotion_banners#track_click', as: :track_click
       post 'promotion_banners/:promotion_banner_id/track_load', to: 'promotion_banners#track_load', as: :track_load
 

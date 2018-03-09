@@ -30,7 +30,11 @@ class ContentSearch
 
   def my_stuff_query
     standard_query.tap do |attrs|
-      attrs[:where]['created_by_id'] = @params[:id]
+      if @params[:bookmarked] == 'true'
+        attrs[:where][:id] = { in: UserBookmark.where(user_id: @params[:id]).pluck(:content_id) }
+      else
+        attrs[:where]['created_by_id'] = @params[:id]
+      end
     end
   end
 

@@ -293,6 +293,7 @@ class Content < ActiveRecord::Base
   }, class_name: "Content", foreign_key: "parent_id"
 
   has_many :promotions
+  has_many :user_bookmarks
 
   belongs_to :content_category
   belongs_to :root_content_category, class_name: 'ContentCategory'
