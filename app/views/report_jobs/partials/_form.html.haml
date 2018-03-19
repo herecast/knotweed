@@ -30,7 +30,7 @@
     - if @report_job.id
       .tab-pane#recipients
         %h2 Recipients
-        %table.table.table-striped.table-hover.table-condensed.report-recipients-table
+        %table.table.table-striped.table-hover.table-condensed.report-job-recipients-table.sortable
           %thead
             %tr
               %th User ID
@@ -39,6 +39,8 @@
               %th Role
               %th Alternative Emails
               %th Params
+              %th Last Review Date
+              %th Last Send Date
               %th
           %tbody
             - @report_job.report_job_recipients.each do |rjr|

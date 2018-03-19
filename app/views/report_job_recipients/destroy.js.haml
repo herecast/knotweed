@@ -1,1 +1,1 @@
-$(".report-job-recipient-#{@report_job_recipient.id}").remove();
+$(".report-job-recipients-table").dataTable().fnDeleteRow($("tr.report-job-recipient-#{@report_job_recipient.id}")[0]);

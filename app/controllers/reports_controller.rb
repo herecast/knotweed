@@ -2,6 +2,9 @@ class ReportsController < ApplicationController
   load_and_authorize_resource
 
   def index
+    @reports = @reports.select("*, (SELECT COUNT(id) FROM report_recipients WHERE report_id=reports.id) as recip_count" +
+                              ", (SELECT COUNT(id) FROM report_jobs WHERE report_id=reports.id) as job_count")
+    @reports = @reports.order('title ASC')
   end
 
   def new
@@ -44,8 +47,8 @@ class ReportsController < ApplicationController
       :overwrite_files,
       :notes,
       :alert_recipients,
-      :cc_email,
-      :bcc_email,
+      :cc_emails,
+      :bcc_emails,
       report_params_attributes: [:param_name, :param_value,
         :_destroy, :id, :report_param_type]
     )

@@ -25,8 +25,10 @@
     %tr
       %th ID
       %th Report Title
+      %th Recipients
       %th Review Date
       %th Sent Date
+      %th
       %th
   %span5
     = page_entries_info @report_jobs if @report_jobs.present?
@@ -36,9 +38,13 @@
       %tr{ class: "report_job-#{rj.id}" }
         %td= rj.id
         %td= link_to rj.report.title, edit_report_path(rj.report)
+        %td= rj.recip_count
         %td= rj.report_review_date.try(:strftime, '%m/%d/%Y %l:%M %p')
         %td= rj.report_sent_date.try(:strftime, '%m/%d/%Y %l:%M %p')
         %td
-          = link_to "Edit", edit_report_job_path(rj), class: "btn btn-warning btn-small"
           = link_to "Run As Review", report_job_runs_path(rj, review_type: 'review'), method: :post, class: "btn btn-info btn-small"
-          = link_to "Run Final", report_job_runs_path(rj, review_type: 'final'), method: :post, class: "btn btn-danger btn-small"
+          = link_to "Run Final", report_job_runs_path(rj, review_type: 'final'), method: :post, class: "btn btn-success btn-small"
+        %td
+          = link_to "Edit", edit_report_job_path(rj), class: "btn btn-warning btn-small"
+          = link_to 'X', report_job_path(rj), method: :delete, class: 'btn btn-small btn-danger',
+            data: { confirm: "Are you sure you want to delete this report job?" }

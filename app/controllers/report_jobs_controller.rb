@@ -5,6 +5,7 @@ class ReportJobsController < ApplicationController
     @search = ReportJob.ransack(params[:q])
     @report_jobs = @search.result(distinct: true).order('created_at DESC').
       includes(:report).
+      select('*, (SELECT COUNT(id) FROM report_job_recipients WHERE report_job_id=report_jobs.id) as recip_count').
       page(params[:page]).per(25)
   end
 
@@ -30,6 +31,12 @@ class ReportJobsController < ApplicationController
     else
       render 'edit'
     end
+  end
+
+  def destroy
+    @report_job.destroy
+    flash[:notice] = 'Report job deleted'
+    redirect_to report_jobs_path
   end
 
   private

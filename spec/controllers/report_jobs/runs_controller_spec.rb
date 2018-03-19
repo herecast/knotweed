@@ -10,7 +10,7 @@ describe ReportJobs::RunsController, type: :controller do
 
     it 'should call run_report_job with the correct argument' do
       allow(ReportJob).to receive(:find).and_return(report_job) # needs to be exact same object for spec
-      expect(report_job).to receive(:run_report_job).with(true)
+      expect(report_job).to receive(:run_report_job).with(true).and_return({successes: 1, failures: 0})
       subject
     end
   end

@@ -17,8 +17,8 @@ RSpec.describe JasperService do
         overwrite: true,
         email_subject: 'Test Subject',
         alert_recipients: ['john@test.com'],
-        cc_email: 'johncc@test.com',
-        bcc_email: 'johnbcc@test.com'
+        cc_emails: ['johncc@test.com'],
+        bcc_emails: ['johnbcc@test.com']
       }
     }
 
@@ -26,7 +26,7 @@ RSpec.describe JasperService do
       report_path: stub_data[:report_path], repository_folder: stub_data[:review_folder],
       overwrite_files: stub_data[:overwrite], output_formats_review: stub_data[:output_formats],
       email_subject: stub_data[:email_subject], alert_recipients: stub_data[:alert_recipients].join(','),
-      cc_email: stub_data[:cc_email], bcc_email: stub_data[:bcc_email] }
+      cc_emails: stub_data[:cc_emails].join(','), bcc_emails: stub_data[:bcc_emails].join(',') }
     let(:report_job) { FactoryGirl.create :report_job, report: report }
     let(:report_recipient) { FactoryGirl.create :report_recipient, report: report }
     let(:report_job_recipient) { FactoryGirl.create :report_job_recipient,
@@ -99,8 +99,8 @@ RSpec.describe JasperService do
         request_body_stub.merge({
           mailNotification: {
             toAddresses:                     {address: report_job_recipient.to_addresses},
-            ccAddresses:                     {address: [stub_data[:cc_email]]},
-            bccAddresses:                    {address: [stub_data[:bcc_email]]},
+            ccAddresses:                     {address: stub_data[:cc_emails]},
+            bccAddresses:                    {address: stub_data[:bcc_emails]},
             subject:                         stub_data[:email_subject],
             messageText:                     nil,
             resultSendType:                  "SEND_EMBED",

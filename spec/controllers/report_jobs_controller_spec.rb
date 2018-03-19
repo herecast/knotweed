@@ -74,4 +74,14 @@ describe ReportJobsController, type: :controller do
       expect(response.code).to eq '200'
     end
   end
+
+  describe 'DELETE destroy' do
+    let!(:report_job) { FactoryGirl.create :report_job }
+
+    subject { delete :destroy, id: report_job.id }
+
+    it 'should destroy the report job' do
+      expect{subject}.to change{ReportJob.count}.by -1
+    end
+  end
 end

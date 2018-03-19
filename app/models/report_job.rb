@@ -58,9 +58,9 @@ class ReportJob < ActiveRecord::Base
       recipients: recipient.to_addresses,
       report_path: report.report_path,
       email_subject: report.email_subject,
-      alert_recipients: report.alert_recipients.try(:split,',').try(:map, &:strip),
-      cc_email: report.cc_email,
-      bcc_email: report.bcc_email
+      alert_recipients: emails_for(:alert_recipients),
+      cc_emails: emails_for(:cc_emails),
+      bcc_emails: emails_for(:bcc_emails)
     }.tap do |args|
       if is_review
         args[:output_formats] = report.output_formats_review
@@ -70,9 +70,37 @@ class ReportJob < ActiveRecord::Base
     end
   end
 
+  # returns array of target emails from the field on reports
+  # in args
+  #
+  #   report_job.emails_for(:alert_recipients)
+  #
+  def emails_for(reports_field)
+    # ensure we're only sending valid method names
+    if [:alert_recipients, :cc_emails, :bcc_emails].include? reports_field
+      report.send(reports_field).try(:split, ',').try(:map, &:strip)
+    else
+      []
+    end
+  end
+
   def run_report_job(is_review=true)
+    results = { successes: 0, failures: 0 }
     report_job_recipients.each do |recip|
-      JasperService.submit_job(report_job_args(recip, is_review))
+      response = JasperService.submit_job(report_job_args(recip, is_review))
+      output_field = is_review ? :jasper_review_response : :jasper_sent_response
+      updates = { output_field => response.body }
+
+      if response.code == 200
+        timestamp_field = is_review ? :report_review_date : :report_sent_date
+        updates[:run_failed] = false
+        updates[timestamp_field] = Time.zone.now
+        results[:successes] += 1
+      else
+        updates[:run_failed] = true
+        results[:failures] += 1
+      end
+      recip.update(updates)
     end
 
     if is_review
@@ -80,6 +108,7 @@ class ReportJob < ActiveRecord::Base
     else
       update report_sent_date: Time.zone.now
     end
+    results
   end
 
   def self.create_from_report!(report)

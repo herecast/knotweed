@@ -17,12 +17,12 @@
         = f.input :output_file_name
         = f.input :output_formats_review, placeholder: 'PDF,HTML'
         = f.input :output_formats_send, placeholder: 'PDF,HTML'
-        = f.input :email_subject, placeholder: "Payment Report From Subtext"
+        = f.input :email_subject, placeholder: "Payment Report From Subtext", input_html: { type: :text }
         = f.input :repository_folder, hint: "Output location for reviewing reports."
         = f.input :overwrite_files
         = f.input :alert_recipients, placeholder: "johno@subtext.org,other_person@subtext.org"
-        = f.input :cc_email
-        = f.input :bcc_email
+        = f.input :cc_emails, placeholder: "johno@subtext.org,other_person@subtext.org"
+        = f.input :bcc_emails, placeholder: "johno@subtext.org,other_person@subtext.org"
         = f.input :notes
 
       #report_params.form-column
@@ -47,7 +47,7 @@
     - if @report.id
       .tab-pane#recipients
         %h2 Recipients
-        %table.table.table-striped.table-hover.table-condensed.report-recipients-table
+        %table.table.table-striped.table-hover.table-condensed.report-recipients-table.sortable
           %thead
             %tr
               %th User ID
@@ -73,14 +73,15 @@
               %th
           %tbody
             - @users.each do |user|
-              %tr{ class: "user-#{user.id}" }
+              %tr{ class: "user-#{user.id}",
+                   style: "#{@recipient_user_ids.include?(user.id) ? 'display: none;' : ''}" }
                 %td= user.id
                 %td= user.name
                 %td= user.email
                 %td= user.roles.map(&:pretty_name).uniq.join(',')
                 %td
                   = link_to '+ Add', '#',
-                    class: "btn btn-small btn-success recipient-action-link #{@recipient_user_ids.include?(user.id) ? 'disabled' : ''}",
+                    class: "btn btn-small btn-success recipient-action-link",
                     data: { form_url: new_report_recipient_path({ report_id: @report.id,
                             user_id: user.id }) }
 

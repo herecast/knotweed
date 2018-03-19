@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180306152739) do
+ActiveRecord::Schema.define(version: 20180313161418) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1051,8 +1051,13 @@ ActiveRecord::Schema.define(version: 20180306152739) do
     t.integer  "report_recipient_id"
     t.integer  "created_by"
     t.integer  "updated_by"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+    t.datetime "report_review_date"
+    t.datetime "report_sent_date"
+    t.text     "jasper_review_response"
+    t.text     "jasper_sent_response"
+    t.boolean  "run_failed",             default: false
   end
 
   create_table "report_jobs", force: :cascade do |t|
@@ -1102,8 +1107,8 @@ ActiveRecord::Schema.define(version: 20180306152739) do
     t.datetime "updated_at",                            null: false
     t.string   "email_subject"
     t.string   "alert_recipients"
-    t.string   "cc_email"
-    t.string   "bcc_email"
+    t.string   "cc_emails"
+    t.string   "bcc_emails"
   end
 
   create_table "repositories", id: :bigserial, force: :cascade do |t|

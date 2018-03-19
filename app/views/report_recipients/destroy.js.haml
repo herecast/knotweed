@@ -1,2 +1,2 @@
-$(".report-recipient-#{@report_recipient.id}").remove();
-$(".user-#{@report_recipient.user.id} .recipient-action-link").removeClass('disabled');
+$(".report-recipients-table").dataTable().fnDeleteRow($("tr.report-recipient-#{@report_recipient.id}")[0]);
+$(".user-#{@report_recipient.user.id}").show();

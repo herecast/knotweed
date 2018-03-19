@@ -134,7 +134,7 @@ Knotweed::Application.routes.draw do
     resources :reports, except: [:show, :destroy] do
       resources :generations, only: [:create], controller: 'reports/generations'
     end
-    resources :report_jobs, except: [:show, :destroy] do
+    resources :report_jobs, except: [:show] do
       resources :runs, only: [:create], controller: 'report_jobs/runs'
     end
 

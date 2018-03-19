@@ -24,6 +24,11 @@ class ReportJobRecipientsController < ApplicationController
     end
   end
 
+  # this is just used for error display
+  def show
+    render 'report_job_recipients/show', layout: false
+  end
+
   private
 
   def report_job_recipient_params

@@ -1,14 +1,19 @@
-%tr{ class: "report-job-recipient-#{rjr.id}" }
+%tr{ class: "report-job-recipient-#{rjr.id} #{rjr.run_failed? ? 'run_failed' : ''}" }
   %td= rjr.report_recipient.user.id
   %td= rjr.report_recipient.user.name
   %td= rjr.report_recipient.user.email
   %td= rjr.report_recipient.user.roles.map(&:pretty_name).uniq.join(',')
   %td= rjr.report_recipient.alternative_emails
   %td
-    - rjr.report_job_params.each do |p|
+    - rjr.report_job_params.each_with_index do |p, index|
       %strong #{p.param_name}:
-      = p.param_value + ","
+      = p.param_value + (index != rjr.report_job_params.count - 1 ? "," : "")
+  %td= rjr.report_review_date.try(:strftime, '%m/%d/%Y %l:%M %p')
+  %td= rjr.report_sent_date.try(:strftime, '%m/%d/%Y %l:%M %p')
   %td
+    - if rjr.run_failed?
+      = link_to '?', '#', class: "recipient-action-link btn btn-info btn-small",
+        data: { form_url: report_job_recipient_path(rjr) }
     = link_to "#", class: "recipient-action-link btn btn-warning btn-small",
       data: { form_url: edit_report_job_recipient_path(rjr) } do
       %i.icon-pencil

@@ -10,7 +10,7 @@ module JasperService
 
   def submit_job(output_file_name:, output_formats:, run_type:, review_folder:,
     overwrite:, report_params:, report_path:, email_subject:, recipients:, alert_recipients:,
-                cc_email:, bcc_email:)
+                cc_emails:, bcc_emails:)
 
     job_data = {
       source:                {
@@ -58,8 +58,8 @@ module JasperService
     if run_type == :send
       job_data[:mailNotification] = {
         toAddresses:                     {address: recipients},
-        ccAddresses:                     {address: [cc_email]},
-        bccAddresses:                    {address: [bcc_email]},
+        ccAddresses:                     {address: cc_emails},
+        bccAddresses:                    {address: bcc_emails},
         subject:                         email_subject,
         messageText:                     nil,
         resultSendType:                  "SEND_EMBED",
@@ -74,6 +74,7 @@ module JasperService
                    body:       job_data.to_json,
                    headers:    {'Content-Type' => 'application/json'},
                    basic_auth: {username: SERVER_USER, password: SERVER_PASS})
+    result
   end
 
 end

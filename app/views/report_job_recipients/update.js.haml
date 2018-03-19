@@ -1,2 +1,1 @@
-$(".report-job-recipient-#{@report_job_recipient.id}").after("#{ j render 'report_job_recipients/partials/row', rjr: @report_job_recipient }");
-$(".report-job-recipient-#{@report_job_recipient.id}").first().remove();
+$(".report-job-recipients-table").dataTable().fnUpdate(#{ render 'report_job_recipients/partials/datatable_row', rjr: @report_job_recipient },$("tr.report-job-recipient-#{@report_job_recipient.id}")[0]);

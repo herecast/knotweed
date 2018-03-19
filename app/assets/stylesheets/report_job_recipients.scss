@@ -1,3 +1,7 @@
 // Place all the styles related to the report_job_recipients controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+table.report-job-recipients-table > tbody > tr.run_failed > td {
+  background-color: rgba(255, 0, 0, 0.35);
+}
