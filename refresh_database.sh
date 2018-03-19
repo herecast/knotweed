@@ -42,6 +42,16 @@ then
     fi
 fi
 
+usercount=$(psql -At -d postgres -c "SELECT count(*) FROM pg_user WHERE usename='knotweed';")
+
+if [ $usercount -eq 0 ]
+then
+    if ! psql -d postgres -c  "CREATE USER knotweed WITH PASSWORD 'knotweed';"
+    then
+        die "failed to create knotweed user in database"
+    fi
+fi
+
 if [[ -e /tmp/.s.PGSQL.5432 ]];
 then
     docker_args+=(-v /tmp/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432)
