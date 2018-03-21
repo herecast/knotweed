@@ -1483,7 +1483,7 @@ class Content < ActiveRecord::Base
   end
 
   def is_business_post?
-    organization.org_type == 'Business'
+    organization.org_type == 'Business' && !is_campaign?
   end
 
   def is_feature_notification?
