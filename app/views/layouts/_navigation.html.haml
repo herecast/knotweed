@@ -3,6 +3,7 @@
     = link_to dashboard_path do
       %i.icon-dashboard
       %span Dashboard
+
 - if can? :read, Organization
   %li
     = link_to organizations_path do
@@ -19,6 +20,7 @@
           = link_to new_organization_path do
             %i.icon-plus
             %span Create New
+
 - if can? :read, Content
   %li
     = link_to contents_path do
@@ -35,33 +37,7 @@
           = link_to new_content_path do
             %i.icon-plus
             %span Create New
-- if can? :read, Content
-  %li
-    = link_to campaigns_path do
-      %i.icon-flag
-      %span Campaigns
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{ controller_name == "campaigns" ? "in" : "" }" }
-      %li{ class: current_page?(campaigns_path) ? "active" : "" }
-        = link_to campaigns_path do
-          %i.icon-tasks
-          %span Search
-      - if can? :create, Content
-        %li{ class: current_page?(new_campaign_path) ? "active" : "" }
-          = link_to new_campaign_path do
-            %i.icon-plus
-            %span Create New
-- if can? :read, Comment
-  %li
-    = link_to comments_path do
-      %i.icon-comment
-      %span Comments
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{ controller_name == "comments" ? "in" : "" }" }
-      %li{ class: current_page?(comments_path) ? "active" : "" }
-        = link_to comments_path do
-          %i.icon-tasks
-          %span Search
+
 - if can? :read, Event
   %li
     = link_to events_path do
@@ -78,22 +54,7 @@
           = link_to new_event_path do
             %i.icon-plus
             %span Create New
-- if can? :read, EventCategory
-  %li
-    = link_to event_categories_path do
-      %i.icon-sitemap
-      %span Event Categories
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == 'event_categories' ? "in" : ""}" }
-      %li{ class: current_page?(event_categories_path) ? "active" : "" }
-        = link_to event_categories_path do
-          %i.icon-tasks
-          %span See all
-      - if can? :create, EventCategory
-        %li{ class: current_page?(new_event_category_path) ? "active" : "" }
-          = link_to new_event_category_path do
-            %i.icon-plus
-            %span Create New
+
 - if can? :read, MarketPost
   %li
     = link_to market_posts_path do
@@ -110,38 +71,52 @@
           = link_to new_market_post_path do
             %i.icon-plus
             %span Create New
-- if can? :read, BusinessLocation
+
+- if can? :read, Comment
   %li
-    = link_to business_locations_path do
-      %i.icon-building
-      %span Venues
+    = link_to comments_path do
+      %i.icon-comment
+      %span Comments
       %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "business_locations" ? "in" : "" }" }
-      %li{ class: current_page?(business_locations_path) ? "active" : "" }
-        = link_to business_locations_path do
+    %ul{ class: "nav nav-stacked #{ controller_name == "comments" ? "in" : "" }" }
+      %li{ class: current_page?(comments_path) ? "active" : "" }
+        = link_to comments_path do
           %i.icon-tasks
           %span Search
-      - if can? :create, BusinessLocation
-        %li{ class: current_page?(new_business_location_path) ? "active" : "" }
-          = link_to new_business_location_path do
-            %i.icon-plus
-            %span Create New
-- if can? :read, Location
+
+- if can? :read, Content
   %li
-    = link_to locations_path do
-      %i.icon-map-marker
-      %span Locations
+    = link_to campaigns_path do
+      %i.icon-flag
+      %span Campaigns
       %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "locations" ? "in" : "" }" }
-      %li{ class: current_page?(locations_path) ? "active" : "" }
-        = link_to locations_path do
+    %ul{ class: "nav nav-stacked #{ controller_name == "campaigns" ? "in" : "" }" }
+      %li{ class: current_page?(campaigns_path) ? "active" : "" }
+        = link_to campaigns_path do
           %i.icon-tasks
           %span Search
-      - if can? :create, Location
-        %li{ class: current_page?(new_location_path) ? "active" : "" }
-          = link_to new_location_path do
+      - if can? :create, Content
+        %li{ class: current_page?(new_campaign_path) ? "active" : "" }
+          = link_to new_campaign_path do
             %i.icon-plus
             %span Create New
+
+- if can? :manage, User
+  %li{ class: "#{controller_name == "users" ? "active" : "" }" }
+    = link_to users_path do
+      %i.icon-male
+      %span Users
+    %ul{ class: "nav nav-stacked #{controller_name == "users" ? "in" : "" }" }
+      %li{ class: current_page?(users_path) ? "active" : "" }
+        = link_to users_path do
+          %i.icon-female
+          %span All
+      - if can? :create, User
+        %li{ class: current_page?(new_user_path) ? "active" : "" }
+          = link_to new_user_path do
+            %i.icon-plus
+            %span Create New
+
 - if can? :read, BusinessProfile
   %li
     = link_to business_profiles_path do
@@ -158,102 +133,24 @@
           = link_to new_business_profile_path do
             %i.icon-plus
             %span Create New
-- if can? :read, ContentSet
+
+- if can? :read, BusinessLocation
   %li
-    = link_to content_sets_path do
-      %i.icon-copy
-      %span Content Sets
+    = link_to business_locations_path do
+      %i.icon-building
+      %span Venues
       %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "content_sets" ? "in" : "" }" }
-      %li{ class: current_page?(content_sets_path) ? "active" : "" }
-        = link_to content_sets_path do
+    %ul{ class: "nav nav-stacked #{controller_name == "business_locations" ? "in" : "" }" }
+      %li{ class: current_page?(business_locations_path) ? "active" : "" }
+        = link_to business_locations_path do
           %i.icon-tasks
           %span Search
-      - if can? :create, ContentSet
-        %li{ class: current_page?(new_content_set_path) ? "active" : "" }
-          = link_to new_content_set_path do
+      - if can? :create, BusinessLocation
+        %li{ class: current_page?(new_business_location_path) ? "active" : "" }
+          = link_to new_business_location_path do
             %i.icon-plus
             %span Create New
-- if can? :read, ImportJob
-  %li
-    = link_to import_jobs_path do
-      %i.icon-circle-arrow-up
-      %span Import Jobs
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "import_jobs" ? "in" : "" }" }
-      %li{ class: current_page?(import_jobs_path) ? "active" : "" }
-        = link_to import_jobs_path do
-          %i.icon-tasks
-          %span Active
-      - if can? :create, ImportJob
-        %li{ class: current_page?(new_import_job_path) ? "active" : "" }
-          = link_to new_import_job_path do
-            %i.icon-plus
-            %span Create New
-- if can? :read, PublishJob
-  %li
-    = link_to publish_jobs_path do
-      %i.icon-circle-arrow-right
-      %span Publish Jobs
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "publish_jobs" ? "in" : "" }" }
-      %li{ class: current_page?(publish_jobs_path) ? "active" : "" }
-        = link_to publish_jobs_path do
-          %i.icon-tasks
-          %span All
-      - if can? :create, PublishJob
-        %li{ class: current_page?(new_publish_job_path) ? "active" : "" }
-          = link_to new_publish_job_path do
-            %i.icon-plus
-            %span Create New
-- if can? :read, Repository
-  %li
-    = link_to repositories_path do
-      %i.icon-table
-      %span Repositories
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "repositories" ? "in" : "" }" }
-      %li{ class: current_page?(repositories_path) ? "active" : "" }
-        = link_to repositories_path do
-          %i.icon-tasks
-          %span All
-      - if can? :create, Repository
-        %li{ class: current_page?(new_repository_path) ? "active" : "" }
-          = link_to new_repository_path do
-            %i.icon-plus
-            %span Create New
-- if can? :read, DataContext
-  %li
-    = link_to data_contexts_path do
-      %i.icon-table
-      %span Data Contexts
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "data_contexts" ? "in" : "" }" }
-      %li{ class: current_page?(data_contexts_path) ? "active" : "" }
-        = link_to data_contexts_path do
-          %i.icon-tasks
-          %span Search
-      - if can? :create, DataContext
-        %li{ class: current_page?(new_data_context_path) ? "active" : "" }
-          = link_to new_data_context_path do
-            %i.icon-plus
-            %span Create New
-- if can? :read, ConsumerApp
-  %li
-    = link_to consumer_apps_path do
-      %i.icon-comment
-      %span Consumer Apps
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "consumer_apps" ? "in" : "" }" }
-      %li{ class: current_page?(consumer_apps_path) ? "active" : "" }
-        = link_to consumer_apps_path do
-          %i.icon-tasks
-          %span Search
-      - if can? :create, ConsumerApp
-        %li{ class: current_page?(new_consumer_app_path) ? "active" : "" }
-          = link_to new_consumer_app_path do
-            %i.icon-plus
-            %span Create New
+
 - if can? :read, Rewrite
   %li
     = link_to rewrites_path do
@@ -265,69 +162,7 @@
         = link_to new_rewrite_path do
           %i.icon-plus
           %span Create New
-- if can? :read, Message
-  %li
-    = link_to messages_path do
-      %i.icon-envelope
-      %span Messages
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "messages" ? "in" : "" }" }
-      %li{ class: current_page?(messages_path) ? "active" : "" }
-        = link_to messages_path do
-          %i.icon-tasks
-          %span Search
-      - if can? :create, Message
-        %li{ class: current_page?(new_message_path) ? "active" : "" }
-          = link_to new_message_path do
-            %i.icon-plus
-            %span Create New
-- if can? :read, WufooForm
-  %li
-    = link_to wufoo_forms_path do
-      %i.icon-comment
-      %span Wufoo Forms
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "wufoo_forms" ? "in" : "" }" }
-      %li{ class: current_page?(wufoo_forms_path) ? "active" : "" }
-        = link_to wufoo_forms_path do
-          %i.icon-tasks
-          %span Search
-      - if can? :create, WufooForm
-        %li{ class: current_page?(new_wufoo_form_path) ? "active" : "" }
-          = link_to new_wufoo_form_path do
-            %i.icon-plus
-            %span Create New
-- if can? :read, Parser
-  %li
-    = link_to parsers_path do
-      %i.icon-book
-      %span Parsers/Parameters
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == 'parsers' ? 'in' : '' }" }
-      %li{ class: current_page?(parsers_path) ? 'active' : ''}
-        = link_to parsers_path do
-          %i.icon-tasks
-          %span Search
-      - if can? :create, Parser
-        %li{ class: current_page?(new_parser_path) ? "active" : "" }
-          = link_to new_parser_path do
-            %i.icon-plus
-            %span Create New
-- if can? :manage, User
-  %li{ class: "#{controller_name == "users" ? "active" : "" }" }
-    = link_to users_path do
-      %i.icon-male
-      %span Users
-    %ul{ class: "nav nav-stacked #{controller_name == "users" ? "in" : "" }" }
-      %li{ class: current_page?(users_path) ? "active" : "" }
-        = link_to users_path do
-          %i.icon-female
-          %span All
-      - if can? :create, User
-        %li{ class: current_page?(new_user_path) ? "active" : "" }
-          = link_to new_user_path do
-            %i.icon-plus
-            %span Create New
+
 - if can? :manage, Listserv
   %li
     = link_to listservs_path do
@@ -341,6 +176,7 @@
           = link_to new_listserv_path do
             %i.icon-plus
             %span Create New
+
 - if can? :manage, Subscription
   %li
     = link_to subscriptions_path do
@@ -354,51 +190,7 @@
           = link_to new_subscription_path do
             %i.icon-plus
             %span Create New
-- if can? :manage, ReceivedEmail
-  %li
-    = link_to received_emails_path do
-      %i.icon-envelope
-      %span Received Emails
-      %i.icon-angle-down.angle-down
-- if can? :manage, ListservContent
-  %li
-    = link_to listserv_contents_path do
-      %i.icon-envelope
-      %span Listserv Contents
-      %i.icon-angle-down.angle-down
-- if can? :manage, ActiveJob::Base
-  %li
-    = link_to sidekiq_wrapper_path do
-      %i.icon-dashboard
-      %span Sidekiq Dashboard
-- if can? :manage, Feature
-  %li
-    = link_to features_path do
-      %i.icon-flag
-      %span Features
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "features" ? "in" : "" }" }
-      %li{ class: current_page?(subscriptions_path) ? "active" : "" }
-      - if can? :create, Feature
-        %li{ class: current_page?(new_feature_path) ? "active" : "" }
-          = link_to new_feature_path do
-            %i.icon-plus
-            %span Create New
-  %li
-    = link_to market_categories_path do
-      %i.icon-sitemap
-      %span Market Categories
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "market_categories" ? "in" : "" }" }
-      %li{ class: current_page?(market_categories_path) ? "active" : "" }
-        %li{ class: current_page?(new_listserv_path) ? "active" : "" }
-          = link_to new_market_category_path do
-            %i.icon-plus
-            %span Create New
-  %li
-    = link_to temp_users_path do
-      %i.icon-male
-      %span Temp Users
+
 - if can? :read, Report
   %li
     = link_to reports_path do
@@ -415,6 +207,7 @@
           = link_to new_report_path do
             %i.icon-plus
             %span Create New
+
 - if can? :read, ReportJob
   %li
     = link_to report_jobs_path do
@@ -431,3 +224,132 @@
           = link_to new_report_job_path do
             %i.icon-plus
             %span Create New
+
+%li
+  %a.dropdown-collapse{ href: '#', class: is_config_controller_class }
+    %i.icon-gears
+    %span CONFIG
+    %i.icon-angle-down.angle-down
+
+  %ul.nav.nav-stacked{ class: is_config_controller_class }
+    - if can? :read, Location
+      %li
+        = link_to locations_path do
+          %i.icon-map-marker
+          %span Locations
+          %i.icon-angle-down.angle-down
+        %ul{ class: "nav nav-stacked #{controller_name == "locations" ? "in" : "" }" }
+          %li{ class: current_page?(locations_path) ? "active" : "" }
+            = link_to locations_path do
+              %i.icon-tasks
+              %span Search
+          - if can? :create, Location
+            %li{ class: current_page?(new_location_path) ? "active" : "" }
+              = link_to new_location_path do
+                %i.icon-plus
+                %span Create New
+
+    - if can? :read, Repository
+      %li
+        = link_to repositories_path do
+          %i.icon-table
+          %span Repositories
+          %i.icon-angle-down.angle-down
+        %ul{ class: "nav nav-stacked #{controller_name == "repositories" ? "in" : "" }" }
+          %li{ class: current_page?(repositories_path) ? "active" : "" }
+            = link_to repositories_path do
+              %i.icon-tasks
+              %span All
+          - if can? :create, Repository
+            %li{ class: current_page?(new_repository_path) ? "active" : "" }
+              = link_to new_repository_path do
+                %i.icon-plus
+                %span Create New
+
+    - if can? :read, ConsumerApp
+      %li
+        = link_to consumer_apps_path do
+          %i.icon-comment
+          %span Consumer Apps
+          %i.icon-angle-down.angle-down
+        %ul{ class: "nav nav-stacked #{controller_name == "consumer_apps" ? "in" : "" }" }
+          %li{ class: current_page?(consumer_apps_path) ? "active" : "" }
+            = link_to consumer_apps_path do
+              %i.icon-tasks
+              %span Search
+          - if can? :create, ConsumerApp
+            %li{ class: current_page?(new_consumer_app_path) ? "active" : "" }
+              = link_to new_consumer_app_path do
+                %i.icon-plus
+                %span Create New
+
+    - if can? :read, ImportJob
+      %li
+        = link_to import_jobs_path do
+          %i.icon-circle-arrow-up
+          %span Import Jobs
+          %i.icon-angle-down.angle-down
+        %ul{ class: "nav nav-stacked #{controller_name == "import_jobs" ? "in" : "" }" }
+          %li{ class: current_page?(import_jobs_path) ? "active" : "" }
+            = link_to import_jobs_path do
+              %i.icon-tasks
+              %span Active
+          - if can? :create, ImportJob
+            %li{ class: current_page?(new_import_job_path) ? "active" : "" }
+              = link_to new_import_job_path do
+                %i.icon-plus
+                %span Create New
+
+    - if can? :read, PublishJob
+      %li
+        = link_to publish_jobs_path do
+          %i.icon-circle-arrow-right
+          %span Publish Jobs
+          %i.icon-angle-down.angle-down
+        %ul{ class: "nav nav-stacked #{controller_name == "publish_jobs" ? "in" : "" }" }
+          %li{ class: current_page?(publish_jobs_path) ? "active" : "" }
+            = link_to publish_jobs_path do
+              %i.icon-tasks
+              %span All
+          - if can? :create, PublishJob
+            %li{ class: current_page?(new_publish_job_path) ? "active" : "" }
+              = link_to new_publish_job_path do
+                %i.icon-plus
+                %span Create New
+                
+    - if can? :read, Parser
+      %li
+        = link_to parsers_path do
+          %i.icon-book
+          %span Parsers/Parameters
+          %i.icon-angle-down.angle-down
+        %ul{ class: "nav nav-stacked #{controller_name == 'parsers' ? 'in' : '' }" }
+          %li{ class: current_page?(parsers_path) ? 'active' : ''}
+            = link_to parsers_path do
+              %i.icon-tasks
+              %span Search
+          - if can? :create, Parser
+            %li{ class: current_page?(new_parser_path) ? "active" : "" }
+              = link_to new_parser_path do
+                %i.icon-plus
+                %span Create New
+
+    - if can? :manage, ActiveJob::Base
+      %li{ class: controller_name == "sidekiq_wrapper" ? 'active' : '' }
+        = link_to sidekiq_wrapper_path do
+          %i.icon-dashboard
+          %span Sidekiq Dashboard
+
+    - if can? :manage, Feature
+      %li
+        = link_to features_path do
+          %i.icon-flag
+          %span Features
+          %i.icon-angle-down.angle-down
+        %ul{ class: "nav nav-stacked #{controller_name == "features" ? "in" : "" }" }
+          %li{ class: current_page?(subscriptions_path) ? "active" : "" }
+          - if can? :create, Feature
+            %li{ class: current_page?(new_feature_path) ? "active" : "" }
+              = link_to new_feature_path do
+                %i.icon-plus
+                %span Create New

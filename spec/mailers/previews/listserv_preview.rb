@@ -8,14 +8,6 @@ class ListservPreview < ActionMailer::Preview
     ListservMailer.existing_subscription(Subscription.last)
   end
 
-  def posting_verification
-    ListservMailer.posting_verification(ListservContent.last)
-  end
-
-  def posting_confirmation
-    ListservMailer.posting_confirmation(ListservContent.last)
-  end
-
   def subscriber_blacklisted
     ListservMailer.subscriber_blacklisted(Subscription.last)
   end

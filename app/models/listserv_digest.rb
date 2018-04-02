@@ -38,21 +38,6 @@
 class ListservDigest < ActiveRecord::Base
   belongs_to :listserv
 
-  scope :has_listserv_content, ->( lc ) {
-    where("? = ANY(listserv_content_ids)", lc.id)
-  }
-
-  def listserv_contents=contents
-    self.listserv_content_ids = contents.map(&:id)
-    @listserv_contents = contents
-  end
-
-  def listserv_contents
-    @listserv_contents ||=
-      listserv_content_ids.present? ?
-        ListservContent.where(id: listserv_content_ids) : []
-  end
-
   def contents=contents
     self.content_ids = contents.map(&:id)
     @contents = contents

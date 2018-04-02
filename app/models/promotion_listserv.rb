@@ -13,7 +13,6 @@
 class PromotionListserv < ActiveRecord::Base
   has_one :promotion, as: :promotable
   belongs_to :listserv
-  belongs_to :listserv_content
 
   validates_associated :promotion, :listserv
 

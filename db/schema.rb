@@ -195,26 +195,12 @@ ActiveRecord::Schema.define(version: 20180326213707) do
 
   add_index "consumer_apps", ["uri"], name: "idx_16494_index_consumer_apps_on_uri", unique: true, using: :btree
 
-  create_table "consumer_apps_messages", id: false, force: :cascade do |t|
-    t.integer "message_id",      limit: 8
-    t.integer "consumer_app_id", limit: 8
-  end
-
-  add_index "consumer_apps_messages", ["consumer_app_id", "message_id"], name: "idx_16504_consumer_apps_messages_joins_index", unique: true, using: :btree
-
   create_table "consumer_apps_organizations", id: false, force: :cascade do |t|
     t.integer "consumer_app_id", limit: 8, null: false
     t.integer "organization_id", limit: 8, null: false
   end
 
   add_index "consumer_apps_organizations", ["consumer_app_id", "organization_id"], name: "idx_16507_consumer_app_publication_index", using: :btree
-
-  create_table "consumer_apps_wufoo_forms", id: false, force: :cascade do |t|
-    t.integer "consumer_app_id", limit: 8
-    t.integer "wufoo_form_id",   limit: 8
-  end
-
-  add_index "consumer_apps_wufoo_forms", ["consumer_app_id", "wufoo_form_id"], name: "idx_16510_consumer_apps_wufoo_forms_joins_index", unique: true, using: :btree
 
   create_table "contacts", id: :bigserial, force: :cascade do |t|
     t.string   "name",         limit: 255
@@ -299,26 +285,6 @@ ActiveRecord::Schema.define(version: 20180326213707) do
     t.integer  "total_comment_count",      limit: 8
     t.datetime "created_at",                                     null: false
     t.datetime "updated_at",                                     null: false
-  end
-
-  create_table "content_sets", id: :bigserial, force: :cascade do |t|
-    t.string   "import_method",         limit: 255
-    t.text     "import_method_details"
-    t.integer  "organization_id",       limit: 8
-    t.string   "name",                  limit: 255
-    t.text     "description"
-    t.text     "notes"
-    t.string   "status",                limit: 255
-    t.datetime "created_at",                                    null: false
-    t.datetime "updated_at",                                    null: false
-    t.date     "start_date"
-    t.date     "end_date"
-    t.boolean  "ongoing"
-    t.string   "format",                limit: 255
-    t.string   "publishing_frequency",  limit: 255
-    t.text     "developer_notes"
-    t.integer  "import_priority",       limit: 8,   default: 1
-    t.string   "import_url_path",       limit: 255
   end
 
   create_table "contents", id: :bigserial, force: :cascade do |t|
@@ -422,25 +388,6 @@ ActiveRecord::Schema.define(version: 20180326213707) do
   add_index "contents_repositories", ["content_id", "repository_id"], name: "idx_16550_index_contents_repositories_on_content_id_and_reposit", using: :btree
   add_index "contents_repositories", ["repository_id", "content_id"], name: "idx_16550_index_contents_repositories_on_repository_id_and_cont", using: :btree
 
-  create_table "data_contexts", id: :bigserial, force: :cascade do |t|
-    t.string   "context",    limit: 255
-    t.boolean  "loaded",                 default: false
-    t.datetime "last_load"
-    t.boolean  "archived",               default: false
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
-  end
-
-  create_table "datasets", id: :bigserial, force: :cascade do |t|
-    t.integer  "data_context_id", limit: 8
-    t.string   "name",            limit: 255
-    t.string   "description",     limit: 255
-    t.string   "realm",           limit: 255
-    t.string   "model_type",      limit: 255
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
-  end
-
   create_table "delayed_jobs", id: :bigserial, force: :cascade do |t|
     t.integer  "priority",   limit: 8,   default: 0, null: false
     t.integer  "attempts",   limit: 8,   default: 0, null: false
@@ -456,15 +403,6 @@ ActiveRecord::Schema.define(version: 20180326213707) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "idx_16604_delayed_jobs_priority", using: :btree
-
-  create_table "event_categories", force: :cascade do |t|
-    t.string   "name"
-    t.string   "query"
-    t.string   "query_modifier"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-    t.string   "slug"
-  end
 
   create_table "event_instances", id: :bigserial, force: :cascade do |t|
     t.integer  "event_id",             limit: 8
@@ -547,7 +485,6 @@ ActiveRecord::Schema.define(version: 20180326213707) do
     t.string   "status",                limit: 255
     t.integer  "frequency",             limit: 8,   default: 0
     t.boolean  "archive",                           default: false, null: false
-    t.integer  "content_set_id",        limit: 8
     t.datetime "run_at"
     t.boolean  "stop_loop",                         default: true
     t.boolean  "automatically_publish",             default: false
@@ -600,73 +537,27 @@ ActiveRecord::Schema.define(version: 20180326213707) do
     t.datetime "publication_date"
   end
 
-  create_table "listserv_content_metrics", force: :cascade do |t|
-    t.integer  "listserv_content_id"
-    t.string   "email"
-    t.datetime "time_sent"
-    t.string   "post_type"
-    t.string   "username"
-    t.boolean  "verified"
-    t.boolean  "enhanced"
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-    t.boolean  "enhance_link_clicked", default: false
-    t.string   "step_reached"
-  end
-
-  add_index "listserv_content_metrics", ["listserv_content_id"], name: "index_listserv_content_metrics_on_listserv_content_id", using: :btree
-
-  create_table "listserv_contents", force: :cascade do |t|
-    t.integer  "listserv_id"
-    t.string   "sender_name"
-    t.string   "sender_email"
-    t.string   "subject"
-    t.text     "body"
-    t.integer  "content_category_id"
-    t.integer  "subscription_id"
-    t.string   "key"
-    t.datetime "verification_email_sent_at"
-    t.datetime "verified_at"
-    t.datetime "pubdate"
-    t.integer  "content_id"
-    t.integer  "user_id"
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
-    t.string   "verify_ip"
-    t.datetime "deleted_at"
-    t.string   "deleted_by"
-  end
-
-  add_index "listserv_contents", ["content_category_id"], name: "index_listserv_contents_on_content_category_id", using: :btree
-  add_index "listserv_contents", ["content_id"], name: "index_listserv_contents_on_content_id", using: :btree
-  add_index "listserv_contents", ["deleted_at"], name: "index_listserv_contents_on_deleted_at", using: :btree
-  add_index "listserv_contents", ["key"], name: "index_listserv_contents_on_key", using: :btree
-  add_index "listserv_contents", ["listserv_id"], name: "index_listserv_contents_on_listserv_id", using: :btree
-  add_index "listserv_contents", ["subscription_id"], name: "index_listserv_contents_on_subscription_id", using: :btree
-  add_index "listserv_contents", ["user_id"], name: "index_listserv_contents_on_user_id", using: :btree
-
   create_table "listserv_digests", force: :cascade do |t|
     t.integer  "listserv_id"
     t.string   "mc_campaign_id"
     t.datetime "sent_at"
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
     t.string   "from_name"
     t.string   "reply_to"
     t.string   "subject"
     t.string   "template"
     t.string   "sponsored_by"
-    t.integer  "location_ids",         default: [],              array: true
-    t.integer  "subscription_ids",     default: [],              array: true
+    t.integer  "location_ids",     default: [],              array: true
+    t.integer  "subscription_ids", default: [],              array: true
     t.string   "mc_segment_id"
     t.string   "title"
     t.string   "preheader"
-    t.integer  "promotion_ids",        default: [],              array: true
-    t.integer  "content_ids",                                    array: true
-    t.integer  "listserv_content_ids",                           array: true
-    t.integer  "emails_sent",          default: 0,  null: false
-    t.integer  "opens_total",          default: 0,  null: false
-    t.hstore   "link_clicks",          default: {}, null: false
+    t.integer  "promotion_ids",    default: [],              array: true
+    t.integer  "content_ids",                                array: true
+    t.integer  "emails_sent",      default: 0,  null: false
+    t.integer  "opens_total",      default: 0,  null: false
+    t.hstore   "link_clicks",      default: {}, null: false
     t.datetime "last_mc_report"
   end
 
@@ -740,19 +631,6 @@ ActiveRecord::Schema.define(version: 20180326213707) do
   add_index "locations_locations", ["parent_id", "child_id"], name: "idx_16707_index_locations_locations_on_parent_id_and_child_id", using: :btree
   add_index "locations_locations", ["parent_id"], name: "idx_16707_index_locations_locations_on_parent_id", using: :btree
 
-  create_table "market_categories", force: :cascade do |t|
-    t.string   "name"
-    t.string   "query"
-    t.string   "category_image"
-    t.string   "detail_page_banner"
-    t.boolean  "featured",           default: false
-    t.boolean  "trending",           default: false
-    t.integer  "result_count"
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
-    t.string   "query_modifier",     default: "AND"
-  end
-
   create_table "market_posts", id: :bigserial, force: :cascade do |t|
     t.string   "cost",                     limit: 255
     t.string   "contact_phone",            limit: 255
@@ -768,17 +646,6 @@ ActiveRecord::Schema.define(version: 20180326213707) do
     t.string   "status",                   limit: 255
     t.string   "preferred_contact_method", limit: 255
     t.boolean  "sold",                                 default: false
-  end
-
-  create_table "messages", id: :bigserial, force: :cascade do |t|
-    t.integer  "created_by_id", limit: 8
-    t.string   "controller",    limit: 255
-    t.string   "action",        limit: 255
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.text     "content"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
   end
 
   create_table "notifiers", id: :bigserial, force: :cascade do |t|
@@ -963,11 +830,10 @@ ActiveRecord::Schema.define(version: 20180326213707) do
   end
 
   create_table "promotion_listservs", id: :bigserial, force: :cascade do |t|
-    t.integer  "listserv_id",         limit: 8
+    t.integer  "listserv_id", limit: 8
     t.datetime "sent_at"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
-    t.integer  "listserv_content_id"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
   end
 
   create_table "promotions", id: :bigserial, force: :cascade do |t|
@@ -1016,23 +882,6 @@ ActiveRecord::Schema.define(version: 20180326213707) do
 
   add_index "publish_records", ["publish_job_id"], name: "idx_16811_index_publish_records_on_publish_job_id", using: :btree
 
-  create_table "received_emails", force: :cascade do |t|
-    t.string   "file_uri"
-    t.string   "purpose"
-    t.datetime "processed_at"
-    t.string   "from"
-    t.string   "to"
-    t.string   "message_id"
-    t.integer  "record_id"
-    t.string   "record_type"
-    t.text     "result"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
-  end
-
-  add_index "received_emails", ["file_uri"], name: "index_received_emails_on_file_uri", using: :btree
-  add_index "received_emails", ["record_type", "record_id"], name: "index_received_emails_on_record_type_and_record_id", using: :btree
-
   create_table "report_job_params", force: :cascade do |t|
     t.string   "report_job_paramable_type"
     t.integer  "report_job_paramable_id"
@@ -1056,8 +905,8 @@ ActiveRecord::Schema.define(version: 20180326213707) do
     t.datetime "report_review_date"
     t.datetime "report_sent_date"
     t.text     "jasper_review_response"
-    t.text     "jasper_sent_response"
     t.boolean  "run_failed",             default: false
+    t.text     "jasper_sent_response"
   end
 
   create_table "report_jobs", force: :cascade do |t|
@@ -1202,13 +1051,6 @@ ActiveRecord::Schema.define(version: 20180326213707) do
   add_index "subscriptions", ["listserv_id"], name: "index_subscriptions_on_listserv_id", using: :btree
   add_index "subscriptions", ["user_id"], name: "index_subscriptions_on_user_id", using: :btree
 
-  create_table "temp_user_captures", force: :cascade do |t|
-    t.string   "name"
-    t.string   "email"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "user_bookmarks", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "content_id"
@@ -1222,13 +1064,6 @@ ActiveRecord::Schema.define(version: 20180326213707) do
   add_index "user_bookmarks", ["content_id"], name: "index_user_bookmarks_on_content_id", using: :btree
   add_index "user_bookmarks", ["deleted_at"], name: "index_user_bookmarks_on_deleted_at", using: :btree
   add_index "user_bookmarks", ["user_id"], name: "index_user_bookmarks_on_user_id", using: :btree
-
-  create_table "user_wufoo_forms", id: false, force: :cascade do |t|
-    t.integer "user_id",       limit: 8
-    t.integer "wufoo_form_id", limit: 8
-  end
-
-  add_index "user_wufoo_forms", ["user_id", "wufoo_form_id"], name: "idx_16876_index_user_wufoo_forms_on_user_id_and_wufoo_form_id", unique: true, using: :btree
 
   create_table "users", id: :bigserial, force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",         null: false
@@ -1283,21 +1118,6 @@ ActiveRecord::Schema.define(version: 20180326213707) do
   end
 
   add_index "users_roles", ["user_id", "role_id"], name: "idx_16873_index_users_roles_on_user_id_and_role_id", using: :btree
-
-  create_table "wufoo_forms", id: :bigserial, force: :cascade do |t|
-    t.string   "form_hash",      limit: 255
-    t.string   "email_field",    limit: 255
-    t.string   "name",           limit: 255
-    t.text     "call_to_action"
-    t.string   "controller",     limit: 255
-    t.string   "action",         limit: 255
-    t.boolean  "active",                     default: true
-    t.datetime "created_at",                                null: false
-    t.datetime "updated_at",                                null: false
-    t.string   "page_url_field", limit: 255
-  end
-
-  add_index "wufoo_forms", ["controller", "action", "active"], name: "idx_16881_index_wufoo_forms_on_controller_and_action_and_active", unique: true, using: :btree
 
   create_table "x_content_campaigns", id: false, force: :cascade do |t|
     t.integer  "id",                        limit: 8
@@ -1362,11 +1182,6 @@ ActiveRecord::Schema.define(version: 20180326213707) do
   add_foreign_key "campaigns", "listservs"
   add_foreign_key "content_locations", "contents"
   add_foreign_key "content_locations", "locations"
-  add_foreign_key "listserv_contents", "content_categories"
-  add_foreign_key "listserv_contents", "contents"
-  add_foreign_key "listserv_contents", "listservs"
-  add_foreign_key "listserv_contents", "subscriptions"
-  add_foreign_key "listserv_contents", "users"
   add_foreign_key "listserv_digests", "listservs"
   add_foreign_key "organization_content_tags", "contents"
   add_foreign_key "organization_content_tags", "organizations"

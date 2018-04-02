@@ -56,38 +56,28 @@ Knotweed::Application.routes.draw do
     end
     resources :import_jobs
     resources :parsers
-    resources :messages, except: [:show]
     resources :publish_jobs
-    resources :wufoo_forms, except: [:show]
     resources :consumer_apps, except: [:show]
     resources :images, only: [:create, :destroy, :update]
     resources :organizations, except: [:show] do
       resources :promotions, shallow: true
     end
 
-    get "organizations/update_content_sets", to: "organizations#update_content_sets", as: :update_content_sets
     resources :organizations
-    resources :content_sets
     resources :contacts, only: [:create, :update, :edit, :destroy]
     resources :issues, only: [:new, :create, :update, :edit, :destroy, :show]
     resources :locations, except: [:destroy]
     resources :business_locations
     resources :events, except: [:show, :destroy]
-    resources :event_categories, except: :show
     put "destroy_event_instance", to: "events#destroy_event_instance", as: :destroy_event_instance
 
     resources :rewrites, except: [:show]
 
-    resources :data_contexts
     resources :repositories
     resources :listservs do
       resources :campaigns, controller: :listserv_campaigns
     end
     resources :subscriptions
-    resources :received_emails
-    resources :listserv_contents do
-      post :undelete, on: :member
-    end
 
     get "repositories/:id/clear_published_contents", to: "repositories#clear_published_contents", as: :clear_published_contents
 
@@ -96,7 +86,6 @@ Knotweed::Application.routes.draw do
     get 'annotation_reports/:annotation_report_id/annotations/:annotation_id/edit', to: "annotations#edit", as: :edit_annotation
     resources :annotation_reports, only: [:edit, :destroy]
     resources :features
-    resources :market_categories, except: [:show]
     get 'annotation_reports/:id/table_row' => 'annotation_reports#table_row', as: :annotation_report_table_row
 
     get 'annotations/:id/accept(/:accepted)' => "annotations#accept_annotation", as: :accept_annotation
@@ -126,8 +115,6 @@ Knotweed::Application.routes.draw do
     post '/contents/category_correction_reviewed', to: 'contents#category_correction_reviwed'
     get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', :defaults => {:format => 'ics'}, as: :event_instances_ics
     get '/ics/events/:public_id', to: 'api/v3/users#events', :defaults => {:format => 'ics'}, as: :user_event_instances_ics
-    get '/temp_users', to: 'temp_user_capture#index'
-    delete '/temp_user/:id', to: 'temp_user_capture#destroy', as: :delete_temp_user
 
     get '/sidekiq_wrapper', to: 'sidekiq_wrapper#index'
 
@@ -170,7 +157,6 @@ Knotweed::Application.routes.draw do
       #deprecated
       post 'events/:id/impressions', to: 'metrics/contents/impressions#create'
 
-      resources :event_categories, only: :index
       resources 'comments', only: [:index, :create]
       post '/comments/unsubscribe_from_alerts', to: 'comments#unsubscribe_webhook'
       resources 'listservs', only: [:show,:index]
@@ -232,9 +218,6 @@ Knotweed::Application.routes.draw do
       delete "subscriptions/:listserv_id/:email", to: 'subscriptions#destroy'
       post '/registrations/confirmed', to: 'confirmed_registrations#create'
 
-      resources :listserv_contents, only: [:show,:update]
-      get '/listserv_contents/:id/verify' => 'listserv_contents#verify', format: 'html'
-      patch '/listserv_contents/:id/update_metric', to: "listserv_contents#update_metric"
       put '/businesses/:id/feedback', to: 'business_feedbacks#update', as: :update_feedback
       resources :content_reports, only: :index
       resources :promotion_banner_reports, only: :index
@@ -242,9 +225,6 @@ Knotweed::Application.routes.draw do
       get '/digests', to: 'digests#index'
       get '/digests/:id', to: 'digests#show'
       get '/features', to: 'features#index'
-      get '/market_categories', to: 'market_categories#index'
-      get '/market_categories/:id', to: 'market_categories#show'
-      post '/temp_user_captures', to: 'temp_user_captures#create'
       post '/ad_metrics', to: 'promotion_banners#create_ad_metric'
       get '/promotion_coupons/:id', to: 'promotion_banners#show_promotion_coupon'
       post '/promotion_coupons/:id/request_email', to: 'promotion_banners#create_promotion_coupon_email'

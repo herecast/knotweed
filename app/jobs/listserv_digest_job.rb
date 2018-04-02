@@ -21,25 +21,15 @@ class ListservDigestJob < ApplicationJob
           end
         end
       else
-        if digest_attributes[:listserv_contents].present? && digest_attributes[:listserv_contents].count > 50
-          digest_attributes[:listserv_contents].each_slice(50).with_index do |lc, i|
-            batched_digest_attrs = digest_attributes
-            batched_digest_attrs[:subject] += " Pt #{ i + 1 }"
-            batched_digest_attrs.merge!(listserv_contents: lc)
-            digests << ListservDigest.new(batched_digest_attrs)
-          end
-
-        else
-          unless @listserv.custom_digest? && custom_query_count < @listserv.post_threshold
-            digests << ListservDigest.new(digest_attributes)
-          end
+        unless @listserv.custom_digest? && custom_query_count < @listserv.post_threshold
+          digests << ListservDigest.new(digest_attributes)
         end
       end
 
       @listserv.update last_digest_generation_time: Time.current
 
       digests.each do |digest|
-        if digest.listserv_contents.any? || digest.contents.any?
+        if digest.contents.any?
           if digest.subscriptions.any?
             digest.save!
             ListservDigestMailer.digest(digest).deliver_now
@@ -50,13 +40,6 @@ class ListservDigestJob < ApplicationJob
   end
 
   private
-  def listserv_contents_verified_after(time)
-    ListservContent\
-      .joins(:subscription)\
-      .where('subscriptions.blacklist <> ?', true)\
-      .where(listserv_id: @listserv.id)\
-      .where("verified_at > ?", time)
-  end
 
   def digest_attributes
     {
@@ -69,16 +52,6 @@ class ListservDigestJob < ApplicationJob
       promotion_ids: @listserv.promotion_ids,
       title: (@listserv.digest_subject? ? @listserv.digest_subject : "#{@listserv.name} Digest")
     }.tap do |attrs|
-
-      if @listserv.internal_list?
-        attrs.merge!({
-          listserv_contents: listserv_contents_verified_after(
-            @listserv.last_digest_generation_time || 1.month.ago
-          ),
-          subscriptions: @listserv.subscriptions.active
-        })
-      end
-
       if @listserv.custom_digest?
         unless @listserv.campaigns.present?
           contents = @listserv.contents_from_custom_query

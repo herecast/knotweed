@@ -1,4 +1,5 @@
 module ApplicationHelper
+  CONFIG_CONTROLLERS = ["locations", "repositories", "consumer_apps", "import_jobs", "publish_jobs", "parsers", "features", "sidekiq_wrapper"]
 
   def display_base_errors resource
     return '' if (resource.errors.empty?) or (resource.errors[:base].empty?)
@@ -20,6 +21,14 @@ module ApplicationHelper
       render(association.to_s.singularize + "_fields", f: builder)		
     end		
     content_tag(:span, name, class: "btn btn-success association_add_fields", data: {id: id, fields: fields.gsub("\n", "")})		
+  end
+
+  def is_config_controller_class
+    if CONFIG_CONTROLLERS.include? controller_name
+      return "in"
+    else
+      return ""
+    end
   end
 
 end

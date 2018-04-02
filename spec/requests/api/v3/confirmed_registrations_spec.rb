@@ -87,7 +87,7 @@ RSpec.describe 'Register Confirmed User', type: :request do
 
         context 'valid format, not real record' do
           before do 
-            user_details[:confirmation_key] = 'listserv_content/01234567'
+            user_details[:confirmation_key] = 'content/01234567'
           end
 
           it 'returns 422 status' do

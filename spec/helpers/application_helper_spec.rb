@@ -20,4 +20,18 @@ describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe '#is_config_controller_class' do
+    subject { helper.is_config_controller_class }
+
+    context 'for a config controller' do
+      before { allow(controller).to receive(:controller_name).and_return(ApplicationHelper::CONFIG_CONTROLLERS[0]) }
+      it { expect(subject).to eq "in" }
+    end
+
+    context 'for a non-config controller' do
+      before { allow(controller).to receive(:controller_name).and_return("fake_non_config") }
+      it { expect(subject).to eq "" }
+    end
+  end
 end

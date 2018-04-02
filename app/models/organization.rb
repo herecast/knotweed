@@ -90,8 +90,6 @@ class Organization < ActiveRecord::Base
   has_many :organization_content_tags
   has_many :tagged_contents, through: :organization_content_tags
 
-  has_many :content_sets
-
   # default images for contents
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
 

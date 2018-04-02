@@ -12,14 +12,6 @@ module NotificationService
     ListservMailer.existing_subscription(subscription).deliver_later
   end
 
-  def posting_verification(posting,  **extra_context)
-    ListservMailer.posting_verification(posting, **extra_context).deliver_later
-  end
-
-  def subscriber_blacklisted(subscription)
-    ListservMailer.subscriber_blacklisted(subscription).deliver_later
-  end
-
   def sign_in_link(sign_in_token)
     UserMailer.sign_in_link(sign_in_token).deliver_later
   end

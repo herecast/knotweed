@@ -15,8 +15,6 @@
 #
 
 class ConsumerApp < ActiveRecord::Base
-  has_and_belongs_to_many :wufoo_forms
-  has_and_belongs_to_many :messages
   has_and_belongs_to_many :organizations, after_add: :reindex_org_async
 
   def reindex_org_async(org)

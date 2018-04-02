@@ -14,7 +14,6 @@
 #  status                :string(255)
 #  frequency             :integer          default(0)
 #  archive               :boolean          default(FALSE), not null
-#  content_set_id        :integer
 #  run_at                :datetime
 #  stop_loop             :boolean          default(TRUE)
 #  automatically_publish :boolean          default(FALSE)

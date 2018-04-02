@@ -4,8 +4,6 @@ class PromoteContentToListservs
 
   # Handles promoting content to the listservs.
   # If the listserv is external, it sends reverse publish emails.
-  # If the listserv is internal, it creates/updates a matching listserv_content
-  # record.
   #
   # @param content [Content]
   # @param consumer_app [ConsumerApp]
@@ -49,10 +47,6 @@ class PromoteContentToListservs
       @promotion_listservs.select{|pl| pl.listserv.is_vc_list?}
     )
 
-    setup_for_internal_lists(
-      @promotion_listservs.select{|pl| pl.listserv.is_managed_list?}
-    )
-
   end
 
   protected
@@ -75,39 +69,4 @@ class PromoteContentToListservs
     PromotionListserv.where(id: promotion_listservs.collect(&:id)).update_all sent_at: Time.zone.now
   end
 
-  def setup_for_internal_lists(promotion_listservs)
-    promotion_listservs.each do |promo_list|
-      list_content = ListservContent.where({
-        listserv_id: promo_list.listserv_id,
-        content_id: @content.id
-      }).last
-
-      if !list_content.present? || list_content.sent_in_digest?
-        list_content = ListservContent.new({
-          listserv: promo_list.listserv,
-          content: @content
-        })
-      end
-
-      list_content.update_from_content(@content)
-
-      list_content.update!({
-        verified_at: Time.current,
-        verify_ip: @remote_ip
-      })
-
-      promo_list.update! listserv_content: list_content
-      ensure_subscribed list_content
-    end
-  end
-
-  def ensure_subscribed(listserv_content)
-    subscription = SubscribeToListservSilently.call(
-      listserv_content.listserv,
-      @content.created_by,
-      @remote_ip
-    )
-
-    listserv_content.update! subscription: subscription
-  end
 end

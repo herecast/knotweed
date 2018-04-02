@@ -28,6 +28,5 @@
 FactoryGirl.define do
   factory :listserv_digest do
     listserv
-    listserv_content_ids []
   end
 end

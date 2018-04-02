@@ -166,17 +166,6 @@ describe OrganizationsController, type: :controller do
       end
     end
 
-    context '?add_content_set=true' do
-      before do
-        allow(organization).to receive(:update_attributes).and_return(true)
-      end
-
-      it 'redirects to new_content_set_path' do
-        put :update, {id: organization.id, organization: update_attrs, add_content_set: true}
-        expect(response).to redirect_to(new_content_set_path(content_set: {organization_id: organization.id}))
-      end
-    end
-
     context 'when the organization is a business' do
       let(:organization) { FactoryGirl.create :organization, org_type: "Business" }
       let!(:business_location) { FactoryGirl.create :business_location, organization_id: organization.id }

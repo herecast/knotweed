@@ -7,7 +7,6 @@
 #  sent_at             :datetime
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  listserv_content_id :integer
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

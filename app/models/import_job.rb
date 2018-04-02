@@ -14,7 +14,6 @@
 #  status                :string(255)
 #  frequency             :integer          default(0)
 #  archive               :boolean          default(FALSE), not null
-#  content_set_id        :integer
 #  run_at                :datetime
 #  stop_loop             :boolean          default(TRUE)
 #  automatically_publish :boolean          default(FALSE)
@@ -44,7 +43,6 @@ class ImportJob < ActiveRecord::Base
 
   belongs_to :organization
   belongs_to :parser
-  belongs_to :content_set
   belongs_to :repository
   has_many :import_records
 

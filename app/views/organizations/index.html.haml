@@ -79,7 +79,6 @@
         %td= organization.contents.count
         %td
           = link_to "content", contents_path(q: { organization_id_in: organization.id }), class: "btn btn-mini btn-info"
-          = link_to "content sets", content_sets_path(q: { organization_id_in: organization.id }), class: "btn btn-mini btn-success"
         %td
           = form_for organization do |f|
             = f.check_box :archived, as: :boolean, class: 'archive-checkbox'

@@ -13,9 +13,8 @@
   = f.input :frequency, hint: "Repeat every x minutes", wrapper_html: { class: "frequency" }
   = f.association :parser, collection: Parser.accessible_by(current_ability, :read), input_html: { class: "chosen-select span4" }, hint: 'NOTE: All filesystem based parsers except UVList and ongoing mail import parsers have been deprecated; please contact a developer if you need to use a different one.'
   = f.association :organization, input_html: { allow_single_deselect: true,
-    class: "chosen-select-single-deselect span4", id: "organizations_select", data: { update_content_sets_url: update_content_sets_path } },
+    class: "chosen-select-single-deselect span4", id: "organizations_select" }, 
     include_blank: true
-  = f.association :content_set, collection: @content_sets, input_html: { class: "chosen-select span4", id: "content_sets_select" }
   = f.input :automatically_publish, label: "Automatically Publish Content?"
   .control-group.auto-publish
     = f.association :repository, input_html: { class: "span4" }

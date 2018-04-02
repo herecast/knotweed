@@ -22,10 +22,10 @@ module DspService
     super(dest, options)
   end
 
-  # calls /extract on a given piece of content (Content or ListservContent)
+  # calls /extract on a given piece of content
   # and returns the JSON parsed response
   #
-  # @param content [Content, ListservContent] the object to send to the DSP
+  # @param content [Content] the object to send to the DSP
   # @param repo [Repository] the repository to make the request to
   # @return [Hash] annotated response from the DSP
   def extract(content, repo=Repository.production_repo)

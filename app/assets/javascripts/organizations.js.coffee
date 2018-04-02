@@ -4,7 +4,6 @@
 
 jQuery ->
   $("#organizations_select").on 'change', ->
-    updateContentSetsSelect()
   # handle new contact button loading form via ajax
   $("#new_contact_button").on 'click', ->
     event.preventDefault();
@@ -87,15 +86,6 @@ jQuery ->
     event.preventDefault();
     $('#business_location_form').modal();
     $(".modal#business_location_form .modal-body").load($(this).data("formUrl"))
-
-updateContentSetsSelect = ->
-  $.ajax({
-    url: $("#organizations_select").data("updateContentSetsUrl")
-    data: {
-      organization_id: $("#organizations_select").val()
-    }
-    dataType: "script"
-  })
 
 jQuery ->
   $('.add-hours-link-organizations').on 'click', ->

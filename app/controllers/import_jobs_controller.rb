@@ -8,7 +8,6 @@ class ImportJobsController < ApplicationController
   respond_to :html
   
   def new
-    @content_sets = ContentSet.accessible_by(current_ability)
     if params[:parser_id]
       @import_job.parser = Parser.find(params[:parser_id])
       @import_job.organization = @import_job.parser.organization
@@ -16,7 +15,6 @@ class ImportJobsController < ApplicationController
   end
 
   def edit
-    @content_sets = ContentSet.accessible_by(current_ability)
   end
   
   def create
@@ -41,9 +39,6 @@ class ImportJobsController < ApplicationController
   end
 
   def index
-    if params[:content_set_id]
-      @import_jobs = @import_jobs.unscoped.where(content_set_id: params[:content_set_id])
-    end
   end
 
   def stop_ongoing_job
@@ -68,7 +63,6 @@ class ImportJobsController < ApplicationController
         :organization_id,
         :frequency,
         :archive,
-        :content_set_id,
         :run_at,
         :stop_loop,
         :automatically_publish,

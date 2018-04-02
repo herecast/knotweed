@@ -4,13 +4,13 @@ class ContentDspSerializer
 
   attr_reader :content
 
-  # @param content [Content, ListservContent] object to be serialized
+  # @param content [Content] object to be serialized
   def initialize(content)
     @content = content
   end
 
   # generates DSP compatible XML from a content record of unknown type
-  # (as of now, either ListservContent or Content)
+  # (as of now, Content)
   #
   # @param include_tags [Boolean] determines whether or not to strip HTML
   #   tags from the content being sent to the DSP

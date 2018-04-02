@@ -7,30 +7,6 @@ RSpec.describe DspClassify do
 
   before { allow(DspService).to receive(:extract).with(content, repo) { extract_response_for_categories(cat_name) } }
 
-  describe 'self.call' do
-    subject { DspClassify.call(content, repo) }
-
-    it 'should return a content category' do
-      expect(subject.name).to eql cat_name
-    end
-
-    describe 'if no category is returned' do
-      before { allow(DspClassify).to receive(:get_category_from_annotations) { nil } }
-
-      it 'should raise DspExceptions::UnableToClassify' do
-        expect{subject}.to raise_error(DspExceptions::UnableToClassify)
-      end
-    end
-
-    describe 'if DSP is down and a timeout error occurs' do
-      before { allow(DspService).to receive(:extract).with(any_args).and_raise(Timeout::Error) }
-
-      it 'should raise DspException::UnableToClassify' do
-        expect{subject}.to raise_error(DspExceptions::UnableToClassify)
-      end
-    end
-  end
-
   describe 'self.get_category_from_annotations' do
     context 'given annotations containing CATEGORIES' do
       subject { DspClassify.get_category_from_annotations(extract_response_for_categories(cat_name)) }

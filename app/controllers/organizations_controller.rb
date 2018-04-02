@@ -46,11 +46,7 @@ class OrganizationsController < ApplicationController
     update_business_info if params[:business_location].present?
     if @organization.update_attributes(organization_params)
       flash[:notice] = "Successfully updated organization #{@organization.id}"
-      if params[:add_content_set]
-        redirect_to new_content_set_path(:content_set => { :organization_id => @organization.id })
-      else
-        redirect_to organizations_path
-      end
+      redirect_to organizations_path
     else
       @users = User.all
       get_managers
@@ -84,11 +80,7 @@ class OrganizationsController < ApplicationController
         format.js
         format.html do
           flash[:notice] = "Created organization with id #{@organization.id}"
-          if params[:add_content_set]
-            redirect_to new_content_set_path(:content_set => { :organization_id => @organization.id })
-          else
-            redirect_to organizations_path
-          end
+          redirect_to organizations_path
         end
       end
     else

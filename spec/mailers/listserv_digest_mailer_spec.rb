@@ -4,7 +4,6 @@ RSpec.describe ListservDigestMailer do
   describe '.digest' do
     context 'Given a listserv digest record' do
       let(:listserv) { FactoryGirl.create :listserv, promotion_ids: [promotion.id] }
-      let(:listserv_contents) { FactoryGirl.create_list :listserv_content, 3, :verified }
       let(:contents) { FactoryGirl.create_list :content, 3 }
       let!(:promotion) { FactoryGirl.create :promotion, promotable_type: 'PromotionBanner' }
       let!(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: promotion }
@@ -13,7 +12,6 @@ RSpec.describe ListservDigestMailer do
       let!(:listserv_digest) {
         FactoryGirl.create :listserv_digest,
           listserv: listserv,
-          listserv_contents: listserv_contents,
           subject: 'A test subject',
           contents: contents,
           mc_campaign_id: nil
@@ -36,10 +34,6 @@ RSpec.describe ListservDigestMailer do
 
         it 'passes the generated content, and listserv digest to MailchimpService.create_campaign' do
           mail = described_class.digest(listserv_digest)
-          #this line will be needed once we're back to using premailer for all
-          #templates.
-
-          # mail = Premailer::Rails::Hook.perform(mail)
 
           expect(MailchimpService).to receive(:create_campaign).with(
             listserv_digest,
@@ -76,14 +70,14 @@ RSpec.describe ListservDigestMailer do
         end
 
         context 'when a listserv digest has a template' do
-          it 'defaults to the digest template' do
-            expect_any_instance_of(ListservDigestMailer).to receive(:mail).with(subject: listserv_digest.subject, template_name: 'digest', skip_premailer: true).and_return(Mail::Message.new)
+          it 'defaults to the outlook_news_template template' do
+            expect_any_instance_of(ListservDigestMailer).to receive(:mail).with(subject: listserv_digest.subject, template_name: 'outlook_news_template', skip_premailer: true).and_return(Mail::Message.new)
             described_class.digest(listserv_digest).deliver_now
           end
 
           it 'uses the template for the listserv' do
             listserv_digest.template = "test"
-            expect_any_instance_of(ListservDigestMailer).to receive(:mail).with(subject: listserv_digest.subject, template_name: "#{listserv_digest.template}", skip_premailer: false).and_return(Mail::Message.new)
+            expect_any_instance_of(ListservDigestMailer).to receive(:mail).with(subject: listserv_digest.subject, template_name: "#{listserv_digest.template}", skip_premailer: true).and_return(Mail::Message.new)
             described_class.digest(listserv_digest).deliver_now
           end
         end
@@ -160,45 +154,6 @@ RSpec.describe ListservDigestMailer do
           ENV["DEFAULT_CONSUMER_HOST"] = old_consumer_host
         end
         subject { described_class.digest(listserv_digest).body.encoded }
-
-        context 'when the template is for listserv digest' do
-          before do
-            listserv_digest.update(
-              template: 'digest',
-              promotion_ids: [promotion.id]
-            )
-          end
-
-          it 'displays the banner ad correctly' do
-            expect(subject).to include "digest-banner"
-          end
-
-          it 'includes all the listserv content titles' do
-            listserv_contents.each do |content|
-              expect(subject).to include content.subject
-            end
-          end
-
-          it 'includes listserv contents sender names' do
-            listserv_contents.each do |content|
-              expect(subject).to include content.sender_name
-            end
-          end
-
-          it 'includes the author email' do
-            listserv_contents.each do |content|
-              expect(subject).to include content.sender_email
-            end
-          end
-
-          it 'includes the date for the content post' do
-            listserv_contents.each do |content|
-              date = content.verified_at.strftime('%m/%d/%y')
-              time = content.verified_at.strftime('%-l:%M %p')
-              expect(subject).to match(/#{date}\s+#{time}/)
-            end
-          end
-        end
 
         context 'when the template is for custom content query' do
           subject { described_class.digest(listserv_digest).body }

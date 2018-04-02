@@ -13,8 +13,6 @@
 require 'rails_helper'
 
 describe PromotionListserv, :type => :model do
-  it{ is_expected.to belong_to :listserv_content }
-
   let(:content) { FactoryGirl.create :content }
 
   context 'for vc_listservs' do
