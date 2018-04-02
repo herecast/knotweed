@@ -119,7 +119,7 @@ class ReportJob < ActiveRecord::Base
                                                          param_value: rp.param_value)
     end
 
-    report.report_recipients.each do |rr|
+    report.report_recipients.active.each do |rr|
       params = report.report_params.where(report_param_type: :recipient).map do |rp|
         ReportJobParam.new(param_name: rp.param_name, param_value: rp.param_value)
       end

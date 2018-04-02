@@ -23,6 +23,9 @@ class ReportJobRecipient < ActiveRecord::Base
   belongs_to :report_job
   belongs_to :report_recipient
 
+  validates_presence_of :report_recipient
+  validates_presence_of :report_job
+
   accepts_nested_attributes_for :report_job_params, :reject_if => lambda { |a| a.values.all?(&:blank?) }, :allow_destroy => true
   
   def to_addresses

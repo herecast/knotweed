@@ -12,7 +12,7 @@ class ReportsController < ApplicationController
 
   def edit
     @users = User.where("(select count(user_id) from users_roles where user_id=users.id) > 0").includes(:roles)
-    @recipient_user_ids = @report.report_recipients.map(&:user_id)
+    @recipient_user_ids = @report.report_recipients.active.map(&:user_id)
   end
 
   def create

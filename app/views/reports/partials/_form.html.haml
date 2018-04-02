@@ -57,7 +57,7 @@
               %th Alternative Emails
               %th
           %tbody
-            - @report.report_recipients.each do |rr|
+            - @report.report_recipients.active.each do |rr|
               = render partial: 'report_recipients/partials/row',
                 locals: { report_recipient: rr }
         %hr

@@ -174,6 +174,7 @@ RSpec.describe ReportJob, type: :model do
     let!(:recipient_param) { FactoryGirl.create :report_param, report: report,
       report_param_type: :recipient }
     let!(:rr1) { FactoryGirl.create :report_recipient, report: report }
+    let!(:archived_rr) { FactoryGirl.create :report_recipient, report: report, archived: true }
 
     subject { ReportJob.create_from_report!(report) }
 
@@ -185,8 +186,13 @@ RSpec.describe ReportJob, type: :model do
       expect{subject}.to change{ReportJobParam.where(report_job_paramable_type: 'ReportJob').count}.by(1)
     end
 
-    it 'should create report_job_recipients for each report_recipient' do
-      expect(subject.report_job_recipients.count).to eq report.report_recipients.count
+    it 'should create report_job_recipients for each active report_recipient' do
+      expect(subject.report_job_recipients.count).to eq report.report_recipients.active.count
+    end
+
+    it 'should not create a report_job_recipient for archived report_recipient' do
+      users = subject.report_job_recipients.map{ |rjr| rjr.report_recipient.user }
+      expect(users).to_not include(archived_rr.user)
     end
 
     it "should create report_job_params for each recipient type param" do

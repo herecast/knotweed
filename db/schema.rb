@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180313161418) do
+ActiveRecord::Schema.define(version: 20180326213707) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1088,9 +1088,12 @@ ActiveRecord::Schema.define(version: 20180313161418) do
     t.string   "alternative_emails"
     t.integer  "created_by"
     t.integer  "updated_by"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.boolean  "archived",           default: false
   end
+
+  add_index "report_recipients", ["user_id", "report_id"], name: "index_report_recipients_on_user_id_and_report_id", using: :btree
 
   create_table "reports", force: :cascade do |t|
     t.string   "title"
