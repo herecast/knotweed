@@ -173,7 +173,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
         it 'returns event instances from all locations' do
           subject
           result_ids = assigns(:event_instances).map(&:id)
-          expect(result_ids).to match [
+          expect(result_ids).to match_array [
             event_location_1.event_instances.map(&:id),
             event_location_3.event_instances.map(&:id),
             event_location_2.event_instances.map(&:id)

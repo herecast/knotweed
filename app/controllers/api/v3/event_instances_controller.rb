@@ -5,7 +5,11 @@ module Api
       def index
 #        expires_in 1.minutes, public: true
         opts = {load: false}
-        opts[:order] = { starts_at: :asc }
+        opts[:order] = [
+          { starts_at: :asc },
+          { venue_name: :asc },
+          { title: :asc }
+        ]
         opts[:where] = {}
         opts[:where][:published] = 1 if @repository.present?
         opts[:where][:removed] = { not: true }
@@ -18,7 +22,7 @@ module Api
         query = params[:query].present? ? params[:query] : "*"
         @event_instances = EventInstance.search(query, opts)
 
-        total_pages = (@event_instances.total_count || 100) / opts[:per_page].to_i
+        total_pages = ((@event_instances.total_count || 100) / opts[:per_page].to_f).ceil
         render json: @event_instances, each_serializer: HashieMashes::DetailedEventInstanceSerializer,
           meta: {
             count: @event_instances.count,
