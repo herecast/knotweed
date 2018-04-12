@@ -113,13 +113,13 @@
         %hr
         %h3 Event Instances
         = f.hint "At least one instance is required."
-        = paginate @event_instances
+        = paginate @event_instances if @event_instances.present?
         = f.simple_fields_for(:event_instances, @event_instances) do |g|
           = render 'event_instance_fields', f: g
         .row-fluid
         = link_to_add_fields "Add Event Instance", f, :event_instances
         .row-fluid
-          = paginate @event_instances
+          = paginate @event_instances if @event_instances.present?
 
         -# image field
         %hr
