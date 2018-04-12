@@ -139,6 +139,7 @@ class Organization < ActiveRecord::Base
     end
   }
   scope :news_publishers, -> { where(org_type: %w[Publisher Publication Blog]) }
+  scope :not_archived, -> { where(archived: [false, nil]) }
 
   #validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
 

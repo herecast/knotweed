@@ -51,7 +51,7 @@ module Api
           else
             scope = Organization
           end
-          orgs = scope.with_role(:manager, object)
+          orgs = scope.not_archived.with_role(:manager, object)
           (orgs + orgs.map{|o| o.get_all_children}.flatten).map{|o| o.id}.uniq
         else
           []
