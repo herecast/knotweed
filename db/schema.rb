@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180326213707) do
+ActiveRecord::Schema.define(version: 20180409164026) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -354,6 +354,7 @@ ActiveRecord::Schema.define(version: 20180326213707) do
     t.integer  "ad_sales_agent"
     t.integer  "ad_promoter"
     t.datetime "latest_activity"
+    t.boolean  "has_future_event_instance"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree
@@ -721,6 +722,8 @@ ActiveRecord::Schema.define(version: 20180326213707) do
     t.boolean  "archived",                             default: false
     t.boolean  "feature_notification_org",             default: false
     t.boolean  "standard_ugc_org",                     default: false
+    t.boolean  "calendar_view_first",                  default: false
+    t.boolean  "calendar_card_active",                 default: false
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree

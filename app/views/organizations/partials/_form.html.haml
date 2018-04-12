@@ -49,6 +49,8 @@
             = f.input :embedded_ad, as: :boolean
             = f.input :certified_storyteller, as: :boolean
             = f.input :certified_social, as: :boolean
+            = f.input :calendar_view_first, as: :boolean
+            = f.input :calendar_card_active, as: :boolean
             - if @organization.has_business_profile?
               = f.input :biz_feed_active, as: :boolean
               = f.input :contact_card_active, as: :boolean

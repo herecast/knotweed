@@ -46,7 +46,9 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           special_link_url: organization.special_link_url,
           special_link_text: organization.special_link_text,
           certified_social: organization.certified_social,
-          desktop_image_url: organization.desktop_image_url
+          desktop_image_url: organization.desktop_image_url,
+          calendar_view_first: organization.calendar_view_first,
+          calendar_card_active: organization.calendar_card_active
         }
       )
     end

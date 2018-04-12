@@ -48,6 +48,8 @@
 #  archived                 :boolean          default(FALSE)
 #  feature_notification_org :boolean          default(FALSE)
 #  standard_ugc_org         :boolean          default(FALSE)
+#  calendar_view_first      :boolean          default(FALSE)
+#  calendar_card_active     :boolean          default(FALSE)
 #
 # Indexes
 #

@@ -88,7 +88,9 @@ module Api
           :description_card_active,
           :hours_card_active,
           :special_link_url,
-          :special_link_text
+          :special_link_text,
+          :calendar_view_first,
+          :calendar_card_active
         )
       end
 

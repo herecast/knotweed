@@ -170,6 +170,8 @@ class OrganizationsController < ApplicationController
         :special_link_text,
         :certified_social,
         :archived,
+        :calendar_view_first,
+        :calendar_card_active,
         :consumer_app_ids => [],
         :location_ids => [],
         :business_location => [

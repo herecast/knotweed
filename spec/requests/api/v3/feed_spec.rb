@@ -547,6 +547,31 @@ describe 'Feed endpoints', type: :request do
       end
     end
 
+    context "when content_type is calendar" do
+      before do
+        @news = FactoryGirl.create :content, :news,
+          organization_id: @organization.id,
+          biz_feed_public: true
+        @first_event = FactoryGirl.create :content, :event,
+          organization_id: @organization.id,
+          biz_feed_public: true
+        @second_event = FactoryGirl.create :content, :event,
+          organization_id: @organization.id,
+          biz_feed_public: true
+        @second_event.channel.event_instances[0].update_attribute(
+          :start_date, 1.month.from_now
+        )
+      end
+
+      subject { get "/api/v3/feed?organization_id=#{@organization.id}&content_type=calendar" }
+
+      it "returns only events, in chronological order" do
+        subject
+        expect(response_json[:feed_items].length).to eq 2
+        expect(response_json[:feed_items][0][:content][:id]).to eq @first_event.id
+      end
+    end
+
     describe "additional params" do
       before do
         @organization = FactoryGirl.create :organization
@@ -562,27 +587,27 @@ describe 'Feed endpoints', type: :request do
         @scheduled_content = FactoryGirl.create :content, :news,
           organization_id: @organization.id,
           pubdate: 3.days.from_now
+        @event = FactoryGirl.create :content, :event,
+          organization_id: @organization.id,
+          biz_feed_public: true
+        Timecop.travel(Time.current + 1.day)
+      end
+
+      after do
+        Timecop.return
       end
 
       describe "?show=everything" do
-        subject do
-          Timecop.travel(Time.current + 1.day)
-          get "/api/v3/feed?organization_id=#{@organization.id}&show=everything"
-          Timecop.return
-        end
+        subject { get "/api/v3/feed?organization_id=#{@organization.id}&show=everything" }
 
         it "returns drafts, hidden content and regular content" do
           subject
-          expect(response_json[:feed_items].length).to eq 4
+          expect(response_json[:feed_items].length).to eq 5
         end
       end
 
       describe "?show=hidden" do
-        subject do
-          Timecop.travel(Time.current + 1.day)
-          get "/api/v3/feed?organization_id=#{@organization.id}&show=hidden"
-          Timecop.return
-        end
+        subject { get "/api/v3/feed?organization_id=#{@organization.id}&show=hidden" }
 
         it "returns biz_feed_public: false contents" do
           subject
@@ -592,11 +617,7 @@ describe 'Feed endpoints', type: :request do
       end
 
       describe "?show=drafts" do
-        subject do
-          Timecop.travel(Time.current + 1.day)
-          get "/api/v3/feed?organization_id=#{@organization.id}&show=draft"
-          Timecop.return
-        end
+        subject { get "/api/v3/feed?organization_id=#{@organization.id}&show=draft" }
 
         it "returns drafts and scheduled posts only" do
           subject
@@ -604,6 +625,16 @@ describe 'Feed endpoints', type: :request do
           content_ids = response_json[:feed_items].map { |c| c[:content][:id] }
           expect(content_ids).to match_array [@draft_content.id, @scheduled_content.id]
         end
+      end
+
+      describe "?calendar=false" do
+        subject { get "/api/v3/feed?organization_id=#{@organization.id}&calendar=false" }
+
+        it "returns all but events" do
+          subject
+          expect(response_json[:feed_items].length).to eq 1
+          expect(response_json[:feed_items][0][:content][:id]).not_to eq @event.id
+         end
       end
     end
   end

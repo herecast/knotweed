@@ -12,6 +12,10 @@ class ContentSearch
     self.new(*args).my_stuff_query
   end
 
+  def self.organization_calendar_query(*args)
+    self.new(*args).organization_calendar_query
+  end
+
   def initialize(params:, requesting_app:, repository:)
     @params         = params
     @requesting_app = requesting_app
@@ -23,6 +27,7 @@ class ContentSearch
     standard_opts.tap do |attrs|
       add_boilerplate_opts(attrs)
       whitelist_organizations_and_content_types(attrs)
+      add_location_opts(attrs)
       conditionally_update_attributes_for_organization_query(attrs)
       conditionally_update_boost_for_query(attrs)
     end
@@ -46,6 +51,28 @@ class ContentSearch
     end
   end
 
+  def organization_calendar_query
+    {
+      load: false,
+      page: page,
+      per_page: per_page,
+      where: {
+        content_type: :event,
+        organization_id: @params[:organization_id],
+        biz_feed_public: [true, nil],
+        starts_at: {
+          gte: Time.current
+        },
+        removed: {
+          not: true
+        }
+      },
+      order: {
+        starts_at: :asc
+      }
+    }
+  end
+
   private
 
     def update_content_types_in_params
@@ -62,8 +89,8 @@ class ContentSearch
         order: {
           latest_activity: :desc
         },
-        page: @params[:page].present? ? @params[:page].to_i : 1,
-        per_page: @params[:per_page].present? ? @params[:per_page].to_i : 20,
+        page: page,
+        per_page: per_page,
         where: {
           pubdate: 5.years.ago..Time.zone.now,
           removed: {
@@ -81,10 +108,14 @@ class ContentSearch
     def category_options
       content_types = ['news', 'market', 'talk']
       content_types << 'campaign' if @params[:organization_id].present?
-      [
-        {content_type: content_types},
-        {content_type: 'event', "organization_id" => {not: Organization::LISTSERV_ORG_ID}}
-      ]
+      if @params[:calendar] == 'false'
+        [{ content_type: content_types }]
+      else
+        [
+          {content_type: content_types},
+          {content_type: 'event', "organization_id" => {not: Organization::LISTSERV_ORG_ID}}
+        ]
+      end
     end
 
     def whitelist_organizations_and_content_types(attrs)
@@ -95,6 +126,26 @@ class ContentSearch
         attrs[:where][:content_type] = @params[:content_type]
       else
         attrs[:where][:organization_id] = { not: Organization::LISTSERV_ORG_ID } unless listserv_org_request?
+      end
+    end
+
+    def add_location_opts(attrs)
+      if @params[:location_id].present?
+        location = Location.find_by_slug_or_id @params[:location_id]
+
+        if @params[:radius].present? && @params[:radius].to_i > 0
+          locations_within_radius = Location.non_region.within_radius_of(location, @params[:radius].to_i).map(&:slug)
+
+          attrs[:where][:or] << [
+            {my_town_only: false, all_loc_ids: locations_within_radius},
+            {my_town_only: true, all_loc_ids: [location.slug]}
+          ]
+        else
+          attrs[:where][:or] << [
+            {about_location_ids: [location.slug]},
+            {base_location_ids: [location.slug]}
+          ]
+        end
       end
     end
 
@@ -112,7 +163,7 @@ class ContentSearch
     end
 
     def conditionally_update_attributes_for_organization_query(attrs)
-      if @params[:organization_id].present? || @params[:organization_id] == 'false'
+      if @params[:organization_id].present?
         attrs[:where][:biz_feed_public] = [true, nil]
         if @params[:organization_id] == 'false'
           organization = Organization.find_by(standard_ugc_org: true)
@@ -120,12 +171,14 @@ class ContentSearch
           organization = Organization.find(@params[:organization_id])
         end
 
-        org_tagged_content_ids = organization.tagged_contents.pluck(:id)
-        attrs[:where][:or] << [
-          { organization_id: organization.id },
-          { channel_id: organization.venue_event_ids, channel_type: 'Event' },
-          { id: org_tagged_content_ids }
-        ]
+        or_opts = [{ organization_id: organization.id }]
+        if @params[:calendar] == 'false'
+          or_opts << { id: organization.tagged_contents.where.not(channel_type: 'Event').pluck(:id) }
+        else
+          or_opts << { channel_id: organization.venue_event_ids, channel_type: 'Event' }
+          or_opts << { id: organization.tagged_contents.pluck(:id) }
+        end
+        attrs[:where][:or] << or_opts
 
         attrs[:where][:or] << [
           { sunset_date: nil },
@@ -153,6 +206,14 @@ class ContentSearch
 
     def listserv_org_request?
       @params[:organization_id].to_i == Organization::LISTSERV_ORG_ID
+    end
+
+    def page
+      @params[:page].present? ? @params[:page].to_i : 1
+    end
+
+    def per_page
+      @params[:per_page].present? ? @params[:per_page].to_i : 20
     end
 
 end

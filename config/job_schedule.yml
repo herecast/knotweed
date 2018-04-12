@@ -14,3 +14,7 @@ update_promotion_metrics:
   cron: "0 0,12 * * *"
   class: 'SchedulePromotionMetricsUpdateJob'
   description: 'Fetch and persist mailchimp promotion metrics at 12:00AM/12:00PM daily'
+reindex_events:
+  cron: "0 1 * * *"
+  class: "ReindexEventsWithFutureInstances"
+  description: "Reindex events for next instance"

@@ -70,6 +70,7 @@
 #  ad_sales_agent            :integer
 #  ad_promoter               :integer
 #  latest_activity           :datetime
+#  has_future_event_instance :boolean
 #
 # Indexes
 #
