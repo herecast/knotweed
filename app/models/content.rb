@@ -109,7 +109,7 @@ class Content < ActiveRecord::Base
 
   before_save :conditionally_update_latest_activity
   def conditionally_update_latest_activity
-    if channel_type == 'MarketPost' && channel.sold_changed?
+    if channel_type == 'MarketPost' && channel.sold_changed? && pubdate >= 30.days.ago
       self.latest_activity = Time.current
     elsif content_type == :news && pubdate_changed?
       self.latest_activity = pubdate
