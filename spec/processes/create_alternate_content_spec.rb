@@ -26,5 +26,32 @@ RSpec.describe CreateAlternateContent do
       expect(alternate_content.id).to eq @content.id
       expect(alternate_content.images[0].image_url).to eq 'https://s3.amazonaws.com/knotweed/duv/Default_Photo_News-01-1.jpg'
     end
+
+    context "when alternate defaults have been overridden" do
+      let(:alt_title) { 'Alt title' }
+      let(:alt_organization_id) { 41 }
+      let(:alt_authors) { 'Alt authors' }
+      let(:alt_text) { 'Alt text' }
+      let(:alt_image_url) { 'Alt-image-url' }
+
+      before do
+        @content.update_attributes(
+          alternate_title: alt_title,
+          alternate_organization_id: alt_organization_id,
+          alternate_authors: alt_authors,
+          alternate_text: alt_text,
+          alternate_image_url: alt_image_url
+        )
+      end
+
+      it "returns the override values" do
+        alternate_content = subject
+        expect(alternate_content.title).to eq alt_title
+        expect(alternate_content.organization_id).to eq alt_organization_id
+        expect(alternate_content.authors).to eq alt_authors
+        expect(alternate_content.raw_content).to eq alt_text
+        expect(alternate_content.images[0].image_url).to eq alt_image_url
+      end
+    end
   end
 end

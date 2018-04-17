@@ -54,3 +54,16 @@ form#edit_document {
     }
   }
 }
+
+#crisis-form {
+  h3 {
+    margin-top: 0px;
+  }
+  label {
+    font-weight: bold;
+  }
+  textarea, input {
+    margin-bottom: 0;
+  }
+}
+

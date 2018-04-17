@@ -117,6 +117,11 @@ class MarketPostsController < ApplicationController
           :url,
           :title,
           :raw_content,
+          :alternate_title,
+          :alternate_organization_id,
+          :alternate_authors,
+          :alternate_text,
+          :alternate_image_url,
           organization_ids: [],
           images_attributes: [
             :id,

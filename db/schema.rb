@@ -355,6 +355,11 @@ ActiveRecord::Schema.define(version: 20180409164026) do
     t.integer  "ad_promoter"
     t.datetime "latest_activity"
     t.boolean  "has_future_event_instance"
+    t.string   "alternate_title"
+    t.integer  "alternate_organization_id"
+    t.string   "alternate_authors"
+    t.string   "alternate_text"
+    t.string   "alternate_image_url"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree

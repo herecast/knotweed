@@ -1,0 +1,21 @@
+.row-fluid#crisis-form
+  .span6
+    %h3 Crisis Management
+    %p
+      When an article needs to be removed from the production site, default "crisis content" will take the place of the article's content. The defaults can be overridden at right.
+    %p
+      If an article needs to be manually rescraped by Facebook, this action can be triggered below. In order to rescrape an article on Twitter, an admin must navigate to 
+      %a{ href: 'https://cards-dev.twitter.com/validator' }
+        Twitter's card validator
+      and input the article's canonical url.
+  .span6
+    = f.input :alternate_title, hint: "Default: #{CreateAlternateContent::ALTERNATE_TITLE}", input_html: { class: "input-block-level" }
+
+    = f.input :alternate_organization_id, hint: "Default: #{CreateAlternateContent::ALTERNATE_ORGANIZATION_ID}" do
+      = f.select :alternate_organization_id, Organization.all.map{ |o| [o.name, o.id] }, include_blank: true, input_html: { class: 'chosen-select input-block-level' }
+
+    = f.input :alternate_authors, hint: "Default: #{CreateAlternateContent::ALTERNATE_AUTHORS}", input_html: { class: "input-block-level" }
+
+    = f.input :alternate_text, as: :text, hint: "Default: #{CreateAlternateContent::ALTERNATE_TEXT}", input_html: { class: "input-block-level" }
+
+    = f.input :alternate_image_url, hint: "Default: #{CreateAlternateContent::ALTERNATE_IMAGE_URL}", input_html: { class: "input-block-level" }

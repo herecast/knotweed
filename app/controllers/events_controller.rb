@@ -217,6 +217,11 @@ class EventsController < ApplicationController
           :id,
           :raw_content,
           :title,
+          :alternate_title,
+          :alternate_organization_id,
+          :alternate_authors,
+          :alternate_text,
+          :alternate_image_url,
           organization_ids: [],
           image_attributes: [
             :id

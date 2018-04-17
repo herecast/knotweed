@@ -71,6 +71,11 @@
 #  ad_promoter               :integer
 #  latest_activity           :datetime
 #  has_future_event_instance :boolean
+#  alternate_title           :string
+#  alternate_organization_id :integer
+#  alternate_authors         :string
+#  alternate_text            :string
+#  alternate_image_url       :string
 #
 # Indexes
 #

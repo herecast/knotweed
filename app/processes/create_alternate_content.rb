@@ -1,6 +1,10 @@
 class CreateAlternateContent
 
   ALTERNATE_IMAGE_URL = 'https://s3.amazonaws.com/knotweed/duv/Default_Photo_News-01-1.jpg'
+  ALTERNATE_TITLE = "We're sorry!"
+  ALTERNATE_TEXT = "This post is not available at the present time. We apologize for the inconvenience. Please email dailyuv@subtext.org with any questions!"
+  ALTERNATE_AUTHORS = 'The team at DailyUV'
+  ALTERNATE_ORGANIZATION_ID = 793
 
   def self.call(*args)
     self.new(*args).call
@@ -11,18 +15,21 @@ class CreateAlternateContent
   end
 
   def call
-    return content_dupe
+    return content_dupe.call(@original_content, alternate_content_attributes)
   end
 
   private
 
     def content_dupe
-      image = Image.new(id: 1)
-      image.define_singleton_method(:image) { Hashie::Mash.new({url: ALTERNATE_IMAGE_URL}) }
-      image.define_singleton_method(:image_url) { ALTERNATE_IMAGE_URL }
-      dupe = Content.new(alternate_content_attributes)
-      dupe.define_singleton_method(:images) { [image] }
-      dupe
+      Proc.new do |content, attrs|
+        alt_image_url = content.alternate_image_url.presence || ALTERNATE_IMAGE_URL
+        image = Image.new(id: 1, primary: true)
+        image.define_singleton_method(:image) { Hashie::Mash.new({url: alt_image_url}) }
+        image.define_singleton_method(:image_url) { alt_image_url }
+        dupe = Content.new(attrs)
+        dupe.define_singleton_method(:images) { [image] }
+        dupe
+      end
     end
 
     def content_category
@@ -31,10 +38,10 @@ class CreateAlternateContent
 
     def alternate_content_attributes
       {
-        title: "We're sorry!",
-        raw_content: "This post is not available at the present time. We apologize for the inconvenience. Please email dailyuv@subtext.org with any questions!",
-        authors: 'The team at DailyUV',
-        organization_id: 793,
+        title: @original_content.alternate_title.presence || ALTERNATE_TITLE,
+        raw_content: @original_content.alternate_text.presence || ALTERNATE_TEXT,
+        authors: @original_content.alternate_authors.presence || ALTERNATE_AUTHORS,
+        organization_id: @original_content.alternate_organization_id.presence || ALTERNATE_ORGANIZATION_ID,
         content_category_id: content_category.id,
         root_content_category_id: content_category.id,
         content_type: @original_content.content_type,

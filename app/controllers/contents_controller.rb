@@ -261,6 +261,11 @@ class ContentsController < ApplicationController
         :url,
         :banner_ad_override,
         :sanitized_content,
+        :alternate_title,
+        :alternate_organization_id,
+        :alternate_authors,
+        :alternate_text,
+        :alternate_image_url,
         content_locations_attributes: [
           :id, :location_type, :location_id, :_destroy
         ],
