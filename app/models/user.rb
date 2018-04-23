@@ -58,6 +58,7 @@ class User < ActiveRecord::Base
   has_many :subscriptions
   has_many :social_logins
   has_many :user_bookmarks
+  has_many :contents, foreign_key: 'created_by'
   belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
   mount_uploader :avatar, ImageUploader
@@ -79,7 +80,9 @@ class User < ActiveRecord::Base
   validates :public_id, uniqueness: true, allow_blank: true
   validates :avatar, :image_minimum_size => true
 
-  after_update :update_subscriptions_locations
+  after_commit :update_subscriptions_locations,
+               :trigger_content_reindex_if_avatar_changed!,
+               on: :update
 
   ransacker :social_login
 
@@ -143,7 +146,7 @@ class User < ActiveRecord::Base
   end
 
   def update_subscriptions_locations
-    if self.location_id_changed? && self.subscriptions.present?
+    if previous_changes.key?(:location_id) && self.subscriptions.present?
       self.subscriptions.each do |sub|
         BackgroundJob.perform_later('MailchimpService', 'update_subscription', sub) if sub.listserv.try(:mc_sync?)
       end
@@ -220,6 +223,12 @@ class User < ActiveRecord::Base
       loop do
         token = Devise.friendly_token
         break token unless User.where(authentication_token: token).first
+      end
+    end
+
+    def trigger_content_reindex_if_avatar_changed!
+      if previous_changes.key?(:avatar)
+        ReindexAssociatedContentJob.perform_later self
       end
     end
 end

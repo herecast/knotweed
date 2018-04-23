@@ -194,7 +194,7 @@ describe Organization, :type => :model do
     end
   end
 
-  describe 'Updating locations or name, triggers a reindex of linked content' do
+  describe 'Updating locations, profile image, or name, triggers a reindex of linked content' do
     subject { FactoryGirl.create :organization }
 
     describe 'adding locations' do
@@ -206,7 +206,7 @@ describe Organization, :type => :model do
             location: location
           )
           subject.save!
-        }.to have_enqueued_job(ReindexOrganizationContentJob).with(subject)
+        }.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
       end
     end
 
@@ -225,7 +225,7 @@ describe Organization, :type => :model do
               location_type: 'about'
             )
           ]
-        }.to have_enqueued_job(ReindexOrganizationContentJob).with(subject)
+        }.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
       end
     end
 
@@ -241,7 +241,7 @@ describe Organization, :type => :model do
       it do
         expect {
           subject.organization_locations.last.destroy
-        }.to have_enqueued_job(ReindexOrganizationContentJob).with(subject)
+        }.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
       end
     end
 
@@ -249,7 +249,15 @@ describe Organization, :type => :model do
       it do
         expect {
           subject.update! name: 'new org'
-        }.to have_enqueued_job(ReindexOrganizationContentJob).with(subject)
+        }.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
+      end
+    end
+
+    describe 'changing organization profile image' do
+      it do
+        expect {
+          subject.update! profile_image: 'newimg.jpg'
+        }.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
       end
     end
 
@@ -257,7 +265,7 @@ describe Organization, :type => :model do
       it 'does not trigger reindex' do
         expect {
           subject.update! website: 'http://dublin-brews.com'
-        }.to_not have_enqueued_job(ReindexOrganizationContentJob)
+        }.to_not have_enqueued_job(ReindexAssociatedContentJob)
       end
     end
   end

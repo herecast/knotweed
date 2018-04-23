@@ -111,7 +111,7 @@ class Organization < ActiveRecord::Base
 
   has_many :promotions, inverse_of: :organization
 
-  after_update :trigger_content_reindex!, if: :name_changed?
+  after_commit :trigger_content_reindex_if_name_or_profile_image_changed!, on: :update
 
   mount_uploader :logo, ImageUploader
   mount_uploader :profile_image, ImageUploader
@@ -186,7 +186,7 @@ class Organization < ActiveRecord::Base
   ransacker :include_child_organizations
 
   def trigger_content_reindex!
-    ReindexOrganizationContentJob.perform_later self
+    ReindexAssociatedContentJob.perform_later self
   end
 
   def has_business_profile?
@@ -199,6 +199,12 @@ class Organization < ActiveRecord::Base
   end
 
   private
+
+  def trigger_content_reindex_if_name_or_profile_image_changed!
+    if previous_changes.key?(:name) || previous_changes.key?(:profile_image)
+      ReindexAssociatedContentJob.perform_later self
+    end
+  end
 
   def twitter_handle_format
     twitter_handle_regex = /^@([A-Za-z0-9_]+)$/
