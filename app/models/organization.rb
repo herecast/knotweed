@@ -17,15 +17,9 @@
 #  subscribe_url            :string(255)
 #  description              :text
 #  banner_ad_override       :string(255)
-#  profile_title            :string(255)
 #  pay_directly             :boolean          default(FALSE)
-#  can_publish_events       :boolean          default(FALSE)
-#  can_publish_market       :boolean          default(FALSE)
-#  can_publish_talk         :boolean          default(FALSE)
-#  can_publish_ads          :boolean          default(FALSE)
 #  profile_image            :string(255)
 #  background_image         :string(255)
-#  profile_ad_override      :string(255)
 #  twitter_handle           :string
 #  custom_links             :jsonb
 #  biz_feed_active          :boolean          default(FALSE)
@@ -33,7 +27,6 @@
 #  ad_contact_nickname      :string
 #  ad_contact_fullname      :string
 #  profile_sales_agent      :string
-#  blog_contact_name        :string
 #  embedded_ad              :boolean          default(FALSE)
 #  certified_storyteller    :boolean          default(FALSE)
 #  services                 :string
@@ -162,10 +155,6 @@ class Organization < ActiveRecord::Base
     end
   end
 
-  def business_location_options
-    business_locations.map{ |bl| [bl.select_option_label, bl.id] }
-  end
-
   # returns an array of all organization records descended from this one
   #
   # @return [Array<Organization>] the descendants of the organization
@@ -176,11 +165,6 @@ class Organization < ActiveRecord::Base
   def remove_logo=(val)
     logo_will_change! if val
     super
-  end
-
-  # selects an ad from the array of profile ad override options
-  def get_profile_ad_override_id
-    profile_ad_override.split(',').sample.to_i if profile_ad_override.present?
   end
 
   ransacker :include_child_organizations

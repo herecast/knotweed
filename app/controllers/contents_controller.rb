@@ -30,7 +30,7 @@ class ContentsController < ApplicationController
 
     @content_categories = ContentCategory.all
     if session[:contents_search].present?
-      if session[:contents_search][:locations_id_in].all?(&:blank?)
+      if session[:contents_search][:locations_id_in].try(:all?,&:blank?)
         @contents = Content.joins(shared_context.join_sources)
       else
         @contents = Content.joins(:locations).joins(shared_context.join_sources)

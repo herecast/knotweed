@@ -12,18 +12,12 @@ RSpec.describe 'Organizations Endpoints', type: :request do
         organization: {
           id: organization.id,
           name: organization.name,
-          profile_title: organization.profile_title || organization.name,
           can_publish_news: organization.can_publish_news,
           subscribe_url: organization.subscribe_url,
           business_profile_id: a_kind_of(Fixnum).or(be_nil),
           description: organization.description,
           org_type: organization.org_type,
           can_edit: boolean,
-          can_publish_events: organization.can_publish_events,
-          can_publish_market: organization.can_publish_market,
-          can_publish_talk: organization.can_publish_talk,
-          can_publish_ads: organization.can_publish_ads,
-          profile_ad_override: organization.profile_ad_override,
           profile_image_url: organization.profile_image.url,
           background_image_url: organization.background_image.url,
           twitter_handle: organization.twitter_handle,
@@ -70,23 +64,6 @@ RSpec.describe 'Organizations Endpoints', type: :request do
       end
     end
 
-    describe 'profile_title' do
-      subject { response_json[:organization][:profile_title] }
-      context 'when model.profile_title is empty' do
-        before do
-          organization.update(
-            name: "test name",
-            profile_title: nil
-          )
-        end
-
-        it 'is equal to name' do
-          get "/api/v3/organizations/#{organization.id}"
-          expect(subject).to eql organization.name
-        end
-      end
-    end
-
     describe 'can_edit' do
       subject { response_json[:organization][:can_edit] }
 
@@ -111,33 +88,6 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           expect(subject).to eql false
         end
       end
-    end
-
-    describe 'promotion ad override' do
-      subject { response_json[:organization] }
-
-      context 'when a profile_ad_override is empty' do
-        it 'has promotion as nil' do
-          get "/api/v3/organizations/#{organization.id}"
-          expect(subject[:profile_ad_override]).to be_nil
-        end
-      end
-
-      context 'when a profile_ad_override is present' do
-        let!(:banner) { FactoryGirl.create :promotion_banner }
-        let!(:promotion) { FactoryGirl.create :promotion, organization: organization, promotable: banner }
-
-        before do
-          organization.profile_ad_override = promotion.id
-          organization.save!
-        end
-
-        it 'returns the id of the promotion' do
-          get "/api/v3/organizations/#{organization.id}"
-          expect(subject[:profile_ad_override]).to eql promotion.id
-        end
-      end
-
     end
   end
 
@@ -229,7 +179,6 @@ RSpec.describe 'Organizations Endpoints', type: :request do
       let(:valid_params) {
         {
           name: 'Test name',
-          profile_title: 'An interesting title',
           description: 'My biz description',
           subscribe_url: 'http://link.to/somewhere'
         }
@@ -246,12 +195,11 @@ RSpec.describe 'Organizations Endpoints', type: :request do
             auth_headers
         }.to change{
             organization.reload.attributes.symbolize_keys.slice(
-            :name, :profile_title, :subscribe_url,
+            :name, :subscribe_url,
             :description
           )
         }.to({
           name: valid_params[:name],
-          profile_title: valid_params[:profile_title],
           subscribe_url: valid_params[:subscribe_url],
           description: valid_params[:description]
         })

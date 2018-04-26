@@ -165,34 +165,6 @@ describe OrganizationsController, type: :controller do
         expect(response).to render_template('organizations/edit')
       end
     end
-
-    context 'when the organization is a business' do
-      let(:organization) { FactoryGirl.create :organization, org_type: "Business" }
-      let!(:business_location) { FactoryGirl.create :business_location, organization_id: organization.id }
-      let!(:business_profile) { FactoryGirl.create :business_profile, 
-                                business_location_id: business_location.id }
-      let!(:business_category) { FactoryGirl.create :business_category }
-
-      it 'updates a business_location' do
-        business_location_attrs =  { business_location_id: business_location.id, email: 'org_mgr@subtext.org', hours: ["Mo-Th|16:00-20:00"] }
-        put :update, { id: organization.id, organization: update_attrs,  business_location: business_location_attrs } 
-        expect(organization.business_locations.first.email).to eq 'org_mgr@subtext.org'
-        expect(organization.business_locations.first.hours).to eq ["Mo-Th|16:00-20:00"]
-      end
-      
-      it 'updates the business_categories' do
-        business_location_attrs =  { business_location_id: business_location.id, hours: [""] }
-        put :update, { id: organization.id, organization: update_attrs, 
-                       business_location: business_location_attrs,
-                       business_profile: { business_category_ids: ['', business_category.id] } } 
-        expect(business_profile.business_categories.first.id).to eq business_category.id 
-      end
-
-      it 'updates the business profile title' do
-        put :update, { id: organization.id, organization: update_attrs.merge('profile_title' => 'My Profile') }
-        expect(organization.profile_title).to eq 'My Profile'
-      end
-    end
   end 
 
   describe '#create' do
@@ -249,22 +221,6 @@ describe OrganizationsController, type: :controller do
     it 'destroys record' do
       expect(organization).to receive(:destroy)
       delete :destroy, id: organization.id
-    end
-  end
-
-  describe '#business_location_options' do
-    let!(:organization) { FactoryGirl.create :organization }
-    let!(:biz_locations) { FactoryGirl.create_list :business_location, 2, organization: organization }
-    context 'organization has some business locations' do
-      it 'sets up the rjs view with business location options' do
-        xhr :get, :business_location_options, organization_id: organization.id, format: :js
-
-        biz_options = assigns(:business_locations)
-        expect(biz_options).to include([nil,nil])
-        biz_locations.each do |bl|
-          expect(biz_options).to include([bl.select_option_label, bl.id])
-        end
-      end
     end
   end
 end

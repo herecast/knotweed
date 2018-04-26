@@ -7,125 +7,69 @@
           Details
       %li
         = link_to '#', class: "green-border", data: { toggle: "tab", target: "#profile" } do
-          Profile
+          Profile Details
       %li
         = link_to '#', class: "green-border", data: { toggle: "tab", target: "#business_locations" } do
-          Locations
+          Profile Locations
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#images" } do
-          Images
-      %li
-        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#contacts" } do
-          Contacts
+          Profile Images
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#locations" } do
           Promote Locations
       %li
-        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#advertisers" } do
-          Advertisers
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#contacts" } do
+          Contacts
       - if @organization.id
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#managers" } do
             Managers
-        %li
-          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#issues" } do
-            Issues
     .tab-content
       .tab-pane.active.form-horizontal#details
         .row-fluid
-          .span5
+          .span12
             = f.input :name, input_html: { class: "input-block-level" }
             = f.input :org_type, collection: Organization::ORG_TYPE_OPTIONS, label: "Organization Type"
-            = f.input :blog_contact_name, label: "Blogger Contact Name"
+            = f.input :can_publish_news, input_html: { class: 'input-block-level' }
             = f.input :pay_for_content, as: :boolean
             = f.input :pay_directly, input_html: { class: 'input-block-level' }
             = f.association :consumer_apps, input_html: { class: "chosen-select input-block-level" }
             = f.association :parent, collection: Organization.where.not(id: @organization.id), label: "Parent Organization (Syndication)",
               input_html: { class: "input-block-level chosen-select-single-deselect" }, include_blank: true
-            = f.input :subscribe_url, input_html: { class: 'input-block-level' }
-            = f.input :special_link_url, input_html: { class: 'input-block-level' }
-            = f.input :special_link_text, input_html: { class: 'input-block-level' }
-            = f.input :twitter_handle
-            = f.input :embedded_ad, as: :boolean
             = f.input :certified_storyteller, as: :boolean
             = f.input :certified_social, as: :boolean
             = f.input :calendar_view_first, as: :boolean
             = f.input :calendar_card_active, as: :boolean
             - if @organization.has_business_profile?
               = f.input :biz_feed_active, as: :boolean
-              = f.input :contact_card_active, as: :boolean
-              = f.input :description_card_active, as: :boolean
-              = f.input :hours_card_active, as: :boolean
             - else
               %p
                 Organization must have
                 %b Business Profile
                 to have active Biz Feed
+            = f.input :embedded_ad, as: :boolean
             = f.input :banner_ad_override
-            = f.input :profile_ad_override
             = f.input :archived, as: :boolean
-          .span7
-            = f.input :website, input_html: { class: "input-block-level" }
-            = f.input :notes, input_html: { class: "input-block-level", rows: 10 } 
-            = f.input :can_publish_news, input_html: { class: 'input-block-level' }
-            = f.input :can_publish_events, input_html: { class: 'input-block-level' }
-            = f.input :can_publish_market, input_html: { class: 'input-block-level' }
-            = f.input :can_publish_talk, input_html: { class: 'input-block-level' }
-            = f.input :can_publish_ads, input_html: { class: 'input-block-level' }
       .tab-pane.form-horizontal#profile
-        - unless @organization.org_type == 'Business'
-          .row-fluid
-            .span5
-              = f.input :profile_title, input_html: { class: "input-block-level" }
-              = f.input :services, input_html: { class: "input-block-level" }
-              = f.input :subscribe_url, input_html: { class: "input-block-level" }
-              = label_tag "Profile image"
-              = image_tag(@organization.profile_image.url) if @organization.profile_image?
-              - if @organization.profile_image?
-                = f.input :remove_profile_image, as: :boolean, label: "Remove profile image?"
-              = f.input :profile_image, label: false
-              = f.input :remote_profile_image_url, label: "OR Upload from URL:"
-            .span7
-              .summernote-wrapper
-                = f.input :description, as: :summernote, label: 'Description'
-        - @organization.business_locations.each do | business_location |
-          = simple_fields_for business_location do |g|
-            .row-fluid
-              .span6
-                = f.input :services, input_html: { class: "input-block-level" }
-                = g.hidden_field :business_location_id, value: business_location.id
-                = g.input :name, input_html: { class: "input-block-level" }
-                = g.input :email, input_html: { class: "input-block-level" }
-                = g.input :venue_url, input_html: { class: "input-block-level" }
-              .span6
-                = g.input :address, input_html: { class: "input-block-level" }
-                = g.input :city, input_html: { class: "input-block-level" }
-                = g.input :state, input_html: { class: "input-block-level" }
-                = g.input :zip, input_html: { class: "input-block-level" }
-                = g.input :phone, input_html: { class: "input-block-level" }
-              .row-fluid
-                %h3 Opening Hours
-                %span.hint 
-                  Each rule needs to be in 
-                  = link_to 'Schema.org OpeningHours format.', 'https://schema.org/openingHours'
-                  To specify days and time, use | as a separator. For example: Mo-Th|16:00-20:00
-                %span.pull-left.btn.btn-success.add-hours-link-organizations + Add Hours
-              #business_location_hours
-                = g.fields_for :hours do |i|
-                  - if business_location.hours.present? && business_location.hours.is_a?(Array)
-                    - business_location.hours.each do |hour|
-                      .row-fluid
-                        .span6
-                          = i.text_field nil, value: hour, class: 'span12'
-                        .span2.offset4
-                          .btn.btn-danger.remove-hours-field X
-          - if business_location.business_profile
-            = simple_fields_for business_location.business_profile do |h|
-              = h.association :business_categories, label_method: :name_with_parent, input_html: { class: 'chosen-select input-block-level' }
+        .row-fluid
+          .span5
+            = f.input :services, input_html: { class: "input-block-level" }
+            = f.input :subscribe_url, input_html: { class: "input-block-level" }
+            = f.input :special_link_url, input_html: { class: 'input-block-level' },
+              label: 'Profile button url'
+            = f.input :special_link_text, input_html: { class: 'input-block-level' },
+              label: 'Profile button label'
+            = f.input :twitter_handle
+            = f.input :contact_card_active, as: :boolean
+            = f.input :description_card_active, as: :boolean
+            = f.input :hours_card_active, as: :boolean
+          .span7
+            .summernote-wrapper
+              = f.input :description, as: :summernote, label: 'Description'
+
       .tab-pane#business_locations
         .pull-right
-          - unless @organization.org_type == "Business"
-            = link_to "+ Add New Location", "#", class: "btn btn-success", data: { form_url: new_business_location_path({ organization_id: @organization.id }  )}, id: "new_business_location_button" 
+          = link_to "+ Add New Location", "#", class: "btn btn-success", data: { form_url: new_business_location_path({ organization_id: @organization.id }  )}, id: "new_business_location_button" 
           / hidden field for creating business locations associated with a new organization record
           - unless @organization.id
             = f.association :business_locations, as: :hidden, input_html: { name: "organization[business_location_list]", value: "" }
@@ -144,55 +88,51 @@
               = render "business_locations/partials/row", business_location: loc
 
       .tab-pane#images
-        .profile-image
-          = label_tag "Profile Image"
-          = image_tag(@organization.profile_image.url, style: "max-width: 400px;") if @organization.profile_image?
-          - if @organization.profile_image?
-            = f.input :remove_profile_image, as: :boolean, label: "Remove Profile Image?"
+        .profile-image.image-container
           .row-fluid
-            .span1
-              = f.input :profile_image, label: false
-            .span3.form-horizontal
-              = f.input :remote_profile_image_url, label: "OR Upload from URL:"
-        .background-image
-          = label_tag "Background Image"
-          = image_tag(@organization.background_image.url, style: "max-width: 400px;") if @organization.profile_image?
-          - if @organization.background_image?
-            = f.input :remove_background_image, as: :boolean, label: "Remove Background Image?"
+            .span4
+              .row-fluid
+                .span4
+                  = f.input :profile_image
+                .span8
+                  = f.input :remote_profile_image_url, label: "OR Upload from URL:"
+              .row-fluid
+                .span4
+                  - if @organization.profile_image?
+                    = f.input :remove_profile_image, as: :boolean, label: "Remove Profile Image?"
+            .span8
+              = image_tag(@organization.profile_image.try(:url), style: "max-width: 400px;")
+        %hr
+        .background-image.image-container
           .row-fluid
-            .span1
-              = f.input :background_image, label: false
-            .span3.form-horizontal
-              = f.input :remote_background_image_url, label: "OR Upload from URL:"
-        .desktop-image
-          = label_tag "Desktop Image"
-          = image_tag(@organization.desktop_image.url, style: "max-width: 400px;") if @organization.desktop_image?
-          - if @organization.desktop_image?
-            = f.input :remove_desktop_image, as: :boolean, label: "Remove Desktop Image?"
+            .span4
+              .row-fluid
+                .span4
+                  = f.input :background_image
+                .span8
+                  = f.input :remote_background_image_url, label: "OR Upload from URL:"
+              .row-fluid
+                .span4
+                  - if @organization.background_image?
+                    = f.input :remove_background_image, as: :boolean, label: "Remove Background Image?"
+            .span8
+              = image_tag(@organization.background_image.try(:url), style: "max-width: 400px;")
+        %hr
+        .desktop-image.image-container
           .row-fluid
-            .span1
-              = f.input :desktop_image, label: false
-            .span3.form-horizontal
-              = f.input :remote_desktop_image_url, label: "OR Upload from URL:"
-      .tab-pane#contacts
-        .pull-right
-          = link_to "+ Add New Contact", "#", class: "btn btn-success", data: { form_url: new_contact_path(Organization, @organization.id) }, id: "new_contact_button"
-          / hidden field for creating contacts associated with a new organization record
-          - unless @organization.id
-            = f.association :contacts, as: :hidden, input_html: { name: "organization[contact_list]" , value: "" }
-        %table.table.table-striped.table-condensed.sortable#contacts_table
-          %thead
-            %tr
-              %th ID
-              %th Type
-              %th Name
-              %th Phone
-              %th Email
-              %th Notes
-              %th
-          %tbody#contact_list
-            - @organization.contacts.each do |contact|
-              = render "contacts/contact_row", contact: contact
+            .span4
+              .row-fluid
+                .span4
+                  = f.input :desktop_image
+                .span8
+                  = f.input :remote_desktop_image_url, label: "OR Upload from URL:"
+              .row-fluid
+                .span4
+                  - if @organization.desktop_image?
+                    = f.input :remove_desktop_image, as: :boolean, label: "Remove Desktop Image?"
+            .span8
+              = image_tag(@organization.desktop_image.try(:url), style: "max-width: 400px;")
+
       .tab-pane#locations
         .flex-grid
           = f.fields_for :organization_locations, f.object.organization_locations.sort_by{|ol| ol.location.name} do |cl|
@@ -213,75 +153,18 @@
               = link_to "select all", "#", id: "select-all-locs"
             .span2.text-left
               = link_to "deselect all", "#", id: "deselect-all-locs"
-      .tab-pane#advertisers
+      .tab-pane#contacts
         .row-fluid
-          %h2 Advertiser Information
           .span6
-            = f.input :ad_sales_agent, label: 'Sales Agent'
             = f.input :ad_contact_nickname, label: 'Contact Nickname'
             = f.input :ad_contact_fullname, label: 'Contact Fullname'
-            = f.input :profile_sales_agent, label: 'Profile Sales Agent'
       - if @organization.id
-        .tab-pane#managers
-          .row-fluid
-            %h2 Organization Managers
-            .span12
-              %table.table.table-striped.table-hover.table-condensed
-                %thead
-                  %tr
-                    %th Id
-                    %th Name
-                    %th Email
-                    %th Remove
-                %tbody
-                  - if @managers.present?
-                    - @managers.each do |m|
-                      %tr
-                        %td= m.id
-                        %td= m.name
-                        %td= m.email
-                        %td= link_to 'remove', business_profiles_delete_manager_path(organization_id: @organization.id, user_id: m.id), method: :delete, class: 'btn btn-mini btn-warning'
-                  - else
-                    %tr
-                      %td No managers yet
-            %h3 Search Users
-            .span12
-              %table.table.table-striped.table-hover.data-table
-                %thead
-                  %tr
-                    %th Id
-                    %th Name
-                    %th Email
-                    %th Add as Manager
-                %tbody
-                  - @users.each do |user|
-                    - unless @managers.present? and @managers.include?(user)
-                      %tr  
-                        %td= user.id
-                        %td= user.name
-                        %td= user.email
-                        %td.actions
-                          = link_to 'add', business_profiles_managers_path(organization_id: @organization.id, user_id: user.id), method: :post, class: 'btn btn-mini btn-warning'
-
-        .tab-pane#issues
-          .pull-right
-            = link_to "+ Add New Issue", "#", class: "btn btn-success", data: { form_url: new_issue_path({organization_id: @organization.id}) }, id: "new_issue_button"
-          %table.table.table-striped.table-condensed.sortable#issues_table
-            %thead
-              %tr
-                %th ID
-                %th Edition
-                %th Copyright
-                %th Publication Date
-                %th
-            %tbody#issue_list
-              - @organization.issues.each do |issue|
-                = render "issues/issue_row", issue: issue
-        .tab-pane#history
-          histry
+        .tab-pane#managers{ data: { form_url: organization_users_path(@organization) } }
+          Loading...
 
       .form-actions
-        = submit_tag nil, class: "btn btn-primary"
+        = submit_tag 'Submit and continue with this record', class: 'btn btn-success', name: 'continue_editing'
+        = submit_tag 'Submit and close record', class: "btn btn-primary"
         = link_to "Cancel", :back, class: "btn"
 
 .modal.fade.modal-hack#contact_form

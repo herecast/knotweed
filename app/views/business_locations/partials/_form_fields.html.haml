@@ -16,7 +16,8 @@
   .span6
     = f.input :email, input_html: { class: 'input-block-level' }
     = f.input :phone, input_html: { data: { mask: '(999) 999-9999' }, class: 'input-block-level' }
-    = f.input :status, include_blank: false, input_html: { class: 'input-block-level' }
+    - if include_status
+      = f.input :status, include_blank: false, input_html: { class: 'input-block-level' }
   .span6
     %span.pull-right.btn.btn-primary#locate_on_map_button{data: {remote: 'true'}} Locate on Map
     - if @business_location.address.present?
@@ -28,11 +29,35 @@
         src: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=#{addr}" }
     - else
       %iframe#confirm_location_map{ data: { base_src_url: "https://www.google.com/maps/embed/v1/place?key=#{Figaro.env.gmaps_api_key}&q=" } }
-= f.association :organization, as: :hidden
-- if @business_location.id.present?
-  - submit_url = business_location_path(@business_location.id)
-  - submit_method = 'PUT'
-- else
-  - submit_url = business_locations_path
-  - submit_method = 'POST'
-= f.submit nil, class: 'btn btn-success', data: { submit_url: submit_url, submit_method: submit_method }
+
+- if @business_location.business_profile
+  = simple_fields_for @business_location.business_profile do |h|
+    = h.association :business_categories, label_method: :name_with_parent, input_html: { class: 'chosen-select input-block-level' }
+
+.row-fluid
+  .span12
+    %h3 Opening Hours
+    %span.hint.span8
+      Each rule needs to be in
+      = link_to 'Schema.org OpeningHours format.', 'https://schema.org/openingHours'
+      To specify days and time, use | as a separator. For example: Mo-Th|16:00-20:00
+    %span.span3.btn.btn-success.add-hours-link-organizations + Add Hours
+#business_location_hours
+  = f.fields_for :hours do |i|
+    - if @business_location.hours.present? && @business_location.hours.is_a?(Array)
+      - @business_location.hours.each do |hour|
+        .row-fluid
+          .span6
+            = i.text_field nil, value: hour, class: 'span12'
+          .span2.offset4
+            .btn.btn-danger.remove-hours-field X
+
+.form-actions
+  = f.association :organization, as: :hidden
+  - if @business_location.id.present?
+    - submit_url = business_location_path(@business_location.id)
+    - submit_method = 'PUT'
+  - else
+    - submit_url = business_locations_path
+    - submit_method = 'POST'
+  = f.submit nil, class: 'btn btn-success', data: { submit_url: submit_url, submit_method: submit_method }

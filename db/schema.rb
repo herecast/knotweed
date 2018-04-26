@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180409164026) do
+ActiveRecord::Schema.define(version: 20180416164435) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -696,15 +696,9 @@ ActiveRecord::Schema.define(version: 20180409164026) do
     t.string   "subscribe_url",            limit: 255
     t.text     "description"
     t.string   "banner_ad_override",       limit: 255
-    t.string   "profile_title",            limit: 255
     t.boolean  "pay_directly",                         default: false
-    t.boolean  "can_publish_events",                   default: false
-    t.boolean  "can_publish_market",                   default: false
-    t.boolean  "can_publish_talk",                     default: false
-    t.boolean  "can_publish_ads",                      default: false
     t.string   "profile_image",            limit: 255
     t.string   "background_image",         limit: 255
-    t.string   "profile_ad_override",      limit: 255
     t.string   "twitter_handle"
     t.jsonb    "custom_links"
     t.boolean  "biz_feed_active",                      default: false
@@ -712,7 +706,6 @@ ActiveRecord::Schema.define(version: 20180409164026) do
     t.string   "ad_contact_nickname"
     t.string   "ad_contact_fullname"
     t.string   "profile_sales_agent"
-    t.string   "blog_contact_name"
     t.boolean  "embedded_ad",                          default: false
     t.boolean  "certified_storyteller",                default: false
     t.string   "services"
@@ -1063,9 +1056,9 @@ ActiveRecord::Schema.define(version: 20180409164026) do
     t.integer  "user_id"
     t.integer  "content_id"
     t.integer  "event_instance_id"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.boolean  "read"
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+    t.boolean  "read",              default: false
     t.datetime "deleted_at"
   end
 

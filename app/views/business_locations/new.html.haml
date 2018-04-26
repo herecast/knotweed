@@ -6,4 +6,4 @@
         Add a Venue
     .box-content
       = simple_form_for @business_location do |f|
-        = render partial: 'business_locations/partials/form_fields', locals: { f: f }
+        = render partial: 'business_locations/partials/form_fields', locals: { f: f, include_status: true }

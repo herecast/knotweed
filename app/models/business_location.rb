@@ -109,10 +109,6 @@ class BusinessLocation < ActiveRecord::Base
     addr
   end
 
-  def protect_against_blank_hours
-    update_column(:hours, nil) if hours == ""
-  end
-
   def coordinates
     [latitude, longitude]
   end

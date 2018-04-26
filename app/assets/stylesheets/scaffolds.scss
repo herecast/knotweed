@@ -87,3 +87,9 @@ div {
     margin-right: 0;
   }
 }
+
+// fix padding for summernote link modal
+.note-editor .modal .modal-dialog .form-group {
+  margin-left: 0;
+  margin-right: 0;
+}

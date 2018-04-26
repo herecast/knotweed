@@ -11,5 +11,5 @@
   %td
     = link_to "#", class: "edit-business-location-link btn btn-success", data: { form_url: edit_business_location_path(business_location) } do
       %i.icon-pencil
-    - unless business_location.business_profile.present?
+    - unless business_location.business_profile.present? or business_location.events.present?
       = link_to "X", business_location_path(business_location), method: :delete, remote: true, class: "btn btn-danger", data: { confirm: "Are you sure?" }

@@ -27,8 +27,6 @@ class OrganizationsController < ApplicationController
   end
 
   def new
-    @users = User.all
-    get_managers
     if params[:short_form]
       render partial: "organizations/partials/short_form", layout: false
     else
@@ -37,19 +35,14 @@ class OrganizationsController < ApplicationController
   end
 
   def edit
-    @users = User.all
-    get_managers
     @contact = Contact.new
   end
 
   def update
-    update_business_info if params[:business_location].present?
     if @organization.update_attributes(organization_params)
       flash[:notice] = "Successfully updated organization #{@organization.id}"
-      redirect_to organizations_path
+      redirect_to form_submit_redirect_path(@organization.id)
     else
-      @users = User.all
-      get_managers
       render action: "edit"
     end
   end
@@ -80,12 +73,10 @@ class OrganizationsController < ApplicationController
         format.js
         format.html do
           flash[:notice] = "Created organization with id #{@organization.id}"
-          redirect_to organizations_path
+          redirect_to form_submit_redirect_path(@organization.id)
         end
       end
     else
-      @users = User.all
-      get_managers
       render "new"
     end
   end
@@ -100,21 +91,14 @@ class OrganizationsController < ApplicationController
     end
   end
 
-  def business_location_options
-    pub = Organization.find params[:organization_id]
-    @business_locations = pub.business_location_options.insert(0, [nil, nil])
-    respond_to do |format|
-      format.js
-    end
-  end
-
   protected
 
-    def update_business_info
-      business_location = BusinessLocation.find(params[:business_location][:business_location_id])
-      business_location.update_attributes(business_location_params)
-      business_location.protect_against_blank_hours
-      business_location.business_profile.update_attributes(business_profile_params) if params[:business_profile].present?
+    def form_submit_redirect_path(id=nil)
+      if params[:continue_editing]
+        edit_organization_path(id)
+      else
+        organizations_path
+      end
     end
 
     def organization_params
@@ -146,18 +130,11 @@ class OrganizationsController < ApplicationController
         :description,
         :banner_ad_override,
         :pay_rate_in_cents,
-        :profile_title,
         :pay_directly,
-        :can_publish_market,
-        :can_publish_ads,
-        :can_publish_talk,
-        :can_publish_events,
-        :profile_ad_override,
         :biz_feed_active,
         :ad_sales_agent,
         :ad_contact_nickname,
         :ad_contact_fullname,
-        :blog_contact_name,
         :profile_sales_agent,
         :embedded_ad,
         :certified_storyteller,
@@ -174,20 +151,6 @@ class OrganizationsController < ApplicationController
         :calendar_card_active,
         :consumer_app_ids => [],
         :location_ids => [],
-        :business_location => [
-          :name,
-          :address,
-          :venue_url,
-          :city,
-          :state,
-          :zip,
-          :phone,
-          :email,
-          :hours
-        ],
-        :business_profile => {
-          :business_category_ids => []
-        },
         :organization_locations_attributes => [
           :id,
           :location_type,
@@ -197,30 +160,8 @@ class OrganizationsController < ApplicationController
       )
     end
 
-    def business_location_params
-      params.require(:business_location).permit(
-        :name,
-        :email,
-        :venue_url,
-        :address,
-        :city,
-        :state,
-        :zip,
-        :phone,
-        hours: []
-      ).tap do |attrs|
-        if attrs[:hours].respond_to?(:[])
-          attrs[:hours].reject! { |h| h.blank? }
-        end
-      end
-    end
-
     def business_profile_params
       params.require(:business_profile).permit(business_category_ids: [])
-    end
-
-    def get_managers
-      @managers = User.with_role(:manager, @organization)
     end
 
     def include_child_organizations?

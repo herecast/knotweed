@@ -17,7 +17,6 @@
 #  subscribe_url            :string(255)
 #  description              :text
 #  banner_ad_override       :string(255)
-#  profile_title            :string(255)
 #  pay_directly             :boolean          default(FALSE)
 #  can_publish_events       :boolean          default(FALSE)
 #  can_publish_market       :boolean          default(FALSE)
@@ -33,7 +32,6 @@
 #  ad_contact_nickname      :string
 #  ad_contact_fullname      :string
 #  profile_sales_agent      :string
-#  blog_contact_name        :string
 #  embedded_ad              :boolean          default(FALSE)
 #  certified_storyteller    :boolean          default(FALSE)
 #  services                 :string
@@ -57,7 +55,6 @@
 require 'spec_helper'
 
 describe Organization, :type => :model do
-  it {is_expected.to have_db_column(:profile_title)}
   it { is_expected.to have_many :organization_locations }
   it { is_expected.to have_many :locations }
 
@@ -119,19 +116,6 @@ describe Organization, :type => :model do
     it "returns list of parent organizations" do
       list = Organization.parent_pubs
       expect(list).to match_array([@parent_org_1, @parent_org_2])
-    end
-  end
-
-  describe '#business_location_options' do
-    before do
-      @organization = FactoryGirl.create :organization
-      @organization.business_locations << FactoryGirl.create(:business_location)
-      @organization.business_locations << FactoryGirl.create(:business_location)
-    end
-
-    it "returns all of organizations business locations" do
-      locations = @organization.business_location_options
-      expect(locations.length).to eq 2
     end
   end
 

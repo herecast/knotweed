@@ -45,7 +45,6 @@ Knotweed::Application.routes.draw do
     resources :campaigns, except: [:show, :destroy]
     resources :comments, only: [:index, :update, :destroy]
     get "issues/select_options", to: "issues#select_options", as: :issue_select_options
-    get "organizations/business_location_options", to: "organizations#business_location_options", as: :business_location_options
     resources :market_posts, except: [:destroy]
     resources :business_profiles, except: [:destroy]
     namespace :business_profiles do
@@ -60,10 +59,10 @@ Knotweed::Application.routes.draw do
     resources :consumer_apps, except: [:show]
     resources :images, only: [:create, :destroy, :update]
     resources :organizations, except: [:show] do
+      resources :users, only: [:index], controller: 'organizations/users'
       resources :promotions, shallow: true
     end
 
-    resources :organizations
     resources :contacts, only: [:create, :update, :edit, :destroy]
     resources :issues, only: [:new, :create, :update, :edit, :destroy, :show]
     resources :locations, except: [:destroy]

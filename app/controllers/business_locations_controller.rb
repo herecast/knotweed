@@ -46,6 +46,7 @@ class BusinessLocationsController < ApplicationController
 
   def create
     @business_location.created_by = current_user
+    @business_location.status = :approved if request.xhr?
     if @business_location.save
       respond_to do |format|
         format.js
@@ -75,10 +76,18 @@ class BusinessLocationsController < ApplicationController
   end
 
   def destroy
-    @business_location.destroy
-    respond_to do |format|
-      format.html { redirect_to :back }
-      format.js
+    # don't allow destroy if it'd leave orphaned records
+    if @business_location.business_profile.present? or @business_location.events.present?
+      flash[:notice] = "Could not destroy record with associated business profile or evens"
+      respond_to do |format|
+        format.html { redirect_to :back }
+      end
+    else
+      @business_location.destroy
+      respond_to do |format|
+        format.html { redirect_to :back }
+        format.js
+      end
     end
   end
 
@@ -96,6 +105,13 @@ class BusinessLocationsController < ApplicationController
         :phone,
         :status,
         :organization_id,
-        )
+        hours: []
+      ).tap do |attrs|
+        if attrs[:hours].respond_to?(:[])
+          attrs[:hours].reject! { |h| h.blank? }
+        elsif not attrs.has_key? :hours # deal with removing all hours entries
+          attrs[:hours] = []
+        end
+      end
     end
 end

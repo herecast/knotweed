@@ -10,12 +10,6 @@ module Api
         :description,
         :org_type,
         :can_edit,
-        :profile_title,
-        :can_publish_events,
-        :can_publish_market,
-        :can_publish_talk,
-        :can_publish_ads,
-        :profile_ad_override,
         :profile_image_url,
         :background_image_url,
         :claimed,
@@ -61,14 +55,6 @@ module Api
         else
           false
         end
-      end
-
-      def profile_title
-        object.profile_title || object.name
-      end
-
-      def profile_ad_override
-        object.get_profile_ad_override_id
       end
 
       def claimed
