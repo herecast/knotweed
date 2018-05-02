@@ -34,7 +34,7 @@ class BusinessLocation < ActiveRecord::Base
   extend Enumerize
   include Auditable
 
-  searchkick callbacks: :async, batch_size: 100, index_prefix: Figaro.env.searchkick_index_prefix,
+  searchkick callbacks: :async, batch_size: 5000, index_prefix: Figaro.env.searchkick_index_prefix,
     match: :word_start, searchable: [:name, :city, :state]
 
   def search_data

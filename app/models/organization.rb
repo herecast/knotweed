@@ -56,7 +56,7 @@ class Organization < ActiveRecord::Base
   LISTSERV_ORG_NAME = "Listserv"
 
   searchkick callbacks: :async,
-    batch_size: 100,
+    batch_size: 1000,
     index_prefix: Figaro.env.searchkick_index_prefix,
     searchable: [:name]
 

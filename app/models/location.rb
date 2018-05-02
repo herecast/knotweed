@@ -68,7 +68,7 @@ class Location < ActiveRecord::Base
   }
 
   searchkick callbacks: :async, index_prefix: Figaro.env.stack_name,
-    batch_size: 100, locations: ["location"]
+    batch_size: 1000, locations: ["location"]
 
   def search_data
     {

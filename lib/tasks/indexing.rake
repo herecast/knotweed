@@ -36,4 +36,25 @@ namespace :indexing do
     BusinessProfile.where('updated_at > ?', 2.hours.ago).each(&:reindex_async)
     puts "Operation completed"
   end
+
+  task :full_reindex_business_location => :environment do
+    index_name = BusinessLocation.reindex(async: {wait: true}, refresh_interval: "30s")
+    puts "Reindexing last hour"
+    BusinessLocation.where('updated_at > ?', 2.hours.ago).each(&:reindex_async)
+    puts "Operation completed"
+  end
+
+  task :full_reindex_location => :environment do
+    index_name = Location.reindex(async: {wait: true}, refresh_interval: "30s")
+    puts "Reindexing last hour"
+    Location.where('updated_at > ?', 2.hours.ago).each(&:reindex_async)
+    puts "Operation completed"
+  end
+
+  task :full_reindex_organization => :environment do
+    index_name = Organization.reindex(async: {wait: true}, refresh_interval: "30s")
+    puts "Reindexing last hour"
+    Organization.where('updated_at > ?', 2.hours.ago).each(&:reindex_async)
+    puts "Operation completed"
+  end
 end
