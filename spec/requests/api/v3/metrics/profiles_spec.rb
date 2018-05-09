@@ -60,7 +60,7 @@ RSpec.describe 'Profile metrics' do
 
   describe 'POST /api/v3/metrics/profiles/:organization_id/clicks' do
     let(:content) {
-      FactoryGirl.create :content
+      FactoryGirl.create :content, pubdate: (Time.zone.now - 1.day)
     }
 
     let(:context_data) {
@@ -99,6 +99,32 @@ RSpec.describe 'Profile metrics' do
       expect(response.status).to eql 201
     end
 
+    context 'for unpublished content' do
+      let(:content) { FactoryGirl.create :content, pubdate: nil }
+
+      it 'responds with 200' do
+        subject
+        expect(response.status).to eql 200
+      end
+
+      it 'does not record a profile metric impression' do
+        expect{subject}.to_not change{ProfileMetric.count}
+      end
+    end
+
+    context 'for future scheduled content' do
+      let(:content) { FactoryGirl.create :content, pubdate: 1.week.from_now }
+
+      it 'responds with 200' do
+        subject
+        expect(response.status).to eql 200
+      end
+
+      it 'does not record a profile metric impression' do
+        expect{subject}.to_not change{ProfileMetric.count}
+      end
+    end
+    
     context 'content_id not included' do
       before do
         context_data.delete(:content_id)

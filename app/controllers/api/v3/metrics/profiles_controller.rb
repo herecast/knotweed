@@ -2,6 +2,8 @@ module Api
   module V3
     class Metrics::ProfilesController < ApiController
 
+      before_action :confirm_content_published
+
       def impression
         metric = ProfileMetric.create(
           profile_metric_params.merge(
@@ -47,6 +49,17 @@ module Api
           end
         end
       end
+
+      # catch non-published content before logging the profile_metric
+      def confirm_content_published
+        if params[:content_id].present?
+          content = Content.find(params[:content_id])
+          if content.pubdate.blank? || content.pubdate > Time.current
+            render json: {}, status: 200 and return
+          end
+        end
+      end
+
     end
   end
 end
