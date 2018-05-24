@@ -134,17 +134,11 @@ class ContentSearch
         location = Location.find_by_slug_or_id @params[:location_id]
 
         if @params[:radius].present? && @params[:radius].to_i > 0
-          locations_within_radius = Location.non_region.within_radius_of(location, @params[:radius].to_i).map(&:slug)
+          locations_within_radius = Location.non_region.within_radius_of(location, @params[:radius].to_i).map(&:slug).compact
 
-          attrs[:where][:or] << [
-            {my_town_only: false, all_loc_ids: locations_within_radius},
-            {my_town_only: true, all_loc_ids: [location.slug]}
-          ]
+          attrs[:where][:base_location_ids] = { in: locations_within_radius }
         else
-          attrs[:where][:or] << [
-            {about_location_ids: [location.slug]},
-            {base_location_ids: [location.slug]}
-          ]
+          attrs[:where][:base_location_ids] = { in: [location.slug] }
         end
       end
     end

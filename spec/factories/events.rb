@@ -51,7 +51,8 @@ FactoryGirl.define do
         if locations
           attrs[:content_locations] = locations.map do |location|
             ContentLocation.new(
-              location: location
+              location: location,
+              location_type: 'base'
             )
           end
         elsif content_locations
