@@ -67,13 +67,32 @@ class Organization < ActiveRecord::Base
       name: name,
       org_type: org_type,
       biz_feed_active: biz_feed_active,
-      consumer_app_ids: consumer_apps.pluck(:id),
-      content_category_ids: contents.pluck(:root_content_category_id).uniq,
+      consumer_app_ids: consumer_apps_ids_only.map(&:id),
+      content_category_ids: contents_root_content_category_ids_only.map(&:root_content_category_id).uniq,
       certified_storyteller: certified_storyteller,
       certified_social: certified_social,
       archived: archived
     }
   end
+
+  scope :search_import, -> {
+    includes(
+      :contents_root_content_category_ids_only,
+      :consumer_apps_ids_only
+    )
+  }
+
+  has_many :contents_root_content_category_ids_only,
+           -> { select('contents.root_content_category_id, contents.organization_id') },
+           primary_key: :id,
+           foreign_key: :organization_id,
+           class_name: :Content
+  has_and_belongs_to_many :consumer_apps_ids_only,
+                          -> { select('consumer_apps.id') },
+                          primary_key: :id,
+                          foreign_key: :organization_id,
+                          join_table: :consumer_apps_organizations,
+                          class_name: :ConsumerApp
 
   resourcify
   belongs_to :parent, class_name: "Organization"
@@ -97,6 +116,10 @@ class Organization < ActiveRecord::Base
   accepts_nested_attributes_for :organization_locations, allow_destroy: true
   has_many :locations, through: :organization_locations
   has_many :base_locations, -> { where('"organization_locations"."location_type" = \'base\'') },
+           through: :organization_locations, source: :location
+  has_many :consumer_active_base_locations, -> {
+    where('"organization_locations"."location_type" = \'base\' and consumer_active = true')
+  },
            through: :organization_locations, source: :location
 
   has_and_belongs_to_many :contacts

@@ -47,6 +47,11 @@ class BusinessLocation < ActiveRecord::Base
     }
   end
 
+  scope :search_import, -> {
+    includes(:created_by)
+  }
+
+
   belongs_to :organization
   has_many :events, foreign_key: 'venue_id'
 

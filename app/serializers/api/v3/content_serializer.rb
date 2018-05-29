@@ -311,7 +311,7 @@ module Api
       end
 
       def base_location_ids
-        base_locations.map(&:slug).compact
+        base_locations_array.map{ |l| l[:slug] }.compact
       end
 
       def base_locations_array
@@ -343,11 +343,11 @@ module Api
         end
 
         def base_locations
+          return @base_locations unless @base_locations.nil?
           if object.organization.present?
-            object.base_locations |= object.organization.base_locations.consumer_active
-          else
-            object.base_locations
+            object.base_locations |= object.organization.consumer_active_base_locations
           end
+          @base_locations ||= object.base_locations
         end
 
     end
