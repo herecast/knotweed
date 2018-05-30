@@ -15,6 +15,6 @@
           %td
           %td 0
         %td.action
-          = link_to 'Edit', edit_event_path(event), class: 'btn btn-mini btn-warning'
+          = link_to 'Edit', edit_content_path(event.content), class: 'btn btn-mini btn-warning'
 - else
   %h4 There are no events scheduled at #{@business_location.name} #{@business_location.full_address}

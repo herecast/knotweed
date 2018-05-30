@@ -1,19 +1,6 @@
 class IssuesController < ApplicationController
   load_and_authorize_resource
 
-  def select_options
-    if params[:organization_id].present?
-      issues = Organization.find(params[:organization_id]).issues.order("issue_edition ASC")
-    else
-      issues = Issue.order("issue_edition ASC")
-    end
-    @issues = issues.map{ |i| [i.issue_edition, i.id]}.insert(0, nil)
-    @selected_id = params[:selected_id]
-    respond_to do |format|
-      format.js { render "issues/select_options" }
-    end
-  end
-
   def edit
     respond_to do |format|
       format.js { render partial: "issues/form" }

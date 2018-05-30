@@ -7,13 +7,7 @@ class ModerationMailer < ActionMailer::Base
   def send_moderation_flag(content, params, subject)
     @content = content
     @params = params
-    if @content.channel_type == 'Event'
-      @admin_uri = edit_event_url(@content.channel_id)
-    elsif @content.channel_type == 'MarketPost'
-      @admin_uri = edit_market_post_url(@content.channel_id)
-    else
-      @admin_uri = edit_content_url(@content.id)
-    end
+    @admin_uri = edit_content_url(@content.id)
     mail(from: Rails.configuration.subtext.emails.no_reply,
          to: Rails.configuration.subtext.emails.moderation,
          subject: subject,
@@ -24,14 +18,7 @@ class ModerationMailer < ActionMailer::Base
     @content = content
     @flag_type = flag_type
     @flagger = flagging_user
-
-    if @content.channel_type == 'Event'
-      @admin_uri = edit_event_url(@content.channel_id)
-    elsif @content.channel_type == 'MarketPost'
-      @admin_uri = edit_market_post_url(@content.channel_id)
-    else
-      @admin_uri = edit_content_url(@content.id)
-    end
+    @admin_uri = edit_content_url(@content.id)
 
     subject = 'dailyUV Flagged as ' + flag_type + ': ' + content.title
 

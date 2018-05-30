@@ -2,7 +2,7 @@ class ContentsController < ApplicationController
 
   PUBLISH_METHODS_TO_DOWNLOAD = ["export_pre_pipeline_xml", "export_post_pipeline_xml", "export_to_xml"]
 
-  before_filter :fix_array_input, only: [:create, :update]
+  before_filter :fix_array_input, only: [:update]
 
   def index
     expires_in 1.minutes, :public => true
@@ -13,31 +13,25 @@ class ContentsController < ApplicationController
       if params[:q][:id_in].present?
         params[:q][:id_in] = params[:q][:id_in].split(',').map{ |s| s.strip }
       end
+      params[:q][:s] = 'pubdate desc' unless params[:q][:s].present?
       session[:contents_search] = params[:q]
     end
 
-    shared_context = Ransack::Context.for(Content)
-    @search = Content.ransack(
-      { channel_type_null: 1 }.merge(session[:contents_search] || {}),
-      context: shared_context)
-    search_comments = Content.ransack(
-      { channel_type_eq: 'Comment' }.merge(session[:contents_search] || {}),
-      context: shared_context)
-
-    shared_conditions = [@search, search_comments].map { |search|
-      Ransack::Visitor.new.accept(search.base)
-    }
-
     @content_categories = ContentCategory.all
-    if session[:contents_search].present?
-      if session[:contents_search][:locations_id_in].try(:all?,&:blank?)
-        @contents = Content.joins(shared_context.join_sources)
-      else
-        @contents = Content.joins(:locations).joins(shared_context.join_sources)
-      end
+    @locations = Location.accessible_by(current_ability).consumer_active.order('state ASC, city ASC')
 
-      @contents = @contents
-        .where(shared_conditions.reduce(&:or))
+    search_conditions = session[:contents_search].try(:dup) || {}
+    search_conditions[:content_category_id_not_eq] = ContentCategory.find_by_name('campaign').try(:id)
+
+    if search_conditions[:event_instances_start_date_gteq].present? or search_conditions[:event_instances_end_date_lteq].present?
+      search_conditions[:channel_type_eq] = 'Event'
+    end
+
+    @search = Content.ransack(search_conditions)
+
+    if session[:contents_search].present?
+      @contents = @search.result(distinct: true)
+        .includes(:organization, :repositories, :created_by, :content_category, :root_content_category, :channel)
         .order("pubdate DESC").page(params[:page])
         .per(100)
     else
@@ -54,83 +48,15 @@ class ContentsController < ApplicationController
     authorize! :new, @content
   end
 
-  def create
-    image_list = params[:content].delete(:image_list)
-    image_ids = image_list.try(:split, ",")
-    @content = Content.new(content_params)
-    authorize! :create, @content
-    connection = nil
-    if @content.save
-      if image_ids.present?
-        image_ids.each do |image_id|
-          image = Image.find(image_id)
-          old_path = "uploads/#{image.image.file.filename}"
-          @content.images << image
-          image = Image.find(image_id)
-          new_path = image.image.path.to_s
-          if old_path != new_path
-            if connection.nil?
-              connection = Fog::Storage.new({
-                provider: "AWS",
-                aws_access_key_id: Figaro.env.aws_access_key_id,
-                aws_secret_access_key: Figaro.env.aws_secret_access_key
-              })
-            end
-            # unfortunately we have to copy directly on AWS here
-            connection.copy_object(Figaro.env.aws_bucket_name, old_path, Figaro.env.aws_bucket_name, new_path)
-            connection.delete_object(Figaro.env.aws_bucket_name, old_path)
-          end
-        end
-      end
-      flash[:notice] = "Created content with id #{@content.id}"
-      redirect_to form_submit_redirect_path(@content.id)
-    else
-      render "new"
-    end
-  end
-
-  def show
-    flash.keep
-    redirect_to edit_content_path(params[:id])
-  end
-
   def edit
     @news_child_ids = ContentCategory.where(parent_id: 31).pluck(:id)
-    # need to determine id of "next record" if we got here from the search index
-    if params[:index].present?
-      params[:page] = 1 unless params[:page].present?
-      contents = Content.ransack(session[:contents_search]).result(distinct: true).order("pubdate DESC").page(params[:page]).per(100).select("contents.id, pubdate")
-      @next_index = params[:index].to_i + 1
-      @next_content_id = contents[@next_index].try(:id)
-      # account for scenario where we are at end of page
-      if @next_content_id.nil?
-        params[:page] = params[:page].to_i + 1
-        contents = Content.ransack(session[:contents_search]).result(distinct: true).order("pubdate DESC").page(params[:page]).per(100).select("id, pubdate")
-        @next_index = 0 # first one on the new page
-        @next_content_id = contents[@next_index].try(:id)
-      end
-    end
-    @content = Content.find(params[:id])
-    # if content is a channelized event
-    # in the future, we'll want to perhaps add a "is_channelized?" method
-    # that returns the class of the channel so we can redirect more generically
-    if @content.channel.present? and @content.channel_type != 'Comment'
-      redirect_to url_for(controller: @content.channel_type.underscore.pluralize, action: "edit",
-                          id: @content.channel_id)
-    end
+    @content = Content.includes(:repositories, :locations, :content_category).find(params[:id])
+    load_event_instances
     authorize! :edit, @content
   end
 
   def update
     @content = Content.find(params[:id])
-
-    # if only param is has_event_calendar, this is an ajax call from contents#index
-    # in that case, we don't need to render anything -- just return status
-    if params[:has_event_calendar]
-      @content.update_attribute :has_event_calendar, params[:has_event_calendar]
-      render status: 200, json: @content.to_json
-      return
-    end
 
     # if category is changed, create a category_correction object
     # normally I would put this in a callback on the model
@@ -145,8 +71,13 @@ class ContentsController < ApplicationController
 
     if @content.update_attributes(content_params)
       flash[:notice] = "Successfully updated content #{@content.id}"
-      redirect_to form_submit_redirect_path(@content.id)
+      if params[:continue_editing]
+        redirect_to edit_content_path(@content)
+      else
+        redirect_to contents_path
+      end
     else
+      load_event_instances
       render "edit"
     end
   end
@@ -201,7 +132,7 @@ class ContentsController < ApplicationController
     else
       params[:q][:title_cont] = params.delete :search_query
     end
-    conts = Content.ransack(params[:q]).result(distinct: true).order("pubdate DESC")
+    conts = Content.ransack(params[:q]).result(distinct: true).order("pubdate DESC").limit(100)
     if params[:content_id].present?
       @orig_content = Content.find(params[:content_id])
       conts = conts - [@orig_content]
@@ -245,6 +176,12 @@ class ContentsController < ApplicationController
 
   private
 
+    def load_event_instances
+      if @content.channel_type == 'Event'
+        @event_instances = @content.event.event_instances.page(params[:page] || 1).per(10)
+      end
+    end
+
     def content_params
       params.require(:content).permit(
         :title,
@@ -261,6 +198,7 @@ class ContentsController < ApplicationController
         :url,
         :banner_ad_override,
         :sanitized_content,
+        :raw_content,
         :alternate_title,
         :alternate_organization_id,
         :alternate_authors,
@@ -270,20 +208,24 @@ class ContentsController < ApplicationController
           :id, :location_type, :location_id, :_destroy
         ],
         organization_ids: [],
-        similar_content_overrides: []
+        similar_content_overrides: [],
+        event_attributes: [
+          :id,
+          :event_url,
+          :contact_phone,
+          :contact_email,
+          :event_category,
+          :cost_type,
+          :cost,
+          :registration_deadline
+        ],
+        market_post_attributes: [
+          :id,
+          :cost,
+          :contact_phone,
+          :contact_email
+        ]
       )
-    end
-
-    def form_submit_redirect_path(id=nil)
-      if params[:continue_editing]
-        edit_content_path(id)
-      elsif params[:create_new]
-        new_content_path
-      elsif params[:next_record]
-        edit_content_path(params[:next_record_id], index: params[:index], page: params[:page])
-      else
-        contents_path
-      end
     end
 
     def fix_array_input

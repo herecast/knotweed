@@ -335,6 +335,14 @@ class Content < ActiveRecord::Base
   # channel relationships
   belongs_to :channel, polymorphic: true, inverse_of: :content
 
+  # THESE ARE JUST SEMI-FAKE ASSOCIATIONS FOR RANSACK TO USE FOR CONTENTS#INDEX
+  # DO NOT USE OTHERWISE
+  belongs_to :event, foreign_key: 'channel_id'
+  accepts_nested_attributes_for :event, allow_destroy: true
+  has_many :event_instances, through: :event
+  belongs_to :market_post, foreign_key: 'channel_id'
+  accepts_nested_attributes_for :market_post, allow_destroy: true
+
   TMP_EXPORT_PATH = Rails.root.to_s + "/tmp/exports"
 
   scope :events, -> { joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",

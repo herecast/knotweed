@@ -6,38 +6,6 @@ describe IssuesController, type: :controller do
     sign_in @user
   end
 
-  describe '#select_options' do
-    let!(:issues) { FactoryGirl.create_list :issue, 3 }
-
-    it 'assigns @issues to mapped select options' do
-      xhr :get, :select_options, format: :js
-      issue_list = assigns(:issues)
-      issues.each do |issue|
-        expect(issue_list).to include([issue.issue_edition, issue.id])
-      end
-    end
-
-    context 'scoped to organization' do
-      let(:organization){ FactoryGirl.create :organization }
-      let(:scoped_issues){ issues.slice(0,2) }
-      let(:non_org_issue){ issues.last }
-      before do
-        scoped_issues.each{|i| i.update_attribute(:organization, organization)}
-        xhr :get, :select_options, organization_id: organization.id, format: :js
-      end
-
-      subject { assigns(:issues) }
-
-      it 'returns only the organization issues' do
-        scoped_issues.each do |i|
-          expect(subject).to include([i.issue_edition,i.id])
-        end
-
-        expect(subject).to_not include([non_org_issue.issue_edition,non_org_issue.id])
-      end
-    end
-  end
-
   describe '#new' do
     it 'assigns @issue' do
       get :new

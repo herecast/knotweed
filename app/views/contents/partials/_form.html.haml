@@ -1,15 +1,31 @@
 = simple_form_for @content, html: { class: "form" } do |f|
-  = f.error_notification
+  - if @content.errors.any?
+    .alert.alert-error
+      Please review the problems below:
+      %ul
+        - @content.errors.full_messages.each do |msg|
+          %li= msg
   .tabbable
     %ul.nav.nav-tabs.nav-tabs-simple#edit_doctabs
       %li{ class: "active" }
-        = link_to "#", class: 'green-border', data: { toggle: "tab", target: "#features" } do
+        = link_to "#", class: 'green-border', data: { toggle: "tab", target: "#details" } do
           %i.icon-info
-          Features
-      %li#contents_tab_link
-        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#doc_content" } do
-          %i.icon-reorder
-          Content
+          Details
+      - if @content.channel.blank? or @content.channel_type == 'Comment'
+        %li#contents_tab_link
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#doc_content" } do
+            %i.icon-reorder
+            Content
+      - if @content.channel_type == 'Event'
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#event_detail" } do
+            %i.icon-calendar
+            Event Detail
+      - if @content.channel_type == 'MarketPost'
+        %li
+          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#market_detail" } do
+            %i.icon-calendar
+            Market Detail
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#images" } do
           %i.icon-reorder
@@ -18,7 +34,10 @@
         = link_to '#', class: 'green-boarder', data: { toggle: "tab", target: "#locations" } do
           %i.icon-map-marker
           Locations
-
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#crisis" } do
+          %i.icon-flag
+          Crisis
       - if @content.id.present?
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#publish" } do
@@ -28,20 +47,8 @@
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#annotation_reports" } do
             Annotation Reports
-      - if @content.organization.present?
-        %li
-          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#promotions" } do
-            %i.icon-eye-open
-            Promotions
-      %li
-        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#crisis" } do
-          %i.icon-flag
-          Crisis
-      %li.pull-right
-        %span.btn.btn-small.tab-traversal-link{ data: { move_index: "-1" } } Previous
-        %span.btn.btn-small.tab-traversal-link{ data: { move_index: "1" } } Next
     .tab-content
-      .tab-pane.form-horizontal#features{ class: "active" }
+      .tab-pane.form-horizontal#details{ class: "active" }
         -# uneditable features displayed in info box if content exists
         .row-fluid
           .span6
@@ -54,7 +61,6 @@
                 = f.association :organization, input_html: { class: "chosen-select span12" }, 
                   label: "Organization"
           .span3
-            = f.input :category_reviewed, label: "Category Reviewed?"
             %span.btn.btn-small.btn-success#add_new_organization{ data: { toggle: "modal", 
                 target: "#organization_form", form_url: new_organization_path(short_form: true) } }
               + Add New
@@ -69,23 +75,6 @@
                     %i.icon-ok
                 %dt Published?
                 %dd= @content.repositories.map{ |r| r.dsp_endpoint }.join(", ")
-          -# was originally going to show and hide this with javascript, but that doesn't make sense.
-          -# it can only be curated into an event if it's been saved as an event record, so no javascript
-          -# showing/hiding here.
-          .span3.channel-related-actions.text-right{ class: @content.category == "event" ? "" : "hidden" }
-            -# if it has already been curated, just link to curated record
-            - if @content.channelized_content.present?
-              -# we just link to the channelized content here and handle redirection
-              -# to the appropriate channel (currently just events)
-              -# in the contents controller#edit action
-              -# NOTE: we're hardcoding the text of this link to event right now.
-              -# to suppor other channels, when we create them, we'll need to add
-              -# an extra database field somewhere that represents which channel the content
-              -# is channelized to and use that value to generate this text.
-              = link_to "See Event Calendar Record", content_path(@content.channelized_content.id)
-            - else
-              = link_to "Create Calendar Event from record", new_event_path(unchannelized_content_id: @content.id), class: "btn btn-success"
-            = f.input :has_event_calendar, label: "Curated?"
         = f.association :organizations, label: 'Tagged Organizations', input_html: { class: 'chosen-select input-block-level' }
         = f.input :title, input_html: { class: "input-block-level" }
         = f.input :subtitle, input_html: { class: "input-block-level" }
@@ -95,22 +84,14 @@
             = label_tag "Search for parent content", nil, class: "control-label"
             .controls
               = text_field_tag "parent_search", nil, class: "span12"
-          = f.association :issue, 
-            collection: (@content.organization.present? ? @content.organization.issues.order("issue_edition ASC") : ["Select a Organization First"]), 
-            input_html: { class: "chosen-select span12", 
-            data: { options_url: issue_select_options_path, selected_id: @content.issue.try(:id) } }, 
-            wrapper_html: { class: "span6" }
         .row-fluid
           = f.association :parent, collection: (@content.parent.present? ? [[@content.parent.title, @content.parent.id]] : []), 
             input_html: { class: "chosen-select span12", 
             data: { options_url: parent_select_options_path, content_id: @content.id } },
             wrapper_html: { class: "span6" }, label: false, include_blank: true,
             hint: "Search for options by typing an ID or title in the text box above."
-          = f.input :copyright, input_html: { class: "span12" }, wrapper_html: { class: "span6" }
         .row-fluid
           = f.input :pubdate, as: :datetime_picker, input_html: { value: @content.pubdate || Date.current }, wrapper_html: { class: "span6" }
-          = f.input :timestamp, disabled: true, as: :string, wrapper_html: { class: "span6" }
-          = f.input :url, input_html: { class: "input-block-level" }
         .row-fluid.sponsored-content
           = f.input :banner_ad_override, wrapper_html: { class: 'span6' },
             hint: 'The id of the Promotion record that should show with this content.',
@@ -119,9 +100,81 @@
             input_html: { value: @content.similar_content_overrides.map{|i| i.to_s }.join(',') },
             hint: 'The ids of content to show in the relevance stack. Input as a comma separated list of numbers.',
             as: :string
-      .tab-pane#doc_content
-        .summernote-wrapper
-          = f.input :sanitized_content, as: :summernote, label: 'Content'
+      - if @content.channel.blank? or @content.channel_type == 'Comment'
+        .tab-pane#doc_content
+          .summernote-wrapper
+            = f.input :sanitized_content, as: :summernote, label: 'Content'
+
+      - if @content.channel_type == 'Event'
+        .tab-pane#event_detail
+          .row-fluid
+            .span6
+              = f.input :raw_content, as: :summernote, label: 'Event Description',
+                value: @content.channel.remove_boilerplate
+            .span6
+              - if @content.channel.venue.present?
+                .row-fluid
+                  %h4 Venue
+                  %strong= @content.channel.venue.name
+                  %br
+                  = @content.channel.venue.address
+                  %br
+                  #{@content.channel.venue.city}, #{@content.channel.venue.state} #{@content.channel.venue.zip}
+                  %br
+                  = @content.channel.venue.venue_url
+                  %br
+                  #{@content.channel.venue.email} #{@content.channel.venue.phone}
+                %hr
+              = f.simple_fields_for :event, @content.event do |g|
+                = g.input :event_url, input_html: { class: "input-block-level" }, required: false
+                .row-fluid
+                  = g.input :contact_phone, input_html: { class: "input-block-level" },
+                    wrapper_html: { class: "span6" }, required: false
+                  = g.input :contact_email, input_html: { class: "input-block-level" },
+                    wrapper_html: { class: "span6" }, required: false
+                .row-fluid
+                  = g.input :cost_type, input_html: { class: "input-block-level" },
+                    wrapper_html: { class: 'span6' }, required: false
+                  = g.input :cost, input_html: { class: "input-block-level" },
+                    wrapper_html: { class: 'span6' }, required: false
+                .row-fluid
+                  = g.input :registration_deadline, as: :date_picker,
+                    input_html: { class: "input-block-level" }, required: false
+          %hr
+          %h3 Event Instances
+          = paginate @event_instances if @event_instances.present?
+          %table.table.table-striped.table-hover.table-condensed
+            %thead
+              %tr
+                %th Start Day
+                %th Start Time
+                %th End Time
+                %th Subtitle
+                %th Presenter Name
+            %tbody
+              - @event_instances.each do |ei|
+                %tr
+                  %td= ei.start_date.try(:strftime, '%m/%d/%Y')
+                  %td= ei.start_date.try(:strftime, '%l:%M %P')
+                  %td= ei.end_date.try(:strftime, '%l:%M %P')
+                  %td= ei.subtitle_override
+                  %td= ei.presenter_name
+
+      - if @content.channel_type == 'MarketPost'
+        .tab-pane#market_detail
+          .row-fluid
+            .span6
+              = f.input :raw_content, as: :summernote, label: "Description",
+                value: @content.channel.remove_boilerplate, required: true
+            .span6
+              = f.simple_fields_for :market_post do |g|
+                = g.input :cost, input_html: { class: 'input-block-level' }
+                .row-fluid
+                  .span6
+                    = g.input :contact_phone, as: :tel, input_html: { class: 'input-block-level' }
+                  .span6
+                    = g.input :contact_email, input_html: { class: 'input-block-level' }
+            
       .tab-pane#images
         = fields_for Image.new do |i|
           %fieldset#image_fields
@@ -146,36 +199,17 @@
             = render 'content_location_fields', f: cl
           .links.card
             = link_to_add_association '+ Add Location', f, :content_locations, class: 'btn btn-default'
-
-
-
+      .tab-pane#crisis
+        = render 'contents/partials/crisis_form', content: @content, f: f
       - if @content.id.present?
         .tab-pane#publish{ data: { no_turbolink: "" } }
           = render partial: 'contents/partials/publishing_tab', locals: { content: @content }
       - if @content.published?
         .tab-pane#annotation_reports
           = render partial: 'contents/partials/annotation_reports_tab', locals: { content: @content }
-      - if @content.organization.present?
-        .tab-pane#promotions
-          = render "promotions/partials/promotions_tab", content: @content
-      .tab-pane#crisis
-        = render 'contents/partials/crisis_form', content: @content, f: f
     .form-actions
-      = submit_tag nil, class: "btn btn-primary"
+      = submit_tag "Submit and close record", class: "btn btn-primary"
       = submit_tag "Submit and continue with this record", class: "btn btn-success", name: "continue_editing"
-      - if @next_content_id.present?
-        = hidden_field_tag :next_record_id, @next_content_id
-        = hidden_field_tag :index, @next_index
-        = hidden_field_tag :page, params[:page]
-        = submit_tag "Submit and go to next record", class: "btn btn-success", name: "next_record"
-      = submit_tag "Submit and add new", class: "btn btn-success", name: "create_new"
-      - if @content.id.present? and !@content.quarantine
-        - if current_user.default_repository.present?
-          = link_to "Publish", publish_content_path(@content, "publish_to_dsp", current_user.default_repository.id),
-            class: "btn btn-primary publish-action-button"
-        - else
-          .has-tooltip.btn{ disabled: "disabled", data: { toggle: "tooltip", 
-            title: "You must select a default repository for your user account" } } Publish
       = render 'contents/partials/crisis_submit', content: @content, type: 'content'
       = link_to "Cancel", :back, class: "btn cancel"
 

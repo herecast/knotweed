@@ -57,7 +57,7 @@ module Api
       def show
         @event_instance = EventInstance.find(params[:id])
         if @current_api_user.present?
-          url = edit_event_url(@event_instance.event) if @current_api_user.has_role? :admin
+          url = edit_content_url(@event_instance.event.content) if @current_api_user.has_role? :admin
         end
         if @requesting_app.present?
           ical_url = @requesting_app.uri + event_instances_ics_path(params[:id])

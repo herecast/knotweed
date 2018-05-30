@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180416164435) do
+ActiveRecord::Schema.define(version: 20180420171339) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -220,9 +220,10 @@ ActiveRecord::Schema.define(version: 20180416164435) do
 
   create_table "content_categories", id: :bigserial, force: :cascade do |t|
     t.string   "name",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
     t.integer  "parent_id",  limit: 8
+    t.boolean  "active",                 default: true
   end
 
   create_table "content_categories_organizations", id: false, force: :cascade do |t|
@@ -354,12 +355,12 @@ ActiveRecord::Schema.define(version: 20180416164435) do
     t.integer  "ad_sales_agent"
     t.integer  "ad_promoter"
     t.datetime "latest_activity"
-    t.boolean  "has_future_event_instance"
     t.string   "alternate_title"
     t.integer  "alternate_organization_id"
     t.string   "alternate_authors"
     t.string   "alternate_text"
     t.string   "alternate_image_url"
+    t.boolean  "has_future_event_instance"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree

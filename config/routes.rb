@@ -38,14 +38,12 @@ Knotweed::Application.routes.draw do
     get "dashboard/session_duration", to: "dashboard#session_duration", as: :session_duration
 
     get "contents/parent_options", to: "contents#parent_select_options", as: :parent_select_options
-    resources :contents
+    resources :contents, except: [:show, :new, :create]
     post "content/removals", to: "contents/removals#create"
     delete "content/removals", to: "contents/removals#destroy"
     post "content/facebook_scraping", to: "contents/facebook_scrapings#create"
     resources :campaigns, except: [:show, :destroy]
     resources :comments, only: [:index, :update, :destroy]
-    get "issues/select_options", to: "issues#select_options", as: :issue_select_options
-    resources :market_posts, except: [:destroy]
     resources :business_profiles, except: [:destroy]
     namespace :business_profiles do
       resources :managers, only: [:create]
@@ -67,8 +65,6 @@ Knotweed::Application.routes.draw do
     resources :issues, only: [:new, :create, :update, :edit, :destroy, :show]
     resources :locations, except: [:destroy]
     resources :business_locations
-    resources :events, except: [:show, :destroy]
-    put "destroy_event_instance", to: "events#destroy_event_instance", as: :destroy_event_instance
 
     resources :rewrites, except: [:show]
 

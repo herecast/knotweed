@@ -14,7 +14,7 @@ describe ContentsController, type: :controller do
 
     context "when category changes" do
 
-      subject { put :update, id: @content, continue_editing: true, content: { content_category_id: @cat_2.id, title: 'Luke OG Skywalker' } }
+      subject { put :update, id: @content, content: { content_category_id: @cat_2.id, title: 'Luke OG Skywalker' } }
 
       it "should create a category correction record" do
         subject
@@ -26,23 +26,11 @@ describe ContentsController, type: :controller do
 
     context "when category does not change" do
 
-      subject { put :update, id: @content, create_new: true, content: { title: "Fake Title Update" } }
+      subject { put :update, id: @content, content: { title: "Fake Title Update" } }
 
       it "should not create a category correction if category doesn't change" do
         subject
         expect(CategoryCorrection.where(content_id: @content.id).count).to eq 0
-      end
-    end
-
-    context "when content has_event_calendar" do
-
-      subject { put :update, id: @content.id, has_event_calendar: true, content: { title: "Fake Title Update" }, format: 'json' }
-
-      it "should respond with 200 status code" do
-        subject
-        @content.reload
-        expect(response.code).to eq '200'
-        expect(response.body).to eq @content.to_json
       end
     end
 
@@ -84,6 +72,15 @@ describe ContentsController, type: :controller do
       end
     end
 
+    describe 'default filtering' do
+      let!(:campaign) { FactoryGirl.create(:content, :campaign) }
+
+      it 'should not return campaigns' do
+        get :index, q: { organization_id_in: [campaign.organization.id] }
+        expect(assigns(:contents)).to_not include(campaign)
+      end
+    end
+
     context 'with a location search param' do
       before do
         @location = FactoryGirl.create :location
@@ -106,150 +103,16 @@ describe ContentsController, type: :controller do
       @next_content = FactoryGirl.create :content
     end
 
-    context "when no index param" do
-
-      subject { get :edit, id: @content.id }
-
-      it 'should respond with 200 status code' do
-        subject
-        expect(response.code).to eq '200'
-      end
-
-      it 'should appropriately load the content' do
-        subject
-        expect(assigns(:content)).to eq @content
-      end
-    end
-
-    context "when index param present" do
-
-      subject { get :edit, { id: @content.id, index: 0 } }
-
-      it "finds next event id" do
-        allow(Content).to receive_message_chain(:ransack, :result, :order, :page, :per, :select) { [@content, @next_content] }
-        subject
-        expect(assigns(:next_content_id)).to eq @next_content.id
-      end
-
-      it "jumps to next page if necessary" do
-        allow(Content).to receive_message_chain(:ransack, :result, :order, :page, :per, :select) { [@next_content, nil] }
-        subject
-        expect(assigns(:next_content_id)).to eq @next_content.id
-      end
-    end
-
-    context "when channel present" do
-      before do
-        @channel = FactoryGirl.create :channel
-      end
-
-      subject { get :edit, id: @content.id }
-
-      it "should respond with a 302 status code" do
-        allow_any_instance_of(Content).to receive(:channel).and_return @channel
-        allow_any_instance_of(Channel).to receive(:present?).and_return true
-        @content.update_attribute(:channel_id, @channel.id)
-        @content.update_attribute(:channel_type, 'Event')
-
-        subject
-
-        expect(response.code).to eq '302'
-      end
-    end
-  end
-
-  describe 'new' do
-    subject { get :new }
+    subject { get :edit, id: @content.id }
 
     it 'should respond with 200 status code' do
       subject
       expect(response.code).to eq '200'
     end
-  end
 
-  describe 'POST #create' do
-    before do
-      @image = FactoryGirl.create :image
-      allow(Fog::Storage).to receive(:new).and_return('fog')
-      allow_any_instance_of(String).to receive(:copy_object)
-      allow_any_instance_of(String).to receive(:delete_object)
-    end
-
-    let(:content_params) { {
-      image_list: "#{@image.id}",
-      title: 'Jabba',
-      content_category_id: 4,
-      category_reviewed: true,
-      has_event_calendar: true,
-      subtitle: 'subtitle',
-      authors: 'Some peeps, like Jabba',
-      copyright: 'Tattooine, 2348',
-      pubdate: Time.current,
-      url: 'http://empire.org',
-      banner_ad_override: 34343,
-      sanitized_content: 'Propaganda, probably',
-      content_locations_attributes: [
-        {
-          location_type: 'base',
-          location_id: FactoryGirl.create(:location).id
-        }
-      ],
-      organization_ids: '12,15',
-      similar_content_overrides: '234,235'
-    } }
-
-    it "allows specified parameters" do
-      should permit(
-        :title,
-        :content_category_id,
-        :organization_id,
-        :category_reviewed,
-        :has_event_calendar,
-        :subtitle,
-        :authors,
-        :issue_id,
-        :parent_id,
-        :copyright,
-        :pubdate,
-        :url,
-        :banner_ad_override,
-        :sanitized_content,
-        content_locations_attributes: [
-          :id, :location_type, :location_id, :_destroy
-        ],
-        organization_ids: [],
-        similar_content_overrides: []
-      ).for(:create, params: { content: content_params })
-    end
-
-    subject { post :create, { content: { image_list: "#{@image.id}", title: 'Jabba' } } }
-
-    context "when content creation succeeds" do
-      it "should respond with 302 status code" do
-        subject
-        expect(flash.now[:notice]).to be_truthy
-        expect(response.code).to eq '302'
-      end
-    end
-
-    context "when content creation fails" do
-      it "should render new content page" do
-        allow_any_instance_of(Content).to receive(:save).and_return(false)
-        expect(subject).to render_template 'new'
-      end
-    end
-  end
-
-  describe 'GET #show' do
-    before do
-      @content = FactoryGirl.create :content
-    end
-
-    subject { get :show, id: @content.id, continue_editing: true }
-
-    it "should respond with 302 status code" do
+    it 'should appropriately load the content' do
       subject
-      expect(response.code).to eq '302'
+      expect(assigns(:content)).to eq @content
     end
   end
 

@@ -35,7 +35,6 @@ class Event < ActiveRecord::Base
 
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
-  validates_associated :content
   delegate :created_by, :organization, :organization_id,
     to: :content
 
@@ -65,16 +64,6 @@ class Event < ActiveRecord::Base
   enumerize :cost_type, in: [:free, :paid, :donation]
 
   serialize :links, Hash
-
-  # this callback allows us to essentially forget that the associated content
-  # exists (and helps us maintain legacy code) because it means we can do things
-  # like this:
-  #     event.title = "New Title"
-  #     event.save
-  #  and end up with the event's content record's title updated.
-  after_save do |event|
-    event.content.save
-  end
 
   # normalize all "URL" fields to be well-formed url's (have an http at beginning)
   before_save do |event|

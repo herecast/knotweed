@@ -25,49 +25,55 @@
             = f.collection_select :organization_id_in, Organization.accessible_by(current_ability), 
               :id, :name, {}, { multiple: true, class: "chosen-select span12" }
           .field.span2
-            = f.label :locations_id_in, 'Locations'
-            = f.collection_select :locations_id_in, Location.accessible_by(current_ability),
+            = f.label :locations_id_in, 'Promote Locations'
+            = f.collection_select :locations_id_in, @locations,
               :id, :name, {}, { multiple: true, class: 'chosen-select span12' }
           .field.span2
-            = f.label :pubdate_gteq, "From"
+            = f.label :pubdate_gteq, "Pubdate From"
             = f.text_field :pubdate_gteq, type: :date, value: search_field_value(:pubdate_gteq), class: "span12"
           .field.span2
-            = f.label :pubdate_lteq, "To"
+            = f.label :pubdate_lteq, "Pubdate To"
             = f.text_field :pubdate_lteq, type: :date, value: search_field_value(:pubdate_lteq), class: "span12"
         .controls.controls-row
           .field.span2
             = f.label :title_cont, "Title"
             = f.text_field :title_cont, class: "span12"
           .field.span2
-            = f.label :authors_cont, "Authors"
-            = f.text_field :authors_cont, class: "span12"
+            = f.label :authors_or_created_by_name_cont, "Authors"
+            = f.text_field :authors_or_created_by_name_cont, class: "span12"
           .field.span2
             = f.label :content_category_id_in, "Category"
             = f.collection_select :content_category_id_in, @content_categories,
               :id, :label, { include_blank: true },
               { multiple: true, class: "chosen-select span12" }
           .field.span2
+            = f.label :pubdate_not_null, "Published?"
+            = f.select :pubdate_not_null,
+              options_for_select([['All', nil],['Published', 'true'],['Unpublished', 'false']], search_field_value(:pubdate_not_null)),
+              {}, { class: 'span12' }
+          .field.span2
             = f.label :repositories_id_eq, "Published in Repository?"
             = f.collection_select :repositories_id_eq, Repository.all, :id, :name, { include_blank: true }, class: "span12"
+        .controls.controls-row
           .field.span2
-            = f.label :has_event_calendar_true, "Event Cal"
-            = f.select :has_event_calendar_true, options_for_select([["Both", nil], ["Yes", 1], ["No", 0]], search_field_value(:has_event_calendar_true)),
-              { class: "span12"}
+            = f.label :event_instances_start_date_gteq, "Start Date"
+            = f.text_field :event_instances_start_date_gteq, type: :date, value: search_field_value(:event_instances_start_date_gteq), class: "span12"
+          .field.span2
+            = f.label :event_instances_end_date_lteq, "End Date"
+            = f.text_field :event_instances_end_date_lteq, type: :date, value: search_field_value(:event_instances_end_date_lteq), class: "span12"
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
 %table.table.table-striped.table-hover.table-condensed#contents_index
   %thead
     %tr
-      %th Content ID
+      %th= sort_link(@search, :id, 'Content ID')
       %th Category
-      %th Reviewed?
+      %th= sort_link(@search, :title)
       %th Organization
-      %th Title
       %th Authors
-      %th Location
-      %th Pubdate
-      %th Curated?
+      %th= sort_link(@search, :pubdate)
+      %th Initial Start Date
       %th
   .span5
     = page_entries_info @contents if @contents.present?
@@ -76,30 +82,24 @@
     - @contents.each_with_index do |c, i|
       %tr{ class: "content-#{c.id}" }
         %td= c.id
-        %td= select_tag 'category_selection', options_from_collection_for_select(@content_categories, 'id', 'name', c.content_category_id), class: 'select_category'
-        %td= check_box_tag 'category_reviewed', '1', c.category_reviewed, class: 'category_reviewed_box'
+        %td= c.content_category.try(:label)
         %td
-          - if c.organization.present?
-            = link_to c.organization.name, contents_path(q: { organization_id_in: c.organization_id })
-        %td
-          = link_to c.title, edit_content_path(id: c.id, index: i, page: params[:page])
+          = link_to c.title, edit_content_path(c)
           - if c.raw_content.present?
             %br
             .index_content
               - stripped = strip_tags(c.sanitized_content.gsub('<',' <')).gsub(/[[:space:]]{2,}/, ' ')
-              = stripped.truncate(250).html_safe
+              = stripped.truncate(50).html_safe
         %td
-          - if c.authors.present?
-            = link_to c.authors, contents_path(q: { authors_cont: c.authors })
+          - if c.organization.present?
+            = link_to c.organization.name, edit_organization_path(c.organization)
         %td
-          - c.locations.each_with_index do |loc, i|
-            = link_to loc.name, contents_path(q: { locations_id_in: [loc.id] })
-            - unless i == (c.locations.count - 1)
-              |
+          - if c.author_name.present?
+            = link_to CGI.unescape_html(c.author_name).truncate(25), contents_path(q: { authors_cont: c.author_name })
         %td= c.pubdate.try(:strftime, "%Y-%m-%d")
         %td
-          = check_box_tag :has_event_calendar, true, c.has_event_calendar, 
-            class: "index-curated-checkbox", data: { update_path: content_path(c) }, id: nil
+          - if c.channel_type == 'Event'
+            = c.channel.event_instances.first.start_date.try(:strftime, '%Y-%m-%d')
         %td.actions
           = link_to "edit", edit_content_path(c), class: "btn btn-mini btn-warning"
           - unless c.published?

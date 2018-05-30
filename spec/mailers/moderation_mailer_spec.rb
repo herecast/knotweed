@@ -34,13 +34,13 @@ describe ModerationMailer, :type => :mailer do
         # market content
         @content.channel = FactoryGirl.create(:market_post)
         email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver_now
-        url = edit_market_post_url(@content.channel_id)
+        url = edit_content_url(@content.id)
         email.body.include?(url)
 
         # event content
         @content.channel = FactoryGirl.create(:event)
         email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver_now
-        url = edit_event_url(@content.channel_id)
+        url = edit_content_url(@content.id)
         email.body.include?(url)
       end
     end
@@ -66,13 +66,13 @@ describe ModerationMailer, :type => :mailer do
         # market content
         @content.channel = FactoryGirl.create(:market_post)
         email = ModerationMailer.send_moderation_flag_v2(@content, @params[:classification], @flagging_user).deliver_now
-        url = edit_market_post_url(@content.channel_id)
+        url = edit_content_url(@content.id)
         email.body.include?(url)
 
         # event content
         @content.channel = FactoryGirl.create(:event)
         email = ModerationMailer.send_moderation_flag_v2(@content, @params[:classification], @flagging_user).deliver_now
-        url = edit_event_url(@content.channel_id)
+        url = edit_content_url(@content.id)
         email.body.include?(url)
       end
     end

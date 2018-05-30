@@ -23,7 +23,6 @@ class MarketPost < ActiveRecord::Base
 
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
-  validates_associated :content
   validates :contact_phone, format: { without: /[a-wyzA-WYZ]/ }
 
   has_one :source, through: :content, class_name: "Organization", foreign_key: "organization_id"
