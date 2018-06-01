@@ -479,7 +479,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     context 'as organization manager' do
       before do
         organization = FactoryGirl.create :organization
-        @banner.promotion.update_attribute :organization_id, organization.id
+        @banner.promotion.content.update_attribute :organization_id, organization.id
         @user.add_role :manager, organization
       end
 

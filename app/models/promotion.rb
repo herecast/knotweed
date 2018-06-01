@@ -25,9 +25,9 @@
 
 class Promotion < ActiveRecord::Base
   include Auditable
-  belongs_to :organization
   delegate :name, to: :organization, prefix: true
   belongs_to :content
+  has_one :organization, through: :content
 
   belongs_to :promotable, polymorphic: true, inverse_of: :promotion
   delegate :banner_image, :redirect_url, :listserv, :sent_at, :banner_image?,

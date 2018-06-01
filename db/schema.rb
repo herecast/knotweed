@@ -840,7 +840,6 @@ ActiveRecord::Schema.define(version: 20180420171339) do
 
   create_table "promotions", id: :bigserial, force: :cascade do |t|
     t.string   "banner",          limit: 255
-    t.integer  "organization_id", limit: 8
     t.integer  "content_id",      limit: 8
     t.text     "description"
     t.datetime "created_at",                                  null: false
@@ -855,7 +854,6 @@ ActiveRecord::Schema.define(version: 20180420171339) do
 
   add_index "promotions", ["content_id"], name: "idx_16765_index_promotions_on_content_id", using: :btree
   add_index "promotions", ["created_by"], name: "idx_16765_index_promotions_on_created_by", using: :btree
-  add_index "promotions", ["organization_id"], name: "idx_16765_index_promotions_on_publication_id", using: :btree
 
   create_table "publish_jobs", id: :bigserial, force: :cascade do |t|
     t.text     "query_params"

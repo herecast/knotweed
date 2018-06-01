@@ -125,7 +125,7 @@ class Organization < ActiveRecord::Base
   has_and_belongs_to_many :contacts
   has_and_belongs_to_many :consumer_apps
 
-  has_many :promotions, inverse_of: :organization
+  has_many :promotions, through: :contents
 
   after_commit :trigger_content_reindex_if_name_or_profile_image_changed!, on: :update
 

@@ -20,14 +20,12 @@ class PromotionsController < ApplicationController
   end
 
   def new
-    organization = Organization.find(params[:organization_id])
     # as of now, we are not allowing creation of promotions without
     # pre-specifying the content, so if params[:content_id] is nil,
     # redirect back from whence they came
     if params[:content_id].present?
       content = Content.find(params[:content_id]) unless params[:content_id].nil?
-      @promotion = Promotion.new organization: organization
-      @promotion.content = content unless content.nil?
+      @promotion = Promotion.new content: content
       if params[:promotable_type].present?
         if params[:promotable_type] == 'PromotionBanner'
           @promotion.promotable = PromotionBanner.new
@@ -42,7 +40,7 @@ class PromotionsController < ApplicationController
       end
     else
       flash[:notice] = "Can't create a promotion with no content"
-      redirect_to edit_organization_path(organization)
+      redirect_to edit_organization_path(params[:organization_id])
     end
   end
 
@@ -52,9 +50,6 @@ class PromotionsController < ApplicationController
 
   def create
     @promotion = Promotion.new(promotion_params)
-
-    pub = Organization.find params[:organization_id]
-    @promotion.organization = pub
 
     respond_to do |format|
       if @promotion.save
@@ -86,7 +81,6 @@ class PromotionsController < ApplicationController
     def promotion_params
       params.require(:promotion).permit(
         :description,
-        :organization_id,
         :content_id,
         :promotable_type,
         :paid,

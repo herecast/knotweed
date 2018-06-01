@@ -83,13 +83,11 @@ RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
 
     context "with proper params" do
       let (:content) { FactoryGirl.create :content }
-      let (:organization) { FactoryGirl.create :organization }
       let (:user) { FactoryGirl.create :user }
 
       let (:params) {{
         content_id: content.id,
         promotion: {
-          organization_id: organization.id,
           share_platform: 'Hothbook'
         }
       }}

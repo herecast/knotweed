@@ -11,8 +11,8 @@
 
       %p
         %b Organization:
-        - if @promotion.organization.present?
-          = link_to @promotion.organization_name, edit_organization_path(@promotion.organization)
+        - if @promotion.content.organization.present?
+          = link_to @promotion.content.organization.name, edit_organization_path(@promotion.content.organization)
       %p
         %b Content:
         - if @promotion.content.nil?

@@ -142,9 +142,9 @@ describe 'Promotion Banner Endpoints', type: :request do
     let(:organization) { FactoryGirl.create :organization }
 
     context 'with existing content and related promotion;' do
-      let(:banner) { FactoryGirl.create :promotion_banner, organization: organization }
+      let(:banner) { FactoryGirl.create :promotion_banner }
       let(:promo) { banner.promotion }
-      let!(:content) { FactoryGirl.create :content, banner_ad_override: promo.id }
+      let!(:content) { FactoryGirl.create :content, banner_ad_override: promo.id, organization: organization }
 
       subject { get "/api/v3/promotions?content_id=#{content.id}" }
 
@@ -154,7 +154,7 @@ describe 'Promotion Banner Endpoints', type: :request do
             id: banner.id,
             image_url: banner.banner_image.url,
             redirect_url: banner.redirect_url,
-            organization_name: organization.name,
+            organization_name: an_instance_of(String),
             promotion_id: promo.id,
             title: promo.content.title,
             select_score: be_an_instance_of(Float).or(be_nil),
@@ -179,7 +179,7 @@ describe 'Promotion Banner Endpoints', type: :request do
             id: banner.id,
             image_url: banner.banner_image.url,
             redirect_url: banner.redirect_url,
-            organization_name: nil,
+            organization_name: promo.content.organization.name,
             promotion_id: promo.id,
             title: promo.content.title,
             select_score: be_an_instance_of(Float).or(be_nil),

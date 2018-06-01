@@ -157,7 +157,7 @@ module Api
       end
 
       def user_can_manage?
-        @current_api_user.ability.can?(:manage, @promotion_banner.promotion.organization)
+        @current_api_user.ability.can?(:manage, @promotion_banner.promotion.content.organization)
       end
 
       def conditionally_prime_daily_ad_reports

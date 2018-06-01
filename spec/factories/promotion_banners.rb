@@ -30,7 +30,6 @@ FactoryGirl.define do
   factory :promotion_banner do
     ignore do
       content nil
-      organization nil
       created_by nil
     end
 
@@ -73,7 +72,6 @@ FactoryGirl.define do
 
     after(:build) do |e, evaluator|
       e.promotion.content = evaluator.content if evaluator.content.present?
-      e.promotion.organization = evaluator.organization if evaluator.organization.present?
       e.promotion.created_by = evaluator.created_by if evaluator.created_by.present?
     end
 
