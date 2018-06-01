@@ -570,6 +570,22 @@ describe 'Feed endpoints', type: :request do
         expect(response_json[:feed_items].length).to eq 2
         expect(response_json[:feed_items][0][:content][:id]).to eq @first_event.id
       end
+
+      context "when Event is tagged to organization" do
+        before do
+          alt_org = FactoryGirl.create :organization
+          @tagged_event = FactoryGirl.create :content, :event,
+            organization_id: alt_org.id,
+            biz_feed_public: true
+          @organization.tagged_contents << @tagged_event
+        end
+
+        it "returns tagged event as well" do
+          subject
+          ids = response_json[:feed_items].map{ |i| i[:content][:id] }
+          expect(ids).to include @tagged_event.id
+        end
+      end
     end
 
     describe "additional params" do

@@ -52,20 +52,25 @@ class ContentSearch
   end
 
   def organization_calendar_query
+    organization = Organization.find(@params[:organization_id])
     {
       load: false,
       page: page,
       per_page: per_page,
       where: {
         content_type: :event,
-        organization_id: @params[:organization_id],
         biz_feed_public: [true, nil],
         starts_at: {
           gte: Time.current
         },
         removed: {
           not: true
-        }
+        },
+        or: [[
+          { organization_id: @params[:organization_id] },
+          { channel_id: organization.venue_event_ids, channel_type: 'Event' },
+          { id: organization.tagged_contents.pluck(:id) }
+        ]]
       },
       order: {
         starts_at: :asc
