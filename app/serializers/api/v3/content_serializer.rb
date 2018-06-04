@@ -343,13 +343,14 @@ module Api
         end
 
         def base_locations
-          return @base_locations unless @base_locations.nil?
-          if object.organization.present?
-            object.base_locations |= object.organization.consumer_active_base_locations
+          if object.base_locations.present?
+            object.base_locations
+          elsif object.organization.present?
+            object.organization.consumer_active_base_locations
+          else
+            []
           end
-          @base_locations ||= object.base_locations
         end
-
     end
   end
 end
