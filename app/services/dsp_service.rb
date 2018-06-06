@@ -140,44 +140,6 @@ module DspService
     rec_doc
   end
 
-  # queries the DSP for similar content
-  #
-  # @param content [Content]
-  # @param num_similar [Integer]
-  # @param repo [Repository]
-  def get_similar_content_ids(content, num_similar=8, repo=Repository.production_repo, has_image: nil)
-    # note -- the "category" method being called on self here
-    # returns the text label of the associated content_category
-    # filters by parent_category for the given content_category-
-    if ["market", "offered", "wanted", "for_free", "sale_event"].include? content.category
-      extra_param = "&recency=30&filter=parent_category:market"
-    elsif ["event"].include? content.category
-      extra_param = "&recency=30&filter=parent_category:event"
-    elsif ["discussion", "recommendation"].include? content.category
-      extra_param = "&filter=parent_category:talk_of_the_town"
-    else
-      extra_param = "&filter=parent_category:news"
-    end
-
-    if has_image == false
-      extra_param += "&filter=has_image:false"
-    elsif has_image == true
-      extra_param += "&filter=has_image:true"
-    end
-    similar_url = repo.recommendation_endpoint + '/recommend/contextual?contentid=' +
-      content.uri + "&key=#{Figaro.env.ontotext_recommend_key}" +
-      "&count=#{num_similar}" + "&sort=rel" + extra_param
-    response = HTTParty.get(similar_url)
-    if response['articles'].present?
-      similar_ids = response['articles'].map do |art|
-        art['id'].split('/')[-1].to_i
-      end
-      similar_ids
-    else
-      []
-    end
-  end
-
   # queries the DSP for active, relevant ads then returns those with inventory
   #
   # @param content [Content]

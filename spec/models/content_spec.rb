@@ -1776,38 +1776,75 @@ describe Content, :type => :model do
   end
 
   describe 'similar_content', elasticsearch: true do
-    context 'with similar_content_overrides present' do
-      before do
-        @override3 = FactoryGirl.create :content, pubdate: 1.week.ago
-        @override1 = FactoryGirl.create :content, pubdate: 1.day.ago
-        @override2 = FactoryGirl.create :content, pubdate: 3.days.ago
-        @ids = [@override1, @override2, @override3].map{ |o| o.id }
-        @content = FactoryGirl.create(:content, similar_content_overrides: @ids)
-        @repo = FactoryGirl.create :repository
-      end
+    let!(:content) { FactoryGirl.create :content }
+    let(:sim_attributes) {
+      {
+        raw_content: content.sanitized_content,
+        title: content.title,
+        origin: Content::UGC_ORIGIN
+      }
+    }
+    
+    # similar_content comes back as raw ES data for the API,
+    # so map to IDs for testing
+    subject { content.similar_content(4).map(&:id) }
 
-      it 'should return the contents specified as overrides' do
-        result_ids = @content.similar_content(@repo).map{ |c| c.id }
-        @ids.each {|id| expect(result_ids).to include id }
-      end
+    describe 'with normal content with identical content fields' do
+      let!(:sim_content) { FactoryGirl.create :content, sim_attributes }
 
-      it 'should return the contents in pubdate DESC order' do
-        expect(@content.similar_content(@repo).to_a).to eq Content.search('*',
-                                                                          where: {id: @ids},
-                                                                          load: false,
-                                                                          order: {pubdate: :desc}).to_a
+      it 'should respond with that content' do
+        expect(subject).to match_array([sim_content.id])
       end
     end
 
-    it 'returns contents in same order as DSP service' do
-      repo = FactoryGirl.build_stubbed :repository
-      content = FactoryGirl.build_stubbed :content
-      similar = FactoryGirl.create_list(:content, 8).shuffle
-      allow(DspService).to receive(:get_similar_content_ids).with(
-        content, 8, repo
-      ).and_return(similar.collect(&:id))
+    describe 'with similar content that is non-UGC' do
+      let!(:sim_content) { FactoryGirl.create :content, sim_attributes.merge({ origin: 'Not one bit UGC' }) }
 
-      expect(content.similar_content(repo, 8).map(&:id)).to eql similar.map(&:id)
+      it 'should not respond with that content' do
+        expect(subject).to_not include(sim_content.id)
+      end
+    end
+
+    describe 'with similar content with no pubdate' do
+      let!(:sim_draft) { FactoryGirl.create :content, sim_attributes.merge({ pubdate: nil }) }
+
+      it 'should not respond with that content' do
+        expect(subject).to_not include(sim_draft.id)
+      end
+    end
+
+    describe 'with similar content with a future pubdate' do
+      let!(:sim_draft) { FactoryGirl.create :content, sim_attributes.merge({ pubdate: 1.week.from_now }) }
+
+      it 'should not respond with that content' do
+        expect(subject).to_not include(sim_draft.id)
+      end
+    end
+
+    describe 'with similar event' do
+      let(:sim_content) { FactoryGirl.create :content, sim_attributes }
+      let!(:sim_event) { FactoryGirl.create :event,
+          start_date: start_date,
+          content: sim_content
+      }
+
+      before { ReindexEventsWithFutureInstances.perform_now }
+
+      context 'with future instances' do
+        let(:start_date) { 1.week.from_now }
+
+        it 'should respond with that event' do
+          expect(subject).to include(sim_content.id)
+        end
+      end
+
+      context 'with no future instances' do
+        let(:start_date) { 1.week.ago }
+
+        it 'should not respond with that event' do
+          expect(subject).to_not include(sim_content.id)
+        end
+      end
     end
   end
 

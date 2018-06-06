@@ -110,35 +110,7 @@ module Api
         expires_in 1.minutes, :public => true
         @content = Content.find params[:id]
 
-        # need to call to_a here so we can use mutating select! afterwards
-        # (Rails 4.1 deprecated calling mutating methods directly on ActiveRecord
-        # Relations)
-        @contents = @content.similar_content(@repository, 20).to_a
-        # filter by organization
-        if @requesting_app.present?
-          requesting_app_orgs = @requesting_app.organizations.to_a
-          @contents.select!{ |c| requesting_app_orgs.map(&:id).include? c.organization_id }
-        end
-
-        # remove records that are events with no future instances
-        @contents.reject! do |c|
-          c.channel_type == 'Event' &&
-            c.event_instances.all? { |ei| Chronic.parse(ei.starts_at) <= Time.zone.now }
-        end
-
-        # remove drafts and future scheduled content
-        @contents.reject!{ |c| c.published_at.blank? or Chronic.parse(c.published_at) >= Time.zone.now }
-
-        # This is a Bad temporary hack to allow filtering the sim stack provided by apiv2
-        # the same way that the consumer app filters it.
-        if Figaro.env.sim_stack_categories?
-          @contents.select! do |c|
-            name = c.content_category_name
-            name && Figaro.env.sim_stack_categories.include?(name)
-          end
-        end
-
-        @contents = @contents.slice(0,8)
+        @contents = @content.similar_content(4)
 
         render json: @contents, each_serializer: HashieMashes::ContentSerializer,
           root: 'similar_content', consumer_app_base_uri: @requesting_app.try(:uri)

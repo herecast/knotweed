@@ -20,7 +20,8 @@ module SearchIndexing
       :published,
       :removed,
       :root_content_category_id,
-      :root_parent_id
+      :root_parent_id,
+      :has_future_event_instance
 
     has_many :comments, serializer: SearchIndexing::CommentSerializer
 

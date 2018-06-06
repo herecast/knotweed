@@ -1324,32 +1324,24 @@ class Content < ActiveRecord::Base
   end
 
   # Retrieves similar content (as configured in similar_content_overrides for sponsored content or determined by
-  # DSP via relevance for 'normal' content) and returns array of related content objects
+  # ElasticSearch similarity and returns array of related content objects
   #
-  # @param repo [Repository] repository to query
   # @param num_similar [Integer] number of results to return
   # @return [Array<Content>] list of similar content
-  def similar_content(repo, num_similar=8)
-    if similar_content_overrides.present?
-      Content.search('*',
-                     where: {id: similar_content_overrides},
-                     order: {pubdate: :desc},
-                     limit: num_similar,
-                     load: false).to_a
-    else
-      similar_ids = DspService.get_similar_content_ids(self, num_similar, repo)
-      c = Content.search('*', where: {id: similar_ids}, load: false)
-      # filter out comments - they will blow up the sort_by list and we don't want them
-      c = c.to_a.reject do |content|
-        content.content_id.present? &&
-          content.parent_content_id.present? &&
-          content.content_id != content.parent_content_id
-      end
-
-      c.sort_by do |content|
-        similar_ids.index(content.id)
-      end
-    end
+  def similar_content(num_similar)
+    c = self.similar(
+      fields: [:title, :content, :location_id],
+      where: {
+        pubdate: 5.years.ago..Time.current,
+        removed: { not: true },
+        has_future_event_instance: { not: false },
+        channel_type: { not: 'Comment' },
+        origin: UGC_ORIGIN
+      },
+      load: false,
+      limit: num_similar
+    )
+    c
   end
 
   def uri
