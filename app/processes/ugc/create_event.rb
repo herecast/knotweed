@@ -4,9 +4,8 @@ module Ugc
       self.new(*args).call
     end
 
-    def initialize(params, remote_ip: nil, repository: nil, user_scope:)
+    def initialize(params, remote_ip: nil, user_scope:)
       @current_user = user_scope
-      @repository = repository
       @params = params
       @remote_ip = remote_ip
     end
@@ -75,9 +74,9 @@ module Ugc
           #the content ID to avoid overwriting it
           new_e[:content_attributes][:id] = @event.content.id
         else
-          new_e[:content_attributes][:pubdate] = Time.zone.now
           # NOTE: these attributes are here because they can't change on update
           new_e[:content_attributes].merge!({
+            published: true,
             pubdate: Time.zone.now,
             content_category_id: ContentCategory.find_or_create_by(name: 'event').id,
             authoremail: @current_user.try(:email),

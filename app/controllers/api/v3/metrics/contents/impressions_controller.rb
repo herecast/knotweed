@@ -7,16 +7,6 @@ module Api
 
         unless analytics_blocked?
           BackgroundJob.perform_later("RecordContentMetric", "call", @content, content_metric_params)
-
-          if @repository.present?
-            if params[:client_id] || user_signed_in?
-              BackgroundJob.perform_later("DspService", "record_user_visit",
-                @content,
-                @current_api_user.try(:email) || params[:client_id],
-                @repository
-              ) unless analytics_blocked?
-            end
-          end
         end
 
         render json: {}, status: :accepted

@@ -11,7 +11,7 @@ module Api
           { title: :asc }
         ]
         opts[:where] = {}
-        opts[:where][:published] = 1 if @repository.present?
+        opts[:where][:published] = 1
         opts[:where][:removed] = { not: true }
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 20
@@ -86,7 +86,7 @@ module Api
           @_active_dates ||= begin
             opts = {load: false, limit: 0}
             opts[:where] = {}
-            opts[:where][:published] = 1 if @repository.present?
+            opts[:where][:published] = 1
             apply_query_date_range opts
             apply_query_location_filters opts
 

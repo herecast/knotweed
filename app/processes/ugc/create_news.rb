@@ -4,9 +4,8 @@ module Ugc
       self.new(*args).call
     end
 
-    def initialize(params, repository: nil, user_scope:)
+    def initialize(params, user_scope:)
       @current_user = user_scope
-      @repository = repository
       @params = params
     end
 
@@ -37,7 +36,8 @@ module Ugc
           :pubdate,
           :raw_content,
           :subtitle,
-          :title
+          :title,
+          :published
         )
       end
 
@@ -45,6 +45,7 @@ module Ugc
         ActionController::Parameters.new(@params).tap do |h|
           h[:content][:raw_content] = h[:content].delete :content if h[:content].has_key? :content
           h[:content][:pubdate] = h[:content].delete :published_at if h[:content].has_key? :published_at
+          h[:content][:published] = true if h[:content].has_key? :pubdate and h[:content][:pubdate].present?
           author_name = h[:content].delete :author_name
 
           if author_name == @current_user.name # @content hasn't been persisted yet so has no created_by

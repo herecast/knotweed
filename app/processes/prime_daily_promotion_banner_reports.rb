@@ -12,7 +12,6 @@ class PrimeDailyPromotionBannerReports
   def call
     reset_daily_impression_counts
     create_reports_for_current_promotion_banners
-    update_active_promotions
     notify_admin_team_of_sunsetting_ads if @is_prod
   end
 
@@ -26,12 +25,6 @@ class PrimeDailyPromotionBannerReports
     def create_reports_for_current_promotion_banners
       PromotionBanner.active(@current_date).each do |promotion_banner|
         promotion_banner.find_or_create_daily_report(@current_date)
-      end
-    end
-
-    def update_active_promotions
-      PromotionBanner.all.each do |promo|
-        promo.update_active_promotions
       end
     end
 

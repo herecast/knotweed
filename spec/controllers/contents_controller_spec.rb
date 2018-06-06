@@ -129,62 +129,6 @@ describe ContentsController, type: :controller do
     end
   end
 
-  describe 'GET #publish' do
-    before do
-      @repository = FactoryGirl.create :repository
-      @content = FactoryGirl.create :content
-    end
-
-    context "when publish succeeds" do
-
-      subject { get :publish, id: @content.id, method: 'export_to_xml', repository_id: @repository.id }
-
-      it "should flash success" do
-        allow_any_instance_of(Content).to receive(:publish).and_return true
-        subject
-        expect(flash.now[:notice]).to include 'successful'
-        expect(response.code).to eq '302'
-      end
-    end
-
-    context "when publish fails" do
-
-      subject { get :publish, id: @content.id, method: 'export_to_xml', repository_id: @repository.id}
-
-      it "should flash error" do
-        allow_any_instance_of(Content).to receive(:publish).and_return false
-        subject
-        expect(flash.now[:error]).to include 'error'
-        expect(response.code).to eq '302'
-      end
-    end
-  end
-
-  describe 'GET #rdf_to_gate' do
-    before do
-      @repository = FactoryGirl.create :repository
-      @content = FactoryGirl.create :content
-    end
-
-    subject { get :rdf_to_gate, id: @content.id, repository_id: @repository.id }
-
-    context "when gate_xml is false" do
-      it "renders 'not found' text" do
-        allow_any_instance_of(Content).to receive(:rdf_to_gate).and_return false
-        subject
-        expect(response.body).to include @content.id.to_s
-      end
-    end
-
-    context "when gate_xml is true" do
-      it "renders file" do
-        allow_any_instance_of(Content).to receive(:rdf_to_gate).and_return({ "data" => 'fake' })
-        subject
-        expect(response.headers["Content-Type"]).to eq 'application/xml'
-      end
-    end
-  end
-
   describe 'parent_select_options' do
     before do
       @content = FactoryGirl.create :content, title: 'nice title'

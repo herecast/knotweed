@@ -59,7 +59,6 @@ class User < ActiveRecord::Base
   has_many :social_logins
   has_many :user_bookmarks
   has_many :contents, foreign_key: 'created_by'
-  belongs_to :default_repository, class_name: "Repository"
   belongs_to :location
   mount_uploader :avatar, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_avatar,

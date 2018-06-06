@@ -38,15 +38,6 @@
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#crisis" } do
           %i.icon-flag
           Crisis
-      - if @content.id.present?
-        %li
-          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#publish" } do
-            %i.icon-upload
-            Publish/Export
-      - if @content.published?
-        %li
-          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#annotation_reports" } do
-            Annotation Reports
     .tab-content
       .tab-pane.form-horizontal#details{ class: "active" }
         -# uneditable features displayed in info box if content exists
@@ -74,7 +65,9 @@
                   - if @content.quarantine
                     %i.icon-ok
                 %dt Published?
-                %dd= @content.repositories.map{ |r| r.dsp_endpoint }.join(", ")
+                %dd
+                  - if @content.published?
+                    %i.icon-ok
         = f.association :organizations, label: 'Tagged Organizations', input_html: { class: 'chosen-select input-block-level' }
         = f.input :title, input_html: { class: "input-block-level" }
         = f.input :subtitle, input_html: { class: "input-block-level" }
@@ -95,10 +88,6 @@
         .row-fluid.sponsored-content
           = f.input :banner_ad_override, wrapper_html: { class: 'span6' },
             hint: 'The id of the Promotion record that should show with this content.',
-            as: :string
-          = f.input :similar_content_overrides, wrapper_html: { class: 'span6' },
-            input_html: { value: @content.similar_content_overrides.map{|i| i.to_s }.join(',') },
-            hint: 'The ids of content to show in the relevance stack. Input as a comma separated list of numbers.',
             as: :string
       - if @content.channel.blank? or @content.channel_type == 'Comment'
         .tab-pane#doc_content
@@ -201,27 +190,11 @@
             = link_to_add_association '+ Add Location', f, :content_locations, class: 'btn btn-default'
       .tab-pane#crisis
         = render 'contents/partials/crisis_form', content: @content, f: f
-      - if @content.id.present?
-        .tab-pane#publish{ data: { no_turbolink: "" } }
-          = render partial: 'contents/partials/publishing_tab', locals: { content: @content }
-      - if @content.published?
-        .tab-pane#annotation_reports
-          = render partial: 'contents/partials/annotation_reports_tab', locals: { content: @content }
     .form-actions
       = submit_tag "Submit and close record", class: "btn btn-primary"
       = submit_tag "Submit and continue with this record", class: "btn btn-success", name: "continue_editing"
       = render 'contents/partials/crisis_submit', content: @content, type: 'content'
       = link_to "Cancel", :back, class: "btn cancel"
-
-- if @content.published?
-  .modal.hide.fade#annotations
-    .modal-header
-      %a.pull-right.btn.btn-primary.span2{ href: "#", data: { dismiss: "modal" } } Finish
-      %span.pull-right#num-reviewed.span2
-      %h3#annotation_report_name
-    #annotation_form
-    .modal-body
-      Loading annotations...
 
 .modal.hide.fade#organization_form
   .modal-header

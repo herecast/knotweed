@@ -230,10 +230,7 @@ class Content < ActiveRecord::Base
   end
 
   belongs_to :issue
-  belongs_to :import_location
-  belongs_to :import_record
 
-  has_many :annotation_reports
   has_many :category_corrections
 
   has_many :content_reports
@@ -251,7 +248,6 @@ class Content < ActiveRecord::Base
            through: :content_locations, source: :location
 
   validate :require_at_least_one_content_location, if: ->(c) {
-    !c.import_record_id? &&
     [:talk, :market_post, :event].include?(c.content_type)
   }
 
@@ -281,9 +277,6 @@ class Content < ActiveRecord::Base
   has_many :organization_content_tags
   has_many :organizations, through: :organization_content_tags
 
-  has_and_belongs_to_many :publish_records
-  has_and_belongs_to_many :repositories, -> { uniq }, after_add: :mark_published
-
   has_many :images, -> { order("images.primary DESC") }, as: :imageable, inverse_of: :imageable, dependent: :destroy
   accepts_nested_attributes_for :images, allow_destroy: true
 
@@ -310,8 +303,6 @@ class Content < ActiveRecord::Base
   has_one :unchannelized_original, class_name: "Content", foreign_key: "channelized_content_id"
   has_one :sales_agent, class_name: 'User', primary_key: "ad_sales_agent", foreign_key: "id"
   has_one :promoter, class_name: 'User', primary_key: "ad_promoter", foreign_key: "id"
-
-  serialize :similar_content_overrides, Array
 
   attr_accessor :tier # this is not stored on the database, but is used to generate a tiered tree
   # for the API
@@ -342,8 +333,6 @@ class Content < ActiveRecord::Base
   has_many :event_instances, through: :event
   belongs_to :market_post, foreign_key: 'channel_id'
   accepts_nested_attributes_for :market_post, allow_destroy: true
-
-  TMP_EXPORT_PATH = Rails.root.to_s + "/tmp/exports"
 
   scope :events, -> { joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",
                                                      "event", "sale_event") }
@@ -378,30 +367,7 @@ class Content < ActiveRecord::Base
   scope :ad_campaign_active, ->(date=Date.current) { where("ad_campaign_start <= ?", date)
     .where("ad_campaign_end >= ?", date) }
 
-  NEW_FORMAT = "New"
-  EXPORT_FORMATS = [NEW_FORMAT]
-  DEFAULT_FORMAT = NEW_FORMAT
-
-  BASE_URI = "http://www.subtext.org/Document"
-
   UGC_ORIGIN = 'UGC'
-
-  # publish methods are string representations
-  # of methods on the Content model
-  # that are called via send on each piece of content
-  EXPORT_TO_XML = "export_to_xml"
-  EXPORT_PRE_PIPELINE = "export_pre_pipeline_xml"
-  EXPORT_POST_PIPELINE = "export_post_pipeline_xml"
-  PUBLISH_TO_DSP = "publish_to_dsp"
-  PUBLISH_METHODS = [PUBLISH_TO_DSP, EXPORT_TO_XML, EXPORT_PRE_PIPELINE,
-                     EXPORT_POST_PIPELINE]
-  # set a default here so if it changes,
-  # we don't have to change the code in many different places
-  DEFAULT_PUBLISH_METHOD = PUBLISH_TO_DSP
-
-  # features that can be overwritten when we reimport
-  REIMPORT_FEATURES = %w(title subtitle authors raw_content pubdate source_category topics
-                         url authoremail import_record)
 
   CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle
                   local_news nation_world offered presentation recommendation
@@ -412,15 +378,6 @@ class Content < ActiveRecord::Base
   # ensure that we never save titles with leading/trailing whitespace
   def title=t
     write_attribute(:title, t.to_s.strip)
-  end
-
-  # callback that is run after a contents_repositories entry is added
-  # sets content.published = true IF the repository is the "production"
-  # repository
-  def mark_published(repo)
-    if repo.id == Repository::PRODUCTION_REPOSITORY_ID
-      update_attribute :published, true
-    end
   end
 
   def primary_image
@@ -440,30 +397,6 @@ class Content < ActiveRecord::Base
   # than to remove references to the method altogether
   def content
     raw_content
-  end
-
-  # if passed a repo, checks if this content was published in that repo
-  # otherwise, checks if it is published in any repo
-  def published?(repo=nil)
-    if repo.present?
-      repositories.include? repo
-    else
-      repositories.present?
-    end
-  end
-
-  def document_uri
-    "#{BASE_URI}/#{id}"
-  end
-
-  def source_uri
-    "<http://www.subtext.org/#{organization.class.to_s}/#{organization.id}>"
-  end
-
-  def location
-    unless import_location.nil?
-      import_location.city if import_location.status == ImportLocation::STATUS_GOOD
-    end
   end
 
   def category
@@ -493,224 +426,6 @@ class Content < ActiveRecord::Base
     if cat_name != content_type.to_s
       self.category = cat_name
     end
-  end
-
-  # creating a new content from import job data
-  # is not as simple as just creating new from hash
-  # because we need to match locations, organizations, etc.
-  def self.create_from_import_job(input, job=nil)
-    # pull special attributes out of the data hash
-    special_attrs = {}
-    # convert symbols to strings
-    data = {}
-    input.each do |k,v|
-      if k.is_a? Symbol
-        key = k.to_s
-      else
-        key = k
-      end
-      if ['image', 'images', 'content_category', 'location', 'source', 'edition', 'imagecaption', 'imagecredit',
-          'in_reply_to', 'categories', 'source_field', 'user_id'].include? key
-        special_attrs[key] = v if v.present?
-      elsif key == 'listserv_locations' || key == 'content_locations'
-        data['location_ids'] = Location.get_ids_from_location_strings(v)
-      elsif v.present?
-        data[key] = v
-      end
-    end
-
-    # if this has our proprietary 'X-Original-Content-Id' key in the header, it means this was created on our site.
-    # if so, AND it's an event, it implies it's already been curated (i.e. 'has_event-calendar')
-    original_content_id = original_event_instance_id = 0
-    original_content_id = data['X-Original-Content-Id'] if data.has_key? 'X-Original-Content-Id'
-    if original_content_id > 0
-      c = Content.find(original_content_id)
-      data['has_event_calendar'] = true if 'Event' == c.channel_type
-    end
-    # if this has our proprietary 'X-Original-Event-Instance-Id' key in the header, it means this was created on
-    # our site so don't create new content. If so, AND it's an event, it implies it's already been curated (i.e. 'has_event-calendar')
-    original_event_instance_id = data['X-Original-Event-Instance-Id'] if data.has_key? 'X-Original-Event-Instance-Id'
-    if original_event_instance_id > 0
-      c = EventInstance.find(original_event_instance_id).event.content
-      data['has_event_calendar'] = true if 'Event' == c.channel_type
-    end
-
-    raw_content = data.delete 'content'
-
-    data.keys.each do |k|
-      unless Content.method_defined? "#{k}="
-        data.delete k
-      end
-    end
-
-    content = Content.new(data)
-    content.raw_content = raw_content
-
-    # pull complex key/values out from data to use later
-    if special_attrs.has_key? 'location'
-      import_location = special_attrs['location']
-      content.import_location = ImportLocation.find_or_create_from_match_string(import_location)
-    end
-
-    if special_attrs.has_key? "source"
-      if special_attrs.has_key? "source_field"
-        source_field = special_attrs["source_field"].to_sym
-      else
-        source_field = :name
-      end
-      source = special_attrs["source"]
-      if source_field == :name
-        # try to match content source's name exactly
-        content.organization = Organization.find_by_name(source)
-        # if that doesn't work, try a "LIKE" query
-        content.organization = Organization.where("name LIKE ?", "%#{source}%").first if content.organization.nil?
-        content.organization = Organization.create(name: source) if content.organization.nil?
-      else # deal with special source_fields
-        content.organization = Organization.where(source_field => source).first
-      end
-    end
-    if special_attrs.has_key? "edition"
-      edition = special_attrs["edition"]
-      content.issue = Issue.where("issue_edition LIKE ?", "%#{edition}%").where(organization_id: content.organization_id,
-                                                                                publication_date: content.pubdate).first
-      # if not found, create a new one
-      if content.issue.nil?
-        content.issue = Issue.new(issue_edition: edition, publication_date: content.pubdate)
-        content.issue.organization = content.organization if content.organization.present?
-      end
-    end
-    if special_attrs.has_key? "categories"
-      content.source_category = special_attrs['categories']
-    end
-    if special_attrs.has_key? 'content_category'
-      content.category = special_attrs['content_category']
-    end
-    if special_attrs.has_key? "in_reply_to"
-      parent = Content.find_by_guid(special_attrs["in_reply_to"])
-      if parent.published? && !parent.quarantine?
-        content.parent = parent
-      end
-    end
-
-    content.import_record = job.last_import_record if job.present?
-
-    content.set_guid unless content.guid.present? # otherwise it won't be set till save and we need it for overwriting
-
-    # deal with existing content that needs to be overwritten
-    # starting with matching organization AND source_content_id
-    # but need to add (our) guid matching as well
-    #
-    # logic here is: IF source exists and source_content_id exists, overwrite based on matching those two
-    # ELSIF: overwrite based on matching guid
-    # ELSE: don't overwrite, create a new one
-    #
-    # TODO: this should probably be factored out into a before_save filter
-    if content.organization.present? and content.source_content_id.present?
-      existing_content = Content.where(organization_id: content.organization_id,
-                                       source_content_id: content.source_content_id).try(:first)
-    end
-    if existing_content.nil? and content.organization.present?
-      existing_content = Content.where(organization_id: content.organization_id, guid: content.guid).try(:first)
-      # some content may be missing the guid because they come in as a listserve digest, which strips the guid.
-      # also sometimes the user posts the same message to multiple listservers, which will cause the message to have
-      # multiple guids even though it's the same content. the logic below allow us to detect existing content in these cases.
-      if existing_content.nil?
-        conditions = { authoremail: content.authoremail, channel_type: nil, pubdate: (content.pubdate.try(:beginning_of_day)..content.pubdate.try(:end_of_day)) }
-        # exclude the list serve name [TownName] from the title
-        partial_title = content.title.gsub(/\[.*\] /, '').try(:strip)
-        title_condition = []
-        if partial_title.present?
-          title_condition.push "title like ?", '%' + partial_title
-        else
-          title_condition.push "title like ?", '%' + content.title
-        end
-        news_category = ContentCategory.find_by_name('news')
-        news_condition = []
-        if news_category.present?
-          news_condition.push "root_content_category_id <> ?", news_category.id
-        end
-        existing_content = Content.where(conditions).where(title_condition).where(news_condition).try(:first)
-      end
-    end
-    if existing_content.present?
-      # if existing content is there, rather than saving, we update
-      # the whitelisted reimport attributes
-      REIMPORT_FEATURES.each do |f|
-        existing_content.send "#{f}=", content.send(f.to_sym) if content.send(f.to_sym).present?
-      end
-      existing_content.locations += content.locations
-      content = existing_content
-    else
-      content.created_by = User.find_by_id(special_attrs['user_id'])
-    end
-    content.updated_by = User.find_by_id(special_attrs['user_id'])
-
-    content.save!
-
-    # ensure all locations are base
-    content.content_locations.each do |cl|
-      cl.update location_type: 'base'
-    end
-
-    # this new_content_images array will contain a list of the images used in this content record
-    new_content_images = []
-
-    # if the content saves, add any images that came in
-    # this has to be down here, not in the special_attributes CASE statement
-    # because we don't want to create the images if the content doesn't save.
-    if special_attrs.has_key? "image"
-      # CarrierWave validation should take care of validating this for us
-      content.create_or_update_image(special_attrs['image'], special_attrs['imagecaption'], special_attrs['imagecredit'], special_attrs['primary'])
-      new_content_images = [File.basename(special_attrs['image'])]
-    end
-
-    # handle multiple images (initially from Wordpress import parser)
-    if special_attrs.has_key? 'images'
-      # CarrierWave validation should take care of validating this for us
-      imgs = special_attrs['images']
-      imgs.each do | img |
-        content.create_or_update_image(img['image'], img['imagecaption'], img['imagecredit'], img['primary'])
-      end
-      new_content_images = imgs.map{|i| File.basename(i['image'])}
-    end
-
-    # delete any now-unused images
-    content.images.each do |i|
-      # regexp removes the timestamp prefix from the filename for matching purposes
-      i.destroy unless new_content_images.include? i.name.match(/[0-9a-f]+-(.+)/)[1]
-    end
-
-    # this line is designed to handle content imported from Wordpress that had an image at the top of the content
-    # and potentially other images.  The first image would duplicate our only (currently-supported) image,
-    # which is also needed for tile view.  This line pulls the first <a ...><img ...></a> set and leaves the second and
-    # subsequent so those images actually display as intended and built in Wordpress.
-    # since those images have already been processed and pulled into to our AWS store, this method goes through
-    # and updates the remaining img tags to point to the correct URL.
-    content.process_wp_content!
-
-    content
-  end
-
-  def create_or_update_image(url, caption, credit, primary=false)
-    image_attrs = {
-        remote_image_url: url,
-        source_url: url
-    }
-    image_attrs[:caption] = caption if caption.present?
-    image_attrs[:credit] = credit if credit.present?
-
-    # do we already have this image?
-    current_image = Image.find_by_imageable_id_and_source_url(id, url)
-    if current_image.present?
-      new_image = images.update(current_image.id, image_attrs)
-    else
-      new_image = images.create(image_attrs)
-    end
-
-    if primary
-      self.primary_image = new_image
-    end
-    new_image
   end
 
   # check that doc validates our xml requirements
@@ -769,189 +484,8 @@ class Content < ActiveRecord::Base
   end
 
   # catchall publish method that handles interacting w/ the publish record
-  def publish(method, repo, record=nil, opts={})
-    # do not allow publishing during BACKUPS
-    if ImportJob.backup_start < Time.current and Time.current < ImportJob.backup_end
-      return false
-    end
-    if method.nil?
-      method = DEFAULT_PUBLISH_METHOD
-    end
-    if record.present?
-      file_list = record.files
-    else
-      if opts[:download_result].present?
-        file_list = []
-      end
-    end
-    result = false
-    opts[:file_list] = file_list unless file_list.nil?
-    begin
-      result = self.send method.to_sym, repo, opts
-      if result == true
-        record.items_published += 1 if record.present?
-      else
-        logger.error("Export of #{self.id} failed (returned: #{result})")
-        record.failures += 1 if record.present?
-      end
-    rescue => e
-      logger.error("Error exporting #{self.id}: #{e}")
-      logger.error(e.backtrace.join("\n"))
-      record.failures += 1 if record.present?
-    end
-    record.save if record.present?
-    if opts[:download_result].present? and not file_list.nil? and file_list.length > 0
-      opts[:download_result] = file_list[0]
-    end
-
-    result
-  end
-
-  # Updates this content's category based on the annotations from the CES
-  # If no category annotation is found, this is a no-op
-  def update_category_from_annotations(annotations)
-    cat = DspClassify.get_category_from_annotations(annotations)
-
-    if cat.present?
-      update_attribute :content_category, cat
-    end
-  end
-
-  # below are our various "publish methods"
-  # new publish methods should return true
-  # if publishing is successful and a string
-  # with an error message if it is not.
-
-  def publish_to_dsp(repo, opts={})
-    DspService.publish(self, repo)
-  end
-
-  def export_to_xml(repo, opts = {}, format=nil)
-    file_list = opts[:file_list] || Array.new
-    unless EXPORT_FORMATS.include? format
-      format = DEFAULT_FORMAT
-    end
-    if quarantine == true
-      return "doc #{id} is quarantined and was not exported"
-    else
-      FileUtils.mkpath(export_path)
-      escaped_guid = CGI::escape guid
-      xml_path = "#{export_path}/#{escaped_guid}.xml"
-      File.open(xml_path, "w+") do |f|
-        f.write self.to_xml
-      end
-      File.open("#{export_path}/#{escaped_guid}.html", "w+") do |f|
-        f.write sanitized_content
-      end
-      file_list << xml_path
-      return true
-    end
-  end
-
-  # the "attributes" hash no longer contains everything we want to push as a feature to DSP
-  # so this method returns the full feature list (attributes hash + whatever else)
-  def feature_set
-    { "title"=>title, "subtitle"=>subtitle,"authors"=>authors,"issue_id"=>issue_id,
-      "import_location_id"=>import_location_id,"copyright"=>copyright,
-      "guid"=>guid,"pubdate"=>pubdate,"topics"=>topics,"url"=>url,
-      "origin"=>origin,"language"=>language,"page"=>page,
-      "authoremail"=>authoremail,"organization_id"=>organization_id,
-      "doctype"=>doctype,"timestamp"=>timestamp,"contentsource"=>contentsource,
-      "source_content_id"=>source_content_id,"parent_id"=>parent_id,
-      "content_category_id"=>content_category_id,
-      "channelized_content_id"=>channelized_content_id,
-      "channel_type"=>channel_type,"channel_id"=>channel_id,
-      "source_uri"=>source_uri,"categories"=>publish_category,
-      "classify_only"=>false
-    }
-  end
-
-  # Export Gate Document directly before/after Pipeline processing
-  def export_pre_pipeline_xml(repo, opts = {})
-    file_list = opts[:file_list] || Array.new
-
-    res = OntotextController.post(repo.dsp_endpoint + '/processPrePipeline',
-        { body: to_xml,
-          headers: { 'Content-type' => "application/vnd.ontotext.ces.document+xml;charset=UTF-8",
-                     'Accept' => "application/vnd.ontotext.ces.document+json;charset=UTF-8" }})
-
- # TODO: Make check for erroneous response better
-    unless res.parsed_response.nil? || res.parsed_response.empty?
-      FileUtils.mkpath("#{export_path}/pre_pipeline")
-      escaped_guid = CGI::escape guid
-      xml_path = "#{export_path}/pre_pipeline/#{escaped_guid}.xml"
-      File.open(xml_path, "w+") { |f| f.write(res.parsed_response) }
-      File.open("#{export_path}/pre_pipeline/#{escaped_guid}.html", "w+") { |f| f.write(sanitized_content) }
-      file_list << xml_path
-      return true
-    else
-      return false
-    end
-  end
-
-  def export_post_pipeline_xml(repo, opts = {})
-    options = { :body => self.to_xml }
-    file_list = opts[:file_list] || Array.new
-
-    res = OntotextController.post("#{repo.dsp_endpoint}/processPostPipeline", options)
-
-    # TODO: Make check for erroneous response better
-    unless res.body.nil? || res.body.empty?
-      FileUtils.mkpath("#{export_path}/post_pipeline")
-      xml_path = "#{export_path}/post_pipeline/#{guid}.xml"
-      File.open(xml_path, "w+") { |f| f.write(res.body) }
-      File.open("#{export_path}/post_pipeline/#{guid}.html", "w+") { |f| f.write(sanitized_content) }
-      file_list << xml_path
-      return true
-    else
-      return false
-    end
-  end
-
-  # construct export path
-  def export_path
-    path = "#{TMP_EXPORT_PATH}/#{organization.name.gsub(" ", "_")}/#{pubdate.strftime("%Y")}/#{pubdate.strftime("%m")}/#{pubdate.strftime("%d")}"
-  end
-
-  # method that constructs an active relation
-  # of contents based on a query hash of conditions
-  # expects query_params to look like the params hash from a form
-  def self.contents_query(query_params)
-    # if the query contains a list of ids, use that
-    if query_params[:ids].present?
-      id_array = query_params[:ids].split(",").map { |i| i.strip.to_i }
-      contents = Content.where(:id => id_array)
-    else
-      query = {
-        quarantine: false # can't publish quarantined docs
-      }
-      if query_params[:organization_id].present?
-        query[:organization_id] = query_params[:organization_id].map { |s| s.to_i }
-      end
-      if query_params[:import_location_id].present?
-        query[:import_location_id] = query_params[:import_location_id].map { |s| s.to_i }
-      end
-      if query_params[:content_category_id].present?
-        query[:content_category_id] = query_params[:content_category_id].map { |s| s.to_i }
-      end
-
-      repo = Repository.find(query_params[:repository_id]) if query_params[:repository_id].present?
-      contents = Content.where(query)
-
-      contents = contents.where("pubdate >= ?", Date.parse(query_params[:from])) if query_params[:from].present?
-      contents = contents.where("pubdate <= ?", Date.parse(query_params[:to])) if query_params[:to].present?
-
-      if query_params[:published] == "true" and repo.present?
-        contents = contents.where("id IN (select content_id from contents_repositories where repository_id=#{repo.id})")
-      elsif query_params[:published] == "false" and repo.present?
-        contents = contents.where("id NOT IN (select content_id from contents_repositories where repository_id=#{repo.id})")
-      end
-    end
-    return contents
-  end
-
-  def rdf_to_gate(repository)
-    return OntotextController.rdf_to_gate(id, repository)
+  def publish!
+    update_attribute published: true
   end
 
   # for threaded contents
@@ -1017,20 +551,6 @@ class Content < ActiveRecord::Base
   end
 =end
 
-  # helper to retrieve the category that the content should be published with
-  def publish_category
-    if organization.present? and category.present?
-      category
-    else
-      c = Category.find_or_create_by(name: source_category)
-      if c.channel.present?
-        c.channel.name
-      else
-        c.name
-      end
-    end
-  end
-
   # used for the DSP to determine whether there is a promotion banner
   def has_active_promotion?
     PromotionBanner.for_content(id).active.count > 0
@@ -1054,16 +574,6 @@ class Content < ActiveRecord::Base
 
   def has_promotion_inventory
     has_promotion_inventory?
-  end
-
-  # returns the content for sending to the DSP for annotation
-  def publish_content(include_tags=false)
-    pub_content = sanitized_content
-    if include_tags
-      pub_content
-    else
-      strip_tags(pub_content)
-    end
   end
 
   # cleans raw_content for text emails
@@ -1239,41 +749,6 @@ class Content < ActiveRecord::Base
     Rinku.auto_link c #.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
   end
 
-  # cycles through the associated image records for a piece of content
-  # and updates any references in raw_content to the image's original filename
-  # so that they point to our AWS stored images
-  def process_wp_content!
-    if !images.present?
-      self
-    else
-      doc =  Nokogiri::HTML.fragment(raw_content)
-      if doc.css('img').present?
-        bucket = Figaro.env.aws_bucket_name
-        doc.css('img').each do |img|
-          # rewrite img src URL.  This has to be done here because we don't know the content_id when
-          # the parser is run by import_job#traverse_input_tree.
-          image_object = images.find_by_source_url(img['src'])
-          if image_object.present?
-            # remove primary image from html since it's shown as a banner
-            if image_object.primary
-              img.remove()
-            else
-              img['src'] = image_object.image.url
-              if image_object.caption.present?
-                img.add_next_sibling("<div class=\"image-caption\"><p>#{image_object.caption}</p></div>")
-              end
-            end
-          end
-        end
-
-        update_attribute :raw_content, doc.to_html
-        self
-      else
-        self
-      end
-    end
-  end
-
   def sanitized_content= new_content
     self.raw_content = new_content
   end
@@ -1407,10 +882,6 @@ class Content < ActiveRecord::Base
     else
       created_by.present? ? created_by.name : authors
     end
-  end
-
-  def to_xml(include_tags=false)
-    ContentDspSerializer.new(self).to_xml(include_tags)
   end
 
   # helper that checks if content is News UGC or not

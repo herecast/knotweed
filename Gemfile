@@ -60,7 +60,6 @@ gem 'puma'
 gem 'rack-cors', require: "rack/cors"
 gem 'rails-deprecated_sanitizer', '~> 1.0.3' # need to keep older sanitize with Rails 4.2 upgrde
 gem 'ransack'
-gem "rdf", '~> 1.1'                                 # Have not yet tested the next major version
 gem 'redis-rails'
 gem 'rinku', '~> 1.7'                               # Have not yet tested the next major version
 gem "rolify"
@@ -75,7 +74,6 @@ gem 'sidekiq-unique-jobs'
 gem "simple_form"
 gem 'sinatra', require: false # for sidekiq/web
 gem "slack-notifier", '~> 2.3.1'
-gem 'sparql-client', '~> 1.1'                       # Have not yet tested the next major version
 gem 'sshkit'
 gem 'summernote-rails'
 gem 'thor', '0.19.1'                                # Later versions cause warnings

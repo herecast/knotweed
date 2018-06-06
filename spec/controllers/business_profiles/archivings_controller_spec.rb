@@ -5,7 +5,7 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
     @user = FactoryGirl.create :admin
     sign_in @user
     @business_profile = FactoryGirl.create :business_profile
-    @business_profile.content = FactoryGirl.create :content
+    @business_profile.content = FactoryGirl.create :content, published: false
     @business_profile.content.organization = FactoryGirl.create :organization
   end
 

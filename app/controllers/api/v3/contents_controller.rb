@@ -40,12 +40,10 @@ module Api
         end
 
         @content = create_process.call(params,
-          user_scope: current_user,
-          repository: @repository
+          user_scope: current_user
         )
 
         if @content.valid?
-          publish @content
           promote_to_listservs @content
           rescrape_facebook @content
 
@@ -88,12 +86,10 @@ module Api
         end
 
         success = update_process.call(@content, params,
-          repository: @repository,
           user_scope: current_user
         )
 
         if success
-          publish @content
           promote_to_listservs @content
           rescrape_facebook @content
 
@@ -142,12 +138,6 @@ module Api
         def has_pubdate_in_past_or_can_edit?
           return true if can? :manage, @content
           @content.pubdate.present? && @content.pubdate < Time.current
-        end
-
-        def publish content
-          if @repository.present? and content.pubdate.present? # don't publish drafts
-            PublishContentJob.perform_later(content, @repository, Content::DEFAULT_PUBLISH_METHOD)
-          end
         end
 
         def promote_to_listservs content

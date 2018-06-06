@@ -129,19 +129,6 @@ describe Api::V3::CommentsController, :type => :controller do
       end
     end
 
-    context 'with consumer_app / repository' do
-      before do
-        @repo = FactoryGirl.create :repository
-        @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
-        api_authenticate user: @user, consumer_app: @consumer_app
-        stub_request(:post, /.*/)
-      end
-
-      it 'should queue the content to be published' do
-        expect{subject}.to have_enqueued_job(PublishContentJob)
-      end
-    end
-
     it 'should automatically set organization to DailyUV' do
       subject
       expect(response.code).to eq('201')

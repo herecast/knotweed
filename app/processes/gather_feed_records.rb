@@ -7,7 +7,6 @@ class GatherFeedRecords
   def initialize(params:, requesting_app:, current_user:)
     @params          = params
     @requesting_app  = requesting_app
-    @repository      = requesting_app.try(:repository)
     @current_user    = current_user
     update_content_type
   end
@@ -75,14 +74,12 @@ class GatherFeedRecords
       if organization_calendar_view?
         ContentSearch.organization_calendar_query({
           params: @params,
-          requesting_app: @requesting_app,
-          repository: @repository
+          requesting_app: @requesting_app
         })
       else
         ContentSearch.standard_query({
           params: @params,
-          requesting_app: @requesting_app,
-          repository: @repository
+          requesting_app: @requesting_app
         })
       end
     end

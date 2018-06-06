@@ -48,8 +48,7 @@ class IssuesController < ApplicationController
         :copyright,
         :issue_edition,
         :publication_date,
-        :organization_id,
-        :import_location_id
+        :organization_id
       )
     end
 

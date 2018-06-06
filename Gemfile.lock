@@ -413,7 +413,6 @@ GEM
       multi_json
     letter_opener (1.4.1)
       launchy (~> 2.2)
-    link_header (0.0.8)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -539,8 +538,6 @@ GEM
       json (>= 1.8)
       nokogiri (~> 1.5)
       trollop (~> 2.1)
-    rdf (1.99.1)
-      link_header (~> 0.0, >= 0.0.8)
     redis (3.3.3)
     redis-actionpack (5.0.1)
       actionpack (>= 4.0, < 6)
@@ -653,11 +650,6 @@ GEM
       tilt (>= 1.3, < 3)
     slack-notifier (2.3.1)
     slop (3.6.0)
-    sparql-client (1.99.1)
-      json (~> 1.8)
-      net-http-persistent (~> 2.9)
-      rdf (>= 1.99, < 3)
-      tins (= 1.6.0)
     spring (2.0.1)
       activesupport (>= 4.2)
     spring-commands-rspec (1.0.4)
@@ -680,7 +672,6 @@ GEM
     thread_safe (0.3.6)
     tilt (2.0.6)
     timecop (0.8.1)
-    tins (1.6.0)
     trollop (2.1.2)
     turbolinks (2.5.3)
       coffee-rails
@@ -780,7 +771,6 @@ DEPENDENCIES
   rails (~> 4.2.7.1)
   rails-deprecated_sanitizer (~> 1.0.3)
   ransack
-  rdf (~> 1.1)
   redis-rails
   rinku (~> 1.7)
   rolify
@@ -803,7 +793,6 @@ DEPENDENCIES
   simplecov
   sinatra
   slack-notifier (~> 2.3.1)
-  sparql-client (~> 1.1)
   spring
   spring-commands-rspec
   sshkit

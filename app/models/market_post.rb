@@ -28,8 +28,6 @@ class MarketPost < ActiveRecord::Base
   has_one :source, through: :content, class_name: "Organization", foreign_key: "organization_id"
   has_one :content_category, through: :content
   has_many :images, through: :content
-  has_many :repositories, through: :content
-  has_one :import_location, through: :content
 
   geocoded_by :locate_address
 

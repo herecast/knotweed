@@ -78,17 +78,13 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
   describe 'GET show' do
     before do
-      @repo = FactoryGirl.create :repository
-      @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+      @consumer_app = FactoryGirl.create :consumer_app
       @org = FactoryGirl.create :organization
       @consumer_app.organizations = [@org]
       @content = FactoryGirl.create :content
       @related_content = FactoryGirl.create(:content)
-      allow_any_instance_of(Promotion).to receive(:update_active_promotions).and_return(true)
       @promo = FactoryGirl.create :promotion, content: @related_content
       @pb = FactoryGirl.create :promotion_banner, promotion: @promo
-      # avoid making calls to repo
-      allow(DspService).to receive(:get_related_promo_ids).and_return([])
     end
 
     subject { get :show, format: :json,

@@ -34,10 +34,8 @@ class ConsumerAppsController < ApplicationController
     def consumer_app_params
       params.require(:consumer_app).permit(
         :name,
-        :repository_id,
         :uri,
         :organization_ids,
-        :import_job_ids
       )
     end
 

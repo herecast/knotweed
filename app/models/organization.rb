@@ -108,7 +108,6 @@ class Organization < ActiveRecord::Base
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
 
   has_many :users
-  has_many :import_jobs
   has_many :issues
   has_many :business_locations
   has_many :venue_events, through: :business_locations, source: :events

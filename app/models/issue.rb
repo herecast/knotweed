@@ -14,7 +14,6 @@
 
 class Issue < ActiveRecord::Base
   belongs_to :organization
-  belongs_to :import_location
   has_many :contents
   
   validates_presence_of :organization

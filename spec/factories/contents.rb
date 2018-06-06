@@ -107,12 +107,11 @@ FactoryGirl.define do
     raw_content "Content goes here"
     organization
     issue
-    import_location
     pubdate {Time.current}
     source_category "Category"
     content_category
     authoremail 'fake@email.com'
-    published false
+    published true
     created_by { FactoryGirl.build(:user) }
 
     trait :located do

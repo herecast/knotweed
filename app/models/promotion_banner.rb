@@ -48,8 +48,6 @@ class PromotionBanner < ActiveRecord::Base
   UPLOAD_ENDPOINT = "/statements"
 
   after_save :generate_coupon_click_redirect
-  after_save :update_active_promotions
-  after_destroy :update_active_promotions
 
   validates_presence_of :promotion, :campaign_start, :campaign_end
   validates :max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: 'max_impressions.present?'
@@ -142,18 +140,6 @@ class PromotionBanner < ActiveRecord::Base
 
   def find_or_create_daily_report(current_date=Date.current)
     current_daily_report(current_date) || promotion_banner_reports.create!(report_date: current_date)
-  end
-
-  def update_active_promotions
-    if promotion.content.present?
-      promotion.content.repositories.each do |r|
-        active_action = promotion.content.has_active_promotion? ? 'add_active' : 'remove_active'
-        DspService.update_promotion(active_action, promotion.content.id, r)
-
-        paid_action = promotion.content.has_paid_promotion? ? 'add_paid' : 'remove_paid'
-        DspService.update_promotion(paid_action, promotion.content.id, r)
-      end
-    end
   end
 
   def remove_coupon_image=(val)

@@ -1,3 +1,0 @@
-[submodule "lib/parsers"]
-	path = lib/parsers
-	url = git@github.com:subtextmedia/parsers.git

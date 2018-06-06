@@ -329,7 +329,6 @@ ActiveRecord::Schema.define(version: 20180420171339) do
     t.integer  "created_by",                limit: 8
     t.integer  "updated_by",                limit: 8
     t.integer  "banner_click_count",        limit: 8,   default: 0
-    t.text     "similar_content_overrides"
     t.integer  "banner_ad_override",        limit: 8
     t.integer  "root_parent_id",            limit: 8
     t.datetime "deleted_at"

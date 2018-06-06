@@ -210,23 +210,6 @@
                 %i.icon-plus
                 %span Create New
 
-    - if can? :read, Repository
-      %li
-        = link_to repositories_path do
-          %i.icon-table
-          %span Repositories
-          %i.icon-angle-down.angle-down
-        %ul{ class: "nav nav-stacked #{controller_name == "repositories" ? "in" : "" }" }
-          %li{ class: current_page?(repositories_path) ? "active" : "" }
-            = link_to repositories_path do
-              %i.icon-tasks
-              %span All
-          - if can? :create, Repository
-            %li{ class: current_page?(new_repository_path) ? "active" : "" }
-              = link_to new_repository_path do
-                %i.icon-plus
-                %span Create New
-
     - if can? :read, ConsumerApp
       %li
         = link_to consumer_apps_path do
@@ -241,57 +224,6 @@
           - if can? :create, ConsumerApp
             %li{ class: current_page?(new_consumer_app_path) ? "active" : "" }
               = link_to new_consumer_app_path do
-                %i.icon-plus
-                %span Create New
-
-    - if can? :read, ImportJob
-      %li
-        = link_to import_jobs_path do
-          %i.icon-circle-arrow-up
-          %span Import Jobs
-          %i.icon-angle-down.angle-down
-        %ul{ class: "nav nav-stacked #{controller_name == "import_jobs" ? "in" : "" }" }
-          %li{ class: current_page?(import_jobs_path) ? "active" : "" }
-            = link_to import_jobs_path do
-              %i.icon-tasks
-              %span Active
-          - if can? :create, ImportJob
-            %li{ class: current_page?(new_import_job_path) ? "active" : "" }
-              = link_to new_import_job_path do
-                %i.icon-plus
-                %span Create New
-
-    - if can? :read, PublishJob
-      %li
-        = link_to publish_jobs_path do
-          %i.icon-circle-arrow-right
-          %span Publish Jobs
-          %i.icon-angle-down.angle-down
-        %ul{ class: "nav nav-stacked #{controller_name == "publish_jobs" ? "in" : "" }" }
-          %li{ class: current_page?(publish_jobs_path) ? "active" : "" }
-            = link_to publish_jobs_path do
-              %i.icon-tasks
-              %span All
-          - if can? :create, PublishJob
-            %li{ class: current_page?(new_publish_job_path) ? "active" : "" }
-              = link_to new_publish_job_path do
-                %i.icon-plus
-                %span Create New
-                
-    - if can? :read, Parser
-      %li
-        = link_to parsers_path do
-          %i.icon-book
-          %span Parsers/Parameters
-          %i.icon-angle-down.angle-down
-        %ul{ class: "nav nav-stacked #{controller_name == 'parsers' ? 'in' : '' }" }
-          %li{ class: current_page?(parsers_path) ? 'active' : ''}
-            = link_to parsers_path do
-              %i.icon-tasks
-              %span Search
-          - if can? :create, Parser
-            %li{ class: current_page?(new_parser_path) ? "active" : "" }
-              = link_to new_parser_path do
                 %i.icon-plus
                 %span Create New
 

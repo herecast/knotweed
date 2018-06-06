@@ -71,29 +71,6 @@ class SelectPromotionBanners
         get_organization_promotion(content.organization)
       else
         @not_run_of_site = false
-        # use DspService to return active, relevant ads w/inventory over a certain threshold score
-        results = DspService.get_related_promo_ids(content, @opts[:limit], @opts[:repository])
-        results = results.sample(promotion_banners_needed)
-
-        if results.present?
-          results.each do |result|
-            content_id = result['id'].split('/')[-1].to_i
-            if content_id.present?
-              banner = PromotionBanner.for_content(content_id)
-                                      .active.has_inventory
-                                      .run_of_site
-                                      .order('random()')
-                                      .first
-            end
-            if banner.present?
-              add_promotion(SelectedPromotionBanner.new(
-                banner,
-                select_score: result['score'].try(:to_s),
-                select_method: 'relevance'
-              ))
-            end
-          end
-        end
       end
     end
 

@@ -1,9 +1,5 @@
 class ContentsController < ApplicationController
 
-  PUBLISH_METHODS_TO_DOWNLOAD = ["export_pre_pipeline_xml", "export_post_pipeline_xml", "export_to_xml"]
-
-  before_filter :fix_array_input, only: [:update]
-
   def index
     expires_in 1.minutes, :public => true
     # if posted, save to session
@@ -31,7 +27,7 @@ class ContentsController < ApplicationController
 
     if session[:contents_search].present?
       @contents = @search.result(distinct: true)
-        .includes(:organization, :repositories, :created_by, :content_category, :root_content_category, :channel)
+        .includes(:organization, :created_by, :content_category, :root_content_category, :channel)
         .order("pubdate DESC").page(params[:page])
         .per(100)
     else
@@ -50,7 +46,7 @@ class ContentsController < ApplicationController
 
   def edit
     @news_child_ids = ContentCategory.where(parent_id: 31).pluck(:id)
-    @content = Content.includes(:repositories, :locations, :content_category).find(params[:id])
+    @content = Content.includes(:locations, :content_category).find(params[:id])
     load_event_instances
     authorize! :edit, @content
   end
@@ -93,36 +89,13 @@ class ContentsController < ApplicationController
 
   def publish
     @content = Content.find(params[:id])
-    opts = {}
-    if params[:repository_id].present?
-      repo = Repository.find(params[:repository_id])
-    else
-      repo = nil
-    end
-    if PUBLISH_METHODS_TO_DOWNLOAD.include? params[:method]
-      opts[:download_result] = true
-    end
-    if @content.publish(params[:method], repo, nil, opts) == true
+    if @content.publish!
       flash[:notice] = "#{params[:method].humanize} successful"
-      if opts[:download_result].present? and opts[:download_result].is_a? String
-        return send_file opts[:download_result]
-      end
     else
       flash[:error] = "#{params[:method].humanize} encountered an error"
     end
 
     redirect_to @content
-  end
-
-  def rdf_to_gate
-    @content = Content.find(params[:id])
-    repo = Repository.find(params[:repository_id])
-    gate_xml = @content.rdf_to_gate(repo)
-    if gate_xml == false
-      render text: "content #{@content.id} not found on Ontotext server"
-    else
-      send_data gate_xml, :filename => "#{@content.id}.gate.xml", type: :xml, disposition: 'attachment'
-    end
   end
 
   def parent_select_options

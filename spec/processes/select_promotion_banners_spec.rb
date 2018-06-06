@@ -3,20 +3,13 @@ require 'spec_helper'
 RSpec.describe SelectPromotionBanners do
 
   describe 'call' do
-    let(:repo) { FactoryGirl.build :repository }
-
     context "when promotion_id passed in" do
       before do
         @promotion_banner = FactoryGirl.create :promotion_banner
         @promotion = FactoryGirl.create :promotion, promotable: @promotion_banner
       end
 
-      subject do
-        SelectPromotionBanners.call(
-          promotion_id: @promotion.id,
-          repository:   repo
-        )
-      end
+      subject { SelectPromotionBanners.call(promotion_id: @promotion.id) }
 
       it "returns promotion_banner related to promotion" do
         results = subject
@@ -27,12 +20,7 @@ RSpec.describe SelectPromotionBanners do
     context "when content_id passed in" do
       let(:content) { FactoryGirl.create(:content) }
 
-      subject do
-        SelectPromotionBanners.call(
-          content_id: content.id,
-          repository: repo
-        )
-      end
+      subject { SelectPromotionBanners.call(content_id: content.id) }
 
       context 'when #banner_ad_override present' do
         let(:override_banner) { FactoryGirl.create(:promotion_banner, :active, :sponsored) }
@@ -42,22 +30,12 @@ RSpec.describe SelectPromotionBanners do
           results = subject
           expect(results.first.promotion_banner).to eql override_banner
         end
-
-        it 'does not query SPARQL::Client' do
-          expect_any_instance_of(SPARQL::Client).to_not receive(:query)
-          subject
-        end
       end
 
       context 'when content.organization has banner ad override' do
         let(:banner_ad1) { FactoryGirl.create :promotion_banner, :active, :sponsored }
         let(:organization) { FactoryGirl.create :organization, banner_ad_override: "#{banner_ad1.promotion.id}" }
         let!(:content) { FactoryGirl.create :content, organization: organization }
-
-        it 'does not query SPARQL::Client' do
-          expect_any_instance_of(SPARQL::Client).to_not receive(:query)
-          subject
-        end
 
         it 'returns a banner from the csv override property' do
           expect(subject.first.promotion_banner).to eq banner_ad1
@@ -67,52 +45,10 @@ RSpec.describe SelectPromotionBanners do
           before do
             @inactive_banner = FactoryGirl.create :promotion_banner, :inactive, :sponsored
             content.organization.update banner_ad_override: @inactive_banner.id
-            allow(DspService).to receive(:get_related_promo_ids).and_return []
           end
 
           it 'not respond with that banner' do
             expect(subject.map(&:promotion_banner)).to_not include @inactive_banner
-          end
-        end
-
-        context "when banner_ad_override does not return an active ad" do
-          before do
-            content.organization.update_attribute :banner_ad_override, 1234
-            allow(DspService).to receive(:get_related_promo_ids).and_return []
-          end
-
-          it "it makes call to DspService for ad" do
-            expect(DspService).to receive(:get_related_promo_ids)
-            subject
-          end
-        end
-      end
-
-      context 'when SPARQL will return results based on similarity' do
-        let(:score) { "9" }
-        let(:promo_banner) { FactoryGirl.create :promotion_banner, content: content }
-
-        before do
-          mock_data = {
-              'score' => score,
-              'id' => "#{content.id}"
-          }
-          allow(DspService).to receive(:get_related_promo_ids).and_return([mock_data])
-        end
-
-        context 'and promotion banner has inventory' do
-          before do
-            promo_banner.update_attributes({
-              max_impressions: nil,
-              daily_max_impressions: nil
-            })
-          end
-
-          it 'will return results for one of the promotion banners' do
-            results = subject
-            expect(results.first.promotion_banner).to eql promo_banner
-            expect(results.first.select_score).to eql score
-            expect(results.first.select_method).to eql 'relevance'
           end
         end
       end
@@ -121,36 +57,29 @@ RSpec.describe SelectPromotionBanners do
         let(:promo_banner) { FactoryGirl.create :promotion_banner, content: content,
           max_impressions: 10, impression_count: 10 }
 
-        context 'when sparql does not return anything' do
+        context 'when no paid banners exist' do
           before do
-            allow(DspService).to receive(:get_related_promo_ids).and_return([])
+            Promotion.update_all(paid: false)
           end
 
-          context 'when no paid banners exist' do
+          context 'when banner is not active' do
             before do
-              Promotion.update_all(paid: false)
+              promo_banner.update_attributes({
+                campaign_start: 1.month.ago,
+                campaign_end: 1.week.ago,
+                max_impressions: nil
+              })
+              promo_banner.promotion.update_attribute(:content_id, content.id)
             end
 
-            context 'when banner is not active' do
-              before do
-                promo_banner.update_attributes({
-                  campaign_start: 1.month.ago,
-                  campaign_end: 1.week.ago,
-                  max_impressions: nil
-                })
-                promo_banner.promotion.update_attribute(:content_id, content.id)
-              end
+            it 'does not return the banner' do
+              results = subject
+              expect(results.first).to be nil
+            end
 
-              it 'does not return the banner' do
-                results = subject
-                expect(results.first).to be nil
-              end
-
-              it 'does not return banner even with content id' do
-                allow(DspService).to receive(:query_promo_similarity_index).and_return([promo_banner.promotion])
-                results = subject
-                expect(results.first).to be nil
-              end
+            it 'does not return banner even with content id' do
+              results = subject
+              expect(results.first).to be nil
             end
           end
         end
@@ -164,12 +93,7 @@ RSpec.describe SelectPromotionBanners do
         @organization = FactoryGirl.create :organization, banner_ad_override: promotion.id
       end
 
-      subject do
-        SelectPromotionBanners.call(
-          organization_id: @organization.id,
-          repository: repo
-        )
-      end
+      subject { SelectPromotionBanners.call(organization_id: @organization.id) }
 
       it "returns promoted banner" do
         results = subject
@@ -178,7 +102,7 @@ RSpec.describe SelectPromotionBanners do
     end
 
     context "when no reference provided" do
-      subject { SelectPromotionBanners.call(repository: repo) }
+      subject { SelectPromotionBanners.call() }
 
       context 'when an active and boosted NON-RUN-OF-SITE promotion exists' do
         let!(:sponsored_banner) { FactoryGirl.create :promotion_banner, :active, :sponsored, boost: true, max_impressions: nil }
@@ -253,12 +177,7 @@ RSpec.describe SelectPromotionBanners do
         @promotion = FactoryGirl.create :promotion, promotable: @promotion_banner1
       end
 
-      subject do
-        SelectPromotionBanners.call(
-          limit: "4",
-          repository: repo
-        )
-      end
+      subject { SelectPromotionBanners.call(limit: "4") }
 
       it "returns the specified number of promotion banners" do
         results = subject
@@ -272,12 +191,7 @@ RSpec.describe SelectPromotionBanners do
         @promotion_banner = FactoryGirl.create :promotion_banner, campaign_start: Date.yesterday, campaign_end: Date.tomorrow
       end
 
-      subject do
-        SelectPromotionBanners.call(
-          exclude: [@promotion_banner.id],
-          repository: repo
-        )
-      end
+      subject { SelectPromotionBanners.call(exclude: [@promotion_banner.id]) }
 
       it "does not return excluded promotion banners" do
         results = subject
@@ -302,9 +216,7 @@ RSpec.describe SelectPromotionBanners do
         )
       end
 
-      subject do
-        SelectPromotionBanners.call()
-      end
+      subject { SelectPromotionBanners.call() }
 
       it 'returns the banner for the promo override' do
         expect(subject.first.promotion_banner).to eql promo.promotable
@@ -312,9 +224,7 @@ RSpec.describe SelectPromotionBanners do
 
       describe 'when multiple are asked for' do
         let(:limit) { 5 }
-        subject do
-          SelectPromotionBanners.call(limit: limit)
-        end
+        subject { SelectPromotionBanners.call(limit: limit) }
 
         it 'returns the same banner x times' do
           expect(subject.count).to eql limit

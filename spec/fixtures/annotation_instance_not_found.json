@@ -1,8 +1,0 @@
-{
-  "head" : {
-    "vars" : [ "predicate", "object", "label" ]
-  },
-  "results" : {
-    "bindings" : [ ]
-  }
-}

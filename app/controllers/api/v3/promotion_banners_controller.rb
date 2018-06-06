@@ -46,7 +46,6 @@ module Api
         opts[:promotion_id]    = params[:promotion_id]
         opts[:content_id]      = params[:content_id]
         opts[:organization_id] = params[:organization_id]
-        opts[:repository]      = @repository
 
         conditionally_prime_daily_ad_reports
         @selected_promotion_banners = SelectPromotionBanners.call(opts)

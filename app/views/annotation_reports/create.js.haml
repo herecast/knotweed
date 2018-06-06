@@ -1,8 +1,0 @@
-annData = #{@annotation_report.json_response.html_safe};
-reportId = #{@annotation_report.id};
-annotationFormBasePath = "/annotation_reports/" + reportId + "/annotations/";
-$("h3#annotation_report_name").html("Annotation Report: #{@annotation_report.name}");
-
-UI.SUBTEXT_ANNOTATION_REPORT(annData);
-
-$("#num-reviewed").html("0 of #{@annotation_report.annotations.count} reviewed");

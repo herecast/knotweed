@@ -8,7 +8,6 @@ describe PromotionsController, :type => :controller do
     sign_in user
     @org = FactoryGirl.create(:organization)
     @content = FactoryGirl.create(:content)
-    allow_any_instance_of(Promotion).to receive(:update_active_promotions).and_return(true)
     @promotion = FactoryGirl.create(:promotion, organization: @org, content: @content)
   end
 

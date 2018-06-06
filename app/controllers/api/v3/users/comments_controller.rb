@@ -6,8 +6,7 @@ module Api
       def index
         search_opts = ContentSearch.comment_query({
           params: params,
-          requesting_app: @requesting_app,
-          repository: @repository
+          requesting_app: @requesting_app
         })
 
         @contents = Content.search(query, search_opts)

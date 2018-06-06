@@ -2,8 +2,7 @@ require 'spec_helper'
 
 describe Api::V3::ContentsController, :type => :controller do
   before do
-    @repo = FactoryGirl.create :repository
-    @consumer_app = FactoryGirl.create :consumer_app, repository: @repo
+    @consumer_app = FactoryGirl.create :consumer_app
     @org = FactoryGirl.create :organization
     @consumer_app.organizations = [@org]
   end
@@ -230,13 +229,8 @@ describe Api::V3::ContentsController, :type => :controller do
         end
 
         it 'publishes the content' do
-          expect(PublishContentJob).to receive(:perform_later).with(
-            kind_of(Content),
-            kind_of(Repository),
-            Content::DEFAULT_PUBLISH_METHOD
-          )
-
           subject
+          expect(Content.last.published).to be true
         end
 
         context 'listserv ids included' do
@@ -379,16 +373,6 @@ describe Api::V3::ContentsController, :type => :controller do
 
         it 'runs content through UpdateContentLocations process' do
           expect(UpdateContentLocations).to receive(:call).with(content, promote_radius: content_params[:promote_radius], base_locations: [location])
-
-          subject
-        end
-
-        it 'publishes the content' do
-          expect(PublishContentJob).to receive(:perform_later).with(
-            content,
-            kind_of(Repository),
-            Content::DEFAULT_PUBLISH_METHOD
-          )
 
           subject
         end

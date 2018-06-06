@@ -51,9 +51,6 @@ Knotweed::Application.routes.draw do
       resources :archivings, only: [:create, :destroy]
       resources :claims, only: [:create]
     end
-    resources :import_jobs
-    resources :parsers
-    resources :publish_jobs
     resources :consumer_apps, except: [:show]
     resources :images, only: [:create, :destroy, :update]
     resources :organizations, except: [:show] do
@@ -68,44 +65,15 @@ Knotweed::Application.routes.draw do
 
     resources :rewrites, except: [:show]
 
-    resources :repositories
     resources :listservs do
       resources :campaigns, controller: :listserv_campaigns
     end
     resources :subscriptions
 
-    get "repositories/:id/clear_published_contents", to: "repositories#clear_published_contents", as: :clear_published_contents
-
-    post 'annotation_reports/create/:content_id', to: "annotation_reports#create", as: :create_annotation_report
-    get 'annotation_reports/export/:content_id', to: "annotation_reports#export", as: :export_annotation_reports
-    get 'annotation_reports/:annotation_report_id/annotations/:annotation_id/edit', to: "annotations#edit", as: :edit_annotation
-    resources :annotation_reports, only: [:edit, :destroy]
     resources :features
-    get 'annotation_reports/:id/table_row' => 'annotation_reports#table_row', as: :annotation_report_table_row
-
-    get 'annotations/:id/accept(/:accepted)' => "annotations#accept_annotation", as: :accept_annotation
 
     get 'contacts/new(/:model(/:id))', to: "contacts#new", as: :new_contact
 
-    post 'publish_jobs/contents_count' => "publish_jobs#contents_count", as: :contents_count
-    get 'publish_jobs/contents_count/:id' => "publish_jobs#job_contents_count", as: :job_contents_count
-    get 'publish_jobs/:id/file_archive.zip' => "publish_jobs#file_archive", as: :job_file_archive
-
-    get "parsers/:parser_id/new_import_job" => "import_jobs#new", as: :new_import_job_for_parser
-
-    # NOTE: these calls must end in :repository_id so that the javascript
-    # that updates the action buttons on the onesie page works correctly
-    get "contents/:id/publish/:method/repository/:repository_id", to: "contents#publish", as: :publish_content
-    get "contents/:id/generate_gate_xml/repository/:repository_id", to: "contents#rdf_to_gate", as: :rdf_to_gate
-
-    get 'import_jobs/:id/run_job', to: 'import_jobs#run_job', as: :run_import_job
-    delete 'import_jobs/:id/cancel', to: 'import_jobs#cancel_job', as: :cancel_import_job
-    get 'import_jobs/:id/archive', to: 'import_jobs#archive', as: :archive_import_job
-    get 'import_jobs/:id/stop_job', to: 'import_jobs#stop_ongoing_job', as: :stop_ongoing_import_job
-    get 'publish_jobs/:id/run_job', to: 'publish_jobs#run_job', as: :run_publish_job
-    delete 'publish_jobs/:id/cancel', to: 'publish_jobs#cancel_job', as: :cancel_publish_job
-    get 'publish_jobs/:id/archive', to: 'publish_jobs#archive', as: :archive_publish_job
-    get 'parsers/:id/parameters', to: "parsers#parameters"
     post '/contents/category_correction', to: 'contents#category_correction'
     post '/contents/category_correction_reviewed', to: 'contents#category_correction_reviwed'
     get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', :defaults => {:format => 'ics'}, as: :event_instances_ics
@@ -168,8 +136,8 @@ Knotweed::Application.routes.draw do
 
       get '/contents/sitemap_ids', to: 'contents#sitemap_ids'
       resources :contents, only: [:show, :create, :update]
-      get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
+      get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       # specifying path here to avoid deprecating the frontend even though we've changed
       # the modeling
       namespace :contents do

@@ -4,9 +4,8 @@ module Ugc
       self.new(*args).call
     end
 
-    def initialize(params, remote_ip: nil, repository: nil, user_scope:)
+    def initialize(params, remote_ip: nil, user_scope:)
       @current_user = user_scope
-      @repository = repository
       @params = params
       @remote_ip = remote_ip
     end
@@ -48,6 +47,7 @@ module Ugc
             :pubdate,
             :organization_id,
             :content_category_id,
+            :published,
             :ugc_job
           ]
         )
@@ -62,6 +62,7 @@ module Ugc
             biz_feed_public: @params[:content][:biz_feed_public],
             raw_content: @params[:content][:content],
             pubdate: Time.zone.now,
+            published: true,
             organization_id: @params[:content][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
             content_category_id: talk_category.id,
             promote_radius: @params[:content][:promote_radius],

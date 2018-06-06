@@ -4,10 +4,7 @@ RSpec.describe 'Profile metrics' do
   let(:remote_ip) { '1.1.1.1' }
   let(:user_agent) { "AmigaVoyager/3.4.4 (MorphOS/PPC native)" }
   let(:location) { FactoryGirl.create :location, slug: 'newton-nh' }
-  let(:consumer_app) {
-    FactoryGirl.create(:consumer_app,
-        repository: FactoryGirl.create(:repository))
-  }
+  let(:consumer_app) { FactoryGirl.create(:consumer_app) }
 
   let(:headers) {
     {

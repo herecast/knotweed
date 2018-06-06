@@ -4,9 +4,8 @@ module Ugc
       self.new(*args).call
     end
 
-    def initialize(content, params, remote_ip: nil, repository: nil, user_scope:)
+    def initialize(content, params, remote_ip: nil, user_scope:)
       @current_user = user_scope
-      @repository = repository
       @params = params
       @remote_ip = remote_ip
       @content = content

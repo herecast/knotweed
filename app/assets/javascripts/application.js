@@ -25,9 +25,6 @@
 //= require flatty/nav
 //= require flatty/tables
 //= require flatty/theme
-//= require import_jobs
-//= require parsers
-//= require publish_jobs
 //= require images
 //= require scaffold
 //= require promotions
@@ -35,10 +32,6 @@
 //= require jquery.multi-select
 //= require jquery.quicksearch
 //= require turbolinks
-//= require annotation_reports
-//= require annotations
-//= require add.dsp
-//= require add.mind
 //= require contents
 //= require dashboard
 //= require business_locations

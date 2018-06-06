@@ -1,6 +1,0 @@
-PREFIX subtext:<http://www.subtext.org/content-attributes#>
-
-INSERT DATA
-{
-    <http://www.subtext.org/Document/%{content_id}> subtext:hasPaidPromo True .
-}

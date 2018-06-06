@@ -51,9 +51,6 @@
             = f.select :pubdate_not_null,
               options_for_select([['All', nil],['Published', 'true'],['Unpublished', 'false']], search_field_value(:pubdate_not_null)),
               {}, { class: 'span12' }
-          .field.span2
-            = f.label :repositories_id_eq, "Published in Repository?"
-            = f.collection_select :repositories_id_eq, Repository.all, :id, :name, { include_blank: true }, class: "span12"
         .controls.controls-row
           .field.span2
             = f.label :event_instances_start_date_gteq, "Start Date"

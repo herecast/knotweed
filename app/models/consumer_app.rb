@@ -21,9 +21,6 @@ class ConsumerApp < ActiveRecord::Base
     org.reindex_async
   end
 
-  has_and_belongs_to_many :import_jobs
-  belongs_to :repository
-
   validates_presence_of :uri
   validates_uniqueness_of :uri
 

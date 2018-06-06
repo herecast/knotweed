@@ -1,4 +1,0 @@
-PREFIX subtext:<http://www.subtext.org/content-attributes#>
-DELETE DATA {
-    <http://www.subtext.org/Document/%{content_id}> subtext:hasPaidPromo True .
-}

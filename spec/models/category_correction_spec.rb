@@ -37,21 +37,4 @@ describe CategoryCorrection, :type => :model do
 
   end
 
-  describe '#publish_corrections_to_dsp' do
-    before do
-      @content = FactoryGirl.create :content
-      @category_correction = FactoryGirl.create :category_correction, content_id: @content.id
-      @category_correction.content.repositories << FactoryGirl.create(:repository)
-      stub_request(:any, "http://23.92.16.168:8081/openrdf-sesame/repositories/subtext/extract").with(basic_auth: [
-          Figaro.env.ontotext_api_username,
-          Figaro.env.ontotext_api_password
-        ])
-    end
-
-    it "publishes to dsp" do
-      response = @category_correction.publish_corrections_to_dsp
-      expect(response.length).to eq 1
-    end
-  end
-
 end

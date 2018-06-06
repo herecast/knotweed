@@ -12,10 +12,6 @@
           Content
       - if @content.persisted?
         %li
-          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#publish" } do
-            %i.icon-upload
-            Publish/Export
-        %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#creatives" } do
             %i.icon-eye-open
             Creatives
@@ -42,20 +38,10 @@
       .tab-pane#doc_content
         .summernote-wrapper
           = f.input :sanitized_content, as: :summernote, label: 'Content'
-      - if @content.id.present?
-        .tab-pane#publish{ data: { no_turbolink: "" } }
-          = render partial: 'contents/partials/publishing_tab', locals: { content: @content }
       .tab-pane#creatives
         = render "promotions/partials/promotions_tab", content: @content
     .form-actions
       = submit_tag nil, class: "btn btn-primary"
       = submit_tag "Submit and continue with this record", class: "btn btn-success", name: "continue_editing"
-      - if @content.id.present? and !@content.quarantine
-        - if current_user.default_repository.present?
-          = link_to "Publish", publish_content_path(@content, "publish_to_dsp", current_user.default_repository.id),
-            class: "btn btn-primary publish-action-button"
-        - else
-          .has-tooltip.btn{ disabled: "disabled", data: { toggle: "tooltip", 
-            title: "You must select a default repository for your user account" } } Publish
       = link_to "Cancel", :back, class: "btn cancel"
 

@@ -16,10 +16,9 @@ class ContentSearch
     self.new(*args).organization_calendar_query
   end
 
-  def initialize(params:, requesting_app:, repository:)
+  def initialize(params:, requesting_app:)
     @params         = params
     @requesting_app = requesting_app
-    @repository     = repository
   end
 
   def standard_query
@@ -107,7 +106,7 @@ class ContentSearch
 
     def add_boilerplate_opts(attrs)
       attrs[:where][:or] = [category_options]
-      attrs[:where][:published] = true if @repository.present?
+      attrs[:where][:published] = true
     end
 
     def category_options

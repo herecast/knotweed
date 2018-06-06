@@ -4,9 +4,8 @@ module Ugc
       self.new(*args).call
     end
 
-    def initialize(params, remote_ip: nil, repository: nil, user_scope:)
+    def initialize(params, remote_ip: nil, user_scope:)
       @current_user = user_scope
-      @repository = repository
       @params = params
       @remote_ip = remote_ip
     end
@@ -62,6 +61,7 @@ module Ugc
             :my_town_only,
             :promote_radius,
             :ugc_job,
+            :published,
             location_ids: [],
           ]
         )
@@ -78,6 +78,7 @@ module Ugc
             authors: @current_user.try(:name),
             content_category_id: market_category.id,
             pubdate: Time.zone.now,
+            published: true,
             timestamp: Time.zone.now,
             organization_id: @params[:content][:organization_id] || dailyuv_org.id,
             ugc_job: @params[:content][:ugc_job]
