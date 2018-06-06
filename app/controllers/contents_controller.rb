@@ -166,7 +166,6 @@ class ContentsController < ApplicationController
         :authors,
         :issue_id,
         :parent_id,
-        :copyright,
         :pubdate,
         :url,
         :banner_ad_override,

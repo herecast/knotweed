@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180420171339) do
+ActiveRecord::Schema.define(version: 20180531192206) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,36 +24,6 @@ ActiveRecord::Schema.define(version: 20180420171339) do
     t.string   "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "annotation_reports", id: :bigserial, force: :cascade do |t|
-    t.integer  "content_id",    limit: 8
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
-    t.string   "name",          limit: 255
-    t.text     "description"
-    t.text     "json_response"
-    t.integer  "repository_id", limit: 8
-  end
-
-  create_table "annotations", id: :bigserial, force: :cascade do |t|
-    t.integer  "annotation_report_id", limit: 8
-    t.string   "annotation_id",        limit: 255
-    t.boolean  "accepted"
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
-    t.string   "startnode",            limit: 255
-    t.string   "endnode",              limit: 255
-    t.string   "annotation_type",      limit: 255
-    t.boolean  "is_generated"
-    t.string   "lookup_class",         limit: 255
-    t.string   "token_feature",        limit: 255
-    t.string   "recognized_class",     limit: 255
-    t.string   "annotated_string",     limit: 255
-    t.string   "instance",             limit: 255
-    t.text     "edges"
-    t.boolean  "is_trusted"
-    t.string   "rule",                 limit: 255
   end
 
   create_table "business_categories", id: :bigserial, force: :cascade do |t|
@@ -186,11 +156,10 @@ ActiveRecord::Schema.define(version: 20180420171339) do
   end
 
   create_table "consumer_apps", id: :bigserial, force: :cascade do |t|
-    t.string   "name",          limit: 255
-    t.string   "uri",           limit: 255
-    t.integer  "repository_id", limit: 8
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.string   "name",       limit: 255
+    t.string   "uri",        limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   add_index "consumer_apps", ["uri"], name: "idx_16494_index_consumer_apps_on_uri", unique: true, using: :btree
@@ -294,26 +263,18 @@ ActiveRecord::Schema.define(version: 20180420171339) do
     t.string   "authors",                   limit: 255
     t.text     "raw_content"
     t.integer  "issue_id",                  limit: 8
-    t.integer  "import_location_id",        limit: 8
     t.datetime "created_at",                                            null: false
     t.datetime "updated_at",                                            null: false
-    t.string   "copyright",                 limit: 255
     t.string   "guid",                      limit: 255
     t.datetime "pubdate"
     t.string   "source_category",           limit: 255
-    t.string   "topics",                    limit: 255
     t.string   "url",                       limit: 255
     t.string   "origin",                    limit: 255
-    t.string   "language",                  limit: 255
     t.string   "page",                      limit: 255
     t.string   "authoremail",               limit: 255
     t.integer  "organization_id",           limit: 8
     t.boolean  "quarantine",                            default: false
-    t.string   "doctype",                   limit: 255
     t.datetime "timestamp"
-    t.string   "contentsource",             limit: 255
-    t.integer  "import_record_id",          limit: 8
-    t.string   "source_content_id",         limit: 255
     t.integer  "parent_id",                 limit: 8
     t.integer  "content_category_id",       limit: 8
     t.boolean  "category_reviewed",                     default: false
@@ -370,8 +331,6 @@ ActiveRecord::Schema.define(version: 20180420171339) do
   add_index "contents", ["content_category_id"], name: "idx_16527_content_category_id", using: :btree
   add_index "contents", ["created_by"], name: "idx_16527_index_contents_on_created_by", using: :btree
   add_index "contents", ["guid"], name: "idx_16527_guid", using: :btree
-  add_index "contents", ["import_location_id"], name: "idx_16527_location_id", using: :btree
-  add_index "contents", ["import_record_id"], name: "idx_16527_import_record_id", using: :btree
   add_index "contents", ["organization_id"], name: "idx_16527_source_id", using: :btree
   add_index "contents", ["parent_id"], name: "idx_16527_index_contents_on_parent_id", using: :btree
   add_index "contents", ["pubdate"], name: "idx_16527_pubdate", using: :btree
@@ -380,19 +339,6 @@ ActiveRecord::Schema.define(version: 20180420171339) do
   add_index "contents", ["root_parent_id"], name: "idx_16527_index_contents_on_root_parent_id", using: :btree
   add_index "contents", ["source_category"], name: "idx_16527_categories", using: :btree
   add_index "contents", ["title"], name: "idx_16527_title", using: :btree
-
-  create_table "contents_publish_records", id: false, force: :cascade do |t|
-    t.integer "content_id",        limit: 8
-    t.integer "publish_record_id", limit: 8
-  end
-
-  create_table "contents_repositories", id: false, force: :cascade do |t|
-    t.integer "content_id",    limit: 8, null: false
-    t.integer "repository_id", limit: 8, null: false
-  end
-
-  add_index "contents_repositories", ["content_id", "repository_id"], name: "idx_16550_index_contents_repositories_on_content_id_and_reposit", using: :btree
-  add_index "contents_repositories", ["repository_id", "content_id"], name: "idx_16550_index_contents_repositories_on_repository_id_and_cont", using: :btree
 
   create_table "delayed_jobs", id: :bigserial, force: :cascade do |t|
     t.integer  "priority",   limit: 8,   default: 0, null: false
@@ -478,60 +424,6 @@ ActiveRecord::Schema.define(version: 20180420171339) do
   end
 
   add_index "images", ["imageable_type", "imageable_id"], name: "idx_16634_index_images_on_imageable_type_and_imageable_id", using: :btree
-
-  create_table "import_jobs", id: :bigserial, force: :cascade do |t|
-    t.integer  "parser_id",             limit: 8
-    t.string   "name",                  limit: 255
-    t.text     "config"
-    t.string   "source_uri",            limit: 255
-    t.string   "job_type",              limit: 255
-    t.integer  "organization_id",       limit: 8
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
-    t.string   "status",                limit: 255
-    t.integer  "frequency",             limit: 8,   default: 0
-    t.boolean  "archive",                           default: false, null: false
-    t.datetime "run_at"
-    t.boolean  "stop_loop",                         default: true
-    t.boolean  "automatically_publish",             default: false
-    t.integer  "repository_id",         limit: 8
-    t.string   "publish_method",        limit: 255
-    t.string   "sidekiq_jid"
-    t.datetime "next_scheduled_run"
-    t.string   "inbound_prefix"
-    t.string   "outbound_prefix"
-  end
-
-  create_table "import_locations", id: :bigserial, force: :cascade do |t|
-    t.integer  "parent_id",      limit: 8,   default: 0
-    t.integer  "region_id",      limit: 8,   default: 0
-    t.string   "city",           limit: 255
-    t.string   "state",          limit: 255
-    t.string   "zip",            limit: 255
-    t.string   "country",        limit: 128
-    t.string   "link_name",      limit: 255
-    t.string   "link_name_full", limit: 255
-    t.integer  "status",                     default: 0
-    t.string   "usgs_id",        limit: 128
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
-  end
-
-  add_index "import_locations", ["city"], name: "idx_16657_city", using: :btree
-  add_index "import_locations", ["link_name"], name: "idx_16657_link_name", using: :btree
-  add_index "import_locations", ["link_name_full"], name: "idx_16657_link_name_full", using: :btree
-  add_index "import_locations", ["state"], name: "idx_16657_state", using: :btree
-  add_index "import_locations", ["status"], name: "idx_16657_status", using: :btree
-  add_index "import_locations", ["usgs_id"], name: "idx_16657_usgs_id", using: :btree
-
-  create_table "import_records", id: :bigserial, force: :cascade do |t|
-    t.integer  "import_job_id",  limit: 8
-    t.integer  "items_imported", limit: 8, default: 0
-    t.integer  "failures",       limit: 8, default: 0
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-    t.integer  "filtered",       limit: 8, default: 0
-  end
 
   create_table "issues", id: :bigserial, force: :cascade do |t|
     t.string   "issue_edition",      limit: 255
@@ -726,21 +618,6 @@ ActiveRecord::Schema.define(version: 20180420171339) do
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
 
-  create_table "parameters", id: :bigserial, force: :cascade do |t|
-    t.integer  "parser_id",  limit: 8
-    t.string   "name",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-  end
-
-  create_table "parsers", id: :bigserial, force: :cascade do |t|
-    t.string   "filename",    limit: 255
-    t.string   "name",        limit: 255
-    t.text     "description"
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
-  end
-
   create_table "profile_metrics", force: :cascade do |t|
     t.integer  "organization_id"
     t.integer  "location_id"
@@ -853,33 +730,6 @@ ActiveRecord::Schema.define(version: 20180420171339) do
 
   add_index "promotions", ["content_id"], name: "idx_16765_index_promotions_on_content_id", using: :btree
   add_index "promotions", ["created_by"], name: "idx_16765_index_promotions_on_created_by", using: :btree
-
-  create_table "publish_jobs", id: :bigserial, force: :cascade do |t|
-    t.text     "query_params"
-    t.integer  "organization_id",    limit: 8
-    t.string   "status",             limit: 255
-    t.string   "publish_method",     limit: 255
-    t.boolean  "archive",                        default: false
-    t.string   "error",              limit: 255
-    t.string   "name",               limit: 255
-    t.text     "description"
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
-    t.text     "file_archive"
-    t.datetime "run_at"
-    t.string   "sidekiq_jid"
-    t.datetime "next_scheduled_run"
-  end
-
-  create_table "publish_records", id: :bigserial, force: :cascade do |t|
-    t.integer  "publish_job_id",  limit: 8
-    t.integer  "items_published", limit: 8, default: 0
-    t.integer  "failures",        limit: 8, default: 0
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
-  end
-
-  add_index "publish_records", ["publish_job_id"], name: "idx_16811_index_publish_records_on_publish_job_id", using: :btree
 
   create_table "report_job_params", force: :cascade do |t|
     t.string   "report_job_paramable_type"
