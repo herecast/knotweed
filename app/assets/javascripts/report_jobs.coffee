@@ -3,6 +3,8 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 jQuery ->
+  Numerous.init()
+
   $(document).on 'click', '.existing-fields-for-report_job_params span.close', ->
     $(this).next(".control-group").find("input.hidden").val(true) # set _delete field to true
     $(this).parent(".report-job-param").hide()
