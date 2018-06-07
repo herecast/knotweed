@@ -280,30 +280,6 @@ describe 'Feed endpoints', type: :request do
       end
     end
 
-    context "when first page and no query" do
-      before do
-        allow(Carousels::ListservCarousel).to receive(:new).and_return(
-          Carousels::ListservCarousel.new
-        )
-      end
-
-      subject { get "/api/v3/feed", {}, headers.merge(auth_headers) }
-
-      it "returns feed_items including listserv carousel" do
-        expect(Carousels::ListservCarousel).to receive(:new)
-        subject
-      end
-    end
-
-    context "page param > 1" do
-      subject { get "/api/v3/feed?page=2", {}, headers.merge(auth_headers) }
-
-      it "does not make call to Carousels::ListservCarousel" do
-        expect(Carousels::ListservCarousel).not_to receive(:new)
-        subject
-      end
-    end
-
     context "when 'query' parameter is present" do
       before do
         @market_post = FactoryGirl.create :content, :market_post, title: news.title, organization: org, published: true
@@ -345,10 +321,6 @@ describe 'Feed endpoints', type: :request do
         expect(business_carousel[:carousel][:organizations].map{ |o| o[:id] }).not_to include @archived_publisher.id
       end
 
-      it "does not call to Carousels::ListservCarousel" do
-        expect(Carousels::ListservCarousel).not_to receive(:new)
-      end
-
       context "when one carousel returns no Organizations" do
         before do
           @second_organization.update_attribute(:name, 'non-search')
@@ -378,10 +350,6 @@ describe 'Feed endpoints', type: :request do
 
             expect(content_types).to all eql content_type.to_s
           end
-
-          it "does not make call to Carousels::ListservCarousel" do
-            expect(Carousels::ListservCarousel).not_to receive(:new)
-          end
         end
       end
 
@@ -389,7 +357,6 @@ describe 'Feed endpoints', type: :request do
         before do
           @listserv = Organization.find_by(name: 'Listserv')
           @listserv.update_attribute(:id, Organization::LISTSERV_ORG_ID)
-          # @listserv = FactoryGirl.create :organization, name: 'Listserv'
           @listserv_content = FactoryGirl.create :content, :talk,
             organization_id: Organization::LISTSERV_ORG_ID,
             raw_content: 'What follows is the biography of Luke Skywalker'

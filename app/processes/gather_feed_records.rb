@@ -15,7 +15,6 @@ class GatherFeedRecords
     return empty_payload if org_present_and_biz_feed_inactive? || listserv_request_without_location?
     do_search if @params[:content_type] != 'organization'
     create_content_array
-    conditionally_add_listserv_carousel
     conditionally_add_carousels
     return { records: @records, total_entries: @total_entries }
   end
@@ -46,15 +45,6 @@ class GatherFeedRecords
       else
         @records = @contents.map do |content|
           FeedItem.new(content)
-        end
-      end
-    end
-
-    def conditionally_add_listserv_carousel
-      unless no_listserv_carousel_required?
-        carousel = Carousels::ListservCarousel.new(location_id: @params[:location_id])
-        if carousel.contents.count > 0
-          @records.insert(2, FeedItem.new(carousel))
         end
       end
     end
@@ -127,20 +117,8 @@ class GatherFeedRecords
         page == 1
     end
 
-    def no_listserv_carousel_required?
-      @params[:content_type].present? ||
-        @params[:query].present? ||
-        @params[:organization_id].present? ||
-        my_stuff_request? ||
-        page > 1
-    end
-
     def listserv_org_request?
       @params[:organization_id].to_i == Organization::LISTSERV_ORG_ID
-    end
-
-    def my_stuff_request?
-      ['me', 'my_stuff', 'mystuff'].include?(@params[:radius].to_s.downcase)
     end
 
     def assign_first_served_at_to_new_contents
