@@ -352,24 +352,6 @@ describe 'Feed endpoints', type: :request do
           end
         end
       end
-
-      context "when content_type: listserv" do
-        before do
-          @listserv = Organization.find_by(name: 'Listserv')
-          @listserv.update_attribute(:id, Organization::LISTSERV_ORG_ID)
-          @listserv_content = FactoryGirl.create :content, :talk,
-            organization_id: Organization::LISTSERV_ORG_ID,
-            raw_content: 'What follows is the biography of Luke Skywalker'
-        end
-
-        subject { get "/api/v3/feed?content_type=listserv", {}, headers }
-
-        it "returns only listserv content" do
-          subject
-          expect(response_json[:feed_items].length).to eq 1
-          expect(response_json[:feed_items][0][:id]).to eq @listserv_content.id
-        end
-      end
     end
   end
 

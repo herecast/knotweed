@@ -123,11 +123,12 @@ class ContentSearch
     end
 
     def whitelist_organizations_and_content_types(attrs)
-      if @params[:content_type].present? && @params[:content_type] == 'listserv'
-        attrs[:where][:organization_id] = Organization::LISTSERV_ORG_ID
-      elsif @params[:content_type].present?
-        attrs[:where][:organization_id] = @requesting_app.organizations.pluck(:id) if @requesting_app.present?
+      if @params[:content_type].present?
         attrs[:where][:content_type] = @params[:content_type]
+        if @requesting_app.present?
+          ids = @requesting_app.organizations.where.not(id: Organization::LISTSERV_ORG_ID).pluck(:id)
+          attrs[:where][:organization_id] = ids
+        end
       else
         attrs[:where][:organization_id] = { not: Organization::LISTSERV_ORG_ID } unless listserv_org_request?
       end
