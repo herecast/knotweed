@@ -25,7 +25,6 @@ module Api
 
         def promotion_params
           params.require(:promotion).permit(
-            :organization_id,
             :created_by,
             :share_platform
           ).tap do |p|
