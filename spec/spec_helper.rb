@@ -1,15 +1,12 @@
 require 'simplecov'
 
-# save to CircleCI's artifacts directory if we're on CircleCI
-if ENV['CIRCLE_ARTIFACTS']
-  dir = File.join(ENV['CIRCLE_ARTIFACTS'], "coverage")
-  SimpleCov.coverage_dir(dir)
-end
 SimpleCov.start 'rails' do
   add_filter "/vendor/"
 
   add_group 'Serializers', 'app/serializers'
 end if ENV["COVERAGE"] || ENV["CI"]
+
+SimpleCov.minimum_coverage 88
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'
