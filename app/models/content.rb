@@ -151,6 +151,8 @@ class Content < ActiveRecord::Base
              organization: [:locations, :consumer_active_base_locations, :organization_locations])
       .where('organization_id NOT IN (4,5,328)')
       .where('root_content_category_id > 0')
+      .where('raw_content IS NOT NULL')
+      .where("raw_content != ''")
   }
 
   def search_serializer
@@ -183,7 +185,7 @@ class Content < ActiveRecord::Base
   end
 
   def should_index?
-    deleted_at.blank?
+    deleted_at.blank? && raw_content.present?
   end
 
   def self.default_search_opts
