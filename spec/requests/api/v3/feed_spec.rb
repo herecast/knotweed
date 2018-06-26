@@ -459,6 +459,19 @@ describe 'Feed endpoints', type: :request do
       end
     end
 
+    context "when Campaign present and biz_feed_public: true" do
+      before do
+        @campaign_content = FactoryGirl.create :content, :campaign,
+          organization_id: @organization.id
+        @campaign_content.update_attribute :biz_feed_public, true
+      end
+
+      it "appears" do
+        subject
+        expect(response_json[:feed_items].length).to eq 1
+      end
+    end
+
     context "when Organization is type: Business and biz feed inactive" do
       before do
         @inactive_organization = FactoryGirl.create :organization,
@@ -554,6 +567,32 @@ describe 'Feed endpoints', type: :request do
           subject
           expect(response_json[:feed_items].length).to eq 5
         end
+
+        context "when Campaign present and biz_feed_public: false" do
+          before do
+            @campaign_content = FactoryGirl.create :content, :campaign,
+              organization_id: @organization.id,
+              biz_feed_public: false
+          end
+
+          it "appears" do
+            subject
+            expect(response_json[:feed_items].length).to eq 6
+          end
+        end
+
+        context "when Campaign present and biz_feed_public: true" do
+          before do
+            @campaign_content = FactoryGirl.create :content, :campaign,
+              organization_id: @organization.id,
+              biz_feed_public: true
+          end
+
+          it "appears" do
+            subject
+            expect(response_json[:feed_items].length).to eq 6
+          end
+        end
       end
 
       describe "?show=hidden" do
@@ -563,6 +602,32 @@ describe 'Feed endpoints', type: :request do
           subject
           expect(response_json[:feed_items].length).to eq 1
           expect(response_json[:feed_items][0][:content][:id]).to eq @hidden_content.id
+        end
+
+        context "when Campaign present and biz_feed_public: false" do
+          before do
+            @campaign_content = FactoryGirl.create :content, :campaign,
+              organization_id: @organization.id,
+              biz_feed_public: false
+          end
+
+          it "appears" do
+            subject
+            expect(response_json[:feed_items].length).to eq 2
+          end
+        end
+
+        context "when Campaign present and biz_feed_public: true" do
+          before do
+            @campaign_content = FactoryGirl.create :content, :campaign,
+              organization_id: @organization.id
+            @campaign_content.update_attribute :biz_feed_public, true
+          end
+
+          it "does not appear" do
+            subject
+            expect(response_json[:feed_items].length).to eq 1
+          end
         end
       end
 
@@ -574,6 +639,32 @@ describe 'Feed endpoints', type: :request do
           expect(response_json[:feed_items].length).to eq 2
           content_ids = response_json[:feed_items].map { |c| c[:content][:id] }
           expect(content_ids).to match_array [@draft_content.id, @scheduled_content.id]
+        end
+
+        context "when Campaign present and biz_feed_public: false" do
+          before do
+            @campaign_content = FactoryGirl.create :content, :campaign,
+              organization_id: @organization.id,
+              biz_feed_public: false
+          end
+
+          it "does not appear" do
+            subject
+            expect(response_json[:feed_items].length).to eq 2
+          end
+        end
+
+        context "when Campaign present and biz_feed_public: true" do
+          before do
+            @campaign_content = FactoryGirl.create :content, :campaign,
+              organization_id: @organization.id
+            @campaign_content.update_attribute :biz_feed_public, true
+          end
+
+          it "does not appear" do
+            subject
+            expect(response_json[:feed_items].length).to eq 2
+          end
         end
       end
 
