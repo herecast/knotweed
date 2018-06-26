@@ -367,21 +367,6 @@ describe 'Feed endpoints', type: :request do
       Timecop.return
     end
 
-    context 'when Organization has BusinessLocation with Events' do
-      before do
-        business_location = FactoryGirl.create :business_location
-        @organization.business_locations << business_location
-        @event = FactoryGirl.create :event, venue_id: business_location.id
-        FactoryGirl.create :content, :market_post, organization_id: @other_organization.id
-      end
-
-      it "returns Events" do
-        subject
-        expect(response_json[:feed_items].length).to eq 1
-        expect(response_json[:feed_items][0][:content][:id]).to eq @event.content.id
-      end
-    end
-
     context "when Organization has tagged Content" do
       before do
         @tagged_content = FactoryGirl.create :content, :market_post

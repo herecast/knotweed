@@ -199,11 +199,6 @@ class Organization < ActiveRecord::Base
     contents.where(channel_type: 'BusinessProfile').present?
   end
 
-  def venue_event_ids
-    # remove conditional after rails 5 upgrade
-    association(:venue_events).loaded? ? venue_events.map(&:id) : venue_events.pluck(:id)
-  end
-
   private
 
   def trigger_content_reindex_if_name_or_profile_image_changed!

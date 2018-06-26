@@ -67,7 +67,6 @@ class ContentSearch
         },
         or: [[
           { organization_id: @params[:organization_id] },
-          { channel_id: organization.venue_event_ids, channel_type: 'Event' },
           { id: organization.tagged_contents.pluck(:id) }
         ]]
       },
@@ -174,7 +173,6 @@ class ContentSearch
         if @params[:calendar] == 'false'
           or_opts << { id: organization.tagged_contents.where.not(channel_type: 'Event').pluck(:id) }
         else
-          or_opts << { channel_id: organization.venue_event_ids, channel_type: 'Event' }
           or_opts << { id: organization.tagged_contents.pluck(:id) }
         end
         attrs[:where][:or] << or_opts
