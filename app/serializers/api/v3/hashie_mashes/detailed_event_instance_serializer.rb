@@ -35,7 +35,6 @@ module Api
         :promote_radius,
         :published_at,
         :registration_deadline,
-        :split_content,
         :starts_at,
         :subtitle,
         :title,

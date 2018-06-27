@@ -22,7 +22,6 @@ def content_response_schema(record)
       cost: record.channel.try(:cost),
       cost_type: record.channel.try(:cost_type),
       created_at: record.created_at.iso8601,
-      embedded_ad: record.embedded_ad?,
       ends_at: record.channel.try(:next_or_first_instance).try(:end_date).try(:iso8601),
       event_url: record.channel.try(:event_url),
       event_instance_id: record.channel.try(:next_or_first_instance).try(:id),
@@ -49,7 +48,7 @@ def content_response_schema(record)
       #schedules: [],
 
       sold: record.channel.try(:sold),
-      split_content: nil,
+      split_content: record.content_type == :news ? SplitContentForAdPlacement.call(record.raw_content) : nil,
       starts_at: record.channel.try(:next_or_first_instance).try(:start_date).try(:iso8601),
       subtitle: record.subtitle,
       sunset_date: record.sunset_date.try(:iso8601),
@@ -307,7 +306,7 @@ describe 'Contents Endpoints', type: :request do
               {
                 content_type: 'news',
                 title: "A distinguished article",
-                content: "<p>Once upon a time...</p>",
+                content: "<p>Once upon a time...#{'a'*255}</p><p>Another p</p>",
                 author_name: 'Fred',
                 organization_id: FactoryGirl.create(:organization,
                   can_publish_news: true
@@ -641,15 +640,16 @@ describe 'Contents Endpoints', type: :request do
             it 'returns json respresenation' do
               subject
               expect(response.body).to include_json(
-                content_response_schema(content).deep_merge(
+                content_response_schema(content.reload).deep_merge(
                   content: {
                     author_name: valid_news_params[:author_name],
                     biz_feed_public: false,
                     title: valid_news_params[:title],
                     # @TODO: make sanitization more sane, it's wrapping
                     # and additional <p> here.
-                    #content: valid_news_params[:content],
-                    content: "<p>#{valid_news_params[:content]}</p>"
+                    # content: valid_news_params[:content],
+                    content: "<p>#{valid_news_params[:content]}</p>",
+                    split_content: { head: "<p></p>#{valid_news_params[:content]}", tail: "" }
                   }
                 )
               )

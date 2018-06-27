@@ -29,7 +29,6 @@ module Api
         :cost,
         :cost_type,
         :created_at,
-        :embedded_ad,
         :ends_at,
         :event_url,
         :event_instance_id,

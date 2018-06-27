@@ -33,11 +33,6 @@ def serialized_event_instance(event_instance)
   promote_radius: event_instance.event.content.promote_radius,
   published_at: event_instance.event.content.pubdate.iso8601,
   registration_deadline: event_instance.event.registration_deadline.try(:iso8601),
-  split_content: nil, 
-  #{
-  #  head: an_instance_of(String),
-  #  tail: an_instance_of(String).or(be_nil),
-  #},
   starts_at: event_instance.start_date.iso8601,
   subtitle: event_instance.subtitle_override,
   title: event_instance.event.content.title,

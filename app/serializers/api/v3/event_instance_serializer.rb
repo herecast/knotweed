@@ -32,7 +32,6 @@ module Api
         :promote_radius,
         :published_at,
         :registration_deadline,
-        :split_content,
         :starts_at,
         :subtitle,
         :title,
@@ -48,23 +47,6 @@ module Api
 
       has_many :comments, serializer: Api::V3::CommentSerializer
       has_many :event_instances, serializer: Api::V3::RelatedEventInstanceSerializer
-
-      def split_content
-        if object.event.content.embedded_ad?
-          SplitContentForAdPlacement.call(
-            ImageUrlService.optimize_image_urls(
-              html_text: content,
-              default_width:  600,
-              default_height: 1800,
-              default_crop:   false
-            )
-          ).tap do |h|
-            if h[:tail].nil?
-              h[:tail] = ""
-            end
-          end
-        end
-      end
 
       def promote_radius
         object.event.content.promote_radius
