@@ -103,20 +103,6 @@ describe 'Contents Endpoints', type: :request do
         subject
         expect(response.body).to include_json(content_response_schema(content))
       end
-
-      context "when content organization has embedded_ad: true" do
-        let(:organization) { FactoryGirl.create :organization, embedded_ad: true }
-        let(:content) { FactoryGirl.create :content, :news, organization: organization }
-
-        before { consumer_app.organizations << organization }
-
-        it 'returns record with split content' do
-          subject
-          response_split_content = response_json[:content][:split_content]
-          expect(response_split_content.key?(:head)).to be true
-          expect(response_split_content.key?(:head)).to be true
-        end
-      end
     end
 
     describe 'when content requested is of listserv origin' do

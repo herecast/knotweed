@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180531192206) do
+ActiveRecord::Schema.define(version: 20180601192206) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -598,7 +598,6 @@ ActiveRecord::Schema.define(version: 20180531192206) do
     t.string   "ad_contact_nickname"
     t.string   "ad_contact_fullname"
     t.string   "profile_sales_agent"
-    t.boolean  "embedded_ad",                          default: false
     t.boolean  "certified_storyteller",                default: false
     t.string   "services"
     t.boolean  "contact_card_active",                  default: true

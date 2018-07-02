@@ -32,7 +32,6 @@
 #  ad_contact_nickname      :string
 #  ad_contact_fullname      :string
 #  profile_sales_agent      :string
-#  embedded_ad              :boolean          default(FALSE)
 #  certified_storyteller    :boolean          default(FALSE)
 #  services                 :string
 #  contact_card_active      :boolean          default(TRUE)
