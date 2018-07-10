@@ -17,6 +17,10 @@
 #  file_extension :string
 #  position       :integer          default(0)
 #
+# Indexes
+#
+#  idx_16634_index_images_on_imageable_type_and_imageable_id  (imageable_type,imageable_id)
+#
 
 FactoryGirl.define do
   factory :image do

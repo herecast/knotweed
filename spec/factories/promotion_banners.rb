@@ -23,7 +23,10 @@
 #  coupon_email_body      :text
 #  coupon_image           :string
 #  sales_agent            :string
-#  digest_emails          :integer
+#  digest_clicks          :integer          default(0), not null
+#  digest_opens           :integer          default(0), not null
+#  digest_emails          :integer          default(0), not null
+#  digest_metrics_updated :datetime
 #
 
 FactoryGirl.define do

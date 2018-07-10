@@ -13,6 +13,12 @@
 #  presenter_name       :string(255)
 #  schedule_id          :integer
 #
+# Indexes
+#
+#  idx_16625_index_event_instances_on_end_date    (end_date)
+#  idx_16625_index_event_instances_on_event_id    (event_id)
+#  idx_16625_index_event_instances_on_start_date  (start_date)
+#
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
 

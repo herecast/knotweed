@@ -18,13 +18,8 @@
 #  description              :text
 #  banner_ad_override       :string(255)
 #  pay_directly             :boolean          default(FALSE)
-#  can_publish_events       :boolean          default(FALSE)
-#  can_publish_market       :boolean          default(FALSE)
-#  can_publish_talk         :boolean          default(FALSE)
-#  can_publish_ads          :boolean          default(FALSE)
 #  profile_image            :string(255)
 #  background_image         :string(255)
-#  profile_ad_override      :string(255)
 #  twitter_handle           :string
 #  custom_links             :jsonb
 #  biz_feed_active          :boolean          default(FALSE)
@@ -45,6 +40,8 @@
 #  archived                 :boolean          default(FALSE)
 #  feature_notification_org :boolean          default(FALSE)
 #  standard_ugc_org         :boolean          default(FALSE)
+#  calendar_view_first      :boolean          default(FALSE)
+#  calendar_card_active     :boolean          default(FALSE)
 #
 # Indexes
 #

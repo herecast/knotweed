@@ -15,6 +15,10 @@
 #  latitude        :float
 #  longitude       :float
 #
+# Indexes
+#
+#  index_locations_on_latitude_and_longitude  (latitude,longitude)
+#
 
 require 'spec_helper'
 

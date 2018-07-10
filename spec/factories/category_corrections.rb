@@ -12,6 +12,10 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #
+# Indexes
+#
+#  idx_16473_index_category_corrections_on_content_id  (content_id)
+#
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
 

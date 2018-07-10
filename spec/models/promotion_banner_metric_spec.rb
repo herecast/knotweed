@@ -19,6 +19,15 @@
 #  page_placement      :string
 #  client_id           :string
 #  location_id         :integer
+#  load_time           :float
+#  location_confirmed  :boolean          default(FALSE)
+#
+# Indexes
+#
+#  index_promotion_banner_metrics_on_content_id           (content_id)
+#  index_promotion_banner_metrics_on_created_at           (created_at)
+#  index_promotion_banner_metrics_on_event_type           (event_type)
+#  index_promotion_banner_metrics_on_promotion_banner_id  (promotion_banner_id)
 #
 
 require 'rails_helper'

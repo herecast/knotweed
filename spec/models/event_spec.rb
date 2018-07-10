@@ -23,6 +23,12 @@
 #  registration_phone    :string(255)
 #  registration_email    :string(255)
 #
+# Indexes
+#
+#  idx_16615_events_on_venue_id_index  (venue_id)
+#  idx_16615_index_events_on_featured  (featured)
+#  idx_16615_index_events_on_venue_id  (venue_id)
+#
 
 require 'spec_helper'
 

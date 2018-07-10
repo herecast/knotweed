@@ -43,6 +43,7 @@
 #  epayment               :boolean          default(FALSE)
 #  w9                     :boolean          default(FALSE)
 #  has_had_bookmarks      :boolean          default(FALSE)
+#  mc_segment_id          :string
 #
 # Indexes
 #

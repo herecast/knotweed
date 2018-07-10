@@ -17,6 +17,11 @@
 #  feedback_cleanliness_avg  :float            default(0.0)
 #  archived                  :boolean          default(FALSE)
 #
+# Indexes
+#
+#  idx_16451_index_business_profiles_on_existence             (existence)
+#  idx_16451_index_business_profiles_on_source_and_source_id  (source,source_id)
+#
 
 require 'spec_helper'
 

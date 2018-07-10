@@ -11,6 +11,10 @@
 #  source      :string(255)
 #  source_id   :integer
 #
+# Indexes
+#
+#  idx_16420_index_business_categories_on_source_and_source_id  (source,source_id)
+#
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
 

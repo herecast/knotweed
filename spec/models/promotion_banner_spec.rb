@@ -23,6 +23,10 @@
 #  coupon_email_body      :text
 #  coupon_image           :string
 #  sales_agent            :string
+#  digest_clicks          :integer          default(0), not null
+#  digest_opens           :integer          default(0), not null
+#  digest_emails          :integer          default(0), not null
+#  digest_metrics_updated :datetime
 #
 
 require 'spec_helper'

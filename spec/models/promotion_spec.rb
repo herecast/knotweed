@@ -4,7 +4,6 @@
 #
 #  id              :integer          not null, primary key
 #  banner          :string(255)
-#  organization_id :integer
 #  content_id      :integer
 #  description     :text
 #  created_at      :datetime         not null
@@ -15,6 +14,11 @@
 #  created_by      :integer
 #  updated_by      :integer
 #  share_platform  :string
+#
+# Indexes
+#
+#  idx_16765_index_promotions_on_content_id  (content_id)
+#  idx_16765_index_promotions_on_created_by  (created_by)
 #
 
 require 'spec_helper'

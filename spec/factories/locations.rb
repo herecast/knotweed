@@ -15,6 +15,10 @@
 #  latitude        :float
 #  longitude       :float
 #
+# Indexes
+#
+#  index_locations_on_latitude_and_longitude  (latitude,longitude)
+#
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
 

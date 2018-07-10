@@ -8,26 +8,18 @@
 #  authors                   :string(255)
 #  raw_content               :text
 #  issue_id                  :integer
-#  import_location_id        :integer
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
-#  copyright                 :string(255)
 #  guid                      :string(255)
 #  pubdate                   :datetime
 #  source_category           :string(255)
-#  topics                    :string(255)
 #  url                       :string(255)
 #  origin                    :string(255)
-#  language                  :string(255)
 #  page                      :string(255)
 #  authoremail               :string(255)
 #  organization_id           :integer
 #  quarantine                :boolean          default(FALSE)
-#  doctype                   :string(255)
 #  timestamp                 :datetime
-#  contentsource             :string(255)
-#  import_record_id          :integer
-#  source_content_id         :string(255)
 #  parent_id                 :integer
 #  content_category_id       :integer
 #  category_reviewed         :boolean          default(FALSE)
@@ -69,6 +61,7 @@
 #  ad_sales_agent            :integer
 #  ad_promoter               :integer
 #  latest_activity           :datetime
+#  has_future_event_instance :boolean
 #  alternate_title           :string
 #  alternate_organization_id :integer
 #  alternate_authors         :string
@@ -81,7 +74,6 @@
 #  idx_16527_categories                                  (source_category)
 #  idx_16527_content_category_id                         (content_category_id)
 #  idx_16527_guid                                        (guid)
-#  idx_16527_import_record_id                            (import_record_id)
 #  idx_16527_index_contents_on_authoremail               (authoremail)
 #  idx_16527_index_contents_on_channel_id                (channel_id)
 #  idx_16527_index_contents_on_channel_type              (channel_type)
@@ -91,7 +83,6 @@
 #  idx_16527_index_contents_on_published                 (published)
 #  idx_16527_index_contents_on_root_content_category_id  (root_content_category_id)
 #  idx_16527_index_contents_on_root_parent_id            (root_parent_id)
-#  idx_16527_location_id                                 (import_location_id)
 #  idx_16527_pubdate                                     (pubdate)
 #  idx_16527_source_id                                   (organization_id)
 #  idx_16527_title                                       (title)

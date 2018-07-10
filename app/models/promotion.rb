@@ -4,7 +4,6 @@
 #
 #  id              :integer          not null, primary key
 #  banner          :string(255)
-#  organization_id :integer
 #  content_id      :integer
 #  description     :text
 #  created_at      :datetime         not null
@@ -18,9 +17,8 @@
 #
 # Indexes
 #
-#  idx_16765_index_promotions_on_content_id      (content_id)
-#  idx_16765_index_promotions_on_created_by      (created_by)
-#  idx_16765_index_promotions_on_publication_id  (organization_id)
+#  idx_16765_index_promotions_on_content_id  (content_id)
+#  idx_16765_index_promotions_on_created_by  (created_by)
 #
 
 class Promotion < ActiveRecord::Base

@@ -8,7 +8,7 @@
 #  event_instance_id :integer
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
-#  read              :boolean
+#  read              :boolean          default(FALSE)
 #  deleted_at        :datetime
 #
 # Indexes

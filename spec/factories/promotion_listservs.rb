@@ -2,11 +2,11 @@
 #
 # Table name: promotion_listservs
 #
-#  id                  :integer          not null, primary key
-#  listserv_id         :integer
-#  sent_at             :datetime
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
+#  id          :integer          not null, primary key
+#  listserv_id :integer
+#  sent_at     :datetime
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

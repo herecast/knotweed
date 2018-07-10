@@ -13,6 +13,11 @@
 #  updated_at             :datetime         not null
 #  load_count             :integer
 #
+# Indexes
+#
+#  index_promotion_banner_reports_on_promotion_banner_id  (promotion_banner_id)
+#  index_promotion_banner_reports_on_report_date          (report_date)
+#
 
 require 'spec_helper'
 

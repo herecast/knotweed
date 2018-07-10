@@ -17,8 +17,8 @@
 #  updated_at            :datetime         not null
 #  email_subject         :string
 #  alert_recipients      :string
-#  cc_email              :string
-#  bcc_email             :string
+#  cc_emails             :string
+#  bcc_emails            :string
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

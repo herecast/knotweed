@@ -2,12 +2,15 @@
 #
 # Table name: consumer_apps
 #
-#  id            :integer          not null, primary key
-#  name          :string(255)
-#  uri           :string(255)
-#  repository_id :integer
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  id         :integer          not null, primary key
+#  name       :string(255)
+#  uri        :string(255)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  idx_16494_index_consumer_apps_on_uri  (uri) UNIQUE
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
