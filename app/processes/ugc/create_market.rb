@@ -22,6 +22,8 @@ module Ugc
 
       @market_post.save
 
+      conditionally_schedule_outreach_email
+
       @market_post.content
     end
 
@@ -107,5 +109,15 @@ module Ugc
             base_locations: [Location.find_by_slug_or_id(location_params[:location_id])]
         end
       end
+
+      def conditionally_schedule_outreach_email
+        if @current_user.contents.market_posts.count == 1
+          BackgroundJob.perform_later('CreateUserOutreachMailchimpCampaign', 'call',
+            user: @current_user,
+            type: 'market_post'
+          )
+        end
+      end
+
   end
 end

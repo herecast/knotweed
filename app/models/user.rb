@@ -217,6 +217,10 @@ class User < ActiveRecord::Base
     "#{name} (#{email})"
   end
 
+  def new_user_mc_segment_string
+    "New User ID: #{id}"
+  end
+
   private
 
     def generate_authentication_token

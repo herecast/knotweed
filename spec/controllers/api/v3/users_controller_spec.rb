@@ -329,6 +329,20 @@ describe Api::V3::UsersController, :type => :controller do
                                          }.stringify_keys)
       end
 
+      it 'creates Mailchimp segment for new user' do
+        expectations = ->(job) do
+          job[:args][0] == 'CreateMailchimpSegmentForNewUser' &&
+            job[:args][1] == 'call'
+        end
+
+        subject
+
+        matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
+          expectations[job]
+        end
+        expect(matching_jobs.length).to eq 1
+      end
+
       context 'with unconfirmed digest subscriptions' do
 
         it 'confirms subscriptions after confriming their account' do
@@ -336,12 +350,17 @@ describe Api::V3::UsersController, :type => :controller do
         end
 
         it 'calls the Mailchimp subscribe service' do
-          subject
-          ActiveJob::Base.queue_adapter.enqueued_jobs.each do |job|
-            expect(job[:args].first).to eq 'MailchimpService'
-            expect(job[:args][1]).to eq 'subscribe'
+          expectations = ->(job) do
+            job[:args][0] == 'MailchimpService' &&
+              job[:args][1] == 'subscribe'
           end
-          expect(ActiveJob::Base.queue_adapter.enqueued_jobs.count).to eq @subs.count
+
+          subject
+
+          matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
+            expectations[job]
+          end
+          expect(matching_jobs.length).to eq @subs.count
         end
       end
     end

@@ -144,6 +144,8 @@ describe Api::V3::ContentsController, :type => :controller do
   end
 
   describe 'creating content' do
+    include ActiveJob::TestHelper
+
     context 'Signed in' do
       let(:user) do
         FactoryGirl.create :user
@@ -185,13 +187,17 @@ describe Api::V3::ContentsController, :type => :controller do
         end
 
         it 'triggers a facebook recache of that content' do
-          expect(BackgroundJob).to receive(:perform_later).with(
-            'FacebookService',
-            'rescrape_url',
-            kind_of(Content)
-          )
+          expectations = ->(job) do
+            job[:args][0] == 'FacebookService' &&
+              job[:args][1] == 'rescrape_url'
+          end
 
           subject
+
+          matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
+            expectations[job]
+          end
+          expect(matching_jobs.length).to eq 1
         end
 
         context 'when pubdate is in the future' do

@@ -42,6 +42,8 @@ module Ugc
         contact_user_and_ad_team if @params[:content][:wants_to_advertise]
       end
 
+      conditionally_schedule_outreach_email
+
       return @event.content
     end
 
@@ -114,5 +116,15 @@ module Ugc
             base_locations: [Location.find_by_slug_or_id(location_params[:location_id])]
         end
       end
+
+      def conditionally_schedule_outreach_email
+        if @current_user.contents.events.count == 1
+          BackgroundJob.perform_later('CreateUserOutreachMailchimpCampaign', 'call',
+            user: @current_user,
+            type: 'event'
+          )
+        end
+      end
+
   end
 end

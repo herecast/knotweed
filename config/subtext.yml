@@ -12,6 +12,15 @@ default: &default
     support:        dailyuv@subtext.org
     sunsetting_ads: robg@subtext.org
 
+  email_outreach:
+    new_user_list_id: c3c399d570
+    initial_market_post:
+      subject: "Nice going on your Market post. Don't stop there!"
+      template_id: 273037
+    initial_event_post:
+      subject: "Nice going on your Event post. Don't stop there!"
+      template_id: 273033
+
 production:
   <<: *default
 

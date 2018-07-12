@@ -29,6 +29,17 @@ RSpec.describe ConfirmRegistration do
       expect(return_value).to be_an_instance_of(User)
     end
 
+    it "calls Mailchimp service to create custom User segment" do
+      background_job = class_double("BackgroundJob").as_stubbed_const
+      background_job = background_job.as_null_object
+      expect(background_job).to receive(:perform_later).with(
+        'CreateMailchimpSegmentForNewUser',
+        'call',
+        user
+      )
+      subject
+    end
+
     context 'when user token is invalid' do
       it 'still returns a User if the confirmation_token is invalid' do
         return_value = ConfirmRegistration.call({confirmation_token: "FAKETOKEN", confirm_ip: '0.0.0.0.0'})

@@ -46,6 +46,7 @@ gem 'kaminari', '~> 0.15'                             # Have not yet tested the 
 gem "legato"
 gem 'lograge'
 gem 'mail'
+gem 'mailchimp-api', '~> 2.0.6', require: 'mailchimp'
 gem 'mini_magick'
 gem 'net-http-persistent'
 gem 'newrelic_rpm'

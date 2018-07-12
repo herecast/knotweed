@@ -328,6 +328,7 @@ class Content < ActiveRecord::Base
 
   scope :events, -> { joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",
                                                      "event", "sale_event") }
+  scope :market_posts, -> { where(channel_type: 'MarketPost') }
 
   scope :published, -> { where(published: true) }
 

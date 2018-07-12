@@ -431,6 +431,8 @@ describe 'Contents Endpoints', type: :request do
         end
 
         describe 'market content' do
+          include ActiveJob::TestHelper
+
           context 'valid params' do
             let(:organization) do
               FactoryGirl.create(:organization)
@@ -476,6 +478,33 @@ describe 'Contents Endpoints', type: :request do
                     }
                   )
                 )
+              end
+            end
+
+            context "when user publishes first Market Post" do
+              it "calls to Mailchimp hook" do
+                subject
+                matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
+                  job[:args][0] == 'CreateUserOutreachMailchimpCampaign'
+                end
+
+                expect(matching_jobs.length).to eq 1
+              end
+            end
+
+            context "when user has already published Market Post" do
+              before do
+                FactoryGirl.create :content, :market_post,
+                  created_by: user
+              end
+
+              it "does not call to Mailchimp hook" do
+                subject
+                matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
+                  job[:args][0] == 'CreateUserOutreachMailchimpCampaign'
+                end
+
+                expect(matching_jobs.length).to eq 0
               end
             end
           end
@@ -560,6 +589,33 @@ describe 'Contents Endpoints', type: :request do
                   ends_at: nil,
                 }
               ])
+            end
+
+            context "when user publishes first Event" do
+              it "calls to Mailchimp hook" do
+                subject
+                matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
+                  job[:args][0] == 'CreateUserOutreachMailchimpCampaign'
+                end
+
+                expect(matching_jobs.length).to eq 1
+              end
+            end
+
+            context "when user has already published Event" do
+              before do
+                FactoryGirl.create :content, :event,
+                  created_by: user
+              end
+
+              it "does not call to Mailchimp hook" do
+                subject
+                matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
+                  job[:args][0] == 'CreateUserOutreachMailchimpCampaign'
+                end
+
+                expect(matching_jobs.length).to eq 0
+              end
             end
           end
         end
