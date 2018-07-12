@@ -66,7 +66,7 @@ module Api
               location_ids: [@current_api_user.try(:location_id)].uniq,
               authoremail: @current_api_user.try(:email),
               authors: @current_api_user.try(:name),
-              raw_content: params[:comment][:content],
+              raw_content: ActionView::Base.full_sanitizer.sanitize(params[:comment][:content]),
               pubdate: Time.zone.now,
               organization_id: params[:comment][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
               content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id

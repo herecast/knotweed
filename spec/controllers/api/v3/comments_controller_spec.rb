@@ -149,6 +149,26 @@ describe Api::V3::CommentsController, :type => :controller do
     it 'enques the notification email' do
       expect{ subject }.to change{ActiveJob::Base.queue_adapter.enqueued_jobs.size}.by(1)
     end
+
+    context "when comment contains HTML tags" do
+      before do
+        @allowed_content = "Hi this is allowed"
+      end
+
+      let(:comment_params) do
+        {
+          content: "<div><p><span style='color: red'>#{@allowed_content}</span></p></div>",
+          parent_content_id: @event.content.id
+        }
+      end
+
+      subject { post :create, comment: comment_params }
+
+      it "strips HTML tags from comment" do
+        subject
+        expect(Content.last.raw_content).to eq @allowed_content
+      end
+    end
   end
 
   private
