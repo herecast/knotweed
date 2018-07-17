@@ -16,7 +16,8 @@ module Api
         :managed_organization_ids,
         :can_publish_news?,
         :location_confirmed,
-        :has_had_bookmarks
+        :has_had_bookmarks,
+        :is_blogger
 
       def location_id
         object.location.slug
@@ -56,6 +57,10 @@ module Api
         else
           []
         end
+      end
+
+      def is_blogger
+        object.has_role?(:blogger)
       end
     end
   end

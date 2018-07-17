@@ -429,7 +429,8 @@ describe Api::V3::UsersController, :type => :controller do
           events_ical_url: nil,
           can_publish_news: false,
           managed_organization_ids: [],
-          has_had_bookmarks: user.has_had_bookmarks
+          has_had_bookmarks: user.has_had_bookmarks,
+          is_blogger: user.has_role?(:blogger)
         }.stringify_keys
       }.stringify_keys
     end

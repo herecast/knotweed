@@ -1,9 +1,20 @@
 module Api
   module V3
     class OrganizationsController < ApiController
-      load_resource only: [:show]
+      before_filter :check_logged_in!, only: [:create, :update]
 
-      before_filter :check_logged_in!, only: [:update]
+      def create
+        @organization = Organization.new(create_organization_params)
+        if @organization.save
+          provision_user_as_manager_and_blogger
+          conditionally_create_business_profile
+          update_business_location
+          render json: @organization, serializer: OrganizationSerializer,
+            status: 201
+        else
+          render json: { errors: @organization.errors }, status:  :unprocessable_entity
+        end
+      end
 
       def update
         @organization = Organization.find(params[:id])
@@ -50,6 +61,7 @@ module Api
       end
 
       def show
+        @organization = Organization.find(params[:id])
         # filter to ensure organization belong to the requesting app
         if @requesting_app.present? and !@requesting_app.organizations.include?(@organization)
           head :no_content
@@ -89,8 +101,31 @@ module Api
           :special_link_url,
           :special_link_text,
           :calendar_view_first,
-          :calendar_card_active
+          :calendar_card_active,
+          :website,
+          organization_locations_attributes: [
+            :location_type,
+            :location_id
+          ]
         )
+      end
+
+      def create_organization_params
+        params[:organization][:organization_locations_attributes] = [{
+          location_type: 'base',
+          location_id: Location.find_by(city: 'Hartford', state: 'VT').id
+        }]
+
+        organization_params.tap do |attrs|
+          attrs[:biz_feed_active] = true
+          attrs[:can_publish_news] = true
+          attrs[:org_type] = 'Blog'
+        end
+      end
+
+      def provision_user_as_manager_and_blogger
+        @current_api_user.add_role(:manager, @organization)
+        @current_api_user.add_role(:blogger)
       end
 
       def business_location_params

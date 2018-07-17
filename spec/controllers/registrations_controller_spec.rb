@@ -73,6 +73,27 @@ describe RegistrationsController, :type => :controller do
           expect(JSON.parse(response.body)).to have_key('errors')
         end
       end
+
+      context "when instant_signup is true" do
+        before do
+          FactoryGirl.create :location, id: Location::REGION_LOCATION_ID
+        end
+
+        subject { get :create, format: :json, user: @user_attributes, instant_signup: true }
+
+        it "returns confirmed user" do
+          subject
+          response_json = JSON.parse(response.body)
+          expect(response_json['email']).to eq @user_attributes[:email]
+          expect(response_json['token']).to be_truthy
+        end
+
+        it "increases user count by 1" do
+          expect{ subject }.to change{
+            User.count
+          }.by 1
+        end
+      end
     end
 
     context 'mailer tests' do
@@ -80,11 +101,11 @@ describe RegistrationsController, :type => :controller do
         @consumer_app = FactoryGirl.create :consumer_app
         api_authenticate consumer_app: @consumer_app
       end
-      
+
       subject! { post :create, format: :json, user: @user_attributes }
-      
+
       let(:mail) { ActionMailer::Base.deliveries.last }
-      
+
       it 'should be sent to the correct user' do
         expect(mail.to).to eq [@user_attributes[:email]]
       end

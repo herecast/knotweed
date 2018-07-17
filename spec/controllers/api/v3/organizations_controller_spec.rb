@@ -102,6 +102,55 @@ describe Api::V3::OrganizationsController, :type => :controller do
     end
   end
 
+  describe "POST create" do
+    before do
+      @user = FactoryGirl.create :user
+      api_authenticate user: @user
+      FactoryGirl.create :location, city: 'Hartford', state: 'VT'
+    end
+
+    let(:params) do
+      {
+        organization: {
+            name: 'Hoth Apoth',
+            description: 'Thy drugs are quick...',
+            website: "https://hothapoth.ho",
+            email: "snowman@hothapoth.ho"
+        }
+      }
+    end
+
+    subject { post :create, params }
+
+    it "creates Organization" do
+      expect{ subject }.to change{
+        Organization.count
+      }.by 1
+    end
+
+    it "provisions Org as blog" do
+      subject
+      expect(Organization.last.biz_feed_active).to be true
+      expect(Organization.last.can_publish_news).to be true
+    end
+
+    it "adds Blogger role to User" do
+      subject
+      expect(@user.has_role?(:blogger)).to be true
+    end
+
+    it "adds logged in user as manager" do
+      subject
+      expect(@user.ability.can?(:manage, Organization.last)).to be true
+    end
+
+    it "creates Business Location for Organization" do
+      expect{ subject }.to change{
+        BusinessLocation.count
+      }.by 1
+    end
+  end
+
   describe 'PUT update' do
     before do
       @org = FactoryGirl.create :organization

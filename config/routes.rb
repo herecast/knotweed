@@ -148,9 +148,10 @@ Knotweed::Application.routes.draw do
         put    '/:organization_id/contents/:content_id',      to: "contents#update"
         post   '/:organization_id/contents/:content_id/tags', to: "contents/tags#create"
         delete '/:organization_id/contents/:content_id/tags', to: "contents/tags#destroy"
+        get    '/:name/validation', to: "validations#show"
       end
       get '/organizations/sitemap_ids', to: 'organizations#sitemap_ids'
-      resources 'organizations', only: [:index, :show, :update]
+      resources :organizations, only: [:index, :show, :update, :create]
 
       # deprecated
       post '/news/:id/impressions', to: 'metrics/contents/impressions#create'

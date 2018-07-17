@@ -38,7 +38,8 @@ RSpec.describe 'User API Endpoints', type: :request do
             skip_analytics: user.skip_analytics,
             managed_organization_ids: an_instance_of(Array),
             can_publish_news: user.can_publish_news?,
-            has_had_bookmarks: user.has_had_bookmarks
+            has_had_bookmarks: user.has_had_bookmarks,
+            is_blogger: user.has_role?(:blogger)
           }
         })
       end
