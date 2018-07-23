@@ -22,10 +22,6 @@ class AlertProductTeamOfNewContent
           IntercomService.send_published_content_event(content)
           SlackService.send_published_content_notification(content)
         end
-        if content.created_by&.has_role?(:promoter)
-          IntercomService.send_published_storyteller_content_alert(content)
-          SlackService.send_storyteller_post_notification(content)
-        end
       end
     end
   end

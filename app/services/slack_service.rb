@@ -30,19 +30,4 @@ module SlackService
     }.merge(BOTS[:piggy])
     notifier.post(opts)
   end
-
-  def send_storyteller_post_notification(content)
-    text = "<@jsensenich> #{content.created_by.name} has published a post for #{content.organization&.name}!"
-    url_appendage = content.is_event? ? "#{content.id}/#{content.channel.next_or_first_instance.id}" : content.id
-    notifier = Slack::Notifier.new(WEBHOOK_URLS[:storyteller_posts])
-    opts = {
-      text: text,
-      attachments: [{
-        title: content.title,
-        text: "https://dailyuv.com/feed/#{url_appendage}",
-        color: "cc3366"
-      }]
-    }.merge(BOTS[:chaco])
-    notifier.post(opts)
-  end
 end
