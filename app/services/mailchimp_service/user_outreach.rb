@@ -20,9 +20,9 @@ module MailchimpService
       })
     end
 
-    def schedule_campaign(campaign_id)
+    def schedule_campaign(campaign_id, timing: Time.current)
       new_mailchimp_connection.campaigns.schedule(campaign_id,
-        mailchimp_safe_schedule_time.utc.to_s.sub(' UTC', '')
+        mailchimp_safe_schedule_time(timing).utc.to_s.sub(' UTC', '')
       )
     end
 
@@ -32,8 +32,8 @@ module MailchimpService
         Mailchimp::API.new(Figaro.env.mailchimp_api_key)
       end
 
-      def mailchimp_safe_schedule_time
-        Time.at(((Time.current - 1.second).to_f / 15.minutes.to_i).floor * 15.minutes.to_i) + 15.minutes
+      def mailchimp_safe_schedule_time(timing)
+        Time.at(((timing - 1.second).to_f / 15.minutes.to_i).floor * 15.minutes.to_i) + 15.minutes
       end
 
   end

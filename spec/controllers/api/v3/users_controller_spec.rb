@@ -331,7 +331,7 @@ describe Api::V3::UsersController, :type => :controller do
 
       it 'creates Mailchimp segment for new user' do
         expectations = ->(job) do
-          job[:args][0] == 'CreateMailchimpSegmentForNewUser' &&
+          job[:args][0] == 'Outreach::CreateMailchimpSegmentForNewUser' &&
             job[:args][1] == 'call'
         end
 

@@ -19,7 +19,7 @@ class ConfirmRegistration
 
     def self.create_user_specific_mc_segment(user)
       if user.persisted?
-        BackgroundJob.perform_later('CreateMailchimpSegmentForNewUser', 'call', user)
+        BackgroundJob.perform_later('Outreach::CreateMailchimpSegmentForNewUser', 'call', user, schedule_welcome_emails: true)
       end
     end
 

@@ -14,12 +14,31 @@ default: &default
 
   email_outreach:
     new_user_list_id: c3c399d570
+    welcome:
+      subject: "Welcome to DailyUV!"
+      template_id: 273041
+    locate_yourself:
+      subject: "You're new to DailyUV. Can we show you around?"
+      template_id: 273045
+    subscribe_to_blogs:
+      subject: "Be the first to know - Subscribe to your favorites"
+      template_id: 273049
+    bookmarking:
+      subject: "Bookmark your favorite DailyUV posts"
+      template_id: 273057
+    subscribe_to_digests:
+      subject: "No more FOMO on the newsfeed"
+      template_id: 273061
+    finding_comments:
+      subject: "Your comments are unforgettable"
+      template_id: 273065
     initial_market_post:
       subject: "Nice going on your Market post. Don't stop there!"
       template_id: 273037
     initial_event_post:
       subject: "Nice going on your Event post. Don't stop there!"
       template_id: 273033
+
 
 production:
   <<: *default

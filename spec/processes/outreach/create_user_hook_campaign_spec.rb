@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe CreateUserOutreachMailchimpCampaign do
+RSpec.describe Outreach::CreateUserHookCampaign do
 
   describe "::call" do
 
@@ -27,7 +27,7 @@ RSpec.describe CreateUserOutreachMailchimpCampaign do
     end
 
     context 'when User creates first Market Post' do
-      subject { CreateUserOutreachMailchimpCampaign.call(type: 'market_post', user: @user) }
+      subject { Outreach::CreateUserHookCampaign.call(type: 'market_post', user: @user) }
 
       it "calls to Mailchimp to create campaign" do
         expect(@campaigns_array).to receive(:create).with(
@@ -52,7 +52,7 @@ RSpec.describe CreateUserOutreachMailchimpCampaign do
     end
 
     context 'when User creates first Event' do
-      subject { CreateUserOutreachMailchimpCampaign.call(type: 'event', user: @user) }
+      subject { Outreach::CreateUserHookCampaign.call(type: 'event', user: @user) }
 
       it "calls to Mailchimp to create campaign" do
         expect(@campaigns_array).to receive(:create).with(

@@ -119,7 +119,7 @@ module Ugc
 
       def conditionally_schedule_outreach_email
         if @current_user.contents.events.count == 1
-          BackgroundJob.perform_later('CreateUserOutreachMailchimpCampaign', 'call',
+          BackgroundJob.perform_later('Outreach::CreateUserHookCampaign', 'call',
             user: @current_user,
             type: 'event'
           )

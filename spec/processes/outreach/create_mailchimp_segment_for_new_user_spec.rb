@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe CreateMailchimpSegmentForNewUser do
+RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
 
   describe "::call" do
     before do
@@ -17,7 +17,7 @@ RSpec.describe CreateMailchimpSegmentForNewUser do
         .and_return(mailchimp)
     end
 
-    subject { CreateMailchimpSegmentForNewUser.call(@user) }
+    subject { Outreach::CreateMailchimpSegmentForNewUser.call(@user) }
 
     it 'subscribes User to New User list' do
       expect(@lists_array).to receive(:subscribe).with(
@@ -45,6 +45,17 @@ RSpec.describe CreateMailchimpSegmentForNewUser do
           [{ email: @user.email }]
         )
       subject
+    end
+
+    context "when schedule_welcome_emails: true" do
+      subject { Outreach::CreateMailchimpSegmentForNewUser.call(@user, schedule_welcome_emails: true) }
+    
+      it "calls to schedule welcome emails" do
+        expect(Outreach::ScheduleWelcomeEmails).to receive(:call).with(
+          @user
+        )
+        subject
+      end
     end
   end
 end

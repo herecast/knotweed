@@ -486,7 +486,7 @@ describe 'Contents Endpoints', type: :request do
               it "calls to Mailchimp hook" do
                 subject
                 matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
-                  job[:args][0] == 'CreateUserOutreachMailchimpCampaign'
+                  job[:args][0] == 'Outreach::CreateUserHookCampaign'
                 end
 
                 expect(matching_jobs.length).to eq 1
@@ -502,7 +502,7 @@ describe 'Contents Endpoints', type: :request do
               it "does not call to Mailchimp hook" do
                 subject
                 matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
-                  job[:args][0] == 'CreateUserOutreachMailchimpCampaign'
+                  job[:args][0] == 'Outreach::CreateUserHookCampaign'
                 end
 
                 expect(matching_jobs.length).to eq 0
@@ -596,7 +596,7 @@ describe 'Contents Endpoints', type: :request do
               it "calls to Mailchimp hook" do
                 subject
                 matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
-                  job[:args][0] == 'CreateUserOutreachMailchimpCampaign'
+                  job[:args][0] == 'Outreach::CreateUserHookCampaign'
                 end
 
                 expect(matching_jobs.length).to eq 1
@@ -612,7 +612,7 @@ describe 'Contents Endpoints', type: :request do
               it "does not call to Mailchimp hook" do
                 subject
                 matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
-                  job[:args][0] == 'CreateUserOutreachMailchimpCampaign'
+                  job[:args][0] == 'Outreach::CreateUserHookCampaign'
                 end
 
                 expect(matching_jobs.length).to eq 0

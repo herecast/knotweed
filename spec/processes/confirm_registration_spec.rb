@@ -33,9 +33,12 @@ RSpec.describe ConfirmRegistration do
       background_job = class_double("BackgroundJob").as_stubbed_const
       background_job = background_job.as_null_object
       expect(background_job).to receive(:perform_later).with(
-        'CreateMailchimpSegmentForNewUser',
+        'Outreach::CreateMailchimpSegmentForNewUser',
         'call',
-        user
+        user,
+        {
+          schedule_welcome_emails: true
+        }
       )
       subject
     end
