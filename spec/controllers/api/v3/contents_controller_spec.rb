@@ -53,6 +53,17 @@ describe Api::V3::ContentsController, :type => :controller do
           expect(response).to have_http_status :ok
           expect(assigns(:content).id).to eql @content.id
         end
+
+        context "when draft is deleted" do
+          before do
+            @content.update_attribute :deleted_at, Time.current
+          end
+
+          it "returns not_found status" do
+            subject
+            expect(response).to have_http_status :not_found
+          end
+        end
       end
     end
 
@@ -110,6 +121,49 @@ describe Api::V3::ContentsController, :type => :controller do
       expect(ActiveJob::Base.queue_adapter.enqueued_jobs.last[:job]).to eq(ActionMailer::DeliveryJob)
     end
 
+  end
+
+  describe "DELETE #destroy" do
+    before do
+      @user = FactoryGirl.create :user
+      @content = FactoryGirl.create :content,
+        pubdate: Time.current,
+        created_by: @user
+    end
+
+    subject { delete :destroy, id: @content.id }
+
+    context "when no user logged in" do
+      it "it returns unauthorized status" do
+        subject
+        expect(response).to have_http_status :unauthorized
+      end
+    end
+
+    context "when correct user logged in" do
+      before do
+        api_authenticate user: @user
+      end
+
+      context "when contents is not a draft" do
+        it "returns bad_request status" do
+          subject
+          expect(response).to have_http_status :bad_request
+        end
+      end
+
+      context "when content is a draft" do
+        before do
+          @content.update_attribute(:pubdate, nil)
+        end
+
+        it "marks Content as deleted" do
+          expect{ subject }.to change{
+            @content.reload.deleted_at
+          }
+        end
+      end
+    end
   end
 
   describe 'GET /contents/:id/metrics' do

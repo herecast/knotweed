@@ -130,12 +130,25 @@ module Api
         end
       end
 
+      def destroy
+        @content = Content.find params[:id]
+        authorize! :destroy, @content
+
+        if @content.pubdate.nil?
+          @content.update_attribute(:deleted_at, Time.current)
+          render json: {}, status: :no_content
+        else
+          render json: {}, status: :bad_request
+        end
+      end
+
       protected
         def whitelisted_with_requesting_app?
           @requesting_app.present? && @requesting_app.organizations.include?(@content.organization)
         end
 
         def has_pubdate_in_past_or_can_edit?
+          return false if @content.deleted_at.present?
           return true if can? :manage, @content
           @content.pubdate.present? && @content.pubdate < Time.current
         end

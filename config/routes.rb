@@ -135,7 +135,7 @@ Knotweed::Application.routes.draw do
       get '/feed', to: 'feed#index'
 
       get '/contents/sitemap_ids', to: 'contents#sitemap_ids'
-      resources :contents, only: [:show, :create, :update]
+      resources :contents, only: [:show, :create, :update, :destroy]
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       # specifying path here to avoid deprecating the frontend even though we've changed
