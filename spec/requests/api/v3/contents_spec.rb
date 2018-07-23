@@ -23,6 +23,7 @@ def content_response_schema(record)
       cost_type: record.channel.try(:cost_type),
       created_at: record.created_at.iso8601,
       ends_at: record.channel.try(:next_or_first_instance).try(:end_date).try(:iso8601),
+      embedded_ad: record.embedded_ad?,
       event_url: record.channel.try(:event_url),
       event_instance_id: record.channel.try(:next_or_first_instance).try(:id),
 

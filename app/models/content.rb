@@ -900,6 +900,10 @@ class Content < ActiveRecord::Base
     self.created_by&.receive_comment_alerts && created_by.present?
   end
 
+  def embedded_ad?
+    !!(organization.present? && organization.embedded_ad)
+  end
+
   private
 
   def require_at_least_one_content_location

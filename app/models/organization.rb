@@ -42,6 +42,7 @@
 #  standard_ugc_org         :boolean          default(FALSE)
 #  calendar_view_first      :boolean          default(FALSE)
 #  calendar_card_active     :boolean          default(FALSE)
+#  embedded_ad              :boolean          default(TRUE)
 #
 # Indexes
 #

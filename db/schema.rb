@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180709165652) do
+ActiveRecord::Schema.define(version: 20180718202725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -613,6 +613,7 @@ ActiveRecord::Schema.define(version: 20180709165652) do
     t.boolean  "standard_ugc_org",                     default: false
     t.boolean  "calendar_view_first",                  default: false
     t.boolean  "calendar_card_active",                 default: false
+    t.boolean  "embedded_ad",                          default: true
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree

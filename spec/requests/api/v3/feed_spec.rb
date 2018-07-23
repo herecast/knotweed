@@ -43,6 +43,7 @@ describe 'Feed endpoints', type: :request do
           cost: an_instance_of(String).or(be_nil),
           cost_type: an_instance_of(String).or(be_nil),
           created_at: content.created_at.iso8601,
+          embedded_ad: content.embedded_ad?,
           ends_at: an_instance_of(String).or(be_nil),
           event_url: an_instance_of(String).or(be_nil),
           event_instance_id: an_instance_of(Fixnum).or(be_nil),

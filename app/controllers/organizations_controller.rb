@@ -137,6 +137,7 @@ class OrganizationsController < ApplicationController
         :ad_contact_fullname,
         :profile_sales_agent,
         :certified_storyteller,
+        :embedded_ad,
         :services,
         :contact_card_active,
         :description_card_active,

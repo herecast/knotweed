@@ -21,6 +21,7 @@ module Api
         :cost,
         :cost_type,
         :created_at,
+        :embedded_ad,
         :ends_at,
         :event_url,
         :event_instance_id,
@@ -265,7 +266,7 @@ module Api
       end
 
       def split_content
-        if object.content_type == :news
+        if object.content_type == :news && object.embedded_ad?
           SplitContentForAdPlacement.call(
             ImageUrlService.optimize_image_urls(
               html_text: content,
@@ -326,6 +327,10 @@ module Api
         if isEvent
           object.channel.try(:schedules).try(:map, &:to_ux_format)
         end
+      end
+
+      def embedded_ad
+        object.embedded_ad?
       end
 
       private
