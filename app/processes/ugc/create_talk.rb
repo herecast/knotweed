@@ -57,8 +57,8 @@ module Ugc
         {
           content_attributes: {
             title: @params[:content][:title],
-            authoremail: @current_api_user.try(:email),
-            authors: @current_api_user.try(:name),
+            authoremail: @current_user.try(:email),
+            authors: @current_user.try(:name),
             biz_feed_public: @params[:content][:biz_feed_public],
             raw_content: @params[:content][:content],
             pubdate: Time.zone.now,
