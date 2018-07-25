@@ -14,6 +14,38 @@ RSpec.describe Payment, type: :model do
     end
   end
 
+  describe 'Payment.by_user' do
+    let(:user) { FactoryGirl.create :user }
+    let!(:payment) { FactoryGirl.create :payment, period_start: 1.week.ago, period_end: Date.today, paid_to: user }
+    let!(:payment2) { FactoryGirl.create :payment, period_start: 1.week.ago, period_end: Date.today, paid_to: user }
+    let!(:payment3) { FactoryGirl.create :payment, period_start: 1.month.ago, period_end: 3.weeks.ago, paid_to: user }
+    let!(:other_user_payment) { FactoryGirl.create :payment } # a different user
+
+    subject { Payment.by_user }
+
+    it 'should return one entry for every user pay period' do
+      expect(subject.length).to eq 3
+    end
+
+    it 'should sum the total payment per user period' do
+      expect(subject.map{ |payment| payment.total_payment}).to match_array([payment.total_payment + payment2.total_payment, payment3.total_payment, other_user_payment.total_payment])
+    end
+  end
+
+  describe 'Payment.to_csv' do
+    let!(:payment) { FactoryGirl.create :payment }
+
+    subject { Payment.to_csv }
+
+    it 'should export to CSV' do
+      invoice_date = payment.period_end.next_month.beginning_of_month
+      expect(subject).to eql(
+        "Vendor Name,Invoice #,Invoice Date,Due Date,Amount,Account\n" +
+        "#{payment.paid_to.fullname},#{payment.id},#{invoice_date},#{invoice_date + 9.days},#{payment.total_payment},#{Payment::ACCOUNT_NUMBER}\n"
+      )
+    end
+  end
+
   describe 'Payment.by_period' do
     let!(:payment1) { FactoryGirl.create :payment }
     let!(:payment2) { FactoryGirl.create :payment,

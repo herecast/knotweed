@@ -23,6 +23,9 @@ Knotweed::Application.routes.draw do
     devise_for :users, controllers: { sessions: 'sessions', registrations: 'registrations' }
 
     resources :payments, only: :index
+    namespace :payments do
+      resources :sends, only: :create
+    end
     delete '/payments/:period_start/:period_end/cancel', to: 'payments#destroy', as: :cancel_payments
 
     resources :users do
