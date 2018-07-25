@@ -13,16 +13,8 @@
     .tab-pane.active#details
       .form-column
         = f.input :title
-        = f.input :report_path
-        = f.input :output_file_name
-        = f.input :output_formats_review, placeholder: 'PDF,HTML'
-        = f.input :output_formats_send, placeholder: 'PDF,HTML'
-        = f.input :email_subject, placeholder: "Payment Report From Subtext", input_html: { type: :text }
-        = f.input :repository_folder, hint: "Output location for reviewing reports."
-        = f.input :overwrite_files
-        = f.input :alert_recipients, placeholder: "johno@subtext.org,other_person@subtext.org"
-        = f.input :cc_emails, placeholder: "johno@subtext.org,other_person@subtext.org"
-        = f.input :bcc_emails, placeholder: "johno@subtext.org,other_person@subtext.org"
+        = f.input :report_type, as: :select, collection: PaymentReportService::AVAILABLE_REPORTS,
+          label_method: :titlecase
         = f.input :notes
 
       #report_params.form-column

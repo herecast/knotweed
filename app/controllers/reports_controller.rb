@@ -38,17 +38,8 @@ class ReportsController < ApplicationController
   def report_params
     params.require(:report).permit(
       :title,
-      :report_path,
-      :output_file_name,
-      :output_formats_review,
-      :output_formats_send,
-      :email_subject,
-      :repository_folder,
-      :overwrite_files,
+      :report_type,
       :notes,
-      :alert_recipients,
-      :cc_emails,
-      :bcc_emails,
       report_params_attributes: [:param_name, :param_value,
         :_destroy, :id, :report_param_type]
     )

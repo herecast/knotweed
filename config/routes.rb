@@ -22,6 +22,9 @@ Knotweed::Application.routes.draw do
 
     devise_for :users, controllers: { sessions: 'sessions', registrations: 'registrations' }
 
+    resources :payments, only: :index
+    delete '/payments/:period_start/:period_end/cancel', to: 'payments#destroy', as: :cancel_payments
+
     resources :users do
       member do
         put :update_subscription
@@ -89,7 +92,7 @@ Knotweed::Application.routes.draw do
     end
 
     resources :report_recipients, except: [:index]
-    resources :report_job_recipients, except: [:index, :create, :new]
+    resources :report_job_recipients, except: [:index, :create, :new, :show]
   end
 
   # API
@@ -98,8 +101,13 @@ Knotweed::Application.routes.draw do
       get '/current_user', to: 'users#show'
       put '/current_user', to: 'users#update'
       post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
+
+      get '/payment_reports', to: 'payment_reports#index', as: :payment_reports, format: 'html'
+
       namespace :users do
         resources :bookmarks, except: [:show, :new, :edit], path: '/:user_id/bookmarks'
+        resources :payments, only: :index, path: '/:user_id/payments'
+        resources :metrics, only: :index, path: '/:user_id/metrics'
         resources :comments, only: :index, path: '/:id/comments'
         resources :contents, only: :index, path: '/:id/contents'
       end
@@ -151,7 +159,10 @@ Knotweed::Application.routes.draw do
         get    '/:name/validation', to: "validations#show"
       end
       get '/organizations/sitemap_ids', to: 'organizations#sitemap_ids'
-      resources :organizations, only: [:index, :show, :update, :create]
+
+      resources 'organizations', only: [:index, :show, :update, :create] do
+        resources :metrics, only: [:index], controller: 'organizations/metrics'
+      end
 
       # deprecated
       post '/news/:id/impressions', to: 'metrics/contents/impressions#create'

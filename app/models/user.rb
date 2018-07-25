@@ -60,6 +60,7 @@ class User < ActiveRecord::Base
   has_many :social_logins
   has_many :user_bookmarks
   has_many :contents, foreign_key: 'created_by'
+  has_many :payments, foreign_key: 'paid_to'
   belongs_to :location
   mount_uploader :avatar, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_avatar,

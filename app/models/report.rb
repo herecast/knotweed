@@ -19,6 +19,7 @@
 #  alert_recipients      :string
 #  cc_emails             :string
 #  bcc_emails            :string
+#  report_type           :string
 #
 
 class Report < ActiveRecord::Base
@@ -29,4 +30,6 @@ class Report < ActiveRecord::Base
   has_many :report_jobs
 
   accepts_nested_attributes_for :report_params, :reject_if => lambda { |a| a.values.all?(&:blank?) }, :allow_destroy => true
+
+  validates_presence_of :report_type
 end

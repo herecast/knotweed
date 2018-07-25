@@ -1,0 +1,36 @@
+table.payment-reports {
+  font-size: 150%;
+  tr {
+    th, td {
+      text-align: right;
+    }
+
+    th {
+      background-color: #444444;
+      color: white;
+    }
+  }
+}
+
+body.payment_reports.index {
+  background-color: white;
+
+  h2.date-range {
+    color: gray;
+  }
+
+  h3 {
+    color: gray;
+  }
+
+  h4.report-title {
+    margin-bottom: 60px;
+  }
+}
+
+
+
+.container.report-summary {
+  margin-top: 30px;
+  margin-bottom: 50px;
+}

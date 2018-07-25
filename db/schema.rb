@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180718202725) do
+ActiveRecord::Schema.define(version: 20180718220002) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -618,6 +618,22 @@ ActiveRecord::Schema.define(version: 20180718202725) do
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
 
+  create_table "payments", force: :cascade do |t|
+    t.date     "period_start"
+    t.date     "period_end"
+    t.integer  "paid_impressions"
+    t.decimal  "pay_per_impression"
+    t.decimal  "total_payment"
+    t.datetime "payment_date"
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.integer  "content_id"
+    t.integer  "paid_to"
+    t.boolean  "paid",               default: false
+  end
+
+  add_index "payments", ["paid_to"], name: "index_payments_on_paid_to", using: :btree
+
   create_table "profile_metrics", force: :cascade do |t|
     t.integer  "organization_id"
     t.integer  "location_id"
@@ -810,6 +826,7 @@ ActiveRecord::Schema.define(version: 20180718202725) do
     t.string   "alert_recipients"
     t.string   "cc_emails"
     t.string   "bcc_emails"
+    t.string   "report_type"
   end
 
   create_table "repositories", id: :bigserial, force: :cascade do |t|
@@ -1037,6 +1054,7 @@ ActiveRecord::Schema.define(version: 20180718202725) do
   add_foreign_key "organization_content_tags", "organizations"
   add_foreign_key "organization_locations", "locations"
   add_foreign_key "organization_locations", "organizations"
+  add_foreign_key "payments", "contents"
   add_foreign_key "profile_metrics", "contents"
   add_foreign_key "profile_metrics", "locations"
   add_foreign_key "profile_metrics", "organizations"

@@ -34,5 +34,15 @@ class PromotionBannerMetric < ActiveRecord::Base
   belongs_to :user
   belongs_to :location
   belongs_to :promotion_banner
+  belongs_to :content
   validates_presence_of :promotion_banner
+
+  scope :for_payment_period, ->(period_start, period_end) {
+    where(
+      created_at: period_start.beginning_of_day..period_end.end_of_day,
+      event_type: 'impression'
+    ).
+    where('content_id IS NOT NULL')
+  }
+
 end

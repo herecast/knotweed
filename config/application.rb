@@ -78,7 +78,7 @@ module Knotweed
     # Set if not pre-compiling assets
     config.assets.compile = !!ENV.fetch('ASSETS_COMPILE', false)
     config.serve_static_files = !!ENV.fetch('SERVE_STATIC_FILES', false)
-    config.assets.precompile += %w(minimal.scss email/base.scss)
+    config.assets.precompile += %w(minimal.scss email/base.scss payment_reports.scss)
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'

@@ -45,3 +45,4 @@
 //= require cocoon
 //= require reports
 //= require report_jobs
+//= require payments

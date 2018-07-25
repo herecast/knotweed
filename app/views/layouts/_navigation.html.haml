@@ -186,6 +186,12 @@
             %i.icon-plus
             %span Create New
 
+- if can? :read, Payment
+  %li{ class: current_page?(payments_path) ? 'active' : '' }
+    = link_to payments_path do
+      %i.icon-book
+      %span Pending Payments
+
 %li
   %a.dropdown-collapse{ href: '#', class: is_config_controller_class }
     %i.icon-gears

@@ -35,5 +35,6 @@
 FactoryGirl.define do
   factory :promotion_banner_metric do
     promotion_banner
+    event_type 'impression'
   end
 end

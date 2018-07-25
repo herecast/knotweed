@@ -28,87 +28,17 @@ class ReportJob < ActiveRecord::Base
   def report_params_hash(recipient)
     rparams = {}
     report_job_params.each do |rp|
-      rparams[rp.param_name] = rp.param_value
+      rparams[rp.param_name.to_sym] = rp.param_value
     end
     
     recipient.report_job_params.each do |recip_param|
       # recipient params override job params
-      rparams[recip_param.param_name] = recip_param.param_value
+      rparams[recip_param.param_name.to_sym] = recip_param.param_value
     end
 
     # add user_id
-    rparams["user_id"] = recipient.report_recipient.user_id
+    rparams[:user_id] = recipient.report_recipient.user_id
     rparams
-  end
-
-  # prepends recipient name to the report output_file_name
-  def filename(recipient)
-    user = recipient.report_recipient.user
-    name = user.fullname.present? ? user.fullname : user.name
-    "#{name.gsub(' ', '_')}_#{report.output_file_name}"
-  end
-
-  def report_job_args(recipient, is_review=true)
-    {
-      output_file_name: filename(recipient),
-      run_type: is_review ? :review : :send,
-      review_folder: report.repository_folder,
-      overwrite: report.overwrite_files,
-      report_params: report_params_hash(recipient),
-      recipients: recipient.to_addresses,
-      report_path: report.report_path,
-      email_subject: report.email_subject,
-      alert_recipients: emails_for(:alert_recipients),
-      cc_emails: emails_for(:cc_emails),
-      bcc_emails: emails_for(:bcc_emails)
-    }.tap do |args|
-      if is_review
-        args[:output_formats] = report.output_formats_review
-      else
-        args[:output_formats] = report.output_formats_send
-      end
-    end
-  end
-
-  # returns array of target emails from the field on reports
-  # in args
-  #
-  #   report_job.emails_for(:alert_recipients)
-  #
-  def emails_for(reports_field)
-    # ensure we're only sending valid method names
-    if [:alert_recipients, :cc_emails, :bcc_emails].include? reports_field
-      report.send(reports_field).try(:split, ',').try(:map, &:strip)
-    else
-      []
-    end
-  end
-
-  def run_report_job(is_review=true)
-    results = { successes: 0, failures: 0 }
-    report_job_recipients.each do |recip|
-      response = JasperService.submit_job(report_job_args(recip, is_review))
-      output_field = is_review ? :jasper_review_response : :jasper_sent_response
-      updates = { output_field => response.body }
-
-      if response.code == 200
-        timestamp_field = is_review ? :report_review_date : :report_sent_date
-        updates[:run_failed] = false
-        updates[timestamp_field] = Time.zone.now
-        results[:successes] += 1
-      else
-        updates[:run_failed] = true
-        results[:failures] += 1
-      end
-      recip.update(updates)
-    end
-
-    if is_review
-      update report_review_date: Time.zone.now
-    else
-      update report_sent_date: Time.zone.now
-    end
-    results
   end
 
   def self.create_from_report!(report)

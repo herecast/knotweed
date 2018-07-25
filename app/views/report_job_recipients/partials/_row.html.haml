@@ -11,9 +11,6 @@
   %td= rjr.report_review_date.try(:strftime, '%m/%d/%Y %l:%M %p')
   %td= rjr.report_sent_date.try(:strftime, '%m/%d/%Y %l:%M %p')
   %td
-    - if rjr.run_failed?
-      = link_to '?', '#', class: "recipient-action-link btn btn-info btn-small",
-        data: { form_url: report_job_recipient_path(rjr) }
     = link_to "#", class: "recipient-action-link btn btn-warning btn-small",
       data: { form_url: edit_report_job_recipient_path(rjr) } do
       %i.icon-pencil

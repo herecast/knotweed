@@ -17,18 +17,6 @@ describe ReportJobRecipientsController, type: :controller do
     end
   end
 
-  describe 'GET show' do
-    subject! { get :show, id: report_job_recipient.id }
-
-    it 'should respond with 200 status' do
-      expect(response.code).to eq '200'
-    end
-
-    it 'should load the report_job_recipient' do
-      expect(assigns(:report_job_recipient)).to eq report_job_recipient
-    end
-  end
-
   describe 'PUT update' do
     let(:update_params) { { report_job_params_attributes: [{ param_name: 'test_new_param', param_value: '12345' }] } }
     subject { put :update, id: report_job_recipient.id, report_job_recipient: update_params, format: :js }

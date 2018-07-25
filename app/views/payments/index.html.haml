@@ -1,0 +1,47 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-search
+        Pending Payments
+      .actions
+        %a.btn.box-remove.btn-mini.btn-link{ href: "#" }
+          %i.icon-remove
+        %a.btn.box-collapse.btn-mini.btn-link{ href: "#" }
+          %i
+%table.table.table-bordered.table-condensed
+  %thead
+    %tr
+      %th Content
+      %th Total Impressions
+      %th Total Payment
+      %th
+  %tbody
+    - @payment_data.keys.sort.each do |period|
+      - periods = period.split("-").map(&:strip)
+      %tr.info
+        %th PAY PERIOD: #{period}
+        %th= @payment_data[period][:total_impressions]
+        %th= number_to_currency(@payment_data[period][:total_payments])
+        %td
+          = link_to 'Cancel', cancel_payments_path(period_start: periods[0], period_end: periods[1]), method: :delete, class: 'btn btn-danger btn-small'
+      - @payment_data[period][:users].keys.sort.each do |username|
+        - user = @payment_data[period][:users][username]
+        %tr.success
+          %th PAID TO: #{username} -- ID #{user[:id]}
+          %th= user[:total_impressions]
+          %th= number_to_currency(user[:total_payment])
+          %td
+        - user[:organizations].keys.sort.each do |org|
+          - payments = user[:organizations][org][:payments]
+          %tr.warning
+            %th.payment-organization-header{ data: { organization_class: org.parameterize.underscore } } ORGANIZATION: #{org} -- ID #{user[:organizations][org][:id]}
+            %th= payments.map(&:paid_impressions).sum
+            %th= number_to_currency(payments.map(&:total_payment).sum)
+            %td
+          - payments.each do |payment|
+            %tr{ class: org.parameterize.underscore, style: "display:none;" }
+              %td #{payment.content.title} -- ID #{payment.content.id}
+              %td= payment.paid_impressions
+              %td= number_to_currency(payment.total_payment)
+              %td

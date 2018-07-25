@@ -42,7 +42,7 @@ describe ReportsController, type: :controller do
 
   describe 'POST create' do
     subject { post :create, report: { title: 'Test Title',
-                                      report_path: '/Test/Report' } }
+                                      report_type: PaymentReportService::AVAILABLE_REPORTS[0] } }
 
     it 'should create a report' do
       expect{subject}.to change{Report.count}.by 1

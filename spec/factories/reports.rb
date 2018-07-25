@@ -26,12 +26,7 @@
 FactoryGirl.define do
   factory :report do
     title "Report Titled The Most Important Report"
-    report_path "/Reports/Bloggers/Blogger_Promoter_Payment_Report"
-    output_formats_review "PDF"
-    output_formats_send "PDF,HTML"
-    output_file_name "test_report"
-    repository_folder "/Reports/Bloggers/To_Review"
-    overwrite_files false
+    report_type PaymentReportService::AVAILABLE_REPORTS[0]
     notes "misc subtext notes"
   end
 end
