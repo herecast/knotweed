@@ -122,7 +122,7 @@ class NotifySubscribersJob < ApplicationJob
 
   def list_has_subscribers(organization)
     list = new_mailchimp_connection.lists.list({list_name: organization.name})['data'][0]
-    return true if list.empty? # this could be a false indicator and the issue is covered elsewhere
+    return true unless list.present? # this could be a false indicator and the issue is covered elsewhere
     return list['stats']['member_count'] > 0
   end
 
