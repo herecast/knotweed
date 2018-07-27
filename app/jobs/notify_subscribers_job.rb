@@ -19,7 +19,8 @@ class NotifySubscribersJob < ApplicationJob
 
     if needs_new_campaign(post)
       mc_list_identifier = SubscriberListIdFetcher.new.call(post.organization).presence
-      if mc_list_identifier
+
+      if mc_list_identifier && list_has_subscribers(post.organization)
         campaign_id = SubscriptionsMailchimpClient.create_campaign(list_identifier: mc_list_identifier,
                                                                    subject:         campaign_subject(post),
                                                                    title:           post.title,
@@ -117,6 +118,16 @@ class NotifySubscribersJob < ApplicationJob
     @title, @organization_name, @organization_url, @post_url, @banner_image_url, @excerpt =
       title, organization_name, organization_url, post_url, banner_image_url, excerpt
     ERB.new(File.read(path)).result(binding)
+  end
+
+  def list_has_subscribers(organization)
+    list = new_mailchimp_connection.lists.list({list_name: organization.name})['data'][0]
+    return true if list.empty? # this could be a false indicator and the issue is covered elsewhere
+    return list['stats']['member_count'] > 0
+  end
+
+  def new_mailchimp_connection
+    Mailchimp::API.new(Figaro.env.subscriptions_mailchimp_api_key)
   end
 end
 

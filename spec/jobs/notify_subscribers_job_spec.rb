@@ -1,6 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe NotifySubscribersJob, type: :job do
+  before do
+    lists_array = double(
+        list: { 'data' => [{ 'stats' => { 'member_count' => 1 } }] }
+      )
+    mailchimp = double(lists: lists_array)
+    allow(Mailchimp::API).to receive(:new)
+      .and_return(mailchimp)
+  end
+
   let(:post)      { FactoryGirl.create(:content, :news, pubdate: 1.day.from_now) }
 
   it { expect(post.title            ).to be_present }
