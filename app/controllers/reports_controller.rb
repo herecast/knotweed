@@ -2,7 +2,7 @@ class ReportsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @reports = @reports.select("*, (SELECT COUNT(id) FROM report_recipients WHERE report_id=reports.id) as recip_count" +
+    @reports = @reports.select("*, (SELECT COUNT(id) FROM report_recipients WHERE report_id=reports.id AND archived=FALSE) as recip_count" +
                               ", (SELECT COUNT(id) FROM report_jobs WHERE report_id=reports.id) as job_count")
     @reports = @reports.order('title ASC')
   end
