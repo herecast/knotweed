@@ -43,6 +43,7 @@ module Ugc
         new_e[:content_attributes][:promote_radius] = e[:promote_radius] if e.has_key? :promote_radius
 
         new_e[:content_attributes][:biz_feed_public] = e[:biz_feed_public]
+        new_e[:content_attributes][:sunset_date] = e[:sunset_date] if e.has_key? :sunset_date
 
         new_e[:cost] = e[:cost] if e.has_key? :cost
         new_e[:cost_type] = e[:cost_type]

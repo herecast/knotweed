@@ -130,7 +130,6 @@ describe Api::V3::OrganizationsController, :type => :controller do
 
     it "provisions Org as blog" do
       subject
-      expect(Organization.last.biz_feed_active).to be true
       expect(Organization.last.can_publish_news).to be true
     end
 

@@ -28,7 +28,8 @@ module Ugc
           :title,
           :biz_feed_public,
           :raw_content,
-          :promote_radius
+          :promote_radius,
+          :sunset_date
         )
       end
 

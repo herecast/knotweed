@@ -10,15 +10,14 @@ module Ugc
     end
 
     def call
-      record
-    end
-
-    def record
-      @record ||= Content.create news_params.merge(
+      @record = Content.create(news_params.merge(
           created_by: @current_user,
           content_category: news_category,
           origin: Content::UGC_ORIGIN
-        )
+      ))
+
+      add_content_location
+      @record
     end
 
     protected
@@ -36,6 +35,7 @@ module Ugc
           :pubdate,
           :raw_content,
           :subtitle,
+          :sunset_date,
           :title,
           :published
         )
@@ -59,5 +59,13 @@ module Ugc
           end
         end
       end
+
+      def add_content_location
+        @record.content_locations = [ContentLocation.create(
+          location: Location.find_by_slug_or_id(@params[:content][:location_id]),
+          location_type: 'base'
+        )]
+      end
+
   end
 end

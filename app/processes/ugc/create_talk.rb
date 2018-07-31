@@ -48,6 +48,7 @@ module Ugc
             :organization_id,
             :content_category_id,
             :published,
+            :sunset_date,
             :ugc_job
           ]
         )

@@ -117,7 +117,6 @@ module Api
         }]
 
         organization_params.tap do |attrs|
-          attrs[:biz_feed_active] = true
           attrs[:can_publish_news] = true
           attrs[:org_type] = 'Blog'
         end
