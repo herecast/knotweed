@@ -34,7 +34,8 @@ module Api
         :certified_social,
         :desktop_image_url,
         :calendar_view_first,
-        :calendar_card_active
+        :calendar_card_active,
+        :digest_id
 
       def profile_image_url
        object.profile_image_url || object.logo_url

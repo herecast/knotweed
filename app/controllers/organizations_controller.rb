@@ -149,6 +149,7 @@ class OrganizationsController < ApplicationController
         :archived,
         :calendar_view_first,
         :calendar_card_active,
+        :digest_id,
         :consumer_app_ids => [],
         :location_ids => [],
         :organization_locations_attributes => [
