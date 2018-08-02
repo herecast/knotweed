@@ -99,6 +99,8 @@ module Api
           :contact_card_active,
           :description_card_active,
           :hours_card_active,
+          :remote_background_image_url,
+          :remote_profile_image_url,
           :special_link_url,
           :special_link_text,
           :calendar_view_first,
