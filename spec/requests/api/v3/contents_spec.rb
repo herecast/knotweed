@@ -487,6 +487,7 @@ describe 'Contents Endpoints', type: :request do
                 subject
                 matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
                   job[:args][0] == 'Outreach::CreateUserHookCampaign'
+                  job[:args][2]['action'] == 'initial_market_post'
                 end
 
                 expect(matching_jobs.length).to eq 1
@@ -503,6 +504,7 @@ describe 'Contents Endpoints', type: :request do
                 subject
                 matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
                   job[:args][0] == 'Outreach::CreateUserHookCampaign'
+                  job[:args][2]['action'] == 'initial_event_post'
                 end
 
                 expect(matching_jobs.length).to eq 0

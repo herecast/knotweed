@@ -7,6 +7,7 @@ module Api
         @organization = Organization.new(create_organization_params)
         if @organization.save
           provision_user_as_manager_and_blogger
+          schedule_blogger_welcome_emails
           conditionally_create_business_profile
           update_business_location
           render json: @organization, serializer: OrganizationSerializer,
@@ -176,6 +177,13 @@ module Api
           @opts[:where][:content_category_ids] = [news_cat.id]
         end
       end
+
+        def schedule_blogger_welcome_emails
+          BackgroundJob.perform_later('Outreach::CreateMailchimpSegmentForNewUser', 'call', @current_api_user,
+            schedule_blogger_emails: true,
+            organization: @organization
+          )
+        end
 
     end
   end

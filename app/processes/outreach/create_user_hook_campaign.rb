@@ -5,9 +5,9 @@ module Outreach
       self.new(*args).call
     end
 
-    def initialize(user:, type:)
-      @user = user
-      @type = type
+    def initialize(user:, action:)
+      @user   = user
+      @action = action
     end
 
     def call
@@ -18,26 +18,17 @@ module Outreach
 
     private
 
+      def email_config
+        Rails.configuration.subtext.email_outreach
+      end
+
       def create_campaign
         MailchimpService::UserOutreach.create_campaign(
           user: @user,
-          subject: send("first_#{@type}_email")[:subject],
-          template_id: send("first_#{@type}_email")[:template_id]
+          subject: email_config.send(@action).subject,
+          template_id: email_config.send(@action).template_id
         )
       end
 
-      def first_market_post_email
-        {
-          subject: Rails.configuration.subtext.email_outreach.initial_market_post.subject,
-          template_id: Rails.configuration.subtext.email_outreach.initial_market_post.template_id
-        }
-      end
-
-      def first_event_email
-        {
-          subject: Rails.configuration.subtext.email_outreach.initial_event_post.subject,
-          template_id: Rails.configuration.subtext.email_outreach.initial_event_post.template_id
-        }
-      end
   end
 end

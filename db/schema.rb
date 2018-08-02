@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180730220002) do
+ActiveRecord::Schema.define(version: 20180801135031) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -615,6 +615,7 @@ ActiveRecord::Schema.define(version: 20180730220002) do
     t.boolean  "calendar_card_active",                 default: false
     t.boolean  "embedded_ad",                          default: true
     t.integer  "digest_id",                limit: 8
+    t.string   "reminder_campaign_id"
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree

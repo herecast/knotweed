@@ -15,6 +15,7 @@ module Outreach
       create_user_specific_mc_segment
       add_user_to_user_specific_mc_segment
       schedule_welcome if @opts[:schedule_welcome_emails] == true
+      schedule_blogger_emails if @opts[:schedule_blogger_emails] == true
     end
 
     private
@@ -37,6 +38,13 @@ module Outreach
 
       def schedule_welcome
         ScheduleWelcomeEmails.call(@user)
+      end
+
+      def schedule_blogger_emails
+        ScheduleBloggerEmails.call(
+          user: @user,
+          organization: @opts[:organization]
+        )
       end
 
   end

@@ -122,7 +122,7 @@ module Ugc
         if @current_user.contents.events.count == 1
           BackgroundJob.perform_later('Outreach::CreateUserHookCampaign', 'call',
             user: @current_user,
-            type: 'event'
+            action: 'initial_event_post'
           )
         end
       end

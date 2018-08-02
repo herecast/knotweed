@@ -1,6 +1,13 @@
 module MailchimpService
   module UserOutreach
     extend self
+    include HTTParty
+
+    format     :json
+    base_uri   "https://#{Figaro.env.mailchimp_api_host}/3.0"
+    basic_auth 'user', Figaro.env.mailchimp_api_key.to_s
+    headers    'Content-Type' => 'application/json',
+               'Accept' => 'application/json'
 
     DEFAULT_FROM_EMAIL = 'jennifer.sensenich@subtext.org'
     DEFAULT_FROM_NAME = 'Jennifer from DailyUV'
@@ -24,6 +31,14 @@ module MailchimpService
       new_mailchimp_connection.campaigns.schedule(campaign_id,
         mailchimp_safe_schedule_time(timing).utc.to_s.sub(' UTC', '')
       )
+    end
+
+    def get_campaign_status(campaign_id)
+      get("/campaigns/#{campaign_id}")
+    end
+
+    def delete_campaign(campaign_id)
+      new_mailchimp_connection.campaigns.delete(campaign_id)
     end
 
     private

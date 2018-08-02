@@ -148,6 +148,17 @@ describe Api::V3::OrganizationsController, :type => :controller do
         BusinessLocation.count
       }.by 1
     end
+
+    it "calls to schedules Blogger outreach emails" do
+      expect(BackgroundJob).to receive(:perform_later).with(
+        'Outreach::CreateMailchimpSegmentForNewUser',
+        'call',
+        @user,
+        schedule_blogger_emails: true,
+        organization: an_instance_of(Organization)
+      )
+      subject
+    end
   end
 
   describe 'PUT update' do

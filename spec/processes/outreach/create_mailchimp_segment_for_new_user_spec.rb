@@ -57,5 +57,24 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
         subject
       end
     end
+
+    context "when schedule_blogger_emails: true" do
+      let(:organization) { FactoryGirl.create(:organization) }
+
+      subject do
+        Outreach::CreateMailchimpSegmentForNewUser.call(@user,
+          schedule_blogger_emails: true,
+          organization: organization
+        )
+      end
+
+      it "calls to schedule blogger emails" do
+        expect(Outreach::ScheduleBloggerEmails).to receive(:call).with(
+          user: @user,
+          organization: organization
+        )
+        subject
+      end
+    end
   end
 end

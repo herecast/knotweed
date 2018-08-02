@@ -115,7 +115,7 @@ module Ugc
         if @current_user.contents.market_posts.count == 1
           BackgroundJob.perform_later('Outreach::CreateUserHookCampaign', 'call',
             user: @current_user,
-            type: 'market_post'
+            action: 'initial_market_post'
           )
         end
       end

@@ -29,8 +29,8 @@ RSpec.describe GatherFeedRecords, elasticsearch: true do
     end
 
     it "alerts product team of new content" do
-      allow(BackgroundJob).to receive(:perform_later).with('AlertProductTeamOfNewContent').and_return true
-      expect(BackgroundJob).to receive(:perform_later).with('AlertProductTeamOfNewContent', 'call', any_args)
+      allow(BackgroundJob).to receive(:perform_later).with('ManageContentOnFirstServe').and_return true
+      expect(BackgroundJob).to receive(:perform_later).with('ManageContentOnFirstServe', 'call', any_args)
       subject
     end
 

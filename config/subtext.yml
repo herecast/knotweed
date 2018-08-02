@@ -38,6 +38,18 @@ default: &default
     initial_event_post:
       subject: "Nice going on your Event post. Don't stop there!"
       template_id: 273033
+    blogger_welcome:
+      subject: "Welcome to Your DailyUV Blog!"
+      template_id: 273077
+    blogger_reminder:
+      subject: "Trouble getting your blog off the ground?"
+      template_id: 273089
+    first_blogger_post:
+      subject: "Nice work on that first blog post!"
+      template_id: 273081
+    third_blogger_post:
+      subject: "3 Blog Posts! You’re ready for this."
+      template_id: 273093
 
 
 production:

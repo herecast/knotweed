@@ -44,6 +44,7 @@
 #  calendar_card_active     :boolean          default(FALSE)
 #  embedded_ad              :boolean          default(TRUE)
 #  digest_id                :integer
+#  reminder_campaign_id     :string
 #
 # Indexes
 #

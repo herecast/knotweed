@@ -27,7 +27,7 @@ RSpec.describe Outreach::CreateUserHookCampaign do
     end
 
     context 'when User creates first Market Post' do
-      subject { Outreach::CreateUserHookCampaign.call(type: 'market_post', user: @user) }
+      subject { Outreach::CreateUserHookCampaign.call(action: 'initial_market_post', user: @user) }
 
       it "calls to Mailchimp to create campaign" do
         expect(@campaigns_array).to receive(:create).with(
@@ -52,7 +52,7 @@ RSpec.describe Outreach::CreateUserHookCampaign do
     end
 
     context 'when User creates first Event' do
-      subject { Outreach::CreateUserHookCampaign.call(type: 'event', user: @user) }
+      subject { Outreach::CreateUserHookCampaign.call(action: 'initial_event_post', user: @user) }
 
       it "calls to Mailchimp to create campaign" do
         expect(@campaigns_array).to receive(:create).with(
