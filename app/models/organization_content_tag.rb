@@ -5,6 +5,8 @@
 #  id              :integer          not null, primary key
 #  organization_id :integer
 #  content_id      :integer
+#  created_at      :datetime
+#  updated_at      :datetime
 #
 # Indexes
 #
