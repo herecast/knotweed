@@ -21,7 +21,8 @@ module SearchIndexing
       :removed,
       :root_content_category_id,
       :root_parent_id,
-      :has_future_event_instance
+      :has_future_event_instance,
+      :organization_order_moment
 
     has_many :comments, serializer: SearchIndexing::CommentSerializer
 
@@ -75,6 +76,10 @@ module SearchIndexing
     # do not include split content in index
     def filter keys
       keys - [:split_content]
+    end
+
+    def organization_order_moment
+      object.content_type == :event ? object.latest_activity : object.pubdate
     end
 
   end

@@ -183,6 +183,8 @@ class ContentSearch
         ]
 
         organization_show_options[@params['show']].call(attrs) if @params['show'].present?
+      
+        attrs[:order] = { organization_order_moment: :desc }
       end
     end
 
