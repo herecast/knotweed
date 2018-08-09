@@ -5,7 +5,8 @@ RSpec.describe NotifySubscribersJob, type: :job do
     lists_array = double(
         list: { 'data' => [{ 'stats' => { 'member_count' => 1 } }] }
       )
-    mailchimp = double(lists: lists_array)
+    @campaigns = double(schedule: true)
+    mailchimp = double(lists: lists_array, campaigns: @campaigns)
     allow(Mailchimp::API).to receive(:new)
       .and_return(mailchimp)
   end
@@ -25,9 +26,8 @@ RSpec.describe NotifySubscribersJob, type: :job do
         expect(SubscriptionsMailchimpClient).to receive(:create_campaign).and_return("some-id")
         expect(SubscriptionsMailchimpClient).to receive(:update_campaign)
         expect(SubscriptionsMailchimpClient).to receive(:set_content)
-        expect(SubscriptionsMailchimpClient).to receive(:unschedule_campaign)
-        expect(SubscriptionsMailchimpClient).to receive(:schedule_campaign)
-        NotifySubscribersJob.new.perform(post.id)
+        expect(@campaigns).to receive(:schedule)
+        NotifySubscribersJob.new.perform(post)
       end
     end
 
@@ -35,7 +35,7 @@ RSpec.describe NotifySubscribersJob, type: :job do
       it "does nothing" do
         allow_any_instance_of(NotifySubscribersJob::SubscriberListIdFetcher).to receive(:call).and_return(nil)
         expect(SubscriptionsMailchimpClient).to_not receive(:create_campaign)
-        NotifySubscribersJob.new.perform(post.id)
+        NotifySubscribersJob.new.perform(post)
       end
     end
 
@@ -44,37 +44,16 @@ RSpec.describe NotifySubscribersJob, type: :job do
         expect(SubscriptionsMailchimpClient).to receive(:create_campaign).and_return("some-id")
         expect(SubscriptionsMailchimpClient).to receive(:update_campaign)
         expect(SubscriptionsMailchimpClient).to receive(:set_content)
-        expect(SubscriptionsMailchimpClient).to receive(:unschedule_campaign)
-        expect(SubscriptionsMailchimpClient).to receive(:schedule_campaign)
-        NotifySubscribersJob.new.perform(post.id)
-
-        expect(SubscriptionsMailchimpClient).to receive(:get_status).and_return("sent")
+        expect(@campaigns).to receive(:schedule)
+        NotifySubscribersJob.new.perform(post)
       end
 
       it "does nothing" do
         expect(SubscriptionsMailchimpClient).to_not receive(:create_campaign)
         expect(SubscriptionsMailchimpClient).to_not receive(:update_campaign)
         expect(SubscriptionsMailchimpClient).to_not receive(:set_content)
-        expect(SubscriptionsMailchimpClient).to_not receive(:unschedule_campaign)
-        expect(SubscriptionsMailchimpClient).to_not receive(:schedule_campaign)
-        NotifySubscribersJob.new.perform(post.id)
-      end
-    end
-
-    context "a post that has already has an un-sent campaign" do
-      before do
-        expect(SubscriptionsMailchimpClient).to receive(:create_campaign).once.and_return("some-id")
-        expect(SubscriptionsMailchimpClient).to receive(:update_campaign).twice
-        expect(SubscriptionsMailchimpClient).to receive(:set_content).twice
-        expect(SubscriptionsMailchimpClient).to receive(:unschedule_campaign).twice
-        expect(SubscriptionsMailchimpClient).to receive(:schedule_campaign).twice
-        NotifySubscribersJob.new.perform(post.id)
-
-        expect(SubscriptionsMailchimpClient).to receive(:get_status).and_return("save")
-      end
-
-      it "cancels the un-sent campaign and changes the campaign identifier" do
-        NotifySubscribersJob.new.perform(post.id)
+        expect(@campaigns).not_to receive(:schedule)
+        NotifySubscribersJob.new.perform(post)
       end
     end
 
@@ -87,49 +66,8 @@ RSpec.describe NotifySubscribersJob, type: :job do
         expect(SubscriptionsMailchimpClient).to_not receive(:create_campaign)
         expect(SubscriptionsMailchimpClient).to_not receive(:update_campaign)
         expect(SubscriptionsMailchimpClient).to_not receive(:set_content)
-        expect(SubscriptionsMailchimpClient).to_not receive(:unschedule_campaign)
-        expect(SubscriptionsMailchimpClient).to_not receive(:schedule_campaign)
-        NotifySubscribersJob.new.perform(post.id)
-      end
-    end
-
-    context "a post whose pubdate is in the future" do
-      before do
-        post.update_attribute(:pubdate, 1.day.from_now)
-      end
-
-      it "schedules the campaign for a little bit past the pubdate" do
-        expect(SubscriptionsMailchimpClient).to receive(:create_campaign).and_return("some-id")
-        expect(SubscriptionsMailchimpClient).to receive(:update_campaign)
-        expect(SubscriptionsMailchimpClient).to receive(:set_content)
-        expect(SubscriptionsMailchimpClient).to receive(:unschedule_campaign)
-
-        scheduled_time = nil
-        allow(SubscriptionsMailchimpClient).to receive(:schedule_campaign) do |args|
-          scheduled_time = args[:send_at]
-        end
-        NotifySubscribersJob.new.perform(post.id)
-        expect((scheduled_time - post.pubdate) < 30.minutes)
-      end
-    end
-
-    context "a post whose pubdate is in the past" do
-      before do
-        post.update_attribute(:pubdate, 1.day.ago)
-      end
-
-      it "schedules the campaign for a little bit in the future" do
-        expect(SubscriptionsMailchimpClient).to receive(:create_campaign).and_return("some-id")
-        expect(SubscriptionsMailchimpClient).to receive(:update_campaign)
-        expect(SubscriptionsMailchimpClient).to receive(:set_content)
-        expect(SubscriptionsMailchimpClient).to receive(:unschedule_campaign)
-
-        scheduled_time = nil
-        allow(SubscriptionsMailchimpClient).to receive(:schedule_campaign) do |args|
-          scheduled_time = args[:send_at]
-        end
-        NotifySubscribersJob.new.perform(post.id)
-        expect((scheduled_time - Time.now) < 30.minutes)
+        expect(@campaigns).to_not receive(:schedule)
+        NotifySubscribersJob.new.perform(post)
       end
     end
   end

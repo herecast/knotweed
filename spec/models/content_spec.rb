@@ -238,19 +238,6 @@ describe Content, :type => :model do
 
   end
 
-  context "a published news item" do
-    before do
-      @content = FactoryGirl.create(:content, :news, published: true)
-    end
-
-    describe "changing the title" do
-      it "updates the subscriber notification" do
-        expect(NotifySubscribersJob).to receive(:perform_later)
-        @content.update(title: "#{@content.title}-new!")
-      end
-    end
-  end
-
   describe "set guid if not present" do
     it "should set the guid of new content that has none" do
       content = FactoryGirl.create(:content)

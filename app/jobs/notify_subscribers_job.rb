@@ -7,27 +7,23 @@ class NotifySubscribersJob < ApplicationJob
   include EmailTemplateHelper
 
   ERB_NEWS_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/notification.html.erb"
-  ERB_BUSINESS_POST_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/organization_notification.html.erb"
+  ERB_NON_NEWS_POST_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/organization_notification.html.erb"
   ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/feature_notification.html.erb"
 
-  def perform(post_id)
-    post = Content.find_by(id: post_id)
-    return unless post
+  def perform(post)
+    return unless !post.deleted_at && post.pubdate
+    return if post.subscriber_mc_identifier.present?
+    mc_list_identifier = SubscriberListIdFetcher.new.call(post.organization).presence
 
-    # If a notification campaign has already been sent, the game is over, so do nothing.
-    return if notification_already_sent(post)
-
-    if needs_new_campaign(post)
-      mc_list_identifier = SubscriberListIdFetcher.new.call(post.organization).presence
-
-      if mc_list_identifier && list_has_subscribers(post.organization)
-        campaign_id = SubscriptionsMailchimpClient.create_campaign(list_identifier: mc_list_identifier,
-                                                                   subject:         campaign_subject(post),
-                                                                   title:           post.title,
-                                                                   from_name:       post.organization_name,
-                                                                   reply_to:        campaign_reply_to)
-        post.update_attribute(:subscriber_mc_identifier, campaign_id.presence)
-      end
+    if mc_list_identifier && list_has_subscribers(post.organization)
+      campaign_id = SubscriptionsMailchimpClient.create_campaign(
+        list_identifier: mc_list_identifier,
+        subject:         campaign_subject(post),
+        title:           post.title,
+        from_name:       post.organization_name,
+        reply_to:        campaign_reply_to
+      )
+      post.update_attribute(:subscriber_mc_identifier, campaign_id.presence)
     end
 
     synchronize_campaign(post)
@@ -47,58 +43,48 @@ class NotifySubscribersJob < ApplicationJob
     end
   end
 
-  def needs_new_campaign(post)
-    # If the post already has a campaign, we never create a new one.  We only ever modify the existing one.
-    return false if post.subscriber_mc_identifier
-
-    # Cancelled posts don't need a new campaign.
-    return false unless post.pubdate
-
-    # Deleted posts don't need a new campaign.
-    return false if post.deleted_at
-
-    true
-  end
-
   def synchronize_campaign(post)
     return unless post.subscriber_mc_identifier
 
     # Synchronize the campaign's HTML content, settings, and schedule with the post.
-    path = appropriate_template_path(post.organization)
-    notification_html = generate_html(post.title,
-                                      post.organization_name,
-                                      url_for_consumer_app("/profile/#{post.organization_id}"),
-                                      url_for_consumer_app(ux2_content_path(post)),
-                                      post.organization.background_image_url,
-                                      content_excerpt(post),
-                                      path)
-    SubscriptionsMailchimpClient.update_campaign(campaign_identifier: post.subscriber_mc_identifier,
-                                                 subject:         campaign_subject(post),
-                                                 title:           post.title,
-                                                 from_name:       post.organization_name,
-                                                 reply_to:        campaign_reply_to)
-    SubscriptionsMailchimpClient.set_content(campaign_identifier: post.subscriber_mc_identifier,
-                                             html:                notification_html)
+    path = appropriate_template_path(post)
+    notification_html = generate_html(
+      post.title,
+      post.organization_name,
+      url_for_consumer_app("/profile/#{post.organization_id}"),
+      url_for_consumer_app(ux2_content_path(post)),
+      post.organization.background_image_url,
+      content_excerpt(post),
+      path
+    )
 
-    # Synchronize the campaign's schedule with the post.  If the post is no longer scheduled for publishing,
-    # only unschedule the campaign.
-    SubscriptionsMailchimpClient.unschedule_campaign(campaign_identifier: post.subscriber_mc_identifier)
-    if !post.deleted_at && post.pubdate
-      # MailChimp is fussy about campaign only being scheduled for future times.
-      # In case their clock is off a little, pad the time with a couple minutes.
-      future_campaign_send_at = [post.pubdate, Time.now].max + 2.minutes
+    SubscriptionsMailchimpClient.update_campaign(
+      campaign_identifier: post.subscriber_mc_identifier,
+      subject: campaign_subject(post),
+      title: post.title,
+      from_name: post.organization_name,
+      reply_to: campaign_reply_to
+    )
 
-      # MailChimp is fussy about schedules being on the quarter-hour (e.g. hh:00, hh:15, hh:30, or hh:45).
-      send_at = next_quarter_hour(future_campaign_send_at)
-      SubscriptionsMailchimpClient.schedule_campaign(campaign_identifier: post.subscriber_mc_identifier, send_at: send_at)
-    end
+    SubscriptionsMailchimpClient.set_content(
+      campaign_identifier: post.subscriber_mc_identifier,
+      html: notification_html
+    )
+
+    # MailChimp is fussy about campaign only being scheduled for future times.
+    # In case their clock is off a little, pad the time with a couple minutes.
+    future_campaign_timing = [post.pubdate, Time.now].max + 2.minutes
+
+    # MailChimp is fussy about schedules being on the quarter-hour (e.g. hh:00, hh:15, hh:30, or hh:45).
+    timing = next_quarter_hour(future_campaign_timing)
+    schedule_campaign(post.subscriber_mc_identifier, timing: timing)
   end
 
-  def appropriate_template_path(organization)
-    if organization.feature_notification_org?
+  def appropriate_template_path(content)
+    if content.organization.feature_notification_org?
       ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH
-    elsif organization.org_type == 'Business'
-      ERB_BUSINESS_POST_TEMPLATE_PATH
+    elsif [:event, :market, :talk].include?(content.content_type)
+      ERB_NON_NEWS_POST_TEMPLATE_PATH
     else
       ERB_NEWS_TEMPLATE_PATH
     end
@@ -126,9 +112,18 @@ class NotifySubscribersJob < ApplicationJob
     return list['stats']['member_count'] > 0
   end
 
-  def new_mailchimp_connection
-    Mailchimp::API.new(Figaro.env.subscriptions_mailchimp_api_key)
+  def schedule_campaign(campaign_id, timing: Time.current)
+    new_mailchimp_connection.campaigns.schedule(campaign_id,
+      next_quarter_hour(timing).utc.to_s.sub(' UTC', '')
+    )
   end
+
+  private
+
+    def new_mailchimp_connection
+      Mailchimp::API.new(Figaro.env.subscriptions_mailchimp_api_key)
+    end
+
 end
 
 

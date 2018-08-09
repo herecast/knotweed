@@ -1073,12 +1073,11 @@ describe 'Contents Endpoints', type: :request do
   describe "#update_subscriber_notification" do
     before do
       @organization = FactoryGirl.create :organization,
-        org_type: 'Business',
-        name: Content::BUSINESS_WHITELIST_FOR_NOTIFICATIONS.first
+        subscribe_url: 'http://glim.glam'
       allow(NotifySubscribersJob).to receive(:perform_later).and_return true
     end
 
-    context "when business Content is type: campaign" do
+    context "when Content is type: campaign" do
       subject do
         FactoryGirl.create :content, :campaign,
           organization_id: @organization.id,

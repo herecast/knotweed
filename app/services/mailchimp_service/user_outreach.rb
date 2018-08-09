@@ -12,12 +12,12 @@ module MailchimpService
     DEFAULT_FROM_EMAIL = 'jennifer.sensenich@subtext.org'
     DEFAULT_FROM_NAME = 'Jennifer from DailyUV'
 
-    def create_campaign(user:, subject:, template_id:)
+    def create_campaign(user:, subject:, template_id:, from_email: DEFAULT_FROM_EMAIL, from_name: DEFAULT_FROM_NAME)
       new_mailchimp_connection.campaigns.create('regular', {
         list_id: Rails.configuration.subtext.email_outreach.new_user_list_id,
         subject: subject,
-        from_email: DEFAULT_FROM_EMAIL,
-        from_name: DEFAULT_FROM_NAME,
+        from_email: from_email,
+        from_name: from_name,
         to_name: user.name,
         template_id: template_id
       }, {

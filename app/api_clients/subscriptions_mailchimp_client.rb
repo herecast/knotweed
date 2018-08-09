@@ -49,21 +49,6 @@ module SubscriptionsMailchimpClient
     detect_error put("/campaigns/#{campaign_identifier}/content", payload)
   end
 
-  def schedule_campaign(campaign_identifier:, send_at:)
-    # MailChimp docs say they want the time to look like "2017-02-04T19:13:00+00:00",
-    # and Rails ISO8601 looks like "2017-02-04T19:13:00Z", so we'll fix up the Rails
-    # result to play nice.
-    at_str = send_at.utc.to_formatted_s(:iso8601).sub(/Z$/, '+00:00')
-
-    payload = {body: {schedule_time: at_str}.to_json}
-    detect_error post("/campaigns/#{campaign_identifier}/actions/schedule", payload)
-  end
-
-  def unschedule_campaign(campaign_identifier:)
-    # Ignore any errors; we expect some in certain scenarios and they are benign.
-    post("/campaigns/#{campaign_identifier}/actions/unschedule")
-  end
-
   def get_status(campaign_identifier:)
     resp = detect_error get("/campaigns/#{campaign_identifier}")
     resp['status']

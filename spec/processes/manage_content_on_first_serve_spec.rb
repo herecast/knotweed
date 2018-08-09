@@ -195,6 +195,47 @@ RSpec.describe ManageContentOnFirstServe do
           subject
         end
       end
+
+      context "when Content Organization has a subscribe_url" do
+        before do
+          organization = FactoryGirl.create :organization,
+            subscribe_url: 'http://glarb.com'
+          @subscribed_market = FactoryGirl.create :content, :market_post,
+            organization_id: organization.id,
+            first_served_at: nil
+          @subscribed_event = FactoryGirl.create :content, :event,
+            organization_id: organization.id,
+            first_served_at: nil
+          @subscribed_news = FactoryGirl.create :content, :news,
+            organization_id: organization.id,
+            first_served_at: nil
+          @subscribed_talk = FactoryGirl.create :content, :talk,
+            organization_id: organization.id,
+            first_served_at: nil
+          @campaign = FactoryGirl.create :content, :campaign,
+            organization_id: organization.id,
+            first_served_at: nil
+          allow(NotifySubscribersJob).to receive(:perform_now).and_return true
+        end
+
+        subject do
+          ManageContentOnFirstServe.call(
+            content_ids: [
+              @subscribed_market.id,
+              @subscribed_news.id,
+              @subscribed_talk.id,
+              @subscribed_event.id,
+              @campaign
+            ],
+            current_time: @current_time
+          )
+        end
+
+        it "calls to notification job" do
+          expect(NotifySubscribersJob).to receive(:perform_now).exactly(4).times
+          subject
+        end
+      end
     end
   end
 end

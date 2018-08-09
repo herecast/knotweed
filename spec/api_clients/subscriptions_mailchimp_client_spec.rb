@@ -138,46 +138,6 @@ RSpec.describe SubscriptionsMailchimpClient do
     end
   end
 
-  describe "#schedule_campaign" do
-    let(:send_at)  { "2017-02-04T19:13:00+00:00" }
-    let!(:apistub) {
-      stub_request(:post,
-                   "#{endpoint}/campaigns/qwer/actions/schedule"
-      ).with(
-        basic_auth: auth,
-        headers:    {
-          "Content-Type" => 'application/json',
-          "Accept"       => 'application/json'
-        },
-        body:       {
-                      schedule_time: send_at,
-                    }.to_json
-      )
-    }
-
-    it "is successful" do
-      expect(subject.schedule_campaign(campaign_identifier: 'qwer', send_at: Time.zone.parse(send_at))).to be_success
-    end
-  end
-
-  describe "#unschedule_campaign" do
-    let!(:apistub) {
-      stub_request(:post,
-                   "#{endpoint}/campaigns/qwer/actions/unschedule"
-      ).with(
-        basic_auth: auth,
-        headers:    {
-          "Content-Type" => 'application/json',
-          "Accept"       => 'application/json'
-        }
-      )
-    }
-
-    it "is successful" do
-      expect(subject.unschedule_campaign(campaign_identifier: 'qwer')).to be_success
-    end
-  end
-
   describe "#get_status" do
     let!(:apistub) {
       stub_request(:get,

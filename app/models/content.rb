@@ -312,8 +312,6 @@ class Content < ActiveRecord::Base
   # where we are creating new content with no parent
   after_save :set_root_parent_id
 
-  after_save :update_subscriber_notification
-
   after_create :hide_campaign_from_public_view
 
   # channel relationships
@@ -905,6 +903,12 @@ class Content < ActiveRecord::Base
     !!(organization.present? && organization.embedded_ad)
   end
 
+  def should_notify_subscribers?
+    organization&.subscribe_url.present? &&
+      !outside_subscriber_notification_blast_radius? &&
+      (is_not_campaign? || is_feature_notification?)
+  end
+
   private
 
   def require_at_least_one_content_location
@@ -919,47 +923,12 @@ class Content < ActiveRecord::Base
     end
   end
 
-  def update_subscriber_notification
-    # Limit News blast radius.
-    return if outside_subscriber_notification_blast_radius?
-
-    # Limit Business post blast radius.
-    return if outside_business_subscriber_notification_blast_radius?
-
-    # Currently, we only notify news subscribers.
-    return unless is_news? || is_business_post? || is_feature_notification?
-
-    # We only update subscriber notification campaigns for published items.
-    return unless published
-
-    # We only need to synchronize the MailChimp notification email campaign if specific fields have changed.
-    monitored_fields = %w[
-      deleted_at
-      pubdate
-      published
-      title
-    ]
-    return if (self.changed & monitored_fields).empty?
-
-    # If this point is reached, this +Content+ item has changed in a way that requires its MailChimp notification
-    # email campaign to either be created, upddated, or deleted.
-    # This job will synchronize the current state of this +Content+ item's notification email campaign with the
-    # current state of this +Content+ item.
-    NotifySubscribersJob.perform_later(self.id)
-
-    true
-  end
-
-  def is_news?
-    root_content_category_id && root_content_category_id == ContentCategory.find_by_name('news')&.id
-  end
-
-  def is_business_post?
-    organization.org_type == 'Business' && !is_campaign?
+  def is_not_campaign?
+    [:news, :event, :talk, :market].include?(content_type)
   end
 
   def is_feature_notification?
-    organization.feature_notification_org?
+    !!organization&.feature_notification_org?
   end
 
   ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS = [
@@ -968,44 +937,6 @@ class Content < ActiveRecord::Base
 
   def outside_subscriber_notification_blast_radius?
     ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.include?(organization_name)
-  end
-
-  BUSINESS_WHITELIST_FOR_NOTIFICATIONS = [
-    'Parker Agency',
-    'DailyUV',
-    'Country Cobbler',
-    'The Skinny Pancake - Hanover, NH',
-    'Cioffredi & Associates',
-    'Town of Hartford',
-    "Dan & Whit's General Store",
-    'Homevues',
-    'Lebanon Opera House',
-    'Upper Valley Food Co-op',
-    'Upper Valley Haven',
-    'Wicked Awesome BBQ',
-    'Flourish Beauty Lab',
-    'AVA Gallery and Art Center',
-    'Bikram Yoga Upper Valley',
-    'Dartmouth Hitchcock Aging Resource Center',
-    'OSHER@Dartmouth',
-    'Peraza Dermatology Group',
-    'Town of Norwich',
-    'Woodstock History Center',
-    'InfuseMe',
-    'Local First Alliance',
-    'Norwich Bookstore',
-    'Simple Energy',
-    'CATV 8-10',
-    'The Co-op Food Stores',
-    'ArtisTree',
-    'River Valley Community College',
-    'HP Roofing',
-    'Hartford Area Career and Technology Center',
-    'COVER'
-  ]
-
-  def outside_business_subscriber_notification_blast_radius?
-    content_type != :news && !BUSINESS_WHITELIST_FOR_NOTIFICATIONS.include?(organization_name)
   end
 
   def hide_campaign_from_public_view
