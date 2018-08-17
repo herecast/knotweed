@@ -22,13 +22,9 @@
             = f.label :org_type_in, "Organization Type"
             = f.select :org_type_in, Organization::ORG_TYPE_OPTIONS, {}, { multiple: true, class: "chosen-select" }
           .field.span3
-            = f.label :locations_id_in, 'Promote Locations'
-            = f.collection_select :locations_id_in, Location.accessible_by(current_ability), :id, :name, 
-              {}, { multiple: true, class: "chosen-select" }
+            = f.label :archived_eq, "Archived?"
+            = f.check_box :archived_eq
         .controls.controls-row
-          .field.span3
-            = f.label :consumer_apps_id_in, "Consumer Apps"
-            = f.collection_select :consumer_apps_id_in, ConsumerApp.accessible_by(current_ability), :id, :name, {}, { multiple: true, class: "chosen-select" }
           .field.span3
             = f.label :pay_for_content_true, "Paid for content?"
             = f.check_box :pay_for_content_true
@@ -44,9 +40,6 @@
               = f.check_box :include_child_organizations, checked: params[:q][:include_child_organizations] == "1" ? true : false
             - else
               = f.check_box :include_child_organizations, checked: false
-          .field.span3
-            = f.label :archived_eq, "Archived?"
-            = f.check_box :archived_eq
         .form-actions
           = f.submit "Search", class: "btn btn-primary"
           = f.submit "Reset", name: "reset", class: "btn"
@@ -55,7 +48,6 @@
     %tr
       %th ID
       %th Organization
-      %th Promote Locations
       %th Parent
       %th # Imported
       %th 
@@ -68,11 +60,6 @@
       %tr{ class: "organization-#{organization.id}" }
         %td= organization.id
         %td= link_to organization.name, edit_organization_path(organization)
-        %td
-          - organization.locations.each_with_index do |loc, i|
-            = link_to loc.name, organizations_path(q: { locations_id_in: [loc.id] })
-            - unless i == (organization.locations.count - 1)
-              |
         %td
           - if organization.parent.present?
             = link_to organization.parent.try(:name), edit_organization_path(organization.parent)
