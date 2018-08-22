@@ -36,7 +36,9 @@ module Outreach
         MailchimpService::UserOutreach.create_campaign(
           user: @user,
           subject: email_config.send(step).subject,
-          template_id: email_config.send(step).template_id
+          template_id: email_config.send(step).template_id,
+          from_email: 'aileen.lem@subtext.org',
+          from_name: 'Aileen from DailyUV'
         )
       end
 
