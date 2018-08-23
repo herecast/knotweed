@@ -9,6 +9,7 @@ class NotifySubscribersJob < ApplicationJob
   ERB_NEWS_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/notification.html.erb"
   ERB_NON_NEWS_POST_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/organization_notification.html.erb"
   ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/feature_notification.html.erb"
+  ERB_GARDENING_GUY_TEST_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/gardening_guy_test.html.erb"
 
   def perform(post)
     return unless !post.deleted_at && post.pubdate
@@ -81,7 +82,9 @@ class NotifySubscribersJob < ApplicationJob
   end
 
   def appropriate_template_path(content)
-    if content.organization.feature_notification_org?
+    if content.organization.name == "The Gardening Guy"
+      ERB_GARDENING_GUY_TEST_TEMPLATE_PATH
+    elsif content.organization.feature_notification_org?
       ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH
     elsif [:event, :market, :talk].include?(content.content_type)
       ERB_NON_NEWS_POST_TEMPLATE_PATH
