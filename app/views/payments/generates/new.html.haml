@@ -1,0 +1,22 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-plus
+        Generate Payments
+    .box-content
+      = form_tag payments_generates_path, method: :post, class: 'form' do
+        .control-group
+          = label_tag :period_start
+          .controls
+            = text_field_tag :period_start
+        .control-group
+          = label_tag :period_end
+          .controls
+            = text_field_tag :period_end
+        .control-group
+          = label_tag :period_ad_rev
+          .controls
+            = text_field_tag :period_ad_rev
+        .form-actions
+          = submit_tag "Generate Payments", class: 'btn btn-primary'

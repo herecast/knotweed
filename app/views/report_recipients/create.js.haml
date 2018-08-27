@@ -1,3 +1,0 @@
-$(".report-recipients-table tbody").append("#{ j render 'report_recipients/partials/row', report_recipient: @report_recipient }");
-$(".report-recipients-table").dataTable().fnAddTr($("tr.report-recipient-#{@report_recipient.id}")[0]);
-$(".user-#{@report_recipient.user.id}").hide();

@@ -5,6 +5,7 @@
         %i.icon-search
         Pending Payments
       .actions
+        = link_to "Generate Payments", new_payments_generate_path, class: 'btn btn-warning'
         = link_to "Export to CSV", payments_path(format: :csv), class: 'btn btn-info'
 %table.table.table-bordered.table-condensed
   %thead

@@ -1,9 +1,0 @@
-.row-fluid
-  .span12.box.bordered-box.blue-border
-    .box-header.blue-background
-      .title
-        %i.icon-pencil
-        Report Job ID #{@report_job.id}
-        = link_to "Run Report", report_job_runs_path(@report_job), method: :post, class: "btn btn-danger"
-    .box-content
-      = render partial: "report_jobs/partials/form"

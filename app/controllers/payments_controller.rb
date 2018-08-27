@@ -28,7 +28,6 @@ class PaymentsController < ApplicationController
     # organizing payments for display in a table like this:
     # {
     #   "06/01/2018 - 06/30/2018" => {
-    #     :total_impressions => 123,
     #     :total_payments => 12345,
     #     :users => {
     #       "User's Name" => {
@@ -45,7 +44,7 @@ class PaymentsController < ApplicationController
     # }
     payments.each do |p|
       period = "#{p.period_start.strftime("%m/%d/%Y")} - #{p.period_end.strftime("%m/%d/%Y")}"
-      payment_data[period] ||= { total_impressions: 0, total_payments: 0, users: {} }
+      payment_data[period] ||= { total_payments: 0, users: {} }
       payment_data[period][:total_payments] += p.total_payment
 
       if p.paid_to.present?
@@ -59,11 +58,8 @@ class PaymentsController < ApplicationController
       end
     end
 
-    # period level "total impressions" is required to show total impressions of ALL CONTENT
-    # not just paid content over that period so we set it separately
     payment_data.keys.each do |period|
       p_dates = period.split(' - ').map{ |pd| Date.parse(pd) }
-      payment_data[period][:total_impressions] = PromotionBannerMetric.for_payment_period(p_dates[0], p_dates[1]).count
     end
     payment_data
   end

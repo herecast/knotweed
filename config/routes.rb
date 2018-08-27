@@ -25,8 +25,10 @@ Knotweed::Application.routes.draw do
     resources :payments, only: :index
     namespace :payments do
       resources :sends, only: :create
+      resources :generates, only: [:new, :create]
     end
     delete '/payments/:period_start/:period_end/cancel', to: 'payments#destroy', as: :cancel_payments
+    resources :payment_recipients
 
     resources :users do
       member do
@@ -86,16 +88,6 @@ Knotweed::Application.routes.draw do
     get '/ics/events/:public_id', to: 'api/v3/users#events', :defaults => {:format => 'ics'}, as: :user_event_instances_ics
 
     get '/sidekiq_wrapper', to: 'sidekiq_wrapper#index'
-
-    resources :reports, except: [:show, :destroy] do
-      resources :generations, only: [:create], controller: 'reports/generations'
-    end
-    resources :report_jobs, except: [:show] do
-      resources :runs, only: [:create], controller: 'report_jobs/runs'
-    end
-
-    resources :report_recipients, except: [:index]
-    resources :report_job_recipients, except: [:index, :create, :new, :show]
   end
 
   # API

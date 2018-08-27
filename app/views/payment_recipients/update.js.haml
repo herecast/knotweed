@@ -1,0 +1,1 @@
+$(".payment-recipients-table").dataTable().fnUpdate(#{ render 'payment_recipients/partials/datatable_row', payment_recipient: @payment_recipient },$("tr.payment-recipient-#{@payment_recipient.id}")[0]);

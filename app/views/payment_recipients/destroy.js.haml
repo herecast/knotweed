@@ -1,0 +1,3 @@
+$(".payment-recipients-table").dataTable().fnDeleteRow($("tr.payment-recipient-#{@payment_recipient.id}")[0]);
+$(".user-#{@payment_recipient.user.id}").show();
+$(".recipient-count").text(parseInt($(".recipient-count").text())-1);

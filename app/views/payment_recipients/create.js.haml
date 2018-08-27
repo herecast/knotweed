@@ -1,0 +1,4 @@
+$(".payment-recipients-table tbody").append("#{ j render 'payment_recipients/partials/row', payment_recipient: @payment_recipient }");
+$(".payment-recipients-table").dataTable().fnAddTr($("tr.payment-recipient-#{@payment_recipient.id}")[0]);
+$(".user-#{@payment_recipient.user.id}").hide();
+$(".recipient-count").text(parseInt($(".recipient-count").text())+1);

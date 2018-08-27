@@ -1,0 +1,52 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border
+    .box-header.blue-background
+      .title
+        %i.icon-search
+        Payment Recipients
+      .actions
+        %span.recipient-count= @payment_recipients.count
+        Recipients
+%table.table.table-bordered.table-condensed.payment-recipients-table.sortable
+  %thead
+    %tr
+      %th User ID
+      %th Name
+      %th Email
+      %th Role
+      %th Organization
+      %th 
+  %tbody
+    - @payment_recipients.each do |pr|
+      = render partial: 'payment_recipients/partials/row',
+        locals: { payment_recipient: pr }
+%hr
+%h2 Search Users
+%span Note: users must be associated with a role to be selected as a payment recipient
+%table.table.table-striped.table-hover.data-table
+  %thead
+    %tr
+      %th ID
+      %th Name
+      %th Email
+      %th Role
+      %th
+  %tbody
+    - @users.each do |user|
+      %tr{ class: "user-#{user.id}",
+           style: "#{@recipient_user_ids.include?(user.id) ? 'display: none;' : ''}" }
+        %td= user.id
+        %td= user.name
+        %td= user.email
+        %td= user.roles.map(&:pretty_name).uniq.join(',')
+        %td
+          = link_to '+ Add', '#',
+            class: "btn btn-small btn-success payment-recipient-action-link",
+            data: { form_url: new_payment_recipient_path(user_id: user.id) }
+
+.modal.fade.modal-hack#payment_recipient_form
+  .modal-header
+    %button.close{ type: "button", data: { dismiss: "modal" } } x
+    %h3 Payment Recipient
+  .modal-body
+    Loading...   

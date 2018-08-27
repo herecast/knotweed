@@ -31,4 +31,12 @@ module ApplicationHelper
     end
   end
 
+  def is_payments_controller_class
+    if ["payments", "payment_recipients"].include? controller_name
+      return "in"
+    else
+      return ""
+    end
+  end
+
 end

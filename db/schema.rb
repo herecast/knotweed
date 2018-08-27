@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180803194021) do
+ActiveRecord::Schema.define(version: 20180823170120) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -555,8 +555,8 @@ ActiveRecord::Schema.define(version: 20180803194021) do
   end
 
   create_table "organization_content_tags", force: :cascade do |t|
-    t.integer "organization_id"
-    t.integer "content_id"
+    t.integer  "organization_id"
+    t.integer  "content_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -616,11 +616,21 @@ ActiveRecord::Schema.define(version: 20180803194021) do
     t.boolean  "calendar_view_first",                  default: false
     t.boolean  "calendar_card_active",                 default: false
     t.boolean  "embedded_ad",                          default: true
-    t.integer  "digest_id",                limit: 8
+    t.integer  "digest_id"
     t.string   "reminder_campaign_id"
   end
 
   add_index "organizations", ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
+
+  create_table "payment_recipients", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "organization_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "payment_recipients", ["organization_id"], name: "index_payment_recipients_on_organization_id", using: :btree
+  add_index "payment_recipients", ["user_id"], name: "index_payment_recipients_on_user_id", using: :btree
 
   create_table "payments", force: :cascade do |t|
     t.date     "period_start"
@@ -750,88 +760,6 @@ ActiveRecord::Schema.define(version: 20180803194021) do
 
   add_index "promotions", ["content_id"], name: "idx_16765_index_promotions_on_content_id", using: :btree
   add_index "promotions", ["created_by"], name: "idx_16765_index_promotions_on_created_by", using: :btree
-
-  create_table "report_job_params", force: :cascade do |t|
-    t.string   "report_job_paramable_type"
-    t.integer  "report_job_paramable_id"
-    t.string   "param_name"
-    t.string   "param_value"
-    t.integer  "created_by"
-    t.integer  "updated_by"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
-  end
-
-  add_index "report_job_params", ["report_job_paramable_type", "report_job_paramable_id"], name: "report_job_params_paramable_type_id", using: :btree
-
-  create_table "report_job_recipients", force: :cascade do |t|
-    t.integer  "report_job_id"
-    t.integer  "report_recipient_id"
-    t.integer  "created_by"
-    t.integer  "updated_by"
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
-    t.datetime "report_review_date"
-    t.datetime "report_sent_date"
-    t.text     "jasper_review_response"
-    t.boolean  "run_failed",             default: false
-    t.text     "jasper_sent_response"
-  end
-
-  create_table "report_jobs", force: :cascade do |t|
-    t.integer  "report_id"
-    t.text     "description"
-    t.datetime "report_review_date"
-    t.datetime "report_sent_date"
-    t.integer  "created_by"
-    t.integer  "updated_by"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
-  end
-
-  create_table "report_params", force: :cascade do |t|
-    t.integer  "report_id"
-    t.string   "report_param_type"
-    t.string   "param_name"
-    t.string   "param_value"
-    t.integer  "created_by"
-    t.integer  "updated_by"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-  end
-
-  create_table "report_recipients", force: :cascade do |t|
-    t.integer  "report_id"
-    t.integer  "user_id"
-    t.string   "alternative_emails"
-    t.integer  "created_by"
-    t.integer  "updated_by"
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
-    t.boolean  "archived",           default: false
-  end
-
-  add_index "report_recipients", ["user_id", "report_id"], name: "index_report_recipients_on_user_id_and_report_id", using: :btree
-
-  create_table "reports", force: :cascade do |t|
-    t.string   "title"
-    t.string   "report_path"
-    t.string   "output_formats_review"
-    t.string   "output_formats_send"
-    t.string   "output_file_name"
-    t.string   "repository_folder"
-    t.boolean  "overwrite_files",       default: false
-    t.text     "notes"
-    t.integer  "created_by"
-    t.integer  "updated_by"
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
-    t.string   "email_subject"
-    t.string   "alert_recipients"
-    t.string   "cc_emails"
-    t.string   "bcc_emails"
-    t.string   "report_type"
-  end
 
   create_table "repositories", id: :bigserial, force: :cascade do |t|
     t.string   "name",                    limit: 255
@@ -1058,6 +986,8 @@ ActiveRecord::Schema.define(version: 20180803194021) do
   add_foreign_key "organization_content_tags", "organizations"
   add_foreign_key "organization_locations", "locations"
   add_foreign_key "organization_locations", "organizations"
+  add_foreign_key "payment_recipients", "organizations"
+  add_foreign_key "payment_recipients", "users"
   add_foreign_key "payments", "contents"
   add_foreign_key "profile_metrics", "contents"
   add_foreign_key "profile_metrics", "locations"

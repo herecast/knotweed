@@ -94,6 +94,7 @@ class User < ActiveRecord::Base
 
   scope :sales_agents, ->{ joins(:roles).where(roles: { name: 'sales agent' } ) }
   scope :promoters, ->{ joins(:roles).where(roles: { name: 'promoter' } ) }
+  scope :with_roles, ->{ where("(select count(user_id) from users_roles where user_id=users.id) > 0").includes(:roles) }
 
   def managed_organizations
     Organization.with_role(:manager, self)

@@ -1,0 +1,12 @@
+%tr{ class: "payment-recipient-#{payment_recipient.id}" }
+  %td= payment_recipient.user_id
+  %td= payment_recipient.user.name
+  %td= payment_recipient.user.email
+  %td= payment_recipient.user.roles.map(&:pretty_name).uniq.join(',')
+  %td= payment_recipient.organization.try(:name)
+  %td
+    = link_to "#", class: "payment-recipient-action-link btn btn-warning btn-small",
+      data: { form_url: edit_payment_recipient_path(payment_recipient) } do
+      %i.icon-pencil
+    = link_to 'X', payment_recipient_path(payment_recipient), method: :delete, remote: true,
+      class: 'btn btn-small btn-danger', data: { confirm: 'Are you sure?' }

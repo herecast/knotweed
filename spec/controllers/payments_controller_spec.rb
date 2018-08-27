@@ -33,7 +33,6 @@ RSpec.describe PaymentsController, type: :controller do
         subject
         expect(assigns(:payment_data)).to eql({
           "#{period_start.strftime("%m/%d/%Y")} - #{period_end.strftime("%m/%d/%Y")}" => {
-            total_impressions: payment.paid_impressions,
             total_payments: payment.total_payment,
             users: {
               payment.paid_to.fullname => {
