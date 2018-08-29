@@ -42,14 +42,14 @@ class ManageContentOnFirstServe
         # on Org create, we attach a dummy content,
         # hence bumping these indexes forward by one
         if ordered_ids.index(content.id) == 1
-          Outreach::CreateUserHookCampaign.call(
-            user: content.created_by,
-            action: 'first_blogger_post'
+          Outreach::ScheduleBloggerEmails.call(
+            action: 'first_blogger_post',
+            user: content.created_by
           )
         elsif ordered_ids.index(content.id) == 3
-          Outreach::CreateUserHookCampaign.call(
-            user: content.created_by,
-            action: 'third_blogger_post'
+          Outreach::ScheduleBloggerEmails.call(
+            action: 'third_blogger_post',
+            user: content.created_by
           )
         end
       end

@@ -17,13 +17,38 @@ RSpec.describe Outreach::ScheduleBloggerEmails do
         .and_return(mailchimp)
     end
 
-    subject { Outreach::ScheduleBloggerEmails.call(user: @user, organization: @organization) }
-  
-    it "schedules initial email and follow-up email" do
-      expect(@campaigns_array).to receive(:create).exactly(2).times
-      expect{ subject }.to change{
-        @organization.reload.reminder_campaign_id
-      }.to @campaign_id
+    context "when action: blogger_welcome_and_reminder" do
+      subject do
+        Outreach::ScheduleBloggerEmails.call(
+          action: 'blogger_welcome_and_reminder',
+          user: @user,
+          organization: @organization
+        )
+      end
+    
+      it "schedules initial email and follow-up email" do
+        expect(@campaigns_array).to receive(:create).exactly(2).times
+        expect{ subject }.to change{
+          @organization.reload.reminder_campaign_id
+        }.to @campaign_id
+      end
+    end
+
+    context "when action is for first or third post" do
+      ['first_blogger_post', 'third_blogger_post'].each do |action|
+        subject do
+          Outreach::ScheduleBloggerEmails.call(
+            action: action,
+            user: @user,
+            organization: @organization
+          )
+        end
+
+        it "schedules an email" do
+          expect(@campaigns_array).to receive(:create)
+          subject
+        end
+      end 
     end
   end
 end

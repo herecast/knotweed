@@ -70,6 +70,7 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
 
       it "calls to schedule blogger emails" do
         expect(Outreach::ScheduleBloggerEmails).to receive(:call).with(
+          action: 'blogger_welcome_and_reminder',
           user: @user,
           organization: organization
         )

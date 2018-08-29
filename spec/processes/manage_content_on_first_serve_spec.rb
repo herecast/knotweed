@@ -135,7 +135,7 @@ RSpec.describe ManageContentOnFirstServe do
         @first_real_content = FactoryGirl.create :content,
           first_served_at: nil,
           organization_id: @organization.id
-        allow(Outreach::CreateUserHookCampaign).to receive(:call).and_return true
+        allow(Outreach::ScheduleBloggerEmails).to receive(:call).and_return true
         allow(MailchimpService::UserOutreach).to receive(
           :get_campaign_status
         ).with(@campaign_id).and_return 'scheduled'
@@ -153,7 +153,7 @@ RSpec.describe ManageContentOnFirstServe do
         end
 
         it "calls to create user hook campaign" do
-          expect(Outreach::CreateUserHookCampaign).to receive(:call).with(
+          expect(Outreach::ScheduleBloggerEmails).to receive(:call).with(
             user: @first_real_content.created_by,
             action: 'first_blogger_post'
           )
@@ -188,7 +188,7 @@ RSpec.describe ManageContentOnFirstServe do
         end
 
         it "sends follow-up email" do
-          expect(Outreach::CreateUserHookCampaign).to receive(:call).with(
+          expect(Outreach::ScheduleBloggerEmails).to receive(:call).with(
             user: @third_content.created_by,
             action: 'third_blogger_post'
           )

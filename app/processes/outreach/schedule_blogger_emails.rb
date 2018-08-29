@@ -5,27 +5,28 @@ module Outreach
       self.new(*args).call
     end
 
-    def initialize(user:, organization:)
+    def initialize(action:, user:, organization:nil)
+      @action       = action
       @user         = user
       @organization = organization
     end
 
     def call
-      blogger_welcome
-      blogger_reminder
+      if @action == 'blogger_welcome_and_reminder'
+        create_and_schedule_campaign('blogger_welcome')
+        response = create_and_schedule_campaign('blogger_reminder', Time.current + 2.weeks)
+        @organization.update_attribute(:reminder_campaign_id, response['id'])
+      else
+        create_and_schedule_campaign(@action)
+      end
     end
 
     private
 
-      def blogger_welcome
-        response = create_campaign('blogger_welcome')
-        schedule_campaign(response, Time.current)
-      end
-
-      def blogger_reminder
-        response = create_campaign('blogger_reminder')
-        schedule_campaign(response, Time.current + 2.weeks)
-        @organization.update_attribute(:reminder_campaign_id, response['id'])
+      def create_and_schedule_campaign(step, send_time=Time.current)
+        response = create_campaign(step)
+        schedule_campaign(response, send_time)
+        return response
       end
 
       def email_config

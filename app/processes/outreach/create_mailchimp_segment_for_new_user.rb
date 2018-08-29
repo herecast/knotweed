@@ -42,6 +42,7 @@ module Outreach
 
       def schedule_blogger_emails
         ScheduleBloggerEmails.call(
+          action: 'blogger_welcome_and_reminder',
           user: @user,
           organization: @opts[:organization]
         )
