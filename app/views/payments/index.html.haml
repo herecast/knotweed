@@ -22,8 +22,8 @@
         %th= @payment_data[period][:total_impressions]
         %th= number_to_currency(@payment_data[period][:total_payments])
         %td
-          = link_to 'Mark Paid', payments_sends_path(period_start: periods[0], period_end: periods[1]), method: :post,
-            class: 'btn btn-small btn-primary', data: { confirm: 'Are you sure you want to mark these paid?' }
+          = link_to 'Send Payments', payments_sends_path(period_start: periods[0], period_end: periods[1]), method: :post,
+            class: 'btn btn-small btn-primary', data: { confirm: 'Are you sure you want to send these payments to Bill.com?' }
           = link_to 'Cancel', cancel_payments_path(period_start: periods[0], period_end: periods[1]), method: :delete,
             class: 'btn btn-danger btn-small', data: { confirm: 'Are you sure you want to cancel these payments?' }
       - @payment_data[period][:users].keys.sort.each do |username|

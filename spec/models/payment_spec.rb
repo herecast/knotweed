@@ -41,7 +41,7 @@ RSpec.describe Payment, type: :model do
       invoice_date = payment.period_end.next_month.beginning_of_month
       expect(subject).to eql(
         "Vendor Name,Invoice #,Invoice Date,Due Date,Amount,Account\n" +
-        "#{payment.paid_to.fullname},#{payment.id},#{invoice_date},#{invoice_date + 9.days},#{payment.total_payment},#{Payment::ACCOUNT_NUMBER}\n"
+        "#{payment.paid_to.fullname},#{payment.id},#{invoice_date},#{invoice_date + 9.days},#{payment.total_payment},#{BillDotComService::CHART_OF_ACCOUNT_ID}\n"
       )
     end
   end

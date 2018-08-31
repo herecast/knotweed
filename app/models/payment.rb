@@ -32,8 +32,6 @@ class Payment < ActiveRecord::Base
 
   scope :for_user, ->(user_id) { where('paid_to = ?', user_id) }
 
-  ACCOUNT_NUMBER = 7190
-
   # pay_per_impression can't be used in the group_by clause because its being a float
   # makes it potentially not always exactly the same (I think). That said, it is
   # always very very close to the same, so we are just taking MIN here.
@@ -45,9 +43,9 @@ class Payment < ActiveRecord::Base
   }
 
   scope :by_user, -> {
-    select('MIN(payments.id) as id, fullname, period_start, period_end, SUM(total_payment) as total_payment').
+    select('MIN(payments.id) as id, users.id as paid_to_id, fullname, period_start, period_end, SUM(total_payment) as total_payment').
     joins(:paid_to).
-    group(:period_start, :period_end, :fullname).
+    group(:period_start, :period_end, :fullname, :paid_to_id).
     order('fullname ASC')
   }
 
@@ -65,17 +63,20 @@ class Payment < ActiveRecord::Base
       csv << headers
 
       all.each do |payment|
-        beginning_of_next_month = payment.period_end.next_month.beginning_of_month
         attrs = []
         attrs << (payment.try(:fullname) || payment.paid_to.try(:fullname))
         attrs << payment.id
-        attrs << beginning_of_next_month
-        attrs << beginning_of_next_month + 9.days
+        attrs << payment.invoice_date
+        attrs << payment.invoice_date + 9.days
         attrs << payment.total_payment
-        attrs << ACCOUNT_NUMBER
+        attrs << BillDotComService::CHART_OF_ACCOUNT_ID
         csv << attrs
       end
     end
+  end
+
+  def invoice_date
+    period_end.next_month.beginning_of_month
   end
 
   def mark_paid!
