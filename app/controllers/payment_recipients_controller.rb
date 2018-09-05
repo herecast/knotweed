@@ -8,6 +8,7 @@ class PaymentRecipientsController < ApplicationController
 
   def new
     @payment_recipient.user = User.find params[:user_id]
+    @organizations = Organization.where("NOT EXISTS(SELECT * FROM payment_recipients WHERE payment_recipients.organization_id = organizations.id)")
     render partial: 'payment_recipients/partials/form', layout: false
   end
 
@@ -24,6 +25,7 @@ class PaymentRecipientsController < ApplicationController
   end
 
   def edit
+    @organizations = Organization.where("NOT EXISTS(SELECT * FROM payment_recipients WHERE payment_recipients.organization_id = organizations.id) OR id = ?", @payment_recipient.organization_id)
     render partial: 'payment_recipients/partials/form', layout: false
   end
 

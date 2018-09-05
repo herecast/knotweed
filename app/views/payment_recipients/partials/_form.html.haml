@@ -4,7 +4,7 @@
     collection: User.where(id: @payment_recipient.user_id),
     input_html: { class: 'input-block-level' }, include_blank: false
   = f.association :organization, label_method: :name,
-    collection: Organization.all,
+    collection: @organizations,
     hint: 'ONLY assign an organization if you want payments to be calculated based on organization'
   .form-actions
     = f.submit class: 'btn btn-primary'
