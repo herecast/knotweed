@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180823170120) do
+ActiveRecord::Schema.define(version: 20180905203429) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -306,7 +306,6 @@ ActiveRecord::Schema.define(version: 20180823170120) do
     t.float    "ad_invoiced_amount"
     t.datetime "first_served_at"
     t.boolean  "removed",                               default: false
-    t.string   "ugc_job"
     t.boolean  "ad_invoice_paid",                       default: false
     t.float    "ad_commission_amount"
     t.boolean  "ad_commission_paid",                    default: false

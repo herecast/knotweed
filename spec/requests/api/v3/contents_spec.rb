@@ -450,7 +450,6 @@ describe 'Contents Endpoints', type: :request do
                 promote_radius: 10,
                 title: "TFK",
                 sold: false,
-                ugc_job: 'Sell or give something away',
                 location_id: FactoryGirl.create(:location).slug
               }
             }

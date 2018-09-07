@@ -57,8 +57,7 @@ module Ugc
             :my_town_only,
             :promote_radius,
             :sunset_date,
-            :ugc_job,
-            location_ids: [],
+            location_ids: []
           ]
         )
       end

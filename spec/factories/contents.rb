@@ -52,7 +52,6 @@
 #  ad_invoiced_amount        :float
 #  first_served_at           :datetime
 #  removed                   :boolean          default(FALSE)
-#  ugc_job                   :string
 #  ad_invoice_paid           :boolean          default(FALSE)
 #  ad_commission_amount      :float
 #  ad_commission_paid        :boolean          default(FALSE)

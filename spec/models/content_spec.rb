@@ -52,7 +52,6 @@
 #  ad_invoiced_amount        :float
 #  first_served_at           :datetime
 #  removed                   :boolean          default(FALSE)
-#  ugc_job                   :string
 #  ad_invoice_paid           :boolean          default(FALSE)
 #  ad_commission_amount      :float
 #  ad_commission_paid        :boolean          default(FALSE)
@@ -96,7 +95,6 @@ describe Content, :type => :model do
   it { is_expected.to have_many 'locations' }
   it { is_expected.to have_db_column :promote_radius }
   it { is_expected.to have_db_column(:short_link).of_type(:string) }
-  it { is_expected.to have_db_column(:ugc_job).of_type(:string) }
 
   include_examples 'Auditable', Content
 

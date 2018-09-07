@@ -63,7 +63,6 @@ module Ugc
             :my_town_only,
             :promote_radius,
             :sunset_date,
-            :ugc_job,
             :published,
             location_ids: [],
           ]
@@ -83,8 +82,7 @@ module Ugc
             pubdate: Time.zone.now,
             published: true,
             timestamp: Time.zone.now,
-            organization_id: @params[:content][:organization_id] || dailyuv_org.id,
-            ugc_job: @params[:content][:ugc_job]
+            organization_id: @params[:content][:organization_id] || dailyuv_org.id
           }
         }
       end

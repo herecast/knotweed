@@ -105,6 +105,7 @@ module Api
           :special_link_text,
           :calendar_view_first,
           :calendar_card_active,
+          :remove_desktop_image,
           :website,
           organization_locations_attributes: [
             :location_type,

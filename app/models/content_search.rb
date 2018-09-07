@@ -79,7 +79,7 @@ class ContentSearch
   private
 
     def update_content_types_in_params
-      if @params[:content_type] == 'stories'
+      if @params[:content_type] == 'stories' || @params[:content_type] == 'posts'
         @params[:content_type] = 'news'
       elsif @params[:content_type] == 'calendar'
         @params[:content_type] = 'event'

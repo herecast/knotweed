@@ -48,8 +48,7 @@ module Ugc
             :organization_id,
             :content_category_id,
             :published,
-            :sunset_date,
-            :ugc_job
+            :sunset_date
           ]
         )
       end
@@ -66,8 +65,7 @@ module Ugc
             published: true,
             organization_id: @params[:content][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
             content_category_id: talk_category.id,
-            promote_radius: @params[:content][:promote_radius],
-            ugc_job: @params[:content][:ugc_job]
+            promote_radius: @params[:content][:promote_radius]
           }
         }
       end

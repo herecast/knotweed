@@ -56,7 +56,6 @@ module Ugc
         new_e = { content_attributes: {} }
         new_e[:content_attributes][:raw_content] = e[:content] if e.has_key? :content
         new_e[:content_attributes][:title] = e[:title] if e.has_key? :title
-        new_e[:content_attributes][:ugc_job] = e[:ugc_job] if e.has_key? :ugc_job
 
         new_e[:content_attributes][:promote_radius] = e[:promote_radius] if e.has_key? :promote_radius
         new_e[:content_attributes][:biz_feed_public] = e[:biz_feed_public]
