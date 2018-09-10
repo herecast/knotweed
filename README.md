@@ -1,31 +1,6 @@
 Knotweed
 ========================
 
-Deployment
-------------------------
-Knotweed uses Capistrano to manage deployment. In order to be able to deploy from your user account, your public key must be added to /home/deploy/.ssh/authorized_keys. When you've made changes, merge them into master and push to Github.
-
-    * Login to the rails backend admin interface (see wiki for how to create an admin account)
-    * Stop all import jobs with the word 'continous' in their name. If any others are running wait for them to finish.
-    * Run the capistrano command for your environment, e.g `cap <environment> deploy` where '<environment>' can be 'staging', 'production', 'qa'
-    * Restart all import jobs with the word 'continous' in their name.
-
-### NOTE:
-
-You'll need your public key to be loaded in ssh-agent or the deployment task will prompt you for your passphrase multiple times. Run
-
-    ssh-add -l
-
-to check if your key is already loaded. If it outputs something like "unable to access authorization agent", you need to run
-
-    exec ssh-agent bash
-
-to start the ssh-agent then
-
-    ssh-add
-
-to load your public key. At that point you should be able to run the deploy process no problem assuming your public key is in /home/deploy/.ssh/authorized_keys.
-
 Logging
 --------------------------
 Log files are shared between 'releases' so they should be continuous across multiple deployments. If you need to access them, they're in
@@ -38,6 +13,18 @@ More specific logging for imports and publishing is found in log/import_records 
 
 Development
 =========================
+
+Necessary resources
+--------------------------
+Postgres: `brew install postgresql` and `brew services start postgresql`
+
+Redis: `brew install redis` and `brew services start redis`
+
+Elasticsearch: `brew install elasticsearch@2.4` and `brew services start elasticsearch`
+
+Note: we are currently pinned to ES version 2.4
+
+For Sidekiq: `bundle install` and `sidekiq -C config/sidekiq.yml -e development`
 
 Using Zeus Standalone
 --------------------------
