@@ -49,7 +49,7 @@ RSpec.describe GeneratePayments, freeze_time: true do
           total_payment: period_ad_rev,
           period_start: period_start,
           period_end: period_end,
-          payment_date: Time.current,
+          payment_date: period_end.next_month.beginning_of_month + 9.days,
           pay_per_impression: (period_ad_rev.to_f / promotion_metrics.count).to_d.truncate(2),
           paid_impressions: promotion_metrics.count,
           content_id: included_content1.id,

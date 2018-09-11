@@ -637,7 +637,7 @@ ActiveRecord::Schema.define(version: 20180905203429) do
     t.integer  "paid_impressions"
     t.decimal  "pay_per_impression"
     t.decimal  "total_payment"
-    t.datetime "payment_date"
+    t.date     "payment_date"
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
     t.integer  "content_id"

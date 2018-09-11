@@ -6,8 +6,8 @@ class GeneratePayments
 
   def initialize(opts={})
     @opts = opts
-    @period_start = Date.parse(opts[:period_start])
-    @period_end = Date.parse(opts[:period_end])
+    @period_start = DateTime.parse(opts[:period_start])
+    @period_end = DateTime.parse(opts[:period_end])
     @period_ad_rev = opts[:period_ad_rev]
     @period_total_impressions = PromotionBannerMetric.for_payment_period(@period_start, @period_end).count
     if @period_total_impressions > 0
@@ -66,7 +66,7 @@ class GeneratePayments
         period_end: @period_end,
         paid_impressions: paid_impressions,
         total_payment: (paid_impressions * @pay_per_impression).to_d.truncate(2),
-        payment_date: Time.current,
+        payment_date: @period_end.next_month.beginning_of_month + 9.days,
         pay_per_impression: @pay_per_impression,
         content_id: cr.content_id,
         paid_to: user

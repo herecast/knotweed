@@ -8,7 +8,7 @@
 #  paid_impressions   :integer
 #  pay_per_impression :decimal(, )
 #  total_payment      :decimal(, )
-#  payment_date       :datetime
+#  payment_date       :date
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  content_id         :integer

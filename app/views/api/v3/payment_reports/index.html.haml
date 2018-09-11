@@ -24,7 +24,7 @@
             %h3 Total Impressions
             %h2= @paid_impressions
           .span3
-            %h3 Pay Per Read
+            %h3 Pay Per Impression
             %h2= number_to_currency(@pay_per_impression)
           .span3
             %h3 Total Payment
@@ -38,7 +38,7 @@
             %tr
               %th.span6
                 Organization
-              %th.span6 Reads
+              %th.span6 Impressions
           %tbody
             - @line_items.each do |item|
               %tr
