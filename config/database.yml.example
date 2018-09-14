@@ -1,0 +1,12 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+
+development:
+  <<: *default
+  database: subtext_development_db
+
+test:
+  <<: *default
+  database: subtext_test_db
