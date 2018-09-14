@@ -243,6 +243,8 @@ class Content < ActiveRecord::Base
     [:talk, :market_post, :event].include?(c.content_type)
   }
 
+  has_many :profile_metrics, dependent: :destroy
+
   validate :if_ad_promotion_type_sponsored_must_have_ad_max_impressions
   validates :ad_invoiced_amount, numericality: { greater_than: 0 }, if: 'ad_invoiced_amount.present?'
   validates :ad_commission_amount, numericality: { greater_than: 0 }, if: 'ad_commission_amount.present?'
@@ -266,7 +268,7 @@ class Content < ActiveRecord::Base
     end
   end
 
-  has_many :organization_content_tags
+  has_many :organization_content_tags, dependent: :destroy
   has_many :organizations, through: :organization_content_tags
 
   has_many :images, -> { order("images.primary DESC") }, as: :imageable, inverse_of: :imageable, dependent: :destroy
