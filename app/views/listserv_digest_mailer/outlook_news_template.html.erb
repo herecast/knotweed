@@ -343,7 +343,13 @@
                                                                   <img alt="<%= author_name %>" src="<%= digest_profile_image(post.organization.profile_image.url, width: 40, height: 40) %>" style="border-radius:1000px;max-width:40px;vertical-align:middle;min-height:40px;padding:0px!important;display:inline-block!important;border:none!important">
                                                                 <% end %>
                                                               </td>
-                                                              <td style="padding:0px;font-family:Helvetica,sans-serif!important;color:#404347!important"><%= post.pubdate.strftime("%A, %B %e %Y") %><br>
+                                                              <td style="padding:0px;font-family:Helvetica,sans-serif!important;color:#404347!important">
+                                                                <% if post.content_type == :event %>
+                                                                  <%= post.channel.next_or_first_instance.start_date.strftime("%A, %B %e %Y") %>
+                                                                <% else %>
+                                                                  <%= post.pubdate.strftime("%A, %B %e %Y") %>
+                                                                <% end %>
+                                                                <br>
                                                                 <span style="text-decoration:none!important;color:#404347!important;line-height:1" target="_blank"><%= author_name %></span></td>
                                                             </tr>
                                                           </tbody>
