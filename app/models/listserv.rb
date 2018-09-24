@@ -46,8 +46,6 @@ class Listserv < ActiveRecord::Base
   has_many :promotion_listservs
   has_and_belongs_to_many :locations
   has_many :subscriptions
-  has_many :campaigns
-
 
   validates_uniqueness_of :reverse_publish_email, :unsubscribe_email,
     :subscribe_email, :post_email, allow_blank: true

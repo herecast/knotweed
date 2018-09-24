@@ -40,3 +40,4 @@
         %td= ls.active_subscriber_count
         %td
           = link_to "Edit", edit_listserv_path(ls), class: 'btn btn-mini'
+          = link_to "Test", listserv_tests_path(listserv_id: ls.id), method: :post, class: 'btn btn-mini'
