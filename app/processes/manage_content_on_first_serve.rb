@@ -15,16 +15,18 @@ class ManageContentOnFirstServe
                          .where('pubdate < ?', Time.current)
 
     @contents.each do |content|
-      # extra check to avoid race condition
-      if content.first_served_at.nil?
-        content.update_attribute(:first_served_at, @current_time)
-        conditionally_schedule_outreach(content)
-        conditionally_schedule_subscriber_notification(content)
-        if Figaro.env.production_messaging_enabled == "true"
-          FacebookService.rescrape_url(content)
-          if content.content_type == :news
-            IntercomService.send_published_content_event(content)
-            SlackService.send_published_content_notification(content)
+      content.with_lock do
+        # extra check to avoid race condition
+        if content.first_served_at.nil?
+          content.update_attribute(:first_served_at, @current_time)
+          conditionally_schedule_outreach(content)
+          conditionally_schedule_subscriber_notification(content)
+          if Figaro.env.production_messaging_enabled == "true"
+            FacebookService.rescrape_url(content)
+            if content.content_type == :news
+              IntercomService.send_published_content_event(content)
+              SlackService.send_published_content_notification(content)
+            end
           end
         end
       end
