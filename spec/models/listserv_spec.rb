@@ -66,6 +66,7 @@ describe Listserv, :type => :model do
   it { is_expected.to have_db_column(:display_subscribe).of_type(:boolean) }
   it { is_expected.to have_db_column(:digest_subject).of_type(:string) }
   it { is_expected.to have_db_column(:digest_preheader).of_type(:string) }
+  it { is_expected.to have_many(:campaigns) }
   it { is_expected.to have_db_column(:list_type).of_type(:string) }
   it { is_expected.to have_db_column(:admin_email).of_type(:string) }
   it { is_expected.to have_db_column(:forwarding_email).of_type(:string) }

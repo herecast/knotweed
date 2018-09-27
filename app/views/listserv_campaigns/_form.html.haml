@@ -1,0 +1,10 @@
+= simple_form_for(campaign,
+  url: campaign.persisted? ? listserv_campaign_path(campaign.listserv, campaign) : listserv_campaigns_path(campaign.listserv),
+  html: {"data-remote"=>true, class: 'form-horizontal'}) do |c|
+  = c.input :title, hint: 'not visible to receivers'
+  = c.input :community_ids, collection: Location.non_region.consumer_active, input_html: { multiple: true }
+  = c.input :preheader
+  = c.input :sponsored_by
+  = c.input :promotion_ids do
+    = c.input_field :promotions_list
+  = c.input :digest_query

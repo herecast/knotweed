@@ -12,26 +12,6 @@ module MailchimpService
     DEFAULT_FROM_EMAIL = 'jennifer.sensenich@subtext.org'
     DEFAULT_FROM_NAME = 'Jennifer from DailyUV'
 
-    def create_list(name)
-      post('/lists', body: default_list_data.merge(name: name).to_json)
-    end
-
-    def subscribe_user_to_list(list_id:, user:)
-      new_mailchimp_connection.lists.subscribe(list_id, {
-        email: user.email
-      }, nil, 'html', false)
-    end
-
-    def delete_list(list_id)
-      delete("/lists/#{list_id}")
-    end
-
-    def create_test_campaign(list_id:, digest:)
-      post('/campaigns', {
-        body: serialized_digest(list_id, digest).to_json
-      })
-    end
-
     def create_campaign(user:, subject:, template_id:, from_email: DEFAULT_FROM_EMAIL, from_name: DEFAULT_FROM_NAME)
       new_mailchimp_connection.campaigns.create('regular', {
         list_id: Rails.configuration.subtext.email_outreach.new_user_list_id,
@@ -69,42 +49,6 @@ module MailchimpService
 
       def mailchimp_safe_schedule_time(timing)
         Time.at(((timing - 1.second).to_f / 15.minutes.to_i).floor * 15.minutes.to_i) + 15.minutes
-      end
-
-      def default_list_data
-        {
-          permission_reminder: 'You\'re receiving this email because you are a tester',
-          email_type_option: true,
-          contact: {
-            company: 'Subtext Media',
-            address1: "15 RailRoad Row",
-            city: "White River Junction",
-            state: "VT",
-            zip: "03770",
-            country: 'USA'
-          },
-          campaign_defaults: {
-            from_name: "DUV Test",
-            from_email: "it@subtext.org",
-            subject: "Test digest",
-            language: "en"
-          }
-        }
-      end
-
-      def serialized_digest(list_id, digest)
-        {
-          type: 'regular',
-          recipients: {
-            list_id: list_id,
-          },
-          settings: {
-            title: digest.title,
-            subject_line: digest.subject,
-            from_name: digest.from_name,
-            reply_to: digest.reply_to
-          }
-        }
       end
 
   end

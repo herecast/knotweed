@@ -45,3 +45,72 @@
 
         .form-actions
           = f.button :submit, class: 'btn btn-success'
+
+      - if @listserv.persisted?
+        %fieldset#campaigns
+          %legend
+            Campaigns
+            %button.btn.new-campaign{type: 'button', data: {template: ((render("listserv_campaigns/form", campaign: Campaign.new(listserv: f.object))))}}
+              %i.glyphicon.glyphicon-plus
+              New
+
+          %table.table.table-striped
+            %thead
+              %tr
+                %th Communities
+                %th Sponsored By
+                %th Promotion
+                %th Query Override
+                %th
+            %tbody
+              - @listserv.campaigns.each do |campaign|
+                = render 'listserv_campaigns/row', campaign: campaign
+
+          %script#campaignModal{type: 'text/html'}
+            .modal.fade
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    %button.close{type: 'button', "data-dismiss"=>"modal"}
+                      &times;
+                    %h4.modal-title Campaign
+                  .modal-body
+                  .modal-footer
+                    %button.btn.btn-primary{type: 'button'} Save Changes
+
+          :javascript
+            jQuery(function($){
+              var template = $('#campaignModal').html();
+              var $campaigns = $('#campaigns');
+
+              function buildModal($btn) {
+                var $modal = $(template).appendTo($('body'));
+                $modal.find('.modal-body').append($btn.data('template'));
+
+                $modal.modal({
+                  show: false
+                }).on('hidden.bs.modal', function() {
+                  $modal.remove();
+                }).on('click', 'button.btn-primary', function() {
+                  $modal.find('form').submit();
+                }).on('ajax:success', function() {
+                  $modal.modal('hide');
+                });
+                return $modal;
+              }
+
+              $campaigns.on('click', 'button.new-campaign', function() {
+                var $modal = buildModal($(this));
+                $modal.modal('show');
+              });
+
+              $campaigns.on('click', 'button.edit-campaign', function() {
+                var $modal = buildModal($(this));
+                $modal.find('#campaign_community_ids').val()
+                $modal.modal('show');
+              });
+
+            });
+
+
+

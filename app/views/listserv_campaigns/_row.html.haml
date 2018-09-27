@@ -1,0 +1,8 @@
+%tr{"data-id" => campaign.id }
+  %td=campaign.communities.sort_by(&:name).collect(&:name).join(', ')
+  %td=campaign.sponsored_by
+  %td=campaign.promotions_list
+  %td=campaign.digest_query
+  %td
+    %button.btn.edit-campaign{type: 'button', data: {template: ((render 'listserv_campaigns/form', campaign: campaign))}} Edit
+    = link_to "Delete", listserv_campaign_path(campaign.listserv_id, campaign), method: :delete , class: 'btn delete-campaign', remote: true

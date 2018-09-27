@@ -74,7 +74,7 @@ Knotweed::Application.routes.draw do
     resources :rewrites, except: [:show]
 
     resources :listservs do
-      resources :tests, only: :create, controller: 'listservs/tests'
+      resources :campaigns, controller: :listserv_campaigns
     end
     resources :subscriptions
 
