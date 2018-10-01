@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   #normal Devise authentication
   before_filter :authorize_access!, :set_current_thread_user, 
-    :set_thread_consumer_app_nil
+    :set_thread_consumer_app_nil, :get_version
 
   rescue_from CanCan::AccessDenied do |exception|
     redirect_to root_path, :alert => exception.message
@@ -39,5 +39,9 @@ class ApplicationController < ActionController::Base
   # in the admin app).
   def set_thread_consumer_app_nil
     ConsumerApp.current = nil
+  end
+
+  def get_version
+    @version ||= `git rev-parse --short HEAD`.chomp
   end
 end
