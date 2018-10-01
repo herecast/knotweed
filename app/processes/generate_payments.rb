@@ -11,7 +11,7 @@ class GeneratePayments
     @period_ad_rev = opts[:period_ad_rev]
     @period_total_impressions = PromotionBannerMetric.for_payment_period(@period_start, @period_end).count
     if @period_total_impressions > 0
-      @pay_per_impression = (@period_ad_rev.to_f / @period_total_impressions).to_d.truncate(2)
+      @pay_per_impression = (@period_ad_rev.to_f / @period_total_impressions).to_d.truncate(4)
     else
       0
     end
@@ -65,7 +65,7 @@ class GeneratePayments
         period_start: @period_start,
         period_end: @period_end,
         paid_impressions: paid_impressions,
-        total_payment: (paid_impressions * @pay_per_impression).to_d.truncate(2),
+        total_payment: (paid_impressions * @pay_per_impression).to_d.truncate(4),
         payment_date: @period_end.next_month.beginning_of_month + 9.days,
         pay_per_impression: @pay_per_impression,
         content_id: cr.content_id,

@@ -14,7 +14,7 @@ module Api
 
         if payments.present?
           sample = payments.first
-          @pay_per_impression = sample.pay_per_impression.truncate(3)
+          @pay_per_impression = sample.pay_per_impression.truncate(4)
           @payment_date = sample.payment_date
           @paid_impressions = payments.sum(:paid_impressions)
           @total_payment = payments.sum(:total_payment)

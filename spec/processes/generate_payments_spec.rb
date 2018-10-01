@@ -41,7 +41,7 @@ RSpec.describe GeneratePayments, freeze_time: true do
           period_start: payment.period_start,
           period_end: payment.period_end,
           payment_date: payment.payment_date,
-          pay_per_impression: payment.pay_per_impression.truncate(2),
+          pay_per_impression: payment.pay_per_impression.truncate(4),
           paid_impressions: payment.paid_impressions,
           content_id: payment.content_id,
           paid_to: payment.paid_to
@@ -50,7 +50,7 @@ RSpec.describe GeneratePayments, freeze_time: true do
           period_start: period_start,
           period_end: period_end,
           payment_date: period_end.next_month.beginning_of_month + 9.days,
-          pay_per_impression: (period_ad_rev.to_f / promotion_metrics.count).to_d.truncate(2),
+          pay_per_impression: (period_ad_rev.to_f / promotion_metrics.count).to_d.truncate(4),
           paid_impressions: promotion_metrics.count,
           content_id: included_content1.id,
           paid_to: recipient.user
