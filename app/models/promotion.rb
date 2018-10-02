@@ -11,14 +11,14 @@
 #  promotable_id   :integer
 #  promotable_type :string(255)
 #  paid            :boolean          default(FALSE)
-#  created_by      :integer
-#  updated_by      :integer
+#  created_by_id   :integer
+#  updated_by_id   :integer
 #  share_platform  :string
 #
 # Indexes
 #
 #  idx_16765_index_promotions_on_content_id  (content_id)
-#  idx_16765_index_promotions_on_created_by  (created_by)
+#  idx_16765_index_promotions_on_created_by  (created_by_id)
 #
 
 class Promotion < ActiveRecord::Base

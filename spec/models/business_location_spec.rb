@@ -19,8 +19,8 @@
 #  state               :string(255)
 #  zip                 :string(255)
 #  status              :string(255)
-#  created_by          :integer
-#  updated_by          :integer
+#  created_by_id       :integer
+#  updated_by_id       :integer
 #  service_radius      :decimal(10, )
 #
 # Indexes

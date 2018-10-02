@@ -11,7 +11,7 @@ module Api
         opts[:where] = {}
         if @current_api_user.present?
           opts[:where][:or] = [
-            [{created_by: @current_api_user.id}, {status: 'approved'}]
+            [{created_by_id: @current_api_user.id}, {status: 'approved'}]
           ]
         else
           opts[:where][:status] = 'approved'

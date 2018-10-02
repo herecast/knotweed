@@ -25,7 +25,7 @@ module Api
             head :no_content and return
           end
         else
-          scope = scope.where('promotions.created_by = ?', @current_api_user.id)
+          scope = scope.where('promotions.created_by_id = ?', @current_api_user.id)
         end
 
         if params[:sort].include?('start_date')

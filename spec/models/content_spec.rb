@@ -32,8 +32,8 @@
 #  view_count                :integer          default(0)
 #  comment_count             :integer          default(0)
 #  commenter_count           :integer          default(0)
-#  created_by                :integer
-#  updated_by                :integer
+#  created_by_id             :integer
+#  updated_by_id             :integer
 #  banner_click_count        :integer          default(0)
 #  similar_content_overrides :text
 #  banner_ad_override        :integer
@@ -768,7 +768,7 @@ describe Content, :type => :model do
   describe '#author_name' do
     before do
       @content = FactoryGirl.create :content, authors: Faker::Name.name
-      @content.update_column :created_by, nil
+      @content.update_column :created_by_id, nil
     end
     let(:user) { FactoryGirl.create :user }
 

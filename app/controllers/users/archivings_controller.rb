@@ -18,7 +18,7 @@ class Users::ArchivingsController < ApplicationController
     if @user.update(archived: true)
       flash[:notice] = "User #{@user.email} has been archived."
       if new_owner.present?
-        Content.where(created_by: @user).update_all(created_by: new_owner)
+        Content.where(created_by: @user).update_all(created_by_id: new_owner.id)
         flash[:notice] << " All content belonging to that account has been reassigned to #{new_owner.email}"
       end
       redirect_to users_path

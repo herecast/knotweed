@@ -3,8 +3,8 @@
 # Table name: business_feedbacks
 #
 #  id                  :integer          not null, primary key
-#  created_by          :integer
-#  updated_by          :integer
+#  created_by_id       :integer
+#  updated_by_id       :integer
 #  business_profile_id :integer
 #  satisfaction        :boolean
 #  cleanliness         :boolean

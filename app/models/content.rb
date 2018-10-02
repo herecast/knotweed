@@ -33,8 +33,8 @@
 #  view_count                :integer          default(0)
 #  comment_count             :integer          default(0)
 #  commenter_count           :integer          default(0)
-#  created_by                :integer
-#  updated_by                :integer
+#  created_by_id             :integer
+#  updated_by_id             :integer
 #  banner_click_count        :integer          default(0)
 #  similar_content_overrides :text
 #  banner_ad_override        :integer
@@ -78,7 +78,7 @@
 #  idx_16527_index_contents_on_channel_id                (channel_id)
 #  idx_16527_index_contents_on_channel_type              (channel_type)
 #  idx_16527_index_contents_on_channelized_content_id    (channelized_content_id)
-#  idx_16527_index_contents_on_created_by                (created_by)
+#  idx_16527_index_contents_on_created_by                (created_by_id)
 #  idx_16527_index_contents_on_parent_id                 (parent_id)
 #  idx_16527_index_contents_on_published                 (published)
 #  idx_16527_index_contents_on_root_content_category_id  (root_content_category_id)

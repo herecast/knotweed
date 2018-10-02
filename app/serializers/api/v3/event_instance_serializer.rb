@@ -153,7 +153,7 @@ module Api
       end
 
       def author_id
-        object.event.content.created_by.try :id
+        object.event.content.created_by_id
       end
 
       def author_name

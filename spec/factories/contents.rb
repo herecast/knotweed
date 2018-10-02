@@ -32,8 +32,8 @@
 #  view_count                :integer          default(0)
 #  comment_count             :integer          default(0)
 #  commenter_count           :integer          default(0)
-#  created_by                :integer
-#  updated_by                :integer
+#  created_by_id             :integer
+#  updated_by_id             :integer
 #  banner_click_count        :integer          default(0)
 #  similar_content_overrides :text
 #  banner_ad_override        :integer

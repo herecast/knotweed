@@ -26,7 +26,7 @@ module Api
       end
 
       def user_id
-        object.created_by.try(:id)
+        object.created_by_id
       end
 
       def parent_content_id

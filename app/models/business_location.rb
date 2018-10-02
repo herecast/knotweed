@@ -19,14 +19,14 @@
 #  state               :string(255)
 #  zip                 :string(255)
 #  status              :string(255)
-#  created_by          :integer
-#  updated_by          :integer
+#  created_by_id       :integer
+#  updated_by_id       :integer
 #  service_radius      :decimal(10, )
 #
 # Indexes
 #
 #  idx_16441_index_business_locations_on_city        (city)
-#  idx_16441_index_business_locations_on_created_by  (created_by)
+#  idx_16441_index_business_locations_on_created_by  (created_by_id)
 #  idx_16441_index_business_locations_on_name        (name)
 #
 
@@ -42,7 +42,7 @@ class BusinessLocation < ActiveRecord::Base
       name: name,
       city: city,
       state: state,
-      created_by: created_by.try(:id),
+      created_by_id: created_by_id,
       status: status
     }
   end

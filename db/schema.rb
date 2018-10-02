@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180905203429) do
+ActiveRecord::Schema.define(version: 20180926183152) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,8 +51,8 @@ ActiveRecord::Schema.define(version: 20180905203429) do
   end
 
   create_table "business_feedbacks", id: :bigserial, force: :cascade do |t|
-    t.integer  "created_by",          limit: 8
-    t.integer  "updated_by",          limit: 8
+    t.integer  "created_by_id",       limit: 8
+    t.integer  "updated_by_id",       limit: 8
     t.integer  "business_profile_id", limit: 8
     t.boolean  "satisfaction"
     t.boolean  "cleanliness"
@@ -79,13 +79,13 @@ ActiveRecord::Schema.define(version: 20180905203429) do
     t.string   "state",               limit: 255
     t.string   "zip",                 limit: 255
     t.string   "status",              limit: 255
-    t.integer  "created_by",          limit: 8
-    t.integer  "updated_by",          limit: 8
+    t.integer  "created_by_id",       limit: 8
+    t.integer  "updated_by_id",       limit: 8
     t.decimal  "service_radius",                  precision: 10
   end
 
   add_index "business_locations", ["city"], name: "idx_16441_index_business_locations_on_city", using: :btree
-  add_index "business_locations", ["created_by"], name: "idx_16441_index_business_locations_on_created_by", using: :btree
+  add_index "business_locations", ["created_by_id"], name: "idx_16441_index_business_locations_on_created_by", using: :btree
   add_index "business_locations", ["name"], name: "idx_16441_index_business_locations_on_name", using: :btree
 
   create_table "business_profiles", id: :bigserial, force: :cascade do |t|
@@ -287,8 +287,8 @@ ActiveRecord::Schema.define(version: 20180905203429) do
     t.integer  "view_count",                limit: 8,   default: 0
     t.integer  "comment_count",             limit: 8,   default: 0
     t.integer  "commenter_count",           limit: 8,   default: 0
-    t.integer  "created_by",                limit: 8
-    t.integer  "updated_by",                limit: 8
+    t.integer  "created_by_id",             limit: 8
+    t.integer  "updated_by_id",             limit: 8
     t.integer  "banner_click_count",        limit: 8,   default: 0
     t.integer  "banner_ad_override",        limit: 8
     t.integer  "root_parent_id",            limit: 8
@@ -328,7 +328,7 @@ ActiveRecord::Schema.define(version: 20180905203429) do
   add_index "contents", ["channel_type"], name: "idx_16527_index_contents_on_channel_type", using: :btree
   add_index "contents", ["channelized_content_id"], name: "idx_16527_index_contents_on_channelized_content_id", using: :btree
   add_index "contents", ["content_category_id"], name: "idx_16527_content_category_id", using: :btree
-  add_index "contents", ["created_by"], name: "idx_16527_index_contents_on_created_by", using: :btree
+  add_index "contents", ["created_by_id"], name: "idx_16527_index_contents_on_created_by", using: :btree
   add_index "contents", ["guid"], name: "idx_16527_guid", using: :btree
   add_index "contents", ["organization_id"], name: "idx_16527_source_id", using: :btree
   add_index "contents", ["parent_id"], name: "idx_16527_index_contents_on_parent_id", using: :btree
@@ -503,17 +503,18 @@ ActiveRecord::Schema.define(version: 20180905203429) do
   end
 
   create_table "locations", id: :bigserial, force: :cascade do |t|
-    t.string   "zip",             limit: 255
-    t.string   "city",            limit: 255
-    t.string   "state",           limit: 255
-    t.string   "county",          limit: 255
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
-    t.boolean  "consumer_active",             default: false
-    t.boolean  "is_region",                   default: false
+    t.string   "zip",                             limit: 255
+    t.string   "city",                            limit: 255
+    t.string   "state",                           limit: 255
+    t.string   "county",                          limit: 255
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
+    t.boolean  "consumer_active",                             default: false
+    t.boolean  "is_region",                                   default: false
     t.string   "slug"
     t.float    "latitude"
     t.float    "longitude"
+    t.integer  "location_ids_within_fifty_miles",             default: [],                 array: true
   end
 
   add_index "locations", ["latitude", "longitude"], name: "index_locations_on_latitude_and_longitude", using: :btree
@@ -641,11 +642,11 @@ ActiveRecord::Schema.define(version: 20180905203429) do
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
     t.integer  "content_id"
-    t.integer  "paid_to"
+    t.integer  "paid_to_id"
     t.boolean  "paid",               default: false
   end
 
-  add_index "payments", ["paid_to"], name: "index_payments_on_paid_to", using: :btree
+  add_index "payments", ["paid_to_id"], name: "index_payments_on_paid_to_id", using: :btree
 
   create_table "profile_metrics", force: :cascade do |t|
     t.integer  "organization_id"
@@ -752,13 +753,13 @@ ActiveRecord::Schema.define(version: 20180905203429) do
     t.integer  "promotable_id",   limit: 8
     t.string   "promotable_type", limit: 255
     t.boolean  "paid",                        default: false
-    t.integer  "created_by",      limit: 8
-    t.integer  "updated_by",      limit: 8
+    t.integer  "created_by_id",   limit: 8
+    t.integer  "updated_by_id",   limit: 8
     t.string   "share_platform"
   end
 
   add_index "promotions", ["content_id"], name: "idx_16765_index_promotions_on_content_id", using: :btree
-  add_index "promotions", ["created_by"], name: "idx_16765_index_promotions_on_created_by", using: :btree
+  add_index "promotions", ["created_by_id"], name: "idx_16765_index_promotions_on_created_by", using: :btree
 
   create_table "repositories", id: :bigserial, force: :cascade do |t|
     t.string   "name",                    limit: 255
@@ -773,15 +774,15 @@ ActiveRecord::Schema.define(version: 20180905203429) do
   end
 
   create_table "rewrites", id: :bigserial, force: :cascade do |t|
-    t.string   "source",      limit: 255
-    t.string   "destination", limit: 255
-    t.integer  "created_by",  limit: 8
-    t.integer  "updated_by",  limit: 8
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.string   "source",        limit: 255
+    t.string   "destination",   limit: 255
+    t.integer  "created_by_id", limit: 8
+    t.integer  "updated_by_id", limit: 8
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
-  add_index "rewrites", ["created_by"], name: "idx_16828_index_rewrites_on_created_by", using: :btree
+  add_index "rewrites", ["created_by_id"], name: "idx_16828_index_rewrites_on_created_by", using: :btree
   add_index "rewrites", ["source"], name: "idx_16828_index_rewrites_on_source", unique: true, using: :btree
   add_index "rewrites", ["updated_at"], name: "idx_16828_index_rewrites_on_updated_at", using: :btree
 

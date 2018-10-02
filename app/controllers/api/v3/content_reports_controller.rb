@@ -17,7 +17,7 @@ module Api
             (SELECT COUNT(*) FROM contents WHERE parent_id = c.id AND created_at > (r.report_date - INTERVAL '1' DAY) AND created_at < r.report_date) as \"Comments\"
           FROM content_reports r
           INNER JOIN contents c ON c.id = r.content_id
-          INNER JOIN users u on u.id = c.created_by
+          INNER JOIN users u on u.id = c.created_by_id
           INNER JOIN organizations o ON o.id = c.organization_id AND (r.view_count > 0 OR r.banner_click_count > 0)
           WHERE DATE_TRUNC('day', r.report_date) >= #{@start_date} AND DATE_TRUNC('day', r.report_date) <= #{@end_date}
           ORDER BY \"Author\", c.title, report_date DESC;"

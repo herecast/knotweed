@@ -11,8 +11,8 @@
 #  promotable_id   :integer
 #  promotable_type :string(255)
 #  paid            :boolean          default(FALSE)
-#  created_by      :integer
-#  updated_by      :integer
+#  created_by_id   :integer
+#  updated_by_id   :integer
 #  share_platform  :string
 #
 # Indexes

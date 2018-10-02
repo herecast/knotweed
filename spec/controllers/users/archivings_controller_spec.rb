@@ -27,7 +27,7 @@ describe Users::ArchivingsController, type: :controller do
       subject { post :create, user_id: user.id, new_content_owner: new_content_owner.email }
 
       it 'should reassign all the content belonging to the original user' do
-        Content.update_all(created_by: user)
+        Content.update_all(created_by_id: user.id)
         subject
         expect(Content.where(created_by: new_content_owner)).to match_array contents
       end

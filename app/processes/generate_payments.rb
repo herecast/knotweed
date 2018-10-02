@@ -38,7 +38,7 @@ class GeneratePayments
   def promotion_metrics_for_user(pr)
     promotion_metrics = PromotionBannerMetric.for_payment_period(@period_start, @period_end).
       joins(content: [:organization, :created_by]).
-      where('contents.created_by = ?', pr.user_id).
+      where('contents.created_by_id = ?', pr.user_id).
       where('organizations.pay_for_content = true').
       select('content_id, COUNT(DISTINCT promotion_banner_metrics.id) as impressions').
       group(:content_id).order(:content_id)

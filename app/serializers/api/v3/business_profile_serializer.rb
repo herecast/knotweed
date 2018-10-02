@@ -69,7 +69,7 @@ module Api
       end
 
       def has_rated
-        context[:current_user].present? && BusinessFeedback.find_by(created_by: context[:current_user].try(:id), business_profile_id: object.id).present?
+        context[:current_user].present? && BusinessFeedback.find_by(created_by_id: context[:current_user].try(:id), business_profile_id: object.id).present?
       end
 
       def feedback

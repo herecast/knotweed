@@ -62,7 +62,7 @@ module SearchIndexing
     end
 
     def created_by_id
-      object.created_by.try(:id)
+      object.created_by_id
     end
 
     def created_by_image_url

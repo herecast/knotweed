@@ -12,12 +12,12 @@
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  content_id         :integer
-#  paid_to            :integer
+#  paid_to_id         :integer
 #  paid               :boolean          default(FALSE)
 #
 # Indexes
 #
-#  index_payments_on_paid_to  (paid_to)
+#  index_payments_on_paid_to_id  (paid_to_id)
 #
 # Foreign Keys
 #
@@ -26,11 +26,11 @@
 
 class Payment < ActiveRecord::Base
   belongs_to :content
-  belongs_to :paid_to, class_name: 'User', foreign_key: 'paid_to'
+  belongs_to :paid_to, class_name: 'User', foreign_key: 'paid_to_id'
 
   validates :content_id, uniqueness: { scope: [:period_start, :period_end] }
 
-  scope :for_user, ->(user_id) { where('paid_to = ?', user_id) }
+  scope :for_user, ->(user_id) { where('paid_to_id = ?', user_id) }
 
   # pay_per_impression can't be used in the group_by clause because its being a float
   # makes it potentially not always exactly the same (I think). That said, it is
@@ -43,9 +43,9 @@ class Payment < ActiveRecord::Base
   }
 
   scope :by_user, -> {
-    select('MIN(payments.id) as id, users.id as paid_to_id, fullname, period_start, period_end, SUM(total_payment) as total_payment').
+    select('MIN(payments.id) as id, users.id as paid_to_user_id, fullname, period_start, period_end, SUM(total_payment) as total_payment').
     joins(:paid_to).
-    group(:period_start, :period_end, :fullname, :paid_to_id).
+    group(:period_start, :period_end, :fullname, :paid_to_user_id).
     order('fullname ASC')
   }
 

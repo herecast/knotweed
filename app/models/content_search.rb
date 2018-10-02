@@ -37,7 +37,7 @@ class ContentSearch
       if @params[:bookmarked] == 'true'
         attrs[:where][:id] = { in: UserBookmark.where(user_id: @params[:id]).pluck(:content_id) }
       else
-        attrs[:where]['created_by_id'] = @params[:id]
+        attrs[:where][:created_by_id] = @params[:id]
       end
     end
   end
@@ -46,7 +46,7 @@ class ContentSearch
     standard_opts.tap do |attrs|
       attrs[:where].delete(:pubdate)
       attrs[:where][:content_type] = 'comment'
-      attrs[:where]['created_by_id'] = @params[:id]
+      attrs[:where][:created_by_id] = @params[:id]
     end
   end
 

@@ -15,7 +15,7 @@ class SendPaymentsJob < ApplicationJob
           invoice_number: payment.id,
           invoice_date: invoice_date,
         )
-        successfully_paid_users << payment.paid_to_id
+        successfully_paid_users << payment.paid_to_user_id
       rescue BillDotComExceptions::UnexpectedResponse => e
         logger.error "Payment #{payment.id} failed: #{e}"
       end

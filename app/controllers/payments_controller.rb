@@ -48,7 +48,7 @@ class PaymentsController < ApplicationController
       payment_data[period][:total_payments] += p.total_payment
 
       if p.paid_to.present?
-        payment_data[period][:users][p.paid_to.fullname] ||= { total_payment: 0, total_impressions: 0, organizations: {}, id: p.paid_to.id }
+        payment_data[period][:users][p.paid_to.fullname] ||= { total_payment: 0, total_impressions: 0, organizations: {}, id: p.paid_to_id }
         if p.content.organization.present?
           payment_data[period][:users][p.paid_to.fullname][:organizations][p.content.organization.name] ||= { id: p.content.organization.id, payments: [] }
           payment_data[period][:users][p.paid_to.fullname][:organizations][p.content.organization.name][:payments] << p

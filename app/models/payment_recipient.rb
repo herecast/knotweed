@@ -2,12 +2,11 @@
 #
 # Table name: payment_recipients
 #
-#  id                 :integer          not null, primary key
-#  user_id            :integer
-#  alternative_emails :string
-#  organization_id    :integer
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
+#  id              :integer          not null, primary key
+#  user_id         :integer
+#  organization_id :integer
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
 #
 # Indexes
 #

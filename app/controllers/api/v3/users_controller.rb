@@ -86,7 +86,7 @@ module Api
           cal = Icalendar::Calendar.new
           tzid = Time.zone.tzinfo.name
           tz = TZInfo::Timezone.get tzid
-          schedules = Schedule.joins(event: :content).where('contents.created_by = ?', user.id)
+          schedules = Schedule.joins(event: :content).where('contents.created_by_id = ?', user.id)
           if schedules.present?
             cal.add_timezone tz.ical_timezone schedules.first.schedule.start_time.to_datetime
           end

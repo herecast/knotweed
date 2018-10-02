@@ -17,7 +17,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         @org_pbs.each do |pb|
           pb.promotion.content.update_attribute :organization, @org
           # ensure promotions aren't created by user to test this fully
-          pb.promotion.update_column :created_by, nil
+          pb.promotion.update_column :created_by_id, nil
         end
       end
 

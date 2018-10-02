@@ -59,8 +59,8 @@ class User < ActiveRecord::Base
   has_many :subscriptions
   has_many :social_logins
   has_many :user_bookmarks
-  has_many :contents, foreign_key: 'created_by'
-  has_many :payments, foreign_key: 'paid_to'
+  has_many :contents, foreign_key: 'created_by_id'
+  has_many :payments, foreign_key: 'paid_to_id'
   belongs_to :location
   mount_uploader :avatar, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_avatar,

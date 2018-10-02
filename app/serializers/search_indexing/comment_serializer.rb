@@ -39,7 +39,7 @@ module SearchIndexing
       end
 
       def user_id
-        object.created_by.try :id
+        object.created_by_id
       end
 
       def user_name

@@ -91,7 +91,7 @@ module Api
       end
 
       def author_id
-        object.created_by.try(:id)
+        object.created_by_id
       end
 
       def content_type

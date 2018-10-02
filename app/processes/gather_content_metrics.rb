@@ -53,7 +53,7 @@ class GatherContentMetrics
           where("content_id IN (select id from contents where organization_id=#{@organization.id})")
       elsif @user.present?
         @content_reports ||= base_scope.
-          joins(:content).where('contents.created_by = ?', @user.id)
+          joins(:content).where('contents.created_by_id = ?', @user.id)
       else
         []
       end

@@ -15,8 +15,8 @@ module Auditable
   extend ActiveSupport::Concern
 
   included do
-    belongs_to :created_by, class_name: 'User', foreign_key: 'created_by'
-    belongs_to :updated_by, class_name: 'User', foreign_key: 'updated_by'
+    belongs_to :created_by, class_name: 'User', foreign_key: 'created_by_id'
+    belongs_to :updated_by, class_name: 'User', foreign_key: 'updated_by_id'
     before_save :set_auditables
   end
 
