@@ -33,7 +33,6 @@ FactoryGirl.define do
     consumer_active true
 
     trait :default do
-      id Location::REGION_LOCATION_ID
       city Location::DEFAULT_LOCATION
       latitude Location::DEFAULT_LOCATION_COORDS[0]
       longitude Location::DEFAULT_LOCATION_COORDS[1]

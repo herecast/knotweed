@@ -76,7 +76,7 @@ describe RegistrationsController, :type => :controller do
 
       context "when instant_signup is true" do
         before do
-          FactoryGirl.create :location, id: Location::REGION_LOCATION_ID
+          FactoryGirl.create :location
         end
 
         subject { get :create, format: :json, user: @user_attributes, instant_signup: true }

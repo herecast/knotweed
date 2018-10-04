@@ -1,10 +1,5 @@
 # Add application configuration variables here, as shown below.  
 #
-# PUSHER_APP_ID: "2954"
-# PUSHER_KEY: 7381a978f7dd7f9a1117
-# PUSHER_SECRET: abdc3b896a0ffb85d373
-# STRIPE_API_KEY: EdAvEPVEC3LuaTg5Q3z6WbDVqZlcBQ8Z
-# STRIPE_PUBLIC_KEY: pk_BRgD57O8fHja9HxduJUszhef6jCyS
 
 AWS_ACCESS_KEY_ID: aws-key
 AWS_SECRET_ACCESS_KEY: aws-secret-key
@@ -12,37 +7,12 @@ AWS_BUCKET_NAME: knotweed
 test:
   AWS_BUCKET_NAME: knotweed-test
 
-# GMail credentials for sending system notifications
-NOTIFICATION_EMAIL: kwnotifications@gmail.com
-NOTIFICATION_EMAIL_PASSWORD: Vermont53
-
 # google maps api key for generating business_location maps
 GMAPS_API_KEY: gmapskey
-
-# config vars that specify when backup starts and ends for use with
-# pausing background jobs` and preventing publishing
-# if not specified, default is 2:45-3:45AM (server time, which is EST now)
-# what is placed here in app.yml is parsed by chronic so a simple
-# "2:45 am" will suffice
-BACKUP_START: "2:45 am"
-BACKUP_END: "3:45 am"
-
-# this is used to determine whether or not to set the "published" flag (content model)
-# to true when content is published to a repository. It defaults to 3, which is our
-# "production repository" on prod, but can be overridden by specifying it in application.yml
-PRODUCTION_REPOSITORY_ID: 3
-
-# hard coding the "region" for extended reach...Upper Valley for the foreseeable future.
-# It defaults to 77 if not specified here, which is the current production ID for "Upper Valley"
-REGION_LOCATION_ID: 77
 
 # HOST to base url's in app emails off -- e.g. "admin url" in moderate emails
 # begins with this.
 DEFAULT_HOST: nick-admin.subtextdev.org
-
-# This is a Bad temporary hack to allow filtering the sim stack provided by apiv2
-# the same way that the consumer app filters it. 
-SIM_STACK_CATEGORIES: market,talk_of_the_town,offered,wanted,for_free,recommendation,event,sale_event,discussion,local_news,business,sports,lifestyle,miscellaneous,beta_talk,lost_and_found 
 
 # used to determine what location APIv3 uses to query for contents if the user is not
 # logged in.
@@ -52,8 +22,6 @@ DEFAULT_LOCATION: Hartford
 FORECAST_IO_API_KEY: 32850541d1acd8a1175be1c217db188b
 
 POSTMARK_API_TOKEN: postmark-token
-
-PROMO_RELEVANCE_SCORE_THRESHOLD: .10
 
 DEFAULT_CONSUMER_HOST: dailyuv.com
 
@@ -68,10 +36,14 @@ ELASTICSEARCH_URL: http://localhost:9200
 
 REDIS_URL: redis://subtext-dev.0egmnu.0001.use1.cache.amazonaws.com/1
 
-# S3 bucket from which import jobs pull for file system imports
-IMPORTS_BUCKET: knotweed-imports-test
-
 OPTIMIZED_IMAGE_URI:      'http://dev-web.subtext.org:8880'
 OPTIMIZED_IMAGE_QUALITY:  "80"
 IMOPT_ALLOWED_SOURCES:  '["d3ctw1a5413a3o.cloudfront.net", "knotweed.s3.amazonaws.com", "subtext-misc.s3.amazonaws.com"]'
 BITLY_OAUTH_KEY: 0123456789abcdef
+
+BILL_DOT_COM_API_ENDPOINT: https://app-hotfix.cashview.com/api/v2/
+BILL_DOT_COM_API_KEY: 123456789abc
+BILL_DOT_COM_ORG_ID: 123456789abc
+BILL_DOT_COM_USERNAME: billdotcom@user.com
+BILL_DOT_COM_PASSWORD: password
+BILL_DOT_COM_COA_ID: 123456789abc
