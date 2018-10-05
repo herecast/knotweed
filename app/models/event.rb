@@ -161,4 +161,8 @@ class Event < ActiveRecord::Base
     event_instances.pluck(:id)
   end
 
+  def closest_location
+    Location.nearest_to_coords(latitude: venue.latitude, longitude: venue.longitude).first
+  end
+
 end

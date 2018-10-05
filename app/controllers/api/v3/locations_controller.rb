@@ -5,7 +5,9 @@ module Api
       def index
         expires_in 1.hour, public: true
 
-        if params[:near].present?
+        if params[:query].present?
+          @locations = Location.search(params[:query], { limit: 10 })
+        elsif params[:near].present?
           if params[:radius].present?
 
             radius = params[:radius].to_i

@@ -53,7 +53,7 @@ module Api
       end
 
       def location_id
-        object.event.content.content_locations.to_a.select(&:base?).first.try(:location).try(:slug)
+        object.event.content.location_id
       end
 
       def images

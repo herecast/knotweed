@@ -25,20 +25,6 @@ module Api
         end
       end
 
-      def weather
-        ForecastIO.api_key = Figaro.env.forecast_io_api_key
-        if @current_api_user.present?
-          @location = @current_api_user.location
-        else
-          @location = Location.find_by_city Location::DEFAULT_LOCATION
-        end
-        @forecast = Rails.cache.fetch("forecast-#{@location.city}", expires_in: 30.minutes) do
-          ForecastIO.forecast(@location.latitude, @location.longitude, params: {exclude: 'minutely,daily,hourly'})
-        end
-
-        render 'api/v3/users/forecast', layout: false
-      end
-
       def logout
         sign_out @current_api_user
         @current_api_user.reset_authentication_token

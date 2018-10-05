@@ -16,9 +16,10 @@ class ContentSearch
     self.new(*args).organization_calendar_query
   end
 
-  def initialize(params:, requesting_app:)
+  def initialize(params:, requesting_app:, current_user: nil)
     @params         = params
     @requesting_app = requesting_app
+    @current_user   = current_user
   end
 
   def standard_query
@@ -129,21 +130,13 @@ class ContentSearch
           attrs[:where][:organization_id] = ids
         end
       else
-        attrs[:where][:organization_id] = { not: Organization::LISTSERV_ORG_ID } unless listserv_org_request?
+        attrs[:where][:organization_id] = { not: Organization::LISTSERV_ORG_ID }
       end
     end
 
     def add_location_opts(attrs)
-      if @params[:location_id].present?
-        location = Location.find_by_slug_or_id @params[:location_id]
-
-        if @params[:radius].present? && @params[:radius].to_i > 0
-          locations_within_radius = Location.non_region.within_radius_of(location, @params[:radius].to_i).map(&:slug).compact
-
-          attrs[:where][:base_location_ids] = { in: locations_within_radius }
-        else
-          attrs[:where][:base_location_ids] = { in: [location.slug] }
-        end
+      if location.present?
+        attrs[:where][:location_id] = { in: location.send(radius_method) }
       end
     end
 
@@ -203,16 +196,24 @@ class ContentSearch
       }
     end
 
-    def listserv_org_request?
-      @params[:organization_id].to_i == Organization::LISTSERV_ORG_ID
-    end
-
     def page
       @params[:page].present? ? @params[:page].to_i : 1
     end
 
     def per_page
       @params[:per_page].present? ? @params[:per_page].to_i : 20
+    end
+
+    def location
+      @current_user.present? ? @current_user.location : Location.find_by(id: @params[:location_id])
+    end
+
+    def radius
+      @params[:radius].presence || 'fifty'
+    end
+
+    def radius_method
+      "location_ids_within_#{radius}_miles".to_sym
     end
 
 end

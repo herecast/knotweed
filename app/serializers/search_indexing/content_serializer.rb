@@ -11,9 +11,7 @@ module SearchIndexing
       :created_by_name,
       :deleted,
       :in_accepted_category,
-      :is_listserv_market_post,
       :latest_activity,
-      :my_town_only,
       :origin,
       :parent_id,
       :pubdate,
@@ -47,10 +45,6 @@ module SearchIndexing
         about_ids = object.about_locations.map(&:slug)
       end
       about_ids.uniq
-    end
-
-    def is_listserv_market_post
-      object.is_listserv_market_post?
     end
 
     def deleted

@@ -2,18 +2,21 @@
 #
 # Table name: locations
 #
-#  id              :integer          not null, primary key
-#  zip             :string(255)
-#  city            :string(255)
-#  state           :string(255)
-#  county          :string(255)
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  consumer_active :boolean          default(FALSE)
-#  is_region       :boolean          default(FALSE)
-#  slug            :string
-#  latitude        :float
-#  longitude       :float
+#  id                              :integer          not null, primary key
+#  zip                             :string(255)
+#  city                            :string(255)
+#  state                           :string(255)
+#  county                          :string(255)
+#  created_at                      :datetime         not null
+#  updated_at                      :datetime         not null
+#  consumer_active                 :boolean          default(FALSE)
+#  is_region                       :boolean          default(FALSE)
+#  slug                            :string
+#  latitude                        :float
+#  longitude                       :float
+#  default_location                :boolean          default(FALSE)
+#  location_ids_within_five_miles  :integer          default([]), is an Array
+#  location_ids_within_fifty_miles :integer          default([]), is an Array
 #
 # Indexes
 #
@@ -23,16 +26,18 @@
 require 'geocoder/stores/active_record'
 
 class Location < ActiveRecord::Base
+  include Geocoder::Store::ActiveRecord #include query helpers
+
   def self.geocoder_options
     {
       latitude: :latitude,
       longitude: :longitude
     }
   end
-  include Geocoder::Store::ActiveRecord #include query helpers
 
-  DEFAULT_LOCATION = Figaro.env.has_key?(:default_location) ? Figaro.env.default_location \
-    : 'Upper Valley'
+  def self.default_location
+    find_by_default_location(true)
+  end
 
   # coordinates for the center of the upper valley
   DEFAULT_LOCATION_COORDS = [43.645, -72.243]
@@ -43,8 +48,7 @@ class Location < ActiveRecord::Base
 
   has_many :organization_locations
   has_many :organizations, through: :organization_locations
-  has_many :content_locations
-  has_many :contents, through: :content_locations
+  has_many :contents
 
   has_and_belongs_to_many :listservs
 
@@ -64,8 +68,12 @@ class Location < ActiveRecord::Base
     where("slug IS NOT NULL AND slug <> ''")
   }
 
-  searchkick callbacks: :async, index_prefix: Figaro.env.stack_name,
-    batch_size: 1000, locations: ["location"]
+  searchkick callbacks: :async,
+    index_prefix: Figaro.env.stack_name,
+    batch_size: 1000,
+    locations: ["location"],
+    match: :word_start,
+    searchable: [:city, :state, :zip]
 
   def search_data
     {
@@ -93,7 +101,7 @@ class Location < ActiveRecord::Base
   end
 
   def name
-    "#{try(:city)} #{try(:state)}"
+    "#{try(:city)}, #{try(:state)}"
   end
 
   def pretty_name
@@ -142,40 +150,6 @@ class Location < ActiveRecord::Base
     geocoded.near(point, radius)
   end
 
-  def self.get_ids_from_location_strings(loc_array)
-    location_ids = []
-    # get the ids of all the locations
-    loc_array.each do |location_string|
-      # city_state = location_string.split(",")
-      # if city_state.present?
-      #   if city_state[1].present?
-      #     location = Location.where(city: city_state[0].strip, state: city_state[1].strip).first
-      #   else
-      #     location = Location.where(city: city_state[0].strip).first
-      #   end
-      location = find_by_city_state(location_string)
-      location_ids |= [location.id] if location.present?
-#      end
-    end
-    location_ids
-  end
-
-  def self.find_by_city_state(city_state)
-    match = city_state.try(:strip).try(:match, '(.*)((\s|,)[a-zA-Z][a-zA-Z]$)')
-    args = {}
-    if match
-      city,state,sep = match.captures
-      state = state.strip.sub(',' , '')
-      args[:state] = state
-    else
-      city = city_state
-    end
-
-    city = city.strip.sub(',', '') if city.present?
-    args[:city] = city
-    Location.where(args).first
-  end
-
   def self.find_by_slug_or_id identifier
     if identifier.to_s =~ /^\d+$/
       find(identifier)
@@ -222,15 +196,5 @@ class Location < ActiveRecord::Base
 
   def build_slug
     self.slug= "#{city} #{state}".parameterize
-  end
-
-  private
-  def self.sql_distance_calculation(latitude, longitude)
-    "( 3959 * acos( cos( radians(#{sanitize(latitude)}::float8) ) *
-            cos( radians( locations.lat::float8 ) ) *
-          cos( radians( locations.long::float8 ) - radians(#{sanitize(longitude)}::float8) ) +
-          sin( radians(#{sanitize(latitude)}::float8) ) *
-          sin( radians( locations.lat::float8 ) ) )
-        )"
   end
 end

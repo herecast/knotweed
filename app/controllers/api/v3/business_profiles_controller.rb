@@ -26,7 +26,7 @@ module Api
             @coords = [params[:lat], params[:lng]]
           else
             # default to center of Upper Valley
-            @coords = Location::DEFAULT_LOCATION_COORDS
+            @coords = Location.default_location.coordinates
           end
 
           radius = params[:radius] || 50 # default 50 miles

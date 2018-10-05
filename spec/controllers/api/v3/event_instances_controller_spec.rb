@@ -134,26 +134,14 @@ describe Api::V3::EventInstancesController, :type => :controller do
       let!(:event_location_1) {
         FactoryGirl.create :event,
           published: true,
-          content_locations: [
-            ContentLocation.new(
-              location: location_1,
-              location_type: 'base'
-            )
-          ],
-          start_date: 3.hours.from_now
+          location_id: location_1.id
       }
 
       let(:location_2) { FactoryGirl.create :location }
       let!(:event_location_2) {
-        FactoryGirl.create :event,
+        FactoryGirl.create :content, :event,
           published: true,
-          content_locations: [
-            ContentLocation.new(
-              location: location_1,
-              location_type: 'base'
-            )
-          ],
-          start_date: 3.hours.from_now
+          location_id: location_1.id
       }
 
       context 'location_id is not specified' do
@@ -170,7 +158,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
       end
 
       context 'location_id is specified' do
-        subject { get :index, location_id: location_1.slug }
+        subject { get :index, location_id: location_1.id }
 
         it 'returns event instances from the specified location' do
           subject
@@ -178,27 +166,6 @@ describe Api::V3::EventInstancesController, :type => :controller do
           expect(results_ids).to include *[
             event_location_1.event_instances.map(&:id),
           ].flatten
-        end
-
-        context 'with radius specified' do
-          let(:radius) { 20 }
-          let(:near_location) { 
-            FactoryGirl.create(:location, coordinates: Geocoder::Calculations.random_point_near(
-              location_1,
-              19, units: :mi
-            ))
-          }
-          let!(:near_event) {
-            FactoryGirl.create :event,
-              published: true,
-              content_locations: [ContentLocation.new(location: near_location, location_type: 'base')]
-          }
-
-          it 'returns event instances located within radius' do
-            get :index, location_id: location_1.slug, radius: radius, days_ahead: 365
-            results_ids = assigns(:event_instances).map(&:id)
-            expect(results_ids).to include *near_event.event_instances.map(&:id)
-          end
         end
       end
     end

@@ -38,14 +38,14 @@ RSpec.describe GatherFeedRecords, elasticsearch: true do
       before do
         @loc1 = FactoryGirl.create :location
         @loc2 = FactoryGirl.create :location
-        @content.content_locations << FactoryGirl.build(:content_location, location: @loc1, location_type: 'base')
+        @content.update_attribute(:location_id, @loc1.id)
         @other_content = FactoryGirl.create :content, :news # NOT IN A LOCATION
         @other_content.reload.reindex
         @content.reload.reindex
       end
 
       context 'matching the content' do
-        let(:params) { { location_id: @loc1.slug } }
+        let(:params) { { location_id: @loc1.id } }
 
         it 'should return the content' do
           response = subject
@@ -59,36 +59,11 @@ RSpec.describe GatherFeedRecords, elasticsearch: true do
       end
 
       context 'not matching the content' do
-        let(:params) { { location_id: @loc2.slug } }
+        let(:params) { { location_id: @loc2.id } }
 
         it 'should not return the content' do
           response = subject
           expect(response[:total_entries]).to eq 0
-        end
-      end
-
-      context 'with a radius passed' do
-        context 'matching the content' do
-          let(:params) { { location_id: @loc1.slug, radius: 10 } }
-
-          it 'should return the content' do
-            response = subject
-            expect(response[:records][0].content.id).to eq @content.id
-          end
-
-          it 'should not return the other content' do
-            response = subject
-            expect(response[:records].length).to eq 1
-          end
-        end
-
-        context 'not matching the content' do
-          let(:params) { { location_id: @loc2.slug, radius: 10 } }
-
-          it 'should not return the content' do
-            response = subject
-            expect(response[:total_entries]).to eq 0
-          end
         end
       end
     end

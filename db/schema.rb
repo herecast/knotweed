@@ -320,6 +320,7 @@ ActiveRecord::Schema.define(version: 20180926183152) do
     t.string   "alternate_text"
     t.string   "alternate_image_url"
     t.boolean  "has_future_event_instance"
+    t.integer  "location_id"
   end
 
   add_index "contents", ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree
@@ -330,6 +331,7 @@ ActiveRecord::Schema.define(version: 20180926183152) do
   add_index "contents", ["content_category_id"], name: "idx_16527_content_category_id", using: :btree
   add_index "contents", ["created_by_id"], name: "idx_16527_index_contents_on_created_by", using: :btree
   add_index "contents", ["guid"], name: "idx_16527_guid", using: :btree
+  add_index "contents", ["location_id"], name: "index_contents_on_location_id", using: :btree
   add_index "contents", ["organization_id"], name: "idx_16527_source_id", using: :btree
   add_index "contents", ["parent_id"], name: "idx_16527_index_contents_on_parent_id", using: :btree
   add_index "contents", ["pubdate"], name: "idx_16527_pubdate", using: :btree
@@ -514,6 +516,8 @@ ActiveRecord::Schema.define(version: 20180926183152) do
     t.string   "slug"
     t.float    "latitude"
     t.float    "longitude"
+    t.boolean  "default_location",                            default: false
+    t.integer  "location_ids_within_five_miles",              default: [],                 array: true
     t.integer  "location_ids_within_fifty_miles",             default: [],                 array: true
   end
 
@@ -981,6 +985,7 @@ ActiveRecord::Schema.define(version: 20180926183152) do
   add_foreign_key "campaigns", "listservs"
   add_foreign_key "content_locations", "contents"
   add_foreign_key "content_locations", "locations"
+  add_foreign_key "contents", "locations"
   add_foreign_key "listserv_digests", "listservs"
   add_foreign_key "organization_content_tags", "contents"
   add_foreign_key "organization_content_tags", "organizations"

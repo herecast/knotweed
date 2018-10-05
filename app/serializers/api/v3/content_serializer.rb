@@ -28,6 +28,8 @@ module Api
         :event_instances,
         :images,
         :image_url,
+        :location,
+        :location_id,
         :organization_biz_feed_active,
         :organization_id,
         :organization_name,
@@ -46,7 +48,6 @@ module Api
         :subtitle,
         :sunset_date,
         :title,
-        :location_id,
         :updated_at,
         :venue_address,
         :venue_city,
@@ -319,10 +320,6 @@ module Api
         end
       end
 
-      def location_id
-        object.content_locations.to_a.select(&:base?).first.try(:location).try(:slug)
-      end
-
       def schedules
         if isEvent
           object.channel.try(:schedules).try(:map, &:to_ux_format)
@@ -331,6 +328,14 @@ module Api
 
       def embedded_ad
         object.embedded_ad?
+      end
+
+      def location
+        {
+          id: object.location&.id,
+          city: object.location&.city,
+          state: object.location&.state
+        }
       end
 
       private

@@ -18,8 +18,6 @@ module Ugc
         }
       ))
 
-      manage_location_attributes @talk
-
       @talk.save
 
       @talk.content
@@ -36,7 +34,6 @@ module Ugc
         )
         new_params[:content].merge!(additional_attributes)
         new_params[:content].delete(:promote_radius)
-        new_params[:content].delete(:location_id)
         new_params.require(:content).permit(
           content_attributes: [
             :title,
@@ -48,7 +45,8 @@ module Ugc
             :organization_id,
             :content_category_id,
             :published,
-            :sunset_date
+            :sunset_date,
+            :location_id
           ]
         )
       end
@@ -65,23 +63,11 @@ module Ugc
             published: true,
             organization_id: @params[:content][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
             content_category_id: talk_category.id,
-            promote_radius: @params[:content][:promote_radius]
+            promote_radius: @params[:content][:promote_radius],
+            location_id: @params[:content][:location_id]
           }
         }
       end
 
-      def location_params
-        @params[:content].slice(:promote_radius, :location_id)
-      end
-
-      def manage_location_attributes talk
-        if location_params[:promote_radius].present? &&
-            location_params[:location_id].present?
-
-          UpdateContentLocations.call talk.content,
-            promote_radius: location_params[:promote_radius].to_i,
-            base_locations: [Location.find_by_slug_or_id(location_params[:location_id])]
-        end
-      end
   end
 end

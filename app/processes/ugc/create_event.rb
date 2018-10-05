@@ -33,14 +33,14 @@ module Ugc
         }
       ))
 
-      update_locations @event
-
       @event.content.organization_id = org_id
       @event.content.images = [Image.create(image: image_data)] if image_data.present?
 
       if @event.save_with_schedules(schedules)
         contact_user_and_ad_team if @params[:content][:wants_to_advertise]
       end
+
+      @event.content.update_attribute(:location_id, @event.closest_location.id)
 
       conditionally_schedule_outreach_email
 
@@ -56,6 +56,7 @@ module Ugc
         new_e = { content_attributes: {} }
         new_e[:content_attributes][:raw_content] = e[:content] if e.has_key? :content
         new_e[:content_attributes][:title] = e[:title] if e.has_key? :title
+        new_e[:content_attributes][:location_id] = e[:location_id] if e.has_key? :location_id
 
         new_e[:content_attributes][:promote_radius] = e[:promote_radius] if e.has_key? :promote_radius
         new_e[:content_attributes][:biz_feed_public] = e[:biz_feed_public]
@@ -101,20 +102,6 @@ module Ugc
       def contact_user_and_ad_team
         AdMailer.event_advertising_user_contact(@current_user).deliver_later
         AdMailer.event_adveritising_request(@current_user, @event).deliver_later
-      end
-
-      def location_params
-        @params[:content].slice(:promote_radius, :location_id)
-      end
-
-      def update_locations model
-        if location_params[:promote_radius].present? &&
-            location_params[:location_id].present?
-
-          UpdateContentLocations.call model.content,
-            promote_radius: location_params[:promote_radius].to_i,
-            base_locations: [Location.find_by_slug_or_id(location_params[:location_id])]
-        end
       end
 
       def conditionally_schedule_outreach_email

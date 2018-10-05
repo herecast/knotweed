@@ -23,9 +23,9 @@ module Ugc
         process_event_params(@params[:content])
       ).permit!
 
-      update_locations @event
-
       @event.update_with_schedules(event_hash, schedules)
+      @event.content.update_attribute(:location_id, @event.closest_location.id)
+      
       return @event.content
     end
 
@@ -38,6 +38,7 @@ module Ugc
         new_e = { content_attributes: {} }
         new_e[:content_attributes][:raw_content] = e[:content] if e.has_key? :content
         new_e[:content_attributes][:title] = e[:title] if e.has_key? :title
+        new_e[:content_attributes][:location_id] = e[:location_id] if e.has_key? :location_id
 
         new_e[:content_attributes][:promote_radius] = e[:promote_radius] if e.has_key? :promote_radius
 
@@ -81,18 +82,5 @@ module Ugc
         new_e
       end
 
-      def location_params
-        @params[:content].slice(:promote_radius, :location_id)
-      end
-
-      def update_locations model
-        if location_params[:promote_radius].present? &&
-            location_params[:location_id].present?
-
-          UpdateContentLocations.call model.content,
-            promote_radius: location_params[:promote_radius].to_i,
-            base_locations: [Location.find_by_slug_or_id(location_params[:location_id])]
-        end
-      end
   end
 end

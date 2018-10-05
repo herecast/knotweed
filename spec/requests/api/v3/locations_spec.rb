@@ -3,7 +3,7 @@ require 'rails_helper'
 def serialized_location location
   {
     location: {
-      id: location.slug,
+      id: location.id,
       city: location.city,
       state: location.state
     }
@@ -23,7 +23,7 @@ RSpec.describe 'Locations API Endpoints', type: :request do
         location = locations.first
         serialized = serialized_location(location)[:location]
 
-        expect(response_json[:locations].find{|l| l[:id].eql? location.slug}).to match serialized
+        expect(response_json[:locations].find{|l| l[:id].eql? location.id}).to match serialized
       end
     end
 
@@ -71,8 +71,8 @@ RSpec.describe 'Locations API Endpoints', type: :request do
         it 'returns the locations within the radius of specified location id' do
           subject
           location_ids = response_json[:locations].map{|l| l[:id]}
-          expect(location_ids).to include *locations_within_radius.map(&:slug)
-          expect(location_ids).to_not include *locations_outside_radius.map(&:slug)
+          expect(location_ids).to include *locations_within_radius.map(&:id)
+          expect(location_ids).to_not include *locations_outside_radius.map(&:id)
         end
       end
 

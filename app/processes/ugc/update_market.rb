@@ -14,8 +14,6 @@ module Ugc
     def call
       @market_post = @content.channel
 
-      update_locations @market_post
-
       @market_post.update market_post_params
 
       @market_post.content
@@ -27,8 +25,6 @@ module Ugc
         new_params = @params.dup
         attributes = additional_update_attributes
         new_params[:content].merge!(attributes)
-
-        new_params.delete(:location_id)
 
         new_params.require(:content).permit(
           :contact_email,
@@ -54,10 +50,9 @@ module Ugc
             :pubdate,
             :timestamp,
             :organization_id,
-            :my_town_only,
             :promote_radius,
             :sunset_date,
-            location_ids: []
+            :location_id
           ]
         )
       end
@@ -70,23 +65,11 @@ module Ugc
             biz_feed_public: @params[:content][:biz_feed_public],
             title: @params[:content][:title],
             raw_content: @params[:content][:content],
-            promote_radius: @params[:content].delete(:promote_radius)
+            promote_radius: @params[:content].delete(:promote_radius),
+            location_id: @params[:content][:location_id]
           }
         }
       end
 
-      def location_params
-        @params[:content].slice(:promote_radius, :location_id)
-      end
-
-      def update_locations post
-        if location_params[:promote_radius].present? &&
-            location_params[:location_id].present?
-
-          UpdateContentLocations.call post.content,
-            promote_radius: location_params[:promote_radius].to_i,
-            base_locations: [Location.find_by_slug_or_id(location_params[:location_id])]
-        end
-      end
   end
 end

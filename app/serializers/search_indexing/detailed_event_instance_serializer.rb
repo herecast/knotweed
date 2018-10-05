@@ -1,6 +1,10 @@
 module SearchIndexing
   class DetailedEventInstanceSerializer < ::Api::V3::EventInstanceSerializer
-    attributes :published, :event_category, :all_loc_ids, :about_location_ids, :my_town_only, :removed
+    attributes :published,
+      :event_category,
+      :all_loc_ids,
+      :about_location_ids,
+      :removed
 
     def published
       object.event.content.published
@@ -20,10 +24,6 @@ module SearchIndexing
 
     def about_location_ids
       object.event.content.about_locations.map(&:slug)
-    end
-
-    def my_town_only
-      object.event.content.my_town_only
     end
   end
 end

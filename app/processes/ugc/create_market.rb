@@ -18,8 +18,6 @@ module Ugc
         }
       ))
 
-      update_locations @market_post
-
       @market_post.save
 
       conditionally_schedule_outreach_email
@@ -33,8 +31,6 @@ module Ugc
         new_params = @params.dup
         attributes = additional_create_attributes
         new_params[:content].merge!(attributes)
-
-        new_params.delete(:location_id)
 
         new_params.require(:content).permit(
           :contact_email,
@@ -60,11 +56,10 @@ module Ugc
             :pubdate,
             :timestamp,
             :organization_id,
-            :my_town_only,
             :promote_radius,
             :sunset_date,
             :published,
-            location_ids: [],
+            :location_id
           ]
         )
       end
@@ -82,7 +77,8 @@ module Ugc
             pubdate: Time.zone.now,
             published: true,
             timestamp: Time.zone.now,
-            organization_id: @params[:content][:organization_id] || dailyuv_org.id
+            organization_id: @params[:content][:organization_id] || dailyuv_org.id,
+            location_id: @params[:content][:location_id]
           }
         }
       end
@@ -95,19 +91,6 @@ module Ugc
         Organization.find_or_create_by(name: 'From DailyUV')
       end
 
-      def location_params
-        @params[:content].slice(:promote_radius, :location_id)
-      end
-
-      def update_locations post
-        if location_params[:promote_radius].present? &&
-            location_params[:location_id].present?
-
-          UpdateContentLocations.call post.content,
-            promote_radius: location_params[:promote_radius].to_i,
-            base_locations: [Location.find_by_slug_or_id(location_params[:location_id])]
-        end
-      end
 
       def conditionally_schedule_outreach_email
         if @current_user.contents.market_posts.count == 1

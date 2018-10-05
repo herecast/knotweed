@@ -26,7 +26,7 @@ describe Api::V3::BusinessLocationsController, :type => :controller do
         subject
         expect(response.body).to include_json({
           location: {
-            id: location.slug,
+            id: location.id,
             city: location.city,
             state: location.state
           }

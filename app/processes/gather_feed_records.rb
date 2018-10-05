@@ -69,7 +69,8 @@ class GatherFeedRecords
       else
         ContentSearch.standard_query({
           params: @params,
-          requesting_app: @requesting_app
+          requesting_app: @requesting_app,
+          current_user: @current_user
         })
       end
     end

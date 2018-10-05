@@ -158,56 +158,6 @@ describe 'Event Instance endpoints', type: :request do
         ]}.to_json)
       end
     end
-
-    describe 'location filtering' do
-      let(:location) {
-        FactoryGirl.create :location
-      }
-
-      let(:radius) { 10 }
-
-      subject {
-        get '/api/v3/event_instances/active_dates', {
-          location_id: location.slug,
-          radius: radius
-        }
-      }
-
-      before do
-        @event = FactoryGirl.create(:event,
-          published: true,
-          locations: [
-            FactoryGirl.create(:location,
-              coordinates: Geocoder::Calculations.random_point_near(
-                location,
-                radius, units: :mi
-              )
-            )
-          ]
-        )
-        @event_instance_within_radius = @event.event_instances.first
-
-        @event2 = FactoryGirl.create(:event,
-          published: true,
-          locations: [
-            FactoryGirl.create(:location,
-              coordinates: [0,0]
-            )
-          ]
-        )
-        @event_instance_out_of_radius = @event.event_instances.first
-      end
-
-      it 'returns instances that are within filtered radius' do
-        subject
-        expect(response.body).to eql({active_dates: [
-            {
-              date: @event_instance_within_radius.start_date.strftime('%Y-%m-%d'),
-              count: 1
-            }
-        ]}.to_json)
-      end
-    end
   end
 
   describe 'GET /api/v3/event_instances/sitemap_ids' do

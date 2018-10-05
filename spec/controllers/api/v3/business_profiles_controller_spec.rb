@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe Api::V3::BusinessProfilesController, :type => :controller do
+  before do
+    FactoryGirl.create :location, :default
+  end
+
   describe 'GET index', elasticsearch: true do
     before do
       bls = FactoryGirl.create_list :business_location, 3
@@ -8,8 +12,8 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
       # so they return with the default search options
       bls.each do |bl|
         bl.update_attributes(
-          latitude: Location::DEFAULT_LOCATION_COORDS[0],
-          longitude: Location::DEFAULT_LOCATION_COORDS[1]
+          latitude: Location.default_location.coordinates[0],
+          longitude: Location.default_location.coordinates[1]
         )
         FactoryGirl.create :business_profile, business_location: bl
       end
@@ -32,8 +36,8 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
       before do
         @archived = FactoryGirl.create :business_profile, archived: true
         @archived.business_location.update_attributes(
-          latitude: Location::DEFAULT_LOCATION_COORDS[0],
-          longitude: Location::DEFAULT_LOCATION_COORDS[1]
+          latitude: Location.default_location.coordinates[0],
+          longitude: Location.default_location.coordinates[1]
         )
       end
 
@@ -47,8 +51,8 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
       before do
         @nonexistent = FactoryGirl.create :business_profile, existence: 0.3
         @nonexistent.business_location.update_attributes(
-          latitude: Location::DEFAULT_LOCATION_COORDS[0],
-          longitude: Location::DEFAULT_LOCATION_COORDS[1]
+          latitude: Location.default_location.coordinates[0],
+          longitude: Location.default_location.coordinates[1]
         )
       end
 
@@ -73,7 +77,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
       let(:geodist_clause) do
         {
           _geo_distance: {
-            'location' => Location::DEFAULT_LOCATION_COORDS.join(','),
+            'location' => Location.default_location.coordinates.join(','),
             'order' => 'asc',
             'unit' => 'mi'
           }
@@ -253,28 +257,6 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
     it 'should send an email' do
       expect{subject}.to change{ActionMailer::Base.deliveries.count}.by 1
     end
-
-=begin
-    it { expect{subject}.to change { Content.count }.by 1 }
-    it { expect{subject}.to change { BusinessProfile.count }.by 1 }
-    it { expect{subject}.to change { Organization.count }.by 1 }
-    it { expect{subject}.to change { BusinessLocation.count }.by 1 }
-
-    it 'should associate the new organization with the business profile through content' do
-      subject
-      BusinessProfile.last.organization.should eq Organization.last
-    end
-
-    it 'should associate the new profile with a new business location' do
-      subject
-      BusinessProfile.last.business_location.should eq BusinessLocation.last
-    end
-
-    it 'should associate the new profile with the business category' do
-      subject
-      BusinessProfile.last.business_categories.should eq [@biz_cat]
-    end
-=end
   end
 
   describe 'PUT update' do

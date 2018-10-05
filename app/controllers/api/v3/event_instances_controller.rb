@@ -151,17 +151,8 @@ module Api
         end
 
         def apply_query_location_filters(opts)
-          if params[:location_id].present?
-            opts[:where][:or] ||= []
-            location = Location.find_by_slug_or_id(params[:location_id])
-
-            if params[:radius].present? && params[:radius].to_i > 0
-              locations_within_radius = Location.within_radius_of(location, params[:radius].to_i).map(&:slug).compact
-
-              opts[:where][:base_location_ids] = { in: locations_within_radius }
-            else
-              opts[:where][:base_location_ids] = { in: [location.slug] }
-            end
+          if location.present?
+            opts[:where][:location_id] = { in: location.send(radius_method) }
           end
         end
 
@@ -171,6 +162,18 @@ module Api
           [:venue, :contact_phone, :contact_email, :event_url].each do |sym|
             @event_instance.event.define_singleton_method(sym) { nil }
           end
+        end
+
+        def location
+          current_user.present? ? current_user.location : Location.find_by(id: params[:location_id])
+        end
+
+        def radius
+          params[:radius].presence || 'fifty'
+        end
+
+        def radius_method
+          "location_ids_within_#{radius}_miles".to_sym
         end
 
     end

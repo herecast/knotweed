@@ -219,7 +219,7 @@ describe Api::V3::ContentsController, :type => :controller do
           content_type: 'market',
           content: 'Test Content',
           promote_radius: 10,
-          location_id: location.slug
+          location_id: location.id
         }
       }
 
@@ -232,12 +232,6 @@ describe Api::V3::ContentsController, :type => :controller do
           expect{ subject }.to change{
             Content.count
           }.by(1)
-        end
-
-        it 'runs content through UpdateContentLocations process' do
-          expect(UpdateContentLocations).to receive(:call).with(kind_of(Content), promote_radius: content_params[:promote_radius], base_locations: [location])
-
-          subject
         end
 
         it 'triggers a facebook recache of that content' do
@@ -324,7 +318,7 @@ describe Api::V3::ContentsController, :type => :controller do
               promote_radius: 10,
               venue_id: business_location.id,
               contact_email: 'test@test.com',
-              location_id: FactoryGirl.create(:location).slug,
+              location_id: FactoryGirl.create(:location).id,
               schedules: [
                 {
                   days_of_week: [],
@@ -412,7 +406,7 @@ describe Api::V3::ContentsController, :type => :controller do
           title: 'Test title',
           content: 'Test Content',
           promote_radius: 10,
-          location_id: location.slug
+          location_id: location.id
         }
       }
 
@@ -427,12 +421,6 @@ describe Api::V3::ContentsController, :type => :controller do
             'rescrape_url',
             content
           )
-
-          subject
-        end
-
-        it 'runs content through UpdateContentLocations process' do
-          expect(UpdateContentLocations).to receive(:call).with(content, promote_radius: content_params[:promote_radius], base_locations: [location])
 
           subject
         end

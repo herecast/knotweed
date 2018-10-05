@@ -16,7 +16,6 @@ module Ugc
           origin: Content::UGC_ORIGIN
       ))
 
-      add_content_location
       @record
     end
 
@@ -37,7 +36,8 @@ module Ugc
           :subtitle,
           :sunset_date,
           :title,
-          :published
+          :published,
+          :location_id
         )
       end
 
@@ -58,13 +58,6 @@ module Ugc
             h[:content][:authors] = author_name
           end
         end
-      end
-
-      def add_content_location
-        @record.content_locations = [ContentLocation.create(
-          location: Location.find_by_slug_or_id(@params[:content][:location_id]),
-          location_type: 'base'
-        )]
       end
 
   end

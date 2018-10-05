@@ -36,6 +36,7 @@ module Api
         :event_instances,
         :images,
         :image_url,
+        :location,
         :location_id,
         :organization_biz_feed_active,
         :organization_id,
@@ -73,8 +74,7 @@ module Api
               base_location = object.base_locations_array.find{ |bl| bl[:slug] == context[:location_id] }
               location_name = base_location.name if base_location.present?
             end
-
-            location_name
+             location_name
           end
         end
 

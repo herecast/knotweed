@@ -15,7 +15,6 @@ describe 'Feed endpoints', type: :request do
           author_id: content.created_by.id,
           author_name: content.author_name,
           avatar_url: content.created_by.avatar_url,
-          base_location_ids: content.base_locations.map(&:id),
           biz_feed_public: content.biz_feed_public,
           campaign_end: content.ad_campaign_end,
           campaign_start: content.ad_campaign_start,
@@ -82,7 +81,11 @@ describe 'Feed endpoints', type: :request do
           subtitle: content.subtitle,
           sunset_date: content.sunset_date.try(:iso8601),
           title: content.sanitized_title,
-          location_id: content.base_locations.map(&:slug).first,
+          location: {
+            id: content.location.id,
+            city: content.location.city,
+            state: content.location.state
+          },
           updated_at: content.updated_at.iso8601,
           venue_address: an_instance_of(String).or(be_nil),
           venue_city: an_instance_of(String).or(be_nil),
@@ -140,14 +143,14 @@ describe 'Feed endpoints', type: :request do
         created_by: user,
         organization: org,
         published: true,
-        locations: locations,
+        location_id: user.location_id,
         images: [FactoryGirl.build(:image, :primary)]
     }
     let!(:event) {
       FactoryGirl.create :content, :event,
         created_by: user,
         organization: org,
-        locations: locations,
+        location_id: user.location_id,
         published: true,
         images: [FactoryGirl.build(:image, :primary)]
     }
@@ -155,7 +158,7 @@ describe 'Feed endpoints', type: :request do
       FactoryGirl.create :content, :market_post,
         created_by: user,
         organization: org,
-        locations: locations,
+        location_id: user.location_id,
         published: true,
         images: [FactoryGirl.build(:image, :primary)]
     }
@@ -163,7 +166,7 @@ describe 'Feed endpoints', type: :request do
       FactoryGirl.create :content, :talk,
         created_by: user,
         organization: org,
-        locations: locations,
+        location_id: user.location_id,
         published: true,
         images: [FactoryGirl.build(:image, :primary)]
     }
@@ -282,13 +285,23 @@ describe 'Feed endpoints', type: :request do
 
     context "when 'query' parameter is present" do
       before do
-        @market_post = FactoryGirl.create :content, :market_post, title: news.title, organization: org, published: true
-        @organization = FactoryGirl.create :organization, name: news.title, org_type: 'Business'
-        @second_organization = FactoryGirl.create :organization, name: "#{news.title} 2", org_type: 'Blog'
-        @archived_business = FactoryGirl.create :organization, name: "#{news.title} 3",
+        @market_post = FactoryGirl.create :content, :market_post,
+          title: news.title,
+          organization: org,
+          published: true,
+          location_id: user.location_id
+        @organization = FactoryGirl.create :organization,
+          name: news.title,
+          org_type: 'Business'
+        @second_organization = FactoryGirl.create :organization,
+          name: "#{news.title} 2",
+          org_type: 'Blog'
+        @archived_business = FactoryGirl.create :organization,
+          name: "#{news.title} 3",
           org_type: 'Business',
           archived: true
-        @archived_publisher = FactoryGirl.create :organization, name: "#{news.title} 4",
+        @archived_publisher = FactoryGirl.create :organization,
+          name: "#{news.title} 4",
           org_type: 'Blog',
           archived: true
       end
@@ -540,19 +553,24 @@ describe 'Feed endpoints', type: :request do
         @organization = FactoryGirl.create :organization
         @hidden_content = FactoryGirl.create :content, :news,
           biz_feed_public: false,
-          organization_id: @organization.id
+          organization_id: @organization.id,
+          location_id: user.location_id
         @draft_content = FactoryGirl.create :content, :news,
-          organization_id: @organization.id
+          organization_id: @organization.id,
+          location_id: user.location_id
         @draft_content.update_attribute(:pubdate, nil)
         @regular_content = FactoryGirl.create :content, :news,
           biz_feed_public: true,
-          organization_id: @organization.id
+          organization_id: @organization.id,
+          location_id: user.location_id
         @scheduled_content = FactoryGirl.create :content, :news,
           organization_id: @organization.id,
-          pubdate: 3.days.from_now
+          pubdate: 3.days.from_now,
+          location_id: user.location_id
         @event = FactoryGirl.create :content, :event,
           organization_id: @organization.id,
-          biz_feed_public: true
+          biz_feed_public: true,
+          location_id: user.location_id
         Timecop.travel(Time.current + 1.day)
       end
 

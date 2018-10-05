@@ -162,7 +162,6 @@ Knotweed::Application.routes.draw do
       # deprecated
       post '/news/:id/impressions', to: 'metrics/contents/impressions#create'
 
-      get '/weather', to: 'users#weather', as: :weather
       post '/users/logout', to: 'users#logout', as: :logout
       get '/user', to: 'users#verify'
       post '/users/email_confirmation', to: 'users#email_confirmation', as: :email_confirmation

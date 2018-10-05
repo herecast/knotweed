@@ -23,10 +23,6 @@ module Api
         object.location.slug
       end
 
-      def location
-        object.location.name
-      end
-
       def listserv_id
         object.location.try(:listserv).try(:id)
       end
@@ -61,6 +57,14 @@ module Api
 
       def is_blogger
         object.has_role?(:blogger)
+      end
+
+      def location
+        {
+          id: object.location.id,
+          city: object.location.city,
+          state: object.location.state
+        }
       end
     end
   end

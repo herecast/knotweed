@@ -2,18 +2,21 @@
 #
 # Table name: locations
 #
-#  id              :integer          not null, primary key
-#  zip             :string(255)
-#  city            :string(255)
-#  state           :string(255)
-#  county          :string(255)
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  consumer_active :boolean          default(FALSE)
-#  is_region       :boolean          default(FALSE)
-#  slug            :string
-#  latitude        :float
-#  longitude       :float
+#  id                              :integer          not null, primary key
+#  zip                             :string(255)
+#  city                            :string(255)
+#  state                           :string(255)
+#  county                          :string(255)
+#  created_at                      :datetime         not null
+#  updated_at                      :datetime         not null
+#  consumer_active                 :boolean          default(FALSE)
+#  is_region                       :boolean          default(FALSE)
+#  slug                            :string
+#  latitude                        :float
+#  longitude                       :float
+#  default_location                :boolean          default(FALSE)
+#  location_ids_within_five_miles  :integer          default([]), is an Array
+#  location_ids_within_fifty_miles :integer          default([]), is an Array
 #
 # Indexes
 #
@@ -32,9 +35,13 @@ FactoryGirl.define do
     longitude { Faker::Address.longitude }
     consumer_active true
 
+    after :create do |location|
+      location.update_attribute(:location_ids_within_fifty_miles, [location.id])
+    end
+
     trait :default do
-      city Location::DEFAULT_LOCATION
-      latitude Location::DEFAULT_LOCATION_COORDS[0]
+      default_location true
+      latitude Location::DEFAULT_LOCATION_COORDS[0] 
       longitude Location::DEFAULT_LOCATION_COORDS[1]
     end
   end

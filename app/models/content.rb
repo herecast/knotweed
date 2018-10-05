@@ -67,6 +67,7 @@
 #  alternate_authors         :string
 #  alternate_text            :string
 #  alternate_image_url       :string
+#  location_id               :integer
 #
 # Indexes
 #
@@ -86,6 +87,11 @@
 #  idx_16527_pubdate                                     (pubdate)
 #  idx_16527_source_id                                   (organization_id)
 #  idx_16527_title                                       (title)
+#  index_contents_on_location_id                         (location_id)
+#
+# Foreign Keys
+#
+#  fk_rails_4a833c7bbc  (location_id => locations.id)
 #
 
 require 'fileutils'
@@ -132,7 +138,6 @@ class Content < ActiveRecord::Base
              :promotions,
              :images,
              :created_by,
-             :base_locations,
              children: [:created_by],
              parent: [:root_content_category],
              content_locations: [:location],
@@ -150,23 +155,6 @@ class Content < ActiveRecord::Base
 
   def search_data
     search_serializer.new(self).serializable_hash
-  end
-
-  def my_town_only
-    if organization.present?
-      [
-        content_locations,
-        organization.organization_locations
-      ].flatten.compact.all?(&:base?)
-    else
-      content_locations.all?(&:base?)
-    end
-  end
-
-  alias_method :my_town_only?, :my_town_only
-
-  def is_listserv_market_post?
-    channel.nil? and (content_category.try(:name) == 'market' or content_category.try(:parent).try(:name) == 'market')
   end
 
   def is_listserv?
@@ -221,6 +209,7 @@ class Content < ActiveRecord::Base
   end
 
   belongs_to :issue
+  belongs_to :location
 
   has_many :category_corrections
 
@@ -238,10 +227,6 @@ class Content < ActiveRecord::Base
            through: :content_locations, source: :location
   has_many :about_locations, -> { where('"content_locations"."location_type" = \'about\'') },
            through: :content_locations, source: :location
-
-  validate :require_at_least_one_content_location, if: ->(c) {
-    [:talk, :market_post, :event].include?(c.content_type)
-  }
 
   has_many :profile_metrics, dependent: :destroy
 

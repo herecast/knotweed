@@ -12,10 +12,7 @@ module Ugc
 
     def call
       validate
-
       @content.update news_params
-      update_content_location
-
       @content
     end
 
@@ -59,7 +56,8 @@ module Ugc
           :subtitle,
           :published,
           :title,
-          :sunset_date
+          :sunset_date,
+          :location_id
         )
       end
 
@@ -78,20 +76,6 @@ module Ugc
           end
 
         end
-      end
-
-      def update_content_location
-        unless base_location_correct?
-          @content.content_locations = [ContentLocation.create(
-            location: Location.find_by_slug_or_id(@params[:content][:location_id]),
-            location_type: 'base'
-          )]
-          @content.reindex_async
-        end
-      end
-
-      def base_location_correct?
-        @content.base_locations[0]&.slug == @params[:content][:location_id]
       end
 
   end

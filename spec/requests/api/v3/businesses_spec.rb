@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe 'Businesses Endpoints', type: :request do
+  before do
+    FactoryGirl.create :location, :default
+  end
+
   let(:user) { FactoryGirl.create :user }
   let(:auth_headers) { auth_headers_for(user) }
 
