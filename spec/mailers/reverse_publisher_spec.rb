@@ -20,18 +20,12 @@ describe ReversePublisher, :type => :mailer do
     let(:listservs) {
       FactoryGirl.create_list :vc_listserv, 2
     }
-    let(:consumer_app) {FactoryGirl.create(:consumer_app)}
 
-    before { allow(ConsumerApp).to receive(:current).and_return consumer_app }
-
-    subject{ ReversePublisher.mail_content_to_listservs(content, listservs, consumer_app) }
+    subject{ ReversePublisher.mail_content_to_listservs(content, listservs) }
 
     it 'is sent to both listserv reverse_publish_emails' do
       expect(subject.to).to include(*listservs.map(&:reverse_publish_email))
     end
-
-    # this is testing the special construction of the consumer app URL 
-    # for the content based on whether or not Thread.current[:consumer_app] is set
 
     it 'should include the ux2 content path for @content' do
       expect(subject.body.encoded).to include("http://bit.ly/12345")

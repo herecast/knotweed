@@ -21,9 +21,8 @@ class PromotionListserv < ActiveRecord::Base
   #
   # @param content [Content] the content object to associate the promotion with
   # @param listserv [Listserv] listserv object to associate the PromotionListserv with
-  # @param consumer_app [ConsumerApp] for generating correct urls in emails
   # @return [PromotionListserv] the new PromotionListserv object
-  def self.create_from_content(content, listserv, consumer_app=nil)
+  def self.create_from_content(content, listserv)
     if listserv.present? and listserv.active and content.authoremail.present?
       p = Promotion.create content: content
       p.promotable = PromotionListserv.new listserv_id: listserv.id

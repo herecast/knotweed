@@ -1,5 +1,5 @@
 module ApplicationHelper
-  CONFIG_CONTROLLERS = ["locations", "consumer_apps", "features", "sidekiq_wrapper"]
+  CONFIG_CONTROLLERS = ["locations", "features", "sidekiq_wrapper"]
 
   def display_base_errors resource
     return '' if (resource.errors.empty?) or (resource.errors[:base].empty?)

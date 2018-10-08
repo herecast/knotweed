@@ -59,7 +59,6 @@ Knotweed::Application.routes.draw do
       resources :archivings, only: [:create, :destroy]
       resources :claims, only: [:create]
     end
-    resources :consumer_apps, except: [:show]
     resources :images, only: [:create, :destroy, :update]
     resources :organizations, except: [:show] do
       resources :users, only: [:index], controller: 'organizations/users'

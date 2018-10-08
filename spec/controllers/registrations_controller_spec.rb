@@ -97,11 +97,6 @@ describe RegistrationsController, :type => :controller do
     end
 
     context 'mailer tests' do
-      before do
-        @consumer_app = FactoryGirl.create :consumer_app
-        api_authenticate consumer_app: @consumer_app
-      end
-
       subject! { post :create, format: :json, user: @user_attributes }
 
       let(:mail) { ActionMailer::Base.deliveries.last }
@@ -115,7 +110,7 @@ describe RegistrationsController, :type => :controller do
       end
 
       it 'should contain correct url' do
-        if mail.body.encoded =~ %r{<a href=\"#{@consumer_app.uri}/sign_up/confirm/([^"]+)">}
+        if mail.body.encoded =~ %r{<a href=\"http://#{Figaro.env.default_consumer_host}/sign_up/confirm/([^"]+)">}
           expect(User.confirm_by_token($1).email).to eq @user_attributes[:email]
         else
           raise 'expected consumer app URI to match email body'

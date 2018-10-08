@@ -5,13 +5,6 @@ describe EventsHelper, type: :helper do
     @event = FactoryGirl.create :event
   end
 
-  describe '#ux2_event_path' do
-
-    it 'should return /events/#{event_instance_id}' do
-      expect(helper.ux2_event_path(@event)).to eq("/events/#{@event.event_instances.first.id}")
-    end
-  end
-
   describe '#cost_label' do
     subject { helper.cost_label(@event) }
 
@@ -70,44 +63,6 @@ describe EventsHelper, type: :helper do
 
       it 'returns params[:q][key]' do
         expect(subject).to eql 'a_value'
-      end
-    end
-  end
-
-  describe '#event_url_for_email' do
-    subject { helper.event_url_for_email(@event) }
-    let(:event_path) { ux2_event_path(@event) }
-    let(:utm_string) { "?utm_medium=email&utm_source=rev-pub&utm_campaign=20151201&utm_content=#{event_path}" }
-
-    context 'consumer_app set from request' do
-      let(:consumer_app) { double(uri: 'http://my-uri.example') }
-      before { allow(ConsumerApp).to receive(:current).and_return consumer_app }
-
-      it 'uses consumer_app uri' do
-        expect(subject).to eql "#{consumer_app.uri}#{event_path}#{utm_string}"
-      end
-    end
-
-    context 'consumer_app not set; @base_uri set from controller' do
-      before do
-        @base_uri = 'http://event.foo'
-        @event.event_instances.first.id = 9999
-        allow(ConsumerApp).to receive(:current).and_return nil
-      end
-
-      it 'uses @base_uri, and first instance id to generate a url' do
-        expect(subject).to eql "#{@base_uri}/events/9999#{utm_string}"
-      end
-    end
-
-    context 'if not consumer_app, or @base_uri;' do
-      before do
-        @base_uri = nil
-        allow(ConsumerApp).to receive(:current).and_return nil
-      end
-
-      it 'uses a default url' do
-        expect(subject).to eql "http://www.dailyuv.com/events"
       end
     end
   end

@@ -43,12 +43,7 @@ module Api
 
       def managed_organization_ids
         if context.present? and context[:current_ability]
-          if context[:consumer_app]
-            scope = context[:consumer_app].organizations
-          else
-            scope = Organization
-          end
-          orgs = scope.not_archived.with_role(:manager, object)
+          orgs = Organization.not_archived.with_role(:manager, object)
           (orgs + orgs.map{|o| o.get_all_children}.flatten).map{|o| o.id}.uniq
         else
           []

@@ -4,7 +4,6 @@ describe Api::V3::OrganizationsController, :type => :controller do
   describe 'GET index', elasticsearch: true do
     before do
       @organization = FactoryGirl.create :organization
-      @consumer_app = FactoryGirl.create :consumer_app
       @non_news_org = FactoryGirl.create :organization
       @difft_app_org = FactoryGirl.create :organization
       @news_cat = FactoryGirl.create :content_category, name: 'news'
@@ -12,7 +11,6 @@ describe Api::V3::OrganizationsController, :type => :controller do
         content_category: @news_cat)
       FactoryGirl.create(:content, organization: @difft_app_org,
         content_category: @news_cat)
-      @consumer_app.organizations += [@organization, @non_news_org]
       Organization.reindex
     end
 
@@ -26,11 +24,6 @@ describe Api::V3::OrganizationsController, :type => :controller do
     it 'only responds with organizations associated with news content' do
       subject
       expect(assigns(:organizations)).to match_array([@organization,@difft_app_org])
-    end
-
-    it 'filters by consumer app if requesting app is available' do
-      get :index, format: :json, consumer_app_uri: @consumer_app.uri
-      expect(assigns(:organizations)).to match_array [@organization]
     end
 
     describe 'with a list of organization ids' do
@@ -50,55 +43,6 @@ describe Api::V3::OrganizationsController, :type => :controller do
         expect(assigns(:organizations)).to match_array @list_of_orgs
       end
 
-      context 'with consumer app specified' do
-        before do
-          @consumer_app.organizations += [@list_of_orgs[0], @list_of_orgs[1]]
-          api_authenticate consumer_app: @consumer_app
-        end
-
-        it 'should limit the response to organizations associated with the consumer app' do
-          subject
-          expect(assigns(:organizations)).to match_array([@list_of_orgs[0], @list_of_orgs[1]])
-        end
-      end
-    end
-  end
-
-  describe 'GET show' do
-    before do
-      @org1 = FactoryGirl.create :organization
-    end
-    subject { get :show, id: @org1.id, format: :json }
-
-    context 'with consumer app specified' do
-      before do
-        @consumer_app = FactoryGirl.create :consumer_app
-        request.headers['Consumer-App-Uri'] = @consumer_app.uri
-      end
-
-
-      context 'without org being associated with consumer app' do
-        it 'should respond with a 204' do
-          subject
-          expect(response.code).to eq '204'
-        end
-      end
-
-      context 'with org associated with consumer app' do
-        before do
-          @consumer_app.organizations << @org1
-        end
-
-        it 'should respond with a 200' do
-          subject
-          expect(response.code).to eq '200'
-        end
-
-        it 'should load the organization' do
-          subject
-          expect(assigns(:organization)).to eq @org1
-        end
-      end
     end
   end
 

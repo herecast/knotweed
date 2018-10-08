@@ -1,5 +1,3 @@
-UPDATE consumer_apps set uri = '%{site_endpoint}' WHERE name = 'Daily UV';
-
 -- set subtextland,vt as an active location
 UPDATE locations SET consumer_active = true where city = 'Subtextland';
 -- set VCLAB listserv as inactive/active

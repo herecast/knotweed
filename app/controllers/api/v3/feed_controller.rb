@@ -7,7 +7,6 @@ module Api
 
         @result_object = GatherFeedRecords.call(
           params: params,
-          requesting_app: @requesting_app,
           current_user: current_user
         )
 

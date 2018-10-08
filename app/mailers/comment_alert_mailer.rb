@@ -1,5 +1,6 @@
 class CommentAlertMailer < ApplicationMailer
   add_template_helper ContentsHelper
+  add_template_helper EmailTemplateHelper
 
   layout 'comment_alert_email'
 

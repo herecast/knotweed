@@ -5,10 +5,7 @@ describe 'User Comments endpoint', type: :request do
   let(:user) { FactoryGirl.create :user }
   let(:other_user) { FactoryGirl.create :user }
   let(:standard_org) { FactoryGirl.create :organization, standard_ugc_org: true }
-  let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [standard_org] }
-  let(:headers) { {'ACCEPT' => 'application/json',
-                   'Consumer-App-Uri' => consumer_app.uri
-                  } }
+  let(:headers) { {'ACCEPT' => 'application/json' } }
 
   describe "/api/v3/users/:id/comments", elasticsearch: true do
     before do

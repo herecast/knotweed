@@ -77,33 +77,19 @@ describe 'Contents Endpoints', type: :request do
 
   describe 'GET /api/v3/contents/:id' do
     let(:org) { FactoryGirl.create :organization }
-    let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
-    let(:headers) { {'ACCEPT' => 'application/json',
-                     'Consumer-App-Uri' => consumer_app.uri
-                  } }
+    let(:headers) { { 'ACCEPT' => 'application/json' } }
     let(:content) { FactoryGirl.create :content, organization: org }
 
-    context "when no requesting app" do
-      subject { get "/api/v3/contents/#{content.id}" }
+    subject { get "/api/v3/contents/#{content.id}", {}, headers }
 
-      it 'does not return content' do
-        subject
-        expect(response_json).to eq({})
-      end
+    it "returns content record" do
+      subject
+      expect(response_json[:content]).not_to be nil
     end
 
-    context "when appropriate requesting app" do
-      subject { get "/api/v3/contents/#{content.id}", {}, headers }
-
-      it "returns content record" do
-        subject
-        expect(response_json[:content]).not_to be nil
-      end
-
-      it 'matches the expect json schema' do
-        subject
-        expect(response.body).to include_json(content_response_schema(content))
-      end
+    it 'matches the expect json schema' do
+      subject
+      expect(response.body).to include_json(content_response_schema(content))
     end
 
     describe 'when content requested is of listserv origin' do
@@ -113,7 +99,6 @@ describe 'Contents Endpoints', type: :request do
         )
       }
       before do
-        consumer_app.update organizations: [listserv_org]
         content.update organization: listserv_org
       end
 
@@ -991,8 +976,6 @@ describe 'Contents Endpoints', type: :request do
     let!(:alt_org) { FactoryGirl.create :organization }
     let!(:location) { FactoryGirl.create(:location)}
 
-    let!(:consumer_app) { FactoryGirl.create :consumer_app_dailyuv, organizations: [org] }
-
     let!(:event) {
       FactoryGirl.create :content, :event, :published, organization: org
     }
@@ -1063,10 +1046,6 @@ describe 'Contents Endpoints', type: :request do
       expect(subject[:content_ids]).to_not include news.id
     end
 
-    it 'does not include non-dailyuv content' do
-      event.update organization_id: alt_org.id
-      expect(subject[:content_ids]).to_not include event.id
-    end
   end
 
   describe "#update_subscriber_notification" do

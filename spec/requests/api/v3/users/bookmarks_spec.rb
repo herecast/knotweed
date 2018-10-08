@@ -4,12 +4,9 @@ require 'rails_helper'
 describe 'User Bookmarks endpoint', type: :request do
   before { FactoryGirl.create :organization, name: 'Listserv' }
   let(:organization) { FactoryGirl.create :organization }
-  let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [organization] }
   let(:owning_user) { FactoryGirl.create :user }
   let(:other_user) { FactoryGirl.create :user }
-  let(:headers) { {'ACCEPT' => 'application/json',
-                   'Consumer-App-Uri' => consumer_app.uri
-                  } }
+  let(:headers) { {'ACCEPT' => 'application/json' } }
   let(:user_headers) { headers.merge(auth_headers_for(owning_user)) }
   let(:wrong_user_headers) { headers.merge(auth_headers_for(other_user)) }
 

@@ -14,7 +14,6 @@ RSpec.describe GatherFeedRecords, elasticsearch: true do
     subject do
       GatherFeedRecords.call(
         params: params,
-        requesting_app: nil,
         current_user: nil
       )
     end

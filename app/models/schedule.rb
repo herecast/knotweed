@@ -13,6 +13,8 @@
 #
 
 class Schedule < ActiveRecord::Base
+  include EmailTemplateHelper
+
   has_many :event_instances, dependent: :destroy
   belongs_to :event
   attr_accessor :_remove
@@ -136,9 +138,7 @@ class Schedule < ActiveRecord::Base
     sane_description = strip_tags(self.event.description).gsub('&nbsp;','')
     event.description = presenter_name.present? ? "PRESENTED BY\: #{presenter_name}\n\n" + sane_description : sane_description
     event.location = self.event.try(:venue).try(:name)
-    if ConsumerApp.current.present?
-      event.url = ConsumerApp.current.uri + "/events/#{self.event.event_instances.first.try(:id)}"
-    end
+    event.url = url_for_consumer_app("/events/#{self.event.event_instances.first.try(:id)}")
     event
   end
 

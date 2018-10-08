@@ -78,17 +78,14 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
   describe 'GET show' do
     before do
-      @consumer_app = FactoryGirl.create :consumer_app
       @org = FactoryGirl.create :organization
-      @consumer_app.organizations = [@org]
       @content = FactoryGirl.create :content
       @related_content = FactoryGirl.create(:content)
       @promo = FactoryGirl.create :promotion, content: @related_content
       @pb = FactoryGirl.create :promotion_banner, promotion: @promo
     end
 
-    subject { get :show, format: :json,
-              content_id: @content.id, consumer_app_uri: @consumer_app.uri }
+    subject { get :show, format: :json, content_id: @content.id }
 
     it 'has 200 status code' do
       subject

@@ -93,40 +93,10 @@ describe ContentsHelper, type: :helper do
     subject { helper.content_url_for_email(content) }
     let(:content_path) { ux2_content_path(content) }
     let(:utm_string) { "?utm_medium=email&utm_source=rev-pub&utm_content=#{content_path}" }
+    before { allow(Figaro.env).to receive(:default_consumer_host).and_return("test.com") }
 
-    context 'consumer_app set from request' do
-      let(:consumer_app) { double(uri: 'http://my-uri.example') }
-      before { allow(ConsumerApp).to receive(:current).and_return consumer_app }
-
-      it 'is generates url based on consumer_app uri' do
-        expect(subject).to eql "#{consumer_app.uri}#{content_path}#{utm_string}"
-      end
-    end
-
-    context 'if not consumer_app;' do
-      before do
-        @base_uri = nil
-        allow(ConsumerApp).to receive(:current).and_return nil
-      end
-
-      it 'Uses a relative url' do
-        expect(subject).to eql "#{content_path}#{utm_string}"
-      end
-
-      context 'when a consumer app exists matching the ENV DEFAULT_CONSUMER_HOST' do
-        let(:default_host) {
-          "Test.COM:9030"
-        }
-        let!(:consumer_app) { ConsumerApp.create uri: "http://#{default_host}" }
-
-        before do
-          allow(Figaro.env).to receive(:default_consumer_host).and_return(default_host)
-        end
-
-        it 'it uses default consumer app uri as the base' do
-          expect(subject).to eql "#{consumer_app.uri}#{ux2_content_path(content)}#{utm_string}"
-        end
-      end
+    it 'is generates url based on default_consumer_host env config' do
+      expect(subject).to eql "http://#{Figaro.env.default_consumer_host}/#{content_path}#{utm_string}"
     end
   end
 

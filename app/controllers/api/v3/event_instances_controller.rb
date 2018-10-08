@@ -1,6 +1,7 @@
 module Api
   module V3
     class EventInstancesController < ApiController
+      include EmailTemplateHelper
 
       def index
 #        expires_in 1.minutes, public: true
@@ -38,7 +39,6 @@ module Api
           .not_deleted
           .not_listserv
           .not_removed
-          .is_dailyuv
           .where('pubdate <= ?', Time.zone.now)
         ).order('start_date DESC')\
           .limit(50_000)\
@@ -59,9 +59,7 @@ module Api
         if @current_api_user.present?
           url = edit_content_url(@event_instance.event.content) if @current_api_user.has_role? :admin
         end
-        if @requesting_app.present?
-          ical_url = @requesting_app.uri + event_instances_ics_path(params[:id])
-        end
+        ical_url = url_for_consumer_app("/#{event_instances_ics_path(params[:id])}")
 
         if @event_instance.event.content.removed?
           update_event_instance_as_removed

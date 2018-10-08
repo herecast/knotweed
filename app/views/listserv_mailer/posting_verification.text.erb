@@ -5,10 +5,10 @@ This verification step helps reduce spam.
 Confirm by choosing to...
 
 SPRUCE IT UP
-http://<%=Figaro.env.default_consumer_host%>/lists/posts/<%=@post.key%><%='?auth_token=' + @auth_token if @auth_token%>
+<%= url_for_consumer_app("/lists/posts/#{@post.key}#{'?auth_token=' + @auth_token if @auth_token}") %>
 
 SEND AS IS
-http://<%=Figaro.env.default_consumer_host%>/lists/confirm_post/<%= @post.key %>
+<%= url_for_consumer_app("/lists/confirm_post/#{@post.key}") %>
 
 BOTH CHOICES ARE FREE
 
@@ -20,5 +20,5 @@ Terms & Privacy: http://dailyuv.com/terms
 
 <% if @subscription.present? && @subscription.subscribed? %>
 Unsubscribe from <% unless features['listserv-user-testing'] %><%=@listserv.name.upcase%><% else %>this test<% end %>:
-http://<%=Figaro.env.default_consumer_host%>/lists/<%= @subscription.key %>/manage
+<%= url_for_consumer_app("/lists/#{@subscription.key}/manage") %>
 <% end %>

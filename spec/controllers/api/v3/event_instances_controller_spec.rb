@@ -46,14 +46,12 @@ describe Api::V3::EventInstancesController, :type => :controller do
     end
 
     describe 'ical_url' do
-      before do
-        @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
-        api_authenticate consumer_app: @consumer
-        get :show, format: :json, id: @inst.id
-      end
+      before { allow(Figaro.env).to receive(:default_consumer_host).and_return("test.com") }
+        
 
       it 'response should include ical url' do
-        expect(JSON.parse(@response.body)['event_instance']['ical_url']).to eq @consumer.uri + event_instances_ics_path(@inst.id)
+        get :show, format: :json, id: @inst.id
+        expect(JSON.parse(@response.body)['event_instance']['ical_url']).to eq "http://#{Figaro.env.default_consumer_host}/#{event_instances_ics_path(@inst.id)}"
       end
     end
 

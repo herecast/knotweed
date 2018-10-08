@@ -36,21 +36,12 @@ module Api
       def index
         expires_in 1.minute, public: true
         if params[:ids].present?
-          if @requesting_app.present?
-            @organizations = @requesting_app.organizations
-          else
-            @organizations = Organization
-          end
-          @organizations = @organizations.where(id: params[:ids])
+          @organizations = Organization.where(id: params[:ids])
         else
           @opts = {}
           @opts[:where] = {}
           @opts[:page] = params[:page] || 1
           @opts[:includes] = [:business_locations]
-
-          if @requesting_app.present?
-            @opts[:where][:consumer_app_ids] = [@requesting_app.id]
-          end
 
           manage_certified_orgs
           query = params[:query].blank? ? '*' : params[:query]
@@ -63,12 +54,7 @@ module Api
 
       def show
         @organization = Organization.find(params[:id])
-        # filter to ensure organization belong to the requesting app
-        if @requesting_app.present? and !@requesting_app.organizations.include?(@organization)
-          head :no_content
-        else
-          render json: @organization, serializer: OrganizationSerializer, context: { current_ability: current_ability }
-        end
+        render json: @organization, serializer: OrganizationSerializer, context: { current_ability: current_ability }
       end
 
       def sitemap_ids

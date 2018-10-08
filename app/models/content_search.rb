@@ -16,9 +16,8 @@ class ContentSearch
     self.new(*args).organization_calendar_query
   end
 
-  def initialize(params:, requesting_app:, current_user: nil)
+  def initialize(params:, current_user: nil)
     @params         = params
-    @requesting_app = requesting_app
     @current_user   = current_user
   end
 
@@ -125,10 +124,6 @@ class ContentSearch
     def whitelist_organizations_and_content_types(attrs)
       if @params[:content_type].present?
         attrs[:where][:content_type] = @params[:content_type]
-        if @requesting_app.present?
-          ids = @requesting_app.organizations.where.not(id: Organization::LISTSERV_ORG_ID).pluck(:id)
-          attrs[:where][:organization_id] = ids
-        end
       else
         attrs[:where][:organization_id] = { not: Organization::LISTSERV_ORG_ID }
       end

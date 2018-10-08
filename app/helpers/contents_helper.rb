@@ -37,26 +37,14 @@ module ContentsHelper
 
   def content_url_for_email(content)
     utm_string = "?utm_medium=email&utm_source=rev-pub&utm_content=#{ux2_content_path(content)}"
-    if ConsumerApp.current.present?
-      url = "#{ConsumerApp.current.uri}#{ux2_content_path(content)}#{utm_string}"
-    elsif ConsumerApp.default.present?
-      url = "#{ConsumerApp.default.uri}#{ux2_content_path(content)}#{utm_string}"
-    else
-      url = "#{ux2_content_path(content)}#{utm_string}"
-    end
+    url = url_for_consumer_app("/#{ux2_content_path(content)}#{utm_string}")
 
     url
   end
 
   def comment_alert_url(content)
     utm_string = "?utm_medium=email&utm_source=comment-alert&utm_content=#{ux2_content_path(content)}"
-    if ConsumerApp.current.present?
-      url = "#{ConsumerApp.current.uri}#{ux2_content_path(content)}#{utm_string}"
-    elsif ConsumerApp.default.present?
-      url = "#{ConsumerApp.default.uri}#{ux2_content_path(content)}#{utm_string}"
-    else
-      url = "#{ux2_content_path(content)}#{utm_string}"
-    end
+    url = url_for_consumer_app("/#{ux2_content_path(content)}#{utm_string}")
 
     url
   end

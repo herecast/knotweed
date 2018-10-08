@@ -3,8 +3,6 @@ module Api
     class PasswordsController < Devise::PasswordsController
       respond_to :json
 
-      before_filter :set_consumer_app_in_thread
-
       # POST /resource/password
       def create
         self.resource = resource_class.send_reset_password_instructions(resource_params)
@@ -33,12 +31,6 @@ module Api
        end
 
        private
-
-       def set_consumer_app_in_thread
-         if request.headers['Consumer-App-Uri'].present?
-           ConsumerApp.current = ConsumerApp.find_by_uri(request.headers['Consumer-App-Uri'])
-         end
-       end
 
        def resource_params
          super.merge({

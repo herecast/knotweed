@@ -4,9 +4,8 @@ class GatherFeedRecords
     self.new(*args).call
   end
 
-  def initialize(params:, requesting_app:, current_user:)
+  def initialize(params:, current_user:)
     @params          = params
-    @requesting_app  = requesting_app
     @current_user    = current_user
     update_content_type
   end
@@ -62,14 +61,10 @@ class GatherFeedRecords
 
     def content_opts
       if organization_calendar_view?
-        ContentSearch.organization_calendar_query({
-          params: @params,
-          requesting_app: @requesting_app
-        })
+        ContentSearch.organization_calendar_query({ params: @params })
       else
         ContentSearch.standard_query({
           params: @params,
-          requesting_app: @requesting_app,
           current_user: @current_user
         })
       end

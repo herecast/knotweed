@@ -8,9 +8,6 @@ module AuthenticationHelpers
           "Token token=#{user.authentication_token}, \
           email=#{user.email}"
       end
-      if args[:consumer_app]
-        @request.headers['Consumer-App-Uri'] = args[:consumer_app].uri
-      end
     else
       @request.headers['HTTP_AUTHORIZATION'] = '' 
     end

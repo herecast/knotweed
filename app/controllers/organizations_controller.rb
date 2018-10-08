@@ -124,7 +124,6 @@ class OrganizationsController < ApplicationController
         :remote_desktop_image_url,
         :remove_desktop_image,
         :profile_background_image_cache,
-        :consumer_app_ids,
         :can_publish_news,
         :subscribe_url,
         :description,
@@ -150,7 +149,6 @@ class OrganizationsController < ApplicationController
         :calendar_view_first,
         :calendar_card_active,
         :digest_id,
-        :consumer_app_ids => [],
         :location_ids => [],
         :organization_locations_attributes => [
           :id,

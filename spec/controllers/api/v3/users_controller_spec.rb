@@ -224,23 +224,22 @@ describe Api::V3::UsersController, :type => :controller do
   describe 'ical url' do
     context 'when user has public id'  do
       before do
+        allow(Figaro.env).to receive(:default_consumer_host).and_return("test.com")
         @user = FactoryGirl.create :user, public_id: 'sorlara'
-        @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
-        api_authenticate user: @user, consumer_app: @consumer
+        api_authenticate user: @user
       end
 
       subject! { get :show }
 
       it 'should contain the ical url' do
-        expect(JSON.parse(@response.body)['current_user']['events_ical_url']).to eq @consumer.uri + user_event_instances_ics_path(@user.public_id)
+        expect(JSON.parse(@response.body)['current_user']['events_ical_url']).to eq "http://#{Figaro.env.default_consumer_host}/#{user_event_instances_ics_path(@user.public_id)}"
       end
     end
 
     context 'when user has no public id' do
       before do
         @user = FactoryGirl.create :user, public_id: ''
-        @consumer = FactoryGirl.create :consumer_app, uri: Faker::Internet.url
-        api_authenticate user: @user, consumer_app: @consumer
+        api_authenticate user: @user
       end
 
       subject! { get :show, format: :json }

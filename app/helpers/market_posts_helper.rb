@@ -9,13 +9,8 @@ module MarketPostsHelper
   end
 
   def market_post_url_for_email(market_post)
-    url = 'http://www.dailyuv.com/market'
     utm_string = "?utm_medium=email&utm_source=rev-pub&utm_content=#{ux2_content_path(market_post.content)}"
-    if ConsumerApp.current.present?
-      url = "#{ConsumerApp.current.uri}/feed/#{market_post.content.id}#{utm_string}"
-    elsif @base_uri.present?
-      url = "#{@base_uri}/feed/#{market_post.content.id}#{utm_string}"
-    end
+    url = url_for_consumer_app("/feed/#{market_post.content.id}#{utm_string}")
 
     url
   end

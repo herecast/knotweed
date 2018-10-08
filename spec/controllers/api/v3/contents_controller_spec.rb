@@ -2,9 +2,7 @@ require 'spec_helper'
 
 describe Api::V3::ContentsController, :type => :controller do
   before do
-    @consumer_app = FactoryGirl.create :consumer_app
     @org = FactoryGirl.create :organization
-    @consumer_app.organizations = [@org]
   end
 
   describe 'GET #show' do
@@ -16,7 +14,7 @@ describe Api::V3::ContentsController, :type => :controller do
         allow(CreateAlternateContent).to receive(:call).and_return(@content)
       end
 
-      subject { get :show, { id: @content.id, consumer_app_uri: @consumer_app.uri } }
+      subject { get :show, { id: @content.id } }
 
       it "makes call to create alternate content" do
         expect(CreateAlternateContent).to receive(:call).with(
@@ -33,7 +31,7 @@ describe Api::V3::ContentsController, :type => :controller do
           organization: @org
       end
 
-      subject { get :show, { id: @content.id, consumer_app_uri: @consumer_app.uri } }
+      subject { get :show, { id: @content.id } }
 
       it "returns not_found status" do
         subject
@@ -74,7 +72,7 @@ describe Api::V3::ContentsController, :type => :controller do
           organization: @org
       end
 
-      subject { get :show, { id: @content.id, consumer_app_uri: @consumer_app.uri } }
+      subject { get :show, { id: @content.id } }
 
       it "returns not_found status" do
         subject
@@ -224,7 +222,7 @@ describe Api::V3::ContentsController, :type => :controller do
       }
 
       subject do
-        post :create, {content: content_params, consumer_app_uri: @consumer_app.uri}
+        post :create, { content: content_params }
       end
 
       context 'when successful' do
@@ -298,7 +296,6 @@ describe Api::V3::ContentsController, :type => :controller do
           it 'promotes to listservs' do
             expect(PromoteContentToListservs).to receive(:call).with(
               kind_of(Content),
-              @consumer_app,
               request.remote_ip,
               *listservs
             )
@@ -411,7 +408,7 @@ describe Api::V3::ContentsController, :type => :controller do
       }
 
       subject do
-        put :update, {id: content.id, content: content_params, consumer_app_uri: @consumer_app.uri}
+        put :update, { id: content.id, content: content_params }
       end
 
       context 'when successful' do
@@ -436,7 +433,6 @@ describe Api::V3::ContentsController, :type => :controller do
           it 'promotes to listservs' do
             expect(PromoteContentToListservs).to receive(:call).with(
               content,
-              @consumer_app,
               request.remote_ip,
               *listservs
             )

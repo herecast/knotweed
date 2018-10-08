@@ -21,6 +21,8 @@
 #
 
 class EventInstance < ActiveRecord::Base
+  include EmailTemplateHelper
+
   searchkick callbacks: :async,
     batch_size: 100,
     index_prefix: Figaro.env.searchkick_index_prefix,
@@ -136,9 +138,7 @@ class EventInstance < ActiveRecord::Base
       ev.summary = self.event.title
       ev.description = strip_tags(description).gsub('&nbsp;','')
       ev.location = self.event.try(:venue).try(:name)
-      if ConsumerApp.current.present?
-        ev.url = ConsumerApp.current.uri + "/events/#{id}"
-      end
+      ev.url = url_for_consumer_app("/events/#{id}")
       ev
     end
 

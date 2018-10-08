@@ -163,7 +163,6 @@ describe 'Event Instance endpoints', type: :request do
   describe 'GET /api/v3/event_instances/sitemap_ids' do
     let!(:org) { FactoryGirl.create :organization }
     let!(:alt_org) { FactoryGirl.create :organization }
-    let!(:consumer_app) { FactoryGirl.create :consumer_app_dailyuv, organizations: [org] }
 
     let!(:instance1) {
       FactoryGirl.create :event_instance
@@ -206,12 +205,6 @@ describe 'Event Instance endpoints', type: :request do
 
     it 'does not include instance if content is removed' do
       instance1.event.content.update removed: true
-      ids = subject[:instances].map{|d| d[:id]}
-      expect(ids).to_not include instance1.id
-    end
-
-    it 'does not include instance if non-dailyuv content' do
-      instance1.event.content.update organization: alt_org
       ids = subject[:instances].map{|d| d[:id]}
       expect(ids).to_not include instance1.id
     end

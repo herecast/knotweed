@@ -4,7 +4,6 @@ RSpec.describe PromoteContentToListservs do
   let(:user) { FactoryGirl.create :user }
   let(:remote_ip) { '1.1.1.1' }
   let(:listservs) { FactoryGirl.create_list :listserv, 3 }
-  let(:consumer_app) { FactoryGirl.create :consumer_app }
   let(:content) { FactoryGirl.create :content, created_by: user }
 
   before do
@@ -15,8 +14,8 @@ RSpec.describe PromoteContentToListservs do
     allow(BitlyService).to receive(:create_short_link).with(any_args).and_return('http://bit.ly/12345')
   end
 
-  context 'Given content, consumer_app, remote_ip, and *listservs, ' do
-    subject { described_class.call(content, consumer_app, remote_ip, *listservs) }
+  context 'Given content, remote_ip, and *listservs, ' do
+    subject { described_class.call(content, remote_ip, *listservs) }
 
     it 'creates a PromotionListserv for each listserv record' do
       expect{subject}.to change{

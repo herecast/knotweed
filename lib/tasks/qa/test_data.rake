@@ -26,8 +26,6 @@ namespace :test_data do
     end
 
     org = Organization.new name: name
-    consumer_app = ConsumerApp.first || raise('Unable to find a consumer app in your database, exiting')
-    org.consumer_apps << consumer_app
     if org.save
       puts "Organization created with name: #{org.name}"
       org

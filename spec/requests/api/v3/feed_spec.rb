@@ -127,10 +127,7 @@ describe 'Feed endpoints', type: :request do
     end
 
     let(:org) { FactoryGirl.create :organization }
-    let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [org] }
-    let(:headers) { {'ACCEPT' => 'application/json',
-                     'Consumer-App-Uri' => consumer_app.uri
-                  } }
+    let(:headers) { {'ACCEPT' => 'application/json' } }
 
     let(:locations) {
       FactoryGirl.create_list(:location, 2)

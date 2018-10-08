@@ -69,7 +69,6 @@ class Organization < ActiveRecord::Base
       name: name,
       org_type: org_type,
       biz_feed_active: biz_feed_active,
-      consumer_app_ids: consumer_apps_ids_only.map(&:id),
       content_category_ids: contents_root_content_category_ids_only.map(&:root_content_category_id).uniq,
       certified_storyteller: certified_storyteller,
       certified_social: certified_social,
@@ -80,7 +79,6 @@ class Organization < ActiveRecord::Base
   scope :search_import, -> {
     includes(
       :contents_root_content_category_ids_only,
-      :consumer_apps_ids_only
     )
   }
 
@@ -89,12 +87,6 @@ class Organization < ActiveRecord::Base
            primary_key: :id,
            foreign_key: :organization_id,
            class_name: :Content
-  has_and_belongs_to_many :consumer_apps_ids_only,
-                          -> { select('consumer_apps.id') },
-                          primary_key: :id,
-                          foreign_key: :organization_id,
-                          join_table: :consumer_apps_organizations,
-                          class_name: :ConsumerApp
 
   resourcify
   belongs_to :parent, class_name: "Organization"
@@ -123,7 +115,6 @@ class Organization < ActiveRecord::Base
            through: :organization_locations, source: :location
 
   has_and_belongs_to_many :contacts
-  has_and_belongs_to_many :consumer_apps
 
   has_many :promotions, through: :contents
 

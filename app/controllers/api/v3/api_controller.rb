@@ -9,7 +9,7 @@ module Api
       #token authentication for ember app
       before_filter :authenticate_user_from_token!
 
-      before_filter :set_requesting_app, :set_current_api_user,
+      before_filter :set_current_api_user,
         :set_current_thread_user
 
       # rescue CanCanCan authorization denied errors to use 403, not 500
@@ -31,15 +31,6 @@ module Api
 
       def set_current_api_user
         @current_api_user = current_user
-      end
-
-      def set_requesting_app
-        if request.headers['Consumer-App-Uri'].present?
-          @requesting_app = ConsumerApp.find_by_uri(request.headers['Consumer-App-Uri'])
-        elsif params[:consumer_app_uri].present?
-          @requesting_app = ConsumerApp.find_by_uri(params[:consumer_app_uri])
-        end
-        ConsumerApp.current = @requesting_app if @requesting_app.present?
       end
 
       def authenticate_user_from_token!

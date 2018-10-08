@@ -1,7 +1,4 @@
-- if ConsumerApp.current.present?
-  - url = ConsumerApp.current.uri + '/sign_up/confirm/' + @token
-- else
-  - url = "http://#{ENV['DEFAULT_CONSUMER_HOST']}/sign_up/confirm/" + @token
+- url = "http://#{Figaro.env.default_consumer_host}/sign_up/confirm/#{@token}"
 %p
   Dear #{@email},
 %p

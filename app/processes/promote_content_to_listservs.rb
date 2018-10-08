@@ -1,4 +1,5 @@
 class PromoteContentToListservs
+  include EmailTemplateHelper
   include ContentsHelper
   include MarketPostsHelper
 
@@ -6,16 +7,14 @@ class PromoteContentToListservs
   # If the listserv is external, it sends reverse publish emails.
   #
   # @param content [Content]
-  # @param consumer_app [ConsumerApp]
   # @param remote_ip [String] - the client ip making the request.
   # @param listserv [Listserv] - continue to add more arguments for more listservs
   def self.call(*args)
     new(*args).call
   end
 
-  def initialize(content, consumer_app, remote_ip, *listservs)
+  def initialize(content, remote_ip, *listservs)
     @content = content
-    @consumer_app = consumer_app
     @remote_ip = remote_ip
     @listservs = listservs
     @promotion_listservs = []
@@ -34,8 +33,7 @@ class PromoteContentToListservs
       if listserv.active? && @content.authoremail.present?
         @promotion_listservs << PromotionListserv.create_from_content(
           @content,
-          listserv,
-          @consumer_app
+          listserv
         )
 
         # Add locations from listserv to content
@@ -54,8 +52,7 @@ class PromoteContentToListservs
     vc_lists = promotion_listservs.collect(&:listserv)
     outbound_mail = ReversePublisher.mail_content_to_listservs(
       @content,
-      vc_lists,
-      @consumer_app
+      vc_lists
     )
 
     outbound_mail.deliver_later

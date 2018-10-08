@@ -4,13 +4,6 @@ RSpec.describe 'Profile metrics' do
   let(:remote_ip) { '1.1.1.1' }
   let(:user_agent) { "AmigaVoyager/3.4.4 (MorphOS/PPC native)" }
   let(:location) { FactoryGirl.create :location, slug: 'newton-nh' }
-  let(:consumer_app) { FactoryGirl.create(:consumer_app) }
-
-  let(:headers) {
-    {
-      'Consumer-App-Uri' => consumer_app.uri
-    }
-  }
 
     before do
       allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(remote_ip)
@@ -28,11 +21,7 @@ RSpec.describe 'Profile metrics' do
 
     let(:organization) { FactoryGirl.create :organization }
 
-    subject {
-      post "/api/v3/metrics/profiles/#{organization.id}/impressions",
-        context_data,
-        headers
-    }
+    subject { post "/api/v3/metrics/profiles/#{organization.id}/impressions", context_data }
 
     it 'records profile metric impression' do
       expect{subject}.to change{
@@ -70,11 +59,7 @@ RSpec.describe 'Profile metrics' do
 
     let(:organization) { FactoryGirl.create :organization }
 
-    subject {
-      post "/api/v3/metrics/profiles/#{organization.id}/clicks",
-        context_data,
-        headers
-    }
+    subject { post "/api/v3/metrics/profiles/#{organization.id}/clicks", context_data }
 
     it 'records profile metric impression' do
       expect{subject}.to change{

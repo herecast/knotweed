@@ -5,7 +5,7 @@ Your subscription to <%=@listserv.name%> is active and can be managed
 through your dailyUV account.
 
 [Manage Subscription]
-http://<%=Figaro.env.default_consumer_host%>/account/subscriptions
+http://<%=url_for_consumer_app("/account/subscriptions")%>
 
 Vital Communities' <%=@listserv.name%> & dailyUV are complementary ways
 to keep up with what's happening in your community.
@@ -19,4 +19,4 @@ Learn More:
 Terms & Privacy: http://dailyuv.com/terms
 
 To unsubscribe go here:
-http://<%=Figaro.env.default_consumer_host%>/lists/<%=@subscription.key%>/manage
+http://<%=url_for_consumer_app("/lists/#{@subscription.key}/manage")%>

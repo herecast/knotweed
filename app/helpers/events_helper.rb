@@ -72,20 +72,4 @@ module EventsHelper
     display_string.chomp!(', ')
   end
 
-  def ux2_event_path(event)
-    "/events/#{event.next_or_first_instance.id}"
-  end
-
-  def event_url_for_email(event)
-    utm_string = "?utm_medium=email&utm_source=rev-pub&utm_campaign=20151201&utm_content=#{ux2_event_path(event)}"
-    if ConsumerApp.current.present?
-      url = "#{ConsumerApp.current.uri}#{ux2_event_path(event)}#{utm_string}"
-    elsif @base_uri.present?
-      url = "#{@base_uri}/events/#{event.event_instances.first.id}#{utm_string}"
-    else
-      url = "http://www.dailyuv.com/events"
-    end
-
-    url
-  end
 end

@@ -1,7 +1,7 @@
 class ReversePublisher < ActionMailer::Base
   helper :events, :contents, :market_posts
 
-  def mail_content_to_listservs(content, listservs, consumer_app=nil)
+  def mail_content_to_listservs(content, listservs)
     # these are the same regardless of channel
     to = listservs.map{ |l| l.reverse_publish_email }
     from = "\"#{content.authors}\" <#{content.authoremail}>"
@@ -9,9 +9,9 @@ class ReversePublisher < ActionMailer::Base
     @body = content.raw_content_for_text_email
     # custom header so that we can identify any content that already exists in our system
     headers['X-Original-Content-Id'] = content.id
-    if consumer_app.present?
-      @base_uri = consumer_app.uri
-    end
+
+    @base_uri = "http://#{Figaro.env.default_consumer_host}"
+
     if content.channel.nil? or content.channel.is_a? Comment # if unchannelized or comment
       headers['In-Reply-To'] = content.parent.try(:guid)
       template_name = 'content'

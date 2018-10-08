@@ -4,7 +4,7 @@ Thanks for subscribing to <%=@subscription.listserv.name%>
 For your privacy and security we now require email verification.
 
 Follow this link to confirm you subscription:
-http://<%=Figaro.env.default_consumer_host%>/lists/<%=@subscription.key%>/subscribe
+<%= url_for_consumer_app("/lists/#{@subscription.key}/subscribe") %>
 
 Following the link above will bring you to dailyUV.
 Where you can manage your subscription.
@@ -14,5 +14,4 @@ Where you can manage your subscription.
 Terms & Privacy: http://dailyuv.com/terms
 
 Manage or unsubscribe here:
-http://<%=Figaro.env.default_consumer_host%>/lists/<%=@subscription.key%>/manage
-
+<%= url_for_consumer_app("/lists/#{@subscription.key}/manage") %>

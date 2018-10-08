@@ -2,24 +2,21 @@ require 'icalendar/tzinfo'
 module Api
   module V3
     class UsersController < ApiController
+      include EmailTemplateHelper
       before_filter :check_logged_in!, only: [:show, :update, :logout]
       before_filter :check_correct_user, only: :update
 
       def show
-        if @requesting_app.present?
-          events_ical_url = @requesting_app.uri + user_event_instances_ics_path(public_id: @current_api_user.public_id.to_s)
-        end
+        events_ical_url = url_for_consumer_app("/" + user_event_instances_ics_path(public_id: @current_api_user.public_id.to_s))
         render json: @current_api_user, serializer: UserSerializer,
           root: 'current_user',  status: 200, events_ical_url: events_ical_url,
-          context: { current_ability: current_ability,
-                     consumer_app: @requesting_app }
+          context: { current_ability: current_ability }
       end
 
       def update
         if @current_api_user.update_attributes(current_user_params)
           render json: @current_api_user, serializer: UserSerializer, root: 'current_user', status: 200,
-            context: { current_ability: current_ability,
-                       consumer_app: @requesting_app }
+            context: { current_ability: current_ability }
         else
           render json: { error: "Current User update failed", messages:  @current_api_user.errors.full_messages }, status: 422
         end

@@ -6,10 +6,7 @@ describe 'My Stuff endpoint', type: :request do
   let(:other_user) { FactoryGirl.create :user }
   let(:standard_org) { FactoryGirl.create :organization, standard_ugc_org: true }
   let(:managed_org) { FactoryGirl.create :organization }
-  let(:consumer_app) { FactoryGirl.create :consumer_app, organizations: [standard_org, managed_org] }
-  let(:headers) { {'ACCEPT' => 'application/json',
-                   'Consumer-App-Uri' => consumer_app.uri
-                  } }
+  let(:headers) { {'ACCEPT' => 'application/json' } }
 
   describe "/api/v3/users/:id/contents", elasticsearch: true do
     before do

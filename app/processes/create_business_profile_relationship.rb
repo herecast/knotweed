@@ -17,7 +17,6 @@ class CreateBusinessProfileRelationship
     update_default_content_attributes
     conditionally_update_organization_type
     update_business_location_org_id
-    add_org_to_consumer_apps
     make_business_profile_exist
   end
 
@@ -43,10 +42,6 @@ class CreateBusinessProfileRelationship
         pubdate: Time.current,
         published: true
       })
-    end
-
-    def add_org_to_consumer_apps
-      ConsumerApp.find_each { |ca| @organization.consumer_apps << ca }
     end
 
     def conditionally_update_organization_type

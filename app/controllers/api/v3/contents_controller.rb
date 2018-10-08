@@ -17,7 +17,6 @@ module Api
                       .not_deleted
                       .not_listserv
                       .not_removed
-                      .is_dailyuv
                       .not_comment
                       .not_all_base_locations
                       .where('pubdate <= ?', Time.zone.now)
@@ -65,7 +64,7 @@ module Api
           return
         end
 
-        if whitelisted_with_requesting_app? && has_pubdate_in_past_or_can_edit?
+        if has_pubdate_in_past_or_can_edit?
           @content = @content.removed == true ? CreateAlternateContent.call(@content) : @content
           render json: @content, serializer: ContentSerializer,
             context: { current_ability: current_ability }
@@ -109,7 +108,7 @@ module Api
         @contents = @content.similar_content(4)
 
         render json: @contents, each_serializer: HashieMashes::ContentSerializer,
-          root: 'similar_content', consumer_app_base_uri: @requesting_app.try(:uri)
+          root: 'similar_content'
       end
 
       def moderate
@@ -143,9 +142,6 @@ module Api
       end
 
       protected
-        def whitelisted_with_requesting_app?
-          @requesting_app.present? && @requesting_app.organizations.include?(@content.organization)
-        end
 
         def has_pubdate_in_past_or_can_edit?
           return false if @content.deleted_at.present?
@@ -156,11 +152,10 @@ module Api
         def promote_to_listservs content
           listserv_ids = params[:content][:listserv_ids] || []
 
-          if listserv_ids.any? && @requesting_app
+          if listserv_ids.any?
             # reverse publish to specified listservs
             PromoteContentToListservs.call(
               content,
-              @requesting_app,
               request.remote_ip,
               *Listserv.where(id: listserv_ids)
             )

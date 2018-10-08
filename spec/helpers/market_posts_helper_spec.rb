@@ -42,40 +42,15 @@ describe MarketPostsHelper, type: :helper do
 
   describe '#market_post_url_for_email' do
     let(:market_post) { FactoryGirl.create :market_post }
-    subject { helper.market_post_url_for_email(market_post) }
-
     let(:content_path) { ux2_content_path(market_post.content) }
     let(:utm_string) { "?utm_medium=email&utm_source=rev-pub&utm_content=#{ux2_content_path(market_post.content)}" }
+    before { allow(Figaro.env).to receive(:default_consumer_host).and_return("test.com") }
 
-    context 'consumer_app set from request' do
-      let(:consumer_app) { double(uri: 'http://my-uri.example') }
-      before { allow(ConsumerApp).to receive(:current).and_return(consumer_app) }
+    subject { helper.market_post_url_for_email(market_post) }
 
-      it 'uses consumer app uri' do
-        expect(subject).to eql "#{consumer_app.uri}/feed/#{market_post.content.id}#{utm_string}"
-      end
+    it 'uses default_consumer_host' do
+      expect(subject).to eql "http://#{Figaro.env.default_consumer_host}/feed/#{market_post.content.id}#{utm_string}"
     end
 
-    context 'consumer_app not set; @base_uri set from controller' do
-      before do
-        @base_uri = 'http://event.foo'
-        allow(ConsumerApp).to receive(:current).and_return(nil)
-      end
-
-      it 'uses @base_uri, and market_post.content.id' do
-        expect(subject).to eql "#{@base_uri}/feed/#{market_post.content.id}#{utm_string}"
-      end
-    end
-
-    context 'if not consumer_app, or @base_uri;' do
-      before do 
-        @base_uri = nil
-        allow(ConsumerApp).to receive(:current).and_return(nil)
-      end
-
-      it 'uses a default url' do
-        expect(subject).to eql "http://www.dailyuv.com/market"
-      end
-    end
   end
 end

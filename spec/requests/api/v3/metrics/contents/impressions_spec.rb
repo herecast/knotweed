@@ -10,17 +10,7 @@ RSpec.describe 'Content Impressions' do
       { client_id: '1222kk898943', location_id: location.slug }
     }
 
-    let(:consumer_app) { FactoryGirl.create(:consumer_app) }
-
-    let(:headers) {
-      {'Consumer-App-Uri' => consumer_app.uri}
-    }
-
-    subject {
-      post "/api/v3/metrics/contents/#{content.id}/impressions",
-        context_data,
-        headers
-    }
+    subject { post "/api/v3/metrics/contents/#{content.id}/impressions", context_data }
 
     before do
       allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(remote_ip)
@@ -31,11 +21,7 @@ RSpec.describe 'Content Impressions' do
       context "given a content id for #{type.to_s}" do
         let(:record) { FactoryGirl.create :content, type }
 
-        subject {
-          post "/api/v3/metrics/contents/#{record.id}/impressions",
-            context_data,
-            headers
-        }
+        subject { post "/api/v3/metrics/contents/#{record.id}/impressions", context_data }
 
         it 'returns 202 status' do
           subject
@@ -62,10 +48,9 @@ RSpec.describe 'Content Impressions' do
 
         context 'user is signed in' do
           let(:user) { FactoryGirl.create(:user) }
+          let(:headers) { auth_headers_for(user)}
 
-          before do
-            headers.merge! auth_headers_for(user)
-          end
+          subject { post "/api/v3/metrics/contents/#{record.id}/impressions", context_data, headers }
 
           it 'records a content metric impression' do
             date = Date.current
