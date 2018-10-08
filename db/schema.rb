@@ -122,34 +122,6 @@ ActiveRecord::Schema.define(version: 20180926183152) do
   add_index "campaigns", ["community_ids"], name: "index_campaigns_on_community_ids", using: :btree
   add_index "campaigns", ["listserv_id"], name: "index_campaigns_on_listserv_id", using: :btree
 
-  create_table "categories", id: :bigserial, force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.integer  "channel_id", limit: 8
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-  end
-
-  add_index "categories", ["name"], name: "idx_16467_index_categories_on_name", using: :btree
-
-  create_table "category_corrections", id: :bigserial, force: :cascade do |t|
-    t.integer  "content_id",   limit: 8
-    t.string   "old_category", limit: 255
-    t.string   "new_category", limit: 255
-    t.string   "user_email",   limit: 255
-    t.string   "title",        limit: 255
-    t.text     "content_body"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
-  end
-
-  add_index "category_corrections", ["content_id"], name: "idx_16473_index_category_corrections_on_content_id", using: :btree
-
-  create_table "channels", id: :bigserial, force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-  end
-
   create_table "comments", id: :bigserial, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -234,16 +206,6 @@ ActiveRecord::Schema.define(version: 20180926183152) do
   add_index "content_metrics", ["organization_id"], name: "index_content_metrics_on_organization_id", using: :btree
   add_index "content_metrics", ["user_id"], name: "index_content_metrics_on_user_id", using: :btree
 
-  create_table "content_promotion_banner_loads", force: :cascade do |t|
-    t.integer  "content_id"
-    t.integer  "promotion_banner_id"
-    t.integer  "load_count",          default: 1
-    t.string   "select_method"
-    t.float    "select_score"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "content_reports", id: :bigserial, force: :cascade do |t|
     t.integer  "content_id",               limit: 8
     t.datetime "report_date"
@@ -262,12 +224,10 @@ ActiveRecord::Schema.define(version: 20180926183152) do
     t.string   "subtitle",                  limit: 255
     t.string   "authors",                   limit: 255
     t.text     "raw_content"
-    t.integer  "issue_id",                  limit: 8
     t.datetime "created_at",                                            null: false
     t.datetime "updated_at",                                            null: false
     t.string   "guid",                      limit: 255
     t.datetime "pubdate"
-    t.string   "source_category",           limit: 255
     t.string   "url",                       limit: 255
     t.string   "origin",                    limit: 255
     t.string   "page",                      limit: 255
@@ -277,7 +237,6 @@ ActiveRecord::Schema.define(version: 20180926183152) do
     t.datetime "timestamp"
     t.integer  "parent_id",                 limit: 8
     t.integer  "content_category_id",       limit: 8
-    t.boolean  "category_reviewed",                     default: false
     t.boolean  "has_event_calendar",                    default: false
     t.integer  "channelized_content_id",    limit: 8
     t.boolean  "published",                             default: false
@@ -338,7 +297,6 @@ ActiveRecord::Schema.define(version: 20180926183152) do
   add_index "contents", ["published"], name: "idx_16527_index_contents_on_published", using: :btree
   add_index "contents", ["root_content_category_id"], name: "idx_16527_index_contents_on_root_content_category_id", using: :btree
   add_index "contents", ["root_parent_id"], name: "idx_16527_index_contents_on_root_parent_id", using: :btree
-  add_index "contents", ["source_category"], name: "idx_16527_categories", using: :btree
   add_index "contents", ["title"], name: "idx_16527_title", using: :btree
 
   create_table "event_instances", id: :bigserial, force: :cascade do |t|
@@ -409,16 +367,6 @@ ActiveRecord::Schema.define(version: 20180926183152) do
   end
 
   add_index "images", ["imageable_type", "imageable_id"], name: "idx_16634_index_images_on_imageable_type_and_imageable_id", using: :btree
-
-  create_table "issues", id: :bigserial, force: :cascade do |t|
-    t.string   "issue_edition",      limit: 255
-    t.integer  "organization_id",    limit: 8
-    t.string   "copyright",          limit: 255
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
-    t.integer  "import_location_id", limit: 8
-    t.datetime "publication_date"
-  end
 
   create_table "listserv_digests", force: :cascade do |t|
     t.integer  "listserv_id"
@@ -532,14 +480,6 @@ ActiveRecord::Schema.define(version: 20180926183152) do
     t.string   "status",                   limit: 255
     t.string   "preferred_contact_method", limit: 255
     t.boolean  "sold",                                 default: false
-  end
-
-  create_table "notifiers", id: :bigserial, force: :cascade do |t|
-    t.integer  "user_id",         limit: 8
-    t.integer  "notifyable_id",   limit: 8
-    t.string   "notifyable_type", limit: 255
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
   end
 
   create_table "organization_content_tags", force: :cascade do |t|
@@ -857,7 +797,6 @@ ActiveRecord::Schema.define(version: 20180926183152) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string   "unconfirmed_email",      limit: 255
-    t.integer  "default_repository_id",  limit: 8
     t.datetime "nda_agreed_at"
     t.boolean  "agreed_to_nda",                      default: false
     t.string   "contact_phone",          limit: 255
