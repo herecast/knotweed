@@ -127,22 +127,6 @@ ActiveRecord::Schema.define(version: 20180926183152) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "consumer_apps", id: :bigserial, force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.string   "uri",        limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-  end
-
-  add_index "consumer_apps", ["uri"], name: "idx_16494_index_consumer_apps_on_uri", unique: true, using: :btree
-
-  create_table "consumer_apps_organizations", id: false, force: :cascade do |t|
-    t.integer "consumer_app_id", limit: 8, null: false
-    t.integer "organization_id", limit: 8, null: false
-  end
-
-  add_index "consumer_apps_organizations", ["consumer_app_id", "organization_id"], name: "idx_16507_consumer_app_publication_index", using: :btree
-
   create_table "contacts", id: :bigserial, force: :cascade do |t|
     t.string   "name",         limit: 255
     t.string   "phone",        limit: 255
