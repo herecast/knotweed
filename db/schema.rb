@@ -341,22 +341,6 @@ ActiveRecord::Schema.define(version: 20180926183152) do
   add_index "contents", ["source_category"], name: "idx_16527_categories", using: :btree
   add_index "contents", ["title"], name: "idx_16527_title", using: :btree
 
-  create_table "delayed_jobs", id: :bigserial, force: :cascade do |t|
-    t.integer  "priority",   limit: 8,   default: 0, null: false
-    t.integer  "attempts",   limit: 8,   default: 0, null: false
-    t.text     "handler",                            null: false
-    t.text     "last_error"
-    t.datetime "run_at"
-    t.datetime "locked_at"
-    t.datetime "failed_at"
-    t.string   "locked_by",  limit: 255
-    t.string   "queue",      limit: 255
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
-  end
-
-  add_index "delayed_jobs", ["priority", "run_at"], name: "idx_16604_delayed_jobs_priority", using: :btree
-
   create_table "event_instances", id: :bigserial, force: :cascade do |t|
     t.integer  "event_id",             limit: 8
     t.datetime "start_date"
@@ -764,18 +748,6 @@ ActiveRecord::Schema.define(version: 20180926183152) do
 
   add_index "promotions", ["content_id"], name: "idx_16765_index_promotions_on_content_id", using: :btree
   add_index "promotions", ["created_by_id"], name: "idx_16765_index_promotions_on_created_by", using: :btree
-
-  create_table "repositories", id: :bigserial, force: :cascade do |t|
-    t.string   "name",                    limit: 255
-    t.string   "dsp_endpoint",            limit: 255
-    t.string   "sesame_endpoint",         limit: 255
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
-    t.string   "graphdb_endpoint",        limit: 255
-    t.string   "annotate_endpoint",       limit: 255
-    t.string   "solr_endpoint",           limit: 255
-    t.string   "recommendation_endpoint", limit: 255
-  end
 
   create_table "rewrites", id: :bigserial, force: :cascade do |t|
     t.string   "source",        limit: 255

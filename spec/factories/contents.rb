@@ -96,9 +96,7 @@ FactoryGirl.define do
     authors Faker::Name.name
     raw_content "Content goes here"
     organization
-    issue
     pubdate {Time.current}
-    source_category "Category"
     content_category
     authoremail 'fake@email.com'
     published true

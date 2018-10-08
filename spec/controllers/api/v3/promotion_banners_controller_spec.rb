@@ -214,7 +214,6 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     before do
       @banner = FactoryGirl.create :promotion_banner
       @content = FactoryGirl.create :content
-      @content.promotion_banners = [@banner]
     end
 
     let(:post_params) {
@@ -265,7 +264,6 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     before do
       @banner = FactoryGirl.create :promotion_banner
       @content = FactoryGirl.create :content
-      @content.promotion_banners = [@banner]
     end
 
     subject {
@@ -444,7 +442,6 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       @banner = FactoryGirl.create :promotion_banner
       @user = FactoryGirl.create :user
       @content = FactoryGirl.create :content
-      @content.promotion_banners = [@banner]
       api_authenticate user: @user
     end
 

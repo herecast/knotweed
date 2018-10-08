@@ -55,7 +55,6 @@
 class User < ActiveRecord::Base
 
   has_many :report_recipients
-  has_many :notifiers
   has_many :subscriptions
   has_many :social_logins
   has_many :user_bookmarks

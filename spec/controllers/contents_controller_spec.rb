@@ -12,28 +12,6 @@ describe ContentsController, type: :controller do
       @cat_2 = FactoryGirl.create :content_category
     end
 
-    context "when category changes" do
-
-      subject { put :update, id: @content, content: { content_category_id: @cat_2.id, title: 'Luke OG Skywalker' } }
-
-      it "should create a category correction record" do
-        subject
-        expect(CategoryCorrection.where(content_id: @content.id).count).to eq 1
-        @content.reload
-        expect(@content.category).to eq @cat_2.name
-      end
-    end
-
-    context "when category does not change" do
-
-      subject { put :update, id: @content, content: { title: "Fake Title Update" } }
-
-      it "should not create a category correction if category doesn't change" do
-        subject
-        expect(CategoryCorrection.where(content_id: @content.id).count).to eq 0
-      end
-    end
-
     context "when update fails" do
 
       subject { put :update, id: @content, content: { title: "Fake Title Update" } }
@@ -164,72 +142,6 @@ describe ContentsController, type: :controller do
           subject
           expect(assigns(:contents)).to match_array [ nil, ["nice title", @content.id] ]
         end
-    end
-  end
-
-  describe "POST #category_correction" do
-    before do
-      @content = FactoryGirl.create :content
-      @category = FactoryGirl.create :category
-    end
-
-    subject { post :category_correction, content_id: @content.id }
-
-    context "when category correction saves" do
-      it "responds with confirmation text" do
-        allow_any_instance_of(Content).to receive(:category).and_return @category
-        subject
-        expect(response.code).to eq '200'
-        expect(response.body).to include @content.id.to_s
-      end
-    end
-
-    context "when category correction save fails" do
-      it "should respond with 500 status code" do
-        allow_any_instance_of(Content).to receive(:category).and_return @category
-        allow_any_instance_of(CategoryCorrection).to receive(:save).and_return false
-        subject
-        expect(response.code).to eq '500'
-      end
-    end
-  end
-
-  describe 'POST #category_correction_reviewed' do
-    before do
-      @content = FactoryGirl.create :content
-    end
-
-    context "when reviewed and saved" do
-
-      subject { post :category_correction_reviwed, content_id: @content.id, checked: 'true' }
-
-      it "responds with confirmation text" do
-        subject
-        expect(response.code).to eq '200'
-        expect(response.body).to include @content.id.to_s
-      end
-    end
-
-    context "when reviewed but content not saved" do
-
-      subject { post :category_correction_reviwed, content_id: @content.id, checked: 'true' }
-
-      it "should respond with 500 status code" do
-        allow_any_instance_of(Content).to receive(:save).and_return false
-        subject
-        expect(response.code).to eq '500'
-      end
-    end
-
-    context "when not reviewed and saved" do
-
-      subject { post :category_correction_reviwed, content_id: @content.id, checked: 'false' }
-
-      it "should respond with confirmation text" do
-        subject
-        expect(response.code).to eq '200'
-        expect(response.body).to include @content.id.to_s
-      end
     end
   end
 

@@ -208,18 +208,11 @@ class Content < ActiveRecord::Base
     end
   end
 
-  belongs_to :issue
   belongs_to :location
-
-  has_many :category_corrections
 
   has_many :content_reports
   has_many :payments
 
-  # NOTE: this relationship is tracking display of promotion banners with
-  # contents, not the promotion of contents (which is handled through the promotion model).
-  has_many :content_promotion_banner_loads
-  has_many :promotion_banners, through: :content_promotion_banner_loads
   has_many :content_locations, dependent: :destroy
   accepts_nested_attributes_for :content_locations, allow_destroy: true
   has_many :locations, through: :content_locations

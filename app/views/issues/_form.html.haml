@@ -1,6 +1,0 @@
-= simple_form_for @issue, remote: true do |f|
-  = f.input :issue_edition, label: "Edition"
-  = f.input :copyright
-  = f.input :publication_date, as: :datetime_picker
-  = f.association :organization, as: :hidden
-  = f.submit nil, class:  "btn btn-success"

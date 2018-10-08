@@ -53,18 +53,6 @@ class ContentsController < ApplicationController
 
   def update
     @content = Content.find(params[:id])
-
-    # if category is changed, create a category_correction object
-    # normally I would put this in a callback on the model
-    # but given the callbacks already on category_correction and the weirdness
-    # of this functionality to begin with, it seems more straightforward
-    # to put it here:
-    if params[:content][:content_category_id].present? and @content.content_category_id != params[:content][:content_category_id].to_i
-      CategoryCorrection.create(content: @content, old_category: @content.category,
-                                new_category: ContentCategory.find(params[:content][:content_category_id]).name)
-      params[:content].delete :content_category_id # already taken care of updating this
-    end
-
     if @content.update_attributes(content_params)
       flash[:notice] = "Successfully updated content #{@content.id}"
       if params[:continue_editing]
@@ -116,37 +104,6 @@ class ContentsController < ApplicationController
     end
   end
 
-  def category_correction
-    content = Content.find params.delete :content_id
-    new_cat = params.delete :new_category
-
-    @category_correction = CategoryCorrection.new
-    @category_correction.content = content
-    @category_correction.old_category = content.category
-    @category_correction.new_category = new_cat
-
-    if @category_correction.save
-      render text: "#{@category_correction.content.id} updated"
-    else
-      render text: "There was an error creating the category correction.", status: 500
-    end
-  end
-
-  def category_correction_reviwed
-    content = Content.find params[:content_id]
-    checked = params[:checked]
-    if checked == 'true'
-      content.category_reviewed = true
-    else
-      content.category_reviewed = false
-    end
-    if content.save
-      render text: "#{content.id} review state updated"
-    else
-      render text: 'There was an error updating content category reviwed.', status: 500
-    end
-  end
-
   private
 
     def load_event_instances
@@ -164,7 +121,6 @@ class ContentsController < ApplicationController
         :has_event_calendar,
         :subtitle,
         :authors,
-        :issue_id,
         :parent_id,
         :pubdate,
         :url,
