@@ -145,6 +145,14 @@ class BusinessLocation < ActiveRecord::Base
     ).order('distance ASC').first
   end
 
+  def add_lat_and_lng_if_bad_address
+    nearest_location = Location.consumer_active.search(zip)[0]
+    update_attributes(
+      latitude: nearest_location.latitude,
+      longitude: nearest_location.longitude
+    )
+  end
+
   private
 
     def state_length_if_present

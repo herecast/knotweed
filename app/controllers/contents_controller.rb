@@ -132,9 +132,7 @@ class ContentsController < ApplicationController
         :alternate_authors,
         :alternate_text,
         :alternate_image_url,
-        content_locations_attributes: [
-          :id, :location_type, :location_id, :_destroy
-        ],
+        :location_id,
         organization_ids: [],
         similar_content_overrides: [],
         event_attributes: [
