@@ -27,7 +27,7 @@ RSpec.describe Outreach::ScheduleWelcomeEmails do
 
     subject { Outreach::ScheduleWelcomeEmails.call(@user) }
 
-    it "schedules SIX successive welcome campaigns" do
+    it "schedules FIVE successive welcome campaigns" do
       Outreach::ScheduleWelcomeEmails.new(@user).send(:ordered_steps).each do |step|
         expect(@campaigns_array).to receive(:create).with(
           'regular',
@@ -39,7 +39,7 @@ RSpec.describe Outreach::ScheduleWelcomeEmails do
           { saved_segment_id: @user.mc_segment_id }
         )
       end
-      expect(@campaigns_array).to receive(:schedule).exactly(6).times
+      expect(@campaigns_array).to receive(:schedule).exactly(5).times
       subject
     end
   end

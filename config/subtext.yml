@@ -17,9 +17,6 @@ default: &default
     welcome:
       subject: "Welcome to DailyUV!"
       template_id: 273041
-    locate_yourself:
-      subject: "You're new to DailyUV. Can we show you around?"
-      template_id: 273045
     subscribe_to_blogs:
       subject: "Be the first to know - Subscribe to your favorites"
       template_id: 273049

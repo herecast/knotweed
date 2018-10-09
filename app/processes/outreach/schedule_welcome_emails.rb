@@ -24,7 +24,6 @@ module Outreach
       def ordered_steps
         [
           'welcome',
-          'locate_yourself',
           'subscribe_to_blogs',
           'bookmarking',
           'subscribe_to_digests',
