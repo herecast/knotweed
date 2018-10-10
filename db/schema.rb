@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180926183152) do
+ActiveRecord::Schema.define(version: 20181007195112) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -223,7 +223,6 @@ ActiveRecord::Schema.define(version: 20180926183152) do
     t.integer  "content_category_id",       limit: 8
     t.boolean  "has_event_calendar",                    default: false
     t.integer  "channelized_content_id",    limit: 8
-    t.boolean  "published",                             default: false
     t.string   "channel_type",              limit: 255
     t.integer  "channel_id",                limit: 8
     t.integer  "root_content_category_id",  limit: 8
@@ -278,7 +277,6 @@ ActiveRecord::Schema.define(version: 20180926183152) do
   add_index "contents", ["organization_id"], name: "idx_16527_source_id", using: :btree
   add_index "contents", ["parent_id"], name: "idx_16527_index_contents_on_parent_id", using: :btree
   add_index "contents", ["pubdate"], name: "idx_16527_pubdate", using: :btree
-  add_index "contents", ["published"], name: "idx_16527_index_contents_on_published", using: :btree
   add_index "contents", ["root_content_category_id"], name: "idx_16527_index_contents_on_root_content_category_id", using: :btree
   add_index "contents", ["root_parent_id"], name: "idx_16527_index_contents_on_root_parent_id", using: :btree
   add_index "contents", ["title"], name: "idx_16527_title", using: :btree
