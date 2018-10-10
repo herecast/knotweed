@@ -11,13 +11,11 @@ describe 'User Comments endpoint', type: :request do
     before do
       FactoryGirl.create :content, :comment,
         created_by: other_user,
-        published: true,
         organization: standard_org
       @owning_user = FactoryGirl.create :user
       @comment_text = "Vader is innocent!"
       @owned_comment = FactoryGirl.create :content, :comment,
         created_by: @owning_user,
-        published: true,
         organization: standard_org,
         raw_content: @comment_text
     end

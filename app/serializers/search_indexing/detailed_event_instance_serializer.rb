@@ -1,14 +1,9 @@
 module SearchIndexing
   class DetailedEventInstanceSerializer < ::Api::V3::EventInstanceSerializer
-    attributes :published,
-      :event_category,
+    attributes :event_category,
       :all_loc_ids,
       :about_location_ids,
       :removed
-
-    def published
-      object.event.content.published
-    end
 
     def event_category
       object.event.event_category

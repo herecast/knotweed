@@ -50,10 +50,7 @@ end
 
 describe 'Event Instance endpoints', type: :request do
   describe 'GET /api/v3/event_instances', elasticsearch: true do
-    let!(:event_instance) {
-      FactoryGirl.create(:event_instance,
-                         published: true)
-    }
+    let!(:event_instance) { FactoryGirl.create(:event_instance) }
 
     subject {
       get '/api/v3/event_instances'
@@ -68,10 +65,7 @@ describe 'Event Instance endpoints', type: :request do
   end
 
   describe 'GET /api/v3/event_instances/:id' do
-    let!(:event_instance) {
-      FactoryGirl.create(:event_instance,
-                         published: true)
-    }
+    let!(:event_instance) { FactoryGirl.create(:event_instance) }
 
     subject {
       get "/api/v3/event_instances/#{event_instance.id}"
@@ -88,14 +82,10 @@ describe 'Event Instance endpoints', type: :request do
   describe '/event_instances/active_dates', elasticsearch: true do
     context 'Given instances in in different days, in future' do
       before do
-        FactoryGirl.create(:event_instance,
-          published: true,
-          start_date: 1.day.from_now
-        )
+        FactoryGirl.create(:event_instance, start_date: 1.day.from_now)
 
         FactoryGirl.create_list(:event_instance, 3,
           start_date: 3.days.from_now,
-          published: true
         )
       end
 
@@ -136,17 +126,9 @@ describe 'Event Instance endpoints', type: :request do
         }
       }
 
-      let!(:instance_within_range) {
-        FactoryGirl.create :event_instance,
-          published: true,
-          start_date: Date.current
-      }
+      let!(:instance_within_range) { FactoryGirl.create :event_instance, start_date: Date.current }
 
-      let!(:instance_out_of_range) {
-        FactoryGirl.create :event_instance,
-          published: true,
-          start_date: 3.days.from_now
-      }
+      let!(:instance_out_of_range) { FactoryGirl.create :event_instance, start_date: 3.days.from_now }
 
       it 'returns only data for range' do
         subject
@@ -193,12 +175,6 @@ describe 'Event Instance endpoints', type: :request do
 
     it 'does not include instance if content is listerv' do
       instance1.event.content.update organization_id: Organization::LISTSERV_ORG_ID
-      ids = subject[:instances].map{|d| d[:id]}
-      expect(ids).to_not include instance1.id
-    end
-
-    it 'does not include instance if content is not published' do
-      instance1.event.content.update published: false
       ids = subject[:instances].map{|d| d[:id]}
       expect(ids).to_not include instance1.id
     end

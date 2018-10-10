@@ -54,7 +54,6 @@ module Ugc
           :pubdate,
           :raw_content,
           :subtitle,
-          :published,
           :title,
           :sunset_date,
           :location_id
@@ -65,7 +64,6 @@ module Ugc
         ActionController::Parameters.new(@params).tap do |h|
           h[:content][:raw_content] = h[:content].delete :content if h[:content].has_key? :content
           h[:content][:pubdate] = h[:content].delete :published_at if h[:content].has_key? :published_at
-          h[:content][:published] = true if h[:content].has_key? :pubdate and h[:content][:pubdate].present?
           author_name = h[:content].delete :author_name
 
           h[:content][:authors_is_created_by] = true if @content.created_by.try(:name) == author_name

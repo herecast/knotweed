@@ -308,8 +308,6 @@ class Content < ActiveRecord::Base
                                                      "event", "sale_event") }
   scope :market_posts, -> { where(channel_type: 'MarketPost') }
 
-  scope :published, -> { where(published: true) }
-
   scope :if_event_only_when_instances, -> {
     where("(CASE #{table_name}.channel_type WHEN 'Event' THEN
               (select count(*)
@@ -451,11 +449,6 @@ class Content < ActiveRecord::Base
       # new content that doesn't have a parent
       self.update_column(:root_parent_id, find_root_parent.id)
     end
-  end
-
-  # catchall publish method that handles interacting w/ the publish record
-  def publish!
-    update_attribute published: true
   end
 
   # for threaded contents
@@ -804,7 +797,7 @@ class Content < ActiveRecord::Base
 
   def increment_view_count!
     # check if content is published before incrementing
-    if self.published
+    if pubdate.present? and pubdate <= Time.now
       unless User.current.try(:skip_analytics) && root_content_category.name == "news"
         increment_integer_attr!(:view_count)
       end

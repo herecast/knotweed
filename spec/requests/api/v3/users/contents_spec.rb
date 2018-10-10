@@ -12,7 +12,6 @@ describe 'My Stuff endpoint', type: :request do
     before do
       FactoryGirl.create :content, :news,
         created_by: other_user,
-        published: true,
         organization: standard_org
       user.add_role('manager', managed_org)
     end
@@ -22,11 +21,9 @@ describe 'My Stuff endpoint', type: :request do
         @owning_user = FactoryGirl.create :user
         @owned_content = FactoryGirl.create :content, :news,
           created_by: @owning_user,
-          published: true,
           organization: standard_org
         @managed_content = FactoryGirl.create :content, :event,
           created_by: @owning_user,
-          published: true,
           organization: managed_org
       end
 

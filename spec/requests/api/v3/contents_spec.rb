@@ -1026,11 +1026,6 @@ describe 'Contents Endpoints', type: :request do
       expect(subject[:content_ids]).to_not include talk.id
     end
 
-    it 'does not include content if not published' do
-      news.update published: false
-      expect(subject[:content_ids]).to_not include news.id
-    end
-
     it 'does not include content if pubdate is null' do
       news.update pubdate: nil
       expect(subject[:content_ids]).to_not include news.id
@@ -1058,8 +1053,7 @@ describe 'Contents Endpoints', type: :request do
     context "when Content is type: campaign" do
       subject do
         FactoryGirl.create :content, :campaign,
-          organization_id: @organization.id,
-          published: true
+          organization_id: @organization.id
       end
 
       it "does not notify subscribers" do

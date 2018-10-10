@@ -58,7 +58,6 @@ module Ugc
             :organization_id,
             :promote_radius,
             :sunset_date,
-            :published,
             :location_id
           ]
         )
@@ -75,7 +74,6 @@ module Ugc
             authors: @current_user.try(:name),
             content_category_id: market_category.id,
             pubdate: Time.zone.now,
-            published: true,
             timestamp: Time.zone.now,
             organization_id: @params[:content][:organization_id] || dailyuv_org.id,
             location_id: @params[:content][:location_id]

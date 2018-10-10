@@ -5,7 +5,7 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
     @user = FactoryGirl.create :admin
     sign_in @user
     @business_profile = FactoryGirl.create :business_profile
-    @business_profile.content = FactoryGirl.create :content, published: false
+    @business_profile.content = FactoryGirl.create :content, pubdate: nil
     @business_profile.content.organization = FactoryGirl.create :organization
   end
 
@@ -33,10 +33,7 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
     end
 
     context "when BusinessProfile.content is published" do
-      before do
-        allow_any_instance_of(Content).to receive(:published?).and_return true
-      end
-
+      before { @business_profile.content.update pubdate: 1.hour.ago }
       it "redirects to BusinessProfile#index" do
         subject
         @business_profile.reload

@@ -516,8 +516,8 @@ describe Content, :type => :model do
 
   describe 'increment_view_count!' do
     before do
-      @published_content = FactoryGirl.create(:content, :located, published: true)
-      @unpublished_content = FactoryGirl.create(:content, :located, published: false)
+      @published_content = FactoryGirl.create(:content, :located, :published)
+      @unpublished_content = FactoryGirl.create(:content, :located, pubdate: nil)
     end
 
     it 'should increment the view count' do

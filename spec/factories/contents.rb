@@ -99,7 +99,6 @@ FactoryGirl.define do
     pubdate {Time.current}
     content_category
     authoremail 'fake@email.com'
-    published true
     created_by { FactoryGirl.build(:user) }
 
     trait :located do
@@ -164,7 +163,6 @@ FactoryGirl.define do
     end
 
     trait :published do
-      published true
       pubdate { Time.current }
     end
 

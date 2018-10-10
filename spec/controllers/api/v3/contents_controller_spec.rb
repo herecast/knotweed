@@ -280,11 +280,6 @@ describe Api::V3::ContentsController, :type => :controller do
           end
         end
 
-        it 'publishes the content' do
-          subject
-          expect(Content.last.published).to be true
-        end
-
         context 'listserv ids included' do
           let(:listservs) {
             FactoryGirl.create_list(:listserv, 2)

@@ -40,7 +40,6 @@ RSpec.describe CreateBusinessProfileRelationship do
         @content.reload
         expect(@content.title).to eq @content.organization.name
         expect(@content.pubdate).not_to be_nil
-        expect(@content.published).to be true
       end
     end
 
@@ -54,7 +53,6 @@ RSpec.describe CreateBusinessProfileRelationship do
         @business_profile.reload
         expect(@business_profile.content.title).to eq @org_name
         expect(@business_profile.content.pubdate).not_to be_nil
-        expect(@business_profile.content.published).to be true
         expect(@business_profile.content.organization_id).to eq @organization.id
       end
     end
@@ -70,7 +68,6 @@ RSpec.describe CreateBusinessProfileRelationship do
         @business_profile.reload
         expect(@business_profile.content.title).to eq @org_name
         expect(@business_profile.content.pubdate).not_to be_nil
-        expect(@business_profile.content.published).to be true
       end
     end
   end

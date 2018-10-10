@@ -139,7 +139,6 @@ describe 'Feed endpoints', type: :request do
       FactoryGirl.create :content, :news,
         created_by: user,
         organization: org,
-        published: true,
         location_id: user.location_id,
         images: [FactoryGirl.build(:image, :primary)]
     }
@@ -148,7 +147,6 @@ describe 'Feed endpoints', type: :request do
         created_by: user,
         organization: org,
         location_id: user.location_id,
-        published: true,
         images: [FactoryGirl.build(:image, :primary)]
     }
     let!(:market) {
@@ -156,7 +154,6 @@ describe 'Feed endpoints', type: :request do
         created_by: user,
         organization: org,
         location_id: user.location_id,
-        published: true,
         images: [FactoryGirl.build(:image, :primary)]
     }
     let!(:talk) {
@@ -164,12 +161,11 @@ describe 'Feed endpoints', type: :request do
         created_by: user,
         organization: org,
         location_id: user.location_id,
-        published: true,
         images: [FactoryGirl.build(:image, :primary)]
     }
     let!(:comment) {
       FactoryGirl.create :content, :comment, organization: org,
-        published: true, parent_id: talk.id
+        parent_id: talk.id
     }
 
     context 'news content' do
@@ -285,7 +281,6 @@ describe 'Feed endpoints', type: :request do
         @market_post = FactoryGirl.create :content, :market_post,
           title: news.title,
           organization: org,
-          published: true,
           location_id: user.location_id
         @organization = FactoryGirl.create :organization,
           name: news.title,

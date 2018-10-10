@@ -11,7 +11,7 @@ RSpec.describe ReindexAssociatedContentJob do
 
     context 'when organization owns content records' do
       let!(:contents) {
-        FactoryGirl.create_list :content, 3, organization: organization, published: true
+        FactoryGirl.create_list :content, 3, organization: organization
       }
 
       it 'calls #reindex on each of those content records' do
@@ -26,7 +26,7 @@ RSpec.describe ReindexAssociatedContentJob do
 
       context 'other content records exist, not owned by org' do
         let!(:others) {
-          FactoryGirl.create_list :content, 3, published: true
+          FactoryGirl.create_list :content, 3
         }
 
         it 'does not reindex those records' do
@@ -51,7 +51,7 @@ RSpec.describe ReindexAssociatedContentJob do
 
     context 'when a user owns content records' do
       let!(:contents) {
-        FactoryGirl.create_list :content, 3, created_by: user, published: true
+        FactoryGirl.create_list :content, 3, created_by: user
       }
 
       it 'calls #reindex on each of those content records' do
@@ -86,7 +86,7 @@ RSpec.describe ReindexAssociatedContentJob do
 
     context 'other content records exist, not owned by org' do
       let!(:others) {
-        FactoryGirl.create_list :content, 3, published: true
+        FactoryGirl.create_list :content, 3
       }
 
       it 'does not reindex those records' do

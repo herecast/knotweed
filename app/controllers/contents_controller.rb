@@ -75,17 +75,6 @@ class ContentsController < ApplicationController
     end
   end
 
-  def publish
-    @content = Content.find(params[:id])
-    if @content.publish!
-      flash[:notice] = "#{params[:method].humanize} successful"
-    else
-      flash[:error] = "#{params[:method].humanize} encountered an error"
-    end
-
-    redirect_to @content
-  end
-
   def parent_select_options
     # check if search query is an integer; if it is, use it as ID query, otherwise title
     if params[:search_query].to_i.to_s == params[:search_query]

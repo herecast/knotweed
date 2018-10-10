@@ -21,7 +21,6 @@ shared_examples_for "Location based index" do
               location: location
             )
           ],
-          published: true
         )
     }
 
@@ -34,7 +33,6 @@ shared_examples_for "Location based index" do
               location: location
             )
           ],
-          published: true
         )
     }
 
@@ -47,7 +45,6 @@ shared_examples_for "Location based index" do
               location: location
             )
           ],
-          published: true
         )
     }
 
@@ -75,7 +72,6 @@ shared_examples_for "Location based index" do
           FactoryGirl.create_list :content, 2,
             content_type,
             content_attributes.merge(
-              published: true,
               content_locations: [
                 ContentLocation.new(
                   location: location_within_radius
@@ -98,7 +94,6 @@ shared_examples_for "Location based index" do
         let!(:post) {
           FactoryGirl.create :content, content_type,
             content_attributes.merge(
-              published: true,
               content_locations: [
                 FactoryGirl.create(:content_location,
                   location_type: 'base',

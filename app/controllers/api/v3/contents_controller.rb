@@ -13,8 +13,7 @@ module Api
           end
         end
 
-        content_ids = Content.published
-                      .not_deleted
+        content_ids = Content.not_deleted
                       .not_listserv
                       .not_removed
                       .not_comment

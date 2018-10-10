@@ -12,7 +12,6 @@ module Api
           { title: :asc }
         ]
         opts[:where] = {}
-        opts[:where][:published] = 1
         opts[:where][:removed] = { not: true }
         opts[:page] = params[:page] || 1
         opts[:per_page] = params[:per_page] || 20
@@ -35,7 +34,6 @@ module Api
       def sitemap_ids
         data = EventInstance.joins(event: :content).merge(
           Content
-          .published
           .not_deleted
           .not_listserv
           .not_removed
@@ -84,7 +82,6 @@ module Api
           @_active_dates ||= begin
             opts = {load: false, limit: 0}
             opts[:where] = {}
-            opts[:where][:published] = 1
             apply_query_date_range opts
             apply_query_location_filters opts
 

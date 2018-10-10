@@ -105,7 +105,6 @@ class ContentSearch
 
     def add_boilerplate_opts(attrs)
       attrs[:where][:or] = [category_options]
-      attrs[:where][:published] = true
     end
 
     def category_options
@@ -178,10 +177,9 @@ class ContentSearch
 
     def organization_show_options
       {
-        'everything' => ->(attrs) { [:pubdate, :biz_feed_public, :published].each { |k| attrs[:where].delete(k) } },
-        'hidden' => ->(attrs) { attrs[:where].delete(:published); attrs[:where][:biz_feed_public] = false },
+        'everything' => ->(attrs) { [:pubdate, :biz_feed_public].each { |k| attrs[:where].delete(k) } },
+        'hidden' => ->(attrs) { attrs[:where][:biz_feed_public] = false },
         'draft' => ->(attrs) do
-          attrs[:where].delete(:published)
           attrs[:where].delete(:pubdate)
           attrs[:where][:or] << [
             { pubdate: nil },

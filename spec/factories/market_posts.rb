@@ -26,7 +26,6 @@ FactoryGirl.define do
     ignore do
       locations nil
       base_locations nil
-      published true
       organization nil
       created_by nil
       title nil
@@ -45,7 +44,6 @@ FactoryGirl.define do
 
     after(:build) do |e, evaluator|
       if e.content
-        e.content.published = evaluator.published
         e.content.locations = evaluator.locations if evaluator.locations
         e.content.base_locations = evaluator.base_locations if evaluator.base_locations
         e.content.organization = evaluator.organization if evaluator.organization.present?

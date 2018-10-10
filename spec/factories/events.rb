@@ -40,7 +40,6 @@ FactoryGirl.define do
       description_override nil
       skip_event_instance false
       created_by nil
-      published true
       locations nil
       content_locations nil
     end
@@ -48,7 +47,6 @@ FactoryGirl.define do
     content {
       FactoryGirl.build(:content, :event, {
         channel: nil,
-        published: published
       }.tap do |attrs|
         if created_by
           attrs[:created_by] = created_by

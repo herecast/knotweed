@@ -16,7 +16,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
   describe 'GET show' do
     before do
-      @event = FactoryGirl.create(:event, published: true)
+      @event = FactoryGirl.create(:event)
       @inst = @event.next_or_first_instance
       schedule = FactoryGirl.create :schedule
       @inst.update_attribute(:schedule_id, schedule.id)
@@ -57,7 +57,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
     context "when related content has been removed" do
       before do
-        @event = FactoryGirl.create(:event, published: true)
+        @event = FactoryGirl.create(:event)
         @event.content.update_attribute(:removed, true)
         @instance = @event.next_or_first_instance
         allow(CreateAlternateContent).to receive(:call).and_return(@event.content)
@@ -93,9 +93,9 @@ describe Api::V3::EventInstancesController, :type => :controller do
   describe 'GET index', elasticsearch: true do
     describe 'date filters' do
       before do
-        @e_past = FactoryGirl.create(:event, published: true, start_date: 3.days.ago).next_or_first_instance
-        @e_future = FactoryGirl.create(:event, published: true, start_date: 1.day.from_now).next_or_first_instance
-        @e_current = FactoryGirl.create(:event, published: true, start_date: Time.current + 1.minute).next_or_first_instance
+        @e_past = FactoryGirl.create(:event, start_date: 3.days.ago).next_or_first_instance
+        @e_future = FactoryGirl.create(:event, start_date: 1.day.from_now).next_or_first_instance
+        @e_current = FactoryGirl.create(:event, start_date: Time.current + 1.minute).next_or_first_instance
       end
 
       context ' when start_date is passed' do
@@ -131,14 +131,12 @@ describe Api::V3::EventInstancesController, :type => :controller do
       let(:location_1) { FactoryGirl.create :location }
       let!(:event_location_1) {
         FactoryGirl.create :event,
-          published: true,
           location_id: location_1.id
       }
 
       let(:location_2) { FactoryGirl.create :location }
       let!(:event_location_2) {
         FactoryGirl.create :content, :event,
-          published: true,
           location_id: location_1.id
       }
 

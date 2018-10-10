@@ -68,7 +68,6 @@ class EventInstance < ActiveRecord::Base
         ]
       }
     ).joins(event: :content)\
-      .where('contents.published = ?', true)\
       .where('contents.root_content_category_id > 0')
   }
 

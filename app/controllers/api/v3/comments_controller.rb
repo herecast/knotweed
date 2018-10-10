@@ -26,7 +26,6 @@ module Api
       def create
         @comment = Comment.new(comment_params)
         @comment.content.origin = Content::UGC_ORIGIN
-        @comment.published = true
         if @comment.save
 
           CommentAlert.call(@comment)

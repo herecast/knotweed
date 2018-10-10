@@ -26,14 +26,12 @@ FactoryGirl.define do
   factory :event_instance do
     ignore do
       location false
-      published true
     end
 
     start_date {1.week.from_now}
 
     event {
       build(:event,
-        published: published,
         locations: location ? [ location ] : nil,
         skip_event_instance: true
       )

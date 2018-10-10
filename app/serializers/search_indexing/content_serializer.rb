@@ -15,7 +15,6 @@ module SearchIndexing
       :origin,
       :parent_id,
       :pubdate,
-      :published,
       :removed,
       :root_content_category_id,
       :root_parent_id,

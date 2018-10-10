@@ -40,7 +40,6 @@ class CreateBusinessProfileRelationship
         title: @organization.name,
         organization_id: @organization.id,
         pubdate: Time.current,
-        published: true
       })
     end
 
