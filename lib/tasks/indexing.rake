@@ -57,4 +57,16 @@ namespace :indexing do
     Organization.where('updated_at > ?', 2.hours.ago).each(&:reindex_async)
     puts "Operation completed"
   end
+
+  task full_reindex: :environment do
+    [
+      'full_reindex_content',
+      'full_reindex_event_instances',
+      'full_reindex_business_profile',
+      'full_reindex_business_location',
+      'full_reindex_organization'
+    ].each do |task|
+      Rake::Task["indexing:#{task}"].invoke
+    end
+  end
 end

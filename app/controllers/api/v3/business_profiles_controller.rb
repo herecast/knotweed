@@ -15,7 +15,7 @@ module Api
           page: page,
           per_page: per_page,
           where: {
-            exists: 1,
+            exists: true,
             archived: false
           }
         }

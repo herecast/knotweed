@@ -165,15 +165,6 @@ class Content < ActiveRecord::Base
     deleted_at.blank? && raw_content.present?
   end
 
-  def self.default_search_opts
-    {
-      order: { pubdate: :desc },
-      where: {
-        pubdate: 5.years.ago..Time.zone.now
-      }
-    }
-  end
-
   def all_loc_slugs
     # this is to work around a bug https://github.com/rails/rails/pull/25976 which is fixed
     # in rails 5.0.1. pluck() prevents previously loaded includes from being used

@@ -1,6 +1,20 @@
 Knotweed
 ========================
 
+Deployment with Heroku
+--------------------------
+You must be associated with a Heroku account.
+
+Get the heroku remote address, add it as a remote (in this example, the remote is `heroku`)
+
+Deployment is as easy as `git push heroku`
+
+Note: if you need to push a non-master branch, you must use `git push heroku <branch name>:master` as in `git push heroku heroku:master`
+
+The Knotweed app relies on reddis, which can be added through Heroku console
+
+In Heroku, ENV["DATABASE_URL"] must be set: this can be a remote DB (and username/password must be set) or a Postgres instance in Heroku
+
 Logging
 --------------------------
 Log files are shared between 'releases' so they should be continuous across multiple deployments. If you need to access them, they're in

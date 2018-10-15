@@ -1,0 +1,9 @@
+{
+  "name": "Knotweed API",
+  "addons" : [
+    {
+      "plan": "bonsai:shared-10",
+      "version": "2.4"
+    }
+  ]
+}

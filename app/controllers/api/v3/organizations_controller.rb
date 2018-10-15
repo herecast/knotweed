@@ -150,15 +150,15 @@ module Api
       def manage_certified_orgs
         if params[:certified_storyteller] == "true" && params[:certified_social] == "true"
           @opts[:where][:or] = [[
-            { certified_social: 1 },
-            { certified_storyteller: 1 }
+            { certified_social: true },
+            { certified_storyteller: true }
           ]]
           @opts[:order] = { name: :asc }
         elsif params[:certified_storyteller] == "true"
-          @opts[:where][:certified_storyteller] = 1
+          @opts[:where][:certified_storyteller] = true
           @opts[:order] = { name: :asc }
         elsif params[:certified_social] == "true"
-          @opts[:where][:certified_social] = 1
+          @opts[:where][:certified_social] = true
           @opts[:order] = { name: :asc }
         else
           # only use organizations associated with news content
