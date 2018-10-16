@@ -93,3 +93,8 @@ div {
   margin-left: 0;
   margin-right: 0;
 }
+
+// make checkbox fields not clickable across the entire form
+label.checkbox {
+  display: inline-block;
+}
