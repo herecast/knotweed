@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181007195112) do
+ActiveRecord::Schema.define(version: 20181016143456) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -157,17 +157,6 @@ ActiveRecord::Schema.define(version: 20181007195112) do
   end
 
   add_index "content_categories_organizations", ["content_category_id", "organization_id"], name: "idx_16559_index_on_content_category_id_and_publication_id", using: :btree
-
-  create_table "content_locations", force: :cascade do |t|
-    t.integer  "content_id"
-    t.integer  "location_id"
-    t.string   "location_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "content_locations", ["content_id"], name: "index_content_locations_on_content_id", using: :btree
-  add_index "content_locations", ["location_id"], name: "index_content_locations_on_location_id", using: :btree
 
   create_table "content_metrics", force: :cascade do |t|
     t.integer  "content_id"
@@ -876,8 +865,6 @@ ActiveRecord::Schema.define(version: 20181007195112) do
   end
 
   add_foreign_key "campaigns", "listservs"
-  add_foreign_key "content_locations", "contents"
-  add_foreign_key "content_locations", "locations"
   add_foreign_key "contents", "locations"
   add_foreign_key "listserv_digests", "listservs"
   add_foreign_key "organization_content_tags", "contents"
