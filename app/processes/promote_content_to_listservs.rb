@@ -35,9 +35,6 @@ class PromoteContentToListservs
           @content,
           listserv
         )
-
-        # Add locations from listserv to content
-        listserv.add_listserv_location_to_content(@content)
       end
     end
 

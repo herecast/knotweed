@@ -91,8 +91,7 @@ require 'spec_helper'
 
 describe Content, :type => :model do
 
-  it { is_expected.to have_many 'content_locations' }
-  it { is_expected.to have_many 'locations' }
+  it { is_expected.to belong_to(:location) }
   it { is_expected.to have_db_column :promote_radius }
   it { is_expected.to have_db_column(:short_link).of_type(:string) }
 
@@ -126,62 +125,6 @@ describe Content, :type => :model do
       end
     end
    end
-
-  describe "#base_locations" do
-    let(:content) { FactoryGirl.create :content }
-    let(:non_base) { FactoryGirl.create_list :location, 3 }
-    let(:base) { FactoryGirl.create_list :location, 3 }
-
-    before do
-      non_base.each do |location|
-        ContentLocation.create(
-          content: content,
-          location: location
-        )
-      end
-
-      base.each do |location|
-        ContentLocation.create(
-          content: content,
-          location: location,
-          location_type: 'base'
-        )
-      end
-    end
-
-    it 'returns locations specified as "base"' do
-      expect(content.base_locations).to include(*base)
-      expect(content.base_locations).to_not include(*non_base)
-    end
-  end
-
-  describe "#about_locations" do
-    let(:content) { FactoryGirl.create :content }
-    let(:non_about) { FactoryGirl.create_list :location, 3 }
-    let(:about) { FactoryGirl.create_list :location, 3 }
-
-    before do
-      non_about.each do |location|
-        ContentLocation.create(
-          content: content,
-          location: location
-        )
-      end
-
-      about.each do |location|
-        ContentLocation.create(
-          content: content,
-          location: location,
-          location_type: 'about'
-        )
-      end
-    end
-
-    it 'returns locations specified as "about"' do
-      expect(content.about_locations).to include(*about)
-      expect(content.about_locations).to_not include(*non_about)
-    end
-  end
 
   it { is_expected.to respond_to(:deleted_at) }
 

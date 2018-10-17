@@ -25,9 +25,9 @@
             = f.collection_select :organization_id_in, Organization.accessible_by(current_ability), 
               :id, :name, {}, { multiple: true, class: "chosen-select span12" }
           .field.span2
-            = f.label :locations_id_in, 'Promote Locations'
-            = f.collection_select :locations_id_in, @locations,
-              :id, :name, {}, { multiple: true, class: 'chosen-select span12' }
+            = f.label :location_id_eq, 'Location'
+            = f.collection_select :location_id_eq, @locations,
+              :id, :name, { prompt: 'Select' }, { class: 'chosen-select span12' }
           .field.span2
             = f.label :pubdate_gteq, "Pubdate From"
             = f.text_field :pubdate_gteq, type: :date, value: search_field_value(:pubdate_gteq), class: "span12"

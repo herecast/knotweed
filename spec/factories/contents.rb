@@ -102,8 +102,8 @@ FactoryGirl.define do
     created_by { FactoryGirl.build(:user) }
 
     trait :located do
-      content_locations {
-        [FactoryGirl.build(:content_location,  content: nil)]
+      location {
+        FactoryGirl.build :location
       }
     end
 

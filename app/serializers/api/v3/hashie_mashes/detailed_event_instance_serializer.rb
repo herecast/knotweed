@@ -6,7 +6,6 @@ module Api
         :author_id,
         :author_name,
         :avatar_url,
-        :base_location_ids,
         :biz_feed_public,
         :comments,
         :comment_count,

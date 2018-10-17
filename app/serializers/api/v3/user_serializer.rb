@@ -5,7 +5,6 @@ module Api
         :name,
         :email,
         :created_at,
-        :location_id,
         :location,
         :listserv_id,
         :listserv_name,
@@ -18,10 +17,6 @@ module Api
         :location_confirmed,
         :has_had_bookmarks,
         :is_blogger
-
-      def location_id
-        object.location.slug
-      end
 
       def listserv_id
         object.location.try(:listserv).try(:id)

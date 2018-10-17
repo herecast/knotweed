@@ -24,7 +24,7 @@ def serialized_event_instance(event_instance)
   id: event_instance.id,
   images: [],
   image_url: event_instance.event.content.images.first.try(:image).try(:url),
-  location_id: event_instance.event.content.base_locations.first.try(:slug),
+  location_id: event_instance.event.content.location_id,
   organization_biz_feed_active: event_instance.event.content.organization.try(:biz_feed_active),
   organization_id: event_instance.event.content.organization_id,
   organization_name: event_instance.event.content.organization.try(:name),

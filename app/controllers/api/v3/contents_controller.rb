@@ -17,7 +17,6 @@ module Api
                       .not_listserv
                       .not_removed
                       .not_comment
-                      .not_all_base_locations
                       .where('pubdate <= ?', Time.zone.now)
                       .only_categories(types)
                       .order('pubdate DESC')

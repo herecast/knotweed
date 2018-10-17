@@ -42,7 +42,7 @@ describe ContentsController, type: :controller do
         @contents = FactoryGirl.create_list :content, 3, organization: @org
       end
 
-      subject { get :index, q: { organization_id_in: [@org.id], locations_id_in: [''] } }
+      subject { get :index, q: { organization_id_in: [@org.id], locations_id_eq: '' } }
 
       it 'should respond with the content belonging to that organization' do
         subject
@@ -62,11 +62,11 @@ describe ContentsController, type: :controller do
     context 'with a location search param' do
       before do
         @location = FactoryGirl.create :location
-        @content = FactoryGirl.create :content
-        @content.locations << @location
+        @content = FactoryGirl.create :content,
+          location_id: @location.id
       end
 
-      subject { get :index, q: { locations_id_in: ['', @location.id.to_s] } }
+      subject { get :index, q: { location_id_eq: @location.id.to_s } }
 
       it "returns contents connected to the location" do
         subject

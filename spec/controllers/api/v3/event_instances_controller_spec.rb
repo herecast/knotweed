@@ -130,7 +130,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
     describe 'location_id filter' do
       let(:location_1) { FactoryGirl.create :location }
       let!(:event_location_1) {
-        FactoryGirl.create :event,
+        FactoryGirl.create :content, :event,
           location_id: location_1.id
       }
 

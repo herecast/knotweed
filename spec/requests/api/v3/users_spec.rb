@@ -27,7 +27,6 @@ RSpec.describe 'User API Endpoints', type: :request do
             name: user.name,
             email: user.email,
             created_at: user.created_at.iso8601,
-            location_id: user.location.slug,
             location: {
               id: user.location.id,
               city: user.location.city,

@@ -28,12 +28,6 @@ RSpec.describe PromoteContentToListservs do
       end
     end
 
-    it 'adds the locations of the listservs to the content record' do
-      locations = listservs.collect(&:locations).flatten
-      subject
-      expect(content.reload.locations).to include(*locations)
-    end
-
     it 'creates a bitly link and saves it to the content record' do
       subject
       expect(content.reload.short_link).to eq('http://bit.ly/12345')

@@ -5,8 +5,6 @@ module Api
         :author_id,
         :author_name,
         :avatar_url,
-        :base_location_ids,
-        :base_locations_array,
         :biz_feed_public,
         :campaign_end,
         :campaign_start,
@@ -307,19 +305,6 @@ module Api
         !!object.organization.try(:biz_feed_active)
       end
 
-      def base_location_ids
-        base_locations_array.map{ |l| l[:slug] }.compact
-      end
-
-      def base_locations_array
-        base_locations.map do |bl|
-          {
-            slug: bl.slug,
-            name: bl.pretty_name
-          }
-        end
-      end
-
       def schedules
         if isEvent
           object.channel.try(:schedules).try(:map, &:to_ux_format)
@@ -347,15 +332,6 @@ module Api
           )
         end
 
-        def base_locations
-          if object.base_locations.present?
-            object.base_locations
-          elsif object.organization.present?
-            object.organization.consumer_active_base_locations
-          else
-            []
-          end
-        end
     end
   end
 end

@@ -32,7 +32,7 @@ FactoryGirl.define do
 
     event {
       build(:event,
-        locations: location ? [ location ] : nil,
+        location: location,
         skip_event_instance: true
       )
     }

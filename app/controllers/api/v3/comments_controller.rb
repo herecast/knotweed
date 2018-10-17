@@ -52,7 +52,7 @@ module Api
               :pubdate,
               :organization_id,
               :content_category_id,
-              location_ids: []
+              :location_id
             ]
           )
         end
@@ -62,7 +62,6 @@ module Api
             content_attributes: {
               title: params[:comment][:title],
               parent_id: params[:comment][:parent_content_id],
-              location_ids: [@current_api_user.try(:location_id)].uniq,
               authoremail: @current_api_user.try(:email),
               authors: @current_api_user.try(:name),
               raw_content: ActionView::Base.full_sanitizer.sanitize(params[:comment][:content]),

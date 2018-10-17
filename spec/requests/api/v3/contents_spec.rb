@@ -1009,12 +1009,6 @@ describe 'Contents Endpoints', type: :request do
       expect(subject[:content_ids]).to_not include comment.content.id
     end
 
-    it 'does not return content that does not have at least one content_location that is not base' do
-      news.update locations: []
-      news.update base_locations: [location]
-      expect(subject[:content_ids]).to_not include news.id
-    end
-
     it 'does not include listserv content' do
       market_post.update organization_id: Organization::LISTSERV_ORG_ID
       expect(subject[:content_ids]).to_not include market_post.id

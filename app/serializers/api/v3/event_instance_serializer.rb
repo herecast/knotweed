@@ -5,7 +5,6 @@ module Api
         :author_id,
         :author_name,
         :avatar_url,
-        :base_location_ids,
         :biz_feed_public,
         :comment_count,
         :commenter_count,
@@ -82,10 +81,6 @@ module Api
 
       def biz_feed_public
         object.event.content.biz_feed_public
-      end
-
-      def base_location_ids
-        object.event.content.base_locations.map(&:slug)
       end
 
       def ical_url

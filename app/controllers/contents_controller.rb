@@ -46,7 +46,7 @@ class ContentsController < ApplicationController
 
   def edit
     @news_child_ids = ContentCategory.where(parent_id: 31).pluck(:id)
-    @content = Content.includes(:locations, :content_category).find(params[:id])
+    @content = Content.includes(:location, :content_category).find(params[:id])
     load_event_instances
     authorize! :edit, @content
   end

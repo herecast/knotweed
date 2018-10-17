@@ -40,8 +40,6 @@ FactoryGirl.define do
       description_override nil
       skip_event_instance false
       created_by nil
-      locations nil
-      content_locations nil
     end
 
     content {
@@ -50,17 +48,6 @@ FactoryGirl.define do
       }.tap do |attrs|
         if created_by
           attrs[:created_by] = created_by
-        end
-
-        if locations
-          attrs[:content_locations] = locations.map do |location|
-            ContentLocation.new(
-              location: location,
-              location_type: 'base'
-            )
-          end
-        elsif content_locations
-          attrs[:content_locations] = content_locations
         end
       end)
     }

@@ -12,8 +12,6 @@ module Api
         :author_id,
         :author_name,
         :avatar_url,
-        :base_location_ids,
-        :base_location_name,
         :biz_feed_public,
         :campaign_end,
         :campaign_start,
@@ -66,17 +64,6 @@ module Api
         :venue_url,
         :venue_zip,
         :view_count
-
-        def base_location_name
-          if object.base_locations_array.present?
-            location_name = object.base_locations_array[0][:name]
-            if context.present? && context[:location_id].present?
-              base_location = object.base_locations_array.find{ |bl| bl[:slug] == context[:location_id] }
-              location_name = base_location.name if base_location.present?
-            end
-             location_name
-          end
-        end
 
         def event_instance_id
           if is_event?

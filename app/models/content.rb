@@ -138,9 +138,9 @@ class Content < ActiveRecord::Base
              :promotions,
              :images,
              :created_by,
+             :location,
              children: [:created_by],
              parent: [:root_content_category],
-             content_locations: [:location],
              content_category: [:parent],
              organization: [:locations, :consumer_active_base_locations, :organization_locations])
       .where('organization_id NOT IN (4,5,328)')
@@ -165,31 +165,6 @@ class Content < ActiveRecord::Base
     deleted_at.blank? && raw_content.present?
   end
 
-  def all_loc_slugs
-    # this is to work around a bug https://github.com/rails/rails/pull/25976 which is fixed
-    # in rails 5.0.1. pluck() prevents previously loaded includes from being used
-    if association(:locations).loaded?
-      locs = locations.map(&:slug)
-    elsif association(:content_locations).loaded?
-      locs = content_locations.map{|cl| cl.location.slug}
-    else
-      locs = locations.pluck(:slug)
-    end
-    if content_type != :talk && organization.present? && organization.name != 'Listserv'
-      # same work-around here - remove when rails is upgraded
-      if organization.association(:locations).loaded?
-        locs += organization.locations.map(&:slug)
-      elsif organization.association(:organization_locations).loaded?
-        locs = organization.organization_locations.map do |ol|
-          ol.location.slug
-        end
-      else
-        locs += organization.locations.pluck(:slug)
-      end
-    end
-    locs.uniq
-  end
-
   after_commit :reindex_associations_async
   def reindex_associations_async
     if channel.present? and channel.is_a? Event
@@ -204,38 +179,12 @@ class Content < ActiveRecord::Base
   has_many :content_reports
   has_many :payments
 
-  has_many :content_locations, dependent: :destroy
-  accepts_nested_attributes_for :content_locations, allow_destroy: true
-  has_many :locations, through: :content_locations
-  has_many :base_locations, -> { where('"content_locations"."location_type" = \'base\'') },
-           through: :content_locations, source: :location
-  has_many :about_locations, -> { where('"content_locations"."location_type" = \'about\'') },
-           through: :content_locations, source: :location
-
   has_many :profile_metrics, dependent: :destroy
 
   validate :if_ad_promotion_type_sponsored_must_have_ad_max_impressions
   validates :ad_invoiced_amount, numericality: { greater_than: 0 }, if: 'ad_invoiced_amount.present?'
   validates :ad_commission_amount, numericality: { greater_than: 0 }, if: 'ad_commission_amount.present?'
   validates :ad_services_amount, numericality: { greater_than: 0 }, if: 'ad_services_amount.present?'
-
-  def base_locations=locs
-    locs.each do |l|
-      ContentLocation.find_or_initialize_by(
-        content: self,
-        location: l
-      ).base!
-    end
-  end
-
-  def about_locations=locs
-    locs.each do |l|
-      ContentLocation.find_or_initialize_by(
-        content: self,
-        location: l
-      ).about!
-    end
-  end
 
   has_many :organization_content_tags, dependent: :destroy
   has_many :organizations, through: :organization_content_tags
@@ -317,10 +266,6 @@ class Content < ActiveRecord::Base
   scope :only_categories, ->(names) {
     joins("JOIN content_categories AS category ON root_content_category_id = category.id")\
     .where("category.name IN (?)", names)
-  }
-  # not checking for org base locations is intentional
-  scope :not_all_base_locations, -> {
-    where("EXISTS(select 1 from content_locations where content_id = contents.id AND (location_type != 'base' OR location_type IS NULL)) OR NOT EXISTS(select 1 from content_locations where content_id = contents.id)")
   }
 
   scope :ad_campaign_active, ->(date=Date.current) { where("ad_campaign_start <= ?", date)
@@ -872,12 +817,6 @@ class Content < ActiveRecord::Base
   end
 
   private
-
-  def require_at_least_one_content_location
-    unless content_locations.any?
-      errors.add(:content_locations, "must have at least one location")
-    end
-  end
 
   def if_ad_promotion_type_sponsored_must_have_ad_max_impressions
     if ad_promotion_type == PromotionBanner::SPONSORED && ad_max_impressions.nil?

@@ -91,14 +91,6 @@ class Listserv < ActiveRecord::Base
     subscriptions.active.count
   end
 
-  def add_listserv_location_to_content(content)
-    if self.locations.present?
-      self.locations.each do |l|
-        content.locations << l unless content.locations.include? l
-      end
-    end
-  end
-
   def is_managed_list?
     subscribe_email.present? or post_email.present? or unsubscribe_email.present?
   end

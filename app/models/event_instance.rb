@@ -59,7 +59,7 @@ class EventInstance < ActiveRecord::Base
             content: [
               :created_by,
               :organization,
-              {content_locations: :location},
+              :location,
               {comments: :created_by},
               :images
             ]
