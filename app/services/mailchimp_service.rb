@@ -257,7 +257,7 @@ module MailchimpService
   end
 
   def get_campaign_clicks_report campaign_id
-    detect_error(get("/reports/#{campaign_id}/click-details")).deep_symbolize_keys
+    detect_error(get("/reports/#{campaign_id}/click-details?count=20")).deep_symbolize_keys
   end
 
 
