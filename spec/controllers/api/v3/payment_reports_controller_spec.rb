@@ -7,7 +7,7 @@ RSpec.describe Api::V3::PaymentReportsController, type: :controller do
     let(:user) { FactoryGirl.create :user }
 
     describe 'with user_id' do
-      subject { get :index, user_id: user.id, period_start: period_start, period_end: period_end }
+      subject { get :index, params: { user_id: user.id, period_start: period_start, period_end: period_end } }
 
       context 'when no user logged in' do
         it "should return unauthorized status" do

@@ -1,3 +1,29 @@
+# == Schema Information
+#
+# Table name: payments
+#
+#  id                 :integer          not null, primary key
+#  period_start       :date
+#  period_end         :date
+#  paid_impressions   :integer
+#  pay_per_impression :decimal(, )
+#  total_payment      :decimal(, )
+#  payment_date       :date
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  content_id         :integer
+#  paid_to            :integer
+#  paid               :boolean          default(FALSE)
+#
+# Indexes
+#
+#  index_payments_on_paid_to  (paid_to)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (content_id => contents.id)
+#
+
 require 'rails_helper'
 
 RSpec.describe Payment, type: :model do

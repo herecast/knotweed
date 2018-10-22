@@ -2,15 +2,15 @@
 #
 # Table name: content_reports
 #
-#  id                       :integer          not null, primary key
-#  content_id               :integer
+#  id                       :bigint(8)        not null, primary key
+#  content_id               :bigint(8)
 #  report_date              :datetime
 #  view_count               :integer          default(0)
 #  banner_click_count       :integer          default(0)
-#  comment_count            :integer
-#  total_view_count         :integer
-#  total_banner_click_count :integer
-#  total_comment_count      :integer
+#  comment_count            :bigint(8)
+#  total_view_count         :bigint(8)
+#  total_banner_click_count :bigint(8)
+#  total_comment_count      :bigint(8)
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #

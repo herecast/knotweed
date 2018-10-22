@@ -2,7 +2,7 @@
 #
 # Table name: business_locations
 #
-#  id                  :integer          not null, primary key
+#  id                  :bigint(8)        not null, primary key
 #  name                :string(255)
 #  address             :string(255)
 #  phone               :string(255)
@@ -10,7 +10,7 @@
 #  hours               :text
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  organization_id     :integer
+#  organization_id     :bigint(8)
 #  latitude            :float
 #  longitude           :float
 #  venue_url           :string(255)

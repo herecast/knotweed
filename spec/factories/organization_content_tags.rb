@@ -5,6 +5,8 @@
 #  id              :integer          not null, primary key
 #  organization_id :integer
 #  content_id      :integer
+#  created_at      :datetime
+#  updated_at      :datetime
 #
 # Indexes
 #
@@ -13,8 +15,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_0359aae08c  (organization_id => organizations.id)
-#  fk_rails_36c5dda2b4  (content_id => contents.id)
+#  fk_rails_...  (content_id => contents.id)
+#  fk_rails_...  (organization_id => organizations.id)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

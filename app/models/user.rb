@@ -2,13 +2,13 @@
 #
 # Table name: users
 #
-#  id                     :integer          not null, primary key
+#  id                     :bigint(8)        not null, primary key
 #  email                  :string(255)      default(""), not null
 #  encrypted_password     :string(255)      default(""), not null
 #  reset_password_token   :string(255)
 #  reset_password_sent_at :datetime
 #  remember_created_at    :datetime
-#  sign_in_count          :integer          default(0)
+#  sign_in_count          :bigint(8)        default(0)
 #  current_sign_in_at     :datetime
 #  last_sign_in_at        :datetime
 #  current_sign_in_ip     :string(255)
@@ -20,13 +20,13 @@
 #  confirmed_at           :datetime
 #  confirmation_sent_at   :datetime
 #  unconfirmed_email      :string(255)
-#  default_repository_id  :integer
+#  default_repository_id  :bigint(8)
 #  nda_agreed_at          :datetime
 #  agreed_to_nda          :boolean          default(FALSE)
 #  contact_phone          :string(255)
 #  contact_email          :string(255)
 #  contact_url            :string(255)
-#  location_id            :integer
+#  location_id            :bigint(8)
 #  test_group             :string(255)      default("consumer")
 #  muted                  :boolean          default(FALSE)
 #  authentication_token   :string(255)
@@ -63,7 +63,7 @@ class User < ActiveRecord::Base
   belongs_to :location
   mount_uploader :avatar, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_avatar,
-                                 :remove_avatar!
+                                 :remove_avatar!, raise: false
 
   accepts_nested_attributes_for :subscriptions
 

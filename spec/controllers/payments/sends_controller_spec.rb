@@ -8,7 +8,7 @@ describe Payments::SendsController, type: :controller do
     let(:period_start) { 2.weeks.ago.strftime('%m/%d/%Y') }
     let(:period_end) { Date.today.strftime('%m/%d/%Y') }
 
-    subject { post :create, period_start: period_start, period_end: period_end }
+    subject { post :create, params: { period_start: period_start, period_end: period_end } }
 
     it 'should queue SendPaymentsJob' do
       subject

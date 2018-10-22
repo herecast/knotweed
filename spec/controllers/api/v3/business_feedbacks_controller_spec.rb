@@ -12,9 +12,9 @@ describe Api::V3::BusinessFeedbacksController, :type => :controller do
     end
 
     subject do
-      post :create, id: @profile.id, feedback: {
+      post :create, params: { id: @profile.id, feedback: {
         recommend: 1
-      }
+      } }
     end
 
     it 'should create a business feedback object' do
@@ -52,12 +52,12 @@ describe Api::V3::BusinessFeedbacksController, :type => :controller do
         created_by: @user
     end
 
-    subject { put :update, id: @business_profile.id, feedback: { recommend: 1 } }
+    subject { put :update, params: { id: @business_profile.id, feedback: { recommend: 1 } } }
 
     it "updates user's feedback" do
-      subject
-      @feedback.reload
-      expect(@feedback.recommend).to be true
+      expect{ subject }.to change{
+        @feedback.reload.recommend
+      }.to true
     end
 
     context "when update fails" do

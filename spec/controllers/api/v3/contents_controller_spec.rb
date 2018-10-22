@@ -15,6 +15,7 @@ describe Api::V3::ContentsController, :type => :controller do
       end
 
       subject { get :show, { id: @content.id } }
+      subject { get :show, params: { id: @content.id } }
 
       it "makes call to create alternate content" do
         expect(CreateAlternateContent).to receive(:call).with(
@@ -31,7 +32,7 @@ describe Api::V3::ContentsController, :type => :controller do
           organization: @org
       end
 
-      subject { get :show, { id: @content.id } }
+      subject { get :show, params: { id: @content.id } }
 
       it "returns not_found status" do
         subject
@@ -72,7 +73,7 @@ describe Api::V3::ContentsController, :type => :controller do
           organization: @org
       end
 
-      subject { get :show, { id: @content.id } }
+      subject { get :show, params: { id: @content.id } }
 
       it "returns not_found status" do
         subject
@@ -89,7 +90,8 @@ describe Api::V3::ContentsController, :type => :controller do
       origin: Content::UGC_ORIGIN
     }
 
-    subject { get :similar_content, format: :json, id: content.id }
+    subject { get :similar_content, format: :json,
+        params: { id: content.id } }
 
     it 'has 200 status code' do
       subject
@@ -103,7 +105,7 @@ describe Api::V3::ContentsController, :type => :controller do
   end
 
   describe 'POST /contents/:id/moderate' do
-    subject { post :moderate, id: @content.id, flag_type: 'Inappropriate' }
+    subject { post :moderate, params: { id: @content.id, flag_type: 'Inappropriate' } }
 
     before do
       @content = FactoryGirl.create :content
@@ -118,7 +120,6 @@ describe Api::V3::ContentsController, :type => :controller do
       }.to change{ActiveJob::Base.queue_adapter.enqueued_jobs.size}.by(1)
       expect(ActiveJob::Base.queue_adapter.enqueued_jobs.last[:job]).to eq(ActionMailer::DeliveryJob)
     end
-
   end
 
   describe "DELETE #destroy" do
@@ -129,7 +130,7 @@ describe Api::V3::ContentsController, :type => :controller do
         created_by: @user
     end
 
-    subject { delete :destroy, id: @content.id }
+    subject { delete :destroy, params: { id: @content.id } }
 
     context "when no user logged in" do
       it "it returns unauthorized status" do
@@ -171,7 +172,7 @@ describe Api::V3::ContentsController, :type => :controller do
       api_authenticate user: @user
     end
 
-    subject { get :metrics, id: @content.id }
+    subject { get :metrics, params: { id: @content.id } }
 
     context 'without owning the content' do
       before do
@@ -222,7 +223,7 @@ describe Api::V3::ContentsController, :type => :controller do
       }
 
       subject do
-        post :create, { content: content_params }
+        post :create, params: { content: content_params }
       end
 
       context 'when successful' do
@@ -403,7 +404,7 @@ describe Api::V3::ContentsController, :type => :controller do
       }
 
       subject do
-        put :update, { id: content.id, content: content_params }
+        put :update, params: { id: content.id, content: content_params }
       end
 
       context 'when successful' do

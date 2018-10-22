@@ -1,7 +1,7 @@
 module Api
   module V3
     class ImagesController < ApiController
-      before_filter :check_logged_in!, only: [:update, :create] 
+      before_action :check_logged_in!, only: [:update, :create] 
 
       def create
         @content = Content.find(params[:image].delete(:content_id))

@@ -1,7 +1,7 @@
 module Api
   module V3
     class OrganizationsController < ApiController
-      before_filter :check_logged_in!, only: [:create, :update]
+      before_action :check_logged_in!, only: [:create, :update]
 
       def create
         @organization = Organization.new(create_organization_params)

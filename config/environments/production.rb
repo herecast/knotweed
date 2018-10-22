@@ -1,4 +1,4 @@
-Knotweed::Application.configure do
+Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
   # Code is not reloaded between requests
@@ -11,7 +11,7 @@ Knotweed::Application.configure do
   config.action_controller.perform_caching = true
 
   # Disable Rails's static asset server (Apache or nginx will already do this)
-  config.serve_static_files = !!ENV.fetch('SERVE_STATIC_FILES', false)
+  config.public_file_server.enabled = !!ENV.fetch('SERVE_STATIC_FILES', false)
 
   # Compress JavaScripts and CSS
   config.assets.compress = true
@@ -97,6 +97,4 @@ Knotweed::Application.configure do
     enable_starttls_auto: false,
     openssl_verify_mode: 'none',
   }
-
-  config.active_record.raise_in_transactional_callbacks = false
 end

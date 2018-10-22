@@ -86,7 +86,7 @@ module Api
       def get_resource
         @subscription = Subscription.find_by(key: params[:key])
         unless @subscription
-          head status: :not_found
+          render json: {}, status: :not_found
         end
       end
 

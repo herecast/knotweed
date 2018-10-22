@@ -7,8 +7,11 @@ class DatetimePickerInput < SimpleForm::Inputs::StringInput
     input_html_options[:type] = 'text'
     picker_pettern = I18n.t('datepicker.pformat', :default => 'dd/MM/yyyy') + ' ' + I18n.t('timepicker.pformat', :default => 'hh:mm')
     input_html_options[:data] ||= {}
-    input_html_options[:data].merge!({ format: picker_pettern, language: I18n.locale.to_s,
-                                       date_weekstart: I18n.t('datepicker.weekstart', :default => 0) })
+    input_html_options[:data] = input_html_options[:data].merge({
+      format: picker_pettern,
+      language: I18n.locale.to_s,
+      date_weekstart: I18n.t('datepicker.weekstart', :default => 0)
+    })
 
     template.content_tag :div, class: 'input-append date datetimepicker' do
       input = super # leave StringInput do the real rendering

@@ -11,7 +11,7 @@ describe ListservCampaignsController do
     let(:raw_campaign_attrs)   { FactoryGirl.attributes_for(:campaign) }
     let(:string_community_ids) { raw_campaign_attrs[:community_ids].map(&:to_s) }
     let(:campaign_attrs)       { raw_campaign_attrs.merge(community_ids: string_community_ids) }
-    subject                    { post :create, listserv_id: listserv, campaign: campaign_attrs, format: :js }
+    subject                    { post :create, params: { listserv_id: listserv, campaign: campaign_attrs }, format: :js }
 
     it 'adds a campaign record' do
       expect{subject}.to change{Campaign.count}.by(1)
@@ -24,7 +24,7 @@ describe ListservCampaignsController do
 
     context 'with invalid params' do
       let(:invalid_attrs) { campaign_attrs.except :community_ids }
-      subject             { post :create, listserv_id: listserv, campaign: invalid_attrs, format: :js }
+      subject             { post :create, params: { listserv_id: listserv, campaign: invalid_attrs }, format: :js }
 
       it 'adds no campaign record' do
         expect{subject}.not_to change{Campaign.count}
@@ -42,7 +42,7 @@ describe ListservCampaignsController do
     let(:patch_attrs) { {sponsored_by: new_sponsor} }
     let(:campaign)    { FactoryGirl.create(:campaign) }
     let(:listserv)    { campaign.listserv }
-    subject           { put :update, listserv_id: listserv, id: campaign, campaign: patch_attrs, format: :js }
+    subject           { put :update, params: { listserv_id: listserv, id: campaign, campaign: patch_attrs }, format: :js }
 
     it 'modifies the given record' do
       expect{subject}.to change{campaign.reload.sponsored_by}
@@ -55,8 +55,8 @@ describe ListservCampaignsController do
     end
 
     context 'with invalid params' do
-      let(:invalid_attrs) { patch_attrs.merge(community_ids: []) }
-      subject             { put :update, listserv_id: listserv, id: campaign, campaign: invalid_attrs, format: :js }
+      let(:invalid_attrs) { patch_attrs.merge(community_ids: ['']) }
+      subject             { put :update, params: { listserv_id: listserv, id: campaign, campaign: invalid_attrs }, format: :js }
 
       it 'leaves the given record intact' do
         expect{subject}.not_to change{campaign.reload.sponsored_by}
@@ -72,7 +72,7 @@ describe ListservCampaignsController do
   describe 'DELETE destroy' do
     let!(:campaign) { FactoryGirl.create(:campaign) }
     let(:listserv)  { campaign.listserv }
-    subject         { delete :destroy, listserv_id: listserv, id: campaign, format: :js }
+    subject         { delete :destroy, params: { listserv_id: listserv, id: campaign }, format: :js }
 
     it 'removes the campaign record' do
       expect{subject}.to change{Campaign.count}.by(-1)

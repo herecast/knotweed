@@ -8,10 +8,10 @@ describe SessionsController, :type => :controller do
                 password: 'passw0rd'
       }
     end
-    
+
     subject! do
       @request.env["devise.mapping"] = Devise.mappings[:user]
-      post :create, format: :json, user: @args 
+      post :create, format: :json, params: { user: @args }
     end
 
     it 'should respond with 201' do
@@ -32,18 +32,18 @@ describe SessionsController, :type => :controller do
       @request.env["devise.mapping"] = Devise.mappings[:user]
     end
     it 'should respond with 201' do
-      post :sign_in_with_token, format: :json, token: @sign_in_token.token
+      post :sign_in_with_token, format: :json, params: { token: @sign_in_token.token }
       expect(response.status).to eq 201
     end
-    
+
     it 'should return expected fields' do
-      post :sign_in_with_token, format: :json, token: @sign_in_token.token
+      post :sign_in_with_token, format: :json, params: { token: @sign_in_token.token }
       expect(JSON.parse(response.body)).to eq({ token: @user.authentication_token, email: @user.email }.stringify_keys)
     end
-   
+
     context 'user is unconfirmed' do
       it 'comfirms the users account' do
-        post :sign_in_with_token, format: :json, token: @sign_in_token.token
+        post :sign_in_with_token, format: :json, params: { token: @sign_in_token.token }
         @user.reload
         expect(@user.confirmed?).to eq true
       end
@@ -54,7 +54,7 @@ describe SessionsController, :type => :controller do
     before do
       # @existing_user = FactoryGirl.create :user, provider: "facebook", uid: "123456"
       @existing_user = FactoryGirl.create :user
-      @existing_social_login = FactoryGirl.create :social_login, 
+      @existing_social_login = FactoryGirl.create :social_login,
         provider: "facebook",
         uid: "123456",
         user: @existing_user
@@ -62,8 +62,8 @@ describe SessionsController, :type => :controller do
     end
 
     let(:existing_user_fb_response) {
-      { email: @existing_user.email, 
-        name: @existing_user.name, 
+      { email: @existing_user.email,
+        name: @existing_user.name,
         id: "123456",
         verified: true,
         age_range: { min: 21 },
@@ -90,12 +90,12 @@ describe SessionsController, :type => :controller do
         gender: "male" }
     }
 
-    
+
     context 'when a user has an existing account' do
 
       it 'returns the correct user and signs them in' do
         allow(FacebookService).to receive(:get_user_info).and_return(existing_user_fb_response)
-        post :oauth, accessToken: "myFak3t0k3n"
+        post :oauth, params: { accessToken: "myFak3t0k3n" }
         @existing_user.reload
         expect(JSON.parse(response.body)).to eq ({ email: @existing_user.email, token: @existing_user.authentication_token }.stringify_keys)
       end
@@ -111,7 +111,7 @@ describe SessionsController, :type => :controller do
       end
 
       subject do
-        post :oauth, accessToken: "myFak3t0k3n", location_id: location.slug
+        post :oauth, params: { accessToken: "myFak3t0k3n", location_id: location.slug }
       end
 
       it 'creates a new user ' do

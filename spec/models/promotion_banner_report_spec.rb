@@ -2,13 +2,13 @@
 #
 # Table name: promotion_banner_reports
 #
-#  id                     :integer          not null, primary key
-#  promotion_banner_id    :integer
+#  id                     :bigint(8)        not null, primary key
+#  promotion_banner_id    :bigint(8)
 #  report_date            :datetime
-#  impression_count       :integer
-#  click_count            :integer
-#  total_impression_count :integer
-#  total_click_count      :integer
+#  impression_count       :bigint(8)
+#  click_count            :bigint(8)
+#  total_impression_count :bigint(8)
+#  total_click_count      :bigint(8)
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  load_count             :integer

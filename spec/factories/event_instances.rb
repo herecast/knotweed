@@ -2,8 +2,8 @@
 #
 # Table name: event_instances
 #
-#  id                   :integer          not null, primary key
-#  event_id             :integer
+#  id                   :bigint(8)        not null, primary key
+#  event_id             :bigint(8)
 #  start_date           :datetime
 #  end_date             :datetime
 #  subtitle_override    :string(255)
@@ -11,7 +11,7 @@
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
 #  presenter_name       :string(255)
-#  schedule_id          :integer
+#  schedule_id          :bigint(8)
 #
 # Indexes
 #

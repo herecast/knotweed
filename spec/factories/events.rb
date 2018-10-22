@@ -2,9 +2,9 @@
 #
 # Table name: events
 #
-#  id                    :integer          not null, primary key
+#  id                    :bigint(8)        not null, primary key
 #  event_type            :string(255)
-#  venue_id              :integer
+#  venue_id              :bigint(8)
 #  cost                  :string(255)
 #  event_url             :string
 #  sponsor               :string(255)

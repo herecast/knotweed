@@ -14,7 +14,7 @@ describe 'Businesses Endpoints', type: :request do
       let(:business) { FactoryGirl.create(:business_profile, :claimed) }
       before do
         business.content.update_attribute(:created_by, user)
-        get "/api/v3/businesses/#{business.id}", {}, auth_headers
+        get "/api/v3/businesses/#{business.id}", params: {}, headers: auth_headers
       end
 
       it 'response includes can_edit=true' do
@@ -26,7 +26,7 @@ describe 'Businesses Endpoints', type: :request do
       let(:business) { FactoryGirl.create(:business_profile, :claimed) }
       before do
         business.content.update_attribute(:created_by, FactoryGirl.create(:user))
-        get "/api/v3/businesses/#{business.id}", {}, auth_headers
+        get "/api/v3/businesses/#{business.id}", params: {}, headers: auth_headers
       end
 
       it 'response includes can_edit=false' do
@@ -58,7 +58,7 @@ describe 'Businesses Endpoints', type: :request do
         )
         @business = FactoryGirl.create :business_profile, :claimed, business_location: location
         @business.content.update_attribute(:created_by, user)
-        get url, {}, auth_headers
+        get url, params: {}, headers: auth_headers
       end
 
       it 'response includes business, and it has can_edit=true' do
@@ -77,7 +77,7 @@ describe 'Businesses Endpoints', type: :request do
       describe 'meta.total' do
 
         it "is equal to the total items matching search" do
-          get url, {
+          get url, params: {
             per_page: 1,
             radius: 10_000 # we don't want distance to limit the query
           }
@@ -102,7 +102,7 @@ describe 'Businesses Endpoints', type: :request do
             end
           end
 
-          get url, {
+          get url, params: {
             sort_by: 'score_desc',
             radius: 10_000 # we don't want distance to limit the query
           }
@@ -120,7 +120,7 @@ describe 'Businesses Endpoints', type: :request do
 
       describe '?sort_by=distance_asc' do
         before do
-          get url, {
+          get url, params: {
             sort_by: 'distance_desc',
             radius: 10_000 # we don't want distance to limit the query
           }
@@ -147,7 +147,7 @@ describe 'Businesses Endpoints', type: :request do
             end
           end
 
-          get url, {
+          get url, params: {
             sort_by: 'rated_desc',
             radius: 10_000 # we don't want distance to limit the query
           }
@@ -164,7 +164,7 @@ describe 'Businesses Endpoints', type: :request do
 
       describe '?sort_by=alpha_asc' do
         before do
-          get url, {
+          get url, params: {
             sort_by: 'alpha_asc',
             radius: 10_000 # we don't want distance to limit the query
           }
@@ -180,7 +180,7 @@ describe 'Businesses Endpoints', type: :request do
 
       describe '?sort_by=alpha_desc' do
         before do
-          get url, {
+          get url, params: {
             sort_by: 'alpha_desc',
             radius: 10_000 # we don't want distance to limit the query
           }
@@ -204,7 +204,7 @@ describe 'Businesses Endpoints', type: :request do
             b.content.organization_id = organization.id
             b.save!
           end
-          get url, { organization_id: organization.id }
+          get url, params: { organization_id: organization.id }
         end
 
         it 'only returns businesses owned by the organization' do
@@ -240,7 +240,7 @@ describe 'Businesses Endpoints', type: :request do
         business.content.update_attribute(:created_by, user)
       end
 
-      subject { put "/api/v3/businesses/#{business.id}", {business: valid_params}, auth_headers }
+      subject { put "/api/v3/businesses/#{business.id}", params: { business: valid_params }, headers: auth_headers }
 
       it 'updates the business' do
         subject

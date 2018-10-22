@@ -6,7 +6,8 @@ Devise.setup do |config|
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
   config.mailer_sender = Rails.configuration.subtext.emails.no_reply
   config.secret_key = '3e42ee7505838262a4f65ae11d644671a746745d6a8233e5c8943cdaf905373d29c6ec997dad7467d62263a1769c5076ae354194a4dbb62c4e91bae25d0b5704'
-
+  config.email_regexp = /\A[^@\s]+@([^@\s]+\.)+[^@\W]+\z/
+  
   # Configure the class responsible to send e-mails.
   # config.mailer = "Devise::Mailer"
 

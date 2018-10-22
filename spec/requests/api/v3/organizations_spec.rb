@@ -192,8 +192,8 @@ RSpec.describe 'Organizations Endpoints', type: :request do
       it 'updates' do
         expect{
           patch "/api/v3/organizations/#{organization.id}",
-            {organization: valid_params},
-            auth_headers
+            params: { organization: valid_params },
+            headers: auth_headers
         }.to change{
             organization.reload.attributes.symbolize_keys.slice(
             :name, :subscribe_url,

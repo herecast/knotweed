@@ -2,7 +2,7 @@ module Api
   module V3
     class Users::PaymentsController < ApiController
 
-      before_filter :check_logged_in!
+      before_action :check_logged_in!
 
       def index
         @payments = Payment.paid.for_user(params[:user_id]).by_period.limit(6)

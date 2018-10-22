@@ -19,7 +19,7 @@ RSpec.describe SubscriptionsController, type: :controller do
         confirmed_at: Time.now,
         confirm_ip: "1.1.1.1"
       })
-      get :index, {}
+      get :index, params: {}
       expect(assigns(:subscriptions)).to eq([subscription])
     end
 
@@ -34,7 +34,7 @@ RSpec.describe SubscriptionsController, type: :controller do
       end
 
       it 'sorts them newest first' do
-        get :index, {}
+        get :index, params: {}
         expect(assigns(:subscriptions).first).to eql Subscription.order('created_at DESC').first
       end
     end
@@ -43,7 +43,7 @@ RSpec.describe SubscriptionsController, type: :controller do
   describe "GET #show" do
     it "assigns the requested subscription as @subscription" do
       subscription = Subscription.create! valid_attributes
-      get :show, {:id => subscription.to_param}
+      get :show, params: { id: subscription.to_param }
       expect(assigns(:subscription)).to eq(subscription)
     end
   end
@@ -51,7 +51,7 @@ RSpec.describe SubscriptionsController, type: :controller do
   describe "GET #edit" do
     it "assigns the requested subscription as @subscription" do
       subscription = Subscription.create! valid_attributes
-      get :edit, {:id => subscription.to_param}
+      get :edit, params: { id: subscription.to_param }
       expect(assigns(:subscription)).to eq(subscription)
     end
   end
@@ -60,18 +60,18 @@ RSpec.describe SubscriptionsController, type: :controller do
     context "with valid params" do
       it "creates a new Subscription" do
         expect {
-          post :create, {:subscription => valid_attributes}
+          post :create, params: { subscription: valid_attributes }
         }.to change(Subscription, :count).by(1)
       end
 
       it "assigns a newly created subscription as @subscription" do
-        post :create, {:subscription => valid_attributes}
+        post :create, params: { subscription: valid_attributes }
         expect(assigns(:subscription)).to be_a(Subscription)
         expect(assigns(:subscription)).to be_persisted
       end
 
       it "redirects to the subscription list" do
-        post :create, {:subscription => valid_attributes}
+        post :create, params: { subscription: valid_attributes }
         expect(response).to redirect_to(subscriptions_url)
       end
     end
@@ -85,20 +85,20 @@ RSpec.describe SubscriptionsController, type: :controller do
 
       it "updates the requested subscription" do
         subscription = Subscription.create! valid_attributes
-        put :update, {:id => subscription.to_param, :subscription => new_attributes}
+        put :update, params: { id: subscription.to_param, subscription: new_attributes }
         subscription.reload
         expect(subscription.blacklist?).to eql true
       end
 
       it "assigns the requested subscription as @subscription" do
         subscription = Subscription.create! valid_attributes
-        put :update, {:id => subscription.to_param, :subscription => valid_attributes}
+        put :update, params: { id: subscription.to_param, subscription: valid_attributes }
         expect(assigns(:subscription)).to eq(subscription)
       end
 
       it "redirects to the subscription list" do
         subscription = Subscription.create! valid_attributes
-        put :update, {:id => subscription.to_param, :subscription => valid_attributes}
+        put :update, params: { id: subscription.to_param, subscription: valid_attributes }
         expect(response).to redirect_to(subscriptions_url)
       end
     end
@@ -108,7 +108,7 @@ RSpec.describe SubscriptionsController, type: :controller do
         @subscription = FactoryGirl.create :subscription
       end
 
-      subject { put :update, id: @subscription.id, subscription: { email: nil } }
+      subject { put :update, params: { id: @subscription.id, subscription: { email: nil } } }
 
       it "does not update subscription" do
         initial_state = @subscription.clone
@@ -123,13 +123,13 @@ RSpec.describe SubscriptionsController, type: :controller do
     it "destroys the requested subscription" do
       subscription = Subscription.create! valid_attributes
       expect {
-        delete :destroy, {:id => subscription.to_param}
+        delete :destroy, params: { id: subscription.to_param }
       }.to change(Subscription, :count).by(-1)
     end
 
     it "redirects to the subscriptions list" do
       subscription = Subscription.create! valid_attributes
-      delete :destroy, {:id => subscription.to_param}
+      delete :destroy, params: { id: subscription.to_param }
       expect(response).to redirect_to(subscriptions_url)
     end
   end

@@ -3,12 +3,12 @@
 #
 # Table name: contents
 #
-#  id                        :integer          not null, primary key
+#  id                        :bigint(8)        not null, primary key
 #  title                     :string(255)
 #  subtitle                  :string(255)
 #  authors                   :string(255)
 #  raw_content               :text
-#  issue_id                  :integer
+#  issue_id                  :bigint(8)
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
 #  guid                      :string(255)
@@ -18,15 +18,14 @@
 #  origin                    :string(255)
 #  page                      :string(255)
 #  authoremail               :string(255)
-#  organization_id           :integer
+#  organization_id           :bigint(8)
 #  quarantine                :boolean          default(FALSE)
 #  timestamp                 :datetime
-#  parent_id                 :integer
-#  content_category_id       :integer
+#  parent_id                 :bigint(8)
+#  content_category_id       :bigint(8)
 #  category_reviewed         :boolean          default(FALSE)
 #  has_event_calendar        :boolean          default(FALSE)
-#  channelized_content_id    :integer
-#  published                 :boolean          default(FALSE)
+#  channelized_content_id    :bigint(8)
 #  channel_type              :string(255)
 #  channel_id                :integer
 #  root_content_category_id  :integer
@@ -37,8 +36,8 @@
 #  updated_by_id             :integer
 #  banner_click_count        :integer          default(0)
 #  similar_content_overrides :text
-#  banner_ad_override        :integer
-#  root_parent_id            :integer
+#  banner_ad_override        :bigint(8)
+#  root_parent_id            :bigint(8)
 #  deleted_at                :datetime
 #  authors_is_created_by     :boolean          default(FALSE)
 #  subscriber_mc_identifier  :string
@@ -81,7 +80,6 @@
 #  idx_16527_index_contents_on_channelized_content_id    (channelized_content_id)
 #  idx_16527_index_contents_on_created_by                (created_by_id)
 #  idx_16527_index_contents_on_parent_id                 (parent_id)
-#  idx_16527_index_contents_on_published                 (published)
 #  idx_16527_index_contents_on_root_content_category_id  (root_content_category_id)
 #  idx_16527_index_contents_on_root_parent_id            (root_parent_id)
 #  idx_16527_pubdate                                     (pubdate)
@@ -109,9 +107,9 @@ class Content < ActiveRecord::Base
 
   before_save :conditionally_update_latest_activity
   def conditionally_update_latest_activity
-    if channel_type == 'MarketPost' && channel.sold_changed? && pubdate >= 30.days.ago
+    if channel_type == 'MarketPost' && channel.saved_change_to_sold? && pubdate >= 30.days.ago
       self.latest_activity = Time.current
-    elsif content_type == :news && pubdate_changed?
+    elsif content_type == :news && will_save_change_to_pubdate?
       self.latest_activity = pubdate
     end
   end
@@ -182,9 +180,9 @@ class Content < ActiveRecord::Base
   has_many :profile_metrics, dependent: :destroy
 
   validate :if_ad_promotion_type_sponsored_must_have_ad_max_impressions
-  validates :ad_invoiced_amount, numericality: { greater_than: 0 }, if: 'ad_invoiced_amount.present?'
-  validates :ad_commission_amount, numericality: { greater_than: 0 }, if: 'ad_commission_amount.present?'
-  validates :ad_services_amount, numericality: { greater_than: 0 }, if: 'ad_services_amount.present?'
+  validates :ad_invoiced_amount, numericality: { greater_than: 0 }, if: ->{ ad_invoiced_amount.present? }
+  validates :ad_commission_amount, numericality: { greater_than: 0 }, if: ->{ ad_commission_amount.present? }
+  validates :ad_services_amount, numericality: { greater_than: 0 }, if: ->{ ad_services_amount.present? }
 
   has_many :organization_content_tags, dependent: :destroy
   has_many :organizations, through: :organization_content_tags
@@ -381,7 +379,7 @@ class Content < ActiveRecord::Base
     # we don't want to be calling find_root_parent every time because it's costly,
     # so we rely on whether or not the parent_id changed as that's the only way -- within
     # a single transaction -- that root_parent_id could've changed
-    if parent_id_changed? or parent_id.nil? # the latter part of this conditional covers creating
+    if saved_change_to_parent_id? or parent_id.nil? # the latter part of this conditional covers creating
       # new content that doesn't have a parent
       self.update_column(:root_parent_id, find_root_parent.id)
     end

@@ -2,12 +2,12 @@
 #
 # Table name: images
 #
-#  id             :integer          not null, primary key
+#  id             :bigint(8)        not null, primary key
 #  caption        :string(255)
 #  credit         :string(255)
 #  image          :string(255)
 #  imageable_type :string(255)
-#  imageable_id   :integer
+#  imageable_id   :bigint(8)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  source_url     :string(400)
@@ -30,7 +30,7 @@ class Image < ActiveRecord::Base
 
   mount_uploader :image, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_image,
-                                 :remove_image!
+                                 :remove_image!, raise: false
 
   # validates_presence_of :image
   validates :image, :image_minimum_size => true

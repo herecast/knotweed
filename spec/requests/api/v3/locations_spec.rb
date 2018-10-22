@@ -35,7 +35,7 @@ RSpec.describe 'Locations API Endpoints', type: :request do
         }
       }
 
-      subject { get "/api/v3/locations", parameters }
+      subject { get "/api/v3/locations", params: parameters }
 
       context 'no radius given' do
         it 'responds with a 422' do
@@ -120,12 +120,12 @@ RSpec.describe 'Locations API Endpoints', type: :request do
       let(:lat) { Faker::Address.latitude }
       let(:lng) { Faker::Address.longitude }
 
-      subject { get '/api/v3/locations/locate', coords: "#{lat},#{lng}" }
+      subject { get '/api/v3/locations/locate', params: { coords: "#{lat},#{lng}" } }
 
       it 'should respond with the closest location' do
         expect(Location).to receive(:nearest_to_coords).with(
-          latitude: lat,
-          longitude: lng
+          latitude: lat.to_s,
+          longitude: lng.to_s
         ).and_return(
           [location]
         )
@@ -140,7 +140,7 @@ RSpec.describe 'Locations API Endpoints', type: :request do
         let(:auth_headers) { auth_headers_for(user) }
 
         subject {
-          get '/api/v3/locations/locate', {}, auth_headers
+          get '/api/v3/locations/locate', params: {}, headers: auth_headers
         }
 
         it "returns the users's location preference" do

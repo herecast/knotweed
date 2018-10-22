@@ -4,7 +4,7 @@ class RegistrationsController < Devise::RegistrationsController
   def create
     super do |user|
       if request.format.json?
-        if params[:instant_signup] == true
+        if [true, "true"].include?(params[:instant_signup])
           user.location_id = Location.find_by(city: 'Hartford', state: 'VT').id
           user.confirmed_at = Time.current
           user.nda_agreed_at = Time.current

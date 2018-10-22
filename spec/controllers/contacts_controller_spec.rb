@@ -15,7 +15,7 @@ describe ContactsController, type: :controller do
       let!(:organization) { FactoryGirl.create :organization }
 
       it 'sets the appropriate instance var' do
-        get :new, model: Organization, id: organization.id
+        get :new, params: { model: Organization, id: organization.id }
         expect(assigns(:organization)).to eql organization
       end
     end
@@ -24,7 +24,7 @@ describe ContactsController, type: :controller do
   describe '#create' do
     let(:attrs) { FactoryGirl.attributes_for :contact }
     it 'creates a record' do
-      expect{ xhr :post, :create, contact: attrs, format: :js }.to change{
+      expect{ post :create, xhr: true, params: { contact: attrs }, format: :js }.to change{
         Contact.count
       }.by(1)
     end
@@ -38,7 +38,7 @@ describe ContactsController, type: :controller do
 
     describe '#edit' do
       before do
-        xhr :get, :edit, id: record.id, format: :js
+        get :edit, xhr: true, params: { id: record.id }, format: :js
       end
 
       it 'renders form partial' do
@@ -52,7 +52,7 @@ describe ContactsController, type: :controller do
 
     describe '#update' do
       it 'updates record' do
-        put :update, id: record.id, format: :js, contact: { name: 'Yolanda' }
+        put :update, params: { id: record.id, contact: { name: 'Yolanda' } }, format: :js
         expect(record.reload.name).to eql 'Yolanda'
       end
     end
@@ -60,7 +60,7 @@ describe ContactsController, type: :controller do
     describe '#destroy' do
       it 'destroys the record' do
         expect(record).to receive(:destroy)
-        xhr :delete, :destroy, id: record.id, format: :js
+        delete :destroy, xhr: true, params: { id: record.id }, format: :js
       end
     end
   end

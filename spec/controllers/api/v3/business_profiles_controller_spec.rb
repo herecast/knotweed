@@ -118,35 +118,35 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
       context 'Given params[:sort_by]=score_desc' do
         it 'tranlates that to highest recommended first' do
           expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: best_score_order)).and_return(mock_results)
-          get :index, { sort_by: 'score_desc' }
+          get :index, params: { sort_by: 'score_desc' }
         end
       end
 
       context 'Given params[:sort_by]=distance_asc' do
         it 'tranlates that to smallest geodist first' do
           expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: closest_order)).and_return(mock_results)
-          get :index, {sort_by: 'distance_asc'}
+          get :index, params: { sort_by: 'distance_asc' }
         end
       end
 
       context 'Given params[:sort_by]=rated_desc' do
         it 'tranlates that to most feedback first' do
           expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: most_rated_order)).and_return(mock_results)
-          get :index, {sort_by: 'rated_desc'}
+          get :index, params: { sort_by: 'rated_desc' }
         end
       end
 
       context 'Given params[:sort_by]=alpha_asc' do
         it 'tranlates that to alphabetical order' do
           expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: alpha_order)).and_return(mock_results)
-          get :index, {sort_by: 'alpha_asc'}
+          get :index, params: { sort_by: 'alpha_asc' }
         end
       end
 
       context 'Given params[:sort_by]=alpha_desc' do
         it 'tranlates that to alphabetical order reversed' do
           expect(BusinessProfile).to receive(:search).with(anything, hash_including(order: [{ business_location_name: :desc }])).and_return(mock_results)
-          get :index, {sort_by: 'alpha_desc'}
+          get :index, params: { sort_by: 'alpha_desc' }
         end
       end
     end
@@ -160,7 +160,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
         BusinessProfile.searchkick_index.refresh
       end
 
-      subject { get :index, query: @search }
+      subject { get :index, params: { query: @search } }
 
       it 'should return matches' do
         subject
@@ -176,12 +176,12 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
         end
 
         it 'should return filtered results' do
-          get :index, category_id: @cat2.id
+          get :index, params: { category_id: @cat2.id }
           expect(assigns(:business_profiles)).to match_array [@bps.last]
         end
 
         it 'should return results for categories and their children' do
-          get :index, category_id: @cat
+          get :index, params: { category_id: @cat }
           expect(assigns(:business_profiles)).to match_array [@bps.first, @bps.last]
         end
       end
@@ -202,8 +202,8 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
 
         it 'should return results within radius if specified' do
           bp = BusinessProfile.first
-          get :index, lat: bp.business_location.latitude, lng: bp.business_location.longitude,
-            radius: 1
+          get :index, params: { lat: bp.business_location.latitude, lng: bp.business_location.longitude,
+            radius: 1 }
           expect(assigns(:business_profiles)).to match_array [bp]
         end
 
@@ -215,7 +215,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
   describe 'GET show' do
     before { @bp = FactoryGirl.create :business_profile }
 
-    subject! { get :show, format: :json, id: @bp.id }
+    subject! { get :show, format: :json, params: { id: @bp.id } }
 
     it 'has 200 status code' do
       expect(response.code).to eq '200'
@@ -247,7 +247,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
       }
     end
 
-    subject { post :create, business: @create_params }
+    subject { post :create, params: { business: @create_params } }
 
     it 'should respond with 201 status code' do
       subject
@@ -273,7 +273,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
       }
     end
 
-    subject { put :update, business: @update_params, id: @business_profile.id }
+    subject { put :update, params: { business: @update_params, id: @business_profile.id } }
 
     context 'for a claimed business' do
       before do

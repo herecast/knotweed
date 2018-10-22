@@ -10,7 +10,7 @@ RSpec.describe Contents::RemovalsController, type: :controller do
       allow(BackgroundJob).to receive(:perform_later).and_return true
     end
 
-    subject { post :create, content_id: @content.id, type: 'contents' }
+    subject { post :create, params: { content_id: @content.id, type: 'contents' } }
 
     it "updates Content.removed to true" do
       expect{ subject }.to change{
@@ -34,7 +34,7 @@ RSpec.describe Contents::RemovalsController, type: :controller do
       allow(BackgroundJob).to receive(:perform_later).and_return true
     end
 
-    subject { delete :destroy, content_id: @content.id, type: 'contents' }
+    subject { delete :destroy, params: { content_id: @content.id, type: 'contents' } }
 
     it "updates Content.removed to false" do
       expect{ subject }.to change{

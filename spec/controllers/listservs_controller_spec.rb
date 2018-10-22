@@ -40,7 +40,7 @@ RSpec.describe ListservsController, type: :controller do
   describe "GET #show" do
     it "assigns the requested listserv as @listserv" do
       listserv = Listserv.create! valid_attributes
-      get :show, {:id => listserv.to_param}
+      get :show, params: { id: listserv.to_param }
       expect(assigns(:listserv)).to eq(listserv)
     end
   end
@@ -55,7 +55,7 @@ RSpec.describe ListservsController, type: :controller do
   describe "GET #edit" do
     it "assigns the requested listserv as @listserv" do
       listserv = Listserv.create! valid_attributes
-      get :edit, {:id => listserv.to_param}
+      get :edit, params: { id: listserv.to_param }
       expect(assigns(:listserv)).to eq(listserv)
     end
   end
@@ -64,18 +64,18 @@ RSpec.describe ListservsController, type: :controller do
     context "with valid params" do
       it "creates a new Listserv" do
         expect {
-          post :create, {:listserv => valid_attributes}
+          post :create, params: { listserv: valid_attributes }
         }.to change(Listserv, :count).by(1)
       end
 
       it "assigns a newly created listserv as @listserv" do
-        post :create, {:listserv => valid_attributes}
+        post :create, params: { listserv: valid_attributes }
         expect(assigns(:listserv)).to be_a(Listserv)
         expect(assigns(:listserv)).to be_persisted
       end
 
       it "redirects to listserv index" do
-        post :create, {:listserv => valid_attributes}
+        post :create, params: { listserv: valid_attributes }
         expect(response).to redirect_to(listservs_path)
       end
     end
@@ -90,20 +90,20 @@ RSpec.describe ListservsController, type: :controller do
 
       it "updates the requested listserv" do
         listserv = Listserv.create! valid_attributes
-        put :update, {:id => listserv.to_param, :listserv => new_attributes}
+        put :update, params: { id: listserv.to_param, listserv: new_attributes }
         listserv.reload
         expect(listserv.name).to eql 'new name'
       end
 
       it "assigns the requested listserv as @listserv" do
         listserv = Listserv.create! valid_attributes
-        put :update, {:id => listserv.to_param, :listserv => valid_attributes}
+        put :update, params: { id: listserv.to_param, listserv: valid_attributes }
         expect(assigns(:listserv)).to eq(listserv)
       end
 
       it "redirects to the listserv" do
         listserv = Listserv.create! valid_attributes
-        put :update, {:id => listserv.to_param, :listserv => valid_attributes}
+        put :update, params: { id: listserv.to_param, listserv: valid_attributes }
         expect(response).to redirect_to(listservs_url)
       end
     end
@@ -113,13 +113,13 @@ RSpec.describe ListservsController, type: :controller do
     it "destroys the requested listserv" do
       listserv = Listserv.create! valid_attributes
       expect {
-        delete :destroy, {:id => listserv.to_param}
+        delete :destroy, params: { id: listserv.to_param }
       }.to change(Listserv, :count).by(-1)
     end
 
     it "redirects to the listservs list" do
       listserv = Listserv.create! valid_attributes
-      delete :destroy, {:id => listserv.to_param}
+      delete :destroy, params: { id: listserv.to_param }
       expect(response).to redirect_to(listservs_url)
     end
   end

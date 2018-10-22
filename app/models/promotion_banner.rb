@@ -2,19 +2,19 @@
 #
 # Table name: promotion_banners
 #
-#  id                     :integer          not null, primary key
+#  id                     :bigint(8)        not null, primary key
 #  banner_image           :string(255)
 #  redirect_url           :string(255)
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  campaign_start         :date
 #  campaign_end           :date
-#  max_impressions        :integer
-#  impression_count       :integer          default(0)
-#  click_count            :integer          default(0)
-#  daily_max_impressions  :integer
+#  max_impressions        :bigint(8)
+#  impression_count       :bigint(8)        default(0)
+#  click_count            :bigint(8)        default(0)
+#  daily_max_impressions  :bigint(8)
 #  boost                  :boolean          default(FALSE)
-#  daily_impression_count :integer          default(0)
+#  daily_impression_count :bigint(8)        default(0)
 #  load_count             :integer          default(0)
 #  integer                :integer          default(0)
 #  promotion_type         :string
@@ -43,17 +43,15 @@ class PromotionBanner < ActiveRecord::Base
   skip_callback :commit, :after, :remove_previously_stored_banner_image,
                                  :remove_previously_stored_coupon_image,
                                  :remove_banner_image!,
-                                 :remove_coupon_image!
+                                 :remove_coupon_image!, raise: false
 
   UPLOAD_ENDPOINT = "/statements"
 
-  after_save :generate_coupon_click_redirect
-
   validates_presence_of :promotion, :campaign_start, :campaign_end
-  validates :max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: 'max_impressions.present?'
-  validates :daily_max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: 'daily_max_impressions.present?'
-  validates :cost_per_day, numericality: { greater_than: 0 }, if: 'cost_per_day.present?'
-  validates :cost_per_impression, numericality: { greater_than: 0 }, if: 'cost_per_impression.present?'
+  validates :max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: ->{ max_impressions.present? }
+  validates :daily_max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: ->{ daily_max_impressions.present? }
+  validates :cost_per_day, numericality: { greater_than: 0 }, if: ->{ cost_per_day.present? }
+  validates :cost_per_impression, numericality: { greater_than: 0 }, if: ->{ cost_per_impression.present? }
   validate :presence_of_banner_image_if_necessary
   validate :will_not_have_daily_and_per_impression_cost
   validate :if_coupon_must_have_coupon_image
@@ -122,6 +120,10 @@ class PromotionBanner < ActiveRecord::Base
 
   scope :sunsetting, -> { where(campaign_end: Date.tomorrow) }
 
+  def redirect_url
+    promotion_type == COUPON ? "/promotions/#{id}" : read_attribute(:redirect_url)
+  end
+
   def active?
     campaign_start <= Date.current && campaign_end >= Date.current
   end
@@ -179,13 +181,6 @@ class PromotionBanner < ActiveRecord::Base
         unless banner_image.present?
           errors.add(:banner_image, 'creative must have banner image')
         end
-      end
-    end
-
-    def generate_coupon_click_redirect
-      new_redirect_url = "/promotions/#{id}"
-      if promotion_type == COUPON && redirect_url != new_redirect_url
-        update_attribute :redirect_url, new_redirect_url
       end
     end
 

@@ -21,7 +21,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_6f2dc6aa5b  (content_id => contents.id)
+#  fk_rails_...  (content_id => contents.id)
 #
 
 class Payment < ActiveRecord::Base

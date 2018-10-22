@@ -1,7 +1,7 @@
 module Api
   module V3
     class CommentsController < ApiController
-      before_filter :check_logged_in!, only: [:create]
+      before_action :check_logged_in!, only: [:create]
 
       # @param the parent content id
       # @return all child comments
@@ -41,7 +41,7 @@ module Api
 
         def comment_params
           new_params = params
-          new_params[:comment].merge!(additional_attributes)
+          new_params[:comment] = new_params[:comment].merge(additional_attributes)
           new_params.require(:comment).permit(
             content_attributes: [
               :title,

@@ -18,13 +18,13 @@ describe RegistrationsController, :type => :controller do
 
   describe 'POST create' do
     context 'with format JSON' do
-      subject{ post :create, format: :json, user: @user_attributes }
+      subject{ post :create, format: :json, params: { user: @user_attributes } }
 
       let(:user) { User.find_by_email(@user_attributes[:email]) }
 
       it 'should respond with success' do
         subject
-        expect(response).to be_success
+        expect(response).to be_successful
       end
 
       it 'should set NDA fields' do
@@ -79,7 +79,7 @@ describe RegistrationsController, :type => :controller do
           FactoryGirl.create :location
         end
 
-        subject { get :create, format: :json, user: @user_attributes, instant_signup: true }
+        subject { get :create, format: :json, params: { user: @user_attributes, instant_signup: true } }
 
         it "returns confirmed user" do
           subject
@@ -97,7 +97,7 @@ describe RegistrationsController, :type => :controller do
     end
 
     context 'mailer tests' do
-      subject! { post :create, format: :json, user: @user_attributes }
+      subject! { post :create, format: :json, params: { user: @user_attributes } }
 
       let(:mail) { ActionMailer::Base.deliveries.last }
 

@@ -6,7 +6,7 @@ RSpec.describe Api::V3::Users::MetricsController, type: :controller do
     let(:end_date) { 1.week.from_now }
     let(:user) { FactoryGirl.create :user }
 
-    subject { get :index, user_id: user.id, start_date: start_date, end_date: end_date }
+    subject { get :index, params: { user_id: user.id, start_date: start_date, end_date: end_date } }
 
     context "when no user logged in" do
       it "should return unauthorized status" do

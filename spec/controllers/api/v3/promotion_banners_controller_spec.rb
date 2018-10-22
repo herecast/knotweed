@@ -21,7 +21,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         end
       end
 
-      subject { get :index, format: :json, organization_id: @org.id }
+      subject { get :index, format: :json, params: { organization_id: @org.id } }
 
       context 'as manager of organization' do
         before { @user.add_role :manager, @org }
@@ -59,17 +59,17 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       describe 'sorting'  do
         it 'accepts pubdate for sort' do
           PromotionBanner.first.promotion.content.update_attribute :pubdate, 1.day.ago
-          get :index, format: :json, sort: 'pubdate DESC'
+          get :index, format: :json, params: { sort: 'pubdate DESC' }
           expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.pubdate}.last
 
-          get :index, format: :json, sort: 'pubdate ASC'
+          get :index, format: :json, params: { sort: 'pubdate ASC' }
           expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.pubdate}.first
         end
         it 'accepts title for sort' do
-          get :index, format: :json, sort: 'title DESC'
+          get :index, format: :json, params: { sort: 'title DESC' }
           expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.title}.last
 
-          get :index, format: :json, sort: 'title ASC'
+          get :index, format: :json, params: { sort: 'title ASC' }
           expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.title}.first
         end
       end
@@ -85,7 +85,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       @pb = FactoryGirl.create :promotion_banner, promotion: @promo
     end
 
-    subject { get :show, format: :json, content_id: @content.id }
+    subject { get :show, format: :json, params: { content_id: @content.id } }
 
     it 'has 200 status code' do
       subject
@@ -167,11 +167,12 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     end
 
     subject {
-      post :track_impression,
+      post :track_impression, params: {
         id: @banner.id,
         client_id: "ClientID!",
         location_id: location.slug,
         format: :json
+      }
     }
 
     it 'should respond with 200' do
@@ -228,9 +229,8 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
     subject {
       post :track_load,
-        post_params.merge(
-          format: :json
-        )
+        format: :json,
+        params: post_params
     }
 
     it 'should respond with 200' do
@@ -246,9 +246,9 @@ describe Api::V3::PromotionBannersController, :type => :controller do
           location_id: location.id,
           promotion_banner_id: @banner.id,
           current_date: Date.current.to_s,
-          content_id: @content.id,
-          load_time: post_params[:load_time],
-          select_score: 1.9,
+          content_id: @content.id.to_s,
+          load_time: post_params[:load_time].to_s,
+          select_score: "1.9",
           select_method: 'sponsored_content'
         })
       )
@@ -265,11 +265,13 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
     subject {
       post :track_click,
+      params: {
         promotion_banner_id: @banner.id,
         content_id: @content.id,
         client_id: 'ClientId@',
         location_id: location.slug,
         format: :json
+      }
     }
 
     it 'should respond with 200' do
@@ -286,7 +288,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
           location_id: location.id,
           promotion_banner_id: @banner.id,
           current_date: Date.current.to_s,
-          content_id: @content.id
+          content_id: @content.id.to_s
         })
       )
       expect(BackgroundJob).to receive(:perform_later).with(
@@ -316,7 +318,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     end
 
     context 'with content id missing' do
-      subject { post :track_click, promotion_banner_id: @banner.id, format: :json }
+      subject { post :track_click, params: { promotion_banner_id: @banner.id, format: :json } }
 
       it 'should respond with 200' do
         subject
@@ -326,7 +328,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
 
     context 'with invalid promotion_banner_id' do
-      subject! { post :track_click, promotion_banner_id: @banner.id + 201, content_id: @content.id, format: :json }
+      subject! { post :track_click, params: { promotion_banner_id: @banner.id + 201, content_id: @content.id }, format: :json }
       it 'should return 422' do
         expect(response.status).to eq 422
       end
@@ -335,7 +337,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
   describe "POST #create_ad_metric" do
     context "when params contain ad_metric" do
-      subject { post :create_ad_metric, { ad_metric: {
+      subject { post :create_ad_metric, params: { ad_metric: {
         campaign: 'under-laser-cta',
         event_type: 'click',
         page_url: 'dailyuv.com/death-star-adverts',
@@ -365,7 +367,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
   describe "GET #show_promotion_coupon" do
     context "when promotion_banner does not exist" do
-      subject { get :show_promotion_coupon, id: '40 billion' }
+      subject { get :show_promotion_coupon, params: { id: '40 billion' } }
 
       it "returns not_found status" do
         subject
@@ -378,7 +380,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         @promotion_banner = FactoryGirl.create :promotion_banner
       end
 
-      subject { get :show_promotion_coupon, id: @promotion_banner.id }
+      subject { get :show_promotion_coupon, params: { id: @promotion_banner.id } }
 
       context "when not a coupon" do
         it "returns not_found status" do
@@ -402,7 +404,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
   describe "POST #create_promotion_coupon_email" do
     context "when promotion_banner does not exist" do
-      subject { post :create_promotion_coupon_email, id: '40 billion' }
+      subject { post :create_promotion_coupon_email, params: { id: '40 billion' } }
 
       it "returns bad_request status" do
         subject
@@ -416,7 +418,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         @email = 'darth@deathstar.com'
       end
 
-      subject { post :create_promotion_coupon_email, id: @promotion_banner.id, email: @email }
+      subject { post :create_promotion_coupon_email, params: { id: @promotion_banner.id, email: @email } }
 
       it "sends email to user" do
         mail = double()
@@ -442,7 +444,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       api_authenticate user: @user
     end
 
-    subject { get :metrics, id: @banner.id }
+    subject { get :metrics, params: { id: @banner.id } }
 
     context 'without owning the content' do
       before do

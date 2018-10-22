@@ -15,7 +15,7 @@ describe BusinessProfiles::ManagersController, type: :controller do
 
     context "when toggled through business profile interface" do
 
-      subject { post :create, business_profile_id: @business_profile.id, user_id: @user.id }
+      subject { post :create, params: { business_profile_id: @business_profile.id, user_id: @user.id } }
 
       it "adds user to business profile organization as manager" do
         subject
@@ -26,7 +26,7 @@ describe BusinessProfiles::ManagersController, type: :controller do
 
     context "when toggled through organization interface" do
 
-      subject { post :create, organization_id: @organization.id, user_id: @user.id }
+      subject { post :create, params: { organization_id: @organization.id, user_id: @user.id } }
 
       it "adds user to organization as manager" do
         subject
@@ -43,7 +43,7 @@ describe BusinessProfiles::ManagersController, type: :controller do
 
     context "when toggled through business profile interface" do
 
-      subject { delete :destroy, business_profile_id: @business_profile.id, user_id: @user.id }
+      subject { delete :destroy, params: { business_profile_id: @business_profile.id, user_id: @user.id } }
 
       it "removes user as business profile manager" do
         expect{ subject }.to change{ @user.roles.count }.by -1
@@ -52,11 +52,11 @@ describe BusinessProfiles::ManagersController, type: :controller do
 
     context "when toggled through organization interface" do
 
-      subject { delete :destroy, organization_id: @organization.id, user_id: @user.id }
+      subject { delete :destroy, params: { organization_id: @organization.id, user_id: @user.id } }
 
       it "removes user as organization manager" do
         expect{ subject }.to change{ @user.roles.count }.by -1
-      end      
-    end    
+      end
+    end
   end
 end

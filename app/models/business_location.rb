@@ -2,7 +2,7 @@
 #
 # Table name: business_locations
 #
-#  id                  :integer          not null, primary key
+#  id                  :bigint(8)        not null, primary key
 #  name                :string(255)
 #  address             :string(255)
 #  phone               :string(255)
@@ -10,7 +10,7 @@
 #  hours               :text
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  organization_id     :integer
+#  organization_id     :bigint(8)
 #  latitude            :float
 #  longitude           :float
 #  venue_url           :string(255)
@@ -79,7 +79,7 @@ class BusinessLocation < ActiveRecord::Base
     end
   end
 
-  after_validation :geocode, if: ->(obj){ obj.address.present? and (obj.address_changed? or obj.name_changed? or obj.locate_include_name_changed?)}
+  after_validation :geocode, if: ->(obj){ obj.address.present? and (obj.saved_change_to_address? or obj.saved_change_to_name? or obj.saved_change_to_locate_include_name?)}
 
   def select_option_label
     label = name || ''
@@ -148,8 +148,8 @@ class BusinessLocation < ActiveRecord::Base
   def add_lat_and_lng_if_bad_address
     nearest_location = Location.consumer_active.search(zip)[0]
     update_attributes(
-      latitude: nearest_location.latitude,
-      longitude: nearest_location.longitude
+      latitude: nearest_location&.latitude,
+      longitude: nearest_location&.longitude
     )
   end
 

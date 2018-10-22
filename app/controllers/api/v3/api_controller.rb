@@ -7,14 +7,12 @@ module Api
       #http_basic_authenticate_with name: Figaro.env.api_username, password: Figaro.env.api_password
 
       #token authentication for ember app
-      before_filter :authenticate_user_from_token!
-
-      before_filter :set_current_api_user,
+      before_action :authenticate_user_from_token!, :set_current_api_user,
         :set_current_thread_user
 
       # rescue CanCanCan authorization denied errors to use 403, not 500
       rescue_from CanCan::AccessDenied do |exception|
-        render nothing: true, status: :forbidden
+        render json: {}, status: :forbidden
       end
 
       protected

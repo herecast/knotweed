@@ -11,13 +11,7 @@ module Ugc
     end
 
     def call
-      @market_post = MarketPost.new(market_post_params.deep_merge(
-        content_attributes: {
-          created_by: @current_user,
-          origin: Content::UGC_ORIGIN
-        }
-      ))
-
+      @market_post = MarketPost.new(market_post_params)
       @market_post.save
 
       conditionally_schedule_outreach_email
@@ -30,7 +24,7 @@ module Ugc
       def market_post_params
         new_params = @params.dup
         attributes = additional_create_attributes
-        new_params[:content].merge!(attributes)
+        new_params[:content] = new_params[:content].merge(attributes)
 
         new_params.require(:content).permit(
           :contact_email,
@@ -58,7 +52,9 @@ module Ugc
             :organization_id,
             :promote_radius,
             :sunset_date,
-            :location_id
+            :location_id,
+            :created_by,
+            :origin
           ]
         )
       end
@@ -76,7 +72,9 @@ module Ugc
             pubdate: Time.zone.now,
             timestamp: Time.zone.now,
             organization_id: @params[:content][:organization_id] || dailyuv_org.id,
-            location_id: @params[:content][:location_id]
+            location_id: @params[:content][:location_id],
+            created_by: @current_user,
+            origin: Content::UGC_ORIGIN
           }
         }
       end

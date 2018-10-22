@@ -6,7 +6,7 @@ describe Api::V3::ContentPermissionsController, type: :controller do
     let(:user) { FactoryGirl.create :user }
     before { api_authenticate user: user }
 
-    subject! { get :index, content_ids: contents.map(&:id) }
+    subject! { get :index, params: { content_ids: contents.map(&:id) } }
 
     it 'should respond with 200' do
       expect(response).to have_http_status :ok

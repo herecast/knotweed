@@ -9,7 +9,7 @@ describe Api::V3::PasswordsController, :type => :controller do
   describe 'POST /password_resets' do
 
     context 'with existing user\'s email address' do
-      subject { post :create, user: { email: @user.email } }
+      subject { post :create, params: { user: { email: @user.email } } }
 
       it 'should send an email to the user' do
         expect{subject}.to change{ActionMailer::Base.deliveries.count}.by(1)
@@ -22,7 +22,7 @@ describe Api::V3::PasswordsController, :type => :controller do
       end
 
       context 'with return_url' do
-        subject { post :create, user: { email: @user.email }, return_url: 'http://test.com' }
+        subject { post :create, params: { user: { email: @user.email }, return_url: 'http://test.com' } }
 
         it 'should send email with link including return_url ' do
           subject
@@ -33,7 +33,7 @@ describe Api::V3::PasswordsController, :type => :controller do
     end
 
     context 'with non-existing email address' do
-      subject { post :create, user: {email: "non@existent.test"}, format: :json }
+      subject { post :create, params: { user: {email: "non@existent.test"} }, format: :json }
 
       it 'responds with 422 status' do
         subject
@@ -57,8 +57,8 @@ describe Api::V3::PasswordsController, :type => :controller do
     end
 
     context 'with valid token' do
-      subject! { put :update, user: { reset_password_token: @token, password: 'newPassword',
-                                     password_confirmation: 'newPassword' } }
+      subject! { put :update, params: { user: { reset_password_token: @token, password: 'newPassword',
+                                     password_confirmation: 'newPassword' } } }
 
       it 'should update the user\'s password' do
         expect(@user.reload.encrypted_password).not_to eq(@orig_pass)
@@ -70,8 +70,8 @@ describe Api::V3::PasswordsController, :type => :controller do
     end
 
     context 'with invalid token' do
-      subject! { put :update, user: { reset_password_token: 'fake token', password: 'Whatever',
-                                      password_confirmation: 'Whatever' } }
+      subject! { put :update, params: { user: { reset_password_token: 'fake token', password: 'Whatever',
+                                      password_confirmation: 'Whatever' } } }
 
       it 'should not update the user\'s password' do
         expect(@user.reload.encrypted_password).to eq(@orig_pass)

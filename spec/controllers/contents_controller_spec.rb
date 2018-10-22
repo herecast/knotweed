@@ -14,7 +14,7 @@ describe ContentsController, type: :controller do
 
     context "when update fails" do
 
-      subject { put :update, id: @content, content: { title: "Fake Title Update" } }
+      subject { put :update, params: { id: @content, content: { title: "Fake Title Update" } } }
 
       it "should render edit page" do
         allow_any_instance_of(Content).to receive(:update_attributes).and_return false
@@ -29,7 +29,7 @@ describe ContentsController, type: :controller do
       FactoryGirl.create_list :content, 5
     end
 
-    subject { get :index, reset: true }
+    subject { get :index, params: { reset: true } }
 
     it 'should respond with 200 status code' do
       subject
@@ -42,7 +42,7 @@ describe ContentsController, type: :controller do
         @contents = FactoryGirl.create_list :content, 3, organization: @org
       end
 
-      subject { get :index, q: { organization_id_in: [@org.id], locations_id_eq: '' } }
+      subject { get :index, params: { q: { organization_id_in: [@org.id], locations_id_eq: '' } } }
 
       it 'should respond with the content belonging to that organization' do
         subject
@@ -54,7 +54,7 @@ describe ContentsController, type: :controller do
       let!(:campaign) { FactoryGirl.create(:content, :campaign) }
 
       it 'should not return campaigns' do
-        get :index, q: { organization_id_in: [campaign.organization.id] }
+        get :index, params: { q: { organization_id_in: [campaign.organization.id] } }
         expect(assigns(:contents)).to_not include(campaign)
       end
     end
@@ -66,7 +66,7 @@ describe ContentsController, type: :controller do
           location_id: @location.id
       end
 
-      subject { get :index, q: { location_id_eq: @location.id.to_s } }
+      subject { get :index, params: { q: { location_id_eq: @location.id.to_s } } }
 
       it "returns contents connected to the location" do
         subject
@@ -81,7 +81,7 @@ describe ContentsController, type: :controller do
       @next_content = FactoryGirl.create :content
     end
 
-    subject { get :edit, id: @content.id }
+    subject { get :edit, params: { id: @content.id } }
 
     it 'should respond with 200 status code' do
       subject
@@ -99,7 +99,7 @@ describe ContentsController, type: :controller do
       @content = FactoryGirl.create :content
     end
 
-    subject { delete :destroy, id: @content.id, format: 'js' }
+    subject { delete :destroy, params: { id: @content.id }, format: 'js' }
 
     it "should respond with 200 status code" do
       expect{ subject }.to change{ Content.count }.by -1
@@ -114,7 +114,7 @@ describe ContentsController, type: :controller do
 
     context "when query is raw id search" do
 
-      subject { xhr :get, :parent_select_options, search_query: @content.id.to_s, q: { id_eq: nil }, format: :js }
+      subject { get :parent_select_options, xhr: true, params: { search_query: @content.id.to_s, q: { id_eq: nil } }, format: :js }
 
       it "should respond with 200 status code" do
         subject
@@ -125,7 +125,7 @@ describe ContentsController, type: :controller do
 
     context "when query is id search" do
 
-      subject { xhr :get, :parent_select_options, content_id: @content.id, q: { id_eq: nil }, format: :js }
+      subject { get :parent_select_options, xhr: true, params: { content_id: @content.id, q: { id_eq: nil } }, format: :js }
 
       it "should respond with 200 status code" do
         subject
@@ -136,7 +136,7 @@ describe ContentsController, type: :controller do
 
     context "when query is a title search" do
 
-        subject { xhr :get, :parent_select_options, search_query: @content.title, q: { id_eq: nil }, format: :js }
+        subject { get :parent_select_options, xhr: true, params: { search_query: @content.title, q: { id_eq: nil } }, format: :js }
 
         it "should respond with 200 status code" do
           subject

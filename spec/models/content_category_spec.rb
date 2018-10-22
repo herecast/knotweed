@@ -2,11 +2,11 @@
 #
 # Table name: content_categories
 #
-#  id         :integer          not null, primary key
+#  id         :bigint(8)        not null, primary key
 #  name       :string(255)
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  parent_id  :integer
+#  parent_id  :bigint(8)
 #  active     :boolean          default(TRUE)
 #
 

@@ -22,7 +22,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
       @inst.update_attribute(:schedule_id, schedule.id)
     end
 
-    subject { get :show, format: :json, id: @inst.id }
+    subject { get :show, format: :json, params: { id: @inst.id } }
 
     it 'should return the instance' do
       subject
@@ -38,7 +38,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
     context 'when instance cannot be found' do
       it 'should return a 404 json response' do
-        get :show, format: :json, id: 9009
+        get :show, format: :json, params: { id: 9009 }
         expect(response.status).to eql 404
         expect(response.headers['Content-Type']).to include 'application/json'
         expect(JSON.parse(response.body)).to match({"error" => an_instance_of(String)})
@@ -48,9 +48,8 @@ describe Api::V3::EventInstancesController, :type => :controller do
     describe 'ical_url' do
       before { allow(Figaro.env).to receive(:default_consumer_host).and_return("test.com") }
         
-
       it 'response should include ical url' do
-        get :show, format: :json, id: @inst.id
+        get :show, format: :json, params: { id: @inst.id }
         expect(JSON.parse(@response.body)['event_instance']['ical_url']).to eq "http://#{Figaro.env.default_consumer_host}/#{event_instances_ics_path(@inst.id)}"
       end
     end
@@ -63,7 +62,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
         allow(CreateAlternateContent).to receive(:call).and_return(@event.content)
       end
 
-      subject { get :show, id: @instance.id }
+      subject { get :show, params: { id: @instance.id } }
 
       it "makes call to create alternate content" do
         expect(CreateAlternateContent).to receive(:call).with(
@@ -82,7 +81,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
     it 'should contain ics data' do
       @request.env["HTTP_ACCEPT"] = "text/calendar"
-      get :show, id: @inst.id
+      get :show, params: { id: @inst.id }
       expect(@response.body).to match /VCALENDAR/
       expect(@response.body).to match /DTSTART/
       expect(@response.body).to match /DTSTAMP/
@@ -100,7 +99,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
       context ' when start_date is passed' do
         it 'returns events on or after the start date' do
-          get :index, {start_date: Date.current}
+          get :index, params: { start_date: Date.current }
           result_ids = assigns(:event_instances).collect(&:id)
           expect(result_ids).to match_array([@e_current.id, @e_future.id])
         end
@@ -108,7 +107,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
       context 'when end_date is passed' do
         it 'should limit results by the end date' do
-          get :index, end_date: Time.current + 1.minute
+          get :index, params: { end_date: Time.current + 1.minute }
           result_ids = assigns(:event_instances).collect(&:id)
           expect(result_ids).to match_array([@e_current.id])
         end
@@ -154,7 +153,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
       end
 
       context 'location_id is specified' do
-        subject { get :index, location_id: location_1.id }
+        subject { get :index, params: { location_id: location_1.slug } }
 
         it 'returns event instances from the specified location' do
           subject

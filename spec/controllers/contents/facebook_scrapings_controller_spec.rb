@@ -10,7 +10,7 @@ RSpec.describe Contents::FacebookScrapingsController, type: :controller do
       allow(BackgroundJob).to receive(:perform_later).and_return true
     end
 
-    subject { post :create, content_id: @content.id }
+    subject { post :create, params: { content_id: @content.id } }
 
     it "makes call to FacebookService for rescrape" do
       expect(BackgroundJob).to receive(:perform_later).with(

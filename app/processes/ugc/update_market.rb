@@ -24,7 +24,7 @@ module Ugc
       def market_post_params
         new_params = @params.dup
         attributes = additional_update_attributes
-        new_params[:content].merge!(attributes)
+        new_params[:content] = new_params[:content].merge(attributes)
 
         new_params.require(:content).permit(
           :contact_email,

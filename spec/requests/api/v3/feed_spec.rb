@@ -170,7 +170,7 @@ describe 'Feed endpoints', type: :request do
 
     context 'news content' do
       let(:do_request) {
-        get "/api/v3/feed", {}, headers
+        get "/api/v3/feed", params: {}, headers: headers
       }
 
       subject {
@@ -184,7 +184,7 @@ describe 'Feed endpoints', type: :request do
 
     context 'event content' do
       let(:do_request) {
-        get "/api/v3/feed", {}, headers
+        get "/api/v3/feed", params: {}, headers: headers
       }
 
       subject {
@@ -228,7 +228,7 @@ describe 'Feed endpoints', type: :request do
 
     context 'market content' do
       let(:do_request) {
-        get "/api/v3/feed", {}, headers
+        get "/api/v3/feed", params: {}, headers: headers
       }
 
       subject {
@@ -252,7 +252,7 @@ describe 'Feed endpoints', type: :request do
 
     context "when no user logged in" do
       before do
-        get "/api/v3/feed", {}, headers
+        get "/api/v3/feed", params: {}, headers: headers
       end
 
       it "returns content in standard categories including talk" do
@@ -263,7 +263,7 @@ describe 'Feed endpoints', type: :request do
     context "when user logged in" do
       context 'returning talk content' do
         let(:do_request) {
-          get "/api/v3/feed", {}, headers.merge(auth_headers)
+          get "/api/v3/feed", params: {}, headers: headers.merge(auth_headers)
         }
 
         subject {
@@ -298,7 +298,7 @@ describe 'Feed endpoints', type: :request do
           archived: true
       end
 
-      subject { get "/api/v3/feed", { query: news.title }, auth_headers }
+      subject { get "/api/v3/feed", params: { query: news.title }, headers: auth_headers }
 
       it 'returns items from all categories matching the query' do
         subject
@@ -343,9 +343,9 @@ describe 'Feed endpoints', type: :request do
       [:market_post, :news, :event, :talk].each do |content_type|
         describe "?content_type=#{content_type}" do
           before do
-            get "/api/v3/feed", {
+            get "/api/v3/feed", params: {
               content_type: content_type
-            }, headers
+            }, headers: headers
           end
 
           it "returns only #{content_type} content" do

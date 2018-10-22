@@ -30,7 +30,7 @@ RSpec.describe FeaturesController, type: :controller do
   describe 'GET #edit' do
     it 'assigns the correct feature as @feature' do
       feature = Feature.create!(valid_attrs)
-      get :edit, { :id => feature.id }
+      get :edit, params: { id: feature.id }
       expect(assigns(:feature)).to eq(feature)
     end
   end
@@ -39,19 +39,19 @@ RSpec.describe FeaturesController, type: :controller do
     context 'with valid params' do
       it 'creates a new feature flag' do
         expect {
-          post :create, { :feature => valid_attrs }
+          post :create, params: { feature: valid_attrs }
         }.to change(Feature, :count).by(1)
       end
 
       it 'redirects back to the index page' do
-        post :create, { :feature => valid_attrs }
+        post :create, params: { feature: valid_attrs }
         expect(response).to redirect_to(features_path)
       end
     end
 
     context 'with invalid params' do
       it 'does not create a new feature flag' do
-        post :create, { :feature => { name: nil } }
+        post :create, params: { feature: { name: nil } }
         expect(response).to render_template(:new)
       end
     end
@@ -63,20 +63,20 @@ RSpec.describe FeaturesController, type: :controller do
 
       it 'updates the feature properly' do
         feature = Feature.create! valid_attrs
-        put :update, { :id => feature.to_param, :feature => new_attrs }
+        put :update, params: { id: feature.to_param, feature: new_attrs }
         feature.reload
         expect(feature.name).to eq 'My Special Feature'
       end
 
       it 'assigns the requested feature as @feature' do
         feature = Feature.create! valid_attrs
-        put :update, { :id => feature.to_param, :feature => valid_attrs }
+        put :update, params: { id: feature.to_param, feature: valid_attrs }
         expect(assigns(:feature)).to eq feature
       end
 
       it 'redirects to the index' do
         feature = Feature.create valid_attrs
-        put :update, { :id => feature.to_param, :feature => valid_attrs }
+        put :update, params: { id: feature.to_param, feature: valid_attrs }
         expect(response).to redirect_to(features_url)
       end
     end

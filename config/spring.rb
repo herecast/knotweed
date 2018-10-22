@@ -1,4 +1,6 @@
-if ENV['RAILS_ENV'] == 'test' && ENV['COVERAGE'] == 'true'
-  require 'simplecov'
-  SimpleCov.start
-end
+%w(
+  .ruby-version
+  .rbenv-vars
+  tmp/restart.txt
+  tmp/caching-dev.txt
+).each { |path| Spring.watch(path) }

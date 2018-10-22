@@ -57,7 +57,7 @@ RSpec.describe PaymentsController, type: :controller do
     let(:period_start) { 1.week.ago }
     let(:period_end) { Date.today }
 
-    subject { delete :destroy, period_start: period_start.strftime("%m/%d/%Y"), period_end: period_end.strftime("%m/%d/%Y") }
+    subject { delete :destroy, params: { period_start: period_start.strftime("%m/%d/%Y"), period_end: period_end.strftime("%m/%d/%Y") } }
 
     it "redirects to index" do
       expect(subject).to redirect_to(payments_path)

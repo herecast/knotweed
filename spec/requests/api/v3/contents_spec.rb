@@ -80,7 +80,7 @@ describe 'Contents Endpoints', type: :request do
     let(:headers) { { 'ACCEPT' => 'application/json' } }
     let(:content) { FactoryGirl.create :content, organization: org }
 
-    subject { get "/api/v3/contents/#{content.id}", {}, headers }
+    subject { get "/api/v3/contents/#{content.id}", headers: headers }
 
     it "returns content record" do
       subject
@@ -102,7 +102,7 @@ describe 'Contents Endpoints', type: :request do
         content.update organization: listserv_org
       end
 
-      subject { get "/api/v3/contents/#{content.id}", {}, headers }
+      subject { get "/api/v3/contents/#{content.id}", params: {}, headers: headers }
 
       context 'user is not signed in' do
         it 'returns a 401 status' do
@@ -132,7 +132,7 @@ describe 'Contents Endpoints', type: :request do
     end
 
     context "when no start_date or end_date" do
-      subject { get "/api/v3/contents/#{@content.id}/metrics", {}, auth_headers }
+      subject { get "/api/v3/contents/#{@content.id}/metrics", params: {}, headers: auth_headers }
 
       it "returns bad_request status" do
         subject
@@ -166,7 +166,7 @@ describe 'Contents Endpoints', type: :request do
         }
       }}
 
-      subject { get "/api/v3/contents/#{@content.id}/metrics?start_date=#{@start_date}&end_date=#{@end_date}", {}, auth_headers }
+      subject { get "/api/v3/contents/#{@content.id}/metrics?start_date=#{@start_date}&end_date=#{@end_date}", params: {}, headers: auth_headers }
 
       it 'returns daily view counts' do
         subject
@@ -184,7 +184,7 @@ describe 'Contents Endpoints', type: :request do
         end
       end
 
-      subject { get "/api/v3/contents/#{@content.id}/metrics?start_date=#{@start_date}&end_date=#{@end_date}", {}, auth_headers }
+      subject { get "/api/v3/contents/#{@content.id}/metrics?start_date=#{@start_date}&end_date=#{@end_date}", params: {}, headers: auth_headers }
 
       it 'returns all daily_view_counts by default' do
         subject
@@ -235,7 +235,7 @@ describe 'Contents Endpoints', type: :request do
 
     describe 'POST /api/v3/contents' do
       subject {
-        post '/api/v3/contents', request_body, headers
+        post '/api/v3/contents', params: request_body, headers: headers
       }
       context 'without authentication' do
         it 'returns 401' do
@@ -613,7 +613,7 @@ describe 'Contents Endpoints', type: :request do
       let(:content) { FactoryGirl.create :content }
 
       subject {
-        put "/api/v3/contents/#{content.id}", request_body, headers
+        put "/api/v3/contents/#{content.id}", params: request_body, headers: headers
       }
 
       context 'without authentication' do
@@ -999,7 +999,7 @@ describe 'Contents Endpoints', type: :request do
     let(:query_params) { {} }
 
     subject do
-      get '/api/v3/contents/sitemap_ids', query_params
+      get '/api/v3/contents/sitemap_ids', params: query_params
       response_json
     end
 

@@ -120,7 +120,7 @@ describe 'Event Instance endpoints', type: :request do
       }
 
       subject {
-        get '/api/v3/event_instances/active_dates', {
+        get '/api/v3/event_instances/active_dates', params: {
           start_date: start_date,
           end_date: end_date
         }

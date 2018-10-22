@@ -1,5 +1,5 @@
 class ListservCampaignsController < ApplicationController
-  before_filter :authorize_access!
+  before_action :authorize_access!
 
   def create
     @campaign = listserv.campaigns.build campaign_params

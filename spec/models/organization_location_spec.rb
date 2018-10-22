@@ -16,8 +16,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_219279fd7d  (location_id => locations.id)
-#  fk_rails_a54d058ea3  (organization_id => organizations.id)
+#  fk_rails_...  (location_id => locations.id)
+#  fk_rails_...  (organization_id => organizations.id)
 #
 
 require 'rails_helper'

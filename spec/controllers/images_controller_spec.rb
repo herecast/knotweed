@@ -8,7 +8,7 @@ describe ImagesController, type: :controller do
 
   describe 'POST #create' do
 
-    subject { post :create, image: { image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg')) }, format: 'js' }
+    subject { post :create, params: { image: { image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg')) } }, format: 'js' }
 
     it "should respond with 200 status code" do
       subject
@@ -22,7 +22,7 @@ describe ImagesController, type: :controller do
       @image = FactoryGirl.create :image
     end
 
-    subject { delete :destroy, id: @image.id, format: 'js' }
+    subject { delete :destroy, params: { id: @image.id }, format: 'js' }
 
     it "deletes the image" do
       expect{ subject }.to change{ Image.count }.by -1
@@ -35,7 +35,7 @@ describe ImagesController, type: :controller do
       @image = FactoryGirl.create :image
     end
 
-    subject { put :update, id: @image.id, image: { caption: 'blarg' }, format: 'js' }
+    subject { put :update, params: { id: @image.id, image: { caption: 'blarg' } }, format: 'js' }
 
     it "updates the image" do
       subject

@@ -16,7 +16,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_f53abcfb16  (user_id => users.id)
+#  fk_rails_...  (user_id => users.id)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

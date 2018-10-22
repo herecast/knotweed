@@ -11,11 +11,11 @@ describe BusinessProfilesController, :type => :controller do
       @business_profiles = FactoryGirl.create_list :business_profile, 5
     end
 
-    subject { get :index, q: { id_in: [] } }
+    subject { get :index, params: { q: { id_in: "" } } }
 
     it "returns http success" do
       subject
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it 'loads the business_profiles' do
@@ -25,7 +25,7 @@ describe BusinessProfilesController, :type => :controller do
 
     context 'with search params' do
       it 'should respond with matching business_profiles' do
-        get :index, q: { business_location_name_cont: @business_profiles.first.business_location.name }
+        get :index, params: { q: { business_location_name_cont: @business_profiles.first.business_location.name } }
         expect(assigns(:business_profiles)).to eq [@business_profiles.first]
       end
     end
@@ -33,7 +33,7 @@ describe BusinessProfilesController, :type => :controller do
     context 'when searching by category' do
       let(:business_category) { FactoryGirl.create :business_category }
 
-      subject { get :index, q: { business_categories_id_in: [business_category.id] } }
+      subject { get :index, params: { q: { business_categories_id_in: [business_category.id] } } }
 
       it 'returns matching businesses' do
         @business_profiles[0].business_categories << business_category
@@ -51,7 +51,7 @@ describe BusinessProfilesController, :type => :controller do
 
       context "when selecting claimed businesses" do
 
-        subject { get :index, q: { content_organization_org_type_present: true } }
+        subject { get :index, params: { q: { content_organization_org_type_present: true } } }
 
         it "returns claimed business profiles" do
           subject
@@ -61,7 +61,7 @@ describe BusinessProfilesController, :type => :controller do
 
       context "when selecting unclaimed businesses" do
 
-        subject { get :index, q: { content_organization_org_type_present: false } }
+        subject { get :index, params: { q: { content_organization_org_type_present: false } } }
 
         it "returns unclaimed business_profiles" do
           subject
@@ -73,7 +73,7 @@ describe BusinessProfilesController, :type => :controller do
     context "when searching by archiving status" do
       context "when querying for active" do
 
-        subject { get :index, q: { archived_eq: false } }
+        subject { get :index, params: { q: { archived_eq: false } } }
 
         it "returns unarchived business profiles" do
           @business_profiles[1..4].map{ |bp| bp.update_attribute(:archived, true) }
@@ -84,7 +84,7 @@ describe BusinessProfilesController, :type => :controller do
 
       context "when querying for archived" do
 
-        subject { get :index, q: { archived_eq: true } }
+        subject { get :index, params: { q: { archived_eq: true } } }
 
         it "returns archived business profiles" do
           @business_profiles[0].update_attribute :archived, true
@@ -96,7 +96,7 @@ describe BusinessProfilesController, :type => :controller do
 
     context "when reset" do
 
-      subject { get :index, reset: true }
+      subject { get :index, params: { reset: true } }
 
       it "responds with no business profiles" do
         subject
@@ -124,7 +124,7 @@ describe BusinessProfilesController, :type => :controller do
 
     context "when update succeeds" do
 
-      subject { put :update, id: @bp.id, business_profile: @attrs_for_update, continue_editing: true }
+      subject { put :update, params: { id: @bp.id, business_profile: @attrs_for_update, continue_editing: true } }
 
       it 'should update business_location attributes' do
         expect{subject}.to change{@bl.reload.address}.to @attrs_for_update[:business_location_attributes][:address]
@@ -136,7 +136,7 @@ describe BusinessProfilesController, :type => :controller do
         allow_any_instance_of(BusinessProfile).to receive(:update_attributes).and_return false
       end
 
-      subject { put :update, id: @bp.id, business_profile: @attrs_for_update, continue_editing: true }
+      subject { put :update, params: { id: @bp.id, business_profile: @attrs_for_update, continue_editing: true } }
 
       it "renders edit page" do
         subject
@@ -151,7 +151,21 @@ describe BusinessProfilesController, :type => :controller do
         @bp.content.images << @image
       end
 
-      subject { put :update, id: @bp.id, create_new: true, business_profile: { content_attributes: { id: @bp.content.id, images_attributes: { '0' => { id: @image.id, remove_image: '1' } } } } }
+      subject { put :update, params: {
+        id: @bp.id,
+        create_new: true,
+        business_profile: {
+          content_attributes: {
+            id: @bp.content.id,
+            images_attributes: {
+              '0' => {
+                id: @image.id,
+                remove_image: '1'
+              }
+            }
+          }
+        }
+      }}
 
       it "deletes image selected for deletion" do
         subject
@@ -165,7 +179,7 @@ describe BusinessProfilesController, :type => :controller do
         @bp.content.organization.logo = File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
       end
 
-      subject { put :update, id: @bp.id, business_profile: { content_attributes: { id: @bp.content.id, organization_attributes: { id: @bp.content.organization.id, remove_logo: '1' } } } }
+      subject { put :update, params: { id: @bp.id, business_profile: { content_attributes: { id: @bp.content.id, organization_attributes: { id: @bp.content.organization.id, remove_logo: '1' } } } } }
 
       it "deletes :logo" do
         subject
@@ -190,7 +204,7 @@ describe BusinessProfilesController, :type => :controller do
       }
     end
 
-    subject { post :create, business_profile: @attrs_for_create }
+    subject { post :create, params: { business_profile: @attrs_for_create } }
 
     it 'should create a business_location record' do
       expect{subject}.to change{BusinessLocation.count}.by 1
@@ -215,7 +229,7 @@ describe BusinessProfilesController, :type => :controller do
         allow_any_instance_of(BusinessProfile).to receive(:save).and_return false
       end
 
-      subject { post :create, business_profile: { business_location_attributes: { name: Faker::Company.name } } }
+      subject { post :create, params: { business_profile: { business_location_attributes: { name: Faker::Company.name } } } }
 
       it "renders new page" do
         subject
@@ -240,7 +254,7 @@ describe BusinessProfilesController, :type => :controller do
     end
 
     context "when business not claimed" do
-      subject { get :edit, id: @bp.id }
+      subject { get :edit, params: { id: @bp.id } }
 
       it "redirects to index" do
         subject
@@ -255,7 +269,7 @@ describe BusinessProfilesController, :type => :controller do
         @bp.content.update_attribute(:organization_id, organization.id)
       end
 
-      subject { get :edit, id: @bp.id }
+      subject { get :edit, params: { id: @bp.id } }
 
       context "when business profile has no managers" do
         it "returns http success" do

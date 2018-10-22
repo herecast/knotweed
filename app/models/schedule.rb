@@ -2,9 +2,9 @@
 #
 # Table name: schedules
 #
-#  id                   :integer          not null, primary key
+#  id                   :bigint(8)        not null, primary key
 #  recurrence           :text
-#  event_id             :integer
+#  event_id             :bigint(8)
 #  description_override :text
 #  subtitle_override    :string(255)
 #  presenter_name       :string(255)
@@ -211,9 +211,9 @@ class Schedule < ActiveRecord::Base
       # update all the event instances with a single query. If any of these fields change,
       # all the instances will need to be updated, so handle it here.
       update_hash = {}
-      update_hash[:presenter_name] = presenter_name if presenter_name_changed?
-      update_hash[:subtitle_override] = subtitle_override if subtitle_override_changed?
-      update_hash[:description_override] = description_override if description_override_changed?
+      update_hash[:presenter_name] = presenter_name if saved_change_to_presenter_name?
+      update_hash[:subtitle_override] = subtitle_override if saved_change_to_subtitle_override?
+      update_hash[:description_override] = description_override if saved_change_to_description_override?
       # have to do this manually since update_all skips callbacks but we don't want to make more than
       # one sql query
       update_hash[:updated_at] = Time.zone.now
@@ -277,8 +277,8 @@ class Schedule < ActiveRecord::Base
 
   def self.parse_repeat_info_to_rule(hash)
     repeats = hash['repeats']
-    if hash['days_of_week'].present?
-      d_o_w = hash['days_of_week'].map{ |d| d-1 } # ember app and IceCube are off by 1 day in their treatment
+    if hash['days_of_week']&.select{ |e| e.present? }.present?
+      d_o_w = hash['days_of_week'].select{ |e| e.present? }.map{ |d| d-1 } # ember app and IceCube are off by 1 day in their treatment
       # of days of week
     end
     if repeats == 'daily'

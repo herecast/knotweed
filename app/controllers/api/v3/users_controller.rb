@@ -3,8 +3,8 @@ module Api
   module V3
     class UsersController < ApiController
       include EmailTemplateHelper
-      before_filter :check_logged_in!, only: [:show, :update, :logout]
-      before_filter :check_correct_user, only: :update
+      before_action :check_logged_in!, only: [:show, :update, :logout]
+      before_action :check_correct_user, only: :update
 
       def show
         events_ical_url = url_for_consumer_app("/" + user_event_instances_ics_path(public_id: @current_api_user.public_id.to_s))
@@ -76,7 +76,7 @@ module Api
           schedules.each do |schedule|
             cal.add_event schedule.to_icalendar_event
           end
-          render text: cal.to_ical
+          render plain: cal.to_ical
         else
           head :not_found
         end

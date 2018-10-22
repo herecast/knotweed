@@ -1,4 +1,4 @@
-class DropContentLocationsTable < ActiveRecord::Migration
+class DropContentLocationsTable < ActiveRecord::Migration[4.2]
   def up
     drop_table :content_locations
   end

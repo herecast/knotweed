@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe PromotionsController, :type => :controller do
-  include Devise::TestHelpers
+  # include Devise::TestHelpers
 
   before do
     user = FactoryGirl.create(:admin)
@@ -16,7 +16,7 @@ describe PromotionsController, :type => :controller do
   end
 
   describe "GET index" do
-    subject { get :index, organization_id: @org }
+    subject { get :index, params: { organization_id: @org } }
     it "assigns all promotions as @promotions" do
       subject
       expect(assigns(:promotions)).to eq([@promotion])
@@ -24,7 +24,7 @@ describe PromotionsController, :type => :controller do
   end
 
   describe "GET show" do
-    subject { get :show, { id: @promotion.to_param } }
+    subject { get :show, params: { id: @promotion.to_param } }
     it "assigns the requested promotion as @promotion" do
       subject
       expect(assigns(:promotion)).to eq(@promotion)
@@ -32,7 +32,7 @@ describe PromotionsController, :type => :controller do
   end
 
   describe "GET edit" do
-    subject { get :edit, {id: @promotion.to_param } }
+    subject { get :edit, params: { id: @promotion.to_param } }
     it "assigns the requested promotion as @promotion" do
       subject
       expect(assigns(:promotion)).to eq(@promotion)
@@ -43,7 +43,7 @@ describe PromotionsController, :type => :controller do
     let(:content) { FactoryGirl.create :content }
     let(:options) { { description: "Another great promotion!", content_id: content.id } }
 
-    subject { post :create, { promotion: options, organization_id: @org } }
+    subject { post :create, params: { promotion: options, organization_id: @org } }
 
     describe "with valid params" do
       it "creates a new Promotion" do
@@ -68,19 +68,19 @@ describe PromotionsController, :type => :controller do
       end
 
       it "html: redirects" do
-        post :create, organization_id: @org.id, promotion: { description: 'unsaved promo' }
+        post :create, params: { organization_id: @org.id, promotion: { description: 'unsaved promo' } }
         expect(response).to render_template 'new'
       end
 
       it "json: responds with 422 status code" do
-        post :create, organization_id: @org.id, promotion: { description: 'unsaved promo' }, format: :json
+        post :create, params: { organization_id: @org.id, promotion: { description: 'unsaved promo' } }, format: :json
         expect(response.code).to eq '422'
       end
     end
   end
 
   describe "PUT update" do
-    subject { put :update, { id: @promotion.to_param, promotion: params} }
+    subject { put :update, params: { id: @promotion.to_param, promotion: params} }
 
     describe "with valid params" do
       let(:params) { { description: 'Another description' } }
@@ -108,12 +108,12 @@ describe PromotionsController, :type => :controller do
       end
 
       it "html: renders edit page" do
-        put :update, id: @promotion.id, promotion: { description: 'Ocean planet' }
+        put :update, params: { id: @promotion.id, promotion: { description: 'Ocean planet' } }
         expect(response).to render_template 'edit'
       end
 
       it "json: responds with 422 status code" do
-        put :update, id: @promotion.id, promotion: { description: 'Desert planet' }, format: :json
+        put :update, params: { id: @promotion.id, promotion: { description: 'Desert planet' } }, format: :json
         expect(response.code).to eq '422'
       end
     end
@@ -123,20 +123,20 @@ describe PromotionsController, :type => :controller do
     context "when content present" do
       context "when PromotionBanner promotable type" do
         it "html: responds with 200 status code" do
-          get :new, organization_id: @org.id, promotable_type: 'PromotionBanner', content_id: @content.id
+          get :new, params: { organization_id: @org.id, promotable_type: 'PromotionBanner', content_id: @content.id }
           expect(assigns(:promotion).content).to eq @content
           expect(response.code).to eq '200'
         end
 
         it "json: responds with 200 status code" do
-          get :new, organization_id: @org.id, promotable_type: 'PromotionBanner', content_id: @content.id, format: :json
+          get :new, params: { organization_id: @org.id, promotable_type: 'PromotionBanner', content_id: @content.id }, format: :json
           expect(response.code).to eq '200'
         end
       end
 
       context "when PromotionListserv promotable type" do
         it "html: responds with 200 status code" do
-          get :new, organization_id: @org.id, promotable_type: 'PromotionListserv', content_id: @content.id
+          get :new, params: { organization_id: @org.id, promotable_type: 'PromotionListserv', content_id: @content.id }
           expect(assigns(:promotion).content).to eq @content
           expect(response.code).to eq '200'
         end
@@ -145,7 +145,7 @@ describe PromotionsController, :type => :controller do
 
     context "when no content present" do
 
-      subject { get :new, organization_id: @org.id }
+      subject { get :new, params: { organization_id: @org.id } }
 
       it "should respond with 302 status code" do
         subject

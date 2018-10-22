@@ -13,7 +13,7 @@ RSpec.describe 'Register Confirmed User', type: :request do
         }
       }
 
-      subject { post "/api/v3/registrations/confirmed", registration: user_details }
+      subject { post "/api/v3/registrations/confirmed", params: { registration: user_details } }
 
       context 'Given confirmation key matching existing subscription' do
         let(:subscription) { FactoryGirl.create(:subscription, user_id: nil) }
@@ -86,7 +86,7 @@ RSpec.describe 'Register Confirmed User', type: :request do
         end
 
         context 'valid format, not real record' do
-          before do 
+          before do
             user_details[:confirmation_key] = 'content/01234567'
           end
 
@@ -97,7 +97,7 @@ RSpec.describe 'Register Confirmed User', type: :request do
         end
 
         context 'no confirmation_key' do
-          before do 
+          before do
             user_details[:confirmation_key] = nil
           end
 

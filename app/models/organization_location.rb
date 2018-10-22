@@ -16,8 +16,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_219279fd7d  (location_id => locations.id)
-#  fk_rails_a54d058ea3  (organization_id => organizations.id)
+#  fk_rails_...  (location_id => locations.id)
+#  fk_rails_...  (organization_id => organizations.id)
 #
 
 class OrganizationLocation < ActiveRecord::Base
@@ -28,7 +28,7 @@ class OrganizationLocation < ActiveRecord::Base
 
   scope :base,-> { where(location_type: 'base') }
 
-  after_save if: :changed? do
+  after_save if: :saved_changes? do
     organization.trigger_content_reindex!
   end
 

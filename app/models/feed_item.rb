@@ -16,7 +16,7 @@ class FeedItem
         if object.class.to_s.include?('Carousel')
           @model_type = 'carousel'
           @carousel = object
-        elsif object.class == Hashie::Mash
+        elsif [Hashie::Mash, Searchkick::HashWrapper].include?(object.class) 
           @model_type = 'content'
           @content = object
         elsif object.class == Organization

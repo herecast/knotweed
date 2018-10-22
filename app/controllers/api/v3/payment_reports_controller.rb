@@ -2,7 +2,7 @@ module Api
   module V3
     class PaymentReportsController < ApiController
 
-      before_filter :check_logged_in!
+      before_action :check_logged_in!
 
       def index
         if params[:user_id].present?

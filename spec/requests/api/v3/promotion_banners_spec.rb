@@ -33,7 +33,7 @@ describe 'Promotion Banner Endpoints', type: :request do
         FactoryGirl.create(:promotion_banner_report, promotion_banner: promotion_banner, report_date: date)
       end
 
-      get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {}, auth_headers
+      get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {}, headers: auth_headers
       expect(response.status).to eql 200
 
       expect(response_json[:promotion_banner_metrics][:daily_impression_counts]).to_not be_empty
@@ -53,19 +53,19 @@ describe 'Promotion Banner Endpoints', type: :request do
       end
 
       it 'returns all daily_impression_counts by default' do
-        get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {}, auth_headers
+        get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {}, headers: auth_headers
         impression_counts = response_json[:promotion_banner_metrics][:daily_impression_counts]
         expect(impression_counts.count).to eql promotion_banner.promotion_banner_reports.count
       end
 
       it 'returns all daily_click_counts by default' do
-        get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {}, auth_headers
+        get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {}, headers: auth_headers
         click_counts = response_json[:promotion_banner_metrics][:daily_click_counts]
         expect(click_counts.count).to eql promotion_banner.promotion_banner_reports.count
       end
 
       it 'orders daily_impression_counts ASC on report_date' do
-        get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {}, auth_headers
+        get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {}, headers: auth_headers
 
         view_counts = response_json[:promotion_banner_metrics][:daily_impression_counts]
         report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
@@ -74,9 +74,9 @@ describe 'Promotion Banner Endpoints', type: :request do
       end
 
       context 'with empty string dates' do
-          subject { get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {
+          subject { get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {
             start_date: " ", end_date: " "
-          }, auth_headers }
+          }, headers: auth_headers }
 
           it 'should return all daily_impression_counts' do
             subject
@@ -94,18 +94,18 @@ describe 'Promotion Banner Endpoints', type: :request do
         let(:start_date) { 25.days.ago.to_date }
 
         it 'returns daily_impression_counts on or after the start_date' do
-          get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {
+          get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {
             start_date: start_date.to_date.to_s
-          }, auth_headers
+          }, headers: auth_headers
           view_counts = response_json[:promotion_banner_metrics][:daily_impression_counts]
           report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
           expect(report_dates).to satisfy{|dates| dates.all?{|d| d >= start_date}}
         end
 
         it 'returns daily_click_counts on or after the start_date' do
-          get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {
+          get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {
             start_date: start_date.to_date.to_s
-          }, auth_headers
+          }, headers: auth_headers
           view_counts = response_json[:promotion_banner_metrics][:daily_click_counts]
           report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
           expect(report_dates).to satisfy{|dates| dates.all?{|d| d >= start_date}}
@@ -115,20 +115,20 @@ describe 'Promotion Banner Endpoints', type: :request do
           let(:end_date) { 2.days.ago.to_date }
 
           it 'returns daily_view_counts between start_date and end_date' do
-            get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {
+            get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {
               start_date: start_date.to_date.to_s,
               end_date: end_date.to_date.to_s
-            }, auth_headers
+            }, headers: auth_headers
             view_counts = response_json[:promotion_banner_metrics][:daily_impression_counts]
             report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
             expect(report_dates).to satisfy{|dates| dates.all?{|d| d.between?(start_date, end_date)}}
           end
 
           it 'returns daily_click_counts between start_date and end_date' do
-            get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", {
+            get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {
               start_date: start_date.to_date.to_s,
               end_date: end_date.to_date.to_s
-            }, auth_headers
+            }, headers: auth_headers
             view_counts = response_json[:promotion_banner_metrics][:daily_click_counts]
             report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
             expect(report_dates).to satisfy{|dates| dates.all?{|d| d.between?(start_date, end_date)}}
@@ -235,7 +235,7 @@ describe 'Promotion Banner Endpoints', type: :request do
 
     let!(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: @promotion }
 
-    subject { get '/api/v3/promotion_banners', {}, auth_headers }
+    subject { get '/api/v3/promotion_banners', params: {}, headers: auth_headers }
 
     it 'returns promomtion banners in public json representation' do
       subject
@@ -252,7 +252,7 @@ describe 'Promotion Banner Endpoints', type: :request do
       let!(:older_promotion_banner) { FactoryGirl.create :promotion_banner, campaign_start: 2.weeks.ago, promotion: @older_promotion }
 
       it 'returns promotion_banners based on the campaign_start sort order' do
-        get '/api/v3/promotion_banners', { page: 1, per_page: 8, sort: 'start_date ASC' }, auth_headers
+        get '/api/v3/promotion_banners', params: { page: 1, per_page: 8, sort: 'start_date ASC' }, headers: auth_headers
         first_banner = response_json[:promotion_banners].first
         expect(first_banner[:campaign_start]).to eq older_promotion_banner.campaign_start.iso8601
       end

@@ -23,7 +23,7 @@ RSpec.describe CommentsController, type: :controller do
         parent_id: @parent_content.id
     end
 
-    subject { put :update, id: @comment.content.id }
+    subject { put :update, params: { id: @comment.content.id } }
 
     it "updates deleted_at to nil" do
       expect{ subject }.to change{
@@ -48,7 +48,7 @@ RSpec.describe CommentsController, type: :controller do
         parent_id: @parent_content.id
     end
 
-    subject { delete :destroy, id: @comment.content.id }
+    subject { delete :destroy, params: { id: @comment.content.id } }
 
     it "updates deleted_at to current time" do
       subject

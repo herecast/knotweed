@@ -26,12 +26,7 @@ module Ugc
         process_event_params(@params[:content])
       ).permit!
 
-      @event = Event.new(event_hash.deep_merge(
-        content_attributes: {
-          created_by: @current_user,
-          origin: Content::UGC_ORIGIN
-        }
-      ))
+      @event = Event.new(event_hash)
 
       @event.content.organization_id = org_id
       @event.content.images = [Image.create(image: image_data)] if image_data.present?
@@ -78,18 +73,20 @@ module Ugc
           new_e[:content_attributes][:id] = @event.content.id
         else
           # NOTE: these attributes are here because they can't change on update
-          new_e[:content_attributes].merge!({
+          new_e[:content_attributes] = new_e[:content_attributes].merge({
             pubdate: Time.zone.now,
             content_category_id: ContentCategory.find_or_create_by(name: 'event').id,
             authoremail: @current_user.try(:email),
-            authors: @current_user.try(:name)
+            authors: @current_user.try(:name),
+            created_by: @current_user,
+            origin: Content::UGC_ORIGIN
           })
         end
 
         if e[:venue_id].present?
           new_e[:venue_id] = e[:venue_id]
         elsif e[:venue].present?
-          new_e[:venue_attributes] = e[:venue].to_hash
+          new_e[:venue_attributes] = e[:venue]
         end
 
         # translate params that have the wrong name

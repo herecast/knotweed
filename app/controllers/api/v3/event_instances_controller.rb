@@ -64,7 +64,7 @@ module Api
         end
 
         if request.headers['HTTP_ACCEPT'] == 'text/calendar'
-          render text: @event_instance.to_ics
+          render plain: @event_instance.to_ics
         else
           render json: @event_instance, root: 'event_instance', serializer: EventInstanceSerializer,
             context: { current_ability: current_ability, admin_content_url: url, ical_url: ical_url }

@@ -10,7 +10,7 @@ describe Api::V3::ContentReportsController, type: :controller do
     @content_report.save
   end
 
-  subject { get :index, start_date: '2015-01-01', end_date: '2017-01-01' }
+  subject { get :index, params: { start_date: '2015-01-01', end_date: '2017-01-01' } }
 
   it "returns appropriate information" do
     subject
@@ -21,10 +21,10 @@ describe Api::V3::ContentReportsController, type: :controller do
       "Author" => @user.name,
       "Publication Date" => @content_report.content.pubdate.strftime("%Y-%m-%d %T"),
       "Title" => @content_report.content.title,
-      "Views" => @content_report.view_count.to_s,
-      "Ad Clicks" => @content_report.banner_click_count.to_s,
-      "Comments" => "0",
-      "Paid for content?" => 'f',
+      "Views" => @content_report.view_count,
+      "Ad Clicks" => @content_report.banner_click_count,
+      "Comments" => 0,
+      "Paid for content?" => false,
       "Title + PubDate" => "#{@content_report.content.title} (#{@content_report.content.pubdate.strftime('%Y-%m-%d %H:%M:%S')})"
     })
   end

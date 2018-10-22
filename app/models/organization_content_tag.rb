@@ -15,8 +15,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_0359aae08c  (organization_id => organizations.id)
-#  fk_rails_36c5dda2b4  (content_id => contents.id)
+#  fk_rails_...  (content_id => contents.id)
+#  fk_rails_...  (organization_id => organizations.id)
 #
 
 class OrganizationContentTag < ActiveRecord::Base

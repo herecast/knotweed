@@ -2,15 +2,15 @@
 #
 # Table name: organizations
 #
-#  id                       :integer          not null, primary key
+#  id                       :bigint(8)        not null, primary key
 #  name                     :string(255)
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #  logo                     :string(255)
-#  organization_id          :integer
+#  organization_id          :bigint(8)
 #  website                  :string(255)
 #  notes                    :text
-#  parent_id                :integer
+#  parent_id                :bigint(8)
 #  org_type                 :string(255)
 #  can_reverse_publish      :boolean          default(FALSE)
 #  can_publish_news         :boolean          default(FALSE)

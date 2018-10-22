@@ -11,7 +11,7 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
 
   describe 'POST #create' do
 
-    subject { post :create, id: @business_profile.id, business_profile: { archived: true } }
+    subject { post :create, params: { id: @business_profile.id, business_profile: { archived: true } } }
 
     context "when successful" do
       it "flags business profile as archived" do
@@ -72,7 +72,7 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
       @business_profile.update_attribute(:archived, true)
     end
 
-    subject { delete :destroy, id: @business_profile.id, business_profile: { archived: false } }
+    subject { delete :destroy, params: { id: @business_profile.id, business_profile: { archived: false } } }
 
     context "when successful" do
       it "flags bussiness profile as not archived" do

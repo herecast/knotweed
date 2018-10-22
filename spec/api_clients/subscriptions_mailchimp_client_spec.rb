@@ -134,7 +134,8 @@ RSpec.describe SubscriptionsMailchimpClient do
     }
 
     it "is successful" do
-      expect(subject.set_content(campaign_identifier: 'qwer', html: "<p></p>")).to be_success
+      response = subject.set_content(campaign_identifier: 'qwer', html: "<p></p>").response
+      expect(response.code.to_i).to eq 200
     end
   end
 

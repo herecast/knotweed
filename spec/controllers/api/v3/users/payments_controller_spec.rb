@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Api::V3::Users::PaymentsController, type: :controller do
   describe 'GET #index' do
     let(:user) { FactoryGirl.create :user }
-    subject { get :index, user_id: user.id }
+    subject { get :index, params: { user_id: user.id } }
 
     context 'when no user logged in' do
       it "should return unauthorized status" do

@@ -5,18 +5,17 @@ describe BusinessLocationsController, :type => :controller do
     @user = FactoryGirl.create :admin
     @business_location = FactoryGirl.create :business_location
     sign_in @user
-    request.env['HTTP_REFERER'] = 'where_i_came_from'
   end
 
   describe "GET 'index'" do
     it 'returns http success' do
       get 'index'
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     context 'when reset' do
 
-      subject { get :index, reset: true }
+      subject { get :index, params: { reset: true } }
 
       it "returns no business locations" do
         allow_any_instance_of(Ransack::Search).to receive_message_chain(:result, :page, :per).and_return []
@@ -29,7 +28,7 @@ describe BusinessLocationsController, :type => :controller do
       let(:query) { { q: 'query' } }
       let(:results) { [FactoryGirl.build_stubbed(:business_location)] }
 
-      subject { get :index, query }
+      subject { get :index, params: query }
 
       it "returns results" do
         Ransack::Search.any_instance.stub_chain(:result, :page, :per) { results }
@@ -42,13 +41,13 @@ describe BusinessLocationsController, :type => :controller do
   describe "GET 'new'" do
     it 'returns http success' do
       get 'new'
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     context "when business_location has organization_id" do
       let(:organization) { FactoryGirl.create :organization }
 
-      subject { get :new, organization_id: organization.id }
+      subject { get :new, params: { organization_id: organization.id } }
 
       it "assigns organization to business location" do
         subject
@@ -58,7 +57,7 @@ describe BusinessLocationsController, :type => :controller do
 
     context "when xhr request" do
 
-      subject { xhr :get, :new }
+      subject { get :new, xhr: true }
 
       it "responds with form" do
         subject
@@ -71,13 +70,13 @@ describe BusinessLocationsController, :type => :controller do
 
     context "when creation succeeds" do
       it "html: redirects to business locations" do
-        post :create, business_location: { address: 'fake', city: 'fake', state: 'VT' }
+        post :create, params: { business_location: { address: 'fake', city: 'fake', state: 'VT' } }
         expect(response.code).to eq '302'
         expect(response).to redirect_to business_locations_path
       end
 
       it "js: should respond with 200 status code" do
-        post :create, format: 'js', business_location: { address: 'fake', city: 'fake', state: 'VT' }
+        post :create, format: 'js', params: { business_location: { address: 'fake', city: 'fake', state: 'VT' } }
         expect(response.code).to eq '200'
       end
     end
@@ -88,13 +87,13 @@ describe BusinessLocationsController, :type => :controller do
       end
 
       it "html: renders new page" do
-        post :create, business_location: { address: 'fake', city: 'fake', state: 'VT' }
+        post :create, params: { business_location: { address: 'fake', city: 'fake', state: 'VT' } }
         expect(response).to render_template 'new'
       end
 
       it "js: responds with errors" do
         allow_any_instance_of(BusinessLocation).to receive(:errors).and_return ['error']
-        post :create, format: :js, business_location: { address: 'fake', city: 'fake', state: 'VT' }
+        post :create, format: :js, params: { business_location: { address: 'fake', city: 'fake', state: 'VT' } }
         expect(JSON.parse(response.body).length).to eq 1
       end
     end
@@ -102,8 +101,8 @@ describe BusinessLocationsController, :type => :controller do
 
   describe "GET 'edit'" do
     it 'returns http success' do
-      get 'edit', id: @business_location.id
-      expect(response).to be_success
+      get 'edit', params: { id: @business_location.id }
+      expect(response).to be_successful
     end
 
     context "when nearby locations exist" do
@@ -113,7 +112,7 @@ describe BusinessLocationsController, :type => :controller do
         @event = FactoryGirl.create :event, venue_id: @other_location.id
       end
 
-      subject { get :edit, id: @business_location.id }
+      subject { get :edit, params: { id: @business_location.id } }
 
       it "assigns event count for nearby venues" do
         subject
@@ -123,7 +122,7 @@ describe BusinessLocationsController, :type => :controller do
 
     context "when xhr request" do
 
-      subject { xhr :get, :edit, id: @business_location.id }
+      subject { get :edit, xhr: true, params: { id: @business_location.id } }
 
       it "responds with form" do
         subject
@@ -134,7 +133,7 @@ describe BusinessLocationsController, :type => :controller do
 
   describe "PUT 'update'" do
 
-    subject { put :update, { id: @business_location.to_param, business_location: params} }
+    subject { put :update, params: { id: @business_location.to_param, business_location: params } }
 
     describe 'with valid params' do
       let(:params) { { name: 'Another string' } }
@@ -161,19 +160,10 @@ describe BusinessLocationsController, :type => :controller do
 
         it "js: re" do
           allow_any_instance_of(BusinessLocation).to receive(:errors).and_return ['error']
-          put :update, id: @business_location.id, business_location: params, format: :js
+          put :update, params: { id: @business_location.id, business_location: params }, format: :js
           expect(JSON.parse(response.body).length).to eq 1
         end
       end
     end
   end
-
-  describe "GET 'destroy'" do
-    subject { delete :destroy, { id: @business_location.to_param} }
-    it 'redirect to back' do
-      subject
-      expect(response).to redirect_to 'where_i_came_from'
-    end
-  end
-
 end

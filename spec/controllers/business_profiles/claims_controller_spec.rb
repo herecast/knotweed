@@ -9,7 +9,7 @@ describe BusinessProfiles::ClaimsController, type: :controller do
 
   describe "POST #create" do
 
-    subject { post :create, id: @business_profile }
+    subject { post :create, params: { id: @business_profile } }
 
     context "when successful" do
       it "makes call to business profile structure service" do

@@ -11,7 +11,10 @@ class UsersController < ApplicationController
     end
 
     if session[:users_search].try(:[], :roles).present?
-      role_ids = session[:users_search][:roles].map { |key, value| Role.get(key.to_s).id if value == 'on'}
+      role_ids = []
+      session[:users_search][:roles].each do |key, value|
+        role_ids << Role.get(key.to_s).id if value == 'on'
+      end
       scope = User.joins(:roles).where(roles: {id: role_ids})
     else
       scope = User
@@ -66,11 +69,11 @@ class UsersController < ApplicationController
     if params['listserv_id'].to_i.in?(@user.active_listserv_subscription_ids)
       sub = @user.subscriptions.where(listserv_id: params['listserv_id'].to_i).first
       UnsubscribeSubscription.call(sub)
-      render nothing: true, status: 200
+      head :no_content, status: 200
     else
       listserv = Listserv.find(params['listserv_id'])
       SubscribeToListservSilently.call(listserv, @user, request.remote_ip)
-      render nothing: true, status: 200
+      head :no_content, status: 200
     end
   end
 

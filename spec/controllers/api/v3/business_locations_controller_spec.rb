@@ -7,7 +7,7 @@ describe Api::V3::BusinessLocationsController, :type => :controller do
       FactoryGirl.create :business_location
     end
 
-    subject { get :location, format: :json, id: biz_location.id }
+    subject { get :location, format: :json, params: { id: biz_location.id } }
 
     context 'location exists' do
       let(:location) { FactoryGirl.build :location }
@@ -66,7 +66,7 @@ describe Api::V3::BusinessLocationsController, :type => :controller do
         @bl = BusinessLocation.where(status: 'approved').first
       end
 
-      subject { get :index, query: @bl.name }
+      subject { get :index, params: { query: @bl.name } }
 
       it 'should respond with the matching business location' do
         subject
@@ -74,7 +74,7 @@ describe Api::V3::BusinessLocationsController, :type => :controller do
       end
 
       context 'with autocomplete' do
-        subject! { get :index, query: @bl.city, autocomplete: true }
+        subject! { get :index, params: { query: @bl.city, autocomplete: true } }
         let(:response_hash) { JSON.parse response.body }
 
         it 'should render JSON with the root venue_locations' do
@@ -90,8 +90,8 @@ describe Api::V3::BusinessLocationsController, :type => :controller do
     context 'when user creates a private or new location' do
       before do
         @user = FactoryGirl.create :user
-        @private_location = FactoryGirl.create :business_location, status: 'private', created_by: @user    
-        @new_location = FactoryGirl.create :business_location, status: 'new', created_by: @user    
+        @private_location = FactoryGirl.create :business_location, status: 'private', created_by: @user
+        @new_location = FactoryGirl.create :business_location, status: 'new', created_by: @user
         FactoryGirl.create :business_location, status: 'approved'
         api_authenticate user: @user
       end

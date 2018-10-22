@@ -27,7 +27,7 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
     context 'when signed in;' do
       let(:url_params) { {} }
 
-      subject { get '/api/v3/subscriptions', url_params, auth_headers }
+      subject { get '/api/v3/subscriptions', params: url_params, headers: auth_headers }
 
       context 'given some subscriptions exist;' do
         let!(:user_subscriptions) { FactoryGirl.create_list :subscription, 3, user: user }
@@ -82,7 +82,7 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
       }
     }
 
-    subject { patch "/api/v3/subscriptions/#{subscription.key}", subscription: attrs }
+    subject { patch "/api/v3/subscriptions/#{subscription.key}", params: { subscription: attrs } }
 
     it 'will update email_type' do
       expect{ subject }.to change{
@@ -251,7 +251,7 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
                                 'name' => "#{listserv.name}", 'user_id' => nil, 'listserv_id' => "#{listserv.id}"}}}
     let(:invalid_sub_params) { {'subscription' => {'id' => nil, 'email' => "#{user.email}", 'name' => "#{listserv.name}",
                                         'listserv_id' => nil}} }
-    subject { post '/api/v3/subscriptions', subscription_params }
+    subject { post '/api/v3/subscriptions', params: subscription_params }
 
     context 'with valid subscription attributes' do
 
@@ -275,7 +275,7 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
 
       it 'can subscribe a user using listserv_id and email' do
         expect {
-          post '/api/v3/subscriptions', { subscription: {listserv_id: listserv.id, email: user.email}}
+          post '/api/v3/subscriptions', params: { subscription: {listserv_id: listserv.id, email: user.email}}
         }.to change{ Subscription.count }.by(1)
       end
 
@@ -290,16 +290,16 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
 
       context 'when a user has not confirmed their account' do
         before do
-          @new_user_params = { 'subscription' => 
-                                { 'listserv_id' => listserv.id, 
+          @new_user_params = { 'subscription' =>
+                                { 'listserv_id' => listserv.id,
                                 'email' => "#{unconfirmed_user.email}",
-                                'name' => "#{listserv.name}", 
+                                'name' => "#{listserv.name}",
                                 'user_id' => nil } }
         end
-        
+
         it 'subscribes to a listserv' do
           expect(SubscribeToListserv).to receive(:call).with(listserv, { email: unconfirmed_user.email })
-          post '/api/v3/subscriptions', @new_user_params
+          post '/api/v3/subscriptions', params: @new_user_params
         end
       end
 
@@ -307,7 +307,7 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
 
         it 'creates new subscription' do
           expect{
-            post '/api/v3/subscriptions', subscription_params.merge!(listserv_id: listserv.id)
+            post '/api/v3/subscriptions', params: subscription_params.merge!(listserv_id: listserv.id)
           }.to change{ Subscription.count }.by(1)
         end
 
@@ -316,21 +316,21 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
       context 'when the subscription request is from a user registration' do
         it 'creates a new subscription' do
           expect{
-            post '/api/v3/subscriptions', subscription_params.merge!(subscribed_from_registration: true)
+            post '/api/v3/subscriptions', params: subscription_params.merge!(subscribed_from_registration: true)
           }.to change{ Subscription.count }.by(1)
         end
 
         it 'does not call the SubscribeToListserv jobs' do
           expect(SubscribeToListserv).to_not receive(:call).with(listserv, { email: unconfirmed_user.email })
           expect(SubscribeToListservSilently).to_not receive(:call).with(listserv, { email: unconfirmed_user.email })
-          post '/api/v3/subscriptions', subscription_params.merge!(subscribed_from_registration: true)
+          post '/api/v3/subscriptions', params: subscription_params.merge!(subscribed_from_registration: true)
         end
       end
     end
 
     context 'with invalid attributes' do
 
-      subject { post '/api/v3/subscriptions', invalid_sub_params }
+      subject { post '/api/v3/subscriptions', params: invalid_sub_params }
 
       it 'renders 422 status code' do
         subject

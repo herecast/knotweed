@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 ruby '2.3.3'
-gem 'rails', '~> 4.2.7.1'
+gem 'rails', '~> 5.1.6'
 
 gem 'active_model_serializers', '~> 0.9.3'              # 0.10 is not backward compatible with 0.9
 gem 'aescrypt'
@@ -9,7 +9,7 @@ gem 'american_date'
 gem 'bootstrap-sass'
 gem 'cancancan'
 gem "carmen-rails"
-gem "carrierwave", '~> 0.9'                            # Have not yet tested the next major version
+gem "carrierwave", '~> 1.0'
 gem 'carrierwave-mimetype-fu'
 gem 'chosen-rails'
 gem 'chronic'
@@ -18,30 +18,28 @@ gem 'coffee-rails'
 gem 'compass-rails'
 gem 'daemons'
 gem 'datetimepicker-rails', git: 'git://github.com/zpaulovics/datetimepicker-rails', tag: 'v1.0.0'
-gem "devise", '~> 3.5'                                # Have not yet tested the next major version
+gem "devise", '~> 4.5.0'                                # Have not yet tested the next major version
 gem 'dimensions'
-gem 'enumerize', '~> 0.11'                            # Have not yet tested the next major version
+gem 'enumerize'
 gem 'faker'
 gem 'faraday_middleware-aws-signers-v4'
 gem 'figaro'
 gem "fog"
 gem 'forecast_io'
 gem 'geocoder'
-gem "google-api-client", '~> 0.8.7'                   # 0.9 causes a failure in the test suite
 gem "haml-rails"
 gem 'health_check', '~> 1.5'                          # Have not yet tested the next major version
 gem 'hpricot'
 gem 'htmlcompressor'
 gem 'httparty'
 gem 'icalendar'
-gem 'ice_cube'
+gem 'ice_cube', '0.16.0'
 gem 'inky-rb', require: 'inky'                        # DSL for email templates
 gem 'intercom', '~> 3.5.21'
 gem 'jbuilder'
 gem 'joiner'
 gem 'jquery-datatables-rails'
-gem 'jquery-rails', '~> 3.1'                          # Have not yet tested the next major version
-gem "jquery-turbolinks"
+gem 'jquery-rails'
 gem 'kaminari', '~> 0.15'                             # Have not yet tested the next major version
 gem "legato"
 gem 'lograge'
@@ -54,7 +52,7 @@ gem "nokogiri"
 gem 'oauth2'
 gem 'open-uri-s3'
 gem 'paranoia'
-gem "pg"
+gem "pg", '~> 0.18'
 gem 'postmark-rails'
 gem 'premailer-rails'                                 # Email asset pipeline
 gem 'puma'
@@ -89,7 +87,7 @@ group :development, :test do
   gem 'guard', require: false
   gem 'guard-rspec', require:false
   gem 'rspec'
-  gem "rspec-rails"
+  gem "rspec-rails", '~> 3.7'
   gem 'spring'
   gem 'spring-commands-rspec'
   gem 'active_record_query_trace'
@@ -98,12 +96,12 @@ end
 
 group :test do
   gem "database_cleaner"
+  gem 'rails-controller-testing'
   gem 'rspec_boolean'
   gem 'rspec-json_expectations'
   gem 'rspec_junit_formatter'               # this is for circleci to properly read & format our test results
   gem 'shoulda-matchers'
   gem 'simplecov'
-  gem "test_after_commit"
   gem "timecop"
   gem "vcr", '~> 2.9'                               # Have not yet tested the next major version
   gem "webmock"
@@ -112,9 +110,7 @@ end
 group :development do
   gem "annotate"
   gem "better_errors", '~> 0.9'                     # Have not yet tested the next major version
-  gem "binding_of_caller"
   gem "letter_opener"
-  gem "quiet_assets"
   gem "yard"
 end
 

@@ -5,7 +5,7 @@ RSpec.describe Api::V3::Organizations::MetricsController, type: :controller do
     let(:start_date) { 1.week.ago }
     let(:end_date) { 1.week.from_now }
     let(:org) { FactoryGirl.create :organization }
-    subject { get :index, organization_id: org.id, start_date: start_date, end_date: end_date }
+    subject { get :index, params: { organization_id: org.id, start_date: start_date, end_date: end_date } }
 
     context "when no user logged in" do
       it "should return unauthorized status" do

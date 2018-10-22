@@ -2,19 +2,19 @@
 #
 # Table name: promotion_banners
 #
-#  id                     :integer          not null, primary key
+#  id                     :bigint(8)        not null, primary key
 #  banner_image           :string(255)
 #  redirect_url           :string(255)
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  campaign_start         :date
 #  campaign_end           :date
-#  max_impressions        :integer
-#  impression_count       :integer          default(0)
-#  click_count            :integer          default(0)
-#  daily_max_impressions  :integer
+#  max_impressions        :bigint(8)
+#  impression_count       :bigint(8)        default(0)
+#  click_count            :bigint(8)        default(0)
+#  daily_max_impressions  :bigint(8)
 #  boost                  :boolean          default(FALSE)
-#  daily_impression_count :integer          default(0)
+#  daily_impression_count :bigint(8)        default(0)
 #  load_count             :integer          default(0)
 #  integer                :integer          default(0)
 #  promotion_type         :string

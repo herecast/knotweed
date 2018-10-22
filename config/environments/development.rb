@@ -1,4 +1,4 @@
-Knotweed::Application.configure do
+Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
   # In the development environment your application's code is reloaded on
@@ -35,10 +35,10 @@ Knotweed::Application.configure do
 
   # Set if not pre-compiling assets
   config.assets.compile = true
-  config.serve_static_files = true
-
-  config.active_record.raise_in_transactional_callbacks = true
+  config.public_file_server.enabled = true
 
   config.action_mailer.delivery_method = :letter_opener
   ActiveRecordQueryTrace.enabled = true
+
+  config.assets.quiet = true
 end

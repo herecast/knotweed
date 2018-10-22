@@ -19,8 +19,9 @@ describe Api::V3::UsersController, :type => :controller do
         location = FactoryGirl.create :location, listservs: [listserv], \
           consumer_active: true
         @user = FactoryGirl.create :user, location: location
-        @user.remote_avatar_url = "https://www.google.com/images/srpr/logo11w.png"
-        @user.save
+        allow(@user).to receive(:avatar_url).and_return(
+          "https://www.google.com/images/srpr/logo11w.png"
+        )
         api_authenticate user: @user
       end
 
@@ -59,7 +60,7 @@ describe Api::V3::UsersController, :type => :controller do
                       }
         end
 
-        subject! { put :update, @new_data }
+        subject! { put :update, params: @new_data }
 
         it 'should not update user' do
           expect(response.code).to eq '422'
@@ -89,7 +90,7 @@ describe Api::V3::UsersController, :type => :controller do
                       }
         end
 
-        subject! { put :update, @new_data }
+        subject! { put :update, params: @new_data }
 
         it 'should update fields' do
           updated_user = assigns(:current_api_user)
@@ -125,7 +126,7 @@ describe Api::V3::UsersController, :type => :controller do
                       }
         end
 
-        subject! { put :update, @new_data }
+        subject! { put :update, params: @new_data }
 
         it 'should not update all fields' do
           updated_user = assigns(:current_api_user)
@@ -152,7 +153,7 @@ describe Api::V3::UsersController, :type => :controller do
                       }
         end
 
-        subject! { put :update, @new_data }
+        subject! { put :update, params: @new_data }
 
         it 'should provide appropriate reponse' do
           updated_user = assigns(:current_api_user)
@@ -167,7 +168,7 @@ describe Api::V3::UsersController, :type => :controller do
           api_authenticate user: @user
         end
 
-        subject! { put :update, format: :json, current_user: {user_id: @user.id, image: file} }
+        subject! { put :update, format: :json, params: { current_user: { user_id: @user.id, image: file } } }
 
         context "when image is improper type" do
           let!(:file) { fixture_file_upload('/bad_upload_file.json', 'application/javascript') }
@@ -202,7 +203,7 @@ describe Api::V3::UsersController, :type => :controller do
         FactoryGirl.create :schedule, event: event
       end
 
-      subject! { get :events, format: :ics, public_id: @public_id }
+      subject! { get :events, format: :ics, params: { public_id: @public_id } }
 
       it 'should return ics data' do
         expect(@response.body).to match /VCALENDAR/
@@ -216,7 +217,7 @@ describe Api::V3::UsersController, :type => :controller do
 
     context 'with invalid public id' do
       before { @user = FactoryGirl.create :user }
-      subject! { get :events, format: :ics, public_id: 'fake-ekaf' }
+      subject! { get :events, format: :ics, params: { public_id: 'fake-ekaf' } }
       it { expect(@response.status).to eq 404 }
     end
   end
@@ -289,7 +290,7 @@ describe Api::V3::UsersController, :type => :controller do
     end
     context 'with valid confirmation token' do
       # we have to call instance_variable_get to pull the raw token that's included in the email. confirmation_token in the DB is the encrypted version.
-      subject! { post :email_confirmation, confirmation_token: @user.instance_variable_get(:@raw_confirmation_token), format: :json}
+      subject! { post :email_confirmation, params: { confirmation_token: @user.instance_variable_get(:@raw_confirmation_token) }, format: :json }
 
       it 'should respond with auth token' do
         expect(JSON.parse(response.body)).to eq({token: @user.authentication_token,
@@ -334,7 +335,7 @@ describe Api::V3::UsersController, :type => :controller do
     end
 
     context 'with invalid confirmation token' do
-      subject! { post :email_confirmation, confirmation_token: 'fake', format: :json }
+      subject! { post :email_confirmation, params: { confirmation_token: 'fake' }, format: :json }
 
       it 'should respond with 404' do
         expect(response.status).to eq 404
@@ -348,7 +349,7 @@ describe Api::V3::UsersController, :type => :controller do
     end
 
     context 'with a valid unconfirmed account' do
-      subject { post :resend_confirmation, user: { email: @user.email } }
+      subject { post :resend_confirmation, params: { user: { email: @user.email } } }
 
       it 'should trigger sending an email' do
         expect{subject}.to change{ActionMailer::Base.deliveries.count}.by 1
@@ -356,7 +357,7 @@ describe Api::V3::UsersController, :type => :controller do
     end
 
     context 'with an email not associated with any accounts' do
-      subject! { post :resend_confirmation, user: { email: 'does_not_exist@indatabase.com' } }
+      subject! { post :resend_confirmation, params: { user: { email: 'does_not_exist@indatabase.com' } } }
 
       it 'should respond with 404 status' do
         expect(response.code).to eq('404')
@@ -368,7 +369,7 @@ describe Api::V3::UsersController, :type => :controller do
         @user.confirm
       end
 
-      subject! { post :resend_confirmation, user: { email: @user.email } }
+      subject! { post :resend_confirmation, params: { user: { email: @user.email } } }
 
       it 'should respond with a message saying the user is already confirmed' do
         expect(response.body).to include('already confirmed')

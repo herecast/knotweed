@@ -1,7 +1,7 @@
 module Api
   module V3
     class PromotionBannersController < ApiController
-      before_filter :check_logged_in!, only: :index
+      before_action :check_logged_in!, only: :index
 
       def index
         params[:sort] ||= 'click_count DESC'

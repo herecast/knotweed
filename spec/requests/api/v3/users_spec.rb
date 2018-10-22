@@ -19,7 +19,7 @@ RSpec.describe 'User API Endpoints', type: :request do
       }
 
       it 'returns json representation of signed in user' do
-        get '/api/v3/current_user', {}, headers
+        get '/api/v3/current_user', params: {}, headers: headers
 
         expect(response_json).to match({
           current_user: {
@@ -85,8 +85,8 @@ RSpec.describe 'User API Endpoints', type: :request do
 
       subject {
         post "/api/v3/users/sign_in_with_token",
-          {token: token}.to_json,
-          json_headers
+          params: {token: token}.to_json,
+          headers: json_headers
       }
 
       context 'When SignInToken.authenticate returns a user' do
@@ -134,8 +134,8 @@ RSpec.describe 'User API Endpoints', type: :request do
 
       subject {
         post "/api/v3/users/email_signin_link",
-          {email: user.email}.to_json,
-          json_headers
+          params: {email: user.email}.to_json,
+          headers: json_headers
       }
 
       it 'returns 201 status code' do
@@ -159,8 +159,8 @@ RSpec.describe 'User API Endpoints', type: :request do
     context 'Given an email which does not match a user account' do
       subject {
         post "/api/v3/users/email_signin_link",
-          {email: "notauser@somewhere.com"}.to_json,
-          json_headers
+          params: {email: "notauser@somewhere.com"}.to_json,
+          headers: json_headers
       }
 
       it 'responds with 422 status code' do

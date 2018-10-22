@@ -11,6 +11,7 @@ module Ugc
     end
 
     def call
+      transform_params
       validate
       @content.update news_params
       @content
@@ -45,7 +46,7 @@ module Ugc
       end
 
       def news_params
-        transformed_params.require(:content).permit(
+        @params.require(:content).permit(
           :authors,
           :authors_is_created_by,
           :biz_feed_public,
@@ -60,8 +61,8 @@ module Ugc
         )
       end
 
-      def transformed_params
-        ActionController::Parameters.new(@params).tap do |h|
+      def transform_params
+        @params.tap do |h|
           h[:content][:raw_content] = h[:content].delete :content if h[:content].has_key? :content
           h[:content][:pubdate] = h[:content].delete :published_at if h[:content].has_key? :published_at
           author_name = h[:content].delete :author_name

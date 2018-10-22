@@ -39,7 +39,7 @@ describe 'My Stuff endpoint', type: :request do
       context "when user logged in" do
         let(:user_headers) { headers.merge(auth_headers_for(@owning_user)) }
 
-        subject { get "/api/v3/users/#{@owning_user.id}/contents", {}, user_headers }
+        subject { get "/api/v3/users/#{@owning_user.id}/contents", params: {}, headers: user_headers }
 
         it "returns only current user's content" do
           subject
@@ -49,7 +49,7 @@ describe 'My Stuff endpoint', type: :request do
 
         describe "?organization_id" do
           context "when request includes organization_id=false" do
-            subject { get "/api/v3/users/#{@owning_user.id}/contents?organization_id=false", {}, user_headers }
+            subject { get "/api/v3/users/#{@owning_user.id}/contents?organization_id=false", params: {}, headers: user_headers }
 
             it "returns content connected to standard_ugc_org" do
               subject
@@ -59,7 +59,7 @@ describe 'My Stuff endpoint', type: :request do
           end
 
           context "when request includes organization_id for managed organization" do
-            subject { get "/api/v3/users/#{@owning_user.id}/contents?organization_id=#{managed_org.id}", {}, user_headers }
+            subject { get "/api/v3/users/#{@owning_user.id}/contents?organization_id=#{managed_org.id}", params: {}, headers: user_headers }
 
             it "returns content connected to the managed org and created_by User" do
               subject
@@ -79,7 +79,7 @@ describe 'My Stuff endpoint', type: :request do
                 content_id: @bookmarked_content.id
             end
 
-            subject { get "/api/v3/users/#{@owning_user.id}/contents?bookmarked=true", {}, user_headers }
+            subject { get "/api/v3/users/#{@owning_user.id}/contents?bookmarked=true", params: {}, headers: user_headers }
 
             it "returns user bookmarked content" do
               subject

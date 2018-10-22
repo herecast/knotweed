@@ -6,7 +6,7 @@ describe Users::ArchivingsController, type: :controller do
   before { sign_in admin }
 
   describe 'GET new' do
-    subject! { get :new, user_id: user.id }
+    subject! { get :new, params: { user_id: user.id } }
 
     it 'should respond with a 200 status' do
       expect(response.code).to eq '200'
@@ -14,7 +14,7 @@ describe Users::ArchivingsController, type: :controller do
   end
 
   describe 'POST create' do
-    subject { post :create, user_id: user.id }
+    subject { post :create, params: { user_id: user.id } }
 
     it 'should update the user record as archived' do
       expect{subject}.to change{user.reload.archived?}.to true
@@ -24,7 +24,7 @@ describe Users::ArchivingsController, type: :controller do
       let(:new_content_owner) { FactoryGirl.create :user }
       let!(:contents) { FactoryGirl.create_list :content, 3 }
 
-      subject { post :create, user_id: user.id, new_content_owner: new_content_owner.email }
+      subject { post :create, params: { user_id: user.id, new_content_owner: new_content_owner.email } }
 
       it 'should reassign all the content belonging to the original user' do
         Content.update_all(created_by_id: user.id)

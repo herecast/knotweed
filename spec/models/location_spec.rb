@@ -2,7 +2,7 @@
 #
 # Table name: locations
 #
-#  id                              :integer          not null, primary key
+#  id                              :bigint(8)        not null, primary key
 #  zip                             :string(255)
 #  city                            :string(255)
 #  state                           :string(255)

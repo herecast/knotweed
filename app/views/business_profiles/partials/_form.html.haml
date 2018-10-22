@@ -91,7 +91,7 @@
                 .row-fluid
                   .span12
                     .business_profile_image_wrapper
-                      = image_tag @business_profile.content.primary_image.image.url
+                      = image_tag(@business_profile.content.primary_image.image.url) if @business_profile.content.primary_image.image.url.present?
                       = f.simple_fields_for :content do |g|
                         = g.simple_fields_for :images do |i|
                           %label
@@ -104,7 +104,7 @@
                     = i.input :logo, as: :file
                 - if @business_profile.claimed? and @business_profile.content.organization.logo.present?
                   .business_profile_image_wrapper
-                    = image_tag @business_profile.content.organization.logo.url
+                    = image_tag(@business_profile.content.organization.logo.url) if @business_profile.content.organization.logo.url.present?
                     = f.simple_fields_for :content do |g|
                       = g.simple_fields_for :organization do |i|
                         %label

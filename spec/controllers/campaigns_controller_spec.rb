@@ -24,7 +24,7 @@ RSpec.describe CampaignsController, type: :controller do
 
   describe "GET #index" do
     context 'when reset' do
-      subject { get :index, { q: nil, reset: true } }
+      subject { get :index, params: { q: nil, reset: true } }
 
       it "returns no campaigns" do
         subject
@@ -42,7 +42,7 @@ RSpec.describe CampaignsController, type: :controller do
     end
 
     context 'when id is given' do
-      subject { get :index, { q: { id_eq: @campaigns.first.id } } }
+      subject { get :index, params: { q: { id_eq: @campaigns.first.id } } }
 
       it "finds matching campaign" do
         subject
@@ -57,7 +57,7 @@ RSpec.describe CampaignsController, type: :controller do
         @org_campaign.update_attribute(:organization_id, @organization.id)
       end
 
-      subject { get :index, { q: { organization_id_eq: @organization.id } } }
+      subject { get :index, params: { q: { organization_id_eq: @organization.id } } }
 
       it "returns campaigns owned by organization" do
         subject
@@ -71,7 +71,7 @@ RSpec.describe CampaignsController, type: :controller do
         @paid_campaign.promotions.first.update_attribute(:paid, true)
       end
 
-      subject { get :index, { q: { promotions_paid_eq: true } } }
+      subject { get :index, params: { q: { promotions_paid_eq: true } } }
 
       it "returns paid campaigns" do
         subject
@@ -85,7 +85,7 @@ RSpec.describe CampaignsController, type: :controller do
         @active_campaign.update_attributes(ad_campaign_start: Date.yesterday, ad_campaign_end: Date.tomorrow)
       end
 
-      subject { get :index, { promotion_banners_active: 'on' } }
+      subject { get :index, params: { promotion_banners_active: 'on' } }
 
       it "returns active promotions" do
         subject
@@ -101,7 +101,7 @@ RSpec.describe CampaignsController, type: :controller do
         promotion_banner.promotion.save
       end
 
-      subject { get :index, { q: { promotions_promotable_of_PromotionBanner_type_boost_eq: true } } }
+      subject { get :index, params: { q: { promotions_promotable_of_PromotionBanner_type_boost_eq: true } } }
 
       it "returns boosted campaigns" do
         subject
@@ -111,7 +111,7 @@ RSpec.describe CampaignsController, type: :controller do
   end
 
   describe "GET #edit" do
-    subject { get :edit, id: @campaigns.first.id }
+    subject { get :edit, params: { id: @campaigns.first.id } }
 
     it "returns ok status" do
       subject
@@ -130,7 +130,7 @@ RSpec.describe CampaignsController, type: :controller do
 
   describe "POST #create" do
     context "when content saves" do
-      subject { post :create, valid_params }
+      subject { post :create, params: valid_params }
 
       it "creates campaign" do
         expect{ subject }.to change{
@@ -144,7 +144,7 @@ RSpec.describe CampaignsController, type: :controller do
         allow_any_instance_of(Content).to receive(:save).and_return false
       end
 
-      subject { post :create, valid_params }
+      subject { post :create, params: valid_params }
 
       it "does not create campaign" do
         expect{ subject }.not_to change{
@@ -155,7 +155,7 @@ RSpec.describe CampaignsController, type: :controller do
   end
 
   describe "GET #edit" do
-    subject { get :edit, id: @campaigns.first.id }
+    subject { get :edit, params: { id: @campaigns.first.id } }
 
     it "returns ok status" do
       subject
@@ -167,7 +167,7 @@ RSpec.describe CampaignsController, type: :controller do
     let(:id) { @campaigns.first.id }
 
     context "when content updates" do
-      subject { put :update, valid_params.merge({ id: id }) }
+      subject { put :update, params: valid_params.merge({ id: id }) }
 
       it "creates campaign" do
         expect{ subject }.to change{
@@ -181,7 +181,7 @@ RSpec.describe CampaignsController, type: :controller do
         allow_any_instance_of(Content).to receive(:update_attributes).and_return false
       end
 
-      subject { put :update, valid_params.merge({ id: id }) }
+      subject { put :update, params: valid_params.merge({ id: id }) }
 
       it "does not create campaign" do
         expect{ subject }.not_to change{

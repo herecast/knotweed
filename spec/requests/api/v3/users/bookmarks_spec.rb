@@ -17,7 +17,7 @@ describe 'User Bookmarks endpoint', type: :request do
     end
 
     context "when incorrect user" do
-      subject { get "/api/v3/users/#{owning_user.id}/bookmarks", {}, wrong_user_headers }
+      subject { get "/api/v3/users/#{owning_user.id}/bookmarks", params: {}, headers: wrong_user_headers }
 
       it "returns forbidden status" do
         subject
@@ -26,7 +26,7 @@ describe 'User Bookmarks endpoint', type: :request do
     end
 
     context "when correct user" do
-      subject { get "/api/v3/users/#{owning_user.id}/bookmarks", {}, user_headers }
+      subject { get "/api/v3/users/#{owning_user.id}/bookmarks", params: {}, headers: user_headers }
 
       it "returns user's bookmarks" do
         subject
@@ -40,7 +40,7 @@ describe 'User Bookmarks endpoint', type: :request do
     let(:bookmarked_content) { FactoryGirl.create :content, :news }
 
     context "when incorrect user" do
-      subject { post "/api/v3/users/#{owning_user.id}/bookmarks", { bookmark: { content_id: bookmarked_content.id } }, wrong_user_headers }
+      subject { post "/api/v3/users/#{owning_user.id}/bookmarks", params: { bookmark: { content_id: bookmarked_content.id } }, headers: wrong_user_headers }
 
       it "returns forbidden status" do
         subject
@@ -49,7 +49,7 @@ describe 'User Bookmarks endpoint', type: :request do
     end
 
     context "when correct user" do
-      subject { post "/api/v3/users/#{owning_user.id}/bookmarks", { bookmark: { content_id: bookmarked_content.id } }, user_headers }
+      subject { post "/api/v3/users/#{owning_user.id}/bookmarks", params: { bookmark: { content_id: bookmarked_content.id } }, headers: user_headers }
 
       it "creates a UserBookmark record" do
         expect{ subject }.to change{
@@ -68,7 +68,7 @@ describe 'User Bookmarks endpoint', type: :request do
     let(:bookmark_params) { { bookmark: { read: true } } }
 
     context "when incorrect user" do
-      subject { put "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmarked_content.id}", bookmark_params, wrong_user_headers }
+      subject { put "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmarked_content.id}", params: bookmark_params, headers: wrong_user_headers }
 
       it "returns forbidden status" do
         subject
@@ -77,7 +77,7 @@ describe 'User Bookmarks endpoint', type: :request do
     end
 
     context "with correct user" do
-      subject { put "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", bookmark_params, user_headers }
+      subject { put "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", params: bookmark_params, headers: user_headers }
 
       it "updates user_bookmark" do
         expect{ subject }.to change{
@@ -94,7 +94,7 @@ describe 'User Bookmarks endpoint', type: :request do
     end
 
     context "with incorrect user" do
-      subject { delete "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", {}, wrong_user_headers }
+      subject { delete "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", params: {}, headers: wrong_user_headers }
 
       it "returns forbidden status" do
         subject
@@ -103,7 +103,7 @@ describe 'User Bookmarks endpoint', type: :request do
     end
 
     context "with correct user" do
-      subject { delete "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", {}, user_headers }
+      subject { delete "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", params: {}, headers: user_headers }
 
       it "creates a UserBookmark record" do
         expect{ subject }.to change{

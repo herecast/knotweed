@@ -80,12 +80,12 @@ class BusinessLocationsController < ApplicationController
     if @business_location.business_profile.present? or @business_location.events.present?
       flash[:notice] = "Could not destroy record with associated business profile or evens"
       respond_to do |format|
-        format.html { redirect_to :back }
+        format.html { redirect_to business_locations_path }
       end
     else
       @business_location.destroy
       respond_to do |format|
-        format.html { redirect_to :back }
+        format.html { redirect_to business_locations_path }
         format.js
       end
     end

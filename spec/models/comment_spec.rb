@@ -2,7 +2,7 @@
 #
 # Table name: comments
 #
-#  id         :integer          not null, primary key
+#  id         :bigint(8)        not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
@@ -82,7 +82,7 @@ describe Comment, :type => :model do
       @parent_content = FactoryGirl.create :content
       @comment = FactoryGirl.create :comment,
         deleted_at: Date.yesterday
-      @comment.update_attributes!(
+      @comment.content.update_attributes!(
         parent_id: @parent_content.id,
         created_by: @user
       )
@@ -103,7 +103,7 @@ describe Comment, :type => :model do
     context "when deleted comment auther has written multiple comments on article" do
       before do
         @comment_two = FactoryGirl.create :comment
-        @comment_two.update_attributes!(
+        @comment_two.content.update_attributes!(
           parent_id: @parent_content.id,
           created_by: @user
         )

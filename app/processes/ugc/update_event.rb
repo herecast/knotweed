@@ -62,7 +62,7 @@ module Ugc
         else
           new_e[:content_attributes][:pubdate] = Time.zone.now
           # NOTE: these attributes are here because they can't change on update
-          new_e[:content_attributes].merge!({
+          new_e[:content_attributes] = new_e[:content_attributes].merge({
             pubdate: Time.zone.now,
             content_category_id: ContentCategory.find_or_create_by(name: 'event').id,
             authoremail: @current_user.try(:email),

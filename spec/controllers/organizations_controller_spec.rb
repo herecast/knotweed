@@ -10,7 +10,7 @@ describe OrganizationsController, type: :controller do
     context 'Given the parameter "reset"' do
       before do
         session[:organizations_search] = {}
-        get :index, {reset: true}
+        get :index, params: { reset: true }
       end
 
       it 'sets session[:organizations_search] to nil' do
@@ -19,20 +19,21 @@ describe OrganizationsController, type: :controller do
     end
 
     context 'Given parameter "q"' do
-      let(:q) { {'fake' => "search"} }
+      let(:query) { "search" }
+      let(:q) { {'fake' => query} }
 
       subject do
-        get :index, {q: q}
+        get :index, params: { q: q }
       end
 
       it 'sets session[:organizations_search] to q' do
         subject
-        expect(session[:organizations_search]).to eql q
+        expect(session[:organizations_search]['fake']).to eql query
       end
 
       it 'does search' do
         search = double(result: Organization )
-        expect(Organization).to receive(:ransack).with(q).and_return(search)
+        expect(Organization).to receive(:ransack).and_return(search)
 
         subject
 
@@ -45,14 +46,14 @@ describe OrganizationsController, type: :controller do
         @news_org = FactoryGirl.create :organization, can_publish_news: true
         @org = FactoryGirl.create :organization
       end
-      
+
       it 'retuns only organizations that can publish news when true' do
-        get :index, q: { "show_news_publishers" => "1" }
+        get :index, params: { q: { "show_news_publishers" => "1" } }
         expect(assigns(:organizations).all? { |org| org.can_publish_news == true }).to eq true
       end
 
       it 'retuns all organizations' do
-        get :index, q: { "show_news_publishers" => "0" }
+        get :index, params: { q: { "show_news_publishers" => "0" } }
         expect(assigns(:organizations).count).to eq Organization.count
       end
     end
@@ -71,31 +72,31 @@ describe OrganizationsController, type: :controller do
         get :index
       end
     end
-    
+
     context 'including child organizations' do
       let!(:parent_organization) { FactoryGirl.create :organization }
       let!(:child_organization) { FactoryGirl.create(:organization, parent_id: parent_organization.id) }
 
       it 'retuns child organizations' do
         q = { 'id_eq' => parent_organization.id, 'include_child_organizations' => '1' }
-        get :index, q: q
+        get :index, params: { q: q }
         expect(assigns(:organizations).length).to eq(2)
       end
 
       it 'does not include child organizations' do
         q = { 'id_eq' => parent_organization.id  }
-        get :index, q: q
+        get :index, params: { q: q }
         expect(assigns(:organizations).length).to eq(1)
       end
 
       context 'when searching by can_publish_news' do
         let!(:parent_news_org) { FactoryGirl.create :organization, can_publish_news: true }
         let!(:child_news_org) { FactoryGirl.create :organization, parent_id: parent_news_org.id }
-        
+
         it 'retuns child organizations for orgs that can publish news' do
           q = { 'include_child_organizations' => '1',
                 'can_publish_news_true' => '1' }
-          get :index, q: q
+          get :index, params: { q: q }
           expect(assigns(:organizations).length).to eq(2)
           expect(assigns(:organizations))
           ids = assigns(:organizations).map(&:id)
@@ -108,12 +109,12 @@ describe OrganizationsController, type: :controller do
 
     context 'when searching by can_publish_news' do
       let!(:news_org) { FactoryGirl.create :organization, can_publish_news: true }
-      
+
       it 'returns records where can_publish_news is true' do
-        get :index, q: { "can_publish_news_true" => 1 }
+        get :index, params: { q: { "can_publish_news_true" => 1 } }
         expect(assigns(:organizations).first).to eq(news_org)
       end
-    
+
     end
   end
 
@@ -125,7 +126,7 @@ describe OrganizationsController, type: :controller do
 
     context '?short_form=true' do
       it 'renders partial short_form' do
-        get :new, short_form: true
+        get :new, params: { short_form: true }
         expect(response).to render_template('organizations/partials/_short_form')
       end
     end
@@ -134,7 +135,7 @@ describe OrganizationsController, type: :controller do
   describe '#edit' do
     let(:organization) { FactoryGirl.create :organization }
     it 'renders "edit"' do
-      get :edit, {id: organization.id}
+      get :edit, params: { id: organization.id }
       expect(response).to render_template('organizations/edit')
     end
   end
@@ -147,12 +148,12 @@ describe OrganizationsController, type: :controller do
     end
 
     it 'updates the model' do
-      put :update, {id: organization.id, organization: update_attrs}
+      put :update, params: { id: organization.id, organization: update_attrs }
       expect(organization.name).to eql 'new name'
     end
 
     it 'redirects to organizations_path' do
-      put :update, {id: organization.id, organization: update_attrs}
+      put :update, params: { id: organization.id, organization: update_attrs }
       expect(response).to redirect_to(organizations_path)
     end
 
@@ -161,18 +162,18 @@ describe OrganizationsController, type: :controller do
         allow(organization).to receive(:update_attributes).and_return(false)
       end
       it 're renders edit' do
-        put :update, {id: organization.id, organization: update_attrs}
+        put :update, params: { id: organization.id, organization: update_attrs }
         expect(response).to render_template('organizations/edit')
       end
     end
-  end 
+  end
 
   describe '#create' do
     context 'with valid attributes' do
       let(:org_attrs) { FactoryGirl.attributes_for(:organization) }
       it 'creates an organization' do
         expect {
-          post :create, organization: org_attrs
+          post :create, params: { organization: org_attrs }
         }.to change {
           Organization.count
         }.by(1)
@@ -183,7 +184,7 @@ describe OrganizationsController, type: :controller do
         let(:contact_list) { contacts.map(&:id).join(',') }
 
         it "converts them to contact_ids" do
-          post :create, organization: org_attrs.merge(contact_list: contact_list)
+          post :create, params: { organization: org_attrs.merge(contact_list: contact_list) }
           expect(assigns(:organization).contact_ids).to eql contacts.map(&:id)
         end
       end
@@ -194,7 +195,7 @@ describe OrganizationsController, type: :controller do
 
         it "converts them to business_location_ids" do
           send_params = {organization: org_attrs.merge(business_location_list: location_list)}
-          post :create, send_params
+          post :create, params: send_params
           expect(assigns(:organization).business_location_ids).to eql locations.map(&:id)
         end
       end
@@ -206,7 +207,7 @@ describe OrganizationsController, type: :controller do
       end
 
       it 're-renders "new" template' do
-        post :create, organization: {name: nil}
+        post :create, params: { organization: { name: nil } }
         expect(response).to render_template('organizations/new')
       end
     end
@@ -220,7 +221,7 @@ describe OrganizationsController, type: :controller do
 
     it 'destroys record' do
       expect(organization).to receive(:destroy)
-      delete :destroy, id: organization.id
+      delete :destroy, params: { id: organization.id }
     end
   end
 end

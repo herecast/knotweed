@@ -32,7 +32,7 @@ describe 'User Comments endpoint', type: :request do
     context "when user logged in" do
       let(:user_headers) { headers.merge(auth_headers_for(@owning_user)) }
 
-      subject { get "/api/v3/users/#{@owning_user.id}/comments", {}, user_headers }
+      subject { get "/api/v3/users/#{@owning_user.id}/comments", params: {}, headers: user_headers }
 
       it "returns only current user's comments" do
         subject

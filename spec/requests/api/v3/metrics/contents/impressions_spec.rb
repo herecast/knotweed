@@ -21,7 +21,10 @@ RSpec.describe 'Content Impressions' do
       context "given a content id for #{type.to_s}" do
         let(:record) { FactoryGirl.create :content, type }
 
-        subject { post "/api/v3/metrics/contents/#{record.id}/impressions", context_data }
+        subject {
+          post "/api/v3/metrics/contents/#{record.id}/impressions",
+            params: context_data
+        }
 
         it 'returns 202 status' do
           subject
@@ -50,7 +53,11 @@ RSpec.describe 'Content Impressions' do
           let(:user) { FactoryGirl.create(:user) }
           let(:headers) { auth_headers_for(user)}
 
-          subject { post "/api/v3/metrics/contents/#{record.id}/impressions", context_data, headers }
+          subject do
+            post "/api/v3/metrics/contents/#{record.id}/impressions",
+              params: context_data,
+              headers: headers
+          end
 
           it 'records a content metric impression' do
             date = Date.current

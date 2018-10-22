@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Api::V3::LocationsController, :type => :controller do
-  
+
   describe 'GET index', elasticsearch: true do
     before do
       FactoryGirl.create_list :location, 3, consumer_active: false
@@ -22,11 +22,11 @@ describe Api::V3::LocationsController, :type => :controller do
     end
 
     context do
-      before do 
+      before do
         FactoryGirl.create :location, city: 'Upper Valley', state: 'VT', consumer_active: true
       end
 
-      it "does not include the location named 'Upper Valley' "do 
+      it "does not include the location named 'Upper Valley' "do
         subject
         expect(assigns(:locations).select { |l| l.name.match 'Upper Valley' }.size).to eq(0)
       end
@@ -58,7 +58,7 @@ describe Api::V3::LocationsController, :type => :controller do
       FactoryGirl.create_list :location, 6, consumer_active: true
     end
 
-    subject { get :closest, id: location.id, count: count }
+    subject { get :closest, params: { id: location.id, count: count } }
 
     it 'has 200 status code' do
       subject
@@ -79,7 +79,7 @@ describe Api::V3::LocationsController, :type => :controller do
   describe 'GET show' do
     let(:location) { FactoryGirl.create :location }
 
-    subject! { get :show, id: location.id }
+    subject! { get :show, params: { id: location.id } }
 
     it 'has 200 status code' do
       expect(response.code).to eq '200'
@@ -112,7 +112,7 @@ describe Api::V3::LocationsController, :type => :controller do
       }
 
       subject {
-        get :locate, coords: "0,0"
+        get :locate, params: { coords: "0,0" }
       }
 
       it 'returns nearest consumer_active location' do

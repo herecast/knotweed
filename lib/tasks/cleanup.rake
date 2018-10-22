@@ -83,7 +83,7 @@ namespace :cleanup do
 
     failed = []
     completed_count = 0
-    BusinessLocation.skip_callback(:commit, :after, :reindex_associations_async)
+    BusinessLocation.skip_callback(:commit, :after, :reindex_associations_async, raise: false)
 
     BusinessLocation.find_each do |bl|
       begin

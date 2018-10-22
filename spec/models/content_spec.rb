@@ -2,12 +2,12 @@
 #
 # Table name: contents
 #
-#  id                        :integer          not null, primary key
+#  id                        :bigint(8)        not null, primary key
 #  title                     :string(255)
 #  subtitle                  :string(255)
 #  authors                   :string(255)
 #  raw_content               :text
-#  issue_id                  :integer
+#  issue_id                  :bigint(8)
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
 #  guid                      :string(255)
@@ -17,14 +17,14 @@
 #  origin                    :string(255)
 #  page                      :string(255)
 #  authoremail               :string(255)
-#  organization_id           :integer
+#  organization_id           :bigint(8)
 #  quarantine                :boolean          default(FALSE)
 #  timestamp                 :datetime
-#  parent_id                 :integer
-#  content_category_id       :integer
+#  parent_id                 :bigint(8)
+#  content_category_id       :bigint(8)
 #  category_reviewed         :boolean          default(FALSE)
 #  has_event_calendar        :boolean          default(FALSE)
-#  channelized_content_id    :integer
+#  channelized_content_id    :bigint(8)
 #  published                 :boolean          default(FALSE)
 #  channel_type              :string(255)
 #  channel_id                :integer
@@ -36,8 +36,8 @@
 #  updated_by_id             :integer
 #  banner_click_count        :integer          default(0)
 #  similar_content_overrides :text
-#  banner_ad_override        :integer
-#  root_parent_id            :integer
+#  banner_ad_override        :bigint(8)
+#  root_parent_id            :bigint(8)
 #  deleted_at                :datetime
 #  authors_is_created_by     :boolean          default(FALSE)
 #  subscriber_mc_identifier  :string

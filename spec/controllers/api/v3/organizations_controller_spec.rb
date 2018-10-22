@@ -31,7 +31,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
         @list_of_orgs = FactoryGirl.create_list :organization, 3
       end
 
-      subject { get :index, ids: @list_of_orgs.map{|o| o.id} }
+      subject { get :index, params: { ids: @list_of_orgs.map{|o| o.id} } }
 
       it 'should respond with 200' do
         subject
@@ -64,7 +64,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
       }
     end
 
-    subject { post :create, params }
+    subject { post :create, params: params }
 
     it "creates Organization" do
       expect{ subject }.to change{
@@ -112,12 +112,14 @@ describe Api::V3::OrganizationsController, :type => :controller do
 
     let(:put_params) do
       {
-        id: @org.id,
         format: :json,
-        organization: {
-          name: 'New Name',
-          description: Faker::Lorem.sentence(2),
-          logo: fixture_file_upload('/photo.jpg', 'image/jpg')
+        params: {
+          id: @org.id,
+          organization: {
+            name: 'New Name',
+            description: Faker::Lorem.sentence(2),
+            logo: fixture_file_upload('/photo.jpg', 'image/jpg')
+          }
         }
       }
     end
@@ -158,10 +160,12 @@ describe Api::V3::OrganizationsController, :type => :controller do
 
         let(:new_put_params) do
           {
-            id: @org.id,
             format: :json,
-            organization: {
-              website: @new_venue_url
+            params: {
+              id: @org.id,
+              organization: {
+                website: @new_venue_url
+              }
             }
           }
         end

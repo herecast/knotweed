@@ -15,8 +15,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_79c3a45f12  (organization_id => organizations.id)
-#  fk_rails_87de0ab58e  (user_id => users.id)
+#  fk_rails_...  (organization_id => organizations.id)
+#  fk_rails_...  (user_id => users.id)
 #
 
 class PaymentRecipient < ActiveRecord::Base

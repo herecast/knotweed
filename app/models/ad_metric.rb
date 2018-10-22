@@ -2,7 +2,7 @@
 #
 # Table name: ad_metrics
 #
-#  id         :integer          not null, primary key
+#  id         :bigint(8)        not null, primary key
 #  campaign   :string
 #  event_type :string
 #  page_url   :string

@@ -4,7 +4,7 @@ module Api
 
       MI_TO_KM = 1.60934
 
-      before_filter :check_logged_in!, only: [:create, :update]
+      before_action :check_logged_in!, only: [:create, :update]
 
       def index
         expires_in 1.minutes, public: true
@@ -164,7 +164,8 @@ module Api
 
         def business_profile_params
           new_params = params
-          new_params.merge!(additional_attributes).delete(:business)
+          new_params = new_params.merge(additional_attributes)
+          new_params.delete(:business)
           new_params.require(:business_profile).permit(
             :has_retail_location,
             business_category_ids: [],

@@ -35,7 +35,7 @@
           %tbody
             - @user.subscriptions.each do |s|
               %tr{ class: "subscription-#{s.id}" }
-                %td= s.listserv.name
+                %td= s.listserv&.name
                 %td= I18n.l s.confirmed_at if s.confirmed?
                 %td= I18n.l s.unsubscribed_at if s.unsubscribed?
                 %td= I18n.l s.created_at if s.created_at?

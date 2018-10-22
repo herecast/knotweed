@@ -14,7 +14,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_a9860dd74e  (user_id => users.id)
+#  fk_rails_...  (user_id => users.id)
 #
 
 class SignInToken < ActiveRecord::Base

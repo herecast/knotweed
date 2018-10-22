@@ -11,7 +11,6 @@
 // GO AFTER THE REQUIRES BELOW.
 //
 //= require jquery
-//= require jquery.turbolinks
 //= require jquery_ujs
 //= require flatty/jquery_ui/jquery-ui.min
 //= require flatty/bootstrap/bootstrap.min

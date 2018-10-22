@@ -2,7 +2,7 @@
 #
 # Table name: market_posts
 #
-#  id                       :integer          not null, primary key
+#  id                       :bigint(8)        not null, primary key
 #  cost                     :string(255)
 #  contact_phone            :string(255)
 #  contact_email            :string(255)
@@ -31,7 +31,7 @@ class MarketPost < ActiveRecord::Base
 
   geocoded_by :locate_address
 
-  after_validation :geocode, if: ->(obj){ obj.locate_address.present? and obj.locate_address_changed?}
+  after_validation :geocode, if: ->(obj){ obj.locate_address.present? and obj.saved_change_to_locate_address?}
 
 
   # this callback allows us to essentially forget that the associated content

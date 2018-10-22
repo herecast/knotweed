@@ -2,7 +2,7 @@
 #
 # Table name: listservs
 #
-#  id                          :integer          not null, primary key
+#  id                          :bigint(8)        not null, primary key
 #  name                        :string(255)
 #  reverse_publish_email       :string(255)
 #  import_name                 :string(255)

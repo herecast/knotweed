@@ -1,16 +1,9 @@
 CarrierWave.configure do |config|
-  if Figaro.env.aws_access_key_id && Figaro.env.aws_secret_access_key
-    # Beginning in Carrierwave v0.10.0, fog credentials get eager loaded.
-    # This doesn't play well with some of the rake tasks, like +assets:precompile+ and +db:migrate+,
-    # because the Figaro environment is not yet available.  So we skip setting the fog credentials
-    # when they're unavailable.
-
-    config.fog_credentials = {
-      :provider               => 'AWS',
-      :aws_access_key_id      => Figaro.env.aws_access_key_id,
-      :aws_secret_access_key => Figaro.env.aws_secret_access_key
-    }
-  end
+  config.fog_credentials = {
+    :provider               => 'AWS',
+    :aws_access_key_id      => Figaro.env.aws_access_key_id || 'dummy',
+    :aws_secret_access_key  => Figaro.env.aws_secret_access_key || 'dummy'
+  }
 
   config.fog_directory = Figaro.env.aws_bucket_name
   config.ignore_download_errors = false

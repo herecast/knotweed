@@ -1,6 +1,10 @@
-require File.expand_path('../boot', __FILE__)
+require_relative 'boot'
 
 require 'rails/all'
+
+# Require the gems listed in Gemfile, including any gems
+# you've limited to :test, :development, or :production.
+Bundler.require(*Rails.groups)
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
@@ -39,10 +43,6 @@ module Knotweed
     config.autoload_paths += Dir[Rails.root.join('app', 'processes','**/')]
     config.autoload_paths += Dir[Rails.root.join('app', 'exceptions','**/')]
 
-    # Only load the plugins named here, in the order given (default is alphabetical).
-    # :all can be used as a placeholder for all plugins not explicitly named.
-    # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
-
     # Activate observers that should always be running.
     # config.active_record.observers = :cacher, :garbage_collector, :forum_observer
 
@@ -77,7 +77,7 @@ module Knotweed
 
     # Set if not pre-compiling assets
     config.assets.compile = !!ENV.fetch('ASSETS_COMPILE', false)
-    config.serve_static_files = !!ENV.fetch('SERVE_STATIC_FILES', false)
+    config.public_file_server.enabled = !!ENV.fetch('SERVE_STATIC_FILES', false)
     config.assets.precompile += %w(minimal.scss email/base.scss payment_reports.scss)
 
     # Version of your assets, change this if you want to expire all your assets
@@ -88,7 +88,7 @@ module Knotweed
     # jobs can configure their own individually
     config.active_job.queue_adapter = :sidekiq
 
-    config.middleware.insert_before 0, "Rack::Cors" do
+    config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins '*'
         resource '/api/v3/*', :headers => :any, :methods => [:get, :put, :patch, :post, :delete, :options]
@@ -97,5 +97,7 @@ module Knotweed
     config.cache_store = :redis_store
 
     config.subtext = Hashie::Mash.new(config_for(:subtext))
+
+    config.active_record.time_zone_aware_types = [:datetime]
   end
 end

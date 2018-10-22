@@ -4,7 +4,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
 
   describe "POST #create" do
     context "when no user logged in" do
-      subject { post :create, { content_id: "fake", organization_id: "fake" } }
+      subject { post :create, params: { content_id: "fake", organization_id: "fake" } }
 
       it "returns unauthorized status" do
         subject
@@ -20,7 +20,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
         Organization.delete_all
       end
 
-      subject { post :create, { content_id: @content.id, organization_id: "fake" } }
+      subject { post :create, params: { content_id: @content.id, organization_id: "fake" } }
 
       it "returns not_found status" do
         subject
@@ -35,7 +35,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
         @organization = FactoryGirl.create :organization
       end
 
-      subject { post :create, { organization_id: @organization.id, content_id: "fake" } }
+      subject { post :create, params: { organization_id: @organization.id, content_id: "fake" } }
 
       it "returns not_found status" do
         subject
@@ -55,7 +55,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
           sign_in user
         end
 
-        subject { post :create, { organization_id: @organization.id, content_id: @content.id } }
+        subject { post :create, params: { organization_id: @organization.id, content_id: @content.id } }
 
         it "returns unauthorized status" do
           subject
@@ -70,7 +70,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
           user.add_role(:manager, @organization)
         end
 
-        subject { post :create, { organization_id: @organization.id, content_id: @content.id } }
+        subject { post :create, params: { organization_id: @organization.id, content_id: @content.id } }
 
         it "creates tag" do
           expect{ subject }.to change{
@@ -85,7 +85,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
           sign_in admin
         end
 
-        subject { post :create, { organization_id: @organization.id, content_id: @content.id } }
+        subject { post :create, params: { organization_id: @organization.id, content_id: @content.id } }
 
         it "creates tag" do
           expect{ subject }.to change{
@@ -98,7 +98,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
 
   describe "DELETE #destroy" do
     context "when no user logged in" do
-      subject { delete :destroy, { content_id: "fake", organization_id: "fake" } }
+      subject { delete :destroy, params: { content_id: "fake", organization_id: "fake" } }
 
       it "returns unauthorized status" do
         subject
@@ -114,7 +114,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
         Organization.delete_all
       end
 
-      subject { delete :destroy, { content_id: @content.id, organization_id: 1 } }
+      subject { delete :destroy, params: { content_id: @content.id, organization_id: 1 } }
 
       it "returns not_found status" do
         subject
@@ -129,7 +129,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
         @organization = FactoryGirl.create :organization
       end
 
-      subject { delete :destroy, { organization_id: @organization.id, content_id: 1 } }
+      subject { delete :destroy, params: { organization_id: @organization.id, content_id: 1 } }
 
       it "returns not_found status" do
         subject
@@ -150,7 +150,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
           sign_in user
         end
 
-        subject { delete :destroy, { organization_id: @organization.id, content_id: @content.id } }
+        subject { delete :destroy, params: { organization_id: @organization.id, content_id: @content.id } }
 
         it "returns unauthorized status" do
           subject
@@ -165,7 +165,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
           user.add_role(:manager, @organization)
         end
 
-        subject { delete :destroy, { organization_id: @organization.id, content_id: @content.id } }
+        subject { delete :destroy, params: { organization_id: @organization.id, content_id: @content.id } }
 
         it "creates tag" do
           expect{ subject }.to change{
@@ -180,7 +180,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
           sign_in admin
         end
 
-        subject { delete :destroy, { organization_id: @organization.id, content_id: @content.id } }
+        subject { delete :destroy, params: { organization_id: @organization.id, content_id: @content.id } }
 
         it "creates tag" do
           expect{ subject }.to change{

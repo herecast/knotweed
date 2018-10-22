@@ -2,8 +2,8 @@
 #
 # Table name: promotion_listservs
 #
-#  id          :integer          not null, primary key
-#  listserv_id :integer
+#  id          :bigint(8)        not null, primary key
+#  listserv_id :bigint(8)
 #  sent_at     :datetime
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null

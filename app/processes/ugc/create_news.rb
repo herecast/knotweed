@@ -41,7 +41,7 @@ module Ugc
       end
 
       def transformed_params
-        ActionController::Parameters.new(@params).tap do |h|
+        @params.tap do |h|
           h[:content][:raw_content] = h[:content].delete :content if h[:content].has_key? :content
           h[:content][:pubdate] = h[:content].delete :published_at if h[:content].has_key? :published_at
           author_name = h[:content].delete :author_name

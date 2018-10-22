@@ -1,4 +1,4 @@
-Knotweed::Application.routes.draw do
+Rails.application.routes.draw do
   require 'sidekiq/web'
 
   #custom devise routing

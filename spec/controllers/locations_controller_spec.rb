@@ -11,12 +11,12 @@ describe LocationsController, :type => :controller do
   describe "GET 'index'" do
     it 'returns http success' do
       get 'index'
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     context 'when reset' do
 
-      subject { get :index, reset: true }
+      subject { get :index, params: { reset: true } }
 
       it "returns no locations" do
         allow_any_instance_of(Ransack::Search).to receive_message_chain(:result, :page, :per).and_return []
@@ -29,7 +29,7 @@ describe LocationsController, :type => :controller do
       let(:query) { { q: 'query' } }
       let(:results) { [FactoryGirl.build_stubbed(:location)] }
 
-      subject { get :index, query }
+      subject { get :index, params: query }
 
       it "returns results" do
         Ransack::Search.any_instance.stub_chain(:result, :page, :per) { results }
@@ -45,7 +45,7 @@ describe LocationsController, :type => :controller do
     end
 
     it 'returns http success' do
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it 'renders the new template' do
@@ -56,7 +56,7 @@ describe LocationsController, :type => :controller do
   describe "POST #create" do
     context "when creation succeeds" do
       it "html: redirects to locations" do
-        post :create, location: { city: 'fake', state: 'VT' }
+        post :create, params: { location: { city: 'fake', state: 'VT' } }
         expect(response.code).to eq '302'
         expect(response).to redirect_to locations_path
       end
@@ -68,7 +68,7 @@ describe LocationsController, :type => :controller do
       end
 
       it "html: renders new page" do
-        post :create, location: { city: 'fake', state: 'VT' }
+        post :create, params: { location: { city: 'fake', state: 'VT' } }
         expect(response).to render_template 'new'
       end
     end
@@ -76,11 +76,11 @@ describe LocationsController, :type => :controller do
 
   describe "GET 'edit'" do
     before do
-      get 'edit', id: @location.id
+      get 'edit', params: { id: @location.id }
     end
 
     it 'returns http success' do
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it 'renders the edit template' do
@@ -90,7 +90,7 @@ describe LocationsController, :type => :controller do
 
   describe "PUT 'update'" do
 
-    subject { put :update, { id: @location.to_param, location: params} }
+    subject { put :update, params: { id: @location.to_param, location: params} }
 
     describe 'with valid params' do
       let(:params) { { city: 'Another string' } }

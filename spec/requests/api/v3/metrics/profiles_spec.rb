@@ -21,7 +21,10 @@ RSpec.describe 'Profile metrics' do
 
     let(:organization) { FactoryGirl.create :organization }
 
-    subject { post "/api/v3/metrics/profiles/#{organization.id}/impressions", context_data }
+    subject {
+      post "/api/v3/metrics/profiles/#{organization.id}/impressions",
+        params: context_data
+    }
 
     it 'records profile metric impression' do
       expect{subject}.to change{
@@ -59,7 +62,10 @@ RSpec.describe 'Profile metrics' do
 
     let(:organization) { FactoryGirl.create :organization }
 
-    subject { post "/api/v3/metrics/profiles/#{organization.id}/clicks", context_data }
+    subject {
+      post "/api/v3/metrics/profiles/#{organization.id}/clicks",
+        params: context_data
+    }
 
     it 'records profile metric impression' do
       expect{subject}.to change{

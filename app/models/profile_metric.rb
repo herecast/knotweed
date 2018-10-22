@@ -26,10 +26,10 @@
 #
 # Foreign Keys
 #
-#  fk_rails_1caf87f7c9  (content_id => contents.id)
-#  fk_rails_2e3dfedbde  (user_id => users.id)
-#  fk_rails_88d257c26e  (location_id => locations.id)
-#  fk_rails_f7742f0da7  (organization_id => organizations.id)
+#  fk_rails_...  (content_id => contents.id)
+#  fk_rails_...  (location_id => locations.id)
+#  fk_rails_...  (organization_id => organizations.id)
+#  fk_rails_...  (user_id => users.id)
 #
 
 class ProfileMetric < ActiveRecord::Base

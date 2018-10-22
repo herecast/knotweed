@@ -20,7 +20,7 @@ describe Api::V3::PromotionBannerReportsController, type: :controller do
         impression_count: 3
     end
 
-    subject { get :index, start_date: 3.day.ago.strftime("%D"), end_date: Date.today.strftime("%D") }
+    subject { get :index, params: { start_date: 3.day.ago.strftime("%D"), end_date: Date.today.strftime("%D") } }
 
     it "returns appropriate information" do
       subject
@@ -64,7 +64,7 @@ describe Api::V3::PromotionBannerReportsController, type: :controller do
       PromotionBanner.all.each { |pb| pb.promotion.update_attribute(:paid, true) }
     end
 
-    subject { get :show_daily_report, report_date: Date.yesterday }
+    subject { get :show_daily_report, params: { report_date: Date.yesterday } }
 
     it "returns revenue information for specific date" do
       subject

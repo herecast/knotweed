@@ -4,7 +4,7 @@ RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
 
   describe "GET #index" do
     context "when content not found" do
-      subject { get :index, content_id: 1 }
+      subject { get :index, params: { content_id: 1 } }
 
       it "returns not_found status" do
         subject
@@ -17,7 +17,7 @@ RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
         @content = FactoryGirl.create :content
       end
 
-      subject { get :index, content_id: @content.id }
+      subject { get :index, params: { content_id: @content.id } }
 
       context "when content has no promotions" do
         it "returns empty array" do
@@ -30,7 +30,7 @@ RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
       context "when content has promotions that are not shares" do
         let (:promotion) { FactoryGirl.create :promotion, content_id: @content.id }
 
-        subject { get :index, content_id: @content.id }
+        subject { get :index, params: { content_id: @content.id } }
 
         it "returns empty array" do
           subject
@@ -46,7 +46,7 @@ RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
             share_platform: 'Twitter'
         end
 
-        subject { get :index, content_id: @content.id }
+        subject { get :index, params: { content_id: @content.id } }
 
         it "returns empty array" do
           subject
@@ -59,7 +59,7 @@ RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
 
   describe "POST #create" do
     context "when content is not present" do
-      subject { post :create, content_id: 1 }
+      subject { post :create, params: { content_id: 1 } }
 
       it "returns not_found status" do
         subject
@@ -73,7 +73,7 @@ RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
         allow_any_instance_of(Promotion).to receive(:save).and_return false
       end
 
-      subject { post :create, { content_id: @content.id, promotion: { pod: 'racer' } } }
+      subject { post :create, params: { content_id: @content.id, promotion: { pod: 'racer' } } }
 
       it "returns unprocessable_entity status" do
         subject
@@ -92,7 +92,7 @@ RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
         }
       }}
 
-      subject { post :create, params }
+      subject { post :create, params: params }
 
       it "creates a promotion" do
         expect{ subject }.to change{

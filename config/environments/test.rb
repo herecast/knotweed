@@ -1,4 +1,4 @@
-Knotweed::Application.configure do
+Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
   # The test environment is used exclusively to run your application's
@@ -10,8 +10,8 @@ Knotweed::Application.configure do
   config.eager_load = false
 
   # Configure static asset server for tests with Cache-Control for performance
-  config.serve_static_files = true
-  config.static_cache_control = "public, max-age=3600"
+  config.public_file_server.enabled = true
+  config.public_file_server.headers = { 'Cache-Control' => 'public, max-age=3600' }
 
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
@@ -33,8 +33,6 @@ Knotweed::Application.configure do
 
   # ActionMailer Config
   config.action_mailer.default_url_options = { :host => '198.74.61.63:8002' }
-
-  config.active_record.raise_in_transactional_callbacks = true
 
   config.active_job.queue_adapter = :test
 

@@ -11,15 +11,8 @@ module Ugc
     end
 
     def call
-      @talk = Comment.new(talk_params.deep_merge(
-        content_attributes: {
-          created_by: @current_user,
-          origin: Content::UGC_ORIGIN
-        }
-      ))
-
+      @talk = Comment.new(talk_params)
       @talk.save
-
       @talk.content
     end
 
@@ -30,9 +23,9 @@ module Ugc
 
       def talk_params
         new_params = ActionController::Parameters.new(
-          content: @params[:content].to_h
+          content: @params[:content]
         )
-        new_params[:content].merge!(additional_attributes)
+        new_params[:content] = new_params[:content].merge(additional_attributes)
         new_params[:content].delete(:promote_radius)
         new_params.require(:content).permit(
           content_attributes: [
@@ -45,7 +38,9 @@ module Ugc
             :organization_id,
             :content_category_id,
             :sunset_date,
-            :location_id
+            :location_id,
+            :created_by,
+            :origin
           ]
         )
       end
@@ -62,7 +57,9 @@ module Ugc
             organization_id: @params[:content][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
             content_category_id: talk_category.id,
             promote_radius: @params[:content][:promote_radius],
-            location_id: @params[:content][:location_id]
+            location_id: @params[:content][:location_id],
+            created_by: @current_user,
+            origin: Content::UGC_ORIGIN
           }
         }
       end

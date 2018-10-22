@@ -1,7 +1,7 @@
 module Api
   module V3
     class ContentPermissionsController < ApiController
-      before_filter :check_logged_in!
+      before_action :check_logged_in!
 
       def index
         contents_array = []

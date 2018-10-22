@@ -27,8 +27,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_7de388d95b  (listserv_id => listservs.id)
-#  fk_rails_933bdff476  (user_id => users.id)
+#  fk_rails_...  (listserv_id => listservs.id)
+#  fk_rails_...  (user_id => users.id)
 #
 
 require 'rails_helper'

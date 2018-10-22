@@ -22,7 +22,7 @@
 #  content_ids      :integer          is an Array
 #  emails_sent      :integer          default(0), not null
 #  opens_total      :integer          default(0), not null
-#  link_clicks      :hstore           default({}), not null
+#  link_clicks      :hstore           not null
 #  last_mc_report   :datetime
 #
 # Indexes
@@ -31,7 +31,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_386f862ec4  (listserv_id => listservs.id)
+#  fk_rails_...  (listserv_id => listservs.id)
 #
 
 require 'rails_helper'

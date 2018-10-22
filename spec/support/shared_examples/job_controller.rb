@@ -8,26 +8,26 @@ shared_examples_for "JobController" do
     end
 
     it 'assigns @job' do
-      xhr :get, :run_job, id: model.id, format: :js
+      get :run_job, xhr: true, params: { id: model.id }, format: :js
       expect(assigns(:job)).to eql model
     end
 
     it 'renders jobs/run_job' do
-      xhr :get, :run_job, id: model.id, format: :js
+      get :run_job, xhr: true, params: { id: model.id }, format: :js
       expect(response).to render_template('jobs/run_job')
     end
 
     context 'When status is "running"' do
       it 'calls model#enqueue_job' do
         expect(model).to receive(:enqueue_job)
-        xhr :get, :run_job, id: model.id, format: :js
+        get :run_job, xhr: true, params: { id: model.id }, format: :js
       end
     end
 
     context 'When status is "queued"' do
       it 'calls model#enqueue_job' do
         expect(model).to receive(:enqueue_job)
-        xhr :get, :run_job, id: model.id, format: :js
+        get :run_job, xhr: true, params: { id: model.id }, format: :js
       end
     end
   end
@@ -40,12 +40,12 @@ shared_examples_for "JobController" do
 
     it 'calls model#cancel_scheduled_runs' do
       expect(model).to receive(:cancel_scheduled_runs)
-      delete :cancel_job, id: model.id, format: :js
+      delete :cancel_job, params: { id: model.id }, format: :js
     end
 
     it 'renders jobs/cancel' do
       expect(model).to receive(:cancel_scheduled_runs)
-      xhr :delete, :cancel_job, id: model.id, format: :js
+      delete :cancel_job, xhr: true, params: { id: model.id }, format: :js
       expect(response).to render_template('jobs/cancel_job')
     end
   end
@@ -57,7 +57,7 @@ shared_examples_for "JobController" do
     end
 
     it 'renders jobs/destroy' do
-      delete :destroy, id: model.id, format: :js
+      delete :destroy, params: { id: model.id }, format: :js
       expect(response).to render_template('jobs/destroy')
     end
   end
@@ -69,12 +69,12 @@ shared_examples_for "JobController" do
     end
 
     it 'sets model#archive to true' do
-      xhr :get, :archive, id: model.id, format: :js
+      get :archive, xhr: true, params: { id: model.id }, format: :js
       expect(model.reload.archive).to be_truthy
     end
 
     it 'renders jobs/archive' do
-      xhr :get, :archive, id: model.id, format: :js
+      get :archive, xhr: true, params: { id: model.id }, format: :js
       expect(response).to render_template('jobs/archive')
     end
   end

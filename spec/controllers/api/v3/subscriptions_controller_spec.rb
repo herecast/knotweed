@@ -16,7 +16,7 @@ describe Api::V3::SubscriptionsController, type: :controller do
         email_type: "html" }
       }
     end
-    subject { post :create, @sub_attrs, format: :json }
+    subject { post :create, params: @sub_attrs, format: :json }
 
     it 'responds successfully' do
       subject
@@ -49,7 +49,7 @@ describe Api::V3::SubscriptionsController, type: :controller do
         email_type: "html" }
       }
 
-      post :create, @sub_attrs, format: :json
+      post :create, params: @sub_attrs, format: :json
       expect(response.code).to eq '422'
     end
 
@@ -79,20 +79,20 @@ describe Api::V3::SubscriptionsController, type: :controller do
     let(:user) { FactoryGirl.create :user }
     let(:listserv) { FactoryGirl.create :listserv, mc_list_id: '58b689ef45', mc_group_name: 'Test Digest' }
     let!(:subscription) { FactoryGirl.create :subscription, email: user.email, listserv_id: listserv.id }
-    let(:mc_request) { {"type"=>"unsubscribe", 
-                        "fired_at"=>"2016-09-21 15:32:52", 
-                        "data"=>{"action"=>"unsub", 
-                                 "reason"=>"manual", 
-                                 "id"=>"ecdecee112", 
-                                 "email"=>"#{user.email}", 
-                                 "email_type"=>"html", 
-                                 "ip_opt"=>"68.81.4.98", 
-                                 "web_id"=>"134812609", "merges"=>{"EMAIL"=>"test@subtext.org", 
-                                                                   "FNAME"=>"Testy", 
-                                                                    "LNAME"=>"McTesterson"}, 
+    let(:mc_request) { {"type"=>"unsubscribe",
+                        "fired_at"=>"2016-09-21 15:32:52",
+                        "data"=>{"action"=>"unsub",
+                                 "reason"=>"manual",
+                                 "id"=>"ecdecee112",
+                                 "email"=>"#{user.email}",
+                                 "email_type"=>"html",
+                                 "ip_opt"=>"68.81.4.98",
+                                 "web_id"=>"134812609", "merges"=>{"EMAIL"=>"test@subtext.org",
+                                                                   "FNAME"=>"Testy",
+                                                                    "LNAME"=>"McTesterson"},
                                  "list_id"=>"#{listserv.mc_list_id}"}} }
 
-    subject { post :unsubscribe_from_mailchimp, mc_request }
+    subject { post :unsubscribe_from_mailchimp, params: mc_request }
 
     #maybe set up VCR to get the response or create a fixture
     context 'when the user unsubscribes' do

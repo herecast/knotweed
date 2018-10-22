@@ -17,7 +17,7 @@ describe Api::V3::CommentsController, :type => :controller do
         @comment.content.update_attribute :parent_id, @content.id
       end
 
-      subject { get :index, format: :json, content_id: @content.id }
+      subject { get :index, format: :json, params: { content_id: @content.id } }
 
       it 'should return the coments associated' do
         subject
@@ -58,7 +58,7 @@ describe Api::V3::CommentsController, :type => :controller do
                                             created_by: FactoryGirl.create(:user))
       end
 
-      subject! { get :index, format: :json, content_id: @event.content.id }
+      subject! { get :index, format: :json, params: { content_id: @event.content.id } }
 
       it 'should return the results flattened and ordered' do
         # pubdate time varies based on when the Factory creates them, so need to order first
@@ -83,7 +83,7 @@ describe Api::V3::CommentsController, :type => :controller do
           created_by: FactoryGirl.create(:user)
       end
 
-      subject! { get :index, format: :json, content_id: @event.content.id }
+      subject! { get :index, format: :json, params: { content_id: @event.content.id } }
 
       it 'should return ordered results' do
         expected = {comments: [comment_format(@comment3), comment_format(@comment2), comment_format(@comment1)]}.stringify_keys
@@ -94,13 +94,16 @@ describe Api::V3::CommentsController, :type => :controller do
     describe 'when avatar is present' do
       before do
         google_logo_stub
-        user = FactoryGirl.create :user, remote_avatar_url:  "https://www.google.com/images/srpr/logo11w.png"
+        user = FactoryGirl.create :user
         @content = FactoryGirl.create :content
         @comment = FactoryGirl.create :comment
         @comment.content.update parent_id: @content.id, created_by: user
+        allow(user).to receive(:avatar_url).and_return(
+          "https://www.google.com/images/srpr/logo11w.png"
+        )
       end
 
-      subject! { get :index, format: :json, content_id: @content.id }
+      subject! { get :index, format: :json, params: { content_id: @content.id } }
 
       it 'should include avatar url in the response' do
         expect(JSON.parse(response.body)).to eq({comments: [comment_format(@comment)]}.stringify_keys)
@@ -118,7 +121,7 @@ describe Api::V3::CommentsController, :type => :controller do
       api_authenticate user: @commenting_user
     end
 
-    subject { post :create, comment: { content: 'fake', parent_content_id: @event.content.id } }
+    subject { post :create, params: { comment: { content: 'fake', parent_content_id: @event.content.id } } }
 
     context 'should not allow creation if user unauthorized' do
       before { api_authenticate success: false }
@@ -162,7 +165,7 @@ describe Api::V3::CommentsController, :type => :controller do
         }
       end
 
-      subject { post :create, comment: comment_params }
+      subject { post :create, params: { comment: comment_params } }
 
       it "strips HTML tags from comment" do
         subject

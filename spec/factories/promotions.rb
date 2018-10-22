@@ -2,13 +2,13 @@
 #
 # Table name: promotions
 #
-#  id              :integer          not null, primary key
+#  id              :bigint(8)        not null, primary key
 #  banner          :string(255)
-#  content_id      :integer
+#  content_id      :bigint(8)
 #  description     :text
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  promotable_id   :integer
+#  promotable_id   :bigint(8)
 #  promotable_type :string(255)
 #  paid            :boolean          default(FALSE)
 #  created_by_id   :integer

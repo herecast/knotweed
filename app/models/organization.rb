@@ -2,15 +2,15 @@
 #
 # Table name: organizations
 #
-#  id                       :integer          not null, primary key
+#  id                       :bigint(8)        not null, primary key
 #  name                     :string(255)
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #  logo                     :string(255)
-#  organization_id          :integer
+#  organization_id          :bigint(8)
 #  website                  :string(255)
 #  notes                    :text
-#  parent_id                :integer
+#  parent_id                :bigint(8)
 #  org_type                 :string(255)
 #  can_reverse_publish      :boolean          default(FALSE)
 #  can_publish_news         :boolean          default(FALSE)
@@ -116,8 +116,6 @@ class Organization < ActiveRecord::Base
 
   has_and_belongs_to_many :contacts
 
-  has_many :promotions, through: :contents
-
   after_commit :trigger_content_reindex_if_name_or_profile_image_changed!, on: :update
 
   mount_uploader :logo, ImageUploader
@@ -131,7 +129,7 @@ class Organization < ActiveRecord::Base
                                  :remove_logo!,
                                  :remove_profile_image!,
                                  :remove_background_image!,
-                                 :remove_desktop_image!
+                                 :remove_desktop_image!, raise: false
 
   scope :alphabetical, -> { order("organizations.name ASC") }
   default_scope { self.alphabetical }
@@ -156,8 +154,12 @@ class Organization < ActiveRecord::Base
   validate :twitter_handle_format
 
   def self.parent_pubs
-    ids = self.where("parent_id IS NOT NULL").select(:parent_id, :name).uniq.map { |p| p.parent_id }
+    ids = self.where("parent_id IS NOT NULL").select(:parent_id, :name).distinct.map { |p| p.parent_id }
     self.where(id: ids)
+  end
+
+  def promotions
+    Promotion.where('content_id IN (select id from contents where contents.organization_id = ?)', id)
   end
 
   def base_locations=locs

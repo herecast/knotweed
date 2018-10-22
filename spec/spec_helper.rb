@@ -27,8 +27,6 @@ VCR.configure do |c|
   c.hook_into :webmock
 end
 
-TestAfterCommit.enabled = true
-
 RSpec.configure do |config|
   config.include AuthenticationHelpers, type: :controller
   config.include RequestHelpers, type: :request

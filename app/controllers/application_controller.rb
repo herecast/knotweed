@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   #normal Devise authentication
-  before_filter :authorize_access!, :set_current_thread_user, 
+  before_action :authorize_access!, :set_current_thread_user, 
     :get_version
 
   rescue_from CanCan::AccessDenied do |exception|

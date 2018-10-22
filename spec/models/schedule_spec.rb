@@ -2,9 +2,9 @@
 #
 # Table name: schedules
 #
-#  id                   :integer          not null, primary key
+#  id                   :bigint(8)        not null, primary key
 #  recurrence           :text
-#  event_id             :integer
+#  event_id             :bigint(8)
 #  description_override :text
 #  subtitle_override    :string(255)
 #  presenter_name       :string(255)

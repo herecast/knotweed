@@ -2,15 +2,15 @@
 #
 # Table name: business_profiles
 #
-#  id                        :integer          not null, primary key
-#  business_location_id      :integer
+#  id                        :bigint(8)        not null, primary key
+#  business_location_id      :bigint(8)
 #  has_retail_location       :boolean          default(TRUE)
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
 #  source                    :string(255)
 #  source_id                 :string(255)
 #  existence                 :float
-#  feedback_count            :integer          default(0)
+#  feedback_count            :bigint(8)        default(0)
 #  feedback_recommend_avg    :float            default(0.0)
 #  feedback_price_avg        :float            default(0.0)
 #  feedback_satisfaction_avg :float            default(0.0)
@@ -43,14 +43,14 @@ class BusinessProfile < ActiveRecord::Base
       exists: (existence.nil? or existence >= 0.4)
     }
     if content.present?
-      index.merge!({
+      index = index.merge({
         title: content.title,
         content: strip_tags(content.raw_content),
         organization_id: content.organization_id
       })
     end
     if business_location.present?
-      index.merge!({
+      index = index.merge({
         business_location_name: business_location.name,
         business_location_city: business_location.city,
         business_location_state: business_location.state,
