@@ -372,8 +372,8 @@ GEM
       railties (>= 4.0.1)
     hashdiff (0.3.7)
     hashie (3.6.0)
-    health_check (1.5.1)
-      rails (>= 2.3.0)
+    health_check (3.0.0)
+      railties (>= 5.0)
     hpricot (0.8.6)
     html2haml (2.2.0)
       erubis (~> 2.7.0)
@@ -754,7 +754,7 @@ DEPENDENCIES
   guard-bundler
   guard-rspec
   haml-rails
-  health_check (~> 1.5)
+  health_check (~> 3.0)
   hpricot
   htmlcompressor
   httparty

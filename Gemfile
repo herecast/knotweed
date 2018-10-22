@@ -28,7 +28,7 @@ gem "fog"
 gem 'forecast_io'
 gem 'geocoder'
 gem "haml-rails"
-gem 'health_check', '~> 1.5'                          # Have not yet tested the next major version
+gem 'health_check', '~> 3.0'
 gem 'hpricot'
 gem 'htmlcompressor'
 gem 'httparty'
