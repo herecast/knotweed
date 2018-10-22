@@ -9,16 +9,16 @@ module Api
         root = Content.find params[:content_id]
         @comments = []
 
-        if root.present?
+        if root.present? && root.removed != true
           if root.content_category.name.in? %w(talk_of_the_town discussion)
             result_list = root.talk_comments
           else
             result_list = root.comments
           end
-            @comments << result_list.not_deleted
-            get_all_comments result_list.not_deleted
-            @comments.flatten!
-            @comments.sort! { |a,b| b.pubdate <=> a.pubdate }
+          @comments << result_list.not_deleted
+          get_all_comments result_list.not_deleted
+          @comments.flatten!
+          @comments.sort! { |a,b| b.pubdate <=> a.pubdate }
         end
         render json: @comments, each_serializer: CommentSerializer
       end

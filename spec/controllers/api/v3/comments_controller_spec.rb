@@ -39,6 +39,17 @@ describe Api::V3::CommentsController, :type => :controller do
           expect(assigns(:comments)).to eq([@talk_comment.content])
         end
       end
+
+      context "when content is removed" do
+        before do
+          @content.update_attribute(:removed, true)
+        end
+
+        it "returns empty array" do
+          subject
+          expect(assigns(:comments)).to eq([])
+        end
+      end
     end
 
     describe 'nested comments' do
