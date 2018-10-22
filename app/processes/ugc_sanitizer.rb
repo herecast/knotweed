@@ -13,7 +13,8 @@ class UgcSanitizer
       'iframe' => ['width', 'height', 'frameborder', 'src', 'class'] # youtube
     },
     protocols: {
-      'a' => { 'href' => ['http', 'https', 'mailto'] }
+      'a' => { 'href' => ['http', 'https', 'mailto'] },
+      'img' => { 'src' => ['http', 'https', :relative] }
     },
     add_attributes: {
       'a' => { 'rel' => 'nofollow' }
