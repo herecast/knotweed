@@ -76,7 +76,7 @@ gem "slack-notifier", '~> 2.3.1'
 gem 'sshkit'
 gem 'summernote-rails'
 gem 'thor', '0.19.1'                                # Later versions cause warnings
-gem "turbolinks", '~> 2.2'                          # Have not yet tested the next major version
+gem "turbolinks", '~> 5.2'
 gem 'typhoeus'
 gem 'uglifier', '~> 2.4'                            # Have not yet tested the next major version
 gem 'unf'
