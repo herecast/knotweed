@@ -212,6 +212,21 @@ describe UsersController, :type => :controller do
         expect(@user.unconfirmed_email).to be_blank
       end
     end
+
+    context "when updating user roles" do
+      before do
+        @role_name = 'Sick role'
+        FactoryGirl.create :role, name: @role_name
+      end
+
+      subject { put :update, params: { id: @user.id, user: { roles: { @role_name => 'on' } } } }
+
+      it "updates user role" do
+        expect{ subject }.to change{
+          @user.has_role?(@role_name)
+        }.to true
+      end
+    end
   end
 
   describe "PUT #update_subscription" do

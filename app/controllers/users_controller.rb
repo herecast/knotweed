@@ -123,12 +123,11 @@ class UsersController < ApplicationController
         :epayment,
         :w9
       ).tap do |attrs|
+        attrs[:role_ids] = []
         if params[:user][:roles].present?
-          attrs[:role_ids] = params[:user][:roles].map do |key, value|
-            Role.get(key.to_s).id if value == 'on'
+          params[:user][:roles].each do |key, value|
+            attrs[:role_ids] << Role.get(key.to_s).id if value == 'on'
           end
-        else
-          attrs[:role_ids] = []
         end
       end
     end
