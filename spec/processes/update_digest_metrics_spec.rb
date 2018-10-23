@@ -55,7 +55,7 @@ RSpec.describe UpdateDigestMetrics do
 
       # second request (reports/campaign_id/click-details)
       stub_request(:get,
-        "https://#{mc_base_url}/reports/#{digest.mc_campaign_id}/click-details"
+        "https://#{mc_base_url}/reports/#{digest.mc_campaign_id}/click-details?count=20"
       ).with(
         basic_auth: auth,
         headers: {
