@@ -73,7 +73,7 @@ module Ugc
         if e[:venue_id].present?
           new_e[:venue_id] = e[:venue_id]
         elsif e[:venue].present?
-          new_e[:venue_attributes] = e[:venue].to_hash
+          new_e[:venue_attributes] = e[:venue]
         end
 
         # translate params that have the wrong name
