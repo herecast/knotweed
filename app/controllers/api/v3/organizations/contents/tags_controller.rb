@@ -5,22 +5,16 @@ module Api
 
       def create
         find_content_and_organization
-        if can?(:manage, @organization)
-          @organization.tagged_contents << @content
-          render json: {}, status: :created
-        else
-          render json: {}, status: :unauthorized
-        end
+        authorize! :manage, @organization
+        @organization.tagged_contents << @content
+        render json: {}, status: :created
       end
 
       def destroy
         find_content_and_organization
-        if can?(:manage, @organization)
-          @organization.tagged_contents.destroy(@content)
-          render json: {}, status: :ok
-        else
-          render json: {}, status: :unauthorized
-        end
+        authorize! :manage, @organization
+        @organization.tagged_contents.destroy(@content)
+        render json: {}, status: :ok
       end
 
       private

@@ -18,28 +18,37 @@ describe 'My Stuff endpoint', type: :request do
 
     context "when making my stuff request" do
       before do
-        @owning_user = FactoryGirl.create :user
         @owned_content = FactoryGirl.create :content, :news,
-          created_by: @owning_user,
+          created_by: user,
           organization: standard_org
         @managed_content = FactoryGirl.create :content, :event,
-          created_by: @owning_user,
+          created_by: user,
           organization: managed_org
       end
 
       context "when no user logged in" do
-        subject { get "/api/v3/users/#{@owning_user.id}/contents" }
+        subject { get "/api/v3/users/#{user.id}/contents" }
 
-        it "it returns forbidden status" do
+        it "it returns unauthorized status" do
+          subject
+          expect(response).to have_http_status :unauthorized
+        end
+      end
+
+      context 'when wrong user logged in' do
+        let(:user_headers) { headers.merge(auth_headers_for(other_user)) }
+        subject { get "/api/v3/users/#{user.id}/contents", params: {}, headers: user_headers }
+
+        it 'returns forbidden status' do
           subject
           expect(response).to have_http_status :forbidden
         end
       end
 
       context "when user logged in" do
-        let(:user_headers) { headers.merge(auth_headers_for(@owning_user)) }
+        let(:user_headers) { headers.merge(auth_headers_for(user)) }
 
-        subject { get "/api/v3/users/#{@owning_user.id}/contents", params: {}, headers: user_headers }
+        subject { get "/api/v3/users/#{user.id}/contents", params: {}, headers: user_headers }
 
         it "returns only current user's content" do
           subject
@@ -49,7 +58,7 @@ describe 'My Stuff endpoint', type: :request do
 
         describe "?organization_id" do
           context "when request includes organization_id=false" do
-            subject { get "/api/v3/users/#{@owning_user.id}/contents?organization_id=false", params: {}, headers: user_headers }
+            subject { get "/api/v3/users/#{user.id}/contents?organization_id=false", params: {}, headers: user_headers }
 
             it "returns content connected to standard_ugc_org" do
               subject
@@ -59,7 +68,7 @@ describe 'My Stuff endpoint', type: :request do
           end
 
           context "when request includes organization_id for managed organization" do
-            subject { get "/api/v3/users/#{@owning_user.id}/contents?organization_id=#{managed_org.id}", params: {}, headers: user_headers }
+            subject { get "/api/v3/users/#{user.id}/contents?organization_id=#{managed_org.id}", params: {}, headers: user_headers }
 
             it "returns content connected to the managed org and created_by User" do
               subject
@@ -75,11 +84,11 @@ describe 'My Stuff endpoint', type: :request do
               @non_bookmarked_content = FactoryGirl.create :content, :news
               @bookmarked_content = FactoryGirl.create :content, :news
               FactoryGirl.create :user_bookmark,
-                user_id: @owning_user.id,
+                user_id: user.id,
                 content_id: @bookmarked_content.id
             end
 
-            subject { get "/api/v3/users/#{@owning_user.id}/contents?bookmarked=true", params: {}, headers: user_headers }
+            subject { get "/api/v3/users/#{user.id}/contents?bookmarked=true", params: {}, headers: user_headers }
 
             it "returns user bookmarked content" do
               subject

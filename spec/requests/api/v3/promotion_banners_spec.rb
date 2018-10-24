@@ -228,34 +228,4 @@ describe 'Promotion Banner Endpoints', type: :request do
     end
   end
 
-  describe "GET /api/v3/promotion_banners" do
-    before do
-      @promotion = FactoryGirl.create :promotion, created_by: user
-    end
-
-    let!(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: @promotion }
-
-    subject { get '/api/v3/promotion_banners', params: {}, headers: auth_headers }
-
-    it 'returns promomtion banners in public json representation' do
-      subject
-      expect(response_json[:promotion_banners].first).to match(
-        public_promotion_banner_schema(promotion_banner)
-      )
-    end
-
-    context 'when sorting by campaign_start date' do
-      before do
-        @older_promotion = FactoryGirl.create :promotion, created_by: user
-      end
-
-      let!(:older_promotion_banner) { FactoryGirl.create :promotion_banner, campaign_start: 2.weeks.ago, promotion: @older_promotion }
-
-      it 'returns promotion_banners based on the campaign_start sort order' do
-        get '/api/v3/promotion_banners', params: { page: 1, per_page: 8, sort: 'start_date ASC' }, headers: auth_headers
-        first_banner = response_json[:promotion_banners].first
-        expect(first_banner[:campaign_start]).to eq older_promotion_banner.campaign_start.iso8601
-      end
-    end
-  end
 end

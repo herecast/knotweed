@@ -16,15 +16,6 @@ describe 'User Bookmarks endpoint', type: :request do
       @bookmark = FactoryGirl.create :user_bookmark, content: content, user: owning_user
     end
 
-    context "when incorrect user" do
-      subject { get "/api/v3/users/#{owning_user.id}/bookmarks", params: {}, headers: wrong_user_headers }
-
-      it "returns forbidden status" do
-        subject
-        expect(response).to have_http_status :forbidden
-      end
-    end
-
     context "when correct user" do
       subject { get "/api/v3/users/#{owning_user.id}/bookmarks", params: {}, headers: user_headers }
 
@@ -38,15 +29,6 @@ describe 'User Bookmarks endpoint', type: :request do
 
   describe "POST /api/v3/users/:user_id/bookmarks" do
     let(:bookmarked_content) { FactoryGirl.create :content, :news }
-
-    context "when incorrect user" do
-      subject { post "/api/v3/users/#{owning_user.id}/bookmarks", params: { bookmark: { content_id: bookmarked_content.id } }, headers: wrong_user_headers }
-
-      it "returns forbidden status" do
-        subject
-        expect(response).to have_http_status :forbidden
-      end
-    end
 
     context "when correct user" do
       subject { post "/api/v3/users/#{owning_user.id}/bookmarks", params: { bookmark: { content_id: bookmarked_content.id } }, headers: user_headers }
@@ -68,7 +50,7 @@ describe 'User Bookmarks endpoint', type: :request do
     let(:bookmark_params) { { bookmark: { read: true } } }
 
     context "when incorrect user" do
-      subject { put "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmarked_content.id}", params: bookmark_params, headers: wrong_user_headers }
+      subject { put "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", params: bookmark_params, headers: wrong_user_headers }
 
       it "returns forbidden status" do
         subject

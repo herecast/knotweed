@@ -27,6 +27,8 @@ module Api
       end
 
       def create
+        authorize! :create, Content
+
         content_type = params[:content][:content_type]
 
         begin
@@ -112,7 +114,7 @@ module Api
       def moderate
         content = Content.find(params[:id])
         ModerationMailer.send_moderation_flag_v2(content, params[:flag_type], \
-          @current_api_user).deliver_later
+          current_user).deliver_later
         head :no_content
       end
 

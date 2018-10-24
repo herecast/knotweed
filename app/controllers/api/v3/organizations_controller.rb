@@ -4,6 +4,8 @@ module Api
       before_action :check_logged_in!, only: [:create, :update]
 
       def create
+        authorize! :create, Organization
+
         @organization = Organization.new(create_organization_params)
         if @organization.save
           provision_user_as_manager_and_blogger
@@ -113,8 +115,8 @@ module Api
       end
 
       def provision_user_as_manager_and_blogger
-        @current_api_user.add_role(:manager, @organization)
-        @current_api_user.add_role(:blogger)
+        current_user.add_role(:manager, @organization)
+        current_user.add_role(:blogger)
       end
 
       def business_location_params
@@ -168,7 +170,7 @@ module Api
       end
 
         def schedule_blogger_welcome_emails
-          BackgroundJob.perform_later('Outreach::CreateMailchimpSegmentForNewUser', 'call', @current_api_user,
+          BackgroundJob.perform_later('Outreach::CreateMailchimpSegmentForNewUser', 'call', current_user,
             schedule_blogger_emails: true,
             organization: @organization
           )

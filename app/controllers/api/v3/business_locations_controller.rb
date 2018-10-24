@@ -9,9 +9,9 @@ module Api
         opts[:order] = { _score: :desc, name: :desc }
         opts[:per_page] = params[:max_results] || 1000
         opts[:where] = {}
-        if @current_api_user.present?
+        if current_user.present?
           opts[:where][:or] = [
-            [{created_by_id: @current_api_user.id}, {status: 'approved'}]
+            [{created_by_id: current_user.id}, {status: 'approved'}]
           ]
         else
           opts[:where][:status] = 'approved'

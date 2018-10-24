@@ -24,6 +24,7 @@ module Api
       end
 
       def create
+        authorize! :create, Comment
         @comment = Comment.new(comment_params)
         @comment.content.origin = Content::UGC_ORIGIN
         if @comment.save
@@ -62,8 +63,8 @@ module Api
             content_attributes: {
               title: params[:comment][:title],
               parent_id: params[:comment][:parent_content_id],
-              authoremail: @current_api_user.try(:email),
-              authors: @current_api_user.try(:name),
+              authoremail: current_user.try(:email),
+              authors: current_user.try(:name),
               raw_content: ActionView::Base.full_sanitizer.sanitize(params[:comment][:content]),
               pubdate: Time.zone.now,
               organization_id: params[:comment][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,

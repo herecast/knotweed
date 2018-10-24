@@ -2,80 +2,6 @@ require 'spec_helper'
 
 describe Api::V3::PromotionBannersController, :type => :controller do
 
-  describe 'GET index' do
-    before do
-      @user = FactoryGirl.create :user
-      api_authenticate user: @user
-    end
-
-    subject { get :index, format: :json }
-
-    describe 'organization\'s promotion banners' do
-      before do
-        @org = FactoryGirl.create :organization
-        @org_pbs = FactoryGirl.create_list :promotion_banner, 2
-        @org_pbs.each do |pb|
-          pb.promotion.content.update_attribute :organization, @org
-          # ensure promotions aren't created by user to test this fully
-          pb.promotion.update_column :created_by_id, nil
-        end
-      end
-
-      subject { get :index, format: :json, params: { organization_id: @org.id } }
-
-      context 'as manager of organization' do
-        before { @user.add_role :manager, @org }
-
-        it 'should respond with the organization pbs' do
-          subject
-          expect(assigns(:promotion_banners)).to match_array(@org_pbs)
-        end
-      end
-
-      context 'without organization privileges' do
-        it 'should respond with no content' do
-          subject
-          expect(response.status).to eq 204
-        end
-      end
-    end
-
-    describe 'user\'s promotion banners' do
-      before do
-        @user_pbs = FactoryGirl.create_list :promotion_banner, 2,
-          created_by: @user
-      end
-
-      it 'should respond with 200' do
-        subject
-        expect(response.status).to eq 200
-      end
-
-      it 'should return all promotion banners' do
-        subject
-        expect(assigns(:promotion_banners).sort).to eq PromotionBanner.all.sort
-        end
-
-      describe 'sorting'  do
-        it 'accepts pubdate for sort' do
-          PromotionBanner.first.promotion.content.update_attribute :pubdate, 1.day.ago
-          get :index, format: :json, params: { sort: 'pubdate DESC' }
-          expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.pubdate}.last
-
-          get :index, format: :json, params: { sort: 'pubdate ASC' }
-          expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.pubdate}.first
-        end
-        it 'accepts title for sort' do
-          get :index, format: :json, params: { sort: 'title DESC' }
-          expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.title}.last
-
-          get :index, format: :json, params: { sort: 'title ASC' }
-          expect(assigns(:promotion_banners).first).to eq PromotionBanner.all.sort_by{|p| p.promotion.content.title}.first
-        end
-      end
-    end
-  end
-
   describe 'GET show' do
     before do
       @org = FactoryGirl.create :organization
@@ -451,9 +377,9 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         @banner.promotion.update_attribute :created_by, nil
       end
 
-      it 'should respond with 401' do
+      it 'should respond with forbidden' do
         subject
-        expect(response.code).to eq('401')
+        expect(response.code).to eq('403')
       end
     end
 

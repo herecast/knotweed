@@ -121,7 +121,7 @@ describe Api::V3::ImagesController, :type => :controller do
 
   describe 'PUT update' do
     before do
-      @content = FactoryGirl.create :content
+      @content = FactoryGirl.create :content, created_by: @user
       @img = FactoryGirl.create :image, primary: false
       # need to have multiple images on the imageable or the first one is set to primary automatically
       @img2 = FactoryGirl.create :image, primary: true

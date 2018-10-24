@@ -17,7 +17,7 @@ module Api
         data = {
           event_type:   'impression',
           current_date: Date.current.to_s,
-          user_id:      @current_api_user.try(:id),
+          user_id:      current_user.try(:id),
           user_agent:   request.user_agent,
           user_ip:      request.remote_ip,
           client_id:    params[:client_id]

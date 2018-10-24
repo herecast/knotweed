@@ -1,43 +1,6 @@
 module Api
   module V3
     class PromotionBannersController < ApiController
-      before_action :check_logged_in!, only: :index
-
-      def index
-        params[:sort] ||= 'click_count DESC'
-        params[:page] ||= 1
-        params[:per_page] ||= 12
-
-        scope = PromotionBanner.joins(promotion: :content)
-
-        if params[:organization_id].present?
-          org = Organization.find params[:organization_id]
-          if current_ability.can? :manage, org
-            scope = scope.where('contents.organization_id = ?', org.id)
-          else
-            head :no_content and return
-          end
-        elsif params[:content_id].present?
-          content = Content.find(params[:content_id])
-          if current_ability.can? :manage, content.organization
-            scope = scope.where('contents.id = ?', content.id)
-          else
-            head :no_content and return
-          end
-        else
-          scope = scope.where('promotions.created_by_id = ?', @current_api_user.id)
-        end
-
-        if params[:sort].include?('start_date')
-        @promotion_banners = scope.order(sanitize_start_date_sort(params[:sort])).
-          page(params[:page].to_i).per(params[:per_page].to_i)
-        else
-          @promotion_banners = scope.order(sanitize_sort_parameter(params[:sort])).
-            page(params[:page].to_i).per(params[:per_page].to_i)
-        end
-
-        render json: @promotion_banners, each_serializer: PromotionBannerSerializer
-      end
 
       def show
         opts                   = {}
@@ -121,14 +84,9 @@ module Api
 
       def metrics
         @promotion_banner = PromotionBanner.find(params[:id])
-        # confirm user owns content first
-        if promo_created_by_user? or user_can_manage?
-          render json: @promotion_banner, serializer: PromotionBannerMetricsSerializer, context:
-            {start_date: params[:start_date], end_date: params[:end_date]}
-        else
-          render json: { errors: ['You do not have permission to access these metrics.'] },
-            status: 401
-        end
+        authorize! :manage, @promotion_banner
+        render json: @promotion_banner, serializer: PromotionBannerMetricsSerializer, context:
+          {start_date: params[:start_date], end_date: params[:end_date]}
       end
 
       protected
@@ -151,14 +109,6 @@ module Api
         end
       end
 
-      def promo_created_by_user?
-        @current_api_user == @promotion_banner.promotion.created_by
-      end
-
-      def user_can_manage?
-        @current_api_user.ability.can?(:manage, @promotion_banner.promotion.content.organization)
-      end
-
       def conditionally_prime_daily_ad_reports
         most_recent_reset_time = Rails.cache.fetch('most_recent_reset_time')
         if most_recent_reset_time.nil? || most_recent_reset_time < Date.current
@@ -174,7 +124,7 @@ module Api
             content_id:          params[:content_id],
             event_type:          event_type,
             current_date:        Date.current.to_s,
-            user_id:             @current_api_user.try(:id),
+            user_id:             current_user.try(:id),
             client_id:           params[:client_id],
             promotion_banner_id: promotion_banner.id,
             select_score:        params[:select_score],
@@ -204,7 +154,7 @@ module Api
             opts = {
               event_type:   event_type,
               current_date: Date.current.to_s,
-              user_id:      @current_api_user.try(:id),
+              user_id:      current_user.try(:id),
               client_id:    params[:client_id]
             }.tap do |data|
               if params[:location_id].present?

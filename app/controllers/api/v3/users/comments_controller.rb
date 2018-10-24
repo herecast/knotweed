@@ -1,9 +1,11 @@
 module Api
   module V3
     class Users::CommentsController < ApiController
-      before_action :confirm_correct_user
+      before_action :check_logged_in!
 
       def index
+        authorize! :manage, User.find(params[:id])
+
         search_opts = ContentSearch.comment_query({
           params: params
         })
@@ -24,12 +26,6 @@ module Api
       end
 
       private
-
-        def confirm_correct_user
-          unless @current_user.present? && params[:id].to_i == @current_user.id
-            render json: {}, status: :forbidden
-          end
-        end
 
         def query
           params[:query].present? ? params[:query] : '*'

@@ -42,30 +42,9 @@ describe Api::V3::UsersController, :type => :controller do
   describe 'PUT current_user' do
       describe 'when user not signed in' do
         before { api_authenticate success: false }
-        it 'should respond with 401 unuthorized' do
+        it 'should respond with 401 unauthorized' do
           put :update, format: :json
           expect(response.code).to eq('401')
-        end
-      end
-
-      context 'when user_id does not match current_user.id' do
-        before do
-          @user = FactoryGirl.create :user
-          api_authenticate user: @user
-          @new_data = { format: :json,
-                        current_user: {
-                          user_id: @user.id + 11,
-                          name: 'Jane Jones III'
-                        }
-                      }
-        end
-
-        subject! { put :update, params: @new_data }
-
-        it 'should not update user' do
-          expect(response.code).to eq '422'
-          expect(assigns(:current_api_user).name).to eq @user.name
-          expect(assigns(:current_api_user).name).not_to eq @new_data[:current_user][:name]
         end
       end
 
@@ -93,7 +72,7 @@ describe Api::V3::UsersController, :type => :controller do
         subject! { put :update, params: @new_data }
 
         it 'should update fields' do
-          updated_user = assigns(:current_api_user)
+          updated_user = controller.current_user
           expect(updated_user.name).to eq @new_data[:current_user][:name]
           expect(updated_user.location).to eq Location.find_by_slug_or_id @new_data[:current_user][:location_id]
           expect(updated_user.location_confirmed?).to be true
@@ -129,7 +108,7 @@ describe Api::V3::UsersController, :type => :controller do
         subject! { put :update, params: @new_data }
 
         it 'should not update all fields' do
-          updated_user = assigns(:current_api_user)
+          updated_user = controller.current_user
           expect(updated_user.name).to eq @new_data[:current_user][:name]
           expect(updated_user.location).to eq Location.find @new_data[:current_user][:location_id]
 
@@ -156,7 +135,7 @@ describe Api::V3::UsersController, :type => :controller do
         subject! { put :update, params: @new_data }
 
         it 'should provide appropriate reponse' do
-          updated_user = assigns(:current_api_user)
+          updated_user = controller.current_user
           expect(response.code).to eq '422'
         end
 
@@ -186,7 +165,7 @@ describe Api::V3::UsersController, :type => :controller do
 
             it "should set new image from file type #{extension}" do
               expect(response.status).to eq 200
-              expect(assigns(:current_api_user).avatar_identifier).to include(file.original_filename)
+              expect(controller.current_user.avatar_identifier).to include(file.original_filename)
             end
           end
         end
@@ -261,8 +240,7 @@ describe Api::V3::UsersController, :type => :controller do
       subject! { post :logout , format: :json}
 
       it 'should logout user' do
-        expect(assigns(:current_user)).to be_nil
-        expect(assigns(:current_api_user)).to be_nil
+        expect(controller.current_user).to be_nil
         expect(response.code).to eq '200'
       end
     end

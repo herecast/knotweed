@@ -276,20 +276,29 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
     subject { put :update, params: { business: @update_params, id: @business_profile.id } }
 
     context 'for a claimed business' do
-      before do
-        @business_profile = FactoryGirl.create :business_profile, :claimed
-      end
+      before { @business_profile = FactoryGirl.create :business_profile, :claimed }
+      context 'as the owner' do
+        before do
+          @business_profile.content.update created_by: @user
+        end
 
-      it 'should update the associated content' do
-        expect{subject}.to change { @business_profile.content.reload.raw_content }.to @update_params[:details]
-      end
+        it 'should update the associated content' do
+          expect{subject}.to change { @business_profile.content.reload.raw_content }.to @update_params[:details]
+        end
 
-      it 'should update the business_profile' do
-        expect{subject}.to change { @business_profile.reload.has_retail_location? }.to @update_params[:has_retail_location]
-      end
+        it 'should update the business_profile' do
+          expect{subject}.to change { @business_profile.reload.has_retail_location? }.to @update_params[:has_retail_location]
+        end
 
-      it 'should update the business_location' do
-        expect{subject}.to change { @business_profile.business_location.reload.phone }.to @update_params[:phone]
+        it 'should update the business_location' do
+          expect{subject}.to change { @business_profile.business_location.reload.phone }.to @update_params[:phone]
+        end
+      end
+      context 'as a random other person' do
+        it 'should respond with a 403 unauthorized' do
+          subject
+          expect(response.code).to eq '403'
+        end
       end
     end
 

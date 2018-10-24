@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
+  let(:user) { FactoryGirl.create :admin }
+  before { api_authenticate user: user }
 
   describe "GET #index" do
     context "when content not found" do
@@ -36,6 +38,15 @@ RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
           subject
           promotions = JSON.parse(response.body)['promotions']
           expect(promotions).to eq []
+        end
+      end
+
+      context 'as unauthorized user' do
+        let(:user) { FactoryGirl.create :user }
+
+        it 'returns forbidden status' do
+          subject
+          expect(response).to have_http_status :forbidden
         end
       end
 
@@ -83,7 +94,6 @@ RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
 
     context "with proper params" do
       let (:content) { FactoryGirl.create :content }
-      let (:user) { FactoryGirl.create :user }
 
       let (:params) {{
         content_id: content.id,

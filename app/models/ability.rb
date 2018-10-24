@@ -40,6 +40,7 @@ class Ability
         parent_org_ids = managed_orgs.pluck(:id)
         org_ids = (parent_org_ids + managed_orgs.map{|o|o.get_all_children}.flatten.map{|o|o.id}).uniq
         can :manage, Organization, id: org_ids
+        can :manage, PromotionBanner, promotion: { content: { organization_id: org_ids } }
         can :manage, Content, organization_id: org_ids
         can :manage, Hashie::Mash, _type: 'content', organization_id: org_ids
         can :manage, Hashie::Mash, _type: 'event_instance', organization_id: org_ids
@@ -47,8 +48,14 @@ class Ability
         can :access, :admin if managed_orgs.present? # allow basic access if they have some management position
       end
 
-      # all users can manage their own content
+      can :manage, PromotionBanner, promotion: { created_by: user }
+      can :manage, BusinessFeedback, created_by: user
+      can :manage, BusinessProfile, content: { created_by: user }
       can :manage, Content, created_by: user
+      can :manage, Comment, created_by: user
+      can :manage, UserBookmark, user: user
+      can :manage, user
+      can :create, Organization
       can :manage, Hashie::Mash, _type: 'content', created_by: {id: user.id}
       can :manage, Hashie::Mash, _type: 'event_instance', created_by: {id: user.id}
     end

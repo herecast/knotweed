@@ -5,7 +5,7 @@ module Api
       before_action :prevent_multiple_ratings, only: [:create]
 
       def create
-        # created_by is automatically set by Auditable concern
+        authorize! :create, BusinessFeedback
         params[:feedback][:business_profile_id] = params[:id]
 
         @business_feedback = BusinessFeedback.new(feedback_params)
@@ -22,6 +22,8 @@ module Api
         params[:feedback][:business_profile_id] = params[:id]
 
         @business_feedback = BusinessFeedback.find_by(created_by_id: current_user.id, business_profile_id: params[:id])
+        authorize! :update, @business_feedback
+
         if @business_feedback.update_attributes(feedback_params)
           render json: @business_feedback, serializer: BusinessFeedbackSerializer, status: :ok
         else

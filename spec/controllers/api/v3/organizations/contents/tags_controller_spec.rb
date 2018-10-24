@@ -59,7 +59,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
 
         it "returns unauthorized status" do
           subject
-          expect(response).to have_http_status :unauthorized
+          expect(response).to have_http_status :forbidden
         end
       end
 
@@ -154,7 +154,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
 
         it "returns unauthorized status" do
           subject
-          expect(response).to have_http_status :unauthorized
+          expect(response).to have_http_status :forbidden
         end
       end
 

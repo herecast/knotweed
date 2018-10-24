@@ -1,14 +1,16 @@
 module Api
   module V3
     class Users::BookmarksController < ApiController
-      before_action :confirm_correct_user
+      before_action :check_logged_in!
 
       def index
-        render json: @current_user.user_bookmarks
+        authorize! :manage, UserBookmark
+        render json: current_user.user_bookmarks
       end
 
       def create
-        bookmark = @current_user.user_bookmarks.build(bookmark_params)
+        authorize! :create, UserBookmark
+        bookmark = current_user.user_bookmarks.build(bookmark_params)
         if bookmark.save
           render json: { bookmark: bookmark }, status: :created
         else
@@ -17,7 +19,8 @@ module Api
       end
 
       def update
-        bookmark = @current_user.user_bookmarks.find(params[:id])
+        bookmark = UserBookmark.find(params[:id])
+        authorize! :update, bookmark
         if bookmark.update(bookmark_params)
           render json: { bookmark: bookmark }, status: :ok
         else
@@ -26,8 +29,9 @@ module Api
       end
 
       def destroy
-        user_bookmark = @current_user.user_bookmarks.find(params[:id])
-        if user_bookmark.destroy
+        bookmark = UserBookmark.find(params[:id])
+        authorize! :destroy, bookmark
+        if bookmark.destroy
           render json: {}, status: :ok
         else
           render json: {}, status: :bad_request
@@ -35,12 +39,6 @@ module Api
       end
 
       private
-
-        def confirm_correct_user
-          unless @current_user.present? && params[:user_id].to_i == @current_user.id
-            render json: {}, status: :forbidden
-          end
-        end
 
         def total_pages
           @contents.present? ? (@contents.total_entries/per_page.to_f).ceil : nil

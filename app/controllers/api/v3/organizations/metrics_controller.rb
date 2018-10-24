@@ -1,6 +1,8 @@
 module Api
   module V3
     class Organizations::MetricsController < ApiController
+      before_action :check_logged_in!
+
       def index
         @organization = Organization.find(params[:organization_id])
         authorize! :manage, @organization

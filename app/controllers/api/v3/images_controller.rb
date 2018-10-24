@@ -1,7 +1,7 @@
 module Api
   module V3
     class ImagesController < ApiController
-      before_action :check_logged_in!, only: [:update, :create] 
+      before_action :check_logged_in!
 
       def create
         @content = Content.find(params[:image].delete(:content_id))
@@ -15,8 +15,9 @@ module Api
       end
 
       def update
-        @image = Image.find(params[:id])
         @content = Content.find(params[:image][:content_id])
+        authorize! :manage, @content
+        @image = Image.find(params[:id])
         if @image.update_attributes(image_params)
           render json: @image, serializer: ImageSerializer, status: 200
         else

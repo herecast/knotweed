@@ -4,33 +4,33 @@ module Api
     class UsersController < ApiController
       include EmailTemplateHelper
       before_action :check_logged_in!, only: [:show, :update, :logout]
-      before_action :check_correct_user, only: :update
 
       def show
-        events_ical_url = url_for_consumer_app("/" + user_event_instances_ics_path(public_id: @current_api_user.public_id.to_s))
-        render json: @current_api_user, serializer: UserSerializer,
+        events_ical_url = url_for_consumer_app("/" + user_event_instances_ics_path(public_id: current_user.public_id.to_s))
+        render json: current_user, serializer: UserSerializer,
           root: 'current_user',  status: 200, events_ical_url: events_ical_url,
           context: { current_ability: current_ability }
       end
 
       def update
-        if @current_api_user.update_attributes(current_user_params)
-          render json: @current_api_user, serializer: UserSerializer, root: 'current_user', status: 200,
+        authorize! :update, current_user
+        if current_user.update_attributes(current_user_params)
+          render json: current_user, serializer: UserSerializer, root: 'current_user', status: 200,
             context: { current_ability: current_ability }
         else
-          render json: { error: "Current User update failed", messages:  @current_api_user.errors.full_messages }, status: 422
+          render json: { error: "Current User update failed", messages:  current_user.errors.full_messages }, status: 422
         end
       end
 
       def logout
-        sign_out @current_api_user
-        @current_api_user.reset_authentication_token
-        if @current_api_user.save
+        user = current_user
+        sign_out current_user
+        user.reset_authentication_token
+        if user.save
            res =  :ok
         else
            res = :unprocessable_entity
         end
-        @current_api_user = nil
         reset_session
         render json: {}, status: res
       end
@@ -120,12 +120,6 @@ module Api
               attrs[:location_id] = location.id
             end
             attrs[:avatar] = params[:current_user][:image] if params[:current_user][:image].present?
-          end
-        end
-
-        def check_correct_user
-          if params[:current_user][:user_id].to_i != @current_api_user.id
-            render json: {}, status: :unprocessable_entity
           end
         end
 

@@ -8,6 +8,7 @@ module Api
         if params[:user_id].present?
           @user = User.find(params[:user_id])
         end
+        authorize! :manage, @user
 
         @period_start = Date.parse(params[:period_start])
         @period_end = Date.parse(params[:period_end])
