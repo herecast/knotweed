@@ -814,6 +814,16 @@ class Content < ActiveRecord::Base
       (is_not_campaign? || is_feature_notification?)
   end
 
+  def built_view_count
+    if root_content_category.try(:name) == 'campaign'
+      promotions.includes(:promotable).first.try(:promotable).try(:impression_count)
+    elsif parent.present?
+      parent_view_count
+    else
+      view_count
+    end
+  end
+
   private
 
   def if_ad_promotion_type_sponsored_must_have_ad_max_impressions

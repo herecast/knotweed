@@ -163,13 +163,7 @@ module Api
       end
 
       def view_count
-        if object.root_content_category.try(:name) == 'campaign'
-          object.promotions.includes(:promotable).first.try(:promotable).try(:impression_count)
-        elsif object.parent.present?
-          object.parent_view_count
-        else
-          object.view_count
-        end
+        object.built_view_count
       end
 
       def commenter_count

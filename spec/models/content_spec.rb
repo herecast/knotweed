@@ -958,4 +958,52 @@ describe Content, :type => :model do
     end
   end
 
+  describe "#built_view_count" do
+    before do
+      @view_count = 47
+    end
+
+    subject { @content.built_view_count }
+
+    context "when root category is campaign" do
+      before do
+        @content = FactoryGirl.create :content, :campaign
+        promotable = FactoryGirl.create :promotion_banner,
+          impression_count: @view_count
+        promotion = FactoryGirl.create :promotion,
+          content_id: @content.id,
+          promotable_id: promotable.id,
+          promotable_type: 'PromotionBanner'
+      end
+
+      it "returns promotable impression count" do
+        expect(subject).to eq @view_count
+      end
+    end
+
+    context "when content has a parent" do
+      before do
+        parent = FactoryGirl.create :content,
+          view_count: @view_count
+        @content = FactoryGirl.create :content,
+          parent_id: parent.id
+      end
+
+      it "returns parent view count" do
+        expect(subject).to eq @view_count
+      end
+    end
+
+    context "when content has no parent" do
+      before do
+        @content = FactoryGirl.create :content,
+          view_count: @view_count
+      end
+
+      it "returns content view_count" do
+        expect(subject).to eq @view_count
+      end
+    end
+  end
+
 end

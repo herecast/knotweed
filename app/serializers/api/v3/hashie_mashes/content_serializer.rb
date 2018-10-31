@@ -125,6 +125,10 @@ module Api
           object.created_by_name
         end
 
+        def view_count
+          Content.find_by(id: object.id)&.built_view_count
+        end
+
         private
 
           def is_event?
