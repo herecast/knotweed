@@ -1,7 +1,0 @@
-- if @forecast.present?
-  #forecast.pull-left.has-tooltip{data: {title: 'Powered by Forecast.io'}}
-    %a{href: "http://forecast.io/#/f/#{@location.lat},#{@location.long}", target: :_blank}
-      = @forecast.currently.temperature.round.to_s + 176.chr(Encoding::UTF_8) + ' ' + @forecast.currently.summary
-  #forecast_icon.pull-left
-    - weather_icon = select_weather_icon(@forecast.currently.icon)
-    %i.wi{class: "#{weather_icon}"}

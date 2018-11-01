@@ -18,9 +18,6 @@ DEFAULT_HOST: nick-admin.subtextdev.org
 # logged in.
 DEFAULT_LOCATION: Hartford
 
-# APIv3 pings the ForecastIO API in order to return a weather response. Configure the API key here.
-FORECAST_IO_API_KEY: 32850541d1acd8a1175be1c217db188b
-
 POSTMARK_API_TOKEN: postmark-token
 
 DEFAULT_CONSUMER_HOST: dailyuv.com
