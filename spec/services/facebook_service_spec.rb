@@ -33,10 +33,10 @@ RSpec.describe FacebookService do
       @content = FactoryGirl.create(:content, :news)
     end
 
-    let(:url) { "https://dailyuv.com/feed/#{@content.id}" }
+    let(:url) { "https://dailyuv.com/#{@content.id}" }
 
     let!(:successful_facebook_rescrape_request) {
-      stub_request(:post, "https://graph.facebook.com/?access_token=#{ENV['FACEBOOK_APP_ID']}%7C#{ENV['FACEBOOK_APP_SECRET']}&id=http://#{ENV['DEFAULT_CONSUMER_HOST']}/feed/#{@content.id}&scrape=true").
+      stub_request(:post, "https://graph.facebook.com/?access_token=#{ENV['FACEBOOK_APP_ID']}%7C#{ENV['FACEBOOK_APP_SECRET']}&id=http://#{ENV['DEFAULT_CONSUMER_HOST']}/#{@content.id}&scrape=true").
         with(:body => "", :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
         to_return(:status => 200, :body => "", :headers => {})
     }
@@ -61,7 +61,7 @@ RSpec.describe FacebookService do
       end
 
       let!(:successful_facebook_event_rescrape_request) {
-        stub_request(:post, "https://graph.facebook.com/?access_token=#{ENV['FACEBOOK_APP_ID']}%7C#{ENV['FACEBOOK_APP_SECRET']}&id=http://#{ENV['DEFAULT_CONSUMER_HOST']}/feed/#{@event.content.id}/#{@event.event_instances.first.id}&scrape=true").
+        stub_request(:post, "https://graph.facebook.com/?access_token=#{ENV['FACEBOOK_APP_ID']}%7C#{ENV['FACEBOOK_APP_SECRET']}&id=http://#{ENV['DEFAULT_CONSUMER_HOST']}/#{@event.content.id}/#{@event.event_instances.first.id}&scrape=true").
           with(:body => "", :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
           to_return(:status => 200, :body => "", :headers => {})
       }

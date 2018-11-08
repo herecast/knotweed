@@ -24,7 +24,7 @@ module SlackService
       text: text,
       attachments: [{
         title: content.title,
-        text: "https://dailyuv.com/feed/#{content.id}",
+        text: "https://dailyuv.com/#{content.id}",
         color: "3CB371"
       }]
     }.merge(BOTS[:piggy])

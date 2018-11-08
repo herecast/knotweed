@@ -96,7 +96,7 @@ describe ContentsHelper, type: :helper do
     before { allow(Figaro.env).to receive(:default_consumer_host).and_return("test.com") }
 
     it 'is generates url based on default_consumer_host env config' do
-      expect(subject).to eql "http://#{Figaro.env.default_consumer_host}/#{content_path}#{utm_string}"
+      expect(subject).to eql "http://#{Figaro.env.default_consumer_host}#{content_path}#{utm_string}"
     end
   end
 

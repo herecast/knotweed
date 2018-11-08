@@ -49,7 +49,7 @@ describe MarketPostsHelper, type: :helper do
     subject { helper.market_post_url_for_email(market_post) }
 
     it 'uses default_consumer_host' do
-      expect(subject).to eql "http://#{Figaro.env.default_consumer_host}/feed/#{market_post.content.id}#{utm_string}"
+      expect(subject).to eql "http://#{Figaro.env.default_consumer_host}/#{market_post.content.id}#{utm_string}"
     end
 
   end
