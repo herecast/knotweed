@@ -1,0 +1,69 @@
+---
+version: "2"
+checks:
+  argument-count:
+    enabled: true
+    config:
+      threshold: 5
+  complex-logic:
+    enabled: true
+    config:
+      threshold: 5
+  file-lines:
+    enabled: true
+    config:
+      threshold: 650
+  method-complexity:
+    enabled: true
+    config:
+      threshold: 5
+  method-count:
+    enabled: true
+    config:
+      threshold: 40
+  method-lines:
+    enabled: true
+    config:
+      threshold: 75
+  nested-control-flow:
+    enabled: true
+    config:
+      threshold: 5
+  return-statements:
+    enabled: true
+    config:
+      threshold: 5
+  similar-code:
+    enabled: true
+    config:
+      threshold: #language-specific defaults. overrides affect all languages.
+  identical-code:
+    enabled: true
+    config:
+      threshold: #language-specific defaults. overrides affect all languages.
+plugins:
+  brakeman:
+   enabled: false
+  rubocop:
+   enabled: false
+  eslint:
+   enabled: false
+exclude_patterns:
+  - ".circle/"
+  - "bin/"
+  - "config/"
+  - "db/"
+  - "features/"
+  - "lib/"
+  - "log/"
+  - "script/"
+  - "spec/"
+  - "vendor/"
+  - "app/assets/javascripts/flatty/"
+  - "app/assets/stylesheets/flatty/"
+  - "app/assets/javascripts/chosen.jquery.min.js"
+  - "app/assets/javascripts/jquery.flot.js"
+  - "app/assets/javascripts/jquery.flot.pie.js"
+  - "app/assets/javascripts/jquery.multi-select.js"
+  - "app/assets/javascripts/jquery.spin.js"
+  - "app/assets/javascripts/numerous-2.1.1.min.js"
