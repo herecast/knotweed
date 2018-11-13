@@ -163,7 +163,7 @@ class Event < ActiveRecord::Base
 
   def closest_location
     venue.add_lat_and_lng_if_bad_address unless venue.geocoded?
-    Location.nearest_to_coords(
+    Location.consumer_active.nearest_to_coords(
       latitude: venue.latitude,
       longitude: venue.longitude
     ).first
