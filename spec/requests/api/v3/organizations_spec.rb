@@ -65,6 +65,20 @@ RSpec.describe 'Organizations Endpoints', type: :request do
       end
     end
 
+    context "when organization is archived" do
+      before do
+        @archived_org = FactoryGirl.create :organization,
+          archived: true
+      end
+
+      subject { get "/api/v3/organizations/#{@archived_org.id}" }
+
+      it "returns not_found status" do
+        subject
+        expect(response).to have_http_status :not_found
+      end
+    end
+
     describe 'can_edit' do
       subject { response_json[:organization][:can_edit] }
 

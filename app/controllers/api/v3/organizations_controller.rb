@@ -55,7 +55,7 @@ module Api
       end
 
       def show
-        @organization = Organization.find(params[:id])
+        @organization = Organization.not_archived.find(params[:id])
         render json: @organization, serializer: OrganizationSerializer, context: { current_ability: current_ability }
       end
 
