@@ -18,8 +18,8 @@ RSpec.describe CommentAlertMailer do
 
     it 'contains creates the correct subject' do
       expect_any_instance_of(CommentAlertMailer).to receive(:mail).with(to: parent_content.created_by.email, 
-                                                                        from: "#{comment_owner.name} via DailyUV <notifications@dailyuv.com>",
-                                                                        subject: "#{comment.created_by.name} commented on your post '#{parent_content.title}'").and_return(Mail::Message.new)
+                                                                        from: "DailyUV",
+                                                                        subject: "#{comment.created_by.name} just commented on your post on DailyUV").and_return(Mail::Message.new)
       subject
     end
 
@@ -28,15 +28,11 @@ RSpec.describe CommentAlertMailer do
       subject {described_class.alert_parent_content_owner(comment, parent_content) }
 
       it 'includes the time of the comment' do
-        expect(subject.body).to include comment.created_at.strftime('%A, %B %d %Y at %l:%M%P')
+        expect(subject.body).to include comment.created_at.strftime('%B %e at %l:%M%P')
       end
 
       it 'includes title as link to the parent content' do
         expect(subject.body).to include parent_content.title
-      end
-
-      it 'includes the body of the comment' do
-        expect(subject.body).to include comment.content.raw_content
       end
 
       it 'contains a mailto link that populates an email for to an admin to unsubscribe user' do

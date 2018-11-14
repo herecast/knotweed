@@ -1,9 +1,0 @@
-%p 
-  On #{@comment.created_at.strftime('%A, %B %d %Y at %l:%M%P')}, #{@comment.created_by.name} commented on your post '#{link_to @parent_content.title, comment_alert_url(@parent_content)}':
-
-%p
-  '#{@comment.content.raw_content}'
-
-%p
-  #{link_to 'View/respond to the comment', comment_alert_url(@parent_content)} on DailyUV.  If you'd like to stop receiving these email alerts when a user comments on your post, #{mail_to "dailyuv@subtext.org", 'click here to unsubscribe.', subject: 'Unsubscribe from comment alerts', body: 'Please unsubscribe this user from future comment alerts: ' + edit_user_url(@parent_content.created_by_id)}
-
