@@ -9,7 +9,7 @@ class CommentAlertMailer < ApplicationMailer
     @parent_content = parent_content
     @comment_owner = @comment.created_by
     mail(to: @parent_content.created_by.email,
-         from: "DailyUV",
+         from: "DailyUV <notifications@dailyuv.com>",
          subject: "#{@comment_owner.name} just commented on your post on DailyUV")
   end
 

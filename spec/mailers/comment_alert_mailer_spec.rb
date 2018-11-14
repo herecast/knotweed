@@ -18,7 +18,7 @@ RSpec.describe CommentAlertMailer do
 
     it 'contains creates the correct subject' do
       expect_any_instance_of(CommentAlertMailer).to receive(:mail).with(to: parent_content.created_by.email, 
-                                                                        from: "DailyUV",
+                                                                        from: "DailyUV <notifications@dailyuv.com>",
                                                                         subject: "#{comment.created_by.name} just commented on your post on DailyUV").and_return(Mail::Message.new)
       subject
     end
