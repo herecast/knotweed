@@ -43,11 +43,12 @@ checks:
       threshold: #language-specific defaults. overrides affect all languages.
 plugins:
   brakeman:
-   enabled: false
+    enabled: true
   rubocop:
-   enabled: false
-  eslint:
-   enabled: false
+    enabled: false
+  coffeelint:
+    enabled: true
+    config: coffeelint.json
 exclude_patterns:
   - ".circle/"
   - "bin/"
