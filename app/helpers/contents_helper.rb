@@ -44,7 +44,7 @@ module ContentsHelper
 
   def comment_alert_url(content)
     utm_string = "?utm_medium=email&utm_source=comment-alert&utm_content=#{ux2_content_path(content)}"
-    url = url_for_consumer_app("/#{ux2_content_path(content)}#{utm_string}")
+    url = url_for_consumer_app("#{ux2_content_path(content)}#{utm_string}")
 
     url
   end
