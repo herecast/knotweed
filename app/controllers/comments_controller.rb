@@ -27,7 +27,7 @@ class CommentsController < ApplicationController
     if @comment.update_attribute(:deleted_at, nil)
       @comment.channel.increase_comment_stats
       flash[:info] = "Comment Unhidden"
-      redirect_to comments_path
+      redirect_to correct_path
     else
       flash.now[:danger] = "Comment was not unhidden"
       render 'index'
@@ -39,10 +39,17 @@ class CommentsController < ApplicationController
     if @comment.update_attribute(:deleted_at, Time.now)
       @comment.channel.decrease_comment_stats
       flash[:info] = "Comment Hidden"
-      redirect_to comments_path
+      redirect_to correct_path
     else
       flash.now[:danger] = "Comment was not hidden"
       render 'index'
     end
   end
+
+  private
+
+    def correct_path
+      !!params[:from_content_form] ? contents_path : comments_path
+    end
+
 end

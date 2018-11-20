@@ -1,5 +1,11 @@
-= link_to "Facebook Scrape", content_facebook_scraping_path(content_id: content.id), class: "btn btn-warning", method: :post
-- if content.removed
-  = link_to "Republish Content", content_removals_path(content_id: content.id, type: type), class: "btn btn-warning", method: :delete
+- if content.channel_type == 'Comment'
+	- if content.deleted_at.nil?
+		= link_to "Hide", comment_path(content, from_content_form: true), method: :delete, class: "btn btn-warning"
+	- else
+		= link_to "Unhide", comment_path(content, from_content_form: true), method: :put, class: "btn btn-danger"
 - else
-  = link_to "Remove Content", content_removals_path(content_id: content.id, type: type), class: "btn btn-danger", method: :create, data: { confirm: "Are you sure you want to remove this Content?" }
+	= link_to "Facebook Scrape", content_facebook_scraping_path(content_id: content.id), class: "btn btn-warning", method: :post
+	- if content.removed
+		= link_to "Republish Content", content_removals_path(content_id: content.id, type: type), class: "btn btn-warning", method: :delete
+	- else
+		= link_to "Remove Content", content_removals_path(content_id: content.id, type: type), class: "btn btn-danger", method: :create, data: { confirm: "Are you sure you want to remove this Content?" }
