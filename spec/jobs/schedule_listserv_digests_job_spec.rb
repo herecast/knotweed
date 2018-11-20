@@ -34,6 +34,23 @@ RSpec.describe ScheduleListservDigestsJob do
         expect(queue.select{|j| j[:at] == second_time.to_i}.first).to_not be nil
       end
     end
+
+    context 'when retry list has job w/ no argument' do
+      before do
+        no_arg_job = double(args: [])
+        allow(Sidekiq::RetrySet).to receive(:new).and_return([no_arg_job])
+      end
+
+      it "enqueues job" do
+        Timecop.freeze(Time.current.beginning_of_day) do
+          subject
+          queue = ActiveJob::Base.queue_adapter.enqueued_jobs
+
+          first_time = listserv1.next_digest_send_time
+          expect(queue.select{|j| j[:at] == first_time.to_i}.first).to_not be nil
+        end
+      end
+    end
   end
 
   context 'When listserv records exist, but not enabled' do

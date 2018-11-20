@@ -25,18 +25,12 @@ class ScheduleListservDigestsJob < ApplicationJob
 
   def check_for_duplicate(listserv, job)
     job_args = job.args.first
-    job_class = job_args['job_class']
-    global_id = nil
 
-    first_job_argument = job_args['arguments'].first
-    if first_job_argument.is_a? Hash
-      global_id = first_job_argument['_aj_globalid']
-    end
-
-    if global_id
-      #split to global id value to an array to check the id easier
+    if job_args.present? && job_args['arguments'].first.is_a?(Hash)
+      global_id = job_args['arguments'].first['_aj_globalid']
       global_id_elements = global_id.split('/')
 
+      job_class = job_args['job_class']
       job_class_matches = job_class == "ListservDigestJob"
 
       #listserv id should be the last element after splitting
