@@ -4,7 +4,7 @@ schedule_listserv_digests:
   description: "Schedule Listserv Digests for the day."
 remove_expired_tokens:
   cron: "0 0 * * 0"
-  class: 'RemoveExpiredTokens'
+  class: 'RemoveExpiredTokensJob'
   description: "Remove expired tokens"
 make_sunsetted_content_private:
   cron: "1 0 * * *"
