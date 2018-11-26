@@ -21,7 +21,7 @@ class NotifySubscribersJob < ApplicationJob
         list_identifier: mc_list_identifier,
         subject:         campaign_subject(post),
         title:           post.title,
-        from_name:       post.organization_name,
+        from_name:       "#{post.organization_name} on DailyUV",
         reply_to:        campaign_reply_to
       )
       post.update_attribute(:subscriber_mc_identifier, campaign_id.presence)
@@ -40,7 +40,7 @@ class NotifySubscribersJob < ApplicationJob
     if post.organization.feature_notification_org?
       "New DailyUV Features!"
     else
-      "See the new post from #{post.organization_name}"
+      "#{post.location.pretty_name} | #{post.title}"
     end
   end
 
@@ -56,7 +56,8 @@ class NotifySubscribersJob < ApplicationJob
       url_for_consumer_app(ux2_content_path(post)),
       post.organization.background_image_url,
       content_excerpt(post),
-      path
+      path,
+      post.organization.profile_image_url
     )
 
     SubscriptionsMailchimpClient.update_campaign(
@@ -103,9 +104,9 @@ class NotifySubscribersJob < ApplicationJob
     end
   end
 
-  def generate_html(title, organization_name, organization_url, post_url, banner_image_url, excerpt, path)
-    @title, @organization_name, @organization_url, @post_url, @banner_image_url, @excerpt =
-      title, organization_name, organization_url, post_url, banner_image_url, excerpt
+  def generate_html(title, organization_name, organization_url, post_url, banner_image_url, excerpt, path, profile_image_url)
+    @title, @organization_name, @organization_url, @post_url, @banner_image_url, @excerpt, @profile_image_url =
+      title, organization_name, organization_url, post_url, banner_image_url, excerpt, profile_image_url
     ERB.new(File.read(path)).result(binding)
   end
 
