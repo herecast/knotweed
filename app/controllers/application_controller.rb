@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::Base
-  protect_from_forgery
-
+  protect_from_forgery with: :exception, unless: -> { request.format.json? }
   #normal Devise authentication
   before_action :authorize_access!, :set_current_thread_user, 
     :get_version

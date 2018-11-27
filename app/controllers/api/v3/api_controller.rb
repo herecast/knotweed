@@ -1,6 +1,7 @@
 module Api
   module V3
     class ApiController < ActionController::Base
+      protect_from_forgery with: :exception, unless: -> { request.format.json? }
       rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
       #token authentication for ember app
