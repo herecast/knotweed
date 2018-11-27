@@ -114,8 +114,6 @@ class Organization < ActiveRecord::Base
   },
            through: :organization_locations, source: :location
 
-  has_and_belongs_to_many :contacts
-
   after_commit :trigger_content_reindex_if_name_or_profile_image_changed!, on: :update
 
   mount_uploader :logo, ImageUploader

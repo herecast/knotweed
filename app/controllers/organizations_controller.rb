@@ -35,7 +35,6 @@ class OrganizationsController < ApplicationController
   end
 
   def edit
-    @contact = Contact.new
   end
 
   def update
@@ -52,9 +51,6 @@ class OrganizationsController < ApplicationController
   # list before doing anything and load_and_authorize_resource uses
   # a before filter.
   def create
-    contact_list = params[:organization].delete("contact_list")
-    contact_ids = contact_list.try(:split, ",")
-
     business_loc_list = params[:organization].delete("business_location_list")
     business_location_ids = business_loc_list.try(:split, ",")
 
@@ -67,7 +63,6 @@ class OrganizationsController < ApplicationController
     @organization.attributes = organization_params
     authorize! :create, @organization
     if @organization.save
-      @organization.update_attribute(:contact_ids, contact_ids) unless contact_ids.nil?
       @organization.update_attribute(:business_location_ids, business_location_ids) unless business_location_ids.nil?
       respond_to do |format|
         format.js
@@ -111,7 +106,6 @@ class OrganizationsController < ApplicationController
         :images_attributes,
         :parent_id,
         :location_ids,
-        :contact_ids,
         :org_type,
         :profile_image,
         :remote_profile_image_url,

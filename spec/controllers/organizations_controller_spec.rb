@@ -179,16 +179,6 @@ describe OrganizationsController, type: :controller do
         }.by(1)
       end
 
-      context "given organization[contact_list] csv parameter" do
-        let(:contacts){ FactoryGirl.create_list :contact, 2 }
-        let(:contact_list) { contacts.map(&:id).join(',') }
-
-        it "converts them to contact_ids" do
-          post :create, params: { organization: org_attrs.merge(contact_list: contact_list) }
-          expect(assigns(:organization).contact_ids).to eql contacts.map(&:id)
-        end
-      end
-
       context "given organization[business_location_list] csv parameter" do
         let(:locations){ FactoryGirl.create_list :business_location, 2 }
         let(:location_list) { locations.map(&:id).join(',') }

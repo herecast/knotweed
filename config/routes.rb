@@ -65,7 +65,6 @@ Rails.application.routes.draw do
       resources :promotions, shallow: true
     end
 
-    resources :contacts, only: [:create, :update, :edit, :destroy]
     resources :locations, except: [:destroy]
     resources :business_locations
 
@@ -77,8 +76,6 @@ Rails.application.routes.draw do
     resources :subscriptions
 
     resources :features
-
-    get 'contacts/new(/:model(/:id))', to: "contacts#new", as: :new_contact
 
     get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', :defaults => {:format => 'ics'}, as: :event_instances_ics
     get '/ics/events/:public_id', to: 'api/v3/users#events', :defaults => {:format => 'ics'}, as: :user_event_instances_ics
