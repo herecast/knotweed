@@ -271,6 +271,21 @@ class Content < ActiveRecord::Base
 
   UGC_ORIGIN = 'UGC'
 
+  UGC_PROCESSES = {
+    'create' => {
+      'event' => Ugc::CreateEvent,
+      'market' => Ugc::CreateMarket,
+      'news' => Ugc::CreateNews,
+      'talk' => Ugc::CreateTalk
+    },
+    'update' => {
+      'event' => Ugc::UpdateEvent,
+      'market' => Ugc::UpdateMarket,
+      'news' => Ugc::UpdateNews,
+      'talk' => Ugc::UpdateTalk
+    }
+  }
+
   CATEGORIES = %w(beta_talk business campaign discussion event for_free lifestyle
                   local_news nation_world offered presentation recommendation
                   sale_event sports wanted)

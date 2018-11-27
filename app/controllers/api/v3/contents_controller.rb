@@ -29,11 +29,9 @@ module Api
       def create
         authorize! :create, Content
 
-        content_type = params[:content][:content_type]
-
         begin
-          create_process = "Ugc::Create#{content_type.classify}".constantize
-        rescue NameError
+          create_process = Content::UGC_PROCESSES['create'].fetch(params[:content][:content_type])
+        rescue KeyError
           render json: {error: 'unknown content type'}, status: :unprocessable_entity
           return
         end
@@ -78,8 +76,8 @@ module Api
         authorize! :update, @content
 
         begin
-          update_process = "Ugc::Update#{@content.content_type.to_s.classify}".constantize
-        rescue NameError
+          update_process = Content::UGC_PROCESSES['update'].fetch(@content.content_type.to_s)
+        rescue KeyError
           render json: {error: 'unknown content type'}, status: :unprocessable_entity
           return
         end
