@@ -46,6 +46,10 @@ RSpec.describe CommentsController, type: :controller do
       @comment = FactoryGirl.create :comment,
         deleted_at: nil,
         parent_id: @parent_content.id
+      mailer = double(deliver_later: true)
+      allow(CommentAlertMailer).to receive(:alert_parent_content_owner).and_return(
+        mailer
+      )
     end
 
     subject { delete :destroy, params: { id: @comment.content.id } }
@@ -61,6 +65,14 @@ RSpec.describe CommentsController, type: :controller do
       }.by(-1).and change{
         @comment.parent.reload.commenter_count
       }.by(-1)
+    end
+
+
+    it "queues email to content owner" do
+      expect(CommentAlertMailer).to receive(:alert_parent_content_owner).with(
+        @comment.content, @parent_content, true
+      )
+      subject
     end
   end
 end

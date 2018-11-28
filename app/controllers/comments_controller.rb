@@ -38,6 +38,7 @@ class CommentsController < ApplicationController
     @comment = Content.find(params[:id])
     if @comment.update_attribute(:deleted_at, Time.now)
       @comment.channel.decrease_comment_stats
+      notify_parent_content_owner
       flash[:info] = "Comment Hidden"
       redirect_to correct_path
     else
@@ -50,6 +51,12 @@ class CommentsController < ApplicationController
 
     def correct_path
       !!params[:from_content_form] ? contents_path : comments_path
+    end
+
+    def notify_parent_content_owner
+      CommentAlertMailer.alert_parent_content_owner(
+        @comment, @comment.parent, true
+      ).deliver_later
     end
 
 end

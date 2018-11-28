@@ -655,7 +655,15 @@
                         
                             <span style="font-family:arial,helvetica neue,helvetica,sans-serif"><span style="font-size:14px">Hey <%= @parent_content.created_by.name %>,<br>
 <br>
-<%= @comment_owner.name %> commented on your post&nbsp;<%= link_to "\"#{@parent_content.title}\"", comment_alert_url(@parent_content), target: "_BLANK" %> on <%= @parent_content.created_at.strftime('%B %e at %l:%M%P') %>.&nbsp;</span></span>
+<% if @comment_hidden %>
+	The following comment: "<%= @comment.content %>" posted by <%= @comment_owner.name %> has been removed from your post <%= link_to "\"#{@parent_content.title}\"", comment_alert_url(@parent_content), target: "_BLANK" %>.<br><br>
+	Let us know if you have any questions,<br><br>
+	Best,<br>
+	The DailyUV Team
+<% else %>
+	<%= @comment_owner.name %> commented on your post&nbsp;<%= link_to "\"#{@parent_content.title}\"", comment_alert_url(@parent_content), target: "_BLANK" %> on <%= @parent_content.created_at.strftime('%B %e at %l:%M%P') %>.
+<% end %>&nbsp;
+</span></span>
                         </td>
                     </tr>
                 </tbody></table>
@@ -680,9 +688,11 @@
                 <table border="0" cellpadding="0" cellspacing="0" class="mcnButtonContentContainer" style="border-collapse: separate !important;border-radius: 30px;background-color: #555555;">
                     <tbody>
                         <tr>
+                          <% unless @comment_hidden %>
                             <td align="center" valign="middle" class="mcnButtonContent" style="font-family: Arial; font-size: 16px; padding: 15px;">
                                 <a class="mcnButton " title="Reply to comment " href="<%= comment_alert_url(@parent_content) %>" target="_blank" style="font-weight: bold;letter-spacing: normal;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Reply to comment </a>
                             </td>
+                          <% end %>
                         </tr>
                     </tbody>
                 </table>
