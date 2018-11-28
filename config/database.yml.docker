@@ -1,13 +1,15 @@
-production:
-  adapter: postgresql
-  encoding: utf8
-  reconnect: true
-  url: <%= ENV['DATABASE_URL'] %>
-  net_read_timeout: 60
-  pool: <%= ENV['DB_POOL'] || ENV['RAILS_MAX_THREADS'] || 10 %>
-
-test:
+default: &default
   adapter: postgresql
   encoding: unicode
+  host: db
+  username: postgres
+  password:
   pool: 5
-  database: knotweed_test
+
+development:
+  <<: *default
+  database: subtext_development_db
+
+test:
+  <<: *default
+  database: subtext_test_db

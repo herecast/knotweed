@@ -18,10 +18,8 @@ Organization.create!({
 })
 p "Created 'DailyUV' organization"
 
-Location.create!({
-  city: Location::DEFAULT_LOCATION
-})
-p "Created #{Location::DEFAULT_LOCATION} location"
+FactoryGirl.create :location, :default
+p "Created default location"
 
 # create admin account
 User.create!({
@@ -54,7 +52,7 @@ def base_content_attrs
     authors: Faker::Name.name,
     pubdate: Time.now,
     organization: Organization.last,
-    locations: [Location.first],
+    location_id: Location.first.id,
     created_by: User.last,
     updated_by: User.last
   }

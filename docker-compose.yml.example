@@ -1,18 +1,48 @@
-version: '2'
+version: '3.1'
 
 services:
-  postgresql:
-    image: "postgres:9.5"
+  web:
+    build: .
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    volumes:
+      - .:/knotweed
     ports:
-      - '5432:5432'
+      - '3000:3000'
+    depends_on:
+      - db
+      - cache
+      - search
     environment:
-      - "POSTGRES_PASSWORD=toor"
-      - "POSTGRES_DB=knotweed_dev"
-  redis:
-    image: "redis"
-    ports:
-      - '6379:6379'
-  elasticsearch:
-    image: "elasticsearch"
-    ports:
-      - "9200:9200"
+      REDIS_URL: redis://cache:6379/0
+      ELASTICSEARCH_URL: http://search:9200
+
+  sidekiq:
+    depends_on:
+      - db
+      - cache
+    build: .
+    command: bundle exec sidekiq -C config/sidekiq.yml
+    volumes:
+      - '.:/knotweed'
+    environment:
+      REDIS_URL: redis://cache:6379/0
+      ELASTICSEARCH_URL: http://search:9200
+
+  db:
+    image: postgres:9.6.1
+    volumes:
+      - ./tmp/postgres:/var/lib/postgresql/data
+
+  cache:
+    image: redis:5
+    command: redis-server
+    volumes:
+      - ./tmp/redis:/data
+
+  search:
+    image: elasticsearch:2.4-alpine
+    volumes:
+      - ./tmp/elasticsearch:/usr/share/elasticsearch/data
+
+volumes:
+  tmp:

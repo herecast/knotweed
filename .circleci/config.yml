@@ -37,7 +37,7 @@ jobs:
 
       - run:
           name: Copy DB info
-          command: mv config/database.yml.docker config/database.yml
+          command: mv config/database.yml.example config/database.yml
 
 
       - run:
