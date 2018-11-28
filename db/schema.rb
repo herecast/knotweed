@@ -149,22 +149,6 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "contacts", id: :bigserial, force: :cascade do |t|
-    t.string   "name",         limit: 255
-    t.string   "phone",        limit: 255
-    t.string   "email",        limit: 255
-    t.text     "notes"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
-    t.string   "contact_type", limit: 255
-    t.text     "address"
-  end
-
-  create_table "contacts_organizations", id: false, force: :cascade do |t|
-    t.bigint "contact_id"
-    t.bigint "organization_id"
-  end
-
   create_table "content_categories", id: :bigserial, force: :cascade do |t|
     t.string   "name",       limit: 255
     t.datetime "created_at",                            null: false
