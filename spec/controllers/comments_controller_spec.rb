@@ -50,6 +50,9 @@ RSpec.describe CommentsController, type: :controller do
       allow(CommentAlertMailer).to receive(:alert_parent_content_owner).and_return(
         mailer
       )
+      allow(ContentRemovalAlertMailer).to receive(:content_removal_alert).and_return(
+        mailer
+      )
     end
 
     subject { delete :destroy, params: { id: @comment.content.id } }
@@ -67,10 +70,16 @@ RSpec.describe CommentsController, type: :controller do
       }.by(-1)
     end
 
-
-    it "queues email to content owner" do
+    it "queues email to parent content owner" do
       expect(CommentAlertMailer).to receive(:alert_parent_content_owner).with(
         @comment.content, @parent_content, true
+      )
+      subject
+    end
+
+    it "queues email to comment creator" do
+      expect(ContentRemovalAlertMailer).to receive(:content_removal_alert).with(
+        @comment.content
       )
       subject
     end
