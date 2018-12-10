@@ -12,6 +12,7 @@ module Outreach
     end
 
     def call
+      conditionally_add_blogger_to_new_users_list
       if @action == 'blogger_welcome_and_reminder'
         create_and_schedule_campaign('blogger_welcome')
         response = create_and_schedule_campaign('blogger_reminder', Time.current + 2.weeks)
@@ -22,6 +23,14 @@ module Outreach
     end
 
     private
+
+      def conditionally_add_blogger_to_new_users_list
+        unless @user.mc_segment_id.present?
+          CreateMailchimpSegmentForNewUser.call(@user,
+            organization: @organization
+          )
+        end
+      end
 
       def create_and_schedule_campaign(step, send_time=Time.current)
         response = create_campaign(step)

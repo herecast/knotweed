@@ -37,7 +37,6 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
     end
 
     it 'subscribes User to User-specific segment' do
-      @user.update_attribute(:mc_segment_id, @mc_id)
       expect(@lists_array).to receive(:static_segment_members_add)
         .with(
           Rails.configuration.subtext.email_outreach.new_user_list_id,
@@ -74,6 +73,19 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
           user: @user,
           organization: organization
         )
+        subject
+      end
+    end
+
+    context "when user already has mc_segment_id" do
+      before do
+        @user.update_attribute(:mc_segment_id, 'njknnj')
+      end
+
+      it "does not create Mailchimp segment for user" do
+        expect(MailchimpService::NewUser).not_to receive(:subscribe_to_list)
+        expect(MailchimpService::NewUser).not_to receive(:create_segment)
+        expect(MailchimpService::NewUser).not_to receive(:add_to_segment)
         subject
       end
     end

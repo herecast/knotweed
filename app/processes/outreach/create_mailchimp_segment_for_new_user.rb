@@ -11,9 +11,11 @@ module Outreach
     end
 
     def call
-      MailchimpService::NewUser.subscribe_to_list(@user)
-      create_user_specific_mc_segment
-      add_user_to_user_specific_mc_segment
+      unless @user.mc_segment_id.present?
+        MailchimpService::NewUser.subscribe_to_list(@user)
+        create_user_specific_mc_segment
+        add_user_to_user_specific_mc_segment
+      end
       schedule_welcome if @opts[:schedule_welcome_emails] == true
       schedule_blogger_emails if @opts[:schedule_blogger_emails] == true
     end

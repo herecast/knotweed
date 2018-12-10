@@ -50,5 +50,29 @@ RSpec.describe Outreach::ScheduleBloggerEmails do
         end
       end 
     end
+
+    context "when blogger does not have mailchimp segment" do
+      before do
+        @user.update_attribute(:mc_segment_id, nil)
+        allow(Outreach::CreateMailchimpSegmentForNewUser).to receive(
+          'call'
+        ).and_return true
+      end
+
+      subject do
+        Outreach::ScheduleBloggerEmails.call(
+          action: 'blogger_welcome_and_reminder',
+          user: @user,
+          organization: @organization
+        )
+      end
+
+      it "creates mailchimp segment for user" do
+        expect(Outreach::CreateMailchimpSegmentForNewUser).to receive(
+          'call'
+        ).with(@user, organization: @organization)
+        subject
+      end
+    end
   end
 end
