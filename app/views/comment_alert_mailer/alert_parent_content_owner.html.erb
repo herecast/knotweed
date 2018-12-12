@@ -661,7 +661,7 @@
 	Best,<br>
 	The DailyUV Team
 <% else %>
-	<%= @comment_owner.name %> commented on your post&nbsp;<%= link_to "\"#{@parent_content.title}\"", comment_alert_url(@parent_content), target: "_BLANK" %> on <%= @parent_content.created_at.strftime('%B %e at %l:%M%P') %>.
+	<%= @comment_owner.name %> commented on your post&nbsp;<%= link_to "\"#{@parent_content.title}\"", comment_alert_url(@parent_content), target: "_BLANK" %> on <%= @comment.created_at.strftime('%B %e at %l:%M%P') %>.
 <% end %>&nbsp;
 </span></span>
                         </td>
