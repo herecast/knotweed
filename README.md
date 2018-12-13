@@ -68,3 +68,10 @@ To have guard automatically watch changes, simple run the following command in a
     bundle exec guard
 
 The App has both Guard and Zeus in the Gemfile, and they're setup to work together.  Guard will automatically start/stop Zeus as needed. No separate Zeus install or commands are needed.
+
+CoffeeLint
+--------------------------------
+If you modify any of our Coffeescript code, you can lint it using CoffeeLint. CoffeeLint is also run automatically by CodeClimate. To lint your code, run:
+
+    rake coffeelint
+

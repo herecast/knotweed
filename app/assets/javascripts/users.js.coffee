@@ -15,16 +15,20 @@ jQuery ->
     select = $('#organization-selector-' + initialId).html()
 
     # add delete option for chosen organization
-    $(this).replaceWith('<div id="removal-link-wrapper-' + initialId + '"><input type="hidden" name="user[controlled_organization_' + initialId + ']" value="' + $(this).val() + '" /><p><b>' + orgName + '</b> | <a id="removal-link-for-' + initialId + '" class="organization-removal-link">remove</a></p></div>')
+    $(this).replaceWith('<div id="removal-link-wrapper-' + initialId +
+      '"><input type="hidden" name="user[controlled_organization_' + initialId +
+      ']" value="' + $(this).val() + '" /><p><b>' + orgName + '</b> | <a id="removal-link-for-' +
+      initialId + '" class="organization-removal-link">remove</a></p></div>')
 
     # add new organization drop-down
     newId = initialId + 1
-    newSelect = '<select id="organization-selector-' + newId + '" class="user-organization-select">' + select + '</select>'
+    newSelect = '<select id="organization-selector-' + newId +
+      '" class="user-organization-select">' + select + '</select>'
     $('#organization-selectors').append newSelect
-    );
+    )
 
 jQuery ->
   $('#organization-selectors').on('click', '.organization-removal-link', ->
     removalId = $(this).attr('id').replace('removal-link-for-', '')
     $('#removal-link-wrapper-' + removalId).remove()
-    );
+    )

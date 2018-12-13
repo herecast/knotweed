@@ -109,6 +109,7 @@ end
 
 group :development do
   gem "annotate"
+  gem "coffeelint"
   gem "better_errors", '~> 0.9'                     # Have not yet tested the next major version
   gem "letter_opener"
   gem "yard"

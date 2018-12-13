@@ -3,5 +3,5 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 jQuery ->
-	$('.ad-status-change-checkbox').on 'change', ->
-		$(this.form).submit()
+  $('.ad-status-change-checkbox').on 'change', ->
+    $(this.form).submit()

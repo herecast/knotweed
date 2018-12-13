@@ -49,7 +49,7 @@ jQuery ->
     if ($("#business_location_locate_include_name").prop('checked'))
       loc_string = loc_string + $("#business_location_name").val() + " "
     # this is used on both business_location forms and on business_profile forms
-    if $('#business_location_address').length > 0 
+    if $('#business_location_address').length > 0
       loc_string += $("#business_location_address").val()
       loc_string += ' ' + $("#business_location_city").val()
       loc_string += ' ' + $("#business_location_state").val()

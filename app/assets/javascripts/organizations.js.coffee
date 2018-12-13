@@ -43,7 +43,8 @@ jQuery ->
     afterInit: (ms) ->
       that = this
       $selectableSearch = $("#search_locations")
-      selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)'
+      selectableSearchString = '#' + that.$container.attr('id') +
+                               ' .ms-elem-selectable:not(.ms-selected)'
 
       that.qs1 = $selectableSearch.quicksearch(selectableSearchString).on 'keydown', (e) ->
         if e.which == 40
@@ -73,7 +74,8 @@ jQuery ->
           <label for="' + val + '">' + val + '</label>
         </div>
         <div class="span6">
-          <input class="span12" id="' + model + '_'+ field_type + '_' + val + '" name="' + model + '[' + field_type + '][' + val + ']" size="30" type="text" value="" />
+          <input class="span12" id="' + model + '_'+ field_type + '_' + val + '" name="' +
+           model + '[' + field_type + '][' + val + ']" size="30" type="text" value="" />
         </div>
         <div class="span2">
           <div class="btn btn-danger remove-serialized-field">
@@ -107,7 +109,8 @@ prepHoursInterface = () ->
     $('#business_location_hours').append '
       <div class="row-fluid">
         <div class="span6">
-          <input class="span12" id="business_location_hours" + name="business_location[hours][]" value="" />
+          <input class="span12" id="business_location_hours"
+           name="business_location[hours][]" value="" />
         </div>
         <div class="span2 offset4">
           <div class="btn btn-danger remove-hours-field">

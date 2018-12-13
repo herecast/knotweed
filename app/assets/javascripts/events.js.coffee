@@ -15,7 +15,7 @@ jQuery ->
     regexp = new RegExp($(this).data('id'), 'g')
     $(this).before($(this).data('fields').replace(regexp, time))
     event.preventDefault()
-    $(".datetimepicker").datetimepicker();
-    $(".datepicker").datetimepicker({pickTime: false});
-    $(".timepicker").datetimepicker({ pickDate: false });
+    $(".datetimepicker").datetimepicker()
+    $(".datepicker").datetimepicker({pickTime: false})
+    $(".timepicker").datetimepicker({ pickDate: false })
   
