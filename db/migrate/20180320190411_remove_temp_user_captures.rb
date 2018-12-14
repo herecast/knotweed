@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RemoveTempUserCaptures < ActiveRecord::Migration
   def up
     drop_table :temp_user_captures

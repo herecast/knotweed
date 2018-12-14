@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
-def serialized_location(location)
+def serialized_location location
   {
     location: {
       id: location.id,
@@ -31,18 +29,18 @@ RSpec.describe 'Locations API Endpoints', type: :request do
 
     describe '?near= parameter' do
       let(:location) { FactoryGirl.create :location, coordinates: [0, 0] }
-      let(:parameters) do
+      let(:parameters) {
         {
           near: location.slug
         }
-      end
+      }
 
-      subject { get '/api/v3/locations', params: parameters }
+      subject { get "/api/v3/locations", params: parameters }
 
       context 'no radius given' do
         it 'responds with a 422' do
           subject
-          expect(response.code).to eql '422'
+          expect(response.code).to eql "422"
         end
       end
 
@@ -53,21 +51,21 @@ RSpec.describe 'Locations API Endpoints', type: :request do
           parameters[:radius] = radius
         end
 
-        let!(:locations_within_radius) do
+        let!(:locations_within_radius) {
           3.times.collect do
             FactoryGirl.create :location, coordinates: Geocoder::Calculations.random_point_near(
               location, radius, units: :mi
             )
           end
-        end
+        }
 
-        let!(:locations_outside_radius) do
+        let!(:locations_outside_radius) {
           FactoryGirl.create_list :location, 3, coordinates: [40, 40]
-        end
+        }
 
         it 'responds with a 200' do
           subject
-          expect(response.code).to eql '200'
+          expect(response.code).to eql "200"
         end
 
         it 'returns the locations within the radius of specified location id' do
@@ -102,12 +100,12 @@ RSpec.describe 'Locations API Endpoints', type: :request do
     end
 
     context 'location id is not a valid location' do
-      subject { get '/api/v3/locations/' + '123-not-valid' }
+      subject { get '/api/v3/locations/' + "123-not-valid" }
 
       it 'responds with 404 status code' do
         subject
-        expect(response_json).to match({}) # empty hash payload
-        expect(response.code).to eql '404'
+        expect(response_json).to match Hash.new # empty hash payload
+        expect(response.code).to eql "404"
       end
     end
   end
@@ -139,9 +137,9 @@ RSpec.describe 'Locations API Endpoints', type: :request do
         let!(:user) { FactoryGirl.create :user, location: location }
         let(:auth_headers) { auth_headers_for(user) }
 
-        subject do
+        subject {
           get '/api/v3/locations/locate', params: {}, headers: auth_headers
-        end
+        }
 
         it "returns the users's location preference" do
           subject
@@ -150,9 +148,9 @@ RSpec.describe 'Locations API Endpoints', type: :request do
       end
 
       context 'not signed in' do
-        subject do
+        subject {
           get '/api/v3/locations/locate'
-        end
+        }
 
         it 'returns the nearest location to the IP address' do
           request_ip = '127.0.1.2'

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: profile_metrics
@@ -40,5 +38,5 @@ class ProfileMetric < ActiveRecord::Base
   belongs_to :user
   belongs_to :content
 
-  validates :content_id, presence: true, if: ->(inst) { inst.event_type.eql?('click') }
+  validates :content_id, presence: true, if: ->(inst) { inst.event_type.eql?("click") }
 end

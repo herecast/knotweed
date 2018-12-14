@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module MailchimpService
   class CampaignSerializer < ActiveModel::Serializer
     root false

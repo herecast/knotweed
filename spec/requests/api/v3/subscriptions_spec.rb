@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 def json_datetime(dt)
@@ -41,17 +39,17 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
           expect(returned.count).to be user_subscriptions.count
 
           returned.each do |sub|
-            expect(sub).to match(a_hash_including(
-                                   user_id: user.id,
-                                   id: a_kind_of(String),
-                                   listserv_id: a_kind_of(Integer),
-                                   email: a_kind_of(String),
-                                   name: a_kind_of(String),
-                                   email_type: a_kind_of(String),
-                                   created_at: a_kind_of(String),
-                                   confirmed_at: a_kind_of(String).or(be_nil),
-                                   unsubscribed_at: a_kind_of(String).or(be_nil)
-                                 ))
+            expect(sub).to match(a_hash_including({
+                                                    user_id: user.id,
+                                                    id: a_kind_of(String),
+                                                    listserv_id: a_kind_of(Integer),
+                                                    email: a_kind_of(String),
+                                                    name: a_kind_of(String),
+                                                    email_type: a_kind_of(String),
+                                                    created_at: a_kind_of(String),
+                                                    confirmed_at: a_kind_of(String).or(be_nil),
+                                                    unsubscribed_at: a_kind_of(String).or(be_nil)
+                                                  }))
           end
         end
 
@@ -63,12 +61,12 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
 
           expect(response_json[:subscriptions].count).to eql 1
 
-          expect(response_json[:meta]).to match(
-            total_count: user_subscriptions.count,
-            page: 1,
-            per_page: 1,
-            page_count: 3
-          )
+          expect(response_json[:meta]).to match({
+                                                  total_count: user_subscriptions.count,
+                                                  page: 1,
+                                                  per_page: 1,
+                                                  page_count: 3
+                                                })
         end
       end
     end
@@ -76,12 +74,12 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
 
   describe 'PATCH /api/v3/subscriptions/:key' do
     let(:subscription) { FactoryGirl.create :subscription, email_type: 'html' }
-    let(:attrs) do
+    let(:attrs) {
       {
         email_type: 'text',
         name: 'John Doe'
       }
-    end
+    }
 
     subject { patch "/api/v3/subscriptions/#{subscription.key}", params: { subscription: attrs } }
 
@@ -105,17 +103,17 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
     it 'returns subscription' do
       subject
 
-      expect(response_json[:subscription]).to match(
-        id: subscription.key,
-        email: subscription.email,
-        name: subscription.name,
-        listserv_id: subscription.listserv_id,
-        user_id: subscription.user_id,
-        created_at: json_datetime(subscription.created_at),
-        confirmed_at: json_datetime(subscription.confirmed_at),
-        email_type: subscription.email_type,
-        unsubscribed_at: json_datetime(subscription.unsubscribed_at)
-      )
+      expect(response_json[:subscription]).to match({
+                                                      id: subscription.key,
+                                                      email: subscription.email,
+                                                      name: subscription.name,
+                                                      listserv_id: subscription.listserv_id,
+                                                      user_id: subscription.user_id,
+                                                      created_at: json_datetime(subscription.created_at),
+                                                      confirmed_at: json_datetime(subscription.confirmed_at),
+                                                      email_type: subscription.email_type,
+                                                      unsubscribed_at: json_datetime(subscription.unsubscribed_at)
+                                                    })
     end
 
     context 'subscription does not exist' do
@@ -176,20 +174,20 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
       it 'sets confirm_ip and confirmed_at' do
         expect { subject }.to change {
           subscription.reload.attributes.with_indifferent_access.slice(:confirm_ip, :confirmed_at)
-        }.to a_hash_including(
-          confirm_ip: remote_ip,
-          confirmed_at: an_instance_of(ActiveSupport::TimeWithZone)
-        )
+        }.to a_hash_including({
+                                confirm_ip: remote_ip,
+                                confirmed_at: an_instance_of(ActiveSupport::TimeWithZone)
+                              })
       end
     end
   end
 
   describe 'DELETE /api/v3/subscriptions/{listserv_id}/{base64_email}' do
     let(:listserv) { FactoryGirl.create :listserv }
-    let(:email) { 'theloneranger@texas.com' }
-    let(:encoded_email) do
+    let(:email) { "theloneranger@texas.com" }
+    let(:encoded_email) {
       CGI.escape(Base64.encode64(email))
-    end
+    }
     subject { delete "/api/v3/subscriptions/#{listserv.id}/#{encoded_email}" }
 
     it 'returns 204 status' do
@@ -198,12 +196,12 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
     end
 
     context 'when subscription exists matching email and listserv_id' do
-      let(:subscription) do
+      let(:subscription) {
         FactoryGirl.create :subscription,
                            listserv: listserv,
                            email: email,
                            unsubscribed_at: nil
-      end
+      }
 
       it 'runs UnsubscribeSubscription' do
         expect(UnsubscribeSubscription).to receive(:call).with(subscription)
@@ -211,9 +209,9 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
       end
 
       it 'sets unsubscribed_at' do
-        expect do
+        expect {
           subject
-        end.to change {
+        }.to change {
           subscription.reload.unsubscribed_at
         }.from(nil)
       end
@@ -236,9 +234,9 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
     end
 
     it 'sets unsubscribed_at' do
-      expect do
+      expect {
         subject
-      end.to change {
+      }.to change {
         subscription.reload.unsubscribed_at
       }.from(nil)
     end
@@ -248,14 +246,14 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
     let(:listserv) { FactoryGirl.create :listserv }
     let(:user) { FactoryGirl.create :user }
     let(:unconfirmed_user) { FactoryGirl.create :user, confirmed_at: nil }
-    let(:subscription_params) do
-      { 'subscription' => { 'email' => user.email.to_s,
-                            'name' => listserv.name.to_s, 'user_id' => nil, 'listserv_id' => listserv.id.to_s } }
-    end
-    let(:invalid_sub_params) do
-      { 'subscription' => { 'id' => nil, 'email' => user.email.to_s, 'name' => listserv.name.to_s,
+    let(:subscription_params) {
+      { 'subscription' => { 'email' => "#{user.email}",
+                            'name' => "#{listserv.name}", 'user_id' => nil, 'listserv_id' => "#{listserv.id}" } }
+    }
+    let(:invalid_sub_params) {
+      { 'subscription' => { 'id' => nil, 'email' => "#{user.email}", 'name' => "#{listserv.name}",
                             'listserv_id' => nil } }
-    end
+    }
     subject { post '/api/v3/subscriptions', params: subscription_params }
 
     context 'with valid subscription attributes' do
@@ -265,9 +263,9 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
       end
 
       it 'creates new subscription' do
-        expect do
+        expect {
           subject
-        end.to change { Subscription.count }.by(1)
+        }.to change { Subscription.count }.by(1)
       end
 
       it 'renders the the json for the new subscription' do
@@ -278,9 +276,9 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
       end
 
       it 'can subscribe a user using listserv_id and email' do
-        expect do
+        expect {
           post '/api/v3/subscriptions', params: { subscription: { listserv_id: listserv.id, email: user.email } }
-        end.to change { Subscription.count }.by(1)
+        }.to change { Subscription.count }.by(1)
       end
 
       context 'when a user has confirmed their account' do
@@ -296,35 +294,35 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
         before do
           @new_user_params = { 'subscription' =>
                                 { 'listserv_id' => listserv.id,
-                                  'email' => unconfirmed_user.email.to_s,
-                                  'name' => listserv.name.to_s,
+                                  'email' => "#{unconfirmed_user.email}",
+                                  'name' => "#{listserv.name}",
                                   'user_id' => nil } }
         end
 
         it 'subscribes to a listserv' do
-          expect(SubscribeToListserv).to receive(:call).with(listserv, email: unconfirmed_user.email)
+          expect(SubscribeToListserv).to receive(:call).with(listserv, { email: unconfirmed_user.email })
           post '/api/v3/subscriptions', params: @new_user_params
         end
       end
 
       context 'when listserv_id is present' do
         it 'creates new subscription' do
-          expect do
+          expect {
             post '/api/v3/subscriptions', params: subscription_params.merge!(listserv_id: listserv.id)
-          end.to change { Subscription.count }.by(1)
+          }.to change { Subscription.count }.by(1)
         end
       end
 
       context 'when the subscription request is from a user registration' do
         it 'creates a new subscription' do
-          expect do
+          expect {
             post '/api/v3/subscriptions', params: subscription_params.merge!(subscribed_from_registration: true)
-          end.to change { Subscription.count }.by(1)
+          }.to change { Subscription.count }.by(1)
         end
 
         it 'does not call the SubscribeToListserv jobs' do
-          expect(SubscribeToListserv).to_not receive(:call).with(listserv, email: unconfirmed_user.email)
-          expect(SubscribeToListservSilently).to_not receive(:call).with(listserv, email: unconfirmed_user.email)
+          expect(SubscribeToListserv).to_not receive(:call).with(listserv, { email: unconfirmed_user.email })
+          expect(SubscribeToListservSilently).to_not receive(:call).with(listserv, { email: unconfirmed_user.email })
           post '/api/v3/subscriptions', params: subscription_params.merge!(subscribed_from_registration: true)
         end
       end
@@ -339,9 +337,9 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
       end
 
       it 'does not create a new subscription' do
-        expect do
+        expect {
           subject
-        end.to_not change {
+        }.to_not change {
           Subscription.count
         }
       end

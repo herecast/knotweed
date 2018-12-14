@@ -1,10 +1,8 @@
-# frozen_string_literal: true
-
 CarrierWave.configure do |config|
   config.fog_credentials = {
-    provider: 'AWS',
-    aws_access_key_id: Figaro.env.aws_access_key_id || 'dummy',
-    aws_secret_access_key: Figaro.env.aws_secret_access_key || 'dummy'
+    :provider => 'AWS',
+    :aws_access_key_id => Figaro.env.aws_access_key_id || 'dummy',
+    :aws_secret_access_key => Figaro.env.aws_secret_access_key || 'dummy'
   }
 
   config.fog_directory = Figaro.env.aws_bucket_name
@@ -14,7 +12,7 @@ CarrierWave.configure do |config|
   # this is a location for CDN switch in future
   # config.asset_host = 'http://stage-cdn.subtext.org'
 
-  config.fog_attributes = { cache_control: 'max-age=' + 1.month.to_s }
+  config.fog_attributes = { :cache_control => 'max-age=' + 1.month.to_s }
 
   if Rails.env.test?
     config.storage = :file

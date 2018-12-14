@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe 'Feature API Endpoints', type: :request do
@@ -17,9 +15,9 @@ RSpec.describe 'Feature API Endpoints', type: :request do
       expect(response_json[:features].count).to eq active_features.count
 
       response_json[:features].each do |feature|
-        expect(feature).to match(a_hash_including(
-                                   name: a_kind_of(String)
-                                 ))
+        expect(feature).to match(a_hash_including({
+                                                    name: a_kind_of(String)
+                                                  }))
       end
     end
 
@@ -29,7 +27,7 @@ RSpec.describe 'Feature API Endpoints', type: :request do
 
       it 'retuns and options boject if present' do
         get '/api/v3/features'
-        expect(response_json[:features].first[:options]).to eq ({ foo: 'bar', boo: { baz: 'buzz' } })
+        expect(response_json[:features].first[:options]).to eq ({ foo: "bar", boo: { baz: "buzz" } })
       end
     end
   end

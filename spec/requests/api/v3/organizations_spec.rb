@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 RSpec.describe 'Organizations Endpoints', type: :request do
@@ -16,7 +14,7 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           name: organization.name,
           can_publish_news: organization.can_publish_news,
           subscribe_url: organization.subscribe_url,
-          business_profile_id: a_kind_of(Integer).or(be_nil),
+          business_profile_id: a_kind_of(Fixnum).or(be_nil),
           description: organization.description,
           org_type: organization.org_type,
           can_edit: boolean,
@@ -67,7 +65,7 @@ RSpec.describe 'Organizations Endpoints', type: :request do
       end
     end
 
-    context 'when organization is archived' do
+    context "when organization is archived" do
       before do
         @archived_org = FactoryGirl.create :organization,
                                            archived: true
@@ -75,7 +73,7 @@ RSpec.describe 'Organizations Endpoints', type: :request do
 
       subject { get "/api/v3/organizations/#{@archived_org.id}" }
 
-      it 'returns not_found status' do
+      it "returns not_found status" do
         subject
         expect(response).to have_http_status :not_found
       end
@@ -136,8 +134,8 @@ RSpec.describe 'Organizations Endpoints', type: :request do
       end
     end
 
-    describe '?certified_[storyteller, social]', elasticsearch: :true do
-      context 'when searching for certified_storyteller' do
+    describe "?certified_[storyteller, social]", elasticsearch: :true do
+      context "when searching for certified_storyteller" do
         before do
           @non_storyteller = FactoryGirl.create :organization, certified_storyteller: false
           @storyteller = FactoryGirl.create :organization, certified_storyteller: true
@@ -145,14 +143,14 @@ RSpec.describe 'Organizations Endpoints', type: :request do
 
         subject { get '/api/v3/organizations?certified_storyteller=true' }
 
-        it 'returns certified_storyteller Organizations' do
+        it "returns certified_storyteller Organizations" do
           subject
           expect(response_json[:organizations].length).to eq 1
           expect(response_json[:organizations][0][:id]).to eq @storyteller.id
         end
       end
 
-      context 'when searching for certified_social' do
+      context "when searching for certified_social" do
         before do
           @non_social = FactoryGirl.create :organization, certified_social: false
           @social = FactoryGirl.create :organization, certified_social: true
@@ -160,14 +158,14 @@ RSpec.describe 'Organizations Endpoints', type: :request do
 
         subject { get '/api/v3/organizations?certified_social=true' }
 
-        it 'returns certified_social Organizations' do
+        it "returns certified_social Organizations" do
           subject
           expect(response_json[:organizations].length).to eq 1
           expect(response_json[:organizations][0][:id]).to eq @social.id
         end
       end
 
-      context 'when searching for certified_social and certified_storyteller' do
+      context "when searching for certified_social and certified_storyteller" do
         before do
           @social = FactoryGirl.create :organization, certified_social: true
           @storyteller = FactoryGirl.create :organization, certified_storyteller: true
@@ -178,7 +176,7 @@ RSpec.describe 'Organizations Endpoints', type: :request do
 
         subject { get '/api/v3/organizations?certified_social=true&certified_storyteller=true' }
 
-        it 'returns certified_social and certified_storyteller Organizations' do
+        it "returns certified_social and certified_storyteller Organizations" do
           subject
           expect(response_json[:organizations].length).to eq 2
           expect(response_json[:organizations].map { |o| o[:id] }).to match_array([@social.id, @storyteller.id])
@@ -192,65 +190,65 @@ RSpec.describe 'Organizations Endpoints', type: :request do
     context 'when signed in and able to manage' do
       let(:user) { FactoryGirl.create :user }
       let(:auth_headers) { auth_headers_for(user) }
-      let(:valid_params) do
+      let(:valid_params) {
         {
           name: 'Test name',
           description: 'My biz description',
           subscribe_url: 'http://link.to/somewhere'
         }
-      end
+      }
 
       before do
         user.roles << Role.create!(name: 'manager', resource: organization)
       end
 
       it 'updates' do
-        expect do
+        expect {
           patch "/api/v3/organizations/#{organization.id}",
                 params: { organization: valid_params },
                 headers: auth_headers
-        end.to change {
+        }.to change {
           organization.reload.attributes.symbolize_keys.slice(
             :name, :subscribe_url,
             :description
           )
-        }.to(
-          name: valid_params[:name],
-          subscribe_url: valid_params[:subscribe_url],
-          description: valid_params[:description]
-        )
+        }.to({
+               name: valid_params[:name],
+               subscribe_url: valid_params[:subscribe_url],
+               description: valid_params[:description]
+             })
       end
     end
   end
 
   describe 'GET /api/v3/organizations/sitemap_ids' do
-    let!(:org_biz) do
+    let!(:org_biz) {
       FactoryGirl.create :organization,
                          org_type: 'Business',
                          biz_feed_active: true
-    end
-    let!(:org_publisher) do
+    }
+    let!(:org_publisher) {
       FactoryGirl.create :organization,
                          org_type: 'Publisher',
                          can_publish_news: true
-    end
-    let!(:org_blog) do
+    }
+    let!(:org_blog) {
       FactoryGirl.create :organization,
                          org_type: 'Blog',
                          can_publish_news: true
-    end
-    let!(:org_publication) do
+    }
+    let!(:org_publication) {
       FactoryGirl.create :organization,
                          org_type: 'Publication',
                          can_publish_news: true
-    end
-    let!(:org_listserv) do
+    }
+    let!(:org_listserv) {
       FactoryGirl.create :organization,
                          id: Organization::LISTSERV_ORG_ID,
                          org_type: 'Publisher',
                          biz_feed_active: true,
                          can_publish_news: true
-    end
+    }
 
     subject do
       get '/api/v3/organizations/sitemap_ids'

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'sidekiq/api'
 class ScheduleListservDigestsJob < ApplicationJob
   def perform
@@ -32,7 +30,7 @@ class ScheduleListservDigestsJob < ApplicationJob
       global_id_elements = global_id.split('/')
 
       job_class = job_args['job_class']
-      job_class_matches = job_class == 'ListservDigestJob'
+      job_class_matches = job_class == "ListservDigestJob"
 
       # listserv id should be the last element after splitting
       id_matches = global_id_elements.last.to_s == listserv.id.to_s

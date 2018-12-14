@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -34,7 +32,7 @@ Rails.application.configure do
   config.active_support.deprecation = :stderr
 
   # ActionMailer Config
-  config.action_mailer.default_url_options = { host: '198.74.61.63:8002' }
+  config.action_mailer.default_url_options = { :host => '198.74.61.63:8002' }
 
   config.active_job.queue_adapter = :test
 

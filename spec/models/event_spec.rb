@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: events
@@ -34,42 +32,42 @@
 
 require 'spec_helper'
 
-describe Event, type: :model do
+describe Event, :type => :model do
   before do
     @event = FactoryGirl.create :event
     @content = @event.content
   end
 
-  describe 'method missing override' do
-    it 'should allow access to content attributes directly' do
+  describe "method missing override" do
+    it "should allow access to content attributes directly" do
       expect(@event.title).to eq(@content.title)
       expect(@event.authors).to eq(@content.authors)
       expect(@event.pubdate).to eq(@content.pubdate)
     end
 
-    it 'should retain normal method_missing behavior if not a content attribute' do
+    it "should retain normal method_missing behavior if not a content attribute" do
       expect { @event.asdfdas }.to raise_error(NoMethodError)
     end
   end
 
-  describe 'description' do
-    it 'should return content.content' do
+  describe "description" do
+    it "should return content.content" do
       expect(@event.description).to eq(@content.content)
     end
   end
 
-  describe 'description=' do
+  describe "description=" do
     it "should update the associated content record's content field" do
-      @event.description = 'New Description'
-      expect(@event.content.content).to eq 'New Description'
+      @event.description = "New Description"
+      expect(@event.content.content).to eq "New Description"
     end
   end
 
-  describe 'after_save' do
-    it 'should also save the associated content record' do
-      @content.title = 'Changed Title'
+  describe "after_save" do
+    it "should also save the associated content record" do
+      @content.title = "Changed Title"
       @event.save # should trigger @content.save callback
-      expect(@content.reload.title).to eq 'Changed Title'
+      expect(@content.reload.title).to eq "Changed Title"
     end
   end
 
@@ -91,36 +89,36 @@ describe Event, type: :model do
   end
 
   describe '#owner_name' do
-    context 'when organization owns event' do
+    context "when organization owns event" do
       before do
         @organization = FactoryGirl.create :organization, name: 'Fake Org'
         @content.update_attribute(:organization_id, @organization.id)
       end
 
-      it 'owner is organization name' do
+      it "owner is organization name" do
         expect(@event.owner_name).to eq @organization.name
       end
     end
 
-    context 'when no organization owns an event but a user created it' do
+    context "when no organization owns an event but a user created it" do
       before do
         @user = FactoryGirl.create :user, name: 'Hodor'
         @content.update_attribute(:created_by, @user)
         @content.update_attribute(:organization_id, nil)
       end
 
-      it 'owner is user name' do
+      it "owner is user name" do
         expect(@event.owner_name).to eq @user.name
       end
     end
 
-    context 'when no organization owns event and created_by is nil' do
+    context "when no organization owns event and created_by is nil" do
       before do
         @content.update_attribute(:organization_id, nil)
         @content.update_attribute(:created_by, nil)
       end
 
-      it 'returns nil' do
+      it "returns nil" do
         expect(@event.owner_name).to be_nil
       end
     end

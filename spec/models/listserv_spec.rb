@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: listservs
@@ -43,7 +41,7 @@
 
 require 'spec_helper'
 
-describe Listserv, type: :model do
+describe Listserv, :type => :model do
   it { is_expected.to respond_to(:subscribe_email, :subscribe_email=) }
   it { is_expected.to respond_to(:unsubscribe_email, :unsubscribe_email=) }
   it { is_expected.to respond_to(:post_email, :post_email=) }
@@ -110,10 +108,10 @@ describe Listserv, type: :model do
     end
 
     describe 'should prevent user from using queries to alter data' do
-      let(:listserv) { FactoryGirl.build :listserv, digest_query: 'DROP DB' }
+      let(:listserv) { FactoryGirl.build :listserv, digest_query: "DROP DB" }
       it 'does not save digest query with data altering commands' do
         expect(listserv.valid?).to be false
-        expect(listserv.errors[:digest_query]).to include 'Commands to alter data are not allowed'
+        expect(listserv.errors[:digest_query]).to include "Commands to alter data are not allowed"
       end
     end
 
@@ -153,18 +151,18 @@ describe Listserv, type: :model do
     end
 
     context 'when given a promotion id' do
-      let!(:promo_with_banner) do
+      let!(:promo_with_banner) {
         FactoryGirl.create :promotion,
                            promotable: FactoryGirl.create(:promotion_banner)
-      end
+      }
 
-      let!(:other_promo) do
+      let!(:other_promo) {
         FactoryGirl.create :promotion,
                            promotable: FactoryGirl.create(:promotion_listserv)
-      end
+      }
 
       it 'checks existence of promotions' do
-        subject.promotion_ids = %w[8675309 234234]
+        subject.promotion_ids = ['8675309', '234234']
         subject.valid? # trigger validation
         expect(subject.errors.messages.first).to include(:promotion_ids)
 
@@ -187,8 +185,8 @@ describe Listserv, type: :model do
 
   describe 'mc_group_name=' do
     it 'to match mailchimp, it strips leading and trailing whitespace' do
-      subject.mc_group_name = ' test '
-      expect(subject.mc_group_name).to eql 'test'
+      subject.mc_group_name = " test "
+      expect(subject.mc_group_name).to eql "test"
     end
   end
 
@@ -205,7 +203,7 @@ describe Listserv, type: :model do
   describe '#next_digest_send_time' do
     context 'daily_digest_send_time in future' do
       before do
-        subject.digest_send_time = '06:00'
+        subject.digest_send_time = "06:00"
       end
 
       it 'returns today send time' do
@@ -219,7 +217,7 @@ describe Listserv, type: :model do
 
     context 'daily_digest_send_time in past' do
       before do
-        subject.digest_send_time = '06:00'
+        subject.digest_send_time = "06:00"
       end
 
       it 'returns tomorrow send time' do
@@ -233,13 +231,13 @@ describe Listserv, type: :model do
     end
 
     context 'when digest send day is present' do
-      let(:listserv_with_day) do
+      let(:listserv_with_day) {
         FactoryGirl.create :listserv,
-                           digest_send_time: '06:00',
+                           digest_send_time: "06:00",
                            digest_send_day: 2.days.from_now.strftime('%A'),
                            send_digest: true,
-                           digest_reply_to: 'test@example.com'
-      end
+                           digest_reply_to: "test@example.com"
+      }
 
       it 'returns the correct send time if day is upcoming in the week' do
         Timecop.freeze(Time.zone.now) do
@@ -265,17 +263,17 @@ describe Listserv, type: :model do
       let!(:contents) { FactoryGirl.create_list :content, 3 }
       let!(:listserv) { Listserv.new }
       before do
-        listserv.digest_query = 'SELECT * FROM contents'
+        listserv.digest_query = "SELECT * FROM contents"
       end
 
       subject { listserv.contents_from_custom_query }
 
-      it 'is equal to matching records' do
+      it "is equal to matching records" do
         expect(subject).to match_array contents
       end
 
       it 'maintains the same sort order' do
-        listserv.digest_query += ' ORDER BY id DESC'
+        listserv.digest_query += " ORDER BY id DESC"
         expect(subject.first).to eql contents.sort_by(&:id).reverse.first
       end
     end
@@ -285,7 +283,7 @@ describe Listserv, type: :model do
     context 'when group name is added' do
       let(:listserv) { FactoryGirl.create :listserv }
       before do
-        listserv.mc_list_id = '123'
+        listserv.mc_list_id = "123"
         listserv.mc_group_name = 'Test Digest'
       end
 
@@ -297,11 +295,11 @@ describe Listserv, type: :model do
     end
 
     context 'when group name is changed' do
-      let(:listserv) do
+      let(:listserv) {
         FactoryGirl.create :listserv,
                            mc_list_id: 321,
                            mc_group_name: 'old name'
-      end
+      }
       before do
         listserv.mc_group_name = 'Test Digest'
       end

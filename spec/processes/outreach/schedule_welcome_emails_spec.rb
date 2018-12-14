@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 RSpec.describe Outreach::ScheduleWelcomeEmails do
-  describe '::call' do
+  describe "::call" do
     before do
       @user = FactoryGirl.create :user,
                                  mc_segment_id: '43nj2k4'
@@ -28,16 +26,16 @@ RSpec.describe Outreach::ScheduleWelcomeEmails do
 
     subject { Outreach::ScheduleWelcomeEmails.call(@user) }
 
-    it 'schedules FIVE successive welcome campaigns' do
+    it "schedules FIVE successive welcome campaigns" do
       Outreach::ScheduleWelcomeEmails.new(@user).send(:ordered_steps).each do |step|
         expect(@campaigns_array).to receive(:create).with(
           'regular',
-          standard_opts.merge(
-            subject: Rails.configuration.subtext.email_outreach.send(step).subject,
-            template_id: Rails.configuration.subtext.email_outreach.send(step).template_id
-          ),
+          standard_opts.merge({
+                                subject: Rails.configuration.subtext.email_outreach.send(step).subject,
+                                template_id: Rails.configuration.subtext.email_outreach.send(step).template_id
+                              }),
           { sections: {} },
-          saved_segment_id: @user.mc_segment_id
+          { saved_segment_id: @user.mc_segment_id }
         )
       end
       expect(@campaigns_array).to receive(:schedule).exactly(5).times

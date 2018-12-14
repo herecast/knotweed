@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
   root false
   attributes :email_type, :status, :ip_signup, :timestamp_signup, :ip_opt,
@@ -46,7 +44,7 @@ class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
       FNAME: object.subscriber_name.to_s.split(/\s+/).first.to_s,
       LNAME: object.subscriber_name.to_s.split(/\s+/).last.to_s
     }.tap do |h|
-      if object.user&.location
+      if object.user && object.user.location
         h[:ZIP] = object.user.location.zip if object.user.location.zip?
         h[:CITY] = object.user.location.city
         h[:STATE] = object.user.location.state
@@ -56,7 +54,7 @@ class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
   end
 
   def interests
-    {
+    return {
       MailchimpService.find_or_create_digest(
         object.listserv.mc_list_id,
         object.listserv.mc_group_name
@@ -65,11 +63,14 @@ class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
   end
 
   def filter(keys)
-    keys -= %i[ip_signup ip_opt timestamp_opt] unless object.confirmed?
+    unless object.confirmed?
+      keys = keys - [:ip_signup, :ip_opt, :timestamp_opt]
+    end
 
-    unless object.user&.location &&
-           object.user.location.geocoded?
-      keys -= [:location]
+    unless (object.user &&
+        object.user.location &&
+        object.user.location.geocoded?)
+      keys = keys - [:location]
     end
 
     keys

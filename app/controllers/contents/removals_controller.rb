@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Contents::RemovalsController < ApplicationController
   def create
     @content = Content.find(params[:content_id])

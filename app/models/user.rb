@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: users
@@ -79,7 +77,7 @@ class User < ActiveRecord::Base
 
   validates_presence_of :location
   validates :public_id, uniqueness: true, allow_blank: true
-  validates :avatar, image_minimum_size: true
+  validates :avatar, :image_minimum_size => true
 
   after_commit :update_subscriptions_locations,
                :trigger_content_reindex_if_avatar_changed!,
@@ -87,19 +85,15 @@ class User < ActiveRecord::Base
 
   ransacker :social_login
 
-  def managed_organization_id
-    Organization.with_role(:manager, self).first.try(:id)
-  end
+  def managed_organization_id; Organization.with_role(:manager, self).first.try(:id); end
 
-  def is_organization_manager?
-    managed_organization_id.present?
-  end
+  def is_organization_manager?; managed_organization_id.present?; end
 
   default_scope { order('id ASC') }
 
   scope :sales_agents, -> { joins(:roles).where(roles: { name: 'sales agent' }) }
   scope :promoters, -> { joins(:roles).where(roles: { name: 'promoter' }) }
-  scope :with_roles, -> { where('(select count(user_id) from users_roles where user_id=users.id) > 0').includes(:roles) }
+  scope :with_roles, -> { where("(select count(user_id) from users_roles where user_id=users.id) > 0").includes(:roles) }
 
   def managed_organizations
     Organization.with_role(:manager, self)
@@ -145,31 +139,31 @@ class User < ActiveRecord::Base
   end
 
   def subscribed_listserv_ids
-    subscriptions.map(&:listserv_id)
+    self.subscriptions.map(&:listserv_id)
   end
 
   def active_listserv_subscription_ids
-    subscriptions.where(unsubscribed_at: nil).map(&:listserv_id)
+    self.subscriptions.where(unsubscribed_at: nil).map(&:listserv_id)
   end
 
   def update_subscriptions_locations
-    if previous_changes.key?(:location_id) && subscriptions.present?
-      subscriptions.each do |sub|
+    if previous_changes.key?(:location_id) && self.subscriptions.present?
+      self.subscriptions.each do |sub|
         BackgroundJob.perform_later('MailchimpService', 'update_subscription', sub) if sub.listserv.try(:mc_sync?)
       end
     end
   end
 
   def unconfirmed_subscriptions?
-    subscriptions.any? { |sub| sub.confirmed_at.nil? }
+    self.subscriptions.any? { |sub| sub.confirmed_at == nil }
   end
 
   def unconfirmed_subscriptions
-    subscriptions.where(confirmed_at: nil)
+    self.subscriptions.where(confirmed_at: nil)
   end
 
   def confirmed?
-    confirmed_at != nil
+    self.confirmed_at != nil
   end
 
   # http://www.rubydoc.info/github/plataformatec/devise/master/Devise/Models/Authenticatable
@@ -182,12 +176,12 @@ class User < ActiveRecord::Base
     archived? ? "The user account #{email} has been deactivated." : super
   end
 
-  def location_id=(lid)
-    if lid.nil?
-      super lid
-    else
+  def location_id=lid
+    unless lid.nil?
       loc = Location.find_by_slug_or_id(lid)
       super loc.id
+    else
+      super lid
     end
   end
 
@@ -217,7 +211,7 @@ class User < ActiveRecord::Base
   end
 
   def unique_roles
-    roles.map(&:pretty_name).uniq
+    roles.map { |r| r.pretty_name }.uniq
   end
 
   def name_with_email

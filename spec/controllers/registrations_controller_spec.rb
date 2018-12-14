@@ -1,13 +1,11 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 # we override Devise registrations controller to support UX2
 # and need to test the custom behavior.
-describe RegistrationsController, type: :controller do
+describe RegistrationsController, :type => :controller do
   let!(:default_location) { FactoryGirl.create :location, city: 'Hartford', state: 'VT' }
   before do
-    @request.env['devise.mapping'] = Devise.mappings[:user]
+    @request.env["devise.mapping"] = Devise.mappings[:user]
     user = FactoryGirl.build :user
     @user_attributes = {
       name: user.name,
@@ -37,17 +35,17 @@ describe RegistrationsController, type: :controller do
 
       it 'should not respond with authentication token' do
         subject
-        expect(JSON.parse(response.body)).to_not eq(
-          'token' => user.authentication_token,
-          'email' => user.email
-        )
+        expect(JSON.parse(response.body)).to_not eq({
+                                                      'token' => user.authentication_token,
+                                                      'email' => user.email
+                                                    })
       end
 
       it 'should respond with message text' do
         subject
-        expect(JSON.parse(response.body)).to eq(
-          'message' => "Thank you! For security purposes, a message with a confirmation link has been sent to your email address. Please check your email and click on the link to activate your account. If the message hasn't appeared in a few minutes, please check your spam folder."
-        )
+        expect(JSON.parse(response.body)).to eq({
+                                                  'message' => "Thank you! For security purposes, a message with a confirmation link has been sent to your email address. Please check your email and click on the link to activate your account. If the message hasn't appeared in a few minutes, please check your spam folder."
+                                                })
       end
 
       it 'should generate confirmation email' do
@@ -76,21 +74,21 @@ describe RegistrationsController, type: :controller do
         end
       end
 
-      context 'when instant_signup is true' do
+      context "when instant_signup is true" do
         before do
           FactoryGirl.create :location
         end
 
         subject { get :create, format: :json, params: { user: @user_attributes, instant_signup: true } }
 
-        it 'returns confirmed user' do
+        it "returns confirmed user" do
           subject
           response_json = JSON.parse(response.body)
           expect(response_json['email']).to eq @user_attributes[:email]
           expect(response_json['token']).to be_truthy
         end
 
-        it 'increases user count by 1' do
+        it "increases user count by 1" do
           expect { subject }.to change {
             User.count
           }.by 1
@@ -113,7 +111,7 @@ describe RegistrationsController, type: :controller do
 
       it 'should contain correct url' do
         if mail.body.encoded =~ %r{<a href=\"http://#{Figaro.env.default_consumer_host}/sign_up/confirm/([^"]+)">}
-          expect(User.confirm_by_token(Regexp.last_match(1)).email).to eq @user_attributes[:email]
+          expect(User.confirm_by_token($1).email).to eq @user_attributes[:email]
         else
           raise 'expected consumer app URI to match email body'
         end

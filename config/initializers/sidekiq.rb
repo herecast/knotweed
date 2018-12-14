@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'sidekiq'
 require 'sidekiq/web'
 require 'sidekiq-scheduler'
@@ -11,7 +9,7 @@ Sidekiq::Web.set :sessions, key: '_knotweed_sidekiq'
 if Rails.env.production?
   Sidekiq.configure_server do |config|
     config.on(:startup) do
-      Sidekiq.schedule = YAML.load_file(File.expand_path('../../config/job_schedule.yml', __dir__))
+      Sidekiq.schedule = YAML.load_file(File.expand_path("../../../config/job_schedule.yml", __FILE__))
       Sidekiq::Scheduler.reload_schedule!
     end
   end

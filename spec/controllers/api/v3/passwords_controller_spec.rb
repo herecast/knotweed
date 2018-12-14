@@ -1,11 +1,9 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
-describe Api::V3::PasswordsController, type: :controller do
+describe Api::V3::PasswordsController, :type => :controller do
   before do
     @user = FactoryGirl.create :user
-    @request.env['devise.mapping'] = Devise.mappings[:user]
+    @request.env["devise.mapping"] = Devise.mappings[:user]
   end
 
   describe 'POST /password_resets' do
@@ -34,7 +32,7 @@ describe Api::V3::PasswordsController, type: :controller do
     end
 
     context 'with non-existing email address' do
-      subject { post :create, params: { user: { email: 'non@existent.test' } }, format: :json }
+      subject { post :create, params: { user: { email: "non@existent.test" } }, format: :json }
 
       it 'responds with 422 status' do
         subject
@@ -57,10 +55,10 @@ describe Api::V3::PasswordsController, type: :controller do
     end
 
     context 'with valid token' do
-      subject! do
+      subject! {
         put :update, params: { user: { reset_password_token: @token, password: 'newPassword',
                                        password_confirmation: 'newPassword' } }
-      end
+      }
 
       it 'should update the user\'s password' do
         expect(@user.reload.encrypted_password).not_to eq(@orig_pass)
@@ -72,10 +70,10 @@ describe Api::V3::PasswordsController, type: :controller do
     end
 
     context 'with invalid token' do
-      subject! do
+      subject! {
         put :update, params: { user: { reset_password_token: 'fake token', password: 'Whatever',
                                        password_confirmation: 'Whatever' } }
-      end
+      }
 
       it 'should not update the user\'s password' do
         expect(@user.reload.encrypted_password).to eq(@orig_pass)

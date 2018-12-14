@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 class GeneratePayments
   def self.call(*args)
-    new(*args).call
+    self.new(*args).call
   end
 
   def initialize(opts = {})
@@ -22,11 +20,11 @@ class GeneratePayments
   def call
     PaymentRecipient.all.each do |pr|
       promotion_metrics = []
-      promotion_metrics += if pr.organization.present?
-                             promotion_metrics_for_publisher(pr)
-                           else
-                             promotion_metrics_for_user(pr)
-                           end
+      if pr.organization.present?
+        promotion_metrics += promotion_metrics_for_publisher(pr)
+      else
+        promotion_metrics += promotion_metrics_for_user(pr)
+      end
       # adds payment hashes to @payments instance variable
       convert_promotion_metrics_to_payments(promotion_metrics, pr.user)
     end
@@ -38,7 +36,7 @@ class GeneratePayments
 
   def promotion_metrics_for_user(pr)
     promotion_metrics = PromotionBannerMetric.for_payment_period(@period_start, @period_end)
-                                             .joins(content: %i[organization created_by])
+                                             .joins(content: [:organization, :created_by])
                                              .where('contents.created_by_id = ?', pr.user_id)
                                              .where('organizations.pay_for_content = true')
                                              .select('content_id, COUNT(DISTINCT promotion_banner_metrics.id) as impressions')

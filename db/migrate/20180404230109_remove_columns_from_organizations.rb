@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RemoveColumnsFromOrganizations < ActiveRecord::Migration
   def change
     remove_column :organizations, :can_publish_events, :boolean, default: false

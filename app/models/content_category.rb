@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: content_categories
@@ -15,8 +13,8 @@
 class ContentCategory < ActiveRecord::Base
   has_many :contents
 
-  belongs_to :parent, class_name: 'ContentCategory'
-  has_many :children, class_name: 'ContentCategory', foreign_key: 'parent_id'
+  belongs_to :parent, class_name: "ContentCategory"
+  has_many :children, class_name: "ContentCategory", foreign_key: "parent_id"
 
   validates_uniqueness_of :name
 

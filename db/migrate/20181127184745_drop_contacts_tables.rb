@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class DropContactsTables < ActiveRecord::Migration[5.1]
   def change
     drop_table :contacts do |t|

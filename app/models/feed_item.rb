@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class FeedItem
   attr_reader :model_type,
               :id,

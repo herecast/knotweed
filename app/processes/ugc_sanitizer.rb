@@ -1,40 +1,38 @@
-# frozen_string_literal: true
-
 class UgcSanitizer
   # NOTE: this needs to be kept in sync with the Ember app
   # if it changes over there.
   EMBER_SANITIZE_CONFIG = {
-    elements: %w[a p ul ol li b i u br span h1
-                 h2 h3 h4 h5 h6 img iframe div blockquote
-                 pre],
+    elements: ['a', 'p', 'ul', 'ol', 'li', 'b', 'i', 'u', 'br', 'span', 'h1',
+               'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'iframe', 'div', 'blockquote',
+               'pre'],
     attributes: {
-      'a' => %w[href title target],
-      'img' => %w[src style class title alt],
+      'a' => ['href', 'title', 'target'],
+      'img' => ['src', 'style', 'class', 'title', 'alt'],
       'div' => ['class'],
-      'span' => %w[class style],
-      'iframe' => %w[width height frameborder src class] # youtube
+      'span' => ['class', 'style'],
+      'iframe' => ['width', 'height', 'frameborder', 'src', 'class'] # youtube
     },
     protocols: {
-      'a' => { 'href' => %w[http https mailto] },
+      'a' => { 'href' => ['http', 'https', 'mailto'] },
       'img' => { 'src' => ['http', 'https', :relative] }
     },
     add_attributes: {
       'a' => { 'rel' => 'nofollow' }
     },
-    remove_contents: %w[style script],
+    remove_contents: ['style', 'script'],
     css: {
-      properties: %w[
-        float width padding
+      properties: [
+        'float', 'width', 'padding'
       ]
     }
-  }.freeze
+  }
 
   def initialize(content)
     @raw_content = content
   end
 
   def self.call(*args)
-    new(*args).call
+    self.new(*args).call
   end
 
   def call
@@ -45,7 +43,7 @@ class UgcSanitizer
 
   protected
 
-  def strip_empty_vertical_space(content)
+  def strip_empty_vertical_space content
     doc = Nokogiri::HTML.fragment(content)
 
     # Remove empty span tags

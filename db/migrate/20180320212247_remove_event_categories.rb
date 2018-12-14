@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RemoveEventCategories < ActiveRecord::Migration
   def up
     drop_table :event_categories

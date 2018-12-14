@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class UserMailer < ApplicationMailer
   add_template_helper EmailTemplateHelper
 
@@ -7,6 +5,6 @@ class UserMailer < ApplicationMailer
     @auth_token = sign_in_token.token
     @user = sign_in_token.user
 
-    mail to: @user.email, subject: 'Sign in to DailyUV.com'
+    mail to: @user.email, subject: "Sign in to DailyUV.com"
   end
 end

@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 class SelectPromotionBanners
   def self.call(*args)
-    new(*args).call
+    self.new(*args).call
   end
 
   def initialize(opts = {})
@@ -13,7 +11,9 @@ class SelectPromotionBanners
   end
 
   def call
-    return global_banner_override if global_banner_override
+    if global_banner_override
+      return global_banner_override
+    end
 
     promotion_banner_loop
     get_random_promotion unless @banners.length == (@opts[:limit] || 1) || @not_run_of_site
@@ -151,8 +151,8 @@ class SelectPromotionBanners
 
       return @banners
     else
-      return nil
+      return nil;
     end
-  rescue StandardError
+  rescue nil
   end
 end

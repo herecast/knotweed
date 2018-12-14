@@ -1,11 +1,9 @@
-# frozen_string_literal: true
-
 class UpdatePromotionBannerDigestMetrics
-  def self.call(*args)
+  def self.call *args
     new(*args).call
   end
 
-  def initialize(banner)
+  def initialize banner
     @banner = banner
   end
 

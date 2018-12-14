@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 RSpec.describe Api::V3::Users::PaymentsController, type: :controller do
@@ -8,7 +6,7 @@ RSpec.describe Api::V3::Users::PaymentsController, type: :controller do
     subject { get :index, params: { user_id: user.id } }
 
     context 'when no user logged in' do
-      it 'should return unauthorized status' do
+      it "should return unauthorized status" do
         subject
         expect(response).to have_http_status :unauthorized
       end

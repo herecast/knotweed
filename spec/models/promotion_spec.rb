@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: promotions
@@ -25,7 +23,7 @@
 
 require 'spec_helper'
 
-describe Promotion, type: :model do
+describe Promotion, :type => :model do
   before do
     @org = FactoryGirl.create(:organization)
     @content = FactoryGirl.create(:content)
@@ -39,7 +37,7 @@ describe Promotion, type: :model do
 
   let(:valid_params) do
     {
-      description: 'What a terrible promotion'
+      description: "What a terrible promotion"
     }
   end
 
@@ -51,13 +49,13 @@ describe Promotion, type: :model do
     p
   end
 
-  context 'with valid params' do
+  context "with valid params" do
     let (:params) { valid_params }
-    it 'should be valid' do
+    it "should be valid" do
       expect(subject).to be_valid
     end
 
-    it 'should create a new promotion' do
+    it "should create a new promotion" do
       expect { subject }.to change { Promotion.count }.by(1)
     end
   end

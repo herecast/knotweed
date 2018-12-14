@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: organizations
@@ -54,10 +52,10 @@
 #
 
 class Organization < ActiveRecord::Base
-  ORG_TYPE_OPTIONS = %w[Business Publisher Publication Blog].freeze
+  ORG_TYPE_OPTIONS = ["Business", "Publisher", 'Publication', 'Blog']
 
   LISTSERV_ORG_ID = 447
-  LISTSERV_ORG_NAME = 'Listserv'
+  LISTSERV_ORG_NAME = "Listserv"
 
   searchkick callbacks: :async,
              batch_size: 1000,
@@ -78,9 +76,9 @@ class Organization < ActiveRecord::Base
     }
   end
 
-  scope :search_import, lambda {
+  scope :search_import, -> {
     includes(
-      :contents_root_content_category_ids_only
+      :contents_root_content_category_ids_only,
     )
   }
 
@@ -91,8 +89,8 @@ class Organization < ActiveRecord::Base
            class_name: :Content
 
   resourcify
-  belongs_to :parent, class_name: 'Organization'
-  has_many :children, class_name: 'Organization', foreign_key: 'parent_id'
+  belongs_to :parent, class_name: "Organization"
+  has_many :children, class_name: "Organization", foreign_key: "parent_id"
 
   has_many :contents
   has_many :business_profiles, through: :contents
@@ -111,7 +109,7 @@ class Organization < ActiveRecord::Base
   has_many :locations, through: :organization_locations
   has_many :base_locations, -> { where('"organization_locations"."location_type" = \'base\'') },
            through: :organization_locations, source: :location
-  has_many :consumer_active_base_locations, lambda {
+  has_many :consumer_active_base_locations, -> {
     where('"organization_locations"."location_type" = \'base\' and consumer_active = true')
   },
            through: :organization_locations, source: :location
@@ -131,16 +129,16 @@ class Organization < ActiveRecord::Base
                 :remove_background_image!,
                 :remove_desktop_image!, raise: false
 
-  scope :alphabetical, -> { order('organizations.name ASC') }
-  default_scope { alphabetical }
+  scope :alphabetical, -> { order("organizations.name ASC") }
+  default_scope { self.alphabetical }
   scope :get_children, ->(parent_ids) { where(parent_id: parent_ids) }
-  scope :descendants_of, lambda { |org_ids|
-    children_ids = get_children(org_ids).pluck(:id)
+  scope :descendants_of, ->(org_ids) {
+    children_ids = self.get_children(org_ids).pluck(:id)
     if children_ids.present?
-      children_descendant_ids = descendants_of(children_ids).pluck(:id)
-      where(id: children_ids + children_descendant_ids)
+      children_descendant_ids = self.descendants_of(children_ids).pluck(:id)
+      self.where(id: children_ids + children_descendant_ids)
     else
-      none
+      self.none
     end
   }
   scope :news_publishers, -> { where(org_type: %w[Publisher Publication Blog]) }
@@ -150,19 +148,19 @@ class Organization < ActiveRecord::Base
 
   validates_uniqueness_of :name
   validates_presence_of :name
-  validates :logo, image_minimum_size: true
+  validates :logo, :image_minimum_size => true
   validate :twitter_handle_format
 
   def self.parent_pubs
-    ids = where('parent_id IS NOT NULL').select(:parent_id, :name).distinct.map(&:parent_id)
-    where(id: ids)
+    ids = self.where("parent_id IS NOT NULL").select(:parent_id, :name).distinct.map { |p| p.parent_id }
+    self.where(id: ids)
   end
 
   def promotions
     Promotion.where('content_id IN (select id from contents where contents.organization_id = ?)', id)
   end
 
-  def base_locations=(locs)
+  def base_locations=locs
     locs.each do |l|
       OrganizationLocation.find_or_initialize_by(
         organization: self,
@@ -175,7 +173,7 @@ class Organization < ActiveRecord::Base
   #
   # @return [Array<Organization>] the descendants of the organization
   def get_all_children
-    self.class.descendants_of(id)
+    self.class.descendants_of(self.id)
   end
 
   def remove_logo=(val)
@@ -204,7 +202,7 @@ class Organization < ActiveRecord::Base
   def twitter_handle_format
     twitter_handle_regex = /^@([A-Za-z0-9_]+)$/
     unless twitter_handle.blank? || !!twitter_handle_regex.match(twitter_handle)
-      errors.add(:twitter_handle, 'Twitter handle must start with @. The handle may have letters, numbers and underscores, but no spaces.')
+      errors.add(:twitter_handle, "Twitter handle must start with @. The handle may have letters, numbers and underscores, but no spaces.")
     end
   end
 end

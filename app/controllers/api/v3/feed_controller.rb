@@ -1,11 +1,9 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class FeedController < ApiController
       def index
         expires_in 1.minutes, public: true unless is_my_stuff_request?
-        render(json: { feed_items: [] }, status: :ok) && return if is_my_stuff_request? && current_user.nil?
+        render json: { feed_items: [] }, status: :ok and return if is_my_stuff_request? && current_user.nil?
 
         @result_object = GatherFeedRecords.call(
           params: params,
@@ -26,7 +24,7 @@ module Api
       protected
 
       def is_my_stuff_request?
-        %w[me my_stuff mystuff].include?(params[:radius].to_s.downcase)
+        ['me', 'my_stuff', 'mystuff'].include?(params[:radius].to_s.downcase)
       end
 
       def total_pages

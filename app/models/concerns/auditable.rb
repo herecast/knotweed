@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # app/models/concerns/auditable.rb
 #
 # Implementing this as a 'concern' in view of us upgrading to Rails 4 at some point.
@@ -24,7 +22,9 @@ module Auditable
 
   def set_auditables
     if User.current.present?
-      self.created_by = (created_by || User.current) unless persisted? # only set created_by if the object is new
+      unless persisted? # only set created_by if the object is new
+        self.created_by = self.created_by || User.current
+      end
       # always set updated_by, even if we're creating
       self.updated_by = User.current
     end

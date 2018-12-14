@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: comments
@@ -13,7 +11,7 @@ class Comment < ActiveRecord::Base
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
 
-  has_one :source, through: :content, class_name: 'Organization', foreign_key: 'organization_id'
+  has_one :source, through: :content, class_name: "Organization", foreign_key: "organization_id"
   has_one :content_category, through: :content
   has_many :images, through: :content
 

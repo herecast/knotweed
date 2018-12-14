@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: event_instances
@@ -28,7 +26,7 @@ class EventInstance < ActiveRecord::Base
   searchkick callbacks: :async,
              batch_size: 100,
              index_prefix: Figaro.env.searchkick_index_prefix,
-             searchable: %i[content title subtitle event_category venue_city venue_name]
+             searchable: [:content, :title, :subtitle, :event_category, :venue_city, :venue_name]
 
   belongs_to :event
   delegate :created_by, :organization, :organization_id,
@@ -51,21 +49,23 @@ class EventInstance < ActiveRecord::Base
   validates_presence_of :start_date
   validate :end_date_after_start_date
 
-  scope :search_import, lambda {
+  scope :search_import, -> {
     includes(
       :other_instances,
-      event: [
-        {
-          content: [
-            :created_by,
-            :organization,
-            :location,
-            { comments: :created_by },
-            :images
-          ]
-        },
-        :venue
-      ]
+      {
+        event: [
+          {
+            content: [
+              :created_by,
+              :organization,
+              :location,
+              { comments: :created_by },
+              :images
+            ]
+          },
+          :venue
+        ]
+      }
     ).joins(event: :content)\
       .where('contents.root_content_category_id > 0')
   }
@@ -79,7 +79,7 @@ class EventInstance < ActiveRecord::Base
   def process_end_time
     if end_date.present?
       date_format = '%Y-%m-%d'
-      time_format = 'T%H:%M:%S%z'
+      time_format = "T%H:%M:%S%z"
       self.end_date = DateTime.strptime(
         start_date.strftime(date_format) + end_date.strftime(time_format),
         "#{date_format}#{time_format}"
@@ -108,8 +108,8 @@ class EventInstance < ActiveRecord::Base
   # validation method that confirms end_date is either nil
   # or greater than start_date.
   def end_date_after_start_date
-    if end_date.present? && (end_date < start_date)
-      errors.add(:end_time, 'End date cannot be before start date.')
+    if end_date.present? and end_date < start_date
+      errors.add(:end_time, "End date cannot be before start date.")
     end
   end
 
@@ -121,7 +121,7 @@ class EventInstance < ActiveRecord::Base
   end
 
   def self.active_dates
-    group('DATE(start_date)').count
+    self.group('DATE(start_date)').count
   end
 
   private
@@ -132,9 +132,9 @@ class EventInstance < ActiveRecord::Base
     ev = Icalendar::Event.new
     ev.dtstart = start_date
     ev.dtend = end_date
-    ev.summary = event.title
+    ev.summary = self.event.title
     ev.description = strip_tags(description).gsub('&nbsp;', '')
-    ev.location = event.try(:venue).try(:name)
+    ev.location = self.event.try(:venue).try(:name)
     ev.url = url_for_consumer_app("/events/#{id}")
     ev
   end

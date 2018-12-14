@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: events
@@ -44,19 +42,21 @@ FactoryGirl.define do
       created_by nil
     end
 
-    content do
+    content {
       FactoryGirl.build(:content, :event, {
-        channel: nil
+        channel: nil,
       }.tap do |attrs|
-        attrs[:created_by] = created_by if created_by
+        if created_by
+          attrs[:created_by] = created_by
+        end
       end)
-    end
+    }
 
     featured false
     association :venue, factory: :business_location
-    contact_phone '888-888-8888'
-    contact_email 'hello@fake.com'
-    cost '$5'
+    contact_phone "888-888-8888"
+    contact_email "hello@fake.com"
+    cost "$5"
     cost_type :free
 
     after(:build) do |e, evaluator|

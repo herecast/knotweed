@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class CommentAlertMailer < ApplicationMailer
   add_template_helper ContentsHelper
   add_template_helper EmailTemplateHelper
@@ -12,14 +10,14 @@ class CommentAlertMailer < ApplicationMailer
     @comment_owner = @comment.created_by
     @comment_hidden = comment_hidden
     mail(to: @parent_content.created_by.email,
-         from: 'DailyUV <notifications@dailyuv.com>',
+         from: "DailyUV <notifications@dailyuv.com>",
          subject: comment_hidden ? removed_subject : created_subject)
   end
 
   private
 
   def removed_subject
-    'A comment has been removed from your post on DailyUV'
+    "A comment has been removed from your post on DailyUV"
   end
 
   def created_subject

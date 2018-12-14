@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
-require 'rails_helper'
+require "rails_helper"
 include EventsHelper
 
-shared_examples 'non-ugc event without schedules' do
+shared_examples "non-ugc event without schedules" do
   it 'email should contain each event_instance dates in the email' do
     test_event.event_instances.each do |event_instance|
       rp_email.body.parts.each do |part|
@@ -13,15 +11,15 @@ shared_examples 'non-ugc event without schedules' do
   end
 end
 
-describe ReversePublisher, type: :mailer do
+describe ReversePublisher, :type => :mailer do
   describe 'mail_content_to_listservs' do
-    let(:content) do
+    let(:content) {
       FactoryGirl.create :content, authoremail: 'test@test.com', short_link: 'http://bit.ly/12345',
                                    content_category: FactoryGirl.create(:content_category, name: 'news')
-    end
-    let(:listservs) do
+    }
+    let(:listservs) {
       FactoryGirl.create_list :vc_listserv, 2
-    end
+    }
 
     subject { ReversePublisher.mail_content_to_listservs(content, listservs) }
 
@@ -30,7 +28,7 @@ describe ReversePublisher, type: :mailer do
     end
 
     it 'should include the ux2 content path for @content' do
-      expect(subject.body.encoded).to include('http://bit.ly/12345')
+      expect(subject.body.encoded).to include("http://bit.ly/12345")
     end
 
     describe 'Event', inline_jobs: true do
@@ -44,7 +42,7 @@ describe ReversePublisher, type: :mailer do
         content.update_attribute(:short_link, 'http://bit.ly/12345')
       end
 
-      it_behaves_like 'non-ugc event without schedules' do
+      it_behaves_like "non-ugc event without schedules" do
         let(:test_event) { non_ugc_event }
         let(:rp_email) { subject }
       end

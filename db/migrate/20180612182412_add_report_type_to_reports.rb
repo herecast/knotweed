@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddReportTypeToReports < ActiveRecord::Migration
   def change
     add_column :reports, :report_type, :string

@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 module Outreach
   class ScheduleWelcomeEmails
     def self.call(*args)
-      new(*args).call
+      self.new(*args).call
     end
 
     def initialize(user)
@@ -22,12 +20,12 @@ module Outreach
     private
 
     def ordered_steps
-      %w[
-        welcome
-        subscribe_to_blogs
-        bookmarking
-        subscribe_to_digests
-        finding_comments
+      [
+        'welcome',
+        'subscribe_to_blogs',
+        'bookmarking',
+        'subscribe_to_digests',
+        'finding_comments'
       ]
     end
 

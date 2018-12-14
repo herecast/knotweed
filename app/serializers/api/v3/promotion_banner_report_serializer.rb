@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class PromotionBannerReportSerializer < ActiveModel::Serializer
@@ -10,61 +8,33 @@ module Api
                  :served, :cost, :daily_cost, :daily_max, :clicks, :ctr, :client, :banner,
                  :paid, :sales_agent, :daily_reports
 
-      def type
-        object.promotion_type
-      end
+      def type; object.promotion_type; end
 
-      def promo_id
-        object.promotion.id
-      end
+      def promo_id; object.promotion.id; end
 
-      def banner_id
-        object.id
-      end
+      def banner_id; object.id; end
 
-      def campaign_start
-        object.campaign_start.try(:strftime, '%D')
-      end
+      def campaign_start; object.campaign_start.try(:strftime, "%D"); end
 
-      def campaign_end
-        object.campaign_end.try(:strftime, '%D')
-      end
+      def campaign_end; object.campaign_end.try(:strftime, "%D"); end
 
-      def served
-        object.impression_count
-      end
+      def served; object.impression_count; end
 
-      def cost
-        object.cost_per_impression
-      end
+      def cost; object.cost_per_impression; end
 
-      def daily_cost
-        object.cost_per_day
-      end
+      def daily_cost; object.cost_per_day; end
 
-      def daily_max
-        object.daily_max_impressions
-      end
+      def daily_max; object.daily_max_impressions; end
 
-      def clicks
-        object.click_count
-      end
+      def clicks; object.click_count; end
 
-      def ctr
-        format('%.2f', (object.click_count * 100.0 / object.impression_count))
-      end
+      def ctr; "%.2f" % (object.click_count * 100.0 / object.impression_count); end
 
-      def client
-        object.promotion.try(:organization).try(:name)
-      end
+      def client; object.promotion.try(:organization).try(:name); end
 
-      def banner
-        object.promotion.try(:content).try(:title)
-      end
+      def banner; object.promotion.try(:content).try(:title); end
 
-      def paid
-        object.promotion.try(:paid)
-      end
+      def paid; object.promotion.try(:paid); end
 
       def daily_reports
         # we need to have a date entry for every date in the range, so generating
@@ -76,16 +46,16 @@ module Api
         # guaranteed
         output_hash = {}
         date = context[:end_date]
-        while date >= context[:start_date]
-          output_hash[date.strftime('%D')] = 0
+        while (date >= context[:start_date])
+          output_hash[date.strftime("%D")] = 0
           date -= 1.day
         end
         object.promotion_banner_reports.each do |pbr|
           # this might seem redundant -- iterating through pbrs we're not using --
           # but because the original query "includes" promotion_banner_reports, this actually
           # saves us from an n+1 query
-          if output_hash.key? pbr.report_date.strftime('%D')
-            output_hash[pbr.report_date.strftime('%D')] = pbr.impression_count
+          if output_hash.has_key? pbr.report_date.strftime("%D")
+            output_hash[pbr.report_date.strftime("%D")] = pbr.impression_count
           end
         end
         output_hash

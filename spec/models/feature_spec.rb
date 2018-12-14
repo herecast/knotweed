@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: features
@@ -46,14 +44,14 @@ describe Feature, type: :model do
 
     context 'with invalid json options' do
       before do
-        subject.name = 'My Feature'
+        subject.name = "My Feature"
         subject.options = '{"invalid": "json}'
       end
 
       it 'adds the correct error message' do
         subject.valid?
         expect(subject.errors.count).to eq 1
-        expect(subject.errors.messages[:options].first).to eq 'Invalid JSON'
+        expect(subject.errors.messages[:options].first).to eq "Invalid JSON"
       end
     end
   end

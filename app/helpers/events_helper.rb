@@ -1,20 +1,20 @@
-# frozen_string_literal: true
-
 module EventsHelper
   def  cost_label(event_instance)
     if event_instance.cost.present? && event_instance.cost_type.present?
       "#{event_instance.cost_type} - #{event_instance.cost}"
     elsif event_instance.cost.present? && !event_instance.cost_type.present?
-      event_instance.cost.to_s
+      "#{event_instance.cost}"
     elsif !event_instance.cost.present? && event_instance.cost_type.present?
-      event_instance.cost_type.to_s
+      "#{event_instance.cost_type}"
+    else
+      nil
     end
   end
 
   def event_instance_display(event_instance)
-    time_range = event_instance.start_date.strftime('%-l:%M %P')
+    time_range = event_instance.start_date.strftime("%-l:%M %P")
     if event_instance.end_date.present?
-      time_range += ' - ' + event_instance.end_date.strftime('%-l:%M %P')
+      time_range += " - " + event_instance.end_date.strftime("%-l:%M %P")
     end
 
     subtitle = ''
@@ -23,7 +23,7 @@ module EventsHelper
       subtitle = ' - ' + event_instance.subtitle
     end
 
-    instance_string = event_instance.start_date.strftime('%b %-d, %Y') + '  ' + time_range + subtitle
+    instance_string = event_instance.start_date.strftime("%b %-d, %Y") + '  ' + time_range + subtitle
     instance_string
   end
 
@@ -33,12 +33,12 @@ module EventsHelper
       subtitle = ' - ' + schedule.subtitle_override
     end
     schedule = schedule.schedule
-    return '', '' unless schedule.next_occurrence.present?
+    return "", "" unless schedule.next_occurrence.present?
 
-    event_date = schedule.next_occurrence.strftime('%b %-d, %Y')
-    time_range = schedule.start_time.strftime('%-l:%M %P')
-    time_range += ' - ' + schedule.end_time.strftime('%-l:%M %P') if schedule.end_time.present?
-    [event_date.to_s + '  ' + time_range + subtitle, 'Repeats ' + schedule.to_s]
+    event_date = schedule.next_occurrence.strftime("%b %-d, %Y")
+    time_range = schedule.start_time.strftime("%-l:%M %P")
+    time_range += " - " + schedule.end_time.strftime("%-l:%M %P") if schedule.end_time.present?
+    return event_date.to_s + '  ' + time_range + subtitle, 'Repeats ' + schedule.to_s
   end
 
   # converts a timestamp to a human readable string
@@ -46,7 +46,7 @@ module EventsHelper
   # @param [timestamp]
   # @return [String] of form Monday, July 1 at 3:00 pm
   def full_date_string(date)
-    date.strftime('%A, %B %-d at %-l:%M %P')
+    date.strftime("%A, %B %-d at %-l:%M %P")
   end
 
   # helper method to provide values for search fields
@@ -58,6 +58,8 @@ module EventsHelper
       session[:events_search][key]
     elsif params[:q].present?
       params[:q][key]
+    else
+      nil
     end
   end
 

@@ -1,16 +1,14 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
-  describe '::call' do
+  describe "::call" do
     before do
       @user = FactoryGirl.create :user
       @mc_id = 'n4k23jn3k2'
       @error_count = { 'error_count' => 0 }
       @lists_array = double(
         subscribe: true,
-        static_segment_add: { 'id' => @mc_id },
+        static_segment_add: { "id" => @mc_id },
         static_segment_members_add: @error_count
       )
       mailchimp = double(lists: @lists_array)
@@ -47,10 +45,10 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
       subject
     end
 
-    context 'when schedule_welcome_emails: true' do
+    context "when schedule_welcome_emails: true" do
       subject { Outreach::CreateMailchimpSegmentForNewUser.call(@user, schedule_welcome_emails: true) }
 
-      it 'calls to schedule welcome emails' do
+      it "calls to schedule welcome emails" do
         expect(Outreach::ScheduleWelcomeEmails).to receive(:call).with(
           @user
         )
@@ -58,7 +56,7 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
       end
     end
 
-    context 'when schedule_blogger_emails: true' do
+    context "when schedule_blogger_emails: true" do
       let(:organization) { FactoryGirl.create(:organization) }
 
       subject do
@@ -67,7 +65,7 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
                                                         organization: organization)
       end
 
-      it 'calls to schedule blogger emails' do
+      it "calls to schedule blogger emails" do
         expect(Outreach::ScheduleBloggerEmails).to receive(:call).with(
           action: 'blogger_welcome_and_reminder',
           user: @user,
@@ -77,12 +75,12 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
       end
     end
 
-    context 'when user already has mc_segment_id' do
+    context "when user already has mc_segment_id" do
       before do
         @user.update_attribute(:mc_segment_id, 'njknnj')
       end
 
-      it 'does not create Mailchimp segment for user' do
+      it "does not create Mailchimp segment for user" do
         expect(MailchimpService::NewUser).not_to receive(:subscribe_to_list)
         expect(MailchimpService::NewUser).not_to receive(:create_segment)
         expect(MailchimpService::NewUser).not_to receive(:add_to_segment)

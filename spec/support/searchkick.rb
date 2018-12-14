@@ -1,9 +1,9 @@
-# frozen_string_literal: true
-
-INDEXED_MODELS = [Content, BusinessLocation, Organization, BusinessProfile, EventInstance, Location].freeze
+INDEXED_MODELS = [Content, BusinessLocation, Organization, BusinessProfile, EventInstance, Location]
 
 def build_indices
-  INDEXED_MODELS.each(&:reindex)
+  INDEXED_MODELS.each do |model|
+    model.reindex
+  end
 end
 
 INDEXED_MODELS.each do |model|
@@ -17,7 +17,7 @@ INDEXED_MODELS.each do |model|
     # everything is async in the app, it's not here, so we just need to add the refresh call
     # after this method happens (since it's actually synchronous).
     def reindex_async
-      self.class.searchkick_index.reindex_record(reload)
+      self.class.searchkick_index.reindex_record(self.reload)
       self.class.searchkick_index.refresh
     end
   end

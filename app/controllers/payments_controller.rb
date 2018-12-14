@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class PaymentsController < ApplicationController
   def index
     authorize! :manage, Payment
@@ -14,9 +12,9 @@ class PaymentsController < ApplicationController
     period_start = Date.parse(params[:period_start])
     period_end = Date.parse(params[:period_end])
     if Payment.unpaid.where(period_start: period_start, period_end: period_end).destroy_all
-      flash[:notice] = "Canceled payments for #{period_start.strftime('%D')} - #{period_end.strftime('%D')}"
+      flash[:notice] = "Canceled payments for #{period_start.strftime("%D")} - #{period_end.strftime("%D")}"
     else
-      flash[:error] = 'There was an issue canceling payments.'
+      flash[:error] = "There was an issue canceling payments."
     end
     redirect_to payments_path
   end
@@ -45,19 +43,19 @@ class PaymentsController < ApplicationController
     #   }
     # }
     payments.each do |p|
-      period = "#{p.period_start.strftime('%m/%d/%Y')} - #{p.period_end.strftime('%m/%d/%Y')}"
+      period = "#{p.period_start.strftime("%m/%d/%Y")} - #{p.period_end.strftime("%m/%d/%Y")}"
       payment_data[period] ||= { total_payments: 0, users: {} }
       payment_data[period][:total_payments] += p.total_payment
 
-      next unless p.paid_to.present?
-
-      payment_data[period][:users][p.paid_to.fullname] ||= { total_payment: 0, total_impressions: 0, organizations: {}, id: p.paid_to_id }
-      next unless p.content.organization.present?
-
-      payment_data[period][:users][p.paid_to.fullname][:organizations][p.content.organization.name] ||= { id: p.content.organization.id, payments: [] }
-      payment_data[period][:users][p.paid_to.fullname][:organizations][p.content.organization.name][:payments] << p
-      payment_data[period][:users][p.paid_to.fullname][:total_payment] += p.total_payment
-      payment_data[period][:users][p.paid_to.fullname][:total_impressions] += p.paid_impressions
+      if p.paid_to.present?
+        payment_data[period][:users][p.paid_to.fullname] ||= { total_payment: 0, total_impressions: 0, organizations: {}, id: p.paid_to_id }
+        if p.content.organization.present?
+          payment_data[period][:users][p.paid_to.fullname][:organizations][p.content.organization.name] ||= { id: p.content.organization.id, payments: [] }
+          payment_data[period][:users][p.paid_to.fullname][:organizations][p.content.organization.name][:payments] << p
+          payment_data[period][:users][p.paid_to.fullname][:total_payment] += p.total_payment
+          payment_data[period][:users][p.paid_to.fullname][:total_impressions] += p.paid_impressions
+        end
+      end
     end
 
     payment_data.keys.each do |period|

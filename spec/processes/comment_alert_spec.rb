@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe CommentAlert do
@@ -26,7 +24,7 @@ RSpec.describe CommentAlert do
 
   context 'when content is a comment' do
     it 'sends an email alert to the parent content creator' do
-      mail = double
+      mail = double()
       expect(mail).to receive(:deliver_later)
       expect(CommentAlertMailer).to receive(:alert_parent_content_owner).with(comment1, parent_content).and_return(mail)
       CommentAlert.call(comment1)

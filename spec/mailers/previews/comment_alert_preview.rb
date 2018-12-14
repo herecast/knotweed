@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class CommentAlertPreview < ActionMailer::Preview
   def alert_parent_content_owner
     comments = Comment.last(2)

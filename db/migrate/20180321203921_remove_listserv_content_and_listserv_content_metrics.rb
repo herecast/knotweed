@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RemoveListservContentAndListservContentMetrics < ActiveRecord::Migration
   def up
     drop_table :listserv_contents

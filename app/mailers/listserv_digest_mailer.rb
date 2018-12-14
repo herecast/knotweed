@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ListservDigestMailer < ActionMailer::Base
   require 'htmlcompressor'
 
@@ -15,15 +13,15 @@ class ListservDigestMailer < ActionMailer::Base
   def digest(digest_record)
     @digest = digest_record
     @listserv = digest_record.listserv
-    compressor = HtmlCompressor::Compressor.new(options = { preserve_line_breaks: true })
+    compressor = HtmlCompressor::Compressor.new(options = { :preserve_line_breaks => true })
 
-    template = @digest.template? ? @digest.template : 'outlook_news_template'
+    template = @digest.template? ? @digest.template : "outlook_news_template"
 
     # note: we used to have a conditional on skip_premailer based on template,
     # but having read the docs in more detail for the premailer-rails gem,
     # it's clear that was skipping premailer regardless, because the gem just looks for
     # the presence of the header. Values of true or false are treated equivalently.
-    mail_instance = mail(subject: @digest.subject, template_name: template.to_s, skip_premailer: true)
+    mail_instance = mail(subject: @digest.subject, template_name: "#{template}", skip_premailer: true)
     mail_instance.delivery_handler = self
     string_body = mail_instance.body.to_s
     mail_instance.body = compressor.compress(string_body)

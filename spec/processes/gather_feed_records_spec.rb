@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe GatherFeedRecords, elasticsearch: true do
-  describe '::call' do
+  describe "::call" do
     before do
       @content = FactoryGirl.create :content, :news
     end
@@ -19,16 +17,16 @@ RSpec.describe GatherFeedRecords, elasticsearch: true do
       )
     end
 
-    it 'returns restructured payload' do
+    it "returns restructured payload" do
       response = subject
-      expect(response[:records][0].to_json).to include_json(
-        model_type: 'content',
-        id: @content.id
-      )
+      expect(response[:records][0].to_json).to include_json({
+                                                              model_type: "content",
+                                                              id: @content.id
+                                                            })
       expect(response[:records][0].content.id).to eq @content.id
     end
 
-    it 'alerts product team of new content' do
+    it "alerts product team of new content" do
       allow(BackgroundJob).to receive(:perform_later).with('ManageContentOnFirstServe').and_return true
       expect(BackgroundJob).to receive(:perform_later).with('ManageContentOnFirstServe', 'call', any_args)
       subject

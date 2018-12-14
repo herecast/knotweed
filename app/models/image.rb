@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: images
@@ -35,11 +33,11 @@ class Image < ActiveRecord::Base
                 :remove_image!, raise: false
 
   # validates_presence_of :image
-  validates :image, image_minimum_size: true
+  validates :image, :image_minimum_size => true
 
   after_save :ensure_only_one_primary
 
-  scope :in_rendering_order, -> { order("#{table_name}.position ASC, #{table_name}.created_at ASC") }
+  scope :in_rendering_order, -> { order("#{self.table_name}.position ASC, #{self.table_name}.created_at ASC") }
 
   def url
     image.try(:url)
@@ -55,7 +53,9 @@ class Image < ActiveRecord::Base
   def ensure_only_one_primary
     if imageable.present?
       other_images = imageable.images.where('id != ?', id)
-      other_images.update_all primary: false if primary
+      if primary
+        other_images.update_all primary: false
+      end
     end
   end
 

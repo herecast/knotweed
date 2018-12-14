@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RemoveReportRelatedTables < ActiveRecord::Migration
   def up
     drop_table :report_job_recipients
@@ -11,6 +9,6 @@ class RemoveReportRelatedTables < ActiveRecord::Migration
   end
 
   def down
-    raise ActiveRecord::IrreversibleMigration, 'Cannot restore the report related tables that have been dropped'
+    raise ActiveRecord::IrreversibleMigration, "Cannot restore the report related tables that have been dropped"
   end
 end

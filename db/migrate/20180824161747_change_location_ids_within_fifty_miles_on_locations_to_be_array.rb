@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ChangeLocationIdsWithinFiftyMilesOnLocationsToBeArray < ActiveRecord::Migration
   def up
     remove_column :locations, :location_ids_within_fifty_miles

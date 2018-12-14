@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: business_locations
@@ -34,32 +32,32 @@
 
 require 'spec_helper'
 
-describe BusinessLocation, type: :model do
+describe BusinessLocation, :type => :model do
   include_examples 'Auditable', BusinessLocation
 
   before do
     @business_location = FactoryGirl.create :business_location
   end
 
-  describe 'validation' do
-    context 'when state is present' do
-      it 'must be two-letters long' do
+  describe "validation" do
+    context "when state is present" do
+      it "must be two-letters long" do
         business_location = FactoryGirl.build :business_location, state: '123'
         expect(business_location).not_to be_valid
       end
     end
   end
 
-  describe '#select_option_label' do
-    it 'returns formatted address' do
+  describe "#select_option_label" do
+    it "returns formatted address" do
       label = @business_location.select_option_label
       expect(label).to include(@business_location.name, @business_location.address, @business_location.address, @business_location.city, @business_location.state, @business_location.zip)
     end
   end
 
-  describe '#geocoding_address' do
-    context 'when the business has a name' do
-      it 'returns address with name' do
+  describe "#geocoding_address" do
+    context "when the business has a name" do
+      it "returns address with name" do
         @business_location.update_attribute(:locate_include_name, true)
         expect(@business_location.geocoding_address).to include(@business_location.name)
       end
@@ -125,12 +123,12 @@ describe BusinessLocation, type: :model do
         end
 
         describe 'nearest location has parent which is not a region' do
-          let!(:parent) do
+          let!(:parent) {
             FactoryGirl.create :location,
                                city: 'parent town',
                                is_region: false,
                                consumer_active: true
-          end
+          }
 
           before do
             nearest.parents << parent

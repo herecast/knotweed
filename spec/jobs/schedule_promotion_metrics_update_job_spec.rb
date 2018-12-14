@@ -1,26 +1,24 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe SchedulePromotionMetricsUpdateJob, type: :job do
   let!(:recent_promotion_banner) { FactoryGirl.create :promotion_banner, campaign_start: 5.days.ago }
   let!(:older_promotion_banner) { FactoryGirl.create :promotion_banner, campaign_start: 3.weeks.ago }
 
-  let!(:old_digest) do
+  let!(:old_digest) {
     FactoryGirl.create :listserv_digest,
                        mc_campaign_id: 7897,
                        promotion_ids: [older_promotion_banner.promotion.id]
-  end
-  let!(:recent_digest) do
+  }
+  let!(:recent_digest) {
     FactoryGirl.create :listserv_digest,
                        mc_campaign_id: 123,
                        promotion_ids: [recent_promotion_banner.promotion.id]
-  end
-  let!(:recent_digest2) do
+  }
+  let!(:recent_digest2) {
     FactoryGirl.create :listserv_digest,
                        mc_campaign_id: 6489,
                        promotion_ids: [recent_promotion_banner.promotion.id]
-  end
+  }
 
   it 'enqueues UpdateDigestMetrics for promotion_banners active in past 2 weeks' do
     ActiveJob::Base.queue_adapter = :test

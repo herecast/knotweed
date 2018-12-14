@@ -1,10 +1,8 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class BusinessLocationsController < ApiController
       def index
-        expires_in 1.minutes, public: true
+        expires_in 1.minutes, :public => true
         query = params[:query].blank? ? '*' : params[:query]
         opts = {}
         opts[:order] = { _score: :desc, name: :desc }
@@ -36,7 +34,7 @@ module Api
           response_data = response_data.slice(0..params[:max_results] - 1) if params[:max_results].present?
 
           # stick in the matched city at the top of the returned data
-          response_data.prepend cs.first.to_s if cs.present?
+          response_data.prepend "#{cs.first}" if cs.present?
           render json: {
             venue_locations: response_data
           }

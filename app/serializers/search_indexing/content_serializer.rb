@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module SearchIndexing
   class ContentSerializer < ::Api::V3::ContentSerializer
     attributes :channel_id,
@@ -36,7 +34,7 @@ module SearchIndexing
     end
 
     def in_accepted_category
-      !((object.content_category.try(:name) == 'event') && (object.channel_type != 'Event'))
+      !(object.content_category.try(:name) == 'event' and object.channel_type != 'Event')
     end
 
     def created_by_id
@@ -52,7 +50,7 @@ module SearchIndexing
     end
 
     # do not include split content in index
-    def filter(keys)
+    def filter keys
       keys - [:split_content]
     end
 

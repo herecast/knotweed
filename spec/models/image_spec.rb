@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: images
@@ -26,15 +24,15 @@
 
 require 'spec_helper'
 
-describe Image, type: :model do
+describe Image, :type => :model do
   describe 'validation' do
     describe '#image_minimum_size' do
-      context 'when image is too small' do
+      context "when image is too small" do
         before do
           @image = FactoryGirl.build :image, image: File.open(File.join(Rails.root, '/spec/fixtures/small.jpg'))
         end
 
-        it 'returns validation error' do
+        it "returns validation error" do
           expect(@image).to be_invalid
         end
       end
@@ -44,7 +42,7 @@ describe Image, type: :model do
           @image = FactoryGirl.build :image, image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
         end
 
-        it 'returns no error' do
+        it "returns no error" do
           expect(@image).to be_valid
         end
       end

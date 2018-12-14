@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Confirms user acccount and any unconfirmed digest subscriptions for the user
 class ConfirmRegistration
   def self.call(opts = {})

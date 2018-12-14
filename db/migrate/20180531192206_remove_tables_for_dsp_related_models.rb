@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RemoveTablesForDspRelatedModels < ActiveRecord::Migration
   def up
     drop_table :parsers
@@ -25,6 +23,6 @@ class RemoveTablesForDspRelatedModels < ActiveRecord::Migration
   end
 
   def down
-    raise ActiveRecord::IrreversibleMigration, 'Cannot restore the DSP related tables that have been dropped'
+    raise ActiveRecord::IrreversibleMigration, "Cannot restore the DSP related tables that have been dropped"
   end
 end

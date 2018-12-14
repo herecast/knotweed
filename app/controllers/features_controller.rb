@@ -1,18 +1,18 @@
-# frozen_string_literal: true
-
 class FeaturesController < ApplicationController
-  before_action :set_feature, only: %i[show edit update]
+  before_action :set_feature, only: [:show, :edit, :update]
   def index
     @features = Feature.all
   end
 
-  def show; end
+  def show
+  end
 
   def new
     @feature = Feature.new
   end
 
-  def edit; end
+  def edit
+  end
 
   def create
     @feature = Feature.new(feature_params)

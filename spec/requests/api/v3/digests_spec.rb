@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe 'Digest API Endpoints', type: :request do
@@ -44,14 +42,14 @@ RSpec.describe 'Digest API Endpoints', type: :request do
 
       it 'returns expected json output' do
         subject
-        expect(response_json[:digest]).to match(
-          id: digest.id,
-          digest_description: digest.digest_description,
-          name: digest.name,
-          digest_send_time: digest.digest_send_time.strftime('%l:%M %p').strip,
-          digest_send_day: digest.digest_send_day,
-          next_digest_send_time: digest.next_digest_send_time.iso8601
-        )
+        expect(response_json[:digest]).to match({
+                                                  id: digest.id,
+                                                  digest_description: digest.digest_description,
+                                                  name: digest.name,
+                                                  digest_send_time: digest.digest_send_time.strftime('%l:%M %p').strip,
+                                                  digest_send_day: digest.digest_send_day,
+                                                  next_digest_send_time: digest.next_digest_send_time.iso8601
+                                                })
       end
     end
   end

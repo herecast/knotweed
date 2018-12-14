@@ -1,21 +1,19 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe BitlyService do
   subject { BitlyService }
 
-  let!(:valid_bitly_request) do
+  let!(:valid_bitly_request) {
     stub_request(:get, "https://api-ssl.bitly.com/v3/shorten?access_token=#{Figaro.env.bitly_oauth_key}&longUrl=http://example.com")
-      .with(headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Ruby' })
-      .to_return(status: 200, body: { data: { url: 'http://bit.ly/12345' } }.to_json, headers: {})
-  end
+      .with(:headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Ruby' })
+      .to_return(:status => 200, :body => { data: { url: 'http://bit.ly/12345' } }.to_json, :headers => {})
+  }
 
-  let!(:invlaid_bitly_request) do
+  let!(:invlaid_bitly_request) {
     stub_request(:get, "https://api-ssl.bitly.com/v3/shorten?access_token=#{Figaro.env.bitly_oauth_key}&longUrl=BadLink")
-      .with(headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Ruby' })
-      .to_return(status: 400, body: '', headers: {})
-  end
+      .with(:headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Ruby' })
+      .to_return(:status => 400, :body => '', :headers => {})
+  }
 
   it { is_expected.to respond_to(:create_short_link) }
 
@@ -26,7 +24,7 @@ RSpec.describe BitlyService do
     end
 
     it 'catches errors in the API response' do
-      expect { BitlyService.create_short_link('BadLink') }.to raise_error(BitlyExceptions::UnexpectedResponse)
+      expect { BitlyService.create_short_link("BadLink") }.to raise_error(BitlyExceptions::UnexpectedResponse)
     end
   end
 end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: content_categories
@@ -14,14 +12,14 @@
 
 require 'spec_helper'
 
-describe ContentCategory, type: :model do
+describe ContentCategory, :type => :model do
   before do
     @content_category = FactoryGirl.create :content_category, name: 'lowercase name'
   end
 
-  describe '#label' do
-    it 'returns titlecased name' do
-      expect(@content_category.label).to eq 'Lowercase Name'
+  describe "#label" do
+    it "returns titlecased name" do
+      expect(@content_category.label).to eq "Lowercase Name"
     end
   end
 end

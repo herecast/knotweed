@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RenameCreatedByColumn < ActiveRecord::Migration
   def up
     rename_column :contents, :created_by, :created_by_id

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class ApiController < ActionController::Base
@@ -10,7 +8,7 @@ module Api
       before_action :authenticate_user_from_token!, :set_current_thread_user
 
       # rescue CanCanCan authorization denied errors to use 403, not 500
-      rescue_from CanCan::AccessDenied do |_exception|
+      rescue_from CanCan::AccessDenied do |exception|
         render json: {}, status: :forbidden
       end
 

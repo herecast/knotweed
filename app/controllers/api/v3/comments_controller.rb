@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class CommentsController < ApiController
@@ -12,11 +10,11 @@ module Api
         @comments = []
 
         if root.present? && root.removed != true
-          result_list = if root.content_category.name.in? %w[talk_of_the_town discussion]
-                          root.talk_comments
-                        else
-                          root.comments
-                        end
+          if root.content_category.name.in? %w(talk_of_the_town discussion)
+            result_list = root.talk_comments
+          else
+            result_list = root.comments
+          end
           @comments << result_list.not_deleted
           get_all_comments result_list.not_deleted
           @comments.flatten!
@@ -46,16 +44,16 @@ module Api
         new_params = params
         new_params[:comment] = new_params[:comment].merge(additional_attributes)
         new_params.require(:comment).permit(
-          content_attributes: %i[
-            title
-            parent_id
-            authoremail
-            authors
-            raw_content
-            pubdate
-            organization_id
-            content_category_id
-            location_id
+          content_attributes: [
+            :title,
+            :parent_id,
+            :authoremail,
+            :authors,
+            :raw_content,
+            :pubdate,
+            :organization_id,
+            :content_category_id,
+            :location_id
           ]
         )
       end
@@ -78,7 +76,9 @@ module Api
       # populates @comments with all nested child comments in the tree
       def get_all_comments(result_list)
         result_list.each do |comment|
-          @comments << comment.children if comment.children.present?
+          if comment.children.present?
+            @comments << comment.children
+          end
           get_all_comments comment.children
         end
       end

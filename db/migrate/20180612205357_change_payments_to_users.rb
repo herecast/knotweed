@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ChangePaymentsToUsers < ActiveRecord::Migration
   def change
     remove_column :payments, :organization_id, :integer

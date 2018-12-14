@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module SearchIndexing
   class DetailedEventInstanceSerializer < ::Api::V3::EventInstanceSerializer
     attributes :event_category,

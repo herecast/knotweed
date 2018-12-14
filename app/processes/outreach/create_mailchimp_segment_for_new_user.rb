@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 module Outreach
   class CreateMailchimpSegmentForNewUser
     def self.call(*args)
-      new(*args).call
+      self.new(*args).call
     end
 
     def initialize(user, opts = {})

@@ -1,20 +1,16 @@
-# frozen_string_literal: true
-
 require 'simplecov'
 
-if ENV['COVERAGE'] || ENV['CI']
-  SimpleCov.start 'rails' do
-    add_filter '/vendor/'
+SimpleCov.start 'rails' do
+  add_filter "/vendor/"
 
-    add_group 'Serializers', 'app/serializers'
-  end
-end
+  add_group 'Serializers', 'app/serializers'
+end if ENV["COVERAGE"] || ENV["CI"]
 
 SimpleCov.minimum_coverage 88
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-ENV['RAILS_ENV'] ||= 'test'
-require File.expand_path('../config/environment', __dir__)
+ENV["RAILS_ENV"] ||= 'test'
+require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'webmock/rspec'
 # require 'pry-debugger' unless ENV['RM_INFO']
@@ -24,7 +20,7 @@ WebMock.disable_net_connect!(allow_localhost: true, allow: ENV['ELASTICSEARCH_UR
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
-Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/vcr_cassettes'
@@ -42,7 +38,7 @@ RSpec.configure do |config|
   # config.mock_with :flexmock
   # config.mock_with :rr
   #
-  config.filter_run focus: true
+  config.filter_run :focus => true
   config.run_all_when_everything_filtered = true
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
@@ -62,7 +58,7 @@ RSpec.configure do |config|
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.
   #     --seed 1234
-  config.order = 'random'
+  config.order = "random"
 
   config.before(:suite) do
     # Disable VCR for the test-suite, unless a test explicitely asks for it

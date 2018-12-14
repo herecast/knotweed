@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe FeaturesController, type: :controller do
@@ -9,11 +7,11 @@ RSpec.describe FeaturesController, type: :controller do
     Feature.destroy_all
   end
 
-  let(:valid_attrs) do
+  let(:valid_attrs) {
     { name: 'My Feature',
       description: 'Feature Description',
       active: false }
-  end
+  }
 
   describe 'GET #index' do
     it 'assigns all features as @features' do
@@ -41,9 +39,9 @@ RSpec.describe FeaturesController, type: :controller do
   describe 'POST #create' do
     context 'with valid params' do
       it 'creates a new feature flag' do
-        expect do
+        expect {
           post :create, params: { feature: valid_attrs }
-        end.to change(Feature, :count).by(1)
+        }.to change(Feature, :count).by(1)
       end
 
       it 'redirects back to the index page' do

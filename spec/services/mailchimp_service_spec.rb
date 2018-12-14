@@ -1,21 +1,19 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 require 'addressable'
 
 # The below is necessary for environments that do not read application.yml (CI)
-ENV['MAILCHIMP_API_HOST'] = 'test.com'
-ENV['MAILCHIMP_API_KEY'] = 'test.key'
+ENV['MAILCHIMP_API_HOST'] = "test.com"
+ENV['MAILCHIMP_API_KEY'] = "test.key"
 
 RSpec.describe MailchimpService do
   before do
-    allow(Figaro.env).to receive(:mailchimp_api_host).and_return('test.com')
-    allow(Figaro.env).to receive(:mailchimp_api_key).and_return('test.key')
+    allow(Figaro.env).to receive(:mailchimp_api_host).and_return("test.com")
+    allow(Figaro.env).to receive(:mailchimp_api_key).and_return("test.key")
   end
 
   subject { MailchimpService }
   let(:base_url) { Figaro.env.mailchimp_api_host.to_s + '/3.0' }
-  let(:auth) { ['user', Figaro.env.mailchimp_api_key] }
+  let(:auth) { ["user", Figaro.env.mailchimp_api_key] }
 
   it { is_expected.to respond_to(:subscribe) }
   it { is_expected.to respond_to(:unsubscribe) }
@@ -23,30 +21,30 @@ RSpec.describe MailchimpService do
   describe 'update_subscription' do
     let(:mc_digest) { { id: 8 } }
     let(:mc_community) { { id: 9 } }
-    let(:listserv) do
+    let(:listserv) {
       FactoryGirl.create :listserv,
                          mc_list_id: 'list123',
                          mc_group_name: 'digest 1'
-    end
+    }
     before do
       allow(described_class).to receive(:find_or_create_community).and_return(mc_community)
       allow(described_class).to receive(:find_or_create_digest).and_return(mc_digest)
     end
 
     context 'given a subscription that is confirmed, not unsubscribed' do
-      let(:subscription) do
+      let(:subscription) {
         FactoryGirl.create(:subscription,
                            :confirmed,
                            unsubscribed_at: nil,
                            listserv: listserv,
-                           name: 'Bobby Roberts')
-      end
+                           name: "Bobby Roberts")
+      }
 
       let(:subscriber_hash) { Digest::MD5.hexdigest subscription.email }
 
-      subject do
+      subject {
         MailchimpService.update_subscription(subscription)
-      end
+      }
 
       context 'when user record' do
         let(:user) { FactoryGirl.create :user }
@@ -56,13 +54,13 @@ RSpec.describe MailchimpService do
           allow(described_class).to receive(:find_or_create_merge_field).and_return({})
         end
 
-        let!(:apistub) do
+        let!(:apistub) {
           stub_request(:put,
                        "https://#{base_url}/lists/#{listserv.mc_list_id}/members/#{subscriber_hash}").with(
                          basic_auth: auth,
                          headers: {
-                           'Content-Type' => 'application/json',
-                           'Accept' => 'application/json'
+                           "Content-Type" => 'application/json',
+                           "Accept" => 'application/json'
                          },
                          body: {
                            email_type: subscription.email_type,
@@ -89,7 +87,7 @@ RSpec.describe MailchimpService do
                            }
                          }.to_json
                        )
-        end
+        }
 
         it 'does upsert on mailchimp api, with expected updates' do
           subject
@@ -133,8 +131,8 @@ RSpec.describe MailchimpService do
             ).with(
               basic_auth: auth,
               headers: {
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
+                "Content-Type" => 'application/json',
+                "Accept" => 'application/json'
               },
               body: {
                 email_type: subscription.email_type,
@@ -174,8 +172,8 @@ RSpec.describe MailchimpService do
                                  "https://#{base_url}/lists/#{listserv.mc_list_id}/members/#{subscriber_hash}").with(
                                    basic_auth: auth,
                                    headers: {
-                                     'Content-Type' => 'application/json',
-                                     'Accept' => 'application/json'
+                                     "Content-Type" => 'application/json',
+                                     "Accept" => 'application/json'
                                    },
                                    body: {
                                      email_type: subscription.email_type,
@@ -207,16 +205,16 @@ RSpec.describe MailchimpService do
         before do
           allow(described_class).to receive(:find_or_create_merge_field)
         end
-        let!(:apistub) do
+        let!(:apistub) {
           stub_request(:put,
                        "https://#{base_url}/lists/#{listserv.mc_list_id}/members/#{subscriber_hash}").to_return(status: 400)
-        end
+        }
         it 'raises exception' do
           expect { subject }.to raise_exception(MailchimpService::UnexpectedResponse)
         end
       end
 
-      context 'when listserv does not have a mc_list_id' do
+      context "when listserv does not have a mc_list_id" do
         before do
           listserv.update! mc_list_id: nil, mc_group_name: nil
         end
@@ -228,18 +226,18 @@ RSpec.describe MailchimpService do
     end
 
     context 'given a subscription that confirmed, and unsubscribed' do
-      let(:subscription) do
+      let(:subscription) {
         FactoryGirl.create(:subscription,
                            :confirmed,
                            :unsubscribed,
                            listserv: listserv)
-      end
+      }
 
       let(:subscriber_hash) { Digest::MD5.hexdigest subscription.email }
 
-      subject do
+      subject {
         MailchimpService.update_subscription(subscription)
-      end
+      }
 
       context 'when user record' do
         let(:user) { FactoryGirl.create :user }
@@ -254,8 +252,8 @@ RSpec.describe MailchimpService do
                                  "https://#{base_url}/lists/#{listserv.mc_list_id}/members/#{subscriber_hash}").with(
                                    basic_auth: auth,
                                    headers: {
-                                     'Content-Type' => 'application/json',
-                                     'Accept' => 'application/json'
+                                     "Content-Type" => 'application/json',
+                                     "Accept" => 'application/json'
                                    },
                                    body: {
                                      email_type: subscription.email_type,
@@ -300,8 +298,8 @@ RSpec.describe MailchimpService do
                                  "https://#{base_url}/lists/#{listserv.mc_list_id}/members/#{subscriber_hash}").with(
                                    basic_auth: auth,
                                    headers: {
-                                     'Content-Type' => 'application/json',
-                                     'Accept' => 'application/json'
+                                     "Content-Type" => 'application/json',
+                                     "Accept" => 'application/json'
                                    },
                                    body: {
                                      email_type: subscription.email_type,
@@ -331,18 +329,18 @@ RSpec.describe MailchimpService do
     end
 
     context 'given a subscription that is not confirmed yet' do
-      let(:subscription) do
+      let(:subscription) {
         FactoryGirl.create(:subscription,
                            confirm_ip: nil,
                            confirmed_at: nil,
                            listserv: listserv)
-      end
+      }
 
       let(:subscriber_hash) { Digest::MD5.hexdigest subscription.email }
 
-      subject do
+      subject {
         MailchimpService.update_subscription(subscription)
-      end
+      }
 
       context 'when user record' do
         let(:user) { FactoryGirl.create :user }
@@ -357,8 +355,8 @@ RSpec.describe MailchimpService do
                                  "https://#{base_url}/lists/#{listserv.mc_list_id}/members/#{subscriber_hash}").with(
                                    basic_auth: auth,
                                    headers: {
-                                     'Content-Type' => 'application/json',
-                                     'Accept' => 'application/json'
+                                     "Content-Type" => 'application/json',
+                                     "Accept" => 'application/json'
                                    },
                                    body: {
                                      email_type: subscription.email_type,
@@ -400,8 +398,8 @@ RSpec.describe MailchimpService do
                                  "https://#{base_url}/lists/#{listserv.mc_list_id}/members/#{subscriber_hash}").with(
                                    basic_auth: auth,
                                    headers: {
-                                     'Content-Type' => 'application/json',
-                                     'Accept' => 'application/json'
+                                     "Content-Type" => 'application/json',
+                                     "Accept" => 'application/json'
                                    },
                                    body: {
                                      email_type: subscription.email_type,
@@ -428,18 +426,18 @@ RSpec.describe MailchimpService do
     end
 
     context 'given a subscription with mc_unsubscribed_at' do
-      let(:subscription) do
+      let(:subscription) {
         FactoryGirl.create(:subscription,
                            :confirmed,
                            unsubscribed_at: Time.zone.now,
                            mc_unsubscribed_at: Time.zone.now,
                            listserv: listserv,
-                           name: 'Bobby Roberts')
-      end
+                           name: "Bobby Roberts")
+      }
 
-      subject do
+      subject {
         MailchimpService.update_subscription(subscription)
-      end
+      }
 
       let(:subscriber_hash) { Digest::MD5.hexdigest subscription.email }
 
@@ -456,15 +454,15 @@ RSpec.describe MailchimpService do
 
   describe '.subscribe' do
     context 'given a subscription' do
-      let(:listserv) { FactoryGirl.create :listserv, mc_list_id: '99ss', mc_group_name: 'blah' }
-      let(:subscription) do
+      let(:listserv) { FactoryGirl.create :listserv, mc_list_id: "99ss", mc_group_name: 'blah' }
+      let(:subscription) {
         FactoryGirl.create(:subscription, :confirmed,
                            listserv: listserv,
-                           name: 'Bobby Roberts')
-      end
-      subject do
+                           name: "Bobby Roberts")
+      }
+      subject {
         MailchimpService.subscribe(subscription)
-      end
+      }
 
       it 'hands off to update_subscription' do
         expect(described_class).to receive(:update_subscription).with(subscription)
@@ -495,16 +493,16 @@ RSpec.describe MailchimpService do
 
   describe '.unsubscribe' do
     context 'given a subscription' do
-      let(:listserv) { FactoryGirl.create :listserv, mc_list_id: '99ss', mc_group_name: 'fadsj' }
-      let(:subscription) do
+      let(:listserv) { FactoryGirl.create :listserv, mc_list_id: "99ss", mc_group_name: "fadsj" }
+      let(:subscription) {
         FactoryGirl.create(:subscription,
                            :confirmed,
                            :unsubscribed,
                            listserv: listserv)
-      end
-      subject do
+      }
+      subject {
         MailchimpService.unsubscribe(subscription)
-      end
+      }
 
       it 'passes off to #update_subscription' do
         expect(described_class).to receive(:update_subscription).with(subscription)
@@ -525,13 +523,13 @@ RSpec.describe MailchimpService do
 
   describe '.create_campaign' do
     context 'given a digest model, and text/html content' do
-      let(:listserv) do
+      let(:listserv) {
         FactoryGirl.create :listserv,
                            mc_list_id: 'M@ailCh1mp',
                            mc_group_name: 'Digest 1'
-      end
+      }
       let(:location) { FactoryGirl.create :location }
-      let!(:digest) do
+      let!(:digest) {
         FactoryGirl.create :listserv_digest,
                            listserv: listserv,
                            title: 'Digest of the day (q1)',
@@ -539,12 +537,12 @@ RSpec.describe MailchimpService do
                            from_name: 'DailyUV',
                            reply_to: 'duv@duv.net',
                            location_ids: [location.id]
-      end
-      let(:content) { '<p>Hello World!</p>' }
+      }
+      let(:content) { "<p>Hello World!</p>" }
 
-      let(:segment) do
-        { id: 123_987, name: "#{listserv.name}-#{digest.id}" }
-      end
+      let(:segment) {
+        { id: 123987, name: "#{listserv.name}-#{digest.id}" }
+      }
 
       subject { MailchimpService.create_campaign(digest, content) }
 
@@ -552,56 +550,56 @@ RSpec.describe MailchimpService do
         allow(described_class).to receive(:create_segment).with(digest).and_return(segment)
       end
 
-      let!(:apistub_create) do
+      let!(:apistub_create) {
         stub_request(:post,
                      "https://#{base_url}/campaigns").with(
                        basic_auth: auth,
                        headers: {
-                         'Content-Type' => 'application/json',
-                         'Accept' => 'application/json'
+                         "Content-Type" => 'application/json',
+                         "Accept" => 'application/json'
                        },
-                       body: hash_including(
-                         type: 'regular',
-                         recipients: {
-                           list_id: listserv.mc_list_id,
-                           segment_opts: {
-                             saved_segment_id: segment[:id]
-                           }
-                         },
-                         settings: {
-                           title: digest.title,
-                           subject_line: digest.subject,
-                           from_name: digest.from_name,
-                           reply_to: digest.reply_to
-                         },
-                         tracking: {
-                           google_analytics: digest.ga_tag
-                         }
-                       )
+                       body: hash_including({
+                                              type: 'regular',
+                                              recipients: {
+                                                list_id: listserv.mc_list_id,
+                                                segment_opts: {
+                                                  saved_segment_id: segment[:id]
+                                                }
+                                              },
+                                              settings: {
+                                                title: digest.title,
+                                                subject_line: digest.subject,
+                                                from_name: digest.from_name,
+                                                reply_to: digest.reply_to
+                                              },
+                                              tracking: {
+                                                google_analytics: digest.ga_tag
+                                              }
+                                            })
                      ).to_return(
                        status: 201,
                        headers: {
-                         'Content-Type' => 'application/json'
+                         "Content-Type" => 'application/json',
                        },
                        body: {
                          id: '123abc'
                        }.to_json
                      )
-      end
+      }
 
-      let!(:apistub_content) do
+      let!(:apistub_content) {
         stub_request(:put,
                      "https://#{base_url}/campaigns/123abc/content").with(
                        basic_auth: auth,
                        headers: {
-                         'Content-Type' => 'application/json',
-                         'Accept' => 'application/json'
+                         "Content-Type" => 'application/json',
+                         "Accept" => 'application/json'
                        },
-                       body: hash_including(
-                         html: content
-                       )
+                       body: hash_including({
+                                              html: content
+                                            })
                      )
-      end
+      }
 
       it 'creates mailchimp campaign with expected attributes' do
         subject
@@ -610,9 +608,9 @@ RSpec.describe MailchimpService do
       end
 
       it 'returns campaign info, including id' do
-        expect(subject).to match hash_including(
-          id: a_kind_of(String)
-        )
+        expect(subject).to match hash_including({
+                                                  id: a_kind_of(String)
+                                                })
       end
 
       it 'assigns segement id back to digest model' do
@@ -625,20 +623,20 @@ RSpec.describe MailchimpService do
 
   describe '.send_campaign' do
     context 'given a campaign id' do
-      let(:campaign_id) { '98fds90' }
+      let(:campaign_id) { "98fds90" }
 
       subject { MailchimpService.send_campaign(campaign_id) }
 
-      let!(:apistub) do
+      let!(:apistub) {
         stub_request(:post,
                      "https://#{base_url}/campaigns/#{campaign_id}/actions/send").with(
                        basic_auth: auth,
                        headers: {
-                         'Content-Type' => 'application/json',
-                         'Accept' => 'application/json'
+                         "Content-Type" => 'application/json',
+                         "Accept" => 'application/json'
                        }
                      )
-      end
+      }
 
       it 'triggers campaign send on mailchimp api' do
         subject
@@ -657,22 +655,22 @@ RSpec.describe MailchimpService do
 
   describe '.interest_categories' do
     context 'given a list id' do
-      let(:list_id) { 'ioiu23' }
+      let(:list_id) { "ioiu23" }
 
       subject { described_class.interest_categories(list_id) }
 
-      let!(:apistub) do
+      let!(:apistub) {
         stub_request(:get,
                      "https://#{base_url}/lists/#{list_id}/interest-categories").with(
                        basic_auth: auth,
                        headers: {
-                         'Content-Type' => 'application/json',
-                         'Accept' => 'application/json'
+                         "Content-Type" => 'application/json',
+                         "Accept" => 'application/json'
                        }
                      ).to_return(
                        status: 200,
                        headers: {
-                         'Content-Type' => 'application/json'
+                         "Content-Type" => 'application/json',
                        },
                        body: {
                          list_id: list_id,
@@ -682,7 +680,7 @@ RSpec.describe MailchimpService do
                              list_id: list_id,
                              title: 'Category1',
                              display_order: 0,
-                             type: 'checkboxes',
+                             type: "checkboxes",
                              links: []
                            }
                          ],
@@ -690,7 +688,7 @@ RSpec.describe MailchimpService do
                          links: []
                        }.to_json
                      )
-      end
+      }
 
       it 'returns array with symbolized hash representation of categories' do
         expect(subject).to match([
@@ -713,18 +711,18 @@ RSpec.describe MailchimpService do
 
       subject { described_class.interests(list_id, interest_category_id) }
 
-      let!(:apistub) do
+      let!(:apistub) {
         stub_request(:get,
                      "https://#{base_url}/lists/#{list_id}/interest-categories/#{interest_category_id}/interests").with(
                        basic_auth: auth,
                        headers: {
-                         'Content-Type' => 'application/json',
-                         'Accept' => 'application/json'
+                         "Content-Type" => 'application/json',
+                         "Accept" => 'application/json'
                        }
                      ).to_return(
                        status: 200,
                        headers: {
-                         'Content-Type' => 'application/json'
+                         "Content-Type" => 'application/json',
                        },
                        body: {
                          interests: [
@@ -741,7 +739,7 @@ RSpec.describe MailchimpService do
                          links: []
                        }.to_json
                      )
-      end
+      }
 
       it 'returns an array with symbolized hash version of interests' do
         expect(subject).to match([
@@ -759,22 +757,22 @@ RSpec.describe MailchimpService do
 
   describe '.merge_fields' do
     context 'given a list id' do
-      let(:list_id) { 'ioiu23' }
+      let(:list_id) { "ioiu23" }
 
       subject { described_class.merge_fields(list_id) }
 
-      let!(:apistub) do
+      let!(:apistub) {
         stub_request(:get,
                      "https://#{base_url}/lists/#{list_id}/merge-fields").with(
                        basic_auth: auth,
                        headers: {
-                         'Content-Type' => 'application/json',
-                         'Accept' => 'application/json'
+                         "Content-Type" => 'application/json',
+                         "Accept" => 'application/json'
                        }
                      ).to_return(
                        status: 200,
                        headers: {
-                         'Content-Type' => 'application/json'
+                         "Content-Type" => 'application/json',
                        },
                        body: {
                          merge_fields: [
@@ -783,7 +781,7 @@ RSpec.describe MailchimpService do
                              tag: 'FNAME',
                              name: 'First Name',
                              display_order: 0,
-                             type: 'text',
+                             type: "text",
                              required: false,
                              public: true,
                              default_value: '',
@@ -794,7 +792,7 @@ RSpec.describe MailchimpService do
                          links: []
                        }.to_json
                      )
-      end
+      }
 
       it 'returns array with symbolized hash representation of categories' do
         expect(subject).to match([
@@ -802,11 +800,11 @@ RSpec.describe MailchimpService do
                                      merge_id: 1,
                                      name: 'First Name',
                                      type: 'text',
-                                     tag: 'FNAME',
+                                     tag: "FNAME",
                                      display_order: 0,
                                      required: false,
                                      public: true,
-                                     default_value: ''
+                                     default_value: ""
                                    }
                                  ])
       end
@@ -821,28 +819,28 @@ RSpec.describe MailchimpService do
       subject { described_class.find_or_create_category(list_id, name) }
 
       context 'When interest category exists in mailchimp;' do
-        let(:named_category) do
+        let(:named_category) {
           {
             id: 909,
             list_id: list_id,
             title: name,
             display_order: 0,
-            type: 'checkboxes'
+            type: "checkboxes",
           }
-        end
+        }
         before do
           stub_request(:get, "https://#{base_url}/lists/#{list_id}/interest-categories")\
             .with(
               basic_auth: auth,
               headers: {
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
+                "Content-Type" => 'application/json',
+                "Accept" => 'application/json'
               }
             )\
             .to_return(
               status: 200,
               headers: {
-                'Content-Type' => 'application/json'
+                "Content-Type" => 'application/json',
               },
               body: {
                 list_id: list_id,
@@ -869,28 +867,28 @@ RSpec.describe MailchimpService do
       end
 
       context 'When interest category does not yet exist' do
-        let(:named_category) do
+        let(:named_category) {
           {
             id: 909,
             list_id: list_id,
             title: name,
             display_order: 0,
-            type: 'checkboxes'
+            type: "checkboxes",
           }
-        end
+        }
         before do
           stub_request(:get, "https://#{base_url}/lists/#{list_id}/interest-categories")\
             .with(
               basic_auth: auth,
               headers: {
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
+                "Content-Type" => 'application/json',
+                "Accept" => 'application/json'
               }
             )\
             .to_return(
               status: 200,
               headers: {
-                'Content-Type' => 'application/json'
+                "Content-Type" => 'application/json',
               },
               body: {
                 list_id: list_id,
@@ -915,18 +913,18 @@ RSpec.describe MailchimpService do
                            .with(
                              basic_auth: auth,
                              headers: {
-                               'Content-Type' => 'application/json',
-                               'Accept' => 'application/json'
+                               "Content-Type" => 'application/json',
+                               "Accept" => 'application/json'
                              },
-                             body: hash_including(
-                               type: 'checkboxes',
-                               title: name
-                             )
+                             body: hash_including({
+                                                    type: 'checkboxes',
+                                                    title: name
+                                                  })
                            )\
                            .to_return(
                              status: 200,
                              headers: {
-                               'Content-Type' => 'application/json'
+                               "Content-Type" => 'application/json',
                              },
                              body: named_category.to_json
                            )
@@ -935,34 +933,34 @@ RSpec.describe MailchimpService do
 
         context 'options' do
           let(:options) { { type: 'dropdown', display_order: 1 } }
-          let(:named_category) do
+          let(:named_category) {
             {
               id: 909,
               list_id: list_id,
               title: name,
               display_order: options[:display_order],
-              type: options[:type]
+              type: options[:type],
             }
-          end
+          }
 
           it 'allows customizing display_order, and type' do
             create_request = stub_request(:post, "https://#{base_url}/lists/#{list_id}/interest-categories")\
                              .with(
                                basic_auth: auth,
                                headers: {
-                                 'Content-Type' => 'application/json',
-                                 'Accept' => 'application/json'
+                                 "Content-Type" => 'application/json',
+                                 "Accept" => 'application/json'
                                },
-                               body: hash_including(
-                                 title: name,
-                                 type: options[:type],
-                                 display_order: options[:display_order]
-                               )
+                               body: hash_including({
+                                                      title: name,
+                                                      type: options[:type],
+                                                      display_order: options[:display_order]
+                                                    })
                              )\
                              .to_return(
                                status: 200,
                                headers: {
-                                 'Content-Type' => 'application/json'
+                                 "Content-Type" => 'application/json',
                                },
                                body: named_category.to_json
                              )
@@ -980,24 +978,24 @@ RSpec.describe MailchimpService do
     context 'Given a list id, and name' do
       let(:list_id) { 'abc321' }
       let(:name) { 'Upper Valley Digest' }
-      let(:digest_category) do
+      let(:digest_category) {
         {
           id: '909',
           list_id: list_id,
           title: 'digests',
           display_order: 0,
-          type: 'checkboxes'
+          type: "checkboxes",
         }
-      end
-      let(:named_interest) do
+      }
+      let(:named_interest) {
         {
           id: '1909',
           list_id: list_id,
           category_id: digest_category[:id],
           name: name,
-          display_order: 0
+          display_order: 0,
         }
-      end
+      }
 
       subject { described_class.find_or_create_digest(list_id, name) }
 
@@ -1006,7 +1004,7 @@ RSpec.describe MailchimpService do
           .to_return(
             status: 200,
             headers: {
-              'Content-Type' => 'application/json'
+              "Content-Type" => 'application/json',
             },
             body: {
               interests: [named_interest]
@@ -1028,14 +1026,14 @@ RSpec.describe MailchimpService do
             .with(
               basic_auth: auth,
               headers: {
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
+                "Content-Type" => 'application/json',
+                "Accept" => 'application/json'
               }
             )\
             .to_return(
               status: 200,
               headers: {
-                'Content-Type' => 'application/json'
+                "Content-Type" => 'application/json',
               },
               body: {
                 interests: [
@@ -1045,7 +1043,7 @@ RSpec.describe MailchimpService do
                     list_id: list_id,
                     category_id: digest_category[:id],
                     name: 'Other Digest',
-                    display_order: 0
+                    display_order: 0,
                   }
                 ],
                 total_items: 1,
@@ -1065,14 +1063,14 @@ RSpec.describe MailchimpService do
             .with(
               basic_auth: auth,
               headers: {
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
+                "Content-Type" => 'application/json',
+                "Accept" => 'application/json'
               }
             )\
             .to_return(
               status: 200,
               headers: {
-                'Content-Type' => 'application/json'
+                "Content-Type" => 'application/json',
               },
               body: {
                 interests: [
@@ -1081,7 +1079,7 @@ RSpec.describe MailchimpService do
                     list_id: list_id,
                     category_id: digest_category[:id],
                     name: 'Other Category',
-                    display_order: 0
+                    display_order: 0,
                   }
                 ],
                 total_items: 1,
@@ -1090,26 +1088,26 @@ RSpec.describe MailchimpService do
             )
         end
 
-        let!(:create_request) do
+        let!(:create_request) {
           stub_request(:post, "https://#{base_url}/lists/#{list_id}/interest-categories/#{digest_category[:id]}/interests")\
             .with(
               basic_auth: auth,
               headers: {
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
+                "Content-Type" => 'application/json',
+                "Accept" => 'application/json'
               },
-              body: hash_including(
-                name: name
-              )
+              body: hash_including({
+                                     name: name
+                                   })
             )\
             .to_return(
               status: 200,
               headers: {
-                'Content-Type' => 'application/json'
+                "Content-Type" => 'application/json',
               },
               body: named_interest.to_json
             )
-        end
+        }
 
         it 'it creates one, and returns a symbolized hash with interest fields' do
           expect(subject).to match a_hash_including(named_interest)
@@ -1122,8 +1120,8 @@ RSpec.describe MailchimpService do
   describe '.find_or_create_merge_field' do
     context 'Given a list id, merge field name, and options' do
       let(:list_id) { 'mc123' }
-      let(:tag) { 'CITY' }
-      let(:options) do
+      let(:tag) { "CITY" }
+      let(:options) {
         {
           name: 'City',
           type: 'text',
@@ -1131,24 +1129,24 @@ RSpec.describe MailchimpService do
           public: true,
           default_value: ''
         }
-      end
+      }
 
       subject { described_class.find_or_create_merge_field(list_id, tag, options) }
 
       context 'merge field exists already' do
-        let!(:index_stub) do
+        let!(:index_stub) {
           stub_request(:get, "https://#{base_url}/lists/#{list_id}/merge-fields")\
             .with(
               basic_auth: auth,
               headers: {
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
+                "Content-Type" => 'application/json',
+                "Accept" => 'application/json'
               }
             )\
             .to_return(
               status: 200,
               headers: {
-                'Content-Type' => 'application/json'
+                "Content-Type" => 'application/json',
               },
               body: {
                 merge_fields: [
@@ -1167,33 +1165,33 @@ RSpec.describe MailchimpService do
                 links: []
               }.to_json
             )
-        end
+        }
 
-        it 'returns a symbolized hash of the merge field as represented in mailchimp' do
-          expect(subject).to match(a_hash_including(
-                                     merge_id: an_instance_of(Fixnum),
-                                     tag: tag,
-                                     name: options[:name],
-                                     type: options[:type],
-                                     public: true
-                                   ))
+        it "returns a symbolized hash of the merge field as represented in mailchimp" do
+          expect(subject).to match(a_hash_including({
+                                                      merge_id: an_instance_of(Fixnum),
+                                                      tag: tag,
+                                                      name: options[:name],
+                                                      type: options[:type],
+                                                      public: true,
+                                                    }))
         end
       end
 
       context 'when merge field does not yet exist' do
-        let!(:index_stub) do
+        let!(:index_stub) {
           stub_request(:get, "https://#{base_url}/lists/#{list_id}/merge-fields")\
             .with(
               basic_auth: auth,
               headers: {
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
+                "Content-Type" => 'application/json',
+                "Accept" => 'application/json'
               }
             )\
             .to_return(
               status: 200,
               headers: {
-                'Content-Type' => 'application/json'
+                "Content-Type" => 'application/json',
               },
               body: {
                 merge_fields: [
@@ -1201,33 +1199,33 @@ RSpec.describe MailchimpService do
                     merge_id: 910,
                     tag: 'OTHER',
                     list_id: list_id,
-                    name: 'Other'
+                    name: "Other"
                   }
                 ],
                 total_items: 1,
                 links: []
               }.to_json
             )
-        end
+        }
 
-        let!(:create_stub) do
+        let!(:create_stub) {
           stub_request(:post, "https://#{base_url}/lists/#{list_id}/merge-fields")\
             .with(
               basic_auth: auth,
               headers: {
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
+                "Content-Type" => 'application/json',
+                "Accept" => 'application/json'
               },
-              body: hash_including(
-                tag: tag,
-                name: options[:name],
-                type: options[:type]
-              )
+              body: hash_including({
+                                     tag: tag,
+                                     name: options[:name],
+                                     type: options[:type]
+                                   })
             )\
             .to_return(
               status: 200,
               headers: {
-                'Content-Type' => 'application/json'
+                "Content-Type" => 'application/json',
               },
               body: {
                 merge_id: 911,
@@ -1240,21 +1238,21 @@ RSpec.describe MailchimpService do
                 default_value: options[:default_value]
               }.to_json
             )
-        end
+        }
 
         it 'creates merge tag' do
           subject
           expect(create_stub).to have_been_requested
         end
 
-        it 'returns a symbolized hash of the merge field as represented in mailchimp' do
-          expect(subject).to match(a_hash_including(
-                                     merge_id: an_instance_of(Fixnum),
-                                     tag: tag,
-                                     name: options[:name],
-                                     type: options[:type],
-                                     public: true
-                                   ))
+        it "returns a symbolized hash of the merge field as represented in mailchimp" do
+          expect(subject).to match(a_hash_including({
+                                                      merge_id: an_instance_of(Fixnum),
+                                                      tag: tag,
+                                                      name: options[:name],
+                                                      type: options[:type],
+                                                      public: true,
+                                                    }))
         end
       end
     end
@@ -1265,8 +1263,8 @@ RSpec.describe MailchimpService do
       let(:list_id) { 'mc123' }
       let(:old_name) { 'Digest foo' }
       let(:new_name) { 'Digest bar' }
-      let(:digest_group) { { id: 'interest-group-1', title: 'Digests' } }
-      let(:digest) { { id: 'interest-9', name: old_name } }
+      let(:digest_group) { { id: "interest-group-1", title: 'Digests' } }
+      let(:digest) { { id: "interest-9", name: old_name } }
 
       subject { described_class.rename_digest(list_id, old_name, new_name) }
 
@@ -1287,17 +1285,17 @@ RSpec.describe MailchimpService do
                       .with(
                         basic_auth: auth,
                         headers: {
-                          'Content-Type' => 'application/json',
-                          'Accept' => 'application/json'
+                          "Content-Type" => 'application/json',
+                          "Accept" => 'application/json'
                         },
-                        body: hash_including(
-                          name: new_name
-                        )
+                        body: hash_including({
+                                               name: new_name
+                                             })
                       )\
                       .to_return(
                         status: 200,
                         headers: {
-                          'Content-Type' => 'application/json'
+                          "Content-Type" => 'application/json',
                         },
                         body: { id: digest[:id], name: new_name }.to_json
                       )
@@ -1348,47 +1346,47 @@ RSpec.describe MailchimpService do
   describe '.create_segment' do
     context 'given a listserv digest instance' do
       let(:list_id) { '1234' }
-      let(:listserv) do
+      let(:listserv) {
         FactoryGirl.create :listserv,
                            mc_list_id: list_id,
                            mc_group_name: 'Test Digest'
-      end
-      let!(:digest) do
+      }
+      let!(:digest) {
         FactoryGirl.create :listserv_digest,
                            listserv: listserv
-      end
+      }
 
       subject { described_class.create_segment(digest) }
 
       context 'when digest has subscriber_emails' do
-        let(:emails) do
+        let(:emails) {
           [
-            'test@company.com',
-            'test2@company.com'
+            "test@company.com",
+            "test2@company.com"
           ]
-        end
+        }
 
         before do
           allow(digest).to receive(:subscriber_emails).and_return(emails)
         end
 
-        let(:created_segment) do
+        let(:created_segment) {
           {
-            id: 123_456,
+            id: 123456,
             name: "#{listserv.name}-#{digest.id}",
             member_count: 1,
             type: 'saved',
             list_id: list_id
           }
-        end
+        }
 
-        let!(:create_request) do
+        let!(:create_request) {
           stub_request(:post, "https://#{base_url}/lists/#{list_id}/segments")\
             .with(
               basic_auth: auth,
               headers: {
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
+                "Content-Type" => 'application/json',
+                "Accept" => 'application/json'
               },
               body: {
                 name: created_segment[:name],
@@ -1398,11 +1396,11 @@ RSpec.describe MailchimpService do
             .to_return(
               status: 200,
               headers: {
-                'Content-Type' => 'application/json'
+                "Content-Type" => 'application/json',
               },
               body: created_segment.to_json
             )
-        end
+        }
 
         it 'creates a digest, and returns the symbolized hash representation' do
           expect(subject).to match hash_including(created_segment)
@@ -1423,11 +1421,11 @@ RSpec.describe MailchimpService do
 
   describe 'add_unsubscribe_hook' do
     let(:list_id) { '1234' }
-    let(:listserv) do
+    let(:listserv) {
       FactoryGirl.create :listserv,
                          mc_list_id: list_id,
                          mc_group_name: 'Test Digest'
-    end
+    }
 
     before do
       allow(Figaro.env).to receive('default_host').and_return('http://test.com')
@@ -1440,13 +1438,13 @@ RSpec.describe MailchimpService do
                         .with(
                           basic_auth: auth,
                           headers: {
-                            'Content-Type' => 'application/json',
-                            'Accept' => 'application/json'
+                            "Content-Type" => 'application/json',
+                            "Accept" => 'application/json'
                           }
                         ).to_return(
                           status: 200,
                           headers: {
-                            'Content-Type' => 'application/json'
+                            "Content-Type" => 'application/json',
                           },
                           body: { webhooks: [] }.to_json
                         )
@@ -1455,8 +1453,8 @@ RSpec.describe MailchimpService do
                     .with(
                       basic_auth: auth,
                       headers: {
-                        'Content-Type' => 'application/json',
-                        'Accept' => 'application/json'
+                        "Content-Type" => 'application/json',
+                        "Accept" => 'application/json'
                       },
                       body: {
                         url: "#{Figaro.env.default_host}/api/v3/subscriptions/unsubscribe_from_mailchimp",
@@ -1478,7 +1476,7 @@ RSpec.describe MailchimpService do
                     .to_return(
                       status: 200,
                       headers: {
-                        'Content-Type' => 'application/json'
+                        "Content-Type" => 'application/json',
                       }
                     )
       subject

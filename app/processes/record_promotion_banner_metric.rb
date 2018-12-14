@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 class RecordPromotionBannerMetric
   def self.call(*args)
-    new(*args).call
+    self.new(*args).call
   end
 
   def initialize(opts = {})

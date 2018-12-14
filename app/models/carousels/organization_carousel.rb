@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Carousels::OrganizationCarousel < Carousel
   def initialize(**args)
     super
@@ -18,7 +16,7 @@ class Carousels::OrganizationCarousel < Carousel
   def publishers_opts
     {
       where: {
-        org_type: %w[Blog Publisher Publication],
+        org_type: ['Blog', 'Publisher', 'Publication'],
         archived: { in: [false, nil] }
       }
     }

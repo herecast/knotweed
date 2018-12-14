@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 def content_response_schema(record)
@@ -15,7 +13,7 @@ def content_response_schema(record)
       comment_count: 0,
       commenter_count: 0,
       # contact_email is only returned for event and market content
-      contact_email: (%i[market event].include?(record.content_type) ? (record.channel.try(:contact_email) || record.authoremail) : nil),
+      contact_email: ([:market, :event].include?(record.content_type) ? (record.channel.try(:contact_email) || record.authoremail) : nil),
       contact_phone: record.channel.try(:contact_phone),
       content: record.sanitized_content,
       content_origin: Content::UGC_ORIGIN.downcase,
@@ -83,7 +81,7 @@ describe 'Contents Endpoints', type: :request do
 
     subject { get "/api/v3/contents/#{content.id}", headers: headers }
 
-    it 'returns content record' do
+    it "returns content record" do
       subject
       expect(response_json[:content]).not_to be nil
     end
@@ -94,10 +92,10 @@ describe 'Contents Endpoints', type: :request do
     end
 
     describe 'when content requested is of listserv origin' do
-      let(:listserv_org) do
+      let(:listserv_org) {
         FactoryGirl.create(:organization,
                            id: Organization::LISTSERV_ORG_ID)
-      end
+      }
       before do
         content.update organization: listserv_org
       end
@@ -107,7 +105,7 @@ describe 'Contents Endpoints', type: :request do
       context 'user is not signed in' do
         it 'returns a 401 status' do
           subject
-          expect(response.code).to eql '401'
+          expect(response.code).to eql "401"
         end
       end
 
@@ -120,7 +118,7 @@ describe 'Contents Endpoints', type: :request do
 
         it 'returns a 200 status' do
           subject
-          expect(response.code).to eql '200'
+          expect(response.code).to eql "200"
         end
       end
     end
@@ -131,16 +129,16 @@ describe 'Contents Endpoints', type: :request do
       @content = FactoryGirl.create :content, created_by: user
     end
 
-    context 'when no start_date or end_date' do
+    context "when no start_date or end_date" do
       subject { get "/api/v3/contents/#{@content.id}/metrics", params: {}, headers: auth_headers }
 
-      it 'returns bad_request status' do
+      it "returns bad_request status" do
         subject
         expect(response.status).to eql 400
       end
     end
 
-    context 'when start_date and end_date present' do
+    context "when start_date and end_date present" do
       before do
         date_range = (2.days.ago.to_date..Date.current)
         @start_date = date_range.first.to_s
@@ -150,7 +148,7 @@ describe 'Contents Endpoints', type: :request do
         end
       end
 
-      let(:expected_response) do
+      let(:expected_response) {
         {
           id: @content.id,
           title: @content.title,
@@ -159,10 +157,14 @@ describe 'Contents Endpoints', type: :request do
           comment_count: 0,
           comments: [],
           promo_click_thru_count: @content.banner_click_count,
-          daily_view_counts: @content.content_reports.map(&:view_count_hash),
-          daily_promo_click_thru_counts: @content.content_reports.map(&:banner_click_hash)
+          daily_view_counts: @content.content_reports.map { |cr|
+                               cr.view_count_hash
+                             },
+          daily_promo_click_thru_counts: @content.content_reports.map { |cr|
+                                           cr.banner_click_hash
+                                         }
         }
-      end
+      }
 
       subject { get "/api/v3/contents/#{@content.id}/metrics?start_date=#{@start_date}&end_date=#{@end_date}", params: {}, headers: auth_headers }
 
@@ -204,13 +206,13 @@ describe 'Contents Endpoints', type: :request do
         expect(report_dates).to eql sorted_dates
       end
 
-      context 'when days are missing reports' do
+      context "when days are missing reports" do
         before do
-          ContentReport.all[10..12].each(&:delete)
+          ContentReport.all[10..12].each { |cr| cr.delete }
           @expected_nuber_of_reports = 41
         end
 
-        it 'returns expected number of daily reports' do
+        it "returns expected number of daily reports" do
           subject
           view_counts = response_json[:content_metrics][:daily_view_counts]
           expect(view_counts.count).to eql @expected_nuber_of_reports
@@ -222,19 +224,19 @@ describe 'Contents Endpoints', type: :request do
   end
 
   describe 'UGC' do
-    let(:headers) do
+    let(:headers) {
       {
-        'ACCEPT' => 'appliction/json'
+        "ACCEPT" => 'appliction/json'
       }
-    end
-    let(:request_body) do
+    }
+    let(:request_body) {
       {}
-    end
+    }
 
     describe 'POST /api/v3/contents' do
-      subject do
+      subject {
         post '/api/v3/contents', params: request_body, headers: headers
-      end
+      }
       context 'without authentication' do
         it 'returns 401' do
           subject
@@ -252,12 +254,12 @@ describe 'Contents Endpoints', type: :request do
         end
 
         describe 'unknown content type' do
-          let(:params) do
+          let(:params) {
             {
               content_type: 'blog_post',
-              title: 'not a valid content type'
+              title: 'not a valid content type',
             }
-          end
+          }
 
           before do
             request_body.merge!(content: params)
@@ -266,22 +268,22 @@ describe 'Contents Endpoints', type: :request do
           it 'returns a 422 error' do
             subject
             expect(response.status).to eql 422
-            expect(response_json[:error]).to eql 'unknown content type'
+            expect(response_json[:error]).to eql "unknown content type"
           end
         end
 
         describe 'news content' do
           context 'valid params' do
-            let(:valid_news_params) do
+            let(:valid_news_params) {
               {
                 content_type: 'news',
-                title: 'A distinguished article',
+                title: "A distinguished article",
                 content: "<p>Once upon a time...#{'a' * 255}</p><p>Another p</p>",
                 author_name: 'Fred',
                 organization_id: FactoryGirl.create(:organization,
-                                                    can_publish_news: true).id
+                                                    can_publish_news: true).id,
               }
-            end
+            }
 
             before do
               request_body.merge!(content: valid_news_params)
@@ -299,7 +301,7 @@ describe 'Contents Endpoints', type: :request do
                   content: {
                     title: valid_news_params[:title],
                     content: valid_news_params[:content],
-                    author_name: 'Fred',
+                    author_name: "Fred",
                     organization_id: valid_news_params[:organization_id]
                   }
                 )
@@ -307,9 +309,9 @@ describe 'Contents Endpoints', type: :request do
             end
 
             describe 'author_name' do
-              let(:author_name) { '' }
+              let(:author_name) { "" }
               before do
-                valid_news_params[:author_name] = author_name
+                valid_news_params.merge!(author_name: author_name)
                 subject
               end
 
@@ -361,13 +363,13 @@ describe 'Contents Endpoints', type: :request do
               end
             end
 
-            describe 'content sanitization' do
+            describe "content sanitization" do
               describe 'in-content img with style attributes' do
                 before do
                   valid_news_params[:content] = 'Who cares <img style="width: 50%; float: left;" src="http://go.test/this.jpg">'
                 end
 
-                it 'does not strip out style attribute' do
+                it "does not strip out style attribute" do
                   subject
                   response_content = response_json[:content][:content]
                   expect(response_content).to eql valid_news_params[:content]
@@ -379,15 +381,15 @@ describe 'Contents Endpoints', type: :request do
 
         describe 'talk content' do
           context 'valid params' do
-            let(:valid_talk_params) do
+            let(:valid_talk_params) {
               {
                 content_type: 'talk',
-                title: 'TFK',
-                content: '<p>Oxygen: Inhale</p>',
+                title: "TFK",
+                content: "<p>Oxygen: Inhale</p>",
                 promote_radius: 10,
                 location_id: FactoryGirl.create(:location).id
               }
-            end
+            }
 
             before do
               request_body.merge!(content: valid_talk_params)
@@ -420,20 +422,20 @@ describe 'Contents Endpoints', type: :request do
               FactoryGirl.create(:organization)
             end
 
-            let(:valid_market_params) do
+            let(:valid_market_params) {
               {
                 contact_email: 'test@test.com',
                 contact_phone: '000-000-0000',
-                content: '<p>Oxygen: Inhale</p>',
+                content: "<p>Oxygen: Inhale</p>",
                 content_type: 'market',
-                cost: '$10',
+                cost: "$10",
                 organization_id: organization.id,
                 promote_radius: 10,
-                title: 'TFK',
+                title: "TFK",
                 sold: false,
                 location_id: FactoryGirl.create(:location).id
               }
-            end
+            }
 
             before do
               request_body.merge!(content: valid_market_params)
@@ -462,8 +464,8 @@ describe 'Contents Endpoints', type: :request do
               end
             end
 
-            context 'when user publishes first Market Post' do
-              it 'calls to Mailchimp hook' do
+            context "when user publishes first Market Post" do
+              it "calls to Mailchimp hook" do
                 subject
                 matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
                   job[:args][0] == 'Outreach::CreateUserHookCampaign'
@@ -474,13 +476,13 @@ describe 'Contents Endpoints', type: :request do
               end
             end
 
-            context 'when user has already published Market Post' do
+            context "when user has already published Market Post" do
               before do
                 FactoryGirl.create :content, :market_post,
                                    created_by: user
               end
 
-              it 'does not call to Mailchimp hook' do
+              it "does not call to Mailchimp hook" do
                 subject
                 matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
                   job[:args][0] == 'Outreach::CreateUserHookCampaign'
@@ -495,16 +497,16 @@ describe 'Contents Endpoints', type: :request do
 
         describe 'event content' do
           context 'valid params' do
-            let(:business_location) do
+            let(:business_location) {
               FactoryGirl.create(:business_location)
-            end
+            }
 
-            let(:valid_event_params) do
+            let(:valid_event_params) {
               {
                 content_type: 'event',
-                title: 'Concert',
-                content: '<p>Tickets for sale a the doors</p>',
-                cost: '$10',
+                title: "Concert",
+                content: "<p>Tickets for sale a the doors</p>",
+                cost: "$10",
                 promote_radius: 10,
                 venue_id: business_location.id,
                 contact_email: 'test@test.com',
@@ -515,14 +517,14 @@ describe 'Contents Endpoints', type: :request do
                     end_at: nil,
                     overrides: [],
                     presenter_name: nil,
-                    repeats: 'once',
+                    repeats: "once",
                     starts_at: 1.day.from_now.iso8601,
                     subtitle: nil,
                     weeks_of_month: []
                   }
                 ]
               }
-            end
+            }
 
             before do
               request_body.merge!(content: valid_event_params)
@@ -555,7 +557,7 @@ describe 'Contents Endpoints', type: :request do
                                                                        subtitle: nil,
                                                                        presenter_name: nil,
                                                                        starts_at: valid_event_params[:schedules].first[:starts_at],
-                                                                       id: kind_of(Integer),
+                                                                       id: kind_of(Fixnum),
                                                                        end_date: valid_event_params[:schedules].first[:starts_at],
                                                                        repeats: 'once',
                                                                        days_of_week: nil,
@@ -565,17 +567,17 @@ describe 'Contents Endpoints', type: :request do
 
               expect(response_json[:content][:event_instances]).to match([
                                                                            {
-                                                                             id: kind_of(Integer),
+                                                                             id: kind_of(Fixnum),
                                                                              subtitle: nil,
                                                                              presenter_name: nil,
                                                                              starts_at: valid_event_params[:schedules].first[:starts_at],
-                                                                             ends_at: nil
+                                                                             ends_at: nil,
                                                                            }
                                                                          ])
             end
 
-            context 'when user publishes first Event' do
-              it 'calls to Mailchimp hook' do
+            context "when user publishes first Event" do
+              it "calls to Mailchimp hook" do
                 subject
                 matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
                   job[:args][0] == 'Outreach::CreateUserHookCampaign'
@@ -585,13 +587,13 @@ describe 'Contents Endpoints', type: :request do
               end
             end
 
-            context 'when user has already published Event' do
+            context "when user has already published Event" do
               before do
                 FactoryGirl.create :content, :event,
                                    created_by: user
               end
 
-              it 'does not call to Mailchimp hook' do
+              it "does not call to Mailchimp hook" do
                 subject
                 matching_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select do |job|
                   job[:args][0] == 'Outreach::CreateUserHookCampaign'
@@ -608,9 +610,9 @@ describe 'Contents Endpoints', type: :request do
     describe 'PUT /api/v3/contents/:id' do
       let(:content) { FactoryGirl.create :content }
 
-      subject do
+      subject {
         put "/api/v3/contents/#{content.id}", params: request_body, headers: headers
-      end
+      }
 
       context 'without authentication' do
         it 'returns 401' do
@@ -643,14 +645,14 @@ describe 'Contents Endpoints', type: :request do
           let(:content) { FactoryGirl.create(:content, :news, created_by: user) }
 
           context 'valid params' do
-            let(:valid_news_params) do
+            let(:valid_news_params) {
               {
-                title: 'A distinguished article, revised',
+                title: "A distinguished article, revised",
                 biz_feed_public: false,
-                content: '<p>Once upon a time...</p>',
-                author_name: 'Fred'
+                content: "<p>Once upon a time...</p>",
+                author_name: "Fred"
               }
-            end
+            }
 
             before do
               request_body.merge!(content: valid_news_params)
@@ -801,17 +803,17 @@ describe 'Contents Endpoints', type: :request do
           let(:content) { FactoryGirl.create(:content, :market_post, created_by: user) }
 
           context 'valid params' do
-            let(:valid_market_params) do
+            let(:valid_market_params) {
               {
                 biz_feed_public: false,
-                title: 'Casting Crowns',
-                content: '<p>Come to the Well</p>',
-                cost: '$10',
+                title: "Casting Crowns",
+                content: "<p>Come to the Well</p>",
+                cost: "$10",
                 promote_radius: 10,
                 contact_email: 'john@galilee.com',
                 location_id: FactoryGirl.create(:location).id
               }
-            end
+            }
 
             before do
               request_body.merge!(content: valid_market_params)
@@ -845,13 +847,13 @@ describe 'Contents Endpoints', type: :request do
           let(:content) { FactoryGirl.create(:content, :talk, created_by: user) }
 
           context 'valid params' do
-            let(:valid_talk_params) do
+            let(:valid_talk_params) {
               {
-                title: 'TFK',
-                content: '<p>Oxygen: Inhale</p>',
-                biz_feed_public: false
+                title: "TFK",
+                content: "<p>Oxygen: Inhale</p>",
+                biz_feed_public: false,
               }
-            end
+            }
 
             before do
               request_body.merge!(content: valid_talk_params)
@@ -880,12 +882,12 @@ describe 'Contents Endpoints', type: :request do
         describe 'event content' do
           let(:content) { FactoryGirl.create(:content, :event, created_by: user) }
           context 'valid params' do
-            let(:valid_event_params) do
+            let(:valid_event_params) {
               {
                 biz_feed_public: false,
-                title: 'Concert',
-                content: '<p>Tickets for sale a the doors</p>',
-                cost: '$10',
+                title: "Concert",
+                content: "<p>Tickets for sale a the doors</p>",
+                cost: "$10",
                 cost_type: 'paid',
                 promote_radius: 10,
                 contact_email: 'test@test.com',
@@ -895,14 +897,14 @@ describe 'Contents Endpoints', type: :request do
                     end_at: nil,
                     overrides: [],
                     presenter_name: nil,
-                    repeats: 'once',
+                    repeats: "once",
                     starts_at: 1.day.from_now.iso8601,
                     subtitle: nil,
                     weeks_of_month: []
                   }
                 ]
               }
-            end
+            }
 
             before do
               request_body.merge!(content: valid_event_params)
@@ -938,7 +940,7 @@ describe 'Contents Endpoints', type: :request do
                                                                          subtitle: nil,
                                                                          presenter_name: nil,
                                                                          starts_at: valid_event_params[:schedules].first[:starts_at],
-                                                                         id: kind_of(Integer),
+                                                                         id: kind_of(Fixnum),
                                                                          end_date: valid_event_params[:schedules].first[:starts_at],
                                                                          repeats: 'once',
                                                                          days_of_week: nil,
@@ -958,21 +960,21 @@ describe 'Contents Endpoints', type: :request do
     let!(:alt_org) { FactoryGirl.create :organization }
     let!(:location) { FactoryGirl.create(:location) }
 
-    let!(:event) do
+    let!(:event) {
       FactoryGirl.create :content, :event, :published, organization: org
-    end
-    let!(:talk) do
+    }
+    let!(:talk) {
       FactoryGirl.create :content, :talk, :published, organization: org
-    end
-    let!(:market_post) do
+    }
+    let!(:market_post) {
       FactoryGirl.create :content, :market_post, :published, organization: org
-    end
-    let!(:news) do
+    }
+    let!(:news) {
       FactoryGirl.create :content, :news, :published, organization: org
-    end
-    let!(:comment) do
+    }
+    let!(:comment) {
       FactoryGirl.create :comment
-    end
+    }
 
     before do
       comment.content.update organization: org
@@ -998,7 +1000,7 @@ describe 'Contents Endpoints', type: :request do
 
     it 'allows specifying type separated by comma' do
       query_params[:type] = 'news,market'
-      expect(subject[:content_ids]).to include news.id, market_post.id
+      expect(subject[:content_ids]).to include *[news.id, market_post.id]
       expect(subject[:content_ids]).to_not include talk.id
     end
 
@@ -1018,20 +1020,20 @@ describe 'Contents Endpoints', type: :request do
     end
   end
 
-  describe '#update_subscriber_notification' do
+  describe "#update_subscriber_notification" do
     before do
       @organization = FactoryGirl.create :organization,
                                          subscribe_url: 'http://glim.glam'
       allow(NotifySubscribersJob).to receive(:perform_later).and_return true
     end
 
-    context 'when Content is type: campaign' do
+    context "when Content is type: campaign" do
       subject do
         FactoryGirl.create :content, :campaign,
                            organization_id: @organization.id
       end
 
-      it 'does not notify subscribers' do
+      it "does not notify subscribers" do
         expect(NotifySubscribersJob).not_to receive(:perform_later)
         subject
       end

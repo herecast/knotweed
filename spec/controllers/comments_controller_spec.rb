@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 RSpec.describe CommentsController, type: :controller do
@@ -8,16 +6,16 @@ RSpec.describe CommentsController, type: :controller do
     sign_in @user
   end
 
-  describe 'GET #index' do
+  describe "GET #index" do
     subject { get :index }
 
-    it 'returns ok status' do
+    it "returns ok status" do
       subject
       expect(response).to have_http_status :ok
     end
   end
 
-  describe 'PUT #update' do
+  describe "PUT #update" do
     before do
       @parent_content = FactoryGirl.create :content
       @comment = FactoryGirl.create :comment,
@@ -27,13 +25,13 @@ RSpec.describe CommentsController, type: :controller do
 
     subject { put :update, params: { id: @comment.content.id } }
 
-    it 'updates deleted_at to nil' do
+    it "updates deleted_at to nil" do
       expect { subject }.to change {
         @comment.content.reload.deleted_at
       }.to nil
     end
 
-    it 'increase comment numbers on parent' do
+    it "increase comment numbers on parent" do
       expect { subject }.to change {
         @comment.parent.reload.comment_count
       }.by(1).and change {
@@ -42,7 +40,7 @@ RSpec.describe CommentsController, type: :controller do
     end
   end
 
-  describe 'DELETE #destroy' do
+  describe "DELETE #destroy" do
     before do
       @parent_content = FactoryGirl.create :content
       @comment = FactoryGirl.create :comment,
@@ -59,12 +57,12 @@ RSpec.describe CommentsController, type: :controller do
 
     subject { delete :destroy, params: { id: @comment.content.id } }
 
-    it 'updates deleted_at to current time' do
+    it "updates deleted_at to current time" do
       subject
       expect(@comment.content.reload.deleted_at).not_to be_nil
     end
 
-    it 'decrease comment numbers on parent' do
+    it "decrease comment numbers on parent" do
       expect { subject }.to change {
         @comment.parent.reload.comment_count
       }.by(-1).and change {
@@ -72,14 +70,14 @@ RSpec.describe CommentsController, type: :controller do
       }.by(-1)
     end
 
-    it 'queues email to parent content owner' do
+    it "queues email to parent content owner" do
       expect(CommentAlertMailer).to receive(:alert_parent_content_owner).with(
         @comment.content, @parent_content, true
       )
       subject
     end
 
-    it 'queues email to comment creator' do
+    it "queues email to comment creator" do
       expect(ContentRemovalAlertMailer).to receive(:content_removal_alert).with(
         @comment.content
       )

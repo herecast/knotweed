@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module ListservSupport
   extend ActiveSupport::Concern
 
@@ -10,18 +8,18 @@ module ListservSupport
 
   def sync_mc_digest_name
     if mc_sync?
-      old_name = mc_group_name_before_last_save
+      old_name = self.mc_group_name_before_last_save
       if old_name.present?
         BackgroundJob.perform_later('MailchimpService', 'rename_digest',
-                                    mc_list_id, old_name, mc_group_name)
-      elsif mc_group_name.present?
+                                    self.mc_list_id, old_name, self.mc_group_name)
+      elsif self.mc_group_name.present?
         BackgroundJob.perform_later('MailchimpService', 'find_or_create_digest',
-                                    mc_list_id, mc_group_name)
+                                    self.mc_list_id, self.mc_group_name)
       end
     end
   end
 
   def add_mc_webhook
-    BackgroundJob.perform_later('MailchimpService', 'add_unsubscribe_hook', mc_list_id) if mc_list_id.present?
+    BackgroundJob.perform_later('MailchimpService', 'add_unsubscribe_hook', self.mc_list_id) if self.mc_list_id.present?
   end
 end

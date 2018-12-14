@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class ImagesController < ApiController
@@ -23,7 +21,7 @@ module Api
         if @image.update_attributes(image_params)
           render json: @image, serializer: ImageSerializer, status: 200
         else
-          render json: { errors: ['Image could not be updated'] }, status: 200
+          render json: { errors: ["Image could not be updated"] }, status: 200
         end
       end
 
@@ -45,7 +43,7 @@ module Api
           @image.save!
           render json: @image, serializer: ImageSerializer, status: 200
         else
-          render json: { errors: ['Image could not be updated'] }, status: 200
+          render json: { errors: ["Image could not be updated"] }, status: 200
         end
       end
 
@@ -61,7 +59,7 @@ module Api
           :imageable_id,
           :position,
           :source_url
-        ).merge(imageable: @content)
+        ).merge({ imageable: @content })
       end
     end
   end

@@ -1,52 +1,50 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe 'User API Endpoints', type: :request do
-  let(:json_headers) do
+  let(:json_headers) {
     {
       'Content-Type' => 'application/json',
       'ACCEPT' => 'application/json'
     }
-  end
+  }
 
   describe 'GET /api/v3/current_user' do
     context 'signed in ' do
       let(:user) { FactoryGirl.create :user }
-      let(:headers) do
+      let(:headers) {
         json_headers['HTTP_AUTHORIZATION'] = \
           "Token token=#{user.authentication_token}, \
           email=#{user.email}"
         json_headers
-      end
+      }
 
       it 'returns json representation of signed in user' do
         get '/api/v3/current_user', params: {}, headers: headers
 
-        expect(response_json).to match(
-          current_user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            created_at: user.created_at.iso8601,
-            location: {
-              id: user.location.id,
-              city: user.location.city,
-              state: user.location.state
-            },
-            location_confirmed: user.location_confirmed?,
-            listserv_id: an_instance_of(String).or(be_nil),
-            listserv_name: an_instance_of(String).or(be_nil),
-            test_group: an_instance_of(String).or(be_nil),
-            user_image_url: an_instance_of(String).or(be_nil),
-            events_ical_url: an_instance_of(String).or(be_nil),
-            skip_analytics: user.skip_analytics,
-            managed_organization_ids: an_instance_of(Array),
-            can_publish_news: user.can_publish_news?,
-            has_had_bookmarks: user.has_had_bookmarks,
-            is_blogger: user.has_role?(:blogger)
-          }
-        )
+        expect(response_json).to match({
+                                         current_user: {
+                                           id: user.id,
+                                           name: user.name,
+                                           email: user.email,
+                                           created_at: user.created_at.iso8601,
+                                           location: {
+                                             id: user.location.id,
+                                             city: user.location.city,
+                                             state: user.location.state
+                                           },
+                                           location_confirmed: user.location_confirmed?,
+                                           listserv_id: an_instance_of(String).or(be_nil),
+                                           listserv_name: an_instance_of(String).or(be_nil),
+                                           test_group: an_instance_of(String).or(be_nil),
+                                           user_image_url: an_instance_of(String).or(be_nil),
+                                           events_ical_url: an_instance_of(String).or(be_nil),
+                                           skip_analytics: user.skip_analytics,
+                                           managed_organization_ids: an_instance_of(Array),
+                                           can_publish_news: user.can_publish_news?,
+                                           has_had_bookmarks: user.has_had_bookmarks,
+                                           is_blogger: user.has_role?(:blogger)
+                                         }
+                                       })
       end
     end
   end
@@ -68,7 +66,7 @@ RSpec.describe 'User API Endpoints', type: :request do
     end
 
     context 'when the email is not found' do
-      subject { get '/api/v3/user/?email=fake@email.com' }
+      subject { get "/api/v3/user/?email=fake@email.com" }
       it 'returns 404' do
         subject
         expect(response.code).to eq '404'
@@ -85,16 +83,16 @@ RSpec.describe 'User API Endpoints', type: :request do
     context 'with token in json payload' do
       let(:token) { SecureRandom.hex(10) }
 
-      subject do
-        post '/api/v3/users/sign_in_with_token',
+      subject {
+        post "/api/v3/users/sign_in_with_token",
              params: { token: token }.to_json,
              headers: json_headers
-      end
+      }
 
       context 'When SignInToken.authenticate returns a user' do
-        let(:user) do
+        let(:user) {
           FactoryGirl.create :user
-        end
+        }
 
         before do
           allow(SignInToken).to receive(:authenticate).with(token).and_return(user)
@@ -130,15 +128,15 @@ RSpec.describe 'User API Endpoints', type: :request do
 
   describe 'POST /api/v3/users/email_signin_link' do
     context 'Given an email from an existing user' do
-      let(:user) do
+      let(:user) {
         FactoryGirl.create :user
-      end
+      }
 
-      subject do
-        post '/api/v3/users/email_signin_link',
+      subject {
+        post "/api/v3/users/email_signin_link",
              params: { email: user.email }.to_json,
              headers: json_headers
-      end
+      }
 
       it 'returns 201 status code' do
         subject
@@ -159,11 +157,11 @@ RSpec.describe 'User API Endpoints', type: :request do
     end
 
     context 'Given an email which does not match a user account' do
-      subject do
-        post '/api/v3/users/email_signin_link',
-             params: { email: 'notauser@somewhere.com' }.to_json,
+      subject {
+        post "/api/v3/users/email_signin_link",
+             params: { email: "notauser@somewhere.com" }.to_json,
              headers: json_headers
-      end
+      }
 
       it 'responds with 422 status code' do
         subject

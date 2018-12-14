@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe GeneratePayments, freeze_time: true do
@@ -28,10 +26,10 @@ RSpec.describe GeneratePayments, freeze_time: true do
     describe 'with child organizations with content' do
       let(:child_org) { FactoryGirl.create :organization, pay_for_content: true, parent: pay_for_org }
       let(:included_content1) { FactoryGirl.create :content, organization: child_org }
-      let!(:promotion_metrics) do
+      let!(:promotion_metrics) {
         FactoryGirl.create_list :promotion_banner_metric, 3, content: included_content1,
                                                              created_at: 2.days.ago
-      end
+      }
 
       it 'should create a payment record' do
         expect { subject }.to change { Payment.count }.by(1)
@@ -40,25 +38,25 @@ RSpec.describe GeneratePayments, freeze_time: true do
       it 'should correctly assign the payment attributes' do
         subject
         payment = Payment.last
-        expect(
-          total_payment: payment.total_payment.to_f,
-          period_start: payment.period_start,
-          period_end: payment.period_end,
-          payment_date: payment.payment_date,
-          pay_per_impression: payment.pay_per_impression.truncate(4),
-          paid_impressions: payment.paid_impressions,
-          content_id: payment.content_id,
-          paid_to: payment.paid_to
-        ).to eq(
-          total_payment: period_ad_rev,
-          period_start: period_start,
-          period_end: period_end,
-          payment_date: period_end.next_month.beginning_of_month + 9.days,
-          pay_per_impression: (period_ad_rev.to_f / promotion_metrics.count).to_d.truncate(4),
-          paid_impressions: promotion_metrics.count,
-          content_id: included_content1.id,
-          paid_to: recipient.user
-        )
+        expect({
+                 total_payment: payment.total_payment.to_f,
+                 period_start: payment.period_start,
+                 period_end: payment.period_end,
+                 payment_date: payment.payment_date,
+                 pay_per_impression: payment.pay_per_impression.truncate(4),
+                 paid_impressions: payment.paid_impressions,
+                 content_id: payment.content_id,
+                 paid_to: payment.paid_to
+               }).to eq({
+                          total_payment: period_ad_rev,
+                          period_start: period_start,
+                          period_end: period_end,
+                          payment_date: period_end.next_month.beginning_of_month + 9.days,
+                          pay_per_impression: (period_ad_rev.to_f / promotion_metrics.count).to_d.truncate(4),
+                          paid_impressions: promotion_metrics.count,
+                          content_id: included_content1.id,
+                          paid_to: recipient.user
+                        })
       end
     end
   end
@@ -75,10 +73,10 @@ RSpec.describe GeneratePayments, freeze_time: true do
 
     describe 'with valid ad impressions *not* in the period' do
       let(:included_content) { FactoryGirl.create :content, created_by: recipient.user, organization: pay_for_org }
-      let!(:impression_out_of_period) do
+      let!(:impression_out_of_period) {
         FactoryGirl.create :promotion_banner_metric, content: included_content,
                                                      created_at: (period_start - 1.month)
-      end
+      }
 
       it 'should not create any payments' do
         expect { subject }.to_not change { Payment.count }
@@ -88,10 +86,10 @@ RSpec.describe GeneratePayments, freeze_time: true do
     describe 'with valid ad impressions for an organization that is not paid' do
       let(:no_pay_org) { FactoryGirl.create :organization, pay_for_content: false }
       let(:included_content) { FactoryGirl.create :content, created_by: recipient.user, organization: no_pay_org }
-      let!(:impression_out_of_period) do
+      let!(:impression_out_of_period) {
         FactoryGirl.create :promotion_banner_metric, content: included_content,
                                                      created_at: (period_end - 2.days)
-      end
+      }
 
       it 'should not create any payments' do
         expect { subject }.to_not change { Payment.count }
@@ -101,14 +99,14 @@ RSpec.describe GeneratePayments, freeze_time: true do
     describe 'with valid ad impressions on two contents' do
       let(:included_content1) { FactoryGirl.create :content, created_by: recipient.user, organization: pay_for_org }
       let(:included_content2) { FactoryGirl.create :content, created_by: recipient.user, organization: pay_for_org }
-      let!(:impression1) do
+      let!(:impression1) {
         FactoryGirl.create :promotion_banner_metric, content: included_content1,
                                                      created_at: (period_end - 2.days)
-      end
-      let!(:impression2) do
+      }
+      let!(:impression2) {
         FactoryGirl.create :promotion_banner_metric, content: included_content2,
                                                      created_at: (period_end - 2.days)
-      end
+      }
 
       it 'should create two payments' do
         expect { subject }.to change { Payment.count }.by(2)

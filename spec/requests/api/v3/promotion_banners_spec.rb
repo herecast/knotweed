@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 def public_promotion_banner_schema(promotion_banner)
@@ -76,11 +74,11 @@ describe 'Promotion Banner Endpoints', type: :request do
       end
 
       context 'with empty string dates' do
-        subject do
+        subject {
           get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {
-            start_date: ' ', end_date: ' '
+            start_date: " ", end_date: " "
           }, headers: auth_headers
-        end
+        }
 
         it 'should return all daily_impression_counts' do
           subject
@@ -153,16 +151,16 @@ describe 'Promotion Banner Endpoints', type: :request do
 
       it 'returns promotion json' do
         subject
-        expect(response_json[:promotions].first).to match(
-          id: banner.id,
-          image_url: banner.banner_image.url,
-          redirect_url: banner.redirect_url,
-          organization_name: an_instance_of(String),
-          promotion_id: promo.id,
-          title: promo.content.title,
-          select_score: be_an_instance_of(Float).or(be_nil),
-          select_method: 'sponsored_content'
-        )
+        expect(response_json[:promotions].first).to match({
+                                                            id: banner.id,
+                                                            image_url: banner.banner_image.url,
+                                                            redirect_url: banner.redirect_url,
+                                                            organization_name: an_instance_of(String),
+                                                            promotion_id: promo.id,
+                                                            title: promo.content.title,
+                                                            select_score: be_an_instance_of(Float).or(be_nil),
+                                                            select_method: "sponsored_content"
+                                                          })
       end
     end
 
@@ -209,12 +207,12 @@ describe 'Promotion Banner Endpoints', type: :request do
           promotion_id: banner.promotion.id,
           title: banner.promotion.content.title,
           select_score: be_an_instance_of(Float).or(be_nil),
-          select_method: 'sponsored_content'
+          select_method: "sponsored_content"
         }]
       )
     end
 
-    context 'when promotion_banner is type: coupon' do
+    context "when promotion_banner is type: coupon" do
       before do
         @promotion_coupon = FactoryGirl.create :promotion_banner,
                                                promotion_type: 'Coupon',
@@ -223,7 +221,7 @@ describe 'Promotion Banner Endpoints', type: :request do
 
       subject { get "/api/v3/promotions/#{@promotion_coupon.promotion.id}" }
 
-      it 'returns automated redirect_url' do
+      it "returns automated redirect_url" do
         subject
         expect(response_json[:promotions][0][:redirect_url]).to eq "/promotions/#{@promotion_coupon.id}"
       end

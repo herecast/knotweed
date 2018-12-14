@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 describe Api::V3::BusinessProfileSerializer do
@@ -31,9 +29,9 @@ describe Api::V3::BusinessProfileSerializer do
     end
   end
 
-  describe '#hours' do
-    context 'when hours present' do
-      it 'returns array of hours in schema.org format' do
+  describe "#hours" do
+    context "when hours present" do
+      it "returns array of hours in schema.org format" do
         ability = double('ability')
         expect(ability).to receive(:can?).with(:manage, @business_profile.content).and_return(false)
 
@@ -42,8 +40,8 @@ describe Api::V3::BusinessProfileSerializer do
       end
     end
 
-    context 'when hours not present' do
-      it 'returns an empty array' do
+    context "when hours not present" do
+      it "returns an empty array" do
         ability = double('ability')
         expect(ability).to receive(:can?).with(:manage, @business_profile.content).and_return(false)
 

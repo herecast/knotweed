@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 require 'json'
 
-describe Api::V3::UsersController, type: :controller do
+describe Api::V3::UsersController, :type => :controller do
   describe 'GET current_user' do
     describe 'when user not signed in' do
       before { api_authenticate success: false }
@@ -22,7 +20,7 @@ describe Api::V3::UsersController, type: :controller do
                                                  consumer_active: true
         @user = FactoryGirl.create :user, location: location
         allow(@user).to receive(:avatar_url).and_return(
-          'https://www.google.com/images/srpr/logo11w.png'
+          "https://www.google.com/images/srpr/logo11w.png"
         )
         api_authenticate user: @user
       end
@@ -144,18 +142,18 @@ describe Api::V3::UsersController, type: :controller do
 
       subject! { put :update, format: :json, params: { current_user: { user_id: @user.id, image: file } } }
 
-      context 'when image is improper type' do
+      context "when image is improper type" do
         let!(:file) { fixture_file_upload('/bad_upload_file.json', 'application/javascript') }
 
         it "returns 'failed' alert" do
           decoded_response = JSON.parse(response.body)
           expect(response.status).to eq 422
-          expect(decoded_response['messages'].size).to eq 1
+          expect(decoded_response["messages"].size).to eq 1
         end
       end
 
-      context 'when image is proper type' do
-        %w[jpg jpeg png].each do |extension|
+      context "when image is proper type" do
+        ['jpg', 'jpeg', 'png'].each do |extension|
           let!(:file) { fixture_file_upload("/photo.#{extension}", "image/#{extension}") }
 
           it "should set new image from file type #{extension}" do
@@ -198,7 +196,7 @@ describe Api::V3::UsersController, type: :controller do
   describe 'ical url' do
     context 'when user has public id' do
       before do
-        allow(Figaro.env).to receive(:default_consumer_host).and_return('test.com')
+        allow(Figaro.env).to receive(:default_consumer_host).and_return("test.com")
         @user = FactoryGirl.create :user, public_id: 'sorlara'
         api_authenticate user: @user
       end
@@ -270,7 +268,7 @@ describe Api::V3::UsersController, type: :controller do
       end
 
       it 'creates Mailchimp segment for new user' do
-        expectations = lambda do |job|
+        expectations = ->(job) do
           job[:args][0] == 'Outreach::CreateMailchimpSegmentForNewUser' &&
             job[:args][1] == 'call'
         end
@@ -285,11 +283,11 @@ describe Api::V3::UsersController, type: :controller do
 
       context 'with unconfirmed digest subscriptions' do
         it 'confirms subscriptions after confriming their account' do
-          expect(@subs.none? { |sub| sub.confirmed_at.nil? })
+          expect(@subs.none? { |sub| sub.confirmed_at == nil })
         end
 
         it 'calls the Mailchimp subscribe service' do
-          expectations = lambda do |job|
+          expectations = ->(job) do
             job[:args][0] == 'MailchimpService' &&
               job[:args][1] == 'subscribe'
           end

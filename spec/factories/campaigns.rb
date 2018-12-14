@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: campaigns
@@ -29,7 +27,7 @@
 
 FactoryGirl.define do
   factory :campaign do
-    sponsored_by 'My String'
+    sponsored_by "My String"
     listserv
     community_ids { [FactoryGirl.create(:location).id] }
   end

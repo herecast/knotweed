@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 namespace :test_data do
   def create_user
     unique = false
-    until unique
+    while !unique
       email = Faker::Internet.email
       unique = User.find_by(email: email).nil?
     end
@@ -21,7 +19,7 @@ namespace :test_data do
 
   def create_org
     unique = false
-    until unique
+    while !unique
       name = Faker::Company.name
       unique = Organization.find_by(name: name).nil?
     end
@@ -38,14 +36,14 @@ namespace :test_data do
   def create_blogger_content(org)
     news_cat = ContentCategory.find_or_create_by(name: 'news')
     content = Content.new(
-      title: 'Article with Metrics',
+      title: "Article with Metrics",
       content_category_id: news_cat.id,
       raw_content: 'This is a fake news article with metrics',
       organization_id: org.id,
       pubdate: Date.today - 30
     )
     if content.save
-      puts 'Content created with title: Article with Metrics'
+      puts "Content created with title: Article with Metrics"
       content
     else
       raise "content creation error: #{content.errors.full_messages}"
@@ -56,7 +54,7 @@ namespace :test_data do
     start_date = Date.current - 30
     total_view_count = 0
     total_banner_click_count = 0
-    [*1..30].reverse_each do |days|
+    [*1..30].reverse.each do |days|
       multiplier = Math::E**(-(30 - days) / 5.0)
       view_count = multiplier * 30
       banner_click_count = multiplier * 8
@@ -76,7 +74,7 @@ namespace :test_data do
   end
 
   desc 'Create two users controlling organizations that can publish news'
-  task create_news_ugc_users: :environment do
+  task :create_news_ugc_users => :environment do
     begin
       puts 'Two users controlling orgs that can_publish_news'
       2.times do
@@ -87,12 +85,12 @@ namespace :test_data do
       end
     rescue Exception => e
       puts 'data creation failed'
-      puts e.inspect.to_s
+      puts "#{e.inspect}"
     end
   end
 
   desc 'Create two Blog users'
-  task create_blog_users: :environment do
+  task :create_blog_users => :environment do
     begin
       puts 'Two users that are bloggers, through the organization'
       2.times do
@@ -103,12 +101,12 @@ namespace :test_data do
       end
     rescue Exception => e
       puts 'data creation failed'
-      puts e.inspect.to_s
+      puts "#{e.inspect}"
     end
   end
 
   desc 'Create two users: one controls a parent org, one a child org'
-  task create_parent_child_org_users: :environment do
+  task :create_parent_child_org_users => :environment do
     begin
       puts 'Parent Organization'
       p_user = create_user
@@ -123,14 +121,14 @@ namespace :test_data do
       c_org.update_attribute(:parent, p_org)
     rescue Exception => e
       puts 'data creation failed'
-      puts e.inspect.to_s
+      puts "#{e.inspect}"
     end
   end
 
   desc 'Create user with Dashboard Metrics'
-  task create_blogger_with_metrics: :environment do
+  task :create_blogger_with_metrics => :environment do
     begin
-      puts 'Creating Blogger with Content and Metrics'
+      puts "Creating Blogger with Content and Metrics"
       blogger = create_user
       blogger.add_role :blogger
       org = create_org
@@ -140,7 +138,7 @@ namespace :test_data do
       content.update_attribute :view_count, content.content_reports.reduce(0) { |total, cr| total + cr.view_count }
     rescue Exception => e
       puts 'data creation failed'
-      puts e.inspect.to_s
+      puts "#{e.inspect}"
     end
   end
 end

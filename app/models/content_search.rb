@@ -1,20 +1,18 @@
-# frozen_string_literal: true
-
 class ContentSearch
   def self.standard_query(*args)
-    new(*args).standard_query
+    self.new(*args).standard_query
   end
 
   def self.comment_query(*args)
-    new(*args).comment_query
+    self.new(*args).comment_query
   end
 
   def self.my_stuff_query(*args)
-    new(*args).my_stuff_query
+    self.new(*args).my_stuff_query
   end
 
   def self.organization_calendar_query(*args)
-    new(*args).organization_calendar_query
+    self.new(*args).organization_calendar_query
   end
 
   def initialize(params:, current_user: nil)
@@ -109,14 +107,14 @@ class ContentSearch
   end
 
   def category_options
-    content_types = %w[news market talk]
+    content_types = ['news', 'market', 'talk']
     content_types << 'campaign' if @params[:organization_id].present?
     if @params[:calendar] == 'false'
       [{ content_type: content_types }]
     else
       [
         { content_type: content_types },
-        { content_type: 'event', 'organization_id' => { not: Organization::LISTSERV_ORG_ID } }
+        { content_type: 'event', "organization_id" => { not: Organization::LISTSERV_ORG_ID } }
       ]
     end
   end
@@ -151,11 +149,11 @@ class ContentSearch
   def conditionally_update_attributes_for_organization_query(attrs)
     if @params[:organization_id].present?
       attrs[:where][:biz_feed_public] = [true, nil]
-      organization = if @params[:organization_id] == 'false'
-                       Organization.find_by(standard_ugc_org: true)
-                     else
-                       Organization.find(@params[:organization_id])
-                     end
+      if @params[:organization_id] == 'false'
+        organization = Organization.find_by(standard_ugc_org: true)
+      else
+        organization = Organization.find(@params[:organization_id])
+      end
 
       or_opts = [{ organization_id: organization.id }]
       if @params[:calendar] == 'false'
@@ -178,9 +176,9 @@ class ContentSearch
 
   def organization_show_options
     {
-      'everything' => ->(attrs) { %i[pubdate biz_feed_public].each { |k| attrs[:where].delete(k) } },
+      'everything' => ->(attrs) { [:pubdate, :biz_feed_public].each { |k| attrs[:where].delete(k) } },
       'hidden' => ->(attrs) { attrs[:where][:biz_feed_public] = false },
-      'draft' => lambda do |attrs|
+      'draft' => ->(attrs) do
         attrs[:where].delete(:pubdate)
         attrs[:where][:or] << [
           { pubdate: nil },

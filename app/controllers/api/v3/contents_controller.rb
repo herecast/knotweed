@@ -1,13 +1,11 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class ContentsController < ApiController
-      before_action :check_logged_in!, except: %i[sitemap_ids show similar_content]
+      before_action :check_logged_in!, except: [:sitemap_ids, :show, :similar_content]
 
       # For usage in sitemap generation
       def sitemap_ids
-        types = (params[:type] || 'news,market,talk').split(/,\s*/).map do |type|
+        types = (params[:type] || "news,market,talk").split(/,\s*/).map do |type|
           if type == 'talk'
             'talk_of_the_town'
           else
@@ -98,7 +96,7 @@ module Api
       end
 
       def similar_content
-        expires_in 1.minutes, public: true
+        expires_in 1.minutes, :public => true
         @content = Content.find params[:id]
 
         @contents = @content.similar_content(4)
@@ -146,7 +144,7 @@ module Api
         @content.pubdate.present? && @content.pubdate < Time.current
       end
 
-      def promote_to_listservs(content)
+      def promote_to_listservs content
         listserv_ids = params[:content][:listserv_ids] || []
 
         if listserv_ids.any?
@@ -159,7 +157,7 @@ module Api
         end
       end
 
-      def rescrape_facebook(content)
+      def rescrape_facebook content
         if content.pubdate.present? && content.pubdate < Time.current
           BackgroundJob.perform_later('FacebookService', 'rescrape_url', content)
         end

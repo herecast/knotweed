@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 module Ugc
   class CreateMarket
     def self.call(*args)
-      new(*args).call
+      self.new(*args).call
     end
 
     def initialize(params, remote_ip: nil, user_scope:)
@@ -41,22 +39,22 @@ module Ugc
         :status,
         :prefered_contact_method,
         :sold,
-        content_attributes: %i[
-          id
-          title
-          raw_content
-          biz_feed_public
-          authoremail
-          authors
-          content_category_id
-          pubdate
-          timestamp
-          organization_id
-          promote_radius
-          sunset_date
-          location_id
-          created_by
-          origin
+        content_attributes: [
+          :id,
+          :title,
+          :raw_content,
+          :biz_feed_public,
+          :authoremail,
+          :authors,
+          :content_category_id,
+          :pubdate,
+          :timestamp,
+          :organization_id,
+          :promote_radius,
+          :sunset_date,
+          :location_id,
+          :created_by,
+          :origin
         ]
       )
     end

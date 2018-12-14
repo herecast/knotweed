@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: promotion_listservs
@@ -13,7 +11,7 @@
 
 require 'rails_helper'
 
-describe PromotionListserv, type: :model do
+describe PromotionListserv, :type => :model do
   let(:content) { FactoryGirl.create :content }
 
   context 'for vc_listservs' do

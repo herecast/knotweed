@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-shared_examples_for 'JobController' do
+shared_examples_for "JobController" do
   let(:model_class) { subject.controller_name.classify.constantize }
 
   describe '#run_job' do

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class OrganizationsController < ApplicationController
   load_and_authorize_resource except: [:create]
 
@@ -16,11 +14,11 @@ class OrganizationsController < ApplicationController
       if include_child_organizations?
         return_child_organizations
       else
-        @organizations = if return_news_orgs?
-                           @search.result(distinct: true).where(can_publish_news: true)
-                         else
-                           @search.result(distinct: true)
-                         end
+        if return_news_orgs?
+          @organizations = @search.result(distinct: true).where(can_publish_news: true)
+        else
+          @organizations = @search.result(distinct: true)
+        end
       end
     else
       @organizations = Organization
@@ -30,20 +28,21 @@ class OrganizationsController < ApplicationController
 
   def new
     if params[:short_form]
-      render partial: 'organizations/partials/short_form', layout: false
+      render partial: "organizations/partials/short_form", layout: false
     else
       render 'new'
     end
   end
 
-  def edit; end
+  def edit
+  end
 
   def update
     if @organization.update_attributes(organization_params)
       flash[:notice] = "Successfully updated organization #{@organization.id}"
       redirect_to form_submit_redirect_path(@organization.id)
     else
-      render action: 'edit'
+      render action: "edit"
     end
   end
 
@@ -52,8 +51,8 @@ class OrganizationsController < ApplicationController
   # list before doing anything and load_and_authorize_resource uses
   # a before filter.
   def create
-    business_loc_list = params[:organization].delete('business_location_list')
-    business_location_ids = business_loc_list.try(:split, ',')
+    business_loc_list = params[:organization].delete("business_location_list")
+    business_location_ids = business_loc_list.try(:split, ",")
 
     # This is part of what cancan does normally in load_resource.
     # It is used to pre load attributes that are part of the ability filter.
@@ -73,7 +72,7 @@ class OrganizationsController < ApplicationController
         end
       end
     else
-      render 'new'
+      render "new"
     end
   end
 
@@ -144,12 +143,12 @@ class OrganizationsController < ApplicationController
       :calendar_view_first,
       :calendar_card_active,
       :digest_id,
-      location_ids: [],
-      organization_locations_attributes: %i[
-        id
-        location_type
-        location_id
-        _destroy
+      :location_ids => [],
+      :organization_locations_attributes => [
+        :id,
+        :location_type,
+        :location_id,
+        :_destroy
       ]
     )
   end
@@ -159,7 +158,7 @@ class OrganizationsController < ApplicationController
   end
 
   def include_child_organizations?
-    session[:organizations_search][:include_child_organizations] == '1'
+    session[:organizations_search][:include_child_organizations] == "1"
   end
 
   def return_child_organizations
@@ -178,6 +177,6 @@ class OrganizationsController < ApplicationController
   end
 
   def return_news_orgs?
-    session[:organizations_search]['show_news_publishers'] == '1'
+    session[:organizations_search]["show_news_publishers"] == "1"
   end
 end

@@ -1,19 +1,20 @@
-# frozen_string_literal: true
-
 class RewritesController < ApplicationController
   load_and_authorize_resource
   respond_to :html
 
-  def index; end
+  def index
+  end
 
-  def edit; end
+  def edit
+  end
 
-  def new; end
+  def new
+  end
 
   def create
     @rewrite = Rewrite.new(rewrite_params)
     if @rewrite.save
-      flash[:notice] = 'Rewrite saved.'
+      flash[:notice] = "Rewrite saved."
       redirect_to rewrites_path
     else
       render 'new'

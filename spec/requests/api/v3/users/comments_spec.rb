@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 describe 'User Comments endpoint', type: :request do
@@ -9,28 +7,28 @@ describe 'User Comments endpoint', type: :request do
   let(:standard_org) { FactoryGirl.create :organization, standard_ugc_org: true }
   let(:headers) { { 'ACCEPT' => 'application/json' } }
 
-  describe '/api/v3/users/:id/comments', elasticsearch: true do
+  describe "/api/v3/users/:id/comments", elasticsearch: true do
     before do
       FactoryGirl.create :content, :comment,
                          created_by: other_user,
                          organization: standard_org
-      @comment_text = 'Vader is innocent!'
+      @comment_text = "Vader is innocent!"
       @owned_comment = FactoryGirl.create :content, :comment,
                                           created_by: user,
                                           organization: standard_org,
                                           raw_content: @comment_text
     end
 
-    context 'when no user logged in' do
+    context "when no user logged in" do
       subject { get "/api/v3/users/#{user.id}/comments" }
 
-      it 'it returns unauthorized status' do
+      it "it returns unauthorized status" do
         subject
         expect(response).to have_http_status :unauthorized
       end
     end
 
-    context 'when user logged in' do
+    context "when user logged in" do
       let(:user_headers) { headers.merge(auth_headers_for(user)) }
 
       subject { get "/api/v3/users/#{user.id}/comments", params: {}, headers: user_headers }

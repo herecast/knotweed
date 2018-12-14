@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class LocationsController < ApiController
@@ -7,7 +5,7 @@ module Api
         expires_in 1.hour, public: true
 
         if params[:query].present?
-          @locations = Location.search(params[:query], limit: 10)
+          @locations = Location.search(params[:query], { limit: 10 })
         elsif params[:near].present?
           if params[:radius].present?
 
@@ -17,7 +15,7 @@ module Api
             @locations = Location.with_slug.consumer_active.non_region.within_radius_of(location, radius)
 
           else
-            render(json: { errors: ['radius must be specified'] }, status: 422) && return
+            render json: { errors: ['radius must be specified'] }, status: 422 and return
           end
         else # not a radius query
 
@@ -55,7 +53,7 @@ module Api
             latitude: coords[0],
             longitude: coords[1]
           ).first
-        elsif current_user&.location
+        elsif current_user && current_user.location
           @location = current_user.location
         else
           @location = Location.non_region.consumer_active.nearest_to_ip(

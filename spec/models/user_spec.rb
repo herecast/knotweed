@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: users
@@ -56,101 +54,101 @@
 
 require 'spec_helper'
 
-describe User, type: :model do
+describe User, :type => :model do
   it { is_expected.to respond_to(:temp_password, :temp_password=) }
   it { is_expected.to have_db_column(:location_confirmed).of_type(:boolean) }
 
   before(:each) do
     location = FactoryGirl.create :location
     @attr = {
-      name: 'Example User',
-      email: 'user@example.com',
-      password: 'changeme',
-      password_confirmation: 'changeme',
-      location: location
+      :name => "Example User",
+      :email => "user@example.com",
+      :password => "changeme",
+      :password_confirmation => "changeme",
+      :location => location
     }
   end
 
-  it 'should create a new instance given a valid attribute' do
+  it "should create a new instance given a valid attribute" do
     expect { FactoryGirl.create :user, @attr }.to change { User.count }.by 1
   end
 
-  it 'should require an email address' do
-    no_email_user = FactoryGirl.build :user, @attr.merge(email: '')
+  it "should require an email address" do
+    no_email_user = FactoryGirl.build :user, @attr.merge(:email => "")
     expect(no_email_user).not_to be_valid
   end
 
-  it 'should accept valid email addresses' do
+  it "should accept valid email addresses" do
     addresses = %w[user@foo.com THE_USER@foo.bar.org first.last@foo.jp]
     addresses.each do |address|
-      valid_email_user = FactoryGirl.build :user, @attr.merge(email: address)
+      valid_email_user = FactoryGirl.build :user, @attr.merge(:email => address)
       expect(valid_email_user).to be_valid
     end
   end
 
-  it 'should reject invalid email addresses' do
+  it "should reject invalid email addresses" do
     addresses = %w[user@foo,com user_at_foo.org example.user@foo.]
     addresses.each do |address|
-      invalid_email_user = FactoryGirl.build :user, @attr.merge(email: address)
+      invalid_email_user = FactoryGirl.build :user, @attr.merge(:email => address)
       expect(invalid_email_user).not_to be_valid
     end
   end
 
-  it 'should reject duplicate email addresses' do
+  it "should reject duplicate email addresses" do
     FactoryGirl.create :user, @attr
     user_with_duplicate_email = FactoryGirl.build :user, @attr
     expect(user_with_duplicate_email).not_to be_valid
   end
 
-  it 'should reject email addresses identical up to case' do
+  it "should reject email addresses identical up to case" do
     upcased_email = @attr[:email].upcase
-    FactoryGirl.create :user, @attr.merge(email: upcased_email)
+    FactoryGirl.create :user, @attr.merge(:email => upcased_email)
     user_with_duplicate_email = FactoryGirl.build :user, @attr
     expect(user_with_duplicate_email).not_to be_valid
   end
 
-  describe 'passwords' do
+  describe "passwords" do
     before(:each) do
       @user = FactoryGirl.build :user, @attr
     end
 
-    it 'should have a password attribute' do
+    it "should have a password attribute" do
       expect(@user).to respond_to(:password)
     end
 
-    it 'should have a password confirmation attribute' do
+    it "should have a password confirmation attribute" do
       expect(@user).to respond_to(:password_confirmation)
     end
   end
 
-  describe 'password validations' do
-    it 'should require a password' do
-      expect(FactoryGirl.build(:user, @attr.merge(password: '', password_confirmation: '')))
+  describe "password validations" do
+    it "should require a password" do
+      expect(FactoryGirl.build :user, @attr.merge(:password => "", :password_confirmation => ""))
         .not_to be_valid
     end
 
-    it 'should require a matching password confirmation' do
-      expect(FactoryGirl.build(:user, @attr.merge(password_confirmation: 'invalid')))
+    it "should require a matching password confirmation" do
+      expect(FactoryGirl.build :user, @attr.merge(:password_confirmation => "invalid"))
         .not_to be_valid
     end
 
-    it 'should reject short passwords' do
-      short = 'a' * 5
-      hash = @attr.merge(password: short, password_confirmation: short)
-      expect(FactoryGirl.build(:user, hash)).not_to be_valid
+    it "should reject short passwords" do
+      short = "a" * 5
+      hash = @attr.merge(:password => short, :password_confirmation => short)
+      expect(FactoryGirl.build :user, hash).not_to be_valid
     end
   end
 
-  describe 'password encryption' do
+  describe "password encryption" do
     before(:each) do
       @user = FactoryGirl.create :user, @attr
     end
 
-    it 'should have an encrypted password attribute' do
+    it "should have an encrypted password attribute" do
       expect(@user).to respond_to(:encrypted_password)
     end
 
-    it 'should set the encrypted password attribute' do
+    it "should set the encrypted password attribute" do
       expect(@user.encrypted_password).not_to be_blank
     end
   end
@@ -215,7 +213,7 @@ describe User, type: :model do
       @user.add_role(:manager, @organization)
     end
 
-    it 'returns managed organizations' do
+    it "returns managed organizations" do
       expect(@user.managed_organizations).to match_array [@organization]
     end
   end
@@ -261,17 +259,17 @@ describe User, type: :model do
 
     describe 'changing avatar' do
       it do
-        expect do
+        expect {
           subject.update! avatar: 'newavatar.jpg'
-        end.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
+        }.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
       end
     end
 
     describe 'changing a non-dependent attribute' do
       it 'does not trigger reindex' do
-        expect do
+        expect {
           subject.update! fullname: 'Robert Paulson'
-        end.to_not have_enqueued_job(ReindexAssociatedContentJob)
+        }.to_not have_enqueued_job(ReindexAssociatedContentJob)
       end
     end
   end
@@ -323,22 +321,22 @@ describe User, type: :model do
     end
 
     describe '.from_facebook_oauth' do
-      let(:facebook_response) do
+      let(:facebook_response) {
         {
-          email: 'facebook_user@mail.com',
-          name: 'John Smith',
+          email: "facebook_user@mail.com",
+          name: "John Smith",
           verified: true,
           age_range: { min: 21 },
           timezone: -6,
-          gender: 'male',
-          id: '1234567',
-          provider: 'facebook',
+          gender: "male",
+          id: "1234567",
+          provider: "facebook",
           extra_info: { verified: true,
                         age_range: { min: 21 },
                         time_zone: -6,
-                        gender: 'male' }
+                        gender: "male" }
         }
-      end
+      }
 
       subject { User.from_facebook_auth(facebook_response) }
 

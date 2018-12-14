@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: promotions
@@ -28,6 +26,6 @@
 FactoryGirl.define do
   factory :promotion do
     content
-    description 'What a nice promotion'
+    description "What a nice promotion"
   end
 end

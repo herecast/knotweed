@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 RSpec.describe Contents::RemovalsController, type: :controller do
-  describe 'POST #create' do
+  describe "POST #create" do
     before do
       @user = FactoryGirl.create :admin
       sign_in @user
@@ -17,20 +15,20 @@ RSpec.describe Contents::RemovalsController, type: :controller do
 
     subject { post :create, params: { content_id: @content.id, type: 'contents' } }
 
-    it 'updates Content.removed to true' do
+    it "updates Content.removed to true" do
       expect { subject }.to change {
         @content.reload.removed
       }.to true
     end
 
-    it 'makes call to FacebookService for rescrape' do
+    it "makes call to FacebookService for rescrape" do
       expect(BackgroundJob).to receive(:perform_later).with(
         'FacebookService', 'rescrape_url', @content
       )
       subject
     end
 
-    it 'queues email to content owner' do
+    it "queues email to content owner" do
       expect(ContentRemovalAlertMailer).to receive(:content_removal_alert).with(
         @content
       )
@@ -38,7 +36,7 @@ RSpec.describe Contents::RemovalsController, type: :controller do
     end
   end
 
-  describe 'DELETE #destroy' do
+  describe "DELETE #destroy" do
     before do
       @user = FactoryGirl.create :admin
       sign_in @user
@@ -48,13 +46,13 @@ RSpec.describe Contents::RemovalsController, type: :controller do
 
     subject { delete :destroy, params: { content_id: @content.id, type: 'contents' } }
 
-    it 'updates Content.removed to false' do
+    it "updates Content.removed to false" do
       expect { subject }.to change {
         @content.reload.removed
       }.to false
     end
 
-    it 'makes call to FacebookService for rescrape' do
+    it "makes call to FacebookService for rescrape" do
       expect(BackgroundJob).to receive(:perform_later).with(
         'FacebookService', 'rescrape_url', @content
       )

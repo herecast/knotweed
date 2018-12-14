@@ -1,16 +1,14 @@
-# frozen_string_literal: true
-
 module ImageUrlService
   extend self
 
   def optimize_image_urls(html_text:, default_width: nil, default_height: nil, default_crop: true)
     doc = Nokogiri::HTML::DocumentFragment.parse(html_text)
     doc.css('img').each do |img|
-      next unless img.has_attribute?('src')
-
-      unoptimized_url = img['src']
-      width, height = choose_dimensions(img, default_width, default_height)
-      img['src'] = optimize_image_url(url: unoptimized_url, width: width, height: height, do_crop: default_crop)
+      if img.has_attribute?('src')
+        unoptimized_url = img['src']
+        width, height = choose_dimensions(img, default_width, default_height)
+        img['src'] = optimize_image_url(url: unoptimized_url, width: width, height: height, do_crop: default_crop)
+      end
     end
 
     doc.to_html
@@ -23,8 +21,8 @@ module ImageUrlService
 
     optimized_image_uri = ENV['OPTIMIZED_IMAGE_URI']
     if optimized_image_uri.present? && url && url =~ /^http/i && hostname_is_allowed(url) && width && height
-      url_no_protocol = url.sub(%r{^https?://}, '')
-      optimized_image_quality = ENV['OPTIMIZED_IMAGE_QUALITY'] || '80'
+      url_no_protocol = url.sub(/^https?:\/\//, '')
+      optimized_image_quality = ENV['OPTIMIZED_IMAGE_QUALITY'] || "80"
       quality = "filters:quality(#{optimized_image_quality})"
 
       if do_crop
@@ -50,9 +48,9 @@ module ImageUrlService
     # The incoming +ENV['IMOPT_ALLOWED_SOURCES']+ list can contain hostnames, e.g. 'd3ctw1a5413a3o.cloudfront.net'
     # or URIs, e.g. 'https://d3ctw1a5413a3o.cloudfront.net'.  We want to convert each item to a simple hostname.
     whitelisted_sources = ENV['IMOPT_ALLOWED_SOURCES'] || '["d3ctw1a5413a3o.cloudfront.net", "knotweed.s3.amazonaws.com", "subtext-misc.s3.amazonaws.com"]'
-    JSON.parse(whitelisted_sources).map do |src|
-      src =~ /^http/i ? src.sub(%r{^https?://}, '') : src
-    end.uniq
+    JSON.parse(whitelisted_sources).map { |src|
+      src =~ /^http/i ? src.sub(/^https?:\/\//, '') : src
+    }.uniq
   end
 
   # Returns the optimized width and height for the given +img+ element.
@@ -60,8 +58,7 @@ module ImageUrlService
   # for the indeterminate value(s), causing the subsequent call to +optimize_image_url+
   # to be a NO-OP.
   def choose_dimensions(img_elem, default_width, default_height)
-    width = default_width
-    height = default_height # Until we determine otherwise
+    width, height = default_width, default_height # Until we determine otherwise
 
     # CSS styling takes precedence over explicit +width+ and +height+ attributes, so
     # look for the explicit attributes first and then override them below if the CSS
@@ -78,7 +75,7 @@ module ImageUrlService
       height = css_height if css_height
     end
 
-    [width, height]
+    return width, height
   end
 
   # Returns nil if the target CSS dimension cannot be determined.
@@ -94,10 +91,10 @@ module ImageUrlService
     # Sort by style string length to prefer a style like +width:30px+ to one with a +min-+ or +max-+ prefix.
     # And if you have to choose between a +min-+ or a +max-+, choose the max by preferring the one that's first
     # in alphabetical order.
-    best_style = dimension_styles.min_by do |s|
-      style_name = s.split(':').first
+    best_style = dimension_styles.min_by { |s|
+      style_name = s.split(":").first
       [style_name.size, style_name]
-    end
+    }
 
     numeric_match = best_style.to_s.split(':').last.to_s.match(/\d+/)
     numeric_match && numeric_match[0]

@@ -1,24 +1,22 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe ConfirmSubscription do
   let(:confirm_ip) { '192.168.1.1' }
-  let(:subscription) do
+  let(:subscription) {
     FactoryGirl.create :subscription,
                        confirmed_at: nil,
                        confirm_ip: nil
-  end
+  }
 
   subject { described_class.call(subscription, confirm_ip) }
 
   it 'sets confirm_ip and confirmed_at' do
     expect { subject }.to change {
       subscription.reload.attributes.with_indifferent_access.slice(:confirm_ip, :confirmed_at)
-    }.to a_hash_including(
-      confirm_ip: confirm_ip,
-      confirmed_at: an_instance_of(ActiveSupport::TimeWithZone)
-    )
+    }.to a_hash_including({
+                            confirm_ip: confirm_ip,
+                            confirmed_at: an_instance_of(ActiveSupport::TimeWithZone)
+                          })
   end
 
   context 'when subscription.listserv has mc_list_id' do

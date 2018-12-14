@@ -1,21 +1,19 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 require 'aescrypt'
 
 RSpec.describe 'Register Confirmed User', type: :request do
   describe 'POST /api/v3/registrations/confirmed' do
     context 'Given new user details;' do
-      let(:user_details) do
+      let(:user_details) {
         {
-          email: 'test@example.org',
-          password: '123456jkl&',
+          email: "test@example.org",
+          password: "123456jkl&",
           location_id: FactoryGirl.create(:location).id,
-          name: 'John Smith'
+          name: "John Smith"
         }
-      end
+      }
 
-      subject { post '/api/v3/registrations/confirmed', params: { registration: user_details } }
+      subject { post "/api/v3/registrations/confirmed", params: { registration: user_details } }
 
       context 'Given confirmation key matching existing subscription' do
         let(:subscription) { FactoryGirl.create(:subscription, user_id: nil) }
@@ -61,7 +59,7 @@ RSpec.describe 'Register Confirmed User', type: :request do
           end
         end
 
-        context 'when no password supplied' do
+        context "when no password supplied" do
           before do
             user_details[:password] = nil
           end
@@ -78,7 +76,7 @@ RSpec.describe 'Register Confirmed User', type: :request do
       describe 'Invalid confirmation_key;' do
         context 'invalid format' do
           before do
-            user_details[:confirmation_key] = 'This is not valid'
+            user_details[:confirmation_key] = "This is not valid"
           end
 
           it 'returns 422 status' do

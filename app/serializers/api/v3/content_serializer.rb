@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class ContentSerializer < ActiveModel::Serializer
@@ -100,19 +98,27 @@ module Api
       end
 
       def venue_name
-        object.channel.try(:venue).try(:name) if object.channel_type == 'Event'
+        if object.channel_type == 'Event'
+          object.channel.try(:venue).try(:name)
+        end
       end
 
       def venue_city
-        object.channel.try(:venue).try(:city) if object.channel_type == 'Event'
+        if object.channel_type == 'Event'
+          object.channel.try(:venue).try(:city)
+        end
       end
 
       def venue_state
-        object.channel.try(:venue).try(:state) if object.channel_type == 'Event'
+        if object.channel_type == 'Event'
+          object.channel.try(:venue).try(:state)
+        end
       end
 
       def venue_zip
-        object.channel.try(:venue).try(:zip) if object.channel_type == 'Event'
+        if object.channel_type == 'Event'
+          object.channel.try(:venue).try(:zip)
+        end
       end
 
       def venue_url
@@ -134,7 +140,9 @@ module Api
       end
 
       def event_url
-        object.channel.try(:event_url) if object.channel_type == 'Event'
+        if object.channel_type == 'Event'
+          object.channel.try(:event_url)
+        end
       end
 
       def ends_at
@@ -186,13 +194,13 @@ module Api
       end
 
       def parent_event_instance_id
-        if object.parent.present? && (object.parent.channel_type == 'Event')
+        if object.parent.present? and object.parent.channel_type == 'Event'
           object.parent.channel.try(:event_instances).try(:first).try(:id)
         end
       end
 
       def parent_content_type
-        if object.parent.present? && object.parent.root_content_category.present?
+        if object.parent.present? and object.parent.root_content_category.present?
           object.parent.root_content_category.name
         end
       end
@@ -214,7 +222,9 @@ module Api
       end
 
       def sold
-        object.channel.try(:sold) if object.channel_type == 'MarketPost'
+        if object.channel_type == 'MarketPost'
+          object.channel.try(:sold)
+        end
       end
 
       def avatar_url
@@ -242,7 +252,7 @@ module Api
       end
 
       def event_instances
-        if object.channel_type == 'Event'
+        if object.channel_type == "Event"
           (object.channel.try(:event_instances) || []).map do |inst|
             AbbreviatedEventInstanceSerializer.new(inst).serializable_hash
           end
@@ -259,13 +269,17 @@ module Api
               default_crop: false
             )
           ).tap do |h|
-            h[:tail] = '' if h[:tail].nil?
+            if h[:tail].nil?
+              h[:tail] = ""
+            end
           end
         end
       end
 
       def cost_type
-        object.channel.try(:cost_type) if object.channel_type == 'Event'
+        if object.channel_type == 'Event'
+          object.channel.try(:cost_type)
+        end
       end
 
       def contact_phone
@@ -273,7 +287,7 @@ module Api
       end
 
       def contact_email
-        if %i[market event].include? object.content_type
+        if [:market, :event].include? object.content_type
           if object.channel.present?
             object.channel.try(:contact_email)
           else
@@ -287,7 +301,9 @@ module Api
       end
 
       def schedules
-        object.channel.try(:schedules).try(:map, &:to_ux_format) if isEvent
+        if isEvent
+          object.channel.try(:schedules).try(:map, &:to_ux_format)
+        end
       end
 
       def embedded_ad
@@ -305,9 +321,9 @@ module Api
       private
 
       def isEvent
-        (object.channel_type == 'Event') || (
-          object.parent.present? &&
-          (object.parent.channel_type == 'Event')
+        (object.channel_type == "Event") || (
+          object.parent.present? and
+          object.parent.channel_type == 'Event'
         )
       end
     end

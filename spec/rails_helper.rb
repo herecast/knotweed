@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 # This file is used by new generated specs, and is supposed to hold

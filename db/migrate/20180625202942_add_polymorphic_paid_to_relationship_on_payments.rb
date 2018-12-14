@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddPolymorphicPaidToRelationshipOnPayments < ActiveRecord::Migration
   def change
     change_table :payments do |t|

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe ListservDigestJob do
@@ -73,7 +71,7 @@ RSpec.describe ListservDigestJob do
           end
 
           context 'with active campaigns' do
-            let!(:campaign_1) do
+            let!(:campaign_1) {
               FactoryGirl.create :campaign,
                                  listserv: listserv,
                                  title: 'Camp1',
@@ -81,31 +79,31 @@ RSpec.describe ListservDigestJob do
                                  sponsored_by: Faker::Company.name,
                                  promotion_ids: [FactoryGirl.create(:promotion_banner).promotion.id],
                                  preheader: 'Camp1 PREHEADER'
-            end
+            }
 
-            let!(:campaign_2) do
+            let!(:campaign_2) {
               FactoryGirl.create :campaign,
                                  title: 'camp2',
                                  listserv: listserv,
                                  community_ids: [listserv.subscriptions.last.user.location_id],
                                  sponsored_by: Faker::Company.name,
                                  digest_query: 'SELECT * FROM contents'
-            end
+            }
 
             context 'when a campaign does not have enough posts' do
-              let(:min_post_listserv) do
+              let(:min_post_listserv) {
                 FactoryGirl.create :listserv,
                                    post_threshold: 5,
-                                   digest_query: 'SELECT * FROM contents LIMIT 0'
-              end
-              let!(:empty_campaign) do
+                                   digest_query: "SELECT * FROM contents LIMIT 0"
+              }
+              let!(:empty_campaign) {
                 FactoryGirl.create :campaign,
                                    title: 'empty_campaign',
                                    listserv: min_post_listserv,
                                    community_ids: [listserv.subscriptions.last.user.location_id],
                                    sponsored_by: Faker::Company.name,
                                    digest_query: 'SELECT * FROM contents LIMIT 0'
-              end
+              }
 
               it 'does not create a new digest if below post_threshold' do
                 subject
@@ -156,7 +154,7 @@ RSpec.describe ListservDigestJob do
           end
 
           it 'sends digest' do
-            mail = double
+            mail = double()
             expect(ListservDigestMailer).to receive(:digest).with(
               an_instance_of(ListservDigest)
             ).and_return(mail)

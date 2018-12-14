@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 RSpec.describe Outreach::ScheduleBloggerEmails do
-  describe '::call' do
+  describe "::call" do
     before do
       @user = FactoryGirl.create :user,
                                  mc_segment_id: '43nj2k4'
@@ -18,7 +16,7 @@ RSpec.describe Outreach::ScheduleBloggerEmails do
         .and_return(mailchimp)
     end
 
-    context 'when action: blogger_welcome_and_reminder' do
+    context "when action: blogger_welcome_and_reminder" do
       subject do
         Outreach::ScheduleBloggerEmails.call(
           action: 'blogger_welcome_and_reminder',
@@ -27,7 +25,7 @@ RSpec.describe Outreach::ScheduleBloggerEmails do
         )
       end
 
-      it 'schedules initial email and follow-up email' do
+      it "schedules initial email and follow-up email" do
         expect(@campaigns_array).to receive(:create).exactly(2).times
         expect { subject }.to change {
           @organization.reload.reminder_campaign_id
@@ -35,8 +33,8 @@ RSpec.describe Outreach::ScheduleBloggerEmails do
       end
     end
 
-    context 'when action is for first or third post' do
-      %w[first_blogger_post third_blogger_post].each do |action|
+    context "when action is for first or third post" do
+      ['first_blogger_post', 'third_blogger_post'].each do |action|
         subject do
           Outreach::ScheduleBloggerEmails.call(
             action: action,
@@ -45,14 +43,14 @@ RSpec.describe Outreach::ScheduleBloggerEmails do
           )
         end
 
-        it 'schedules an email' do
+        it "schedules an email" do
           expect(@campaigns_array).to receive(:create)
           subject
         end
       end
     end
 
-    context 'when blogger does not have mailchimp segment' do
+    context "when blogger does not have mailchimp segment" do
       before do
         @user.update_attribute(:mc_segment_id, nil)
         allow(Outreach::CreateMailchimpSegmentForNewUser).to receive(
@@ -68,7 +66,7 @@ RSpec.describe Outreach::ScheduleBloggerEmails do
         )
       end
 
-      it 'creates mailchimp segment for user' do
+      it "creates mailchimp segment for user" do
         expect(Outreach::CreateMailchimpSegmentForNewUser).to receive(
           'call'
         ).with(@user, organization: @organization)

@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 module Ugc
   class CreateNews
     def self.call(*args)
-      new(*args).call
+      self.new(*args).call
     end
 
     def initialize(params, user_scope:)
@@ -45,8 +43,8 @@ module Ugc
 
     def transformed_params
       @params.tap do |h|
-        h[:content][:raw_content] = h[:content].delete :content if h[:content].key? :content
-        h[:content][:pubdate] = h[:content].delete :published_at if h[:content].key? :published_at
+        h[:content][:raw_content] = h[:content].delete :content if h[:content].has_key? :content
+        h[:content][:pubdate] = h[:content].delete :published_at if h[:content].has_key? :published_at
         author_name = h[:content].delete :author_name
 
         if author_name == @current_user.name # @content hasn't been persisted yet so has no created_by

@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
-describe BusinessProfilesController, type: :controller do
+describe BusinessProfilesController, :type => :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
@@ -13,9 +11,9 @@ describe BusinessProfilesController, type: :controller do
       @business_profiles = FactoryGirl.create_list :business_profile, 5
     end
 
-    subject { get :index, params: { q: { id_in: '' } } }
+    subject { get :index, params: { q: { id_in: "" } } }
 
-    it 'returns http success' do
+    it "returns http success" do
       subject
       expect(response).to be_successful
     end
@@ -44,47 +42,47 @@ describe BusinessProfilesController, type: :controller do
       end
     end
 
-    context 'when searching for businesses by claim' do
+    context "when searching for businesses by claim" do
       before do
         @business_profiles[0].content = FactoryGirl.create :content
         organization = FactoryGirl.create :organization, org_type: 'Business'
         @business_profiles[0].content.update_attribute(:organization_id, organization.id)
       end
 
-      context 'when selecting claimed businesses' do
+      context "when selecting claimed businesses" do
         subject { get :index, params: { q: { content_organization_org_type_present: true } } }
 
-        it 'returns claimed business profiles' do
+        it "returns claimed business profiles" do
           subject
           expect(assigns(:business_profiles)).to match_array [@business_profiles[0]]
         end
       end
 
-      context 'when selecting unclaimed businesses' do
+      context "when selecting unclaimed businesses" do
         subject { get :index, params: { q: { content_organization_org_type_present: false } } }
 
-        it 'returns unclaimed business_profiles' do
+        it "returns unclaimed business_profiles" do
           subject
           expect(assigns(:business_profiles)).not_to include @business_profiles[0]
         end
       end
     end
 
-    context 'when searching by archiving status' do
-      context 'when querying for active' do
+    context "when searching by archiving status" do
+      context "when querying for active" do
         subject { get :index, params: { q: { archived_eq: false } } }
 
-        it 'returns unarchived business profiles' do
+        it "returns unarchived business profiles" do
           @business_profiles[1..4].map { |bp| bp.update_attribute(:archived, true) }
           subject
           expect(assigns(:business_profiles)).to match_array [@business_profiles[0]]
         end
       end
 
-      context 'when querying for archived' do
+      context "when querying for archived" do
         subject { get :index, params: { q: { archived_eq: true } } }
 
-        it 'returns archived business profiles' do
+        it "returns archived business profiles" do
           @business_profiles[0].update_attribute :archived, true
           subject
           expect(assigns(:business_profiles)).to match_array [@business_profiles[0]]
@@ -92,10 +90,10 @@ describe BusinessProfilesController, type: :controller do
       end
     end
 
-    context 'when reset' do
+    context "when reset" do
       subject { get :index, params: { reset: true } }
 
-      it 'responds with no business profiles' do
+      it "responds with no business profiles" do
         subject
         expect(assigns(:business_profiles)).to eq []
       end
@@ -119,7 +117,7 @@ describe BusinessProfilesController, type: :controller do
       }
     end
 
-    context 'when update succeeds' do
+    context "when update succeeds" do
       subject { put :update, params: { id: @bp.id, business_profile: @attrs_for_update, continue_editing: true } }
 
       it 'should update business_location attributes' do
@@ -127,27 +125,27 @@ describe BusinessProfilesController, type: :controller do
       end
     end
 
-    context 'when update fails' do
+    context "when update fails" do
       before do
         allow_any_instance_of(BusinessProfile).to receive(:update_attributes).and_return false
       end
 
       subject { put :update, params: { id: @bp.id, business_profile: @attrs_for_update, continue_editing: true } }
 
-      it 'renders edit page' do
+      it "renders edit page" do
         subject
         expect(response).to render_template 'edit'
       end
     end
 
-    context 'when removing image from claimed business profile' do
+    context "when removing image from claimed business profile" do
       before do
         @image = FactoryGirl.create(:image)
         @image.image = File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
         @bp.content.images << @image
       end
 
-      subject do
+      subject {
         put :update, params: {
           id: @bp.id,
           create_new: true,
@@ -163,23 +161,23 @@ describe BusinessProfilesController, type: :controller do
             }
           }
         }
-      end
+      }
 
-      it 'deletes image selected for deletion' do
+      it "deletes image selected for deletion" do
         subject
         @bp.reload
         expect(@bp.content.primary_image.image.url).to be_nil
       end
     end
 
-    context 'when removing logo from claimed business profile organization' do
+    context "when removing logo from claimed business profile organization" do
       before do
         @bp.content.organization.logo = File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
       end
 
       subject { put :update, params: { id: @bp.id, business_profile: { content_attributes: { id: @bp.content.id, organization_attributes: { id: @bp.content.organization.id, remove_logo: '1' } } } } }
 
-      it 'deletes :logo' do
+      it "deletes :logo" do
         subject
         @bp.reload
         expect(@bp.content.organization.logo.url).to be_nil
@@ -222,14 +220,14 @@ describe BusinessProfilesController, type: :controller do
       subject
     end
 
-    context 'when create fails' do
+    context "when create fails" do
       before do
         allow_any_instance_of(BusinessProfile).to receive(:save).and_return false
       end
 
       subject { post :create, params: { business_profile: { business_location_attributes: { name: Faker::Company.name } } } }
 
-      it 'renders new page' do
+      it "renders new page" do
         subject
         expect(response).to render_template 'new'
       end
@@ -239,7 +237,7 @@ describe BusinessProfilesController, type: :controller do
   describe 'GET #new' do
     subject { get :new }
 
-    it 'responds with 200 status code' do
+    it "responds with 200 status code" do
       subject
       expect(response.code).to eq '200'
     end
@@ -250,16 +248,16 @@ describe BusinessProfilesController, type: :controller do
       @bp = FactoryGirl.create :business_profile
     end
 
-    context 'when business not claimed' do
+    context "when business not claimed" do
       subject { get :edit, params: { id: @bp.id } }
 
-      it 'redirects to index' do
+      it "redirects to index" do
         subject
         expect(response).to redirect_to business_profiles_path
       end
     end
 
-    context 'when business_profile is claimed' do
+    context "when business_profile is claimed" do
       before do
         @bp.content = FactoryGirl.create :content
         organization = FactoryGirl.create :organization, org_type: 'Business'
@@ -268,19 +266,19 @@ describe BusinessProfilesController, type: :controller do
 
       subject { get :edit, params: { id: @bp.id } }
 
-      context 'when business profile has no managers' do
-        it 'returns http success' do
+      context "when business profile has no managers" do
+        it "returns http success" do
           expect(response).to have_http_status 200
         end
       end
 
-      context 'when business profile has managers' do
+      context "when business profile has managers" do
         before do
           @manager = FactoryGirl.create :user, email: 'bill@deblasio.com'
           @manager.add_role :manager, @bp.content.organization
         end
 
-        it 'assigns managers' do
+        it "assigns managers" do
           subject
           expect(assigns(:managers)).to match_array [@manager]
         end

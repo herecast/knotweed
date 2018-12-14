@@ -1,7 +1,5 @@
-# frozen_string_literal: true
-
 RSpec.configure do |config|
-  config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::ControllerHelpers, :type => :controller
 
   # rspec-rails 3 will no longer automatically infer an example group's spec type
   # from the file location. You can explicitly opt-in to the feature using this

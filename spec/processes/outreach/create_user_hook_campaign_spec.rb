@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 RSpec.describe Outreach::CreateUserHookCampaign do
-  describe '::call' do
+  describe "::call" do
     before do
       @user = FactoryGirl.create :user,
                                  mc_segment_id: '43nj2k4'
@@ -29,20 +27,20 @@ RSpec.describe Outreach::CreateUserHookCampaign do
     context 'when User creates first Market Post' do
       subject { Outreach::CreateUserHookCampaign.call(action: 'initial_market_post', user: @user) }
 
-      it 'calls to Mailchimp to create campaign' do
+      it "calls to Mailchimp to create campaign" do
         expect(@campaigns_array).to receive(:create).with(
           'regular',
-          standard_opts.merge(
-            subject: Rails.configuration.subtext.email_outreach.initial_market_post.subject,
-            template_id: Rails.configuration.subtext.email_outreach.initial_market_post.template_id
-          ),
+          standard_opts.merge({
+                                subject: Rails.configuration.subtext.email_outreach.initial_market_post.subject,
+                                template_id: Rails.configuration.subtext.email_outreach.initial_market_post.template_id
+                              }),
           { sections: {} },
-          saved_segment_id: @user.mc_segment_id
+          { saved_segment_id: @user.mc_segment_id }
         )
         subject
       end
 
-      it 'calls Mailchimp to schedule campaign' do
+      it "calls Mailchimp to schedule campaign" do
         expect(@campaigns_array).to receive(:schedule).with(
           @campaign_id,
           any_args
@@ -54,20 +52,20 @@ RSpec.describe Outreach::CreateUserHookCampaign do
     context 'when User creates first Event' do
       subject { Outreach::CreateUserHookCampaign.call(action: 'initial_event_post', user: @user) }
 
-      it 'calls to Mailchimp to create campaign' do
+      it "calls to Mailchimp to create campaign" do
         expect(@campaigns_array).to receive(:create).with(
           'regular',
-          standard_opts.merge(
-            subject: Rails.configuration.subtext.email_outreach.initial_event_post.subject,
-            template_id: Rails.configuration.subtext.email_outreach.initial_event_post.template_id
-          ),
+          standard_opts.merge({
+                                subject: Rails.configuration.subtext.email_outreach.initial_event_post.subject,
+                                template_id: Rails.configuration.subtext.email_outreach.initial_event_post.template_id
+                              }),
           { sections: {} },
-          saved_segment_id: @user.mc_segment_id
+          { saved_segment_id: @user.mc_segment_id }
         )
         subject
       end
 
-      it 'calls Mailchimp to schedule campaign' do
+      it "calls Mailchimp to schedule campaign" do
         expect(@campaigns_array).to receive(:schedule).with(
           @campaign_id,
           any_args

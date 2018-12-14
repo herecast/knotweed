@@ -1,10 +1,8 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe 'Profile metrics' do
   let(:remote_ip) { '1.1.1.1' }
-  let(:user_agent) { 'AmigaVoyager/3.4.4 (MorphOS/PPC native)' }
+  let(:user_agent) { "AmigaVoyager/3.4.4 (MorphOS/PPC native)" }
   let(:location) { FactoryGirl.create :location, slug: 'newton-nh' }
 
   before do
@@ -13,19 +11,19 @@ RSpec.describe 'Profile metrics' do
   end
 
   describe 'POST /api/v3/metrics/profiles/:organization_id/impressions' do
-    let(:context_data) do
+    let(:context_data) {
       {
         client_id: '1222kk898943',
         location_id: location.slug
       }
-    end
+    }
 
     let(:organization) { FactoryGirl.create :organization }
 
-    subject do
+    subject {
       post "/api/v3/metrics/profiles/#{organization.id}/impressions",
            params: context_data
-    end
+    }
 
     it 'records profile metric impression' do
       expect { subject }.to change {
@@ -49,24 +47,24 @@ RSpec.describe 'Profile metrics' do
   end
 
   describe 'POST /api/v3/metrics/profiles/:organization_id/clicks' do
-    let(:content) do
+    let(:content) {
       FactoryGirl.create :content, pubdate: (Time.zone.now - 1.day)
-    end
+    }
 
-    let(:context_data) do
+    let(:context_data) {
       {
         content_id: content.id,
         client_id: '1222kk898943',
         location_id: location.slug
       }
-    end
+    }
 
     let(:organization) { FactoryGirl.create :organization }
 
-    subject do
+    subject {
       post "/api/v3/metrics/profiles/#{organization.id}/clicks",
            params: context_data
-    end
+    }
 
     it 'records profile metric impression' do
       expect { subject }.to change {

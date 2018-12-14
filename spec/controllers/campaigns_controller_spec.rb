@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 RSpec.describe CampaignsController, type: :controller do
@@ -16,7 +14,7 @@ RSpec.describe CampaignsController, type: :controller do
   end
 
   let(:new_title) { 'Hoth Racquet Sale!' }
-  let(:valid_params) do
+  let(:valid_params) {
     { content: {
       organization_id: 5,
       title: new_title,
@@ -24,13 +22,13 @@ RSpec.describe CampaignsController, type: :controller do
       ad_campaign_end: Date.tomorrow,
       ad_promotion_type: 'ROS'
     } }
-  end
+  }
 
-  describe 'GET #index' do
+  describe "GET #index" do
     context 'when reset' do
       subject { get :index, params: { q: nil, reset: true } }
 
-      it 'returns no campaigns' do
+      it "returns no campaigns" do
         subject
         expect(assigns(:campaigns)).to eq []
       end
@@ -39,7 +37,7 @@ RSpec.describe CampaignsController, type: :controller do
     context 'when default search' do
       subject { get :index }
 
-      it 'returns all campaigns' do
+      it "returns all campaigns" do
         subject
         expect(response).to have_http_status :ok
       end
@@ -48,7 +46,7 @@ RSpec.describe CampaignsController, type: :controller do
     context 'when id is given' do
       subject { get :index, params: { q: { id_eq: @campaigns.first.id } } }
 
-      it 'finds matching campaign' do
+      it "finds matching campaign" do
         subject
         expect(assigns(:campaigns)).to match_array [@campaigns.first]
       end
@@ -63,13 +61,13 @@ RSpec.describe CampaignsController, type: :controller do
 
       subject { get :index, params: { q: { organization_id_eq: @organization.id } } }
 
-      it 'returns campaigns owned by organization' do
+      it "returns campaigns owned by organization" do
         subject
         expect(assigns(:campaigns)).to match_array [@org_campaign]
       end
     end
 
-    context 'when paid checkbox is clicked' do
+    context "when paid checkbox is clicked" do
       before do
         @paid_campaign = @campaigns.first
         @paid_campaign.promotions.first.update_attribute(:paid, true)
@@ -77,13 +75,13 @@ RSpec.describe CampaignsController, type: :controller do
 
       subject { get :index, params: { q: { promotions_paid_eq: true } } }
 
-      it 'returns paid campaigns' do
+      it "returns paid campaigns" do
         subject
         expect(assigns(:campaigns)).to match_array [@paid_campaign]
       end
     end
 
-    context 'when active checkbox is clicked' do
+    context "when active checkbox is clicked" do
       before do
         @active_campaign = @campaigns.first
         @active_campaign.update_attributes(ad_campaign_start: Date.yesterday, ad_campaign_end: Date.tomorrow)
@@ -91,13 +89,13 @@ RSpec.describe CampaignsController, type: :controller do
 
       subject { get :index, params: { promotion_banners_active: 'on' } }
 
-      it 'returns active promotions' do
+      it "returns active promotions" do
         subject
         expect(assigns(:campaigns)).to match_array [@active_campaign]
       end
     end
 
-    context 'when boosted checkbox is clicked' do
+    context "when boosted checkbox is clicked" do
       before do
         @boosted_campaign = @campaigns.first
         promotion_banner = FactoryGirl.create :promotion_banner, boost: true
@@ -107,50 +105,50 @@ RSpec.describe CampaignsController, type: :controller do
 
       subject { get :index, params: { q: { promotions_promotable_of_PromotionBanner_type_boost_eq: true } } }
 
-      it 'returns boosted campaigns' do
+      it "returns boosted campaigns" do
         subject
         expect(assigns(:campaigns)).to match_array [@boosted_campaign]
       end
     end
   end
 
-  describe 'GET #edit' do
+  describe "GET #edit" do
     subject { get :edit, params: { id: @campaigns.first.id } }
 
-    it 'returns ok status' do
+    it "returns ok status" do
       subject
       expect(response).to have_http_status :ok
     end
   end
 
-  describe 'GET #new' do
+  describe "GET #new" do
     subject { get :new }
 
-    it 'returns ok status' do
+    it "returns ok status" do
       subject
       expect(response).to have_http_status :ok
     end
   end
 
-  describe 'POST #create' do
-    context 'when content saves' do
+  describe "POST #create" do
+    context "when content saves" do
       subject { post :create, params: valid_params }
 
-      it 'creates campaign' do
+      it "creates campaign" do
         expect { subject }.to change {
           Content.count
         }.by 1
       end
     end
 
-    context 'when content does not save' do
+    context "when content does not save" do
       before do
         allow_any_instance_of(Content).to receive(:save).and_return false
       end
 
       subject { post :create, params: valid_params }
 
-      it 'does not create campaign' do
+      it "does not create campaign" do
         expect { subject }.not_to change {
           Content.count
         }
@@ -158,36 +156,36 @@ RSpec.describe CampaignsController, type: :controller do
     end
   end
 
-  describe 'GET #edit' do
+  describe "GET #edit" do
     subject { get :edit, params: { id: @campaigns.first.id } }
 
-    it 'returns ok status' do
+    it "returns ok status" do
       subject
       expect(response).to have_http_status :ok
     end
   end
 
-  describe 'PUT #edit' do
+  describe "PUT #edit" do
     let(:id) { @campaigns.first.id }
 
-    context 'when content updates' do
-      subject { put :update, params: valid_params.merge(id: id) }
+    context "when content updates" do
+      subject { put :update, params: valid_params.merge({ id: id }) }
 
-      it 'creates campaign' do
+      it "creates campaign" do
         expect { subject }.to change {
           @campaigns.first.reload.title
         }.to eq new_title
       end
     end
 
-    context 'when content does not update' do
+    context "when content does not update" do
       before do
         allow_any_instance_of(Content).to receive(:update_attributes).and_return false
       end
 
-      subject { put :update, params: valid_params.merge(id: id) }
+      subject { put :update, params: valid_params.merge({ id: id }) }
 
-      it 'does not create campaign' do
+      it "does not create campaign" do
         expect { subject }.not_to change {
           @campaigns.first.reload.title
         }

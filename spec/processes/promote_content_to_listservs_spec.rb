@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe PromoteContentToListservs do
@@ -35,7 +33,7 @@ RSpec.describe PromoteContentToListservs do
       expect(content.reload.short_link).to eq('http://bit.ly/12345')
     end
 
-    context 'When some are external' do
+    context "When some are external" do
       before do
         subset = listservs.sort_by(&:id).first(2)
         subset.each_with_index do |ls, i|
@@ -45,7 +43,7 @@ RSpec.describe PromoteContentToListservs do
 
       it 'should update sent_at with the current time', freeze_time: true do
         tm = Time.zone.now
-        test_group = PromotionListserv.order('id asc').first(2)
+        test_group = PromotionListserv.order("id asc").first(2)
         test_group.each do |pl|
           expect(pl.sent_at).to be_within(1.second).of tm
         end

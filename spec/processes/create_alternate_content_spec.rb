@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe CreateAlternateContent do
-  describe '::call' do
+  describe "::call" do
     before do
       @old_title = 'Legacy Tatooine'
       @old_raw_content = 'So offensive!'
@@ -17,7 +15,7 @@ RSpec.describe CreateAlternateContent do
 
     subject { CreateAlternateContent.call(@content) }
 
-    it 'returns an unpersisted Content record with crisis attributes' do
+    it "returns an unpersisted Content record with crisis attributes" do
       alternate_content = subject
       expect(alternate_content.class).to eq Content
       expect(alternate_content.persisted?).to be false
@@ -28,7 +26,7 @@ RSpec.describe CreateAlternateContent do
       expect(alternate_content.images[0].image_url).to eq 'https://s3.amazonaws.com/knotweed/duv/Default_Photo_News-01-1.jpg'
     end
 
-    context 'when alternate defaults have been overridden' do
+    context "when alternate defaults have been overridden" do
       let(:alt_title) { 'Alt title' }
       let(:alt_organization_id) { 41 }
       let(:alt_authors) { 'Alt authors' }
@@ -45,7 +43,7 @@ RSpec.describe CreateAlternateContent do
         )
       end
 
-      it 'returns the override values' do
+      it "returns the override values" do
         alternate_content = subject
         expect(alternate_content.title).to eq alt_title
         expect(alternate_content.organization_id).to eq alt_organization_id

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: promotion_banner_metrics
@@ -39,7 +37,7 @@ class PromotionBannerMetric < ActiveRecord::Base
   belongs_to :content
   validates_presence_of :promotion_banner
 
-  scope :for_payment_period, lambda { |period_start, period_end|
+  scope :for_payment_period, ->(period_start, period_end) {
     where(
       created_at: period_start.beginning_of_day..period_end.end_of_day,
       event_type: 'impression'

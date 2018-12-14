@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe ListservDigestMailer do
@@ -11,15 +9,15 @@ RSpec.describe ListservDigestMailer do
       let!(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: promotion }
       let(:market_post) { FactoryGirl.create :market_post }
 
-      let!(:listserv_digest) do
+      let!(:listserv_digest) {
         FactoryGirl.create :listserv_digest,
                            listserv: listserv,
                            subject: 'A test subject',
                            contents: contents,
                            mc_campaign_id: nil
-      end
+      }
 
-      describe 'delivery' do
+      describe "delivery" do
         subject { described_class.digest(listserv_digest).deliver_now }
 
         before do
@@ -78,14 +76,14 @@ RSpec.describe ListservDigestMailer do
           end
 
           it 'uses the template for the listserv' do
-            listserv_digest.template = 'test'
-            expect_any_instance_of(ListservDigestMailer).to receive(:mail).with(subject: listserv_digest.subject, template_name: listserv_digest.template.to_s, skip_premailer: true).and_return(Mail::Message.new)
+            listserv_digest.template = "test"
+            expect_any_instance_of(ListservDigestMailer).to receive(:mail).with(subject: listserv_digest.subject, template_name: "#{listserv_digest.template}", skip_premailer: true).and_return(Mail::Message.new)
             described_class.digest(listserv_digest).deliver_now
           end
         end
 
         context 'when using a custom footer' do
-          let!(:unencoded_tag) { '*|UNSUB|*' }
+          let!(:unencoded_tag) { ("*|UNSUB|*") }
           let(:footer_markup) { "<a href=\"#{unencoded_tag}\">unsubscribe</a>" }
 
           before do
@@ -94,7 +92,7 @@ RSpec.describe ListservDigestMailer do
 
           it 'does not encode mailchimp merge tags in links' do
             mail = described_class.digest(listserv_digest)
-            expect(mail.body).not_to include '%7C'
+            expect(mail.body).not_to include "%7C"
             expect(mail.body).to include unencoded_tag
           end
         end
@@ -146,12 +144,12 @@ RSpec.describe ListservDigestMailer do
 
       describe 'generated body' do
         around(:each) do |example|
-          old_consumer_host = ENV['DEFAULT_CONSUMER_HOST']
-          ENV['DEFAULT_CONSUMER_HOST'] = 'test.test'
+          old_consumer_host = ENV["DEFAULT_CONSUMER_HOST"]
+          ENV["DEFAULT_CONSUMER_HOST"] = "test.test"
 
           example.run
 
-          ENV['DEFAULT_CONSUMER_HOST'] = old_consumer_host
+          ENV["DEFAULT_CONSUMER_HOST"] = old_consumer_host
         end
         subject { described_class.digest(listserv_digest).body.encoded }
 

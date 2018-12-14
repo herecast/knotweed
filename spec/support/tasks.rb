@@ -1,7 +1,5 @@
-# frozen_string_literal: true
-
 # File: spec/support/tasks.rb
-require 'rake'
+require "rake"
 
 # Task names should be used in the top-level describe, with an optional
 # "rake "-prefix for better documentation. Both of these will work:
@@ -17,7 +15,7 @@ module TaskExampleGroup
   extend ActiveSupport::Concern
 
   included do
-    let(:task_name) { self.class.top_level_description.sub(/\Arake /, '') }
+    let(:task_name) { self.class.top_level_description.sub(/\Arake /, "") }
     let(:tasks) { Rake::Task }
 
     # Make the Rake task available as `task` in your examples:
@@ -27,7 +25,7 @@ end
 
 RSpec.configure do |config|
   # Tag Rake specs with `:task` metadata or put them in the spec/tasks dir
-  config.define_derived_metadata(file_path: %r{/spec/tasks/}) do |metadata|
+  config.define_derived_metadata(:file_path => %r{/spec/tasks/}) do |metadata|
     metadata[:type] = :task
   end
 

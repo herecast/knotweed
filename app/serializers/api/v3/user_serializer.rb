@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class UserSerializer < ActiveModel::Serializer
@@ -33,13 +31,15 @@ module Api
       end
 
       def events_ical_url
-        serialization_options[:events_ical_url] if object.public_id.present?
+        if object.public_id.present?
+          serialization_options[:events_ical_url]
+        end
       end
 
       def managed_organization_ids
-        if context.present? && context[:current_ability]
+        if context.present? and context[:current_ability]
           orgs = Organization.not_archived.with_role(:manager, object)
-          (orgs + orgs.map(&:get_all_children).flatten).map(&:id).uniq
+          (orgs + orgs.map { |o| o.get_all_children }.flatten).map { |o| o.id }.uniq
         else
           []
         end

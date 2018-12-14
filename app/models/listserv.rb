@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: listservs
@@ -72,11 +70,11 @@ class Listserv < ActiveRecord::Base
 
   scope :active, -> { where(active: true) }
 
-  scope :custom_digest, lambda {
+  scope :custom_digest, -> {
     where(list_type: 'custom_digest')
   }
 
-  def mc_group_name=(n)
+  def mc_group_name=n
     write_attribute :mc_group_name, (n.nil? ? n : n.strip)
   end
 
@@ -85,7 +83,7 @@ class Listserv < ActiveRecord::Base
   end
 
   def promotions_list
-    promotion_ids.join(', ')
+    promotion_ids.join(", ")
   end
 
   def active_subscriber_count
@@ -93,7 +91,7 @@ class Listserv < ActiveRecord::Base
   end
 
   def is_managed_list?
-    subscribe_email.present? || post_email.present? || unsubscribe_email.present?
+    subscribe_email.present? or post_email.present? or unsubscribe_email.present?
   end
 
   def is_vc_list?
@@ -105,17 +103,17 @@ class Listserv < ActiveRecord::Base
   end
 
   def no_altering_queries
-    if digest_query?
-      query_array = digest_query.upcase.split(' ')
-      reserved_commands = %w[INSERT UPDATE DELETE DROP TRUNCATE]
+    if self.digest_query?
+      query_array = self.digest_query.upcase.split(' ')
+      reserved_commands = %w(INSERT UPDATE DELETE DROP TRUNCATE)
       has_reserved_words = query_array.any? { |word| reserved_commands.include?(word) }
-      errors.add(:digest_query, 'Commands to alter data are not allowed') if has_reserved_words
+      errors.add(:digest_query, "Commands to alter data are not allowed") if has_reserved_words
     end
   end
 
   def valid_template_name
-    if template? && digest_templates.exclude?(template)
-      errors.add(:template, 'Please enter a valid template')
+    if self.template? and digest_templates.exclude? self.template
+      errors.add(:template, "Please enter a valid template")
     end
   end
 
@@ -130,18 +128,20 @@ class Listserv < ActiveRecord::Base
   end
 
   def banner_ads
-    promotions.map(&:promotable) if promotions.any?
+    if promotions.any?
+      promotions.map { |promo| promo.promotable }
+    end
   end
 
   def self.digest_days
-    %w[
-      Sunday
-      Monday
-      Tuesday
-      Wednesday
-      Thursday
-      Friday
-      Saturday
+    [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
     ]
   end
 
@@ -181,7 +181,7 @@ class Listserv < ActiveRecord::Base
   end
 
   def parse_digest_send_time
-    Time.zone.parse(digest_send_time.strftime('%H:%M'))
+    Time.zone.parse(digest_send_time.strftime("%H:%M"))
   end
 
   def find_week_to_send(time_with_week)
@@ -193,7 +193,7 @@ class Listserv < ActiveRecord::Base
   end
 
   def get_query
-    ActiveRecord::Base.connection.execute(digest_query)
+    ActiveRecord::Base.connection.execute(self.digest_query)
   end
 
   def custom_digest_results
@@ -203,7 +203,7 @@ class Listserv < ActiveRecord::Base
   def mc_group_name_required
     if mc_list_id?
       unless mc_group_name?
-        errors.add(:mc_group_name, 'required when mc_list_id present')
+        errors.add(:mc_group_name, "required when mc_list_id present")
       end
     end
   end

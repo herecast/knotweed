@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: schedules
@@ -26,9 +24,9 @@ class Schedule < ActiveRecord::Base
   validates_presence_of :event
 
   def self.create_single_occurrence_from_event_instance(ei)
-    schedule = Schedule.new(subtitle_override: ei.subtitle_override,
-                            presenter_name: ei.presenter_name,
-                            description_override: ei.description_override)
+    schedule = Schedule.new({ subtitle_override: ei.subtitle_override,
+                              presenter_name: ei.presenter_name,
+                              description_override: ei.description_override })
     schedule.event = ei.event
     schedule.save! # persist so we can assign event instance to it so that update_event_instances
     # doesn't end up replacing the instance
@@ -89,13 +87,13 @@ class Schedule < ActiveRecord::Base
     # JSON arrays as nil.
     if hash['overrides'].present?
       hash['overrides'].each do |i|
-        next unless i['hidden'] # this data structure is to support instance specific data overrides in the future
-
-        # exceptions are passed just as dates, so we need to assign them the start time
-        # for them to work consistently.
-        exc = Time.zone.at(i['date'].to_time)
-        exception_time = Time.zone.local(exc.year, exc.month, exc.day, starts_at.hour, starts_at.min, starts_at.sec)
-        sched.add_exception_time exception_time
+        if i['hidden'] # this data structure is to support instance specific data overrides in the future
+          # exceptions are passed just as dates, so we need to assign them the start time
+          # for them to work consistently.
+          exc = Time.zone.at(i['date'].to_time)
+          exception_time = Time.zone.local(exc.year, exc.month, exc.day, starts_at.hour, starts_at.min, starts_at.sec)
+          sched.add_exception_time exception_time
+        end
       end
     end
 
@@ -146,7 +144,7 @@ class Schedule < ActiveRecord::Base
 
   def set_schedule!(sched)
     self.schedule = sched
-    save
+    self.save
   end
 
   # convenience methods that let us interact with IceCube schedule
@@ -174,18 +172,18 @@ class Schedule < ActiveRecord::Base
 
   # create or update event_instances for schedule
   def update_event_instances
-    if schedule.present?
+    if self.schedule.present?
       # remove no longer existent occurrences
       EventInstance.where(schedule_id: id).each do |ei|
-        ei.destroy unless schedule.all_occurrences.map { |o| o.start_time.to_i }.include? ei.start_date.to_i
+        ei.destroy unless self.schedule.all_occurrences.map { |o| o.start_time.to_i }.include? ei.start_date.to_i
       end
       eis_by_date = event_instances_by_date
 
       # add new occurrences
       schedule.each_occurrence do |occurrence|
-        if !eis_by_date.key? occurrence.start_time.to_i
+        if !eis_by_date.has_key? occurrence.start_time.to_i
           attrs = {
-            schedule_id: id,
+            schedule_id: self.id,
             event_id: event.id,
             start_date: occurrence.start_time,
             description_override: description_override,
@@ -198,7 +196,7 @@ class Schedule < ActiveRecord::Base
           ei = eis_by_date[occurrence.start_time.to_i]
           # update end dates if need be -- unfortunately, since end_dates are all different
           # (even though duration is the same), these have to be updated by separate queries
-          if (ei.end_date.to_i != occurrence.end_time.to_i) &&
+          if ei.end_date.to_i != occurrence.end_time.to_i and
              if occurrence.end_time == occurrence.start_time
                # support removing end times from schedules/instances
                # if ei.end_date is already nil, we can skip the db call here
@@ -242,11 +240,11 @@ class Schedule < ActiveRecord::Base
       if rule.is_a? IceCube::DailyRule
         repeats = 'daily'
       elsif rule.is_a? IceCube::WeeklyRule
-        repeats = if rule_hash[:interval] == 2
-                    'bi-weekly'
-                  else
-                    'weekly'
-                  end
+        if rule_hash[:interval] == 2
+          repeats = 'bi-weekly'
+        else
+          repeats = 'weekly'
+        end
         days_of_week = rule_hash[:validations][:day].map { |d| d + 1 }
       elsif rule.is_a? IceCube::MonthlyRule
         repeats = 'monthly'
@@ -280,7 +278,7 @@ class Schedule < ActiveRecord::Base
   def self.parse_repeat_info_to_rule(hash)
     repeats = hash['repeats']
     if hash['days_of_week']&.select { |e| e.present? }.present?
-      d_o_w = hash['days_of_week'].select(&:present?).map { |d| d - 1 } # ember app and IceCube are off by 1 day in their treatment
+      d_o_w = hash['days_of_week'].select { |e| e.present? }.map { |d| d - 1 } # ember app and IceCube are off by 1 day in their treatment
       # of days of week
     end
     if repeats == 'daily'

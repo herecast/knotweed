@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 module Outreach
   class ScheduleBloggerEmails
     def self.call(*args)
-      new(*args).call
+      self.new(*args).call
     end
 
     def initialize(action:, user:, organization: nil)
@@ -35,7 +33,7 @@ module Outreach
     def create_and_schedule_campaign(step, send_time = Time.current)
       response = create_campaign(step)
       schedule_campaign(response, send_time)
-      response
+      return response
     end
 
     def email_config

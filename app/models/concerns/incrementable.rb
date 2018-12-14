@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Incrementable
   # accepts symbol reference to a count field that needs to be
   # incremented and needs to skip callbacks

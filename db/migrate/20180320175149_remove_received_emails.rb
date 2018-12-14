@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RemoveReceivedEmails < ActiveRecord::Migration
   def up
     drop_table :received_emails

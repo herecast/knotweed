@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: content_promotion_banner_loads
@@ -24,15 +22,15 @@ class ContentPromotionBannerLoad < ActiveRecord::Base
   # looks for a corresponding ContentPromotionBannerImpression record --
   # if it finds it, increment display_count, else create a new one.
   def self.log_load(content_id, promotion_banner_id, select_method, select_score)
-    impression = where(content_id: content_id,
-                       promotion_banner_id: promotion_banner_id).first
+    impression = self.where(content_id: content_id,
+                            promotion_banner_id: promotion_banner_id).first
     if impression.present?
       impression.update_attribute :load_count, impression.load_count + 1
       impression.update_attribute :select_method, select_method
       impression.update_attribute :select_score, select_score
     else
-      create(content_id: content_id,
-             promotion_banner_id: promotion_banner_id, load_count: 1, select_method: select_method, select_score: select_score)
+      self.create(content_id: content_id,
+                  promotion_banner_id: promotion_banner_id, load_count: 1, select_method: select_method, select_score: select_score)
     end
   end
 end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 describe ApplicationHelper, type: :helper do
@@ -12,12 +10,12 @@ describe ApplicationHelper, type: :helper do
     end
 
     context 'Given a resource with multiple base errors' do
-      let(:errors) { ['error 1', 'Error 2'] }
-      let(:resource) do
+      let(:errors) { ["error 1", "Error 2"] }
+      let(:resource) {
         double(errors: {
                  base: errors
                })
-      end
+      }
       subject { helper.display_base_errors(resource) }
       it 'generates html with all the error messages' do
         expect(subject).to satisfy { |html| errors.all? { |e| html.include?(e) } }
@@ -30,12 +28,12 @@ describe ApplicationHelper, type: :helper do
 
     context 'for a config controller' do
       before { allow(controller).to receive(:controller_name).and_return(ApplicationHelper::CONFIG_CONTROLLERS[0]) }
-      it { expect(subject).to eq 'in' }
+      it { expect(subject).to eq "in" }
     end
 
     context 'for a non-config controller' do
-      before { allow(controller).to receive(:controller_name).and_return('fake_non_config') }
-      it { expect(subject).to eq '' }
+      before { allow(controller).to receive(:controller_name).and_return("fake_non_config") }
+      it { expect(subject).to eq "" }
     end
   end
 end

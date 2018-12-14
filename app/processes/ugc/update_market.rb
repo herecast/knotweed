@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 module Ugc
   class UpdateMarket
     def self.call(*args)
-      new(*args).call
+      self.new(*args).call
     end
 
     def initialize(content, params, remote_ip: nil, user_scope:)
@@ -41,20 +39,20 @@ module Ugc
         :status,
         :prefered_contact_method,
         :sold,
-        content_attributes: %i[
-          id
-          title
-          raw_content
-          authoremail
-          authors
-          biz_feed_public
-          content_category_id
-          pubdate
-          timestamp
-          organization_id
-          promote_radius
-          sunset_date
-          location_id
+        content_attributes: [
+          :id,
+          :title,
+          :raw_content,
+          :authoremail,
+          :authors,
+          :biz_feed_public,
+          :content_category_id,
+          :pubdate,
+          :timestamp,
+          :organization_id,
+          :promote_radius,
+          :sunset_date,
+          :location_id
         ]
       )
     end

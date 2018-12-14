@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Ability
   include CanCan::Ability
 
@@ -22,7 +20,7 @@ class Ability
 
       can :manage, Content, created_by: user
       # give access only to event category contents
-      event_category = ContentCategory.find_or_create_by(name: 'event')
+      event_category = ContentCategory.find_or_create_by(name: "event")
       can :manage, Content, content_category_id: event_category.id
 
       # Hashie::Mash is returned directly out of searchkick when {load: false}
@@ -31,16 +29,16 @@ class Ability
 
       can :manage, BusinessLocation # for event venues
     else
-      managed_orgs = if user.roles.where(name: 'manager').count > 0
-                       Organization.with_role(:manager, user)
-                     else
-                       []
-                     end
+      if user.roles.where(name: 'manager').count > 0
+        managed_orgs = Organization.with_role(:manager, user)
+      else
+        managed_orgs = []
+      end
       if managed_orgs.present?
         # note: due to quirks in the way Rolify works, we *can't* use the same role name for this
         # that we use for the unscoped admin. So instead I'm calling it manager.
         parent_org_ids = managed_orgs.pluck(:id)
-        org_ids = (parent_org_ids + managed_orgs.map(&:get_all_children).flatten.map(&:id)).uniq
+        org_ids = (parent_org_ids + managed_orgs.map { |o| o.get_all_children }.flatten.map { |o| o.id }).uniq
         can :manage, Organization, id: org_ids
         can :manage, PromotionBanner, promotion: { content: { organization_id: org_ids } }
         can :manage, Content, organization_id: org_ids

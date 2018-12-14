@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
-describe Api::V3::BusinessProfilesController, type: :controller do
+describe Api::V3::BusinessProfilesController, :type => :controller do
   before do
     FactoryGirl.create :location, :default
   end
@@ -64,7 +62,7 @@ describe Api::V3::BusinessProfilesController, type: :controller do
       end
     end
 
-    describe 'Sorting' do
+    describe "Sorting" do
       let(:mock_results) { double('results', total_entries: 0) }
 
       let(:best_score_order) do

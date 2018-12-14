@@ -1,9 +1,6 @@
-# frozen_string_literal: true
-
 module MailchimpService
   module UserOutreach
     extend self
-
     include HTTParty
 
     format     :json
@@ -25,8 +22,9 @@ module MailchimpService
                                                   template_id: template_id
                                                 }, {
                                                   sections: {}
-                                                },
-                                                saved_segment_id: user.mc_segment_id)
+                                                }, {
+                                                  saved_segment_id: user.mc_segment_id
+                                                })
     end
 
     def schedule_campaign(campaign_id, timing: Time.current)

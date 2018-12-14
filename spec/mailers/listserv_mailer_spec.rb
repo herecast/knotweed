@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe ListservMailer, type: :mailer do
   let(:body_html) { subject.body.parts.find { |p| p.content_type.match /html/ }.body.raw_source }
@@ -8,14 +6,14 @@ RSpec.describe ListservMailer, type: :mailer do
 
   before(:each) do
     allow(Figaro.env).to receive(:listserv_marketing_url)\
-      .and_return('http://listserv.dailyUV.com')
+      .and_return("http://listserv.dailyUV.com")
 
     allow(Figaro.env).to receive(:default_consumer_host)\
-      .and_return('test.localhost')
+      .and_return("test.localhost")
   end
 
   shared_examples :has_curious_why_changed_when_not_user_test do
-    let(:message) { 'Curious why things changed?' }
+    let(:message) { "Curious why things changed?" }
 
     it 'has curious why changed message' do
       expect(body_html).to include(message)
@@ -47,13 +45,13 @@ RSpec.describe ListservMailer, type: :mailer do
   end
 
   shared_examples :has_unsubscribe_with_user_test_changes do
-    let(:unsub_wording) do
+    let(:unsub_wording) {
       /#{Regexp.escape("unsubscribe from")}\s+#{Regexp.escape(subscription.listserv.name)}/i
-    end
+    }
 
-    let(:unsub_url) do
+    let(:unsub_url) {
       "http://#{Figaro.env.default_consumer_host}/lists/#{subscription.key}/manage"
-    end
+    }
 
     it 'has unsubscribe link' do
       expect(body_html).to match(unsub_wording)
@@ -70,9 +68,9 @@ RSpec.describe ListservMailer, type: :mailer do
                            active: true)
       end
 
-      let(:unsub_wording) do
+      let(:unsub_wording) {
         /#{Regexp.escape("unsubscribe from")}\s+#{Regexp.escape("this test")}/i
-      end
+      }
 
       it 'has unsubscribe link with test wording' do
         expect(body_html).to match(unsub_wording)

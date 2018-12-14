@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative 'boot'
 
 require 'rails/all'
@@ -10,7 +8,7 @@ Bundler.require(*Rails.groups)
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
-  Bundler.require(*Rails.groups(assets: %w[development test]))
+  Bundler.require(*Rails.groups(:assets => %w(development test)))
   Bundler.require(:pry) unless ENV['RM_INFO'] || Rails.env.production?
   Bundler.require(:rubymine) if ENV['RM_INFO']
   Bundler.require(:default, Rails.env)
@@ -33,7 +31,7 @@ module Knotweed
 
     # Custom directories with classes and modules you want to be autoloadable.
     # config.autoload_paths += %W(#{config.root}/extras)
-    config.autoload_paths += %W[#{config.root}/lib]
+    config.autoload_paths += %W(#{config.root}/lib)
     config.autoload_paths += Dir[Rails.root.join('app', 'api_clients', '**/')]
     config.autoload_paths += Dir[Rails.root.join('app', 'serializers', '**/')]
     config.autoload_paths += Dir[Rails.root.join('app', 'models', 'concerns', '**/')]
@@ -54,10 +52,10 @@ module Knotweed
     # config.i18n.default_locale = :de
 
     # Configure the default encoding used in templates for Ruby 1.9.
-    config.encoding = 'utf-8'
+    config.encoding = "utf-8"
 
     # Configure sensitive parameters which will be filtered from the log file.
-    config.filter_parameters += %i[password password_confirmation]
+    config.filter_parameters += [:password, :password_confirmation]
 
     # Enable escaping HTML in JSON.
     config.active_support.escape_html_entities_in_json = true
@@ -77,7 +75,7 @@ module Knotweed
     # Set if not pre-compiling assets
     config.assets.compile = !!ENV.fetch('ASSETS_COMPILE', false)
     config.public_file_server.enabled = !!ENV.fetch('SERVE_STATIC_FILES', false)
-    config.assets.precompile += %w[minimal.scss email/base.scss payment_reports.scss]
+    config.assets.precompile += %w(minimal.scss email/base.scss payment_reports.scss)
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
@@ -89,7 +87,7 @@ module Knotweed
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins '*'
-        resource '/api/v3/*', headers: :any, methods: %i[get put patch post delete options]
+        resource '/api/v3/*', :headers => :any, :methods => [:get, :put, :patch, :post, :delete, :options]
       end
     end
     config.cache_store = :redis_store

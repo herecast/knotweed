@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ListservCampaignsController < ApplicationController
   before_action :authorize_access!
 
@@ -49,9 +47,11 @@ class ListservCampaignsController < ApplicationController
       :preheader,
       :promotions_list,
       community_ids: [],
-      promotion_ids: []
+      promotion_ids: [],
     ).tap do |p|
-      p[:community_ids].reject!(&:empty?) if p[:community_ids].respond_to?(:[])
+      if p[:community_ids].respond_to?(:[])
+        p[:community_ids].reject! { |c| c.empty? }
+      end
     end
   end
 end

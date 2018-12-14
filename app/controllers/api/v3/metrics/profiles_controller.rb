@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class Metrics::ProfilesController < ApiController
@@ -36,7 +34,7 @@ module Api
       def profile_metric_params
         organization = Organization.find params[:id]
 
-        {
+        return {
           user_id: current_user.try(:id),
           user_agent: request.user_agent,
           user_ip: request.remote_ip,
@@ -57,7 +55,7 @@ module Api
         if params[:content_id].present?
           content = Content.find(params[:content_id])
           if content.pubdate.blank? || content.pubdate > Time.current
-            render(json: {}, status: 200) && return
+            render json: {}, status: 200 and return
           end
         end
       end

@@ -1,11 +1,9 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class BusinessProfilesController < ApiController
       MI_TO_KM = 1.60934
 
-      before_action :check_logged_in!, only: %i[create update]
+      before_action :check_logged_in!, only: [:create, :update]
 
       def index
         expires_in 1.minutes, public: true
@@ -23,12 +21,12 @@ module Api
 
         # don't do any geodist related stuff if organization_id comes in
         unless params[:organization_id].present?
-          @coords = if params[:lat].present? && params[:lng].present?
-                      [params[:lat], params[:lng]]
-                    else
-                      # default to center of Upper Valley
-                      Location.default_location.coordinates
-                    end
+          if params[:lat].present? and params[:lng].present?
+            @coords = [params[:lat], params[:lng]]
+          else
+            # default to center of Upper Valley
+            @coords = Location.default_location.coordinates
+          end
 
           radius = params[:radius] || 50 # default 50 miles
           # convert to radians
@@ -39,7 +37,9 @@ module Api
         end
 
         opts[:order] = sort_by
-        opts[:order].unshift(_score: :desc) if query.present? && (query != '*')
+        if query.present? and query != '*'
+          opts[:order].unshift({ _score: :desc })
+        end
 
         if params[:category_id].present?
           opts[:where][:category_ids] = { in: BusinessCategory.find(params[:category_id]).full_descendant_ids }
@@ -95,17 +95,17 @@ module Api
       protected
 
       def sort_by
-        order = params[:sort_by] || 'score_desc'
+        order = params[:sort_by] || "score_desc"
         case order
-        when 'distance_asc'
+        when "distance_asc"
           closest_order
-        when 'score_desc'
+        when "score_desc"
           best_score_order
-        when 'rated_desc'
+        when "rated_desc"
           most_rated_order
-        when 'alpha_asc'
+        when "alpha_asc"
           alpha_order
-        when 'alpha_desc'
+        when "alpha_desc"
           [{ business_location_name: :desc }]
         else
           return []
@@ -173,7 +173,7 @@ module Api
             :id,
             :title,
             :raw_content,
-            organization_attributes: %i[id description]
+            organization_attributes: [:id, :description]
           ],
           business_location_attributes: [
             :id,

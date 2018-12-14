@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: subscriptions
@@ -48,15 +46,15 @@ class Subscription < ActiveRecord::Base
 
   before_save :detect_and_connect_user, unless: :user_id?
 
-  scope :active, lambda {
-    where('confirmed_at IS NOT NULL').where(unsubscribed_at: nil)
+  scope :active, -> {
+    where("confirmed_at IS NOT NULL").where(unsubscribed_at: nil)
   }
 
   def self.find(id)
     find_by!("#{table_name}.id = :id OR #{table_name}.key = :key", id: id.to_i, key: id.to_s)
   end
 
-  def email=(value)
+  def email=value
     super(value.try(:downcase))
   end
 
@@ -80,12 +78,15 @@ class Subscription < ActiveRecord::Base
 
   def detect_and_connect_user
     usr = User.where(email: email).first
-    self.user = usr if usr
+    if usr
+      self.user = usr
+    end
   end
 
   def generate_key
     self.key = SecureRandom.uuid
   end
 
-  def cast_id_type(id); end
+  def cast_id_type(id)
+  end
 end

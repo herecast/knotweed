@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: schedules
@@ -16,7 +14,7 @@
 
 require 'spec_helper'
 
-describe Schedule, type: :model do
+describe Schedule, :type => :model do
   describe 'after_save :update_event_instances' do
     describe 'on creation' do
       before do
@@ -150,7 +148,7 @@ describe Schedule, type: :model do
     context 'with event instances with overlapping durations' do
       before do
         @schedule = FactoryGirl.create :schedule,
-                                       recurrence: IceCube::Schedule.new(Chronic.parse('today at 2pm'),
+                                       recurrence: IceCube::Schedule.new(Chronic.parse("today at 2pm"),
                                                                          duration: 2.hours) { |s| s.add_recurrence_rule IceCube::Rule.hourly.until(Chronic.parse('tomorrow at 2pm')) }.to_yaml
       end
 
@@ -243,7 +241,7 @@ describe Schedule, type: :model do
     context 'when passed _remove for an existing schedule' do
       before do
         @schedule = FactoryGirl.create :schedule, event: @event
-        @remove_input = @input.merge('_remove' => true, 'id' => @schedule.id)
+        @remove_input = @input.merge({ '_remove' => true, 'id' => @schedule.id })
       end
 
       subject { Schedule.build_from_ux_for_event(@remove_input, @event.id) }
@@ -256,7 +254,7 @@ describe Schedule, type: :model do
     context 'when ends_at < starts_at' do
       before do
         @schedule = FactoryGirl.create :schedule, event: @event
-        @weird_timing = @input.merge('starts_at' => Time.current, 'ends_at' => Time.current - 61 * 60)
+        @weird_timing = @input.merge({ 'starts_at' => Time.current, "ends_at" => Time.current - 61 * 60 })
       end
 
       subject { Schedule.build_from_ux_for_event(@weird_timing, @event.id) }

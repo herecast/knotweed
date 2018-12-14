@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: subscriptions
@@ -39,9 +37,9 @@ FactoryGirl.define do
   factory :subscription do
     user
     listserv
-    source 'email'
+    source "email"
     sequence(:email) { |n| "user#{n}@example.org" }
-    name 'Da Name'
+    name "Da Name"
 
     trait(:confirmed) do
       confirmed_at { 1.day.ago }

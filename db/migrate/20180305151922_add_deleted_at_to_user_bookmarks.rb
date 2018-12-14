@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddDeletedAtToUserBookmarks < ActiveRecord::Migration
   def change
     add_column :user_bookmarks, :deleted_at, :datetime

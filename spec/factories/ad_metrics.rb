@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: ad_metrics
@@ -17,6 +15,6 @@
 
 FactoryGirl.define do
   factory :ad_metric do
-    campaign 'CTA Below Death Star laser'
+    campaign "CTA Below Death Star laser"
   end
 end

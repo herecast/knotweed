@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RemoveDatasetsAndDataContexts < ActiveRecord::Migration
   def up
     drop_table :data_contexts

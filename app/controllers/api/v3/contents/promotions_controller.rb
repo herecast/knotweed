@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Api
   module V3
     class Contents::PromotionsController < ApiController
@@ -33,7 +31,9 @@ module Api
           :created_by,
           :share_platform
         ).tap do |p|
-          p[:created_by] = current_user if p[:created_by].present?
+          if p[:created_by].present?
+            p[:created_by] = current_user
+          end
         end
       end
     end

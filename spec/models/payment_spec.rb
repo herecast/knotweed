@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: payments
@@ -56,7 +54,7 @@ RSpec.describe Payment, type: :model do
     end
 
     it 'should sum the total payment per user period' do
-      expect(subject.map(&:total_payment)).to match_array([payment.total_payment + payment2.total_payment, payment3.total_payment, other_user_payment.total_payment])
+      expect(subject.map { |payment| payment.total_payment }).to match_array([payment.total_payment + payment2.total_payment, payment3.total_payment, other_user_payment.total_payment])
     end
   end
 
@@ -68,7 +66,7 @@ RSpec.describe Payment, type: :model do
     it 'should export to CSV' do
       invoice_date = payment.period_end.next_month.beginning_of_month
       expect(subject).to eql(
-        "Vendor Name,Invoice #,Invoice Date,Due Date,Amount,Account\n" \
+        "Vendor Name,Invoice #,Invoice Date,Due Date,Amount,Account\n" +
         "#{payment.paid_to.fullname},#{payment.id},#{invoice_date},#{invoice_date + 9.days},#{payment.total_payment},#{BillDotComService::CHART_OF_ACCOUNT_ID}\n"
       )
     end
@@ -76,11 +74,11 @@ RSpec.describe Payment, type: :model do
 
   describe 'Payment.by_period' do
     let!(:payment1) { FactoryGirl.create :payment }
-    let!(:payment2) do
+    let!(:payment2) {
       FactoryGirl.create :payment,
                          period_start: payment1.period_start,
                          period_end: payment1.period_end
-    end
+    }
 
     subject { Payment.by_period }
 
