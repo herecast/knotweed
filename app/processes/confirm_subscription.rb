@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # A service object responsible for confirming the subscription.
 # It will unset unsubscribed_at if present (resubscribing)
 #
@@ -5,7 +7,7 @@ class ConfirmSubscription
   # @param [Subscription] - instance to confirm.
   # @param [String] - ip address used to confirm
   def self.call(*args)
-    self.new(*args).call
+    new(*args).call
   end
 
   def initialize(subscription, confirm_ip)

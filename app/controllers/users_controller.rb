@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class UsersController < ApplicationController
   def index
-    authorize! :index, @user, :message => 'Not authorized as an administrator.'
+    authorize! :index, @user, message: 'Not authorized as an administrator.'
     @user_sources = User.pluck(:source).compact.uniq
 
     if params[:reset]
@@ -30,11 +32,11 @@ class UsersController < ApplicationController
     @search.sorts = 'created_at desc'
     @total_count = @search.result.count
 
-    if params[:page].nil?
-      @page = 1
-    else
-      @page = params[:page].to_i
-    end
+    @page = if params[:page].nil?
+              1
+            else
+              params[:page].to_i
+            end
     @users = @search.result.page(params[:page]).per(25)
   end
 
@@ -50,16 +52,16 @@ class UsersController < ApplicationController
 
   def update
     @user = User.find(params[:id])
-    authorize! :update, @user, :message => 'Not authorized as an administrator.'
+    authorize! :update, @user, message: 'Not authorized as an administrator.'
     @user.skip_reconfirmation!
     params[:user].delete(:password) if params[:user][:password].blank?
     if @user.update_attributes(user_params)
       process_user_organizations
-      redirect_to @user, :notice => "User updated."
+      redirect_to @user, notice: 'User updated.'
     else
       @digests = Listserv.all
       @organizations = Organization.with_role(:manager, @user)
-      render action: 'edit', :alert => "Unable to update user."
+      render action: 'edit', alert: 'Unable to update user.'
     end
   end
 
@@ -77,13 +79,13 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    authorize! :destroy, @user, :message => 'Not authorized as an administrator.'
+    authorize! :destroy, @user, message: 'Not authorized as an administrator.'
     user = User.find(params[:id])
-    unless user == current_user
-      user.destroy
-      redirect_to users_path, :notice => "User deleted."
+    if user == current_user
+      redirect_to users_path, notice: "Can't delete yourself."
     else
-      redirect_to users_path, :notice => "Can't delete yourself."
+      user.destroy
+      redirect_to users_path, notice: 'User deleted.'
     end
   end
 
@@ -98,11 +100,11 @@ class UsersController < ApplicationController
     authorize! :create, @user
     process_user_organizations
     if @user.save
-      flash[:notice] = "User created."
+      flash[:notice] = 'User created.'
       redirect_to @user
     else
-      flash.now[:alert] = "There was a problem creating the user"
-      render "new"
+      flash.now[:alert] = 'There was a problem creating the user'
+      render 'new'
     end
   end
 

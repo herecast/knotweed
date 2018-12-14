@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
-describe Api::V3::ImagesController, :type => :controller do
+describe Api::V3::ImagesController, type: :controller do
   before do
     @market_post = FactoryGirl.create :market_post
     @file1 = fixture_file_upload('/photo.jpg', 'image/jpg')
@@ -9,10 +11,10 @@ describe Api::V3::ImagesController, :type => :controller do
   end
 
   describe 'POST create' do
-    subject {
+    subject do
       post :create, params: { image: { image: @file1, primary: false,
                                        content_id: @market_post.content.id } }
-    }
+    end
 
     context 'as signed in user with authorization' do
       before do
@@ -43,7 +45,7 @@ describe Api::V3::ImagesController, :type => :controller do
       end
     end
 
-    context "when image does not save" do
+    context 'when image does not save' do
       before do
         @market_post.content.update_attribute :created_by, @user
         allow_any_instance_of(Image).to receive(:save).and_return(false)
@@ -51,7 +53,7 @@ describe Api::V3::ImagesController, :type => :controller do
 
       subject { post :create, params: { image: { image: @file1, content_id: @market_post.content.id } } }
 
-      it "returns unprocessable entity status" do
+      it 'returns unprocessable entity status' do
         subject
         expect(response).to have_http_status :unprocessable_entity
       end
@@ -61,10 +63,10 @@ describe Api::V3::ImagesController, :type => :controller do
   describe 'POST upsert' do
     let(:content) { FactoryGirl.create :content, :talk }
 
-    subject {
+    subject do
       post :upsert, params: { image: { image: @file1, primary: false,
                                        content_id: content.id } }
-    }
+    end
 
     context 'as signed in user with authorization' do
       before do
@@ -106,7 +108,7 @@ describe Api::V3::ImagesController, :type => :controller do
       end
     end
 
-    context "when image does not save" do
+    context 'when image does not save' do
       before do
         content.update_attribute :created_by, @user
         allow_any_instance_of(Image).to receive(:save).and_return(false)
@@ -114,7 +116,7 @@ describe Api::V3::ImagesController, :type => :controller do
 
       subject { post :create, params: { image: { image: @file1, content_id: content.id } } }
 
-      it "returns unprocessable entity status" do
+      it 'returns unprocessable entity status' do
         subject
         expect(response).to have_http_status :unprocessable_entity
       end
@@ -145,7 +147,7 @@ describe Api::V3::ImagesController, :type => :controller do
       end
     end
 
-    context "when update fails" do
+    context 'when update fails' do
       before do
         @market_post.content.update_attribute :created_by, @user
         allow_any_instance_of(Image).to receive(:update_attributes).and_return(false)
@@ -153,7 +155,7 @@ describe Api::V3::ImagesController, :type => :controller do
 
       subject { put :update, params: { id: @img.id, image: { primary: true, content_id: @content.id } } }
 
-      it "returns unprocessable entity status" do
+      it 'returns unprocessable entity status' do
         subject
         expect(response).to have_http_status :ok
       end

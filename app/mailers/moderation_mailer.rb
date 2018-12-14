@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ModerationMailer < ActionMailer::Base
   BUSINESS_MODERATION_EMAIL_RECIPIENT = Figaro.env.business_moderation_email? ? Figaro.env.business_moderation_email \
     : Rails.configuration.subtext.emails.moderation

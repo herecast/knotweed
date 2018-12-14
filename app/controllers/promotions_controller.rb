@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PromotionsController < ApplicationController
   def index
     @organization = Organization.find(params[:organization_id])
@@ -69,7 +71,7 @@ class PromotionsController < ApplicationController
         format.html { redirect_to edit_campaign_path(@promotion.content), notice: 'Promotion was successfully updated.' }
         format.json { head :no_content }
       else
-        format.html { render action: "edit" }
+        format.html { render action: 'edit' }
         format.json { render json: @promotion.errors, status: :unprocessable_entity }
       end
     end
@@ -83,10 +85,10 @@ class PromotionsController < ApplicationController
       :content_id,
       :promotable_type,
       :paid,
-      promotable_attributes: [:id, :boost, :campaign_start, :campaign_end, :daily_max_impressions,
-                              :max_impressions, :banner_image, :redirect_url, :promotion_type, :sales_agent,
-                              :cost_per_impression, :cost_per_day, :coupon_email_body, :coupon_image,
-                              :remove_coupon_image, :remove_banner_image],
+      promotable_attributes: %i[id boost campaign_start campaign_end daily_max_impressions
+                                max_impressions banner_image redirect_url promotion_type sales_agent
+                                cost_per_impression cost_per_day coupon_email_body coupon_image
+                                remove_coupon_image remove_banner_image],
       content_attributes: [:title]
     )
   end

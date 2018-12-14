@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -33,12 +35,8 @@ Rails.application.configure do
   # config.force_ssl = true
 
   custom_opts = {}
-  if ENV.fetch('STACK_NAME', nil)
-    custom_opts[:stack_name] = ENV['STACK_NAME']
-  end
-  if ENV.fetch('LOG_STDOUT', false)
-    config.logger = Logger.new(STDOUT)
-  end
+  custom_opts[:stack_name] = ENV['STACK_NAME'] if ENV.fetch('STACK_NAME', nil)
+  config.logger = Logger.new(STDOUT) if ENV.fetch('LOG_STDOUT', false)
   config.lograge.enabled = true
   config.lograge.formatter = Lograge::Formatters::Json.new
   config.log_level = (ENV['LOG_LEVEL'] || 'info').to_sym
@@ -47,7 +45,7 @@ Rails.application.configure do
   active_record_logger.level = Logger::INFO
   config.active_record.logger = active_record_logger
   config.lograge.custom_options = lambda do |event|
-    exceptions = %w(controller action format id)
+    exceptions = %w[controller action format id]
     custom_opts[:params] = event.payload[:params].except(*exceptions)
     custom_opts[:search] = event.payload[:searchkick_runtime] if event.payload[:searchkick_runtime].to_f > 0
     custom_opts
@@ -81,13 +79,13 @@ Rails.application.configure do
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
 
-  config.action_mailer.default_url_options = { :host => Figaro.env.default_host }
+  config.action_mailer.default_url_options = { host: Figaro.env.default_host }
   config.action_mailer.asset_host = Figaro.env.default_host
   # ActionMailer Config
   # Setup for production - deliveries, no errors raised
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.default :charset => "utf-8"
+  config.action_mailer.default charset: 'utf-8'
   config.action_mailer.smtp_settings = {
     address: ENV['SMTP_ADDRESS'],
     port: 25,
@@ -95,6 +93,6 @@ Rails.application.configure do
     password: ENV['SMTP_PASSWORD'],
     authentication: 'plain',
     enable_starttls_auto: false,
-    openssl_verify_mode: 'none',
+    openssl_verify_mode: 'none'
   }
 end

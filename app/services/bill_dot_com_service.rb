@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module BillDotComService
   include HTTParty
+
   extend self
 
   DEV_KEY = ENV['BILL_DOT_COM_API_KEY']
@@ -45,7 +48,7 @@ module BillDotComService
   def find_vendor(name, sid = nil)
     data = {
       entity: 'Vendor',
-      term: name,
+      term: name
     }
     response = detect_error(post('/SearchEntity.json', options_with_auth(data, sid)))
     response['response_data'][0]['id']
@@ -85,7 +88,7 @@ module BillDotComService
 
   def options_with_auth(data, sid = nil)
     session_id = sid || authenticate
-    return {
+    {
       headers: {
         'Content-Type' => 'application/x-www-form-urlencoded'
       },
@@ -101,7 +104,7 @@ module BillDotComService
   # `response_status` field that is 0 for success, 1 for failure
   def detect_error(response)
     if response['response_status'] == 1
-      raise BillDotComExceptions::UnexpectedResponse.new(response['response_data']['error_message'])
+      raise BillDotComExceptions::UnexpectedResponse, response['response_data']['error_message']
     end
 
     response
@@ -109,9 +112,7 @@ module BillDotComService
 
   # set debug_output based on environment
   def set_debug_output
-    unless Rails.env.production?
-      debug_output
-    end
+    debug_output unless Rails.env.production?
   end
   set_debug_output
 end

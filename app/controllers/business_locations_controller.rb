@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BusinessLocationsController < ApplicationController
   load_and_authorize_resource
 
@@ -34,7 +36,7 @@ class BusinessLocationsController < ApplicationController
   end
 
   def new
-    if params.has_key? :organization_id
+    if params.key? :organization_id
       @business_location.organization = Organization.find params[:organization_id]
     end
     if request.xhr?
@@ -77,8 +79,8 @@ class BusinessLocationsController < ApplicationController
 
   def destroy
     # don't allow destroy if it'd leave orphaned records
-    if @business_location.business_profile.present? or @business_location.events.present?
-      flash[:notice] = "Could not destroy record with associated business profile or evens"
+    if @business_location.business_profile.present? || @business_location.events.present?
+      flash[:notice] = 'Could not destroy record with associated business profile or evens'
       respond_to do |format|
         format.html { redirect_to business_locations_path }
       end
@@ -107,8 +109,8 @@ class BusinessLocationsController < ApplicationController
                                               :organization_id,
                                               hours: []).tap do |attrs|
       if attrs[:hours].respond_to?(:[])
-        attrs[:hours].reject! { |h| h.blank? }
-      elsif not attrs.has_key? :hours # deal with removing all hours entries
+        attrs[:hours].reject!(&:blank?)
+      elsif !attrs.key? :hours # deal with removing all hours entries
         attrs[:hours] = []
       end
     end

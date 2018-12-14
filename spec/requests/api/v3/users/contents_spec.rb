@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe 'My Stuff endpoint', type: :request do
@@ -8,7 +10,7 @@ describe 'My Stuff endpoint', type: :request do
   let(:managed_org) { FactoryGirl.create :organization }
   let(:headers) { { 'ACCEPT' => 'application/json' } }
 
-  describe "/api/v3/users/:id/contents", elasticsearch: true do
+  describe '/api/v3/users/:id/contents', elasticsearch: true do
     before do
       FactoryGirl.create :content, :news,
                          created_by: other_user,
@@ -16,7 +18,7 @@ describe 'My Stuff endpoint', type: :request do
       user.add_role('manager', managed_org)
     end
 
-    context "when making my stuff request" do
+    context 'when making my stuff request' do
       before do
         @owned_content = FactoryGirl.create :content, :news,
                                             created_by: user,
@@ -26,10 +28,10 @@ describe 'My Stuff endpoint', type: :request do
                                               organization: managed_org
       end
 
-      context "when no user logged in" do
+      context 'when no user logged in' do
         subject { get "/api/v3/users/#{user.id}/contents" }
 
-        it "it returns unauthorized status" do
+        it 'it returns unauthorized status' do
           subject
           expect(response).to have_http_status :unauthorized
         end
@@ -45,7 +47,7 @@ describe 'My Stuff endpoint', type: :request do
         end
       end
 
-      context "when user logged in" do
+      context 'when user logged in' do
         let(:user_headers) { headers.merge(auth_headers_for(user)) }
 
         subject { get "/api/v3/users/#{user.id}/contents", params: {}, headers: user_headers }
@@ -56,21 +58,21 @@ describe 'My Stuff endpoint', type: :request do
           expect(response_json[:feed_items].map { |c| c[:content][:id] }).to match_array [@owned_content.id, @managed_content.id]
         end
 
-        describe "?organization_id" do
-          context "when request includes organization_id=false" do
+        describe '?organization_id' do
+          context 'when request includes organization_id=false' do
             subject { get "/api/v3/users/#{user.id}/contents?organization_id=false", params: {}, headers: user_headers }
 
-            it "returns content connected to standard_ugc_org" do
+            it 'returns content connected to standard_ugc_org' do
               subject
               expect(response_json[:feed_items].length).to eq 1
               expect(response_json[:feed_items][0][:content][:id]).to eq @owned_content.id
             end
           end
 
-          context "when request includes organization_id for managed organization" do
+          context 'when request includes organization_id for managed organization' do
             subject { get "/api/v3/users/#{user.id}/contents?organization_id=#{managed_org.id}", params: {}, headers: user_headers }
 
-            it "returns content connected to the managed org and created_by User" do
+            it 'returns content connected to the managed org and created_by User' do
               subject
               expect(response_json[:feed_items].length).to eq 1
               expect(response_json[:feed_items][0][:content][:id]).to eq @managed_content.id
@@ -78,8 +80,8 @@ describe 'My Stuff endpoint', type: :request do
           end
         end
 
-        describe "?bookmarked" do
-          context "when request is bookmarked: true" do
+        describe '?bookmarked' do
+          context 'when request is bookmarked: true' do
             before do
               @non_bookmarked_content = FactoryGirl.create :content, :news
               @bookmarked_content = FactoryGirl.create :content, :news
@@ -90,7 +92,7 @@ describe 'My Stuff endpoint', type: :request do
 
             subject { get "/api/v3/users/#{user.id}/contents?bookmarked=true", params: {}, headers: user_headers }
 
-            it "returns user bookmarked content" do
+            it 'returns user bookmarked content' do
               subject
               expect(response_json[:feed_items].length).to eq 1
               expect(response_json[:feed_items][0][:content][:id]).to eq @bookmarked_content.id

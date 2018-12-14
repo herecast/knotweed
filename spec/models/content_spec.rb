@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: contents
@@ -89,16 +91,16 @@
 
 require 'spec_helper'
 
-describe Content, :type => :model do
+describe Content, type: :model do
   it { is_expected.to belong_to(:location) }
   it { is_expected.to have_db_column :promote_radius }
   it { is_expected.to have_db_column(:short_link).of_type(:string) }
 
   include_examples 'Auditable', Content
 
-  describe "validation" do
-    context "when ad_promotion_type = sponsored" do
-      it "ad_max_impressions must be populated" do
+  describe 'validation' do
+    context 'when ad_promotion_type = sponsored' do
+      it 'ad_max_impressions must be populated' do
         content = FactoryGirl.build :content,
                                     ad_promotion_type: PromotionBanner::SPONSORED,
                                     ad_max_impressions: nil
@@ -107,19 +109,19 @@ describe Content, :type => :model do
     end
   end
 
-  describe "#should_index?" do
-    context "when content is soft deleted" do
+  describe '#should_index?' do
+    context 'when content is soft deleted' do
       let(:content) { FactoryGirl.create :content, deleted_at: Date.yesterday }
 
-      it "returns false" do
+      it 'returns false' do
         expect(content.should_index?).to be false
       end
     end
 
-    context "when pubdate is within past five years and before today" do
+    context 'when pubdate is within past five years and before today' do
       let(:content) { FactoryGirl.create :content, pubdate: Date.yesterday }
 
-      it "returns true" do
+      it 'returns true' do
         expect(content.should_index?).to be true
       end
     end
@@ -127,12 +129,12 @@ describe Content, :type => :model do
 
   it { is_expected.to respond_to(:deleted_at) }
 
-  describe "find_root_parent" do
-    it "should return self for a content with no parent" do
+  describe 'find_root_parent' do
+    it 'should return self for a content with no parent' do
       c = FactoryGirl.create(:content)
       expect(c.find_root_parent).to eq(c)
     end
-    it "should return the root parent for content" do
+    it 'should return the root parent for content' do
       c1 = FactoryGirl.create(:content)
       c2 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
       c3 = FactoryGirl.create(:content, organization: c1.organization, parent: c2)
@@ -141,66 +143,66 @@ describe Content, :type => :model do
     end
   end
 
-  describe "get_downstream_thread" do
-    it "should return nil for contents without children" do
+  describe 'get_downstream_thread' do
+    it 'should return nil for contents without children' do
       c = FactoryGirl.create(:content)
       expect(c.get_downstream_thread).to eq(nil)
     end
 
-    it "should return a hash representing the full thread below the content" do
+    it 'should return a hash representing the full thread below the content' do
       c1 = FactoryGirl.create(:content)
       c2 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
       c3 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
       c4 = FactoryGirl.create(:content, organization: c1.organization, parent: c3)
-      expect(c1.get_downstream_thread).to eq({
-                                               c2.id => nil, c3.id => {
-                                                 c4.id => nil
-                                               }
-                                             })
+      expect(c1.get_downstream_thread).to eq(
+        c2.id => nil, c3.id => {
+          c4.id => nil
+        }
+      )
     end
   end
 
-  describe "mark_quarantined" do
+  describe 'mark_quarantined' do
     before do
       @content = FactoryGirl.create(:content)
     end
 
-    it "should leave valid content unquarantined" do
+    it 'should leave valid content unquarantined' do
       expect(@content.quarantine).to eq(false)
     end
 
-    it "should mark it quarantined if sanitized_content is empty" do
-      @content.raw_content = "<br/>"
+    it 'should mark it quarantined if sanitized_content is empty' do
+      @content.raw_content = '<br/>'
       @content.save
       @content.reload
       expect(@content.quarantine).to eq(true)
     end
   end
 
-  describe "set guid if not present" do
-    it "should set the guid of new content that has none" do
+  describe 'set guid if not present' do
+    it 'should set the guid of new content that has none' do
       content = FactoryGirl.create(:content)
-      expect(content.guid).to eq("#{content.title.gsub(" ", "_").gsub("/", "-")}-#{content.pubdate.strftime("%Y-%m-%d")}")
+      expect(content.guid).to eq("#{content.title.tr(' ', '_').tr('/', '-')}-#{content.pubdate.strftime('%Y-%m-%d')}")
     end
-    it "should not overwrite the guid of new content that has a guid" do
-      content = FactoryGirl.create(:content, guid: "Test-Guid")
-      expect(content.guid).to eq("Test-Guid")
+    it 'should not overwrite the guid of new content that has a guid' do
+      content = FactoryGirl.create(:content, guid: 'Test-Guid')
+      expect(content.guid).to eq('Test-Guid')
     end
   end
 
-  describe "has_active_promotion?" do
+  describe 'has_active_promotion?' do
     let(:content) { FactoryGirl.create(:content) }
 
-    it "should return false if there are no promotions" do
+    it 'should return false if there are no promotions' do
       expect(content.has_active_promotion?).to eq(false)
     end
 
-    it "should return false if there is a promotion banner but it is inactive" do
+    it 'should return false if there is a promotion banner but it is inactive' do
       FactoryGirl.create :promotion_banner, :inactive, content: content
       expect(content.has_active_promotion?).to eq(false)
     end
 
-    it "should return true if there is an active promotion banner attached" do
+    it 'should return true if there is an active promotion banner attached' do
       FactoryGirl.create :promotion_banner, :active, content: content
       expect(content.has_active_promotion?).to eq(true)
     end
@@ -241,13 +243,13 @@ describe Content, :type => :model do
     end
   end
 
-  describe "category" do
+  describe 'category' do
     before do
       @cat = FactoryGirl.create :content_category
       @content = FactoryGirl.create :content, content_category: @cat
     end
 
-    it "should return the name of the attached content category" do
+    it 'should return the name of the attached content category' do
       expect(@content.category).to eq(@cat.name)
     end
   end
@@ -332,9 +334,9 @@ describe Content, :type => :model do
       @content = FactoryGirl.build :content, content_category: nil
     end
 
-    subject {
+    subject do
       @content.content_category = @cat
-    }
+    end
 
     describe 'set_root_content_category_id' do
       it 'should set root_content_category_id' do
@@ -433,8 +435,8 @@ describe Content, :type => :model do
       before do
         @user = FactoryGirl.create :user, skip_analytics: true
         User.current = @user
-        @news_content_category = FactoryGirl.create :content_category, name: "news"
-        @event_content_category = FactoryGirl.create :content_category, name: "event"
+        @news_content_category = FactoryGirl.create :content_category, name: 'news'
+        @event_content_category = FactoryGirl.create :content_category, name: 'event'
       end
 
       it 'should not increment the view count' do
@@ -474,7 +476,7 @@ describe Content, :type => :model do
       end
     end
 
-    context "When non-event content exists" do
+    context 'When non-event content exists' do
       let!(:other_content) { FactoryGirl.create :content }
 
       it 'includes content' do
@@ -495,13 +497,13 @@ describe Content, :type => :model do
 
   describe 'similar_content', elasticsearch: true do
     let!(:content) { FactoryGirl.create :content }
-    let(:sim_attributes) {
+    let(:sim_attributes) do
       {
         raw_content: content.sanitized_content,
         title: content.title,
         origin: Content::UGC_ORIGIN
       }
-    }
+    end
 
     # similar_content comes back as raw ES data for the API,
     # so map to IDs for testing
@@ -516,7 +518,7 @@ describe Content, :type => :model do
     end
 
     describe 'with similar content that is non-UGC' do
-      let!(:sim_content) { FactoryGirl.create :content, sim_attributes.merge({ origin: 'Not one bit UGC' }) }
+      let!(:sim_content) { FactoryGirl.create :content, sim_attributes.merge(origin: 'Not one bit UGC') }
 
       it 'should not respond with that content' do
         expect(subject).to_not include(sim_content.id)
@@ -524,7 +526,7 @@ describe Content, :type => :model do
     end
 
     describe 'with similar content with no pubdate' do
-      let!(:sim_draft) { FactoryGirl.create :content, sim_attributes.merge({ pubdate: nil }) }
+      let!(:sim_draft) { FactoryGirl.create :content, sim_attributes.merge(pubdate: nil) }
 
       it 'should not respond with that content' do
         expect(subject).to_not include(sim_draft.id)
@@ -532,7 +534,7 @@ describe Content, :type => :model do
     end
 
     describe 'with similar content with a future pubdate' do
-      let!(:sim_draft) { FactoryGirl.create :content, sim_attributes.merge({ pubdate: 1.week.from_now }) }
+      let!(:sim_draft) { FactoryGirl.create :content, sim_attributes.merge(pubdate: 1.week.from_now) }
 
       it 'should not respond with that content' do
         expect(subject).to_not include(sim_draft.id)
@@ -541,11 +543,11 @@ describe Content, :type => :model do
 
     describe 'with similar event' do
       let(:sim_content) { FactoryGirl.create :content, sim_attributes }
-      let!(:sim_event) {
+      let!(:sim_event) do
         FactoryGirl.create :event,
                            start_date: start_date,
                            content: sim_content
-      }
+      end
 
       before { ReindexEventsWithFutureInstances.perform_now }
 
@@ -581,7 +583,7 @@ describe Content, :type => :model do
       end
 
       it 'is ""' do
-        expect(subject.ux2_uri).to eql ""
+        expect(subject.ux2_uri).to eql ''
       end
     end
 
@@ -597,27 +599,27 @@ describe Content, :type => :model do
     end
   end
 
-  describe "#sanitized_title" do
-    context "when no title present" do
-      it "returns nil" do
+  describe '#sanitized_title' do
+    context 'when no title present' do
+      it 'returns nil' do
         content = FactoryGirl.create :content, title: nil
         expect(content.sanitized_title).to be_nil
       end
     end
 
-    context "when title present" do
-      it "returns title" do
+    context 'when title present' do
+      it 'returns title' do
         content = FactoryGirl.create :content, title: 'In a galaxy...'
         expect(content.sanitized_title).to eq content.title
       end
     end
 
-    context "when title is only listserv name" do
+    context 'when title is only listserv name' do
       it "returns 'Post by...' title" do
         user = FactoryGirl.create :user, name: 'Han Solo'
-        content = FactoryGirl.create :content, title: "[Hoth]",
+        content = FactoryGirl.create :content, title: '[Hoth]',
                                                created_by: user
-        expect(content.sanitized_title).to include "Han Solo"
+        expect(content.sanitized_title).to include 'Han Solo'
       end
     end
   end
@@ -715,10 +717,10 @@ describe Content, :type => :model do
     let(:news_cat) { FactoryGirl.build :content_category, name: 'news' }
     subject { content.is_news_ugc? }
     describe 'for news UGC' do
-      let (:content) {
+      let (:content) do
         FactoryGirl.build :content, origin: Content::UGC_ORIGIN,
                                     content_category: news_cat
-      }
+      end
       it { should be true }
     end
 
@@ -737,7 +739,7 @@ describe Content, :type => :model do
     end
   end
 
-  describe "#current_daily_report" do
+  describe '#current_daily_report' do
     before do
       @content_category = FactoryGirl.build :content_category, name: 'news'
       @news = FactoryGirl.create :content, content_category_id: @content_category.id
@@ -745,30 +747,30 @@ describe Content, :type => :model do
 
     subject { @news.current_daily_report }
 
-    context "when no daily report present" do
+    context 'when no daily report present' do
       before do
         @content_report = FactoryGirl.create :content_report, report_date: Date.yesterday
         @news.content_reports << @content_report
       end
 
-      it "returns nil" do
+      it 'returns nil' do
         expect(subject).to be_nil
       end
     end
 
-    context "when daily report present" do
+    context 'when daily report present' do
       before do
         @content_report = FactoryGirl.create :content_report, report_date: Date.current
         @news.content_reports << @content_report
       end
 
-      it "returns current report" do
+      it 'returns current report' do
         expect(subject).to eq @content_report
       end
     end
   end
 
-  describe "#find_or_create_daily_report" do
+  describe '#find_or_create_daily_report' do
     before do
       @content_category = FactoryGirl.build :content_category, name: 'news'
       @news = FactoryGirl.create :content, content_category_id: @content_category.id
@@ -776,21 +778,21 @@ describe Content, :type => :model do
 
     subject { @news.find_or_create_daily_report }
 
-    context "when no report present" do
-      it "creates daily report" do
+    context 'when no report present' do
+      it 'creates daily report' do
         expect { subject }.to change {
           @news.reload.content_reports.count
         }.by 1
       end
     end
 
-    context "when current report available" do
+    context 'when current report available' do
       before do
         @content_report = FactoryGirl.create :content_report, report_date: Date.current
         @news.content_reports << @content_report
       end
 
-      it "returns current report" do
+      it 'returns current report' do
         expect(subject).to eq @content_report
       end
     end
@@ -813,9 +815,9 @@ describe Content, :type => :model do
     end
 
     context 'comment posted' do
-      let!(:comment) {
+      let!(:comment) do
         FactoryGirl.create :content, :comment, parent: subject
-      }
+      end
 
       it 'is the pubdate of the comment' do
         subject
@@ -833,18 +835,18 @@ describe Content, :type => :model do
 
       subject { @market_post.channel.update_attribute(:sold, true) }
 
-      it "updates latest_activity to current time" do
+      it 'updates latest_activity to current time' do
         expect { subject }.to change {
           @market_post.reload.latest_activity
         }
       end
 
-      context "when market post is older than 30 days" do
+      context 'when market post is older than 30 days' do
         before do
           @market_post.update_attribute(:pubdate, 40.days.ago)
         end
 
-        it "does not update latest_activity" do
+        it 'does not update latest_activity' do
           expect { subject }.not_to change {
             @market_post.reload.latest_activity
           }
@@ -852,12 +854,12 @@ describe Content, :type => :model do
       end
     end
 
-    context "when publisher schedules news post" do
+    context 'when publisher schedules news post' do
       let(:scheduled_pubdate) { 3.days.from_now }
 
       subject { FactoryGirl.create :content, :news, pubdate: scheduled_pubdate }
 
-      it "latest_activity is scheduled time" do
+      it 'latest_activity is scheduled time' do
         expect(subject.latest_activity).to eql scheduled_pubdate
       end
     end
@@ -871,7 +873,7 @@ describe Content, :type => :model do
 
       subject { @draft_news.update_attribute(:pubdate, new_pubdate) }
 
-      it "updates latest_activity to pubdate" do
+      it 'updates latest_activity to pubdate' do
         expect { subject }.to change {
           @draft_news.latest_activity
         }.to new_pubdate
@@ -905,14 +907,14 @@ describe Content, :type => :model do
     end
   end
 
-  describe "#built_view_count" do
+  describe '#built_view_count' do
     before do
       @view_count = 47
     end
 
     subject { @content.built_view_count }
 
-    context "when root category is campaign" do
+    context 'when root category is campaign' do
       before do
         @content = FactoryGirl.create :content, :campaign
         promotable = FactoryGirl.create :promotion_banner,
@@ -923,12 +925,12 @@ describe Content, :type => :model do
                                        promotable_type: 'PromotionBanner'
       end
 
-      it "returns promotable impression count" do
+      it 'returns promotable impression count' do
         expect(subject).to eq @view_count
       end
     end
 
-    context "when content has a parent" do
+    context 'when content has a parent' do
       before do
         parent = FactoryGirl.create :content,
                                     view_count: @view_count
@@ -936,18 +938,18 @@ describe Content, :type => :model do
                                       parent_id: parent.id
       end
 
-      it "returns parent view count" do
+      it 'returns parent view count' do
         expect(subject).to eq @view_count
       end
     end
 
-    context "when content has no parent" do
+    context 'when content has no parent' do
       before do
         @content = FactoryGirl.create :content,
                                       view_count: @view_count
       end
 
-      it "returns content view_count" do
+      it 'returns content view_count' do
         expect(subject).to eq @view_count
       end
     end

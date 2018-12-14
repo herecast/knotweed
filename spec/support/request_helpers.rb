@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RequestHelpers
   def auth_headers_for(user)
     {
@@ -17,8 +19,8 @@ module RequestHelpers
 
   def transform_to_symbolized_keys(thing)
     case thing
-    when Hash; symbolize_recursive(thing)
-    when Array; thing.map { |v| transform_to_symbolized_keys(v) }
+    when Hash then symbolize_recursive(thing)
+    when Array then thing.map { |v| transform_to_symbolized_keys(v) }
     else; thing
     end
   end

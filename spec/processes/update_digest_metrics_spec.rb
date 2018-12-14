@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe UpdateDigestMetrics do
   before do
-    allow(Figaro.env).to receive(:mailchimp_api_host).and_return("test.com")
-    allow(Figaro.env).to receive(:mailchimp_api_key).and_return("test.key")
+    allow(Figaro.env).to receive(:mailchimp_api_host).and_return('test.com')
+    allow(Figaro.env).to receive(:mailchimp_api_key).and_return('test.key')
   end
-  let(:auth) { ["user", Figaro.env.mailchimp_api_key] }
+  let(:auth) { ['user', Figaro.env.mailchimp_api_key] }
   let(:mc_base_url) { Figaro.env.mailchimp_api_host.to_s + '/3.0' }
 
   context 'Given a digest with campaign data on mailchimp' do
-    let(:digest) {
+    let(:digest) do
       FactoryGirl.create :listserv_digest,
                          mc_campaign_id: 'kdsksd',
                          emails_sent: 0,
@@ -20,15 +22,15 @@ RSpec.describe UpdateDigestMetrics do
                            FactoryGirl.create(:promotion_banner, redirect_url: 'http://promoabc.test').promotion.id,
                            FactoryGirl.create(:promotion_banner, redirect_url: 'http://promo76.test').promotion.id
                          ]
-    }
+    end
     let(:emails_sent) { 200 }
     let(:opens_total) { 186 }
-    let(:click_map) {
+    let(:click_map) do
       {
-        "http://promoabc.test" => "40",
-        "http://promo76.test" => "50"
+        'http://promoabc.test' => '40',
+        'http://promo76.test' => '50'
       }
-    }
+    end
 
     before do
       # first request (reports/campaign_id)
@@ -36,13 +38,13 @@ RSpec.describe UpdateDigestMetrics do
                    "https://#{mc_base_url}/reports/#{digest.mc_campaign_id}").with(
                      basic_auth: auth,
                      headers: {
-                       "Content-Type" => 'application/json',
-                       "Accept" => 'application/json'
+                       'Content-Type' => 'application/json',
+                       'Accept' => 'application/json'
                      }
                    ).to_return(
                      status: 200,
                      headers: {
-                       "Content-Type" => 'application/json',
+                       'Content-Type' => 'application/json'
                      },
                      body: {
                        emails_sent: emails_sent,
@@ -57,13 +59,13 @@ RSpec.describe UpdateDigestMetrics do
                    "https://#{mc_base_url}/reports/#{digest.mc_campaign_id}/click-details?count=20").with(
                      basic_auth: auth,
                      headers: {
-                       "Content-Type" => 'application/json',
-                       "Accept" => 'application/json'
+                       'Content-Type' => 'application/json',
+                       'Accept' => 'application/json'
                      }
                    ).to_return(
                      status: 200,
                      headers: {
-                       "Content-Type" => 'application/json',
+                       'Content-Type' => 'application/json'
                      },
                      body: {
                        urls_clicked: click_map.map do |url, clicks|

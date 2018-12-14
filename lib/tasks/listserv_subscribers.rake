@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 namespace :listserv_subscribers do
   desc 'Subscribe users to digest'
-  task :prepopulate_digest, [:digest_name, :location_city, :location_state, :user_count] => :environment do |t, args|
+  task :prepopulate_digest, %i[digest_name location_city location_state user_count] => :environment do |_t, args|
     location = Location.find_by! city: args[:location_city], state: args[:location_state]
     location_users = User.unscoped
                          .where(location_id: location.id)
@@ -23,7 +25,7 @@ namespace :listserv_subscribers do
   end
 
   desc 'Add 50 extra subscribers from Lebanon and Hanover'
-  task :add_extra_subscribers => :environment do
+  task add_extra_subscribers: :environment do
     hanover = Location.find_by(city: 'Hanover', state: 'NH')
     lebanon = Location.find_by(city: 'Lebanon', state: 'NH')
 
@@ -53,7 +55,7 @@ namespace :listserv_subscribers do
   end
 
   desc 'Add 500 more users each from VT and NH'
-  task :add_more_vt_and_nh_users => :environment do
+  task add_more_vt_and_nh_users: :environment do
     thetford  = Location.find_by(city: 'Thetford', state: 'VT')
     woodstock = Location.find_by(city: 'Woodstock', state: 'VT')
     hartland  = Location.find_by(city: 'Hartland', state: 'VT')

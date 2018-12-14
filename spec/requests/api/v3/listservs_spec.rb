@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Listserv API Endpoints', type: :request do
@@ -13,7 +15,7 @@ RSpec.describe 'Listserv API Endpoints', type: :request do
         end
       end
 
-      it "does not return inactive listservs" do
+      it 'does not return inactive listservs' do
         inactive_listserv = Listserv.last
         inactive_listserv.update_attribute(:active, false)
         get '/api/v3/listservs'
@@ -38,12 +40,12 @@ RSpec.describe 'Listserv API Endpoints', type: :request do
 
       it 'returns the listserv' do
         get "/api/v3/listservs/#{listserv.id}"
-        expect(response_json[:listserv]).to match({
-                                                    id: listserv.id,
-                                                    name: listserv.name,
-                                                    next_digest_send_time: listserv.next_digest_send_time.try(:iso8601),
-                                                    digest_send_time: listserv.digest_send_time
-                                                  })
+        expect(response_json[:listserv]).to match(
+          id: listserv.id,
+          name: listserv.name,
+          next_digest_send_time: listserv.next_digest_send_time.try(:iso8601),
+          digest_send_time: listserv.digest_send_time
+        )
       end
     end
 

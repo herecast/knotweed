@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: comments
@@ -9,39 +11,39 @@
 
 require 'spec_helper'
 
-describe Comment, :type => :model do
+describe Comment, type: :model do
   before do
     @content = FactoryGirl.create :content, pubdate: 1.day.ago
     @comment = FactoryGirl.create :comment, content: @content
   end
 
-  describe "method missing override" do
-    it "should allow access to content attributes directly" do
+  describe 'method missing override' do
+    it 'should allow access to content attributes directly' do
       expect(@comment.title).to eq(@content.title)
       expect(@comment.authors).to eq(@content.authors)
       expect(@comment.pubdate).to eq(@content.pubdate)
     end
 
-    it "should retain normal method_missing behavior if not a content attribute" do
+    it 'should retain normal method_missing behavior if not a content attribute' do
       expect { @comment.asdfdas }.to raise_error(NoMethodError)
     end
   end
 
-  describe "after_save" do
-    it "should also save the associated content record" do
-      @content.title = "Changed Title"
+  describe 'after_save' do
+    it 'should also save the associated content record' do
+      @content.title = 'Changed Title'
       @comment.save # should trigger @content.save callback
-      expect(@content.reload.title).to eq "Changed Title"
+      expect(@content.reload.title).to eq 'Changed Title'
     end
   end
 
-  describe "after_create" do
+  describe 'after_create' do
     before do
       @parent = FactoryGirl.create :content, pubdate: 1.week.ago
       @user = FactoryGirl.create :admin
     end
 
-    it "should increase the counter comments" do
+    it 'should increase the counter comments' do
       @content.parent = @parent
       @content.save
       count = @parent.comment_count
@@ -50,7 +52,7 @@ describe Comment, :type => :model do
       expect(@parent.comment_count).to eq(count + 1)
     end
 
-    it "should increase the counter commenters" do
+    it 'should increase the counter commenters' do
       User.current = @user
       count = @parent.commenter_count
       @content = FactoryGirl.create :content
@@ -61,7 +63,7 @@ describe Comment, :type => :model do
       expect(@parent.commenter_count).to eq(count + 1)
     end
 
-    it "should not increase the counter commenters, if same user" do
+    it 'should not increase the counter commenters, if same user' do
       count = @parent.commenter_count
       @content = FactoryGirl.create :content, created_by: @user
       @content.parent = @parent
@@ -76,7 +78,7 @@ describe Comment, :type => :model do
     end
   end
 
-  describe "#decrease_comment_stats" do
+  describe '#decrease_comment_stats' do
     before do
       @user = FactoryGirl.create :user
       @parent_content = FactoryGirl.create :content
@@ -88,10 +90,10 @@ describe Comment, :type => :model do
       )
     end
 
-    context "when deleted comment auther has only written one comment on article" do
+    context 'when deleted comment auther has only written one comment on article' do
       subject { @comment.decrease_comment_stats }
 
-      it "decreases parent comment_count and commenter_count" do
+      it 'decreases parent comment_count and commenter_count' do
         expect { subject }.to change {
           @comment.parent.reload.comment_count
         }.by(-1).and change {
@@ -100,7 +102,7 @@ describe Comment, :type => :model do
       end
     end
 
-    context "when deleted comment auther has written multiple comments on article" do
+    context 'when deleted comment auther has written multiple comments on article' do
       before do
         @comment_two = FactoryGirl.create :comment
         @comment_two.content.update_attributes!(
@@ -111,7 +113,7 @@ describe Comment, :type => :model do
 
       subject { @comment.decrease_comment_stats }
 
-      it "decreases parent comment_count but not commenter_count" do
+      it 'decreases parent comment_count but not commenter_count' do
         expect { subject }.to change {
           @comment.parent.reload.comment_count
         }.by(-1).and change {

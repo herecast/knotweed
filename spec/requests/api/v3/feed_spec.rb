@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe 'Feed endpoints', type: :request do
@@ -10,117 +12,117 @@ describe 'Feed endpoints', type: :request do
       it 'has the expected fields for all content' do
         do_request
 
-        expect(subject).to include({
-                                     id: content.id,
-                                     author_id: content.created_by.id,
-                                     author_name: content.author_name,
-                                     avatar_url: content.created_by.avatar_url,
-                                     biz_feed_public: content.biz_feed_public,
-                                     campaign_end: content.ad_campaign_end,
-                                     campaign_start: content.ad_campaign_start,
-                                     click_count: an_instance_of(Fixnum).or(be_nil),
-                                     comment_count: an_instance_of(Fixnum).or(be_nil),
-                                     commenter_count: an_instance_of(Fixnum).or(be_nil),
-                                     comments: content.comments.map do |comment|
-                                                 {
-                                                   id: comment.channel.try(:id) || comment.id,
-                                                   content: comment.sanitized_content,
-                                                   content_id: comment.id,
-                                                   parent_content_id: comment.parent_id,
-                                                   published_at: comment.pubdate.iso8601,
-                                                   title: comment.sanitized_title,
-                                                   user_id: comment.created_by.try(:id),
-                                                   user_image_url: comment.created_by.try(:avatar).try(:url),
-                                                   user_name: comment.created_by.try(:name),
-                                                 }
-                                               end,
-                                     contact_email: an_instance_of(String).or(be_nil),
-                                     contact_phone: an_instance_of(String).or(be_nil),
-                                     content: content.sanitized_content,
-                                     content_origin: 'ugc',
-                                     content_type: content.content_type.to_s,
-                                     cost: an_instance_of(String).or(be_nil),
-                                     cost_type: an_instance_of(String).or(be_nil),
-                                     created_at: content.created_at.iso8601,
-                                     embedded_ad: content.embedded_ad?,
-                                     ends_at: an_instance_of(String).or(be_nil),
-                                     event_url: an_instance_of(String).or(be_nil),
-                                     event_instance_id: an_instance_of(Fixnum).or(be_nil),
-                                     event_instances: an_instance_of(Array).or(be_nil),
-                                     images: content.images.map do |image|
-                                               {
-                                                 id: image.id,
-                                                 caption: image.caption,
-                                                 content_id: image.imageable_id,
-                                                 file_extension: image.file_extension,
-                                                 height: image.height,
-                                                 image_url: image.image.url,
-                                                 position: image.position,
-                                                 primary: image.primary?,
-                                                 width: image.width
-                                               }
-                                             end,
-                                     image_url: content.images[0].url,
-                                     organization_biz_feed_active: org.biz_feed_active,
-                                     organization_id: org.id,
-                                     organization_name: org.name,
-                                     organization_profile_image_url: nil,
+        expect(subject).to include(
+          id: content.id,
+          author_id: content.created_by.id,
+          author_name: content.author_name,
+          avatar_url: content.created_by.avatar_url,
+          biz_feed_public: content.biz_feed_public,
+          campaign_end: content.ad_campaign_end,
+          campaign_start: content.ad_campaign_start,
+          click_count: an_instance_of(Fixnum).or(be_nil),
+          comment_count: an_instance_of(Fixnum).or(be_nil),
+          commenter_count: an_instance_of(Fixnum).or(be_nil),
+          comments: content.comments.map do |comment|
+                      {
+                        id: comment.channel.try(:id) || comment.id,
+                        content: comment.sanitized_content,
+                        content_id: comment.id,
+                        parent_content_id: comment.parent_id,
+                        published_at: comment.pubdate.iso8601,
+                        title: comment.sanitized_title,
+                        user_id: comment.created_by.try(:id),
+                        user_image_url: comment.created_by.try(:avatar).try(:url),
+                        user_name: comment.created_by.try(:name)
+                      }
+                    end,
+          contact_email: an_instance_of(String).or(be_nil),
+          contact_phone: an_instance_of(String).or(be_nil),
+          content: content.sanitized_content,
+          content_origin: 'ugc',
+          content_type: content.content_type.to_s,
+          cost: an_instance_of(String).or(be_nil),
+          cost_type: an_instance_of(String).or(be_nil),
+          created_at: content.created_at.iso8601,
+          embedded_ad: content.embedded_ad?,
+          ends_at: an_instance_of(String).or(be_nil),
+          event_url: an_instance_of(String).or(be_nil),
+          event_instance_id: an_instance_of(Fixnum).or(be_nil),
+          event_instances: an_instance_of(Array).or(be_nil),
+          images: content.images.map do |image|
+                    {
+                      id: image.id,
+                      caption: image.caption,
+                      content_id: image.imageable_id,
+                      file_extension: image.file_extension,
+                      height: image.height,
+                      image_url: image.image.url,
+                      position: image.position,
+                      primary: image.primary?,
+                      width: image.width
+                    }
+                  end,
+          image_url: content.images[0].url,
+          organization_biz_feed_active: org.biz_feed_active,
+          organization_id: org.id,
+          organization_name: org.name,
+          organization_profile_image_url: nil,
 
-                                     # @TODO: parent fields should be revisited, do we need them?
-                                     parent_content_id: content.parent_id,
-                                     parent_content_type: content.parent.try(:content_type),
-                                     parent_event_instance_id: an_instance_of(Fixnum).or(be_nil),
+          # @TODO: parent fields should be revisited, do we need them?
+          parent_content_id: content.parent_id,
+          parent_content_type: content.parent.try(:content_type),
+          parent_event_instance_id: an_instance_of(Fixnum).or(be_nil),
 
-                                     promote_radius: content.promote_radius,
-                                     published_at: content.pubdate.iso8601,
-                                     redirect_url: an_instance_of(String).or(be_nil),
-                                     registration_deadline: an_instance_of(String).or(be_nil),
-                                     schedules: an_instance_of(Array).or(be_nil),
-                                     sold: content.channel.try(:sold),
-                                     starts_at: an_instance_of(String).or(be_nil),
-                                     subtitle: content.subtitle,
-                                     sunset_date: content.sunset_date.try(:iso8601),
-                                     title: content.sanitized_title,
-                                     location: {
-                                       id: content.location.id,
-                                       city: content.location.city,
-                                       state: content.location.state
-                                     },
-                                     updated_at: content.updated_at.iso8601,
-                                     venue_address: an_instance_of(String).or(be_nil),
-                                     venue_city: an_instance_of(String).or(be_nil),
-                                     venue_name: an_instance_of(String).or(be_nil),
-                                     venue_state: an_instance_of(String).or(be_nil),
-                                     venue_url: an_instance_of(String).or(be_nil),
-                                     venue_zip: an_instance_of(String).or(be_nil),
-                                     view_count: content.view_count
-                                   })
+          promote_radius: content.promote_radius,
+          published_at: content.pubdate.iso8601,
+          redirect_url: an_instance_of(String).or(be_nil),
+          registration_deadline: an_instance_of(String).or(be_nil),
+          schedules: an_instance_of(Array).or(be_nil),
+          sold: content.channel.try(:sold),
+          starts_at: an_instance_of(String).or(be_nil),
+          subtitle: content.subtitle,
+          sunset_date: content.sunset_date.try(:iso8601),
+          title: content.sanitized_title,
+          location: {
+            id: content.location.id,
+            city: content.location.city,
+            state: content.location.state
+          },
+          updated_at: content.updated_at.iso8601,
+          venue_address: an_instance_of(String).or(be_nil),
+          venue_city: an_instance_of(String).or(be_nil),
+          venue_name: an_instance_of(String).or(be_nil),
+          venue_state: an_instance_of(String).or(be_nil),
+          venue_url: an_instance_of(String).or(be_nil),
+          venue_zip: an_instance_of(String).or(be_nil),
+          view_count: content.view_count
+        )
       end
 
       context 'when comments exist' do
-        let!(:comments) {
+        let!(:comments) do
           content.children = FactoryGirl.create_list :content, 7, :comment,
                                                      created_by: FactoryGirl.create(:user),
                                                      parent: content
-        }
+        end
 
         it 'embeds the last 6 comments' do
           do_request
-          expect(subject).to include({
-                                       comments: comments.sort_by(&:pubdate).reverse.take(6).map do |comment|
-                                         {
-                                           id: comment.channel.try(:id) || comment.id,
-                                           content_id: comment.id,
-                                           title: comment.sanitized_title,
-                                           content: comment.sanitized_content,
-                                           parent_content_id: comment.parent_id,
-                                           published_at: comment.pubdate.iso8601,
-                                           user_id: comment.created_by.id,
-                                           user_name: comment.created_by.name,
-                                           user_image_url: comment.created_by.avatar.url
-                                         }
-                                       end
-                                     })
+          expect(subject).to include(
+            comments: comments.sort_by(&:pubdate).reverse.take(6).map do |comment|
+              {
+                id: comment.channel.try(:id) || comment.id,
+                content_id: comment.id,
+                title: comment.sanitized_title,
+                content: comment.sanitized_content,
+                parent_content_id: comment.parent_id,
+                published_at: comment.pubdate.iso8601,
+                user_id: comment.created_by.id,
+                user_name: comment.created_by.name,
+                user_image_url: comment.created_by.avatar.url
+              }
+            end
+          )
         end
       end
     end
@@ -128,53 +130,53 @@ describe 'Feed endpoints', type: :request do
     let(:org) { FactoryGirl.create :organization }
     let(:headers) { { 'ACCEPT' => 'application/json' } }
 
-    let(:locations) {
+    let(:locations) do
       FactoryGirl.create_list(:location, 2)
-    }
-    let(:user) {
+    end
+    let(:user) do
       FactoryGirl.create(:user)
-    }
-    let!(:news) {
+    end
+    let!(:news) do
       FactoryGirl.create :content, :news,
                          created_by: user,
                          organization: org,
                          location_id: user.location_id,
                          images: [FactoryGirl.build(:image, :primary)]
-    }
-    let!(:event) {
+    end
+    let!(:event) do
       FactoryGirl.create :content, :event,
                          created_by: user,
                          organization: org,
                          location_id: user.location_id,
                          images: [FactoryGirl.build(:image, :primary)]
-    }
-    let!(:market) {
+    end
+    let!(:market) do
       FactoryGirl.create :content, :market_post,
                          created_by: user,
                          organization: org,
                          location_id: user.location_id,
                          images: [FactoryGirl.build(:image, :primary)]
-    }
-    let!(:talk) {
+    end
+    let!(:talk) do
       FactoryGirl.create :content, :talk,
                          created_by: user,
                          organization: org,
                          location_id: user.location_id,
                          images: [FactoryGirl.build(:image, :primary)]
-    }
-    let!(:comment) {
+    end
+    let!(:comment) do
       FactoryGirl.create :content, :comment, organization: org,
                                              parent_id: talk.id
-    }
+    end
 
     context 'news content' do
-      let(:do_request) {
-        get "/api/v3/feed", params: {}, headers: headers
-      }
+      let(:do_request) do
+        get '/api/v3/feed', params: {}, headers: headers
+      end
 
-      subject {
+      subject do
         response_json[:feed_items].find { |i| i[:content][:content_type] == 'news' }[:content]
-      }
+      end
 
       it_behaves_like 'JSON schema for all Content' do
         let(:content) { news }
@@ -182,13 +184,13 @@ describe 'Feed endpoints', type: :request do
     end
 
     context 'event content' do
-      let(:do_request) {
-        get "/api/v3/feed", params: {}, headers: headers
-      }
+      let(:do_request) do
+        get '/api/v3/feed', params: {}, headers: headers
+      end
 
-      subject {
+      subject do
         response_json[:feed_items].find { |i| i[:content][:content_type] == 'event' }[:content]
-      }
+      end
 
       it_behaves_like 'JSON schema for all Content' do
         let(:content) { event }
@@ -196,42 +198,42 @@ describe 'Feed endpoints', type: :request do
 
       it 'additional event related fields' do
         do_request
-        expect(subject).to include({
-                                     starts_at: event.channel.next_or_first_instance.start_date.try(:iso8601),
-                                     ends_at: event.channel.next_or_first_instance.end_date.try(:iso8601),
-                                     event_instance_id: event.channel.next_or_first_instance.id,
-                                     parent_event_instance_id: nil,
-                                     registration_deadline: nil,
-                                     cost: event.channel.cost,
-                                     event_instances: event.channel.event_instances.map do |ei|
-                                                        {
-                                                          id: ei.id,
-                                                          subtitle: ei.subtitle_override,
-                                                          starts_at: ei.start_date.try(:iso8601),
-                                                          ends_at: ei.end_date.try(:iso8601),
-                                                          presenter_name: ei.presenter_name
-                                                        }
-                                                      end,
-                                     contact_phone: event.channel.contact_phone,
-                                     contact_email: event.channel.contact_email,
-                                     venue_name: event.channel.venue.name,
-                                     venue_address: event.channel.venue.address,
-                                     venue_city: event.channel.venue.city,
-                                     venue_state: event.channel.venue.state,
-                                     venue_zip: event.channel.venue.zip,
-                                     venue_url: event.channel.venue.venue_url,
-                                   })
+        expect(subject).to include(
+          starts_at: event.channel.next_or_first_instance.start_date.try(:iso8601),
+          ends_at: event.channel.next_or_first_instance.end_date.try(:iso8601),
+          event_instance_id: event.channel.next_or_first_instance.id,
+          parent_event_instance_id: nil,
+          registration_deadline: nil,
+          cost: event.channel.cost,
+          event_instances: event.channel.event_instances.map do |ei|
+                             {
+                               id: ei.id,
+                               subtitle: ei.subtitle_override,
+                               starts_at: ei.start_date.try(:iso8601),
+                               ends_at: ei.end_date.try(:iso8601),
+                               presenter_name: ei.presenter_name
+                             }
+                           end,
+          contact_phone: event.channel.contact_phone,
+          contact_email: event.channel.contact_email,
+          venue_name: event.channel.venue.name,
+          venue_address: event.channel.venue.address,
+          venue_city: event.channel.venue.city,
+          venue_state: event.channel.venue.state,
+          venue_zip: event.channel.venue.zip,
+          venue_url: event.channel.venue.venue_url
+        )
       end
     end
 
     context 'market content' do
-      let(:do_request) {
-        get "/api/v3/feed", params: {}, headers: headers
-      }
+      let(:do_request) do
+        get '/api/v3/feed', params: {}, headers: headers
+      end
 
-      subject {
+      subject do
         response_json[:feed_items].find { |i| i[:content][:content_type] == 'market' }[:content]
-      }
+      end
 
       it_behaves_like 'JSON schema for all Content' do
         let(:content) { market }
@@ -239,34 +241,34 @@ describe 'Feed endpoints', type: :request do
 
       it 'has additional market related fields' do
         do_request
-        expect(subject).to include({
-                                     cost: market.channel.cost,
-                                     sold: market.channel.sold,
-                                     contact_phone: market.channel.contact_phone,
-                                     contact_email: market.channel.contact_email,
-                                   })
+        expect(subject).to include(
+          cost: market.channel.cost,
+          sold: market.channel.sold,
+          contact_phone: market.channel.contact_phone,
+          contact_email: market.channel.contact_email
+        )
       end
     end
 
-    context "when no user logged in" do
+    context 'when no user logged in' do
       before do
-        get "/api/v3/feed", params: {}, headers: headers
+        get '/api/v3/feed', params: {}, headers: headers
       end
 
-      it "returns content in standard categories including talk" do
+      it 'returns content in standard categories including talk' do
         expect(response_json[:feed_items].length).to eq 4
       end
     end
 
-    context "when user logged in" do
+    context 'when user logged in' do
       context 'returning talk content' do
-        let(:do_request) {
-          get "/api/v3/feed", params: {}, headers: headers.merge(auth_headers)
-        }
+        let(:do_request) do
+          get '/api/v3/feed', params: {}, headers: headers.merge(auth_headers)
+        end
 
-        subject {
+        subject do
           response_json[:feed_items].find { |i| i[:content][:content_type] == 'talk' }[:content]
-        }
+        end
 
         it_behaves_like 'JSON schema for all Content' do
           let(:content) { talk.reload }
@@ -296,7 +298,7 @@ describe 'Feed endpoints', type: :request do
                                                  archived: true
       end
 
-      subject { get "/api/v3/feed", params: { query: news.title }, headers: auth_headers }
+      subject { get '/api/v3/feed', params: { query: news.title }, headers: auth_headers }
 
       it 'returns items from all categories matching the query' do
         subject
@@ -304,32 +306,32 @@ describe 'Feed endpoints', type: :request do
         expect(contents.length).to eq 2
       end
 
-      it "returns two Organization collections" do
+      it 'returns two Organization collections' do
         subject
         collections = response_json[:feed_items].select { |i| i[:model_type] == 'carousel' }
         expect(collections.length).to eq 2
       end
 
-      it "does not return archived businesses" do
+      it 'does not return archived businesses' do
         subject
         carousels = response_json[:feed_items].select { |i| i[:model_type] == 'carousel' }
         business_carousel = carousels.find { |c| c[:carousel][:title] == 'Businesses' }
         expect(business_carousel[:carousel][:organizations].map { |o| o[:id] }).not_to include @archived_business.id
       end
 
-      it "does not return archived publishers" do
+      it 'does not return archived publishers' do
         subject
         carousels = response_json[:feed_items].select { |i| i[:model_type] == 'carousel' }
         business_carousel = carousels.find { |c| c[:carousel][:title] == 'Publishers' }
         expect(business_carousel[:carousel][:organizations].map { |o| o[:id] }).not_to include @archived_publisher.id
       end
 
-      context "when one carousel returns no Organizations" do
+      context 'when one carousel returns no Organizations' do
         before do
           @second_organization.update_attribute(:name, 'non-search')
         end
 
-        it "call only returns carousel with Organizations" do
+        it 'call only returns carousel with Organizations' do
           subject
           collections = response_json[:feed_items].select { |i| i[:model_type] == 'carousel' }
           expect(collections.length).to eq 1
@@ -338,10 +340,10 @@ describe 'Feed endpoints', type: :request do
     end
 
     context 'content_type parameter' do
-      [:market_post, :news, :event, :talk].each do |content_type|
+      %i[market_post news event talk].each do |content_type|
         describe "?content_type=#{content_type}" do
           before do
-            get "/api/v3/feed", params: {
+            get '/api/v3/feed', params: {
               content_type: content_type
             }, headers: headers
           end
@@ -358,7 +360,7 @@ describe 'Feed endpoints', type: :request do
     end
   end
 
-  describe "organization_id param present", elasticsearch: true do
+  describe 'organization_id param present', elasticsearch: true do
     before do
       @organization = FactoryGirl.create :organization
       @other_organization = FactoryGirl.create :organization
@@ -370,112 +372,112 @@ describe 'Feed endpoints', type: :request do
       Timecop.return
     end
 
-    context "when Organization has tagged Content" do
+    context 'when Organization has tagged Content' do
       before do
         @tagged_content = FactoryGirl.create :content, :market_post
         FactoryGirl.create :content, :market_post, organization_id: @other_organization.id
         @organization.tagged_contents << @tagged_content
       end
 
-      it "returns tagged Content" do
+      it 'returns tagged Content' do
         subject
         expect(response_json[:feed_items].length).to eq 1
         expect(response_json[:feed_items][0][:content][:id]).to eq @tagged_content.id
       end
     end
 
-    context "when Organization owns Market Posts" do
+    context 'when Organization owns Market Posts' do
       before do
         @market_post = FactoryGirl.create :content, :market_post, organization_id: @organization.id
         FactoryGirl.create :content, :market_post, organization_id: @other_organization.id
       end
 
-      it "returns the Market Posts" do
+      it 'returns the Market Posts' do
         subject
         expect(response_json[:feed_items].length).to eq 1
         expect(response_json[:feed_items][0][:content][:id]).to eq @market_post.id
       end
     end
 
-    context "when Organization owns Events" do
+    context 'when Organization owns Events' do
       before do
         @event = FactoryGirl.create :content, :event, organization_id: @organization.id
         FactoryGirl.create :content, :event, organization_id: @other_organization.id
       end
 
-      it "returns the Events" do
+      it 'returns the Events' do
         subject
         expect(response_json[:feed_items].length).to eq 1
         expect(response_json[:feed_items][0][:content][:id]).to eq @event.id
       end
     end
 
-    context "when Organization owns Content in talk category" do
+    context 'when Organization owns Content in talk category' do
       before do
         @talk = FactoryGirl.create :content, :talk, organization_id: @organization.id
         FactoryGirl.create :content, :talk, organization_id: @other_organization.id
       end
 
-      it "returns talk items" do
+      it 'returns talk items' do
         subject
         expect(response_json[:feed_items].length).to eq 1
         expect(response_json[:feed_items][0][:content][:id]).to eq @talk.id
       end
     end
 
-    context "when Organization owns Content in news category" do
+    context 'when Organization owns Content in news category' do
       before do
         @news = FactoryGirl.create :content, :news, organization_id: @organization.id
         FactoryGirl.create :content, :news, organization_id: @other_organization.id
       end
 
-      it "returns news items" do
+      it 'returns news items' do
         subject
         expect(response_json[:feed_items].length).to eq 1
         expect(response_json[:feed_items][0][:content][:id]).to eq @news.id
       end
     end
 
-    context "when Content is created but has no pubdate" do
+    context 'when Content is created but has no pubdate' do
       before do
         content = FactoryGirl.create :content, :news,
                                      organization_id: @organization.id
         content.update_attribute(:pubdate, nil)
       end
 
-      it "does not return nil pubdate items" do
+      it 'does not return nil pubdate items' do
         subject
         expect(response_json[:feed_items].length).to eq 0
       end
     end
 
-    context "when Content is scheduled for future release" do
+    context 'when Content is scheduled for future release' do
       before do
         content = FactoryGirl.create :content, :news,
                                      organization_id: @organization.id,
                                      pubdate: Date.current + 5.days
       end
 
-      it "it does not return future pubdate items" do
+      it 'it does not return future pubdate items' do
         subject
         expect(response_json[:feed_items].length).to eq 0
       end
     end
 
-    context "when Campaign present and biz_feed_public: true" do
+    context 'when Campaign present and biz_feed_public: true' do
       before do
         @campaign_content = FactoryGirl.create :content, :campaign,
                                                organization_id: @organization.id
         @campaign_content.update_attribute :biz_feed_public, true
       end
 
-      it "appears" do
+      it 'appears' do
         subject
         expect(response_json[:feed_items].length).to eq 1
       end
     end
 
-    context "when Organization is type: Business and biz feed inactive" do
+    context 'when Organization is type: Business and biz feed inactive' do
       before do
         @inactive_organization = FactoryGirl.create :organization,
                                                     org_type: 'Business',
@@ -491,13 +493,13 @@ describe 'Feed endpoints', type: :request do
         Timecop.return
       end
 
-      it "it returns empty payload" do
+      it 'it returns empty payload' do
         subject
         expect(response_json[:feed_items].length).to eq 0
       end
     end
 
-    context "when content_type is calendar" do
+    context 'when content_type is calendar' do
       before do
         @news = FactoryGirl.create :content, :news,
                                    organization_id: @organization.id,
@@ -515,13 +517,13 @@ describe 'Feed endpoints', type: :request do
 
       subject { get "/api/v3/feed?organization_id=#{@organization.id}&content_type=calendar" }
 
-      it "returns only events, in chronological order" do
+      it 'returns only events, in chronological order' do
         subject
         expect(response_json[:feed_items].length).to eq 2
         expect(response_json[:feed_items][0][:content][:id]).to eq @first_event.id
       end
 
-      context "when Event is tagged to organization" do
+      context 'when Event is tagged to organization' do
         before do
           alt_org = FactoryGirl.create :organization
           @tagged_event = FactoryGirl.create :content, :event,
@@ -530,7 +532,7 @@ describe 'Feed endpoints', type: :request do
           @organization.tagged_contents << @tagged_event
         end
 
-        it "returns tagged event as well" do
+        it 'returns tagged event as well' do
           subject
           ids = response_json[:feed_items].map { |i| i[:content][:id] }
           expect(ids).to include @tagged_event.id
@@ -538,7 +540,7 @@ describe 'Feed endpoints', type: :request do
       end
     end
 
-    describe "additional params" do
+    describe 'additional params' do
       before do
         @organization = FactoryGirl.create :organization
         @hidden_content = FactoryGirl.create :content, :news,
@@ -568,118 +570,118 @@ describe 'Feed endpoints', type: :request do
         Timecop.return
       end
 
-      describe "?show=everything" do
+      describe '?show=everything' do
         subject { get "/api/v3/feed?organization_id=#{@organization.id}&show=everything" }
 
-        it "returns drafts, hidden content and regular content" do
+        it 'returns drafts, hidden content and regular content' do
           subject
           expect(response_json[:feed_items].length).to eq 5
         end
 
-        context "when Campaign present and biz_feed_public: false" do
+        context 'when Campaign present and biz_feed_public: false' do
           before do
             @campaign_content = FactoryGirl.create :content, :campaign,
                                                    organization_id: @organization.id,
                                                    biz_feed_public: false
           end
 
-          it "appears" do
+          it 'appears' do
             subject
             expect(response_json[:feed_items].length).to eq 6
           end
         end
 
-        context "when Campaign present and biz_feed_public: true" do
+        context 'when Campaign present and biz_feed_public: true' do
           before do
             @campaign_content = FactoryGirl.create :content, :campaign,
                                                    organization_id: @organization.id,
                                                    biz_feed_public: true
           end
 
-          it "appears" do
+          it 'appears' do
             subject
             expect(response_json[:feed_items].length).to eq 6
           end
         end
       end
 
-      describe "?show=hidden" do
+      describe '?show=hidden' do
         subject { get "/api/v3/feed?organization_id=#{@organization.id}&show=hidden" }
 
-        it "returns biz_feed_public: false contents" do
+        it 'returns biz_feed_public: false contents' do
           subject
           expect(response_json[:feed_items].length).to eq 1
           expect(response_json[:feed_items][0][:content][:id]).to eq @hidden_content.id
         end
 
-        context "when Campaign present and biz_feed_public: false" do
+        context 'when Campaign present and biz_feed_public: false' do
           before do
             @campaign_content = FactoryGirl.create :content, :campaign,
                                                    organization_id: @organization.id,
                                                    biz_feed_public: false
           end
 
-          it "appears" do
+          it 'appears' do
             subject
             expect(response_json[:feed_items].length).to eq 2
           end
         end
 
-        context "when Campaign present and biz_feed_public: true" do
+        context 'when Campaign present and biz_feed_public: true' do
           before do
             @campaign_content = FactoryGirl.create :content, :campaign,
                                                    organization_id: @organization.id
             @campaign_content.update_attribute :biz_feed_public, true
           end
 
-          it "does not appear" do
+          it 'does not appear' do
             subject
             expect(response_json[:feed_items].length).to eq 1
           end
         end
       end
 
-      describe "?show=drafts" do
+      describe '?show=drafts' do
         subject { get "/api/v3/feed?organization_id=#{@organization.id}&show=draft" }
 
-        it "returns drafts and scheduled posts only" do
+        it 'returns drafts and scheduled posts only' do
           subject
           expect(response_json[:feed_items].length).to eq 2
           content_ids = response_json[:feed_items].map { |c| c[:content][:id] }
           expect(content_ids).to match_array [@draft_content.id, @scheduled_content.id]
         end
 
-        context "when Campaign present and biz_feed_public: false" do
+        context 'when Campaign present and biz_feed_public: false' do
           before do
             @campaign_content = FactoryGirl.create :content, :campaign,
                                                    organization_id: @organization.id,
                                                    biz_feed_public: false
           end
 
-          it "does not appear" do
+          it 'does not appear' do
             subject
             expect(response_json[:feed_items].length).to eq 2
           end
         end
 
-        context "when Campaign present and biz_feed_public: true" do
+        context 'when Campaign present and biz_feed_public: true' do
           before do
             @campaign_content = FactoryGirl.create :content, :campaign,
                                                    organization_id: @organization.id
             @campaign_content.update_attribute :biz_feed_public, true
           end
 
-          it "does not appear" do
+          it 'does not appear' do
             subject
             expect(response_json[:feed_items].length).to eq 2
           end
         end
       end
 
-      describe "?calendar=false" do
+      describe '?calendar=false' do
         subject { get "/api/v3/feed?organization_id=#{@organization.id}&calendar=false" }
 
-        it "returns all but events" do
+        it 'returns all but events' do
           subject
           expect(response_json[:feed_items].length).to eq 1
           expect(response_json[:feed_items][0][:content][:id]).not_to eq @event.id

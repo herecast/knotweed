@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'json'
 
-describe Api::V3::CommentsController, :type => :controller do
+describe Api::V3::CommentsController, type: :controller do
   describe 'GET index' do
     it 'should fail without content_id' do
       get :index, format: :json
@@ -39,12 +41,12 @@ describe Api::V3::CommentsController, :type => :controller do
         end
       end
 
-      context "when content is removed" do
+      context 'when content is removed' do
         before do
           @content.update_attribute(:removed, true)
         end
 
-        it "returns empty array" do
+        it 'returns empty array' do
           subject
           expect(assigns(:comments)).to eq([])
         end
@@ -109,7 +111,7 @@ describe Api::V3::CommentsController, :type => :controller do
         @comment = FactoryGirl.create :comment
         @comment.content.update parent_id: @content.id, created_by: user
         allow(user).to receive(:avatar_url).and_return(
-          "https://www.google.com/images/srpr/logo11w.png"
+          'https://www.google.com/images/srpr/logo11w.png'
         )
       end
 
@@ -162,9 +164,9 @@ describe Api::V3::CommentsController, :type => :controller do
       expect { subject }.to change { ActiveJob::Base.queue_adapter.enqueued_jobs.size }.by(1)
     end
 
-    context "when comment contains HTML tags" do
+    context 'when comment contains HTML tags' do
       before do
-        @allowed_content = "Hi this is allowed"
+        @allowed_content = 'Hi this is allowed'
       end
 
       let(:comment_params) do
@@ -176,7 +178,7 @@ describe Api::V3::CommentsController, :type => :controller do
 
       subject { post :create, params: { comment: comment_params } }
 
-      it "strips HTML tags from comment" do
+      it 'strips HTML tags from comment' do
         subject
         expect(Content.last.raw_content).to eq @allowed_content
       end

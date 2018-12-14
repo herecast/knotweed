@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ListservMailer < ActionMailer::Base
   default from: Rails.configuration.subtext.emails.listserv
   layout 'listserv_mailer'

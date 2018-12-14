@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe SendPaymentsJob do
@@ -7,18 +9,18 @@ RSpec.describe SendPaymentsJob do
   subject { described_class.new.perform(period_start.to_s, period_end.to_s) }
 
   describe 'with unpaid payments' do
-    let!(:payment) {
+    let!(:payment) do
       FactoryGirl.create :payment, period_start: period_start, period_end: period_end,
                                    paid: false
-    }
-    let(:send_payment_params) {
+    end
+    let(:send_payment_params) do
       {
         vendor_name: payment.paid_to.fullname,
         amount: payment.total_payment,
         invoice_number: payment.id,
         invoice_date: payment.invoice_date
       }
-    }
+    end
 
     describe 'when the BillDotCom call succeeds' do
       before { allow(BillDotComService).to receive(:send_payment).with(send_payment_params).and_return(true) }
@@ -29,10 +31,10 @@ RSpec.describe SendPaymentsJob do
     end
 
     describe 'when the BillDotCom call fails' do
-      before {
+      before do
         allow(BillDotComService).to receive(:send_payment).with(send_payment_params)
-                                                          .and_raise(BillDotComExceptions::UnexpectedResponse.new("Generic problem error"))
-      }
+                                                          .and_raise(BillDotComExceptions::UnexpectedResponse.new('Generic problem error'))
+      end
 
       it 'should not update the payment as paid' do
         subject

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DropConsumerApps < ActiveRecord::Migration
   def change
     drop_table :consumer_apps do |t|

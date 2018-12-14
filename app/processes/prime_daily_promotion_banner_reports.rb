@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class PrimeDailyPromotionBannerReports
   def self.call(*args)
-    self.new(*args).call
+    new(*args).call
   end
 
   def initialize(current_date, is_prod)
@@ -17,8 +19,8 @@ class PrimeDailyPromotionBannerReports
   private
 
   def reset_daily_impression_counts
-    PromotionBanner.where("daily_impression_count > 0")
-                   .update_all("daily_impression_count = 0")
+    PromotionBanner.where('daily_impression_count > 0')
+                   .update_all('daily_impression_count = 0')
   end
 
   def create_reports_for_current_promotion_banners

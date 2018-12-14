@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: profile_metrics
@@ -40,10 +42,10 @@ FactoryGirl.define do
     location nil
     user nil
     content nil
-    event_type "MyString"
-    user_ip "MyString"
-    user_agent "MyString"
-    client_id "MyString"
+    event_type 'MyString'
+    user_ip 'MyString'
+    user_agent 'MyString'
+    client_id 'MyString'
     location_confirmed false
   end
 end

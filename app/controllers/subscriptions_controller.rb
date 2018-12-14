@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class SubscriptionsController < ApplicationController
-  before_action :set_subscription, only: [:show, :edit, :update, :destroy]
+  before_action :set_subscription, only: %i[show edit update destroy]
   before_action :store_query_in_session, only: [:index]
 
   def index
@@ -7,19 +9,17 @@ class SubscriptionsController < ApplicationController
     @subscriptions = @search.result(distinct: true)\
                             .active\
                             .includes(:listserv)\
-                            .order("created_at DESC")\
+                            .order('created_at DESC')\
                             .page(params[:page])
   end
 
-  def show
-  end
+  def show; end
 
   def new
     @subscription = Subscription.new
   end
 
-  def edit
-  end
+  def edit; end
 
   def create
     @subscription = Subscription.new(subscription_params)
@@ -58,9 +58,7 @@ class SubscriptionsController < ApplicationController
   end
 
   def store_query_in_session
-    if params[:q].present?
-      session[:subscriptions_search] = params[:q]
-    end
+    session[:subscriptions_search] = params[:q] if params[:q].present?
   end
 
   def search_query

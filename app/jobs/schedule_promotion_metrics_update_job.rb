@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This job schedules both the digest metric update from mailchimp,
 # and the caching of the promotion banner metrics on their respective
 # records.

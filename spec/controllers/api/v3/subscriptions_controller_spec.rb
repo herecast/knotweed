@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Api::V3::SubscriptionsController, type: :controller do
@@ -9,11 +11,11 @@ describe Api::V3::SubscriptionsController, type: :controller do
       @sub_attrs = { subscription: {
         user_id: @user.id,
         listserv_id: @listserv.id,
-        source: "daily_uv",
+        source: 'daily_uv',
         email: @user.email,
         name: @user.name,
         confirmed_at: Time.zone.now,
-        email_type: "html"
+        email_type: 'html'
       } }
     end
     subject { post :create, params: @sub_attrs, format: :json }
@@ -42,11 +44,11 @@ describe Api::V3::SubscriptionsController, type: :controller do
     it 'returns errors for invalid subscriptions' do
       @sub_attrs = { subscription: {
         user_id: @user.id,
-        source: "daily_uv",
+        source: 'daily_uv',
         email: @user.email,
         name: @user.name,
         confirmed_at: Time.zone.now,
-        email_type: "html"
+        email_type: 'html'
       } }
 
       post :create, params: @sub_attrs, format: :json
@@ -77,20 +79,20 @@ describe Api::V3::SubscriptionsController, type: :controller do
     let(:user) { FactoryGirl.create :user }
     let(:listserv) { FactoryGirl.create :listserv, mc_list_id: '58b689ef45', mc_group_name: 'Test Digest' }
     let!(:subscription) { FactoryGirl.create :subscription, email: user.email, listserv_id: listserv.id }
-    let(:mc_request) {
-      { "type" => "unsubscribe",
-        "fired_at" => "2016-09-21 15:32:52",
-        "data" => { "action" => "unsub",
-                    "reason" => "manual",
-                    "id" => "ecdecee112",
-                    "email" => "#{user.email}",
-                    "email_type" => "html",
-                    "ip_opt" => "68.81.4.98",
-                    "web_id" => "134812609", "merges" => { "EMAIL" => "test@subtext.org",
-                                                           "FNAME" => "Testy",
-                                                           "LNAME" => "McTesterson" },
-                    "list_id" => "#{listserv.mc_list_id}" } }
-    }
+    let(:mc_request) do
+      { 'type' => 'unsubscribe',
+        'fired_at' => '2016-09-21 15:32:52',
+        'data' => { 'action' => 'unsub',
+                    'reason' => 'manual',
+                    'id' => 'ecdecee112',
+                    'email' => user.email.to_s,
+                    'email_type' => 'html',
+                    'ip_opt' => '68.81.4.98',
+                    'web_id' => '134812609', 'merges' => { 'EMAIL' => 'test@subtext.org',
+                                                           'FNAME' => 'Testy',
+                                                           'LNAME' => 'McTesterson' },
+                    'list_id' => listserv.mc_list_id.to_s } }
+    end
 
     subject { post :unsubscribe_from_mailchimp, params: mc_request }
 

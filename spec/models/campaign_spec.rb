@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: campaigns
@@ -82,15 +84,15 @@ RSpec.describe Campaign, type: :model do
   end
 
   context 'when given a promotion id' do
-    let!(:promo_with_banner) {
+    let!(:promo_with_banner) do
       FactoryGirl.create :promotion,
                          promotable: FactoryGirl.create(:promotion_banner)
-    }
+    end
 
-    let!(:other_promo) {
+    let!(:other_promo) do
       FactoryGirl.create :promotion,
                          promotable: FactoryGirl.create(:promotion_listserv)
-    }
+    end
 
     it 'checks existence of the promotion' do
       subject.promotion_ids = ['190380']
@@ -116,15 +118,15 @@ RSpec.describe Campaign, type: :model do
   describe 'community overlap' do
     context 'when multiple campaigns exist for a listserv' do
       let(:locations) { FactoryGirl.create_list :location, 2 }
-      let!(:campaign1) {
+      let!(:campaign1) do
         FactoryGirl.create :campaign,
                            communities: [locations.first]
-      }
-      let!(:campaign2) {
+      end
+      let!(:campaign2) do
         FactoryGirl.create :campaign,
                            listserv: campaign1.listserv,
                            communities: [locations.last]
-      }
+      end
 
       it 'validates that community can\'t be assigned to multiple campaigns' do
         expect(campaign1).to be_valid
@@ -133,7 +135,7 @@ RSpec.describe Campaign, type: :model do
         campaign2.communities = [locations.first]
 
         expect(campaign2).to_not be_valid
-        expect(campaign2.errors[:community_ids]).to include("cannot have community included in another campaign")
+        expect(campaign2.errors[:community_ids]).to include('cannot have community included in another campaign')
       end
     end
   end

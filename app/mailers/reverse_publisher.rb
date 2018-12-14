@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 class ReversePublisher < ActionMailer::Base
   helper :events, :contents, :market_posts
 
   def mail_content_to_listservs(content, listservs)
     # these are the same regardless of channel
-    to = listservs.map { |l| l.reverse_publish_email }
+    to = listservs.map(&:reverse_publish_email)
     from = "\"#{content.authors}\" <#{content.authoremail}>"
     subject = content.title
     @body = content.raw_content_for_text_email
@@ -12,7 +14,7 @@ class ReversePublisher < ActionMailer::Base
 
     @base_uri = "http://#{Figaro.env.default_consumer_host}"
 
-    if content.channel.nil? or content.channel.is_a? Comment # if unchannelized or comment
+    if content.channel.nil? || content.channel.is_a?(Comment) # if unchannelized or comment
       headers['In-Reply-To'] = content.parent.try(:guid)
       template_name = 'content'
       @content = content

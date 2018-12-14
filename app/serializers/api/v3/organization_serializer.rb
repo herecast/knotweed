@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class OrganizationSerializer < ActiveModel::Serializer
@@ -40,13 +42,13 @@ module Api
         object.profile_image_url || object.logo_url
      end
 
-      def background_image_url; object.background_image.url if object.background_image.present?; end
+      def background_image_url
+        object.background_image.url if object.background_image.present?
+      end
 
       def business_profile_id
         bp_content = object.contents.where(channel_type: 'BusinessProfile').first
-        if bp_content.present?
-          bp_content.channel_id
-        end
+        bp_content.channel_id if bp_content.present?
       end
 
       def can_edit

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ListservDigestJob < ApplicationJob
   def perform(listserv)
     @listserv = listserv
@@ -29,11 +31,11 @@ class ListservDigestJob < ApplicationJob
       @listserv.update last_digest_generation_time: Time.current
 
       digests.each do |digest|
-        if digest.contents.any?
-          if digest.subscriptions.any?
-            digest.save!
-            ListservDigestMailer.digest(digest).deliver_now
-          end
+        next unless digest.contents.any?
+
+        if digest.subscriptions.any?
+          digest.save!
+          ListservDigestMailer.digest(digest).deliver_now
         end
       end
     end
@@ -55,10 +57,10 @@ class ListservDigestJob < ApplicationJob
       if @listserv.custom_digest?
         unless @listserv.campaigns.present?
           contents = @listserv.contents_from_custom_query
-          attrs.merge!({
-                         contents: contents,
-                         subscriptions: @listserv.subscriptions.active
-                       })
+          attrs.merge!(
+            contents: contents,
+            subscriptions: @listserv.subscriptions.active
+          )
         end
       end
     end

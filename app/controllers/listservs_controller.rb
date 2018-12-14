@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class ListservsController < ApplicationController
-  before_action :set_listserv, only: [:show, :edit, :update, :destroy]
+  before_action :set_listserv, only: %i[show edit update destroy]
 
   def index
     # if posted, save to session
@@ -9,14 +11,13 @@ class ListservsController < ApplicationController
       session[:listservs_search] = params[:q]
     end
     unless session[:listservs_search].present?
-      session[:listservs_search] = { :active_true => true }
+      session[:listservs_search] = { active_true: true }
     end
     @search = Listserv.ransack(session[:listservs_search])
     @listservs = @search.result(distinct: true)
   end
 
-  def show
-  end
+  def show; end
 
   def new
     # default list type should be custom digest

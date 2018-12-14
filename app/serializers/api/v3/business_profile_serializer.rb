@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class BusinessProfileSerializer < ActiveModel::Serializer
@@ -29,24 +31,40 @@ module Api
       end
 
       def images
-        object.content.images.map { |img| img.url } if object.content.present?
+        object.content.images.map(&:url) if object.content.present?
       end
 
-      def website; object.business_location.venue_url; end
+      def website
+        object.business_location.venue_url
+      end
 
-      def phone; object.business_location.phone; end
+      def phone
+        object.business_location.phone
+      end
 
-      def email; object.business_location.email; end
+      def email
+        object.business_location.email
+      end
 
-      def address; object.business_location.address; end
+      def address
+        object.business_location.address
+      end
 
-      def city; object.business_location.city; end
+      def city
+        object.business_location.city
+      end
 
-      def state; object.business_location.state; end
+      def state
+        object.business_location.state
+      end
 
-      def zip; object.business_location.zip; end
+      def zip
+        object.business_location.zip
+      end
 
-      def service_radius; object.business_location.service_radius; end
+      def service_radius
+        object.business_location.service_radius
+      end
 
       def has_address
         address.present? && city.present? && state.present?
@@ -63,7 +81,9 @@ module Api
         }
       end
 
-      def category_ids; object.business_category_ids; end
+      def category_ids
+        object.business_category_ids
+      end
 
       def can_edit
         if context.present? && context[:current_ability].present?
@@ -86,9 +106,13 @@ module Api
         }
       end
 
-      def feedback_num; object.feedback_count; end
+      def feedback_num
+        object.feedback_count
+      end
 
-      def claimed; object.claimed?; end
+      def claimed
+        object.claimed?
+      end
 
       def biz_feed_active
         object.organization.try(:biz_feed_active) if object.content.present?

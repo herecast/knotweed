@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddColumnsToReportJobRecipients < ActiveRecord::Migration
   def change
     add_column :report_job_recipients, :report_review_date, :datetime

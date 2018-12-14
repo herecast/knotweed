@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class KitchenSinkMailer < ActionMailer::Base
   require 'htmlcompressor'
 
@@ -8,10 +10,10 @@ class KitchenSinkMailer < ActionMailer::Base
   layout 'email'
 
   def show
-    mail()
+    mail
   end
 
-  # TODO send to litmus
+  # TODO: send to litmus
   # Default handler override
   # def self.deliver_mail(mail_instance)
   # Disable default delivery process.

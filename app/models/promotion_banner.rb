@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: promotion_banners
@@ -45,7 +47,7 @@ class PromotionBanner < ActiveRecord::Base
                 :remove_banner_image!,
                 :remove_coupon_image!, raise: false
 
-  UPLOAD_ENDPOINT = "/statements"
+  UPLOAD_ENDPOINT = '/statements'
 
   validates_presence_of :promotion, :campaign_start, :campaign_end
   validates :max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: -> { max_impressions.present? }
@@ -59,15 +61,15 @@ class PromotionBanner < ActiveRecord::Base
   OVER_DELIVERY_PERCENTAGE = 0.15
 
   # returns currently active promotion banners
-  scope :active, ->(date = Date.current) {
-                   where("campaign_start <= ?", date)
-                     .where("campaign_end >= ?", date)
+  scope :active, lambda { |date = Date.current|
+                   where('campaign_start <= ?', date)
+                     .where('campaign_end >= ?', date)
                  }
 
   # this scope combines all conditions to determine whether a promotion banner is paid
   # NOTE: for now, we're just concerned with 'paid' and 'active' being true - will eventually
   # other conditions (campaign start/end, inventory)
-  scope :paid, -> {
+  scope :paid, lambda {
                  includes(:promotion)
                    .where('promotions.paid = ?', true).references(:promotion)
                }
@@ -75,7 +77,7 @@ class PromotionBanner < ActiveRecord::Base
   # this scope combines all conditions to determine whether a promotion banner has inventory
   # NOTE: we need the select clause or else the "joins" causes the scope to return
   # readonly records.
-  scope :has_inventory, -> {
+  scope :has_inventory, lambda {
                           includes(:promotion)
                             .where('(impression_count < max_impressions OR max_impressions IS NULL)')
                             .where("(daily_impression_count < (daily_max_impressions + (daily_max_impressions * #{OVER_DELIVERY_PERCENTAGE})) OR daily_max_impressions IS NULL)")
@@ -85,29 +87,29 @@ class PromotionBanner < ActiveRecord::Base
   # this scope combines all conditions to determine whether a promotion banner is boosted
   # NOTE: we need the select clause or else the "joins" causes the scope to return
   # readonly records.
-  scope :boost, -> {
+  scope :boost, lambda {
                   includes(:promotion)
                     .where('boost = ?', true)
                 }
 
   # query promotion banners by content
-  scope :for_content, lambda { |content_id| joins(:promotion).where('promotions.content_id = ?', content_id) }
+  scope :for_content, ->(content_id) { joins(:promotion).where('promotions.content_id = ?', content_id) }
 
   # query promotion banners by multiple promotion ids
-  scope :for_promotions, lambda { |promotion_ids| joins(:promotion).where(promotions: { :id => promotion_ids }) }
+  scope :for_promotions, ->(promotion_ids) { joins(:promotion).where(promotions: { id: promotion_ids }) }
 
-  RUN_OF_SITE = "ROS"
-  SPONSORED = "Sponsored"
-  DIGEST = "Digest"
-  NATIVE = "Native"
-  COUPON = "Coupon"
-  PROFILE_PAGE = "Profile Page"
-  PROMOTION_SERVICES = "Promotion Services"
-  PACKAGE_LAUNCH = "Package: Launch"
-  PACKAGE_MAINTENANCE = "Package: Maintenance"
-  PACKAGE_PLUS = "Package: Plus"
-  PACKAGE_PRESENCE = "Package: Presence"
-  PACKAGE_PROMINENCE = "Package: Prominence"
+  RUN_OF_SITE = 'ROS'
+  SPONSORED = 'Sponsored'
+  DIGEST = 'Digest'
+  NATIVE = 'Native'
+  COUPON = 'Coupon'
+  PROFILE_PAGE = 'Profile Page'
+  PROMOTION_SERVICES = 'Promotion Services'
+  PACKAGE_LAUNCH = 'Package: Launch'
+  PACKAGE_MAINTENANCE = 'Package: Maintenance'
+  PACKAGE_PLUS = 'Package: Plus'
+  PACKAGE_PRESENCE = 'Package: Presence'
+  PACKAGE_PROMINENCE = 'Package: Prominence'
 
   PROMOTION_TYPES = [
     RUN_OF_SITE,
@@ -122,7 +124,7 @@ class PromotionBanner < ActiveRecord::Base
     PACKAGE_PLUS,
     PACKAGE_PRESENCE,
     PACKAGE_PROMINENCE
-  ]
+  ].freeze
 
   scope :run_of_site, -> { where(promotion_type: [RUN_OF_SITE, COUPON]) }
 
@@ -145,7 +147,7 @@ class PromotionBanner < ActiveRecord::Base
   end
 
   def current_daily_report(current_date = Date.current)
-    promotion_banner_reports.where("report_date >= ?", current_date).take
+    promotion_banner_reports.where('report_date >= ?', current_date).take
   end
 
   def find_or_create_daily_report(current_date = Date.current)

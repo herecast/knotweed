@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe RecordPromotionBannerMetric do
@@ -5,101 +7,101 @@ RSpec.describe RecordPromotionBannerMetric do
     @promotion_banner = FactoryGirl.create :promotion_banner
   end
 
-  describe "::call" do
-    context "with event_type: load" do
-      subject {
-        RecordPromotionBannerMetric.call({
-                                           event_type: 'load',
-                                           user_id: nil,
-                                           promotion_banner_id: @promotion_banner.id,
-                                           current_date: Date.current.to_s
-                                         })
-      }
+  describe '::call' do
+    context 'with event_type: load' do
+      subject do
+        RecordPromotionBannerMetric.call(
+          event_type: 'load',
+          user_id: nil,
+          promotion_banner_id: @promotion_banner.id,
+          current_date: Date.current.to_s
+        )
+      end
 
-      it "reports load event" do
+      it 'reports load event' do
         expect { subject }.to change {
           PromotionBannerMetric.where(event_type: 'load').count
         }.by 1
       end
 
-      it "increases load count of promotion_banner" do
+      it 'increases load count of promotion_banner' do
         expect { subject }.to change {
           @promotion_banner.reload.load_count
         }.by 1
       end
     end
 
-    context "with event_type: impression" do
-      subject {
-        RecordPromotionBannerMetric.call({
-                                           event_type: 'impression',
-                                           current_user: nil,
-                                           promotion_banner_id: @promotion_banner.id,
-                                           current_date: Date.current.to_s,
-                                           gtm_blocked: true
-                                         })
-      }
+    context 'with event_type: impression' do
+      subject do
+        RecordPromotionBannerMetric.call(
+          event_type: 'impression',
+          current_user: nil,
+          promotion_banner_id: @promotion_banner.id,
+          current_date: Date.current.to_s,
+          gtm_blocked: true
+        )
+      end
 
-      it "reports impression event" do
+      it 'reports impression event' do
         expect { subject }.to change {
           PromotionBannerMetric.where(event_type: 'impression').count
         }.by 1
       end
 
-      it "increases impression count of promotion_banner" do
+      it 'increases impression count of promotion_banner' do
         expect { subject }.to change {
           @promotion_banner.reload.impression_count
         }.by 1
       end
 
-      it "increases daily impression count of promotion_banner" do
+      it 'increases daily impression count of promotion_banner' do
         expect { subject }.to change {
           @promotion_banner.reload.daily_impression_count
         }.by 1
       end
 
-      context "when gtm is blocked on front end" do
-        it "records gtm_blocked as true" do
+      context 'when gtm is blocked on front end' do
+        it 'records gtm_blocked as true' do
           subject
           expect(PromotionBannerMetric.last.gtm_blocked).to be true
         end
       end
     end
 
-    context "with event_type: click" do
-      subject {
-        RecordPromotionBannerMetric.call({
-                                           event_type: 'click',
-                                           user_id: nil,
-                                           promotion_banner_id: @promotion_banner.id,
-                                           current_date: Date.current.to_s
-                                         })
-      }
+    context 'with event_type: click' do
+      subject do
+        RecordPromotionBannerMetric.call(
+          event_type: 'click',
+          user_id: nil,
+          promotion_banner_id: @promotion_banner.id,
+          current_date: Date.current.to_s
+        )
+      end
 
-      it "reports click event" do
+      it 'reports click event' do
         expect { subject }.to change {
           PromotionBannerMetric.where(event_type: 'click').count
         }.by 1
       end
 
-      it "increases click count of promotion_banner" do
+      it 'increases click count of promotion_banner' do
         expect { subject }.to change {
           @promotion_banner.reload.click_count
         }.by 1
       end
     end
 
-    context "when promotion banner does not have current report" do
-      subject {
-        RecordPromotionBannerMetric.call({
-                                           event_type: 'load',
-                                           user_id: nil,
-                                           promotion_banner_id: @promotion_banner.id,
-                                           current_date: Date.current.to_s
-                                         })
-      }
+    context 'when promotion banner does not have current report' do
+      subject do
+        RecordPromotionBannerMetric.call(
+          event_type: 'load',
+          user_id: nil,
+          promotion_banner_id: @promotion_banner.id,
+          current_date: Date.current.to_s
+        )
+      end
 
-      it "creates a promotion banner report" do
+      it 'creates a promotion banner report' do
         expect { subject }.to change {
           PromotionBannerReport.count
         }.by 1
@@ -107,23 +109,23 @@ RSpec.describe RecordPromotionBannerMetric do
       end
     end
 
-    context "when promotion banner has current report" do
+    context 'when promotion banner has current report' do
       before do
         @promotion_banner_report = FactoryGirl.create :promotion_banner_report,
                                                       promotion_banner_id: @promotion_banner.id,
                                                       report_date: Date.current
       end
 
-      subject {
-        RecordPromotionBannerMetric.call({
-                                           event_type: 'click',
-                                           user_id: nil,
-                                           promotion_banner_id: @promotion_banner.id,
-                                           current_date: Date.current.to_s
-                                         })
-      }
+      subject do
+        RecordPromotionBannerMetric.call(
+          event_type: 'click',
+          user_id: nil,
+          promotion_banner_id: @promotion_banner.id,
+          current_date: Date.current.to_s
+        )
+      end
 
-      it "increments promotion banner report stats" do
+      it 'increments promotion banner report stats' do
         expect { subject }.to change {
           @promotion_banner_report.reload.click_count
         }.by 1

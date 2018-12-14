@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # define tests for models that use the Auditable concern (app/models/concerns/auditable.rb)
 # Should be included in the relevant models using:
 #   include_examples 'Auditable', Content
@@ -19,14 +21,14 @@ shared_examples 'Auditable' do |model|
       @existing_object.update_attribute :updated_by, nil
     end
 
-    it "should set updated_by when #{model.to_s} is updated" do
+    it "should set updated_by when #{model} is updated" do
       @existing_object.save
       expect(@existing_object.reload.updated_by).to eq(@user)
     end
   end
 
   describe 'created_by' do
-    it "should set updated and created by when a #{model.to_s} is created" do
+    it "should set updated and created by when a #{model} is created" do
       obj = FactoryGirl.create model_symbol, created_by: nil
       expect(obj.created_by).to eq(@user)
       expect(obj.updated_by).to eq(@user)

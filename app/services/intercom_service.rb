@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module IntercomService
-  extend self
+  module_function
 
   def send_published_content_event(content)
     number_of_published_posts = Content.where(organization_id: content.organization.id)

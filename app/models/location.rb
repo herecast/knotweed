@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: locations
@@ -40,7 +42,7 @@ class Location < ActiveRecord::Base
   end
 
   # coordinates for the center of the upper valley
-  DEFAULT_LOCATION_COORDS = [43.645, -72.243]
+  DEFAULT_LOCATION_COORDS = [43.645, -72.243].freeze
 
   validates :slug, uniqueness: true
   validates :state, length: { is: 2 }, if: :state?
@@ -59,27 +61,27 @@ class Location < ActiveRecord::Base
   scope :consumer_active, -> { where consumer_active: true }
   scope :not_upper_valley, -> { where "city != 'Upper Valley'" }
 
-  scope :non_region, -> {
+  scope :non_region, lambda {
     where(is_region: false)
   }
 
-  scope :with_slug, -> {
+  scope :with_slug, lambda {
     where("slug IS NOT NULL AND slug <> ''")
   }
 
   searchkick callbacks: :async,
              index_prefix: Figaro.env.stack_name,
              batch_size: 1000,
-             locations: ["location"],
+             locations: ['location'],
              match: :word_start,
-             searchable: [:city, :state, :zip]
+             searchable: %i[city state zip]
 
   def search_data
     {
       id: id,
       location: {
         lat: latitude,
-        lon: longitude,
+        lon: longitude
       },
       city: city,
       state: state,
@@ -92,7 +94,7 @@ class Location < ActiveRecord::Base
     # But we aren't using that in the data currently.
     # So this will return the first non-region it finds in the relationship.
     parent = parents.consumer_active.non_region.first
-    return parent.try(:parent_city) || parent
+    parent.try(:parent_city) || parent
   end
 
   def should_index?
@@ -104,12 +106,10 @@ class Location < ActiveRecord::Base
   end
 
   def pretty_name
-    unless city.nil? || state.nil?
-      "#{city}, #{state}"
-    end
+    "#{city}, #{state}" unless city.nil? || state.nil?
   end
 
-  def coordinates=coords
+  def coordinates=(coords)
     self.latitude, self.longitude = coords
   end
 
@@ -117,17 +117,17 @@ class Location < ActiveRecord::Base
     [latitude, longitude].compact
   end
 
-  alias_method :to_coordinates, :coordinates
+  alias to_coordinates coordinates
 
   def coordinates?
     coordinates.present?
   end
 
-  def self.with_distance latitude:, longitude:
+  def self.with_distance(latitude:, longitude:)
     select("*, #{distance_from_sql([latitude, longitude])} as distance")
   end
 
-  def self.nearest_to_coords latitude:, longitude:
+  def self.nearest_to_coords(latitude:, longitude:)
     with_distance(
       latitude: latitude,
       longitude: longitude
@@ -135,7 +135,7 @@ class Location < ActiveRecord::Base
       .order('distance ASC')
   end
 
-  def self.nearest_to_ip ip
+  def self.nearest_to_ip(ip)
     result = Geocoder.search(ip).first
 
     if result
@@ -149,7 +149,7 @@ class Location < ActiveRecord::Base
     geocoded.near(point, radius)
   end
 
-  def self.find_by_slug_or_id identifier
+  def self.find_by_slug_or_id(identifier)
     if identifier.to_s =~ /^\d+$/
       find(identifier)
     else
@@ -160,7 +160,7 @@ class Location < ActiveRecord::Base
   # though the HABTM relationship allows for many listservs, in reality
   # each location will only have one listserv
   def listserv
-    self.listservs.first
+    listservs.first
   end
 
   # queries ElasticSearch index and returns the closest num locations
@@ -175,19 +175,19 @@ class Location < ActiveRecord::Base
       },
       limit: num,
       where: {
-        id: { not: self.id }
+        id: { not: id }
       }
     }
     Location.search('*', opts).results
   end
 
-  def city=c
+  def city=(c)
     write_attribute :city, c
     build_slug
     c
   end
 
-  def state=s
+  def state=(s)
     write_attribute :state, s
     build_slug
     s

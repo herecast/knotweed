@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: business_locations
@@ -35,7 +37,7 @@ class BusinessLocation < ActiveRecord::Base
   include Auditable
 
   searchkick callbacks: :async, batch_size: 5000, index_prefix: Figaro.env.searchkick_index_prefix,
-             match: :word_start, searchable: [:name, :city, :state]
+             match: :word_start, searchable: %i[name city state]
 
   def search_data
     {
@@ -47,7 +49,7 @@ class BusinessLocation < ActiveRecord::Base
     }
   end
 
-  scope :search_import, -> {
+  scope :search_import, lambda {
     includes(:created_by)
   }
 
@@ -60,7 +62,7 @@ class BusinessLocation < ActiveRecord::Base
 
   validate :state_length_if_present
 
-  STATUS_CATEGORIES = [:approved, :new, :private]
+  STATUS_CATEGORIES = %i[approved new private].freeze
 
   enumerize :status, in: STATUS_CATEGORIES
 
@@ -71,18 +73,16 @@ class BusinessLocation < ActiveRecord::Base
     business_profile.reindex_async if business_profile.present?
     if events.present?
       events.each do |e|
-        e.event_instances.each do |ei|
-          ei.reindex_async
-        end
+        e.event_instances.each(&:reindex_async)
       end
     end
   end
 
-  after_validation :geocode, if: ->(obj) { obj.address.present? and (obj.saved_change_to_address? or obj.saved_change_to_name? or obj.saved_change_to_locate_include_name?) }
+  after_validation :geocode, if: ->(obj) { obj.address.present? && (obj.saved_change_to_address? || obj.saved_change_to_name? || obj.saved_change_to_locate_include_name?) }
 
   def select_option_label
     label = name || ''
-    label += ' - ' if address.present? or city.present? or state.present? or zip.present?
+    label += ' - ' if address.present? || city.present? || state.present? || zip.present?
     label += address if address.present?
     label += ' ' + city if city.present?
     label += ', ' + state if state.present?
@@ -91,10 +91,8 @@ class BusinessLocation < ActiveRecord::Base
   end
 
   def geocoding_address
-    addr = ""
-    if locate_include_name
-      addr += name + " "
-    end
+    addr = ''
+    addr += name + ' ' if locate_include_name
     addr += address if address.present?
     addr += ' ' + city if city.present?
     addr += ' ' + state if state.present?
@@ -104,7 +102,7 @@ class BusinessLocation < ActiveRecord::Base
   end
 
   def full_address
-    addr = ""
+    addr = ''
     addr += address + ',' if address.present?
     addr += ' ' + city if city.present?
     addr += ', ' + state if state.present?
@@ -117,7 +115,7 @@ class BusinessLocation < ActiveRecord::Base
     [latitude, longitude]
   end
 
-  def coordinates=coords
+  def coordinates=(coords)
     self.latitude, self.longitude = coords
   end
 
@@ -126,12 +124,12 @@ class BusinessLocation < ActiveRecord::Base
     return matching if matching
 
     nearest = nearest_location_within_10_miles
-    return nearest.try(:parent_city) || nearest
+    nearest.try(:parent_city) || nearest
   end
 
   def location_matching_city_state
     Location.where(
-      "lower(city) = lower(:city) AND lower(state) = lower(:state)",
+      'lower(city) = lower(:city) AND lower(state) = lower(:state)',
       city: city,
       state: state
     ).first

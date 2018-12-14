@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Api::V3::Organizations::MetricsController, type: :controller do
@@ -7,8 +9,8 @@ RSpec.describe Api::V3::Organizations::MetricsController, type: :controller do
     let(:org) { FactoryGirl.create :organization }
     subject { get :index, params: { organization_id: org.id, start_date: start_date, end_date: end_date } }
 
-    context "when no user logged in" do
-      it "should return unauthenticated status" do
+    context 'when no user logged in' do
+      it 'should return unauthenticated status' do
         subject
         expect(response).to have_http_status :unauthorized
       end

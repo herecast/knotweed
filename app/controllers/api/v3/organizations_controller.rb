@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class OrganizationsController < ApiController
-      before_action :check_logged_in!, only: [:create, :update]
+      before_action :check_logged_in!, only: %i[create update]
 
       def create
         authorize! :create, Organization
@@ -60,11 +62,11 @@ module Api
       end
 
       def sitemap_ids
-        ids = Organization.where("id <> ?", Organization::LISTSERV_ORG_ID)\
+        ids = Organization.where('id <> ?', Organization::LISTSERV_ORG_ID)\
                           .where("
                  (org_type IN (:publishers) AND can_publish_news = TRUE) OR
                  (org_type = 'Business' AND biz_feed_active = TRUE)
-          ", publishers: %w{Blog Publisher Publication})\
+          ", publishers: %w[Blog Publisher Publication])\
                           .order('updated_at DESC')\
                           .limit(50_000)\
                           .pluck(:id)
@@ -95,9 +97,9 @@ module Api
           :calendar_card_active,
           :remove_desktop_image,
           :website,
-          organization_locations_attributes: [
-            :location_type,
-            :location_id
+          organization_locations_attributes: %i[
+            location_type
+            location_id
           ]
         )
       end
@@ -150,16 +152,16 @@ module Api
       end
 
       def manage_certified_orgs
-        if params[:certified_storyteller] == "true" && params[:certified_social] == "true"
+        if params[:certified_storyteller] == 'true' && params[:certified_social] == 'true'
           @opts[:where][:or] = [[
             { certified_social: true },
             { certified_storyteller: true }
           ]]
           @opts[:order] = { name: :asc }
-        elsif params[:certified_storyteller] == "true"
+        elsif params[:certified_storyteller] == 'true'
           @opts[:where][:certified_storyteller] = true
           @opts[:order] = { name: :asc }
-        elsif params[:certified_social] == "true"
+        elsif params[:certified_social] == 'true'
           @opts[:where][:certified_social] = true
           @opts[:order] = { name: :asc }
         else

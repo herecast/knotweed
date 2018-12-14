@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
-describe Api::V3::PromotionBannersController, :type => :controller do
+describe Api::V3::PromotionBannersController, type: :controller do
   describe 'GET show' do
     before do
       @org = FactoryGirl.create :organization
@@ -17,39 +19,39 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       expect(response.code).to eq('200')
     end
 
-    context "when most_recent_reset_time is nil" do
+    context 'when most_recent_reset_time is nil' do
       before do
         Rails.cache.clear
       end
 
-      it "runs background job to clear daily impressions" do
-        ENV['STACK_NAME'] = "knotweed-production"
+      it 'runs background job to clear daily impressions' do
+        ENV['STACK_NAME'] = 'knotweed-production'
         expect(BackgroundJob).to receive(:perform_later).with(
-          "PrimeDailyPromotionBannerReports", "call", Date.current.to_s, true
+          'PrimeDailyPromotionBannerReports', 'call', Date.current.to_s, true
         )
         subject
       end
 
-      context "when environment is non-prod" do
-        it "primes reports with is_prod=false" do
-          ENV['STACK_NAME'] = "hoth-qa"
+      context 'when environment is non-prod' do
+        it 'primes reports with is_prod=false' do
+          ENV['STACK_NAME'] = 'hoth-qa'
           expect(BackgroundJob).to receive(:perform_later).with(
-            "PrimeDailyPromotionBannerReports", "call", Date.current.to_s, false
+            'PrimeDailyPromotionBannerReports', 'call', Date.current.to_s, false
           )
           subject
         end
       end
     end
 
-    context "when most_recent_reset_time is from the previous day" do
+    context 'when most_recent_reset_time is from the previous day' do
       before do
         Rails.cache.write('most_recent_reset_time', Date.yesterday)
       end
 
-      it "runs background job to clear daily impressions" do
-        ENV['STACK_NAME'] = "knotweed-production"
+      it 'runs background job to clear daily impressions' do
+        ENV['STACK_NAME'] = 'knotweed-production'
         expect(BackgroundJob).to receive(:perform_later).with(
-          "PrimeDailyPromotionBannerReports", "call", Date.current.to_s, true
+          'PrimeDailyPromotionBannerReports', 'call', Date.current.to_s, true
         )
         subject
       end
@@ -63,7 +65,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
       it 'should not call record_promotion_banner_metric' do
         expect(BackgroundJob).not_to receive(:perform_later).with(
-          'RecordPromotionBannerMetric', "call", any_args
+          'RecordPromotionBannerMetric', 'call', any_args
         )
         subject
       end
@@ -90,14 +92,14 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       @content = FactoryGirl.create :content
     end
 
-    subject {
+    subject do
       post :track_impression, params: {
         id: @banner.id,
-        client_id: "ClientID!",
+        client_id: 'ClientID!',
         location_id: location.slug,
         format: :json
       }
-    }
+    end
 
     it 'should respond with 200' do
       subject
@@ -106,12 +108,12 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
     it "calls record_promotion_banner_metric with 'impression'" do
       expect(BackgroundJob).to receive(:perform_later).with(
-        'RecordPromotionBannerMetric', "call", hash_including({
-                                                                event_type: "impression",
-                                                                promotion_banner_id: @banner.id,
-                                                                client_id: 'ClientID!',
-                                                                location_id: location.id
-                                                              })
+        'RecordPromotionBannerMetric', 'call', hash_including(
+                                                 event_type: 'impression',
+                                                 promotion_banner_id: @banner.id,
+                                                 client_id: 'ClientID!',
+                                                 location_id: location.id
+                                               )
       )
       subject
     end
@@ -124,7 +126,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
       it 'should not call record_promotion_banner_metric' do
         expect(BackgroundJob).not_to receive(:perform_later).with(
-          'RecordPromotionBannerMetric', "call", any_args
+          'RecordPromotionBannerMetric', 'call', any_args
         )
         subject
       end
@@ -138,7 +140,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       @content = FactoryGirl.create :content
     end
 
-    let(:post_params) {
+    let(:post_params) do
       {
         promotion_banner_id: @banner.id,
         content_id: @content.id,
@@ -149,13 +151,13 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         select_method: 'sponsored_content',
         load_time: 0.9832
       }
-    }
+    end
 
-    subject {
+    subject do
       post :track_load,
            format: :json,
            params: post_params
-    }
+    end
 
     it 'should respond with 200' do
       subject
@@ -164,17 +166,17 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
     it "calls record_promotion_banner_metric with 'load'" do
       expect(BackgroundJob).to receive(:perform_later).with(
-        "RecordPromotionBannerMetric", "call", hash_including({
-                                                                event_type: 'load',
-                                                                client_id: 'ClientId@',
-                                                                location_id: location.id,
-                                                                promotion_banner_id: @banner.id,
-                                                                current_date: Date.current.to_s,
-                                                                content_id: @content.id.to_s,
-                                                                load_time: post_params[:load_time].to_s,
-                                                                select_score: "1.9",
-                                                                select_method: 'sponsored_content'
-                                                              })
+        'RecordPromotionBannerMetric', 'call', hash_including(
+                                                 event_type: 'load',
+                                                 client_id: 'ClientId@',
+                                                 location_id: location.id,
+                                                 promotion_banner_id: @banner.id,
+                                                 current_date: Date.current.to_s,
+                                                 content_id: @content.id.to_s,
+                                                 load_time: post_params[:load_time].to_s,
+                                                 select_score: '1.9',
+                                                 select_method: 'sponsored_content'
+                                               )
       )
       subject
     end
@@ -187,7 +189,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       @content = FactoryGirl.create :content
     end
 
-    subject {
+    subject do
       post :track_click,
            params: {
              promotion_banner_id: @banner.id,
@@ -196,7 +198,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
              location_id: location.slug,
              format: :json
            }
-    }
+    end
 
     it 'should respond with 200' do
       subject
@@ -205,24 +207,23 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
     it "calls record_promotion_banner_metric with 'click" do
       expect(BackgroundJob).to receive(:perform_later).with(
-        "RecordPromotionBannerMetric", "call", hash_including({
-                                                                event_type: 'click',
-                                                                user_id: nil,
-                                                                client_id: 'ClientId@',
-                                                                location_id: location.id,
-                                                                promotion_banner_id: @banner.id,
-                                                                current_date: Date.current.to_s,
-                                                                content_id: @content.id.to_s
-                                                              })
+        'RecordPromotionBannerMetric', 'call', hash_including(
+                                                 event_type: 'click',
+                                                 user_id: nil,
+                                                 client_id: 'ClientId@',
+                                                 location_id: location.id,
+                                                 promotion_banner_id: @banner.id,
+                                                 current_date: Date.current.to_s,
+                                                 content_id: @content.id.to_s
+                                               )
       )
       expect(BackgroundJob).to receive(:perform_later).with(
-        'RecordContentMetric', 'call', @content, {
-          event_type: 'click',
-          current_date: Date.current.to_s,
-          user_id: nil,
-          client_id: 'ClientId@',
-          location_id: location.id
-        }
+        'RecordContentMetric', 'call', @content,
+        event_type: 'click',
+        current_date: Date.current.to_s,
+        user_id: nil,
+        client_id: 'ClientId@',
+        location_id: location.id
       )
       subject
     end
@@ -235,7 +236,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
       it 'should not call record_promotion_banner_metric' do
         expect(BackgroundJob).not_to receive(:perform_later).with(
-          'RecordPromotionBannerMetric', "call", any_args
+          'RecordPromotionBannerMetric', 'call', any_args
         )
         subject
       end
@@ -258,30 +259,30 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     end
   end
 
-  describe "POST #create_ad_metric" do
-    context "when params contain ad_metric" do
-      subject {
+  describe 'POST #create_ad_metric' do
+    context 'when params contain ad_metric' do
+      subject do
         post :create_ad_metric, params: { ad_metric: {
           campaign: 'under-laser-cta',
           event_type: 'click',
           page_url: 'dailyuv.com/death-star-adverts',
           content: 'Want to advertise with the Republic?'
         } }
-      }
+      end
 
-      it "creates ad_metric" do
+      it 'creates ad_metric' do
         expect { subject }.to change {
           AdMetric.count
         }.by 1
       end
 
-      context "when user is admin" do
+      context 'when user is admin' do
         before do
           user = FactoryGirl.create :user, skip_analytics: true
           api_authenticate user: user
         end
 
-        it "does not record metric" do
+        it 'does not record metric' do
           expect { subject }.not_to change {
             AdMetric.count
           }
@@ -290,36 +291,36 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     end
   end
 
-  describe "GET #show_promotion_coupon" do
-    context "when promotion_banner does not exist" do
+  describe 'GET #show_promotion_coupon' do
+    context 'when promotion_banner does not exist' do
       subject { get :show_promotion_coupon, params: { id: '40 billion' } }
 
-      it "returns not_found status" do
+      it 'returns not_found status' do
         subject
         expect(response).to have_http_status :not_found
       end
     end
 
-    context "when promotion_banner exists" do
+    context 'when promotion_banner exists' do
       before do
         @promotion_banner = FactoryGirl.create :promotion_banner
       end
 
       subject { get :show_promotion_coupon, params: { id: @promotion_banner.id } }
 
-      context "when not a coupon" do
-        it "returns not_found status" do
+      context 'when not a coupon' do
+        it 'returns not_found status' do
           subject
           expect(response).to have_http_status :not_found
         end
       end
 
-      context "when a coupon" do
+      context 'when a coupon' do
         before do
           @promotion_banner.update_attribute :promotion_type, PromotionBanner::COUPON
         end
 
-        it "returns ok status" do
+        it 'returns ok status' do
           subject
           expect(response).to have_http_status :ok
         end
@@ -327,17 +328,17 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     end
   end
 
-  describe "POST #create_promotion_coupon_email" do
-    context "when promotion_banner does not exist" do
+  describe 'POST #create_promotion_coupon_email' do
+    context 'when promotion_banner does not exist' do
       subject { post :create_promotion_coupon_email, params: { id: '40 billion' } }
 
-      it "returns bad_request status" do
+      it 'returns bad_request status' do
         subject
         expect(response).to have_http_status :bad_request
       end
     end
 
-    context "when promotion_banner exists" do
+    context 'when promotion_banner exists' do
       before do
         @promotion_banner = FactoryGirl.create :promotion_banner
         @email = 'darth@deathstar.com'
@@ -345,8 +346,8 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
       subject { post :create_promotion_coupon_email, params: { id: @promotion_banner.id, email: @email } }
 
-      it "sends email to user" do
-        mail = double()
+      it 'sends email to user' do
+        mail = double
         expect(mail).to receive(:deliver_later)
         expect(AdMailer).to receive(:coupon_request)
           .with(@email, @promotion_banner)
@@ -354,7 +355,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         subject
       end
 
-      it "returns ok status" do
+      it 'returns ok status' do
         subject
         expect(response).to have_http_status :ok
       end
@@ -400,7 +401,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         @user.add_role :manager, organization
       end
 
-      it "should respond with content" do
+      it 'should respond with content' do
         subject
         expect(assigns(:promotion_banner)).to eq @banner
       end

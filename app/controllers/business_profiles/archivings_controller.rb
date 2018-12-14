@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BusinessProfiles::ArchivingsController < ApplicationController
   before_action :prevent_deletion_of_published_content, only: [:create]
 
@@ -6,7 +8,7 @@ class BusinessProfiles::ArchivingsController < ApplicationController
       unclaim_business
       flash[:notice] = "#{@business_profile.business_location.name} has been archived"
     else
-      flash[:warning] = "The business was not successfully archived"
+      flash[:warning] = 'The business was not successfully archived'
     end
     redirect_to business_profiles_path
   end
@@ -16,7 +18,7 @@ class BusinessProfiles::ArchivingsController < ApplicationController
     if business_profile.update_attributes(business_profile_params)
       flash[:notice] = "#{business_profile.business_location.name} has been activated"
     else
-      flash[:warning] = "The business was not successfully activated"
+      flash[:warning] = 'The business was not successfully activated'
     end
     redirect_to business_profiles_path
   end
@@ -29,8 +31,8 @@ class BusinessProfiles::ArchivingsController < ApplicationController
 
   def prevent_deletion_of_published_content
     @business_profile = BusinessProfile.find_by(id: params[:id])
-    if @business_profile.content.try(:pubdate).present? and @business_profile.content.try(:pubdate) <= Time.now
-      flash[:warning] = "Cannot delete business with published content"
+    if @business_profile.content.try(:pubdate).present? && (@business_profile.content.try(:pubdate) <= Time.now)
+      flash[:warning] = 'Cannot delete business with published content'
       redirect_to business_profiles_path
     end
   end

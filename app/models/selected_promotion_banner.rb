@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SelectedPromotionBanner
   attr_reader :promotion_banner
   attr_reader :select_score
@@ -19,7 +21,7 @@ class SelectedPromotionBanner
     end
   end
 
-  def read_attribute_for_serialization attr
+  def read_attribute_for_serialization(attr)
     send(attr)
   end
 end

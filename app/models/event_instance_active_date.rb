@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EventInstanceActiveDate
   include ActiveModel::Serialization
   attr_reader :date, :count
@@ -11,19 +13,19 @@ class EventInstanceActiveDate
     { date: nil, count: nil }
   end
 
-  def date=d
-    if d.is_a? String
-      @date = Date.parse(d)
-    else
-      @date = d
-    end
+  def date=(d)
+    @date = if d.is_a? String
+              Date.parse(d)
+            else
+              d
+            end
   end
 
-  def count=c
-    if c.is_a? String
-      @count = c.to_i
-    else
-      @count = c
-    end
+  def count=(c)
+    @count = if c.is_a? String
+               c.to_i
+             else
+               c
+             end
   end
 end

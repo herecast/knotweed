@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'sidekiq/testing'
 
@@ -5,19 +7,19 @@ RSpec.describe ScheduleListservDigestsJob do
   subject { described_class.new.perform }
 
   context 'When listserv records exists, enabled and have digest send time' do
-    let!(:listserv1) {
+    let!(:listserv1) do
       FactoryGirl.create :listserv,
-                         digest_send_time: "02:00",
+                         digest_send_time: '02:00',
                          send_digest: true,
                          digest_reply_to: 'test@example.org'
-    }
+    end
 
-    let!(:listserv2) {
+    let!(:listserv2) do
       FactoryGirl.create :listserv,
-                         digest_send_time: "06:00",
+                         digest_send_time: '06:00',
                          send_digest: true,
                          digest_reply_to: 'test@example.org'
-    }
+    end
 
     it 'triggers ListservDigestJob for listserv records' do
       expect { subject }.to have_enqueued_job(ListservDigestJob).exactly(2).times
@@ -42,7 +44,7 @@ RSpec.describe ScheduleListservDigestsJob do
         allow(Sidekiq::RetrySet).to receive(:new).and_return([no_arg_job])
       end
 
-      it "enqueues job" do
+      it 'enqueues job' do
         Timecop.freeze(Time.current.beginning_of_day) do
           subject
           queue = ActiveJob::Base.queue_adapter.enqueued_jobs
@@ -55,11 +57,11 @@ RSpec.describe ScheduleListservDigestsJob do
   end
 
   context 'When listserv records exist, but not enabled' do
-    let!(:listserv) {
+    let!(:listserv) do
       FactoryGirl.create :listserv,
-                         digest_send_time: "02:00",
+                         digest_send_time: '02:00',
                          send_digest: false
-    }
+    end
 
     it 'does not schedule them for digest generation' do
       expect { subject }.to_not have_enqueued_job(ListservDigestJob)
@@ -72,16 +74,16 @@ RSpec.describe ScheduleListservDigestsJob do
       Sidekiq::Testing.disable!
       ActiveJob::Base.queue_adapter = :sidekiq
       example.run
-      Sidekiq.redis { |conn| conn.flushdb }
+      Sidekiq.redis(&:flushdb)
       ActiveJob::Base.queue_adapter = prev_qu_adapter
     end
 
-    let!(:listserv) {
+    let!(:listserv) do
       FactoryGirl.create :listserv,
-                         digest_send_time: "02:00",
+                         digest_send_time: '02:00',
                          digest_reply_to: 'test@example.org',
                          send_digest: true
-    }
+    end
 
     it 'does not schedule the same job more than once' do
       expect { described_class.new.perform }.to change {

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: event_instances
@@ -30,10 +32,10 @@ FactoryGirl.define do
 
     start_date { 1.week.from_now }
 
-    event {
+    event do
       build(:event,
             location: location,
             skip_event_instance: true)
-    }
+    end
   end
 end

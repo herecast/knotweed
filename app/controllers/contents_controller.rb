@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 class ContentsController < ApplicationController
   def index
-    expires_in 1.minutes, :public => true
+    expires_in 1.minutes, public: true
     # if posted, save to session
     if params[:reset]
       session[:contents_search] = nil
     elsif params[:q].present?
       if params[:q][:id_in].present?
-        params[:q][:id_in] = params[:q][:id_in].split(',').map { |s| s.strip }
+        params[:q][:id_in] = params[:q][:id_in].split(',').map(&:strip)
       end
       params[:q][:s] = 'pubdate desc' unless params[:q][:s].present?
       session[:contents_search] = params[:q]
@@ -18,7 +20,7 @@ class ContentsController < ApplicationController
     search_conditions = session[:contents_search].try(:dup) || {}
     search_conditions[:content_category_id_not_eq] = ContentCategory.find_by_name('campaign').try(:id)
 
-    if search_conditions[:event_instances_start_date_gteq].present? or search_conditions[:event_instances_end_date_lteq].present?
+    if search_conditions[:event_instances_start_date_gteq].present? || search_conditions[:event_instances_end_date_lteq].present?
       search_conditions[:channel_type_eq] = 'Event'
     end
 
@@ -27,7 +29,7 @@ class ContentsController < ApplicationController
     if session[:contents_search].present?
       @contents = @search.result(distinct: true)
                          .includes(:organization, :created_by, :content_category, :root_content_category, :channel)
-                         .order("pubdate DESC").page(params[:page])
+                         .order('pubdate DESC').page(params[:page])
                          .per(100)
     else
       @contents = []
@@ -61,7 +63,7 @@ class ContentsController < ApplicationController
       end
     else
       load_event_instances
-      render "edit"
+      render 'edit'
     end
   end
 
@@ -81,10 +83,10 @@ class ContentsController < ApplicationController
     else
       params[:q][:title_cont] = params.delete :search_query
     end
-    conts = Content.ransack(params[:q]).result(distinct: true).order("pubdate DESC").limit(100)
+    conts = Content.ransack(params[:q]).result(distinct: true).order('pubdate DESC').limit(100)
     if params[:content_id].present?
       @orig_content = Content.find(params[:content_id])
-      conts = conts - [@orig_content]
+      conts -= [@orig_content]
     end
     @contents = conts.map { |c| [c.title, c.id] }.insert(0, nil)
     respond_to do |format|
@@ -123,21 +125,21 @@ class ContentsController < ApplicationController
       :location_id,
       organization_ids: [],
       similar_content_overrides: [],
-      event_attributes: [
-        :id,
-        :event_url,
-        :contact_phone,
-        :contact_email,
-        :event_category,
-        :cost_type,
-        :cost,
-        :registration_deadline
+      event_attributes: %i[
+        id
+        event_url
+        contact_phone
+        contact_email
+        event_category
+        cost_type
+        cost
+        registration_deadline
       ],
-      market_post_attributes: [
-        :id,
-        :cost,
-        :contact_phone,
-        :contact_email
+      market_post_attributes: %i[
+        id
+        cost
+        contact_phone
+        contact_email
       ]
     )
   end
@@ -145,7 +147,7 @@ class ContentsController < ApplicationController
   def fix_array_input
     input = params[:content][:similar_content_overrides]
     if input.present?
-      params[:content][:similar_content_overrides] = input.gsub('[', '').gsub(']', '').split(',').map { |str| str.strip.to_i }
+      params[:content][:similar_content_overrides] = input.delete('[').delete(']').split(',').map { |str| str.strip.to_i }
     else
       params[:content].delete :similar_content_overrides
     end

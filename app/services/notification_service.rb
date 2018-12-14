@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 # This module exists to create an api for sending email notifications
 # without needing to know implementation details of how the notification is sent.
 
 module NotificationService
-  extend self
+  module_function
 
   def subscription_verification(subscription)
     ListservMailer.subscription_verification(subscription).deliver_later

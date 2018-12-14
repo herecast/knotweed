@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe OrganizationsController, type: :controller do
@@ -19,7 +21,7 @@ describe OrganizationsController, type: :controller do
     end
 
     context 'Given parameter "q"' do
-      let(:query) { "search" }
+      let(:query) { 'search' }
       let(:q) { { 'fake' => query } }
 
       subject do
@@ -48,19 +50,19 @@ describe OrganizationsController, type: :controller do
       end
 
       it 'retuns only organizations that can publish news when true' do
-        get :index, params: { q: { "show_news_publishers" => "1" } }
+        get :index, params: { q: { 'show_news_publishers' => '1' } }
         expect(assigns(:organizations).all? { |org| org.can_publish_news == true }).to eq true
       end
 
       it 'retuns all organizations' do
-        get :index, params: { q: { "show_news_publishers" => "0" } }
+        get :index, params: { q: { 'show_news_publishers' => '0' } }
         expect(assigns(:organizations).count).to eq Organization.count
       end
     end
 
     context 'no parameters; session[:organizations_search]' do
       before do
-        session[:organizations_search] = { fake: "search" }
+        session[:organizations_search] = { fake: 'search' }
       end
 
       it 'searches with the saved session search parameters' do
@@ -110,7 +112,7 @@ describe OrganizationsController, type: :controller do
       let!(:news_org) { FactoryGirl.create :organization, can_publish_news: true }
 
       it 'returns records where can_publish_news is true' do
-        get :index, params: { q: { "can_publish_news_true" => 1 } }
+        get :index, params: { q: { 'can_publish_news_true' => 1 } }
         expect(assigns(:organizations).first).to eq(news_org)
       end
     end
@@ -140,7 +142,7 @@ describe OrganizationsController, type: :controller do
 
   describe '#update' do
     let(:organization) { FactoryGirl.create :organization }
-    let(:update_attrs) { { 'name' => "new name" } }
+    let(:update_attrs) { { 'name' => 'new name' } }
     before do
       allow(Organization).to receive(:find).and_return(organization)
     end
@@ -170,18 +172,18 @@ describe OrganizationsController, type: :controller do
     context 'with valid attributes' do
       let(:org_attrs) { FactoryGirl.attributes_for(:organization) }
       it 'creates an organization' do
-        expect {
+        expect do
           post :create, params: { organization: org_attrs }
-        }.to change {
+        end.to change {
           Organization.count
         }.by(1)
       end
 
-      context "given organization[business_location_list] csv parameter" do
+      context 'given organization[business_location_list] csv parameter' do
         let(:locations) { FactoryGirl.create_list :business_location, 2 }
         let(:location_list) { locations.map(&:id).join(',') }
 
-        it "converts them to business_location_ids" do
+        it 'converts them to business_location_ids' do
           send_params = { organization: org_attrs.merge(business_location_list: location_list) }
           post :create, params: send_params
           expect(assigns(:organization).business_location_ids).to eql locations.map(&:id)

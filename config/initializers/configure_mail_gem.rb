@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Mail.defaults do
   if Rails.env.test?
     delivery_method :test

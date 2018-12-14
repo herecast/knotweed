@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveContentSets < ActiveRecord::Migration
   def up
     drop_table :content_sets

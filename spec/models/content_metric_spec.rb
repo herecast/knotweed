@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: content_metrics
@@ -32,37 +34,37 @@ RSpec.describe ContentMetric, type: :model do
   it { is_expected.to belong_to :user }
   it { is_expected.to belong_to :content }
 
-  context "when no content_id present" do
-    it "is not valid" do
+  context 'when no content_id present' do
+    it 'is not valid' do
       content_metric = FactoryGirl.build :content_metric, content_id: nil
       expect(content_metric).not_to be_valid
     end
   end
 
-  context "when content_id present" do
-    it "is valid" do
+  context 'when content_id present' do
+    it 'is valid' do
       content_metric = FactoryGirl.build :content_metric, content_id: 1
       expect(content_metric).to be_valid
     end
   end
 
-  describe "#organization" do
+  describe '#organization' do
     it { is_expected.to belong_to :organization }
 
-    let(:organization) {
+    let(:organization) do
       FactoryGirl.create :organization
-    }
+    end
 
-    let!(:content) {
+    let!(:content) do
       FactoryGirl.create :content,
                          organization: organization
-    }
+    end
 
     context 'creating a new record' do
-      subject {
+      subject do
         FactoryGirl.create :content_metric,
                            content: content
-      }
+      end
 
       it 'assigns organization from content record' do
         expect(subject.organization).to eql organization

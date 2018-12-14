@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class SplitContentForAdPlacement
   def self.call(*args)
-    self.new(*args).call
+    new(*args).call
   end
 
   def initialize(content_body)

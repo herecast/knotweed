@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: campaigns
@@ -49,7 +51,7 @@ class Campaign < ActiveRecord::Base
   end
 
   def promotions_list
-    promotion_ids.join(", ")
+    promotion_ids.join(', ')
   end
 
   def contents_from_custom_query
@@ -58,11 +60,11 @@ class Campaign < ActiveRecord::Base
   end
 
   def no_altering_queries
-    if self.digest_query?
-      query_array = self.digest_query.upcase.split(' ')
-      reserved_commands = %w(INSERT UPDATE DELETE DROP TRUNCATE)
+    if digest_query?
+      query_array = digest_query.upcase.split(' ')
+      reserved_commands = %w[INSERT UPDATE DELETE DROP TRUNCATE]
       has_reserved_words = query_array.any? { |word| reserved_commands.include?(word) }
-      errors.add(:digest_query, "Commands to alter data are not allowed") if has_reserved_words
+      errors.add(:digest_query, 'Commands to alter data are not allowed') if has_reserved_words
     end
   end
 
@@ -99,7 +101,7 @@ class Campaign < ActiveRecord::Base
   private
 
   def get_query
-    ActiveRecord::Base.connection.execute(self.digest_query)
+    ActiveRecord::Base.connection.execute(digest_query)
   end
 
   def custom_digest_results

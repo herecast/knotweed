@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SessionsController < Devise::SessionsController
   respond_to :html, :json
 
@@ -8,7 +10,7 @@ class SessionsController < Devise::SessionsController
           token: user.authentication_token,
           email: user.email
         }
-        render json: data, status: 201 and return
+        render(json: data, status: 201) && return
       end
     end
   end
@@ -18,7 +20,7 @@ class SessionsController < Devise::SessionsController
 
     if user.present?
       unless user.confirmed?
-        ConfirmRegistration.call({ confirmation_token: user.confirmation_token, confirm_ip: request.remote_ip })
+        ConfirmRegistration.call(confirmation_token: user.confirmation_token, confirm_ip: request.remote_ip)
         user.reload
       end
       sign_in user
@@ -37,7 +39,7 @@ class SessionsController < Devise::SessionsController
     user_info = FacebookService.get_user_info(params[:accessToken])
     fb_user_info = ActiveSupport::HashWithIndifferentAccess.new(user_info)
     fb_user_info[:extra_info] = {}
-    fb_user_info[:provider] = "facebook"
+    fb_user_info[:provider] = 'facebook'
     fb_user_info[:extra_info][:verified] = fb_user_info[:verified]
     fb_user_info[:extra_info][:age_range] = fb_user_info[:age_range]
     fb_user_info[:extra_info][:time_zone] = fb_user_info[:timezone]
@@ -53,8 +55,8 @@ class SessionsController < Devise::SessionsController
       sign_in user
       render json: { email: user.email, token: user.authentication_token }, status: :created
     else
-      missing_fields = user.errors.keys.map(&:to_s).join(",")
-      render json: { error: "There was a problem signing in", missing_fields: missing_fields }, status: 422
+      missing_fields = user.errors.keys.map(&:to_s).join(',')
+      render json: { error: 'There was a problem signing in', missing_fields: missing_fields }, status: 422
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: market_posts
@@ -24,13 +26,13 @@ class MarketPost < ActiveRecord::Base
   accepts_nested_attributes_for :content
   validates :contact_phone, format: { without: /[a-wyzA-WYZ]/ }
 
-  has_one :source, through: :content, class_name: "Organization", foreign_key: "organization_id"
+  has_one :source, through: :content, class_name: 'Organization', foreign_key: 'organization_id'
   has_one :content_category, through: :content
   has_many :images, through: :content
 
   geocoded_by :locate_address
 
-  after_validation :geocode, if: ->(obj) { obj.locate_address.present? and obj.saved_change_to_locate_address? }
+  after_validation :geocode, if: ->(obj) { obj.locate_address.present? && obj.saved_change_to_locate_address? }
 
   # this callback allows us to essentially forget that the associated content
   # exists (and helps us maintain legacy code) because it means we can do things

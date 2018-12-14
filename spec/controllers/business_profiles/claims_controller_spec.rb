@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe BusinessProfiles::ClaimsController, type: :controller do
@@ -7,16 +9,16 @@ describe BusinessProfiles::ClaimsController, type: :controller do
     @business_profile = FactoryGirl.create :business_profile
   end
 
-  describe "POST #create" do
+  describe 'POST #create' do
     subject { post :create, params: { id: @business_profile } }
 
-    context "when successful" do
-      it "makes call to business profile structure service" do
+    context 'when successful' do
+      it 'makes call to business profile structure service' do
         expect(CreateBusinessProfileRelationship).to receive(:call)
         subject
       end
 
-      it "creates structure for claimed business" do
+      it 'creates structure for claimed business' do
         subject
         @business_profile.reload
         expect(@business_profile.content.channel_type).to eq 'BusinessProfile'
@@ -25,8 +27,8 @@ describe BusinessProfiles::ClaimsController, type: :controller do
       end
     end
 
-    context "when not successful" do
-      it "returns flash warning" do
+    context 'when not successful' do
+      it 'returns flash warning' do
         allow(BusinessProfile).to receive(:find_by).and_return(nil)
         subject
         @business_profile.reload

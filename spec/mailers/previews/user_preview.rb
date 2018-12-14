@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserPreview < ActionMailer::Preview
   def sign_in_link
     UserMailer.sign_in_link(

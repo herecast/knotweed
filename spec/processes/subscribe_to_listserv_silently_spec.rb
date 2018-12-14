@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe SubscribeToListservSilently do
@@ -24,10 +26,10 @@ RSpec.describe SubscribeToListservSilently do
     end
 
     context 'when existing subscription' do
-      let!(:existing) {
+      let!(:existing) do
         Subscription.create!(listserv: listserv,
                              email: user.email)
-      }
+      end
 
       it 'returns the same subscription model' do
         subscription = subject
@@ -61,9 +63,9 @@ RSpec.describe SubscribeToListservSilently do
         end
 
         it 'changes unsubscribed status to subscribed' do
-          expect {
+          expect do
             subject
-          }.to change {
+          end.to change {
             existing.reload.unsubscribed?
           }.from(true).to(false)
         end

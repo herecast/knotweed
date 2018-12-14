@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MailchimpService
   module NewUser
     extend self

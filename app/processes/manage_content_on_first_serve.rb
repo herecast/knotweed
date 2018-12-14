@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class ManageContentOnFirstServe
   def self.call(*args)
-    self.new(*args).call
+    new(*args).call
   end
 
   def initialize(content_ids:, current_time:)
@@ -20,7 +22,7 @@ class ManageContentOnFirstServe
           content.update_attribute(:first_served_at, @current_time)
           conditionally_schedule_outreach(content)
           conditionally_schedule_subscriber_notification(content)
-          if Figaro.env.production_messaging_enabled == "true"
+          if Figaro.env.production_messaging_enabled == 'true'
             FacebookService.rescrape_url(content)
             if content.content_type == :news
               IntercomService.send_published_content_event(content)
@@ -58,7 +60,7 @@ class ManageContentOnFirstServe
 
   def conditionally_cancel_reminder_campaign(organization)
     if organization.reminder_campaign_id.present?
-      unless MailchimpService::UserOutreach.get_campaign_status(organization.reminder_campaign_id) == "sent"
+      unless MailchimpService::UserOutreach.get_campaign_status(organization.reminder_campaign_id) == 'sent'
         MailchimpService::UserOutreach.delete_campaign(organization.reminder_campaign_id)
       end
       organization.update_attribute(:reminder_campaign_id, nil)

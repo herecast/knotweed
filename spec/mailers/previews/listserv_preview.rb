@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Preview all emails at http://localhost:3000/rails/mailers/subscriptions
 class ListservPreview < ActionMailer::Preview
   def subscription_verification

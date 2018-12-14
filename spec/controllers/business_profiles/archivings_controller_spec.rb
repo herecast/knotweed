@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe BusinessProfiles::ArchivingsController, type: :controller do
@@ -12,8 +14,8 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
   describe 'POST #create' do
     subject { post :create, params: { id: @business_profile.id, business_profile: { archived: true } } }
 
-    context "when successful" do
-      it "flags business profile as archived" do
+    context 'when successful' do
+      it 'flags business profile as archived' do
         subject
         @business_profile.reload
         expect(@business_profile.archived).to be true
@@ -21,8 +23,8 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
       end
     end
 
-    context "when not successful" do
-      it "returns warning flash" do
+    context 'when not successful' do
+      it 'returns warning flash' do
         allow_any_instance_of(BusinessProfile).to receive(:update_attributes).and_return(false)
         subject
         @business_profile.reload
@@ -31,9 +33,9 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
       end
     end
 
-    context "when BusinessProfile.content is published" do
+    context 'when BusinessProfile.content is published' do
       before { @business_profile.content.update pubdate: 1.hour.ago }
-      it "redirects to BusinessProfile#index" do
+      it 'redirects to BusinessProfile#index' do
         subject
         @business_profile.reload
         expect(@business_profile.archived).to be false
@@ -41,24 +43,24 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
       end
     end
 
-    context "when BusinessProfile is claimed" do
+    context 'when BusinessProfile is claimed' do
       before do
         allow_any_instance_of(BusinessProfile).to receive(:claimed?).and_return true
       end
 
-      it "destroys associated organization and content" do
+      it 'destroys associated organization and content' do
         expect { subject }.to change { Content.count }.by -1
         @business_profile.reload
         expect { @business_profile.organization }.to raise_error(Module::DelegationError)
       end
     end
 
-    context "when BusinessProfile has no content" do
+    context 'when BusinessProfile has no content' do
       before do
         allow_any_instance_of(BusinessProfile).to receive(:content).and_return nil
       end
 
-      it "archives BusinessProfile" do
+      it 'archives BusinessProfile' do
         subject
         @business_profile.reload
         expect(@business_profile.archived).to be true
@@ -73,8 +75,8 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
 
     subject { delete :destroy, params: { id: @business_profile.id, business_profile: { archived: false } } }
 
-    context "when successful" do
-      it "flags bussiness profile as not archived" do
+    context 'when successful' do
+      it 'flags bussiness profile as not archived' do
         subject
         @business_profile.reload
         expect(@business_profile.archived).to be false
@@ -82,8 +84,8 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
       end
     end
 
-    context "when not successful" do
-      it "returns warning flash" do
+    context 'when not successful' do
+      it 'returns warning flash' do
         allow_any_instance_of(BusinessProfile).to receive(:update_attributes).and_return(false)
         subject
         @business_profile.reload

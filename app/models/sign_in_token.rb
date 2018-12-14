@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: sign_in_tokens
@@ -24,14 +26,14 @@ class SignInToken < ActiveRecord::Base
   after_initialize :generate_token
 
   def self.authenticate(token)
-    self.includes(:user)\
-        .where('sign_in_tokens.created_at >= ?', 24.hours.ago)\
-        .find_by(token: token)\
-        .try(:user)
+    includes(:user)\
+      .where('sign_in_tokens.created_at >= ?', 24.hours.ago)\
+      .find_by(token: token)\
+      .try(:user)
   end
 
   def self.clean_stale!
-    self.where('created_at < ?', 24.hours.ago).delete_all
+    where('created_at < ?', 24.hours.ago).delete_all
   end
 
   private

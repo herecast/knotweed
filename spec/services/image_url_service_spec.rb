@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe ImageUrlService do
   around(:each) do |example|
-    old_uri                    = ENV["OPTIMIZED_IMAGE_URI"]
-    ENV["OPTIMIZED_IMAGE_URI"] = "http://thumbor.subtext.org"
+    old_uri                    = ENV['OPTIMIZED_IMAGE_URI']
+    ENV['OPTIMIZED_IMAGE_URI'] = 'http://thumbor.subtext.org'
 
     example.run
 
-    ENV["OPTIMIZED_IMAGE_URI"] = old_uri
+    ENV['OPTIMIZED_IMAGE_URI'] = old_uri
   end
 
   subject { ImageUrlService }
@@ -15,10 +17,10 @@ RSpec.describe ImageUrlService do
   it { is_expected.to respond_to(:optimize_image_urls) }
   it { is_expected.to respond_to(:optimize_image_url) }
 
-  describe "#optimize_image_url" do
+  describe '#optimize_image_url' do
     it 'returns the given URL if the given URL is blank' do
       expect(subject.optimize_image_url(url: nil, width: 100, height: 100, do_crop: true)).to eq nil
-      expect(subject.optimize_image_url(url: "",  width: 100, height: 100, do_crop: true)).to eq ""
+      expect(subject.optimize_image_url(url: '',  width: 100, height: 100, do_crop: true)).to eq ''
     end
 
     it 'returns the given URL if the given URL is not an HTTP url' do
@@ -60,8 +62,8 @@ RSpec.describe ImageUrlService do
     end
   end
 
-  describe "#optimize_image_urls" do
-    let(:text) { "<div><img src=\"http://knotweed.s3.amazonaws.com/asdf/wer.png\" style=\"width: 75%; min-width: 30px\" height=\"100\" /></div>" }
+  describe '#optimize_image_urls' do
+    let(:text) { '<div><img src="http://knotweed.s3.amazonaws.com/asdf/wer.png" style="width: 75%; min-width: 30px" height="100" /></div>' }
 
     it 'replaces img URLs' do
       expect(subject.optimize_image_urls(html_text: text)).to include "#{ENV['OPTIMIZED_IMAGE_URI']}/unsafe/30x100/smart"
@@ -69,6 +71,6 @@ RSpec.describe ImageUrlService do
   end
 
   def is_url(s)
-    !!(s =~ /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/)
+    !!(s =~ %r{(http|https)://(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(/|/([\w#!:.?+=&%@!\-/]))?})
   end
 end

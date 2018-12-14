@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception, unless: -> { request.format.json? }
   # normal Devise authentication
@@ -5,11 +7,10 @@ class ApplicationController < ActionController::Base
                 :get_version
 
   rescue_from CanCan::AccessDenied do |exception|
-    redirect_to root_path, :alert => exception.message
+    redirect_to root_path, alert: exception.message
   end
 
-  rescue_from ActionController::RoutingError, :with =>
-    :render_404
+  rescue_from ActionController::RoutingError, with: :render_404
 
   private
 
@@ -21,12 +22,10 @@ class ApplicationController < ActionController::Base
   end
 
   def render_404(exception = nil)
-    if exception
-      logger.info "Rendering 404: #{exception.message}"
-    end
+    logger.info "Rendering 404: #{exception.message}" if exception
 
-    render :file => "#{Rails.root}/public/404.html",
-           :status => 404, :layout => false
+    render file: "#{Rails.root}/public/404.html",
+           status: 404, layout: false
   end
 
   def set_current_thread_user

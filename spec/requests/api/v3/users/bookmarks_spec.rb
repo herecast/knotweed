@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe 'User Bookmarks endpoint', type: :request do
@@ -9,13 +11,13 @@ describe 'User Bookmarks endpoint', type: :request do
   let(:user_headers) { headers.merge(auth_headers_for(owning_user)) }
   let(:wrong_user_headers) { headers.merge(auth_headers_for(other_user)) }
 
-  describe "GET /api/v3/users/:user_id/bookmarks" do
+  describe 'GET /api/v3/users/:user_id/bookmarks' do
     before do
       content = FactoryGirl.create :content, :news
       @bookmark = FactoryGirl.create :user_bookmark, content: content, user: owning_user
     end
 
-    context "when correct user" do
+    context 'when correct user' do
       subject { get "/api/v3/users/#{owning_user.id}/bookmarks", params: {}, headers: user_headers }
 
       it "returns user's bookmarks" do
@@ -26,13 +28,13 @@ describe 'User Bookmarks endpoint', type: :request do
     end
   end
 
-  describe "POST /api/v3/users/:user_id/bookmarks" do
+  describe 'POST /api/v3/users/:user_id/bookmarks' do
     let(:bookmarked_content) { FactoryGirl.create :content, :news }
 
-    context "when correct user" do
+    context 'when correct user' do
       subject { post "/api/v3/users/#{owning_user.id}/bookmarks", params: { bookmark: { content_id: bookmarked_content.id } }, headers: user_headers }
 
-      it "creates a UserBookmark record" do
+      it 'creates a UserBookmark record' do
         expect { subject }.to change {
           owning_user.reload.user_bookmarks.length
         }.by 1
@@ -40,7 +42,7 @@ describe 'User Bookmarks endpoint', type: :request do
     end
   end
 
-  describe "PUT /api/v3/users/:user_id/bookmarks/:id" do
+  describe 'PUT /api/v3/users/:user_id/bookmarks/:id' do
     before do
       @bookmarked_content = FactoryGirl.create :content, :news
       @bookmark = owning_user.user_bookmarks.create(content_id: @bookmarked_content.id)
@@ -48,19 +50,19 @@ describe 'User Bookmarks endpoint', type: :request do
 
     let(:bookmark_params) { { bookmark: { read: true } } }
 
-    context "when incorrect user" do
+    context 'when incorrect user' do
       subject { put "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", params: bookmark_params, headers: wrong_user_headers }
 
-      it "returns forbidden status" do
+      it 'returns forbidden status' do
         subject
         expect(response).to have_http_status :forbidden
       end
     end
 
-    context "with correct user" do
+    context 'with correct user' do
       subject { put "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", params: bookmark_params, headers: user_headers }
 
-      it "updates user_bookmark" do
+      it 'updates user_bookmark' do
         expect { subject }.to change {
           @bookmark.reload.read
         }.to true
@@ -68,25 +70,25 @@ describe 'User Bookmarks endpoint', type: :request do
     end
   end
 
-  describe "DELETE /api/v3/users/:user_id/bookmarks/:id" do
+  describe 'DELETE /api/v3/users/:user_id/bookmarks/:id' do
     before do
       bookmarked_content = FactoryGirl.create :content, :news
       @bookmark = owning_user.user_bookmarks.create(content_id: bookmarked_content.id)
     end
 
-    context "with incorrect user" do
+    context 'with incorrect user' do
       subject { delete "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", params: {}, headers: wrong_user_headers }
 
-      it "returns forbidden status" do
+      it 'returns forbidden status' do
         subject
         expect(response).to have_http_status :forbidden
       end
     end
 
-    context "with correct user" do
+    context 'with correct user' do
       subject { delete "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", params: {}, headers: user_headers }
 
-      it "creates a UserBookmark record" do
+      it 'creates a UserBookmark record' do
         expect { subject }.to change {
           @bookmark.reload.deleted_at
         }

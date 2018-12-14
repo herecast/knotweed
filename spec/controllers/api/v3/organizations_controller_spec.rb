@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
-describe Api::V3::OrganizationsController, :type => :controller do
+describe Api::V3::OrganizationsController, type: :controller do
   describe 'GET index', elasticsearch: true do
     before do
       @organization = FactoryGirl.create :organization
@@ -31,7 +33,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
         @list_of_orgs = FactoryGirl.create_list :organization, 3
       end
 
-      subject { get :index, params: { ids: @list_of_orgs.map { |o| o.id } } }
+      subject { get :index, params: { ids: @list_of_orgs.map(&:id) } }
 
       it 'should respond with 200' do
         subject
@@ -45,7 +47,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
     end
   end
 
-  describe "POST create" do
+  describe 'POST create' do
     before do
       @user = FactoryGirl.create :user
       api_authenticate user: @user
@@ -57,42 +59,42 @@ describe Api::V3::OrganizationsController, :type => :controller do
         organization: {
           name: 'Hoth Apoth',
           description: 'Thy drugs are quick...',
-          website: "https://hothapoth.ho",
-          email: "snowman@hothapoth.ho"
+          website: 'https://hothapoth.ho',
+          email: 'snowman@hothapoth.ho'
         }
       }
     end
 
     subject { post :create, params: params }
 
-    it "creates Organization" do
+    it 'creates Organization' do
       expect { subject }.to change {
         Organization.count
       }.by 1
     end
 
-    it "provisions Org as blog" do
+    it 'provisions Org as blog' do
       subject
       expect(Organization.last.can_publish_news).to be true
     end
 
-    it "adds Blogger role to User" do
+    it 'adds Blogger role to User' do
       subject
       expect(@user.has_role?(:blogger)).to be true
     end
 
-    it "adds logged in user as manager" do
+    it 'adds logged in user as manager' do
       subject
       expect(@user.ability.can?(:manage, Organization.last)).to be true
     end
 
-    it "creates Business Location for Organization" do
+    it 'creates Business Location for Organization' do
       expect { subject }.to change {
         BusinessLocation.count
       }.by 1
     end
 
-    it "calls to schedules Blogger outreach emails" do
+    it 'calls to schedules Blogger outreach emails' do
       expect(BackgroundJob).to receive(:perform_later).with(
         'Outreach::CreateMailchimpSegmentForNewUser',
         'call',
@@ -150,7 +152,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
         expect { subject }.to change { @org.reload.name }
       end
 
-      context "when BusinessLocation params are present" do
+      context 'when BusinessLocation params are present' do
         before do
           @business_location = FactoryGirl.create :business_location, venue_url: 'https://old.venue'
           @org.business_locations << @business_location
@@ -171,7 +173,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
 
         subject { put :update, new_put_params }
 
-        it "updates BusinessLocation" do
+        it 'updates BusinessLocation' do
           expect { subject }.to change {
             @org.reload.business_locations.first.venue_url
           }.to @new_venue_url

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: features
@@ -16,7 +18,7 @@
 FactoryGirl.define do
   factory :feature do
     sequence(:name) { |n| "My Feature Toggle #{n}" }
-    description "This is the feature description"
+    description 'This is the feature description'
     active false
   end
 end

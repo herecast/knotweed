@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: business_categories
@@ -21,7 +23,7 @@
 FactoryGirl.define do
   factory :business_category do
     sequence(:name) { |n| "Biz Cat #{n}" }
-    description "MyString"
-    icon_class "MyString"
+    description 'MyString'
+    icon_class 'MyString'
   end
 end

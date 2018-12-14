@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'geocoder/lookups/freegeoip'
 
 # Patch because freegeoip no longer supports http protocol
@@ -13,7 +15,7 @@ Geocoder.configure(
   lookup: :google, # name of geocoding service (symbol)
   ip_lookup: :freegeoip,
   freegeoip: {
-    host: "freegeoip.io",
+    host: 'freegeoip.io',
     use_ssl: true
   },
   # language: :en,              # ISO-639 language code

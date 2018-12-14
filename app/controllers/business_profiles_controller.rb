@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 class BusinessProfilesController < ApplicationController
   load_and_authorize_resource except: [:create]
-  before_action :check_for_claim, only: [:edit, :update]
+  before_action :check_for_claim, only: %i[edit update]
 
   def index
     # if posted, save to session
     if params[:reset]
       session[:business_profiles_search] = nil
     elsif params[:q].present?
-      params[:q][:id_in] = params[:q][:id_in].split(',').map { |s| s.strip } if params[:q][:id_in].present?
+      params[:q][:id_in] = params[:q][:id_in].split(',').map(&:strip) if params[:q][:id_in].present?
       session[:business_profiles_search] = params[:q]
     end
 
@@ -22,8 +24,7 @@ class BusinessProfilesController < ApplicationController
     end
   end
 
-  def show
-  end
+  def show; end
 
   def update
     if @business_profile.update_attributes(business_profile_params)
@@ -40,10 +41,10 @@ class BusinessProfilesController < ApplicationController
     @business_profile = BusinessProfile.new(business_profile_params)
     authorize! :create, @business_profile
     if @business_profile.save
-      CreateBusinessProfileRelationship.call({
-                                               business_profile: @business_profile,
-                                               org_name: params[:business_profile][:business_location_attributes][:name]
-                                             })
+      CreateBusinessProfileRelationship.call(
+        business_profile: @business_profile,
+        org_name: params[:business_profile][:business_location_attributes][:name]
+      )
 
       flash[:notice] = "Created business profile with id #{@business_profile.id}"
       redirect_to form_submit_redirect_path(@business_profile.id)
@@ -72,8 +73,8 @@ class BusinessProfilesController < ApplicationController
       :content_attributes,
       :business_location,
       business_category_ids: [],
-      business_location_attributes: [:name, :address, :venue_url, :city, :state, :zip, :phone, :email, :id, :hours => []],
-      content_attributes: [:id, :raw_content, images_attributes: [:id, :image, :remove_image], organization_attributes: [:id, :parent_id, :logo, :remove_logo]]
+      business_location_attributes: [:name, :address, :venue_url, :city, :state, :zip, :phone, :email, :id, hours: []],
+      content_attributes: [:id, :raw_content, images_attributes: %i[id image remove_image], organization_attributes: %i[id parent_id logo remove_logo]]
     )
   end
 
@@ -91,7 +92,7 @@ class BusinessProfilesController < ApplicationController
 
   def check_for_claim
     unless @business_profile.claimed?
-      flash[:alert] = "Business must be claimed to edit"
+      flash[:alert] = 'Business must be claimed to edit'
       redirect_to business_profiles_path
     end
   end

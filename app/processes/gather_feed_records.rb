@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class GatherFeedRecords
   def self.call(*args)
-    self.new(*args).call
+    new(*args).call
   end
 
   def initialize(params:, current_user:)
@@ -15,7 +17,7 @@ class GatherFeedRecords
     do_search if @params[:content_type] != 'organization'
     create_content_array
     conditionally_add_carousels
-    return { records: @records, total_entries: @total_entries }
+    { records: @records, total_entries: @total_entries }
   end
 
   private
@@ -50,7 +52,7 @@ class GatherFeedRecords
 
   def conditionally_add_carousels
     if first_page_of_standard_search_request?
-      ['Publishers', 'Businesses'].each do |type|
+      %w[Publishers Businesses].each do |type|
         carousel = Carousels::OrganizationCarousel.new(title: type, query: query)
         if carousel.organizations.count > 0
           @records.insert(0, FeedItem.new(carousel))
@@ -61,12 +63,12 @@ class GatherFeedRecords
 
   def content_opts
     if organization_calendar_view?
-      ContentSearch.organization_calendar_query({ params: @params })
+      ContentSearch.organization_calendar_query(params: @params)
     else
-      ContentSearch.standard_query({
-                                     params: @params,
-                                     current_user: @current_user
-                                   })
+      ContentSearch.standard_query(
+        params: @params,
+        current_user: @current_user
+      )
     end
   end
 
@@ -75,7 +77,7 @@ class GatherFeedRecords
       page: page,
       per_page: per_page,
       where: {
-        org_type: ['Blog', 'Publisher', 'Publication', 'Business']
+        org_type: %w[Blog Publisher Publication Business]
       }
     }
   end

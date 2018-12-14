@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveMessages < ActiveRecord::Migration
   def up
     drop_table :consumer_apps_messages
@@ -20,6 +22,6 @@ class RemoveMessages < ActiveRecord::Migration
       t.integer :message_id
       t.integer :consumer_app_id
     end
-    add_index :consumer_apps_messages, [:consumer_app_id, :message_id], unique: true, name: "consumer_apps_messages_joins_index"
+    add_index :consumer_apps_messages, %i[consumer_app_id message_id], unique: true, name: 'consumer_apps_messages_joins_index'
   end
 end

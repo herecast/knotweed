@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'Businesses Endpoints', type: :request do
@@ -70,12 +72,12 @@ describe 'Businesses Endpoints', type: :request do
     end
 
     context 'Given several business profiles exist' do
-      let!(:business_profiles) {
+      let!(:business_profiles) do
         FactoryGirl.create_list(:business_profile, 4)
-      }
+      end
 
       describe 'meta.total' do
-        it "is equal to the total items matching search" do
+        it 'is equal to the total items matching search' do
           get url, params: {
             per_page: 1,
             radius: 10_000 # we don't want distance to limit the query
@@ -91,10 +93,9 @@ describe 'Businesses Endpoints', type: :request do
           business_profiles.each_with_index do |bp, i|
             # create some businesses with unique averages
             ((i + 1) * 3).times do
-              bf = FactoryGirl.build(:business_feedback, {
-                                       business_profile: bp,
-                                       recommend: tf
-                                     })
+              bf = FactoryGirl.build(:business_feedback,
+                                     business_profile: bp,
+                                     recommend: tf)
               bf.save!
               bf.run_callbacks(:commit)
               tf = !tf
@@ -138,9 +139,8 @@ describe 'Businesses Endpoints', type: :request do
         before do
           business_profiles.each_with_index do |bp, i|
             (i + 1).times do
-              bf = FactoryGirl.build :business_feedback, {
-                business_profile: bp,
-              }
+              bf = FactoryGirl.build :business_feedback,
+                                     business_profile: bp
               bf.save!
               bf.run_callbacks(:commit)
             end
@@ -218,22 +218,22 @@ describe 'Businesses Endpoints', type: :request do
 
   describe 'PUT /api/v3/businesses/:id' do
     let!(:business) { FactoryGirl.create(:business_profile, :claimed) }
-    let!(:valid_params) {
+    let!(:valid_params) do
       {
         name: 'Test new name',
-        details: "<p>I am a robot</p>",
+        details: '<p>I am a robot</p>',
         email: 'my.new@email.com',
         has_retail_location: true,
-        phone: "(555) 124-1234",
+        phone: '(555) 124-1234',
         hours: ['Mo-Th|8:00-17:00'],
-        website: "http://dailyuv.com",
-        address: "123 foo st",
+        website: 'http://dailyuv.com',
+        address: '123 foo st',
         city: 'Enfield',
-        state: "NH",
-        zip: "03748",
+        state: 'NH',
+        zip: '03748',
         service_radius: 25
       }
-    }
+    end
     context 'as owner of business' do
       before do
         business.content.update_attribute(:created_by, user)
@@ -257,9 +257,9 @@ describe 'Businesses Endpoints', type: :request do
           state: valid_params[:state],
           zip: valid_params[:zip],
           has_retail_location: valid_params[:has_retail_location],
-          service_radius: a_kind_of(Fixnum),
+          service_radius: a_kind_of(Integer),
           hours: valid_params[:hours],
-          feedback_num: a_kind_of(Fixnum),
+          feedback_num: a_kind_of(Integer),
           can_edit: true,
           # @TODO:  details: valid_params[:details],
           # Details gets another <p></p> wrapped around it.

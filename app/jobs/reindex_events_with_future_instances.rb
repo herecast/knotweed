@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ReindexEventsWithFutureInstances < ApplicationJob
   def perform
     events = Content.includes(channel: :event_instances)
@@ -12,7 +14,7 @@ class ReindexEventsWithFutureInstances < ApplicationJob
         else
           e.update_attribute(:has_future_event_instance, false)
         end
-      rescue
+      rescue StandardError
       end
     end
   end

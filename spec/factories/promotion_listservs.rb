@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: promotion_listservs
@@ -14,6 +16,6 @@
 FactoryGirl.define do
   factory :promotion_listserv do
     listserv
-    sent_at "2015-04-30 14:37:06"
+    sent_at '2015-04-30 14:37:06'
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: payments
@@ -28,21 +30,21 @@ class Payment < ActiveRecord::Base
   belongs_to :content
   belongs_to :paid_to, class_name: 'User', foreign_key: 'paid_to_id'
 
-  validates :content_id, uniqueness: { scope: [:period_start, :period_end] }
+  validates :content_id, uniqueness: { scope: %i[period_start period_end] }
 
   scope :for_user, ->(user_id) { where('paid_to_id = ?', user_id) }
 
   # pay_per_impression can't be used in the group_by clause because its being a float
   # makes it potentially not always exactly the same (I think). That said, it is
   # always very very close to the same, so we are just taking MIN here.
-  scope :by_period, -> {
+  scope :by_period, lambda {
     select('MIN(payments.id) as id, MIN(fullname) as fullname, period_start, period_end, MIN(pay_per_impression) as pay_per_impression, MIN(payment_date) as payment_date, SUM(paid_impressions) as paid_impressions, SUM(total_payment) as total_payment')
       .joins(:paid_to)
       .group(:period_start, :period_end)
       .order('payment_date DESC')
   }
 
-  scope :by_user, -> {
+  scope :by_user, lambda {
     select('MIN(payments.id) as id, users.id as paid_to_user_id, fullname, period_start, period_end, SUM(total_payment) as total_payment')
       .joins(:paid_to)
       .group(:period_start, :period_end, :fullname, :paid_to_user_id)

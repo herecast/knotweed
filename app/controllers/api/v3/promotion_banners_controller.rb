@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class PromotionBannersController < ApiController
@@ -35,7 +37,7 @@ module Api
 
           render json: {}, status: :ok
         else
-          head :unprocessable_entity and return
+          head(:unprocessable_entity) && return
         end
       end
 
@@ -48,7 +50,7 @@ module Api
           record_content_metric('click')
           render json: {}, status: :ok
         else
-          head :unprocessable_entity and return
+          head(:unprocessable_entity) && return
         end
       end
 
@@ -102,16 +104,16 @@ module Api
         sort_parts = sort.split(',')
         sort_direction = sort_parts.last
         if sort_direction.include?('ASC')
-          "campaign_start ASC"
+          'campaign_start ASC'
         elsif sort_direction.include?('DESC')
-          "campaign_start DESC"
+          'campaign_start DESC'
         end
       end
 
       def conditionally_prime_daily_ad_reports
         most_recent_reset_time = Rails.cache.fetch('most_recent_reset_time')
         if most_recent_reset_time.nil? || most_recent_reset_time < Date.current
-          is_prod = (ENV['STACK_NAME'] == "knotweed-production")
+          is_prod = (ENV['STACK_NAME'] == 'knotweed-production')
           BackgroundJob.perform_later('PrimeDailyPromotionBannerReports', 'call', Date.current.to_s, is_prod)
           Rails.cache.write('most_recent_reset_time', Time.current, expires_in: 24.hours)
         end
