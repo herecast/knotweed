@@ -6,9 +6,8 @@ Local Development w/ Docker
 1. Clone this repo -> navigate terminal to knotweed root directory
 2. Install Docker on your machine. You can [get started here](https://www.docker.com/get-started)
 3. Run `cp docker-compose.yml.example docker-compose.yml`
-4. Run `mv /knotweed/config/database.yml.docker /knotweed/config/database.yml` -- note that this will overwrite your database config if you have an existing local app
-5. Run `docker-compose up` -- the first time you do this, it will take a while
-6. In separate terminal window, run `docker-compose run --rm web bundle exec rake db:create db:schema:load db:seed`
+4. Run `docker-compose up` -- the first time you do this, it will take a while
+5. In separate terminal window, run `docker-compose run --rm web bundle exec rake db:create db:schema:load db:seed`
 
 By default, the server will run on port 3000 -- you can change this in docker-compose.yml. Docker will run elasticsearch, redis and postgres alongside the API.
 

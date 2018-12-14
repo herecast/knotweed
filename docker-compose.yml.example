@@ -15,6 +15,7 @@ services:
     environment:
       REDIS_URL: redis://cache:6379/0
       ELASTICSEARCH_URL: http://search:9200
+      DATABASE_URL: postgres://postgres@db/subtext_development_db?pool=5&encoding=unicode
 
   sidekiq:
     depends_on:
@@ -27,6 +28,7 @@ services:
     environment:
       REDIS_URL: redis://cache:6379/0
       ELASTICSEARCH_URL: http://search:9200
+      DATABASE_URL: postgres://postgres@db/subtext_development_db?pool=5&encoding=unicode
 
   db:
     image: postgres:9.6.1

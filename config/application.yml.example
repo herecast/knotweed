@@ -1,6 +1,11 @@
 # Add application configuration variables here, as shown below.  
 #
 
+development:
+  DATABASE_URL: postgres://localhost/subtext_development_db?pool=5&encoding=unicode
+test:
+  DATABASE_URL: postgres://localhost/subtext_test_db?pool=5&encoding=unicode
+
 AWS_ACCESS_KEY_ID: aws-key
 AWS_SECRET_ACCESS_KEY: aws-secret-key
 AWS_BUCKET_NAME: knotweed
