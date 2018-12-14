@@ -27,7 +27,7 @@ RSpec.describe 'Register Confirmed User', type: :request do
         end
 
         it 'creates a user record' do
-          expect{ subject }.to change{
+          expect { subject }.to change {
             User.last
           }
         end

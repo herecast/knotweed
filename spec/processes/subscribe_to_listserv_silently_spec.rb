@@ -22,16 +22,18 @@ RSpec.describe SubscribeToListservSilently do
       expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'subscribe', an_instance_of(Subscription))
       subject
     end
-    
+
     context 'when existing subscription' do
-      let!(:existing) { Subscription.create!(listserv: listserv,
-                                            email: user.email) }
+      let!(:existing) {
+        Subscription.create!(listserv: listserv,
+                             email: user.email)
+      }
 
       it 'returns the same subscription model' do
         subscription = subject
         expect(subscription.id).to eql existing.id
       end
-      
+
       it 'backgrounds MailchimpService.subscribe' do
         expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'subscribe', an_instance_of(Subscription))
         subject
@@ -41,12 +43,12 @@ RSpec.describe SubscribeToListservSilently do
         before do
           existing.update! confirmed_at: nil
         end
-        
+
         it 'confirms the subscription' do
           subscription = subject
           expect(subscription.confirmed_at).not_to be nil
         end
-      
+
         it 'backgrounds MailchimpService.subscribe' do
           expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'subscribe', an_instance_of(Subscription))
           subject
@@ -59,9 +61,9 @@ RSpec.describe SubscribeToListservSilently do
         end
 
         it 'changes unsubscribed status to subscribed' do
-          expect{
+          expect {
             subject
-          }.to change{
+          }.to change {
             existing.reload.unsubscribed?
           }.from(true).to(false)
         end
@@ -72,7 +74,5 @@ RSpec.describe SubscribeToListservSilently do
         end
       end
     end
-
   end
-
 end

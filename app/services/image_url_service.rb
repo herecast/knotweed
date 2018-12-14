@@ -58,12 +58,12 @@ module ImageUrlService
   # for the indeterminate value(s), causing the subsequent call to +optimize_image_url+
   # to be a NO-OP.
   def choose_dimensions(img_elem, default_width, default_height)
-    width, height = default_width, default_height   # Until we determine otherwise
+    width, height = default_width, default_height # Until we determine otherwise
 
     # CSS styling takes precedence over explicit +width+ and +height+ attributes, so
     # look for the explicit attributes first and then override them below if the CSS
     # styling yields values.
-    width  = img_elem['width' ] if img_elem.has_attribute?('width')
+    width  = img_elem['width'] if img_elem.has_attribute?('width')
     height = img_elem['height'] if img_elem.has_attribute?('height')
 
     # Attempt to override the explicit attribute values with CSS style values.
@@ -82,16 +82,16 @@ module ImageUrlService
   def extract_css_dimension(style_str, target_dimension)
     # We are only interested in the style components that have the target dimension in their names
     # and have numeric pixel values.
-    dimension_styles = style_str.
-      split(';').
-      map { |s| s.gsub(/\s+/, '') }.
-      grep(/#{target_dimension}/i).
-      grep(/\d+px$/i)
+    dimension_styles = style_str
+                       .split(';')
+                       .map { |s| s.gsub(/\s+/, '') }
+                       .grep(/#{target_dimension}/i)
+                       .grep(/\d+px$/i)
 
     # Sort by style string length to prefer a style like +width:30px+ to one with a +min-+ or +max-+ prefix.
     # And if you have to choose between a +min-+ or a +max-+, choose the max by preferring the one that's first
     # in alphabetical order.
-    best_style  = dimension_styles.min_by { |s|
+    best_style = dimension_styles.min_by { |s|
       style_name = s.split(":").first
       [style_name.size, style_name]
     }

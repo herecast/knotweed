@@ -14,7 +14,6 @@ describe BusinessLocationsController, :type => :controller do
     end
 
     context 'when reset' do
-
       subject { get :index, params: { reset: true } }
 
       it "returns no business locations" do
@@ -56,7 +55,6 @@ describe BusinessLocationsController, :type => :controller do
     end
 
     context "when xhr request" do
-
       subject { get :new, xhr: true }
 
       it "responds with form" do
@@ -67,7 +65,6 @@ describe BusinessLocationsController, :type => :controller do
   end
 
   describe "POST #create" do
-
     context "when creation succeeds" do
       it "html: redirects to business locations" do
         post :create, params: { business_location: { address: 'fake', city: 'fake', state: 'VT' } }
@@ -121,7 +118,6 @@ describe BusinessLocationsController, :type => :controller do
     end
 
     context "when xhr request" do
-
       subject { get :edit, xhr: true, params: { id: @business_location.id } }
 
       it "responds with form" do
@@ -132,7 +128,6 @@ describe BusinessLocationsController, :type => :controller do
   end
 
   describe "PUT 'update'" do
-
     subject { put :update, params: { id: @business_location.to_param, business_location: params } }
 
     describe 'with valid params' do

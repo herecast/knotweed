@@ -36,7 +36,7 @@ class Subscription < ActiveRecord::Base
   belongs_to :listserv
 
   validates :email, presence: true,
-    uniqueness: { scope: :listserv_id, case_sensitive: false }
+                    uniqueness: { scope: :listserv_id, case_sensitive: false }
 
   validates :listserv, presence: true
   validates :confirm_ip, presence: true, if: :confirmed?

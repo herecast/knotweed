@@ -83,9 +83,9 @@ gem 'unf'
 
 group :development, :test do
   gem "factory_girl_rails", "~> 4.4.0"              # 4.5.0 causes a failure in the test suite
-  gem 'guard-bundler', require:false
+  gem 'guard-bundler', require: false
   gem 'guard', require: false
-  gem 'guard-rspec', require:false
+  gem 'guard-rspec', require: false
   gem 'rspec'
   gem "rspec-rails", '~> 3.7'
   gem 'spring'
@@ -99,7 +99,7 @@ group :test do
   gem 'rails-controller-testing'
   gem 'rspec_boolean'
   gem 'rspec-json_expectations'
-  gem 'rspec_junit_formatter'               # this is for circleci to properly read & format our test results
+  gem 'rspec_junit_formatter' # this is for circleci to properly read & format our test results
   gem 'shoulda-matchers'
   gem 'simplecov'
   gem "timecop"
@@ -113,6 +113,7 @@ group :development do
   gem "better_errors", '~> 0.9'                     # Have not yet tested the next major version
   gem "letter_opener"
   gem "yard"
+  gem 'rubocop', '~> 0.61.1', require: false
 end
 
 group :pry do

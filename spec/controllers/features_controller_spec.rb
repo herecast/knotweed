@@ -7,10 +7,11 @@ RSpec.describe FeaturesController, type: :controller do
     Feature.destroy_all
   end
 
-  let(:valid_attrs) { {name: 'My Feature',
-    description: 'Feature Description',
-    active: false
-  } }
+  let(:valid_attrs) {
+    { name: 'My Feature',
+      description: 'Feature Description',
+      active: false }
+  }
 
   describe 'GET #index' do
     it 'assigns all features as @features' do
@@ -59,7 +60,7 @@ RSpec.describe FeaturesController, type: :controller do
 
   describe 'PUT #update' do
     context 'with valid params' do
-      let(:new_attrs) { { name: 'My Special Feature'} }
+      let(:new_attrs) { { name: 'My Special Feature' } }
 
       it 'updates the feature properly' do
         feature = Feature.create! valid_attrs

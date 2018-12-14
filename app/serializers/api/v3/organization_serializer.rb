@@ -1,44 +1,43 @@
 module Api
   module V3
     class OrganizationSerializer < ActiveModel::Serializer
-
       attributes :id,
-        :name,
-        :can_publish_news,
-        :subscribe_url,
-        :business_profile_id,
-        :description,
-        :org_type,
-        :can_edit,
-        :profile_image_url,
-        :background_image_url,
-        :claimed,
-        :twitter_handle,
-        :custom_links,
-        :biz_feed_active,
-        :phone,
-        :website,
-        :hours,
-        :email,
-        :address,
-        :city,
-        :state,
-        :zip,
-        :certified_storyteller,
-        :services,
-        :contact_card_active,
-        :description_card_active,
-        :hours_card_active,
-        :special_link_url,
-        :special_link_text,
-        :certified_social,
-        :desktop_image_url,
-        :calendar_view_first,
-        :calendar_card_active,
-        :digest_id
+                 :name,
+                 :can_publish_news,
+                 :subscribe_url,
+                 :business_profile_id,
+                 :description,
+                 :org_type,
+                 :can_edit,
+                 :profile_image_url,
+                 :background_image_url,
+                 :claimed,
+                 :twitter_handle,
+                 :custom_links,
+                 :biz_feed_active,
+                 :phone,
+                 :website,
+                 :hours,
+                 :email,
+                 :address,
+                 :city,
+                 :state,
+                 :zip,
+                 :certified_storyteller,
+                 :services,
+                 :contact_card_active,
+                 :description_card_active,
+                 :hours_card_active,
+                 :special_link_url,
+                 :special_link_text,
+                 :certified_social,
+                 :desktop_image_url,
+                 :calendar_view_first,
+                 :calendar_card_active,
+                 :digest_id
 
       def profile_image_url
-       object.profile_image_url || object.logo_url
+        object.profile_image_url || object.logo_url
      end
 
       def background_image_url; object.background_image.url if object.background_image.present?; end
@@ -96,10 +95,9 @@ module Api
 
       private
 
-        def business_location
-          object.business_locations.try(:first)
-        end
-
+      def business_location
+        object.business_locations.try(:first)
+      end
     end
   end
 end

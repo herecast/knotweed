@@ -1,5 +1,4 @@
 class SendPaymentsJob < ApplicationJob
-
   def perform(period_start, period_end)
     # we are querying payments by user so we can sum the amount and issue the payment with one invoice.
     # However, we need to update `paid` to true on all individual payment records, so we need to track
@@ -23,5 +22,4 @@ class SendPaymentsJob < ApplicationJob
     Payment.where(paid_to: successfully_paid_users, period_start: Date.parse(period_start),
                   period_end: Date.parse(period_end)).update_all(paid: true)
   end
-
 end

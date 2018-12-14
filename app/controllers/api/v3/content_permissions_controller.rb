@@ -8,7 +8,7 @@ module Api
         if params[:content_ids].present?
           contents = Content.find(params[:content_ids])
           contents.each do |content|
-            contents_array << { content_id: content.id, can_edit: can?(:crud, content)}
+            contents_array << { content_id: content.id, can_edit: can?(:crud, content) }
           end
         end
 

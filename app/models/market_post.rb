@@ -20,7 +20,6 @@
 #
 
 class MarketPost < ActiveRecord::Base
-
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
   validates :contact_phone, format: { without: /[a-wyzA-WYZ]/ }
@@ -31,8 +30,7 @@ class MarketPost < ActiveRecord::Base
 
   geocoded_by :locate_address
 
-  after_validation :geocode, if: ->(obj){ obj.locate_address.present? and obj.saved_change_to_locate_address?}
-
+  after_validation :geocode, if: ->(obj) { obj.locate_address.present? and obj.saved_change_to_locate_address? }
 
   # this callback allows us to essentially forget that the associated content
   # exists (and helps us maintain legacy code) because it means we can do things
@@ -43,7 +41,6 @@ class MarketPost < ActiveRecord::Base
   after_save do |market_post|
     market_post.content.save
   end
-
 
   # override default method_missing to pipe through any attribute calls that aren't on the
   # event model directly through to the attached content record.
@@ -69,5 +66,4 @@ class MarketPost < ActiveRecord::Base
       end
     end
   end
-
 end

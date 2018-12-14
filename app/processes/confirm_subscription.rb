@@ -2,7 +2,6 @@
 # It will unset unsubscribed_at if present (resubscribing)
 #
 class ConfirmSubscription
-
   # @param [Subscription] - instance to confirm.
   # @param [String] - ip address used to confirm
   def self.call(*args)
@@ -25,14 +24,13 @@ class ConfirmSubscription
       @subscription.update! unsubscribed_at: nil
       sync_with_mc
     end
-
   end
 
   private
+
   def sync_with_mc
     if @subscription.listserv.mc_sync?
       BackgroundJob.perform_later('MailchimpService', 'subscribe', @subscription)
     end
   end
-
 end

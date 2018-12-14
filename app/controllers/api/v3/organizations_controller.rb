@@ -13,9 +13,9 @@ module Api
           conditionally_create_business_profile
           update_business_location
           render json: @organization, serializer: OrganizationSerializer,
-            status: 201
+                 status: 201
         else
-          render json: { errors: @organization.errors }, status:  :unprocessable_entity
+          render json: { errors: @organization.errors }, status: :unprocessable_entity
         end
       end
 
@@ -28,10 +28,10 @@ module Api
           update_business_location
           add_custom_links if params[:organization].key?(:custom_links)
           render json: @organization, serializer: OrganizationSerializer,
-            status: 204
+                 status: 204
         else
           render json: { errors: @organization.errors.messages },
-            status: :unprocessable_entity
+                 status: :unprocessable_entity
         end
       end
 
@@ -61,13 +61,13 @@ module Api
 
       def sitemap_ids
         ids = Organization.where("id <> ?", Organization::LISTSERV_ORG_ID)\
-          .where("
+                          .where("
                  (org_type IN (:publishers) AND can_publish_news = TRUE) OR
                  (org_type = 'Business' AND biz_feed_active = TRUE)
           ", publishers: %w{Blog Publisher Publication})\
-          .order('updated_at DESC')\
-          .limit(50_000)\
-          .pluck(:id)
+                          .order('updated_at DESC')\
+                          .limit(50_000)\
+                          .pluck(:id)
         render json: {
           organization_ids: ids
         }
@@ -169,13 +169,11 @@ module Api
         end
       end
 
-        def schedule_blogger_welcome_emails
-          BackgroundJob.perform_later('Outreach::CreateMailchimpSegmentForNewUser', 'call', current_user,
-            schedule_blogger_emails: true,
-            organization: @organization
-          )
-        end
-
+      def schedule_blogger_welcome_emails
+        BackgroundJob.perform_later('Outreach::CreateMailchimpSegmentForNewUser', 'call', current_user,
+                                    schedule_blogger_emails: true,
+                                    organization: @organization)
+      end
     end
   end
 end

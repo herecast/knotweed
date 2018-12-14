@@ -42,13 +42,12 @@
 require 'spec_helper'
 
 describe Listserv, :type => :model do
-
   it { is_expected.to respond_to(:subscribe_email, :subscribe_email=) }
   it { is_expected.to respond_to(:unsubscribe_email, :unsubscribe_email=) }
   it { is_expected.to respond_to(:post_email, :post_email=) }
   it { is_expected.to respond_to(:is_managed_list?) }
   it { is_expected.to respond_to(:is_vc_list?) }
-  it { is_expected.to respond_to(:promotions_list, :promotions_list=)}
+  it { is_expected.to respond_to(:promotions_list, :promotions_list=) }
 
   it { is_expected.to have_db_column(:mc_list_id).of_type(:string) }
   it { is_expected.to have_db_column(:mc_group_name).of_type(:string) }
@@ -77,9 +76,9 @@ describe Listserv, :type => :model do
     it 'is equal to related active subscriptions' do
       ls = FactoryGirl.create :listserv
       subs = FactoryGirl.create_list :subscription, 3,
-        listserv: ls,
-        confirmed_at: Time.zone.now,
-        confirm_ip: '1.1.1.1'
+                                     listserv: ls,
+                                     confirmed_at: Time.zone.now,
+                                     confirm_ip: '1.1.1.1'
 
       expect(ls.active_subscriber_count).to eql subs.count
     end
@@ -109,7 +108,7 @@ describe Listserv, :type => :model do
     end
 
     describe 'should prevent user from using queries to alter data' do
-      let(:listserv) { FactoryGirl.build :listserv, digest_query: "DROP DB"}
+      let(:listserv) { FactoryGirl.build :listserv, digest_query: "DROP DB" }
       it 'does not save digest query with data altering commands' do
         expect(listserv.valid?).to be false
         expect(listserv.errors[:digest_query]).to include "Commands to alter data are not allowed"
@@ -154,40 +153,39 @@ describe Listserv, :type => :model do
     context 'when given a promotion id' do
       let!(:promo_with_banner) {
         FactoryGirl.create :promotion,
-          promotable: FactoryGirl.create(:promotion_banner)
+                           promotable: FactoryGirl.create(:promotion_banner)
       }
 
       let!(:other_promo) {
         FactoryGirl.create :promotion,
-          promotable: FactoryGirl.create(:promotion_listserv)
+                           promotable: FactoryGirl.create(:promotion_listserv)
       }
 
       it 'checks existence of promotions' do
         subject.promotion_ids = ['8675309', '234234']
-        subject.valid? #trigger validation
+        subject.valid? # trigger validation
         expect(subject.errors.messages.first).to include(:promotion_ids)
 
-        subject.promotion_ids= [promo_with_banner.id]
-        subject.valid? #trigger validation
+        subject.promotion_ids = [promo_with_banner.id]
+        subject.valid? # trigger validation
         expect(subject.errors).to_not have_key(:promotion_id)
       end
 
       it 'requires promotion is tied to a PromotionBanner' do
         subject.promotion_ids = [other_promo.id]
-        subject.valid? #trigger validation
+        subject.valid? # trigger validation
         expect(subject.errors).to have_key(:promotion_ids)
 
         subject.promotion_ids = [promo_with_banner.id]
-        subject.valid? #trigger validation
+        subject.valid? # trigger validation
         expect(subject.errors).to_not have_key(:promotion_id)
       end
     end
-
   end
 
   describe 'mc_group_name=' do
     it 'to match mailchimp, it strips leading and trailing whitespace' do
-      subject.mc_group_name= " test "
+      subject.mc_group_name = " test "
       expect(subject.mc_group_name).to eql "test"
     end
   end
@@ -196,8 +194,8 @@ describe Listserv, :type => :model do
     let!(:promotion) { FactoryGirl.create :promotion, promotable_type: 'PromotionBanner' }
     let!(:promotion_banner) { FactoryGirl.create :promotion_banner, promotion: promotion }
     let(:banner_ad_listserv) { FactoryGirl.create :listserv, promotion_ids: [promotion.id] }
-  
-   it 'retuns an array of banner ads' do
+
+    it 'retuns an array of banner ads' do
       expect(banner_ad_listserv.banner_ads.first).to eq promotion_banner
     end
   end
@@ -233,17 +231,19 @@ describe Listserv, :type => :model do
     end
 
     context 'when digest send day is present' do
-      let(:listserv_with_day) { FactoryGirl.create :listserv,
-                                digest_send_time: "06:00",
-                                digest_send_day: 2.days.from_now.strftime('%A'),
-                                send_digest: true, 
-                                digest_reply_to: "test@example.com" }
+      let(:listserv_with_day) {
+        FactoryGirl.create :listserv,
+                           digest_send_time: "06:00",
+                           digest_send_day: 2.days.from_now.strftime('%A'),
+                           send_digest: true,
+                           digest_reply_to: "test@example.com"
+      }
 
       it 'returns the correct send time if day is upcoming in the week' do
         Timecop.freeze(Time.zone.now) do
-         send_time = listserv_with_day.next_digest_send_time
-         test_time = Time.zone.parse('06:00') + 2.days
-         expect(send_time).to eq test_time
+          send_time = listserv_with_day.next_digest_send_time
+          test_time = Time.zone.parse('06:00') + 2.days
+          expect(send_time).to eq test_time
         end
       end
 
@@ -283,7 +283,7 @@ describe Listserv, :type => :model do
     context 'when group name is added' do
       let(:listserv) { FactoryGirl.create :listserv }
       before do
-        listserv.mc_list_id="123"
+        listserv.mc_list_id = "123"
         listserv.mc_group_name = 'Test Digest'
       end
 
@@ -297,8 +297,8 @@ describe Listserv, :type => :model do
     context 'when group name is changed' do
       let(:listserv) {
         FactoryGirl.create :listserv,
-          mc_list_id: 321,
-          mc_group_name: 'old name'
+                           mc_list_id: 321,
+                           mc_group_name: 'old name'
       }
       before do
         listserv.mc_group_name = 'Test Digest'
@@ -330,5 +330,4 @@ describe Listserv, :type => :model do
       persisted_listserv.save!
     end
   end
-
 end

@@ -1,6 +1,5 @@
 module Outreach
   class CreateUserHookCampaign
-
     def self.call(*args)
       self.new(*args).call
     end
@@ -18,17 +17,16 @@ module Outreach
 
     private
 
-      def email_config
-        Rails.configuration.subtext.email_outreach
-      end
+    def email_config
+      Rails.configuration.subtext.email_outreach
+    end
 
-      def create_campaign
-        MailchimpService::UserOutreach.create_campaign(
-          user: @user,
-          subject: email_config.send(@action).subject,
-          template_id: email_config.send(@action).template_id
-        )
-      end
-
+    def create_campaign
+      MailchimpService::UserOutreach.create_campaign(
+        user: @user,
+        subject: email_config.send(@action).subject,
+        template_id: email_config.send(@action).template_id
+      )
+    end
   end
 end

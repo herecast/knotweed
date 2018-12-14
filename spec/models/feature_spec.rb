@@ -19,11 +19,10 @@ describe Feature, type: :model do
   it { is_expected.to have_db_column(:active).of_type(:boolean) }
   it { is_expected.to have_db_column(:options).of_type(:text) }
 
-
   describe 'validations' do
     before do
       @feature = FactoryGirl.build(:feature, name: nil)
-    end 
+    end
     it 'requires name to be present' do
       @feature.valid?
       expect(@feature.errors).not_to be_nil

@@ -9,21 +9,22 @@ describe Api::V3::ImagesController, :type => :controller do
   end
 
   describe 'POST create' do
-    subject { post :create, params: { image: { image: @file1, primary: false,
-              content_id: @market_post.content.id } } }
+    subject {
+      post :create, params: { image: { image: @file1, primary: false,
+                                       content_id: @market_post.content.id } }
+    }
 
     context 'as signed in user with authorization' do
       before do
         @market_post.content.update_attribute :created_by, @user
       end
 
-
       it 'should create an image' do
-        expect{subject}.to change{Image.count}.by 1
+        expect { subject }.to change { Image.count }.by 1
       end
 
       it 'should add an image to the content in question' do
-        expect{subject}.to change{@market_post.content.images.count}.by 1
+        expect { subject }.to change { @market_post.content.images.count }.by 1
       end
     end
 
@@ -33,7 +34,7 @@ describe Api::V3::ImagesController, :type => :controller do
       end
 
       it 'should not create an image' do
-        expect{subject}.to_not change{Image.count}
+        expect { subject }.to_not change { Image.count }
       end
 
       it 'should respond with 403' do
@@ -60,21 +61,22 @@ describe Api::V3::ImagesController, :type => :controller do
   describe 'POST upsert' do
     let(:content) { FactoryGirl.create :content, :talk }
 
-    subject { post :upsert, params: { image: { image: @file1, primary: false,
-              content_id: content.id } } }
+    subject {
+      post :upsert, params: { image: { image: @file1, primary: false,
+                                       content_id: content.id } }
+    }
 
     context 'as signed in user with authorization' do
       before do
         content.update_attribute :created_by, @user
       end
 
-
       it 'should create an image' do
-        expect{subject}.to change{Image.count}.by 1
+        expect { subject }.to change { Image.count }.by 1
       end
 
       it 'should add an image to the content in question' do
-        expect{subject}.to change{content.images.count}.by 1
+        expect { subject }.to change { content.images.count }.by 1
       end
 
       context 'existing images' do
@@ -95,7 +97,7 @@ describe Api::V3::ImagesController, :type => :controller do
       end
 
       it 'should not create an image' do
-        expect{subject}.to_not change{Image.count}
+        expect { subject }.to_not change { Image.count }
       end
 
       it 'should respond with 403' do
@@ -131,7 +133,7 @@ describe Api::V3::ImagesController, :type => :controller do
     subject { put :update, params: { id: @img.id, image: { primary: true, content_id: @content.id } } }
 
     it 'should update the primary attribute' do
-      expect{subject}.to change{@img.reload.primary}.to true
+      expect { subject }.to change { @img.reload.primary }.to true
     end
 
     context 'image caption' do
@@ -139,7 +141,7 @@ describe Api::V3::ImagesController, :type => :controller do
 
       subject { put :update, params: { id: @img.id, image: { primary: true, caption: caption, content_id: @content.id } } }
       it 'should update image caption' do
-        expect{subject}.to change{@img.reload.caption}.to caption
+        expect { subject }.to change { @img.reload.caption }.to caption
       end
     end
 
@@ -167,11 +169,11 @@ describe Api::V3::ImagesController, :type => :controller do
     subject { delete :destroy, params: { id: @img.id } }
 
     it 'should remove the image from the associated content' do
-      expect{subject}.to change{@market_post.content.images.count}.by -1
+      expect { subject }.to change { @market_post.content.images.count }.by -1
     end
 
     it 'should destroy the image record' do
-      expect{subject}.to change{Image.find_by_id(@img.id)}.from(@img).to(nil)
+      expect { subject }.to change { Image.find_by_id(@img.id) }.from(@img).to(nil)
     end
   end
 end

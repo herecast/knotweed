@@ -62,9 +62,9 @@ FactoryGirl.define do
     after(:build) do |e, evaluator|
       unless evaluator.skip_event_instance
         ei = FactoryGirl.build :event_instance,
-          event: e,
-          start_date: evaluator.start_date,
-          subtitle_override: evaluator.subtitle_override, description_override: evaluator.description_override
+                               event: e,
+                               start_date: evaluator.start_date,
+                               subtitle_override: evaluator.subtitle_override, description_override: evaluator.description_override
         e.event_instances << ei
       end
     end

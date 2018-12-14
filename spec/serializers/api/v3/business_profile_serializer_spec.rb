@@ -14,7 +14,7 @@ describe Api::V3::BusinessProfileSerializer do
         ability = double('ability')
         expect(ability).to receive(:can?).with(:manage, @business_profile.content).and_return(true)
 
-        serialized_object = JSON.parse(Api::V3::BusinessProfileSerializer.new(@business_profile, root: false, context: {current_ability: ability}).to_json)
+        serialized_object = JSON.parse(Api::V3::BusinessProfileSerializer.new(@business_profile, root: false, context: { current_ability: ability }).to_json)
         expect(serialized_object['can_edit']).to be true
       end
     end
@@ -23,7 +23,7 @@ describe Api::V3::BusinessProfileSerializer do
         ability = double('ability')
         expect(ability).to receive(:can?).with(:manage, @business_profile.content).and_return(false)
 
-        serialized_object = JSON.parse(Api::V3::BusinessProfileSerializer.new(@business_profile, root: false, context: {current_ability: ability}).to_json)
+        serialized_object = JSON.parse(Api::V3::BusinessProfileSerializer.new(@business_profile, root: false, context: { current_ability: ability }).to_json)
         expect(serialized_object['can_edit']).to be false
       end
     end
@@ -35,7 +35,7 @@ describe Api::V3::BusinessProfileSerializer do
         ability = double('ability')
         expect(ability).to receive(:can?).with(:manage, @business_profile.content).and_return(false)
 
-        serialized_object = JSON.parse(Api::V3::BusinessProfileSerializer.new(@business_profile, root: false, context: {current_ability: ability}).to_json)
+        serialized_object = JSON.parse(Api::V3::BusinessProfileSerializer.new(@business_profile, root: false, context: { current_ability: ability }).to_json)
         expect(serialized_object['hours']).to eq @business_profile.business_location.hours
       end
     end
@@ -47,7 +47,7 @@ describe Api::V3::BusinessProfileSerializer do
 
         @business_profile.business_location.update_attribute(:hours, nil)
 
-        serialized_object = JSON.parse(Api::V3::BusinessProfileSerializer.new(@business_profile, root: false, context: {current_ability: ability}).to_json)
+        serialized_object = JSON.parse(Api::V3::BusinessProfileSerializer.new(@business_profile, root: false, context: { current_ability: ability }).to_json)
         expect(serialized_object['hours']).to eq []
       end
     end

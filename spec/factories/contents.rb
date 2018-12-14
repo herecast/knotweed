@@ -96,7 +96,7 @@ FactoryGirl.define do
     authors Faker::Name.name
     raw_content "Content goes here"
     organization
-    pubdate {Time.current}
+    pubdate { Time.current }
     content_category
     authoremail 'fake@email.com'
     created_by { FactoryGirl.build(:user) }
@@ -114,8 +114,8 @@ FactoryGirl.define do
       }
       content_category {
         ContentCategory.find_or_create_by({
-          name: 'talk_of_the_town'
-        })
+                                            name: 'talk_of_the_town'
+                                          })
       }
     end
 
@@ -123,8 +123,8 @@ FactoryGirl.define do
       located
       content_category {
         ContentCategory.find_or_create_by({
-          name: 'news'
-        })
+                                            name: 'news'
+                                          })
       }
     end
 
@@ -132,8 +132,8 @@ FactoryGirl.define do
       located
       content_category {
         ContentCategory.find_or_create_by({
-          name: 'event'
-        })
+                                            name: 'event'
+                                          })
       }
 
       channel {
@@ -145,8 +145,8 @@ FactoryGirl.define do
       located
       content_category {
         ContentCategory.find_or_create_by({
-          name: 'market'
-        })
+                                            name: 'market'
+                                          })
       }
 
       channel {
@@ -172,8 +172,8 @@ FactoryGirl.define do
       ad_campaign_end Date.tomorrow
       content_category {
         ContentCategory.find_or_create_by({
-          name: 'campaign'
-        })
+                                            name: 'campaign'
+                                          })
       }
     end
   end

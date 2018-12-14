@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe RewritesController do
-
   before do
     @user = FactoryGirl.create :admin
     sign_in @user
@@ -23,7 +22,7 @@ describe RewritesController do
     let(:existing_rewrite) { FactoryGirl.create :rewrite }
     let(:args) do
       { source: 'new-source',
-       destination: 'new-destination' }
+        destination: 'new-destination' }
     end
     subject! { put :update, params: { rewrite: args, id: existing_rewrite.id } }
     it 'should update the rewrite' do
@@ -36,8 +35,7 @@ describe RewritesController do
     let!(:existing_rewrite) { FactoryGirl.create :rewrite }
     subject { delete :destroy, params: { id: existing_rewrite.id }, format: :js }
     it 'should destroy the rewrite' do
-      expect{subject}.to change{Rewrite.count}.from(1).to(0)
+      expect { subject }.to change { Rewrite.count }.from(1).to(0)
     end
   end
-
 end

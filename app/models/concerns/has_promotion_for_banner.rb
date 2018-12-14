@@ -21,5 +21,4 @@ module HasPromotionForBanner
       end
     end
   end
-
 end

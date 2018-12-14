@@ -8,7 +8,7 @@ class EventInstanceActiveDate
   end
 
   def attributes
-    {date: nil, count: nil}
+    { date: nil, count: nil }
   end
 
   def date=d

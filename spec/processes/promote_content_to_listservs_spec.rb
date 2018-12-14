@@ -8,9 +8,9 @@ RSpec.describe PromoteContentToListservs do
 
   before do
     listservs.each do |ls|
-      ls.update locations: [ FactoryGirl.create(:location) ]
+      ls.update locations: [FactoryGirl.create(:location)]
     end
-    
+
     allow(BitlyService).to receive(:create_short_link).with(any_args).and_return('http://bit.ly/12345')
   end
 
@@ -18,7 +18,7 @@ RSpec.describe PromoteContentToListservs do
     subject { described_class.call(content, remote_ip, *listservs) }
 
     it 'creates a PromotionListserv for each listserv record' do
-      expect{subject}.to change{
+      expect { subject }.to change {
         PromotionListserv.count
       }.by(3)
 
@@ -36,11 +36,10 @@ RSpec.describe PromoteContentToListservs do
     context "When some are external" do
       before do
         subset = listservs.sort_by(&:id).first(2)
-        subset.each_with_index do |ls,i|
+        subset.each_with_index do |ls, i|
           ls.update! reverse_publish_email: "test#{i}@test.com"
         end
       end
-
 
       it 'should update sent_at with the current time', freeze_time: true do
         tm = Time.zone.now
@@ -49,7 +48,6 @@ RSpec.describe PromoteContentToListservs do
           expect(pl.sent_at).to be_within(1.second).of tm
         end
       end
-
     end
 
     context 'Several are external listservs;' do
@@ -60,7 +58,7 @@ RSpec.describe PromoteContentToListservs do
       end
 
       it 'should send two emails (list, confirmation) for the vc_list', inline_jobs: true do
-        expect{subject}.to change{ActionMailer::Base.deliveries.count}.by 2
+        expect { subject }.to change { ActionMailer::Base.deliveries.count }.by 2
 
         first = ActionMailer::Base.deliveries.first
         second = ActionMailer::Base.deliveries.second

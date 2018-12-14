@@ -13,7 +13,6 @@ describe ContentsController, type: :controller do
     end
 
     context "when update fails" do
-
       subject { put :update, params: { id: @content, content: { title: "Fake Title Update" } } }
 
       it "should render edit page" do
@@ -63,7 +62,7 @@ describe ContentsController, type: :controller do
       before do
         @location = FactoryGirl.create :location
         @content = FactoryGirl.create :content,
-          location_id: @location.id
+                                      location_id: @location.id
       end
 
       subject { get :index, params: { q: { location_id_eq: @location.id.to_s } } }
@@ -102,7 +101,7 @@ describe ContentsController, type: :controller do
     subject { delete :destroy, params: { id: @content.id }, format: 'js' }
 
     it "should respond with 200 status code" do
-      expect{ subject }.to change{ Content.count }.by -1
+      expect { subject }.to change { Content.count }.by -1
       expect(response.code).to eq '200'
     end
   end
@@ -113,18 +112,16 @@ describe ContentsController, type: :controller do
     end
 
     context "when query is raw id search" do
-
       subject { get :parent_select_options, xhr: true, params: { search_query: @content.id.to_s, q: { id_eq: nil } }, format: :js }
 
       it "should respond with 200 status code" do
         subject
-        expect(assigns(:contents)).to match_array [ nil, ["nice title", @content.id] ]
+        expect(assigns(:contents)).to match_array [nil, ["nice title", @content.id]]
         expect(response.code).to eq '200'
       end
     end
 
     context "when query is id search" do
-
       subject { get :parent_select_options, xhr: true, params: { content_id: @content.id, q: { id_eq: nil } }, format: :js }
 
       it "should respond with 200 status code" do
@@ -135,14 +132,12 @@ describe ContentsController, type: :controller do
     end
 
     context "when query is a title search" do
+      subject { get :parent_select_options, xhr: true, params: { search_query: @content.title, q: { id_eq: nil } }, format: :js }
 
-        subject { get :parent_select_options, xhr: true, params: { search_query: @content.title, q: { id_eq: nil } }, format: :js }
-
-        it "should respond with 200 status code" do
-          subject
-          expect(assigns(:contents)).to match_array [ nil, ["nice title", @content.id] ]
-        end
+      it "should respond with 200 status code" do
+        subject
+        expect(assigns(:contents)).to match_array [nil, ["nice title", @content.id]]
+      end
     end
   end
-
 end

@@ -7,8 +7,8 @@ module Api
         authorize! :manage, User.find(params[:id])
 
         search_opts = ContentSearch.comment_query({
-          params: params
-        })
+                                                    params: params
+                                                  })
 
         @contents = Content.search(query, search_opts)
         opts = { context: { current_ability: current_ability } }
@@ -27,18 +27,17 @@ module Api
 
       private
 
-        def query
-          params[:query].present? ? params[:query] : '*'
-        end
+      def query
+        params[:query].present? ? params[:query] : '*'
+      end
 
-        def total_pages
-          @contents.present? ? (@contents.total_entries/per_page.to_f).ceil : nil
-        end
+      def total_pages
+        @contents.present? ? (@contents.total_entries / per_page.to_f).ceil : nil
+      end
 
-        def per_page
-          params[:per_page] || 20
-        end
-
+      def per_page
+        params[:per_page] || 20
+      end
     end
   end
 end

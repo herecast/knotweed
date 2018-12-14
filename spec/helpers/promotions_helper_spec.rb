@@ -1,4 +1,4 @@
-require 'spec_helper' 
+require 'spec_helper'
 
 describe PromotionsHelper, type: :helper do
   describe '#get_promotions_list' do
@@ -10,7 +10,7 @@ describe PromotionsHelper, type: :helper do
         expect(content).to receive(:promotions).and_return(:content_promotions)
         expect(organization).to_not receive(:promotions)
 
-        expect( helper.get_promotion_list(organization, content) ).to eql :content_promotions
+        expect(helper.get_promotion_list(organization, content)).to eql :content_promotions
       end
     end
 
@@ -21,7 +21,7 @@ describe PromotionsHelper, type: :helper do
 
         expect(organization).to receive(:promotions).and_return(:organization_promotions)
 
-        expect( helper.get_promotion_list(organization, content) ).to eql :organization_promotions
+        expect(helper.get_promotion_list(organization, content)).to eql :organization_promotions
       end
     end
   end

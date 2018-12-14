@@ -1,7 +1,6 @@
 module Api
   module V3
     class Metrics::Contents::ImpressionsController < ApiController
-
       def create
         @content = Content.not_deleted.find params[:id]
 
@@ -13,14 +12,15 @@ module Api
       end
 
       private
+
       def content_metric_params
         data = {
-          event_type:   'impression',
+          event_type: 'impression',
           current_date: Date.current.to_s,
-          user_id:      current_user.try(:id),
-          user_agent:   request.user_agent,
-          user_ip:      request.remote_ip,
-          client_id:    params[:client_id]
+          user_id: current_user.try(:id),
+          user_agent: request.user_agent,
+          user_ip: request.remote_ip,
+          client_id: params[:client_id]
         }
 
         if params[:location_id].present?

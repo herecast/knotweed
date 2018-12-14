@@ -1,5 +1,4 @@
 class CommentsController < ApplicationController
-
   def index
     if params[:reset]
       session[:comment_search] = nil
@@ -14,9 +13,9 @@ class CommentsController < ApplicationController
 
     if session[:comment_search].present?
       @comments = @search.result(distinct: true)
-        .order("created_at DESC")
-        .page(params[:page])
-        .per(25)
+                         .order("created_at DESC")
+                         .page(params[:page])
+                         .per(25)
     else
       @comments = []
     end
@@ -50,18 +49,17 @@ class CommentsController < ApplicationController
 
   private
 
-    def correct_path
-      !!params[:from_content_form] ? contents_path : comments_path
-    end
+  def correct_path
+    !!params[:from_content_form] ? contents_path : comments_path
+  end
 
-    def notify_comment_owner
-      ContentRemovalAlertMailer.content_removal_alert(@comment).deliver_later
-    end
+  def notify_comment_owner
+    ContentRemovalAlertMailer.content_removal_alert(@comment).deliver_later
+  end
 
-    def notify_parent_content_owner
-      CommentAlertMailer.alert_parent_content_owner(
-        @comment, @comment.parent, true
-      ).deliver_later
-    end
-
+  def notify_parent_content_owner
+    CommentAlertMailer.alert_parent_content_owner(
+      @comment, @comment.parent, true
+    ).deliver_later
+  end
 end

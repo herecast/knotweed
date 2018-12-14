@@ -39,12 +39,12 @@ class PromoteContentToListservs
     end
 
     send_to_external_lists(
-      @promotion_listservs.select{|pl| pl.listserv.is_vc_list?}
+      @promotion_listservs.select { |pl| pl.listserv.is_vc_list? }
     )
-
   end
 
   protected
+
   def send_to_external_lists(promotion_listservs)
     vc_lists = promotion_listservs.collect(&:listserv)
     outbound_mail = ReversePublisher.mail_content_to_listservs(
@@ -62,5 +62,4 @@ class PromoteContentToListservs
 
     PromotionListserv.where(id: promotion_listservs.collect(&:id)).update_all sent_at: Time.zone.now
   end
-
 end

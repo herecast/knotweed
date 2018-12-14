@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe CommentAlert do
   let(:org) { FactoryGirl.create :organization, name: 'Listserv' }
   let(:parent_content_owner) { FactoryGirl.create :user, receive_comment_alerts: true }
-  let(:parent_content) { FactoryGirl.create :content, :talk, created_by: parent_content_owner}
+  let(:parent_content) { FactoryGirl.create :content, :talk, created_by: parent_content_owner }
   let(:listserv_parent_content) { FactoryGirl.create :content, organization_id: org.id, created_by: parent_content_owner }
   let(:comment1) { FactoryGirl.build :content, :talk, parent_id: parent_content.id }
   let(:no_alert_content_owner) { FactoryGirl.create :user, receive_comment_alerts: false }
@@ -13,7 +13,7 @@ RSpec.describe CommentAlert do
   let(:author_comment) { FactoryGirl.create :content, :talk, created_by: parent_content_owner }
   let(:no_owner_content) { FactoryGirl.create :content, :talk, created_by: nil }
 
-  subject { described_class.call(comment, parent_content)}
+  subject { described_class.call(comment, parent_content) }
 
   context 'when content is not a comment' do
     it 'does not send an email alert' do
@@ -46,17 +46,16 @@ RSpec.describe CommentAlert do
 
     context 'when the author is commenting on their own post' do
       it 'does not attempt to send an email' do
-         expect(CommentAlertMailer).to_not receive(:alert_parent_content_owner).with(author_comment, parent_content)
-         CommentAlert.call(author_comment)
+        expect(CommentAlertMailer).to_not receive(:alert_parent_content_owner).with(author_comment, parent_content)
+        CommentAlert.call(author_comment)
       end
     end
 
     context 'when parent content does not have created_by' do
       it 'does not attempt to send an email' do
-         expect(CommentAlertMailer).to_not receive(:alert_parent_content_owner).with(author_comment, no_owner_content)
-         CommentAlert.call(no_owner_content)
+        expect(CommentAlertMailer).to_not receive(:alert_parent_content_owner).with(author_comment, no_owner_content)
+        CommentAlert.call(no_owner_content)
       end
     end
-    
   end
 end

@@ -13,8 +13,8 @@ describe Api::V3::SubscriptionsController, type: :controller do
         email: @user.email,
         name: @user.name,
         confirmed_at: Time.zone.now,
-        email_type: "html" }
-      }
+        email_type: "html"
+      } }
     end
     subject { post :create, params: @sub_attrs, format: :json }
 
@@ -46,8 +46,8 @@ describe Api::V3::SubscriptionsController, type: :controller do
         email: @user.email,
         name: @user.name,
         confirmed_at: Time.zone.now,
-        email_type: "html" }
-      }
+        email_type: "html"
+      } }
 
       post :create, params: @sub_attrs, format: :json
       expect(response.code).to eq '422'
@@ -59,7 +59,6 @@ describe Api::V3::SubscriptionsController, type: :controller do
     end
 
     context 'when a user re-subscribes' do
-
       it 'handles already persisted subscriptions' do
         @subscription = Subscription.create(@sub_attrs[:subscription])
         subject
@@ -71,7 +70,6 @@ describe Api::V3::SubscriptionsController, type: :controller do
         subject
         expect(assigns(:subscription).unsubscribed_at).to be_nil
       end
-
     end
   end
 
@@ -79,22 +77,24 @@ describe Api::V3::SubscriptionsController, type: :controller do
     let(:user) { FactoryGirl.create :user }
     let(:listserv) { FactoryGirl.create :listserv, mc_list_id: '58b689ef45', mc_group_name: 'Test Digest' }
     let!(:subscription) { FactoryGirl.create :subscription, email: user.email, listserv_id: listserv.id }
-    let(:mc_request) { {"type"=>"unsubscribe",
-                        "fired_at"=>"2016-09-21 15:32:52",
-                        "data"=>{"action"=>"unsub",
-                                 "reason"=>"manual",
-                                 "id"=>"ecdecee112",
-                                 "email"=>"#{user.email}",
-                                 "email_type"=>"html",
-                                 "ip_opt"=>"68.81.4.98",
-                                 "web_id"=>"134812609", "merges"=>{"EMAIL"=>"test@subtext.org",
-                                                                   "FNAME"=>"Testy",
-                                                                    "LNAME"=>"McTesterson"},
-                                 "list_id"=>"#{listserv.mc_list_id}"}} }
+    let(:mc_request) {
+      { "type" => "unsubscribe",
+        "fired_at" => "2016-09-21 15:32:52",
+        "data" => { "action" => "unsub",
+                    "reason" => "manual",
+                    "id" => "ecdecee112",
+                    "email" => "#{user.email}",
+                    "email_type" => "html",
+                    "ip_opt" => "68.81.4.98",
+                    "web_id" => "134812609", "merges" => { "EMAIL" => "test@subtext.org",
+                                                           "FNAME" => "Testy",
+                                                           "LNAME" => "McTesterson" },
+                    "list_id" => "#{listserv.mc_list_id}" } }
+    }
 
     subject { post :unsubscribe_from_mailchimp, params: mc_request }
 
-    #maybe set up VCR to get the response or create a fixture
+    # maybe set up VCR to get the response or create a fixture
     context 'when the user unsubscribes' do
       it 'has a 200 status code' do
         subject
@@ -108,7 +108,7 @@ describe Api::V3::SubscriptionsController, type: :controller do
       end
 
       it 'updates the subscription mc_unsubscribed_at' do
-        expect{subject}.to change{
+        expect { subject }.to change {
           subscription.reload.mc_unsubscribed_at
         }.from(nil).to(instance_of(ActiveSupport::TimeWithZone))
       end
@@ -117,7 +117,6 @@ describe Api::V3::SubscriptionsController, type: :controller do
     context 'when the user is unsubscribed' do
       before do
         subscription.update_attributes(unsubscribed_at: 1.day.ago)
-
       end
       it 'has a 200 status code' do
         subject
@@ -128,6 +127,5 @@ describe Api::V3::SubscriptionsController, type: :controller do
         expect { subject }.not_to change { subscription.unsubscribed_at }
       end
     end
-
   end
 end

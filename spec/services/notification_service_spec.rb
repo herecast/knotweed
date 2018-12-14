@@ -29,7 +29,7 @@ RSpec.describe NotificationService do
   end
 
   describe '#sign_in_link' do
-    let(:sign_in_token) { FactoryGirl.build :sign_in_token}
+    let(:sign_in_token) { FactoryGirl.build :sign_in_token }
 
     it 'delivers via activemailer delayed' do
       mail = double()
@@ -39,5 +39,4 @@ RSpec.describe NotificationService do
       NotificationService.sign_in_link(sign_in_token)
     end
   end
-
 end

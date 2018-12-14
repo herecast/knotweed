@@ -4,7 +4,7 @@ module Api
       protect_from_forgery with: :exception, unless: -> { request.format.json? }
       rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
-      #token authentication for ember app
+      # token authentication for ember app
       before_action :authenticate_user_from_token!, :set_current_thread_user
 
       # rescue CanCanCan authorization denied errors to use 403, not 500
@@ -35,7 +35,7 @@ module Api
       end
 
       def record_not_found(error)
-        render json: {error: error.message}, status: :not_found
+        render json: { error: error.message }, status: :not_found
       end
 
       def meta_pagination_for(scope)

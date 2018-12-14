@@ -1,9 +1,8 @@
 require "rails_helper"
 
-
 RSpec.describe ListservMailer, type: :mailer do
-  let(:body_html) { subject.body.parts.find {|p| p.content_type.match /html/}.body.raw_source }
-  let(:body_text) { subject.body.parts.find {|p| p.content_type.match /plain/}.body.raw_source }
+  let(:body_html) { subject.body.parts.find { |p| p.content_type.match /html/ }.body.raw_source }
+  let(:body_text) { subject.body.parts.find { |p| p.content_type.match /plain/ }.body.raw_source }
 
   before(:each) do
     allow(Figaro.env).to receive(:listserv_marketing_url)\
@@ -29,9 +28,8 @@ RSpec.describe ListservMailer, type: :mailer do
     context 'when listserv-user-testing feature is active' do
       before do
         FactoryGirl.create(:feature,
-          name: 'listserv-user-testing',
-          active: true
-        )
+                           name: 'listserv-user-testing',
+                           active: true)
       end
 
       it 'does not have curious why changed message' do
@@ -66,14 +64,13 @@ RSpec.describe ListservMailer, type: :mailer do
     context 'when listserv-user-testing feature is active' do
       before do
         FactoryGirl.create(:feature,
-          name: 'listserv-user-testing',
-          active: true
-        )
+                           name: 'listserv-user-testing',
+                           active: true)
       end
 
-    let(:unsub_wording) {
-      /#{Regexp.escape("unsubscribe from")}\s+#{Regexp.escape("this test")}/i
-    }
+      let(:unsub_wording) {
+        /#{Regexp.escape("unsubscribe from")}\s+#{Regexp.escape("this test")}/i
+      }
 
       it 'has unsubscribe link with test wording' do
         expect(body_html).to match(unsub_wording)
@@ -106,7 +103,6 @@ RSpec.describe ListservMailer, type: :mailer do
     include_examples :has_curious_why_changed_when_not_user_test
   end
 
-
   describe '#existing_subscription' do
     let(:listserv) { FactoryGirl.create :listserv, unsubscribe_email: 'unsub.me@list.org' }
     let(:subscription) { FactoryGirl.create :subscription, email: 'test@example.org', listserv: listserv }
@@ -129,5 +125,4 @@ RSpec.describe ListservMailer, type: :mailer do
 
     include_examples :has_curious_why_changed_when_not_user_test
   end
-
 end

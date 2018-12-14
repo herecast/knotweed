@@ -4,19 +4,19 @@ RSpec.describe ConfirmSubscription do
   let(:confirm_ip) { '192.168.1.1' }
   let(:subscription) {
     FactoryGirl.create :subscription,
-      confirmed_at: nil,
-      confirm_ip: nil
+                       confirmed_at: nil,
+                       confirm_ip: nil
   }
 
-  subject{ described_class.call(subscription, confirm_ip) }
+  subject { described_class.call(subscription, confirm_ip) }
 
   it 'sets confirm_ip and confirmed_at' do
-    expect{ subject }.to change{
+    expect { subject }.to change {
       subscription.reload.attributes.with_indifferent_access.slice(:confirm_ip, :confirmed_at)
     }.to a_hash_including({
-      confirm_ip: confirm_ip,
-      confirmed_at: an_instance_of(ActiveSupport::TimeWithZone)
-    })
+                            confirm_ip: confirm_ip,
+                            confirmed_at: an_instance_of(ActiveSupport::TimeWithZone)
+                          })
   end
 
   context 'when subscription.listserv has mc_list_id' do
@@ -41,14 +41,13 @@ RSpec.describe ConfirmSubscription do
     end
   end
 
-
   context 'when already confirmed' do
     before do
       subscription.update! confirmed_at: 1.day.ago, confirm_ip: '1.1.1.1'
     end
 
     it 'does not change confirmed_at, confirm_ip' do
-      expect{ subject }.to_not change{
+      expect { subject }.to_not change {
         subscription.reload.attributes.with_indifferent_access.slice(
           :confirm_ip, :confirmed_at
         )
@@ -63,12 +62,10 @@ RSpec.describe ConfirmSubscription do
       end
 
       it 'unsets unsubscribed status' do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           subscription.reload.unsubscribed?
         }.to false
       end
-
     end
-
   end
 end

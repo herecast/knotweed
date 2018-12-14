@@ -10,7 +10,6 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
   end
 
   describe 'POST #create' do
-
     subject { post :create, params: { id: @business_profile.id, business_profile: { archived: true } } }
 
     context "when successful" do
@@ -48,9 +47,9 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
       end
 
       it "destroys associated organization and content" do
-        expect{ subject }.to change{ Content.count }.by -1
+        expect { subject }.to change { Content.count }.by -1
         @business_profile.reload
-        expect{ @business_profile.organization }.to raise_error(Module::DelegationError)
+        expect { @business_profile.organization }.to raise_error(Module::DelegationError)
       end
     end
 
@@ -93,5 +92,4 @@ describe BusinessProfiles::ArchivingsController, type: :controller do
       end
     end
   end
-
 end

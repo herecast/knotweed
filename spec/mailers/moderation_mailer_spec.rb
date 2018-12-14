@@ -9,12 +9,11 @@ describe ModerationMailer, :type => :mailer do
       @flagging_user = FactoryGirl.create(:user)
       @flagger_name = 'Joseph'
       @flagger_email = 'jos@example.com'
-      @params = {:classification => 'Offensive', :flagger_name => @flagger_name, :flagger_email => @flagger_email }
-      @subject ='dailyUV Flagged as ' + @params[:classification] + ': ' +  @content.title
+      @params = { :classification => 'Offensive', :flagger_name => @flagger_name, :flagger_email => @flagger_email }
+      @subject = 'dailyUV Flagged as ' + @params[:classification] + ': ' + @content.title
     end
 
     describe 'moderation email' do
-
       it "should send an email" do
         email = ModerationMailer.send_moderation_flag(@content, @params, @subject).deliver_now
         expect(ModerationMailer.deliveries.present?).to eq(true)
@@ -46,7 +45,6 @@ describe ModerationMailer, :type => :mailer do
     end
 
     describe 'version 2' do
-
       it "should send an email" do
         email = ModerationMailer.send_moderation_flag_v2(@content, @params[:classification], @flagging_user).deliver_now
         expect(ModerationMailer.deliveries.present?).to eq(true)

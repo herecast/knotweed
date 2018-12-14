@@ -53,7 +53,6 @@
 #
 
 class User < ActiveRecord::Base
-
   has_many :report_recipients
   has_many :subscriptions
   has_many :social_logins
@@ -63,7 +62,7 @@ class User < ActiveRecord::Base
   belongs_to :location
   mount_uploader :avatar, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_avatar,
-                                 :remove_avatar!, raise: false
+                :remove_avatar!, raise: false
 
   accepts_nested_attributes_for :subscriptions
 
@@ -87,13 +86,14 @@ class User < ActiveRecord::Base
   ransacker :social_login
 
   def managed_organization_id; Organization.with_role(:manager, self).first.try(:id); end
+
   def is_organization_manager?; managed_organization_id.present?; end
 
   default_scope { order('id ASC') }
 
-  scope :sales_agents, ->{ joins(:roles).where(roles: { name: 'sales agent' } ) }
-  scope :promoters, ->{ joins(:roles).where(roles: { name: 'promoter' } ) }
-  scope :with_roles, ->{ where("(select count(user_id) from users_roles where user_id=users.id) > 0").includes(:roles) }
+  scope :sales_agents, -> { joins(:roles).where(roles: { name: 'sales agent' }) }
+  scope :promoters, -> { joins(:roles).where(roles: { name: 'promoter' }) }
+  scope :with_roles, -> { where("(select count(user_id) from users_roles where user_id=users.id) > 0").includes(:roles) }
 
   def managed_organizations
     Organization.with_role(:manager, self)
@@ -118,7 +118,7 @@ class User < ActiveRecord::Base
   end
 
   def ability
-      @ability ||= Ability.new(self)
+    @ability ||= Ability.new(self)
   end
 
   # computed property that checks if the user has permission to manage
@@ -178,7 +178,7 @@ class User < ActiveRecord::Base
 
   def location_id=lid
     unless lid.nil?
-      loc=Location.find_by_slug_or_id(lid)
+      loc = Location.find_by_slug_or_id(lid)
       super loc.id
     else
       super lid
@@ -191,7 +191,7 @@ class User < ActiveRecord::Base
     if user.nil?
       user = User.new({
         email: auth[:email],
-        password: Devise.friendly_token[0,20],
+        password: Devise.friendly_token[0, 20],
         name: auth[:name],
         nda_agreed_at: Time.zone.now,
         agreed_to_nda: true
@@ -204,14 +204,14 @@ class User < ActiveRecord::Base
       user
     else
       social_login = SocialLogin.find_or_create_by(user_id: user.id, provider: auth[:provider], uid: auth[:id])
-      #this should capture any updates the user makes to their additional info.
+      # this should capture any updates the user makes to their additional info.
       social_login.update_attributes(extra_info: auth[:extra_info])
       user
     end
   end
 
   def unique_roles
-    roles.map{ |r| r.pretty_name }.uniq
+    roles.map { |r| r.pretty_name }.uniq
   end
 
   def name_with_email
@@ -224,16 +224,16 @@ class User < ActiveRecord::Base
 
   private
 
-    def generate_authentication_token
-      loop do
-        token = Devise.friendly_token
-        break token unless User.where(authentication_token: token).first
-      end
+  def generate_authentication_token
+    loop do
+      token = Devise.friendly_token
+      break token unless User.where(authentication_token: token).first
     end
+  end
 
-    def trigger_content_reindex_if_avatar_changed!
-      if previous_changes.key?(:avatar)
-        ReindexAssociatedContentJob.perform_later self
-      end
+  def trigger_content_reindex_if_avatar_changed!
+    if previous_changes.key?(:avatar)
+      ReindexAssociatedContentJob.perform_later self
     end
+  end
 end

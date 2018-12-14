@@ -18,25 +18,25 @@ module Api
       end
 
       # PUT /resource/password
-       def update
-         self.resource = resource_class.reset_password_by_token(resource_params)
-         yield resource if block_given?
+      def update
+        self.resource = resource_class.reset_password_by_token(resource_params)
+        yield resource if block_given?
 
-         if resource.errors.empty?
-           resource.unlock_access! if unlockable?(resource)
-           head :no_content
-         else
-           render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
-         end
-       end
+        if resource.errors.empty?
+          resource.unlock_access! if unlockable?(resource)
+          head :no_content
+        else
+          render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
 
-       private
+      private
 
-       def resource_params
-         super.merge({
-           return_url: params[:return_url]
-         })
-       end
+      def resource_params
+        super.merge({
+                      return_url: params[:return_url]
+                    })
+      end
     end
   end
 end

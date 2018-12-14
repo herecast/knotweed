@@ -1,17 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe CreateAlternateContent do
-
   describe "::call" do
     before do
       @old_title = 'Legacy Tatooine'
       @old_raw_content = 'So offensive!'
       @old_authors = 'Mean Dugs'
       @content = FactoryGirl.create :content, :news,
-        title: @old_title,
-        raw_content: @old_raw_content,
-        authors: @old_authors,
-        removed: true
+                                    title: @old_title,
+                                    raw_content: @old_raw_content,
+                                    authors: @old_authors,
+                                    removed: true
     end
 
     subject { CreateAlternateContent.call(@content) }

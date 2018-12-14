@@ -2,47 +2,47 @@ module Api
   module V3
     class EventInstanceSerializer < ActiveModel::Serializer
       attributes :id,
-        :author_id,
-        :author_name,
-        :avatar_url,
-        :biz_feed_public,
-        :comment_count,
-        :commenter_count,
-        :contact_email,
-        :contact_phone,
-        :content,
-        :content_id,
-        :content_origin,
-        :cost,
-        :cost_type,
-        :created_at,
-        :ends_at,
-        :event_id,
-        :event_url,
-        :ical_url,
-        :images,
-        :image_url,
-        :location_id,
-        :organization_biz_feed_active,
-        :organization_id,
-        :organization_name,
-        :organization_profile_image_url,
-        :presenter_name,
-        :promote_radius,
-        :published_at,
-        :registration_deadline,
-        :starts_at,
-        :subtitle,
-        :title,
-        :updated_at,
-        :venue_address,
-        :venue_city,
-        :venue_latitude,
-        :venue_longitude,
-        :venue_name,
-        :venue_state,
-        :venue_url,
-        :venue_zip
+                 :author_id,
+                 :author_name,
+                 :avatar_url,
+                 :biz_feed_public,
+                 :comment_count,
+                 :commenter_count,
+                 :contact_email,
+                 :contact_phone,
+                 :content,
+                 :content_id,
+                 :content_origin,
+                 :cost,
+                 :cost_type,
+                 :created_at,
+                 :ends_at,
+                 :event_id,
+                 :event_url,
+                 :ical_url,
+                 :images,
+                 :image_url,
+                 :location_id,
+                 :organization_biz_feed_active,
+                 :organization_id,
+                 :organization_name,
+                 :organization_profile_image_url,
+                 :presenter_name,
+                 :promote_radius,
+                 :published_at,
+                 :registration_deadline,
+                 :starts_at,
+                 :subtitle,
+                 :title,
+                 :updated_at,
+                 :venue_address,
+                 :venue_city,
+                 :venue_latitude,
+                 :venue_longitude,
+                 :venue_name,
+                 :venue_state,
+                 :venue_url,
+                 :venue_zip
 
       has_many :comments, serializer: Api::V3::CommentSerializer
       has_many :event_instances, serializer: Api::V3::RelatedEventInstanceSerializer
@@ -56,7 +56,7 @@ module Api
       end
 
       def images
-        object.event.content.images.sort_by{|i| [i.position.to_i, i.created_at]}.map do |img|
+        object.event.content.images.sort_by { |i| [i.position.to_i, i.created_at] }.map do |img|
           {
             id: img.id,
             caption: img.caption,
@@ -263,7 +263,6 @@ module Api
       def cost_type
         object.event.try(:cost_type)
       end
-
     end
   end
 end

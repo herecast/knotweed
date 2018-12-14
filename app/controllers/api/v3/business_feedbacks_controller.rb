@@ -11,10 +11,10 @@ module Api
         @business_feedback = BusinessFeedback.new(feedback_params)
         if @business_feedback.save
           render json: @business_feedback, serializer: BusinessFeedbackSerializer,
-            status: 201
+                 status: 201
         else
           render json: { errors: @business_feedback.errors.messages },
-            status: :unprocessable_entity
+                 status: :unprocessable_entity
         end
       end
 
@@ -33,22 +33,21 @@ module Api
 
       private
 
-        def prevent_multiple_ratings
-          if BusinessFeedback.find_by(created_by_id: current_user.id, business_profile_id: params[:id]).present?
-            render json: {}, status: :forbidden
-          end
+      def prevent_multiple_ratings
+        if BusinessFeedback.find_by(created_by_id: current_user.id, business_profile_id: params[:id]).present?
+          render json: {}, status: :forbidden
         end
+      end
 
-        def feedback_params
-          params.require(:feedback).permit(
-            :business_profile_id,
-            :satisfaction,
-            :cleanliness,
-            :price,
-            :recommend
-          )
-        end
-
+      def feedback_params
+        params.require(:feedback).permit(
+          :business_profile_id,
+          :satisfaction,
+          :cleanliness,
+          :price,
+          :recommend
+        )
+      end
     end
   end
 end

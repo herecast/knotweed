@@ -1,51 +1,51 @@
 require 'rails_helper';
 
 def serialized_event_instance(event_instance)
-{
-  author_id: event_instance.event.content.created_by.try(:id),
-  author_name: event_instance.event.content.created_by.try(:name),
-  avatar_url: event_instance.event.content.created_by.try(:avatar_url),
-  comments: [],
-  comment_count: 0,
-  commenter_count: 0,
-  contact_email: event_instance.event.contact_email,
-  contact_phone: event_instance.event.contact_phone,
-  content: event_instance.event.content.sanitized_content,
-  content_id: event_instance.event.content.id,
-  content_origin: an_instance_of(String),
-  cost: event_instance.event.cost,
-  cost_type: event_instance.event.cost_type,
-  created_at: event_instance.event.content.created_at.iso8601,
-  ends_at: event_instance.end_date.try(:iso8601),
-  event_id: event_instance.event.id,
-  event_url: event_instance.event.event_url,
-  event_instances: [],
-  ical_url: an_instance_of(String).or(be_nil),
-  id: event_instance.id,
-  images: [],
-  image_url: event_instance.event.content.images.first.try(:image).try(:url),
-  location_id: event_instance.event.content.location_id,
-  organization_biz_feed_active: event_instance.event.content.organization.try(:biz_feed_active),
-  organization_id: event_instance.event.content.organization_id,
-  organization_name: event_instance.event.content.organization.try(:name),
-  organization_profile_image_url: event_instance.event.content.organization.try(:profile_image_url) || event_instance.event.content.organization.try(:logo_url),
-  presenter_name: event_instance.presenter_name,
-  promote_radius: event_instance.event.content.promote_radius,
-  published_at: event_instance.event.content.pubdate.iso8601,
-  registration_deadline: event_instance.event.registration_deadline.try(:iso8601),
-  starts_at: event_instance.start_date.iso8601,
-  subtitle: event_instance.subtitle_override,
-  title: event_instance.event.content.title,
-  updated_at: event_instance.updated_at.try(:iso8601),
-  venue_address: event_instance.event.venue.try(:address),
-  venue_city: event_instance.event.venue.try(:city),
-  venue_latitude: event_instance.event.venue.try(:latitude),
-  venue_longitude: event_instance.event.venue.try(:longitude),
-  venue_name: event_instance.event.venue.try(:name),
-  venue_state: event_instance.event.venue.try(:state),
-  venue_url: event_instance.event.venue.try(:url),
-  venue_zip: event_instance.event.venue.try(:zip),
-}
+  {
+    author_id: event_instance.event.content.created_by.try(:id),
+    author_name: event_instance.event.content.created_by.try(:name),
+    avatar_url: event_instance.event.content.created_by.try(:avatar_url),
+    comments: [],
+    comment_count: 0,
+    commenter_count: 0,
+    contact_email: event_instance.event.contact_email,
+    contact_phone: event_instance.event.contact_phone,
+    content: event_instance.event.content.sanitized_content,
+    content_id: event_instance.event.content.id,
+    content_origin: an_instance_of(String),
+    cost: event_instance.event.cost,
+    cost_type: event_instance.event.cost_type,
+    created_at: event_instance.event.content.created_at.iso8601,
+    ends_at: event_instance.end_date.try(:iso8601),
+    event_id: event_instance.event.id,
+    event_url: event_instance.event.event_url,
+    event_instances: [],
+    ical_url: an_instance_of(String).or(be_nil),
+    id: event_instance.id,
+    images: [],
+    image_url: event_instance.event.content.images.first.try(:image).try(:url),
+    location_id: event_instance.event.content.location_id,
+    organization_biz_feed_active: event_instance.event.content.organization.try(:biz_feed_active),
+    organization_id: event_instance.event.content.organization_id,
+    organization_name: event_instance.event.content.organization.try(:name),
+    organization_profile_image_url: event_instance.event.content.organization.try(:profile_image_url) || event_instance.event.content.organization.try(:logo_url),
+    presenter_name: event_instance.presenter_name,
+    promote_radius: event_instance.event.content.promote_radius,
+    published_at: event_instance.event.content.pubdate.iso8601,
+    registration_deadline: event_instance.event.registration_deadline.try(:iso8601),
+    starts_at: event_instance.start_date.iso8601,
+    subtitle: event_instance.subtitle_override,
+    title: event_instance.event.content.title,
+    updated_at: event_instance.updated_at.try(:iso8601),
+    venue_address: event_instance.event.venue.try(:address),
+    venue_city: event_instance.event.venue.try(:city),
+    venue_latitude: event_instance.event.venue.try(:latitude),
+    venue_longitude: event_instance.event.venue.try(:longitude),
+    venue_name: event_instance.event.venue.try(:name),
+    venue_state: event_instance.event.venue.try(:state),
+    venue_url: event_instance.event.venue.try(:url),
+    venue_zip: event_instance.event.venue.try(:zip),
+  }
 end
 
 describe 'Event Instance endpoints', type: :request do
@@ -59,8 +59,8 @@ describe 'Event Instance endpoints', type: :request do
 
     it 'returns expected schema fields' do
       expect(subject).to include_json({
-        event_instances: [serialized_event_instance(event_instance.reload)]
-      })
+                                        event_instances: [serialized_event_instance(event_instance.reload)]
+                                      })
     end
   end
 
@@ -74,8 +74,8 @@ describe 'Event Instance endpoints', type: :request do
 
     it 'returns expected schema fields' do
       expect(subject).to include_json({
-        event_instance: serialized_event_instance(event_instance)
-      })
+                                        event_instance: serialized_event_instance(event_instance)
+                                      })
     end
   end
 
@@ -85,8 +85,7 @@ describe 'Event Instance endpoints', type: :request do
         FactoryGirl.create(:event_instance, start_date: 1.day.from_now)
 
         FactoryGirl.create_list(:event_instance, 3,
-          start_date: 3.days.from_now,
-        )
+                                start_date: 3.days.from_now,)
       end
 
       subject {
@@ -96,17 +95,17 @@ describe 'Event Instance endpoints', type: :request do
       it 'returns the dates and count of events corresponding' do
         subject
         expect(response.body).to include_json({
-          active_dates: [
-            {
-              date: 1.day.from_now.strftime('%Y-%m-%d'),
-              count: 1
-            },
-            {
-              date: 3.days.from_now.strftime('%Y-%m-%d'),
-              count: 3
-            }
-          ]
-        })
+                                                active_dates: [
+                                                  {
+                                                    date: 1.day.from_now.strftime('%Y-%m-%d'),
+                                                    count: 1
+                                                  },
+                                                  {
+                                                    date: 3.days.from_now.strftime('%Y-%m-%d'),
+                                                    count: 3
+                                                  }
+                                                ]
+                                              })
       end
     end
 
@@ -132,12 +131,12 @@ describe 'Event Instance endpoints', type: :request do
 
       it 'returns only data for range' do
         subject
-        expect(response.body).to eql({active_dates: [
-            {
-              date: Date.current,
-              count: 1
-            }
-        ]}.to_json)
+        expect(response.body).to eql({ active_dates: [
+          {
+            date: Date.current,
+            count: 1
+          }
+        ] }.to_json)
       end
     end
   end
@@ -165,35 +164,35 @@ describe 'Event Instance endpoints', type: :request do
 
     it 'returns expected id, and content_ids for each record' do
       expect(subject[:instances]).to include({
-        id: instance1.id,
-        content_id: instance1.event.content.id
-      }, {
-        id: instance2.id,
-        content_id: instance2.event.content.id
-      })
+                                               id: instance1.id,
+                                               content_id: instance1.event.content.id
+                                             }, {
+                                               id: instance2.id,
+                                               content_id: instance2.event.content.id
+                                             })
     end
 
     it 'does not include instance if content is listerv' do
       instance1.event.content.update organization_id: Organization::LISTSERV_ORG_ID
-      ids = subject[:instances].map{|d| d[:id]}
+      ids = subject[:instances].map { |d| d[:id] }
       expect(ids).to_not include instance1.id
     end
 
     it 'does not include instance if content is removed' do
       instance1.event.content.update removed: true
-      ids = subject[:instances].map{|d| d[:id]}
+      ids = subject[:instances].map { |d| d[:id] }
       expect(ids).to_not include instance1.id
     end
 
     it 'does not include instance if content pubdate is null' do
       instance1.event.content.update pubdate: nil
-      ids = subject[:instances].map{|d| d[:id]}
+      ids = subject[:instances].map { |d| d[:id] }
       expect(ids).to_not include instance1.id
     end
 
     it 'does not include instance if content pubdate is in the future' do
       instance1.event.content.update pubdate: Time.zone.now.tomorrow
-      ids = subject[:instances].map{|d| d[:id]}
+      ids = subject[:instances].map { |d| d[:id] }
       expect(ids).to_not include instance1.id
     end
   end

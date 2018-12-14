@@ -25,8 +25,8 @@ require 'spec_helper'
 describe EventInstance, :type => :model do
   before do
     content = FactoryGirl.create :content, :event,
-      raw_content: 'cool description',
-      subtitle: 'helpful subtitle'
+                                 raw_content: 'cool description',
+                                 subtitle: 'helpful subtitle'
 
     @event = content.channel
   end
@@ -47,7 +47,6 @@ describe EventInstance, :type => :model do
         expect(subject).to match_array(@event.event_instances)
       end
     end
-
   end
 
   describe "validation" do

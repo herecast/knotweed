@@ -54,7 +54,7 @@ class BusinessLocationsController < ApplicationController
       end
     else
       respond_to do |format|
-        format.js { render json: @business_location.errors } 
+        format.js { render json: @business_location.errors }
         format.html { render 'new' }
       end
     end
@@ -69,7 +69,7 @@ class BusinessLocationsController < ApplicationController
       end
     else
       respond_to do |format|
-        format.js { render json: @business_location.errors } 
+        format.js { render json: @business_location.errors }
         format.html { render 'edit' }
       end
     end
@@ -93,25 +93,24 @@ class BusinessLocationsController < ApplicationController
 
   private
 
-    def business_location_params
-      params.require(:business_location).permit(:name,
-        :locate_include_name,
-        :address,
-        :city,
-        :state,
-        :zip,
-        :venue_url,
-        :email,
-        :phone,
-        :status,
-        :organization_id,
-        hours: []
-      ).tap do |attrs|
-        if attrs[:hours].respond_to?(:[])
-          attrs[:hours].reject! { |h| h.blank? }
-        elsif not attrs.has_key? :hours # deal with removing all hours entries
-          attrs[:hours] = []
-        end
+  def business_location_params
+    params.require(:business_location).permit(:name,
+                                              :locate_include_name,
+                                              :address,
+                                              :city,
+                                              :state,
+                                              :zip,
+                                              :venue_url,
+                                              :email,
+                                              :phone,
+                                              :status,
+                                              :organization_id,
+                                              hours: []).tap do |attrs|
+      if attrs[:hours].respond_to?(:[])
+        attrs[:hours].reject! { |h| h.blank? }
+      elsif not attrs.has_key? :hours # deal with removing all hours entries
+        attrs[:hours] = []
       end
     end
+  end
 end

@@ -4,7 +4,6 @@ RSpec.describe PaymentsController, type: :controller do
   let(:admin) { FactoryGirl.create :admin }
   before { sign_in admin }
 
-
   describe "GET #index" do
     subject { get :index }
 
@@ -25,30 +24,32 @@ RSpec.describe PaymentsController, type: :controller do
     describe 'with unpaid payments in a period' do
       let(:period_start) { 1.week.ago }
       let(:period_end) { Date.today }
-      let!(:promotion_metrics) { FactoryGirl.create_list :promotion_banner_metric, payment.paid_impressions,
-        content: payment.content, created_at: (period_start + 1.day) }
+      let!(:promotion_metrics) {
+        FactoryGirl.create_list :promotion_banner_metric, payment.paid_impressions,
+                                content: payment.content, created_at: (period_start + 1.day)
+      }
       let!(:payment) { FactoryGirl.create :payment, period_start: period_start, period_end: period_end, paid: false }
 
       it 'should correctly construct the `payment_data` instance variable' do
         subject
         expect(assigns(:payment_data)).to eql({
-          "#{period_start.strftime("%m/%d/%Y")} - #{period_end.strftime("%m/%d/%Y")}" => {
-            total_payments: payment.total_payment,
-            users: {
-              payment.paid_to.fullname => {
-                id: payment.paid_to.id,
-                total_impressions: payment.paid_impressions,
-                total_payment: payment.total_payment,
-                organizations: {
-                  payment.content.organization.name => {
-                    id: payment.content.organization.id,
-                    payments: [payment]
-                  }
-                }
-              }
-            }
-          }
-        })
+                                                "#{period_start.strftime("%m/%d/%Y")} - #{period_end.strftime("%m/%d/%Y")}" => {
+                                                  total_payments: payment.total_payment,
+                                                  users: {
+                                                    payment.paid_to.fullname => {
+                                                      id: payment.paid_to.id,
+                                                      total_impressions: payment.paid_impressions,
+                                                      total_payment: payment.total_payment,
+                                                      organizations: {
+                                                        payment.content.organization.name => {
+                                                          id: payment.content.organization.id,
+                                                          payments: [payment]
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              })
       end
     end
   end
@@ -68,7 +69,7 @@ RSpec.describe PaymentsController, type: :controller do
       let!(:paid_payment) { FactoryGirl.create :payment, period_start: period_start, period_end: period_end, paid: true }
 
       it 'destroys the unpaid payments' do
-        expect{subject}.to change{ Payment.count }.by(-unpaid_payments.length)
+        expect { subject }.to change { Payment.count }.by(-unpaid_payments.length)
       end
 
       it 'does not destroy paid payments' do
@@ -77,5 +78,4 @@ RSpec.describe PaymentsController, type: :controller do
       end
     end
   end
-
 end

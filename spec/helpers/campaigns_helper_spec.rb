@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe CampaignsHelper, type: :helper do
-
   describe "#active_checkbox" do
     it "returns active checkbox attributes" do
       attrs = active_checkbox(true)

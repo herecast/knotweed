@@ -13,15 +13,16 @@ class NotifySubscribersJob < ApplicationJob
   def perform(post)
     return unless !post.deleted_at && post.pubdate
     return if post.subscriber_mc_identifier.present?
+
     mc_list_identifier = SubscriberListIdFetcher.new.call(post.organization).presence
 
     if mc_list_identifier && list_has_subscribers(post.organization)
       campaign_id = SubscriptionsMailchimpClient.create_campaign(
         list_identifier: mc_list_identifier,
-        subject:         campaign_subject(post),
-        title:           post.title,
-        from_name:       "#{post.organization_name} on DailyUV",
-        reply_to:        campaign_reply_to
+        subject: campaign_subject(post),
+        title: post.title,
+        from_name: "#{post.organization_name} on DailyUV",
+        reply_to: campaign_reply_to
       )
       post.update_attribute(:subscriber_mc_identifier, campaign_id.presence)
     end
@@ -108,28 +109,25 @@ class NotifySubscribersJob < ApplicationJob
   end
 
   def list_has_subscribers(organization)
-    list = new_mailchimp_connection.lists.list({list_name: organization.name})['data'][0]
+    list = new_mailchimp_connection.lists.list({ list_name: organization.name })['data'][0]
     return true unless list.present? # this could be a false indicator and the issue is covered elsewhere
+
     return list['stats']['member_count'] > 0
   end
 
   def schedule_campaign(campaign_id, timing: Time.current)
     new_mailchimp_connection.campaigns.schedule(campaign_id,
-      next_quarter_hour(timing).utc.to_s.sub(' UTC', '')
-    )
+                                                next_quarter_hour(timing).utc.to_s.sub(' UTC', ''))
   end
 
   private
 
-    def new_mailchimp_connection
-      Mailchimp::API.new(Figaro.env.subscriptions_mailchimp_api_key)
-    end
-
+  def new_mailchimp_connection
+    Mailchimp::API.new(Figaro.env.subscriptions_mailchimp_api_key)
+  end
 end
 
-
 class NotifySubscribersJob::SubscriberListIdFetcher
-
   # We have two ways to match an organization to a MailChimp list: by +subscribe_url+ and by +name+.
   def call(organization)
     return nil unless subscribe_url = organization.subscribe_url.presence

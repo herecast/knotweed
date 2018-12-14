@@ -26,7 +26,6 @@
 require 'spec_helper'
 
 describe BusinessProfile, :type => :model do
-
   describe '#after_destroy' do
     before do
       @organization = FactoryGirl.create :organization
@@ -38,7 +37,7 @@ describe BusinessProfile, :type => :model do
 
     context "when business profile is destroyed" do
       it "destroys associated organization" do
-        expect{ subject }.to change{ Organization.count }.by(-1)
+        expect { subject }.to change { Organization.count }.by(-1)
       end
 
       context 'when associated organization has other content' do
@@ -47,10 +46,9 @@ describe BusinessProfile, :type => :model do
         end
 
         it 'should not destroy associated organization' do
-          expect{ subject }.to_not change{ Organization.count }
+          expect { subject }.to_not change { Organization.count }
         end
       end
-
     end
   end
 
@@ -90,10 +88,9 @@ describe BusinessProfile, :type => :model do
           "Tu-Su|00:00-02:00",
           "Tu-Su|10:00-23:59"
         ]
-      }.each do |k,v|
+      }.each do |k, v|
         it { expect(BusinessProfile.convert_hours_to_standard(k, 'factual')).to eq(v) }
       end
     end
   end
-
 end

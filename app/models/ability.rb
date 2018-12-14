@@ -4,7 +4,7 @@ class Ability
   def initialize(user)
     user ||= User.new # guest user (not logged in)
     # cycle through the user's roles and apply appropriate permissions
-    
+
     if user.has_role? :admin # super admin, unscoped to a resource
       can :manage, :all
       cannot :crud, Content
@@ -24,7 +24,7 @@ class Ability
       can :manage, Content, content_category_id: event_category.id
 
       # Hashie::Mash is returned directly out of searchkick when {load: false}
-      can :manage, Hashie::Mash, _type: 'content', created_by: {id: user.id}
+      can :manage, Hashie::Mash, _type: 'content', created_by: { id: user.id }
       can :manage, Hashie::Mash, _type: 'content', content_category_id: event_category.id
 
       can :manage, BusinessLocation # for event venues
@@ -38,7 +38,7 @@ class Ability
         # note: due to quirks in the way Rolify works, we *can't* use the same role name for this
         # that we use for the unscoped admin. So instead I'm calling it manager.
         parent_org_ids = managed_orgs.pluck(:id)
-        org_ids = (parent_org_ids + managed_orgs.map{|o|o.get_all_children}.flatten.map{|o|o.id}).uniq
+        org_ids = (parent_org_ids + managed_orgs.map { |o| o.get_all_children }.flatten.map { |o| o.id }).uniq
         can :manage, Organization, id: org_ids
         can :manage, PromotionBanner, promotion: { content: { organization_id: org_ids } }
         can :manage, Content, organization_id: org_ids
@@ -56,8 +56,8 @@ class Ability
       can :manage, UserBookmark, user: user
       can :manage, user
       can :create, Organization
-      can :manage, Hashie::Mash, _type: 'content', created_by: {id: user.id}
-      can :manage, Hashie::Mash, _type: 'event_instance', created_by: {id: user.id}
+      can :manage, Hashie::Mash, _type: 'content', created_by: { id: user.id }
+      can :manage, Hashie::Mash, _type: 'event_instance', created_by: { id: user.id }
     end
   end
 end

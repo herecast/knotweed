@@ -34,6 +34,7 @@ class ListservCampaignsController < ApplicationController
   end
 
   protected
+
   def listserv
     Listserv.find(params[:listserv_id])
   end
@@ -49,7 +50,7 @@ class ListservCampaignsController < ApplicationController
       promotion_ids: [],
     ).tap do |p|
       if p[:community_ids].respond_to?(:[])
-        p[:community_ids].reject!{|c| c.empty?}
+        p[:community_ids].reject! { |c| c.empty? }
       end
     end
   end

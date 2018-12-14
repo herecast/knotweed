@@ -14,5 +14,4 @@ module MarketPostsHelper
 
     url
   end
-
 end

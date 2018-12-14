@@ -4,8 +4,10 @@ class RewritesController < ApplicationController
 
   def index
   end
+
   def edit
   end
+
   def new
   end
 
@@ -36,8 +38,7 @@ class RewritesController < ApplicationController
 
   private
 
-    def rewrite_params
-      params.require(:rewrite).permit(:destination, :source)
-    end
-  
+  def rewrite_params
+    params.require(:rewrite).permit(:destination, :source)
+  end
 end

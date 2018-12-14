@@ -13,7 +13,6 @@ require 'spec_helper'
 # we lose the whole default hash -- which is currently just start date. So if you passed { subtitle: "Hello" },
 # then your instance wouldn't have a start date.
 describe Api::V3::EventInstancesController, :type => :controller do
-
   describe 'GET show' do
     before do
       @event = FactoryGirl.create(:event)
@@ -32,7 +31,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
     it 'check comment_count' do
       comment_count = @inst.event.comment_count
       subject
-      inst=JSON.parse(@response.body)
+      inst = JSON.parse(@response.body)
       expect(inst["event_instance"]["comment_count"]).to eq(comment_count)
     end
 
@@ -41,13 +40,13 @@ describe Api::V3::EventInstancesController, :type => :controller do
         get :show, format: :json, params: { id: 9009 }
         expect(response.status).to eql 404
         expect(response.headers['Content-Type']).to include 'application/json'
-        expect(JSON.parse(response.body)).to match({"error" => an_instance_of(String)})
+        expect(JSON.parse(response.body)).to match({ "error" => an_instance_of(String) })
       end
     end
 
     describe 'ical_url' do
       before { allow(Figaro.env).to receive(:default_consumer_host).and_return("test.com") }
-        
+
       it 'response should include ical url' do
         get :show, format: :json, params: { id: @inst.id }
         expect(JSON.parse(@response.body)['event_instance']['ical_url']).to eq "http://#{Figaro.env.default_consumer_host}/#{event_instances_ics_path(@inst.id)}"
@@ -113,9 +112,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
         end
       end
 
-
       describe "meta[:total]" do
-
         subject { get :index }
 
         it "returns total event instances matching search criteria" do
@@ -130,13 +127,13 @@ describe Api::V3::EventInstancesController, :type => :controller do
       let(:location_1) { FactoryGirl.create :location }
       let!(:event_location_1) {
         FactoryGirl.create :content, :event,
-          location_id: location_1.id
+                           location_id: location_1.id
       }
 
       let(:location_2) { FactoryGirl.create :location }
       let!(:event_location_2) {
         FactoryGirl.create :content, :event,
-          location_id: location_1.id
+                           location_id: location_1.id
       }
 
       context 'location_id is not specified' do
@@ -164,7 +161,5 @@ describe Api::V3::EventInstancesController, :type => :controller do
         end
       end
     end
-
   end
-
 end

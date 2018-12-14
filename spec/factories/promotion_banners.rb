@@ -77,6 +77,5 @@ FactoryGirl.define do
       e.promotion.content = evaluator.content if evaluator.content.present?
       e.promotion.created_by = evaluator.created_by if evaluator.created_by.present?
     end
-
   end
 end

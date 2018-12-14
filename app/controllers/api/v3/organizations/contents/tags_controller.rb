@@ -19,11 +19,10 @@ module Api
 
       private
 
-        def find_content_and_organization
-          @organization = Organization.find(params[:organization_id])
-          @content = Content.find(params[:content_id])
-        end
-
+      def find_content_and_organization
+        @organization = Organization.find(params[:organization_id])
+        @content = Content.find(params[:content_id])
+      end
     end
   end
 end

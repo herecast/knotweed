@@ -34,9 +34,8 @@
 require 'rails_helper'
 
 RSpec.describe Subscription, type: :model do
-
-  it { is_expected.to belong_to(:user)}
-  it { is_expected.to belong_to(:listserv)}
+  it { is_expected.to belong_to(:user) }
+  it { is_expected.to belong_to(:listserv) }
   it { is_expected.to have_db_column(:name) }
 
   it { is_expected.to have_db_column(:confirm_ip).of_type(:string) }
@@ -47,9 +46,11 @@ RSpec.describe Subscription, type: :model do
     subject { FactoryGirl.build :subscription }
 
     it { is_expected.to validate_presence_of(:email) }
-    it { is_expected.to validate_uniqueness_of(:email)\
-                          .scoped_to(:listserv_id)\
-                          .case_insensitive }
+    it {
+      is_expected.to validate_uniqueness_of(:email)\
+        .scoped_to(:listserv_id)\
+        .case_insensitive
+    }
     it { is_expected.to validate_presence_of(:listserv) }
 
     context 'when confirmed' do
@@ -89,7 +90,6 @@ RSpec.describe Subscription, type: :model do
       expect(val).to be true
     end
   end
-
 
   describe '#key' do
     subject { FactoryGirl.create :subscription }
@@ -136,5 +136,4 @@ RSpec.describe Subscription, type: :model do
       end
     end
   end
-
 end

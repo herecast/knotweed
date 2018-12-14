@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::V3::BusinessLocationsController, :type => :controller do
-
   describe 'GET location' do
     let(:biz_location) do
       FactoryGirl.create :business_location
@@ -25,12 +24,12 @@ describe Api::V3::BusinessLocationsController, :type => :controller do
       it 'returns a json representation of location' do
         subject
         expect(response.body).to include_json({
-          location: {
-            id: location.id,
-            city: location.city,
-            state: location.state
-          }
-        })
+                                                location: {
+                                                  id: location.id,
+                                                  city: location.city,
+                                                  state: location.state
+                                                }
+                                              })
       end
     end
 

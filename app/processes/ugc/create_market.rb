@@ -21,81 +21,78 @@ module Ugc
 
     private
 
-      def market_post_params
-        new_params = @params.dup
-        attributes = additional_create_attributes
-        new_params[:content] = new_params[:content].merge(attributes)
+    def market_post_params
+      new_params = @params.dup
+      attributes = additional_create_attributes
+      new_params[:content] = new_params[:content].merge(attributes)
 
-        new_params.require(:content).permit(
-          :contact_email,
-          :contact_phone,
-          :contact_url,
-          :cost,
-          :latitude,
-          :longitude,
-          :locate_address,
-          :locate_include_name,
-          :locate_name,
-          :status,
-          :prefered_contact_method,
-          :sold,
-          content_attributes: [
-            :id,
-            :title,
-            :raw_content,
-            :biz_feed_public,
-            :authoremail,
-            :authors,
-            :content_category_id,
-            :pubdate,
-            :timestamp,
-            :organization_id,
-            :promote_radius,
-            :sunset_date,
-            :location_id,
-            :created_by,
-            :origin
-          ]
-        )
-      end
+      new_params.require(:content).permit(
+        :contact_email,
+        :contact_phone,
+        :contact_url,
+        :cost,
+        :latitude,
+        :longitude,
+        :locate_address,
+        :locate_include_name,
+        :locate_name,
+        :status,
+        :prefered_contact_method,
+        :sold,
+        content_attributes: [
+          :id,
+          :title,
+          :raw_content,
+          :biz_feed_public,
+          :authoremail,
+          :authors,
+          :content_category_id,
+          :pubdate,
+          :timestamp,
+          :organization_id,
+          :promote_radius,
+          :sunset_date,
+          :location_id,
+          :created_by,
+          :origin
+        ]
+      )
+    end
 
-      def additional_create_attributes
-        {
-          cost: @params[:content][:cost],
-          content_attributes: {
-            title: @params[:content][:title],
-            raw_content: @params[:content][:content],
-            biz_feed_public: @params[:content][:biz_feed_public],
-            authoremail: @current_user.try(:email),
-            authors: @current_user.try(:name),
-            content_category_id: market_category.id,
-            pubdate: Time.zone.now,
-            timestamp: Time.zone.now,
-            organization_id: @params[:content][:organization_id] || dailyuv_org.id,
-            location_id: @params[:content][:location_id],
-            created_by: @current_user,
-            origin: Content::UGC_ORIGIN
-          }
+    def additional_create_attributes
+      {
+        cost: @params[:content][:cost],
+        content_attributes: {
+          title: @params[:content][:title],
+          raw_content: @params[:content][:content],
+          biz_feed_public: @params[:content][:biz_feed_public],
+          authoremail: @current_user.try(:email),
+          authors: @current_user.try(:name),
+          content_category_id: market_category.id,
+          pubdate: Time.zone.now,
+          timestamp: Time.zone.now,
+          organization_id: @params[:content][:organization_id] || dailyuv_org.id,
+          location_id: @params[:content][:location_id],
+          created_by: @current_user,
+          origin: Content::UGC_ORIGIN
         }
+      }
+    end
+
+    def market_category
+      ContentCategory.find_or_create_by(name: 'market')
+    end
+
+    def dailyuv_org
+      Organization.find_or_create_by(name: 'From DailyUV')
+    end
+
+    def conditionally_schedule_outreach_email
+      if @current_user.contents.market_posts.count == 1
+        BackgroundJob.perform_later('Outreach::CreateUserHookCampaign', 'call',
+                                    user: @current_user,
+                                    action: 'initial_market_post')
       end
-
-      def market_category
-        ContentCategory.find_or_create_by(name: 'market')
-      end
-
-      def dailyuv_org
-        Organization.find_or_create_by(name: 'From DailyUV')
-      end
-
-
-      def conditionally_schedule_outreach_email
-        if @current_user.contents.market_posts.count == 1
-          BackgroundJob.perform_later('Outreach::CreateUserHookCampaign', 'call',
-            user: @current_user,
-            action: 'initial_market_post'
-          )
-        end
-      end
-
+    end
   end
 end

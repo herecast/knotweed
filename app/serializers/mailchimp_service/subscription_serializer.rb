@@ -1,8 +1,8 @@
 class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
   root false
   attributes :email_type, :status, :ip_signup, :timestamp_signup, :ip_opt,
-    :timestamp_opt, :email_address, :status_if_new, :location,:merge_fields,
-    :interests
+             :timestamp_opt, :email_address, :status_if_new, :location, :merge_fields,
+             :interests
 
   def status
     object.confirmed? ? 'subscribed' : 'pending'
@@ -70,7 +70,7 @@ class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
     unless (object.user &&
         object.user.location &&
         object.user.location.geocoded?)
-      keys  = keys - [:location]
+      keys = keys - [:location]
     end
 
     keys

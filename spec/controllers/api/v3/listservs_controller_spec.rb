@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::V3::ListservsController, :type => :controller do
-
   describe 'GET index' do
     before do
       FactoryGirl.create :listserv
@@ -20,7 +19,5 @@ describe Api::V3::ListservsController, :type => :controller do
       subject
       expect(assigns(:listservs).count).to eq 2
     end
-
   end
-
 end

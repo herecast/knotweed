@@ -51,7 +51,7 @@ RSpec.describe 'Organizations Endpoints', type: :request do
     context 'with claimed business_profile' do
       let!(:business_profile) { FactoryGirl.create :business_profile, :claimed, id: 100 }
       before do
-        business_profile.content.organization= organization
+        business_profile.content.organization = organization
         business_profile.content.save!
       end
 
@@ -68,7 +68,7 @@ RSpec.describe 'Organizations Endpoints', type: :request do
     context "when organization is archived" do
       before do
         @archived_org = FactoryGirl.create :organization,
-          archived: true
+                                           archived: true
       end
 
       subject { get "/api/v3/organizations/#{@archived_org.id}" }
@@ -107,7 +107,6 @@ RSpec.describe 'Organizations Endpoints', type: :request do
   end
 
   describe 'GET /api/v3/organizations' do
-
     describe 'can_edit' do
       let!(:organization1) { FactoryGirl.create :organization }
       subject { response_json[:organizations][0][:can_edit] }
@@ -171,8 +170,8 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           @social = FactoryGirl.create :organization, certified_social: true
           @storyteller = FactoryGirl.create :organization, certified_storyteller: true
           @non_certified = FactoryGirl.create :organization,
-            certified_social: false,
-            certified_storyteller: false
+                                              certified_social: false,
+                                              certified_storyteller: false
         end
 
         subject { get '/api/v3/organizations?certified_social=true&certified_storyteller=true' }
@@ -204,20 +203,20 @@ RSpec.describe 'Organizations Endpoints', type: :request do
       end
 
       it 'updates' do
-        expect{
+        expect {
           patch "/api/v3/organizations/#{organization.id}",
-            params: { organization: valid_params },
-            headers: auth_headers
-        }.to change{
-            organization.reload.attributes.symbolize_keys.slice(
+                params: { organization: valid_params },
+                headers: auth_headers
+        }.to change {
+          organization.reload.attributes.symbolize_keys.slice(
             :name, :subscribe_url,
             :description
           )
         }.to({
-          name: valid_params[:name],
-          subscribe_url: valid_params[:subscribe_url],
-          description: valid_params[:description]
-        })
+               name: valid_params[:name],
+               subscribe_url: valid_params[:subscribe_url],
+               description: valid_params[:description]
+             })
       end
     end
   end
@@ -225,30 +224,30 @@ RSpec.describe 'Organizations Endpoints', type: :request do
   describe 'GET /api/v3/organizations/sitemap_ids' do
     let!(:org_biz) {
       FactoryGirl.create :organization,
-        org_type: 'Business',
-        biz_feed_active: true
+                         org_type: 'Business',
+                         biz_feed_active: true
     }
     let!(:org_publisher) {
       FactoryGirl.create :organization,
-        org_type: 'Publisher',
-        can_publish_news: true
+                         org_type: 'Publisher',
+                         can_publish_news: true
     }
     let!(:org_blog) {
       FactoryGirl.create :organization,
-        org_type: 'Blog',
-        can_publish_news: true
+                         org_type: 'Blog',
+                         can_publish_news: true
     }
     let!(:org_publication) {
       FactoryGirl.create :organization,
-        org_type: 'Publication',
-        can_publish_news: true
+                         org_type: 'Publication',
+                         can_publish_news: true
     }
     let!(:org_listserv) {
       FactoryGirl.create :organization,
-        id: Organization::LISTSERV_ORG_ID,
-        org_type: 'Publisher',
-        biz_feed_active: true,
-        can_publish_news: true
+                         id: Organization::LISTSERV_ORG_ID,
+                         org_type: 'Publisher',
+                         biz_feed_active: true,
+                         can_publish_news: true
     }
 
     subject do
@@ -271,7 +270,7 @@ RSpec.describe 'Organizations Endpoints', type: :request do
 
     it 'does not include publishing organizations with can_publish_news=false' do
       publisher_orgs = [org_publisher, org_blog, org_publication]
-      publisher_orgs.each {|org| org.update can_publish_news: false}
+      publisher_orgs.each { |org| org.update can_publish_news: false }
 
       expect(subject[:organization_ids]).to_not include *publisher_orgs.map(&:id)
     end

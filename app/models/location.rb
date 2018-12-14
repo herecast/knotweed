@@ -26,7 +26,7 @@
 require 'geocoder/stores/active_record'
 
 class Location < ActiveRecord::Base
-  include Geocoder::Store::ActiveRecord #include query helpers
+  include Geocoder::Store::ActiveRecord # include query helpers
 
   def self.geocoder_options
     {
@@ -42,9 +42,8 @@ class Location < ActiveRecord::Base
   # coordinates for the center of the upper valley
   DEFAULT_LOCATION_COORDS = [43.645, -72.243]
 
-
   validates :slug, uniqueness: true
-  validates :state, length: {is: 2}, if: :state?
+  validates :state, length: { is: 2 }, if: :state?
 
   has_many :organization_locations
   has_many :organizations, through: :organization_locations
@@ -69,11 +68,11 @@ class Location < ActiveRecord::Base
   }
 
   searchkick callbacks: :async,
-    index_prefix: Figaro.env.stack_name,
-    batch_size: 1000,
-    locations: ["location"],
-    match: :word_start,
-    searchable: [:city, :state, :zip]
+             index_prefix: Figaro.env.stack_name,
+             batch_size: 1000,
+             locations: ["location"],
+             match: :word_start,
+             searchable: [:city, :state, :zip]
 
   def search_data
     {
@@ -111,7 +110,7 @@ class Location < ActiveRecord::Base
   end
 
   def coordinates=coords
-    self.latitude,self.longitude = coords
+    self.latitude, self.longitude = coords
   end
 
   def coordinates
@@ -133,7 +132,7 @@ class Location < ActiveRecord::Base
       latitude: latitude,
       longitude: longitude
     )\
-    .order('distance ASC')
+      .order('distance ASC')
   end
 
   def self.nearest_to_ip ip
@@ -158,25 +157,25 @@ class Location < ActiveRecord::Base
     end
   end
 
-  #though the HABTM relationship allows for many listservs, in reality
-  #each location will only have one listserv
+  # though the HABTM relationship allows for many listservs, in reality
+  # each location will only have one listserv
   def listserv
     self.listservs.first
   end
 
   # queries ElasticSearch index and returns the closest num locations
-  def closest(num=8)
-    opts =  {
+  def closest(num = 8)
+    opts = {
       order: {
-          _geo_distance: {
-            'location' => "#{latitude},#{longitude}",
-            'order' => 'asc',
-            'unit' => 'mi'
+        _geo_distance: {
+          'location' => "#{latitude},#{longitude}",
+          'order' => 'asc',
+          'unit' => 'mi'
         }
       },
       limit: num,
       where: {
-          id: { not: self.id }
+        id: { not: self.id }
       }
     }
     Location.search('*', opts).results
@@ -195,6 +194,6 @@ class Location < ActiveRecord::Base
   end
 
   def build_slug
-    self.slug= "#{city} #{state}".parameterize
+    self.slug = "#{city} #{state}".parameterize
   end
 end

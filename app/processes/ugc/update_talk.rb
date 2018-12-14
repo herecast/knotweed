@@ -17,19 +17,19 @@ module Ugc
     end
 
     protected
-      def talk_update_params
-        new_params = ActionController::Parameters.new(
-          content: @params[:content]
-        )
-        new_params[:content][:raw_content] = new_params[:content].delete(:content)
-        new_params.require(:content).permit(
-          :title,
-          :biz_feed_public,
-          :raw_content,
-          :promote_radius,
-          :sunset_date
-        )
-      end
 
+    def talk_update_params
+      new_params = ActionController::Parameters.new(
+        content: @params[:content]
+      )
+      new_params[:content][:raw_content] = new_params[:content].delete(:content)
+      new_params.require(:content).permit(
+        :title,
+        :biz_feed_public,
+        :raw_content,
+        :promote_radius,
+        :sunset_date
+      )
+    end
   end
 end

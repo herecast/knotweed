@@ -11,15 +11,15 @@ RSpec.describe UpdateDigestMetrics do
   context 'Given a digest with campaign data on mailchimp' do
     let(:digest) {
       FactoryGirl.create :listserv_digest,
-        mc_campaign_id: 'kdsksd',
-        emails_sent: 0,
-        opens_total: 0,
-        link_clicks: {},
-        last_mc_report: nil,
-        promotion_ids: [
-          FactoryGirl.create(:promotion_banner, redirect_url: 'http://promoabc.test').promotion.id,
-          FactoryGirl.create(:promotion_banner, redirect_url: 'http://promo76.test').promotion.id
-        ]
+                         mc_campaign_id: 'kdsksd',
+                         emails_sent: 0,
+                         opens_total: 0,
+                         link_clicks: {},
+                         last_mc_report: nil,
+                         promotion_ids: [
+                           FactoryGirl.create(:promotion_banner, redirect_url: 'http://promoabc.test').promotion.id,
+                           FactoryGirl.create(:promotion_banner, redirect_url: 'http://promo76.test').promotion.id
+                         ]
     }
     let(:emails_sent) { 200 }
     let(:opens_total) { 186 }
@@ -33,46 +33,44 @@ RSpec.describe UpdateDigestMetrics do
     before do
       # first request (reports/campaign_id)
       stub_request(:get,
-        "https://#{mc_base_url}/reports/#{digest.mc_campaign_id}"
-      ).with(
-        basic_auth: auth,
-        headers: {
-          "Content-Type" => 'application/json',
-          "Accept" => 'application/json'
-        }
-      ).to_return(
-        status: 200,
-        headers: {
-          "Content-Type" => 'application/json',
-        },
-        body: {
-          emails_sent: emails_sent,
-          opens: {
-            opens_total: opens_total
-          }
-        }.to_json
-      )
+                   "https://#{mc_base_url}/reports/#{digest.mc_campaign_id}").with(
+                     basic_auth: auth,
+                     headers: {
+                       "Content-Type" => 'application/json',
+                       "Accept" => 'application/json'
+                     }
+                   ).to_return(
+                     status: 200,
+                     headers: {
+                       "Content-Type" => 'application/json',
+                     },
+                     body: {
+                       emails_sent: emails_sent,
+                       opens: {
+                         opens_total: opens_total
+                       }
+                     }.to_json
+                   )
 
       # second request (reports/campaign_id/click-details)
       stub_request(:get,
-        "https://#{mc_base_url}/reports/#{digest.mc_campaign_id}/click-details?count=20"
-      ).with(
-        basic_auth: auth,
-        headers: {
-          "Content-Type" => 'application/json',
-          "Accept" => 'application/json'
-        }
-      ).to_return(
-        status: 200,
-        headers: {
-          "Content-Type" => 'application/json',
-        },
-        body: {
-          urls_clicked: click_map.map do |url, clicks|
-            { url: url, total_clicks: clicks.to_i}
-          end
-        }.to_json
-      )
+                   "https://#{mc_base_url}/reports/#{digest.mc_campaign_id}/click-details?count=20").with(
+                     basic_auth: auth,
+                     headers: {
+                       "Content-Type" => 'application/json',
+                       "Accept" => 'application/json'
+                     }
+                   ).to_return(
+                     status: 200,
+                     headers: {
+                       "Content-Type" => 'application/json',
+                     },
+                     body: {
+                       urls_clicked: click_map.map do |url, clicks|
+                         { url: url, total_clicks: clicks.to_i }
+                       end
+                     }.to_json
+                   )
     end
 
     subject { described_class.call(digest) }

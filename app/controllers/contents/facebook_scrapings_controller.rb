@@ -1,5 +1,4 @@
 class Contents::FacebookScrapingsController < ApplicationController
-
   def create
     @content = Content.find(params[:content_id])
     BackgroundJob.perform_later('FacebookService', 'rescrape_url', @content)

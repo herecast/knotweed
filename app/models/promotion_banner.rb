@@ -41,17 +41,17 @@ class PromotionBanner < ActiveRecord::Base
   mount_uploader :banner_image, ImageUploader
   mount_uploader :coupon_image, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_banner_image,
-                                 :remove_previously_stored_coupon_image,
-                                 :remove_banner_image!,
-                                 :remove_coupon_image!, raise: false
+                :remove_previously_stored_coupon_image,
+                :remove_banner_image!,
+                :remove_coupon_image!, raise: false
 
   UPLOAD_ENDPOINT = "/statements"
 
   validates_presence_of :promotion, :campaign_start, :campaign_end
-  validates :max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: ->{ max_impressions.present? }
-  validates :daily_max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: ->{ daily_max_impressions.present? }
-  validates :cost_per_day, numericality: { greater_than: 0 }, if: ->{ cost_per_day.present? }
-  validates :cost_per_impression, numericality: { greater_than: 0 }, if: ->{ cost_per_impression.present? }
+  validates :max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: -> { max_impressions.present? }
+  validates :daily_max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: -> { daily_max_impressions.present? }
+  validates :cost_per_day, numericality: { greater_than: 0 }, if: -> { cost_per_day.present? }
+  validates :cost_per_impression, numericality: { greater_than: 0 }, if: -> { cost_per_impression.present? }
   validate :presence_of_banner_image_if_necessary
   validate :will_not_have_daily_and_per_impression_cost
   validate :if_coupon_must_have_coupon_image
@@ -59,34 +59,42 @@ class PromotionBanner < ActiveRecord::Base
   OVER_DELIVERY_PERCENTAGE = 0.15
 
   # returns currently active promotion banners
-  scope :active, ->(date=Date.current) { where("campaign_start <= ?", date)
-    .where("campaign_end >= ?", date) }
+  scope :active, ->(date = Date.current) {
+                   where("campaign_start <= ?", date)
+                     .where("campaign_end >= ?", date)
+                 }
 
   # this scope combines all conditions to determine whether a promotion banner is paid
   # NOTE: for now, we're just concerned with 'paid' and 'active' being true - will eventually
   # other conditions (campaign start/end, inventory)
-  scope :paid, -> { includes(:promotion)
-    .where('promotions.paid = ?', true).references(:promotion) }
+  scope :paid, -> {
+                 includes(:promotion)
+                   .where('promotions.paid = ?', true).references(:promotion)
+               }
 
- # this scope combines all conditions to determine whether a promotion banner has inventory
+  # this scope combines all conditions to determine whether a promotion banner has inventory
   # NOTE: we need the select clause or else the "joins" causes the scope to return
   # readonly records.
-  scope :has_inventory, -> { includes(:promotion)
-    .where('(impression_count < max_impressions OR max_impressions IS NULL)')
-    .where("(daily_impression_count < (daily_max_impressions + (daily_max_impressions * #{OVER_DELIVERY_PERCENTAGE})) OR daily_max_impressions IS NULL)")
-    .references(:promotion) }
+  scope :has_inventory, -> {
+                          includes(:promotion)
+                            .where('(impression_count < max_impressions OR max_impressions IS NULL)')
+                            .where("(daily_impression_count < (daily_max_impressions + (daily_max_impressions * #{OVER_DELIVERY_PERCENTAGE})) OR daily_max_impressions IS NULL)")
+                            .references(:promotion)
+                        }
 
- # this scope combines all conditions to determine whether a promotion banner is boosted
+  # this scope combines all conditions to determine whether a promotion banner is boosted
   # NOTE: we need the select clause or else the "joins" causes the scope to return
   # readonly records.
-  scope :boost, -> { includes(:promotion)
-    .where('boost = ?', true) }
+  scope :boost, -> {
+                  includes(:promotion)
+                    .where('boost = ?', true)
+                }
 
   # query promotion banners by content
   scope :for_content, lambda { |content_id| joins(:promotion).where('promotions.content_id = ?', content_id) }
 
   # query promotion banners by multiple promotion ids
-  scope :for_promotions, lambda { |promotion_ids| joins(:promotion).where(promotions: {:id =>  promotion_ids}) }
+  scope :for_promotions, lambda { |promotion_ids| joins(:promotion).where(promotions: { :id => promotion_ids }) }
 
   RUN_OF_SITE = "ROS"
   SPONSORED = "Sponsored"
@@ -136,11 +144,11 @@ class PromotionBanner < ActiveRecord::Base
     active? && has_inventory?
   end
 
-  def current_daily_report(current_date=Date.current)
+  def current_daily_report(current_date = Date.current)
     promotion_banner_reports.where("report_date >= ?", current_date).take
   end
 
-  def find_or_create_daily_report(current_date=Date.current)
+  def find_or_create_daily_report(current_date = Date.current)
     current_daily_report(current_date) || promotion_banner_reports.create!(report_date: current_date)
   end
 
@@ -164,36 +172,35 @@ class PromotionBanner < ActiveRecord::Base
 
   private
 
-    def will_not_have_daily_and_per_impression_cost
-      if cost_per_impression.present? && cost_per_day.present?
-        errors.add(:cost_per_impression, 'cannot have cost_per_impression when cost_per_day is present')
+  def will_not_have_daily_and_per_impression_cost
+    if cost_per_impression.present? && cost_per_day.present?
+      errors.add(:cost_per_impression, 'cannot have cost_per_impression when cost_per_day is present')
+    end
+  end
+
+  def if_coupon_must_have_coupon_image
+    if promotion_type == COUPON && coupon_image.file.blank?
+      errors.add(:coupon_image, 'type coupon must have coupon image')
+    end
+  end
+
+  def presence_of_banner_image_if_necessary
+    unless [PROMOTION_SERVICES, PROFILE_PAGE].include?(promotion_type)
+      unless banner_image.present?
+        errors.add(:banner_image, 'creative must have banner image')
       end
     end
+  end
 
-    def if_coupon_must_have_coupon_image
-      if promotion_type == COUPON && coupon_image.file.blank?
-        errors.add(:coupon_image, 'type coupon must have coupon image')
-      end
-    end
+  def total_daily_allowable_impressions
+    daily_max_impressions + (daily_max_impressions * OVER_DELIVERY_PERCENTAGE)
+  end
 
-    def presence_of_banner_image_if_necessary
-      unless [PROMOTION_SERVICES, PROFILE_PAGE].include?(promotion_type)
-        unless banner_image.present?
-          errors.add(:banner_image, 'creative must have banner image')
-        end
-      end
-    end
+  def has_daily_impressions_left?
+    daily_max_impressions.present? ? daily_impression_count < total_daily_allowable_impressions : true
+  end
 
-    def total_daily_allowable_impressions
-      daily_max_impressions + (daily_max_impressions * OVER_DELIVERY_PERCENTAGE)
-    end
-
-    def has_daily_impressions_left?
-      daily_max_impressions.present? ? daily_impression_count < total_daily_allowable_impressions : true
-    end
-
-    def has_total_impressions_left?
-      max_impressions.present? ? impression_count < max_impressions : true
-    end
-
+  def has_total_impressions_left?
+    max_impressions.present? ? impression_count < max_impressions : true
+  end
 end

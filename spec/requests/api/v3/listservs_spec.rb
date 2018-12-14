@@ -17,15 +17,15 @@ RSpec.describe 'Listserv API Endpoints', type: :request do
         inactive_listserv = Listserv.last
         inactive_listserv.update_attribute(:active, false)
         get '/api/v3/listservs'
-        returned_ids = response_json[:listservs].collect{|l| l[:id]}
+        returned_ids = response_json[:listservs].collect { |l| l[:id] }
         expect(returned_ids).not_to include inactive_listserv.id
       end
 
       context 'given ids[]= parameter' do
         it 'returns the specified listservs' do
-          subset = listservs.slice(0,2)
+          subset = listservs.slice(0, 2)
           get '/api/v3/listservs', params: { ids: subset.collect(&:id) }
-          returned_ids = response_json[:listservs].collect{|l| l[:id]}
+          returned_ids = response_json[:listservs].collect { |l| l[:id] }
           expect(returned_ids).to match_array subset.collect(&:id)
         end
       end
@@ -39,11 +39,11 @@ RSpec.describe 'Listserv API Endpoints', type: :request do
       it 'returns the listserv' do
         get "/api/v3/listservs/#{listserv.id}"
         expect(response_json[:listserv]).to match({
-          id: listserv.id,
-          name: listserv.name,
-          next_digest_send_time: listserv.next_digest_send_time.try(:iso8601),
-          digest_send_time: listserv.digest_send_time
-        })
+                                                    id: listserv.id,
+                                                    name: listserv.name,
+                                                    next_digest_send_time: listserv.next_digest_send_time.try(:iso8601),
+                                                    digest_send_time: listserv.digest_send_time
+                                                  })
       end
     end
 

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::V3::LocationsController, :type => :controller do
-
   describe 'GET index', elasticsearch: true do
     before do
       FactoryGirl.create_list :location, 3, consumer_active: false
@@ -26,7 +25,7 @@ describe Api::V3::LocationsController, :type => :controller do
         FactoryGirl.create :location, city: 'Upper Valley', state: 'VT', consumer_active: true
       end
 
-      it "does not include the location named 'Upper Valley' "do
+      it "does not include the location named 'Upper Valley' " do
         subject
         expect(assigns(:locations).select { |l| l.name.match 'Upper Valley' }.size).to eq(0)
       end
@@ -50,8 +49,10 @@ describe Api::V3::LocationsController, :type => :controller do
 
   describe 'GET closest', elasticsearch: true do
     let(:location) { FactoryGirl.create :location, consumer_active: true }
-    let(:inactive_location) { FactoryGirl.create :location, consumer_active: false, latitude: location.latitude,
-      longitude: location.longitude }
+    let(:inactive_location) {
+      FactoryGirl.create :location, consumer_active: false, latitude: location.latitude,
+                                    longitude: location.longitude
+    }
     let(:count) { 5 }
 
     before do
@@ -94,21 +95,21 @@ describe Api::V3::LocationsController, :type => :controller do
     context 'When nearest location is not consumer_active = true' do
       let!(:nearest) {
         FactoryGirl.create :location,
-          consumer_active: false,
-          latitude: 0.5,
-          longitude: 0.5
+                           consumer_active: false,
+                           latitude: 0.5,
+                           longitude: 0.5
       }
       let!(:nearest_active) {
         FactoryGirl.create :location,
-          consumer_active: true,
-          latitude: 0.8,
-          longitude: 0.8
+                           consumer_active: true,
+                           latitude: 0.8,
+                           longitude: 0.8
       }
       let!(:furthest) {
         FactoryGirl.create :location,
-          consumer_active: true,
-          latitude: 1.2,
-          longitude: 1.2
+                           consumer_active: true,
+                           latitude: 1.2,
+                           longitude: 1.2
       }
 
       subject {

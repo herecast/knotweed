@@ -68,27 +68,28 @@ describe 'Promotion Banner Endpoints', type: :request do
         get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {}, headers: auth_headers
 
         view_counts = response_json[:promotion_banner_metrics][:daily_impression_counts]
-        report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
+        report_dates = view_counts.map { |v| DateTime.parse(v[:report_date]).to_date }
         sorted_dates = report_dates.sort
         expect(report_dates).to eql sorted_dates
       end
 
       context 'with empty string dates' do
-          subject { get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {
+        subject {
+          get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {
             start_date: " ", end_date: " "
-          }, headers: auth_headers }
+          }, headers: auth_headers
+        }
 
-          it 'should return all daily_impression_counts' do
-            subject
-            expect(response_json[:promotion_banner_metrics][:daily_impression_counts].count).to eql promotion_banner.promotion_banner_reports.count
-          end
+        it 'should return all daily_impression_counts' do
+          subject
+          expect(response_json[:promotion_banner_metrics][:daily_impression_counts].count).to eql promotion_banner.promotion_banner_reports.count
+        end
 
-          it 'should return all daily_click_counts' do
-            subject
-            expect(response_json[:promotion_banner_metrics][:daily_click_counts].count).to eql promotion_banner.promotion_banner_reports.count
-          end
+        it 'should return all daily_click_counts' do
+          subject
+          expect(response_json[:promotion_banner_metrics][:daily_click_counts].count).to eql promotion_banner.promotion_banner_reports.count
+        end
       end
-
 
       context 'given a start_date parameter' do
         let(:start_date) { 25.days.ago.to_date }
@@ -98,8 +99,8 @@ describe 'Promotion Banner Endpoints', type: :request do
             start_date: start_date.to_date.to_s
           }, headers: auth_headers
           view_counts = response_json[:promotion_banner_metrics][:daily_impression_counts]
-          report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
-          expect(report_dates).to satisfy{|dates| dates.all?{|d| d >= start_date}}
+          report_dates = view_counts.map { |v| DateTime.parse(v[:report_date]).to_date }
+          expect(report_dates).to satisfy { |dates| dates.all? { |d| d >= start_date } }
         end
 
         it 'returns daily_click_counts on or after the start_date' do
@@ -107,8 +108,8 @@ describe 'Promotion Banner Endpoints', type: :request do
             start_date: start_date.to_date.to_s
           }, headers: auth_headers
           view_counts = response_json[:promotion_banner_metrics][:daily_click_counts]
-          report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
-          expect(report_dates).to satisfy{|dates| dates.all?{|d| d >= start_date}}
+          report_dates = view_counts.map { |v| DateTime.parse(v[:report_date]).to_date }
+          expect(report_dates).to satisfy { |dates| dates.all? { |d| d >= start_date } }
         end
 
         context 'given a end_date parameter' do
@@ -120,8 +121,8 @@ describe 'Promotion Banner Endpoints', type: :request do
               end_date: end_date.to_date.to_s
             }, headers: auth_headers
             view_counts = response_json[:promotion_banner_metrics][:daily_impression_counts]
-            report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
-            expect(report_dates).to satisfy{|dates| dates.all?{|d| d.between?(start_date, end_date)}}
+            report_dates = view_counts.map { |v| DateTime.parse(v[:report_date]).to_date }
+            expect(report_dates).to satisfy { |dates| dates.all? { |d| d.between?(start_date, end_date) } }
           end
 
           it 'returns daily_click_counts between start_date and end_date' do
@@ -130,8 +131,8 @@ describe 'Promotion Banner Endpoints', type: :request do
               end_date: end_date.to_date.to_s
             }, headers: auth_headers
             view_counts = response_json[:promotion_banner_metrics][:daily_click_counts]
-            report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
-            expect(report_dates).to satisfy{|dates| dates.all?{|d| d.between?(start_date, end_date)}}
+            report_dates = view_counts.map { |v| DateTime.parse(v[:report_date]).to_date }
+            expect(report_dates).to satisfy { |dates| dates.all? { |d| d.between?(start_date, end_date) } }
           end
         end
       end
@@ -151,16 +152,15 @@ describe 'Promotion Banner Endpoints', type: :request do
       it 'returns promotion json' do
         subject
         expect(response_json[:promotions].first).to match({
-            id: banner.id,
-            image_url: banner.banner_image.url,
-            redirect_url: banner.redirect_url,
-            organization_name: an_instance_of(String),
-            promotion_id: promo.id,
-            title: promo.content.title,
-            select_score: be_an_instance_of(Float).or(be_nil),
-            select_method: "sponsored_content"
-          }
-        )
+                                                            id: banner.id,
+                                                            image_url: banner.banner_image.url,
+                                                            redirect_url: banner.redirect_url,
+                                                            organization_name: an_instance_of(String),
+                                                            promotion_id: promo.id,
+                                                            title: promo.content.title,
+                                                            select_score: be_an_instance_of(Float).or(be_nil),
+                                                            select_method: "sponsored_content"
+                                                          })
       end
     end
 
@@ -215,8 +215,8 @@ describe 'Promotion Banner Endpoints', type: :request do
     context "when promotion_banner is type: coupon" do
       before do
         @promotion_coupon = FactoryGirl.create :promotion_banner,
-          promotion_type: 'Coupon',
-          coupon_image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
+                                               promotion_type: 'Coupon',
+                                               coupon_image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
       end
 
       subject { get "/api/v3/promotions/#{@promotion_coupon.promotion.id}" }
@@ -227,5 +227,4 @@ describe 'Promotion Banner Endpoints', type: :request do
       end
     end
   end
-
 end

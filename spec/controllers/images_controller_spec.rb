@@ -7,7 +7,6 @@ describe ImagesController, type: :controller do
   end
 
   describe 'POST #create' do
-
     subject { post :create, params: { image: { image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg')) } }, format: 'js' }
 
     it "should respond with 200 status code" do
@@ -25,7 +24,7 @@ describe ImagesController, type: :controller do
     subject { delete :destroy, params: { id: @image.id }, format: 'js' }
 
     it "deletes the image" do
-      expect{ subject }.to change{ Image.count }.by -1
+      expect { subject }.to change { Image.count }.by -1
       expect(response.code).to eq '200'
     end
   end

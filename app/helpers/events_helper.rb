@@ -1,5 +1,4 @@
 module EventsHelper
-
   def  cost_label(event_instance)
     if event_instance.cost.present? && event_instance.cost_type.present?
       "#{event_instance.cost_type} - #{event_instance.cost}"
@@ -34,13 +33,13 @@ module EventsHelper
       subtitle = ' - ' + schedule.subtitle_override
     end
     schedule = schedule.schedule
-    return "","" unless schedule.next_occurrence.present?
+    return "", "" unless schedule.next_occurrence.present?
+
     event_date = schedule.next_occurrence.strftime("%b %-d, %Y")
     time_range = schedule.start_time.strftime("%-l:%M %P")
     time_range += " - " + schedule.end_time.strftime("%-l:%M %P") if schedule.end_time.present?
     return event_date.to_s + '  ' + time_range + subtitle, 'Repeats ' + schedule.to_s
   end
-
 
   # converts a timestamp to a human readable string
   #
@@ -71,5 +70,4 @@ module EventsHelper
     display_string += event.event_url + ', ' if event.event_url.present?
     display_string.chomp!(', ')
   end
-
 end

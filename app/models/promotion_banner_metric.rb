@@ -41,8 +41,7 @@ class PromotionBannerMetric < ActiveRecord::Base
     where(
       created_at: period_start.beginning_of_day..period_end.end_of_day,
       event_type: 'impression'
-    ).
-    where('content_id IS NOT NULL')
+    )
+      .where('content_id IS NOT NULL')
   }
-
 end

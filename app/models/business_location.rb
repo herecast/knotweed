@@ -35,7 +35,7 @@ class BusinessLocation < ActiveRecord::Base
   include Auditable
 
   searchkick callbacks: :async, batch_size: 5000, index_prefix: Figaro.env.searchkick_index_prefix,
-    match: :word_start, searchable: [:name, :city, :state]
+             match: :word_start, searchable: [:name, :city, :state]
 
   def search_data
     {
@@ -50,7 +50,6 @@ class BusinessLocation < ActiveRecord::Base
   scope :search_import, -> {
     includes(:created_by)
   }
-
 
   belongs_to :organization
   has_many :events, foreign_key: 'venue_id'
@@ -79,7 +78,7 @@ class BusinessLocation < ActiveRecord::Base
     end
   end
 
-  after_validation :geocode, if: ->(obj){ obj.address.present? and (obj.saved_change_to_address? or obj.saved_change_to_name? or obj.saved_change_to_locate_include_name?)}
+  after_validation :geocode, if: ->(obj) { obj.address.present? and (obj.saved_change_to_address? or obj.saved_change_to_name? or obj.saved_change_to_locate_include_name?) }
 
   def select_option_label
     label = name || ''
@@ -155,10 +154,9 @@ class BusinessLocation < ActiveRecord::Base
 
   private
 
-    def state_length_if_present
-      if state.present? && state.length != 2
-        errors.add(:state, 'State must be two-letter abbreviation')
-      end
+  def state_length_if_present
+    if state.present? && state.length != 2
+      errors.add(:state, 'State must be two-letter abbreviation')
     end
-
+  end
 end

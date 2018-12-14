@@ -24,11 +24,10 @@
 #
 
 class BusinessProfile < ActiveRecord::Base
-
   searchkick locations: ['location'], callbacks: :async, batch_size: 1000,
-    index_prefix: Figaro.env.searchkick_index_prefix, match: :word_start,
-    searchable: [:category_names, :title, :content, :business_location_name,
-                 :business_location_city]
+             index_prefix: Figaro.env.searchkick_index_prefix, match: :word_start,
+             searchable: [:category_names, :title, :content, :business_location_name,
+                          :business_location_city]
 
   def search_data
     index = {
@@ -44,18 +43,18 @@ class BusinessProfile < ActiveRecord::Base
     }
     if content.present?
       index = index.merge({
-        title: content.title,
-        content: strip_tags(content.raw_content),
-        organization_id: content.organization_id
-      })
+                            title: content.title,
+                            content: strip_tags(content.raw_content),
+                            organization_id: content.organization_id
+                          })
     end
     if business_location.present?
       index = index.merge({
-        business_location_name: business_location.name,
-        business_location_city: business_location.city,
-        business_location_state: business_location.state,
-        location: { lat: business_location.latitude, lon: business_location.longitude }
-      })
+                            business_location_name: business_location.name,
+                            business_location_city: business_location.city,
+                            business_location_state: business_location.state,
+                            location: { lat: business_location.latitude, lon: business_location.longitude }
+                          })
     end
     index
   end
@@ -109,6 +108,7 @@ class BusinessProfile < ActiveRecord::Base
   end
 
   private
+
   # returns hash of aggregated feedbacks
   #
   # @return [Hash] average feedback values
@@ -129,19 +129,19 @@ class BusinessProfile < ActiveRecord::Base
   # @param format [String] the incoming data format
   #
   # @return hours [Array] array of strings representing the hour information
-  def self.convert_hours_to_standard(hours, format=nil)
+  def self.convert_hours_to_standard(hours, format = nil)
     output = hours.strip
     if format == 'factual'
       output.gsub!(/Mon|Tue|Wed|Thu|Fri|Sat|Sun|Open Daily/, {
-        'Mon' => 'Mo',
-        'Tue' => 'Tu',
-        'Wed' => 'We',
-        'Thu' => 'Th',
-        'Fri' => 'Fr',
-        'Sat' => 'Sa',
-        'Sun' => 'Su',
-        'Open Daily' => 'Mo-Su'
-      })
+                     'Mon' => 'Mo',
+                     'Tue' => 'Tu',
+                     'Wed' => 'We',
+                     'Thu' => 'Th',
+                     'Fri' => 'Fr',
+                     'Sat' => 'Sa',
+                     'Sun' => 'Su',
+                     'Open Daily' => 'Mo-Su'
+                   })
       # convert all "8:00" style hour definitions to "08:00"
       output.gsub!(/([ \-])(\d:\d{2})/, "\\10\\2")
 
@@ -168,7 +168,7 @@ class BusinessProfile < ActiveRecord::Base
       end
 
       # change day-time space divider to '|'
-      output.map!{|o| o.gsub(' ', '|')}
+      output.map! { |o| o.gsub(' ', '|') }
     end
     output
   end

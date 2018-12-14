@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 # == Schema Information
 #
 # Table name: contents
@@ -115,20 +116,20 @@ class Content < ActiveRecord::Base
   end
 
   searchkick callbacks: :async,
-    batch_size: 750,
-    index_prefix: Figaro.env.searchkick_index_prefix,
-    searchable: [:content, :title, :subtitle, :author_name, :organization_name],
-    settings: {
-      analysis: {
-        analyzer: {
-          #@TODO! This changes in newer searchkick versions.
-          #see: https://github.com/ankane/searchkick/blob/master/lib/searchkick/index_options.rb
-          searchkick_index: {
-            :char_filter=>["html_strip", "ampersand"]
-          }
-        }
-      }
-    }
+             batch_size: 750,
+             index_prefix: Figaro.env.searchkick_index_prefix,
+             searchable: [:content, :title, :subtitle, :author_name, :organization_name],
+             settings: {
+               analysis: {
+                 analyzer: {
+                   # @TODO! This changes in newer searchkick versions.
+                   # see: https://github.com/ankane/searchkick/blob/master/lib/searchkick/index_options.rb
+                   searchkick_index: {
+                     :char_filter => ["html_strip", "ampersand"]
+                   }
+                 }
+               }
+             }
 
   scope :search_import, -> {
     includes(:root_content_category,
@@ -180,9 +181,9 @@ class Content < ActiveRecord::Base
   has_many :profile_metrics, dependent: :destroy
 
   validate :if_ad_promotion_type_sponsored_must_have_ad_max_impressions
-  validates :ad_invoiced_amount, numericality: { greater_than: 0 }, if: ->{ ad_invoiced_amount.present? }
-  validates :ad_commission_amount, numericality: { greater_than: 0 }, if: ->{ ad_commission_amount.present? }
-  validates :ad_services_amount, numericality: { greater_than: 0 }, if: ->{ ad_services_amount.present? }
+  validates :ad_invoiced_amount, numericality: { greater_than: 0 }, if: -> { ad_invoiced_amount.present? }
+  validates :ad_commission_amount, numericality: { greater_than: 0 }, if: -> { ad_commission_amount.present? }
+  validates :ad_services_amount, numericality: { greater_than: 0 }, if: -> { ad_services_amount.present? }
 
   has_many :organization_content_tags, dependent: :destroy
   has_many :organizations, through: :organization_content_tags
@@ -242,8 +243,10 @@ class Content < ActiveRecord::Base
   belongs_to :market_post, foreign_key: 'channel_id'
   accepts_nested_attributes_for :market_post, allow_destroy: true
 
-  scope :events, -> { joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",
-                                                     "event", "sale_event") }
+  scope :events, -> {
+                   joins(:content_category).where("content_categories.name = ? or content_categories.name = ?",
+                                                  "event", "sale_event")
+                 }
   scope :market_posts, -> { where(channel_type: 'MarketPost') }
 
   scope :if_event_only_when_instances, -> {
@@ -263,11 +266,13 @@ class Content < ActiveRecord::Base
   scope :not_comment, -> { where(parent_id: nil) }
   scope :only_categories, ->(names) {
     joins("JOIN content_categories AS category ON root_content_category_id = category.id")\
-    .where("category.name IN (?)", names)
+      .where("category.name IN (?)", names)
   }
 
-  scope :ad_campaign_active, ->(date=Date.current) { where("ad_campaign_start <= ?", date)
-    .where("ad_campaign_end >= ?", date) }
+  scope :ad_campaign_active, ->(date = Date.current) {
+                               where("ad_campaign_start <= ?", date)
+                                 .where("ad_campaign_end >= ?", date)
+                             }
 
   UGC_ORIGIN = 'UGC'
 
@@ -425,14 +430,14 @@ class Content < ActiveRecord::Base
   # return thread of comment-type objects associated with self
   # NOTE: for simplicity, I'm ignoring tiers of comments here. We'll still return them...
   # but until told otherwise, this is the way we're doing it because it's much easier.
-  def get_comment_thread(tier=0)
+  def get_comment_thread(tier = 0)
     if children.present?
       comments = []
       children.order('pubdate ASC').each do |c|
         if c.channel_type == 'Comment'
           c.tier = tier
           comments += [c]
-          comments += c.get_comment_thread(tier+1)
+          comments += c.get_comment_thread(tier + 1)
         end
       end
       comments
@@ -441,8 +446,8 @@ class Content < ActiveRecord::Base
     end
   end
 
-  ################
-  # Not currently used.  Maybe in the future? if not, then remove
+################
+# Not currently used.  Maybe in the future? if not, then remove
 =begin
   def get_ordered_downstream_thread(tier=0)
     downstream_thread = []
@@ -507,11 +512,10 @@ class Content < ActiveRecord::Base
     clean_content = doc.to_html
 
     # strip all tags but <p>, <br> and <a> and their href attributes and clean up &nbsp; and &amp;
-    text = sanitize(clean_content, {tags: %w(a p br), attributes: %w(href)}).gsub(/&nbsp;/, ' ').gsub(/&amp;/,'&')
+    text = sanitize(clean_content, { tags: %w(a p br), attributes: %w(href) }).gsub(/&nbsp;/, ' ').gsub(/&amp;/, '&')
 
     # now convert all the p and br tags to newlines, then squeeze big sets (>3) of contiguous newlines down to just two.
-    text = text.gsub(/\<\/p\>\<p\>/,"\n").gsub(/\<p\>/,"\n").gsub(/\<br\>/,' ').gsub(/\<\/p\>/,"\n").squeeze("\n") #.gsub(/^\n{2,}/m,"\n\n") #.squeeze("\n")
-
+    text = text.gsub(/\<\/p\>\<p\>/, "\n").gsub(/\<p\>/, "\n").gsub(/\<br\>/, ' ').gsub(/\<\/p\>/, "\n").squeeze("\n") # .gsub(/^\n{2,}/m,"\n\n") #.squeeze("\n")
   end
 
   # Creates sanitized version of title - at this point, just stripping out listerv towns
@@ -580,7 +584,6 @@ class Content < ActiveRecord::Base
     CGI.escape(BASE_URI + "/#{id}")
   end
 
-
   def talk_comments
     children.where(root_content_category_id: [ContentCategory.find_by_name('discussion'), ContentCategory.find_by_name('talk_of_the_town').id])
   end
@@ -598,9 +601,10 @@ class Content < ActiveRecord::Base
     end
   end
 
-  #returns the URI path that matches UX2 for this content record
+  # returns the URI path that matches UX2 for this content record
   def ux2_uri
     return "" unless root_content_category.present?
+
     prefix = root_content_category.try(:name)
     # convert talk_of_the_town to talk
     prefix = 'talk' if prefix == 'talk_of_the_town'
@@ -652,11 +656,11 @@ class Content < ActiveRecord::Base
     root_content_category.try(:name) == 'news'
   end
 
-  def current_daily_report(current_date=Date.current)
+  def current_daily_report(current_date = Date.current)
     content_reports.where("report_date >= ?", current_date).take
   end
 
-  def find_or_create_daily_report(current_date=Date.current)
+  def find_or_create_daily_report(current_date = Date.current)
     current_daily_report(current_date) || content_reports.create!(report_date: current_date)
   end
 
@@ -701,7 +705,7 @@ class Content < ActiveRecord::Base
   end
 
   ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS = [
-    "Dev Testbed",        # For testing on an FE
+    "Dev Testbed", # For testing on an FE
   ]
 
   def outside_subscriber_notification_blast_radius?

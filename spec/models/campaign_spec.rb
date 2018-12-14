@@ -26,16 +26,16 @@
 require 'rails_helper'
 
 RSpec.describe Campaign, type: :model do
-  it{ is_expected.to have_db_column(:listserv_id).of_type(:integer) }
-  it{ is_expected.to have_db_column(:community_ids).of_type(:integer).with_options(array: true) }
-  it{ is_expected.to have_db_column(:promotion_ids).of_type(:integer) }
-  it{ is_expected.to have_db_column(:sponsored_by).of_type(:string) }
-  it{ is_expected.to have_db_column(:digest_query).of_type(:text) }
-  it{ is_expected.to have_db_column(:preheader).of_type(:string) }
-  it{ is_expected.to respond_to(:promotions_list, :promotions_list=) }
+  it { is_expected.to have_db_column(:listserv_id).of_type(:integer) }
+  it { is_expected.to have_db_column(:community_ids).of_type(:integer).with_options(array: true) }
+  it { is_expected.to have_db_column(:promotion_ids).of_type(:integer) }
+  it { is_expected.to have_db_column(:sponsored_by).of_type(:string) }
+  it { is_expected.to have_db_column(:digest_query).of_type(:text) }
+  it { is_expected.to have_db_column(:preheader).of_type(:string) }
+  it { is_expected.to respond_to(:promotions_list, :promotions_list=) }
 
-  it{ is_expected.to belong_to(:listserv) }
-  it{ is_expected.to have_db_column(:title).of_type(:string) }
+  it { is_expected.to belong_to(:listserv) }
+  it { is_expected.to have_db_column(:title).of_type(:string) }
 
   describe 'communities' do
     context 'assigned an array of locations' do
@@ -84,31 +84,31 @@ RSpec.describe Campaign, type: :model do
   context 'when given a promotion id' do
     let!(:promo_with_banner) {
       FactoryGirl.create :promotion,
-        promotable: FactoryGirl.create(:promotion_banner)
+                         promotable: FactoryGirl.create(:promotion_banner)
     }
 
     let!(:other_promo) {
       FactoryGirl.create :promotion,
-        promotable: FactoryGirl.create(:promotion_listserv)
+                         promotable: FactoryGirl.create(:promotion_listserv)
     }
 
     it 'checks existence of the promotion' do
       subject.promotion_ids = ['190380']
-      subject.valid? #trigger validation
+      subject.valid? # trigger validation
       expect(subject.errors).to have_key(:promotion_ids)
 
       subject.promotion_ids = [promo_with_banner.id]
-      subject.valid? #trigger validation
+      subject.valid? # trigger validation
       expect(subject.errors).to_not have_key(:promotion_id)
     end
 
     it 'requires promotion is tied to a PromotionBanner' do
       subject.promotion_ids = [other_promo.id]
-      subject.valid? #trigger validation
+      subject.valid? # trigger validation
       expect(subject.errors).to have_key(:promotion_ids)
 
       subject.promotion_ids = [promo_with_banner.id]
-      subject.valid? #trigger validation
+      subject.valid? # trigger validation
       expect(subject.errors).to_not have_key(:promotion_ids)
     end
   end
@@ -118,12 +118,12 @@ RSpec.describe Campaign, type: :model do
       let(:locations) { FactoryGirl.create_list :location, 2 }
       let!(:campaign1) {
         FactoryGirl.create :campaign,
-          communities: [locations.first]
+                           communities: [locations.first]
       }
       let!(:campaign2) {
         FactoryGirl.create :campaign,
-          listserv: campaign1.listserv,
-          communities: [locations.last]
+                           listserv: campaign1.listserv,
+                           communities: [locations.last]
       }
 
       it 'validates that community can\'t be assigned to multiple campaigns' do
@@ -137,5 +137,4 @@ RSpec.describe Campaign, type: :model do
       end
     end
   end
-
 end

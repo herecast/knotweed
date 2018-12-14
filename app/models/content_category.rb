@@ -23,5 +23,4 @@ class ContentCategory < ActiveRecord::Base
   def label
     name.try :titlecase
   end
-
 end

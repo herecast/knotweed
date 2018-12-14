@@ -29,7 +29,7 @@ class Promotion < ActiveRecord::Base
 
   belongs_to :promotable, polymorphic: true, inverse_of: :promotion
   delegate :banner_image, :redirect_url, :listserv, :sent_at, :banner_image?,
-    :boost, to: :promotable, prefix: true
+           :boost, to: :promotable, prefix: true
 
   # NOTE: this relationship is not identifying contents that it promotes,
   # but rather, contents that it is shown with on the consumer site.
@@ -48,7 +48,7 @@ class Promotion < ActiveRecord::Base
 
   UPLOAD_ENDPOINT = "/statements"
 
-  scope :shares, ->{ where('share_platform IS NOT NULL') }
+  scope :shares, -> { where('share_platform IS NOT NULL') }
 
   def promotable_attributes=(attributes)
     if PROMOTABLE_TYPES.include?(promotable_type)
@@ -60,5 +60,4 @@ class Promotion < ActiveRecord::Base
   def is_creative?
     promotable_type == 'PromotionBanner'
   end
-
 end

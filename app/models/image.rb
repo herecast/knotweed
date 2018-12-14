@@ -26,11 +26,11 @@ class Image < ActiveRecord::Base
   include Rails.application.routes.url_helpers
 
   belongs_to :imageable, polymorphic: true, inverse_of: :images,
-    touch: true
+                         touch: true
 
   mount_uploader :image, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_image,
-                                 :remove_image!, raise: false
+                :remove_image!, raise: false
 
   # validates_presence_of :image
   validates :image, :image_minimum_size => true
@@ -63,5 +63,4 @@ class Image < ActiveRecord::Base
     image_will_change! if val
     super
   end
-
 end

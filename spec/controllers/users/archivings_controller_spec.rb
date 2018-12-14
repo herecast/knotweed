@@ -17,7 +17,7 @@ describe Users::ArchivingsController, type: :controller do
     subject { post :create, params: { user_id: user.id } }
 
     it 'should update the user record as archived' do
-      expect{subject}.to change{user.reload.archived?}.to true
+      expect { subject }.to change { user.reload.archived? }.to true
     end
 
     context 'with new_content_owner passed' do

@@ -51,43 +51,44 @@ class ListservsController < ApplicationController
   end
 
   private
-    def set_listserv
-      @listserv = Listserv.find(params[:id])
-    end
 
-    def listserv_params
-      params.require(:listserv).permit(
-        :active,
-        :import_name,
-        :name,
-        :reverse_publish_email,
-        :subscribe_email,
-        :unsubscribe_email,
-        :post_email,
-        :digest_send_time,
-        :mc_list_id,
-        :mc_group_name,
-        :digest_header,
-        :digest_footer,
-        :send_digest,
-        :digest_reply_to,
-        :timezone,
-        :digest_description,
-        :digest_send_day,
-        :digest_query,
-        :template,
-        :sponsored_by,
-        :display_subscribe,
-        :digest_preheader,
-        :digest_subject,
-        :list_type,
-        :sender_name,
-        :admin_email,
-        :promotions_list,
-        :forwarding_email,
-        :forward_for_processing,
-        :post_threshold,
-        promotion_ids: []
-      )
-    end
+  def set_listserv
+    @listserv = Listserv.find(params[:id])
+  end
+
+  def listserv_params
+    params.require(:listserv).permit(
+      :active,
+      :import_name,
+      :name,
+      :reverse_publish_email,
+      :subscribe_email,
+      :unsubscribe_email,
+      :post_email,
+      :digest_send_time,
+      :mc_list_id,
+      :mc_group_name,
+      :digest_header,
+      :digest_footer,
+      :send_digest,
+      :digest_reply_to,
+      :timezone,
+      :digest_description,
+      :digest_send_day,
+      :digest_query,
+      :template,
+      :sponsored_by,
+      :display_subscribe,
+      :digest_preheader,
+      :digest_subject,
+      :list_type,
+      :sender_name,
+      :admin_email,
+      :promotions_list,
+      :forwarding_email,
+      :forward_for_processing,
+      :post_threshold,
+      promotion_ids: []
+    )
+  end
 end

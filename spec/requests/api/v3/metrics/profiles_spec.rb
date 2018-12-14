@@ -5,11 +5,10 @@ RSpec.describe 'Profile metrics' do
   let(:user_agent) { "AmigaVoyager/3.4.4 (MorphOS/PPC native)" }
   let(:location) { FactoryGirl.create :location, slug: 'newton-nh' }
 
-    before do
-      allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(remote_ip)
-      allow_any_instance_of(ActionDispatch::Request).to receive(:user_agent).and_return(user_agent)
-    end
-
+  before do
+    allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(remote_ip)
+    allow_any_instance_of(ActionDispatch::Request).to receive(:user_agent).and_return(user_agent)
+  end
 
   describe 'POST /api/v3/metrics/profiles/:organization_id/impressions' do
     let(:context_data) {
@@ -23,11 +22,11 @@ RSpec.describe 'Profile metrics' do
 
     subject {
       post "/api/v3/metrics/profiles/#{organization.id}/impressions",
-        params: context_data
+           params: context_data
     }
 
     it 'records profile metric impression' do
-      expect{subject}.to change{
+      expect { subject }.to change {
         ProfileMetric.count
       }.by(1)
 
@@ -64,11 +63,11 @@ RSpec.describe 'Profile metrics' do
 
     subject {
       post "/api/v3/metrics/profiles/#{organization.id}/clicks",
-        params: context_data
+           params: context_data
     }
 
     it 'records profile metric impression' do
-      expect{subject}.to change{
+      expect { subject }.to change {
         ProfileMetric.count
       }.by(1)
 
@@ -96,7 +95,7 @@ RSpec.describe 'Profile metrics' do
       end
 
       it 'does not record a profile metric impression' do
-        expect{subject}.to_not change{ProfileMetric.count}
+        expect { subject }.to_not change { ProfileMetric.count }
       end
     end
 
@@ -109,10 +108,10 @@ RSpec.describe 'Profile metrics' do
       end
 
       it 'does not record a profile metric impression' do
-        expect{subject}.to_not change{ProfileMetric.count}
+        expect { subject }.to_not change { ProfileMetric.count }
       end
     end
-    
+
     context 'content_id not included' do
       before do
         context_data.delete(:content_id)

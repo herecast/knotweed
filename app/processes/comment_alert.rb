@@ -1,6 +1,5 @@
-#alert content owner when comments are made on content
+# alert content owner when comments are made on content
 class CommentAlert
-
   def self.call(content)
     parent_content = content.parent
     unless parent_content.nil? || parent_content.organization.name == "Listserv"

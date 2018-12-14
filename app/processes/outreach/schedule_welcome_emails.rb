@@ -1,6 +1,5 @@
 module Outreach
   class ScheduleWelcomeEmails
-
     def self.call(*args)
       self.new(*args).call
     end
@@ -14,34 +13,32 @@ module Outreach
         create_campaign(step)
       end.each_with_index do |response, index|
         MailchimpService::UserOutreach.schedule_campaign(response['id'],
-          timing: Time.current + (index * 4).days
-        )
+                                                         timing: Time.current + (index * 4).days)
       end
     end
 
     private
 
-      def ordered_steps
-        [
-          'welcome',
-          'subscribe_to_blogs',
-          'bookmarking',
-          'subscribe_to_digests',
-          'finding_comments'
-        ]
-      end
+    def ordered_steps
+      [
+        'welcome',
+        'subscribe_to_blogs',
+        'bookmarking',
+        'subscribe_to_digests',
+        'finding_comments'
+      ]
+    end
 
-      def email_config
-        Rails.configuration.subtext.email_outreach
-      end
+    def email_config
+      Rails.configuration.subtext.email_outreach
+    end
 
-      def create_campaign(step)
-        MailchimpService::UserOutreach.create_campaign(
-          user: @user,
-          subject: email_config.send(step).subject,
-          template_id: email_config.send(step).template_id
-        )
-      end
-
+    def create_campaign(step)
+      MailchimpService::UserOutreach.create_campaign(
+        user: @user,
+        subject: email_config.send(step).subject,
+        template_id: email_config.send(step).template_id
+      )
+    end
   end
 end

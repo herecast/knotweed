@@ -18,7 +18,7 @@ describe RegistrationsController, :type => :controller do
 
   describe 'POST create' do
     context 'with format JSON' do
-      subject{ post :create, format: :json, params: { user: @user_attributes } }
+      subject { post :create, format: :json, params: { user: @user_attributes } }
 
       let(:user) { User.find_by_email(@user_attributes[:email]) }
 
@@ -36,20 +36,20 @@ describe RegistrationsController, :type => :controller do
       it 'should not respond with authentication token' do
         subject
         expect(JSON.parse(response.body)).to_not eq({
-          'token' => user.authentication_token,
-          'email' => user.email
-        })
+                                                      'token' => user.authentication_token,
+                                                      'email' => user.email
+                                                    })
       end
 
       it 'should respond with message text' do
         subject
         expect(JSON.parse(response.body)).to eq({
-          'message' => "Thank you! For security purposes, a message with a confirmation link has been sent to your email address. Please check your email and click on the link to activate your account. If the message hasn't appeared in a few minutes, please check your spam folder."
-        })
+                                                  'message' => "Thank you! For security purposes, a message with a confirmation link has been sent to your email address. Please check your email and click on the link to activate your account. If the message hasn't appeared in a few minutes, please check your spam folder."
+                                                })
       end
 
       it 'should generate confirmation email' do
-        expect{subject}.to change{ActionMailer::Base.deliveries.count}.by(1)
+        expect { subject }.to change { ActionMailer::Base.deliveries.count }.by(1)
       end
 
       it 'should generate an email confirmation token' do
@@ -89,7 +89,7 @@ describe RegistrationsController, :type => :controller do
         end
 
         it "increases user count by 1" do
-          expect{ subject }.to change{
+          expect { subject }.to change {
             User.count
           }.by 1
         end

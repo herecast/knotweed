@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Api::V3::PromotionBannersController, :type => :controller do
-
   describe 'GET show' do
     before do
       @org = FactoryGirl.create :organization
@@ -82,7 +81,6 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         expect(assigns(:selected_promotion_banners).first.promotion_banner).to eq @pb2
       end
     end
-
   end
 
   describe 'post track_impression' do
@@ -109,11 +107,11 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     it "calls record_promotion_banner_metric with 'impression'" do
       expect(BackgroundJob).to receive(:perform_later).with(
         'RecordPromotionBannerMetric', "call", hash_including({
-          event_type: "impression",
-          promotion_banner_id: @banner.id,
-          client_id: 'ClientID!',
-          location_id: location.id
-        })
+                                                                event_type: "impression",
+                                                                promotion_banner_id: @banner.id,
+                                                                client_id: 'ClientID!',
+                                                                location_id: location.id
+                                                              })
       )
       subject
     end
@@ -155,8 +153,8 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
     subject {
       post :track_load,
-        format: :json,
-        params: post_params
+           format: :json,
+           params: post_params
     }
 
     it 'should respond with 200' do
@@ -167,16 +165,16 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     it "calls record_promotion_banner_metric with 'load'" do
       expect(BackgroundJob).to receive(:perform_later).with(
         "RecordPromotionBannerMetric", "call", hash_including({
-          event_type: 'load',
-          client_id: 'ClientId@',
-          location_id: location.id,
-          promotion_banner_id: @banner.id,
-          current_date: Date.current.to_s,
-          content_id: @content.id.to_s,
-          load_time: post_params[:load_time].to_s,
-          select_score: "1.9",
-          select_method: 'sponsored_content'
-        })
+                                                                event_type: 'load',
+                                                                client_id: 'ClientId@',
+                                                                location_id: location.id,
+                                                                promotion_banner_id: @banner.id,
+                                                                current_date: Date.current.to_s,
+                                                                content_id: @content.id.to_s,
+                                                                load_time: post_params[:load_time].to_s,
+                                                                select_score: "1.9",
+                                                                select_method: 'sponsored_content'
+                                                              })
       )
       subject
     end
@@ -191,13 +189,13 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
     subject {
       post :track_click,
-      params: {
-        promotion_banner_id: @banner.id,
-        content_id: @content.id,
-        client_id: 'ClientId@',
-        location_id: location.slug,
-        format: :json
-      }
+           params: {
+             promotion_banner_id: @banner.id,
+             content_id: @content.id,
+             client_id: 'ClientId@',
+             location_id: location.slug,
+             format: :json
+           }
     }
 
     it 'should respond with 200' do
@@ -208,14 +206,14 @@ describe Api::V3::PromotionBannersController, :type => :controller do
     it "calls record_promotion_banner_metric with 'click" do
       expect(BackgroundJob).to receive(:perform_later).with(
         "RecordPromotionBannerMetric", "call", hash_including({
-          event_type: 'click',
-          user_id: nil,
-          client_id: 'ClientId@',
-          location_id: location.id,
-          promotion_banner_id: @banner.id,
-          current_date: Date.current.to_s,
-          content_id: @content.id.to_s
-        })
+                                                                event_type: 'click',
+                                                                user_id: nil,
+                                                                client_id: 'ClientId@',
+                                                                location_id: location.id,
+                                                                promotion_banner_id: @banner.id,
+                                                                current_date: Date.current.to_s,
+                                                                content_id: @content.id.to_s
+                                                              })
       )
       expect(BackgroundJob).to receive(:perform_later).with(
         'RecordContentMetric', 'call', @content, {
@@ -252,7 +250,6 @@ describe Api::V3::PromotionBannersController, :type => :controller do
       end
     end
 
-
     context 'with invalid promotion_banner_id' do
       subject! { post :track_click, params: { promotion_banner_id: @banner.id + 201, content_id: @content.id }, format: :json }
       it 'should return 422' do
@@ -263,15 +260,17 @@ describe Api::V3::PromotionBannersController, :type => :controller do
 
   describe "POST #create_ad_metric" do
     context "when params contain ad_metric" do
-      subject { post :create_ad_metric, params: { ad_metric: {
-        campaign: 'under-laser-cta',
-        event_type: 'click',
-        page_url: 'dailyuv.com/death-star-adverts',
-        content: 'Want to advertise with the Republic?'
-      } } }
+      subject {
+        post :create_ad_metric, params: { ad_metric: {
+          campaign: 'under-laser-cta',
+          event_type: 'click',
+          page_url: 'dailyuv.com/death-star-adverts',
+          content: 'Want to advertise with the Republic?'
+        } }
+      }
 
       it "creates ad_metric" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           AdMetric.count
         }.by 1
       end
@@ -283,7 +282,7 @@ describe Api::V3::PromotionBannersController, :type => :controller do
         end
 
         it "does not record metric" do
-          expect{ subject }.not_to change{
+          expect { subject }.not_to change {
             AdMetric.count
           }
         end

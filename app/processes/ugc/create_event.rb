@@ -20,7 +20,7 @@ module Ugc
       end
 
       schedule_data = @params[:content].delete :schedules
-      schedules = schedule_data.map{ |s| Schedule.build_from_ux_for_event(s) }
+      schedules = schedule_data.map { |s| Schedule.build_from_ux_for_event(s) }
 
       event_hash = ActionController::Parameters.new(
         process_event_params(@params[:content])
@@ -43,71 +43,70 @@ module Ugc
     end
 
     private
-      # accepts incoming params hash and returns a sanitized (only specified attributes accepted)
-      # and translated hash of event data
-      def process_event_params(e)
-        include_upper_valley = e[:extended_reach_enabled]
-        # have to parse out event.content parameters into the appropriate place
-        new_e = { content_attributes: {} }
-        new_e[:content_attributes][:raw_content] = e[:content] if e.has_key? :content
-        new_e[:content_attributes][:title] = e[:title] if e.has_key? :title
-        new_e[:content_attributes][:location_id] = e[:location_id] if e.has_key? :location_id
 
-        new_e[:content_attributes][:promote_radius] = e[:promote_radius] if e.has_key? :promote_radius
-        new_e[:content_attributes][:biz_feed_public] = e[:biz_feed_public]
-        new_e[:content_attributes][:sunset_date] = e[:sunset_date] if e.has_key? :sunset_date
+    # accepts incoming params hash and returns a sanitized (only specified attributes accepted)
+    # and translated hash of event data
+    def process_event_params(e)
+      include_upper_valley = e[:extended_reach_enabled]
+      # have to parse out event.content parameters into the appropriate place
+      new_e = { content_attributes: {} }
+      new_e[:content_attributes][:raw_content] = e[:content] if e.has_key? :content
+      new_e[:content_attributes][:title] = e[:title] if e.has_key? :title
+      new_e[:content_attributes][:location_id] = e[:location_id] if e.has_key? :location_id
 
-        new_e[:cost] = e[:cost] if e.has_key? :cost
-        new_e[:cost_type] = e[:cost_type]
-        new_e[:contact_email] = e[:contact_email] if e.has_key? :contact_email
-        new_e[:contact_phone] = e[:contact_phone] if e.has_key? :contact_phone
-        new_e[:event_url] = e[:event_url] if e.has_key? :event_url
+      new_e[:content_attributes][:promote_radius] = e[:promote_radius] if e.has_key? :promote_radius
+      new_e[:content_attributes][:biz_feed_public] = e[:biz_feed_public]
+      new_e[:content_attributes][:sunset_date] = e[:sunset_date] if e.has_key? :sunset_date
 
-        new_e[:registration_deadline] = e[:registration_deadline] if e.has_key? :registration_deadline
-        new_e[:registration_url] = e[:registration_url] if e.has_key? :registration_url
-        new_e[:registration_phone] = e[:registration_phone] if e.has_key? :registration_phone
-        new_e[:registration_email] = e[:registration_email] if e.has_key? :registration_email
+      new_e[:cost] = e[:cost] if e.has_key? :cost
+      new_e[:cost_type] = e[:cost_type]
+      new_e[:contact_email] = e[:contact_email] if e.has_key? :contact_email
+      new_e[:contact_phone] = e[:contact_phone] if e.has_key? :contact_phone
+      new_e[:event_url] = e[:event_url] if e.has_key? :event_url
 
-        if @event.present? and @event.id # event already exists and this is an update so we need to include
-          #the content ID to avoid overwriting it
-          new_e[:content_attributes][:id] = @event.content.id
-        else
-          # NOTE: these attributes are here because they can't change on update
-          new_e[:content_attributes] = new_e[:content_attributes].merge({
-            pubdate: Time.zone.now,
-            content_category_id: ContentCategory.find_or_create_by(name: 'event').id,
-            authoremail: @current_user.try(:email),
-            authors: @current_user.try(:name),
-            created_by: @current_user,
-            origin: Content::UGC_ORIGIN
-          })
-        end
+      new_e[:registration_deadline] = e[:registration_deadline] if e.has_key? :registration_deadline
+      new_e[:registration_url] = e[:registration_url] if e.has_key? :registration_url
+      new_e[:registration_phone] = e[:registration_phone] if e.has_key? :registration_phone
+      new_e[:registration_email] = e[:registration_email] if e.has_key? :registration_email
 
-        if e[:venue_id].present?
-          new_e[:venue_id] = e[:venue_id]
-        elsif e[:venue].present?
-          new_e[:venue_attributes] = e[:venue]
-        end
-
-        # translate params that have the wrong name
-        new_e[:event_category] = e[:category].to_s.downcase.gsub(' ','_') if e.has_key? :category
-        new_e[:event_category] = nil
-        new_e
+      if @event.present? and @event.id # event already exists and this is an update so we need to include
+        # the content ID to avoid overwriting it
+        new_e[:content_attributes][:id] = @event.content.id
+      else
+        # NOTE: these attributes are here because they can't change on update
+        new_e[:content_attributes] = new_e[:content_attributes].merge({
+                                                                        pubdate: Time.zone.now,
+                                                                        content_category_id: ContentCategory.find_or_create_by(name: 'event').id,
+                                                                        authoremail: @current_user.try(:email),
+                                                                        authors: @current_user.try(:name),
+                                                                        created_by: @current_user,
+                                                                        origin: Content::UGC_ORIGIN
+                                                                      })
       end
 
-      def contact_user_and_ad_team
-        AdMailer.event_advertising_user_contact(@current_user).deliver_later
-        AdMailer.event_adveritising_request(@current_user, @event).deliver_later
+      if e[:venue_id].present?
+        new_e[:venue_id] = e[:venue_id]
+      elsif e[:venue].present?
+        new_e[:venue_attributes] = e[:venue]
       end
 
-      def conditionally_schedule_outreach_email
-        if @current_user.contents.events.count == 1
-          BackgroundJob.perform_later('Outreach::CreateUserHookCampaign', 'call',
-            user: @current_user,
-            action: 'initial_event_post'
-          )
-        end
-      end
+      # translate params that have the wrong name
+      new_e[:event_category] = e[:category].to_s.downcase.gsub(' ', '_') if e.has_key? :category
+      new_e[:event_category] = nil
+      new_e
+    end
 
+    def contact_user_and_ad_team
+      AdMailer.event_advertising_user_contact(@current_user).deliver_later
+      AdMailer.event_adveritising_request(@current_user, @event).deliver_later
+    end
+
+    def conditionally_schedule_outreach_email
+      if @current_user.contents.events.count == 1
+        BackgroundJob.perform_later('Outreach::CreateUserHookCampaign', 'call',
+                                    user: @current_user,
+                                    action: 'initial_event_post')
+      end
+    end
   end
 end

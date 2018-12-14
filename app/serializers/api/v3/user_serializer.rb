@@ -2,21 +2,21 @@ module Api
   module V3
     class UserSerializer < ActiveModel::Serializer
       attributes :id,
-        :name,
-        :email,
-        :created_at,
-        :location,
-        :listserv_id,
-        :listserv_name,
-        :test_group,
-        :user_image_url,
-        :events_ical_url,
-        :skip_analytics,
-        :managed_organization_ids,
-        :can_publish_news?,
-        :location_confirmed,
-        :has_had_bookmarks,
-        :is_blogger
+                 :name,
+                 :email,
+                 :created_at,
+                 :location,
+                 :listserv_id,
+                 :listserv_name,
+                 :test_group,
+                 :user_image_url,
+                 :events_ical_url,
+                 :skip_analytics,
+                 :managed_organization_ids,
+                 :can_publish_news?,
+                 :location_confirmed,
+                 :has_had_bookmarks,
+                 :is_blogger
 
       def listserv_id
         object.location.try(:listserv).try(:id)
@@ -39,7 +39,7 @@ module Api
       def managed_organization_ids
         if context.present? and context[:current_ability]
           orgs = Organization.not_archived.with_role(:manager, object)
-          (orgs + orgs.map{|o| o.get_all_children}.flatten).map{|o| o.id}.uniq
+          (orgs + orgs.map { |o| o.get_all_children }.flatten).map { |o| o.id }.uniq
         else
           []
         end

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 RSpec.describe CreateBusinessProfileRelationship do
-
   describe "::call" do
     before do
       @business_profile = FactoryGirl.create :business_profile
@@ -16,9 +15,9 @@ RSpec.describe CreateBusinessProfileRelationship do
       subject { CreateBusinessProfileRelationship.call(org_name: @org_name) }
 
       it "creates new BusinessProfile and BusinessLocation" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           BusinessProfile.count
-        }.by(1).and change{
+        }.by(1).and change {
           BusinessLocation.count
         }.by 1
       end
@@ -31,8 +30,8 @@ RSpec.describe CreateBusinessProfileRelationship do
     context "when BusinessProfile Content record already exists" do
       before do
         @content = FactoryGirl.create :content,
-          channel_id: @business_profile.id,
-          channel_type: 'BusinessProfile'
+                                      channel_id: @business_profile.id,
+                                      channel_type: 'BusinessProfile'
       end
 
       it "updates content record accordingly" do
@@ -59,9 +58,9 @@ RSpec.describe CreateBusinessProfileRelationship do
 
     context "when no Content record or matching Organization present" do
       it "creates appropriate Content record and Organization" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           Content.count
-        }.by(1).and change{
+        }.by(1).and change {
           Organization.count
         }.by(1)
 

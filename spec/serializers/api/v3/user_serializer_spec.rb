@@ -5,8 +5,10 @@ describe Api::V3::UserSerializer do
     @user = FactoryGirl.create :user
   end
 
-  let (:serialized_object) { JSON.parse(Api::V3::UserSerializer.new(@user, 
-        root: false, context: { current_ability: @user.ability } ).to_json) }
+  let (:serialized_object) {
+    JSON.parse(Api::V3::UserSerializer.new(@user,
+                                           root: false, context: { current_ability: @user.ability }).to_json)
+  }
 
   describe 'managed_organization_ids' do
     before do

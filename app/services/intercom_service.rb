@@ -20,8 +20,7 @@ module IntercomService
 
   private
 
-    def intercom
-      Intercom::Client.new(token: ENV['INTERCOM_ACCESS_TOKEN'])
-    end
-
+  def intercom
+    Intercom::Client.new(token: ENV['INTERCOM_ACCESS_TOKEN'])
+  end
 end

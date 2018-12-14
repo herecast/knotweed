@@ -5,8 +5,8 @@ RSpec.describe CampaignsController, type: :controller do
     @user = FactoryGirl.create :admin
     sign_in @user
     @campaigns = FactoryGirl.create_list :content, 4, :campaign,
-      ad_campaign_start: Date.current - 4,
-      ad_campaign_end: Date.current - 3
+                                         ad_campaign_start: Date.current - 4,
+                                         ad_campaign_end: Date.current - 3
     @campaigns.each do |c|
       promotion = FactoryGirl.create :promotion
       c.promotions << promotion
@@ -14,13 +14,15 @@ RSpec.describe CampaignsController, type: :controller do
   end
 
   let(:new_title) { 'Hoth Racquet Sale!' }
-  let(:valid_params) {{ content: {
-    organization_id: 5,
-    title: new_title,
-    ad_campaign_start: Date.yesterday,
-    ad_campaign_end: Date.tomorrow,
-    ad_promotion_type: 'ROS'
-  } }}
+  let(:valid_params) {
+    { content: {
+      organization_id: 5,
+      title: new_title,
+      ad_campaign_start: Date.yesterday,
+      ad_campaign_end: Date.tomorrow,
+      ad_promotion_type: 'ROS'
+    } }
+  }
 
   describe "GET #index" do
     context 'when reset' do
@@ -133,7 +135,7 @@ RSpec.describe CampaignsController, type: :controller do
       subject { post :create, params: valid_params }
 
       it "creates campaign" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           Content.count
         }.by 1
       end
@@ -147,7 +149,7 @@ RSpec.describe CampaignsController, type: :controller do
       subject { post :create, params: valid_params }
 
       it "does not create campaign" do
-        expect{ subject }.not_to change{
+        expect { subject }.not_to change {
           Content.count
         }
       end
@@ -170,7 +172,7 @@ RSpec.describe CampaignsController, type: :controller do
       subject { put :update, params: valid_params.merge({ id: id }) }
 
       it "creates campaign" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @campaigns.first.reload.title
         }.to eq new_title
       end
@@ -184,7 +186,7 @@ RSpec.describe CampaignsController, type: :controller do
       subject { put :update, params: valid_params.merge({ id: id }) }
 
       it "does not create campaign" do
-        expect{ subject }.not_to change{
+        expect { subject }.not_to change {
           @campaigns.first.reload.title
         }
       end

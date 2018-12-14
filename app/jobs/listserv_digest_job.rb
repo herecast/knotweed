@@ -56,9 +56,9 @@ class ListservDigestJob < ApplicationJob
         unless @listserv.campaigns.present?
           contents = @listserv.contents_from_custom_query
           attrs.merge!({
-            contents: contents,
-            subscriptions: @listserv.subscriptions.active
-          })
+                         contents: contents,
+                         subscriptions: @listserv.subscriptions.active
+                       })
         end
       end
     end
@@ -68,11 +68,11 @@ class ListservDigestJob < ApplicationJob
     if campaign.community_ids.any?
       # can't use the active scope here out of the box because of the ambiguous field names
       # when we join
-      @listserv.subscriptions.joins('INNER JOIN users on subscriptions.user_id = users.id').
-        where('users.location_id in (?)', campaign.community_ids).
-        where('subscriptions.confirmed_at IS NOT NULL').
-        where('subscriptions.unsubscribed_at IS NULL').
-        pluck(:id)
+      @listserv.subscriptions.joins('INNER JOIN users on subscriptions.user_id = users.id')
+               .where('users.location_id in (?)', campaign.community_ids)
+               .where('subscriptions.confirmed_at IS NOT NULL')
+               .where('subscriptions.unsubscribed_at IS NULL')
+               .pluck(:id)
     else
       @listserv.subscriptions.active.pluck(:id)
     end
@@ -93,5 +93,4 @@ class ListservDigestJob < ApplicationJob
   def custom_query_count
     @listserv.try(:contents_from_custom_query).try(:count) || 0
   end
-
 end

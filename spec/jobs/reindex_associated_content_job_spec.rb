@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe ReindexAssociatedContentJob do
-
   describe 'with an organization' do
     let(:organization) { FactoryGirl.create :organization }
 

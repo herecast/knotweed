@@ -55,8 +55,8 @@
 require 'spec_helper'
 
 describe User, :type => :model do
-  it{ is_expected.to respond_to(:temp_password, :temp_password=) }
-  it{ is_expected.to have_db_column(:location_confirmed).of_type(:boolean) }
+  it { is_expected.to respond_to(:temp_password, :temp_password=) }
+  it { is_expected.to have_db_column(:location_confirmed).of_type(:boolean) }
 
   before(:each) do
     location = FactoryGirl.create :location
@@ -70,7 +70,7 @@ describe User, :type => :model do
   end
 
   it "should create a new instance given a valid attribute" do
-    expect{ FactoryGirl.create :user, @attr }.to change{ User.count }.by 1
+    expect { FactoryGirl.create :user, @attr }.to change { User.count }.by 1
   end
 
   it "should require an email address" do
@@ -108,7 +108,6 @@ describe User, :type => :model do
   end
 
   describe "passwords" do
-
     before(:each) do
       @user = FactoryGirl.build :user, @attr
     end
@@ -123,15 +122,14 @@ describe User, :type => :model do
   end
 
   describe "password validations" do
-
     it "should require a password" do
-      expect(FactoryGirl.build :user, @attr.merge(:password => "", :password_confirmation => "")).
-        not_to be_valid
+      expect(FactoryGirl.build :user, @attr.merge(:password => "", :password_confirmation => ""))
+        .not_to be_valid
     end
 
     it "should require a matching password confirmation" do
-      expect(FactoryGirl.build :user, @attr.merge(:password_confirmation => "invalid")).
-        not_to be_valid
+      expect(FactoryGirl.build :user, @attr.merge(:password_confirmation => "invalid"))
+        .not_to be_valid
     end
 
     it "should reject short passwords" do
@@ -139,11 +137,9 @@ describe User, :type => :model do
       hash = @attr.merge(:password => short, :password_confirmation => short)
       expect(FactoryGirl.build :user, hash).not_to be_valid
     end
-
   end
 
   describe "password encryption" do
-
     before(:each) do
       @user = FactoryGirl.create :user, @attr
     end
@@ -155,7 +151,6 @@ describe User, :type => :model do
     it "should set the encrypted password attribute" do
       expect(@user.encrypted_password).not_to be_blank
     end
-
   end
 
   describe 'required fields' do
@@ -237,7 +232,7 @@ describe User, :type => :model do
         end
 
         it 'backgrounds a MailchimpService.update_subscription for each subscription' do
-          expect(BackgroundJob).to receive(:perform_later).with('MailchimpService','update_subscription', @sub)
+          expect(BackgroundJob).to receive(:perform_later).with('MailchimpService', 'update_subscription', @sub)
           @user.location = @new_location
           @user.save!
         end
@@ -254,11 +249,9 @@ describe User, :type => :model do
           @user.location = @new_location
           @user.save!
         end
-
       end
     end
     context 'when user has subscriptions, but'
-
   end
 
   describe 'Updating avatar triggers a reindex of linked content' do
@@ -339,7 +332,7 @@ describe User, :type => :model do
           id: "1234567",
           provider: "facebook",
           extra_info: { verified: true,
-                        age_range: {  min: 21 },
+                        age_range: { min: 21 },
                         time_zone: -6,
                         gender: "male" }
         }
@@ -386,7 +379,7 @@ describe User, :type => :model do
         let!(:location) { FactoryGirl.create :location }
 
         it 'creates a new user account' do
-          expect{ User.from_facebook_oauth(facebook_response, location: location) }.to change{ User.count }.by(1)
+          expect { User.from_facebook_oauth(facebook_response, location: location) }.to change { User.count }.by(1)
         end
 
         it 'sets the correct info for the new user' do

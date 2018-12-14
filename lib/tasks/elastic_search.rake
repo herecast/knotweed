@@ -12,7 +12,6 @@ task :reindex_after, [:date_string] => :environment do |t, args|
       c.reindex
     end
   end
-
 end
 
 desc 'reindex all records with pubdate > now'

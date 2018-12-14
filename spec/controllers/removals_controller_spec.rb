@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 RSpec.describe Contents::RemovalsController, type: :controller do
-
   describe "POST #create" do
     before do
       @user = FactoryGirl.create :admin
@@ -17,7 +16,7 @@ RSpec.describe Contents::RemovalsController, type: :controller do
     subject { post :create, params: { content_id: @content.id, type: 'contents' } }
 
     it "updates Content.removed to true" do
-      expect{ subject }.to change{
+      expect { subject }.to change {
         @content.reload.removed
       }.to true
     end
@@ -48,7 +47,7 @@ RSpec.describe Contents::RemovalsController, type: :controller do
     subject { delete :destroy, params: { content_id: @content.id, type: 'contents' } }
 
     it "updates Content.removed to false" do
-      expect{ subject }.to change{
+      expect { subject }.to change {
         @content.reload.removed
       }.to false
     end

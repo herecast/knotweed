@@ -1,5 +1,4 @@
 class UsersController < ApplicationController
-
   def index
     authorize! :index, @user, :message => 'Not authorized as an administrator.'
     @user_sources = User.pluck(:source).compact.uniq
@@ -15,7 +14,7 @@ class UsersController < ApplicationController
       session[:users_search][:roles].each do |key, value|
         role_ids << Role.get(key.to_s).id if value == 'on'
       end
-      scope = User.joins(:roles).where(roles: {id: role_ids})
+      scope = User.joins(:roles).where(roles: { id: role_ids })
     else
       scope = User
     end
@@ -109,44 +108,43 @@ class UsersController < ApplicationController
 
   private
 
-    def user_params
-      params.require(:user).permit(
-        :name,
-        :email,
-        :password,
-        :location_confirmed,
-        :location_id,
-        :archived,
-        :receive_comment_alerts,
-        :fullname,
-        :nickname,
-        :epayment,
-        :w9
-      ).tap do |attrs|
-        attrs[:role_ids] = []
-        if params[:user][:roles].present?
-          params[:user][:roles].each do |key, value|
-            attrs[:role_ids] << Role.get(key.to_s).id if value == 'on'
-          end
+  def user_params
+    params.require(:user).permit(
+      :name,
+      :email,
+      :password,
+      :location_confirmed,
+      :location_id,
+      :archived,
+      :receive_comment_alerts,
+      :fullname,
+      :nickname,
+      :epayment,
+      :w9
+    ).tap do |attrs|
+      attrs[:role_ids] = []
+      if params[:user][:roles].present?
+        params[:user][:roles].each do |key, value|
+          attrs[:role_ids] << Role.get(key.to_s).id if value == 'on'
         end
       end
     end
+  end
 
-    def process_user_organizations
-      params[:user].each do |key, value|
-        @user.add_role :manager, Organization.find_by(id: value) if key.include?('controlled_organization')
-      end
+  def process_user_organizations
+    params[:user].each do |key, value|
+      @user.add_role :manager, Organization.find_by(id: value) if key.include?('controlled_organization')
     end
+  end
 
-    def new_subscription_ids
-      if params['listserv_id'].present?
-        new_subs =  params['listserv_id'].to_i - @user.subscriptions.map(&:listserv_id)
-        new_subs.map!(&:to_i)
-      end
+  def new_subscription_ids
+    if params['listserv_id'].present?
+      new_subs = params['listserv_id'].to_i - @user.subscriptions.map(&:listserv_id)
+      new_subs.map!(&:to_i)
     end
+  end
 
-    def display_social_users?
-      params[:q].present? && params[:q][:social_login] == '1'
-    end
-
+  def display_social_users?
+    params[:q].present? && params[:q][:social_login] == '1'
+  end
 end

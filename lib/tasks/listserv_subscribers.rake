@@ -1,14 +1,12 @@
 namespace :listserv_subscribers do
-
   desc 'Subscribe users to digest'
   task :prepopulate_digest, [:digest_name, :location_city, :location_state, :user_count] => :environment do |t, args|
-    
     location = Location.find_by! city: args[:location_city], state: args[:location_state]
     location_users = User.unscoped
-                        .where(location_id: location.id)
-                        .where.not(confirmed_at: nil)
-                        .order(confirmed_at: :desc)
-                        .limit(args[:user_count])
+                         .where(location_id: location.id)
+                         .where.not(confirmed_at: nil)
+                         .order(confirmed_at: :desc)
+                         .limit(args[:user_count])
 
     listserv = Listserv.find_by! name: args[:digest_name]
 
@@ -22,12 +20,10 @@ namespace :listserv_subscribers do
       end
     end
     puts "The #{listserv.name} digest has been updated with #{listserv.subscriptions.count - initial_count} subscriptions."
-  
   end
 
   desc 'Add 50 extra subscribers from Lebanon and Hanover'
   task :add_extra_subscribers => :environment do
-
     hanover = Location.find_by(city: 'Hanover', state: 'NH')
     lebanon = Location.find_by(city: 'Lebanon', state: 'NH')
 
@@ -58,7 +54,6 @@ namespace :listserv_subscribers do
 
   desc 'Add 500 more users each from VT and NH'
   task :add_more_vt_and_nh_users => :environment do
-
     thetford  = Location.find_by(city: 'Thetford', state: 'VT')
     woodstock = Location.find_by(city: 'Woodstock', state: 'VT')
     hartland  = Location.find_by(city: 'Hartland', state: 'VT')

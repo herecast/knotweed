@@ -64,5 +64,4 @@ describe MarketPost, :type => :model do
       expect(@market_post.errors.any?).to be false
     end
   end
-
 end

@@ -25,9 +25,9 @@ class SignInToken < ActiveRecord::Base
 
   def self.authenticate(token)
     self.includes(:user)\
-      .where('sign_in_tokens.created_at >= ?', 24.hours.ago)\
-      .find_by(token: token)\
-      .try(:user)
+        .where('sign_in_tokens.created_at >= ?', 24.hours.ago)\
+        .find_by(token: token)\
+        .try(:user)
   end
 
   def self.clean_stale!
@@ -35,6 +35,7 @@ class SignInToken < ActiveRecord::Base
   end
 
   private
+
   def generate_token
     self.token ||= SecureRandom.hex(10)
   end

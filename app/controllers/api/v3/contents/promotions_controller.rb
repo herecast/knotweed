@@ -26,17 +26,16 @@ module Api
 
       private
 
-        def promotion_params
-          params.require(:promotion).permit(
-            :created_by,
-            :share_platform
-          ).tap do |p|
-            if p[:created_by].present?
-              p[:created_by] = current_user
-            end
+      def promotion_params
+        params.require(:promotion).permit(
+          :created_by,
+          :share_platform
+        ).tap do |p|
+          if p[:created_by].present?
+            p[:created_by] = current_user
           end
         end
-
+      end
     end
   end
 end

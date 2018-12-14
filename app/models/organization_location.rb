@@ -26,7 +26,7 @@ class OrganizationLocation < ActiveRecord::Base
 
   TYPES = ['base']
 
-  scope :base,-> { where(location_type: 'base') }
+  scope :base, -> { where(location_type: 'base') }
 
   after_save if: :saved_changes? do
     organization.trigger_content_reindex!

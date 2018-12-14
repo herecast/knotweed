@@ -20,11 +20,12 @@ module Api
             token: user.authentication_token
           }
         else
-          render json: {errors: user.errors}, status: 422
+          render json: { errors: user.errors }, status: 422
         end
       end
 
       protected
+
       def registration_params
         params.require(:registration).permit(
           :email, :password, :location_id, :name, :confirmation_key
@@ -51,7 +52,7 @@ module Api
       def validate_confirmation_record
         @confirmation_record = confirmation_class.find(confirmation_id)
       rescue ActiveRecord::RecordNotFound, NameError
-        render json: {errors: ['invalid confirmation_key']}, status: 422
+        render json: { errors: ['invalid confirmation_key'] }, status: 422
       end
 
       def create_temp_password(user)

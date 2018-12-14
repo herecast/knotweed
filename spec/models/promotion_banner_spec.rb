@@ -32,12 +32,11 @@
 require 'spec_helper'
 
 describe PromotionBanner, :type => :model do
-
-  it {is_expected.to have_db_column(:load_count).of_type(:integer).with_options(default:0)}
-  it {is_expected.to have_db_column(:digest_clicks).of_type(:integer).with_options(default:0)}
-  it {is_expected.to have_db_column(:digest_opens).of_type(:integer).with_options(default:0)}
-  it {is_expected.to have_db_column(:digest_emails).of_type(:integer).with_options(default:0)}
-  it {is_expected.to have_db_column(:digest_metrics_updated).of_type(:datetime)}
+  it { is_expected.to have_db_column(:load_count).of_type(:integer).with_options(default: 0) }
+  it { is_expected.to have_db_column(:digest_clicks).of_type(:integer).with_options(default: 0) }
+  it { is_expected.to have_db_column(:digest_opens).of_type(:integer).with_options(default: 0) }
+  it { is_expected.to have_db_column(:digest_emails).of_type(:integer).with_options(default: 0) }
+  it { is_expected.to have_db_column(:digest_metrics_updated).of_type(:datetime) }
 
   describe 'validation' do
     context "when no banner image present" do
@@ -51,8 +50,8 @@ describe PromotionBanner, :type => :model do
     context "when both cost_per_impression and cost_per_day are present" do
       before do
         @promotion_banner = FactoryGirl.build :promotion_banner,
-          cost_per_day: 6.45,
-          cost_per_impression: 0.12
+                                              cost_per_day: 6.45,
+                                              cost_per_impression: 0.12
       end
 
       it "is not valid" do
@@ -63,8 +62,8 @@ describe PromotionBanner, :type => :model do
     context "when promotion is type: coupon" do
       it "requires a coupon image" do
         promotion_banner = FactoryGirl.build :promotion_banner,
-          promotion_type: PromotionBanner::COUPON,
-          coupon_image: nil
+                                             promotion_type: PromotionBanner::COUPON,
+                                             coupon_image: nil
         expect(promotion_banner).not_to be_valid
       end
     end
@@ -72,9 +71,9 @@ describe PromotionBanner, :type => :model do
     context "when promotion_type is profile_page or promotional_services" do
       before do
         @promotion_banner = FactoryGirl.build :promotion_banner,
-          campaign_start: Date.today,
-          campaign_end: Date.tomorrow,
-          banner_image: nil
+                                              campaign_start: Date.today,
+                                              campaign_end: Date.tomorrow,
+                                              banner_image: nil
       end
 
       it "does not need banner_image to be valid" do
@@ -108,9 +107,11 @@ describe PromotionBanner, :type => :model do
     subject { PromotionBanner.for_content(banner.promotion.content_id).has_inventory }
 
     context 'a banner with no inventory' do
-      let(:banner) { FactoryGirl.create :promotion_banner,
-        daily_max_impressions: 5, daily_impression_count: one_more_than_actual_allowance(5),
-        max_impressions: nil }
+      let(:banner) {
+        FactoryGirl.create :promotion_banner,
+                           daily_max_impressions: 5, daily_impression_count: one_more_than_actual_allowance(5),
+                           max_impressions: nil
+      }
 
       it 'should not be returned' do
         expect(subject).to_not include(banner)
@@ -118,9 +119,11 @@ describe PromotionBanner, :type => :model do
     end
 
     context 'a banner with inventory' do
-      let(:banner) { FactoryGirl.create :promotion_banner,
-        daily_max_impressions: 7, daily_impression_count: 5,
-        max_impressions: nil }
+      let(:banner) {
+        FactoryGirl.create :promotion_banner,
+                           daily_max_impressions: 7, daily_impression_count: 5,
+                           max_impressions: nil
+      }
 
       it 'should be returned' do
         expect(subject).to include(banner)
@@ -132,8 +135,10 @@ describe PromotionBanner, :type => :model do
     subject { PromotionBanner.has_inventory }
 
     context 'a promotion banner with no impression limits' do
-      let(:promotion_banner) { FactoryGirl.create :promotion_banner,
-        daily_max_impressions: nil, max_impressions: nil }
+      let(:promotion_banner) {
+        FactoryGirl.create :promotion_banner,
+                           daily_max_impressions: nil, max_impressions: nil
+      }
 
       it 'should be included' do
         expect(subject).to include(promotion_banner)
@@ -141,8 +146,10 @@ describe PromotionBanner, :type => :model do
     end
 
     context 'a promotion banner over daily_max_impressions' do
-      let(:promotion_banner) { FactoryGirl.create :promotion_banner,
-        daily_max_impressions: 5, daily_impression_count: one_more_than_actual_allowance(5) }
+      let(:promotion_banner) {
+        FactoryGirl.create :promotion_banner,
+                           daily_max_impressions: 5, daily_impression_count: one_more_than_actual_allowance(5)
+      }
 
       it 'should not be included' do
         expect(subject).to_not include(promotion_banner)
@@ -150,8 +157,10 @@ describe PromotionBanner, :type => :model do
     end
 
     context 'a promotion banner over max_impressions' do
-      let(:promotion_banner) { FactoryGirl.create :promotion_banner,
-        max_impressions: 5, impression_count: 5 }
+      let(:promotion_banner) {
+        FactoryGirl.create :promotion_banner,
+                           max_impressions: 5, impression_count: 5
+      }
 
       it 'should not be included' do
         expect(subject).to_not include(promotion_banner)
@@ -159,9 +168,11 @@ describe PromotionBanner, :type => :model do
     end
 
     context 'a promotion banner over daily_max_impressions but not over max_impressions' do
-      let(:promotion_banner) { FactoryGirl.create :promotion_banner,
-        daily_max_impressions: 5, max_impressions: 6,
-        daily_impression_count: one_more_than_actual_allowance(5), impression_count: 5 }
+      let(:promotion_banner) {
+        FactoryGirl.create :promotion_banner,
+                           daily_max_impressions: 5, max_impressions: 6,
+                           daily_impression_count: one_more_than_actual_allowance(5), impression_count: 5
+      }
 
       it 'should not be included' do
         expect(subject).to_not include(promotion_banner)
@@ -169,9 +180,11 @@ describe PromotionBanner, :type => :model do
     end
 
     context 'a promotion banner over max_impressions but not over daily_max_impressions' do
-      let(:promotion_banner) { FactoryGirl.create :promotion_banner,
-        daily_max_impressions: 3, max_impressions: 6,
-        daily_impression_count: 2, impression_count: 6 }
+      let(:promotion_banner) {
+        FactoryGirl.create :promotion_banner,
+                           daily_max_impressions: 3, max_impressions: 6,
+                           daily_impression_count: 2, impression_count: 6
+      }
 
       it 'should not be included' do
         expect(subject).to_not include(promotion_banner)
@@ -193,8 +206,10 @@ describe PromotionBanner, :type => :model do
     end
 
     describe 'when passed a time argument' do
-      let(:banner) { FactoryGirl.create :promotion_banner, campaign_start: 2.weeks.from_now,
-        campaign_end: 3.weeks.from_now }
+      let(:banner) {
+        FactoryGirl.create :promotion_banner, campaign_start: 2.weeks.from_now,
+                                              campaign_end: 3.weeks.from_now
+      }
 
       subject { PromotionBanner.active(banner.campaign_start + 1.minute) }
 
@@ -340,9 +355,8 @@ describe PromotionBanner, :type => :model do
     context "when a current daily PromotionBannerReport is present" do
       it "returns report" do
         promotion_banner_report = FactoryGirl.create(:promotion_banner_report,
-          promotion_banner_id: @promotion_banner.id,
-          report_date: Date.current
-        )
+                                                     promotion_banner_id: @promotion_banner.id,
+                                                     report_date: Date.current)
         expect(@promotion_banner.current_daily_report(Date.current)).to eq promotion_banner_report
       end
     end
@@ -357,7 +371,7 @@ describe PromotionBanner, :type => :model do
 
     context "when no current PromotionBannerReport is present" do
       it "creates current daily PromotionBannerReport" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           PromotionBannerReport.count
         }.by 1
       end
@@ -366,9 +380,8 @@ describe PromotionBanner, :type => :model do
     context "when current PromotionBannerReport is present" do
       it "returns current PromotionBannerReport" do
         promotion_banner_report = FactoryGirl.create(:promotion_banner_report,
-          promotion_banner_id: @promotion_banner.id,
-          report_date: Date.current
-        )
+                                                     promotion_banner_id: @promotion_banner.id,
+                                                     report_date: Date.current)
         expect(subject).to eq promotion_banner_report
       end
     end
@@ -377,9 +390,8 @@ describe PromotionBanner, :type => :model do
   describe "#generate_coupon_click_redirect" do
     it "auto generates coupon click url" do
       promotion_banner = FactoryGirl.build(:promotion_banner,
-        promotion_type: PromotionBanner::COUPON,
-        coupon_image:   File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
-      )
+                                           promotion_type: PromotionBanner::COUPON,
+                                           coupon_image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg')))
       promotion_banner.save
       expect(promotion_banner.reload.redirect_url).to eq "/promotions/#{promotion_banner.id}"
     end
@@ -388,5 +400,4 @@ describe PromotionBanner, :type => :model do
   def one_more_than_actual_allowance(daily_max)
     (daily_max + (daily_max * PromotionBanner::OVER_DELIVERY_PERCENTAGE)).ceil
   end
-
 end

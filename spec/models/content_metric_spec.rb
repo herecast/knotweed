@@ -55,19 +55,18 @@ RSpec.describe ContentMetric, type: :model do
 
     let!(:content) {
       FactoryGirl.create :content,
-        organization: organization
+                         organization: organization
     }
 
     context 'creating a new record' do
       subject {
         FactoryGirl.create :content_metric,
-          content: content
+                           content: content
       }
 
       it 'assigns organization from content record' do
         expect(subject.organization).to eql organization
       end
     end
-
   end
 end

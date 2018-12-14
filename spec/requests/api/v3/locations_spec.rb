@@ -23,7 +23,7 @@ RSpec.describe 'Locations API Endpoints', type: :request do
         location = locations.first
         serialized = serialized_location(location)[:location]
 
-        expect(response_json[:locations].find{|l| l[:id].eql? location.id}).to match serialized
+        expect(response_json[:locations].find { |l| l[:id].eql? location.id }).to match serialized
       end
     end
 
@@ -70,14 +70,12 @@ RSpec.describe 'Locations API Endpoints', type: :request do
 
         it 'returns the locations within the radius of specified location id' do
           subject
-          location_ids = response_json[:locations].map{|l| l[:id]}
+          location_ids = response_json[:locations].map { |l| l[:id] }
           expect(location_ids).to include *locations_within_radius.map(&:id)
           expect(location_ids).to_not include *locations_outside_radius.map(&:id)
         end
       end
-
     end
-
   end
 
   describe 'GET /api/v3/location/:id' do
@@ -106,7 +104,7 @@ RSpec.describe 'Locations API Endpoints', type: :request do
 
       it 'responds with 404 status code' do
         subject
-        expect(response_json).to match Hash.new #empty hash payload
+        expect(response_json).to match Hash.new # empty hash payload
         expect(response.code).to eql "404"
       end
     end

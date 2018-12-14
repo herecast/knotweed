@@ -1,6 +1,5 @@
 # Confirms user acccount and any unconfirmed digest subscriptions for the user
 class ConfirmRegistration
-
   def self.call(opts = {})
     user = User.confirm_by_token opts[:confirmation_token]
     create_user_specific_mc_segment(user)
@@ -17,10 +16,9 @@ class ConfirmRegistration
 
   private
 
-    def self.create_user_specific_mc_segment(user)
-      if user.persisted?
-        BackgroundJob.perform_later('Outreach::CreateMailchimpSegmentForNewUser', 'call', user, schedule_welcome_emails: true)
-      end
+  def self.create_user_specific_mc_segment(user)
+    if user.persisted?
+      BackgroundJob.perform_later('Outreach::CreateMailchimpSegmentForNewUser', 'call', user, schedule_welcome_emails: true)
     end
-
+  end
 end

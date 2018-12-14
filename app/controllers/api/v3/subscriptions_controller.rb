@@ -1,16 +1,16 @@
 module Api
   module V3
     class SubscriptionsController < ApiController
-      before_action :get_resource, only: [:show, :update, :confirm ]
-      before_action :check_logged_in!, only:  [:index]
+      before_action :get_resource, only: [:show, :update, :confirm]
+      before_action :check_logged_in!, only: [:index]
 
       def index
         @subscriptions = Subscription.where(user_id: current_user.id)\
-                          .where(unsubscribed_at: nil).page(params[:page]).per(params[:per_page] || 25)
+                                     .where(unsubscribed_at: nil).page(params[:page]).per(params[:per_page] || 25)
 
         render json: @subscriptions,
-          each_serializer: SubscriptionSerializer,
-          meta: meta_pagination_for(@subscriptions)
+               each_serializer: SubscriptionSerializer,
+               meta: meta_pagination_for(@subscriptions)
       end
 
       def show
@@ -25,12 +25,12 @@ module Api
             @subscription = SubscribeToListservSilently.call(listserv, user, request.remote_ip)
           elsif subscribed_from_registration?
             @subscription = Subscription.create!(subscription_params)
-          else 
+          else
             @subscription = SubscribeToListserv.call(listserv, { email: params[:subscription][:email] })
           end
           render json: @subscription, serializer: SubscriptionSerializer, status: 201
         else
-          render json: {errors: 'listserv_id cant be blank'}, status: 422
+          render json: { errors: 'listserv_id cant be blank' }, status: 422
         end
       end
 
@@ -38,7 +38,7 @@ module Api
         if @subscription.update subscription_params
           render json: {}, status: :no_content
         else
-          render json: {errors: @subscription.errors}, status: 422
+          render json: { errors: @subscription.errors }, status: 422
         end
       end
 
@@ -63,7 +63,7 @@ module Api
             UnsubscribeSubscription.call(@subscription) if @subscription.present?
           end
         else
-          render json: {errors: "Invalid parameters"}, status: :unprocessable_entity
+          render json: { errors: "Invalid parameters" }, status: :unprocessable_entity
           return
         end
         render json: {}, status: :no_content
@@ -83,6 +83,7 @@ module Api
       end
 
       protected
+
       def get_resource
         @subscription = Subscription.find_by(key: params[:key])
         unless @subscription
@@ -91,7 +92,7 @@ module Api
       end
 
       def subscription_params
-        params.require(:subscription).permit(:email_type, :name, :user_id, 
+        params.require(:subscription).permit(:email_type, :name, :user_id,
                                              :listserv_id, :source, :email,
                                              :confirmed_at)
       end
@@ -107,9 +108,9 @@ module Api
       end
 
       def find_subscription
-        Subscription.where("listserv_id = ? AND email = ?", 
+        Subscription.where("listserv_id = ? AND email = ?",
                            listserv_from_mailchimp.id, params['data']['email'])
-                           .try(:first)
+                    .try(:first)
       end
 
       def find_user

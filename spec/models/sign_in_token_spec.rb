@@ -31,7 +31,7 @@ RSpec.describe SignInToken, type: :model do
 
     context 'uniqueness' do
       it 'generates random and unique keys each time' do
-        tokens = 5.times.collect{ SignInToken.new.token }
+        tokens = 5.times.collect { SignInToken.new.token }
 
         expect(tokens.uniq).to eql tokens
       end

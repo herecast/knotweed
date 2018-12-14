@@ -90,7 +90,6 @@
 require 'spec_helper'
 
 describe Content, :type => :model do
-
   it { is_expected.to belong_to(:location) }
   it { is_expected.to have_db_column :promote_radius }
   it { is_expected.to have_db_column(:short_link).of_type(:string) }
@@ -101,8 +100,8 @@ describe Content, :type => :model do
     context "when ad_promotion_type = sponsored" do
       it "ad_max_impressions must be populated" do
         content = FactoryGirl.build :content,
-          ad_promotion_type: PromotionBanner::SPONSORED,
-          ad_max_impressions: nil
+                                    ad_promotion_type: PromotionBanner::SPONSORED,
+                                    ad_max_impressions: nil
         expect(content).not_to be_valid
       end
     end
@@ -124,7 +123,7 @@ describe Content, :type => :model do
         expect(content.should_index?).to be true
       end
     end
-   end
+  end
 
   it { is_expected.to respond_to(:deleted_at) }
 
@@ -154,10 +153,10 @@ describe Content, :type => :model do
       c3 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
       c4 = FactoryGirl.create(:content, organization: c1.organization, parent: c3)
       expect(c1.get_downstream_thread).to eq({
-        c2.id => nil, c3.id => {
-          c4.id => nil
-        }
-      })
+                                               c2.id => nil, c3.id => {
+                                                 c4.id => nil
+                                               }
+                                             })
     end
   end
 
@@ -176,7 +175,6 @@ describe Content, :type => :model do
       @content.reload
       expect(@content.quarantine).to eq(true)
     end
-
   end
 
   describe "set guid if not present" do
@@ -206,7 +204,6 @@ describe Content, :type => :model do
       FactoryGirl.create :promotion_banner, :active, content: content
       expect(content.has_active_promotion?).to eq(true)
     end
-
   end
 
   describe '#has_promotion_inventory?' do
@@ -253,7 +250,6 @@ describe Content, :type => :model do
     it "should return the name of the attached content category" do
       expect(@content.category).to eq(@cat.name)
     end
-
   end
 
   describe 'get_comment_thread' do
@@ -291,14 +287,13 @@ describe Content, :type => :model do
       expect(subject.count).to eq(4)
       tier_counts = []
       subject.each do |com|
-        tier_counts[com.tier] ||=0
-        tier_counts[com.tier] +=1
+        tier_counts[com.tier] ||= 0
+        tier_counts[com.tier] += 1
       end
       expect(tier_counts[0]).to eq(2)
       expect(tier_counts[1]).to eq(1)
       expect(tier_counts[2]).to eq(1)
     end
-
   end
 
   describe 'comments' do
@@ -343,13 +338,13 @@ describe Content, :type => :model do
 
     describe 'set_root_content_category_id' do
       it 'should set root_content_category_id' do
-        expect{subject}.to change{@content.root_content_category_id}.to @cat.id
+        expect { subject }.to change { @content.root_content_category_id }.to @cat.id
       end
 
       it 'should set root_content_category_id appropriately if the category is not the root' do
         cat2 = FactoryGirl.create :content_category
         @cat.update_attribute :parent_id, cat2.id
-        expect{subject}.to change{@content.root_content_category_id}.to cat2.id
+        expect { subject }.to change { @content.root_content_category_id }.to cat2.id
       end
     end
   end
@@ -363,16 +358,15 @@ describe Content, :type => :model do
 
     subject { @content.save }
 
-
     describe 'set_root_parent_id' do
       it 'should set root_parent_id' do
-        expect{subject}.to change{@content.root_parent_id}.to @parent.id
+        expect { subject }.to change { @content.root_parent_id }.to @parent.id
       end
 
       it 'should set root_parent_id appropriately if the parent is not the root' do
         parent2 = FactoryGirl.create :content
         @parent.update_attribute :parent_id, parent2.id
-        expect{subject}.to change{@content.root_parent_id}.to parent2.id
+        expect { subject }.to change { @content.root_parent_id }.to parent2.id
       end
 
       it 'should set root_parent_id to self.id when no parent exists' do
@@ -384,7 +378,7 @@ describe Content, :type => :model do
         it 'should update the root_parent_id if parent_id changes' do
           @content.save
           @content.parent = nil
-          expect{@content.save}.to change{@content.root_parent_id}.to @content.id
+          expect { @content.save }.to change { @content.root_parent_id }.to @content.id
         end
       end
     end
@@ -395,8 +389,8 @@ describe Content, :type => :model do
       before do
         @user = FactoryGirl.create :user
         @news = FactoryGirl.create :content,
-          content_category: FactoryGirl.create(:content_category, name: 'news'),
-          created_by: @user
+                                   content_category: FactoryGirl.create(:content_category, name: 'news'),
+                                   created_by: @user
         @not_news = FactoryGirl.create :content, created_by: @user
       end
 
@@ -428,35 +422,35 @@ describe Content, :type => :model do
     end
 
     it 'should increment the view count' do
-      expect{@published_content.increment_view_count!}.to change{@published_content.view_count}.by 1
+      expect { @published_content.increment_view_count! }.to change { @published_content.view_count }.by 1
     end
 
     it 'should not increment the view count if not published' do
-      expect{@unpublished_content.increment_view_count!}.not_to change{@unpublished_content.view_count}
+      expect { @unpublished_content.increment_view_count! }.not_to change { @unpublished_content.view_count }
     end
 
     context 'for a user with skip_analytics = true' do
       before do
         @user = FactoryGirl.create :user, skip_analytics: true
         User.current = @user
-        @news_content_category   = FactoryGirl.create :content_category, name: "news"
+        @news_content_category = FactoryGirl.create :content_category, name: "news"
         @event_content_category = FactoryGirl.create :content_category, name: "event"
       end
 
       it 'should not increment the view count' do
-        expect{@unpublished_content.increment_view_count!}.not_to change{@unpublished_content.view_count}
+        expect { @unpublished_content.increment_view_count! }.not_to change { @unpublished_content.view_count }
       end
 
       it 'should not increment if the root content is news' do
         @published_content.update_attributes(content_category: @news_content_category)
         @published_content.save!
-        expect{@published_content.increment_view_count!}.not_to change{@published_content.view_count}
+        expect { @published_content.increment_view_count! }.not_to change { @published_content.view_count }
       end
 
       it 'should increment view count for other channels' do
         @published_content.update_attributes(content_category: @event_content_category)
         @published_content.save!
-        expect{@published_content.increment_view_count!}.to change{@published_content.view_count}
+        expect { @published_content.increment_view_count! }.to change { @published_content.view_count }
       end
     end
   end
@@ -468,7 +462,7 @@ describe Content, :type => :model do
       let!(:event) { FactoryGirl.create :event }
 
       it 'includes the event content' do
-        expect( subject ).to include(event.content)
+        expect(subject).to include(event.content)
       end
     end
 
@@ -476,7 +470,7 @@ describe Content, :type => :model do
       let!(:event_no_instances) { FactoryGirl.create :event, skip_event_instance: true }
 
       it 'does not include the event content' do
-        expect( subject ).to_not include(event_no_instances.content)
+        expect(subject).to_not include(event_no_instances.content)
       end
     end
 
@@ -484,7 +478,7 @@ describe Content, :type => :model do
       let!(:other_content) { FactoryGirl.create :content }
 
       it 'includes content' do
-        expect( subject ).to include(other_content)
+        expect(subject).to include(other_content)
       end
     end
 
@@ -493,8 +487,8 @@ describe Content, :type => :model do
       let!(:other_content) { FactoryGirl.create :content }
 
       it 'includes other content, but not events with no instances' do
-        expect( subject ).to include(other_content)
-        expect( subject ).to_not include(event_no_instances)
+        expect(subject).to include(other_content)
+        expect(subject).to_not include(event_no_instances)
       end
     end
   end
@@ -508,7 +502,7 @@ describe Content, :type => :model do
         origin: Content::UGC_ORIGIN
       }
     }
-    
+
     # similar_content comes back as raw ES data for the API,
     # so map to IDs for testing
     subject { content.similar_content(4).map(&:id) }
@@ -547,9 +541,10 @@ describe Content, :type => :model do
 
     describe 'with similar event' do
       let(:sim_content) { FactoryGirl.create :content, sim_attributes }
-      let!(:sim_event) { FactoryGirl.create :event,
-          start_date: start_date,
-          content: sim_content
+      let!(:sim_event) {
+        FactoryGirl.create :event,
+                           start_date: start_date,
+                           content: sim_content
       }
 
       before { ReindexEventsWithFutureInstances.perform_now }
@@ -621,7 +616,7 @@ describe Content, :type => :model do
       it "returns 'Post by...' title" do
         user = FactoryGirl.create :user, name: 'Han Solo'
         content = FactoryGirl.create :content, title: "[Hoth]",
-          created_by: user
+                                               created_by: user
         expect(content.sanitized_title).to include "Han Solo"
       end
     end
@@ -631,7 +626,7 @@ describe Content, :type => :model do
     it 'sets raw_content' do
       content = 'Test Content'
       expect(subject).to receive(:raw_content=).with(content)
-      subject.sanitized_content= content
+      subject.sanitized_content = content
     end
   end
 
@@ -655,7 +650,6 @@ describe Content, :type => :model do
         @content.raw_content = img_content
         expect(subject.html_safe).to eql img_content.html_safe
       end
-
     end
   end
 
@@ -721,8 +715,10 @@ describe Content, :type => :model do
     let(:news_cat) { FactoryGirl.build :content_category, name: 'news' }
     subject { content.is_news_ugc? }
     describe 'for news UGC' do
-      let (:content) { FactoryGirl.build :content, origin: Content::UGC_ORIGIN,
-                       content_category: news_cat }
+      let (:content) {
+        FactoryGirl.build :content, origin: Content::UGC_ORIGIN,
+                                    content_category: news_cat
+      }
       it { should be true }
     end
 
@@ -782,7 +778,7 @@ describe Content, :type => :model do
 
     context "when no report present" do
       it "creates daily report" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @news.reload.content_reports.count
         }.by 1
       end
@@ -838,7 +834,7 @@ describe Content, :type => :model do
       subject { @market_post.channel.update_attribute(:sold, true) }
 
       it "updates latest_activity to current time" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @market_post.reload.latest_activity
         }
       end
@@ -849,7 +845,7 @@ describe Content, :type => :model do
         end
 
         it "does not update latest_activity" do
-          expect{ subject }.not_to change{
+          expect { subject }.not_to change {
             @market_post.reload.latest_activity
           }
         end
@@ -876,7 +872,7 @@ describe Content, :type => :model do
       subject { @draft_news.update_attribute(:pubdate, new_pubdate) }
 
       it "updates latest_activity to pubdate" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @draft_news.latest_activity
         }.to new_pubdate
       end
@@ -920,11 +916,11 @@ describe Content, :type => :model do
       before do
         @content = FactoryGirl.create :content, :campaign
         promotable = FactoryGirl.create :promotion_banner,
-          impression_count: @view_count
+                                        impression_count: @view_count
         promotion = FactoryGirl.create :promotion,
-          content_id: @content.id,
-          promotable_id: promotable.id,
-          promotable_type: 'PromotionBanner'
+                                       content_id: @content.id,
+                                       promotable_id: promotable.id,
+                                       promotable_type: 'PromotionBanner'
       end
 
       it "returns promotable impression count" do
@@ -935,9 +931,9 @@ describe Content, :type => :model do
     context "when content has a parent" do
       before do
         parent = FactoryGirl.create :content,
-          view_count: @view_count
+                                    view_count: @view_count
         @content = FactoryGirl.create :content,
-          parent_id: parent.id
+                                      parent_id: parent.id
       end
 
       it "returns parent view count" do
@@ -948,7 +944,7 @@ describe Content, :type => :model do
     context "when content has no parent" do
       before do
         @content = FactoryGirl.create :content,
-          view_count: @view_count
+                                      view_count: @view_count
       end
 
       it "returns content view_count" do
@@ -956,5 +952,4 @@ describe Content, :type => :model do
       end
     end
   end
-
 end

@@ -2,58 +2,58 @@ module Api
   module V3
     class ContentSerializer < ActiveModel::Serializer
       attributes :id,
-        :author_id,
-        :author_name,
-        :avatar_url,
-        :biz_feed_public,
-        :campaign_end,
-        :campaign_start,
-        :click_count,
-        :comment_count,
-        :commenter_count,
-        :contact_email,
-        :contact_phone,
-        :content,
-        :content_origin,
-        :content_type,
-        :cost,
-        :cost_type,
-        :created_at,
-        :embedded_ad,
-        :ends_at,
-        :event_url,
-        :event_instance_id,
-        :event_instances,
-        :images,
-        :image_url,
-        :location,
-        :location_id,
-        :organization_biz_feed_active,
-        :organization_id,
-        :organization_name,
-        :organization_profile_image_url,
-        :parent_content_id,
-        :parent_content_type,
-        :parent_event_instance_id,
-        :promote_radius,
-        :published_at,
-        :redirect_url,
-        :registration_deadline,
-        :schedules,
-        :sold,
-        :split_content,
-        :starts_at,
-        :subtitle,
-        :sunset_date,
-        :title,
-        :updated_at,
-        :venue_address,
-        :venue_city,
-        :venue_name,
-        :venue_state,
-        :venue_url,
-        :venue_zip,
-        :view_count
+                 :author_id,
+                 :author_name,
+                 :avatar_url,
+                 :biz_feed_public,
+                 :campaign_end,
+                 :campaign_start,
+                 :click_count,
+                 :comment_count,
+                 :commenter_count,
+                 :contact_email,
+                 :contact_phone,
+                 :content,
+                 :content_origin,
+                 :content_type,
+                 :cost,
+                 :cost_type,
+                 :created_at,
+                 :embedded_ad,
+                 :ends_at,
+                 :event_url,
+                 :event_instance_id,
+                 :event_instances,
+                 :images,
+                 :image_url,
+                 :location,
+                 :location_id,
+                 :organization_biz_feed_active,
+                 :organization_id,
+                 :organization_name,
+                 :organization_profile_image_url,
+                 :parent_content_id,
+                 :parent_content_type,
+                 :parent_event_instance_id,
+                 :promote_radius,
+                 :published_at,
+                 :redirect_url,
+                 :registration_deadline,
+                 :schedules,
+                 :sold,
+                 :split_content,
+                 :starts_at,
+                 :subtitle,
+                 :sunset_date,
+                 :title,
+                 :updated_at,
+                 :venue_address,
+                 :venue_city,
+                 :venue_name,
+                 :venue_state,
+                 :venue_url,
+                 :venue_zip,
+                 :view_count
 
       def event_instance_id
         if object.channel_type == 'Event'
@@ -74,7 +74,7 @@ module Api
       end
 
       def images
-        object.images.sort_by{|i| [i.position.to_i, i.created_at]}.map do |img|
+        object.images.sort_by { |i| [i.position.to_i, i.created_at] }.map do |img|
           {
             id: img.id,
             caption: img.caption,
@@ -144,6 +144,7 @@ module Api
           object.channel.try(:event_url)
         end
       end
+
       def ends_at
         if object.channel_type == 'Event'
           object.channel.try(:next_or_first_instance).try(:end_date)
@@ -263,9 +264,9 @@ module Api
           SplitContentForAdPlacement.call(
             ImageUrlService.optimize_image_urls(
               html_text: content,
-              default_width:  600,
+              default_width: 600,
               default_height: 1800,
-              default_crop:   false
+              default_crop: false
             )
           ).tap do |h|
             if h[:tail].nil?
@@ -319,13 +320,12 @@ module Api
 
       private
 
-        def isEvent
-          (object.channel_type == "Event") || (
-            object.parent.present? and
-            object.parent.channel_type == 'Event'
-          )
-        end
-
+      def isEvent
+        (object.channel_type == "Event") || (
+          object.parent.present? and
+          object.parent.channel_type == 'Event'
+        )
+      end
     end
   end
 end

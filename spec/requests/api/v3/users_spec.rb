@@ -22,34 +22,34 @@ RSpec.describe 'User API Endpoints', type: :request do
         get '/api/v3/current_user', params: {}, headers: headers
 
         expect(response_json).to match({
-          current_user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            created_at: user.created_at.iso8601,
-            location: {
-              id: user.location.id,
-              city: user.location.city,
-              state: user.location.state
-            },
-            location_confirmed: user.location_confirmed?,
-            listserv_id: an_instance_of(String).or(be_nil),
-            listserv_name: an_instance_of(String).or(be_nil),
-            test_group: an_instance_of(String).or(be_nil),
-            user_image_url: an_instance_of(String).or(be_nil),
-            events_ical_url: an_instance_of(String).or(be_nil),
-            skip_analytics: user.skip_analytics,
-            managed_organization_ids: an_instance_of(Array),
-            can_publish_news: user.can_publish_news?,
-            has_had_bookmarks: user.has_had_bookmarks,
-            is_blogger: user.has_role?(:blogger)
-          }
-        })
+                                         current_user: {
+                                           id: user.id,
+                                           name: user.name,
+                                           email: user.email,
+                                           created_at: user.created_at.iso8601,
+                                           location: {
+                                             id: user.location.id,
+                                             city: user.location.city,
+                                             state: user.location.state
+                                           },
+                                           location_confirmed: user.location_confirmed?,
+                                           listserv_id: an_instance_of(String).or(be_nil),
+                                           listserv_name: an_instance_of(String).or(be_nil),
+                                           test_group: an_instance_of(String).or(be_nil),
+                                           user_image_url: an_instance_of(String).or(be_nil),
+                                           events_ical_url: an_instance_of(String).or(be_nil),
+                                           skip_analytics: user.skip_analytics,
+                                           managed_organization_ids: an_instance_of(Array),
+                                           can_publish_news: user.can_publish_news?,
+                                           has_had_bookmarks: user.has_had_bookmarks,
+                                           is_blogger: user.has_role?(:blogger)
+                                         }
+                                       })
       end
     end
   end
 
-  describe 'GET /api/v3/user/:email'do
+  describe 'GET /api/v3/user/:email' do
     let(:user) { FactoryGirl.create :user }
 
     context 'when email is attached to a user' do
@@ -85,8 +85,8 @@ RSpec.describe 'User API Endpoints', type: :request do
 
       subject {
         post "/api/v3/users/sign_in_with_token",
-          params: {token: token}.to_json,
-          headers: json_headers
+             params: { token: token }.to_json,
+             headers: json_headers
       }
 
       context 'When SignInToken.authenticate returns a user' do
@@ -134,8 +134,8 @@ RSpec.describe 'User API Endpoints', type: :request do
 
       subject {
         post "/api/v3/users/email_signin_link",
-          params: {email: user.email}.to_json,
-          headers: json_headers
+             params: { email: user.email }.to_json,
+             headers: json_headers
       }
 
       it 'returns 201 status code' do
@@ -159,8 +159,8 @@ RSpec.describe 'User API Endpoints', type: :request do
     context 'Given an email which does not match a user account' do
       subject {
         post "/api/v3/users/email_signin_link",
-          params: {email: "notauser@somewhere.com"}.to_json,
-          headers: json_headers
+             params: { email: "notauser@somewhere.com" }.to_json,
+             headers: json_headers
       }
 
       it 'responds with 422 status code' do

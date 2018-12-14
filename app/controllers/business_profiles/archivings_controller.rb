@@ -23,23 +23,22 @@ class BusinessProfiles::ArchivingsController < ApplicationController
 
   private
 
-    def business_profile_params
-      params.require(:business_profile).permit(:archived)
-    end
+  def business_profile_params
+    params.require(:business_profile).permit(:archived)
+  end
 
-    def prevent_deletion_of_published_content
-      @business_profile = BusinessProfile.find_by(id: params[:id])
-      if @business_profile.content.try(:pubdate).present? and @business_profile.content.try(:pubdate) <= Time.now
-        flash[:warning] = "Cannot delete business with published content"
-        redirect_to business_profiles_path
-      end
+  def prevent_deletion_of_published_content
+    @business_profile = BusinessProfile.find_by(id: params[:id])
+    if @business_profile.content.try(:pubdate).present? and @business_profile.content.try(:pubdate) <= Time.now
+      flash[:warning] = "Cannot delete business with published content"
+      redirect_to business_profiles_path
     end
+  end
 
-    def unclaim_business
-      if @business_profile.claimed?
-        @business_profile.organization.destroy
-        @business_profile.content.destroy
-      end
+  def unclaim_business
+    if @business_profile.claimed?
+      @business_profile.organization.destroy
+      @business_profile.content.destroy
     end
-
+  end
 end

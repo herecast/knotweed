@@ -5,10 +5,10 @@ class SubscriptionsController < ApplicationController
   def index
     @search = Subscription.ransack(search_query)
     @subscriptions = @search.result(distinct: true)\
-      .active\
-      .includes(:listserv)\
-      .order("created_at DESC")\
-      .page(params[:page])
+                            .active\
+                            .includes(:listserv)\
+                            .order("created_at DESC")\
+                            .page(params[:page])
   end
 
   def show
@@ -45,23 +45,25 @@ class SubscriptionsController < ApplicationController
   end
 
   private
-    def set_subscription
-      @subscription = Subscription.find(params[:id])
-    end
 
-    def subscription_params
-      params.require(:subscription).permit(
-        :email, :listserv_id, :blacklist, :source, :unsubscribed_at,
-        :confirmed_at, :user_id)
-    end
+  def set_subscription
+    @subscription = Subscription.find(params[:id])
+  end
 
-    def store_query_in_session
-      if params[:q].present?
-        session[:subscriptions_search] = params[:q]
-      end
-    end
+  def subscription_params
+    params.require(:subscription).permit(
+      :email, :listserv_id, :blacklist, :source, :unsubscribed_at,
+      :confirmed_at, :user_id
+    )
+  end
 
-    def search_query
-      session[:subscriptions_search] || params[:q]
+  def store_query_in_session
+    if params[:q].present?
+      session[:subscriptions_search] = params[:q]
     end
+  end
+
+  def search_query
+    session[:subscriptions_search] || params[:q]
+  end
 end

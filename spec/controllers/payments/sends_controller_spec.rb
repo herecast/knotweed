@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Payments::SendsController, type: :controller do
   let(:admin) { FactoryGirl.create :admin }
   before { sign_in admin }
-  
+
   describe 'POST #create' do
     let(:period_start) { 2.weeks.ago.strftime('%m/%d/%Y') }
     let(:period_end) { Date.today.strftime('%m/%d/%Y') }

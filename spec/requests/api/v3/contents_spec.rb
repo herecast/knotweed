@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 def content_response_schema(record)
   {
     content: {
@@ -28,7 +27,7 @@ def content_response_schema(record)
       event_instance_id: record.channel.try(:next_or_first_instance).try(:id),
 
       # Problems with a matching against nested array with include_json
-      #event_instances: [],
+      # event_instances: [],
 
       id: record.id,
       images: [],
@@ -46,7 +45,7 @@ def content_response_schema(record)
       registration_deadline: record.channel.try(:registration_deadline),
 
       # Problems with a matching against nested array with include_json
-      #schedules: [],
+      # schedules: [],
 
       sold: record.channel.try(:sold),
       split_content: record.content_type == :news ? SplitContentForAdPlacement.call(record.raw_content) : nil,
@@ -57,7 +56,7 @@ def content_response_schema(record)
       location_id: record.location_id,
 
       # random failures due to database time vs rails time
-#      updated_at: record.updated_at.iso8601,
+      #      updated_at: record.updated_at.iso8601,
 
       venue_address: record.channel.try(:venue).try(:address),
       venue_city: record.channel.try(:venue).try(:city),
@@ -95,8 +94,7 @@ describe 'Contents Endpoints', type: :request do
     describe 'when content requested is of listserv origin' do
       let(:listserv_org) {
         FactoryGirl.create(:organization,
-          id: Organization::LISTSERV_ORG_ID
-        )
+                           id: Organization::LISTSERV_ORG_ID)
       }
       before do
         content.update organization: listserv_org
@@ -150,21 +148,23 @@ describe 'Contents Endpoints', type: :request do
         end
       end
 
-      let(:expected_response) {{
-        id: @content.id,
-        title: @content.title,
-        image_url: @content.primary_image&.image_url,
-        view_count: 0,
-        comment_count: 0,
-        comments: [],
-        promo_click_thru_count: @content.banner_click_count,
-        daily_view_counts: @content.content_reports.map{ |cr|
-          cr.view_count_hash
-        },
-        daily_promo_click_thru_counts: @content.content_reports.map{ |cr|
-          cr.banner_click_hash
+      let(:expected_response) {
+        {
+          id: @content.id,
+          title: @content.title,
+          image_url: @content.primary_image&.image_url,
+          view_count: 0,
+          comment_count: 0,
+          comments: [],
+          promo_click_thru_count: @content.banner_click_count,
+          daily_view_counts: @content.content_reports.map { |cr|
+                               cr.view_count_hash
+                             },
+          daily_promo_click_thru_counts: @content.content_reports.map { |cr|
+                                           cr.banner_click_hash
+                                         }
         }
-      }}
+      }
 
       subject { get "/api/v3/contents/#{@content.id}/metrics?start_date=#{@start_date}&end_date=#{@end_date}", params: {}, headers: auth_headers }
 
@@ -201,7 +201,7 @@ describe 'Contents Endpoints', type: :request do
       it 'orders daily_view_counts ASC on report_date' do
         subject
         view_counts = response_json[:content_metrics][:daily_view_counts]
-        report_dates = view_counts.map{|v| DateTime.parse(v[:report_date]).to_date}
+        report_dates = view_counts.map { |v| DateTime.parse(v[:report_date]).to_date }
         sorted_dates = report_dates.sort
         expect(report_dates).to eql sorted_dates
       end
@@ -278,11 +278,10 @@ describe 'Contents Endpoints', type: :request do
               {
                 content_type: 'news',
                 title: "A distinguished article",
-                content: "<p>Once upon a time...#{'a'*255}</p><p>Another p</p>",
+                content: "<p>Once upon a time...#{'a' * 255}</p><p>Another p</p>",
                 author_name: 'Fred',
                 organization_id: FactoryGirl.create(:organization,
-                  can_publish_news: true
-                ).id,
+                                                    can_publish_news: true).id,
               }
             }
 
@@ -310,7 +309,7 @@ describe 'Contents Endpoints', type: :request do
             end
 
             describe 'author_name' do
-              let(:author_name) {""}
+              let(:author_name) { "" }
               before do
                 valid_news_params.merge!(author_name: author_name)
                 subject
@@ -359,13 +358,12 @@ describe 'Contents Endpoints', type: :request do
               end
 
               it 'should create a draft content record' do
-                expect{subject}.to change{Content.count}.by 1
+                expect { subject }.to change { Content.count }.by 1
                 expect(Content.last.pubdate).to be_nil
               end
             end
 
             describe "content sanitization" do
-
               describe 'in-content img with style attributes' do
                 before do
                   valid_news_params[:content] = 'Who cares <img style="width: 50%; float: left;" src="http://go.test/this.jpg">'
@@ -481,7 +479,7 @@ describe 'Contents Endpoints', type: :request do
             context "when user has already published Market Post" do
               before do
                 FactoryGirl.create :content, :market_post,
-                  created_by: user
+                                   created_by: user
               end
 
               it "does not call to Mailchimp hook" do
@@ -555,27 +553,27 @@ describe 'Contents Endpoints', type: :request do
               # The following is because response_json doesn't work well with nested
               # arrays.
               expect(response_json[:content][:schedules]).to match([
-                {
-                  subtitle: nil,
-                  presenter_name: nil,
-                  starts_at: valid_event_params[:schedules].first[:starts_at],
-                  id: kind_of(Fixnum),
-                  end_date: valid_event_params[:schedules].first[:starts_at],
-                  repeats: 'once',
-                  days_of_week: nil,
-                  weeks_of_month: nil
-                }
-              ])
+                                                                     {
+                                                                       subtitle: nil,
+                                                                       presenter_name: nil,
+                                                                       starts_at: valid_event_params[:schedules].first[:starts_at],
+                                                                       id: kind_of(Fixnum),
+                                                                       end_date: valid_event_params[:schedules].first[:starts_at],
+                                                                       repeats: 'once',
+                                                                       days_of_week: nil,
+                                                                       weeks_of_month: nil
+                                                                     }
+                                                                   ])
 
               expect(response_json[:content][:event_instances]).to match([
-                {
-                  id: kind_of(Fixnum),
-                  subtitle: nil,
-                  presenter_name: nil,
-                  starts_at: valid_event_params[:schedules].first[:starts_at],
-                  ends_at: nil,
-                }
-              ])
+                                                                           {
+                                                                             id: kind_of(Fixnum),
+                                                                             subtitle: nil,
+                                                                             presenter_name: nil,
+                                                                             starts_at: valid_event_params[:schedules].first[:starts_at],
+                                                                             ends_at: nil,
+                                                                           }
+                                                                         ])
             end
 
             context "when user publishes first Event" do
@@ -592,7 +590,7 @@ describe 'Contents Endpoints', type: :request do
             context "when user has already published Event" do
               before do
                 FactoryGirl.create :content, :event,
-                  created_by: user
+                                   created_by: user
               end
 
               it "does not call to Mailchimp hook" do
@@ -634,7 +632,6 @@ describe 'Contents Endpoints', type: :request do
           subject
           expect(response.status).to eql 403
         end
-
       end
 
       context 'with authentication, owner' do
@@ -684,7 +681,7 @@ describe 'Contents Endpoints', type: :request do
             describe 'author_name' do
               context 'when the user is not the original author' do
                 let(:other_user) { FactoryGirl.create :user, name: Faker::Name.name }
-                before { content.update_attribute :created_by, other_user}
+                before { content.update_attribute :created_by, other_user }
 
                 context 'when passed the current user\'s name (*not* the author)' do
                   before do
@@ -707,7 +704,7 @@ describe 'Contents Endpoints', type: :request do
                 end
 
                 it 'should set `authors_is_created_by` to false' do
-                  expect{subject}.to change{content.reload.authors_is_created_by}.to false
+                  expect { subject }.to change { content.reload.authors_is_created_by }.to false
                 end
               end
             end
@@ -719,7 +716,7 @@ describe 'Contents Endpoints', type: :request do
               end
 
               it 'should update the content pubdate' do
-                expect{subject}.to change{content.reload.pubdate}
+                expect { subject }.to change { content.reload.pubdate }
               end
             end
 
@@ -730,7 +727,7 @@ describe 'Contents Endpoints', type: :request do
               end
 
               it 'should unset the pubdate and make the content a draft' do
-                expect{subject}.to change{content.reload.pubdate}.to nil
+                expect { subject }.to change { content.reload.pubdate }.to nil
               end
             end
 
@@ -741,7 +738,7 @@ describe 'Contents Endpoints', type: :request do
               end
 
               it 'should not succeed' do
-                expect{subject}.to_not change{content.reload.pubdate}
+                expect { subject }.to_not change { content.reload.pubdate }
               end
             end
 
@@ -756,7 +753,7 @@ describe 'Contents Endpoints', type: :request do
               end
 
               it 'should update the content' do
-                expect{subject}.to change{content.reload.title}
+                expect { subject }.to change { content.reload.title }
               end
             end
 
@@ -774,7 +771,7 @@ describe 'Contents Endpoints', type: :request do
                 end
 
                 it 'should not update content' do
-                  expect{subject}.to_not change{content.reload.title}
+                  expect { subject }.to_not change { content.reload.title }
                 end
 
                 it 'should respond with errors' do
@@ -795,7 +792,7 @@ describe 'Contents Endpoints', type: :request do
                 end
 
                 it 'should update the content' do
-                  expect{subject}.to change{content.reload.title}.to valid_news_params[:title]
+                  expect { subject }.to change { content.reload.title }.to valid_news_params[:title]
                 end
               end
             end
@@ -882,7 +879,6 @@ describe 'Contents Endpoints', type: :request do
           end
         end
 
-
         describe 'event content' do
           let(:content) { FactoryGirl.create(:content, :event, created_by: user) }
           context 'valid params' do
@@ -940,17 +936,17 @@ describe 'Contents Endpoints', type: :request do
                 # The following is because response_json doesn't work well with nested
                 # arrays.
                 expect(response_json[:content][:schedules]).to match([
-                  {
-                    subtitle: nil,
-                    presenter_name: nil,
-                    starts_at: valid_event_params[:schedules].first[:starts_at],
-                    id: kind_of(Fixnum),
-                    end_date: valid_event_params[:schedules].first[:starts_at],
-                    repeats: 'once',
-                    days_of_week: nil,
-                    weeks_of_month: nil
-                  }
-                ])
+                                                                       {
+                                                                         subtitle: nil,
+                                                                         presenter_name: nil,
+                                                                         starts_at: valid_event_params[:schedules].first[:starts_at],
+                                                                         id: kind_of(Fixnum),
+                                                                         end_date: valid_event_params[:schedules].first[:starts_at],
+                                                                         repeats: 'once',
+                                                                         days_of_week: nil,
+                                                                         weeks_of_month: nil
+                                                                       }
+                                                                     ])
               end
             end
           end
@@ -962,7 +958,7 @@ describe 'Contents Endpoints', type: :request do
   describe 'GET /api/v3/contents/sitemap_ids' do
     let!(:org) { FactoryGirl.create :organization }
     let!(:alt_org) { FactoryGirl.create :organization }
-    let!(:location) { FactoryGirl.create(:location)}
+    let!(:location) { FactoryGirl.create(:location) }
 
     let!(:event) {
       FactoryGirl.create :content, :event, :published, organization: org
@@ -1022,20 +1018,19 @@ describe 'Contents Endpoints', type: :request do
       news.update removed: true
       expect(subject[:content_ids]).to_not include news.id
     end
-
   end
 
   describe "#update_subscriber_notification" do
     before do
       @organization = FactoryGirl.create :organization,
-        subscribe_url: 'http://glim.glam'
+                                         subscribe_url: 'http://glim.glam'
       allow(NotifySubscribersJob).to receive(:perform_later).and_return true
     end
 
     context "when Content is type: campaign" do
       subject do
         FactoryGirl.create :content, :campaign,
-          organization_id: @organization.id
+                           organization_id: @organization.id
       end
 
       it "does not notify subscribers" do

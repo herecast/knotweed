@@ -1,11 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe SplitContentForAdPlacement do
-
   describe '::call' do
     context "when article character total is fewer than #{SplitContentForAdPlacement::CHARACTER_MINIMUM}" do
       before do
-        @head = "<p><br><br><br>#{ 'a' * (SplitContentForAdPlacement::CHARACTER_MINIMUM - 1) }</p><p></p>"
+        @head = "<p><br><br><br>#{'a' * (SplitContentForAdPlacement::CHARACTER_MINIMUM - 1)}</p><p></p>"
         @tail = nil
         @body = "#{@head}#{@tail}"
       end
@@ -37,7 +36,7 @@ RSpec.describe SplitContentForAdPlacement do
 
     context "when first paragraph is #{SplitContentForAdPlacement::CHARACTER_MINIMUM} characters or fewer" do
       before do
-        @head = "<p>#{'a'*(SplitContentForAdPlacement::CHARACTER_MINIMUM - 1)}<br><br></p><p>Glarbity #{'ab' * 270}</p>"
+        @head = "<p>#{'a' * (SplitContentForAdPlacement::CHARACTER_MINIMUM - 1)}<br><br></p><p>Glarbity #{'ab' * 270}</p>"
         @tail = "<p>More glarb</p>"
         @body = "#{@head}#{@tail}"
       end
@@ -53,7 +52,7 @@ RSpec.describe SplitContentForAdPlacement do
 
     context "when first paragraph is empty and second is too short" do
       before do
-        @head = "<p></p><p>#{'a'*(SplitContentForAdPlacement::CHARACTER_MINIMUM - 1)}</p><p>Glarbity #{'ab' * 270}</p>"
+        @head = "<p></p><p>#{'a' * (SplitContentForAdPlacement::CHARACTER_MINIMUM - 1)}</p><p>Glarbity #{'ab' * 270}</p>"
         @tail = "<p>More glarb</p>"
         @body = "#{@head}#{@tail}"
       end
@@ -101,8 +100,8 @@ RSpec.describe SplitContentForAdPlacement do
 
     context "when content is in divs" do
       before do
-        @head = "<div>#{'a'*SplitContentForAdPlacement::CHARACTER_MINIMUM}</div>"
-        @tail = "<div>#{'b'*45}</div>"
+        @head = "<div>#{'a' * SplitContentForAdPlacement::CHARACTER_MINIMUM}</div>"
+        @tail = "<div>#{'b' * 45}</div>"
         @body = "#{@head}#{@tail}"
       end
 

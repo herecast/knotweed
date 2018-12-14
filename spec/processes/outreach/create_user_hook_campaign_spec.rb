@@ -1,12 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe Outreach::CreateUserHookCampaign do
-
   describe "::call" do
-
     before do
       @user = FactoryGirl.create :user,
-        mc_segment_id: '43nj2k4'
+                                 mc_segment_id: '43nj2k4'
       @campaign_id = '43n2hjb4'
       @campaigns_array = double(
         create: { 'id' => @campaign_id },
@@ -33,9 +31,9 @@ RSpec.describe Outreach::CreateUserHookCampaign do
         expect(@campaigns_array).to receive(:create).with(
           'regular',
           standard_opts.merge({
-            subject: Rails.configuration.subtext.email_outreach.initial_market_post.subject,
-            template_id: Rails.configuration.subtext.email_outreach.initial_market_post.template_id
-          }),
+                                subject: Rails.configuration.subtext.email_outreach.initial_market_post.subject,
+                                template_id: Rails.configuration.subtext.email_outreach.initial_market_post.template_id
+                              }),
           { sections: {} },
           { saved_segment_id: @user.mc_segment_id }
         )
@@ -58,9 +56,9 @@ RSpec.describe Outreach::CreateUserHookCampaign do
         expect(@campaigns_array).to receive(:create).with(
           'regular',
           standard_opts.merge({
-            subject: Rails.configuration.subtext.email_outreach.initial_event_post.subject,
-            template_id: Rails.configuration.subtext.email_outreach.initial_event_post.template_id
-          }),
+                                subject: Rails.configuration.subtext.email_outreach.initial_event_post.subject,
+                                template_id: Rails.configuration.subtext.email_outreach.initial_event_post.template_id
+                              }),
           { sections: {} },
           { saved_segment_id: @user.mc_segment_id }
         )

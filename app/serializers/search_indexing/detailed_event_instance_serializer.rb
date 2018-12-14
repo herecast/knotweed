@@ -1,7 +1,7 @@
 module SearchIndexing
   class DetailedEventInstanceSerializer < ::Api::V3::EventInstanceSerializer
     attributes :event_category,
-      :removed
+               :removed
 
     def event_category
       object.event.event_category

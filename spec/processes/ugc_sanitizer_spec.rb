@@ -1,9 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe UgcSanitizer do
-
   def strip_whitespace(html)
-    html.strip.gsub("\n","").gsub(/>\s+</,"><")
+    html.strip.gsub("\n", "").gsub(/>\s+</, "><")
   end
 
   describe '.call' do

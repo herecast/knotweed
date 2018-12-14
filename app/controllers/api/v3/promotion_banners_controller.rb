@@ -1,7 +1,6 @@
 module Api
   module V3
     class PromotionBannersController < ApiController
-
       def show
         opts                   = {}
         opts[:limit]           = params[:limit] || 1
@@ -13,8 +12,8 @@ module Api
         conditionally_prime_daily_ad_reports
         @selected_promotion_banners = SelectPromotionBanners.call(opts)
 
-        render json:  @selected_promotion_banners, root: :promotions,
-          each_serializer: SelectedPromotionSerializer
+        render json: @selected_promotion_banners, root: :promotions,
+               each_serializer: SelectedPromotionSerializer
       end
 
       def track_impression
@@ -86,7 +85,7 @@ module Api
         @promotion_banner = PromotionBanner.find(params[:id])
         authorize! :manage, @promotion_banner
         render json: @promotion_banner, serializer: PromotionBannerMetricsSerializer, context:
-          {start_date: params[:start_date], end_date: params[:end_date]}
+          { start_date: params[:start_date], end_date: params[:end_date] }
       end
 
       protected
@@ -96,7 +95,7 @@ module Api
         sort_parts.select! do |pt|
           pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
         end
-        sort_parts.join(',').gsub(/(pubdate|title)/,'contents.\1').gsub('view_count','impression_count')
+        sort_parts.join(',').gsub(/(pubdate|title)/, 'contents.\1').gsub('view_count', 'impression_count')
       end
 
       def sanitize_start_date_sort(sort)
@@ -121,20 +120,20 @@ module Api
       def record_promotion_banner_metric(promotion_banner, event_type)
         unless analytics_blocked?
           data = {
-            content_id:          params[:content_id],
-            event_type:          event_type,
-            current_date:        Date.current.to_s,
-            user_id:             current_user.try(:id),
-            client_id:           params[:client_id],
+            content_id: params[:content_id],
+            event_type: event_type,
+            current_date: Date.current.to_s,
+            user_id: current_user.try(:id),
+            client_id: params[:client_id],
             promotion_banner_id: promotion_banner.id,
-            select_score:        params[:select_score],
-            select_method:       params[:select_method],
-            load_time:           params[:load_time],
-            user_agent:          request.user_agent,
-            user_ip:             request.remote_ip,
-            gtm_blocked:         params[:gtm_blocked] == true,
-            page_placement:      params[:page_placement],
-            page_url:            params[:page_url]
+            select_score: params[:select_score],
+            select_method: params[:select_method],
+            load_time: params[:load_time],
+            user_agent: request.user_agent,
+            user_ip: request.remote_ip,
+            gtm_blocked: params[:gtm_blocked] == true,
+            page_placement: params[:page_placement],
+            page_url: params[:page_url]
           }
 
           if params[:location_id].present?
@@ -152,10 +151,10 @@ module Api
           @content = Content.find_by_id params[:content_id]
           if @content.present?
             opts = {
-              event_type:   event_type,
+              event_type: event_type,
               current_date: Date.current.to_s,
-              user_id:      current_user.try(:id),
-              client_id:    params[:client_id]
+              user_id: current_user.try(:id),
+              client_id: params[:client_id]
             }.tap do |data|
               if params[:location_id].present?
                 data[:location_id] = Location.find_by_slug_or_id(params[:location_id]).try(:id)
@@ -175,7 +174,6 @@ module Api
           :content
         )
       end
-
     end
   end
 end

@@ -58,9 +58,9 @@ class Organization < ActiveRecord::Base
   LISTSERV_ORG_NAME = "Listserv"
 
   searchkick callbacks: :async,
-    batch_size: 1000,
-    index_prefix: Figaro.env.searchkick_index_prefix,
-    searchable: [:name]
+             batch_size: 1000,
+             index_prefix: Figaro.env.searchkick_index_prefix,
+             searchable: [:name]
 
   ransacker :show_news_publishers
 
@@ -121,13 +121,13 @@ class Organization < ActiveRecord::Base
   mount_uploader :background_image, ImageUploader
   mount_uploader :desktop_image, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_logo,
-                                 :remove_previously_stored_profile_image,
-                                 :remove_previously_stored_background_image,
-                                 :remove_previously_stored_desktop_image,
-                                 :remove_logo!,
-                                 :remove_profile_image!,
-                                 :remove_background_image!,
-                                 :remove_desktop_image!, raise: false
+                :remove_previously_stored_profile_image,
+                :remove_previously_stored_background_image,
+                :remove_previously_stored_desktop_image,
+                :remove_logo!,
+                :remove_profile_image!,
+                :remove_background_image!,
+                :remove_desktop_image!, raise: false
 
   scope :alphabetical, -> { order("organizations.name ASC") }
   default_scope { self.alphabetical }
@@ -144,7 +144,7 @@ class Organization < ActiveRecord::Base
   scope :news_publishers, -> { where(org_type: %w[Publisher Publication Blog]) }
   scope :not_archived, -> { where(archived: [false, nil]) }
 
-  #validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
+  # validates :org_type, inclusion: { in: ORG_TYPE_OPTIONS }, allow_blank: true, allow_nil: true
 
   validates_uniqueness_of :name
   validates_presence_of :name

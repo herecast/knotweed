@@ -54,7 +54,7 @@ RSpec.describe Payment, type: :model do
     end
 
     it 'should sum the total payment per user period' do
-      expect(subject.map{ |payment| payment.total_payment}).to match_array([payment.total_payment + payment2.total_payment, payment3.total_payment, other_user_payment.total_payment])
+      expect(subject.map { |payment| payment.total_payment }).to match_array([payment.total_payment + payment2.total_payment, payment3.total_payment, other_user_payment.total_payment])
     end
   end
 
@@ -74,9 +74,10 @@ RSpec.describe Payment, type: :model do
 
   describe 'Payment.by_period' do
     let!(:payment1) { FactoryGirl.create :payment }
-    let!(:payment2) { FactoryGirl.create :payment,
-      period_start: payment1.period_start,
-      period_end: payment1.period_end
+    let!(:payment2) {
+      FactoryGirl.create :payment,
+                         period_start: payment1.period_start,
+                         period_end: payment1.period_end
     }
 
     subject { Payment.by_period }

@@ -4,33 +4,32 @@ RSpec.describe UpdatePromotionBannerDigestMetrics do
   context 'Given a promotion banner with digests having metrics' do
     let!(:promotion_banner) {
       FactoryGirl.create :promotion_banner,
-        impression_count: 1,
-        click_count: 1,
-        digest_clicks: 1,
-        digest_emails: 1,
-        digest_opens: 1,
-        digest_metrics_updated: 1.week.ago
-
+                         impression_count: 1,
+                         click_count: 1,
+                         digest_clicks: 1,
+                         digest_emails: 1,
+                         digest_opens: 1,
+                         digest_metrics_updated: 1.week.ago
     }
 
     let!(:digest1) {
       FactoryGirl.create :listserv_digest,
-        promotion_ids: [promotion_banner.promotion.id],
-        opens_total: 7,
-        emails_sent: 1,
-        link_clicks: {
-          promotion_banner.redirect_url => '3'
-        }
+                         promotion_ids: [promotion_banner.promotion.id],
+                         opens_total: 7,
+                         emails_sent: 1,
+                         link_clicks: {
+                           promotion_banner.redirect_url => '3'
+                         }
     }
 
     let!(:digest2) {
       FactoryGirl.create :listserv_digest,
-        promotion_ids: [promotion_banner.promotion.id],
-        opens_total: 3,
-        emails_sent: 2,
-        link_clicks: {
-          promotion_banner.redirect_url => '5'
-        }
+                         promotion_ids: [promotion_banner.promotion.id],
+                         opens_total: 3,
+                         emails_sent: 2,
+                         link_clicks: {
+                           promotion_banner.redirect_url => '5'
+                         }
     }
 
     subject {

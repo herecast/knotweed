@@ -59,7 +59,7 @@ class PaymentsController < ApplicationController
     end
 
     payment_data.keys.each do |period|
-      p_dates = period.split(' - ').map{ |pd| Date.parse(pd) }
+      p_dates = period.split(' - ').map { |pd| Date.parse(pd) }
     end
     payment_data
   end

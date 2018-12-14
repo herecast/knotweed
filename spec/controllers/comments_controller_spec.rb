@@ -19,22 +19,22 @@ RSpec.describe CommentsController, type: :controller do
     before do
       @parent_content = FactoryGirl.create :content
       @comment = FactoryGirl.create :comment,
-        deleted_at: Date.yesterday,
-        parent_id: @parent_content.id
+                                    deleted_at: Date.yesterday,
+                                    parent_id: @parent_content.id
     end
 
     subject { put :update, params: { id: @comment.content.id } }
 
     it "updates deleted_at to nil" do
-      expect{ subject }.to change{
+      expect { subject }.to change {
         @comment.content.reload.deleted_at
       }.to nil
     end
 
     it "increase comment numbers on parent" do
-      expect{ subject }.to change{
+      expect { subject }.to change {
         @comment.parent.reload.comment_count
-      }.by(1).and change{
+      }.by(1).and change {
         @comment.parent.reload.commenter_count
       }.by(1)
     end
@@ -44,8 +44,8 @@ RSpec.describe CommentsController, type: :controller do
     before do
       @parent_content = FactoryGirl.create :content
       @comment = FactoryGirl.create :comment,
-        deleted_at: nil,
-        parent_id: @parent_content.id
+                                    deleted_at: nil,
+                                    parent_id: @parent_content.id
       mailer = double(deliver_later: true)
       allow(CommentAlertMailer).to receive(:alert_parent_content_owner).and_return(
         mailer
@@ -63,9 +63,9 @@ RSpec.describe CommentsController, type: :controller do
     end
 
     it "decrease comment numbers on parent" do
-      expect{ subject }.to change{
+      expect { subject }.to change {
         @comment.parent.reload.comment_count
-      }.by(-1).and change{
+      }.by(-1).and change {
         @comment.parent.reload.commenter_count
       }.by(-1)
     end

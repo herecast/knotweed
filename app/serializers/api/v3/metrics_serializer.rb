@@ -2,12 +2,12 @@ module Api
   module V3
     class MetricsSerializer < ActiveModel::Serializer
       attributes :id,
-        :promo_click_thru_count,
-        :view_count,
-        :comment_count,
-        :daily_view_counts,
-        :daily_promo_click_thru_counts
-      
+                 :promo_click_thru_count,
+                 :view_count,
+                 :comment_count,
+                 :daily_view_counts,
+                 :daily_promo_click_thru_counts
+
       def promo_click_thru_count
         metrics[:promo_click_thru_count]
       end
@@ -30,13 +30,13 @@ module Api
 
       private
 
-        def metrics
-          @metrics ||= GatherContentMetrics.call(
-            owner: object,
-            start_date: context[:start_date],
-            end_date: context[:end_date]
-          )
-        end
+      def metrics
+        @metrics ||= GatherContentMetrics.call(
+          owner: object,
+          start_date: context[:start_date],
+          end_date: context[:end_date]
+        )
+      end
     end
   end
 end

@@ -53,8 +53,8 @@ RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
       context "when content has promotions that are shares" do
         before do
           @promotion = FactoryGirl.create :promotion,
-            content_id: @content.id,
-            share_platform: 'Twitter'
+                                          content_id: @content.id,
+                                          share_platform: 'Twitter'
         end
 
         subject { get :index, params: { content_id: @content.id } }
@@ -95,17 +95,19 @@ RSpec.describe Api::V3::Contents::PromotionsController, type: :controller do
     context "with proper params" do
       let (:content) { FactoryGirl.create :content }
 
-      let (:params) {{
-        content_id: content.id,
-        promotion: {
-          share_platform: 'Hothbook'
+      let (:params) {
+        {
+          content_id: content.id,
+          promotion: {
+            share_platform: 'Hothbook'
+          }
         }
-      }}
+      }
 
       subject { post :create, params: params }
 
       it "creates a promotion" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           Promotion.count
         }.by 1
       end

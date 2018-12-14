@@ -48,16 +48,15 @@ class Listserv < ActiveRecord::Base
   has_many :subscriptions
   has_many :campaigns
 
-
   validates_uniqueness_of :reverse_publish_email, :unsubscribe_email,
-    :subscribe_email, :post_email, allow_blank: true
+                          :subscribe_email, :post_email, allow_blank: true
 
   validates :reverse_publish_email, absence: { absence: true,
-    message: "Can't populate `reverse_publish_email` for lists that are managed by Subtext." },
-    if: :is_managed_list?
+                                               message: "Can't populate `reverse_publish_email` for lists that are managed by Subtext." },
+                                    if: :is_managed_list?
   validates :unsubscribe_email, :subscribe_email, :post_email, absence: { absence: true,
-    message: "Can't populate these fields for lists that are managed by Vital Communities." },
-    if: :is_vc_list?
+                                                                          message: "Can't populate these fields for lists that are managed by Vital Communities." },
+                                                               if: :is_vc_list?
 
   validates :digest_reply_to, presence: true, if: :send_digest?
   validates :digest_send_time, presence: true, if: :send_digest?
@@ -69,9 +68,9 @@ class Listserv < ActiveRecord::Base
   validate :no_altering_queries
   validate :valid_template_name
 
-  scope :active, ->{ where(active: true) }
+  scope :active, -> { where(active: true) }
 
-  scope :custom_digest, ->{
+  scope :custom_digest, -> {
     where(list_type: 'custom_digest')
   }
 
@@ -130,7 +129,7 @@ class Listserv < ActiveRecord::Base
 
   def banner_ads
     if promotions.any?
-      promotions.map{|promo| promo.promotable}
+      promotions.map { |promo| promo.promotable }
     end
   end
 
@@ -170,16 +169,17 @@ class Listserv < ActiveRecord::Base
 
   def contents_from_custom_query
     custom_ids = custom_digest_results.map { |result| result['id'].to_i }
-    Content.where(id: custom_ids).sort_by {|c| custom_ids.index(c.id) }
+    Content.where(id: custom_ids).sort_by { |c| custom_ids.index(c.id) }
   end
 
   def promotions
     if promotion_ids.any?
-      Promotion.where(id: promotion_ids).sort_by {|p| promotion_ids.index(p.id) }
+      Promotion.where(id: promotion_ids).sort_by { |p| promotion_ids.index(p.id) }
     else
       []
     end
   end
+
   def parse_digest_send_time
     Time.zone.parse(digest_send_time.strftime("%H:%M"))
   end

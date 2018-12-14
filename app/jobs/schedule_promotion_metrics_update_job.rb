@@ -17,7 +17,7 @@ class SchedulePromotionMetricsUpdateJob < ApplicationJob
   def perform(campaign_start_date = 2.weeks.ago)
     promotion_banners = PromotionBanner.where(campaign_start: campaign_start_date..Time.current)
 
-    digests = ListservDigest.where("promotion_ids && '{?}'", promotion_banners.map{|b| b.promotion.id}).where('mc_campaign_id IS NOT NULL')
+    digests = ListservDigest.where("promotion_ids && '{?}'", promotion_banners.map { |b| b.promotion.id }).where('mc_campaign_id IS NOT NULL')
 
     digests.each do |digest|
       BackgroundJob.perform_later('UpdateDigestMetrics', 'call', digest)

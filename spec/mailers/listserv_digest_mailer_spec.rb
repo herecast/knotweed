@@ -11,11 +11,11 @@ RSpec.describe ListservDigestMailer do
 
       let!(:listserv_digest) {
         FactoryGirl.create :listserv_digest,
-          listserv: listserv,
-          subject: 'A test subject',
-          contents: contents,
-          mc_campaign_id: nil
-       }
+                           listserv: listserv,
+                           subject: 'A test subject',
+                           contents: contents,
+                           mc_campaign_id: nil
+      }
 
       describe "delivery" do
         subject { described_class.digest(listserv_digest).deliver_now }
@@ -27,7 +27,7 @@ RSpec.describe ListservDigestMailer do
         end
 
         it 'direct email delivery is disabled' do
-          expect{ subject }.to_not change{
+          expect { subject }.to_not change {
             ActionMailer::Base.deliveries.count
           }.from(0)
         end
@@ -44,7 +44,7 @@ RSpec.describe ListservDigestMailer do
         end
 
         it 'backgrounds campaign send' do
-          expect{subject}.to have_enqueued_job(BackgroundJob).with(
+          expect { subject }.to have_enqueued_job(BackgroundJob).with(
             'ListservDigestMailer',
             'send_campaign',
             listserv_digest
@@ -52,7 +52,7 @@ RSpec.describe ListservDigestMailer do
         end
 
         it 'updates the mc_campaign_id on digest record' do
-          expect{ subject }.to change{
+          expect { subject }.to change {
             listserv_digest.reload.mc_campaign_id
           }.to 'theCampaignId'
         end
@@ -85,7 +85,7 @@ RSpec.describe ListservDigestMailer do
         context 'when using a custom footer' do
           let!(:unencoded_tag) { ("*|UNSUB|*") }
           let(:footer_markup) { "<a href=\"#{unencoded_tag}\">unsubscribe</a>" }
-          
+
           before do
             listserv.update! digest_footer: footer_markup
           end
@@ -117,17 +117,16 @@ RSpec.describe ListservDigestMailer do
             end
 
             it 'updates the sent_at time on digest record' do
-              expect{subject}.to change{
+              expect { subject }.to change {
                 listserv_digest.reload.sent_at
               }.from(nil).to instance_of(ActiveSupport::TimeWithZone)
             end
 
             it 'updates the last_digest_send_time on listserv record' do
-              expect{ subject }.to change{
+              expect { subject }.to change {
                 listserv.reload.last_digest_send_time
               }.to instance_of(ActiveSupport::TimeWithZone)
             end
-
           end
         end
       end
@@ -135,7 +134,6 @@ RSpec.describe ListservDigestMailer do
       describe 'subject' do
         subject { described_class.digest(listserv_digest).subject }
         context 'When listserv digest has a subject' do
-
           before do
             listserv_digest.update(subject: 'A fine subject')
           end
@@ -167,12 +165,8 @@ RSpec.describe ListservDigestMailer do
               expect(subject).to include content.title
             end
           end
-
         end
-
       end
     end
-
   end
-
 end

@@ -15,13 +15,13 @@ describe ReversePublisher, :type => :mailer do
   describe 'mail_content_to_listservs' do
     let(:content) {
       FactoryGirl.create :content, authoremail: 'test@test.com', short_link: 'http://bit.ly/12345',
-        content_category: FactoryGirl.create(:content_category, name: 'news')
+                                   content_category: FactoryGirl.create(:content_category, name: 'news')
     }
     let(:listservs) {
       FactoryGirl.create_list :vc_listserv, 2
     }
 
-    subject{ ReversePublisher.mail_content_to_listservs(content, listservs) }
+    subject { ReversePublisher.mail_content_to_listservs(content, listservs) }
 
     it 'is sent to both listserv reverse_publish_emails' do
       expect(subject.to).to include(*listservs.map(&:reverse_publish_email))
@@ -55,17 +55,17 @@ describe ReversePublisher, :type => :mailer do
           content.update_attribute(:short_link, 'http://bit.ly/12345')
         end
 
-        let!(:schedule1) { FactoryGirl.create :schedule, event: multi_event, subtitle_override: 'no loco', recurrence: IceCube::Schedule.new(Time.zone.now + 1.hour, duration: 2.hours){ |s| s.add_recurrence_rule IceCube::Rule.daily.until(1.week.from_now) }.to_yaml }
+        let!(:schedule1) { FactoryGirl.create :schedule, event: multi_event, subtitle_override: 'no loco', recurrence: IceCube::Schedule.new(Time.zone.now + 1.hour, duration: 2.hours) { |s| s.add_recurrence_rule IceCube::Rule.daily.until(1.week.from_now) }.to_yaml }
 
-        let!(:schedule2) { FactoryGirl.create :schedule, event: multi_event, subtitle_override: 'no loco 2', recurrence: IceCube::Schedule.new(Time.zone.now - 2.days, duration: 4.hours){ |s| s.add_recurrence_rule IceCube::Rule.weekly.until(4.weeks.from_now) }.to_yaml }
+        let!(:schedule2) { FactoryGirl.create :schedule, event: multi_event, subtitle_override: 'no loco 2', recurrence: IceCube::Schedule.new(Time.zone.now - 2.days, duration: 4.hours) { |s| s.add_recurrence_rule IceCube::Rule.weekly.until(4.weeks.from_now) }.to_yaml }
 
         it 'email should contain an event summary' do
-          #schedules in this test must have recurrence
+          # schedules in this test must have recurrence
           multi_event.schedules.each do |schedule|
-              subject.body.parts.each do |part|
-                expect(part.to_s).to include(friendly_schedule_date(schedule)[0])
-                expect(part.to_s).to include(friendly_schedule_date(schedule)[1])
-              end
+            subject.body.parts.each do |part|
+              expect(part.to_s).to include(friendly_schedule_date(schedule)[0])
+              expect(part.to_s).to include(friendly_schedule_date(schedule)[1])
+            end
           end
         end
       end
@@ -74,7 +74,7 @@ describe ReversePublisher, :type => :mailer do
         let(:ugc_single_event) { FactoryGirl.create :event, skip_event_instance: true }
         let(:content) { ugc_single_event.content }
         let(:schedule_starts) { Time.zone.now + 3.days }
-        let!(:schedule) { FactoryGirl.create :schedule, event: ugc_single_event, subtitle_override: 'no loco 3', recurrence: IceCube::Schedule.new(schedule_starts, duration: 30.minutes){ |s| s.add_recurrence_rule IceCube::SingleOccurrenceRule.new(schedule_starts) }.to_yaml }
+        let!(:schedule) { FactoryGirl.create :schedule, event: ugc_single_event, subtitle_override: 'no loco 3', recurrence: IceCube::Schedule.new(schedule_starts, duration: 30.minutes) { |s| s.add_recurrence_rule IceCube::SingleOccurrenceRule.new(schedule_starts) }.to_yaml }
 
         it_behaves_like 'non-ugc event without schedules' do
           let(:test_event) { ugc_single_event }
@@ -83,5 +83,4 @@ describe ReversePublisher, :type => :mailer do
       end
     end
   end
-
 end

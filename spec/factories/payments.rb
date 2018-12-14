@@ -35,6 +35,6 @@ FactoryGirl.define do
     total_payment 9.99
     payment_date Time.current
     content
-    association :paid_to, factory: :user 
+    association :paid_to, factory: :user
   end
 end

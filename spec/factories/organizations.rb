@@ -55,7 +55,7 @@
 
 FactoryGirl.define do
   factory :organization do
-    sequence(:name) {|n| "My Organization #{n}" }
+    sequence(:name) { |n| "My Organization #{n}" }
     biz_feed_active false
   end
 end

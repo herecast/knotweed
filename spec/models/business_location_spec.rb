@@ -36,7 +36,7 @@ describe BusinessLocation, :type => :model do
   include_examples 'Auditable', BusinessLocation
 
   before do
-	  @business_location = FactoryGirl.create :business_location
+    @business_location = FactoryGirl.create :business_location
   end
 
   describe "validation" do
@@ -72,8 +72,8 @@ describe BusinessLocation, :type => :model do
 
       let!(:business_location) do
         FactoryGirl.create :business_location,
-          city: location.city,
-          state: location.state
+                           city: location.city,
+                           state: location.state
       end
 
       subject { business_location.location }
@@ -101,19 +101,19 @@ describe BusinessLocation, :type => :model do
 
         let!(:nearest) do
           FactoryGirl.create :location,
-            city: 'nearborough',
-            coordinates: Geocoder::Calculations.random_point_near(
-              business_location.coordinates, 5, units: :mi
-            )
+                             city: 'nearborough',
+                             coordinates: Geocoder::Calculations.random_point_near(
+                               business_location.coordinates, 5, units: :mi
+                             )
         end
 
         let!(:other) do
           FactoryGirl.create :location,
-            coordinates: Geocoder::Calculations.endpoint(
-              business_location.coordinates,
-              90,
-              7, units: :mi
-            )
+                             coordinates: Geocoder::Calculations.endpoint(
+                               business_location.coordinates,
+                               90,
+                               7, units: :mi
+                             )
         end
 
         subject { business_location.location }
@@ -125,9 +125,9 @@ describe BusinessLocation, :type => :model do
         describe 'nearest location has parent which is not a region' do
           let!(:parent) {
             FactoryGirl.create :location,
-              city: 'parent town',
-              is_region: false,
-              consumer_active: true
+                               city: 'parent town',
+                               is_region: false,
+                               consumer_active: true
           }
 
           before do
@@ -150,12 +150,12 @@ describe BusinessLocation, :type => :model do
           degrees = 90
           distance = 11
           FactoryGirl.create :location,
-            coordinates: Geocoder::Calculations.endpoint(
-              business_location.coordinates,
-              degrees,
-              distance,
-              units: :mi
-            )
+                             coordinates: Geocoder::Calculations.endpoint(
+                               business_location.coordinates,
+                               degrees,
+                               distance,
+                               units: :mi
+                             )
         end
 
         subject { business_location.location }

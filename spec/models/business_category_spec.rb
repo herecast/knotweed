@@ -32,6 +32,5 @@ describe BusinessCategory, :type => :model do
     it { expect(@t1_1.full_descendant_ids).to match_array([@t1_1.id, @t2_1.id, @t2_2.id]) }
     it { expect(@t1_2.full_descendant_ids).to match_array([@t1_2.id]) }
     it { expect(@t2_1.full_descendant_ids).to match_array([@t2_1.id]) }
-
   end
 end

@@ -58,7 +58,7 @@ FactoryGirl.define do
   factory :user do
     name Faker::Name.name
     fullname Faker::Name.name
-    sequence(:email) {|n| "email#{n}@test.com" }
+    sequence(:email) { |n| "email#{n}@test.com" }
     password 'changeme'
     password_confirmation 'changeme'
     # required if the Devise Confirmable module is used
@@ -79,6 +79,5 @@ FactoryGirl.define do
         user.add_role :manager, org
       end
     end
-
   end
 end

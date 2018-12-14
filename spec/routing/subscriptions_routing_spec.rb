@@ -2,7 +2,6 @@ require "rails_helper"
 
 RSpec.describe SubscriptionsController, type: :routing do
   describe "routing" do
-
     it "routes to #index" do
       expect(:get => "/admin/subscriptions").to route_to("subscriptions#index")
     end
@@ -34,6 +33,5 @@ RSpec.describe SubscriptionsController, type: :routing do
     it "routes to #destroy" do
       expect(:delete => "/admin/subscriptions/1").to route_to("subscriptions#destroy", :id => "1")
     end
-
   end
 end

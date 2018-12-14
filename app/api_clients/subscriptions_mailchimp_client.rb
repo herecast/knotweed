@@ -19,7 +19,7 @@ module SubscriptionsMailchimpClient
       page_size = 100
       page_num = 0
       begin
-        pagination_params = {offset: page_num * page_size, count: page_size}.to_param
+        pagination_params = { offset: page_num * page_size, count: page_size }.to_param
         lists = get("/lists?#{pagination_params}")['lists']
         lists.each { |list| y << list }
         page_num += 1
@@ -28,24 +28,24 @@ module SubscriptionsMailchimpClient
   end
 
   def create_campaign(list_identifier:, subject:, title:, from_name:, reply_to:)
-    payload = {body: {
-                       type:       'regular',
-                       recipients: {list_id: list_identifier},
-                       settings:   campaign_settings(subject, title, from_name, reply_to),
-                     }.to_json}
-    resp    = detect_error post("/campaigns", payload)
+    payload = { body: {
+      type: 'regular',
+      recipients: { list_id: list_identifier },
+      settings: campaign_settings(subject, title, from_name, reply_to),
+    }.to_json }
+    resp = detect_error post("/campaigns", payload)
     resp['id']
   end
 
   def update_campaign(campaign_identifier:, subject:, title:, from_name:, reply_to:)
-    payload = {body: {
-                       settings: campaign_settings(subject, title, from_name, reply_to),
-                     }.to_json}
+    payload = { body: {
+      settings: campaign_settings(subject, title, from_name, reply_to),
+    }.to_json }
     detect_error patch("/campaigns/#{campaign_identifier}", payload)
   end
 
   def set_content(campaign_identifier:, html:)
-    payload = {body: {html: html}.to_json}
+    payload = { body: { html: html }.to_json }
     detect_error put("/campaigns/#{campaign_identifier}/content", payload)
   end
 
@@ -59,9 +59,9 @@ module SubscriptionsMailchimpClient
   def campaign_settings(subject, title, from_name, reply_to)
     campaign_settings = {
       subject_line: subject,
-      title:        title,
-      from_name:    from_name,
-      reply_to:     reply_to,
+      title: title,
+      from_name: from_name,
+      reply_to: reply_to,
     }
   end
 
@@ -69,10 +69,10 @@ module SubscriptionsMailchimpClient
     unless response.success?
       raise UnexpectedResponse.new(response)
     end
+
     response
   end
 end
-
 
 class SubscriptionsMailchimpClient::UnexpectedResponse < ::StandardError
   attr_reader :response

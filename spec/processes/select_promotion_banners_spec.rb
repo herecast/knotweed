@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 RSpec.describe SelectPromotionBanners do
-
   describe 'call' do
     context "when promotion_id passed in" do
       before do
@@ -54,8 +53,10 @@ RSpec.describe SelectPromotionBanners do
       end
 
       context 'When banner does not have inventory' do
-        let(:promo_banner) { FactoryGirl.create :promotion_banner, content: content,
-          max_impressions: 10, impression_count: 10 }
+        let(:promo_banner) {
+          FactoryGirl.create :promotion_banner, content: content,
+                                                max_impressions: 10, impression_count: 10
+        }
 
         context 'when no paid banners exist' do
           before do
@@ -65,10 +66,10 @@ RSpec.describe SelectPromotionBanners do
           context 'when banner is not active' do
             before do
               promo_banner.update_attributes({
-                campaign_start: 1.month.ago,
-                campaign_end: 1.week.ago,
-                max_impressions: nil
-              })
+                                               campaign_start: 1.month.ago,
+                                               campaign_end: 1.week.ago,
+                                               max_impressions: nil
+                                             })
               promo_banner.promotion.update_attribute(:content_id, content.id)
             end
 
@@ -115,8 +116,8 @@ RSpec.describe SelectPromotionBanners do
       context "when coupon exists" do
         before do
           @promotion_banner = FactoryGirl.create :promotion_banner,
-            promotion_type: PromotionBanner::COUPON,
-            coupon_image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
+                                                 promotion_type: PromotionBanner::COUPON,
+                                                 coupon_image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
         end
 
         it "returns coupon" do
@@ -158,7 +159,7 @@ RSpec.describe SelectPromotionBanners do
       context 'when only active, no inventory, and non-ROS' do
         let!(:banner) do
           FactoryGirl.create :promotion_banner, :active, :digest,
-            daily_max_impressions: 5, daily_impression_count: 6
+                             daily_max_impressions: 5, daily_impression_count: 6
         end
 
         it 'should return nothing' do
@@ -182,7 +183,7 @@ RSpec.describe SelectPromotionBanners do
       it "returns the specified number of promotion banners" do
         results = subject
         expect(results.length).to eq 4
-        expect(results.map{ |r| r.promotion_banner.id}).to_not include(@promotion_banner5.id)
+        expect(results.map { |r| r.promotion_banner.id }).to_not include(@promotion_banner5.id)
       end
     end
 
@@ -202,11 +203,11 @@ RSpec.describe SelectPromotionBanners do
     context 'when feature flag is specifying an override' do
       let!(:other_promos) {
         FactoryGirl.create :promotion,
-          promotable: FactoryGirl.create(:promotion_banner)
+                           promotable: FactoryGirl.create(:promotion_banner)
       }
       let!(:promo) {
         FactoryGirl.create :promotion,
-          promotable: FactoryGirl.create(:promotion_banner)
+                           promotable: FactoryGirl.create(:promotion_banner)
       }
       before do
         Feature.create(
@@ -235,5 +236,4 @@ RSpec.describe SelectPromotionBanners do
       end
     end
   end
-
 end

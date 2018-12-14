@@ -21,7 +21,7 @@ class Role < ActiveRecord::Base
 
   scopify
 
-  scope :non_resource_roles, ->{ where(resource_id: nil) }
+  scope :non_resource_roles, -> { where(resource_id: nil) }
 
   def pretty_name
     name.gsub('_', ' ').capitalize

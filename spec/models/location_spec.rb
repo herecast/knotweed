@@ -26,15 +26,15 @@
 require 'spec_helper'
 
 describe Location, :type => :model do
-  it {is_expected.to have_db_column(:is_region).of_type(:boolean)}
+  it { is_expected.to have_db_column(:is_region).of_type(:boolean) }
   it { is_expected.to have_many :contents }
   it { is_expected.to have_many :organizations }
   it { is_expected.to have_many :organization_locations }
   it { is_expected.to validate_length_of(:state).is_equal_to(2) }
 
   describe "#slug" do
-    it {is_expected.to have_db_column(:slug)}
-    it {is_expected.to validate_uniqueness_of(:slug)}
+    it { is_expected.to have_db_column(:slug) }
+    it { is_expected.to validate_uniqueness_of(:slug) }
 
     it 'is a dasherized city and state' do
       subject.city = "Wateroo Otte-Witte"
@@ -134,7 +134,7 @@ describe Location, :type => :model do
       }
 
       context 'Geocoder returns a result for IP' do
-        let(:result) { 
+        let(:result) {
           Geocoder::Result::Base.new(
             latitude: 12.0012,
             longitude: 11.001
@@ -183,19 +183,19 @@ describe Location, :type => :model do
       it 'returns locations within the radius' do
         locations_within = 3.times.collect do
           FactoryGirl.create :location,
-            coordinates: Geocoder::Calculations.random_point_near(
-              coords,
-              radius,
-              unit: :mi
-            )
+                             coordinates: Geocoder::Calculations.random_point_near(
+                               coords,
+                               radius,
+                               unit: :mi
+                             )
         end
 
         locations_outside = 3.times.collect do
           FactoryGirl.create :location,
-            coordinates: [
-              (30..40).to_a.sample,
-              (30..40).to_a.sample
-            ]
+                             coordinates: [
+                               (30..40).to_a.sample,
+                               (30..40).to_a.sample
+                             ]
         end
 
         expect(subject).to include *locations_within

@@ -1,5 +1,4 @@
 class CampaignsController < ApplicationController
-
   def index
     @active = params[:promotion_banners_active] == 'on' ? true : false
     if params[:reset]
@@ -17,10 +16,10 @@ class CampaignsController < ApplicationController
 
     if session[:campaign_search].present?
       @campaigns = @search.result(distinct: true)
-        .order("created_at DESC")
-        .page(params[:page])
-        .per(25)
-        .includes(:organization, promotions: [:promotable])
+                          .order("created_at DESC")
+                          .page(params[:page])
+                          .per(25)
+                          .includes(:organization, promotions: [:promotable])
       @campaigns = @campaigns.ad_campaign_active if @active
     else
       @campaigns = []
@@ -58,35 +57,34 @@ class CampaignsController < ApplicationController
 
   private
 
-    def campaign_params
-      params.require(:content).permit(
-        :organization_id,
-        :title,
-        :subtitle,
-        :authors,
-        :pubdate,
-        :ad_promotion_type,
-        :ad_campaign_start,
-        :ad_campaign_end,
-        :ad_max_impressions,
-        :sanitized_content,
-        :ad_invoiced_amount,
-        :ad_invoice_paid,
-        :ad_commission_amount,
-        :ad_commission_paid,
-        :ad_services_amount,
-        :ad_services_paid,
-        :ad_sales_agent,
-        :ad_promoter
-      )
-    end
+  def campaign_params
+    params.require(:content).permit(
+      :organization_id,
+      :title,
+      :subtitle,
+      :authors,
+      :pubdate,
+      :ad_promotion_type,
+      :ad_campaign_start,
+      :ad_campaign_end,
+      :ad_max_impressions,
+      :sanitized_content,
+      :ad_invoiced_amount,
+      :ad_invoice_paid,
+      :ad_commission_amount,
+      :ad_commission_paid,
+      :ad_services_amount,
+      :ad_services_paid,
+      :ad_sales_agent,
+      :ad_promoter
+    )
+  end
 
-    def campaign_content_category_id
-      ContentCategory.find_or_create_by(name: 'campaign').id
-    end
+  def campaign_content_category_id
+    ContentCategory.find_or_create_by(name: 'campaign').id
+  end
 
-    def correct_path
-      params[:continue_editing].present? ? edit_campaign_path(@content) : campaigns_path
-    end
-
+  def correct_path
+    params[:continue_editing].present? ? edit_campaign_path(@content) : campaigns_path
+  end
 end

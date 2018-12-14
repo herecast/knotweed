@@ -3,17 +3,17 @@ require 'rails_helper'
 RSpec.describe NotifySubscribersJob, type: :job do
   before do
     lists_array = double(
-        list: { 'data' => [{ 'stats' => { 'member_count' => 1 } }] }
-      )
+      list: { 'data' => [{ 'stats' => { 'member_count' => 1 } }] }
+    )
     @campaigns = double(schedule: true)
     mailchimp = double(lists: lists_array, campaigns: @campaigns)
     allow(Mailchimp::API).to receive(:new)
       .and_return(mailchimp)
   end
 
-  let(:post)      { FactoryGirl.create(:content, :news, pubdate: 1.day.from_now) }
+  let(:post) { FactoryGirl.create(:content, :news, pubdate: 1.day.from_now) }
 
-  it { expect(post.title            ).to be_present }
+  it { expect(post.title).to be_present }
   it { expect(post.organization_name).to be_present }
 
   describe 'perform' do

@@ -41,7 +41,7 @@ FactoryGirl.define do
 
     trait :default do
       default_location true
-      latitude Location::DEFAULT_LOCATION_COORDS[0] 
+      latitude Location::DEFAULT_LOCATION_COORDS[0]
       longitude Location::DEFAULT_LOCATION_COORDS[1]
     end
   end

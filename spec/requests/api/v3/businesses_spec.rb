@@ -62,7 +62,7 @@ describe 'Businesses Endpoints', type: :request do
       end
 
       it 'response includes business, and it has can_edit=true' do
-        jbusiness = response_json[:businesses].find{|b| b[:id].eql? @business.id}
+        jbusiness = response_json[:businesses].find { |b| b[:id].eql? @business.id }
 
         expect(jbusiness).to_not be nil
         expect(jbusiness[:can_edit]).to be_truthy
@@ -75,7 +75,6 @@ describe 'Businesses Endpoints', type: :request do
       }
 
       describe 'meta.total' do
-
         it "is equal to the total items matching search" do
           get url, params: {
             per_page: 1,
@@ -91,11 +90,11 @@ describe 'Businesses Endpoints', type: :request do
           tf = false
           business_profiles.each_with_index do |bp, i|
             # create some businesses with unique averages
-            ((i+1) * 3).times do
+            ((i + 1) * 3).times do
               bf = FactoryGirl.build(:business_feedback, {
-                business_profile: bp,
-                recommend: tf
-              })
+                                       business_profile: bp,
+                                       recommend: tf
+                                     })
               bf.save!
               bf.run_callbacks(:commit)
               tf = !tf
@@ -112,7 +111,7 @@ describe 'Businesses Endpoints', type: :request do
           businesses = response_json[:businesses]
           expect(businesses.count).to eql business_profiles.count
 
-          sorted = businesses.sort_by{|b|  b[:feedback][:recommend]}.reverse
+          sorted = businesses.sort_by { |b| b[:feedback][:recommend] }.reverse
           expect(businesses.first).to eql sorted.first
           expect(businesses.last).to eql sorted.last
         end
@@ -127,7 +126,7 @@ describe 'Businesses Endpoints', type: :request do
         end
         it 'returns business profiles sorted by geodist asc' do
           businesses = response_json[:businesses]
-          sorted = businesses.sort_by{|b| b[:geodist]}
+          sorted = businesses.sort_by { |b| b[:geodist] }
 
           expect(businesses.count).to eql business_profiles.count
           expect(businesses.first).to eql sorted.first
@@ -138,7 +137,7 @@ describe 'Businesses Endpoints', type: :request do
       describe '?sort_by=rated_desc' do
         before do
           business_profiles.each_with_index do |bp, i|
-            (i+1).times do
+            (i + 1).times do
               bf = FactoryGirl.build :business_feedback, {
                 business_profile: bp,
               }
@@ -154,7 +153,7 @@ describe 'Businesses Endpoints', type: :request do
         end
         it 'returns business profiles sorted by feedback_num desc' do
           businesses = response_json[:businesses]
-          sorted = businesses.sort_by{|b| b[:feedback_num]}.reverse
+          sorted = businesses.sort_by { |b| b[:feedback_num] }.reverse
 
           expect(businesses.count).to eql business_profiles.count
           expect(businesses.first).to eql sorted.first
@@ -171,7 +170,7 @@ describe 'Businesses Endpoints', type: :request do
         end
         it 'returns business profiles sorted alphabetically' do
           businesses = response_json[:businesses]
-          sorted = businesses.sort_by{|b| b[:name]}
+          sorted = businesses.sort_by { |b| b[:name] }
           expect(businesses.count).to eql business_profiles.count
           expect(businesses.first).to eql sorted.first
           expect(businesses.last).to eql sorted.last
@@ -187,7 +186,7 @@ describe 'Businesses Endpoints', type: :request do
         end
         it 'returns business profiles sorted reverse alphabetically' do
           businesses = response_json[:businesses]
-          sorted = businesses.sort_by{|b| b[:name]}.reverse
+          sorted = businesses.sort_by { |b| b[:name] }.reverse
 
           expect(businesses.count).to eql business_profiles.count
           expect(businesses.first).to eql sorted.first
@@ -208,7 +207,7 @@ describe 'Businesses Endpoints', type: :request do
         end
 
         it 'only returns businesses owned by the organization' do
-          returned_ids = response_json[:businesses].collect{|b| b[:id]}
+          returned_ids = response_json[:businesses].collect { |b| b[:id] }
 
           expect(returned_ids).to include(*owned_by_org.collect(&:id))
           expect(returned_ids).to_not include(*not_owned_by_org.collect(&:id))
@@ -262,9 +261,9 @@ describe 'Businesses Endpoints', type: :request do
           hours: valid_params[:hours],
           feedback_num: a_kind_of(Fixnum),
           can_edit: true,
-# @TODO:  details: valid_params[:details],
-# Details gets another <p></p> wrapped around it.
-# Needs to be looked at.
+          # @TODO:  details: valid_params[:details],
+          # Details gets another <p></p> wrapped around it.
+          # Needs to be looked at.
           details: an_instance_of(String),
           logo: an_instance_of(String).or(be_nil),
           images: an_instance_of(Array),

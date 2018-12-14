@@ -2,14 +2,16 @@ require 'rails_helper'
 
 RSpec.describe SubscribeToListserv do
   context 'Given a listserv and attrs including email;' do
-    let(:attrs) { {
-      email: "user@example.org",
-      name: 'tom dale',
-      source: 'email'
-    }}
+    let(:attrs) {
+      {
+        email: "user@example.org",
+        name: 'tom dale',
+        source: 'email'
+      }
+    }
     let(:listserv) { FactoryGirl.create :subtext_listserv }
 
-    subject { SubscribeToListserv.call(listserv,attrs) }
+    subject { SubscribeToListserv.call(listserv, attrs) }
 
     it 'creates a subscription' do
       subscription = subject
@@ -27,10 +29,12 @@ RSpec.describe SubscribeToListserv do
     end
 
     context 'when existing subscription;' do
-      let!(:existing) { Subscription.create!({
-        listserv: listserv,
-        email: attrs[:email]
-      }) }
+      let!(:existing) {
+        Subscription.create!({
+                               listserv: listserv,
+                               email: attrs[:email]
+                             })
+      }
 
       it 'returns same subscription model' do
         subscription = subject
@@ -70,16 +74,15 @@ RSpec.describe SubscribeToListserv do
         end
       end
 
-
       context 'when previously unsubscribed;' do
         before do
           existing.update_attribute(:unsubscribed_at, Time.zone.now)
         end
 
         it 'changes unsubscribed status to subscribed' do
-          expect{
+          expect {
             subject
-          }.to change{
+          }.to change {
             existing.reload.unsubscribed?
           }.from(true).to(false)
         end

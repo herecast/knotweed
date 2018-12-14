@@ -36,7 +36,7 @@ class PaymentRecipientsController < ApplicationController
       end
     else
       respond_to do |format|
-        format.js { render json: @payment_recipient.errors } 
+        format.js { render json: @payment_recipient.errors }
       end
     end
   end

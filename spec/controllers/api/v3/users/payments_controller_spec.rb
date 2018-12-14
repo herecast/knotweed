@@ -25,9 +25,9 @@ RSpec.describe Api::V3::Users::PaymentsController, type: :controller do
         before do
           15.times do |i|
             FactoryGirl.create :payment, content: contents[i],
-              payment_date: i.days.ago, paid_to: user,
-              period_start: 1.month.ago, period_end: Date.today,
-              paid: true
+                                         payment_date: i.days.ago, paid_to: user,
+                                         period_start: 1.month.ago, period_end: Date.today,
+                                         paid: true
           end
         end
 

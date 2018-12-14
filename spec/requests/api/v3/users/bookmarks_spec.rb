@@ -1,4 +1,3 @@
-
 require 'rails_helper'
 
 describe 'User Bookmarks endpoint', type: :request do
@@ -6,7 +5,7 @@ describe 'User Bookmarks endpoint', type: :request do
   let(:organization) { FactoryGirl.create :organization }
   let(:owning_user) { FactoryGirl.create :user }
   let(:other_user) { FactoryGirl.create :user }
-  let(:headers) { {'ACCEPT' => 'application/json' } }
+  let(:headers) { { 'ACCEPT' => 'application/json' } }
   let(:user_headers) { headers.merge(auth_headers_for(owning_user)) }
   let(:wrong_user_headers) { headers.merge(auth_headers_for(other_user)) }
 
@@ -34,7 +33,7 @@ describe 'User Bookmarks endpoint', type: :request do
       subject { post "/api/v3/users/#{owning_user.id}/bookmarks", params: { bookmark: { content_id: bookmarked_content.id } }, headers: user_headers }
 
       it "creates a UserBookmark record" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           owning_user.reload.user_bookmarks.length
         }.by 1
       end
@@ -62,7 +61,7 @@ describe 'User Bookmarks endpoint', type: :request do
       subject { put "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", params: bookmark_params, headers: user_headers }
 
       it "updates user_bookmark" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @bookmark.reload.read
         }.to true
       end
@@ -88,7 +87,7 @@ describe 'User Bookmarks endpoint', type: :request do
       subject { delete "/api/v3/users/#{owning_user.id}/bookmarks/#{@bookmark.id}", params: {}, headers: user_headers }
 
       it "creates a UserBookmark record" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @bookmark.reload.deleted_at
         }
       end

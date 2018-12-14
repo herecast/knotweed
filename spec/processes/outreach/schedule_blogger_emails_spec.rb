@@ -1,11 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe Outreach::ScheduleBloggerEmails do
-
   describe "::call" do
     before do
       @user = FactoryGirl.create :user,
-        mc_segment_id: '43nj2k4'
+                                 mc_segment_id: '43nj2k4'
       @organization = FactoryGirl.create :organization
       @campaign_id = '43n2hjb4'
       @campaigns_array = double(
@@ -25,10 +24,10 @@ RSpec.describe Outreach::ScheduleBloggerEmails do
           organization: @organization
         )
       end
-    
+
       it "schedules initial email and follow-up email" do
         expect(@campaigns_array).to receive(:create).exactly(2).times
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @organization.reload.reminder_campaign_id
         }.to @campaign_id
       end
@@ -48,7 +47,7 @@ RSpec.describe Outreach::ScheduleBloggerEmails do
           expect(@campaigns_array).to receive(:create)
           subject
         end
-      end 
+      end
     end
 
     context "when blogger does not have mailchimp segment" do

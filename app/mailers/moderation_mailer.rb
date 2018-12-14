@@ -1,8 +1,6 @@
 class ModerationMailer < ActionMailer::Base
-
   BUSINESS_MODERATION_EMAIL_RECIPIENT = Figaro.env.business_moderation_email? ? Figaro.env.business_moderation_email \
     : Rails.configuration.subtext.emails.moderation
-
 
   def send_moderation_flag(content, params, subject)
     @content = content
@@ -39,5 +37,4 @@ class ModerationMailer < ActionMailer::Base
          to: BUSINESS_MODERATION_EMAIL_RECIPIENT,
          subject: subject)
   end
-
 end

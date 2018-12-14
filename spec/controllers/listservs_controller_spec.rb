@@ -6,28 +6,30 @@ RSpec.describe ListservsController, type: :controller do
     sign_in @user
   end
 
-  let(:valid_attributes) {{
-    name: 'listserv1',
-    list_type: 'internal_digest',
-    subscribe_email: 'subscribe@example.org',
-    unsubscribe_email: 'unsubscribe@example.org',
-    post_email: 'post@example.org',
-    digest_send_time: '13:01',
-    mc_list_id: 'xyz123',
-    mc_group_name: 'xyz123',
-    send_digest: false,
-    digest_reply_to: 'test@example.org',
-    digest_header: '',
-    digest_footer: '',
-    digest_subject: 'da subject',
-    digest_preheader: 'a distinguished curated list',
-    sender_name: 'Mace Windu',
-    admin_email: 'admin@gmail.com',
-    forwarding_email: 'forwarding@mail.com',
-    forward_for_processing: '1',
-    post_threshold: 5,
-    active: true
-  }}
+  let(:valid_attributes) {
+    {
+      name: 'listserv1',
+      list_type: 'internal_digest',
+      subscribe_email: 'subscribe@example.org',
+      unsubscribe_email: 'unsubscribe@example.org',
+      post_email: 'post@example.org',
+      digest_send_time: '13:01',
+      mc_list_id: 'xyz123',
+      mc_group_name: 'xyz123',
+      send_digest: false,
+      digest_reply_to: 'test@example.org',
+      digest_header: '',
+      digest_footer: '',
+      digest_subject: 'da subject',
+      digest_preheader: 'a distinguished curated list',
+      sender_name: 'Mace Windu',
+      admin_email: 'admin@gmail.com',
+      forwarding_email: 'forwarding@mail.com',
+      forward_for_processing: '1',
+      post_threshold: 5,
+      active: true
+    }
+  }
 
   describe "GET #index" do
     it "assigns all listservs as @listservs" do
@@ -79,14 +81,15 @@ RSpec.describe ListservsController, type: :controller do
         expect(response).to redirect_to(listservs_path)
       end
     end
-
   end
 
   describe "PUT #update" do
     context "with valid params" do
-      let(:new_attributes) {{
-        name: 'new name'
-      }}
+      let(:new_attributes) {
+        {
+          name: 'new name'
+        }
+      }
 
       it "updates the requested listserv" do
         listserv = Listserv.create! valid_attributes
@@ -123,5 +126,4 @@ RSpec.describe ListservsController, type: :controller do
       expect(response).to redirect_to(listservs_url)
     end
   end
-
 end

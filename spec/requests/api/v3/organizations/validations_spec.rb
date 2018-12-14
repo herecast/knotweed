@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 RSpec.describe 'Organizations::Validations', type: :request do
-
   describe "GET show" do
     context "when no Organization present with name" do
       subject { get '/api/v3/organizations/fakey-jakey/validation' }

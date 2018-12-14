@@ -23,18 +23,17 @@ module Api
 
       protected
 
-        def is_my_stuff_request?
-          ['me', 'my_stuff', 'mystuff'].include?(params[:radius].to_s.downcase)
-        end
+      def is_my_stuff_request?
+        ['me', 'my_stuff', 'mystuff'].include?(params[:radius].to_s.downcase)
+      end
 
-        def total_pages
-          @result_object[:total_entries].present? ? (@result_object[:total_entries]/per_page.to_f).ceil : nil
-        end
+      def total_pages
+        @result_object[:total_entries].present? ? (@result_object[:total_entries] / per_page.to_f).ceil : nil
+      end
 
-        def per_page
-          params[:per_page] || 20
-        end
-
+      def per_page
+        params[:per_page] || 20
+      end
     end
   end
 end

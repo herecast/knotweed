@@ -27,5 +27,4 @@ class PaymentRecipient < ActiveRecord::Base
   validates_presence_of :user
 
   validates_uniqueness_of :organization, allow_nil: true
-
 end

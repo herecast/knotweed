@@ -7,11 +7,10 @@ RSpec.describe StreamlinedRegistrationMailer do
       @password = Devise.friendly_token(8)
       location = FactoryGirl.create :location, city: "Hartford"
       @user = User.new(name: Faker::Name.name,
-                      email: Faker::Internet.email,
-                      location: location,
-                      password: @password,
-                      source: "market_message"
-                     )
+                       email: Faker::Internet.email,
+                       location: location,
+                       password: @password,
+                       source: "market_message")
       @user.skip_confirmation!
       @user.save!
       @user.send(:generate_confirmation_token)
@@ -20,8 +19,7 @@ RSpec.describe StreamlinedRegistrationMailer do
       @user.save!
       @mail = StreamlinedRegistrationMailer.confirmation_instructions(@user,
                                                                       @token,
-                                                                     { password: @password }
-                                                                    ).deliver_now
+                                                                      { password: @password }).deliver_now
     end
 
     it 'sends an email with the users passowrd and confirmation link' do
@@ -31,6 +29,5 @@ RSpec.describe StreamlinedRegistrationMailer do
       expect(@mail.to.first).to eq @user.email
       expect(@mail.body.include?("http://#{Figaro.env.default_consumer_host}/sign_up/confirm/#{@token}"))
     end
-
   end
 end

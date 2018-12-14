@@ -1,7 +1,6 @@
 module Api
   module V3
     class Metrics::ProfilesController < ApiController
-
       before_action :confirm_content_published
 
       def impression
@@ -13,7 +12,7 @@ module Api
         if metric.persisted?
           render json: {}, status: 201
         else
-          render json: {errors: metric.errors.full_messages}, status: 422
+          render json: { errors: metric.errors.full_messages }, status: 422
         end
       end
 
@@ -26,18 +25,19 @@ module Api
         if metric.persisted?
           render json: {}, status: 201
         else
-          render json: {errors: metric.errors.full_messages}, status: 422
+          render json: { errors: metric.errors.full_messages }, status: 422
         end
       end
 
       private
+
       def profile_metric_params
         organization = Organization.find params[:id]
 
         return {
-          user_id:    current_user.try(:id),
+          user_id: current_user.try(:id),
           user_agent: request.user_agent,
-          user_ip:    request.remote_ip,
+          user_ip: request.remote_ip,
           client_id: params[:client_id],
           content_id: params[:content_id],
           organization: organization
@@ -59,7 +59,6 @@ module Api
           end
         end
       end
-
     end
   end
 end

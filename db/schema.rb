@@ -11,7 +11,6 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema.define(version: 20181016143456) do
-
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -33,7 +32,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.string   "icon_class",  limit: 255
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
-    t.string   "source",      limit: 255
+    t.string   "source", limit: 255
     t.bigint   "source_id"
     t.index ["source", "source_id"], name: "idx_16420_index_business_categories_on_source_and_source_id", using: :btree
   end
@@ -72,15 +71,15 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.bigint   "organization_id"
     t.float    "latitude"
     t.float    "longitude"
-    t.string   "venue_url",           limit: 255
-    t.boolean  "locate_include_name",                            default: false
+    t.string   "venue_url", limit: 255
+    t.boolean  "locate_include_name", default: false
     t.string   "city",                limit: 255
     t.string   "state",               limit: 255
     t.string   "zip",                 limit: 255
     t.string   "status",              limit: 255
     t.bigint   "created_by_id"
     t.bigint   "updated_by_id"
-    t.decimal  "service_radius",                  precision: 10
+    t.decimal  "service_radius", precision: 10
     t.index ["city"], name: "idx_16441_index_business_locations_on_city", using: :btree
     t.index ["created_by_id"], name: "idx_16441_index_business_locations_on_created_by_id", using: :btree
     t.index ["name"], name: "idx_16441_index_business_locations_on_name", using: :btree
@@ -88,7 +87,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
 
   create_table "business_profiles", id: :bigserial, force: :cascade do |t|
     t.bigint   "business_location_id"
-    t.boolean  "has_retail_location",                   default: true
+    t.boolean  "has_retail_location", default: true
     t.datetime "created_at",                                            null: false
     t.datetime "updated_at",                                            null: false
     t.string   "source",                    limit: 255
@@ -106,14 +105,14 @@ ActiveRecord::Schema.define(version: 20181016143456) do
 
   create_table "campaigns", force: :cascade do |t|
     t.integer  "listserv_id"
-    t.integer  "community_ids", default: [],              array: true
+    t.integer  "community_ids", default: [], array: true
     t.string   "sponsored_by"
     t.text     "digest_query"
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.string   "title"
     t.string   "preheader"
-    t.integer  "promotion_ids", default: [],              array: true
+    t.integer  "promotion_ids", default: [], array: true
     t.index ["community_ids"], name: "index_campaigns_on_community_ids", using: :btree
     t.index ["listserv_id"], name: "index_campaigns_on_listserv_id", using: :btree
   end
@@ -139,7 +138,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
   end
 
   create_table "channels", id: :bigserial, force: :cascade do |t|
-    t.string   "name",       limit: 255
+    t.string   "name", limit: 255
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
@@ -154,7 +153,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.bigint   "parent_id"
-    t.boolean  "active",                 default: true
+    t.boolean  "active", default: true
   end
 
   create_table "content_categories_organizations", id: false, force: :cascade do |t|
@@ -203,20 +202,20 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.text     "raw_content"
     t.datetime "created_at",                                            null: false
     t.datetime "updated_at",                                            null: false
-    t.string   "guid",                      limit: 255
+    t.string   "guid", limit: 255
     t.datetime "pubdate"
     t.string   "url",                       limit: 255
     t.string   "origin",                    limit: 255
     t.string   "page",                      limit: 255
     t.string   "authoremail",               limit: 255
     t.bigint   "organization_id"
-    t.boolean  "quarantine",                            default: false
+    t.boolean  "quarantine", default: false
     t.datetime "timestamp"
     t.bigint   "parent_id"
     t.bigint   "content_category_id"
-    t.boolean  "has_event_calendar",                    default: false
+    t.boolean  "has_event_calendar", default: false
     t.bigint   "channelized_content_id"
-    t.string   "channel_type",              limit: 255
+    t.string   "channel_type", limit: 255
     t.bigint   "channel_id"
     t.bigint   "root_content_category_id"
     t.bigint   "view_count",                            default: 0
@@ -224,12 +223,12 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.bigint   "commenter_count",                       default: 0
     t.bigint   "created_by_id"
     t.bigint   "updated_by_id"
-    t.bigint   "banner_click_count",                    default: 0
+    t.bigint   "banner_click_count", default: 0
     t.text     "similar_content_overrides"
     t.bigint   "banner_ad_override"
     t.bigint   "root_parent_id"
     t.datetime "deleted_at"
-    t.boolean  "authors_is_created_by",                 default: false
+    t.boolean  "authors_is_created_by", default: false
     t.string   "subscriber_mc_identifier"
     t.boolean  "biz_feed_public"
     t.datetime "sunset_date"
@@ -244,9 +243,9 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.boolean  "removed",                               default: false
     t.boolean  "ad_invoice_paid",                       default: false
     t.float    "ad_commission_amount"
-    t.boolean  "ad_commission_paid",                    default: false
+    t.boolean  "ad_commission_paid", default: false
     t.float    "ad_services_amount"
-    t.boolean  "ad_services_paid",                      default: false
+    t.boolean  "ad_services_paid", default: false
     t.integer  "ad_sales_agent"
     t.integer  "ad_promoter"
     t.datetime "latest_activity"
@@ -278,11 +277,11 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.bigint   "event_id"
     t.datetime "start_date"
     t.datetime "end_date"
-    t.string   "subtitle_override",    limit: 255
+    t.string   "subtitle_override", limit: 255
     t.text     "description_override"
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
-    t.string   "presenter_name",       limit: 255
+    t.string   "presenter_name", limit: 255
     t.bigint   "schedule_id"
     t.index ["end_date"], name: "idx_16625_index_event_instances_on_end_date", using: :btree
     t.index ["event_id"], name: "idx_16625_index_event_instances_on_event_id", using: :btree
@@ -290,9 +289,9 @@ ActiveRecord::Schema.define(version: 20181016143456) do
   end
 
   create_table "events", id: :bigserial, force: :cascade do |t|
-    t.string   "event_type",            limit: 255
+    t.string   "event_type", limit: 255
     t.bigint   "venue_id"
-    t.string   "cost",                  limit: 255
+    t.string   "cost", limit: 255
     t.string   "event_url"
     t.string   "sponsor",               limit: 255
     t.string   "sponsor_url",           limit: 255
@@ -304,7 +303,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.string   "contact_email",         limit: 255
     t.string   "cost_type",             limit: 255
     t.string   "event_category",        limit: 255
-    t.boolean  "social_enabled",                    default: false
+    t.boolean  "social_enabled", default: false
     t.datetime "registration_deadline"
     t.string   "registration_url",      limit: 255
     t.string   "registration_phone",    limit: 255
@@ -331,12 +330,12 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.bigint   "imageable_id"
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false
-    t.string   "source_url",     limit: 400
-    t.boolean  "primary",                    default: false
+    t.string   "source_url", limit: 400
+    t.boolean  "primary", default: false
     t.integer  "width"
     t.integer  "height"
     t.string   "file_extension"
-    t.integer  "position",                   default: 0
+    t.integer  "position", default: 0
     t.index ["imageable_type", "imageable_id"], name: "idx_16634_index_images_on_imageable_type_and_imageable_id", using: :btree
   end
 
@@ -356,8 +355,8 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.string   "mc_segment_id"
     t.string   "title"
     t.string   "preheader"
-    t.integer  "promotion_ids",    default: [],              array: true
-    t.integer  "content_ids",                                array: true
+    t.integer  "promotion_ids", default: [], array: true
+    t.integer  "content_ids", array: true
     t.integer  "emails_sent",      default: 0,  null: false
     t.integer  "opens_total",      default: 0,  null: false
     t.hstore   "link_clicks",      default: {}, null: false
@@ -378,24 +377,24 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.string   "subscribe_email"
     t.string   "mc_list_id"
     t.string   "mc_group_name"
-    t.boolean  "send_digest",                             default: false
+    t.boolean  "send_digest", default: false
     t.datetime "last_digest_send_time"
     t.datetime "last_digest_generation_time"
     t.text     "digest_header"
     t.text     "digest_footer"
     t.string   "digest_reply_to"
-    t.string   "timezone",                                default: "Eastern Time (US & Canada)"
+    t.string   "timezone", default: "Eastern Time (US & Canada)"
     t.text     "digest_description"
     t.string   "digest_send_day"
     t.text     "digest_query"
     t.string   "template"
     t.string   "sponsored_by"
-    t.boolean  "display_subscribe",                       default: false
+    t.boolean  "display_subscribe", default: false
     t.string   "digest_subject"
     t.string   "digest_preheader"
-    t.string   "list_type",                               default: "custom_list"
+    t.string   "list_type", default: "custom_list"
     t.string   "sender_name"
-    t.integer  "promotion_ids",                           default: [],                                        array: true
+    t.integer  "promotion_ids", default: [], array: true
     t.string   "admin_email"
     t.string   "forwarding_email"
     t.boolean  "forward_for_processing",                  default: false
@@ -448,7 +447,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.datetime "updated_at",                                           null: false
     t.string   "status",                   limit: 255
     t.string   "preferred_contact_method", limit: 255
-    t.boolean  "sold",                                 default: false
+    t.boolean  "sold", default: false
   end
 
   create_table "organization_content_tags", force: :cascade do |t|
@@ -471,31 +470,31 @@ ActiveRecord::Schema.define(version: 20181016143456) do
   end
 
   create_table "organizations", id: :bigserial, force: :cascade do |t|
-    t.string   "name",                     limit: 255
+    t.string   "name", limit: 255
     t.datetime "created_at",                                           null: false
     t.datetime "updated_at",                                           null: false
-    t.string   "logo",                     limit: 255
+    t.string   "logo", limit: 255
     t.bigint   "organization_id"
-    t.string   "website",                  limit: 255
+    t.string   "website", limit: 255
     t.text     "notes"
     t.bigint   "parent_id"
-    t.string   "org_type",                 limit: 255
+    t.string   "org_type", limit: 255
     t.boolean  "can_reverse_publish",                  default: false
     t.boolean  "can_publish_news",                     default: false
-    t.string   "subscribe_url",            limit: 255
+    t.string   "subscribe_url", limit: 255
     t.text     "description"
-    t.string   "banner_ad_override",       limit: 255
-    t.boolean  "pay_directly",                         default: false
+    t.string   "banner_ad_override", limit: 255
+    t.boolean  "pay_directly", default: false
     t.string   "profile_image",            limit: 255
     t.string   "background_image",         limit: 255
     t.string   "twitter_handle"
     t.jsonb    "custom_links"
-    t.boolean  "biz_feed_active",                      default: false
+    t.boolean  "biz_feed_active", default: false
     t.string   "ad_sales_agent"
     t.string   "ad_contact_nickname"
     t.string   "ad_contact_fullname"
     t.string   "profile_sales_agent"
-    t.boolean  "certified_storyteller",                default: false
+    t.boolean  "certified_storyteller", default: false
     t.string   "services"
     t.boolean  "contact_card_active",                  default: true
     t.boolean  "description_card_active",              default: true
@@ -503,7 +502,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.boolean  "pay_for_content",                      default: false
     t.string   "special_link_url"
     t.string   "special_link_text"
-    t.boolean  "certified_social",                     default: false
+    t.boolean  "certified_social", default: false
     t.string   "desktop_image"
     t.boolean  "archived",                             default: false
     t.boolean  "feature_notification_org",             default: false
@@ -578,7 +577,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.string   "client_id"
     t.integer  "location_id"
     t.float    "load_time"
-    t.boolean  "location_confirmed",  default: false
+    t.boolean  "location_confirmed", default: false
     t.index ["content_id"], name: "index_promotion_banner_metrics_on_content_id", using: :btree
     t.index ["created_at"], name: "index_promotion_banner_metrics_on_created_at", using: :btree
     t.index ["event_type"], name: "index_promotion_banner_metrics_on_event_type", using: :btree
@@ -634,14 +633,14 @@ ActiveRecord::Schema.define(version: 20181016143456) do
   end
 
   create_table "promotions", id: :bigserial, force: :cascade do |t|
-    t.string   "banner",          limit: 255
+    t.string   "banner", limit: 255
     t.bigint   "content_id"
     t.text     "description"
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
     t.bigint   "promotable_id"
     t.string   "promotable_type", limit: 255
-    t.boolean  "paid",                        default: false
+    t.boolean  "paid", default: false
     t.bigint   "created_by_id"
     t.bigint   "updated_by_id"
     t.string   "share_platform"
@@ -662,7 +661,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
   end
 
   create_table "roles", id: :bigserial, force: :cascade do |t|
-    t.string   "name",          limit: 255
+    t.string   "name", limit: 255
     t.bigint   "resource_id"
     t.string   "resource_type", limit: 255
     t.datetime "created_at",                null: false
@@ -682,7 +681,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
   end
 
   create_table "sign_in_tokens", force: :cascade do |t|
-    t.string   "token",      null: false
+    t.string   "token", null: false
     t.integer  "user_id"
     t.datetime "created_at", null: false
     t.index ["token"], name: "index_sign_in_tokens_on_token", using: :btree
@@ -704,17 +703,17 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.integer  "listserv_id"
     t.datetime "confirmed_at"
     t.datetime "unsubscribed_at"
-    t.boolean  "blacklist",            default: false
+    t.boolean  "blacklist", default: false
     t.string   "subscription_details"
     t.string   "source"
-    t.string   "email",                                 null: false
+    t.string   "email", null: false
     t.string   "confirmation_details"
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.string   "key",                                   null: false
     t.string   "name"
     t.string   "confirm_ip"
-    t.string   "email_type",           default: "html"
+    t.string   "email_type", default: "html"
     t.datetime "mc_unsubscribed_at"
     t.index ["listserv_id"], name: "index_subscriptions_on_listserv_id", using: :btree
     t.index ["user_id"], name: "index_subscriptions_on_user_id", using: :btree
@@ -726,7 +725,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.integer  "event_instance_id"
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
-    t.boolean  "read",              default: false
+    t.boolean  "read", default: false
     t.datetime "deleted_at"
     t.index ["content_id"], name: "index_user_bookmarks_on_content_id", using: :btree
     t.index ["deleted_at"], name: "index_user_bookmarks_on_deleted_at", using: :btree
@@ -739,7 +738,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.string   "reset_password_token",   limit: 255
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.bigint   "sign_in_count",                      default: 0
+    t.bigint   "sign_in_count", default: 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip",     limit: 255
@@ -750,21 +749,21 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.string   "confirmation_token",     limit: 255
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.string   "unconfirmed_email",      limit: 255
+    t.string   "unconfirmed_email", limit: 255
     t.datetime "nda_agreed_at"
-    t.boolean  "agreed_to_nda",                      default: false
+    t.boolean  "agreed_to_nda", default: false
     t.string   "contact_phone",          limit: 255
     t.string   "contact_email",          limit: 255
     t.string   "contact_url",            limit: 255
     t.bigint   "location_id"
-    t.string   "test_group",             limit: 255, default: "consumer"
-    t.boolean  "muted",                              default: false
+    t.string   "test_group", limit: 255, default: "consumer"
+    t.boolean  "muted", default: false
     t.string   "authentication_token",   limit: 255
     t.string   "avatar",                 limit: 255
     t.string   "public_id",              limit: 255
-    t.boolean  "skip_analytics",                     default: false
+    t.boolean  "skip_analytics", default: false
     t.string   "temp_password"
-    t.boolean  "archived",                           default: false
+    t.boolean  "archived", default: false
     t.string   "source"
     t.boolean  "receive_comment_alerts",             default: true
     t.boolean  "location_confirmed",                 default: false
@@ -807,18 +806,18 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.string   "authoremail",               limit: 255
     t.bigint   "organization_id"
     t.boolean  "quarantine"
-    t.string   "doctype",                   limit: 255
+    t.string   "doctype", limit: 255
     t.datetime "timestamp"
-    t.string   "contentsource",             limit: 255
+    t.string   "contentsource", limit: 255
     t.bigint   "import_record_id"
-    t.string   "source_content_id",         limit: 255
+    t.string   "source_content_id", limit: 255
     t.bigint   "parent_id"
     t.bigint   "content_category_id"
     t.boolean  "category_reviewed"
     t.boolean  "has_event_calendar"
     t.bigint   "channelized_content_id"
     t.boolean  "published"
-    t.string   "channel_type",              limit: 255
+    t.string   "channel_type", limit: 255
     t.bigint   "channel_id"
     t.bigint   "root_content_category_id"
     t.bigint   "view_count"

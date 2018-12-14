@@ -6,7 +6,7 @@ RSpec.describe UnsubscribeSubscription do
   subject { UnsubscribeSubscription.call(subscription) }
 
   it 'sets #unsubscribed_at' do
-    expect{ subject }.to change{
+    expect { subject }.to change {
       subscription.reload.unsubscribed_at
     }.to an_instance_of(ActiveSupport::TimeWithZone)
   end
@@ -37,14 +37,13 @@ RSpec.describe UnsubscribeSubscription do
     end
   end
 
-
   context 'when unsubscribed;' do
     before do
       subscription.update unsubscribed_at: 1.day.ago
     end
 
     it 'does not change unsubscribed_at time' do
-      expect{ subject }.to_not change{
+      expect { subject }.to_not change {
         subscription.reload.unsubscribed_at
       }
     end

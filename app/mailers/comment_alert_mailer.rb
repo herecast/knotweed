@@ -4,7 +4,7 @@ class CommentAlertMailer < ApplicationMailer
 
   layout 'comment_alert_email'
 
-  def alert_parent_content_owner(comment, parent_content, comment_hidden=false)
+  def alert_parent_content_owner(comment, parent_content, comment_hidden = false)
     @comment = comment
     @parent_content = parent_content
     @comment_owner = @comment.created_by
@@ -16,12 +16,11 @@ class CommentAlertMailer < ApplicationMailer
 
   private
 
-    def removed_subject
-      "A comment has been removed from your post on DailyUV"
-    end
+  def removed_subject
+    "A comment has been removed from your post on DailyUV"
+  end
 
-    def created_subject
-      "#{@comment_owner.name} just commented on your post on DailyUV"
-    end
-
+  def created_subject
+    "#{@comment_owner.name} just commented on your post on DailyUV"
+  end
 end

@@ -45,7 +45,7 @@ class ListservDigest < ActiveRecord::Base
   def contents
     @contents ||=
       content_ids.present? ?
-        Content.where(id: content_ids).sort_by{|c| content_ids.index(c.id)} : []
+        Content.where(id: content_ids).sort_by { |c| content_ids.index(c.id) } : []
   end
 
   def locations=(list)
@@ -82,7 +82,7 @@ class ListservDigest < ActiveRecord::Base
     formatted_title = title.gsub(' ', '_')
     tag = "#{frequency}_#{formatted_title}_#{send_date}"
     if tag.bytesize > 50
-      "#{frequency}_#{formatted_title[0,30]}_#{send_date}"
+      "#{frequency}_#{formatted_title[0, 30]}_#{send_date}"
     else
       tag
     end
@@ -90,7 +90,7 @@ class ListservDigest < ActiveRecord::Base
 
   def promotions
     if promotion_ids.any?
-      Promotion.where(id: promotion_ids).sort_by {|p| promotion_ids.index(p.id) }
+      Promotion.where(id: promotion_ids).sort_by { |p| promotion_ids.index(p.id) }
     else
       []
     end

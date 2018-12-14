@@ -15,7 +15,6 @@ describe LocationsController, :type => :controller do
     end
 
     context 'when reset' do
-
       subject { get :index, params: { reset: true } }
 
       it "returns no locations" do
@@ -89,8 +88,7 @@ describe LocationsController, :type => :controller do
   end
 
   describe "PUT 'update'" do
-
-    subject { put :update, params: { id: @location.to_param, location: params} }
+    subject { put :update, params: { id: @location.to_param, location: params } }
 
     describe 'with valid params' do
       let(:params) { { city: 'Another string' } }

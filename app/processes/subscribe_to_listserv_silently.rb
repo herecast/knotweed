@@ -14,9 +14,9 @@ class SubscribeToListservSilently
 
   def call
     @subscription = Subscription.find_or_initialize_by({
-      listserv: @listserv,
-      email: @user.email
-    })
+                                                         listserv: @listserv,
+                                                         email: @user.email
+                                                       })
 
     @subscription.name = @user.name
     @subscription.source = "knotweed"
@@ -32,7 +32,6 @@ class SubscribeToListservSilently
       sync_with_mc
     end
 
-
     if @subscription.persisted? && @subscription.confirmed?
       @subscription.save!
     end
@@ -45,5 +44,4 @@ class SubscribeToListservSilently
       BackgroundJob.perform_later('MailchimpService', 'subscribe', @subscription)
     end
   end
-  
 end

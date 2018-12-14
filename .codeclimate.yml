@@ -45,7 +45,7 @@ plugins:
   brakeman:
     enabled: true
   rubocop:
-    enabled: false
+    enabled: true
   coffeelint:
     enabled: true
     config: coffeelint.json

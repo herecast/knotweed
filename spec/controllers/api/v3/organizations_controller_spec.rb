@@ -8,9 +8,9 @@ describe Api::V3::OrganizationsController, :type => :controller do
       @difft_app_org = FactoryGirl.create :organization
       @news_cat = FactoryGirl.create :content_category, name: 'news'
       FactoryGirl.create(:content, organization: @organization,
-        content_category: @news_cat)
+                                   content_category: @news_cat)
       FactoryGirl.create(:content, organization: @difft_app_org,
-        content_category: @news_cat)
+                                   content_category: @news_cat)
       Organization.reindex
     end
 
@@ -23,7 +23,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
 
     it 'only responds with organizations associated with news content' do
       subject
-      expect(assigns(:organizations)).to match_array([@organization,@difft_app_org])
+      expect(assigns(:organizations)).to match_array([@organization, @difft_app_org])
     end
 
     describe 'with a list of organization ids' do
@@ -31,7 +31,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
         @list_of_orgs = FactoryGirl.create_list :organization, 3
       end
 
-      subject { get :index, params: { ids: @list_of_orgs.map{|o| o.id} } }
+      subject { get :index, params: { ids: @list_of_orgs.map { |o| o.id } } }
 
       it 'should respond with 200' do
         subject
@@ -42,7 +42,6 @@ describe Api::V3::OrganizationsController, :type => :controller do
         subject
         expect(assigns(:organizations)).to match_array @list_of_orgs
       end
-
     end
   end
 
@@ -56,10 +55,10 @@ describe Api::V3::OrganizationsController, :type => :controller do
     let(:params) do
       {
         organization: {
-            name: 'Hoth Apoth',
-            description: 'Thy drugs are quick...',
-            website: "https://hothapoth.ho",
-            email: "snowman@hothapoth.ho"
+          name: 'Hoth Apoth',
+          description: 'Thy drugs are quick...',
+          website: "https://hothapoth.ho",
+          email: "snowman@hothapoth.ho"
         }
       }
     end
@@ -67,7 +66,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
     subject { post :create, params: params }
 
     it "creates Organization" do
-      expect{ subject }.to change{
+      expect { subject }.to change {
         Organization.count
       }.by 1
     end
@@ -88,7 +87,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
     end
 
     it "creates Business Location for Organization" do
-      expect{ subject }.to change{
+      expect { subject }.to change {
         BusinessLocation.count
       }.by 1
     end
@@ -144,11 +143,11 @@ describe Api::V3::OrganizationsController, :type => :controller do
       end
 
       it 'should update description' do
-        expect{subject}.to change{@org.reload.description}
+        expect { subject }.to change { @org.reload.description }
       end
 
       it 'should update name' do
-        expect{subject}.to change{@org.reload.name}
+        expect { subject }.to change { @org.reload.name }
       end
 
       context "when BusinessLocation params are present" do
@@ -173,7 +172,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
         subject { put :update, new_put_params }
 
         it "updates BusinessLocation" do
-          expect{ subject }.to change{
+          expect { subject }.to change {
             @org.reload.business_locations.first.venue_url
           }.to @new_venue_url
         end
@@ -192,7 +191,7 @@ describe Api::V3::OrganizationsController, :type => :controller do
       end
 
       it 'should not update the organization' do
-        expect{subject}.to_not change{@org.reload.name}
+        expect { subject }.to_not change { @org.reload.name }
       end
     end
   end

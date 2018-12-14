@@ -1,5 +1,4 @@
 namespace :test_data do
-
   def create_user
     unique = false
     while !unique
@@ -56,7 +55,7 @@ namespace :test_data do
     total_view_count = 0
     total_banner_click_count = 0
     [*1..30].reverse.each do |days|
-      multiplier = Math::E ** (-(30 - days)/5.0)
+      multiplier = Math::E**(-(30 - days) / 5.0)
       view_count = multiplier * 30
       banner_click_count = multiplier * 8
       total_view_count += view_count
@@ -76,7 +75,6 @@ namespace :test_data do
 
   desc 'Create two users controlling organizations that can publish news'
   task :create_news_ugc_users => :environment do
-
     begin
       puts 'Two users controlling orgs that can_publish_news'
       2.times do
@@ -85,7 +83,6 @@ namespace :test_data do
         o.update_attribute(:can_publish_news, true)
         u.add_role :manager, o
       end
-
     rescue Exception => e
       puts 'data creation failed'
       puts "#{e.inspect}"
@@ -94,7 +91,6 @@ namespace :test_data do
 
   desc 'Create two Blog users'
   task :create_blog_users => :environment do
-
     begin
       puts 'Two users that are bloggers, through the organization'
       2.times do
@@ -103,7 +99,6 @@ namespace :test_data do
         o.update_attributes org_type: 'Blog', can_publish_news: true
         u.add_role :manager, o
       end
-
     rescue Exception => e
       puts 'data creation failed'
       puts "#{e.inspect}"
@@ -112,7 +107,6 @@ namespace :test_data do
 
   desc 'Create two users: one controls a parent org, one a child org'
   task :create_parent_child_org_users => :environment do
-
     begin
       puts 'Parent Organization'
       p_user = create_user
@@ -125,7 +119,6 @@ namespace :test_data do
       c_user.add_role :manager, c_org
 
       c_org.update_attribute(:parent, p_org)
-
     rescue Exception => e
       puts 'data creation failed'
       puts "#{e.inspect}"
@@ -134,7 +127,6 @@ namespace :test_data do
 
   desc 'Create user with Dashboard Metrics'
   task :create_blogger_with_metrics => :environment do
-
     begin
       puts "Creating Blogger with Content and Metrics"
       blogger = create_user
@@ -144,7 +136,6 @@ namespace :test_data do
       content = create_blogger_content(org)
       create_reports(content)
       content.update_attribute :view_count, content.content_reports.reduce(0) { |total, cr| total + cr.view_count }
-
     rescue Exception => e
       puts 'data creation failed'
       puts "#{e.inspect}"

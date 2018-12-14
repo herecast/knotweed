@@ -7,14 +7,16 @@ RSpec.describe RecordContentMetric do
   end
 
   describe "::call" do
-    subject { RecordContentMetric.call(@news, {
-      event_type: 'dummy',
-      current_date: Date.current.to_s
-    }) }
+    subject {
+      RecordContentMetric.call(@news, {
+                                 event_type: 'dummy',
+                                 current_date: Date.current.to_s
+                               })
+    }
 
     context "when no current report available" do
       it "creates content report" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @news.reload.content_reports.count
         }.by 1
       end
@@ -26,26 +28,28 @@ RSpec.describe RecordContentMetric do
       end
 
       it "does not create content_report" do
-        expect{ subject }.not_to change{
+        expect { subject }.not_to change {
           @news.reload.content_reports.length
         }
       end
     end
 
     context "with event_type: impression" do
-      subject { RecordContentMetric.call(@news, {
-        event_type: 'impression',
-        current_date: Date.current.to_s
-      }) }
+      subject {
+        RecordContentMetric.call(@news, {
+                                   event_type: 'impression',
+                                   current_date: Date.current.to_s
+                                 })
+      }
 
       it "creates impression metric" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           ContentMetric.where(event_type: 'impression').count
         }.by 1
       end
 
       it "increases content view count" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @news.reload.view_count
         }.by 1
       end
@@ -57,19 +61,21 @@ RSpec.describe RecordContentMetric do
     end
 
     context "with event_type: click" do
-      subject { RecordContentMetric.call(@news, {
-        event_type: 'click',
-        current_date: Date.current.to_s
-      }) }
+      subject {
+        RecordContentMetric.call(@news, {
+                                   event_type: 'click',
+                                   current_date: Date.current.to_s
+                                 })
+      }
 
       it "creates click metric" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           ContentMetric.where(event_type: 'click').count
         }.by 1
       end
 
       it "increases content banner click count" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @news.reload.banner_click_count
         }.by 1
       end

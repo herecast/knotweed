@@ -6,19 +6,21 @@ RSpec.describe SubscriptionsController, type: :controller do
     sign_in @user
   end
 
-  let(:listserv) {FactoryGirl.create :subtext_listserv}
+  let(:listserv) { FactoryGirl.create :subtext_listserv }
 
-  let(:valid_attributes) {{
-    email: "name@example.org",
-    listserv_id: listserv.id
-  }}
+  let(:valid_attributes) {
+    {
+      email: "name@example.org",
+      listserv_id: listserv.id
+    }
+  }
 
   describe "GET #index" do
     it "assigns all subscriptions as @subscriptions" do
       subscription = Subscription.create! valid_attributes.merge({
-        confirmed_at: Time.now,
-        confirm_ip: "1.1.1.1"
-      })
+                                                                   confirmed_at: Time.now,
+                                                                   confirm_ip: "1.1.1.1"
+                                                                 })
       get :index, params: {}
       expect(assigns(:subscriptions)).to eq([subscription])
     end
@@ -27,9 +29,9 @@ RSpec.describe SubscriptionsController, type: :controller do
       before do
         5.times do |i|
           FactoryGirl.create :subscription,
-            created_at: Time.current + i,
-            confirmed_at: Time.now,
-            confirm_ip: "1.1.1.1"
+                             created_at: Time.current + i,
+                             confirmed_at: Time.now,
+                             confirm_ip: "1.1.1.1"
         end
       end
 
@@ -80,7 +82,7 @@ RSpec.describe SubscriptionsController, type: :controller do
   describe "PUT #update" do
     context "with valid params" do
       let(:new_attributes) {
-        {blacklist: true}
+        { blacklist: true }
       }
 
       it "updates the requested subscription" do
@@ -116,7 +118,6 @@ RSpec.describe SubscriptionsController, type: :controller do
         expect(@subscription.reload).to eq initial_state
       end
     end
-
   end
 
   describe "DELETE #destroy" do
@@ -133,5 +134,4 @@ RSpec.describe SubscriptionsController, type: :controller do
       expect(response).to redirect_to(subscriptions_url)
     end
   end
-
 end

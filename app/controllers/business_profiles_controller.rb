@@ -41,9 +41,9 @@ class BusinessProfilesController < ApplicationController
     authorize! :create, @business_profile
     if @business_profile.save
       CreateBusinessProfileRelationship.call({
-        business_profile: @business_profile,
-        org_name: params[:business_profile][:business_location_attributes][:name]
-      })
+                                               business_profile: @business_profile,
+                                               org_name: params[:business_profile][:business_location_attributes][:name]
+                                             })
 
       flash[:notice] = "Created business profile with id #{@business_profile.id}"
       redirect_to form_submit_redirect_path(@business_profile.id)
@@ -67,37 +67,36 @@ class BusinessProfilesController < ApplicationController
 
   private
 
-    def business_profile_params
-      params.require(:business_profile).permit(
-        :content_attributes,
-        :business_location,
-        business_category_ids: [],
-        business_location_attributes: [ :name, :address, :venue_url, :city, :state, :zip, :phone, :email, :id, :hours => [] ],
-        content_attributes: [ :id, :raw_content, images_attributes: [ :id, :image, :remove_image ], organization_attributes: [ :id, :parent_id, :logo, :remove_logo ] ]
-      )
-    end
+  def business_profile_params
+    params.require(:business_profile).permit(
+      :content_attributes,
+      :business_location,
+      business_category_ids: [],
+      business_location_attributes: [:name, :address, :venue_url, :city, :state, :zip, :phone, :email, :id, :hours => []],
+      content_attributes: [:id, :raw_content, images_attributes: [:id, :image, :remove_image], organization_attributes: [:id, :parent_id, :logo, :remove_logo]]
+    )
+  end
 
-    def form_submit_redirect_path(id=nil)
-      if params[:continue_editing]
-        edit_business_profile_path(id)
-      elsif params[:create_new]
-        new_business_profile_path
-      elsif params[:next_record]
-        edit_business_profile_path(params[:next_record_id], index: params[:index], page: params[:page])
-      else
-        business_profiles_path
-      end
+  def form_submit_redirect_path(id = nil)
+    if params[:continue_editing]
+      edit_business_profile_path(id)
+    elsif params[:create_new]
+      new_business_profile_path
+    elsif params[:next_record]
+      edit_business_profile_path(params[:next_record_id], index: params[:index], page: params[:page])
+    else
+      business_profiles_path
     end
+  end
 
-    def check_for_claim
-      unless @business_profile.claimed?
-        flash[:alert] = "Business must be claimed to edit"
-        redirect_to business_profiles_path
-      end
+  def check_for_claim
+    unless @business_profile.claimed?
+      flash[:alert] = "Business must be claimed to edit"
+      redirect_to business_profiles_path
     end
+  end
 
-    def get_managers
-      @managers = User.with_role(:manager, @business_profile.content.organization)
-    end
-
+  def get_managers
+    @managers = User.with_role(:manager, @business_profile.content.organization)
+  end
 end

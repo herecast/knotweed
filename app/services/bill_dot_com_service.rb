@@ -42,7 +42,7 @@ module BillDotComService
     # pay_bill(vendor_id: vendor_id, bill_id: bill_id, amount: amount, sid: session_id)
   end
 
-  def find_vendor(name, sid=nil)
+  def find_vendor(name, sid = nil)
     data = {
       entity: 'Vendor',
       term: name,
@@ -83,7 +83,7 @@ module BillDotComService
 
   protected
 
-  def options_with_auth(data, sid=nil)
+  def options_with_auth(data, sid = nil)
     session_id = sid || authenticate
     return {
       headers: {
@@ -103,6 +103,7 @@ module BillDotComService
     if response['response_status'] == 1
       raise BillDotComExceptions::UnexpectedResponse.new(response['response_data']['error_message'])
     end
+
     response
   end
 
@@ -113,5 +114,4 @@ module BillDotComService
     end
   end
   set_debug_output
-
 end

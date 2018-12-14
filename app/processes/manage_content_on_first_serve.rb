@@ -1,5 +1,4 @@
 class ManageContentOnFirstServe
-
   def self.call(*args)
     self.new(*args).call
   end
@@ -35,41 +34,40 @@ class ManageContentOnFirstServe
 
   private
 
-    def conditionally_schedule_outreach(content)
-      organization = content.organization
-      if organization.org_type == 'Blog'
-        conditionally_cancel_reminder_campaign(organization)
-        ordered_ids = organization.contents.order(pubdate: :asc).pluck(:id)
+  def conditionally_schedule_outreach(content)
+    organization = content.organization
+    if organization.org_type == 'Blog'
+      conditionally_cancel_reminder_campaign(organization)
+      ordered_ids = organization.contents.order(pubdate: :asc).pluck(:id)
 
-        # on Org create, we attach a dummy content,
-        # hence bumping these indexes forward by one
-        if ordered_ids.index(content.id) == 1
-          Outreach::ScheduleBloggerEmails.call(
-            action: 'first_blogger_post',
-            user: content.created_by
-          )
-        elsif ordered_ids.index(content.id) == 3
-          Outreach::ScheduleBloggerEmails.call(
-            action: 'third_blogger_post',
-            user: content.created_by
-          )
-        end
+      # on Org create, we attach a dummy content,
+      # hence bumping these indexes forward by one
+      if ordered_ids.index(content.id) == 1
+        Outreach::ScheduleBloggerEmails.call(
+          action: 'first_blogger_post',
+          user: content.created_by
+        )
+      elsif ordered_ids.index(content.id) == 3
+        Outreach::ScheduleBloggerEmails.call(
+          action: 'third_blogger_post',
+          user: content.created_by
+        )
       end
     end
+  end
 
-    def conditionally_cancel_reminder_campaign(organization)
-      if organization.reminder_campaign_id.present?
-        unless MailchimpService::UserOutreach.get_campaign_status(organization.reminder_campaign_id) == "sent"
-          MailchimpService::UserOutreach.delete_campaign(organization.reminder_campaign_id)
-        end
-        organization.update_attribute(:reminder_campaign_id, nil)
+  def conditionally_cancel_reminder_campaign(organization)
+    if organization.reminder_campaign_id.present?
+      unless MailchimpService::UserOutreach.get_campaign_status(organization.reminder_campaign_id) == "sent"
+        MailchimpService::UserOutreach.delete_campaign(organization.reminder_campaign_id)
       end
+      organization.update_attribute(:reminder_campaign_id, nil)
     end
+  end
 
-    def conditionally_schedule_subscriber_notification(content)
-      if content.should_notify_subscribers?
-        NotifySubscribersJob.perform_now(content)
-      end
+  def conditionally_schedule_subscriber_notification(content)
+    if content.should_notify_subscribers?
+      NotifySubscribersJob.perform_now(content)
     end
-
+  end
 end

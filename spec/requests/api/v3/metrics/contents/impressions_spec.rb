@@ -23,7 +23,7 @@ RSpec.describe 'Content Impressions' do
 
         subject {
           post "/api/v3/metrics/contents/#{record.id}/impressions",
-            params: context_data
+               params: context_data
         }
 
         it 'returns 202 status' do
@@ -37,13 +37,13 @@ RSpec.describe 'Content Impressions' do
           expect(RecordContentMetric).to receive(:call).with(
             record,
             a_hash_including({
-              event_type: 'impression',
-              current_date: date.to_s,
-              user_agent: user_agent,
-              user_ip: remote_ip,
-              client_id: context_data[:client_id],
-              location_id: location.id
-            })
+                               event_type: 'impression',
+                               current_date: date.to_s,
+                               user_agent: user_agent,
+                               user_ip: remote_ip,
+                               client_id: context_data[:client_id],
+                               location_id: location.id
+                             })
           )
 
           subject
@@ -51,12 +51,12 @@ RSpec.describe 'Content Impressions' do
 
         context 'user is signed in' do
           let(:user) { FactoryGirl.create(:user) }
-          let(:headers) { auth_headers_for(user)}
+          let(:headers) { auth_headers_for(user) }
 
           subject do
             post "/api/v3/metrics/contents/#{record.id}/impressions",
-              params: context_data,
-              headers: headers
+                 params: context_data,
+                 headers: headers
           end
 
           it 'records a content metric impression' do
@@ -65,14 +65,14 @@ RSpec.describe 'Content Impressions' do
             expect(RecordContentMetric).to receive(:call).with(
               record,
               a_hash_including({
-                event_type: 'impression',
-                current_date: date.to_s,
-                user_agent: user_agent,
-                user_ip: remote_ip,
-                user_id: user.id,
-                client_id: context_data[:client_id],
-                location_id: location.id
-              })
+                                 event_type: 'impression',
+                                 current_date: date.to_s,
+                                 user_agent: user_agent,
+                                 user_ip: remote_ip,
+                                 user_id: user.id,
+                                 client_id: context_data[:client_id],
+                                 location_id: location.id
+                               })
             )
 
             subject
@@ -91,7 +91,6 @@ RSpec.describe 'Content Impressions' do
           end
         end
       end
-
     end
   end
 end

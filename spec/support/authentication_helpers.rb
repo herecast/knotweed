@@ -1,6 +1,6 @@
 module AuthenticationHelpers
-  def api_authenticate(args={})
-    args = {user: nil, success: true}.merge(args)
+  def api_authenticate(args = {})
+    args = { user: nil, success: true }.merge(args)
     user = args[:user]
     if args[:success]
       if user
@@ -9,7 +9,7 @@ module AuthenticationHelpers
           email=#{user.email}"
       end
     else
-      @request.headers['HTTP_AUTHORIZATION'] = '' 
+      @request.headers['HTTP_AUTHORIZATION'] = ''
     end
   end
 end

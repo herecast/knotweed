@@ -1,7 +1,6 @@
 module Api
   module V3
     class ListservsController < ApiController
-
       def index
         expires_in 1.hours, public: true
 
@@ -18,7 +17,6 @@ module Api
         @listserv = Listserv.find(params[:id])
         render json: @listserv, serializer: ListservSerializer
       end
-
     end
   end
 end

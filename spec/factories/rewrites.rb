@@ -17,7 +17,7 @@
 #  idx_16828_index_rewrites_on_updated_at  (updated_at)
 #
 
-FactoryGirl.define do 
+FactoryGirl.define do
   factory :rewrite do
     sequence(:source) { |n| "green-acre-#{n}" }
     destination { Faker::Internet.url }

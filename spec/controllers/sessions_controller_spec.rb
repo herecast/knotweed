@@ -5,8 +5,7 @@ describe SessionsController, :type => :controller do
     before do
       @user = FactoryGirl.create :user, password: 'passw0rd', password_confirmation: 'passw0rd'
       @args = { email: @user.email,
-                password: 'passw0rd'
-      }
+                password: 'passw0rd' }
     end
 
     subject! do
@@ -26,8 +25,8 @@ describe SessionsController, :type => :controller do
   describe 'Sign in with token' do
     before do
       @user = FactoryGirl.create :user, password: 'passw0rd',
-        password_confirmation: 'passw0rd',
-        confirmed_at: nil
+                                        password_confirmation: 'passw0rd',
+                                        confirmed_at: nil
       @sign_in_token = FactoryGirl.create :sign_in_token, user: @user
       @request.env["devise.mapping"] = Devise.mappings[:user]
     end
@@ -55,9 +54,9 @@ describe SessionsController, :type => :controller do
       # @existing_user = FactoryGirl.create :user, provider: "facebook", uid: "123456"
       @existing_user = FactoryGirl.create :user
       @existing_social_login = FactoryGirl.create :social_login,
-        provider: "facebook",
-        uid: "123456",
-        user: @existing_user
+                                                  provider: "facebook",
+                                                  uid: "123456",
+                                                  user: @existing_user
       @request.env["devise.mapping"] = Devise.mappings[:user]
     end
 
@@ -90,9 +89,7 @@ describe SessionsController, :type => :controller do
         gender: "male" }
     }
 
-
     context 'when a user has an existing account' do
-
       it 'returns the correct user and signs them in' do
         allow(FacebookService).to receive(:get_user_info).and_return(existing_user_fb_response)
         post :oauth, params: { accessToken: "myFak3t0k3n" }
@@ -115,12 +112,11 @@ describe SessionsController, :type => :controller do
       end
 
       it 'creates a new user ' do
-        expect{ subject }.to change { User.count }.by(1)
+        expect { subject }.to change { User.count }.by(1)
       end
 
-
       it 'creates a new social login record for the user' do
-        expect{ subject }.to change { SocialLogin.count }.by(1)
+        expect { subject }.to change { SocialLogin.count }.by(1)
       end
 
       it 'signs in the created user' do
@@ -135,12 +131,12 @@ describe SessionsController, :type => :controller do
         end
 
         it 'does not create a new user' do
-          expect{ subject }.to_not change { User.count }
+          expect { subject }.to_not change { User.count }
         end
 
         it 'returns the an error with the missing fields' do
           subject
-          expect(JSON.parse(response.body)).to eq ({ error: "There was a problem signing in", missing_fields: "email"}).stringify_keys
+          expect(JSON.parse(response.body)).to eq ({ error: "There was a problem signing in", missing_fields: "email" }).stringify_keys
         end
       end
     end

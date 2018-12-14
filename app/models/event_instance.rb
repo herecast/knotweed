@@ -24,13 +24,13 @@ class EventInstance < ActiveRecord::Base
   include EmailTemplateHelper
 
   searchkick callbacks: :async,
-    batch_size: 100,
-    index_prefix: Figaro.env.searchkick_index_prefix,
-    searchable: [:content, :title, :subtitle, :event_category, :venue_city, :venue_name]
+             batch_size: 100,
+             index_prefix: Figaro.env.searchkick_index_prefix,
+             searchable: [:content, :title, :subtitle, :event_category, :venue_city, :venue_name]
 
   belongs_to :event
   delegate :created_by, :organization, :organization_id,
-    to: :event
+           to: :event
 
   belongs_to :schedule
 
@@ -40,12 +40,11 @@ class EventInstance < ActiveRecord::Base
   before_save :process_end_time
 
   has_many :other_instances,
-# cannot eager load if we include this
-#    ->(instance) { where("id <> ?", instance.id) },
-    class_name: 'EventInstance',
-    foreign_key: 'event_id',
-    primary_key: 'event_id'
-
+           # cannot eager load if we include this
+           #    ->(instance) { where("id <> ?", instance.id) },
+           class_name: 'EventInstance',
+           foreign_key: 'event_id',
+           primary_key: 'event_id'
 
   validates_presence_of :start_date
   validate :end_date_after_start_date
@@ -54,13 +53,13 @@ class EventInstance < ActiveRecord::Base
     includes(
       :other_instances,
       {
-        event:  [
+        event: [
           {
             content: [
               :created_by,
               :organization,
               :location,
-              {comments: :created_by},
+              { comments: :created_by },
               :images
             ]
           },
@@ -125,20 +124,18 @@ class EventInstance < ActiveRecord::Base
     self.group('DATE(start_date)').count
   end
 
-
   private
 
-    # private because this is a helper method for to_ics
-    # may be called with send if needed
-    def ics_event_attributes
-      ev = Icalendar::Event.new
-      ev.dtstart = start_date
-      ev.dtend = end_date
-      ev.summary = self.event.title
-      ev.description = strip_tags(description).gsub('&nbsp;','')
-      ev.location = self.event.try(:venue).try(:name)
-      ev.url = url_for_consumer_app("/events/#{id}")
-      ev
-    end
-
+  # private because this is a helper method for to_ics
+  # may be called with send if needed
+  def ics_event_attributes
+    ev = Icalendar::Event.new
+    ev.dtstart = start_date
+    ev.dtend = end_date
+    ev.summary = self.event.title
+    ev.description = strip_tags(description).gsub('&nbsp;', '')
+    ev.location = self.event.try(:venue).try(:name)
+    ev.url = url_for_consumer_app("/events/#{id}")
+    ev
+  end
 end

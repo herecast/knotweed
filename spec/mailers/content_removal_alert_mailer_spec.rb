@@ -9,7 +9,7 @@ RSpec.describe ContentRemovalAlertMailer do
     end
 
     it "delivers mail" do
-      expect { subject }.to change{ 
+      expect { subject }.to change {
         ActionMailer::Base.deliveries.count
       }.by(1)
     end
@@ -25,7 +25,7 @@ RSpec.describe ContentRemovalAlertMailer do
     end
 
     it "delivers mail" do
-      expect { subject }.to change{ 
+      expect { subject }.to change {
         ActionMailer::Base.deliveries.count
       }.by(1)
     end

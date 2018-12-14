@@ -88,95 +88,95 @@ class OrganizationsController < ApplicationController
 
   protected
 
-    def form_submit_redirect_path(id=nil)
-      if params[:continue_editing]
-        edit_organization_path(id)
-      else
-        organizations_path
-      end
+  def form_submit_redirect_path(id = nil)
+    if params[:continue_editing]
+      edit_organization_path(id)
+    else
+      organizations_path
+    end
+  end
+
+  def organization_params
+    params.require(:organization).permit(
+      :name,
+      :organization_id,
+      :twitter_handle,
+      :website,
+      :notes,
+      :images_attributes,
+      :parent_id,
+      :location_ids,
+      :org_type,
+      :profile_image,
+      :remote_profile_image_url,
+      :remove_profile_image,
+      :profile_image_cache,
+      :background_image,
+      :remote_background_image_url,
+      :remove_background_image,
+      :desktop_image,
+      :remote_desktop_image_url,
+      :remove_desktop_image,
+      :profile_background_image_cache,
+      :can_publish_news,
+      :subscribe_url,
+      :description,
+      :banner_ad_override,
+      :pay_rate_in_cents,
+      :pay_directly,
+      :biz_feed_active,
+      :ad_sales_agent,
+      :ad_contact_nickname,
+      :ad_contact_fullname,
+      :profile_sales_agent,
+      :certified_storyteller,
+      :embedded_ad,
+      :services,
+      :contact_card_active,
+      :description_card_active,
+      :hours_card_active,
+      :pay_for_content,
+      :special_link_url,
+      :special_link_text,
+      :certified_social,
+      :archived,
+      :calendar_view_first,
+      :calendar_card_active,
+      :digest_id,
+      :location_ids => [],
+      :organization_locations_attributes => [
+        :id,
+        :location_type,
+        :location_id,
+        :_destroy
+      ]
+    )
+  end
+
+  def business_profile_params
+    params.require(:business_profile).permit(business_category_ids: [])
+  end
+
+  def include_child_organizations?
+    session[:organizations_search][:include_child_organizations] == "1"
+  end
+
+  def return_child_organizations
+    # default scope involves ordering by name and Postgres shits the bed if you order
+    # by something that isn't included in the select clause
+    if return_news_orgs?
+      ids_for_parents = @search.result(distinct: true)
+                               .where(can_publish_news: true)
+                               .select(:id, :name).collect(&:id)
+    else
+      ids_for_parents = @search.result(distinct: true).select(:id, :name).collect(&:id)
     end
 
-    def organization_params
-      params.require(:organization).permit(
-        :name,
-        :organization_id,
-        :twitter_handle,
-        :website,
-        :notes,
-        :images_attributes,
-        :parent_id,
-        :location_ids,
-        :org_type,
-        :profile_image,
-        :remote_profile_image_url,
-        :remove_profile_image,
-        :profile_image_cache,
-        :background_image,
-        :remote_background_image_url,
-        :remove_background_image,
-        :desktop_image,
-        :remote_desktop_image_url,
-        :remove_desktop_image,
-        :profile_background_image_cache,
-        :can_publish_news,
-        :subscribe_url,
-        :description,
-        :banner_ad_override,
-        :pay_rate_in_cents,
-        :pay_directly,
-        :biz_feed_active,
-        :ad_sales_agent,
-        :ad_contact_nickname,
-        :ad_contact_fullname,
-        :profile_sales_agent,
-        :certified_storyteller,
-        :embedded_ad,
-        :services,
-        :contact_card_active,
-        :description_card_active,
-        :hours_card_active,
-        :pay_for_content,
-        :special_link_url,
-        :special_link_text,
-        :certified_social,
-        :archived,
-        :calendar_view_first,
-        :calendar_card_active,
-        :digest_id,
-        :location_ids => [],
-        :organization_locations_attributes => [
-          :id,
-          :location_type,
-          :location_id,
-          :_destroy
-        ]
-      )
-    end
+    ids_for_children = Organization.get_children(ids_for_parents).select(:id, :name).collect(&:id)
+    @organizations = Organization.where(id: ids_for_parents + ids_for_children)
+  end
 
-    def business_profile_params
-      params.require(:business_profile).permit(business_category_ids: [])
-    end
-
-    def include_child_organizations?
-      session[:organizations_search][:include_child_organizations] == "1"
-    end
-
-    def return_child_organizations
-      # default scope involves ordering by name and Postgres shits the bed if you order
-      # by something that isn't included in the select clause
-      if return_news_orgs?
-        ids_for_parents = @search.result(distinct: true).
-          where(can_publish_news: true).
-          select(:id, :name).collect(&:id)
-      else
-        ids_for_parents = @search.result(distinct: true).select(:id, :name).collect(&:id)
-      end
-
-      ids_for_children = Organization.get_children(ids_for_parents).select(:id, :name).collect(&:id)
-      @organizations = Organization.where(id: ids_for_parents + ids_for_children)
-    end
-
-    def return_news_orgs?
-      session[:organizations_search]["show_news_publishers"] == "1"
-    end
+  def return_news_orgs?
+    session[:organizations_search]["show_news_publishers"] == "1"
+  end
 end

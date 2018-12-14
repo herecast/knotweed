@@ -6,24 +6,24 @@ describe 'My Stuff endpoint', type: :request do
   let(:other_user) { FactoryGirl.create :user }
   let(:standard_org) { FactoryGirl.create :organization, standard_ugc_org: true }
   let(:managed_org) { FactoryGirl.create :organization }
-  let(:headers) { {'ACCEPT' => 'application/json' } }
+  let(:headers) { { 'ACCEPT' => 'application/json' } }
 
   describe "/api/v3/users/:id/contents", elasticsearch: true do
     before do
       FactoryGirl.create :content, :news,
-        created_by: other_user,
-        organization: standard_org
+                         created_by: other_user,
+                         organization: standard_org
       user.add_role('manager', managed_org)
     end
 
     context "when making my stuff request" do
       before do
         @owned_content = FactoryGirl.create :content, :news,
-          created_by: user,
-          organization: standard_org
+                                            created_by: user,
+                                            organization: standard_org
         @managed_content = FactoryGirl.create :content, :event,
-          created_by: user,
-          organization: managed_org
+                                              created_by: user,
+                                              organization: managed_org
       end
 
       context "when no user logged in" do
@@ -53,7 +53,7 @@ describe 'My Stuff endpoint', type: :request do
         it "returns only current user's content" do
           subject
           expect(response_json[:feed_items].length).to eq 2
-          expect(response_json[:feed_items].map{ |c| c[:content][:id] }).to match_array [@owned_content.id, @managed_content.id]
+          expect(response_json[:feed_items].map { |c| c[:content][:id] }).to match_array [@owned_content.id, @managed_content.id]
         end
 
         describe "?organization_id" do
@@ -84,8 +84,8 @@ describe 'My Stuff endpoint', type: :request do
               @non_bookmarked_content = FactoryGirl.create :content, :news
               @bookmarked_content = FactoryGirl.create :content, :news
               FactoryGirl.create :user_bookmark,
-                user_id: user.id,
-                content_id: @bookmarked_content.id
+                                 user_id: user.id,
+                                 content_id: @bookmarked_content.id
             end
 
             subject { get "/api/v3/users/#{user.id}/contents?bookmarked=true", params: {}, headers: user_headers }

@@ -2,12 +2,12 @@ module Api
   module V3
     class PaymentsSerializer < ActiveModel::Serializer
       attributes :period_start,
-        :period_end,
-        :paid_impressions,
-        :pay_per_impression,
-        :total_payment,
-        :payment_date,
-        :report_url
+                 :period_end,
+                 :paid_impressions,
+                 :pay_per_impression,
+                 :total_payment,
+                 :payment_date,
+                 :report_url
 
       def pay_per_impression
         object.pay_per_impression

@@ -39,7 +39,7 @@ RSpec.describe PromotionBannerMetric, type: :model do
   context "when no promotion_banner_id" do
     it "PromotionBannerMetric is not valid" do
       promotion_banner_metric = FactoryGirl.build :promotion_banner_metric, promotion_banner_id: nil
-      expect(promotion_banner_metric).to_not be_valid 
+      expect(promotion_banner_metric).to_not be_valid
     end
   end
 

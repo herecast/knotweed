@@ -6,18 +6,18 @@ RSpec.describe SchedulePromotionMetricsUpdateJob, type: :job do
 
   let!(:old_digest) {
     FactoryGirl.create :listserv_digest,
-      mc_campaign_id: 7897,
-      promotion_ids: [older_promotion_banner.promotion.id]
+                       mc_campaign_id: 7897,
+                       promotion_ids: [older_promotion_banner.promotion.id]
   }
   let!(:recent_digest) {
     FactoryGirl.create :listserv_digest,
-      mc_campaign_id: 123,
-      promotion_ids: [recent_promotion_banner.promotion.id]
+                       mc_campaign_id: 123,
+                       promotion_ids: [recent_promotion_banner.promotion.id]
   }
   let!(:recent_digest2) {
     FactoryGirl.create :listserv_digest,
-      mc_campaign_id: 6489,
-      promotion_ids: [recent_promotion_banner.promotion.id]
+                       mc_campaign_id: 6489,
+                       promotion_ids: [recent_promotion_banner.promotion.id]
   }
 
   it 'enqueues UpdateDigestMetrics for promotion_banners active in past 2 weeks' do

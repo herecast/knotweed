@@ -8,7 +8,7 @@ shared_examples 'Auditable' do |model|
     # not testing sign in here, just signing assignment of properties
     User.current = @user
   end
-  
+
   let(:model_symbol) { model.to_s.underscore }
 
   describe 'updated_by' do
@@ -32,5 +32,4 @@ shared_examples 'Auditable' do |model|
       expect(obj.updated_by).to eq(@user)
     end
   end
-
 end

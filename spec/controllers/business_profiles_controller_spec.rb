@@ -50,7 +50,6 @@ describe BusinessProfilesController, :type => :controller do
       end
 
       context "when selecting claimed businesses" do
-
         subject { get :index, params: { q: { content_organization_org_type_present: true } } }
 
         it "returns claimed business profiles" do
@@ -60,7 +59,6 @@ describe BusinessProfilesController, :type => :controller do
       end
 
       context "when selecting unclaimed businesses" do
-
         subject { get :index, params: { q: { content_organization_org_type_present: false } } }
 
         it "returns unclaimed business_profiles" do
@@ -72,18 +70,16 @@ describe BusinessProfilesController, :type => :controller do
 
     context "when searching by archiving status" do
       context "when querying for active" do
-
         subject { get :index, params: { q: { archived_eq: false } } }
 
         it "returns unarchived business profiles" do
-          @business_profiles[1..4].map{ |bp| bp.update_attribute(:archived, true) }
+          @business_profiles[1..4].map { |bp| bp.update_attribute(:archived, true) }
           subject
           expect(assigns(:business_profiles)).to match_array [@business_profiles[0]]
         end
       end
 
       context "when querying for archived" do
-
         subject { get :index, params: { q: { archived_eq: true } } }
 
         it "returns archived business profiles" do
@@ -95,7 +91,6 @@ describe BusinessProfilesController, :type => :controller do
     end
 
     context "when reset" do
-
       subject { get :index, params: { reset: true } }
 
       it "responds with no business profiles" do
@@ -123,11 +118,10 @@ describe BusinessProfilesController, :type => :controller do
     end
 
     context "when update succeeds" do
-
       subject { put :update, params: { id: @bp.id, business_profile: @attrs_for_update, continue_editing: true } }
 
       it 'should update business_location attributes' do
-        expect{subject}.to change{@bl.reload.address}.to @attrs_for_update[:business_location_attributes][:address]
+        expect { subject }.to change { @bl.reload.address }.to @attrs_for_update[:business_location_attributes][:address]
       end
     end
 
@@ -151,21 +145,23 @@ describe BusinessProfilesController, :type => :controller do
         @bp.content.images << @image
       end
 
-      subject { put :update, params: {
-        id: @bp.id,
-        create_new: true,
-        business_profile: {
-          content_attributes: {
-            id: @bp.content.id,
-            images_attributes: {
-              '0' => {
-                id: @image.id,
-                remove_image: '1'
+      subject {
+        put :update, params: {
+          id: @bp.id,
+          create_new: true,
+          business_profile: {
+            content_attributes: {
+              id: @bp.content.id,
+              images_attributes: {
+                '0' => {
+                  id: @image.id,
+                  remove_image: '1'
+                }
               }
             }
           }
         }
-      }}
+      }
 
       it "deletes image selected for deletion" do
         subject
@@ -207,11 +203,11 @@ describe BusinessProfilesController, :type => :controller do
     subject { post :create, params: { business_profile: @attrs_for_create } }
 
     it 'should create a business_location record' do
-      expect{subject}.to change{BusinessLocation.count}.by 1
+      expect { subject }.to change { BusinessLocation.count }.by 1
     end
 
     it 'should create a business_profile record' do
-      expect{subject}.to change{BusinessProfile.count}.by 1
+      expect { subject }.to change { BusinessProfile.count }.by 1
     end
 
     it 'should create a claimed business' do
@@ -239,7 +235,6 @@ describe BusinessProfilesController, :type => :controller do
   end
 
   describe 'GET #new' do
-
     subject { get :new }
 
     it "responds with 200 status code" do

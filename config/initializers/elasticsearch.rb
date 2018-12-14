@@ -4,7 +4,7 @@ Ethon.logger = Logger.new("/dev/null")
 Searchkick.redis = ConnectionPool.new { Redis.new }
 Searchkick.client = Elasticsearch::Client.new(
   url: ENV["ELASTICSEARCH_URL"],
-  transport_options: {request: {timeout: 60}},
+  transport_options: { request: { timeout: 60 } },
   retry_on_failure: true # https://github.com/ankane/searchkick/issues/351
 ) do |f|
   # we don't want to attempt to sign requests to our local elasticsearch instance on dev

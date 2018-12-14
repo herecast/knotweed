@@ -13,7 +13,7 @@ INDEXED_MODELS.each do |model|
       self.class.searchkick_index.refresh
     end
 
-    # this feels sort of hacky -- but jobs are just run inline in testing, so while 
+    # this feels sort of hacky -- but jobs are just run inline in testing, so while
     # everything is async in the app, it's not here, so we just need to add the refresh call
     # after this method happens (since it's actually synchronous).
     def reindex_async

@@ -6,8 +6,7 @@ module FacebookService
 
   def get_user_info(access_token)
     options = { fields: "email, name, verified, age_range, timezone, gender",
-                access_token: access_token
-              }
+                access_token: access_token }
     detect_error(get "#{base_uri}/v2.11/me", query: options)
   end
 
@@ -30,6 +29,7 @@ module FacebookService
     if response.code >= 400
       raise UnexpectedResponse.new(response)
     end
+
     response
   end
 end

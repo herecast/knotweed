@@ -15,7 +15,7 @@
 
 FactoryGirl.define do
   factory :feature do
-    sequence(:name) { |n| "My Feature Toggle #{n}"}
+    sequence(:name) { |n| "My Feature Toggle #{n}" }
     description "This is the feature description"
     active false
   end

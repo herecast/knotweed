@@ -81,7 +81,7 @@ describe Comment, :type => :model do
       @user = FactoryGirl.create :user
       @parent_content = FactoryGirl.create :content
       @comment = FactoryGirl.create :comment,
-        deleted_at: Date.yesterday
+                                    deleted_at: Date.yesterday
       @comment.content.update_attributes!(
         parent_id: @parent_content.id,
         created_by: @user
@@ -92,9 +92,9 @@ describe Comment, :type => :model do
       subject { @comment.decrease_comment_stats }
 
       it "decreases parent comment_count and commenter_count" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @comment.parent.reload.comment_count
-        }.by(-1).and change{
+        }.by(-1).and change {
           @comment.parent.reload.commenter_count
         }.by(-1)
       end
@@ -112,9 +112,9 @@ describe Comment, :type => :model do
       subject { @comment.decrease_comment_stats }
 
       it "decreases parent comment_count but not commenter_count" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @comment.parent.reload.comment_count
-        }.by(-1).and change{
+        }.by(-1).and change {
           @comment.parent.reload.commenter_count
         }.by(0)
       end

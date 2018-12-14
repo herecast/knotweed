@@ -16,7 +16,6 @@ require 'spec_helper'
 
 describe Schedule, :type => :model do
   describe 'after_save :update_event_instances' do
-
     describe 'on creation' do
       before do
         @recurrence = IceCube::Schedule.new(Time.zone.now) do |s|
@@ -28,11 +27,11 @@ describe Schedule, :type => :model do
       subject { FactoryGirl.create :schedule, recurrence: @recurrence.to_yaml, event: @event }
 
       it 'should create the right number of event instances' do
-        expect{subject}.to change{EventInstance.count}.by(@recurrence.all_occurrences.count)
+        expect { subject }.to change { EventInstance.count }.by(@recurrence.all_occurrences.count)
       end
 
       it 'should associate the correct number of new event_instances with the event' do
-        expect{subject}.to change{@event.event_instances.count}.by @recurrence.all_occurrences.count
+        expect { subject }.to change { @event.event_instances.count }.by @recurrence.all_occurrences.count
       end
 
       it 'should associate the new event_instances with the schedule and the event' do
@@ -60,15 +59,15 @@ describe Schedule, :type => :model do
       end
 
       it 'should change the number of event instances associated with the schedule' do
-        expect{subject}.to change{@schedule.event_instances.count}.by -12
+        expect { subject }.to change { @schedule.event_instances.count }.by -12
       end
 
       it 'should change the number of event instances associated with the event' do
-        expect{subject}.to change{@event.event_instances.count}.by -12
+        expect { subject }.to change { @event.event_instances.count }.by -12
       end
 
       it 'should change the number of event instances' do
-        expect{subject}.to change{EventInstance.count}.by -12
+        expect { subject }.to change { EventInstance.count }.by -12
       end
     end
 
@@ -79,7 +78,7 @@ describe Schedule, :type => :model do
         end
         @event = FactoryGirl.create :event
         @schedule = FactoryGirl.create :schedule, recurrence: @recurrence.to_yaml, event: @event,
-          description_override: 'zilch', presenter_name: 'blargh', subtitle_override: 'nom'
+                                                  description_override: 'zilch', presenter_name: 'blargh', subtitle_override: 'nom'
       end
 
       subject do
@@ -104,20 +103,20 @@ describe Schedule, :type => :model do
         @duration = 30.minutes
         @time = Time.zone.local(2015, 9, 1, 12, 0, 0)
         @schedule = FactoryGirl.create :schedule, recurrence: IceCube::Schedule.new(@time,
-                  duration: @duration){ |s| s.add_recurrence_rule IceCube::Rule.daily.until(@time + 1.week)}.to_yaml
+                                                                                    duration: @duration) { |s| s.add_recurrence_rule IceCube::Rule.daily.until(@time + 1.week) }.to_yaml
       end
 
       it 'should create event instances with the correct end_date based on duration parameter' do
-       @schedule.event_instances.each do |ei|
-         expect(ei.end_date).to eq(ei.start_date + @duration)
-       end
+        @schedule.event_instances.each do |ei|
+          expect(ei.end_date).to eq(ei.start_date + @duration)
+        end
       end
 
       describe 'changing the duration' do
         before do
           @new_duration = @duration + 1.hour
           @new_recurrence = IceCube::Schedule.new(@time, duration: @new_duration) do |s|
-            s.add_recurrence_rule IceCube::Rule.daily.until(@time+1.week)
+            s.add_recurrence_rule IceCube::Rule.daily.until(@time + 1.week)
           end
         end
 
@@ -141,7 +140,7 @@ describe Schedule, :type => :model do
         end
 
         it 'should remove an event_instance' do
-          expect{subject}.to change{@schedule.reload.event_instances.count}.by -1
+          expect { subject }.to change { @schedule.reload.event_instances.count }.by -1
         end
       end
     end
@@ -149,8 +148,8 @@ describe Schedule, :type => :model do
     context 'with event instances with overlapping durations' do
       before do
         @schedule = FactoryGirl.create :schedule,
-          recurrence: IceCube::Schedule.new(Chronic.parse("today at 2pm"),
-            duration: 2.hours){ |s| s.add_recurrence_rule IceCube::Rule.hourly.until(Chronic.parse('tomorrow at 2pm')) }.to_yaml
+                                       recurrence: IceCube::Schedule.new(Chronic.parse("today at 2pm"),
+                                                                         duration: 2.hours) { |s| s.add_recurrence_rule IceCube::Rule.hourly.until(Chronic.parse('tomorrow at 2pm')) }.to_yaml
       end
 
       it 'should start with the right number of event instances' do
@@ -197,7 +196,7 @@ describe Schedule, :type => :model do
     end
 
     it 'should remove the excepted event instance' do
-      expect(EventInstance.where(schedule_id: @schedule.id).map{ |ei| ei.start_date.to_i}).not_to include(@exception_time.to_i)
+      expect(EventInstance.where(schedule_id: @schedule.id).map { |ei| ei.start_date.to_i }).not_to include(@exception_time.to_i)
       expect(EventInstance.where(schedule_id: @schedule.id).count).to eq(@original_count - 1)
     end
   end
@@ -230,7 +229,7 @@ describe Schedule, :type => :model do
 
     it 'should have the expected recurrence rules' do
       # if you just pass the UTC time in, the rule is different because of the way IceCube handles timezone info
-      rule = IceCube::Rule.weekly.day(1,4).until(Time.zone.at('2015-12-31T15:00:00.000Z'.to_time.end_of_day))
+      rule = IceCube::Rule.weekly.day(1, 4).until(Time.zone.at('2015-12-31T15:00:00.000Z'.to_time.end_of_day))
       expect(@schedule.schedule.recurrence_rules).to eq [rule]
     end
 
@@ -242,7 +241,7 @@ describe Schedule, :type => :model do
     context 'when passed _remove for an existing schedule' do
       before do
         @schedule = FactoryGirl.create :schedule, event: @event
-        @remove_input = @input.merge({'_remove' => true, 'id' => @schedule.id})
+        @remove_input = @input.merge({ '_remove' => true, 'id' => @schedule.id })
       end
 
       subject { Schedule.build_from_ux_for_event(@remove_input, @event.id) }
@@ -267,7 +266,6 @@ describe Schedule, :type => :model do
         expect(finish).to be > start
       end
     end
-
   end
 
   describe 'to_ux_format' do
@@ -276,8 +274,8 @@ describe Schedule, :type => :model do
       @basic_response = {
         subtitle: @schedule.subtitle_override,
         presenter_name: @schedule.presenter_name,
-        starts_at: @start_time=Time.local(2015),
-        ends_at: @end_time=Time.local(2015)+2.months,
+        starts_at: @start_time = Time.local(2015),
+        ends_at: @end_time = Time.local(2015) + 2.months,
         id: nil
       }
     end
@@ -303,13 +301,13 @@ describe Schedule, :type => :model do
       },
       'once' => {
         rule: IceCube::SingleOccurrenceRule.new(Time.local(2015)),
-        repeats_fields: { repeats: 'once', days_of_week: nil, weeks_of_month: nil, end_date: Time.local(2015)  }
+        repeats_fields: { repeats: 'once', days_of_week: nil, weeks_of_month: nil, end_date: Time.local(2015) }
       }
     }
 
     rules_and_outputs.each do |type, specifics|
       it "should generate the correct hash response for a #{type} recurrence" do
-        @schedule.schedule = IceCube::Schedule.new(@start_time, end_time: @end_time){ |s| s.add_recurrence_rule specifics[:rule] }
+        @schedule.schedule = IceCube::Schedule.new(@start_time, end_time: @end_time) { |s| s.add_recurrence_rule specifics[:rule] }
         expect(output).to eq(specifics[:repeats_fields].merge(@basic_response))
       end
     end
@@ -331,7 +329,6 @@ describe Schedule, :type => :model do
         end
       end
     end
-
   end
 
   describe 'Schedule.create_single_occurrence_from_event_instance(ei)' do
@@ -359,7 +356,7 @@ describe Schedule, :type => :model do
   describe 'schedule converted to ics' do
     context 'with text overrides' do
       before do
-        @subtitle_override = Faker::Lorem.sentence(2,true,2)
+        @subtitle_override = Faker::Lorem.sentence(2, true, 2)
         @schedule = FactoryGirl.create :schedule, subtitle_override: @subtitle_override
         @schedule.add_exception_time! @schedule.schedule.all_occurrences[1]
         @schedule.add_recurrence_rule! IceCube::SingleOccurrenceRule.new(Time.current)

@@ -1,14 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe 'Promotion Coupons Endpoint', type: :request do
-
   describe 'GET /api/v3/promotion_coupons/:id' do
     before do
       @message = 'When I was a boy on Tatooine...'
       @promotion_coupon = FactoryGirl.create :promotion_banner,
-        coupon_image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg')),
-        coupon_email_body: @message,
-        promotion_type: 'Coupon'
+                                             coupon_image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg')),
+                                             coupon_email_body: @message,
+                                             promotion_type: 'Coupon'
     end
 
     subject { get "/api/v3/promotion_coupons/#{@promotion_coupon.id}" }

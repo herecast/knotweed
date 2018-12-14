@@ -1,5 +1,4 @@
 class ContentsController < ApplicationController
-
   def index
     expires_in 1.minutes, :public => true
     # if posted, save to session
@@ -7,7 +6,7 @@ class ContentsController < ApplicationController
       session[:contents_search] = nil
     elsif params[:q].present?
       if params[:q][:id_in].present?
-        params[:q][:id_in] = params[:q][:id_in].split(',').map{ |s| s.strip }
+        params[:q][:id_in] = params[:q][:id_in].split(',').map { |s| s.strip }
       end
       params[:q][:s] = 'pubdate desc' unless params[:q][:s].present?
       session[:contents_search] = params[:q]
@@ -27,9 +26,9 @@ class ContentsController < ApplicationController
 
     if session[:contents_search].present?
       @contents = @search.result(distinct: true)
-        .includes(:organization, :created_by, :content_category, :root_content_category, :channel)
-        .order("pubdate DESC").page(params[:page])
-        .per(100)
+                         .includes(:organization, :created_by, :content_category, :root_content_category, :channel)
+                         .order("pubdate DESC").page(params[:page])
+                         .per(100)
     else
       @contents = []
     end
@@ -38,7 +37,7 @@ class ContentsController < ApplicationController
   def new
     @content = Content.new
     # for users that can only access certain specific attribute contents
-    current_ability.attributes_for(:new, Content).each do |key,value|
+    current_ability.attributes_for(:new, Content).each do |key, value|
       @content.send("#{key}=", value)
     end
     authorize! :new, @content
@@ -87,7 +86,7 @@ class ContentsController < ApplicationController
       @orig_content = Content.find(params[:content_id])
       conts = conts - [@orig_content]
     end
-    @contents = conts.map{ |c| [c.title, c.id] }.insert(0,nil)
+    @contents = conts.map { |c| [c.title, c.id] }.insert(0, nil)
     respond_to do |format|
       format.js
     end
@@ -95,61 +94,60 @@ class ContentsController < ApplicationController
 
   private
 
-    def load_event_instances
-      if @content.channel_type == 'Event'
-        @event_instances = @content.event.event_instances.page(params[:page] || 1).per(10)
-      end
+  def load_event_instances
+    if @content.channel_type == 'Event'
+      @event_instances = @content.event.event_instances.page(params[:page] || 1).per(10)
     end
+  end
 
-    def content_params
-      params.require(:content).permit(
-        :title,
-        :content_category_id,
-        :organization_id,
-        :category_reviewed,
-        :has_event_calendar,
-        :subtitle,
-        :authors,
-        :parent_id,
-        :pubdate,
-        :url,
-        :banner_ad_override,
-        :sanitized_content,
-        :raw_content,
-        :alternate_title,
-        :alternate_organization_id,
-        :alternate_authors,
-        :alternate_text,
-        :alternate_image_url,
-        :location_id,
-        organization_ids: [],
-        similar_content_overrides: [],
-        event_attributes: [
-          :id,
-          :event_url,
-          :contact_phone,
-          :contact_email,
-          :event_category,
-          :cost_type,
-          :cost,
-          :registration_deadline
-        ],
-        market_post_attributes: [
-          :id,
-          :cost,
-          :contact_phone,
-          :contact_email
-        ]
-      )
+  def content_params
+    params.require(:content).permit(
+      :title,
+      :content_category_id,
+      :organization_id,
+      :category_reviewed,
+      :has_event_calendar,
+      :subtitle,
+      :authors,
+      :parent_id,
+      :pubdate,
+      :url,
+      :banner_ad_override,
+      :sanitized_content,
+      :raw_content,
+      :alternate_title,
+      :alternate_organization_id,
+      :alternate_authors,
+      :alternate_text,
+      :alternate_image_url,
+      :location_id,
+      organization_ids: [],
+      similar_content_overrides: [],
+      event_attributes: [
+        :id,
+        :event_url,
+        :contact_phone,
+        :contact_email,
+        :event_category,
+        :cost_type,
+        :cost,
+        :registration_deadline
+      ],
+      market_post_attributes: [
+        :id,
+        :cost,
+        :contact_phone,
+        :contact_email
+      ]
+    )
+  end
+
+  def fix_array_input
+    input = params[:content][:similar_content_overrides]
+    if input.present?
+      params[:content][:similar_content_overrides] = input.gsub('[', '').gsub(']', '').split(',').map { |str| str.strip.to_i }
+    else
+      params[:content].delete :similar_content_overrides
     end
-
-    def fix_array_input
-      input = params[:content][:similar_content_overrides]
-      if input.present?
-        params[:content][:similar_content_overrides] = input.gsub('[','').gsub(']','').split(',').map{|str| str.strip.to_i }
-      else
-        params[:content].delete :similar_content_overrides
-      end
-    end
-
+  end
 end

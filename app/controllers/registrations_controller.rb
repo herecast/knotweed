@@ -25,7 +25,7 @@ class RegistrationsController < Devise::RegistrationsController
           if user.save
             render json: res, status: 201 and return
           else
-            render json: {errors: user.errors}, status: 422 and return
+            render json: { errors: user.errors }, status: 422 and return
           end
         end
       end
@@ -53,6 +53,6 @@ class RegistrationsController < Devise::RegistrationsController
 
   def account_update_params
     params.require(:user).permit(:name, :email, :location_id, :password, :password_confirmation,
-                                :current_password)
+                                 :current_password)
   end
 end

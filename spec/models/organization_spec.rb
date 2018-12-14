@@ -129,19 +129,19 @@ describe Organization, :type => :model do
     it 'should respond with the descended tree' do
       expect(@c1.get_all_children).to eq []
       expect(@s1.get_all_children).to eq [@c1]
-      expect(@organization.get_all_children).to eq [@s1,@s2,@c1,@c2]
+      expect(@organization.get_all_children).to eq [@s1, @s2, @c1, @c2]
     end
   end
 
   describe '.news_publishers' do
     it 'includes Blog, Publisher, and Publication type organizations' do
-      expect { FactoryGirl.create(:organization, org_type: 'Blog'       ) }.to change{Organization.news_publishers.count}.by(1)
-      expect { FactoryGirl.create(:organization, org_type: 'Publisher'  ) }.to change{Organization.news_publishers.count}.by(1)
-      expect { FactoryGirl.create(:organization, org_type: 'Publication') }.to change{Organization.news_publishers.count}.by(1)
+      expect { FactoryGirl.create(:organization, org_type: 'Blog') }.to change { Organization.news_publishers.count }.by(1)
+      expect { FactoryGirl.create(:organization, org_type: 'Publisher') }.to change { Organization.news_publishers.count }.by(1)
+      expect { FactoryGirl.create(:organization, org_type: 'Publication') }.to change { Organization.news_publishers.count }.by(1)
     end
 
     it 'ignores other types of organizations' do
-      expect { FactoryGirl.create(:organization, org_type: 'Community') }.not_to change{Organization.news_publishers.count}
+      expect { FactoryGirl.create(:organization, org_type: 'Community') }.not_to change { Organization.news_publishers.count }
     end
   end
 
@@ -154,26 +154,26 @@ describe Organization, :type => :model do
     it 'includes children' do
       expect {
         FactoryGirl.create(:organization, parent: subject)
-      }.to change{Organization.descendants_of(subject.id).count}.by 1
+      }.to change { Organization.descendants_of(subject.id).count }.by 1
     end
 
     it 'includes grand-children' do
       expect {
         FactoryGirl.create(:organization, parent: child1)
-      }.to change{Organization.descendants_of(subject.id).count}.by 1
+      }.to change { Organization.descendants_of(subject.id).count }.by 1
     end
 
     it 'includes great-grand-children' do
       expect {
         FactoryGirl.create(:organization, parent: grand_child)
-      }.to change{Organization.descendants_of(subject.id).count}.by 1
+      }.to change { Organization.descendants_of(subject.id).count }.by 1
     end
 
     it 'ignores non-descendants' do
       expect {
         non_descendant = FactoryGirl.create(:organization)
         expect(non_descendant.parent).to_not eq subject
-      }.not_to change{Organization.descendants_of(subject.id).count}
+      }.not_to change { Organization.descendants_of(subject.id).count }
     end
   end
 

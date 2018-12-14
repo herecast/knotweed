@@ -56,8 +56,7 @@ describe Promotion, :type => :model do
     end
 
     it "should create a new promotion" do
-      expect{subject}.to change{Promotion.count}.by(1)
+      expect { subject }.to change { Promotion.count }.by(1)
     end
   end
-
 end

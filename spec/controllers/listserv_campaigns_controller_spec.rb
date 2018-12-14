@@ -14,7 +14,7 @@ describe ListservCampaignsController do
     subject                    { post :create, params: { listserv_id: listserv, campaign: campaign_attrs }, format: :js }
 
     it 'adds a campaign record' do
-      expect{subject}.to change{Campaign.count}.by(1)
+      expect { subject }.to change { Campaign.count }.by(1)
     end
 
     it 'returns a success status code' do
@@ -27,7 +27,7 @@ describe ListservCampaignsController do
       subject             { post :create, params: { listserv_id: listserv, campaign: invalid_attrs }, format: :js }
 
       it 'adds no campaign record' do
-        expect{subject}.not_to change{Campaign.count}
+        expect { subject }.not_to change { Campaign.count }
       end
 
       it 'returns a failure status code' do
@@ -39,13 +39,13 @@ describe ListservCampaignsController do
 
   describe 'PUT update' do
     let(:new_sponsor) { 'new sponsor' }
-    let(:patch_attrs) { {sponsored_by: new_sponsor} }
+    let(:patch_attrs) { { sponsored_by: new_sponsor } }
     let(:campaign)    { FactoryGirl.create(:campaign) }
     let(:listserv)    { campaign.listserv }
     subject           { put :update, params: { listserv_id: listserv, id: campaign, campaign: patch_attrs }, format: :js }
 
     it 'modifies the given record' do
-      expect{subject}.to change{campaign.reload.sponsored_by}
+      expect { subject }.to change { campaign.reload.sponsored_by }
       expect(campaign.sponsored_by).to eq new_sponsor
     end
 
@@ -59,7 +59,7 @@ describe ListservCampaignsController do
       subject             { put :update, params: { listserv_id: listserv, id: campaign, campaign: invalid_attrs }, format: :js }
 
       it 'leaves the given record intact' do
-        expect{subject}.not_to change{campaign.reload.sponsored_by}
+        expect { subject }.not_to change { campaign.reload.sponsored_by }
       end
 
       it 'returns a failure status code' do
@@ -75,7 +75,7 @@ describe ListservCampaignsController do
     subject         { delete :destroy, params: { listserv_id: listserv, id: campaign }, format: :js }
 
     it 'removes the campaign record' do
-      expect{subject}.to change{Campaign.count}.by(-1)
+      expect { subject }.to change { Campaign.count }.by(-1)
     end
 
     it 'returns a success status code' do

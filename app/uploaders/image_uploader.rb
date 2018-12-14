@@ -1,6 +1,6 @@
 # encoding: utf-8
-class ImageUploader < CarrierWave::Uploader::Base
 
+class ImageUploader < CarrierWave::Uploader::Base
   # Include RMagick or MiniMagick support:
   # include CarrierWave::RMagick
   include CarrierWave::MiniMagick
@@ -54,7 +54,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   # Add a white list of extensions which are allowed to be uploaded.
   # For images you might use something like this:
   def extension_white_list
-   %w(jpg jpeg png)
+    %w(jpg jpeg png)
   end
 
   # Override the filename of the uploaded files:
@@ -68,18 +68,17 @@ class ImageUploader < CarrierWave::Uploader::Base
     model.instance_variable_get(var) or model.instance_variable_set(var, Time.current.to_i)
   end
 
-  def secure_token(length=16)
+  def secure_token(length = 16)
     var = :"@#{mounted_as}_secure_token"
-    model.instance_variable_get(var) or model.instance_variable_set(var, SecureRandom.hex(length/2))
+    model.instance_variable_get(var) or model.instance_variable_set(var, SecureRandom.hex(length / 2))
   end
 
   private
 
-    def store_dimensions_and_type
-      if file && model && model.class == Image
-        model.width, model.height = ::MiniMagick::Image.open(file.file)[:dimensions]
-        model.file_extension = file.extension
-      end
+  def store_dimensions_and_type
+    if file && model && model.class == Image
+      model.width, model.height = ::MiniMagick::Image.open(file.file)[:dimensions]
+      model.file_extension = file.extension
     end
-
+  end
 end

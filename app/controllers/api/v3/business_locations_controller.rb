@@ -1,7 +1,6 @@
 module Api
   module V3
     class BusinessLocationsController < ApiController
-
       def index
         expires_in 1.minutes, :public => true
         query = params[:query].blank? ? '*' : params[:query]
@@ -11,7 +10,7 @@ module Api
         opts[:where] = {}
         if current_user.present?
           opts[:where][:or] = [
-            [{created_by_id: current_user.id}, {status: 'approved'}]
+            [{ created_by_id: current_user.id }, { status: 'approved' }]
           ]
         else
           opts[:where][:status] = 'approved'
@@ -24,15 +23,15 @@ module Api
           cs_query = params[:query]
           # The following two lines search extract the (city,state) pair from the search results,
           # then sets cs to the most frequently occurring (city,state) pair
-          cities = BusinessLocation.search(cs_query).map{|c| c.city.strip + ', ' + c.state.strip}
-          cs = cities.group_by{|n| n }.values.max_by(&:size)
+          cities = BusinessLocation.search(cs_query).map { |c| c.city.strip + ', ' + c.state.strip }
+          cs = cities.group_by { |n| n }.values.max_by(&:size)
 
           # reorganize the responses from the search so the locations that begin with the query
           # string appear first, then follow with whatever is left and params[:max_results] results
-          response_data = @venues.map{|v| "#{v.name} #{v.city}, #{v.state}".strip }
-          leftmost_matches = response_data.select{|v| v=~ /^#{query}/}.sort
+          response_data = @venues.map { |v| "#{v.name} #{v.city}, #{v.state}".strip }
+          leftmost_matches = response_data.select { |v| v =~ /^#{query}/ }.sort
           response_data = leftmost_matches + (response_data - leftmost_matches)
-          response_data = response_data.slice(0..params[:max_results]-1) if params[:max_results].present?
+          response_data = response_data.slice(0..params[:max_results] - 1) if params[:max_results].present?
 
           # stick in the matched city at the top of the returned data
           response_data.prepend "#{cs.first}" if cs.present?
@@ -54,7 +53,6 @@ module Api
           render json: {}, status: :not_found
         end
       end
-
     end
   end
 end

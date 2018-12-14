@@ -1,7 +1,6 @@
 module Api
   module V3
     class LocationsController < ApiController
-
       def index
         expires_in 1.hour, public: true
 
@@ -16,7 +15,7 @@ module Api
             @locations = Location.with_slug.consumer_active.non_region.within_radius_of(location, radius)
 
           else
-            render json: {errors: ['radius must be specified']}, status: 422 and return
+            render json: { errors: ['radius must be specified'] }, status: 422 and return
           end
         else # not a radius query
 
@@ -50,7 +49,7 @@ module Api
       def locate
         if params[:coords]
           coords = params[:coords].split(',')
-          @location= Location.non_region.consumer_active.nearest_to_coords(
+          @location = Location.non_region.consumer_active.nearest_to_coords(
             latitude: coords[0],
             longitude: coords[1]
           ).first
@@ -64,7 +63,6 @@ module Api
 
         render json: @location, serializer: LocationSerializer
       end
-
     end
   end
 end

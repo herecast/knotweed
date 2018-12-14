@@ -1,5 +1,4 @@
 class Carousels::OrganizationCarousel < Carousel
-
   def initialize(**args)
     super
     @carousel_type = 'organization'
@@ -10,29 +9,28 @@ class Carousels::OrganizationCarousel < Carousel
 
   private
 
-    def find_organizations
-      @organizations = Organization.search(@query, opts.merge(send("#{@title.downcase}_opts")))
-    end
+  def find_organizations
+    @organizations = Organization.search(@query, opts.merge(send("#{@title.downcase}_opts")))
+  end
 
-    def publishers_opts
-      {
-        where: {
-          org_type: ['Blog', 'Publisher', 'Publication'],
-          archived: { in: [false, nil] }
-        }
+  def publishers_opts
+    {
+      where: {
+        org_type: ['Blog', 'Publisher', 'Publication'],
+        archived: { in: [false, nil] }
       }
-    end
+    }
+  end
 
-    def businesses_opts
-      {
-        where: {
-          org_type: 'Business',
-          archived: { in: [false, nil] }
-        },
-        boost_where: {
-          biz_feed_active: true
-        }
+  def businesses_opts
+    {
+      where: {
+        org_type: 'Business',
+        archived: { in: [false, nil] }
+      },
+      boost_where: {
+        biz_feed_active: true
       }
-    end
-
+    }
+  end
 end

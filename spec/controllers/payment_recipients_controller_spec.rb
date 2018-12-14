@@ -27,7 +27,7 @@ RSpec.describe PaymentRecipientsController, type: :controller do
     subject { post :create, params: { payment_recipient: { user_id: user.id } }, format: :js }
 
     it 'creates a payment_recipient record' do
-      expect{subject}.to change{PaymentRecipient.count}.by(1)
+      expect { subject }.to change { PaymentRecipient.count }.by(1)
     end
   end
 
@@ -43,11 +43,13 @@ RSpec.describe PaymentRecipientsController, type: :controller do
   describe "PUT #update" do
     let!(:payment_recipient) { FactoryGirl.create :payment_recipient }
     let(:org) { FactoryGirl.create :organization }
-    subject { put :update, params: { id: payment_recipient.id,
-      payment_recipient: { organization_id: org.id } }, format: :js }
+    subject {
+      put :update, params: { id: payment_recipient.id,
+                             payment_recipient: { organization_id: org.id } }, format: :js
+    }
 
     it "updates the record" do
-      expect{subject}.to change{payment_recipient.reload.organization}.to(org)
+      expect { subject }.to change { payment_recipient.reload.organization }.to(org)
     end
   end
 
@@ -56,8 +58,7 @@ RSpec.describe PaymentRecipientsController, type: :controller do
     subject { delete :destroy, params: { id: payment_recipient.id }, format: :js }
 
     it "destroys the payment recipient" do
-      expect{subject}.to change{PaymentRecipient.count}.by(-1)
+      expect { subject }.to change { PaymentRecipient.count }.by(-1)
     end
   end
-
 end

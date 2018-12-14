@@ -32,7 +32,6 @@ class FeaturesController < ApplicationController
     end
   end
 
-
   private
 
   def set_feature
@@ -48,5 +47,4 @@ class FeaturesController < ApplicationController
       :options
     )
   end
-
 end

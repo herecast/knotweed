@@ -38,16 +38,16 @@ FactoryGirl.define do
     user
     listserv
     source "email"
-    sequence(:email) {|n| "user#{n}@example.org" }
+    sequence(:email) { |n| "user#{n}@example.org" }
     name "Da Name"
 
     trait(:confirmed) do
-      confirmed_at {1.day.ago}
+      confirmed_at { 1.day.ago }
       confirm_ip '1.1.1.1'
     end
 
     trait(:subscribed) do
-      confirmed_at {1.day.ago}
+      confirmed_at { 1.day.ago }
       confirm_ip '1.1.1.1'
       unsubscribed_at nil
     end

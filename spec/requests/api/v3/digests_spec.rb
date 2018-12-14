@@ -5,7 +5,7 @@ RSpec.describe 'Digest API Endpoints', type: :request do
     context 'when listservs are active and `is_managed_list?`' do
       let!(:digests) { FactoryGirl.create_list :listserv, 3, display_subscribe: true }
       before do
-        digests.each {|digest| digest.update_attributes(subscribe_email: Faker::Internet.email) }
+        digests.each { |digest| digest.update_attributes(subscribe_email: Faker::Internet.email) }
       end
       it 'returns available listserv digests' do
         get '/api/v3/digests'
@@ -24,7 +24,7 @@ RSpec.describe 'Digest API Endpoints', type: :request do
       let!(:digests) { FactoryGirl.create_list :listserv, 3, list_type: 'internal_digest' }
       let!(:active_digest) { FactoryGirl.create :listserv, active: true, display_subscribe: true }
       before do
-        digests.each { |digest| digest.update_attributes(active: false, post_email: Faker::Internet.email)}
+        digests.each { |digest| digest.update_attributes(active: false, post_email: Faker::Internet.email) }
       end
 
       it 'does not return the listserv digests where `display_subscribe` is false and `list_type` is custom_digest' do
@@ -43,15 +43,14 @@ RSpec.describe 'Digest API Endpoints', type: :request do
       it 'returns expected json output' do
         subject
         expect(response_json[:digest]).to match({
-          id: digest.id,
-          digest_description: digest.digest_description,
-          name: digest.name,
-          digest_send_time: digest.digest_send_time.strftime('%l:%M %p').strip,
-          digest_send_day: digest.digest_send_day,
-          next_digest_send_time: digest.next_digest_send_time.iso8601
-        })
+                                                  id: digest.id,
+                                                  digest_description: digest.digest_description,
+                                                  name: digest.name,
+                                                  digest_send_time: digest.digest_send_time.strftime('%l:%M %p').strip,
+                                                  digest_send_day: digest.digest_send_day,
+                                                  next_digest_send_time: digest.next_digest_send_time.iso8601
+                                                })
       end
     end
   end
 end
-

@@ -7,7 +7,7 @@ Devise.setup do |config|
   config.mailer_sender = Rails.configuration.subtext.emails.no_reply
   config.secret_key = '3e42ee7505838262a4f65ae11d644671a746745d6a8233e5c8943cdaf905373d29c6ec997dad7467d62263a1769c5076ae354194a4dbb62c4e91bae25d0b5704'
   config.email_regexp = /\A[^@\s]+@([^@\s]+\.)+[^@\W]+\z/
-  
+
   # Configure the class responsible to send e-mails.
   # config.mailer = "Devise::Mailer"
 
@@ -37,12 +37,12 @@ Devise.setup do |config|
   # Configure which authentication keys should be case-insensitive.
   # These keys will be downcased upon creating or modifying a user and when used
   # to authenticate or find a user. Default is :email.
-  config.case_insensitive_keys = [ :email ]
+  config.case_insensitive_keys = [:email]
 
   # Configure which authentication keys should have whitespace stripped.
   # These keys will have whitespace before and after removed upon creating or
   # modifying a user and when used to authenticate or find a user. Default is :email.
-  config.strip_whitespace_keys = [ :email ]
+  config.strip_whitespace_keys = [:email]
 
   # Tell if authentication through request.params is enabled. True by default.
   # It can be set to an array that will enable params authentication only for the

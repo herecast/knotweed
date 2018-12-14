@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe MarketPostsHelper, type: :helper do
   describe '#market_contact_display' do
-    let(:market_post) {MarketPost.new}
+    let(:market_post) { MarketPost.new }
     subject { helper.market_contact_display(market_post) }
     context 'Given a market_post with a phone' do
       before do
@@ -51,6 +51,5 @@ describe MarketPostsHelper, type: :helper do
     it 'uses default_consumer_host' do
       expect(subject).to eql "http://#{Figaro.env.default_consumer_host}/#{market_post.content.id}#{utm_string}"
     end
-
   end
 end

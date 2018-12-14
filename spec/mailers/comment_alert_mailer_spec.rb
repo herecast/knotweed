@@ -12,21 +12,20 @@ RSpec.describe CommentAlertMailer do
     subject { described_class.alert_parent_content_owner(comment, parent_content).deliver_now }
 
     it 'successfully delivers the email' do
-      expect { subject }.to change{ 
+      expect { subject }.to change {
         ActionMailer::Base.deliveries.count
       }.by(1)
     end
 
     it 'contains creates the correct subject' do
-      expect_any_instance_of(CommentAlertMailer).to receive(:mail).with(to: parent_content.created_by.email, 
+      expect_any_instance_of(CommentAlertMailer).to receive(:mail).with(to: parent_content.created_by.email,
                                                                         from: "DailyUV <notifications@dailyuv.com>",
                                                                         subject: "#{comment.created_by.name} just commented on your post on DailyUV").and_return(Mail::Message.new)
       subject
     end
 
     describe 'email content' do
-
-      subject {described_class.alert_parent_content_owner(comment, parent_content) }
+      subject { described_class.alert_parent_content_owner(comment, parent_content) }
 
       it 'includes the time of the comment' do
         expect(subject.body).to include comment.created_at.strftime('%B %e at %l:%M%P')

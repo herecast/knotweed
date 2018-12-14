@@ -203,12 +203,10 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
         it 'should return results within radius if specified' do
           bp = BusinessProfile.first
           get :index, params: { lat: bp.business_location.latitude, lng: bp.business_location.longitude,
-            radius: 1 }
+                                radius: 1 }
           expect(assigns(:business_profiles)).to match_array [bp]
         end
-
       end
-
     end
   end
 
@@ -255,7 +253,7 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
     end
 
     it 'should send an email' do
-      expect{subject}.to change{ActionMailer::Base.deliveries.count}.by 1
+      expect { subject }.to change { ActionMailer::Base.deliveries.count }.by 1
     end
   end
 
@@ -283,15 +281,15 @@ describe Api::V3::BusinessProfilesController, :type => :controller do
         end
 
         it 'should update the associated content' do
-          expect{subject}.to change { @business_profile.content.reload.raw_content }.to @update_params[:details]
+          expect { subject }.to change { @business_profile.content.reload.raw_content }.to @update_params[:details]
         end
 
         it 'should update the business_profile' do
-          expect{subject}.to change { @business_profile.reload.has_retail_location? }.to @update_params[:has_retail_location]
+          expect { subject }.to change { @business_profile.reload.has_retail_location? }.to @update_params[:has_retail_location]
         end
 
         it 'should update the business_location' do
-          expect{subject}.to change { @business_profile.business_location.reload.phone }.to @update_params[:phone]
+          expect { subject }.to change { @business_profile.business_location.reload.phone }.to @update_params[:phone]
         end
       end
       context 'as a random other person' do

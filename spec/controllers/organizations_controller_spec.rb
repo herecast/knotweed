@@ -20,7 +20,7 @@ describe OrganizationsController, type: :controller do
 
     context 'Given parameter "q"' do
       let(:query) { "search" }
-      let(:q) { {'fake' => query} }
+      let(:q) { { 'fake' => query } }
 
       subject do
         get :index, params: { q: q }
@@ -32,7 +32,7 @@ describe OrganizationsController, type: :controller do
       end
 
       it 'does search' do
-        search = double(result: Organization )
+        search = double(result: Organization)
         expect(Organization).to receive(:ransack).and_return(search)
 
         subject
@@ -60,11 +60,11 @@ describe OrganizationsController, type: :controller do
 
     context 'no parameters; session[:organizations_search]' do
       before do
-        session[:organizations_search] = {fake: "search"}
+        session[:organizations_search] = { fake: "search" }
       end
 
       it 'searches with the saved session search parameters' do
-        search = double(result: Organization )
+        search = double(result: Organization)
         expect(Organization).to receive(:ransack).with(
           session[:organizations_search]
         ).and_return(search)
@@ -84,7 +84,7 @@ describe OrganizationsController, type: :controller do
       end
 
       it 'does not include child organizations' do
-        q = { 'id_eq' => parent_organization.id  }
+        q = { 'id_eq' => parent_organization.id }
         get :index, params: { q: q }
         expect(assigns(:organizations).length).to eq(1)
       end
@@ -103,7 +103,6 @@ describe OrganizationsController, type: :controller do
           expect(ids).to include parent_news_org.id
           expect(ids).to include child_news_org.id
         end
-
       end
     end
 
@@ -114,7 +113,6 @@ describe OrganizationsController, type: :controller do
         get :index, params: { q: { "can_publish_news_true" => 1 } }
         expect(assigns(:organizations).first).to eq(news_org)
       end
-
     end
   end
 
@@ -142,7 +140,7 @@ describe OrganizationsController, type: :controller do
 
   describe '#update' do
     let(:organization) { FactoryGirl.create :organization }
-    let(:update_attrs) { {'name' => "new name"} }
+    let(:update_attrs) { { 'name' => "new name" } }
     before do
       allow(Organization).to receive(:find).and_return(organization)
     end
@@ -180,11 +178,11 @@ describe OrganizationsController, type: :controller do
       end
 
       context "given organization[business_location_list] csv parameter" do
-        let(:locations){ FactoryGirl.create_list :business_location, 2 }
+        let(:locations) { FactoryGirl.create_list :business_location, 2 }
         let(:location_list) { locations.map(&:id).join(',') }
 
         it "converts them to business_location_ids" do
-          send_params = {organization: org_attrs.merge(business_location_list: location_list)}
+          send_params = { organization: org_attrs.merge(business_location_list: location_list) }
           post :create, params: send_params
           expect(assigns(:organization).business_location_ids).to eql locations.map(&:id)
         end

@@ -9,8 +9,8 @@ describe Api::V3::ContentsController, :type => :controller do
     context "when content is removed" do
       before do
         @content = FactoryGirl.create :content, :news,
-          removed: true,
-          organization: @org
+                                      removed: true,
+                                      organization: @org
         allow(CreateAlternateContent).to receive(:call).and_return(@content)
       end
 
@@ -28,8 +28,8 @@ describe Api::V3::ContentsController, :type => :controller do
     context "when content is draft" do
       before do
         @content = FactoryGirl.create :content, :news,
-          pubdate: nil,
-          organization: @org
+                                      pubdate: nil,
+                                      organization: @org
       end
 
       subject { get :show, params: { id: @content.id } }
@@ -69,8 +69,8 @@ describe Api::V3::ContentsController, :type => :controller do
     context "when content is scheduled to be published" do
       before do
         @content = FactoryGirl.create :content, :news,
-          pubdate: Date.tomorrow,
-          organization: @org
+                                      pubdate: Date.tomorrow,
+                                      organization: @org
       end
 
       subject { get :show, params: { id: @content.id } }
@@ -84,14 +84,17 @@ describe Api::V3::ContentsController, :type => :controller do
 
   describe 'GET similar_content', elasticsearch: true do
     let(:content) { FactoryGirl.create :content }
-    let!(:sim_content) { FactoryGirl.create :content,
-      title: content.title,
-      raw_content: content.sanitized_content,
-      origin: Content::UGC_ORIGIN
+    let!(:sim_content) {
+      FactoryGirl.create :content,
+                         title: content.title,
+                         raw_content: content.sanitized_content,
+                         origin: Content::UGC_ORIGIN
     }
 
-    subject { get :similar_content, format: :json,
-        params: { id: content.id } }
+    subject {
+      get :similar_content, format: :json,
+                            params: { id: content.id }
+    }
 
     it 'has 200 status code' do
       subject
@@ -117,7 +120,7 @@ describe Api::V3::ContentsController, :type => :controller do
     it 'should queue flag notification email' do
       expect {
         subject
-      }.to change{ActiveJob::Base.queue_adapter.enqueued_jobs.size}.by(1)
+      }.to change { ActiveJob::Base.queue_adapter.enqueued_jobs.size }.by(1)
       expect(ActiveJob::Base.queue_adapter.enqueued_jobs.last[:job]).to eq(ActionMailer::DeliveryJob)
     end
   end
@@ -126,8 +129,8 @@ describe Api::V3::ContentsController, :type => :controller do
     before do
       @user = FactoryGirl.create :user
       @content = FactoryGirl.create :content,
-        pubdate: Time.current,
-        created_by: @user
+                                    pubdate: Time.current,
+                                    created_by: @user
     end
 
     subject { delete :destroy, params: { id: @content.id } }
@@ -157,7 +160,7 @@ describe Api::V3::ContentsController, :type => :controller do
         end
 
         it "marks Content as deleted" do
-          expect{ subject }.to change{
+          expect { subject }.to change {
             @content.reload.deleted_at
           }
         end
@@ -228,7 +231,7 @@ describe Api::V3::ContentsController, :type => :controller do
 
       context 'when successful' do
         it 'creates a new record' do
-          expect{ subject }.to change{
+          expect { subject }.to change {
             Content.count
           }.by(1)
         end
@@ -362,7 +365,7 @@ describe Api::V3::ContentsController, :type => :controller do
             end
 
             it 'creates a venue with venue attributes' do
-              expect{subject}.to change{
+              expect { subject }.to change {
                 BusinessLocation.count
               }.by(1)
 
@@ -387,7 +390,6 @@ describe Api::V3::ContentsController, :type => :controller do
       let(:content) do
         FactoryGirl.create :content, :market_post, created_by: user
       end
-
 
       let(:location) {
         FactoryGirl.create :location

@@ -29,5 +29,4 @@ module Auditable
       self.updated_by = User.current
     end
   end
-
 end

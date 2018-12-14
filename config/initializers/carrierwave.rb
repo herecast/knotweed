@@ -1,8 +1,8 @@
 CarrierWave.configure do |config|
   config.fog_credentials = {
-    :provider               => 'AWS',
-    :aws_access_key_id      => Figaro.env.aws_access_key_id || 'dummy',
-    :aws_secret_access_key  => Figaro.env.aws_secret_access_key || 'dummy'
+    :provider => 'AWS',
+    :aws_access_key_id => Figaro.env.aws_access_key_id || 'dummy',
+    :aws_secret_access_key => Figaro.env.aws_secret_access_key || 'dummy'
   }
 
   config.fog_directory = Figaro.env.aws_bucket_name
@@ -20,5 +20,4 @@ CarrierWave.configure do |config|
   else
     config.storage = :fog
   end
-
 end

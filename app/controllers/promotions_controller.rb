@@ -1,5 +1,4 @@
 class PromotionsController < ApplicationController
-
   def index
     @organization = Organization.find(params[:organization_id])
     @promotions = @organization.promotions
@@ -78,18 +77,17 @@ class PromotionsController < ApplicationController
 
   private
 
-    def promotion_params
-      params.require(:promotion).permit(
-        :description,
-        :content_id,
-        :promotable_type,
-        :paid,
-        promotable_attributes: [ :id, :boost, :campaign_start, :campaign_end, :daily_max_impressions,
-          :max_impressions, :banner_image, :redirect_url, :promotion_type, :sales_agent,
-          :cost_per_impression, :cost_per_day, :coupon_email_body, :coupon_image,
-          :remove_coupon_image, :remove_banner_image ],
-        content_attributes: [ :title ]
-      )
-    end
-
+  def promotion_params
+    params.require(:promotion).permit(
+      :description,
+      :content_id,
+      :promotable_type,
+      :paid,
+      promotable_attributes: [:id, :boost, :campaign_start, :campaign_end, :daily_max_impressions,
+                              :max_impressions, :banner_image, :redirect_url, :promotion_type, :sales_agent,
+                              :cost_per_impression, :cost_per_day, :coupon_email_body, :coupon_image,
+                              :remove_coupon_image, :remove_banner_image],
+      content_attributes: [:title]
+    )
+  end
 end

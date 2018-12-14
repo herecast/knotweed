@@ -1,7 +1,6 @@
 module Api
   module V3
     class PaymentReportsController < ApiController
-
       before_action :check_logged_in!
 
       def index
@@ -31,22 +30,21 @@ module Api
         pments = Payment.where(paid_to: @user)
         if pments.present?
           pments.where(period_start: @period_start,
-                  period_end: @period_end)
+                       period_end: @period_end)
         else
           []
         end
       end
-      
+
       def line_items
         if @user.present?
-          payments.
-            paid.
-            joins(content: [:organization]).
-            select('organizations.id, organizations.name as name, SUM(paid_impressions) as total_impressions').
-            group('organizations.id')
+          payments
+            .paid
+            .joins(content: [:organization])
+            .select('organizations.id, organizations.name as name, SUM(paid_impressions) as total_impressions')
+            .group('organizations.id')
         end
       end
-
     end
   end
 end

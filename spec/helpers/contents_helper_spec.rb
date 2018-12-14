@@ -1,11 +1,10 @@
-require 'spec_helper' 
+require 'spec_helper'
 
 describe ContentsHelper, type: :helper do
-
   describe 'event_feed_content_path' do
     let(:event) { FactoryGirl.create :event }
-    let(:utm_string) {"?utm_medium=email&utm_source=rev-pub&utm_content=#{ux2_content_path(event.content)}" }
-    
+    let(:utm_string) { "?utm_medium=email&utm_source=rev-pub&utm_content=#{ux2_content_path(event.content)}" }
+
     it 'should return /feed/#{content_id}?eventInstanceid=#{event_instance_id}' do
       expect(helper.event_feed_content_path(event.content)).to eq "#{ux2_content_path(event.content)}?eventInstanceId=#{event.next_instance.id}#{utm_string}"
     end
@@ -21,7 +20,7 @@ describe ContentsHelper, type: :helper do
 
     context 'session[:contents_search]' do
       before do
-        session[:contents_search] = {key => 'a_value'}
+        session[:contents_search] = { key => 'a_value' }
       end
 
       it 'returns session[:contents_search][key]' do
@@ -42,7 +41,7 @@ describe ContentsHelper, type: :helper do
 
   describe '#remove_list_from_title' do
     context 'When title has [bracket content]' do
-      subject{ helper.remove_list_from_title("My Title [in brackets]") }
+      subject { helper.remove_list_from_title("My Title [in brackets]") }
 
       it 'removes [bracket content]' do
         expect(subject).to_not include('[in brackets]')
@@ -101,24 +100,24 @@ describe ContentsHelper, type: :helper do
   end
 
   describe "#organization_url_label" do
-    it {expect(helper.organization_url_label(nil      )).to eq "" }
-    it {expect(helper.organization_url_label(''       )).to eq "" }
-    it {expect(helper.organization_url_label('foobar' )).to eq "foobar" }
-    it {expect(helper.organization_url_label('foo/bar')).to eq "foo/bar" }
+    it { expect(helper.organization_url_label(nil)).to eq "" }
+    it { expect(helper.organization_url_label('')).to eq "" }
+    it { expect(helper.organization_url_label('foobar')).to eq "foobar" }
+    it { expect(helper.organization_url_label('foo/bar')).to eq "foo/bar" }
 
     ['', 'http://', 'https://'].each do |prefix|
-      it {expect(helper.organization_url_label("#{prefix}dailyUV/my-org"                          )).to eq "dailyUV/my-org" }
-      it {expect(helper.organization_url_label("#{prefix}dailyUV/123-my-org"                      )).to eq "dailyUV/my-org" }
-      it {expect(helper.organization_url_label("#{prefix}dailyUV/organizations/my-org"            )).to eq "dailyUV/my-org" }
-      it {expect(helper.organization_url_label("#{prefix}dailyUV/organizations/123-my-org"        )).to eq "dailyUV/my-org" }
-      it {expect(helper.organization_url_label("#{prefix}dailyUV.com/my-org"                      )).to eq "dailyUV/my-org" }
-      it {expect(helper.organization_url_label("#{prefix}dailyUV.com/123-my-org"                  )).to eq "dailyUV/my-org" }
-      it {expect(helper.organization_url_label("#{prefix}dailyUV.com/organizations/my-org"        )).to eq "dailyUV/my-org" }
-      it {expect(helper.organization_url_label("#{prefix}dailyUV.com/organizations/123-my-org"    )).to eq "dailyUV/my-org" }
-      it {expect(helper.organization_url_label("#{prefix}www.dailyUV.com/my-org"                  )).to eq "dailyUV/my-org" }
-      it {expect(helper.organization_url_label("#{prefix}www.dailyUV.com/123-my-org"              )).to eq "dailyUV/my-org" }
-      it {expect(helper.organization_url_label("#{prefix}www.dailyUV.com/organizations/my-org"    )).to eq "dailyUV/my-org" }
-      it {expect(helper.organization_url_label("#{prefix}www.dailyUV.com/organizations/123-my-org")).to eq "dailyUV/my-org" }
+      it { expect(helper.organization_url_label("#{prefix}dailyUV/my-org")).to eq "dailyUV/my-org" }
+      it { expect(helper.organization_url_label("#{prefix}dailyUV/123-my-org")).to eq "dailyUV/my-org" }
+      it { expect(helper.organization_url_label("#{prefix}dailyUV/organizations/my-org")).to eq "dailyUV/my-org" }
+      it { expect(helper.organization_url_label("#{prefix}dailyUV/organizations/123-my-org")).to eq "dailyUV/my-org" }
+      it { expect(helper.organization_url_label("#{prefix}dailyUV.com/my-org")).to eq "dailyUV/my-org" }
+      it { expect(helper.organization_url_label("#{prefix}dailyUV.com/123-my-org")).to eq "dailyUV/my-org" }
+      it { expect(helper.organization_url_label("#{prefix}dailyUV.com/organizations/my-org")).to eq "dailyUV/my-org" }
+      it { expect(helper.organization_url_label("#{prefix}dailyUV.com/organizations/123-my-org")).to eq "dailyUV/my-org" }
+      it { expect(helper.organization_url_label("#{prefix}www.dailyUV.com/my-org")).to eq "dailyUV/my-org" }
+      it { expect(helper.organization_url_label("#{prefix}www.dailyUV.com/123-my-org")).to eq "dailyUV/my-org" }
+      it { expect(helper.organization_url_label("#{prefix}www.dailyUV.com/organizations/my-org")).to eq "dailyUV/my-org" }
+      it { expect(helper.organization_url_label("#{prefix}www.dailyUV.com/organizations/123-my-org")).to eq "dailyUV/my-org" }
     end
   end
 end

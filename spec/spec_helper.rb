@@ -13,14 +13,14 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'webmock/rspec'
-#require 'pry-debugger' unless ENV['RM_INFO']
+# require 'pry-debugger' unless ENV['RM_INFO']
 require 'vcr'
 require 'factory_girl'
 WebMock.disable_net_connect!(allow_localhost: true, allow: ENV['ELASTICSEARCH_URL'])
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
-Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
+Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/vcr_cassettes'
@@ -94,19 +94,18 @@ RSpec.configure do |config|
     example.run
     Timecop.return
   end
-
 end
 
 Geocoder.configure(lookup: :test)
 Geocoder::Lookup::Test.set_default_stub(
   [
     {
-      'latitude'     => 40.7143528,
-      'longitude'    => -74.0059731,
-      'address'      => 'New York, NY, USA',
-      'state'        => 'New York',
-      'state_code'   => 'NY',
-      'country'      => 'United States',
+      'latitude' => 40.7143528,
+      'longitude' => -74.0059731,
+      'address' => 'New York, NY, USA',
+      'state' => 'New York',
+      'state_code' => 'NY',
+      'country' => 'United States',
       'country_code' => 'US'
     }
   ]

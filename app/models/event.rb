@@ -36,7 +36,7 @@ class Event < ActiveRecord::Base
   has_one :content, as: :channel
   accepts_nested_attributes_for :content
   delegate :created_by, :organization, :organization_id,
-    to: :content
+           to: :content
 
   has_one :source, through: :content, class_name: "Organization", foreign_key: "organization_id"
   has_one :content_category, through: :content
@@ -44,7 +44,7 @@ class Event < ActiveRecord::Base
 
   belongs_to :venue, class_name: "BusinessLocation", foreign_key: "venue_id"
   accepts_nested_attributes_for :venue,
-    reject_if: proc { |attributes| attributes['name'].blank? and attributes['address'].blank? }
+                                reject_if: proc { |attributes| attributes['name'].blank? and attributes['address'].blank? }
 
   # event instances represent individual datetimes for events that might occur more than once
   # they can also have a subtitle and description that "override" the master
@@ -103,6 +103,7 @@ class Event < ActiveRecord::Base
   def description
     content.content
   end
+
   def description=(new_desc)
     content.raw_content = new_desc
   end
@@ -168,5 +169,4 @@ class Event < ActiveRecord::Base
       longitude: venue.longitude
     ).first
   end
-
 end

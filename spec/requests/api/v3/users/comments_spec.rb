@@ -5,18 +5,18 @@ describe 'User Comments endpoint', type: :request do
   let(:user) { FactoryGirl.create :user }
   let(:other_user) { FactoryGirl.create :user }
   let(:standard_org) { FactoryGirl.create :organization, standard_ugc_org: true }
-  let(:headers) { {'ACCEPT' => 'application/json' } }
+  let(:headers) { { 'ACCEPT' => 'application/json' } }
 
   describe "/api/v3/users/:id/comments", elasticsearch: true do
     before do
       FactoryGirl.create :content, :comment,
-        created_by: other_user,
-        organization: standard_org
+                         created_by: other_user,
+                         organization: standard_org
       @comment_text = "Vader is innocent!"
       @owned_comment = FactoryGirl.create :content, :comment,
-        created_by: user,
-        organization: standard_org,
-        raw_content: @comment_text
+                                          created_by: user,
+                                          organization: standard_org,
+                                          raw_content: @comment_text
     end
 
     context "when no user logged in" do

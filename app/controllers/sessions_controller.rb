@@ -18,7 +18,7 @@ class SessionsController < Devise::SessionsController
 
     if user.present?
       unless user.confirmed?
-        ConfirmRegistration.call({confirmation_token: user.confirmation_token, confirm_ip: request.remote_ip })
+        ConfirmRegistration.call({ confirmation_token: user.confirmation_token, confirm_ip: request.remote_ip })
         user.reload
       end
       sign_in user
@@ -32,7 +32,7 @@ class SessionsController < Devise::SessionsController
       }, status: 422
     end
   end
-  
+
   def oauth
     user_info = FacebookService.get_user_info(params[:accessToken])
     fb_user_info = ActiveSupport::HashWithIndifferentAccess.new(user_info)

@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   require 'sidekiq/web'
 
-  #custom devise routing
-  devise_scope :user  do
+  # custom devise routing
+  devise_scope :user do
     post '/api/v3/users/sign_in', to: 'sessions#create'
     post '/api/v3/users/sign_up', to: 'registrations#create'
     post '/api/v3/users/oauth', to: 'sessions#oauth'
@@ -11,7 +11,6 @@ Rails.application.routes.draw do
 
     post '/api/v3/users/sign_in_with_token', to: 'sessions#sign_in_with_token'
   end
-
 
   # /admin/...
   scope '/admin' do
@@ -77,15 +76,15 @@ Rails.application.routes.draw do
 
     resources :features
 
-    get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', :defaults => {:format => 'ics'}, as: :event_instances_ics
-    get '/ics/events/:public_id', to: 'api/v3/users#events', :defaults => {:format => 'ics'}, as: :user_event_instances_ics
+    get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', :defaults => { :format => 'ics' }, as: :event_instances_ics
+    get '/ics/events/:public_id', to: 'api/v3/users#events', :defaults => { :format => 'ics' }, as: :user_event_instances_ics
 
     get '/sidekiq_wrapper', to: 'sidekiq_wrapper#index'
   end
 
   # API
   namespace :api do
-    namespace :v3, defaults: {format: 'json'} do
+    namespace :v3, defaults: { format: 'json' } do
       get '/current_user', to: 'users#show'
       put '/current_user', to: 'users#update'
       post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
@@ -104,7 +103,7 @@ Rails.application.routes.draw do
 
       post 'promotion_banners/:id/impression', to: 'promotion_banners#track_impression', as: :track_impression
       get '/promotion_banners/:id/metrics', to: 'promotion_banners#metrics',
-        as: :promotion_banner_metrics
+                                            as: :promotion_banner_metrics
       get '/promotions', to: 'promotion_banners#show'
       get '/promotions/:promotion_id', to: 'promotion_banners#show'
       get '/event_instances/active_dates', to: 'event_instances#active_dates'
@@ -112,15 +111,15 @@ Rails.application.routes.draw do
 
       resources 'event_instances', only: [:index, :show]
 
-      #deprecated
+      # deprecated
       post 'events/:id/impressions', to: 'metrics/contents/impressions#create'
 
       resources 'comments', only: [:index, :create]
       post '/comments/unsubscribe_from_alerts', to: 'comments#unsubscribe_webhook'
-      resources 'listservs', only: [:show,:index]
+      resources 'listservs', only: [:show, :index]
       get '/venues', to: 'business_locations#index', as: :venues
       get '/venue_locations', to: 'business_locations#index', as: :venue_locations,
-        defaults: { autocomplete: true, max_results: 5 }
+                              defaults: { autocomplete: true, max_results: 5 }
       get '/venues/:id/location', to: "business_locations#location"
 
       get '/locations/:id/closest', to: 'locations#closest', as: :closest
@@ -193,5 +192,4 @@ Rails.application.routes.draw do
       post '/metrics/profiles/:id/clicks', to: 'metrics/profiles#click'
     end
   end
-
 end

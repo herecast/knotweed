@@ -36,17 +36,17 @@ class Payment < ActiveRecord::Base
   # makes it potentially not always exactly the same (I think). That said, it is
   # always very very close to the same, so we are just taking MIN here.
   scope :by_period, -> {
-    select('MIN(payments.id) as id, MIN(fullname) as fullname, period_start, period_end, MIN(pay_per_impression) as pay_per_impression, MIN(payment_date) as payment_date, SUM(paid_impressions) as paid_impressions, SUM(total_payment) as total_payment').
-    joins(:paid_to).
-    group(:period_start, :period_end).
-    order('payment_date DESC')
+    select('MIN(payments.id) as id, MIN(fullname) as fullname, period_start, period_end, MIN(pay_per_impression) as pay_per_impression, MIN(payment_date) as payment_date, SUM(paid_impressions) as paid_impressions, SUM(total_payment) as total_payment')
+      .joins(:paid_to)
+      .group(:period_start, :period_end)
+      .order('payment_date DESC')
   }
 
   scope :by_user, -> {
-    select('MIN(payments.id) as id, users.id as paid_to_user_id, fullname, period_start, period_end, SUM(total_payment) as total_payment').
-    joins(:paid_to).
-    group(:period_start, :period_end, :fullname, :paid_to_user_id).
-    order('fullname ASC')
+    select('MIN(payments.id) as id, users.id as paid_to_user_id, fullname, period_start, period_end, SUM(total_payment) as total_payment')
+      .joins(:paid_to)
+      .group(:period_start, :period_end, :fullname, :paid_to_user_id)
+      .order('fullname ASC')
   }
 
   scope :unpaid, -> { where(paid: false) }
@@ -82,5 +82,4 @@ class Payment < ActiveRecord::Base
   def mark_paid!
     update paid: true
   end
-
 end

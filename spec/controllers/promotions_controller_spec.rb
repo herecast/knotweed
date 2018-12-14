@@ -80,7 +80,7 @@ describe PromotionsController, :type => :controller do
   end
 
   describe "PUT update" do
-    subject { put :update, params: { id: @promotion.to_param, promotion: params} }
+    subject { put :update, params: { id: @promotion.to_param, promotion: params } }
 
     describe "with valid params" do
       let(:params) { { description: 'Another description' } }
@@ -144,7 +144,6 @@ describe PromotionsController, :type => :controller do
     end
 
     context "when no content present" do
-
       subject { get :new, params: { organization_id: @org.id } }
 
       it "should respond with 302 status code" do
@@ -153,5 +152,4 @@ describe PromotionsController, :type => :controller do
       end
     end
   end
-
 end

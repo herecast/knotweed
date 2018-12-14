@@ -25,7 +25,6 @@
 require 'spec_helper'
 
 describe Image, :type => :model do
-
   describe 'validation' do
     describe '#image_minimum_size' do
       context "when image is too small" do
@@ -47,12 +46,12 @@ describe Image, :type => :model do
           expect(@image).to be_valid
         end
       end
-      
+
       context 'when image does not exist in server filesystem' do
         before do
           @image = FactoryGirl.create :image, image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
         end
-        
+
         it 'does not try to validate image' do
           File.delete(@image.image.current_path)
           expect(@image).to be_valid
@@ -86,9 +85,8 @@ describe Image, :type => :model do
     end
 
     it 'renders the images in order of primary first, then the remaining images by position' do
-      expect(@imgble.images.order(:id        ).to_a).to eq [@img2, @img1, @img3]
+      expect(@imgble.images.order(:id).to_a).to eq [@img2, @img1, @img3]
       expect(@imgble.images.in_rendering_order.to_a).to eq [@img2, @img3, @img1]
     end
   end
-
 end

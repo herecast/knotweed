@@ -13,7 +13,7 @@ class ListservDigestMailer < ActionMailer::Base
   def digest(digest_record)
     @digest = digest_record
     @listserv = digest_record.listserv
-    compressor = HtmlCompressor::Compressor.new(options = {:preserve_line_breaks => true})
+    compressor = HtmlCompressor::Compressor.new(options = { :preserve_line_breaks => true })
 
     template = @digest.template? ? @digest.template : "outlook_news_template"
 

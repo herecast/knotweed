@@ -8,7 +8,6 @@ describe BusinessProfiles::ClaimsController, type: :controller do
   end
 
   describe "POST #create" do
-
     subject { post :create, params: { id: @business_profile } }
 
     context "when successful" do
@@ -36,5 +35,4 @@ describe BusinessProfiles::ClaimsController, type: :controller do
       end
     end
   end
-
 end

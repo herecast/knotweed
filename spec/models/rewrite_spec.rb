@@ -19,7 +19,6 @@
 
 require 'spec_helper'
 
-
 describe Rewrite, :type => :model do
   before do
     @source = 'NeVer-LanD'
@@ -27,7 +26,6 @@ describe Rewrite, :type => :model do
   end
 
   it 'should save the source in lowercase' do
-    expect(@rewrite.reload.source).to eq  @source.downcase
+    expect(@rewrite.reload.source).to eq @source.downcase
   end
-
 end

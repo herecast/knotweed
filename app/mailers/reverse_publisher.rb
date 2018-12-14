@@ -3,7 +3,7 @@ class ReversePublisher < ActionMailer::Base
 
   def mail_content_to_listservs(content, listservs)
     # these are the same regardless of channel
-    to = listservs.map{ |l| l.reverse_publish_email }
+    to = listservs.map { |l| l.reverse_publish_email }
     from = "\"#{content.authors}\" <#{content.authoremail}>"
     subject = content.title
     @body = content.raw_content_for_text_email
@@ -37,8 +37,6 @@ class ReversePublisher < ActionMailer::Base
     @html_body = outbound_html
     mail(from: Rails.configuration.subtext.emails.no_reply,
          to: content.authoremail,
-         subject: content.title
-    )
+         subject: content.title)
   end
-
 end

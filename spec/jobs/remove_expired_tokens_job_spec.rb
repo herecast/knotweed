@@ -6,6 +6,6 @@ RSpec.describe RemoveExpiredTokensJob do
   subject { described_class.new.perform }
 
   it 'removes all tokens created more than 24 hrs ago' do
-    expect{ subject }.to change{ SignInToken.count }.by(-3)
+    expect { subject }.to change { SignInToken.count }.by(-3)
   end
 end

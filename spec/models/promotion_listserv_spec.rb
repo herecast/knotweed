@@ -38,7 +38,6 @@ describe PromotionListserv, :type => :model do
         content.authoremail = nil
         expect(subject).to be_falsey
       end
-
     end
   end
 end

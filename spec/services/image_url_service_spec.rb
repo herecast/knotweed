@@ -13,7 +13,7 @@ RSpec.describe ImageUrlService do
   subject { ImageUrlService }
 
   it { is_expected.to respond_to(:optimize_image_urls) }
-  it { is_expected.to respond_to(:optimize_image_url ) }
+  it { is_expected.to respond_to(:optimize_image_url) }
 
   describe "#optimize_image_url" do
     it 'returns the given URL if the given URL is blank' do
@@ -31,32 +31,32 @@ RSpec.describe ImageUrlService do
     end
 
     it 'returns a URL' do
-      expect(is_url(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 100, do_crop: true ))).to eq true
+      expect(is_url(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 100, do_crop: true))).to eq true
       expect(is_url(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 100, do_crop: false))).to eq true
     end
 
     it 'returns a new URL, different from the given URL' do
-      expect(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 100, do_crop: true )).to_not eq 'http://knotweed.s3.amazonaws.com'
+      expect(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 100, do_crop: true)).to_not eq 'http://knotweed.s3.amazonaws.com'
       expect(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 100, do_crop: false)).to_not eq 'http://knotweed.s3.amazonaws.com'
     end
 
     it 'the returned URL depends on the cropping choice' do
       non_cropped_result = subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 100, do_crop: false)
-      expect(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 100, do_crop: true )).to_not eq non_cropped_result
+      expect(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 100, do_crop: true)).to_not eq non_cropped_result
     end
 
     it 'the returned URL depends on the target rectangle' do
       result1 = subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 100, do_crop: true)
-      expect(   subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 200, do_crop: true )).to_not eq result1
-      expect(   subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 200, height: 100, do_crop: true )).to_not eq result1
+      expect(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 200, do_crop: true)).to_not eq result1
+      expect(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 200, height: 100, do_crop: true)).to_not eq result1
 
       result2 = subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 200, height: 100, do_crop: true)
-      expect(   subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 200, do_crop: true )).to_not eq result2
+      expect(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 200, do_crop: true)).to_not eq result2
     end
 
     it 'returns the given URL if the URL has an unknown hostname' do
-      expect(subject.optimize_image_url(url: 'http://unknown.hostname.com',      width: 100, height: 100, do_crop: true )).to     eq 'http://unknown.hostname.com'
-      expect(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 100, do_crop: true )).to_not eq 'http://knotweed.s3.amazonaws.com'
+      expect(subject.optimize_image_url(url: 'http://unknown.hostname.com',      width: 100, height: 100, do_crop: true)).to     eq 'http://unknown.hostname.com'
+      expect(subject.optimize_image_url(url: 'http://knotweed.s3.amazonaws.com', width: 100, height: 100, do_crop: true)).to_not eq 'http://knotweed.s3.amazonaws.com'
     end
   end
 

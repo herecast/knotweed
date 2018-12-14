@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controller do
-
   describe "POST #create" do
     context "when no user logged in" do
       subject { post :create, params: { content_id: "fake", organization_id: "fake" } }
@@ -73,7 +72,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
         subject { post :create, params: { organization_id: @organization.id, content_id: @content.id } }
 
         it "creates tag" do
-          expect{ subject }.to change{
+          expect { subject }.to change {
             @organization.tagged_contents.count
           }.by 1
         end
@@ -88,7 +87,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
         subject { post :create, params: { organization_id: @organization.id, content_id: @content.id } }
 
         it "creates tag" do
-          expect{ subject }.to change{
+          expect { subject }.to change {
             @organization.tagged_contents.count
           }.by 1
         end
@@ -168,7 +167,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
         subject { delete :destroy, params: { organization_id: @organization.id, content_id: @content.id } }
 
         it "creates tag" do
-          expect{ subject }.to change{
+          expect { subject }.to change {
             @organization.tagged_contents.count
           }.by -1
         end
@@ -183,7 +182,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
         subject { delete :destroy, params: { organization_id: @organization.id, content_id: @content.id } }
 
         it "creates tag" do
-          expect{ subject }.to change{
+          expect { subject }.to change {
             @organization.tagged_contents.count
           }.by -1
         end

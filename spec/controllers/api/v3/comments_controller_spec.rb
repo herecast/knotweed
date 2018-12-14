@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'json'
 
 describe Api::V3::CommentsController, :type => :controller do
-
   describe 'GET index' do
     it 'should fail without content_id' do
       get :index, format: :json
@@ -74,8 +73,8 @@ describe Api::V3::CommentsController, :type => :controller do
       it 'should return the results flattened and ordered' do
         # pubdate time varies based on when the Factory creates them, so need to order first
         # to match what the controller does
-        comments = [@comment3, @comment2, @comment1].map{ |c| comment_format(c) }
-        expected = {comments: comments}.stringify_keys
+        comments = [@comment3, @comment2, @comment1].map { |c| comment_format(c) }
+        expected = { comments: comments }.stringify_keys
         expect(JSON.parse(response.body)).to eq(expected)
       end
     end
@@ -85,19 +84,19 @@ describe Api::V3::CommentsController, :type => :controller do
         @event = FactoryGirl.create :event
         @comment1 = FactoryGirl.create :comment, pubdate: Time.parse('2014-01-01')
         @comment1.content.update created_by: FactoryGirl.create(:user),
-          parent: @event.content
+                                 parent: @event.content
         @comment2 = FactoryGirl.create :comment, pubdate: Time.parse('2014-02-01')
         @comment2.content.update created_by: FactoryGirl.create(:user),
-          parent: @comment1.content
+                                 parent: @comment1.content
         @comment3 = FactoryGirl.create :comment, pubdate: Time.parse('2014-03-01')
         @comment3.content.update parent: @comment2.content,
-          created_by: FactoryGirl.create(:user)
+                                 created_by: FactoryGirl.create(:user)
       end
 
       subject! { get :index, format: :json, params: { content_id: @event.content.id } }
 
       it 'should return ordered results' do
-        expected = {comments: [comment_format(@comment3), comment_format(@comment2), comment_format(@comment1)]}.stringify_keys
+        expected = { comments: [comment_format(@comment3), comment_format(@comment2), comment_format(@comment1)] }.stringify_keys
         expect(JSON.parse(response.body)).to eq(expected)
       end
     end
@@ -117,10 +116,9 @@ describe Api::V3::CommentsController, :type => :controller do
       subject! { get :index, format: :json, params: { content_id: @content.id } }
 
       it 'should include avatar url in the response' do
-        expect(JSON.parse(response.body)).to eq({comments: [comment_format(@comment)]}.stringify_keys)
+        expect(JSON.parse(response.body)).to eq({ comments: [comment_format(@comment)] }.stringify_keys)
       end
     end
-
   end
 
   describe 'POST create' do
@@ -161,7 +159,7 @@ describe Api::V3::CommentsController, :type => :controller do
     end
 
     it 'enques the notification email' do
-      expect{ subject }.to change{ActiveJob::Base.queue_adapter.enqueued_jobs.size}.by(1)
+      expect { subject }.to change { ActiveJob::Base.queue_adapter.enqueued_jobs.size }.by(1)
     end
 
     context "when comment contains HTML tags" do
@@ -200,5 +198,4 @@ describe Api::V3::CommentsController, :type => :controller do
     r[:content_id] = comment.content.id
     r.stringify_keys
   end
-
 end

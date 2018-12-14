@@ -19,11 +19,11 @@ describe Ability, :type => :model do
     end
 
     context "when is an admin user" do
-      let(:user){ FactoryGirl.create(:admin) }
+      let(:user) { FactoryGirl.create(:admin) }
 
-      it{ is_expected.to be_able_to(:manage, :all) }
-      it{ is_expected.to be_able_to(:access, :rails_admin) }
-      it{ is_expected.to be_able_to(:access, :admin) }
+      it { is_expected.to be_able_to(:manage, :all) }
+      it { is_expected.to be_able_to(:access, :rails_admin) }
+      it { is_expected.to be_able_to(:access, :admin) }
     end
 
     context "when is an organization manager" do
@@ -53,18 +53,18 @@ describe Ability, :type => :model do
         Hashie::Mash.new(_type: 'event_instance', organization_id: @child.id)
       }
 
-      let(:user){ @user }
+      let(:user) { @user }
 
-      it{ is_expected.to be_able_to(:access, :admin) }
-      it{ is_expected.to be_able_to(:manage, @org) }
-      it{ is_expected.to be_able_to(:manage, @child) }
-      it{ is_expected.to be_able_to(:manage, @org_content) }
-      it{ is_expected.to be_able_to(:manage, @child_content) }
+      it { is_expected.to be_able_to(:access, :admin) }
+      it { is_expected.to be_able_to(:manage, @org) }
+      it { is_expected.to be_able_to(:manage, @child) }
+      it { is_expected.to be_able_to(:manage, @org_content) }
+      it { is_expected.to be_able_to(:manage, @child_content) }
 
-      it{ is_expected.to be_able_to(:manage, hashie_content_by_org) }
-      it{ is_expected.to be_able_to(:manage, hashie_content_by_child_org) }
-      it{ is_expected.to be_able_to(:manage, hashie_event_instance_by_org) }
-      it{ is_expected.to be_able_to(:manage, hashie_event_instance_by_child_org) }
+      it { is_expected.to be_able_to(:manage, hashie_content_by_org) }
+      it { is_expected.to be_able_to(:manage, hashie_content_by_child_org) }
+      it { is_expected.to be_able_to(:manage, hashie_event_instance_by_org) }
+      it { is_expected.to be_able_to(:manage, hashie_event_instance_by_child_org) }
     end
 
     context "when is an event manager" do
@@ -78,18 +78,18 @@ describe Ability, :type => :model do
         @user.add_role :event_manager
       end
 
-      let(:user){ @user }
+      let(:user) { @user }
 
       let(:hashie_content_event) {
         Hashie::Mash.new(_type: 'content', content_category_id: @event_category.id)
       }
 
-      it{ is_expected.to be_able_to(:access, :dashboard) }
-      it{ is_expected.to be_able_to(:manage, @event.content) }
-      it{ is_expected.to be_able_to(:manage, @event.venue) }
-      it{ is_expected.to be_able_to(:manage, @content) }
+      it { is_expected.to be_able_to(:access, :dashboard) }
+      it { is_expected.to be_able_to(:manage, @event.content) }
+      it { is_expected.to be_able_to(:manage, @event.venue) }
+      it { is_expected.to be_able_to(:manage, @content) }
 
-      it{ is_expected.to be_able_to(:manage, hashie_content_event) }
+      it { is_expected.to be_able_to(:manage, hashie_content_event) }
     end
 
     context 'when is a regular user' do
@@ -99,31 +99,31 @@ describe Ability, :type => :model do
         @other_content = FactoryGirl.create :content, created_by: nil
       end
 
-      let(:user){ @user }
+      let(:user) { @user }
 
       let(:hashie_content_owned) {
-        Hashie::Mash.new(_type: 'content', created_by: {id: user.id})
+        Hashie::Mash.new(_type: 'content', created_by: { id: user.id })
       }
 
       let(:hashie_content_not_owned) {
-        Hashie::Mash.new(_type: 'content', created_by: {id: 9099809})
+        Hashie::Mash.new(_type: 'content', created_by: { id: 9099809 })
       }
 
       let(:hashie_instance_owned) {
-        Hashie::Mash.new(_type: 'event_instance', created_by: {id: user.id})
+        Hashie::Mash.new(_type: 'event_instance', created_by: { id: user.id })
       }
 
       let(:hashie_instance_not_owned) {
-        Hashie::Mash.new(_type: 'event_instance', created_by: {id: 9099809})
+        Hashie::Mash.new(_type: 'event_instance', created_by: { id: 9099809 })
       }
 
       it { is_expected.to be_able_to(:manage, @content) }
       it { is_expected.not_to be_able_to(:manage, @other_content) }
 
-      it{ is_expected.to be_able_to(:manage, hashie_content_owned) }
-      it{ is_expected.not_to be_able_to(:manage, hashie_content_not_owned) }
-      it{ is_expected.to be_able_to(:manage, hashie_instance_owned) }
-      it{ is_expected.not_to be_able_to(:manage, hashie_instance_not_owned) }
+      it { is_expected.to be_able_to(:manage, hashie_content_owned) }
+      it { is_expected.not_to be_able_to(:manage, hashie_content_not_owned) }
+      it { is_expected.to be_able_to(:manage, hashie_instance_owned) }
+      it { is_expected.not_to be_able_to(:manage, hashie_instance_not_owned) }
     end
   end
 end

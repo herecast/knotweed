@@ -12,11 +12,11 @@ RSpec.describe ManageContentOnFirstServe do
       before do
         @content_one = FactoryGirl.create :content
         @content_two = FactoryGirl.create :content,
-          first_served_at: Date.yesterday
+                                          first_served_at: Date.yesterday
         @draft_content = FactoryGirl.create :content,
-          pubdate: nil
+                                            pubdate: nil
         @scheduled_content = FactoryGirl.create :content,
-          pubdate: Date.tomorrow
+                                                pubdate: Date.tomorrow
         allow(SlackService).to receive(
           :send_published_content_notification
         ).and_return(true)
@@ -36,21 +36,21 @@ RSpec.describe ManageContentOnFirstServe do
       end
 
       it "updates first_served_at for previously unserved content item" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @content_one.reload.first_served_at.to_s
-        }.to(@current_time).and not_change{
+        }.to(@current_time).and not_change {
           @content_two.reload.first_served_at
         }
       end
 
       it "does not update draft content" do
-        expect{ subject }.not_to change{
+        expect { subject }.not_to change {
           @draft_content.reload.first_served_at
         }
       end
 
       it "does not update scheduled content" do
-        expect{ subject }.not_to change{
+        expect { subject }.not_to change {
           @scheduled_content.reload.first_served_at
         }
       end
@@ -127,14 +127,14 @@ RSpec.describe ManageContentOnFirstServe do
       before do
         @campaign_id = 'nkjn23'
         @organization = FactoryGirl.create :organization,
-          org_type: 'Blog',
-          reminder_campaign_id: @campaign_id
+                                           org_type: 'Blog',
+                                           reminder_campaign_id: @campaign_id
         FactoryGirl.create :content,
-          organization_id: @organization.id,
-          pubdate: 1.day.ago
+                           organization_id: @organization.id,
+                           pubdate: 1.day.ago
         @first_real_content = FactoryGirl.create :content,
-          first_served_at: nil,
-          organization_id: @organization.id
+                                                 first_served_at: nil,
+                                                 organization_id: @organization.id
         allow(Outreach::ScheduleBloggerEmails).to receive(:call).and_return true
         allow(MailchimpService::UserOutreach).to receive(
           :get_campaign_status
@@ -164,7 +164,7 @@ RSpec.describe ManageContentOnFirstServe do
           expect(MailchimpService::UserOutreach).to receive(
             :delete_campaign
           ).with(@campaign_id)
-          expect{ subject }.to change{
+          expect { subject }.to change {
             @organization.reload.reminder_campaign_id
           }.to nil
         end
@@ -173,11 +173,11 @@ RSpec.describe ManageContentOnFirstServe do
       context "when content is third for the org" do
         before do
           @second_content = FactoryGirl.create :content,
-            organization_id: @organization.id,
-            first_served_at: nil
+                                               organization_id: @organization.id,
+                                               first_served_at: nil
           @third_content = FactoryGirl.create :content,
-            organization_id: @organization.id,
-            first_served_at: nil
+                                              organization_id: @organization.id,
+                                              first_served_at: nil
         end
 
         subject do
@@ -199,22 +199,22 @@ RSpec.describe ManageContentOnFirstServe do
       context "when Content Organization has a subscribe_url" do
         before do
           organization = FactoryGirl.create :organization,
-            subscribe_url: 'http://glarb.com'
+                                            subscribe_url: 'http://glarb.com'
           @subscribed_market = FactoryGirl.create :content, :market_post,
-            organization_id: organization.id,
-            first_served_at: nil
+                                                  organization_id: organization.id,
+                                                  first_served_at: nil
           @subscribed_event = FactoryGirl.create :content, :event,
-            organization_id: organization.id,
-            first_served_at: nil
+                                                 organization_id: organization.id,
+                                                 first_served_at: nil
           @subscribed_news = FactoryGirl.create :content, :news,
-            organization_id: organization.id,
-            first_served_at: nil
+                                                organization_id: organization.id,
+                                                first_served_at: nil
           @subscribed_talk = FactoryGirl.create :content, :talk,
-            organization_id: organization.id,
-            first_served_at: nil
+                                                organization_id: organization.id,
+                                                first_served_at: nil
           @campaign = FactoryGirl.create :content, :campaign,
-            organization_id: organization.id,
-            first_served_at: nil
+                                         organization_id: organization.id,
+                                         first_served_at: nil
           allow(NotifySubscribersJob).to receive(:perform_now).and_return true
         end
 

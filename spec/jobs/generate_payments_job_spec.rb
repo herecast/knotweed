@@ -9,8 +9,7 @@ RSpec.describe GeneratePaymentsJob do
 
   it 'should call GeneratePayments' do
     expect(GeneratePayments).to receive(:call).with({ period_start: period_start.to_s, period_end: period_end.to_s,
-                                                    period_ad_rev: period_ad_rev })
+                                                      period_ad_rev: period_ad_rev })
     subject
   end
-
 end

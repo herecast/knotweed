@@ -28,13 +28,12 @@ FactoryGirl.define do
       location false
     end
 
-    start_date {1.week.from_now}
+    start_date { 1.week.from_now }
 
     event {
       build(:event,
-        location: location,
-        skip_event_instance: true
-      )
+            location: location,
+            skip_event_instance: true)
     }
   end
 end

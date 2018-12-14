@@ -48,18 +48,19 @@ module Api
       end
 
       private
-        def image_params
-          params.require(:image).permit(
-            :primary,
-            :caption,
-            :credit,
-            :image,
-            :imageable_type,
-            :imageable_id,
-            :position,
-            :source_url
-          ).merge({ imageable: @content })
-        end
+
+      def image_params
+        params.require(:image).permit(
+          :primary,
+          :caption,
+          :credit,
+          :image,
+          :imageable_type,
+          :imageable_id,
+          :position,
+          :source_url
+        ).merge({ imageable: @content })
+      end
     end
   end
 end

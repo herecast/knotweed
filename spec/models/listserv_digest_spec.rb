@@ -46,15 +46,15 @@ RSpec.describe ListservDigest, type: :model do
   it { is_expected.to have_db_column(:from_name).of_type(:string) }
   it { is_expected.to have_db_column(:reply_to).of_type(:string) }
   it { is_expected.to have_db_column(:sponsored_by).of_type(:string) }
-  it{ is_expected.to have_db_column(:location_ids).of_type(:integer).with_options(array: true) }
+  it { is_expected.to have_db_column(:location_ids).of_type(:integer).with_options(array: true) }
   it { is_expected.to have_db_column(:title).of_type(:string) }
   it { is_expected.to have_db_column(:preheader).of_type(:string) }
-  it { is_expected.to have_db_column(:promotion_ids)}
+  it { is_expected.to have_db_column(:promotion_ids) }
 
-  it { is_expected.to have_db_column(:emails_sent).of_type(:integer)}
-  it { is_expected.to have_db_column(:opens_total).of_type(:integer)}
-  it { is_expected.to have_db_column(:last_mc_report).of_type(:datetime)}
-  it { is_expected.to have_db_column(:link_clicks).of_type(:hstore)}
+  it { is_expected.to have_db_column(:emails_sent).of_type(:integer) }
+  it { is_expected.to have_db_column(:opens_total).of_type(:integer) }
+  it { is_expected.to have_db_column(:last_mc_report).of_type(:datetime) }
+  it { is_expected.to have_db_column(:link_clicks).of_type(:hstore) }
 
   it { is_expected.to belong_to(:listserv) }
 
@@ -122,7 +122,7 @@ RSpec.describe ListservDigest, type: :model do
       subject.title = "Test Listserv Digest"
       subject.listserv = listserv
     end
-  
+
     it 'returns a google analytics tag with frequecy and date' do
       expect(subject.ga_tag).to eq "Daily_#{subject.title.gsub(' ', '_')}_#{Date.today.strftime("%m_%d_%y")}"
     end
@@ -136,7 +136,7 @@ RSpec.describe ListservDigest, type: :model do
     end
 
     context 'when the returned string is greater than 50 bytes' do
-     before { subject.title = "Here is a super long title that will be too large formatted" }
+      before { subject.title = "Here is a super long title that will be too large formatted" }
 
       it 'returns a formatted string less than 50 bytes' do
         frequency = listserv.digest_send_day? ? "Weekly" : "Daily"
@@ -167,4 +167,4 @@ RSpec.describe ListservDigest, type: :model do
       end
     end
   end
-end 
+end

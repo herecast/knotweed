@@ -54,7 +54,7 @@ class Campaign < ActiveRecord::Base
 
   def contents_from_custom_query
     custom_ids = custom_digest_results.map { |result| result['id'].to_i }
-    Content.where(id: custom_ids).sort_by {|c| custom_ids.index(c.id) }
+    Content.where(id: custom_ids).sort_by { |c| custom_ids.index(c.id) }
   end
 
   def no_altering_queries
@@ -67,6 +67,7 @@ class Campaign < ActiveRecord::Base
   end
 
   protected
+
   def require_a_community
     unless communities.any?
       errors.add(:community_ids, 'must have at least one community')
@@ -89,7 +90,7 @@ class Campaign < ActiveRecord::Base
 
   def promotions
     if promotion_ids.any?
-      Promotion.where(id: promotion_ids).sort_by {|p| promotion_ids.index(p.id) }
+      Promotion.where(id: promotion_ids).sort_by { |p| promotion_ids.index(p.id) }
     else
       []
     end

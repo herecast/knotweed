@@ -1,10 +1,9 @@
 class GeneratePayments
-
   def self.call(*args)
     self.new(*args).call
   end
 
-  def initialize(opts={})
+  def initialize(opts = {})
     @opts = opts
     @period_start = DateTime.parse(opts[:period_start])
     @period_end = DateTime.parse(opts[:period_end])
@@ -36,26 +35,26 @@ class GeneratePayments
   private
 
   def promotion_metrics_for_user(pr)
-    promotion_metrics = PromotionBannerMetric.for_payment_period(@period_start, @period_end).
-      joins(content: [:organization, :created_by]).
-      where('contents.created_by_id = ?', pr.user_id).
-      where('organizations.pay_for_content = true').
-      select('content_id, COUNT(DISTINCT promotion_banner_metrics.id) as impressions').
-      group(:content_id).order(:content_id)
+    promotion_metrics = PromotionBannerMetric.for_payment_period(@period_start, @period_end)
+                                             .joins(content: [:organization, :created_by])
+                                             .where('contents.created_by_id = ?', pr.user_id)
+                                             .where('organizations.pay_for_content = true')
+                                             .select('content_id, COUNT(DISTINCT promotion_banner_metrics.id) as impressions')
+                                             .group(:content_id).order(:content_id)
   end
 
   def promotion_metrics_for_publisher(pr)
-    promotion_metrics = PromotionBannerMetric.for_payment_period(@period_start, @period_end).
-      joins(:content).
-      joins('INNER JOIN organizations o ON contents.organization_id = o.id').
-      where('o.pay_for_content = true').
-      where('o.name = ? OR '\
+    promotion_metrics = PromotionBannerMetric.for_payment_period(@period_start, @period_end)
+                                             .joins(:content)
+                                             .joins('INNER JOIN organizations o ON contents.organization_id = o.id')
+                                             .where('o.pay_for_content = true')
+                                             .where('o.name = ? OR '\
                  '(SELECT name '\
                  'FROM organizations '\
                  'WHERE id = o.parent_id) = ?',
-            pr.organization.name, pr.organization.name).
-      select('content_id, COUNT(DISTINCT promotion_banner_metrics.id) as impressions').
-      group(:content_id).order(:content_id)
+                                                    pr.organization.name, pr.organization.name)
+                                             .select('content_id, COUNT(DISTINCT promotion_banner_metrics.id) as impressions')
+                                             .group(:content_id).order(:content_id)
   end
 
   def convert_promotion_metrics_to_payments(promotion_metrics, user)
@@ -82,5 +81,4 @@ class GeneratePayments
       end
     end
   end
-
 end

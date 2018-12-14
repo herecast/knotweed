@@ -29,7 +29,6 @@ describe UsersController, :type => :controller do
   end
 
   describe 'GET #edit' do
-
     subject { get :edit, params: { id: @user.id } }
 
     it "renders edit page" do
@@ -73,7 +72,6 @@ describe UsersController, :type => :controller do
         end
 
         context "when admin searches by id" do
-
           subject { get :index, params: { q: { id_eq: @user_1.id } } }
 
           it "returns matching user" do
@@ -83,7 +81,6 @@ describe UsersController, :type => :controller do
         end
 
         context "when admin searches by email" do
-
           subject { get :index, params: { q: { email_eq: @user_2.email } } }
 
           it "returns matching user" do
@@ -93,7 +90,6 @@ describe UsersController, :type => :controller do
         end
 
         context "when admin searches by name" do
-
           subject { get :index, params: { q: { name_cont: 'nick' } } }
 
           it "returns matching users" do
@@ -119,7 +115,7 @@ describe UsersController, :type => :controller do
         context 'when admin searches for Social Login' do
           before do
             SocialLogin.create(user_id: @user_1.id, provider: 'facebook',
-                              uid: 1234)
+                               uid: 1234)
           end
 
           subject { get :index, params: { q: { social_login: 1 } } }
@@ -132,7 +128,6 @@ describe UsersController, :type => :controller do
       end
 
       context "when admin search finds no matches" do
-
         subject { get :index, params: { q: { name_cont: 'xyz' } } }
 
         it "returns empty array" do
@@ -142,7 +137,6 @@ describe UsersController, :type => :controller do
       end
 
       context "when reset" do
-
         subject { get :index, params: { reset: true } }
 
         it "returns all users" do
@@ -150,12 +144,10 @@ describe UsersController, :type => :controller do
           expect(assigns(:users).length).to eq User.count
         end
       end
-
     end
   end
 
   describe "PUT #update" do
-
     context "when successful update of managed organization" do
       before do
         @organization = FactoryGirl.create :organization
@@ -190,7 +182,6 @@ describe UsersController, :type => :controller do
     end
 
     context "when unsuccessful save" do
-
       subject { put :update, params: { id: @user.id, user: { name: 'bill' } } }
 
       it "renders edit" do
@@ -222,7 +213,7 @@ describe UsersController, :type => :controller do
       subject { put :update, params: { id: @user.id, user: { roles: { @role_name => 'on' } } } }
 
       it "updates user role" do
-        expect{ subject }.to change{
+        expect { subject }.to change {
           @user.has_role?(@role_name)
         }.to true
       end
@@ -237,7 +228,7 @@ describe UsersController, :type => :controller do
       subject { put :update_subscription, xhr: true, params: { id: @user.id, user_id: @user.id, listserv_id: @listserv.id } }
 
       it 'creates a subscription to the listserv for the user' do
-        expect{ subject }.to change{ @user.subscriptions.reload.count }.by 1
+        expect { subject }.to change { @user.subscriptions.reload.count }.by 1
       end
 
       it 'runs SubscribeToListservSilently' do
@@ -284,7 +275,6 @@ describe UsersController, :type => :controller do
   end
 
   describe "DELETE #destroy" do
-
     context "when admin deletes another user" do
       before do
         @new_user = FactoryGirl.create :user, email: 'tessek@squidhead.com'
@@ -293,13 +283,12 @@ describe UsersController, :type => :controller do
       subject { delete :destroy, params: { id: @new_user.id } }
 
       it "deletes the user" do
-        expect{ subject }.to change{ User.count }.by -1
+        expect { subject }.to change { User.count }.by -1
         expect(response.code).to eq '302'
       end
     end
 
     context "when admin tries to delete self" do
-
       subject { delete :destroy, params: { id: @user.id } }
 
       it "rejects delete request" do
@@ -320,7 +309,7 @@ describe UsersController, :type => :controller do
 
     context "when creation succeeds" do
       it "redirects to user path" do
-        expect{ subject }.to change{ User.count }.by 1
+        expect { subject }.to change { User.count }.by 1
         expect(response.code).to eq '302'
       end
     end
@@ -333,5 +322,4 @@ describe UsersController, :type => :controller do
       end
     end
   end
-
 end

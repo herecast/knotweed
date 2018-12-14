@@ -19,5 +19,4 @@ describe Api::V3::ContentMetricsSerializer do
       expect(serialized_object['comments'][0]['id']).to eq(@comment1.id)
     end
   end
-
 end

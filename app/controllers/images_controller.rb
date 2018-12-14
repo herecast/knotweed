@@ -1,5 +1,4 @@
 class ImagesController < ApplicationController
-
   def create
     @image = Image.create(image_params)
     # if it's the only image for a given imageable item,
@@ -29,20 +28,19 @@ class ImagesController < ApplicationController
 
   private
 
-    def image_params
-      params.require(:image).permit(
-        :caption,
-        :credit,
-        :image,
-        :image_cache,
-        :remove_image,
-        :imageable_id,
-        :imageable_type,
-        :remote_image_url,
-        :source_url,
-        :imageable,
-        :primary
-      )
-    end
-
+  def image_params
+    params.require(:image).permit(
+      :caption,
+      :credit,
+      :image,
+      :image_cache,
+      :remove_image,
+      :imageable_id,
+      :imageable_type,
+      :remote_image_url,
+      :source_url,
+      :imageable,
+      :primary
+    )
+  end
 end
