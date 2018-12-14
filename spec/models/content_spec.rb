@@ -301,42 +301,6 @@ describe Content, :type => :model do
 
   end
 
-  # the test input and expected output is kept outside the test in spec/fixtures/sanitized_content
-  # each _input file must have a matching named file ending with _output.
-  describe 'when user sends raw content' do
-    input_files = Dir['spec/fixtures/sanitized_content/*_input']
-    output_files = Dir['spec/fixtures/sanitized_content/*_output']
-    raise 'unable to find any input files for this test!' if input_files.blank?
-
-    input_files.each do |input_file|
-      it "from #{input_file}" do
-        output_file = input_file.gsub '_input', '_output'
-        raise 'expected sanitized output file not found' unless output_files.include? output_file
-        raw_content = File.read input_file
-        content = FactoryGirl.create :content , raw_content: raw_content
-        expect(content.sanitized_content).to eq File.read(output_file).chomp
-      end
-    end
-  end
-
-  describe '#remove_boilerplate' do
-    input_files = Dir['spec/fixtures/sanitized_content/*_input']
-    let!(:blacklisted_content) {File.readlines(Rails.root.join('lib', 'content_blacklist.txt'))}
-    input_files.each do |input_file|
-      context "from #{input_file}" do
-        it 'strips blacklisted content' do
-          raw_content = File.read input_file
-          content = FactoryGirl.create :content , raw_content: raw_content
-          bp_removed = content.remove_boilerplate
-
-          blacklisted_content.each do |blc|
-            expect(bp_removed).to_not include(blc)
-          end
-        end
-      end
-    end
-  end
-
   describe 'comments' do
     before do
       @content = FactoryGirl.create :content
@@ -692,19 +656,6 @@ describe Content, :type => :model do
         expect(subject.html_safe).to eql img_content.html_safe
       end
 
-    end
-
-    context 'for content without a specific sanitizer' do
-      before { @content = FactoryGirl.create :content, origin: nil }
-
-      it' should use the default_sanitized_content method' do
-        expect(@content).to receive(:default_sanitized_content)
-        subject
-      end
-
-      it 'should match output of default_sanitized_content' do
-        expect(subject).to eq @content.default_sanitized_content
-      end
     end
   end
 

@@ -7,7 +7,7 @@ RSpec.describe GatherContentMetrics do
     let(:end_date) { Date.today }
 
     subject { GatherContentMetrics.call(
-      organization: org,
+      owner: org,
       start_date: start_date,
       end_date: end_date
     )}
@@ -71,7 +71,7 @@ RSpec.describe GatherContentMetrics do
           view_count: rand(10), report_date: content_report1.report_date }
 
         subject { GatherContentMetrics.call(
-          organization: org,
+          owner: org,
           start_date: start_date,
           end_date: end_date
         )[:daily_view_counts]}
@@ -94,7 +94,7 @@ RSpec.describe GatherContentMetrics do
           banner_click_count: rand(10), report_date: content_report1.report_date }
 
         subject { GatherContentMetrics.call(
-          organization: org,
+          owner: org,
           start_date: start_date,
           end_date: end_date
         )[:daily_promo_click_thru_counts]}
@@ -113,7 +113,7 @@ RSpec.describe GatherContentMetrics do
     let(:end_date) { Date.today }
 
     subject { GatherContentMetrics.call(
-      user: user,
+      owner: user,
       start_date: start_date,
       end_date: end_date
     )}

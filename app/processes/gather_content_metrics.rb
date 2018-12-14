@@ -6,8 +6,7 @@ class GatherContentMetrics
 
   def initialize(opts={})
     @opts            = opts
-    @organization    = opts[:organization]
-    @user            = opts[:user]
+    @owner    = opts[:owner]
     @start_date      = opts[:start_date]
     @end_date        = opts[:end_date]
   end
@@ -37,10 +36,8 @@ class GatherContentMetrics
     end
 
     def contents
-      if @organization.present?
-        @contents ||= @organization.contents.where(pubdate: @start_date..@end_date)
-      elsif @user.present?
-        @contents ||= @user.contents.where(pubdate: @start_date..@end_date)
+      if @owner.present?
+        @contents ||= @owner.contents.where(pubdate: @start_date..@end_date)
       else
         @contents = []
       end
@@ -48,12 +45,12 @@ class GatherContentMetrics
 
     def content_reports
       base_scope = ContentReport.where(report_date: @start_date..(@end_date + 1.day))
-      if @organization.present?
+      if @owner.is_a? Organization
         @content_reports ||= base_scope.
-          where("content_id IN (select id from contents where organization_id=#{@organization.id})")
-      elsif @user.present?
+          where("content_id IN (select id from contents where organization_id=#{@owner.id})")
+      elsif @owner.is_a? User
         @content_reports ||= base_scope.
-          joins(:content).where('contents.created_by_id = ?', @user.id)
+          joins(:content).where('contents.created_by_id = ?', @owner.id)
       else
         []
       end

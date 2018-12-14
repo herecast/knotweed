@@ -290,8 +290,6 @@ class Content < ActiveRecord::Base
                   local_news nation_world offered presentation recommendation
                   sale_event sports wanted)
 
-  BLACKLIST_BLOCKS = File.readlines(Rails.root.join('lib', 'content_blacklist.txt'))
-
   # ensure that we never save titles with leading/trailing whitespace
   def title=t
     write_attribute(:title, t.to_s.strip)
@@ -531,10 +529,8 @@ class Content < ActiveRecord::Base
   def sanitized_content
     if raw_content.nil?
       raw_content
-    elsif origin == UGC_ORIGIN
-      ugc_sanitized_content
     else
-      default_sanitized_content
+      ugc_sanitized_content
     end
   end
 
@@ -542,159 +538,8 @@ class Content < ActiveRecord::Base
     UgcSanitizer.call(raw_content)
   end
 
-  def default_sanitized_content
-    pre_sanitize_filters = [
-      # HACK: not sure exactly what this is...
-      #[:gsub!, ["\u{a0}",""]], # get rid of... this
-      [:gsub!, [/<!--(?:(?!-->).)*-->/m, ""]], # get rid of HTML comments
-      [:gsub!, [/<![^>]*>/, ""]], # get rid of doctype
-      [:gsub!, [/<\/div><div[^>]*>/, "\n\n"]], # replace divs with new lines
-    ]
-
-    # fix state abbreviations from N.y. to N.Y.
-    c = raw_content.gsub(/[[:alpha:]]\.[[:alpha:]]\./) {|s| s.upcase }
-    pre_sanitize_filters.each {|f| c.send f[0], *f[1]}
-    doc =  Nokogiri::HTML.parse(c)
-
-    doc.search("style").each {|t| t.remove() }
-    doc.search('//text()').each {|t| t.content = t.content.sub(/^[^>\n]*>\p{Space}*\z/, "") } # kill tag fragments
-    is_newline = Proc.new do |t|
-      not t.nil? and (t.matches? "br" or (t.matches? "p" and t.children.empty?))
-    end
-    remove_dup_newlines = Proc.new do |this_e, &block|
-      while is_newline.call(this_e.next())
-        block.call() if block
-        this_e.next().remove()
-      end
-    end
-
-    #for removing br tags at specific places
-    remove_br_tags = Proc.new do |node|
-      node.gsub /<\s?br\s?\/?\s?>/i, ''
-    end
-
-    #replace all span elements with their content
-    doc.traverse do |node|
-      node.replace node.inner_html if node.name == 'span'
-    end
-    doc.search("p").each do |e|
-      # This removes completely empty <p> tags... hopefully helps with excess whitespace issues
-      if e.children.empty?
-        e.remove
-      # We saw content where only a text fragment was inside a "<p>" block, but then the following
-      # tags "really" should have been part of that initial text fragment. This logic attempts to
-      # remove excess whitespace in that and consolidate into 1 or more <p> blocks.
-      else
-        text = [remove_br_tags.call(e.inner_html)]
-        next_e = e.next()
-        until next_e.nil? do
-          if next_e.text?
-            text[-1] += remove_br_tags.call(next_e.inner_html)
-          elsif is_newline.call(next_e)
-            remove_dup_newlines.call(next_e)
-          elsif next_e.matches? "strong"
-            text.append "" if is_newline.call(next_e.next())
-            text[-1] += " " if text[-1][-1] != " "
-            text[-1] += next_e.to_html unless next_e.children.empty?
-          else
-            break
-          end
-          this_e = next_e
-          next_e = next_e.next()
-          this_e.remove()
-        end
-        text = text.delete_if {|t| t.empty? or t.blank?}
-        new_node = Nokogiri::HTML.fragment("<p>#{text.shift}</p>")
-        begin
-          e = e.replace(new_node)
-        rescue ArgumentError
-          logger.warn("failed to replace some <p> tags for #{id}")
-        end
-        text.reverse_each { |t| e.after("<p>#{t}</p>") }
-      end
-    end
-    # try to remove any lingering inline CSS or bad text
-    e_iter = doc.search("body").first.children.first unless doc.search("body").first.nil?
-    until e_iter.nil? do
-      if e_iter.text?
-        e_iter.remove() if e_iter.text.match(/\A.*{.*}\Z/) or e_iter.text.blank?
-      elsif e_iter.matches? "br"
-      else
-      end
-      e_iter = e_iter.next()
-    end
-
-    # Get rid of excess whitespace caused by a ton of <br> tags
-    doc.search("br").each {|e| remove_dup_newlines.call(e) }
-    c = doc.search("body").first.to_html unless doc.search("body").first.nil?
-    c ||= doc.to_html
-    c = sanitize(c, tags: %w(span div img a p br h1 h2 h3 h4 h5 h6 strong em table td tr th ul ol li b i u iframe))
-    c = simple_format c, {},  sanitize: false
-    c.gsub!(/(<a href="http[^>]*)>/, '\1 target="_blank">')
-
-    BLACKLIST_BLOCKS.each do |b|
-      if /^\/(.*)\/([a-z]*)$/ =~ b.strip
-        match = $~
-        opts = 0
-        match[2].each_char do |flag|
-          case flag
-          when "i"
-            opts |= Regexp::IGNORECASE
-          when "m"
-            opts |= Regexp::MULTILINE
-          when "x"
-            opts |= Regexp::EXTENDED
-          end
-        end
-        b = Regexp.new match[1], opts
-      else
-        b = b.strip
-      end
-      c.gsub!(b, "")
-    end
-
-    c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "<br />")
-    c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
-
-    # remove non-UTF-8 content - in Rails 3 you have to transcode to some other then recode to UTF-8
-    # in Rails 4, use ActiveSupport's scrub()
-    Rinku.auto_link c #.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
-  end
-
   def sanitized_content= new_content
     self.raw_content = new_content
-  end
-
-  # removes boilerplate
-  def remove_boilerplate
-    return raw_content if raw_content.nil?
-
-    c = raw_content
-
-    BLACKLIST_BLOCKS.each do |b|
-      if /^\/(.*)\/([a-z]*)$/ =~ b.strip
-        match = $~
-        opts = 0
-        match[2].each_char do |flag|
-          case flag
-            when "i"
-              opts |= Regexp::IGNORECASE
-            when "m"
-              opts |= Regexp::MULTILINE
-            when "x"
-              opts |= Regexp::EXTENDED
-          end
-        end
-        b = Regexp.new match[1], opts
-      else
-        b = b.strip
-      end
-      c.gsub!(b, "")
-    end
-
-    c.gsub!(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "<br />")
-    c.gsub(/(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)(?:[\n]+|<br(?:\ \/)?>|<p>(?:[\n]+|<br(?:\ \/)?>|[\s]+|[[:space:]]+|(?:\&#160;)+)?<\/p>)+/m, "")
-
   end
 
   # returns true if content has attached event

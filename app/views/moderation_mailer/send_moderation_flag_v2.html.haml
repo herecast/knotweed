@@ -13,11 +13,3 @@ Author: #{@content.authors} #{@content.authoremail}
 Pubdate: #{@content.pubdate.to_s}
 %br
 Admin URL: #{@admin_uri}
--# If the content is actually spam, then the clients that receive this will filter it and
-  the intended targets will never get notified.  So, since we have the links to the original
-  content above that the moderator can review, just don't send the spammy content.
-  %br
-  %br
-  %strong Content
-  %br
-  = @content.remove_boilerplate.html_safe

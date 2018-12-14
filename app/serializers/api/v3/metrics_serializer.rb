@@ -1,6 +1,6 @@
 module Api
   module V3
-    class UserMetricsSerializer < ActiveModel::Serializer
+    class MetricsSerializer < ActiveModel::Serializer
       attributes :id,
         :promo_click_thru_count,
         :view_count,
@@ -32,7 +32,7 @@ module Api
 
         def metrics
           @metrics ||= GatherContentMetrics.call(
-            user: object,
+            owner: object,
             start_date: context[:start_date],
             end_date: context[:end_date]
           )

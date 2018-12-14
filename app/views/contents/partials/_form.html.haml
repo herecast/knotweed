@@ -91,8 +91,7 @@
         .tab-pane#event_detail
           .row-fluid
             .span6
-              = f.input :raw_content, as: :summernote, label: 'Event Description',
-                value: @content.channel.remove_boilerplate
+              = f.input :sanitized_content, as: :summernote, label: 'Event Description'
             .span6
               - if @content.channel.venue.present?
                 .row-fluid
@@ -146,8 +145,7 @@
         .tab-pane#market_detail
           .row-fluid
             .span6
-              = f.input :raw_content, as: :summernote, label: "Description",
-                value: @content.channel.remove_boilerplate, required: true
+              = f.input :sanitized_content, as: :summernote, label: "Description", required: true
             .span6
               = f.simple_fields_for :market_post do |g|
                 = g.input :cost, input_html: { class: 'input-block-level' }

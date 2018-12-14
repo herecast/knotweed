@@ -674,11 +674,8 @@ describe 'Contents Endpoints', type: :request do
                     author_name: valid_news_params[:author_name],
                     biz_feed_public: false,
                     title: valid_news_params[:title],
-                    # @TODO: make sanitization more sane, it's wrapping
-                    # and additional <p> here.
-                    # content: valid_news_params[:content],
-                    content: "<p>#{valid_news_params[:content]}</p>",
-                    split_content: { head: "<p></p>#{valid_news_params[:content]}", tail: "" }
+                    content: valid_news_params[:content],
+                    split_content: { head: valid_news_params[:content], tail: "" }
                   }
                 )
               )
@@ -836,10 +833,7 @@ describe 'Contents Endpoints', type: :request do
                 content_response_schema(content).deep_merge(
                   content: {
                     biz_feed_public: false,
-                    # @TODO: make sanitization more sane, it's wrapping
-                    # and additional <p> here.
-                    #content: valid_market_params[:content],
-                    content: "<p>#{valid_market_params[:content]}</p>",
+                    content: valid_market_params[:content],
                     contact_email: valid_market_params[:contact_email],
                     cost: '$10',
                     promote_radius: valid_market_params[:promote_radius],
@@ -880,10 +874,7 @@ describe 'Contents Endpoints', type: :request do
                   content: {
                     biz_feed_public: false,
                     title: valid_talk_params[:title],
-                    # @TODO: make sanitization more sane, it's wrapping
-                    # and additional <p> here.
-                    #content: valid_event_params[:content],
-                    content: "<p>#{valid_talk_params[:content]}</p>",
+                    content: valid_talk_params[:content],
                   }
                 )
               )
@@ -941,10 +932,7 @@ describe 'Contents Endpoints', type: :request do
                     contact_email: valid_event_params[:contact_email],
                     cost: valid_event_params[:cost],
                     cost_type: valid_event_params[:cost_type],
-                    # @TODO: make sanitization more sane, it's wrapping
-                    # and additional <p> here.
-                    #content: valid_event_params[:content],
-                    content: "<p>#{valid_event_params[:content]}</p>",
+                    content: valid_event_params[:content],
                   }
                 )
 
