@@ -12,6 +12,7 @@ module Api
           schedule_blogger_welcome_emails
           conditionally_create_business_profile
           update_business_location
+          notify_via_slack
           render json: @organization, serializer: OrganizationSerializer,
                  status: 201
         else
@@ -173,6 +174,15 @@ module Api
         BackgroundJob.perform_later('Outreach::CreateMailchimpSegmentForNewUser', 'call', current_user,
                                     schedule_blogger_emails: true,
                                     organization: @organization)
+      end
+
+      def notify_via_slack
+        if Figaro.env.production_messaging_enabled == 'true'
+          BackgroundJob.perform_later('SlackService', 'send_new_blogger_alert',
+            user: current_user,
+            organization: @organization
+          )
+        end
       end
     end
   end

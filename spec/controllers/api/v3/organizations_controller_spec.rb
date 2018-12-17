@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'sidekiq/testing'
 
 describe Api::V3::OrganizationsController, :type => :controller do
   describe 'GET index', elasticsearch: true do
@@ -101,6 +102,18 @@ describe Api::V3::OrganizationsController, :type => :controller do
         organization: an_instance_of(Organization)
       )
       subject
+    end
+
+    context "when PRODUCTION_MESSAGING_ENABLED" do
+      before do
+        allow(Figaro.env).to receive(:production_messaging_enabled).and_return('true')
+      end
+
+      it 'sends notification to Slack' do
+        subject
+        queue = ActiveJob::Base.queue_adapter.enqueued_jobs
+        expect(queue.select { |j| j[:args][0] == 'SlackService' }.length).to eq 1
+      end
     end
   end
 

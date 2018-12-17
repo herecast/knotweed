@@ -191,6 +191,10 @@ class Organization < ActiveRecord::Base
     contents.where(channel_type: 'BusinessProfile').present?
   end
 
+  def profile_link
+    "https://#{Figaro.env.default_host}/profile/#{id}"
+  end
+
   private
 
   def trigger_content_reindex_if_name_or_profile_image_changed!
