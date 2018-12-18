@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: content_reports
@@ -17,7 +19,7 @@
 
 require 'spec_helper'
 
-describe ContentReport, :type => :model do
+describe ContentReport, type: :model do
   before { @content_report = FactoryGirl.build :content_report }
   subject { @content_report }
   it { is_expected.to be_valid }

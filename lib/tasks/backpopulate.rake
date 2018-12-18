@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 namespace :backpopulate do
-  task :root_parent_ids => :environment do
+  task root_parent_ids: :environment do
     puts 'Updating all Content records where parent_id: nil and root_parent_id: nil'
     # to make this more efficient, we're updating all root parents first
     # with a single SQL query, then cycling through the remaining ones.
@@ -12,14 +14,14 @@ namespace :backpopulate do
     end
   end
 
-  task :fix_orphaned_promotion_listservs => :environment do
+  task fix_orphaned_promotion_listservs: :environment do
     puts 'Updating all orphaned promotion listserv records'
     fixed = 0
     skipped = 0
     Promotion.where(promotable: nil).find_each do |p|
       date_range = p.created_at..(p.created_at + 2.seconds)
       pl = PromotionListserv.where(created_at: date_range)
-                            .where('(select count(id) from promotions where promotable_type=? and promotable_id=promotion_listservs.id)=0', "PromotionListserv").first
+                            .where('(select count(id) from promotions where promotable_type=? and promotable_id=promotion_listservs.id)=0', 'PromotionListserv').first
       if pl.present?
         puts "attaching promotion #{p.id} to promotion listserv #{pl.id}\n"
         p.promotable = pl

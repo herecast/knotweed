@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: organizations
@@ -53,11 +55,11 @@
 
 require 'spec_helper'
 
-describe Organization, :type => :model do
+describe Organization, type: :model do
   it { is_expected.to have_many :organization_locations }
   it { is_expected.to have_many :locations }
 
-  describe "#base_locations" do
+  describe '#base_locations' do
     let(:organization) { FactoryGirl.create :organization }
     let(:non_base) { FactoryGirl.create_list :location, 3 }
     let(:base) { FactoryGirl.create_list :location, 3 }
@@ -89,30 +91,30 @@ describe Organization, :type => :model do
     @organization = FactoryGirl.create(:organization)
   end
 
-  describe "validations" do
-    context "when Twitter handle does not begin with @" do
-      it "is not valid" do
+  describe 'validations' do
+    context 'when Twitter handle does not begin with @' do
+      it 'is not valid' do
         organization = FactoryGirl.build :organization, twitter_handle: 'jango_fett'
         expect(organization).not_to be_valid
       end
     end
 
-    context "when Twitter handle begins with @" do
-      it "is valid" do
+    context 'when Twitter handle begins with @' do
+      it 'is valid' do
         organization = FactoryGirl.build :organization, twitter_handle: '@jango_fett'
         expect(organization).to be_valid
       end
     end
   end
 
-  describe "::parent_pubs" do
+  describe '::parent_pubs' do
     before do
       @parent_org_1 = FactoryGirl.create :organization
       @parent_org_2 = FactoryGirl.create :organization, parent: @parent_org_1
       @child_org    = FactoryGirl.create :organization, parent: @parent_org_2
     end
 
-    it "returns list of parent organizations" do
+    it 'returns list of parent organizations' do
       list = Organization.parent_pubs
       expect(list).to match_array([@parent_org_1, @parent_org_2])
     end
@@ -152,28 +154,28 @@ describe Organization, :type => :model do
     let!(:grand_child) { FactoryGirl.create(:organization, parent: child1) }
 
     it 'includes children' do
-      expect {
+      expect do
         FactoryGirl.create(:organization, parent: subject)
-      }.to change { Organization.descendants_of(subject.id).count }.by 1
+      end.to change { Organization.descendants_of(subject.id).count }.by 1
     end
 
     it 'includes grand-children' do
-      expect {
+      expect do
         FactoryGirl.create(:organization, parent: child1)
-      }.to change { Organization.descendants_of(subject.id).count }.by 1
+      end.to change { Organization.descendants_of(subject.id).count }.by 1
     end
 
     it 'includes great-grand-children' do
-      expect {
+      expect do
         FactoryGirl.create(:organization, parent: grand_child)
-      }.to change { Organization.descendants_of(subject.id).count }.by 1
+      end.to change { Organization.descendants_of(subject.id).count }.by 1
     end
 
     it 'ignores non-descendants' do
-      expect {
+      expect do
         non_descendant = FactoryGirl.create(:organization)
         expect(non_descendant.parent).to_not eq subject
-      }.not_to change { Organization.descendants_of(subject.id).count }
+      end.not_to change { Organization.descendants_of(subject.id).count }
     end
   end
 
@@ -184,12 +186,12 @@ describe Organization, :type => :model do
       let(:location) { FactoryGirl.create :location }
 
       it do
-        expect {
+        expect do
           subject.organization_locations << OrganizationLocation.new(
             location: location
           )
           subject.save!
-        }.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
+        end.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
       end
     end
 
@@ -202,13 +204,13 @@ describe Organization, :type => :model do
       end
 
       it do
-        expect {
+        expect do
           subject.update! organization_locations_attributes: [
             subject.organization_locations.first.attributes.merge(
               location_type: 'about'
             )
           ]
-        }.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
+        end.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
       end
     end
 
@@ -222,52 +224,52 @@ describe Organization, :type => :model do
       end
 
       it do
-        expect {
+        expect do
           subject.organization_locations.last.destroy
-        }.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
+        end.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
       end
     end
 
     describe 'changing organization name' do
       it do
-        expect {
+        expect do
           subject.update! name: 'new org'
-        }.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
+        end.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
       end
     end
 
     describe 'changing organization profile image' do
       it do
-        expect {
+        expect do
           subject.update! profile_image: 'newimg.jpg'
-        }.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
+        end.to have_enqueued_job(ReindexAssociatedContentJob).with(subject)
       end
     end
 
     describe 'changing a non-dependent attribute' do
       it 'does not trigger reindex' do
-        expect {
+        expect do
           subject.update! website: 'http://dublin-brews.com'
-        }.to_not have_enqueued_job(ReindexAssociatedContentJob)
+        end.to_not have_enqueued_job(ReindexAssociatedContentJob)
       end
     end
   end
 
-  describe "#has_business_profile?" do
+  describe '#has_business_profile?' do
     let(:organization) { FactoryGirl.create :organization }
 
-    context "when no related BusinessProfile" do
-      it "returns false" do
+    context 'when no related BusinessProfile' do
+      it 'returns false' do
         expect(organization.has_business_profile?).to be false
       end
     end
 
-    context "when related BusinessProfile present" do
+    context 'when related BusinessProfile present' do
       before do
         organization.contents << FactoryGirl.create(:content, channel_type: 'BusinessProfile')
       end
 
-      it "returns true" do
+      it 'returns true' do
         expect(organization.has_business_profile?).to be true
       end
     end

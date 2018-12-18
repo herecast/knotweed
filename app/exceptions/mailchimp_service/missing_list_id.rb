@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MailchimpService
   class MissingListId < ::StandardError
     attr_reader :listserv

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Api::V3::MetricsSerializer do
@@ -16,12 +18,12 @@ describe Api::V3::MetricsSerializer do
     expect(subject['id']).to eq org.id
   end
 
-  [
-    'promo_click_thru_count',
-    'view_count',
-    'comment_count',
-    'daily_view_counts',
-    'daily_promo_click_thru_counts'
+  %w[
+    promo_click_thru_count
+    view_count
+    comment_count
+    daily_view_counts
+    daily_promo_click_thru_counts
   ].each do |k|
     it "should serialize `#{k}`" do
       expect(subject.keys).to include k

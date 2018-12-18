@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class ContentMetricsSerializer < ActiveModel::Serializer
@@ -55,8 +57,8 @@ module Api
       end
 
       def content_reports
-        @content_reports ||= object.content_reports.where("report_date >= ?", context[:start_date])
-                                   .where("report_date <= ?", Date.parse(context[:end_date]) + 1)
+        @content_reports ||= object.content_reports.where('report_date >= ?', context[:start_date])
+                                   .where('report_date <= ?', Date.parse(context[:end_date]) + 1)
       end
     end
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class EventInstancesController < ApiController
@@ -19,7 +21,7 @@ module Api
         apply_date_query opts
         apply_query_location_filters opts
 
-        query = params[:query].present? ? params[:query] : "*"
+        query = params[:query].present? ? params[:query] : '*'
         @event_instances = EventInstance.search(query, opts)
 
         total_pages = ((@event_instances.total_count || 100) / opts[:per_page].to_f).ceil
@@ -97,13 +99,13 @@ module Api
                   field: :starts_at,
                   interval: :day,
                   time_zone: timezone_offset,
-                  format: "yyyy-MM-dd"
+                  format: 'yyyy-MM-dd'
                 }
               }
             }
           }
 
-          query = params[:query].present? ? params[:query] : "*"
+          query = params[:query].present? ? params[:query] : '*'
 
           results = EventInstance.search(query, opts).aggs['records_by_date']['buckets']
 
@@ -126,11 +128,11 @@ module Api
 
         start_date ||= Time.current
 
-        if params[:end_date].present?
-          end_date = Time.parse(params[:end_date])
-        else
-          end_date = (start_date + 1.year).end_of_month
-        end
+        end_date = if params[:end_date].present?
+                     Time.parse(params[:end_date])
+                   else
+                     (start_date + 1.year).end_of_month
+                   end
         opts[:where][:starts_at] = start_date..end_date
       end
 
@@ -138,11 +140,11 @@ module Api
         start_date = (params[:start_date].present? ? DateTime.parse(params[:start_date]) : DateTime.now)
         end_date = (params[:end_date].present? ? DateTime.parse(params[:end_date]) : nil)
 
-        if end_date.present?
-          opts[:where][:starts_at] = start_date.beginning_of_day..end_date.end_of_day
-        else
-          opts[:where][:starts_at] = { gte: start_date }
-        end
+        opts[:where][:starts_at] = if end_date.present?
+                                     start_date.beginning_of_day..end_date.end_of_day
+                                   else
+                                     { gte: start_date }
+                                   end
       end
 
       def apply_query_location_filters(opts)
@@ -154,7 +156,7 @@ module Api
       def update_event_instance_as_removed
         dupe = CreateAlternateContent.call(@event_instance.event.content)
         @event_instance.event.define_singleton_method(:content) { dupe }
-        [:venue, :contact_phone, :contact_email, :event_url].each do |sym|
+        %i[venue contact_phone contact_email event_url].each do |sym|
           @event_instance.event.define_singleton_method(sym) { nil }
         end
       end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: business_categories
@@ -18,7 +20,7 @@
 
 require 'spec_helper'
 
-describe BusinessCategory, :type => :model do
+describe BusinessCategory, type: :model do
   describe '#full_descendant_ids' do
     before do
       @root = FactoryGirl.create :business_category

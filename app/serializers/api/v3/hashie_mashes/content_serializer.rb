@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ###
 # This serializer will be operating on the elasticsearch document,
 # which is likely different than the actual content record.  So be
@@ -66,9 +68,7 @@ module Api
                    :view_count
 
         def event_instance_id
-          if is_event?
-            next_or_first_instance.try(:id)
-          end
+          next_or_first_instance.try(:id) if is_event?
         end
 
         # do not delete. It gets confused with url helper methods.
@@ -85,29 +85,25 @@ module Api
         end
 
         def next_or_first_instance
-          instances_by_start_date = (object.event_instances || []).sort_by { |inst|
+          instances_by_start_date = (object.event_instances || []).sort_by do |inst|
             DateTime.parse(inst.starts_at)
-          }
+          end
           instances_by_start_date.find do |instance|
             DateTime.parse(instance.starts_at) >= Time.zone.now
           end || instances_by_start_date.first
         end
 
         def starts_at
-          if is_event?
-            next_or_first_instance.try(:starts_at)
-          end
+          next_or_first_instance.try(:starts_at) if is_event?
         end
 
         def ends_at
-          if is_event?
-            next_or_first_instance.try(:ends_at)
-          end
+          next_or_first_instance.try(:ends_at) if is_event?
         end
 
         def content
           if object.content.try(:match, /No content found/)
-            ""
+            ''
           else
             object.content
           end

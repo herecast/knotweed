@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class ConfirmedRegistrationsController < ApiController
@@ -6,9 +8,7 @@ module Api
       def create
         user = User.new(user_params)
 
-        unless user.password.present?
-          create_temp_password(user)
-        end
+        create_temp_password(user) unless user.password.present?
 
         user.confirmed_at = Time.zone.now
 
@@ -63,7 +63,7 @@ module Api
 
       def default_location
         Location.find_or_create_by(
-          city: "Lebanon",
+          city: 'Lebanon',
           state: 'NH'
         )
       end

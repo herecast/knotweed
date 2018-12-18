@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class Users::ContentsController < ApiController
@@ -6,9 +8,9 @@ module Api
       def index
         authorize! :manage, User.find(params[:id])
 
-        search_opts = ContentSearch.my_stuff_query({
-                                                     params: params
-                                                   })
+        search_opts = ContentSearch.my_stuff_query(
+          params: params
+        )
 
         @contents = Content.search(query, search_opts)
 

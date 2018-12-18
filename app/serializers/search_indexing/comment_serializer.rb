@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SearchIndexing
   class CommentSerializer < ::ActiveModel::Serializer
     attributes :id,

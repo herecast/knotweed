@@ -1,4 +1,6 @@
-require 'rails_helper';
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 def serialized_event_instance(event_instance)
   {
@@ -44,7 +46,7 @@ def serialized_event_instance(event_instance)
     venue_name: event_instance.event.venue.try(:name),
     venue_state: event_instance.event.venue.try(:state),
     venue_url: event_instance.event.venue.try(:url),
-    venue_zip: event_instance.event.venue.try(:zip),
+    venue_zip: event_instance.event.venue.try(:zip)
   }
 end
 
@@ -52,30 +54,30 @@ describe 'Event Instance endpoints', type: :request do
   describe 'GET /api/v3/event_instances', elasticsearch: true do
     let!(:event_instance) { FactoryGirl.create(:event_instance) }
 
-    subject {
+    subject do
       get '/api/v3/event_instances'
       response.body
-    }
+    end
 
     it 'returns expected schema fields' do
-      expect(subject).to include_json({
-                                        event_instances: [serialized_event_instance(event_instance.reload)]
-                                      })
+      expect(subject).to include_json(
+        event_instances: [serialized_event_instance(event_instance.reload)]
+      )
     end
   end
 
   describe 'GET /api/v3/event_instances/:id' do
     let!(:event_instance) { FactoryGirl.create(:event_instance) }
 
-    subject {
+    subject do
       get "/api/v3/event_instances/#{event_instance.id}"
       response.body
-    }
+    end
 
     it 'returns expected schema fields' do
-      expect(subject).to include_json({
-                                        event_instance: serialized_event_instance(event_instance)
-                                      })
+      expect(subject).to include_json(
+        event_instance: serialized_event_instance(event_instance)
+      )
     end
   end
 
@@ -85,45 +87,45 @@ describe 'Event Instance endpoints', type: :request do
         FactoryGirl.create(:event_instance, start_date: 1.day.from_now)
 
         FactoryGirl.create_list(:event_instance, 3,
-                                start_date: 3.days.from_now,)
+                                start_date: 3.days.from_now)
       end
 
-      subject {
+      subject do
         get '/api/v3/event_instances/active_dates'
-      }
+      end
 
       it 'returns the dates and count of events corresponding' do
         subject
-        expect(response.body).to include_json({
-                                                active_dates: [
-                                                  {
-                                                    date: 1.day.from_now.strftime('%Y-%m-%d'),
-                                                    count: 1
-                                                  },
-                                                  {
-                                                    date: 3.days.from_now.strftime('%Y-%m-%d'),
-                                                    count: 3
-                                                  }
-                                                ]
-                                              })
+        expect(response.body).to include_json(
+          active_dates: [
+            {
+              date: 1.day.from_now.strftime('%Y-%m-%d'),
+              count: 1
+            },
+            {
+              date: 3.days.from_now.strftime('%Y-%m-%d'),
+              count: 3
+            }
+          ]
+        )
       end
     end
 
     describe 'filtering by date range' do
-      let(:start_date) {
+      let(:start_date) do
         1.day.ago.to_date
-      }
+      end
 
-      let(:end_date) {
+      let(:end_date) do
         1.day.from_now.to_date
-      }
+      end
 
-      subject {
+      subject do
         get '/api/v3/event_instances/active_dates', params: {
           start_date: start_date,
           end_date: end_date
         }
-      }
+      end
 
       let!(:instance_within_range) { FactoryGirl.create :event_instance, start_date: Date.current }
 
@@ -145,12 +147,12 @@ describe 'Event Instance endpoints', type: :request do
     let!(:org) { FactoryGirl.create :organization }
     let!(:alt_org) { FactoryGirl.create :organization }
 
-    let!(:instance1) {
+    let!(:instance1) do
       FactoryGirl.create :event_instance
-    }
-    let!(:instance2) {
+    end
+    let!(:instance2) do
       FactoryGirl.create :event_instance
-    }
+    end
 
     before do
       instance1.event.content.update organization: org
@@ -166,10 +168,9 @@ describe 'Event Instance endpoints', type: :request do
       expect(subject[:instances]).to include({
                                                id: instance1.id,
                                                content_id: instance1.event.content.id
-                                             }, {
-                                               id: instance2.id,
-                                               content_id: instance2.event.content.id
-                                             })
+                                             },
+                                             id: instance2.id,
+                                             content_id: instance2.event.content.id)
     end
 
     it 'does not include instance if content is listerv' do

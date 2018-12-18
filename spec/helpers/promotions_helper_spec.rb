@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe PromotionsHelper, type: :helper do
   describe '#get_promotions_list' do
-    context "Given organization, and content" do
+    context 'Given organization, and content' do
       it 'returns content#promotions' do
         content = Content.new
         organization = Organization.new

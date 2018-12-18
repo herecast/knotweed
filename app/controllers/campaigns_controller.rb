@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class CampaignsController < ApplicationController
   def index
-    @active = params[:promotion_banners_active] == 'on' ? true : false
+    @active = params[:promotion_banners_active] == 'on'
     if params[:reset]
       session[:campaign_search] = nil
       @active = false
@@ -16,7 +18,7 @@ class CampaignsController < ApplicationController
 
     if session[:campaign_search].present?
       @campaigns = @search.result(distinct: true)
-                          .order("created_at DESC")
+                          .order('created_at DESC')
                           .page(params[:page])
                           .per(25)
                           .includes(:organization, promotions: [:promotable])
@@ -34,10 +36,10 @@ class CampaignsController < ApplicationController
     @content = Content.new(campaign_params)
     @content.content_category_id = campaign_content_category_id
     if @content.save
-      flash[:notice] = "Campaign created successfully!"
+      flash[:notice] = 'Campaign created successfully!'
       redirect_to correct_path
     else
-      render "new"
+      render 'new'
     end
   end
 
@@ -48,7 +50,7 @@ class CampaignsController < ApplicationController
   def update
     @content = Content.find(params[:id])
     if @content.update_attributes(campaign_params)
-      flash[:notice] = "Campaign updated successfully!"
+      flash[:notice] = 'Campaign updated successfully!'
       redirect_to correct_path
     else
       render 'edit'

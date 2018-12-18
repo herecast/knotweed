@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: events
@@ -38,13 +40,13 @@ class Event < ActiveRecord::Base
   delegate :created_by, :organization, :organization_id,
            to: :content
 
-  has_one :source, through: :content, class_name: "Organization", foreign_key: "organization_id"
+  has_one :source, through: :content, class_name: 'Organization', foreign_key: 'organization_id'
   has_one :content_category, through: :content
   has_many :images, through: :content
 
-  belongs_to :venue, class_name: "BusinessLocation", foreign_key: "venue_id"
+  belongs_to :venue, class_name: 'BusinessLocation', foreign_key: 'venue_id'
   accepts_nested_attributes_for :venue,
-                                reject_if: proc { |attributes| attributes['name'].blank? and attributes['address'].blank? }
+                                reject_if: proc { |attributes| attributes['name'].blank? && attributes['address'].blank? }
 
   # event instances represent individual datetimes for events that might occur more than once
   # they can also have a subtitle and description that "override" the master
@@ -59,15 +61,15 @@ class Event < ActiveRecord::Base
   # to first save and create the content, then save the event.
   # validates_presence_of :content_id
 
-  enumerize :cost_type, in: [:free, :paid, :donation]
+  enumerize :cost_type, in: %i[free paid donation]
 
   serialize :links, Hash
 
   # normalize all "URL" fields to be well-formed url's (have an http at beginning)
   before_save do |event|
-    [:sponsor_url, :event_url].each do |method|
+    %i[sponsor_url event_url].each do |method|
       if event.send(method).present?
-        event.send("#{method}=", "http://#{event.send(method)}") unless event.send(method).match(/^https?:\/\/.*/)
+        event.send("#{method}=", "http://#{event.send(method)}") unless event.send(method) =~ %r{^https?://.*}
       end
     end
   end
@@ -119,38 +121,34 @@ class Event < ActiveRecord::Base
   end
 
   def save_with_schedules(schedules)
-    begin
-      Event.transaction do
-        self.save!
-        schedules.each do |s|
-          s.event_id = self.id
-          s.save!
-        end
+    Event.transaction do
+      save!
+      schedules.each do |s|
+        s.event_id = id
+        s.save!
       end
-    rescue ActiveRecord::RecordInvalid
-      false
     end
+  rescue ActiveRecord::RecordInvalid
+    false
   end
 
   def update_with_schedules(event_hash, schedules)
-    begin
-      Event.transaction do
-        self.update_attributes!(event_hash)
-        schedules.each do |s|
-          if s._remove
-            s.destroy
-          else
-            s.save!
-          end
+    Event.transaction do
+      update_attributes!(event_hash)
+      schedules.each do |s|
+        if s._remove
+          s.destroy
+        else
+          s.save!
         end
       end
-    rescue ActiveRecord::RecordInvalid
-      false
     end
+  rescue ActiveRecord::RecordInvalid
+    false
   end
 
   def owner_name
-    if organization.present? and organization.name != "From DailyUV"
+    if organization.present? && (organization.name != 'From DailyUV')
       # this prevents DailyUV from "owning" imported events on the edit page
       organization.name
     elsif content.try(:created_by)

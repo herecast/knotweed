@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: roles
@@ -16,21 +18,21 @@
 #
 
 class Role < ActiveRecord::Base
-  has_and_belongs_to_many :users, :join_table => :users_roles
-  belongs_to :resource, :polymorphic => true
+  has_and_belongs_to_many :users, join_table: :users_roles
+  belongs_to :resource, polymorphic: true
 
   scopify
 
   scope :non_resource_roles, -> { where(resource_id: nil) }
 
   def pretty_name
-    name.gsub('_', ' ').capitalize
+    name.tr('_', ' ').capitalize
   end
 
   # just a shortcut so we don't have to write
   #     Role.find_or_create_by(name: 'hello')
   # every time
   def self.get(name)
-    self.find_or_create_by(name: name)
+    find_or_create_by(name: name)
   end
 end

@@ -1,17 +1,19 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controller do
-  describe "POST #create" do
-    context "when no user logged in" do
-      subject { post :create, params: { content_id: "fake", organization_id: "fake" } }
+  describe 'POST #create' do
+    context 'when no user logged in' do
+      subject { post :create, params: { content_id: 'fake', organization_id: 'fake' } }
 
-      it "returns unauthorized status" do
+      it 'returns unauthorized status' do
         subject
         expect(response).to have_http_status :unauthorized
       end
     end
 
-    context "when organization not found" do
+    context 'when organization not found' do
       before do
         user = FactoryGirl.create :user
         sign_in user
@@ -19,36 +21,36 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
         Organization.delete_all
       end
 
-      subject { post :create, params: { content_id: @content.id, organization_id: "fake" } }
+      subject { post :create, params: { content_id: @content.id, organization_id: 'fake' } }
 
-      it "returns not_found status" do
+      it 'returns not_found status' do
         subject
         expect(response).to have_http_status :not_found
       end
     end
 
-    context "when content not found" do
+    context 'when content not found' do
       before do
         user = FactoryGirl.create :user
         sign_in user
         @organization = FactoryGirl.create :organization
       end
 
-      subject { post :create, params: { organization_id: @organization.id, content_id: "fake" } }
+      subject { post :create, params: { organization_id: @organization.id, content_id: 'fake' } }
 
-      it "returns not_found status" do
+      it 'returns not_found status' do
         subject
         expect(response).to have_http_status :not_found
       end
     end
 
-    context "when content and organization found" do
+    context 'when content and organization found' do
       before do
         @content = FactoryGirl.create :content
         @organization = FactoryGirl.create :organization
       end
 
-      context "when logged in user cannot manage org" do
+      context 'when logged in user cannot manage org' do
         before do
           user = FactoryGirl.create :user
           sign_in user
@@ -56,13 +58,13 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
 
         subject { post :create, params: { organization_id: @organization.id, content_id: @content.id } }
 
-        it "returns unauthorized status" do
+        it 'returns unauthorized status' do
           subject
           expect(response).to have_http_status :forbidden
         end
       end
 
-      context "when logged in user can manage org" do
+      context 'when logged in user can manage org' do
         before do
           user = FactoryGirl.create :user
           sign_in user
@@ -71,14 +73,14 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
 
         subject { post :create, params: { organization_id: @organization.id, content_id: @content.id } }
 
-        it "creates tag" do
+        it 'creates tag' do
           expect { subject }.to change {
             @organization.tagged_contents.count
           }.by 1
         end
       end
 
-      context "when logged in user is admin" do
+      context 'when logged in user is admin' do
         before do
           admin = FactoryGirl.create :admin
           sign_in admin
@@ -86,7 +88,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
 
         subject { post :create, params: { organization_id: @organization.id, content_id: @content.id } }
 
-        it "creates tag" do
+        it 'creates tag' do
           expect { subject }.to change {
             @organization.tagged_contents.count
           }.by 1
@@ -95,17 +97,17 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
     end
   end
 
-  describe "DELETE #destroy" do
-    context "when no user logged in" do
-      subject { delete :destroy, params: { content_id: "fake", organization_id: "fake" } }
+  describe 'DELETE #destroy' do
+    context 'when no user logged in' do
+      subject { delete :destroy, params: { content_id: 'fake', organization_id: 'fake' } }
 
-      it "returns unauthorized status" do
+      it 'returns unauthorized status' do
         subject
         expect(response).to have_http_status :unauthorized
       end
     end
 
-    context "when organization not found" do
+    context 'when organization not found' do
       before do
         user = FactoryGirl.create :user
         sign_in user
@@ -115,13 +117,13 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
 
       subject { delete :destroy, params: { content_id: @content.id, organization_id: 1 } }
 
-      it "returns not_found status" do
+      it 'returns not_found status' do
         subject
         expect(response).to have_http_status :not_found
       end
     end
 
-    context "when content not found" do
+    context 'when content not found' do
       before do
         user = FactoryGirl.create :user
         sign_in user
@@ -130,20 +132,20 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
 
       subject { delete :destroy, params: { organization_id: @organization.id, content_id: 1 } }
 
-      it "returns not_found status" do
+      it 'returns not_found status' do
         subject
         expect(response).to have_http_status :not_found
       end
     end
 
-    context "when content and organization found" do
+    context 'when content and organization found' do
       before do
         @content = FactoryGirl.create :content
         @organization = FactoryGirl.create :organization
         @organization.tagged_contents << @content
       end
 
-      context "when logged in user cannot manage org" do
+      context 'when logged in user cannot manage org' do
         before do
           user = FactoryGirl.create :user
           sign_in user
@@ -151,13 +153,13 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
 
         subject { delete :destroy, params: { organization_id: @organization.id, content_id: @content.id } }
 
-        it "returns unauthorized status" do
+        it 'returns unauthorized status' do
           subject
           expect(response).to have_http_status :forbidden
         end
       end
 
-      context "when logged in user can manage org" do
+      context 'when logged in user can manage org' do
         before do
           user = FactoryGirl.create :user
           sign_in user
@@ -166,14 +168,14 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
 
         subject { delete :destroy, params: { organization_id: @organization.id, content_id: @content.id } }
 
-        it "creates tag" do
+        it 'creates tag' do
           expect { subject }.to change {
             @organization.tagged_contents.count
           }.by -1
         end
       end
 
-      context "when logged in user is admin" do
+      context 'when logged in user is admin' do
         before do
           admin = FactoryGirl.create :admin
           sign_in admin
@@ -181,7 +183,7 @@ RSpec.describe Api::V3::Organizations::Contents::TagsController, type: :controll
 
         subject { delete :destroy, params: { organization_id: @organization.id, content_id: @content.id } }
 
-        it "creates tag" do
+        it 'creates tag' do
           expect { subject }.to change {
             @organization.tagged_contents.count
           }.by -1

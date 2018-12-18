@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
-describe LocationsController, :type => :controller do
+describe LocationsController, type: :controller do
   before do
     @user = FactoryGirl.create :admin
     @location = FactoryGirl.create :location
@@ -17,7 +19,7 @@ describe LocationsController, :type => :controller do
     context 'when reset' do
       subject { get :index, params: { reset: true } }
 
-      it "returns no locations" do
+      it 'returns no locations' do
         allow_any_instance_of(Ransack::Search).to receive_message_chain(:result, :page, :per).and_return []
         subject
         expect(assigns(:locations)).to eq []
@@ -30,7 +32,7 @@ describe LocationsController, :type => :controller do
 
       subject { get :index, params: query }
 
-      it "returns results" do
+      it 'returns results' do
         Ransack::Search.any_instance.stub_chain(:result, :page, :per) { results }
         subject
         expect(assigns(:locations)).to eq results
@@ -52,21 +54,21 @@ describe LocationsController, :type => :controller do
     end
   end
 
-  describe "POST #create" do
-    context "when creation succeeds" do
-      it "html: redirects to locations" do
+  describe 'POST #create' do
+    context 'when creation succeeds' do
+      it 'html: redirects to locations' do
         post :create, params: { location: { city: 'fake', state: 'VT' } }
         expect(response.code).to eq '302'
         expect(response).to redirect_to locations_path
       end
     end
 
-    context "when creation fails" do
+    context 'when creation fails' do
       before do
         allow_any_instance_of(Location).to receive(:save).and_return false
       end
 
-      it "html: renders new page" do
+      it 'html: renders new page' do
         post :create, params: { location: { city: 'fake', state: 'VT' } }
         expect(response).to render_template 'new'
       end
@@ -104,12 +106,12 @@ describe LocationsController, :type => :controller do
         expect(response).to redirect_to(locations_path)
       end
 
-      context "when update fails" do
+      context 'when update fails' do
         before do
           allow_any_instance_of(Location).to receive(:update_attributes).and_return false
         end
 
-        it "html: renders edit page" do
+        it 'html: renders edit page' do
           subject
           expect(response).to render_template 'edit'
         end

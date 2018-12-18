@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenamePaidToColumn < ActiveRecord::Migration
   def up
     rename_column :payments, :paid_to, :paid_to_id

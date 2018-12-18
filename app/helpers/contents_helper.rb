@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ContentsHelper
   def search_field_value(key)
     if params[:reset]
@@ -6,27 +8,21 @@ module ContentsHelper
       session[:contents_search][key]
     elsif params[:q].present?
       params[:q][key]
-    else
-      nil
     end
   end
 
   def remove_list_from_title(title)
-    if title.present?
-      title.gsub(/\[.*\]/, '')
-    else
-      nil
-    end
+    title.gsub(/\[.*\]/, '') if title.present?
   end
 
   # confirms that a piece of content has authors, authoremail,
   # and title populated -- returns false if not
   def can_be_listserv_promoted(content)
-    content.authors.present? and content.authoremail.present? and content.title.present?
+    content.authors.present? && content.authoremail.present? && content.title.present?
   end
 
   def ux2_content_path(content)
-    content.channel_type == "Event" ? "/#{content.id}/#{content.channel.next_or_first_instance.id}" : "/#{content.id}"
+    content.channel_type == 'Event' ? "/#{content.id}/#{content.channel.next_or_first_instance.id}" : "/#{content.id}"
   end
 
   def event_feed_content_path(content)
@@ -52,13 +48,17 @@ module ContentsHelper
   # Returns "dailyUV/my-org" given a full URL like "http://www.dailyUV.com/organizations/3456-my-org".
   def organization_url_label(url)
     # URI.parse requires a scheme in the URL if the rest of this method is to work.
-    url_with_scheme = url.to_s =~ /^http(s?)\:\/\// ? url.to_s : "http://#{url}"
-    uri = URI.parse(url_with_scheme) rescue nil
+    url_with_scheme = url.to_s =~ %r{^http(s?)\://} ? url.to_s : "http://#{url}"
+    uri = begin
+            URI.parse(url_with_scheme)
+          rescue StandardError
+            nil
+          end
     return url.to_s unless uri
 
     host_label = uri.host.to_s.split('.').reverse[0..1].last
-    org_label = uri.path.to_s.sub('/organizations', '').split('/').find_all { |c| c.present? }.first.to_s.sub(/^\d+\-/, '')
-    [host_label, org_label].find_all { |c| c.present? }.join('/')
+    org_label = uri.path.to_s.sub('/organizations', '').split('/').find_all(&:present?).first.to_s.sub(/^\d+\-/, '')
+    [host_label, org_label].find_all(&:present?).join('/')
   end
 
   def content_excerpt(content)

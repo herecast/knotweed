@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Creates a subscription object related to listserv, and triggers verification email
 # If subscription already exists, then resubscribes (unsets unsubscribed_at_
 class SubscribeToListserv
@@ -5,10 +7,10 @@ class SubscribeToListserv
   # @param [Hash] including email key
   # @return [Subscription]
   def self.call(listserv, attrs = {})
-    sub = Subscription.find_or_initialize_by({
-                                               listserv: listserv,
-                                               email: attrs[:email]
-                                             });
+    sub = Subscription.find_or_initialize_by(
+      listserv: listserv,
+      email: attrs[:email]
+    )
     sub.attributes = attrs
     sub.unsubscribed_at = nil
 
@@ -20,6 +22,6 @@ class SubscribeToListserv
       NotificationService.subscription_verification(sub)
     end
 
-    return sub
+    sub
   end
 end

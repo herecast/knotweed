@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: business_categories
@@ -32,7 +34,7 @@ class BusinessCategory < ActiveRecord::Base
   #
   # @return [Array] ids of business categories
   def full_descendant_ids
-    response = [self.id]
+    response = [id]
     children.each do |c|
       response << c.full_descendant_ids
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: contents
@@ -92,9 +94,9 @@
 FactoryGirl.define do
   factory :content do
     title { "Title-#{[*('A'..'Z')].sample(8).join}" }
-    subtitle "Subtitle"
+    subtitle 'Subtitle'
     authors Faker::Name.name
-    raw_content "Content goes here"
+    raw_content 'Content goes here'
     organization
     pubdate { Time.current }
     content_category
@@ -102,64 +104,64 @@ FactoryGirl.define do
     created_by { FactoryGirl.build(:user) }
 
     trait :located do
-      location {
+      location do
         FactoryGirl.build :location
-      }
+      end
     end
 
     trait :talk do
       located
-      channel {
+      channel do
         FactoryGirl.build :comment, content: nil
-      }
-      content_category {
-        ContentCategory.find_or_create_by({
-                                            name: 'talk_of_the_town'
-                                          })
-      }
+      end
+      content_category do
+        ContentCategory.find_or_create_by(
+          name: 'talk_of_the_town'
+        )
+      end
     end
 
     trait :news do
       located
-      content_category {
-        ContentCategory.find_or_create_by({
-                                            name: 'news'
-                                          })
-      }
+      content_category do
+        ContentCategory.find_or_create_by(
+          name: 'news'
+        )
+      end
     end
 
     trait :event do
       located
-      content_category {
-        ContentCategory.find_or_create_by({
-                                            name: 'event'
-                                          })
-      }
+      content_category do
+        ContentCategory.find_or_create_by(
+          name: 'event'
+        )
+      end
 
-      channel {
+      channel do
         FactoryGirl.build :event, content: nil
-      }
+      end
     end
 
     trait :market_post do
       located
-      content_category {
-        ContentCategory.find_or_create_by({
-                                            name: 'market'
-                                          })
-      }
+      content_category do
+        ContentCategory.find_or_create_by(
+          name: 'market'
+        )
+      end
 
-      channel {
+      channel do
         FactoryGirl.build :market_post, content: nil
-      }
+      end
     end
 
     trait :comment do
       channel_type 'Comment'
       parent_id 0
-      channel {
+      channel do
         FactoryGirl.build :comment, content: nil
-      }
+      end
     end
 
     trait :published do
@@ -170,11 +172,11 @@ FactoryGirl.define do
       ad_promotion_type 'ROS'
       ad_campaign_start Date.yesterday
       ad_campaign_end Date.tomorrow
-      content_category {
-        ContentCategory.find_or_create_by({
-                                            name: 'campaign'
-                                          })
-      }
+      content_category do
+        ContentCategory.find_or_create_by(
+          name: 'campaign'
+        )
+      end
     end
   end
 end

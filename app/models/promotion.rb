@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: promotions
@@ -44,15 +46,15 @@ class Promotion < ActiveRecord::Base
 
   validates_presence_of :description, if: :is_creative?
 
-  PROMOTABLE_TYPES = ['PromotionBanner']
+  PROMOTABLE_TYPES = ['PromotionBanner'].freeze
 
-  UPLOAD_ENDPOINT = "/statements"
+  UPLOAD_ENDPOINT = '/statements'
 
   scope :shares, -> { where('share_platform IS NOT NULL') }
 
   def promotable_attributes=(attributes)
     if PROMOTABLE_TYPES.include?(promotable_type)
-      self.promotable ||= self.promotable_type.constantize.new
+      self.promotable ||= promotable_type.constantize.new
       self.promotable.assign_attributes(attributes)
     end
   end

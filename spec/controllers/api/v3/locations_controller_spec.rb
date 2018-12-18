@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
-describe Api::V3::LocationsController, :type => :controller do
+describe Api::V3::LocationsController, type: :controller do
   describe 'GET index', elasticsearch: true do
     before do
       FactoryGirl.create_list :location, 3, consumer_active: false
@@ -49,10 +51,10 @@ describe Api::V3::LocationsController, :type => :controller do
 
   describe 'GET closest', elasticsearch: true do
     let(:location) { FactoryGirl.create :location, consumer_active: true }
-    let(:inactive_location) {
+    let(:inactive_location) do
       FactoryGirl.create :location, consumer_active: false, latitude: location.latitude,
                                     longitude: location.longitude
-    }
+    end
     let(:count) { 5 }
 
     before do
@@ -93,28 +95,28 @@ describe Api::V3::LocationsController, :type => :controller do
 
   describe 'GET locate' do
     context 'When nearest location is not consumer_active = true' do
-      let!(:nearest) {
+      let!(:nearest) do
         FactoryGirl.create :location,
                            consumer_active: false,
                            latitude: 0.5,
                            longitude: 0.5
-      }
-      let!(:nearest_active) {
+      end
+      let!(:nearest_active) do
         FactoryGirl.create :location,
                            consumer_active: true,
                            latitude: 0.8,
                            longitude: 0.8
-      }
-      let!(:furthest) {
+      end
+      let!(:furthest) do
         FactoryGirl.create :location,
                            consumer_active: true,
                            latitude: 1.2,
                            longitude: 1.2
-      }
+      end
 
-      subject {
-        get :locate, params: { coords: "0,0" }
-      }
+      subject do
+        get :locate, params: { coords: '0,0' }
+      end
 
       it 'returns nearest consumer_active location' do
         subject

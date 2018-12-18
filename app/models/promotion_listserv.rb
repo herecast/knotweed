@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: promotion_listservs
@@ -23,7 +25,7 @@ class PromotionListserv < ActiveRecord::Base
   # @param listserv [Listserv] listserv object to associate the PromotionListserv with
   # @return [PromotionListserv] the new PromotionListserv object
   def self.create_from_content(content, listserv)
-    if listserv.present? and listserv.active and content.authoremail.present?
+    if listserv.present? && listserv.active && content.authoremail.present?
       p = Promotion.create content: content
       p.promotable = PromotionListserv.new listserv_id: listserv.id
       p.save!

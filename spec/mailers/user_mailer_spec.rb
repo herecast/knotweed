@@ -1,12 +1,14 @@
-require "spec_helper"
+# frozen_string_literal: true
 
-describe UserMailer, :type => :mailer do
+require 'spec_helper'
+
+describe UserMailer, type: :mailer do
   let(:body_html) { subject.body.parts.find { |p| p.content_type.match /html/ }.body.raw_source }
   let(:body_text) { subject.body.parts.find { |p| p.content_type.match /plain/ }.body.raw_source }
 
   before(:each) do
     allow(Figaro.env).to receive(:default_consumer_host)\
-      .and_return("test.localhost")
+      .and_return('test.localhost')
   end
 
   describe 'sign_in_link' do

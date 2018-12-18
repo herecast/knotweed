@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 class CreateAlternateContent
   ALTERNATE_IMAGE_URL = 'https://s3.amazonaws.com/knotweed/duv/Default_Photo_News-01-1.jpg'
   ALTERNATE_TITLE = "We're sorry!"
-  ALTERNATE_TEXT = "This post is not available at the present time. We apologize for the inconvenience. Please email dailyuv@subtext.org with any questions!"
+  ALTERNATE_TEXT = 'This post is not available at the present time. We apologize for the inconvenience. Please email dailyuv@subtext.org with any questions!'
   ALTERNATE_AUTHORS = 'The team at DailyUV'
   ALTERNATE_ORGANIZATION_ID = 793
 
   def self.call(*args)
-    self.new(*args).call
+    new(*args).call
   end
 
   def initialize(original_content)
@@ -14,16 +16,16 @@ class CreateAlternateContent
   end
 
   def call
-    return content_dupe.call(@original_content, alternate_content_attributes)
+    content_dupe.call(@original_content, alternate_content_attributes)
   end
 
   private
 
   def content_dupe
-    Proc.new do |content, attrs|
+    proc do |content, attrs|
       alt_image_url = content.alternate_image_url.presence || ALTERNATE_IMAGE_URL
       image = Image.new(id: 1, primary: true)
-      image.define_singleton_method(:image) { Hashie::Mash.new({ url: alt_image_url }) }
+      image.define_singleton_method(:image) { Hashie::Mash.new(url: alt_image_url) }
       image.define_singleton_method(:image_url) { alt_image_url }
       dupe = Content.new(attrs)
       dupe.define_singleton_method(:images) { [image] }

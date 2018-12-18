@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe PaymentsController, type: :controller do
   let(:admin) { FactoryGirl.create :admin }
   before { sign_in admin }
 
-  describe "GET #index" do
+  describe 'GET #index' do
     subject { get :index }
 
-    it "returns http success" do
+    it 'returns http success' do
       subject
       expect(response).to have_http_status(:success)
     end
@@ -24,32 +26,32 @@ RSpec.describe PaymentsController, type: :controller do
     describe 'with unpaid payments in a period' do
       let(:period_start) { 1.week.ago }
       let(:period_end) { Date.today }
-      let!(:promotion_metrics) {
+      let!(:promotion_metrics) do
         FactoryGirl.create_list :promotion_banner_metric, payment.paid_impressions,
                                 content: payment.content, created_at: (period_start + 1.day)
-      }
+      end
       let!(:payment) { FactoryGirl.create :payment, period_start: period_start, period_end: period_end, paid: false }
 
       it 'should correctly construct the `payment_data` instance variable' do
         subject
-        expect(assigns(:payment_data)).to eql({
-                                                "#{period_start.strftime("%m/%d/%Y")} - #{period_end.strftime("%m/%d/%Y")}" => {
-                                                  total_payments: payment.total_payment,
-                                                  users: {
-                                                    payment.paid_to.fullname => {
-                                                      id: payment.paid_to.id,
-                                                      total_impressions: payment.paid_impressions,
-                                                      total_payment: payment.total_payment,
-                                                      organizations: {
-                                                        payment.content.organization.name => {
-                                                          id: payment.content.organization.id,
-                                                          payments: [payment]
-                                                        }
-                                                      }
-                                                    }
-                                                  }
-                                                }
-                                              })
+        expect(assigns(:payment_data)).to eql(
+          "#{period_start.strftime('%m/%d/%Y')} - #{period_end.strftime('%m/%d/%Y')}" => {
+            total_payments: payment.total_payment,
+            users: {
+              payment.paid_to.fullname => {
+                id: payment.paid_to.id,
+                total_impressions: payment.paid_impressions,
+                total_payment: payment.total_payment,
+                organizations: {
+                  payment.content.organization.name => {
+                    id: payment.content.organization.id,
+                    payments: [payment]
+                  }
+                }
+              }
+            }
+          }
+        )
       end
     end
   end
@@ -58,9 +60,9 @@ RSpec.describe PaymentsController, type: :controller do
     let(:period_start) { 1.week.ago }
     let(:period_end) { Date.today }
 
-    subject { delete :destroy, params: { period_start: period_start.strftime("%m/%d/%Y"), period_end: period_end.strftime("%m/%d/%Y") } }
+    subject { delete :destroy, params: { period_start: period_start.strftime('%m/%d/%Y'), period_end: period_end.strftime('%m/%d/%Y') } }
 
-    it "redirects to index" do
+    it 'redirects to index' do
       expect(subject).to redirect_to(payments_path)
     end
 

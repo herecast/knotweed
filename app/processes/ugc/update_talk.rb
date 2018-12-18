@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Ugc
   class UpdateTalk
     def self.call(*args)
-      self.new(*args).call
+      new(*args).call
     end
 
     def initialize(content, params, remote_ip: nil, user_scope:)

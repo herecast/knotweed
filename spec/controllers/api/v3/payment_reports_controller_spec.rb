@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Api::V3::PaymentReportsController, type: :controller do
@@ -10,7 +12,7 @@ RSpec.describe Api::V3::PaymentReportsController, type: :controller do
       subject { get :index, params: { user_id: user.id, period_start: period_start, period_end: period_end } }
 
       context 'when no user logged in' do
-        it "should return unauthorized status" do
+        it 'should return unauthorized status' do
           subject
           expect(response).to have_http_status :unauthorized
         end
@@ -25,10 +27,10 @@ RSpec.describe Api::V3::PaymentReportsController, type: :controller do
         end
 
         describe 'paid payments' do
-          let!(:payment) {
+          let!(:payment) do
             FactoryGirl.create :payment, period_start: period_start,
                                          period_end: period_end, paid_to: user, paid: false
-          }
+          end
 
           it 'should not be included' do
             subject
@@ -42,18 +44,18 @@ RSpec.describe Api::V3::PaymentReportsController, type: :controller do
           let(:c3) { FactoryGirl.create :content, organization: org2, created_by: user }
           let(:org1) { FactoryGirl.create :organization }
           let(:org2) { FactoryGirl.create :organization }
-          let!(:payment1) {
+          let!(:payment1) do
             FactoryGirl.create :payment, period_start: period_start,
                                          period_end: period_end, content: c1, paid_to: user, paid: true
-          }
-          let!(:payment2) {
+          end
+          let!(:payment2) do
             FactoryGirl.create :payment, period_start: period_start,
                                          period_end: period_end, content: c2, paid_to: user, paid: true
-          }
-          let!(:payment3) {
+          end
+          let!(:payment3) do
             FactoryGirl.create :payment, period_start: period_start,
                                          period_end: period_end, content: c3, paid_to: user, paid: true
-          }
+          end
 
           it 'should correctly assign total_payment' do
             subject

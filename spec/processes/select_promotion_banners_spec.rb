@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe SelectPromotionBanners do
   describe 'call' do
-    context "when promotion_id passed in" do
+    context 'when promotion_id passed in' do
       before do
         @promotion_banner = FactoryGirl.create :promotion_banner
         @promotion = FactoryGirl.create :promotion, promotable: @promotion_banner
@@ -10,13 +12,13 @@ RSpec.describe SelectPromotionBanners do
 
       subject { SelectPromotionBanners.call(promotion_id: @promotion.id) }
 
-      it "returns promotion_banner related to promotion" do
+      it 'returns promotion_banner related to promotion' do
         results = subject
         expect(results.first.promotion_banner).to eq @promotion_banner
       end
     end
 
-    context "when content_id passed in" do
+    context 'when content_id passed in' do
       let(:content) { FactoryGirl.create(:content) }
 
       subject { SelectPromotionBanners.call(content_id: content.id) }
@@ -33,7 +35,7 @@ RSpec.describe SelectPromotionBanners do
 
       context 'when content.organization has banner ad override' do
         let(:banner_ad1) { FactoryGirl.create :promotion_banner, :active, :sponsored }
-        let(:organization) { FactoryGirl.create :organization, banner_ad_override: "#{banner_ad1.promotion.id}" }
+        let(:organization) { FactoryGirl.create :organization, banner_ad_override: banner_ad1.promotion.id.to_s }
         let!(:content) { FactoryGirl.create :content, organization: organization }
 
         it 'returns a banner from the csv override property' do
@@ -53,10 +55,10 @@ RSpec.describe SelectPromotionBanners do
       end
 
       context 'When banner does not have inventory' do
-        let(:promo_banner) {
+        let(:promo_banner) do
           FactoryGirl.create :promotion_banner, content: content,
                                                 max_impressions: 10, impression_count: 10
-        }
+        end
 
         context 'when no paid banners exist' do
           before do
@@ -65,11 +67,11 @@ RSpec.describe SelectPromotionBanners do
 
           context 'when banner is not active' do
             before do
-              promo_banner.update_attributes({
-                                               campaign_start: 1.month.ago,
-                                               campaign_end: 1.week.ago,
-                                               max_impressions: nil
-                                             })
+              promo_banner.update_attributes(
+                campaign_start: 1.month.ago,
+                campaign_end: 1.week.ago,
+                max_impressions: nil
+              )
               promo_banner.promotion.update_attribute(:content_id, content.id)
             end
 
@@ -87,7 +89,7 @@ RSpec.describe SelectPromotionBanners do
       end
     end
 
-    context "when organization_id passed in" do
+    context 'when organization_id passed in' do
       before do
         @org_banner = FactoryGirl.create :promotion_banner
         promotion = FactoryGirl.create :promotion, promotable_id: @org_banner.id, promotable_type: 'PromotionBanner'
@@ -96,14 +98,14 @@ RSpec.describe SelectPromotionBanners do
 
       subject { SelectPromotionBanners.call(organization_id: @organization.id) }
 
-      it "returns promoted banner" do
+      it 'returns promoted banner' do
         results = subject
         expect(results.first.id).to eq @org_banner.id
       end
     end
 
-    context "when no reference provided" do
-      subject { SelectPromotionBanners.call() }
+    context 'when no reference provided' do
+      subject { SelectPromotionBanners.call }
 
       context 'when an active and boosted NON-RUN-OF-SITE promotion exists' do
         let!(:sponsored_banner) { FactoryGirl.create :promotion_banner, :active, :sponsored, boost: true, max_impressions: nil }
@@ -113,45 +115,45 @@ RSpec.describe SelectPromotionBanners do
         end
       end
 
-      context "when coupon exists" do
+      context 'when coupon exists' do
         before do
           @promotion_banner = FactoryGirl.create :promotion_banner,
                                                  promotion_type: PromotionBanner::COUPON,
                                                  coupon_image: File.open(File.join(Rails.root, '/spec/fixtures/photo.jpg'))
         end
 
-        it "returns coupon" do
+        it 'returns coupon' do
           results = subject
           expect(results.first.promotion_banner).to eq @promotion_banner
         end
       end
 
-      context "when active and boosted promotion exists" do
+      context 'when active and boosted promotion exists' do
         before do
           @promotion_banner = FactoryGirl.create :promotion_banner, boost: true, max_impressions: nil
         end
 
-        it "gets a random boosted promotion banner" do
+        it 'gets a random boosted promotion banner' do
           results = subject
           expect(results.first.promotion_banner).to eq @promotion_banner
         end
       end
 
-      context "when no boosted promotions exist" do
+      context 'when no boosted promotions exist' do
         before do
           @promotion_banner = FactoryGirl.create :promotion_banner, campaign_start: Date.yesterday, campaign_end: Date.tomorrow
         end
 
-        it "gets a random active with inventory promotion banner" do
+        it 'gets a random active with inventory promotion banner' do
           results = subject
           expect(results.first.promotion_banner).to eq @promotion_banner
         end
       end
 
-      context "when only active with no inventory" do
+      context 'when only active with no inventory' do
         let!(:banner) { FactoryGirl.create :promotion_banner, :active, daily_max_impressions: 5, daily_impression_count: 6 }
 
-        it "gets active, no inventory ad" do
+        it 'gets active, no inventory ad' do
           expect(subject.first.promotion_banner).to eq banner
         end
       end
@@ -168,7 +170,7 @@ RSpec.describe SelectPromotionBanners do
       end
     end
 
-    context "when context and limit passed in" do
+    context 'when context and limit passed in' do
       before do
         @promotion_banner1 = FactoryGirl.create :promotion_banner
         @promotion_banner2 = FactoryGirl.create :promotion_banner, boost: true, max_impressions: nil
@@ -178,37 +180,37 @@ RSpec.describe SelectPromotionBanners do
         @promotion = FactoryGirl.create :promotion, promotable: @promotion_banner1
       end
 
-      subject { SelectPromotionBanners.call(limit: "4") }
+      subject { SelectPromotionBanners.call(limit: '4') }
 
-      it "returns the specified number of promotion banners" do
+      it 'returns the specified number of promotion banners' do
         results = subject
         expect(results.length).to eq 4
         expect(results.map { |r| r.promotion_banner.id }).to_not include(@promotion_banner5.id)
       end
     end
 
-    context "when exclude passed in" do
+    context 'when exclude passed in' do
       before do
         @promotion_banner = FactoryGirl.create :promotion_banner, campaign_start: Date.yesterday, campaign_end: Date.tomorrow
       end
 
       subject { SelectPromotionBanners.call(exclude: [@promotion_banner.id]) }
 
-      it "does not return excluded promotion banners" do
+      it 'does not return excluded promotion banners' do
         results = subject
         expect(results).to eq []
       end
     end
 
     context 'when feature flag is specifying an override' do
-      let!(:other_promos) {
+      let!(:other_promos) do
         FactoryGirl.create :promotion,
                            promotable: FactoryGirl.create(:promotion_banner)
-      }
-      let!(:promo) {
+      end
+      let!(:promo) do
         FactoryGirl.create :promotion,
                            promotable: FactoryGirl.create(:promotion_banner)
-      }
+      end
       before do
         Feature.create(
           active: true,
@@ -217,7 +219,7 @@ RSpec.describe SelectPromotionBanners do
         )
       end
 
-      subject { SelectPromotionBanners.call() }
+      subject { SelectPromotionBanners.call }
 
       it 'returns the banner for the promo override' do
         expect(subject.first.promotion_banner).to eql promo.promotable

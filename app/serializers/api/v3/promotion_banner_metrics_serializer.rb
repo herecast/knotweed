@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class PromotionBannerMetricsSerializer < ActiveModel::Serializer
@@ -5,11 +7,17 @@ module Api
                  :campaign_start, :campaign_end, :max_impressions, :impression_count,
                  :click_count, :daily_impression_counts, :daily_click_counts
 
-      def title; object.promotion.content.title; end
+      def title
+        object.promotion.content.title
+      end
 
-      def pubdate; object.promotion.content.pubdate; end
+      def pubdate
+        object.promotion.content.pubdate
+      end
 
-      def image_url; object.banner_image.url; end
+      def image_url
+        object.banner_image.url
+      end
 
       def daily_impression_counts
         scope = object.promotion_banner_reports.order('report_date ASC')

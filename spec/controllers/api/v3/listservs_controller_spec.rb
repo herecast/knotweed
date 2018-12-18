@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
-describe Api::V3::ListservsController, :type => :controller do
+describe Api::V3::ListservsController, type: :controller do
   describe 'GET index' do
     before do
       FactoryGirl.create :listserv

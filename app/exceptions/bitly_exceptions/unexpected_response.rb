@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module BitlyExceptions
   class UnexpectedResponse < ::StandardError
     attr_reader :response

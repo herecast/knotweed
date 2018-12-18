@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 class ImageUploader < CarrierWave::Uploader::Base
   # Include RMagick or MiniMagick support:
@@ -20,12 +20,12 @@ class ImageUploader < CarrierWave::Uploader::Base
     # new one
     if Rails.env.test?
       "#{Rails.root}/spec/support/uploads"
-    elsif model.methods.include? :imageable and model.imageable.present?
+    elsif model.methods.include?(:imageable) && model.imageable.present?
       "#{model.imageable_type.underscore}/#{model.imageable.id}"
     elsif model.class != Image # i.e. if it's an organization
       "#{model.class.to_s.underscore}/#{model.id}"
     else
-      "uploads"
+      'uploads'
     end
   end
 
@@ -54,7 +54,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   # Add a white list of extensions which are allowed to be uploaded.
   # For images you might use something like this:
   def extension_white_list
-    %w(jpg jpeg png)
+    %w[jpg jpeg png]
   end
 
   # Override the filename of the uploaded files:
@@ -65,12 +65,12 @@ class ImageUploader < CarrierWave::Uploader::Base
 
   def timestamp
     var = :"@#{mounted_as}_timestamp"
-    model.instance_variable_get(var) or model.instance_variable_set(var, Time.current.to_i)
+    model.instance_variable_get(var) || model.instance_variable_set(var, Time.current.to_i)
   end
 
   def secure_token(length = 16)
     var = :"@#{mounted_as}_secure_token"
-    model.instance_variable_get(var) or model.instance_variable_set(var, SecureRandom.hex(length / 2))
+    model.instance_variable_get(var) || model.instance_variable_set(var, SecureRandom.hex(length / 2))
   end
 
   private

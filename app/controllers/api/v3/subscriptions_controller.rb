@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class SubscriptionsController < ApiController
-      before_action :get_resource, only: [:show, :update, :confirm]
+      before_action :get_resource, only: %i[show update confirm]
       before_action :check_logged_in!, only: [:index]
 
       def index
@@ -26,7 +28,7 @@ module Api
           elsif subscribed_from_registration?
             @subscription = Subscription.create!(subscription_params)
           else
-            @subscription = SubscribeToListserv.call(listserv, { email: params[:subscription][:email] })
+            @subscription = SubscribeToListserv.call(listserv, email: params[:subscription][:email])
           end
           render json: @subscription, serializer: SubscriptionSerializer, status: 201
         else
@@ -63,7 +65,7 @@ module Api
             UnsubscribeSubscription.call(@subscription) if @subscription.present?
           end
         else
-          render json: { errors: "Invalid parameters" }, status: :unprocessable_entity
+          render json: { errors: 'Invalid parameters' }, status: :unprocessable_entity
           return
         end
         render json: {}, status: :no_content
@@ -86,9 +88,7 @@ module Api
 
       def get_resource
         @subscription = Subscription.find_by(key: params[:key])
-        unless @subscription
-          render json: {}, status: :not_found
-        end
+        render json: {}, status: :not_found unless @subscription
       end
 
       def subscription_params
@@ -108,7 +108,7 @@ module Api
       end
 
       def find_subscription
-        Subscription.where("listserv_id = ? AND email = ?",
+        Subscription.where('listserv_id = ? AND email = ?',
                            listserv_from_mailchimp.id, params['data']['email'])
                     .try(:first)
       end

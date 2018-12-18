@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Payments::GeneratesController < ApplicationController
   def create
     authorize! :manage, Payment

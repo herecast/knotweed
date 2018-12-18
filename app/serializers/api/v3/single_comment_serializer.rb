@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class SingleCommentSerializer < ActiveModel::Serializer
@@ -13,7 +15,7 @@ module Api
       end
 
       def parent_comment_id
-        if object.parent.present? and object.parent.channel.is_a? Comment
+        if object.parent.present? && object.parent.channel.is_a?(Comment)
           object.parent.channel.id
         end
       end
@@ -23,7 +25,7 @@ module Api
       end
 
       def event_instance_id
-        if object.parent.present? and object.parent.channel.is_a? Event
+        if object.parent.present? && object.parent.channel.is_a?(Event)
           object.parent.channel.event_instances.first.id
         end
       end

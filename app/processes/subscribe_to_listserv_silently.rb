@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 # Service object responsible for adding and confirming subscription and syncing
 # with Mailchimp
 #
 class SubscribeToListservSilently
   def self.call(*args)
-    self.new(*args).call
+    new(*args).call
   end
 
   def initialize(listserv, user, confirm_ip)
@@ -13,13 +15,13 @@ class SubscribeToListservSilently
   end
 
   def call
-    @subscription = Subscription.find_or_initialize_by({
-                                                         listserv: @listserv,
-                                                         email: @user.email
-                                                       })
+    @subscription = Subscription.find_or_initialize_by(
+      listserv: @listserv,
+      email: @user.email
+    )
 
     @subscription.name = @user.name
-    @subscription.source = "knotweed"
+    @subscription.source = 'knotweed'
 
     if !@subscription.confirmed?
       @subscription.confirm_ip = @confirm_ip
@@ -32,11 +34,9 @@ class SubscribeToListservSilently
       sync_with_mc
     end
 
-    if @subscription.persisted? && @subscription.confirmed?
-      @subscription.save!
-    end
+    @subscription.save! if @subscription.persisted? && @subscription.confirmed?
 
-    return @subscription
+    @subscription
   end
 
   def sync_with_mc

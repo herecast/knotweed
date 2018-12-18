@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Subtext has a special MailChimp account for managing organization subscriber lists.
 # This module is a wrapper for that account.
 
@@ -5,6 +7,7 @@ require 'httparty'
 
 module SubscriptionsMailchimpClient
   include HTTParty
+
   extend self
 
   format     :json
@@ -31,15 +34,15 @@ module SubscriptionsMailchimpClient
     payload = { body: {
       type: 'regular',
       recipients: { list_id: list_identifier },
-      settings: campaign_settings(subject, title, from_name, reply_to),
+      settings: campaign_settings(subject, title, from_name, reply_to)
     }.to_json }
-    resp = detect_error post("/campaigns", payload)
+    resp = detect_error post('/campaigns', payload)
     resp['id']
   end
 
   def update_campaign(campaign_identifier:, subject:, title:, from_name:, reply_to:)
     payload = { body: {
-      settings: campaign_settings(subject, title, from_name, reply_to),
+      settings: campaign_settings(subject, title, from_name, reply_to)
     }.to_json }
     detect_error patch("/campaigns/#{campaign_identifier}", payload)
   end
@@ -61,14 +64,12 @@ module SubscriptionsMailchimpClient
       subject_line: subject,
       title: title,
       from_name: from_name,
-      reply_to: reply_to,
+      reply_to: reply_to
     }
   end
 
   def detect_error(response)
-    unless response.success?
-      raise UnexpectedResponse.new(response)
-    end
+    raise UnexpectedResponse, response unless response.success?
 
     response
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BusinessProfiles::ManagersController < ApplicationController
   def create
     get_organization
@@ -18,11 +20,11 @@ class BusinessProfiles::ManagersController < ApplicationController
   private
 
   def get_organization
-    if params[:organization_id].present?
-      @org = Organization.find(params[:organization_id])
-    else
-      @org = BusinessProfile.find(params[:business_profile_id]).content.organization
-    end
+    @org = if params[:organization_id].present?
+             Organization.find(params[:organization_id])
+           else
+             BusinessProfile.find(params[:business_profile_id]).content.organization
+           end
   end
 
   def smart_redirect

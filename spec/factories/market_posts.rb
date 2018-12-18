@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: market_posts
@@ -30,12 +32,12 @@ FactoryGirl.define do
       title nil
     end
 
-    cost "$5"
+    cost '$5'
     contact_phone Faker::PhoneNumber.phone_number
     contact_email Faker::Internet.email
     contact_url Faker::Internet.url
-    locate_name "MP_locate_name"
-    locate_address "MP_locate_address"
+    locate_name 'MP_locate_name'
+    locate_address 'MP_locate_address'
     latitude Faker::Address.latitude
     longitude Faker::Address.longitude
     locate_include_name false
@@ -46,11 +48,11 @@ FactoryGirl.define do
         e.content.organization = evaluator.organization if evaluator.organization.present?
         e.content.created_by = evaluator.created_by if evaluator.created_by.present?
         e.content.title = evaluator.title if evaluator.title.present?
-        if ContentCategory.exists?(name: 'market')
-          e.content.content_category = ContentCategory.find_by name: 'market'
-        else
-          e.content.content_category = FactoryGirl.build :content_category, name: 'market'
-        end
+        e.content.content_category = if ContentCategory.exists?(name: 'market')
+                                       ContentCategory.find_by name: 'market'
+                                     else
+                                       FactoryGirl.build :content_category, name: 'market'
+                                     end
       end
     end
   end

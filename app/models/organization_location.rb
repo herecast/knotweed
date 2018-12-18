@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: organization_locations
@@ -24,7 +26,7 @@ class OrganizationLocation < ActiveRecord::Base
   belongs_to :organization
   belongs_to :location
 
-  TYPES = ['base']
+  TYPES = ['base'].freeze
 
   scope :base, -> { where(location_type: 'base') }
 
@@ -42,6 +44,6 @@ class OrganizationLocation < ActiveRecord::Base
 
   def base!
     self.location_type = 'base'
-    self.save!
+    save!
   end
 end

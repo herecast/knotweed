@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
-describe Api::V3::ContentsController, :type => :controller do
+describe Api::V3::ContentsController, type: :controller do
   before do
     @org = FactoryGirl.create :organization
   end
 
   describe 'GET #show' do
-    context "when content is removed" do
+    context 'when content is removed' do
       before do
         @content = FactoryGirl.create :content, :news,
                                       removed: true,
@@ -14,10 +16,10 @@ describe Api::V3::ContentsController, :type => :controller do
         allow(CreateAlternateContent).to receive(:call).and_return(@content)
       end
 
-      subject { get :show, { id: @content.id } }
+      subject { get :show, id: @content.id }
       subject { get :show, params: { id: @content.id } }
 
-      it "makes call to create alternate content" do
+      it 'makes call to create alternate content' do
         expect(CreateAlternateContent).to receive(:call).with(
           @content
         )
@@ -25,7 +27,7 @@ describe Api::V3::ContentsController, :type => :controller do
       end
     end
 
-    context "when content is draft" do
+    context 'when content is draft' do
       before do
         @content = FactoryGirl.create :content, :news,
                                       pubdate: nil,
@@ -34,7 +36,7 @@ describe Api::V3::ContentsController, :type => :controller do
 
       subject { get :show, params: { id: @content.id } }
 
-      it "returns not_found status" do
+      it 'returns not_found status' do
         subject
         expect(response).to have_http_status :not_found
       end
@@ -53,12 +55,12 @@ describe Api::V3::ContentsController, :type => :controller do
           expect(assigns(:content).id).to eql @content.id
         end
 
-        context "when draft is deleted" do
+        context 'when draft is deleted' do
           before do
             @content.update_attribute :deleted_at, Time.current
           end
 
-          it "returns not_found status" do
+          it 'returns not_found status' do
             subject
             expect(response).to have_http_status :not_found
           end
@@ -66,7 +68,7 @@ describe Api::V3::ContentsController, :type => :controller do
       end
     end
 
-    context "when content is scheduled to be published" do
+    context 'when content is scheduled to be published' do
       before do
         @content = FactoryGirl.create :content, :news,
                                       pubdate: Date.tomorrow,
@@ -75,7 +77,7 @@ describe Api::V3::ContentsController, :type => :controller do
 
       subject { get :show, params: { id: @content.id } }
 
-      it "returns not_found status" do
+      it 'returns not_found status' do
         subject
         expect(response).to have_http_status :not_found
       end
@@ -84,17 +86,17 @@ describe Api::V3::ContentsController, :type => :controller do
 
   describe 'GET similar_content', elasticsearch: true do
     let(:content) { FactoryGirl.create :content }
-    let!(:sim_content) {
+    let!(:sim_content) do
       FactoryGirl.create :content,
                          title: content.title,
                          raw_content: content.sanitized_content,
                          origin: Content::UGC_ORIGIN
-    }
+    end
 
-    subject {
+    subject do
       get :similar_content, format: :json,
                             params: { id: content.id }
-    }
+    end
 
     it 'has 200 status code' do
       subject
@@ -118,14 +120,14 @@ describe Api::V3::ContentsController, :type => :controller do
     end
 
     it 'should queue flag notification email' do
-      expect {
+      expect do
         subject
-      }.to change { ActiveJob::Base.queue_adapter.enqueued_jobs.size }.by(1)
+      end.to change { ActiveJob::Base.queue_adapter.enqueued_jobs.size }.by(1)
       expect(ActiveJob::Base.queue_adapter.enqueued_jobs.last[:job]).to eq(ActionMailer::DeliveryJob)
     end
   end
 
-  describe "DELETE #destroy" do
+  describe 'DELETE #destroy' do
     before do
       @user = FactoryGirl.create :user
       @content = FactoryGirl.create :content,
@@ -135,31 +137,31 @@ describe Api::V3::ContentsController, :type => :controller do
 
     subject { delete :destroy, params: { id: @content.id } }
 
-    context "when no user logged in" do
-      it "it returns unauthorized status" do
+    context 'when no user logged in' do
+      it 'it returns unauthorized status' do
         subject
         expect(response).to have_http_status :unauthorized
       end
     end
 
-    context "when correct user logged in" do
+    context 'when correct user logged in' do
       before do
         api_authenticate user: @user
       end
 
-      context "when contents is not a draft" do
-        it "returns bad_request status" do
+      context 'when contents is not a draft' do
+        it 'returns bad_request status' do
           subject
           expect(response).to have_http_status :bad_request
         end
       end
 
-      context "when content is a draft" do
+      context 'when content is a draft' do
         before do
           @content.update_attribute(:pubdate, nil)
         end
 
-        it "marks Content as deleted" do
+        it 'marks Content as deleted' do
           expect { subject }.to change {
             @content.reload.deleted_at
           }
@@ -211,11 +213,11 @@ describe Api::V3::ContentsController, :type => :controller do
         api_authenticate user: user
       end
 
-      let(:location) {
+      let(:location) do
         FactoryGirl.create :location
-      }
+      end
 
-      let(:content_params) {
+      let(:content_params) do
         {
           title: 'Test title',
           content_type: 'market',
@@ -223,7 +225,7 @@ describe Api::V3::ContentsController, :type => :controller do
           promote_radius: 10,
           location_id: location.id
         }
-      }
+      end
 
       subject do
         post :create, params: { content: content_params }
@@ -237,7 +239,7 @@ describe Api::V3::ContentsController, :type => :controller do
         end
 
         it 'triggers a facebook recache of that content' do
-          expectations = ->(job) do
+          expectations = lambda do |job|
             job[:args][0] == 'FacebookService' &&
               job[:args][1] == 'rescrape_url'
           end
@@ -285,9 +287,9 @@ describe Api::V3::ContentsController, :type => :controller do
         end
 
         context 'listserv ids included' do
-          let(:listservs) {
+          let(:listservs) do
             FactoryGirl.create_list(:listserv, 2)
-          }
+          end
           before do
             content_params.merge!(listserv_ids: listservs.map(&:id))
           end
@@ -305,12 +307,12 @@ describe Api::V3::ContentsController, :type => :controller do
 
         describe 'Events' do
           let(:business_location) { FactoryGirl.create(:business_location) }
-          let(:content_params) {
+          let(:content_params) do
             {
               content_type: 'event',
-              title: "Concert",
-              content: "<p>Tickets for sale a the doors</p>",
-              cost: "$10",
+              title: 'Concert',
+              content: '<p>Tickets for sale a the doors</p>',
+              cost: '$10',
               promote_radius: 10,
               venue_id: business_location.id,
               contact_email: 'test@test.com',
@@ -321,22 +323,22 @@ describe Api::V3::ContentsController, :type => :controller do
                   end_at: nil,
                   overrides: [],
                   presenter_name: nil,
-                  repeats: "once",
+                  repeats: 'once',
                   starts_at: 1.day.from_now.iso8601,
                   subtitle: nil,
                   weeks_of_month: []
                 }
               ]
             }
-          }
+          end
 
-          context "when user wants to advertise" do
+          context 'when user wants to advertise' do
             before do
               content_params[:wants_to_advertise] = true
             end
 
-            it "sends the adverising request" do
-              mail = double()
+            it 'sends the adverising request' do
+              mail = double
               expect(mail).to receive(:deliver_later)
               expect(AdMailer).to receive(:event_adveritising_request).and_return(mail)
 
@@ -344,8 +346,8 @@ describe Api::V3::ContentsController, :type => :controller do
             end
           end
 
-          context "when user does not flag wants_to_advertise" do
-            it "does not send an email to admin" do
+          context 'when user does not flag wants_to_advertise' do
+            it 'does not send an email to admin' do
               expect(AdMailer).not_to receive(:event_adveritising_request)
               subject
             end
@@ -355,10 +357,10 @@ describe Api::V3::ContentsController, :type => :controller do
             before do
               content_params.deep_merge!(
                 venue: {
-                  name: "Norwich Historical Society",
-                  address: "34 Elm Street",
-                  city: "Norwich",
-                  state: "VT"
+                  name: 'Norwich Historical Society',
+                  address: '34 Elm Street',
+                  city: 'Norwich',
+                  state: 'VT'
                 },
                 venue_id: nil
               )
@@ -391,11 +393,11 @@ describe Api::V3::ContentsController, :type => :controller do
         FactoryGirl.create :content, :market_post, created_by: user
       end
 
-      let(:location) {
+      let(:location) do
         FactoryGirl.create :location
-      }
+      end
 
-      let(:content_params) {
+      let(:content_params) do
         {
           id: content.id,
           title: 'Test title',
@@ -403,7 +405,7 @@ describe Api::V3::ContentsController, :type => :controller do
           promote_radius: 10,
           location_id: location.id
         }
-      }
+      end
 
       subject do
         put :update, params: { id: content.id, content: content_params }
@@ -421,9 +423,9 @@ describe Api::V3::ContentsController, :type => :controller do
         end
 
         context 'listserv ids included' do
-          let(:listservs) {
+          let(:listservs) do
             FactoryGirl.create_list(:listserv, 2)
-          }
+          end
           before do
             content_params.merge!(listserv_ids: listservs.map(&:id))
           end

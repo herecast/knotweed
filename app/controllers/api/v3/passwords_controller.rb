@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class PasswordsController < Devise::PasswordsController
@@ -33,9 +35,9 @@ module Api
       private
 
       def resource_params
-        super.merge({
-                      return_url: params[:return_url]
-                    })
+        super.merge(
+          return_url: params[:return_url]
+        )
       end
     end
   end

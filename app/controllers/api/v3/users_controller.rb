@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 require 'icalendar/tzinfo'
 module Api
   module V3
     class UsersController < ApiController
       include EmailTemplateHelper
-      before_action :check_logged_in!, only: [:show, :update, :logout]
+      before_action :check_logged_in!, only: %i[show update logout]
 
       def show
-        events_ical_url = url_for_consumer_app("/" + user_event_instances_ics_path(public_id: current_user.public_id.to_s))
+        events_ical_url = url_for_consumer_app('/' + user_event_instances_ics_path(public_id: current_user.public_id.to_s))
         render json: current_user, serializer: UserSerializer,
                root: 'current_user', status: 200, events_ical_url: events_ical_url,
                context: { current_ability: current_ability }
@@ -18,7 +20,7 @@ module Api
           render json: current_user, serializer: UserSerializer, root: 'current_user', status: 200,
                  context: { current_ability: current_ability }
         else
-          render json: { error: "Current User update failed", messages: current_user.errors.full_messages }, status: 422
+          render json: { error: 'Current User update failed', messages: current_user.errors.full_messages }, status: 422
         end
       end
 
@@ -26,18 +28,18 @@ module Api
         user = current_user
         sign_out current_user
         user.reset_authentication_token
-        if user.save
-          res = :ok
-        else
-          res = :unprocessable_entity
-        end
+        res = if user.save
+                :ok
+              else
+                :unprocessable_entity
+              end
         reset_session
         render json: {}, status: res
       end
 
       def email_confirmation
-        user = ConfirmRegistration.call({ confirmation_token: params[:confirmation_token],
-                                          confirm_ip: request.remote_ip })
+        user = ConfirmRegistration.call(confirmation_token: params[:confirmation_token],
+                                        confirm_ip: request.remote_ip)
         if user.errors.blank?
           resp = { token: user.authentication_token,
                    email: user.email }
@@ -84,13 +86,13 @@ module Api
       def verify
         user = User.where(email: params[:email])
         if user.present?
-          render json: {}, status: :ok and return
+          render(json: {}, status: :ok) && return
         else
-          render json: {}, status: :not_found and return
+          render(json: {}, status: :not_found) && return
         end
       end
 
-      def email_signin_link user = User.find_by(email: params[:email])
+      def email_signin_link(user = User.find_by(email: params[:email]))
         if user.present?
           NotificationService.sign_in_link(
             SignInToken.create(user: user)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: promotion_banners
@@ -37,7 +39,7 @@ FactoryGirl.define do
     end
 
     promotion
-    redirect_url "http://www.google.com"
+    redirect_url 'http://www.google.com'
     campaign_start 2.days.ago
     campaign_end 2.days.from_now
     max_impressions 1000

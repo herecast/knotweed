@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AuthenticationHelpers
   def api_authenticate(args = {})
     args = { user: nil, success: true }.merge(args)

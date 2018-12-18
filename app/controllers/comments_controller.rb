@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CommentsController < ApplicationController
   def index
     if params[:reset]
@@ -11,24 +13,24 @@ class CommentsController < ApplicationController
 
     @search = Content.ransack(session[:comment_search])
 
-    if session[:comment_search].present?
-      @comments = @search.result(distinct: true)
-                         .order("created_at DESC")
+    @comments = if session[:comment_search].present?
+                  @search.result(distinct: true)
+                         .order('created_at DESC')
                          .page(params[:page])
                          .per(25)
-    else
-      @comments = []
-    end
+                else
+                  []
+                end
   end
 
   def update
     @comment = Content.find(params[:id])
     if @comment.update_attribute(:deleted_at, nil)
       @comment.channel.increase_comment_stats
-      flash[:info] = "Comment Unhidden"
+      flash[:info] = 'Comment Unhidden'
       redirect_to correct_path
     else
-      flash.now[:danger] = "Comment was not unhidden"
+      flash.now[:danger] = 'Comment was not unhidden'
       render 'index'
     end
   end
@@ -39,10 +41,10 @@ class CommentsController < ApplicationController
       @comment.channel.decrease_comment_stats
       notify_comment_owner
       notify_parent_content_owner
-      flash[:info] = "Comment Hidden"
+      flash[:info] = 'Comment Hidden'
       redirect_to correct_path
     else
-      flash.now[:danger] = "Comment was not hidden"
+      flash.now[:danger] = 'Comment was not hidden'
       render 'index'
     end
   end

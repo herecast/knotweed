@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
-describe DashboardController, :type => :controller do
+describe DashboardController, type: :controller do
   before do
     @user = FactoryGirl.create :admin
     sign_in @user

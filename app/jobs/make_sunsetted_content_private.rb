@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MakeSunsettedContentPrivate < ApplicationJob
   def perform
     sunsetted_content = Content.where.not(sunset_date: nil)

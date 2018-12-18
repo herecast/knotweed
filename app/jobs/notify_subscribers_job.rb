@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Synchronizes the given post's MailChimp email notification campaign with the post.
 # The synchronization may involve creating a campaign for the give post, updating an unsent campaign, or
 # halting the post's campaign.
@@ -33,12 +35,12 @@ class NotifySubscribersJob < ApplicationJob
   private
 
   def campaign_reply_to
-    "dailyUV@subtext.org"
+    'dailyUV@subtext.org'
   end
 
   def campaign_subject(post)
     if post.organization.feature_notification_org?
-      "New DailyUV Features!"
+      'New DailyUV Features!'
     else
       "#{post.location.pretty_name} | #{post.title}"
     end
@@ -85,7 +87,7 @@ class NotifySubscribersJob < ApplicationJob
   def appropriate_template_path(content)
     if content.organization.feature_notification_org?
       ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH
-    elsif [:event, :market, :talk].include?(content.content_type)
+    elsif %i[event market talk].include?(content.content_type)
       ERB_NON_NEWS_POST_TEMPLATE_PATH
     else
       ERB_NEWS_TEMPLATE_PATH
@@ -103,16 +105,21 @@ class NotifySubscribersJob < ApplicationJob
   end
 
   def generate_html(title, organization_name, organization_url, post_url, banner_image_url, excerpt, path, profile_image_url)
-    @title, @organization_name, @organization_url, @post_url, @banner_image_url, @excerpt, @profile_image_url =
-      title, organization_name, organization_url, post_url, banner_image_url, excerpt, profile_image_url
+    @title = title
+    @organization_name = organization_name
+    @organization_url = organization_url
+    @post_url = post_url
+    @banner_image_url = banner_image_url
+    @excerpt = excerpt
+    @profile_image_url = profile_image_url
     ERB.new(File.read(path)).result(binding)
   end
 
   def list_has_subscribers(organization)
-    list = new_mailchimp_connection.lists.list({ list_name: organization.name })['data'][0]
+    list = new_mailchimp_connection.lists.list(list_name: organization.name)['data'][0]
     return true unless list.present? # this could be a false indicator and the issue is covered elsewhere
 
-    return list['stats']['member_count'] > 0
+    list['stats']['member_count'] > 0
   end
 
   def schedule_campaign(campaign_id, timing: Time.current)

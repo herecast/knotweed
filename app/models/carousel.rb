@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Carousel
   attr_reader :id,
               :query,
@@ -7,7 +9,7 @@ class Carousel
               :title,
               :query_params
 
-  def initialize(**args)
+  def initialize(**_args)
     @id            = object_id
     @organizations = []
     @contents = []
@@ -18,7 +20,7 @@ class Carousel
   def opts
     {
       page: 1,
-      per_page: 5,
+      per_page: 5
     }
   end
 end

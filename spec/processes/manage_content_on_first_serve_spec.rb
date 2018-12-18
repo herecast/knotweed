@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe ManageContentOnFirstServe do
@@ -8,7 +10,7 @@ RSpec.describe ManageContentOnFirstServe do
       @current_time = Time.current.to_s
     end
 
-    context "when content not for Blog" do
+    context 'when content not for Blog' do
       before do
         @content_one = FactoryGirl.create :content
         @content_two = FactoryGirl.create :content,
@@ -35,7 +37,7 @@ RSpec.describe ManageContentOnFirstServe do
         )
       end
 
-      it "updates first_served_at for previously unserved content item" do
+      it 'updates first_served_at for previously unserved content item' do
         expect { subject }.to change {
           @content_one.reload.first_served_at.to_s
         }.to(@current_time).and not_change {
@@ -43,19 +45,19 @@ RSpec.describe ManageContentOnFirstServe do
         }
       end
 
-      it "does not update draft content" do
+      it 'does not update draft content' do
         expect { subject }.not_to change {
           @draft_content.reload.first_served_at
         }
       end
 
-      it "does not update scheduled content" do
+      it 'does not update scheduled content' do
         expect { subject }.not_to change {
           @scheduled_content.reload.first_served_at
         }
       end
 
-      context "when PRODUCTION_MESSAGING_ENABLED is set to true" do
+      context 'when PRODUCTION_MESSAGING_ENABLED is set to true' do
         before do
           allow(Figaro.env).to receive(:production_messaging_enabled).and_return('true')
           @news = FactoryGirl.create :content, :news
@@ -69,20 +71,20 @@ RSpec.describe ManageContentOnFirstServe do
           )
         end
 
-        it "pings Facebook service to scrape URL" do
+        it 'pings Facebook service to scrape URL' do
           expect(FacebookService).to receive(:rescrape_url).with(@news)
           subject
         end
 
-        context "when content type is news" do
-          it "pings Intercom service" do
+        context 'when content type is news' do
+          it 'pings Intercom service' do
             expect(IntercomService).to receive(
               :send_published_content_event
             ).with(@news)
             subject
           end
 
-          it "pings Slack service" do
+          it 'pings Slack service' do
             expect(SlackService).to receive(
               :send_published_content_notification
             ).with(@news)
@@ -90,7 +92,7 @@ RSpec.describe ManageContentOnFirstServe do
           end
         end
 
-        context "when content type is NOT news" do
+        context 'when content type is NOT news' do
           subject do
             ManageContentOnFirstServe.call(
               content_ids: [@market.id],
@@ -98,32 +100,32 @@ RSpec.describe ManageContentOnFirstServe do
             )
           end
 
-          it "pings Facebook service to scrape URL" do
+          it 'pings Facebook service to scrape URL' do
             expect(FacebookService).to receive(:rescrape_url).with(@market)
             subject
           end
         end
       end
 
-      context "when PRODUCTION_MESSAGING_ENABLED is NOT set or blank" do
-        it "does NOT ping Facebook service to rescrape" do
+      context 'when PRODUCTION_MESSAGING_ENABLED is NOT set or blank' do
+        it 'does NOT ping Facebook service to rescrape' do
           expect(FacebookService).not_to receive(:rescrape_url)
           subject
         end
 
-        it "does NOT ping Intercom about published News posts" do
+        it 'does NOT ping Intercom about published News posts' do
           expect(IntercomService).not_to receive(:send_published_content_event)
           subject
         end
 
-        it "does NOT ping Slack service about published News posts" do
+        it 'does NOT ping Slack service about published News posts' do
           expect(SlackService).not_to receive(:send_published_content_notification)
           subject
         end
       end
     end
 
-    context "when Content Organization is a blog" do
+    context 'when Content Organization is a blog' do
       before do
         @campaign_id = 'nkjn23'
         @organization = FactoryGirl.create :organization,
@@ -144,7 +146,7 @@ RSpec.describe ManageContentOnFirstServe do
         ).with(@campaign_id).and_return true
       end
 
-      context "when content is first for the Org" do
+      context 'when content is first for the Org' do
         subject do
           ManageContentOnFirstServe.call(
             content_ids: [@first_real_content.id],
@@ -152,7 +154,7 @@ RSpec.describe ManageContentOnFirstServe do
           )
         end
 
-        it "calls to create user hook campaign" do
+        it 'calls to create user hook campaign' do
           expect(Outreach::ScheduleBloggerEmails).to receive(:call).with(
             user: @first_real_content.created_by,
             action: 'first_blogger_post'
@@ -160,7 +162,7 @@ RSpec.describe ManageContentOnFirstServe do
           subject
         end
 
-        it "deletes Org reminder campaign" do
+        it 'deletes Org reminder campaign' do
           expect(MailchimpService::UserOutreach).to receive(
             :delete_campaign
           ).with(@campaign_id)
@@ -170,7 +172,7 @@ RSpec.describe ManageContentOnFirstServe do
         end
       end
 
-      context "when content is third for the org" do
+      context 'when content is third for the org' do
         before do
           @second_content = FactoryGirl.create :content,
                                                organization_id: @organization.id,
@@ -187,7 +189,7 @@ RSpec.describe ManageContentOnFirstServe do
           )
         end
 
-        it "sends follow-up email" do
+        it 'sends follow-up email' do
           expect(Outreach::ScheduleBloggerEmails).to receive(:call).with(
             user: @third_content.created_by,
             action: 'third_blogger_post'
@@ -196,7 +198,7 @@ RSpec.describe ManageContentOnFirstServe do
         end
       end
 
-      context "when Content Organization has a subscribe_url" do
+      context 'when Content Organization has a subscribe_url' do
         before do
           organization = FactoryGirl.create :organization,
                                             subscribe_url: 'http://glarb.com'
@@ -231,7 +233,7 @@ RSpec.describe ManageContentOnFirstServe do
           )
         end
 
-        it "calls to notification job" do
+        it 'calls to notification job' do
           expect(NotifySubscribersJob).to receive(:perform_now).exactly(4).times
           subject
         end

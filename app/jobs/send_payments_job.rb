@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SendPaymentsJob < ApplicationJob
   def perform(period_start, period_end)
     # we are querying payments by user so we can sum the amount and issue the payment with one invoice.
@@ -12,7 +14,7 @@ class SendPaymentsJob < ApplicationJob
           vendor_name: payment.fullname,
           amount: payment.total_payment.to_f.round(2),
           invoice_number: payment.id,
-          invoice_date: invoice_date,
+          invoice_date: invoice_date
         )
         successfully_paid_users << payment.paid_to_user_id
       rescue BillDotComExceptions::UnexpectedResponse => e

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DigestImageServiceHelper
   def digest_primary_image(image_url, **image_attrs)
     ImageUrlService.optimize_image_url(url: image_url,

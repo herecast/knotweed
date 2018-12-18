@@ -1,12 +1,12 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class PaymentReportsController < ApiController
       before_action :check_logged_in!
 
       def index
-        if params[:user_id].present?
-          @user = User.find(params[:user_id])
-        end
+        @user = User.find(params[:user_id]) if params[:user_id].present?
         authorize! :manage, @user
 
         @period_start = Date.parse(params[:period_start])

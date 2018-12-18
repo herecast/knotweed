@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: listservs
@@ -43,7 +45,7 @@
 
 FactoryGirl.define do
   factory :listserv do
-    name "My Listserv"
+    name 'My Listserv'
     active true
     digest_send_time '09:15'
 

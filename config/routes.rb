@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   require 'sidekiq/web'
 
@@ -16,7 +18,7 @@ Rails.application.routes.draw do
   scope '/admin' do
     authenticated :user do
       mount Sidekiq::Web, at: '/sidekiq'
-      root :to => "dashboard#index"
+      root to: 'dashboard#index'
     end
 
     devise_for :users, controllers: { sessions: 'sessions', registrations: 'registrations' }
@@ -24,7 +26,7 @@ Rails.application.routes.draw do
     resources :payments, only: :index
     namespace :payments do
       resources :sends, only: :create
-      resources :generates, only: [:new, :create]
+      resources :generates, only: %i[new create]
     end
     delete '/payments/:period_start/:period_end/cancel', to: 'payments#destroy', as: :cancel_payments
     resources :payment_recipients
@@ -33,32 +35,32 @@ Rails.application.routes.draw do
       member do
         put :update_subscription
       end
-      resources :archivings, only: [:new, :create], controller: 'users/archivings'
+      resources :archivings, only: %i[new create], controller: 'users/archivings'
     end
-    post '/users/admin-create', to: 'users#create', as: "create_user"
-    put '/users/:id/admin-update', to: 'users#update', as: "update_user"
+    post '/users/admin-create', to: 'users#create', as: 'create_user'
+    put '/users/:id/admin-update', to: 'users#update', as: 'update_user'
 
-    get "/", to: "dashboard#index", as: :dashboard
-    get "/dashboard/total_sign_ins", to: "dashboard#total_sign_ins", as: :total_sign_ins
-    get "dashboard/article_clicks", to: "dashboard#article_clicks", as: :article_clicks
-    get "dashboard/clicks_by_category", to: "dashboard#clicks_by_category", as: :clicks_by_category
-    get "dashboard/session_duration", to: "dashboard#session_duration", as: :session_duration
+    get '/', to: 'dashboard#index', as: :dashboard
+    get '/dashboard/total_sign_ins', to: 'dashboard#total_sign_ins', as: :total_sign_ins
+    get 'dashboard/article_clicks', to: 'dashboard#article_clicks', as: :article_clicks
+    get 'dashboard/clicks_by_category', to: 'dashboard#clicks_by_category', as: :clicks_by_category
+    get 'dashboard/session_duration', to: 'dashboard#session_duration', as: :session_duration
 
-    get "contents/parent_options", to: "contents#parent_select_options", as: :parent_select_options
-    resources :contents, except: [:show, :new, :create]
-    post "content/removals", to: "contents/removals#create"
-    delete "content/removals", to: "contents/removals#destroy"
-    post "content/facebook_scraping", to: "contents/facebook_scrapings#create"
-    resources :campaigns, except: [:show, :destroy]
-    resources :comments, only: [:index, :update, :destroy]
+    get 'contents/parent_options', to: 'contents#parent_select_options', as: :parent_select_options
+    resources :contents, except: %i[show new create]
+    post 'content/removals', to: 'contents/removals#create'
+    delete 'content/removals', to: 'contents/removals#destroy'
+    post 'content/facebook_scraping', to: 'contents/facebook_scrapings#create'
+    resources :campaigns, except: %i[show destroy]
+    resources :comments, only: %i[index update destroy]
     resources :business_profiles, except: [:destroy]
     namespace :business_profiles do
       resources :managers, only: [:create]
       delete '/managers', to: 'managers#destroy', as: 'delete_manager'
-      resources :archivings, only: [:create, :destroy]
+      resources :archivings, only: %i[create destroy]
       resources :claims, only: [:create]
     end
-    resources :images, only: [:create, :destroy, :update]
+    resources :images, only: %i[create destroy update]
     resources :organizations, except: [:show] do
       resources :users, only: [:index], controller: 'organizations/users'
       resources :promotions, shallow: true
@@ -76,8 +78,8 @@ Rails.application.routes.draw do
 
     resources :features
 
-    get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', :defaults => { :format => 'ics' }, as: :event_instances_ics
-    get '/ics/events/:public_id', to: 'api/v3/users#events', :defaults => { :format => 'ics' }, as: :user_event_instances_ics
+    get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', defaults: { format: 'ics' }, as: :event_instances_ics
+    get '/ics/events/:public_id', to: 'api/v3/users#events', defaults: { format: 'ics' }, as: :user_event_instances_ics
 
     get '/sidekiq_wrapper', to: 'sidekiq_wrapper#index'
   end
@@ -92,7 +94,7 @@ Rails.application.routes.draw do
       get '/payment_reports', to: 'payment_reports#index', as: :payment_reports, format: 'html'
 
       namespace :users do
-        resources :bookmarks, except: [:show, :new, :edit], path: '/:user_id/bookmarks'
+        resources :bookmarks, except: %i[show new edit], path: '/:user_id/bookmarks'
         resources :payments, only: :index, path: '/:user_id/payments'
         resources :metrics, only: :index, path: '/:user_id/metrics'
         resources :comments, only: :index, path: '/:id/comments'
@@ -109,44 +111,44 @@ Rails.application.routes.draw do
       get '/event_instances/active_dates', to: 'event_instances#active_dates'
       get '/event_instances/sitemap_ids', to: 'event_instances#sitemap_ids'
 
-      resources 'event_instances', only: [:index, :show]
+      resources 'event_instances', only: %i[index show]
 
       # deprecated
       post 'events/:id/impressions', to: 'metrics/contents/impressions#create'
 
-      resources 'comments', only: [:index, :create]
+      resources 'comments', only: %i[index create]
       post '/comments/unsubscribe_from_alerts', to: 'comments#unsubscribe_webhook'
-      resources 'listservs', only: [:show, :index]
+      resources 'listservs', only: %i[show index]
       get '/venues', to: 'business_locations#index', as: :venues
       get '/venue_locations', to: 'business_locations#index', as: :venue_locations,
                               defaults: { autocomplete: true, max_results: 5 }
-      get '/venues/:id/location', to: "business_locations#location"
+      get '/venues/:id/location', to: 'business_locations#location'
 
       get '/locations/:id/closest', to: 'locations#closest', as: :closest
       get '/locations/locate', to: 'locations#locate'
-      resources :locations, only: [:index, :show]
+      resources :locations, only: %i[index show]
 
       get '/feed', to: 'feed#index'
 
       get '/contents/sitemap_ids', to: 'contents#sitemap_ids'
-      resources :contents, only: [:show, :create, :update, :destroy]
+      resources :contents, only: %i[show create update destroy]
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       # specifying path here to avoid deprecating the frontend even though we've changed
       # the modeling
       namespace :contents do
-        get '/:content_id/promotions', to: "promotions#index"
-        post '/:content_id/promotions', to: "promotions#create"
+        get '/:content_id/promotions', to: 'promotions#index'
+        post '/:content_id/promotions', to: 'promotions#create'
       end
       namespace :organizations do
-        put    '/:organization_id/contents/:content_id',      to: "contents#update"
-        post   '/:organization_id/contents/:content_id/tags', to: "contents/tags#create"
-        delete '/:organization_id/contents/:content_id/tags', to: "contents/tags#destroy"
-        get    '/:name/validation', to: "validations#show"
+        put    '/:organization_id/contents/:content_id',      to: 'contents#update'
+        post   '/:organization_id/contents/:content_id/tags', to: 'contents/tags#create'
+        delete '/:organization_id/contents/:content_id/tags', to: 'contents/tags#destroy'
+        get    '/:name/validation', to: 'validations#show'
       end
       get '/organizations/sitemap_ids', to: 'organizations#sitemap_ids'
 
-      resources 'organizations', only: [:index, :show, :update, :create] do
+      resources 'organizations', only: %i[index show update create] do
         resources :metrics, only: [:index], controller: 'organizations/metrics'
       end
 
@@ -158,12 +160,12 @@ Rails.application.routes.draw do
       post '/users/email_confirmation', to: 'users#email_confirmation', as: :email_confirmation
       post '/users/resend_confirmation', to: 'users#resend_confirmation', as: :resend_confirmation
       post '/users/email_signin_link', to: 'users#email_signin_link', as: :email_signin_link
-      resources 'images', only: [:create, :update, :destroy]
+      resources 'images', only: %i[create update destroy]
       post '/images/upsert', to: 'images#upsert'
 
       delete '/content_locations/:id', to: 'content_locations#destroy'
 
-      resources 'business_profiles', only: [:index, :show, :create, :update], path: 'businesses'
+      resources 'business_profiles', only: %i[index show create update], path: 'businesses'
       resources 'business_categories', only: [:index]
       post '/businesses/:id/feedback', to: 'business_feedbacks#create', as: :leave_feedback
       post '/emails', to: 'emails#create'
@@ -174,8 +176,8 @@ Rails.application.routes.draw do
       post '/subscriptions', to: 'subscriptions#create'
       patch'/subscriptions/:key', to: 'subscriptions#update'
       patch '/subscriptions/:key/confirm', to: 'subscriptions#confirm'
-      delete "subscriptions/:key", to: 'subscriptions#destroy'
-      delete "subscriptions/:listserv_id/:email", to: 'subscriptions#destroy'
+      delete 'subscriptions/:key', to: 'subscriptions#destroy'
+      delete 'subscriptions/:listserv_id/:email', to: 'subscriptions#destroy'
       post '/registrations/confirmed', to: 'confirmed_registrations#create'
 
       put '/businesses/:id/feedback', to: 'business_feedbacks#update', as: :update_feedback

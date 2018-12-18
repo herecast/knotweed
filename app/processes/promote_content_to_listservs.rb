@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PromoteContentToListservs
   include EmailTemplateHelper
   include ContentsHelper
@@ -21,21 +23,21 @@ class PromoteContentToListservs
   end
 
   def call
-    if @content.channel.is_a? MarketPost
-      content_link = market_post_url_for_email(@content.channel)
-    else
-      content_link = content_url_for_email(@content)
-    end
+    content_link = if @content.channel.is_a? MarketPost
+                     market_post_url_for_email(@content.channel)
+                   else
+                     content_url_for_email(@content)
+                   end
     short_link = BitlyService.create_short_link(content_link)
     @content.update_attributes(short_link: short_link)
     @listservs.each do |listserv|
       # need authoremail to send to lists
-      if listserv.active? && @content.authoremail.present?
-        @promotion_listservs << PromotionListserv.create_from_content(
-          @content,
-          listserv
-        )
-      end
+      next unless listserv.active? && @content.authoremail.present?
+
+      @promotion_listservs << PromotionListserv.create_from_content(
+        @content,
+        listserv
+      )
     end
 
     send_to_external_lists(

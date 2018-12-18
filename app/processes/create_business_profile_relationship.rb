@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class CreateBusinessProfileRelationship
   def self.call(*args)
-    self.new(*args).call
+    new(*args).call
   end
 
   def initialize(opts)
@@ -35,11 +37,11 @@ class CreateBusinessProfileRelationship
   end
 
   def update_default_content_attributes
-    @content.update_attributes({
-                                 title: @organization.name,
-                                 organization_id: @organization.id,
-                                 pubdate: Time.current,
-                               })
+    @content.update_attributes(
+      title: @organization.name,
+      organization_id: @organization.id,
+      pubdate: Time.current
+    )
   end
 
   def conditionally_update_organization_type

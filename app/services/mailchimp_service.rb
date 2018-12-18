@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 module MailchimpService
   include HTTParty
+
   extend self
 
   format :json
-  base_uri "https://" + Figaro.env.mailchimp_api_host.to_s + '/3.0'
+  base_uri 'https://' + Figaro.env.mailchimp_api_host.to_s + '/3.0'
   basic_auth 'user', Figaro.env.mailchimp_api_key.to_s
   headers 'Content-Type' => 'application/json',
           'Accept' => 'application/json'
@@ -31,7 +34,7 @@ module MailchimpService
         )
       end
     else
-      raise MissingListId.new(subscription.listserv)
+      raise MissingListId, subscription.listserv
     end
   end
 
@@ -42,10 +45,10 @@ module MailchimpService
   # @param [Subscription]
   def subscribe(subscription)
     if subscription.confirmed?
-      unless subscription.unsubscribed?
-        update_subscription(subscription)
-      else
+      if subscription.unsubscribed?
         raise "Subscription #{subscription.id} is unsubscribed."
+      else
+        update_subscription(subscription)
       end
     else
       raise "Subscription #{subscription.id} is not confirmed."
@@ -73,9 +76,8 @@ module MailchimpService
   def create_campaign(digest, content = nil)
     digest.update mc_segment_id: create_segment(digest)[:id]
 
-    resp = detect_error post('/campaigns', {
-                               body: CampaignSerializer.new(digest).to_json
-                             })
+    resp = detect_error post('/campaigns',
+                             body: CampaignSerializer.new(digest).to_json)
     if content.present?
       put_campaign_content(resp.parsed_response['id'], content)
     end
@@ -87,11 +89,10 @@ module MailchimpService
   # @param [string] - Campaign id
   # @param [string] - content
   def put_campaign_content(campaign_id, content)
-    detect_error put("/campaigns/#{campaign_id}/content", {
-                       body: {
-                         html: content
-                       }.to_json
-                     })
+    detect_error put("/campaigns/#{campaign_id}/content",
+                     body: {
+                       html: content
+                     }.to_json)
   end
 
   # Sends campaign now on mailchimp api
@@ -140,7 +141,7 @@ module MailchimpService
 
     group = data.slice('id', 'title', 'type', 'list_id', 'display_order').symbolize_keys
 
-    return group
+    group
   end
 
   # Find/create digest by name
@@ -149,7 +150,7 @@ module MailchimpService
   # @param [String] - digest name
   # @return [Hash]
   def find_or_create_digest(list_id, name)
-    category = find_or_create_category(list_id, 'digests', { type: 'checkboxes' })
+    category = find_or_create_category(list_id, 'digests', type: 'checkboxes')
 
     interest = interests(list_id, category[:id]).find do |interest|
       interest[:name] == name
@@ -163,7 +164,7 @@ module MailchimpService
 
     interest = data.slice('id', 'name', 'type', 'category_id', 'list_id', 'display_order').symbolize_keys
 
-    return interest
+    interest
   end
 
   def add_unsubscribe_hook(list_id)
@@ -199,11 +200,11 @@ module MailchimpService
   # @return [Array<Hash>]
   def merge_fields(list_id)
     data = detect_error get("/lists/#{list_id}/merge-fields")
-    data['merge_fields'].collect { |c|
+    data['merge_fields'].collect do |c|
       c.slice('tag', 'merge_id', 'name', 'type',
               'required', 'default_value', 'display_order',
               'public').symbolize_keys
-    }
+    end
   end
 
   # Find/create merge field
@@ -222,14 +223,14 @@ module MailchimpService
     data = detect_error(post("/lists/#{list_id}/merge-fields", body: {
       tag: tag,
       name: options[:name] || tag.titleize,
-      type: options[:type] || "text",
+      type: options[:type] || 'text',
       required: options[:required] || false,
       public: options[:public] || true
     }.to_json))
 
     field = data.slice('tag', 'merge_id', 'name', 'type', 'required', 'default_value',
                        'display_order', 'public').symbolize_keys
-    return field
+    field
   end
 
   # create and return a segment for the digest subscribers
@@ -244,36 +245,32 @@ module MailchimpService
           static_segment: digest.subscriber_emails
         }.to_json)).deep_symbolize_keys
       else
-        raise MailchimpService::MissingListId.new(digest.listserv)
+        raise MailchimpService::MissingListId, digest.listserv
       end
     else
-      raise MailchimpService::NoSubscribersPresent.new(digest)
+      raise MailchimpService::NoSubscribersPresent, digest
     end
   end
 
-  def get_campaign_report campaign_id
+  def get_campaign_report(campaign_id)
     detect_error(get("/reports/#{campaign_id}")).deep_symbolize_keys
   end
 
-  def get_campaign_clicks_report campaign_id
+  def get_campaign_clicks_report(campaign_id)
     detect_error(get("/reports/#{campaign_id}/click-details?count=20")).deep_symbolize_keys
   end
 
   protected
 
   def detect_error(response)
-    if response.code >= 400
-      raise UnexpectedResponse.new(response)
-    end
+    raise UnexpectedResponse, response if response.code >= 400
 
     response
   end
 
   # set debug_output based on environment
   def set_debug_output
-    unless Rails.env.production?
-      debug_output
-    end
+    debug_output unless Rails.env.production?
   end
   set_debug_output
 end

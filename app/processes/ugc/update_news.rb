@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Ugc
   class UpdateNews
     def self.call(*args)
-      self.new(*args).call
+      new(*args).call
     end
 
     def initialize(content, params, user_scope:)
@@ -26,19 +28,19 @@ module Ugc
 
     def validate
       # if it's already published, don't allow changing the pubdate (i.e. unpublishing or scheduling)
-      if @content.pubdate.present? and
-         @content.pubdate <= Time.zone.now and news_params.has_key?(:pubdate) and
-         ::Chronic.parse(news_params[:pubdate]).to_i != @content.pubdate.to_i
+      if @content.pubdate.present? &&
+         (@content.pubdate <= Time.zone.now) && news_params.key?(:pubdate) &&
+         (::Chronic.parse(news_params[:pubdate]).to_i != @content.pubdate.to_i)
 
-        raise ValidationError.new("Can't unpublish already published news content")
+        raise ValidationError, "Can't unpublish already published news content"
       end
 
       # don't allow publishing or scheduling without an organization
-      if news_params[:organization_id].blank? and
-         @content.organization.blank? and
+      if news_params[:organization_id].blank? &&
+         @content.organization.blank? &&
          news_params[:pubdate].present?
 
-        raise ValidationError.new("Organization must be specified for news content")
+        raise ValidationError, 'Organization must be specified for news content'
       end
     end
 
@@ -64,8 +66,8 @@ module Ugc
 
     def transform_params
       @params.tap do |h|
-        h[:content][:raw_content] = h[:content].delete :content if h[:content].has_key? :content
-        h[:content][:pubdate] = h[:content].delete :published_at if h[:content].has_key? :published_at
+        h[:content][:raw_content] = h[:content].delete :content if h[:content].key? :content
+        h[:content][:pubdate] = h[:content].delete :published_at if h[:content].key? :published_at
         author_name = h[:content].delete :author_name
 
         h[:content][:authors_is_created_by] = true if @content.created_by.try(:name) == author_name

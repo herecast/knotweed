@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: subscriptions
@@ -69,8 +71,8 @@ RSpec.describe Subscription, type: :model do
   describe '#email' do
     context 'assigning' do
       it 'transforms to lowercase' do
-        subject.email = "My@email.COM"
-        expect(subject.email).to eql "my@email.com"
+        subject.email = 'My@email.COM'
+        expect(subject.email).to eql 'my@email.com'
       end
     end
   end
@@ -116,22 +118,22 @@ RSpec.describe Subscription, type: :model do
 
   describe '#subscriber_name' do
     context 'no user record' do
-      let(:subscription) { Subscription.new name: "Mickey Mouse", user: nil }
+      let(:subscription) { Subscription.new name: 'Mickey Mouse', user: nil }
 
       subject { subscription.subscriber_name }
 
-      it "is equal to #name" do
+      it 'is equal to #name' do
         expect(subject).to eql subscription.name
       end
     end
 
     context 'user record' do
       let(:user) { FactoryGirl.create :user, name: 'Donald Duck' }
-      let(:subscription) { Subscription.new name: "Mickey Mouse", user: user }
+      let(:subscription) { Subscription.new name: 'Mickey Mouse', user: user }
 
       subject { subscription.subscriber_name }
 
-      it "is equal to #user.name" do
+      it 'is equal to #user.name' do
         expect(subject).to eql user.name
       end
     end

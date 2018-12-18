@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveMarketCategories < ActiveRecord::Migration
   def up
     drop_table :market_categories

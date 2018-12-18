@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ReindexAssociatedContentJob < ApplicationJob
   # The following options are already set in the
   # global sidekiq config.  If they were not, we would need
@@ -7,11 +9,11 @@ class ReindexAssociatedContentJob < ApplicationJob
   def perform(object)
     object.contents.find_each do |content|
       # for comments we want to reindex the parent, not the comment
-      if content.parent.present?
-        to_reindex = content.parent
-      else
-        to_reindex = content
-      end
+      to_reindex = if content.parent.present?
+                     content.parent
+                   else
+                     content
+                   end
       logger.info "Reindexing content with ID #{to_reindex.id}"
       to_reindex.reindex
     end

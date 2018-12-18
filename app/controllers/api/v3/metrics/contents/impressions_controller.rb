@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class Metrics::Contents::ImpressionsController < ApiController
@@ -5,7 +7,7 @@ module Api
         @content = Content.not_deleted.find params[:id]
 
         unless analytics_blocked?
-          BackgroundJob.perform_later("RecordContentMetric", "call", @content, content_metric_params)
+          BackgroundJob.perform_later('RecordContentMetric', 'call', @content, content_metric_params)
         end
 
         render json: {}, status: :accepted
@@ -29,7 +31,7 @@ module Api
           data[:location_confirmed] = ['1', 1, 'true', true].include?(params[:location_confirmed])
         end
 
-        return data
+        data
       end
     end
   end

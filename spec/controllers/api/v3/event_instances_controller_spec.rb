@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # this stuff is annoyingly complex because of the relationship between events and
@@ -12,7 +14,7 @@ require 'spec_helper'
 # one important thing to note is that if you override just one entry of instance_attributes,
 # we lose the whole default hash -- which is currently just start date. So if you passed { subtitle: "Hello" },
 # then your instance wouldn't have a start date.
-describe Api::V3::EventInstancesController, :type => :controller do
+describe Api::V3::EventInstancesController, type: :controller do
   describe 'GET show' do
     before do
       @event = FactoryGirl.create(:event)
@@ -32,7 +34,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
       comment_count = @inst.event.comment_count
       subject
       inst = JSON.parse(@response.body)
-      expect(inst["event_instance"]["comment_count"]).to eq(comment_count)
+      expect(inst['event_instance']['comment_count']).to eq(comment_count)
     end
 
     context 'when instance cannot be found' do
@@ -40,12 +42,12 @@ describe Api::V3::EventInstancesController, :type => :controller do
         get :show, format: :json, params: { id: 9009 }
         expect(response.status).to eql 404
         expect(response.headers['Content-Type']).to include 'application/json'
-        expect(JSON.parse(response.body)).to match({ "error" => an_instance_of(String) })
+        expect(JSON.parse(response.body)).to match('error' => an_instance_of(String))
       end
     end
 
     describe 'ical_url' do
-      before { allow(Figaro.env).to receive(:default_consumer_host).and_return("test.com") }
+      before { allow(Figaro.env).to receive(:default_consumer_host).and_return('test.com') }
 
       it 'response should include ical url' do
         get :show, format: :json, params: { id: @inst.id }
@@ -53,7 +55,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
       end
     end
 
-    context "when related content has been removed" do
+    context 'when related content has been removed' do
       before do
         @event = FactoryGirl.create(:event)
         @event.content.update_attribute(:removed, true)
@@ -63,7 +65,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
       subject { get :show, params: { id: @instance.id } }
 
-      it "makes call to create alternate content" do
+      it 'makes call to create alternate content' do
         expect(CreateAlternateContent).to receive(:call).with(
           @instance.event.content
         )
@@ -79,7 +81,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
     end
 
     it 'should contain ics data' do
-      @request.env["HTTP_ACCEPT"] = "text/calendar"
+      @request.env['HTTP_ACCEPT'] = 'text/calendar'
       get :show, params: { id: @inst.id }
       expect(@response.body).to match /VCALENDAR/
       expect(@response.body).to match /DTSTART/
@@ -112,10 +114,10 @@ describe Api::V3::EventInstancesController, :type => :controller do
         end
       end
 
-      describe "meta[:total]" do
+      describe 'meta[:total]' do
         subject { get :index }
 
-        it "returns total event instances matching search criteria" do
+        it 'returns total event instances matching search criteria' do
           subject
           payload = JSON.parse(response.body)
           expect(payload['meta']['total']).to eq 2
@@ -125,16 +127,16 @@ describe Api::V3::EventInstancesController, :type => :controller do
 
     describe 'location_id filter' do
       let(:location_1) { FactoryGirl.create :location }
-      let!(:event_location_1) {
+      let!(:event_location_1) do
         FactoryGirl.create :content, :event,
                            location_id: location_1.id
-      }
+      end
 
       let(:location_2) { FactoryGirl.create :location }
-      let!(:event_location_2) {
+      let!(:event_location_2) do
         FactoryGirl.create :content, :event,
                            location_id: location_1.id
-      }
+      end
 
       context 'location_id is not specified' do
         subject { get :index }
@@ -156,7 +158,7 @@ describe Api::V3::EventInstancesController, :type => :controller do
           subject
           results_ids = assigns(:event_instances).map(&:id)
           expect(results_ids).to include *[
-            event_location_1.event_instances.map(&:id),
+            event_location_1.event_instances.map(&:id)
           ].flatten
         end
       end

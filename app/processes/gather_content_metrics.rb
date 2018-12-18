@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class GatherContentMetrics
   def self.call(*args)
-    self.new(*args).call
+    new(*args).call
   end
 
   def initialize(opts = {})
@@ -11,7 +13,7 @@ class GatherContentMetrics
   end
 
   def call
-    return {
+    {
       promo_click_thru_count: promo_click_thru_count,
       view_count: view_count,
       comment_count: comment_count,

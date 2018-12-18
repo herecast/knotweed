@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Promotion Coupons Endpoint', type: :request do
@@ -12,7 +14,7 @@ RSpec.describe 'Promotion Coupons Endpoint', type: :request do
 
     subject { get "/api/v3/promotion_coupons/#{@promotion_coupon.id}" }
 
-    it "returns promotion_coupon information" do
+    it 'returns promotion_coupon information' do
       subject
       expect(response_json).to match(
         promotion_coupon: {

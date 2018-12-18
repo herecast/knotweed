@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: listserv_digests
@@ -37,7 +39,7 @@
 class ListservDigest < ActiveRecord::Base
   belongs_to :listserv
 
-  def contents=contents
+  def contents=(contents)
     self.content_ids = contents.map(&:id)
     @contents = contents
   end
@@ -77,9 +79,9 @@ class ListservDigest < ActiveRecord::Base
   end
 
   def ga_tag
-    frequency = listserv.digest_send_day? ? "Weekly" : "Daily"
-    send_date = Date.today.strftime("%m_%d_%y")
-    formatted_title = title.gsub(' ', '_')
+    frequency = listserv.digest_send_day? ? 'Weekly' : 'Daily'
+    send_date = Date.today.strftime('%m_%d_%y')
+    formatted_title = title.tr(' ', '_')
     tag = "#{frequency}_#{formatted_title}_#{send_date}"
     if tag.bytesize > 50
       "#{frequency}_#{formatted_title[0, 30]}_#{send_date}"
@@ -96,7 +98,7 @@ class ListservDigest < ActiveRecord::Base
     end
   end
 
-  def clicks_for_promo promotion
+  def clicks_for_promo(promotion)
     (link_clicks[promotion.promotable.redirect_url] || 0).to_i
   end
 end
