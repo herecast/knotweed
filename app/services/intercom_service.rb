@@ -8,6 +8,8 @@ module IntercomService
                                        .where.not(first_served_at: nil)
                                        .count
 
+
+    intercom = Intercom::Client.new(token: ENV['INTERCOM_ACCESS_TOKEN'])
     intercom.events.create(
       event_name: 'published-content',
       email: content.created_by.email,
@@ -18,11 +20,5 @@ module IntercomService
         "post_title": content.title
       }
     )
-  end
-
-  private
-
-  def intercom
-    Intercom::Client.new(token: ENV['INTERCOM_ACCESS_TOKEN'])
   end
 end
