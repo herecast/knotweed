@@ -26,8 +26,8 @@ jobs:
             - knotweed-bundle-
 
       - run:
-          name: Bundle install
-          command: bundle install
+          name: bundle check & install
+          command: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3
 
       - save_cache:
           key: knotweed-bundle-{{ checksum "Gemfile.lock" }}
@@ -44,6 +44,10 @@ jobs:
             bundle exec rake db:create
             bundle exec rake db:schema:load
 
+      - run: mkdir ~/rspec
       - run:
           name: Run tests
-          command: COVERAGE=true bundle exec rspec
+          command: bundle exec rspec --format progress --format RspecJunitFormatter -o ~/rspec/rspec.xml
+          when: always
+      - store_test_results:
+          path: ~/rspec
