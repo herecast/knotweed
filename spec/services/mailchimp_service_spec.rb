@@ -7,6 +7,12 @@ require 'addressable'
 ENV['MAILCHIMP_API_HOST'] = 'test.com'
 ENV['MAILCHIMP_API_KEY'] = 'test.key'
 
+def mc_formatted_time(datetime)
+  if datetime.present?
+    datetime.strftime('%Y-%m-%d %H:%M:%S')
+  end
+end
+
 RSpec.describe MailchimpService do
   before do
     allow(Figaro.env).to receive(:mailchimp_api_host).and_return('test.com')
@@ -68,9 +74,9 @@ RSpec.describe MailchimpService do
                            email_type: subscription.email_type,
                            status: 'subscribed',
                            ip_signup: subscription.confirm_ip,
-                           timestamp_signup: subscription.created_at.iso8601,
+                           timestamp_signup: mc_formatted_time(subscription.created_at),
                            ip_opt: subscription.confirm_ip,
-                           timestamp_opt: subscription.confirmed_at.iso8601,
+                           timestamp_opt: mc_formatted_time(subscription.confirmed_at),
                            email_address: subscription.email,
                            status_if_new: 'subscribed',
                            location: {
@@ -140,9 +146,9 @@ RSpec.describe MailchimpService do
                 email_type: subscription.email_type,
                 status: 'subscribed',
                 ip_signup: subscription.confirm_ip,
-                timestamp_signup: subscription.created_at.iso8601,
+                timestamp_signup: mc_formatted_time(subscription.created_at),
                 ip_opt: subscription.confirm_ip,
-                timestamp_opt: subscription.confirmed_at.iso8601,
+                timestamp_opt: mc_formatted_time(subscription.confirmed_at),
                 email_address: subscription.email,
                 status_if_new: 'subscribed',
                 merge_fields: {
@@ -181,9 +187,9 @@ RSpec.describe MailchimpService do
                                      email_type: subscription.email_type,
                                      status: 'subscribed',
                                      ip_signup: subscription.confirm_ip,
-                                     timestamp_signup: subscription.created_at.iso8601,
+                                     timestamp_signup: mc_formatted_time(subscription.created_at),
                                      ip_opt: subscription.confirm_ip,
-                                     timestamp_opt: subscription.confirmed_at.iso8601,
+                                     timestamp_opt: mc_formatted_time(subscription.confirmed_at),
                                      email_address: subscription.email,
                                      status_if_new: 'subscribed',
                                      merge_fields: {
@@ -261,9 +267,9 @@ RSpec.describe MailchimpService do
                                      email_type: subscription.email_type,
                                      status: 'subscribed',
                                      ip_signup: subscription.confirm_ip,
-                                     timestamp_signup: subscription.created_at.iso8601,
+                                     timestamp_signup: mc_formatted_time(subscription.created_at),
                                      ip_opt: subscription.confirm_ip,
-                                     timestamp_opt: subscription.confirmed_at.iso8601,
+                                     timestamp_opt: mc_formatted_time(subscription.confirmed_at),
                                      email_address: subscription.email,
                                      status_if_new: 'subscribed',
                                      location: {
@@ -307,9 +313,9 @@ RSpec.describe MailchimpService do
                                      email_type: subscription.email_type,
                                      status: 'subscribed',
                                      ip_signup: subscription.confirm_ip,
-                                     timestamp_signup: subscription.created_at.iso8601,
+                                     timestamp_signup: mc_formatted_time(subscription.created_at),
                                      ip_opt: subscription.confirm_ip,
-                                     timestamp_opt: subscription.confirmed_at.iso8601,
+                                     timestamp_opt: mc_formatted_time(subscription.confirmed_at),
                                      email_address: subscription.email,
                                      status_if_new: 'subscribed',
                                      merge_fields: {
@@ -363,7 +369,7 @@ RSpec.describe MailchimpService do
                                    body: {
                                      email_type: subscription.email_type,
                                      status: 'pending',
-                                     timestamp_signup: subscription.created_at.iso8601,
+                                     timestamp_signup: mc_formatted_time(subscription.created_at),
                                      email_address: subscription.email,
                                      status_if_new: 'pending',
                                      location: {
@@ -406,7 +412,7 @@ RSpec.describe MailchimpService do
                                    body: {
                                      email_type: subscription.email_type,
                                      status: 'pending',
-                                     timestamp_signup: subscription.created_at.iso8601,
+                                     timestamp_signup: mc_formatted_time(subscription.created_at),
                                      email_address: subscription.email,
                                      status_if_new: 'pending',
                                      merge_fields: {
