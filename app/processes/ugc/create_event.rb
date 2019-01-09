@@ -40,6 +40,7 @@ module Ugc
       @event.content.update_attribute(:location_id, @event.closest_location.id)
 
       conditionally_schedule_outreach_email
+      @event.content.set_event_latest_activity
 
       @event.content
     end

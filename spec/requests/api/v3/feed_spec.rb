@@ -260,6 +260,20 @@ describe 'Feed endpoints', type: :request do
       end
     end
 
+    context "when content has future latest_activity" do
+      before do
+        content = FactoryGirl.create :content, :news
+        content.update_attribute(:latest_activity, 3.days.from_now)
+      end
+
+      subject { get "/api/v3/feed", params: {}, headers: headers }
+
+      it "does not not return content" do
+        subject
+        expect(response_json[:feed_items].length).to eq 4
+      end
+    end
+
     context 'when user logged in' do
       context 'returning talk content' do
         let(:do_request) do

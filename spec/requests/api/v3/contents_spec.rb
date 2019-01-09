@@ -499,6 +499,8 @@ describe 'Contents Endpoints', type: :request do
               FactoryGirl.create(:business_location)
             end
 
+            let(:starts_at) { 3.days.from_now }
+
             let(:valid_event_params) do
               {
                 content_type: 'event',
@@ -516,7 +518,7 @@ describe 'Contents Endpoints', type: :request do
                     overrides: [],
                     presenter_name: nil,
                     repeats: 'once',
-                    starts_at: 1.day.from_now.iso8601,
+                    starts_at: starts_at.iso8601,
                     subtitle: nil,
                     weeks_of_month: []
                   }
@@ -531,6 +533,12 @@ describe 'Contents Endpoints', type: :request do
             it 'return 201 status' do
               subject
               expect(response.status).to eql 201
+            end
+
+            it 'sets content latest_activity to 1 day before first instance' do
+              subject
+              expectation = (starts_at - 1.day).change(usec: 0)
+              expect(Content.last.latest_activity).to eq expectation
             end
 
             it 'returns json respresenation' do

@@ -30,6 +30,7 @@ class ContentSearch
       add_location_opts(attrs)
       conditionally_update_attributes_for_organization_query(attrs)
       conditionally_update_boost_for_query(attrs)
+      conditionally_guard_from_future_latest_activity(attrs)
     end
   end
 
@@ -173,6 +174,12 @@ class ContentSearch
       organization_show_options[@params['show']].call(attrs) if @params['show'].present?
 
       attrs[:order] = { organization_order_moment: :desc }
+    end
+  end
+
+  def conditionally_guard_from_future_latest_activity(attrs)
+    unless @params[:organization_id].present? || @params[:id].present?
+      attrs[:where][:latest_activity] = { lt: Time.current + 10.minutes }
     end
   end
 

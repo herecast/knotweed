@@ -826,35 +826,7 @@ describe Content, type: :model do
       end
     end
 
-    context 'market post marked sold' do
-      before do
-        @market_post = FactoryGirl.create :content, :market_post
-        @market_post.update_attribute(:latest_activity, 2.days.ago)
-        @market_post.channel.update_attribute(:sold, false)
-      end
-
-      subject { @market_post.channel.update_attribute(:sold, true) }
-
-      it 'updates latest_activity to current time' do
-        expect { subject }.to change {
-          @market_post.reload.latest_activity
-        }
-      end
-
-      context 'when market post is older than 30 days' do
-        before do
-          @market_post.update_attribute(:pubdate, 40.days.ago)
-        end
-
-        it 'does not update latest_activity' do
-          expect { subject }.not_to change {
-            @market_post.reload.latest_activity
-          }
-        end
-      end
-    end
-
-    context 'when publisher schedules news post' do
+    context "when publisher schedules news post" do
       let(:scheduled_pubdate) { 3.days.from_now }
 
       subject { FactoryGirl.create :content, :news, pubdate: scheduled_pubdate }

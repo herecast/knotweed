@@ -25,11 +25,9 @@ class Comment < ActiveRecord::Base
 
   def increase_comment_stats
     unless content.parent.blank?
-      new_comment_count = content.parent.comment_count + 1
-      content.parent.update_attributes(
-        comment_count: new_comment_count,
-        latest_activity: Time.current
-      )
+      updates = { comment_count: content.parent.comment_count + 1 }
+      updates[:latest_activity] = Time.current if should_update_latest_activity?
+      content.parent.update_attributes(updates)
       unless Content.where('parent_id=? and created_by_id=? and id!= ?', content.parent, content.created_by, content.id).exists?
         new_commenter_count = content.parent.commenter_count + 1
         content.parent.update_attribute(:commenter_count, new_commenter_count)
@@ -66,4 +64,11 @@ class Comment < ActiveRecord::Base
       end
     end
   end
+
+  private
+
+    def should_update_latest_activity?
+      content.parent.pubdate > 1.week.ago && content.parent.channel_type != 'Event'
+    end
+
 end

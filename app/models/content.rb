@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: contents
@@ -9,12 +8,10 @@
 #  subtitle                  :string(255)
 #  authors                   :string(255)
 #  raw_content               :text
-#  issue_id                  :bigint(8)
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
 #  guid                      :string(255)
 #  pubdate                   :datetime
-#  source_category           :string(255)
 #  url                       :string(255)
 #  origin                    :string(255)
 #  page                      :string(255)
@@ -24,18 +21,17 @@
 #  timestamp                 :datetime
 #  parent_id                 :bigint(8)
 #  content_category_id       :bigint(8)
-#  category_reviewed         :boolean          default(FALSE)
 #  has_event_calendar        :boolean          default(FALSE)
 #  channelized_content_id    :bigint(8)
 #  channel_type              :string(255)
-#  channel_id                :integer
-#  root_content_category_id  :integer
-#  view_count                :integer          default(0)
-#  comment_count             :integer          default(0)
-#  commenter_count           :integer          default(0)
-#  created_by_id             :integer
-#  updated_by_id             :integer
-#  banner_click_count        :integer          default(0)
+#  channel_id                :bigint(8)
+#  root_content_category_id  :bigint(8)
+#  view_count                :bigint(8)        default(0)
+#  comment_count             :bigint(8)        default(0)
+#  commenter_count           :bigint(8)        default(0)
+#  created_by_id             :bigint(8)
+#  updated_by_id             :bigint(8)
+#  banner_click_count        :bigint(8)        default(0)
 #  similar_content_overrides :text
 #  banner_ad_override        :bigint(8)
 #  root_parent_id            :bigint(8)
@@ -72,7 +68,6 @@
 # Indexes
 #
 #  idx_16527_authors                                     (authors)
-#  idx_16527_categories                                  (source_category)
 #  idx_16527_content_category_id                         (content_category_id)
 #  idx_16527_guid                                        (guid)
 #  idx_16527_index_contents_on_authoremail               (authoremail)
@@ -90,7 +85,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_4a833c7bbc  (location_id => locations.id)
+#  fk_rails_...  (location_id => locations.id)
 #
 
 require 'fileutils'
@@ -108,9 +103,7 @@ class Content < ActiveRecord::Base
 
   before_save :conditionally_update_latest_activity
   def conditionally_update_latest_activity
-    if channel_type == 'MarketPost' && channel.saved_change_to_sold? && pubdate >= 30.days.ago
-      self.latest_activity = Time.current
-    elsif content_type == :news && will_save_change_to_pubdate?
+    if content_type == :news && will_save_change_to_pubdate?
       self.latest_activity = pubdate
     end
   end
@@ -674,7 +667,21 @@ class Content < ActiveRecord::Base
     end
   end
 
+  def set_event_latest_activity
+    if channel_type == 'Event'
+      update_attribute(
+        :latest_activity,
+        event_latest_activity
+      )
+    end
+  end
+
   private
+
+  def event_latest_activity
+    one_day_before_event = channel.event_instances.first.start_date - 1.day
+    one_day_before_event < Time.current ? Time.current : one_day_before_event
+  end
 
   def if_ad_promotion_type_sponsored_must_have_ad_max_impressions
     if ad_promotion_type == PromotionBanner::SPONSORED && ad_max_impressions.nil?

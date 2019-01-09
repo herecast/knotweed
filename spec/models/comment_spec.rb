@@ -76,6 +76,55 @@ describe Comment, type: :model do
       @parent.reload
       expect(@parent.commenter_count).to eq(count)
     end
+
+    context "when parent content is less than one week old" do
+      subject do
+        FactoryGirl.create :content, :comment,
+          parent_id: @content.id
+      end
+
+      it "updates parent content latest_activity" do
+        Timecop.freeze do
+          expect{ subject }.to change{
+            @content.reload.latest_activity
+          }
+        end
+      end
+
+      context "when parent content is an Event" do
+        before do
+          @event = FactoryGirl.create :content, :event,
+            pubdate: 1.day.ago,
+            latest_activity: 1.day.ago
+        end
+
+        subject do
+          FactoryGirl.create :content, :comment,
+            parent_id: @event.id
+        end
+
+        it "does not update latest_activity" do
+          expect{ subject }.not_to change{
+            @event.reload.latest_activity
+          }
+        end
+      end
+    end
+
+    context "when parent content is less than one week old" do
+      subject do
+        FactoryGirl.create :content, :comment,
+          parent_id: @content.id
+      end
+
+      it "updates parent content latest_activity" do
+        Timecop.freeze(Time.current + 8.day) do
+          expect{ subject }.not_to change{
+            @content.reload.latest_activity
+          }
+        end
+      end
+    end
   end
 
   describe '#decrease_comment_stats' do
