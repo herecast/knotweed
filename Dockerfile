@@ -8,3 +8,4 @@ ADD Gemfile.lock /knotweed/
 RUN bundle install
 ADD . /knotweed/
 RUN mv /knotweed/config/database.yml.docker /knotweed/config/database.yml
+RUN RAILS_ENV=production bundle exec rake assets:precompile
