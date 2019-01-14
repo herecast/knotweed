@@ -400,6 +400,25 @@ describe 'Feed endpoints', type: :request do
       end
     end
 
+    context "when Organization content is outside of location range" do
+      before do
+        distant_location = FactoryGirl.create :location
+        @close_location = FactoryGirl.create :location,
+          location_ids_within_fifty_miles: []
+        @distant_org_item = FactoryGirl.create :content, :market_post,
+          organization_id: @organization.id,
+          location_id: distant_location.id
+      end
+
+      subject { get "/api/v3/feed?organization_id=#{@organization.id}&location_id=#{@close_location.id}" }
+
+      it "returns content" do
+        subject
+        expect(response_json[:feed_items].length).to eq 1
+        expect(response_json[:feed_items][0][:content][:id]).to eq @distant_org_item.id
+      end
+    end
+
     context 'when Organization owns Market Posts' do
       before do
         @market_post = FactoryGirl.create :content, :market_post, organization_id: @organization.id

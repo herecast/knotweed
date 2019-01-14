@@ -27,7 +27,7 @@ class ContentSearch
     standard_opts.tap do |attrs|
       add_boilerplate_opts(attrs)
       whitelist_organizations_and_content_types(attrs)
-      add_location_opts(attrs)
+      conditionally_add_location_opts(attrs)
       conditionally_update_attributes_for_organization_query(attrs)
       conditionally_update_boost_for_query(attrs)
       conditionally_guard_from_future_latest_activity(attrs)
@@ -130,8 +130,8 @@ class ContentSearch
     end
   end
 
-  def add_location_opts(attrs)
-    if location.present?
+  def conditionally_add_location_opts(attrs)
+    if location.present? && @params[:organization_id].blank?
       attrs[:where][:location_id] = { in: location.send(radius_method) }
     end
   end
