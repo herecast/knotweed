@@ -44,7 +44,8 @@ RSpec.describe 'Listserv API Endpoints', type: :request do
           id: listserv.id,
           name: listserv.name,
           next_digest_send_time: listserv.next_digest_send_time.try(:iso8601),
-          digest_send_time: listserv.digest_send_time
+          digest_send_time: listserv.digest_send_time,
+          reverse_publish_email: listserv.reverse_publish_email
         )
       end
     end

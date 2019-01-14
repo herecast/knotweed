@@ -57,6 +57,7 @@ module Ugc
           location_id
           created_by
           origin
+          url
         ]
       )
     end
@@ -76,7 +77,8 @@ module Ugc
           organization_id: @params[:content][:organization_id] || dailyuv_org.id,
           location_id: @params[:content][:location_id],
           created_by: @current_user,
-          origin: Content::UGC_ORIGIN
+          origin: Content::UGC_ORIGIN,
+          url: @params[:content][:url]
         }
       }
     end

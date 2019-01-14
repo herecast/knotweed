@@ -60,7 +60,8 @@ module Ugc
         :subtitle,
         :title,
         :sunset_date,
-        :location_id
+        :location_id,
+        :url
       )
     end
 

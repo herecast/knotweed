@@ -25,7 +25,6 @@ def content_response_schema(record)
       created_at: record.created_at.iso8601,
       ends_at: record.channel.try(:next_or_first_instance).try(:end_date).try(:iso8601),
       embedded_ad: record.embedded_ad?,
-      event_url: record.channel.try(:event_url),
       event_instance_id: record.channel.try(:next_or_first_instance).try(:id),
 
       # Problems with a matching against nested array with include_json
@@ -55,6 +54,7 @@ def content_response_schema(record)
       subtitle: record.subtitle,
       sunset_date: record.sunset_date.try(:iso8601),
       title: record.title,
+      url: record.url,
       location_id: record.location_id,
 
       # random failures due to database time vs rails time

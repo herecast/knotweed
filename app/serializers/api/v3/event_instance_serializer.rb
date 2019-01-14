@@ -20,7 +20,6 @@ module Api
                  :created_at,
                  :ends_at,
                  :event_id,
-                 :event_url,
                  :ical_url,
                  :images,
                  :image_url,
@@ -37,6 +36,7 @@ module Api
                  :subtitle,
                  :title,
                  :updated_at,
+                 :url,
                  :venue_address,
                  :venue_city,
                  :venue_latitude,
@@ -121,8 +121,8 @@ module Api
         object.event.id
       end
 
-      def event_url
-        object.event.event_url
+      def url
+        object.event.content.url
       end
 
       def title

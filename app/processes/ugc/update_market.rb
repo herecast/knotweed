@@ -55,6 +55,7 @@ module Ugc
           promote_radius
           sunset_date
           location_id
+          url
         ]
       )
     end
@@ -68,7 +69,8 @@ module Ugc
           title: @params[:content][:title],
           raw_content: @params[:content][:content],
           promote_radius: @params[:content].delete(:promote_radius),
-          location_id: @params[:content][:location_id]
+          location_id: @params[:content][:location_id],
+          url: @params[:content][:url]
         }
       }
     end

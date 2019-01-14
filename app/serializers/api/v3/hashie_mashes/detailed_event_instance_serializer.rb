@@ -23,7 +23,6 @@ module Api
                    :ends_at,
                    :event_id,
                    :event_instances,
-                   :event_url,
                    :ical_url,
                    :images,
                    :image_url,
@@ -40,6 +39,7 @@ module Api
                    :subtitle,
                    :title,
                    :updated_at,
+                   :url,
                    :venue_address,
                    :venue_city,
                    :venue_latitude,
@@ -48,10 +48,6 @@ module Api
                    :venue_state,
                    :venue_url,
                    :venue_zip
-
-        def event_url
-          object[:event_url]
-        end
 
         def ical_url
           context[:ical_url] if context.present?

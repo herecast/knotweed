@@ -23,7 +23,6 @@ module Api
                  :created_at,
                  :embedded_ad,
                  :ends_at,
-                 :event_url,
                  :event_instance_id,
                  :event_instances,
                  :images,
@@ -42,6 +41,7 @@ module Api
                  :redirect_url,
                  :registration_deadline,
                  :schedules,
+                 :short_link,
                  :sold,
                  :split_content,
                  :starts_at,
@@ -49,6 +49,8 @@ module Api
                  :sunset_date,
                  :title,
                  :updated_at,
+                 :url,
+                 :venue_id,
                  :venue_address,
                  :venue_city,
                  :venue_name,
@@ -69,10 +71,6 @@ module Api
         elsif object.images.present?
           object.images[0].image.url
         end
-      end
-
-      def event_url
-        object.channel.try(:event_url)
       end
 
       def images
@@ -97,6 +95,12 @@ module Api
 
       def content_type
         object.content_type
+      end
+
+      def venue_id
+        if object.channel_type == 'Event'
+          object.channel.try(:venue).try(:id)
+        end
       end
 
       def venue_name
@@ -131,10 +135,6 @@ module Api
         if object.channel_type == 'Event'
           object.channel.try(:next_or_first_instance).try(:start_date)
         end
-      end
-
-      def event_url
-        object.channel.try(:event_url) if object.channel_type == 'Event'
       end
 
       def ends_at
