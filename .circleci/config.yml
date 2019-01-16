@@ -51,3 +51,6 @@ jobs:
           when: always
       - store_test_results:
           path: ~/rspec
+      - store_artifacts:
+          path: ~/knotweed/coverage
+          destination: ~/coverage
