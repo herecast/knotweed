@@ -24,7 +24,7 @@ module SearchIndexing
     has_many :comments, serializer: SearchIndexing::CommentSerializer
 
     def comments
-      object.children.to_a.select { |c| !c[:pubdate].nil? && c[:deleted_at].nil? }.sort_by(&:pubdate).reverse.take(6)
+      object.abridged_comments
     end
 
     def content_category_name

@@ -49,6 +49,10 @@ module Api
       has_many :comments, serializer: Api::V3::CommentSerializer
       has_many :event_instances, serializer: Api::V3::RelatedEventInstanceSerializer
 
+      def comments
+        object.event.content.abridged_comments
+      end
+
       def promote_radius
         object.event.content.promote_radius
       end
@@ -91,10 +95,6 @@ module Api
 
       def event_instances
         object.other_instances
-      end
-
-      def comments
-        object.event.content.comments
       end
 
       def cost

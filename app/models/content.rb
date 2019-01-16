@@ -676,6 +676,12 @@ class Content < ActiveRecord::Base
     end
   end
 
+  def abridged_comments
+    children.where("pubdate IS NOT NULL AND deleted_at IS NULL")
+            .order(pubdate: :desc)
+            .take(6)
+  end
+
   private
 
   def event_latest_activity
