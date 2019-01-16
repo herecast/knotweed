@@ -74,6 +74,16 @@ RSpec.describe Payment, type: :model do
     end
   end
 
+  describe '#revenue_share' do
+    let(:payment) { FactoryGirl.create :payment }
+
+    subject { payment.revenue_share }
+
+    it 'should return the percent of period ad revenue in this payment' do
+      expect(subject).to eq (payment.total_payment * 100 / payment.period_ad_rev).truncate(2)
+    end
+  end
+
   describe 'Payment.by_period' do
     let!(:payment1) { FactoryGirl.create :payment }
     let!(:payment2) do
@@ -94,6 +104,14 @@ RSpec.describe Payment, type: :model do
 
     it 'should sum the paid impressions per period' do
       expect(subject.first.paid_impressions).to eq(payment1.paid_impressions + payment2.paid_impressions)
+    end
+
+    describe 'revenue_share' do
+      subject { Payment.by_period.first.revenue_share }
+
+      it 'should return the total revenue share for a payee over a period' do
+        expect(subject).to eq ((payment1.total_payment + payment2.total_payment) * 100 / payment1.period_ad_rev).truncate(2)
+      end
     end
   end
 end

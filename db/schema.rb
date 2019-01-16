@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181016143456) do
+ActiveRecord::Schema.define(version: 20190115204158) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -535,6 +535,7 @@ ActiveRecord::Schema.define(version: 20181016143456) do
     t.datetime "updated_at",                         null: false
     t.integer  "content_id"
     t.integer  "paid_to_id"
+    t.decimal "period_ad_rev"
     t.boolean  "paid",               default: false
     t.index ["paid_to_id"], name: "index_payments_on_paid_to_id", using: :btree
   end

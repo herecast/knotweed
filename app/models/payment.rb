@@ -38,7 +38,7 @@ class Payment < ActiveRecord::Base
   # makes it potentially not always exactly the same (I think). That said, it is
   # always very very close to the same, so we are just taking MIN here.
   scope :by_period, lambda {
-    select('MIN(payments.id) as id, MIN(fullname) as fullname, period_start, period_end, MIN(pay_per_impression) as pay_per_impression, MIN(payment_date) as payment_date, SUM(paid_impressions) as paid_impressions, SUM(total_payment) as total_payment')
+    select('MIN(payments.id) as id, MIN(fullname) as fullname, period_start, period_end, MIN(pay_per_impression) as pay_per_impression, MIN(payment_date) as payment_date, SUM(paid_impressions) as paid_impressions, SUM(total_payment) as total_payment, MIN(period_ad_rev) as period_ad_rev')
       .joins(:paid_to)
       .group(:period_start, :period_end)
       .order('payment_date DESC')
@@ -79,6 +79,10 @@ class Payment < ActiveRecord::Base
 
   def invoice_date
     period_end.next_month.beginning_of_month
+  end
+
+  def revenue_share
+    (total_payment * 100 / period_ad_rev).truncate(2) if period_ad_rev.present?
   end
 
   def mark_paid!

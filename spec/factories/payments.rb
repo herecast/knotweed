@@ -36,6 +36,7 @@ FactoryGirl.define do
     pay_per_impression 9.99
     total_payment 9.99
     payment_date Time.current
+    period_ad_rev 100.50
     content
     association :paid_to, factory: :user
   end

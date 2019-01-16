@@ -48,7 +48,8 @@ RSpec.describe GeneratePayments, freeze_time: true do
           pay_per_impression: payment.pay_per_impression.truncate(4),
           paid_impressions: payment.paid_impressions,
           content_id: payment.content_id,
-          paid_to: payment.paid_to
+          paid_to: payment.paid_to,
+          period_ad_rev: payment.period_ad_rev
         ).to eq(
           total_payment: period_ad_rev,
           period_start: period_start,
@@ -57,7 +58,8 @@ RSpec.describe GeneratePayments, freeze_time: true do
           pay_per_impression: (period_ad_rev.to_f / promotion_metrics.count).to_d.truncate(4),
           paid_impressions: promotion_metrics.count,
           content_id: included_content1.id,
-          paid_to: recipient.user
+          paid_to: recipient.user,
+          period_ad_rev: period_ad_rev
         )
       end
     end

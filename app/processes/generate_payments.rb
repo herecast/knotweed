@@ -69,6 +69,7 @@ class GeneratePayments
         total_payment: (paid_impressions * @pay_per_impression).to_d.truncate(4),
         payment_date: @period_end.next_month.beginning_of_month + 9.days,
         pay_per_impression: @pay_per_impression,
+        period_ad_rev: @period_ad_rev,
         content_id: cr.content_id,
         paid_to: user
       }

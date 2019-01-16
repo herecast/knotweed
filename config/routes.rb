@@ -91,7 +91,7 @@ Rails.application.routes.draw do
       put '/current_user', to: 'users#update'
       post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
 
-      get '/payment_reports', to: 'payment_reports#index', as: :payment_reports, format: 'html'
+      get '/payment_reports', to: 'payment_reports#index', as: :payment_reports, defaults: { format: 'html' }
 
       namespace :users do
         resources :bookmarks, except: %i[show new edit], path: '/:user_id/bookmarks'

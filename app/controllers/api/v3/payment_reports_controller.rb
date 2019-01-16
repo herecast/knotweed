@@ -16,6 +16,7 @@ module Api
           sample = payments.first
           @pay_per_impression = sample.pay_per_impression.truncate(4)
           @payment_date = sample.payment_date
+          @revenue_share = (payments.sum(:total_payment) * 100 / sample.period_ad_rev).truncate(2) if sample.period_ad_rev.present?
           @paid_impressions = payments.sum(:paid_impressions)
           @total_payment = payments.sum(:total_payment)
 

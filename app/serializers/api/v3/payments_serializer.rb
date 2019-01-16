@@ -9,11 +9,8 @@ module Api
                  :pay_per_impression,
                  :total_payment,
                  :payment_date,
-                 :report_url
-
-      def pay_per_impression
-        object.pay_per_impression
-      end
+                 :report_url,
+                 :revenue_share
 
       def report_url
         if context[:organization_id].present?
