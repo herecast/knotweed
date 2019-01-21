@@ -16,7 +16,7 @@ class NotifySubscribersJob < ApplicationJob
     return unless !post.deleted_at && post.pubdate
     return if post.subscriber_mc_identifier.present?
 
-    mc_list_identifier = SubscriberListIdFetcher.new.call(post.organization).presence
+    mc_list_identifier = fetch_subscriber_list_id(post.organization).presence
 
     if mc_list_identifier && list_has_subscribers(post.organization)
       campaign_id = SubscriptionsMailchimpClient.create_campaign(
@@ -127,23 +127,16 @@ class NotifySubscribersJob < ApplicationJob
                                                 next_quarter_hour(timing).utc.to_s.sub(' UTC', ''))
   end
 
-  private
-
   def new_mailchimp_connection
     Mailchimp::API.new(Figaro.env.subscriptions_mailchimp_api_key)
   end
-end
 
-class NotifySubscribersJob::SubscriberListIdFetcher
-  # We have two ways to match an organization to a MailChimp list: by +subscribe_url+ and by +name+.
-  def call(organization)
+  def fetch_subscriber_list_id(organization)
     return nil unless subscribe_url = organization.subscribe_url.presence
 
     list = lookup_by_subscribe_url_short(subscribe_url) || lookup_by_name(organization.name)
     list.presence && list['id']
   end
-
-  private
 
   def lookup_by_name(name)
     name = name.to_s.squish
