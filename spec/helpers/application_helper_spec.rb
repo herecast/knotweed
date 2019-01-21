@@ -38,4 +38,24 @@ describe ApplicationHelper, type: :helper do
       it { expect(subject).to eq '' }
     end
   end
+
+  describe '#is_payments_controller_class' do
+    subject { helper.is_payments_controller_class }
+    before { allow(controller).to receive(:controller_name).and_return(controller_name) }
+
+    context 'for a non-payment controller' do
+      let(:controller_name) { 'blah' }
+      it { expect(subject).to eq '' }
+    end
+
+    context 'for payments controller' do
+      let(:controller_name) { 'payments' }
+      it { expect(subject).to eq 'in' }
+    end
+
+    context 'for payment_recipients controller' do
+      let(:controller_name) { 'payment_recipients' }
+      it { expect(subject).to eq 'in' }
+    end
+  end
 end
