@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-# include Rails.application.routes.url_helpers
 
 RSpec.describe CommentAlertMailer do
   describe '.alert_parent_content_owner' do

@@ -340,7 +340,7 @@ describe Api::V3::ContentsController, type: :controller do
             it 'sends the adverising request' do
               mail = double
               expect(mail).to receive(:deliver_later)
-              expect(AdMailer).to receive(:event_adveritising_request).and_return(mail)
+              expect(AdMailer).to receive(:event_advertising_request).and_return(mail)
 
               subject
             end
@@ -348,7 +348,7 @@ describe Api::V3::ContentsController, type: :controller do
 
           context 'when user does not flag wants_to_advertise' do
             it 'does not send an email to admin' do
-              expect(AdMailer).not_to receive(:event_adveritising_request)
+              expect(AdMailer).not_to receive(:event_advertising_request)
               subject
             end
           end

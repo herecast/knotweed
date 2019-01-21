@@ -101,7 +101,7 @@ module Ugc
 
     def contact_user_and_ad_team
       AdMailer.event_advertising_user_contact(@current_user).deliver_later
-      AdMailer.event_adveritising_request(@current_user, @event).deliver_later
+      AdMailer.event_advertising_request(@current_user, @event).deliver_later
     end
 
     def conditionally_schedule_outreach_email

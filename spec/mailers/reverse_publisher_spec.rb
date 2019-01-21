@@ -33,6 +33,14 @@ describe ReversePublisher, type: :mailer do
       expect(subject.body.encoded).to include('http://bit.ly/12345')
     end
 
+    describe 'Market Post' do
+      let(:content) { FactoryGirl.create :content, :market_post }
+
+      it 'is sent successfully' do
+        expect(subject.to).to include(*listservs.map(&:reverse_publish_email))
+      end
+    end
+
     describe 'Event', inline_jobs: true do
       let(:non_ugc_event) { FactoryGirl.create :event, skip_event_instance: true }
       let(:content) { non_ugc_event.content }

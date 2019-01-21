@@ -7,7 +7,7 @@ class AdMailer < ActionMailer::Base
     mail to: user.email, subject: 'Boosting your event on DailyUV'
   end
 
-  def event_adveritising_request(user, event)
+  def event_advertising_request(user, event)
     @user = user
     @event = event
     mail(to: Rails.configuration.subtext.emails.advertising, subject: "#{@user.email} wants to advertise an event")
