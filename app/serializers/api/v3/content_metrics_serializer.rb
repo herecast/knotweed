@@ -43,7 +43,7 @@ module Api
             report_match.banner_click_hash
           else
             {
-              report_date: Time.parse(date.to_s),
+              report_date: date.to_time,
               banner_click_count: 0
             }
           end

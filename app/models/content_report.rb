@@ -22,14 +22,14 @@ class ContentReport < ActiveRecord::Base
 
   def view_count_hash
     {
-      report_date: report_date.to_s,
+      report_date: report_date,
       view_count: view_count || 0
     }
   end
 
   def banner_click_hash
     {
-      report_date: report_date.to_s,
+      report_date: report_date,
       banner_click_count: banner_click_count || 0
     }
   end
