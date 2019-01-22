@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: payments
@@ -16,6 +15,7 @@
 #  content_id         :integer
 #  paid_to_id         :integer
 #  paid               :boolean          default(FALSE)
+#  period_ad_rev      :decimal(, )
 #
 # Indexes
 #

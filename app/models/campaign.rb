@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: campaigns
@@ -22,7 +21,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_ac529cad68  (listserv_id => listservs.id)
+#  fk_rails_...  (listserv_id => listservs.id)
 #
 
 class Campaign < ActiveRecord::Base

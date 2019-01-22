@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: users
@@ -22,7 +21,6 @@
 #  confirmed_at           :datetime
 #  confirmation_sent_at   :datetime
 #  unconfirmed_email      :string(255)
-#  default_repository_id  :bigint(8)
 #  nda_agreed_at          :datetime
 #  agreed_to_nda          :boolean          default(FALSE)
 #  contact_phone          :string(255)

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: promotions
@@ -13,8 +12,8 @@
 #  promotable_id   :bigint(8)
 #  promotable_type :string(255)
 #  paid            :boolean          default(FALSE)
-#  created_by_id   :integer
-#  updated_by_id   :integer
+#  created_by_id   :bigint(8)
+#  updated_by_id   :bigint(8)
 #  share_platform  :string
 #
 # Indexes

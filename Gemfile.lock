@@ -746,7 +746,7 @@ DEPENDENCIES
   active_record_query_trace
   aescrypt
   american_date
-  annotate
+  annotate (~> 2.7.4)
   better_errors (~> 0.9)
   bootstrap-sass
   byebug

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: contents
@@ -9,12 +8,10 @@
 #  subtitle                  :string(255)
 #  authors                   :string(255)
 #  raw_content               :text
-#  issue_id                  :bigint(8)
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
 #  guid                      :string(255)
 #  pubdate                   :datetime
-#  source_category           :string(255)
 #  url                       :string(255)
 #  origin                    :string(255)
 #  page                      :string(255)
@@ -24,19 +21,17 @@
 #  timestamp                 :datetime
 #  parent_id                 :bigint(8)
 #  content_category_id       :bigint(8)
-#  category_reviewed         :boolean          default(FALSE)
 #  has_event_calendar        :boolean          default(FALSE)
 #  channelized_content_id    :bigint(8)
-#  published                 :boolean          default(FALSE)
 #  channel_type              :string(255)
-#  channel_id                :integer
-#  root_content_category_id  :integer
-#  view_count                :integer          default(0)
-#  comment_count             :integer          default(0)
-#  commenter_count           :integer          default(0)
-#  created_by_id             :integer
-#  updated_by_id             :integer
-#  banner_click_count        :integer          default(0)
+#  channel_id                :bigint(8)
+#  root_content_category_id  :bigint(8)
+#  view_count                :bigint(8)        default(0)
+#  comment_count             :bigint(8)        default(0)
+#  commenter_count           :bigint(8)        default(0)
+#  created_by_id             :bigint(8)
+#  updated_by_id             :bigint(8)
+#  banner_click_count        :bigint(8)        default(0)
 #  similar_content_overrides :text
 #  banner_ad_override        :bigint(8)
 #  root_parent_id            :bigint(8)
@@ -68,25 +63,29 @@
 #  alternate_authors         :string
 #  alternate_text            :string
 #  alternate_image_url       :string
+#  location_id               :integer
 #
 # Indexes
 #
 #  idx_16527_authors                                     (authors)
-#  idx_16527_categories                                  (source_category)
 #  idx_16527_content_category_id                         (content_category_id)
 #  idx_16527_guid                                        (guid)
 #  idx_16527_index_contents_on_authoremail               (authoremail)
 #  idx_16527_index_contents_on_channel_id                (channel_id)
 #  idx_16527_index_contents_on_channel_type              (channel_type)
 #  idx_16527_index_contents_on_channelized_content_id    (channelized_content_id)
-#  idx_16527_index_contents_on_created_by                (created_by)
+#  idx_16527_index_contents_on_created_by                (created_by_id)
 #  idx_16527_index_contents_on_parent_id                 (parent_id)
-#  idx_16527_index_contents_on_published                 (published)
 #  idx_16527_index_contents_on_root_content_category_id  (root_content_category_id)
 #  idx_16527_index_contents_on_root_parent_id            (root_parent_id)
 #  idx_16527_pubdate                                     (pubdate)
 #  idx_16527_source_id                                   (organization_id)
 #  idx_16527_title                                       (title)
+#  index_contents_on_location_id                         (location_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (location_id => locations.id)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

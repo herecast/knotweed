@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: business_locations
@@ -21,14 +20,14 @@
 #  state               :string(255)
 #  zip                 :string(255)
 #  status              :string(255)
-#  created_by_id       :integer
-#  updated_by_id       :integer
+#  created_by_id       :bigint(8)
+#  updated_by_id       :bigint(8)
 #  service_radius      :decimal(10, )
 #
 # Indexes
 #
 #  idx_16441_index_business_locations_on_city        (city)
-#  idx_16441_index_business_locations_on_created_by  (created_by)
+#  idx_16441_index_business_locations_on_created_by  (created_by_id)
 #  idx_16441_index_business_locations_on_name        (name)
 #
 

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: payments
@@ -14,12 +13,13 @@
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  content_id         :integer
-#  paid_to            :integer
+#  paid_to_id         :integer
 #  paid               :boolean          default(FALSE)
+#  period_ad_rev      :decimal(, )
 #
 # Indexes
 #
-#  index_payments_on_paid_to  (paid_to)
+#  index_payments_on_paid_to_id  (paid_to_id)
 #
 # Foreign Keys
 #

@@ -1,10 +1,9 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: ad_metrics
 #
-#  id         :bigint(8)        not null, primary key
+#  id         :integer          not null, primary key
 #  campaign   :string
 #  event_type :string
 #  page_url   :string
