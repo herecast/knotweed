@@ -40,13 +40,9 @@ class GatherFeedRecords
     if @params[:content_type] == 'organization'
       organizations = Organization.search(query, organization_opts)
       @total_entries = organizations.total_entries
-      @records = organizations.map do |organization|
-        FeedItem.new(organization)
-      end
-    else
-      @records = @contents.map do |content|
-        FeedItem.new(content)
-      end
+    end
+    @records = (organizations || @contents).map do |item|
+      FeedItem.new(item)
     end
   end
 

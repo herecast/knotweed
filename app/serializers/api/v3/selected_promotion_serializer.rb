@@ -14,7 +14,7 @@ module Api
       end
 
       def image_url
-        object.banner_image.url
+        object.promotion_banner.banner_image.url
       end
 
       def title
@@ -22,7 +22,7 @@ module Api
       end
 
       def redirect_url
-        object.promotion_type == PromotionBanner::COUPON ? "/promotions/#{object.id}" : object.redirect_url
+        object.promotion_banner.promotion_type == PromotionBanner::COUPON ? "/promotions/#{object.id}" : object.promotion_banner.redirect_url
       end
     end
   end

@@ -9,7 +9,7 @@
         .controls.controls-row
           .field.span3
             = f.label :list_type_eq, "List Type"
-            = f.select :list_type_eq, Listserv.list_types, include_blank: true
+            = f.select :list_type_eq, Listserv::LIST_TYPES, include_blank: true
           .field.span2
             = f.label :active_true, "Active"
             = f.check_box :active_true

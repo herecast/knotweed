@@ -41,7 +41,6 @@ gem 'joiner'
 gem 'jquery-datatables-rails'
 gem 'jquery-rails'
 gem 'kaminari', '~> 0.15'                             # Have not yet tested the next major version
-gem "legato"
 gem 'lograge'
 gem 'mail'
 gem 'mailchimp-api', '~> 2.0.6', require: 'mailchimp'

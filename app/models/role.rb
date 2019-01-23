@@ -26,7 +26,7 @@ class Role < ActiveRecord::Base
   scope :non_resource_roles, -> { where(resource_id: nil) }
 
   def pretty_name
-    name.tr('_', ' ').capitalize
+    name.titlecase
   end
 
   # just a shortcut so we don't have to write

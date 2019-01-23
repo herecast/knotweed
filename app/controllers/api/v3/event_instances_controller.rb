@@ -112,11 +112,11 @@ module Api
           mapped_results = results.select do |result|
             result['doc_count'] > 0
           end.map do |result|
-            EventInstanceActiveDate.new(
+            {
               date: result['key_as_string'],
               count: result['doc_count']
-            )
-          end.sort_by(&:date)
+            }
+          end.sort_by{ |result| result[:date] }
           mapped_results
         end
       end

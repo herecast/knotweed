@@ -26,4 +26,4 @@ class FeedItem
       @organization = object
     end
   end
-  end
+end

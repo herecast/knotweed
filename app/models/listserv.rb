@@ -76,6 +76,15 @@ class Listserv < ActiveRecord::Base
     where(list_type: 'custom_digest')
   }
 
+  DIGEST_TEMPLATES = Dir.entries('app/views/listserv_digest_mailer/').map{ |file| file.split('.').first }.compact
+
+  LIST_TYPES = 
+    [
+      ['External List', 'external_list'],
+      ['Internal List', 'internal_list'],
+      ['Custom Digest', 'custom_digest']
+    ]
+
   def mc_group_name=(n)
     write_attribute :mc_group_name, (n.nil? ? n : n.strip)
   end
@@ -114,7 +123,7 @@ class Listserv < ActiveRecord::Base
   end
 
   def valid_template_name
-    if template? && digest_templates.exclude?(template)
+    if template? && DIGEST_TEMPLATES.exclude?(template)
       errors.add(:template, 'Please enter a valid template')
     end
   end
@@ -145,26 +154,12 @@ class Listserv < ActiveRecord::Base
     ]
   end
 
-  def self.list_types
-    [
-      ['External List', 'external_list'],
-      ['Internal List', 'internal_list'],
-      ['Custom Digest', 'custom_digest']
-    ]
-  end
-
   def internal_list?
     list_type.eql? 'internal_list'
   end
 
   def custom_digest?
     list_type.eql?('custom_digest') && digest_query?
-  end
-
-  def digest_templates
-    templates = Dir.entries('app/views/listserv_digest_mailer/')
-    file_names = templates.map { |file| file.split('.').first }
-    file_names.compact!
   end
 
   def contents_from_custom_query
@@ -182,14 +177,6 @@ class Listserv < ActiveRecord::Base
 
   def parse_digest_send_time
     Time.zone.parse(digest_send_time.strftime('%H:%M'))
-  end
-
-  def find_week_to_send(time_with_week)
-    if time_with_week > 1.week.from_now
-      time_with_week = time_with_week.advance(weeks: -1)
-    else
-      time_with_week
-    end
   end
 
   def get_query

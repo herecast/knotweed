@@ -332,4 +332,58 @@ describe Listserv, type: :model do
       persisted_listserv.save!
     end
   end
+
+  describe '#promotions_list=' do
+    let(:listserv) { FactoryGirl.create :listserv }
+    let(:promotions) { "1,2, 5" }
+
+    subject{ listserv.promotions_list = promotions }
+
+    it 'should split the string and assign values to promotion_ids' do
+      expect{subject}.to change{listserv.promotion_ids}.to [1,2,5]
+    end
+  end
+
+  describe '#promotions_list' do
+    let(:listserv) { FactoryGirl.create :listserv }
+    before { listserv.promotion_ids = [1,2,5] }
+
+    subject { listserv.promotions_list }
+
+    it 'should combine promotion_ids into a string with comma space separator' do
+      expect(subject).to eq "1, 2, 5"
+    end
+  end
+
+  describe 'template name validation' do
+    let(:listserv) { FactoryGirl.create :listserv }
+
+    describe 'for a valid template' do
+      before do
+        listserv.template = 'fake template'
+        stub_const("Listserv::DIGEST_TEMPLATES", ['fake template'])
+      end
+
+      it 'should be valid' do
+        expect(listserv).to be_valid
+      end
+    end
+
+    describe 'for nil template' do
+      it 'should be valid' do
+        expect(listserv).to be_valid
+      end
+    end
+
+    describe 'for an invalid template' do
+      before do
+        listserv.template = 'fake template'
+        stub_const("Listserv::DIGEST_TEMPLATES", ['other fake'])
+      end
+
+      it 'should not be valid' do
+        expect(listserv).to_not be_valid
+      end
+    end
+  end
 end

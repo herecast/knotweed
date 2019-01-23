@@ -28,4 +28,28 @@ RSpec.describe OrganizationLocation, type: :model do
   it { is_expected.to belong_to :organization }
   it { is_expected.to belong_to :location }
   it { is_expected.to have_db_column(:location_type).of_type(:string) }
+
+  describe '#base?' do
+    let(:ol) { FactoryGirl.create :organization_location, location_type: loc_type }
+    subject { ol.base? }
+
+    context 'for a base location' do
+      let(:loc_type) { 'base' }
+      it { expect(subject).to be true }
+    end
+
+    context 'for a non-base location' do
+      let(:loc_type) { 'OTHER KIND' }
+      it { expect(subject).to be false }
+    end
+  end
+
+  describe '#base!' do
+    let(:ol) { FactoryGirl.create :organization_location, location_type: 'some random type' }
+    subject { ol.base! }
+
+    it 'should change the location type to "base"' do
+      expect{subject}.to change{ol.location_type}.to 'base'
+    end
+  end
 end

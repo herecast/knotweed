@@ -424,8 +424,6 @@ GEM
       activesupport (>= 3.0.0)
     launchy (2.4.3)
       addressable (~> 2.3)
-    legato (0.7.0)
-      multi_json
     letter_opener (1.6.0)
       launchy (~> 2.2)
     listen (3.1.5)
@@ -790,7 +788,6 @@ DEPENDENCIES
   jquery-datatables-rails
   jquery-rails
   kaminari (~> 0.15)
-  legato
   letter_opener
   lograge
   mail

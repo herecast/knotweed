@@ -154,24 +154,6 @@ class PromotionBanner < ActiveRecord::Base
     current_daily_report(current_date) || promotion_banner_reports.create!(report_date: current_date)
   end
 
-  def remove_coupon_image=(val)
-    coupon_image_will_change! if val
-    super
-  end
-
-  def remove_banner_image=(val)
-    banner_image_will_change! if val
-    super
-  end
-
-  def total_impressions_allowed
-    if campaign_start.present? && campaign_end.present?
-      ((campaign_end - campaign_start).to_i + 1) * (daily_max_impressions || 0)
-    else
-      0
-    end
-  end
-
   private
 
   def will_not_have_daily_and_per_impression_cost

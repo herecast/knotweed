@@ -2,7 +2,7 @@
   = f.error_notification
 
   .form-inputs
-    = f.input :list_type, collection: Listserv.list_types, include_blank: false,
+    = f.input :list_type, collection: Listserv::LIST_TYPES, include_blank: false,
       hint: "Use: 'Custom Digest' for creating a newsletter, 'Internal Digest' for UVList, and 'External Digest' for area listservs"
     = f.input :name
     = f.input :sender_name
@@ -37,7 +37,7 @@
         = f.input :digest_preheader
         = f.input :digest_header, as: :summernote
         = f.input :digest_footer, as: :summernote
-        = f.input :template, collection: @listserv.digest_templates, include_blank: false
+        = f.input :template, collection: Listserv::DIGEST_TEMPLATES, include_blank: false
         = f.input :sponsored_by, hint: "Ex: 'Sponsored by Monsanto'"
         = f.input :promotion_ids do
           = f.input_field :promotions_list
