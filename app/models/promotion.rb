@@ -51,6 +51,13 @@ class Promotion < ActiveRecord::Base
 
   scope :shares, -> { where('share_platform IS NOT NULL') }
 
+  def promotable_attributes=(attributes)  
+    if PROMOTABLE_TYPES.include?(promotable_type) 
+      self.promotable ||= promotable_type.constantize.new 
+      self.promotable.assign_attributes(attributes) 
+    end 
+  end
+
   def is_creative?
     promotable_type == 'PromotionBanner'
   end
