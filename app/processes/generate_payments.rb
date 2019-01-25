@@ -7,8 +7,11 @@ class GeneratePayments
 
   def initialize(opts = {})
     @opts = opts
-    @period_start = DateTime.parse(opts[:period_start])
-    @period_end = DateTime.parse(opts[:period_end])
+    # using chronic here incorporates our default Rails timezone (Eastern)
+    # plus it's just a bit more versatile since we're not validating the input
+    # in any way.
+    @period_start = Chronic.parse(opts[:period_start])
+    @period_end = Chronic.parse(opts[:period_end])
     @period_ad_rev = opts[:period_ad_rev]
     @period_total_impressions = PromotionBannerMetric.for_payment_period(@period_start, @period_end).count
     if @period_total_impressions > 0
