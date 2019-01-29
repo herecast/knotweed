@@ -39,6 +39,23 @@ RSpec.describe ListservsController, type: :controller do
       get :index
       expect(assigns(:listservs)).to eq([listserv])
     end
+
+    context 'with reset param' do
+      subject { get :index, params: { reset: true } }
+
+      it 'should reset the search session' do
+        expect{ subject }.to change{ request.session["listservs_search"] }.to({ active_true: true })
+      end
+    end
+
+    context 'with search params' do
+      let(:search_params) { { 'fake_search' => 'whatever' } }
+      subject { get :index, params: { q: search_params } }
+
+      it 'should set the search session' do
+        expect{ subject }.to change{ request.session["listservs_search"] }.to(search_params)
+      end
+    end
   end
 
   describe 'GET #show' do
@@ -83,6 +100,16 @@ RSpec.describe ListservsController, type: :controller do
         expect(response).to redirect_to(listservs_path)
       end
     end
+
+    context 'with invalid listserv' do
+      before { allow_any_instance_of(Listserv).to receive(:valid?).and_return(false) }
+      subject { post :create, params: { listserv: valid_attributes } }
+
+      it 'should render `new`' do
+        subject
+        expect(response).to render_template(:new)
+      end
+    end
   end
 
   describe 'PUT #update' do
@@ -110,6 +137,17 @@ RSpec.describe ListservsController, type: :controller do
         listserv = Listserv.create! valid_attributes
         put :update, params: { id: listserv.to_param, listserv: valid_attributes }
         expect(response).to redirect_to(listservs_url)
+      end
+    end
+
+    context 'with invalid listserv' do
+      let(:listserv) { FactoryGirl.create :listserv }
+      before { allow_any_instance_of(Listserv).to receive(:update).and_return(false) }
+      subject { put :update, params: { id: listserv.to_param, listserv: { name: 'new_name' } } }
+
+      it 'should render `edit`' do
+        subject
+        expect(response).to render_template(:edit)
       end
     end
   end

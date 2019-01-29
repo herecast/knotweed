@@ -36,15 +36,6 @@ class ContentsController < ApplicationController
     end
   end
 
-  def new
-    @content = Content.new
-    # for users that can only access certain specific attribute contents
-    current_ability.attributes_for(:new, Content).each do |key, value|
-      @content.send("#{key}=", value)
-    end
-    authorize! :new, @content
-  end
-
   def edit
     @news_child_ids = ContentCategory.where(parent_id: 31).pluck(:id)
     @content = Content.includes(:location, :content_category).find(params[:id])
@@ -144,12 +135,4 @@ class ContentsController < ApplicationController
     )
   end
 
-  def fix_array_input
-    input = params[:content][:similar_content_overrides]
-    if input.present?
-      params[:content][:similar_content_overrides] = input.delete('[').delete(']').split(',').map { |str| str.strip.to_i }
-    else
-      params[:content].delete :similar_content_overrides
-    end
-  end
 end

@@ -40,6 +40,16 @@ describe 'User Bookmarks endpoint', type: :request do
         }.by 1
       end
     end
+
+    context 'without valid content' do
+      subject { post "/api/v3/users/#{owning_user.id}/bookmarks", params: { bookmark: { read: false } }, headers: user_headers }
+
+      it 'responds with bad request' do
+        subject
+        expect(response).to be_a_bad_request
+      end
+    end
+
   end
 
   describe 'PUT /api/v3/users/:user_id/bookmarks/:id' do
@@ -66,6 +76,16 @@ describe 'User Bookmarks endpoint', type: :request do
         expect { subject }.to change {
           @bookmark.reload.read
         }.to true
+      end
+
+      context 'without valid content' do
+        let(:invalid_id) { (Content.maximum(:id) || 0) + 1 }
+        subject { post "/api/v3/users/#{owning_user.id}/bookmarks", params: { bookmark: { content_id: invalid_id } }, headers: user_headers }
+
+        it 'responds with bad request' do
+          subject
+          expect(response).to be_a_bad_request
+        end
       end
     end
   end

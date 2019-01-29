@@ -42,14 +42,6 @@ module Api
 
       private
 
-      def total_pages
-        @contents.present? ? (@contents.total_entries / per_page.to_f).ceil : nil
-      end
-
-      def per_page
-        params[:per_page] || 20
-      end
-
       def bookmark_params
         params.require(:bookmark).permit(
           :content_id,

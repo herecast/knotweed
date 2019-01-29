@@ -20,12 +20,8 @@ module Api
 
       def track_impression
         @banner = PromotionBanner.find params[:id]
-        if @banner.present?
-          record_promotion_banner_metric(@banner, 'impression')
-          render json: {}, status: :ok
-        else
-          render json: {}, status: :bad_request
-        end
+        record_promotion_banner_metric(@banner, 'impression')
+        render json: {}, status: :ok
       end
 
       def track_load
@@ -91,24 +87,6 @@ module Api
       end
 
       protected
-
-      def sanitize_sort_parameter(sort)
-        sort_parts = sort.split(',')
-        sort_parts.select! do |pt|
-          pt.match /\A([a-zA-Z]+_)?[a-zA-Z]+ (ASC|DESC)/
-        end
-        sort_parts.join(',').gsub(/(pubdate|title)/, 'contents.\1').gsub('view_count', 'impression_count')
-      end
-
-      def sanitize_start_date_sort(sort)
-        sort_parts = sort.split(',')
-        sort_direction = sort_parts.last
-        if sort_direction.include?('ASC')
-          'campaign_start ASC'
-        elsif sort_direction.include?('DESC')
-          'campaign_start DESC'
-        end
-      end
 
       def conditionally_prime_daily_ad_reports
         most_recent_reset_time = Rails.cache.fetch('most_recent_reset_time')

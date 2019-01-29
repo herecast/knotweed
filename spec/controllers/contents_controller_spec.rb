@@ -9,23 +9,34 @@ describe ContentsController, type: :controller do
   end
 
   describe 'PUT #update' do
-    before do
-      @content = FactoryGirl.create(:content)
-      @cat_2 = FactoryGirl.create :content_category
-    end
+    let(:content) { FactoryGirl.create(:content) }
+    let(:title) { 'Fake Title Update' }
+    subject { put :update, params: { id: content.id, content: { title: title } } }
 
     context 'when update fails' do
-      subject { put :update, params: { id: @content, content: { title: 'Fake Title Update' } } }
-
       it 'should render edit page' do
         allow_any_instance_of(Content).to receive(:update_attributes).and_return false
         subject
         expect(response).to render_template 'edit'
       end
     end
+
+    context 'successful update' do
+      it 'should update the content record' do
+        expect{subject}.to change{content.reload.title}.to title
+      end
+
+      context 'with :continue_editing param' do
+        subject { put :update, params: { id: content.id, content: { title: title }, continue_editing: true } }
+
+        it 'should redirect to edit_contents_path' do
+          expect(subject).to redirect_to(edit_content_path(assigns(:content)))
+        end
+      end
+    end
   end
 
-  describe 'index' do
+  describe 'GET #index' do
     before do
       FactoryGirl.create_list :content, 5
     end
@@ -35,6 +46,15 @@ describe ContentsController, type: :controller do
     it 'should respond with 200 status code' do
       subject
       expect(response.code).to eq '200'
+    end
+
+    describe 'id_in search param' do
+      subject { get :index, params: { q: { id_in: '1, 2, 5' } } }
+
+      it 'should parse id_in to a usable array of stripped strings' do
+        subject
+        expect(request.session["contents_search"]["id_in"]).to match_array %w(1 2 5)
+      end
     end
 
     context 'with an organization search param' do
@@ -77,12 +97,10 @@ describe ContentsController, type: :controller do
   end
 
   describe 'GET #edit' do
-    before do
-      @content = FactoryGirl.create :content
-      @next_content = FactoryGirl.create :content
-    end
+    let(:content) { FactoryGirl.create :content }
+    let(:next_content) { FactoryGirl.create :content }
 
-    subject { get :edit, params: { id: @content.id } }
+    subject { get :edit, params: { id: content.id } }
 
     it 'should respond with 200 status code' do
       subject
@@ -91,7 +109,16 @@ describe ContentsController, type: :controller do
 
     it 'should appropriately load the content' do
       subject
-      expect(assigns(:content)).to eq @content
+      expect(assigns(:content)).to eq content
+    end
+
+    context 'for an event' do
+      let(:content) { FactoryGirl.create :content, :event }
+
+      it 'should set event instances' do
+        subject
+        expect(assigns(:event_instances)).to be_present
+      end
     end
   end
 

@@ -180,6 +180,16 @@ describe Api::V3::PromotionBannersController, type: :controller do
       )
       subject
     end
+
+    context 'with invalid promotion banner' do
+      let(:invalid_banner_id) { (PromotionBanner.maximum(:id) || 0) + 1 }
+      subject { post :track_load, format: :json, params: { promotion_banner_id: invalid_banner_id } }
+
+      it 'should respond with 422' do
+        subject
+        expect(response.status).to eq 422
+      end
+    end
   end
 
   describe 'post track_click' do
@@ -274,6 +284,15 @@ describe Api::V3::PromotionBannersController, type: :controller do
         expect { subject }.to change {
           AdMetric.count
         }.by 1
+      end
+
+      context 'for an invalid ad_metric' do # never happens...? but controller includes this scenario, so figured I'd test
+        before { allow_any_instance_of(AdMetric).to receive(:valid?).and_return false }
+
+        it 'should respond with bad_request' do
+          subject
+          expect(response).to have_http_status :bad_request
+        end
       end
 
       context 'when user is admin' do

@@ -26,10 +26,20 @@ RSpec.describe PaymentRecipientsController, type: :controller do
 
   describe 'POST #create' do
     let(:user) { FactoryGirl.create :user }
-    subject { post :create, params: { payment_recipient: { user_id: user.id } }, format: :js }
+    subject { post :create, params: params, format: :js }
 
-    it 'creates a payment_recipient record' do
-      expect { subject }.to change { PaymentRecipient.count }.by(1)
+    context 'with valid params' do
+      let(:params) { { payment_recipient: { user_id: user.id } } }
+      it 'creates a payment_recipient record' do
+        expect { subject }.to change { PaymentRecipient.count }.by(1)
+      end
+    end
+    
+    context 'with invalid params' do
+      let(:params) { { payment_recipient: { fake_param: 'fake' } } }
+      it 'does not create a payment recipient' do
+        expect { subject }.not_to change { PaymentRecipient.count }
+      end
     end
   end
 
@@ -45,13 +55,21 @@ RSpec.describe PaymentRecipientsController, type: :controller do
   describe 'PUT #update' do
     let!(:payment_recipient) { FactoryGirl.create :payment_recipient }
     let(:org) { FactoryGirl.create :organization }
-    subject do
-      put :update, params: { id: payment_recipient.id,
-                             payment_recipient: { organization_id: org.id } }, format: :js
-    end
+    let(:params) { { id: payment_recipient.id,
+                             payment_recipient: { organization_id: org.id } } }
+    subject { put :update, params: params, format: :js }
 
     it 'updates the record' do
       expect { subject }.to change { payment_recipient.reload.organization }.to(org)
+    end
+
+    context 'with invalid user id' do
+      let(:invalid_user) { (User.maximum(:id) || 0) + 1 }
+      let(:params) { { id: payment_recipient.id, payment_recipient: { user_id: invalid_user, organization_id: org.id } } }
+
+      it 'should not change the record' do
+        expect { subject }.not_to change { payment_recipient.reload.organization }
+      end
     end
   end
 

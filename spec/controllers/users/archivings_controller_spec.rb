@@ -25,13 +25,23 @@ describe Users::ArchivingsController, type: :controller do
     context 'with new_content_owner passed' do
       let(:new_content_owner) { FactoryGirl.create :user }
       let!(:contents) { FactoryGirl.create_list :content, 3 }
+      let(:params) { { user_id: user.id, new_content_owner: new_content_owner.email } }
 
-      subject { post :create, params: { user_id: user.id, new_content_owner: new_content_owner.email } }
+      subject { post :create, params: params }
 
       it 'should reassign all the content belonging to the original user' do
         Content.update_all(created_by_id: user.id)
         subject
         expect(Content.where(created_by: new_content_owner)).to match_array contents
+      end
+
+      context 'but invalid' do
+        let(:params) { { user_id: user.id, new_content_owner: 'fake-user-email@email.com' } }
+
+        it 'should render `new`' do
+          subject
+          expect(response).to render_template('new')
+        end
       end
     end
   end

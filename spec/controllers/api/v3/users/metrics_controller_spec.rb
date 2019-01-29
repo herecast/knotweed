@@ -25,6 +25,14 @@ RSpec.describe Api::V3::Users::MetricsController, type: :controller do
         subject
         expect(response).to have_http_status :success
       end
+
+      context 'with missing request params' do
+        subject { get :index, params: { user_id: user.id } }
+        it 'should respond with bad_request' do
+          subject
+          expect(response).to have_http_status :bad_request
+        end
+      end
     end
   end
 end

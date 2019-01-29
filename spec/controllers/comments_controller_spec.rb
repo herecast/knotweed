@@ -9,11 +9,35 @@ RSpec.describe CommentsController, type: :controller do
   end
 
   describe 'GET #index' do
-    subject { get :index }
+    let(:params) { {} }
+    subject { get :index, params: params }
 
     it 'returns ok status' do
       subject
       expect(response).to have_http_status :ok
+    end
+
+    context 'with reset param' do
+      let(:params) { { reset: true } }
+
+      it 'should reset the search query' do
+        subject
+        expect(request.session["comment_search"]).to be nil
+      end
+    end
+
+    context 'with search params' do
+      let(:params) { { q: { parent_id_eq: nil, authors_cont: nil } }  }
+
+      it 'should set channel type' do
+        subject
+        expect(request.session["comment_search"]["channel_type_eq"]).to be 'Comment'
+      end
+
+      it 'should set parent_id_not_null' do
+        subject
+        expect(request.session["comment_search"]["parent_id_not_null"]).to be 1
+      end
     end
   end
 

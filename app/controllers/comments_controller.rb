@@ -25,28 +25,20 @@ class CommentsController < ApplicationController
 
   def update
     @comment = Content.find(params[:id])
-    if @comment.update_attribute(:deleted_at, nil)
-      @comment.channel.increase_comment_stats
-      flash[:info] = 'Comment Unhidden'
-      redirect_to correct_path
-    else
-      flash.now[:danger] = 'Comment was not unhidden'
-      render 'index'
-    end
+    @comment.update_attribute(:deleted_at, nil)
+    @comment.channel.increase_comment_stats
+    flash[:info] = 'Comment Unhidden'
+    redirect_to correct_path
   end
 
   def destroy
     @comment = Content.find(params[:id])
-    if @comment.update_attribute(:deleted_at, Time.now)
-      @comment.channel.decrease_comment_stats
-      notify_comment_owner
-      notify_parent_content_owner
-      flash[:info] = 'Comment Hidden'
-      redirect_to correct_path
-    else
-      flash.now[:danger] = 'Comment was not hidden'
-      render 'index'
-    end
+    @comment.update_attribute(:deleted_at, Time.now)
+    @comment.channel.decrease_comment_stats
+    notify_comment_owner
+    notify_parent_content_owner
+    flash[:info] = 'Comment Hidden'
+    redirect_to correct_path
   end
 
   private

@@ -42,6 +42,15 @@ RSpec.describe Api::V3::Organizations::MetricsController, type: :controller do
         subject
         expect(response).to have_http_status :success
       end
+
+      context 'with no valid params' do
+        subject { get :index, params: { organization_id: org.id } }
+
+        it 'should respond with bad_request' do
+          subject
+          expect(response).to have_http_status :bad_request
+        end
+      end
     end
   end
 end
