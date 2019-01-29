@@ -101,10 +101,6 @@ module Api
         object.event.cost
       end
 
-      def cost_type
-        object.event.cost_type
-      end
-
       def updated_at
         object.event.content.updated_at
       end
@@ -131,10 +127,6 @@ module Api
 
       def published_at
         object.event.content.pubdate
-      end
-
-      def content
-        object.event.content.sanitized_content
       end
 
       def content_id
@@ -192,24 +184,6 @@ module Api
         end
       end
 
-      def image_width
-        if object.event.content.images.present?
-          object.event.content.images[0].width
-        end
-      end
-
-      def image_height
-        if object.event.content.images.present?
-          object.event.content.images[0].height
-        end
-      end
-
-      def image_file_extension
-        if object.event.content.images.present?
-          object.event.content.images[0].file_extension
-        end
-      end
-
       def starts_at
         object.start_date
       end
@@ -238,20 +212,12 @@ module Api
         object.event.venue.try(:zip)
       end
 
-      def venue_id
-        object.event.venue.try(:id)
-      end
-
       def venue_latitude
         object.event.venue.try(:latitude)
       end
 
       def venue_longitude
         object.event.venue.try(:longitude)
-      end
-
-      def venue_locate_name
-        object.event.venue.try(:geocoding_address)
       end
 
       def venue_url

@@ -10,7 +10,7 @@ describe Api::V3::EventInstanceSerializer do
 
   let(:serialized_object) { JSON.parse(Api::V3::EventInstanceSerializer.new(@event_instance).to_json) }
 
-  it 'shold return a cost_type' do
+  it 'should return a cost_type' do
     expect(serialized_object['event_instance']['cost_type']).to eq @event.cost_type
   end
 end
