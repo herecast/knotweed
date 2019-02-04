@@ -250,17 +250,15 @@ module Api
       end
 
       def split_content
-        if object.content_type == :news && object.embedded_ad?
-          SplitContentForAdPlacement.call(
-            ImageUrlService.optimize_image_urls(
-              html_text: content,
-              default_width: 600,
-              default_height: 1800,
-              default_crop: false
-            )
-          ).tap do |h|
-            h[:tail] = '' if h[:tail].nil?
-          end
+        SplitContentForAdPlacement.call(
+          ImageUrlService.optimize_image_urls(
+            html_text: content,
+            default_width: 600,
+            default_height: 1800,
+            default_crop: false
+          )
+        ).tap do |h|
+          h[:tail] = '' if h[:tail].nil?
         end
       end
 

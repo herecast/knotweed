@@ -18,6 +18,7 @@ module Api
                  :cost,
                  :cost_type,
                  :created_at,
+                 :embedded_ad,
                  :ends_at,
                  :event_id,
                  :ical_url,
@@ -32,6 +33,7 @@ module Api
                  :promote_radius,
                  :published_at,
                  :registration_deadline,
+                 :split_content,
                  :starts_at,
                  :subtitle,
                  :title,
@@ -91,6 +93,10 @@ module Api
 
       def ical_url
         context[:ical_url] if context.present?
+      end
+
+      def embedded_ad
+        object.event.content.embedded_ad?
       end
 
       def event_instances
@@ -181,6 +187,19 @@ module Api
       def image_url
         if object.event.content.images.present?
           object.event.content.images[0].image.url
+        end
+      end
+
+      def split_content
+        SplitContentForAdPlacement.call(
+          ImageUrlService.optimize_image_urls(
+            html_text: content,
+            default_width: 600,
+            default_height: 1800,
+            default_crop: false
+          )
+        ).tap do |h|
+          h[:tail] = '' if h[:tail].nil?
         end
       end
 

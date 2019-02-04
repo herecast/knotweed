@@ -49,7 +49,7 @@ def content_response_schema(record)
       # schedules: [],
 
       sold: record.channel.try(:sold),
-      split_content: record.content_type == :news ? SplitContentForAdPlacement.call(record.raw_content) : nil,
+      split_content: { head: an_instance_of(String), tail: an_instance_of(String) },
       starts_at: record.channel.try(:next_or_first_instance).try(:start_date).try(:iso8601),
       subtitle: record.subtitle,
       sunset_date: record.sunset_date.try(:iso8601),
