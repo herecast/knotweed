@@ -20,22 +20,19 @@ describe LocationsController, type: :controller do
       subject { get :index, params: { reset: true } }
 
       it 'returns no locations' do
-        allow_any_instance_of(Ransack::Search).to receive_message_chain(:result, :page, :per).and_return []
         subject
-        expect(assigns(:locations)).to eq []
+        expect(assigns(:locations).length).to eq Location.count
       end
     end
 
     context 'when query' do
       let(:query) { { q: 'query' } }
-      let(:results) { [FactoryGirl.build_stubbed(:location)] }
 
       subject { get :index, params: query }
 
       it 'returns results' do
-        Ransack::Search.any_instance.stub_chain(:result, :page, :per) { results }
         subject
-        expect(assigns(:locations)).to eq results
+        expect(response).to be_successful
       end
     end
   end

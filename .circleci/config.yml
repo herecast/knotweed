@@ -4,7 +4,7 @@ jobs:
   build:
     working_directory: ~/knotweed
     docker:
-      - image: circleci/ruby:2.3.3-node
+      - image: circleci/ruby:2.5.3-node
         environment:
           BUNDLE_PATH: vendor/bundle
           PGUSER: knotweed

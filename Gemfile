@@ -1,10 +1,9 @@
 source 'https://rubygems.org'
 
-ruby '2.3.3'
+ruby '2.5.3'
 gem 'rails', '~> 5.1.6'
 
 gem 'active_model_serializers', '~> 0.9.3'              # 0.10 is not backward compatible with 0.9
-gem 'aescrypt'
 gem 'american_date'
 gem 'bootstrap-sass'
 gem 'cancancan'

@@ -52,7 +52,6 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
-    aescrypt (1.0.0)
     american_date (1.1.1)
     annotate (2.7.4)
       activerecord (>= 3.2, < 6.0)
@@ -742,7 +741,6 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers (~> 0.9.3)
   active_record_query_trace
-  aescrypt
   american_date
   annotate (~> 2.7.4)
   better_errors (~> 0.9)
@@ -848,7 +846,7 @@ DEPENDENCIES
   yard
 
 RUBY VERSION
-   ruby 2.3.3p222
+   ruby 2.5.3p105
 
 BUNDLED WITH
    1.16.6

@@ -18,30 +18,32 @@ describe BusinessLocationsController, type: :controller do
     context 'when reset' do
       subject { get :index, params: { reset: true } }
 
-      it 'returns no business locations' do
-        allow_any_instance_of(Ransack::Search).to receive_message_chain(:result, :page, :per).and_return []
+      it 'returns all business locations' do
         subject
-        expect(assigns(:business_locations)).to eq []
+        expect(assigns(:business_locations).length).to eq BusinessLocation.count
       end
     end
 
     context 'when query' do
+      before do
+        FactoryGirl.create :business_location
+      end
+
       let(:query) { { q: 'query' } }
-      let(:results) { [FactoryGirl.build_stubbed(:business_location)] }
 
       subject { get :index, params: query }
 
       it 'returns results' do
-        Ransack::Search.any_instance.stub_chain(:result, :page, :per) { results }
         subject
-        expect(assigns(:business_locations)).to eq results
+        expect(response).to be_successful
       end
     end
   end
 
   describe "GET 'new'" do
+    subject { get 'new' }
+
     it 'returns http success' do
-      get 'new'
       expect(response).to be_successful
     end
 
@@ -107,7 +109,6 @@ describe BusinessLocationsController, type: :controller do
     context 'when nearby locations exist' do
       before do
         @other_location = FactoryGirl.create :business_location
-        allow_any_instance_of(BusinessLocation).to receive(:nearbys).and_return [@other_location]
         @event = FactoryGirl.create :event, venue_id: @other_location.id
       end
 
@@ -156,6 +157,7 @@ describe BusinessLocationsController, type: :controller do
         @business_location.reload
         expect(@business_location.name).to eq(params[:name])
       end
+
       it 'redirect to business_locations' do
         subject
         expect(response).to redirect_to(business_locations_path)
@@ -166,15 +168,25 @@ describe BusinessLocationsController, type: :controller do
           allow_any_instance_of(BusinessLocation).to receive(:update_attributes).and_return false
         end
 
-        it 'html: renders edit page' do
-          subject
-          expect(response).to render_template 'edit'
+        context "when html request" do
+          it 'renders edit page' do
+            subject
+            expect(response).to render_template 'edit'
+          end
         end
 
-        it 'js: re' do
-          allow_any_instance_of(BusinessLocation).to receive(:errors).and_return ['error']
-          put :update, params: { id: @business_location.id, business_location: params }, format: :js
-          expect(JSON.parse(response.body).length).to eq 1
+        context "when js request" do
+          before do
+            @errors = ['bad error']
+            allow_any_instance_of(BusinessLocation).to receive(:errors).and_return @errors
+          end
+
+          subject { put :update, params: { id: @business_location.id, business_location: params }, format: :js }
+
+          it 'returns errors in json' do
+            subject
+            expect(JSON.parse(response.body)).to eq({ "business_locations" => @errors })
+          end
         end
       end
     end

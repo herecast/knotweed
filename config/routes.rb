@@ -178,7 +178,6 @@ Rails.application.routes.draw do
       patch '/subscriptions/:key/confirm', to: 'subscriptions#confirm'
       delete 'subscriptions/:key', to: 'subscriptions#destroy'
       delete 'subscriptions/:listserv_id/:email', to: 'subscriptions#destroy'
-      post '/registrations/confirmed', to: 'confirmed_registrations#create'
 
       put '/businesses/:id/feedback', to: 'business_feedbacks#update', as: :update_feedback
       get '/digests', to: 'digests#index'

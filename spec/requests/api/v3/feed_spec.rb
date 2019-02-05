@@ -20,9 +20,9 @@ describe 'Feed endpoints', type: :request do
           biz_feed_public: content.biz_feed_public,
           campaign_end: content.ad_campaign_end,
           campaign_start: content.ad_campaign_start,
-          click_count: an_instance_of(Fixnum).or(be_nil),
-          comment_count: an_instance_of(Fixnum).or(be_nil),
-          commenter_count: an_instance_of(Fixnum).or(be_nil),
+          click_count: an_instance_of(Integer).or(be_nil),
+          comment_count: an_instance_of(Integer).or(be_nil),
+          commenter_count: an_instance_of(Integer).or(be_nil),
           comments: content.comments.map do |comment|
                       {
                         id: comment.channel.try(:id) || comment.id,
@@ -47,7 +47,7 @@ describe 'Feed endpoints', type: :request do
           embedded_ad: content.embedded_ad?,
           ends_at: an_instance_of(String).or(be_nil),
           event_url: an_instance_of(String).or(be_nil),
-          event_instance_id: an_instance_of(Fixnum).or(be_nil),
+          event_instance_id: an_instance_of(Integer).or(be_nil),
           event_instances: an_instance_of(Array).or(be_nil),
           images: content.images.map do |image|
                     {
@@ -71,7 +71,7 @@ describe 'Feed endpoints', type: :request do
           # @TODO: parent fields should be revisited, do we need them?
           parent_content_id: content.parent_id,
           parent_content_type: content.parent.try(:content_type),
-          parent_event_instance_id: an_instance_of(Fixnum).or(be_nil),
+          parent_event_instance_id: an_instance_of(Integer).or(be_nil),
 
           promote_radius: content.promote_radius,
           published_at: content.pubdate.iso8601,

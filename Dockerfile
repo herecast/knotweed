@@ -1,5 +1,5 @@
-FROM ruby:2.3.3
-RUN apt-get update -qq && apt-get install -y build-essential libmysqlclient-dev nodejs imagemagick && apt-get clean && rm -rf /var/lib/apt/lists/*
+FROM ruby:2.5.3
+RUN apt-get update -qq && apt-get install -y build-essential default-libmysqlclient-dev nodejs imagemagick && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN echo America/New_York > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata
 RUN mkdir -p /knotweed
 WORKDIR /knotweed

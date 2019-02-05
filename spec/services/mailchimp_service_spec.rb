@@ -1177,7 +1177,7 @@ RSpec.describe MailchimpService do
 
         it 'returns a symbolized hash of the merge field as represented in mailchimp' do
           expect(subject).to match(a_hash_including(
-                                     merge_id: an_instance_of(Fixnum),
+                                     merge_id: an_instance_of(Integer),
                                      tag: tag,
                                      name: options[:name],
                                      type: options[:type],
@@ -1255,7 +1255,7 @@ RSpec.describe MailchimpService do
 
         it 'returns a symbolized hash of the merge field as represented in mailchimp' do
           expect(subject).to match(a_hash_including(
-                                     merge_id: an_instance_of(Fixnum),
+                                     merge_id: an_instance_of(Integer),
                                      tag: tag,
                                      name: options[:name],
                                      type: options[:type],
