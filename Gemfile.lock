@@ -788,7 +788,6 @@ DEPENDENCIES
   kaminari (~> 0.15)
   letter_opener
   lograge
-  mail
   mailchimp-api (~> 2.0.6)
   mini_magick
   net-http-persistent
