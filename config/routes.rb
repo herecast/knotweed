@@ -131,7 +131,9 @@ Rails.application.routes.draw do
       get '/feed', to: 'feed#index'
 
       get '/contents/sitemap_ids', to: 'contents#sitemap_ids'
-      resources :contents, only: %i[show create update destroy]
+      resources :contents, only: %i[show create update destroy] do
+        post '/notifications', to: 'contents/notifications#create'
+      end
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
       get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
       # specifying path here to avoid deprecating the frontend even though we've changed
@@ -145,6 +147,9 @@ Rails.application.routes.draw do
         post   '/:organization_id/contents/:content_id/tags', to: 'contents/tags#create'
         delete '/:organization_id/contents/:content_id/tags', to: 'contents/tags#destroy'
         get    '/:name/validation', to: 'validations#show'
+        get    '/subscriptions',    to: 'subscriptions#index'
+        post   '/:organization_id/subscriptions', to: 'subscriptions#create'
+        delete '/subscriptions/:id',              to: 'subscriptions#destroy'
       end
       get '/organizations/sitemap_ids', to: 'organizations#sitemap_ids'
 

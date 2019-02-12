@@ -21,7 +21,7 @@ class ManageContentOnFirstServe
         if content.first_served_at.nil?
           content.update_attribute(:first_served_at, @current_time)
           conditionally_schedule_outreach(content)
-          conditionally_schedule_subscriber_notification(content)
+          conditionally_schedule_notification(content)
           if Figaro.env.production_messaging_enabled == 'true'
             FacebookService.rescrape_url(content)
             if content.content_type == :news
@@ -56,6 +56,18 @@ class ManageContentOnFirstServe
         )
       end
     end
+
+    def conditionally_schedule_notification(content)
+      if content.should_notify_subscribers?
+        begin
+          BackgroundJob.perform_later('Outreach::SendOrganizationPostNotification',
+            'call',
+            content
+          )
+        rescue
+        end
+      end
+    end
   end
 
   def conditionally_cancel_reminder_campaign(organization)
@@ -64,12 +76,6 @@ class ManageContentOnFirstServe
         MailchimpService::UserOutreach.delete_campaign(organization.reminder_campaign_id)
       end
       organization.update_attribute(:reminder_campaign_id, nil)
-    end
-  end
-
-  def conditionally_schedule_subscriber_notification(content)
-    if content.should_notify_subscribers?
-      NotifySubscribersJob.perform_now(content)
     end
   end
 end

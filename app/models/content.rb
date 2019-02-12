@@ -64,6 +64,7 @@
 #  alternate_text            :string
 #  alternate_image_url       :string
 #  location_id               :integer
+#  mc_campaign_id            :string
 #
 # Indexes
 #
@@ -651,12 +652,6 @@ class Content < ActiveRecord::Base
     !!(organization.present? && organization.embedded_ad)
   end
 
-  def should_notify_subscribers?
-    organization&.subscribe_url.present? &&
-      !outside_subscriber_notification_blast_radius? &&
-      (is_not_campaign? || is_feature_notification?)
-  end
-
   def built_view_count
     if root_content_category.try(:name) == 'campaign'
       promotions.includes(:promotable).first.try(:promotable).try(:impression_count)
@@ -682,6 +677,10 @@ class Content < ActiveRecord::Base
             .take(6)
   end
 
+  def should_notify_subscribers?
+    mc_campaign_id.nil? && organization.active_subscriber_count > 0
+  end
+
   private
 
   def event_latest_activity
@@ -693,22 +692,6 @@ class Content < ActiveRecord::Base
     if ad_promotion_type == PromotionBanner::SPONSORED && ad_max_impressions.nil?
       errors.add(:ad_max_impressions, 'For ad_promotion_type Sponsored, ad_max_impressions must be populated')
     end
-  end
-
-  def is_not_campaign?
-    %i[news event talk market].include?(content_type)
-  end
-
-  def is_feature_notification?
-    !!organization&.feature_notification_org?
-  end
-
-  ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS = [
-    'Dev Testbed', # For testing on an FE
-  ].freeze
-
-  def outside_subscriber_notification_blast_radius?
-    ORGANIZATIONS_NOT_FOR_AUTOMATIC_SUBSCRIBER_ALERTS.include?(organization_name)
   end
 
   def hide_campaign_from_public_view

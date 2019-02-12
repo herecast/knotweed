@@ -44,6 +44,8 @@
 #  w9                     :boolean          default(FALSE)
 #  has_had_bookmarks      :boolean          default(FALSE)
 #  mc_segment_id          :string
+#  first_name             :string
+#  last_name              :string
 #
 # Indexes
 #
@@ -59,6 +61,8 @@ class User < ActiveRecord::Base
   has_many :user_bookmarks
   has_many :contents, foreign_key: 'created_by_id'
   has_many :payments, foreign_key: 'paid_to_id'
+  has_many :organization_subscriptions
+
   belongs_to :location
   mount_uploader :avatar, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_avatar,

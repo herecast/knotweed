@@ -9,4 +9,10 @@ class UserMailer < ApplicationMailer
 
     mail to: @user.email, subject: 'Sign in to DailyUV.com'
   end
+
+  def auto_subscribed(user:, password:)
+    @password = password
+
+    mail to: user.email, subject: 'Your free account on DailyUV is ready!'
+  end
 end

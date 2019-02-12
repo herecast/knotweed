@@ -36,7 +36,11 @@ module Api
                  :desktop_image_url,
                  :calendar_view_first,
                  :calendar_card_active,
-                 :digest_id
+                 :digest_id,
+                 :active_subscriber_count,
+                 :post_count,
+                 :total_view_count
+
 
       def profile_image_url
         object.profile_image_url || object.logo_url
@@ -93,6 +97,14 @@ module Api
 
       def zip
         business_location.try(:zip)
+      end
+
+      def post_count
+        object.contents.count
+      end
+
+      def total_view_count
+        object.contents.sum(:view_count).to_i
       end
 
       private

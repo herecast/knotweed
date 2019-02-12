@@ -45,7 +45,10 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           desktop_image_url: organization.desktop_image_url,
           calendar_view_first: organization.calendar_view_first,
           calendar_card_active: organization.calendar_card_active,
-          digest_id: organization.digest_id
+          digest_id: organization.digest_id,
+          active_subscriber_count: organization.active_subscriber_count,
+          post_count: organization.contents.count,
+          total_view_count: organization.contents.sum(:view_count).to_i
         }
       )
     end

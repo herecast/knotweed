@@ -102,6 +102,7 @@ group :test do
   gem "timecop"
   gem "vcr", '~> 2.9'                               # Have not yet tested the next major version
   gem "webmock"
+  gem 'rb-readline'
 end
 
 group :development do

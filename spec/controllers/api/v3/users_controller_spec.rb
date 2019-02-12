@@ -371,7 +371,13 @@ describe Api::V3::UsersController, type: :controller do
         can_publish_news: false,
         managed_organization_ids: [],
         has_had_bookmarks: user.has_had_bookmarks,
-        is_blogger: user.has_role?(:blogger)
+        is_blogger: user.has_role?(:blogger),
+        organization_subscriptions: user.organization_subscriptions.map do |os|
+          {
+            id: os.id,
+            organization_name: os.organization.name
+          }
+        end
       }.stringify_keys }.stringify_keys
   end
 end

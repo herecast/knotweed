@@ -46,6 +46,7 @@
 #  embedded_ad              :boolean          default(TRUE)
 #  digest_id                :integer
 #  reminder_campaign_id     :string
+#  mc_segment_id            :string
 #
 # Indexes
 #

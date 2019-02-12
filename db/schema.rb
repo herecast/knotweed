@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190115204158) do
+ActiveRecord::Schema.define(version: 20190129171040) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -257,6 +258,7 @@ ActiveRecord::Schema.define(version: 20190115204158) do
     t.string   "alternate_image_url"
     t.boolean  "has_future_event_instance"
     t.integer  "location_id"
+    t.string   "mc_campaign_id"
     t.index ["authoremail"], name: "idx_16527_index_contents_on_authoremail", using: :btree
     t.index ["authors"], name: "idx_16527_authors", using: :btree
     t.index ["channel_id"], name: "idx_16527_index_contents_on_channel_id", using: :btree
@@ -469,6 +471,18 @@ ActiveRecord::Schema.define(version: 20190115204158) do
     t.index ["organization_id"], name: "index_organization_locations_on_organization_id", using: :btree
   end
 
+  create_table "organization_subscriptions", force: :cascade do |t|
+    t.bigint   "user_id"
+    t.bigint   "organization_id"
+    t.string   "mc_subscriber_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["organization_id"], name: "index_organization_subscriptions_on_organization_id"
+    t.index ["user_id", "organization_id"], name: "index_organization_subscriptions_on_user_id_and_organization_id", unique: true
+    t.index ["user_id"], name: "index_organization_subscriptions_on_user_id"
+  end
+
   create_table "organizations", id: :bigserial, force: :cascade do |t|
     t.string   "name", limit: 255
     t.datetime "created_at",                                           null: false
@@ -512,6 +526,7 @@ ActiveRecord::Schema.define(version: 20190115204158) do
     t.boolean  "embedded_ad",                          default: true
     t.integer  "digest_id"
     t.string   "reminder_campaign_id"
+    t.string   "mc_segment_id"
     t.index ["name"], name: "idx_16739_index_publications_on_name", unique: true, using: :btree
   end
 
@@ -774,6 +789,8 @@ ActiveRecord::Schema.define(version: 20190115204158) do
     t.boolean  "w9",                                 default: false
     t.boolean  "has_had_bookmarks",                  default: false
     t.string   "mc_segment_id"
+    t.string   "first_name"
+    t.string   "last_name"
     t.index ["email"], name: "idx_16858_index_users_on_email", unique: true, using: :btree
     t.index ["public_id"], name: "idx_16858_index_users_on_public_id", unique: true, using: :btree
     t.index ["reset_password_token"], name: "idx_16858_index_users_on_reset_password_token", unique: true, using: :btree

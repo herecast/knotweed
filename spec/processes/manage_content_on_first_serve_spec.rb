@@ -10,6 +10,74 @@ RSpec.describe ManageContentOnFirstServe do
       @current_time = Time.current.to_s
     end
 
+    context 'when first_served_at is nil' do
+      before do
+        @organization = FactoryGirl.create :organization
+        @content = FactoryGirl.create :content,
+          organization_id: @organization.id
+        allow(SlackService).to receive(
+          :send_published_content_notification
+        ).and_return(true)
+        allow(IntercomService).to receive(
+          :send_published_content_event
+        ).and_return(true)
+        allow(FacebookService).to receive(
+          :rescrape_url
+        ).and_return(true)
+      end
+
+      subject do
+        ManageContentOnFirstServe.call(
+          content_ids: [@content.id],
+          current_time: @current_time
+        )
+      end
+
+      context 'when content has no mc_campaign_id' do
+        context 'when content Org has subscribers' do
+          before do
+            user = FactoryGirl.create :user
+            @organization.organization_subscriptions.create(
+              user_id: user.id
+            )
+          end
+
+          it "calls to schedule Mailchimp post" do
+            expect(BackgroundJob).to receive(:perform_later).with(
+              'Outreach::SendOrganizationPostNotification',
+              'call',
+              @content
+            )
+            subject
+          end
+        end
+
+        context 'when content Organization has no subscribers' do
+          it "does not call to schedule Mailchimp post" do
+            expect(BackgroundJob).not_to receive(:perform_later)
+            subject
+          end
+        end
+      end
+
+      context 'when content has mc_campaign_id' do
+        context 'when content Organization has subscribers' do
+          before do
+            user = FactoryGirl.create :user
+            @organization.organization_subscriptions.create(
+              user_id: user.id
+            )
+            @content.update_attribute(:mc_campaign_id, '1234')
+          end
+
+          it "does not call to schedule Mailchimp post" do
+            expect(BackgroundJob).not_to receive(:perform_later)
+            subject
+          end
+        end
+      end
+    end
+
     context 'when content not for Blog' do
       before do
         @content_one = FactoryGirl.create :content
@@ -194,47 +262,6 @@ RSpec.describe ManageContentOnFirstServe do
             user: @third_content.created_by,
             action: 'third_blogger_post'
           )
-          subject
-        end
-      end
-
-      context 'when Content Organization has a subscribe_url' do
-        before do
-          organization = FactoryGirl.create :organization,
-                                            subscribe_url: 'http://glarb.com'
-          @subscribed_market = FactoryGirl.create :content, :market_post,
-                                                  organization_id: organization.id,
-                                                  first_served_at: nil
-          @subscribed_event = FactoryGirl.create :content, :event,
-                                                 organization_id: organization.id,
-                                                 first_served_at: nil
-          @subscribed_news = FactoryGirl.create :content, :news,
-                                                organization_id: organization.id,
-                                                first_served_at: nil
-          @subscribed_talk = FactoryGirl.create :content, :talk,
-                                                organization_id: organization.id,
-                                                first_served_at: nil
-          @campaign = FactoryGirl.create :content, :campaign,
-                                         organization_id: organization.id,
-                                         first_served_at: nil
-          allow(NotifySubscribersJob).to receive(:perform_now).and_return true
-        end
-
-        subject do
-          ManageContentOnFirstServe.call(
-            content_ids: [
-              @subscribed_market.id,
-              @subscribed_news.id,
-              @subscribed_talk.id,
-              @subscribed_event.id,
-              @campaign
-            ],
-            current_time: @current_time
-          )
-        end
-
-        it 'calls to notification job' do
-          expect(NotifySubscribersJob).to receive(:perform_now).exactly(4).times
           subject
         end
       end

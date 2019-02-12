@@ -64,6 +64,7 @@
 #  alternate_text            :string
 #  alternate_image_url       :string
 #  location_id               :integer
+#  mc_campaign_id            :string
 #
 # Indexes
 #

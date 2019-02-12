@@ -1025,24 +1025,4 @@ describe 'Contents Endpoints', type: :request do
       expect(subject[:content_ids]).to_not include news.id
     end
   end
-
-  describe '#update_subscriber_notification' do
-    before do
-      @organization = FactoryGirl.create :organization,
-                                         subscribe_url: 'http://glim.glam'
-      allow(NotifySubscribersJob).to receive(:perform_later).and_return true
-    end
-
-    context 'when Content is type: campaign' do
-      subject do
-        FactoryGirl.create :content, :campaign,
-                           organization_id: @organization.id
-      end
-
-      it 'does not notify subscribers' do
-        expect(NotifySubscribersJob).not_to receive(:perform_later)
-        subject
-      end
-    end
-  end
 end

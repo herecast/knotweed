@@ -46,6 +46,7 @@
 #  embedded_ad              :boolean          default(TRUE)
 #  digest_id                :integer
 #  reminder_campaign_id     :string
+#  mc_segment_id            :string
 #
 # Indexes
 #
@@ -61,7 +62,7 @@ class Organization < ActiveRecord::Base
   searchkick callbacks: :async,
              batch_size: 1000,
              index_prefix: Figaro.env.searchkick_index_prefix,
-             searchable: [:name]
+             searchable: [:name, :description]
 
   ransacker :show_news_publishers
 
@@ -73,7 +74,8 @@ class Organization < ActiveRecord::Base
       content_category_ids: contents_root_content_category_ids_only.map(&:root_content_category_id).uniq,
       certified_storyteller: certified_storyteller,
       certified_social: certified_social,
-      archived: archived
+      archived: archived,
+      description: description
     }
   end
 
@@ -95,6 +97,7 @@ class Organization < ActiveRecord::Base
 
   has_many :contents
   has_many :business_profiles, through: :contents
+  has_many :organization_subscriptions
 
   has_many :organization_content_tags
   has_many :tagged_contents, through: :organization_content_tags
@@ -194,6 +197,14 @@ class Organization < ActiveRecord::Base
 
   def profile_link
     "https://#{Figaro.env.default_host}/profile/#{id}"
+  end
+
+  def mc_segment_name
+    "#{id}-organization-segment"
+  end
+
+  def active_subscriber_count
+    organization_subscriptions.active.count
   end
 
   private

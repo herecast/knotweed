@@ -18,7 +18,8 @@ module Api
                  :can_publish_news?,
                  :location_confirmed,
                  :has_had_bookmarks,
-                 :is_blogger
+                 :is_blogger,
+                 :organization_subscriptions
 
       def listserv_id
         object.location.try(:listserv).try(:id)
@@ -55,6 +56,12 @@ module Api
           city: object.location.city,
           state: object.location.state
         }
+      end
+
+      def organization_subscriptions
+        object.organization_subscriptions.active.map do |org_subscription|
+          OrganizationSubscriptionSerializer.new(org_subscription, root: false)
+        end
       end
     end
   end

@@ -44,7 +44,13 @@ RSpec.describe 'User API Endpoints', type: :request do
             managed_organization_ids: an_instance_of(Array),
             can_publish_news: user.can_publish_news?,
             has_had_bookmarks: user.has_had_bookmarks,
-            is_blogger: user.has_role?(:blogger)
+            is_blogger: user.has_role?(:blogger),
+            organization_subscriptions: user.organization_subscriptions.map do |os|
+              {
+                id: os.id,
+                organization_name: os.organization.name
+              }
+            end
           }
         )
       end
