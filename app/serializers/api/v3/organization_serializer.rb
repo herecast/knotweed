@@ -100,7 +100,11 @@ module Api
       end
 
       def post_count
-        object.contents.count
+        object.contents
+              .not_removed
+              .where('pubdate IS NOT NULL AND pubdate < ?', Time.current)
+              .where.not(channel_type: "BusinessProfile")
+              .count
       end
 
       def total_view_count
