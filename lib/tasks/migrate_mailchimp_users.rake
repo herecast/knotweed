@@ -58,7 +58,7 @@ task migrate_mailchimp_users: :environment do
             password: temp_password
           )
           puts "*** Created new user with email: #{user.email}"
-          UserMailer.auto_subscribed(user: user, password: temp_password).deliver_later
+          UserMailer.auto_subscribed(user: user, password: temp_password).deliver_now
           user
         end
       end.compact
