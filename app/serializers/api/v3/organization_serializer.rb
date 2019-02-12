@@ -103,7 +103,7 @@ module Api
         object.contents
               .not_removed
               .where('pubdate IS NOT NULL AND pubdate < ?', Time.current)
-              .where.not(channel_type: "BusinessProfile")
+              .where("channel_type != 'BusinessProfile' OR channel_type IS NULL")
               .count
       end
 
