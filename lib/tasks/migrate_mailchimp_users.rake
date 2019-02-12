@@ -8,8 +8,8 @@ task migrate_mailchimp_users: :environment do
 
   # grab lists from Subscription account in Mailchimp
   lists = []
-  2.times do |index|
-    old_mailchimp_connection.lists.list([], index*100, 100)['data'].each do |l|
+  3.times do |index|
+    old_mailchimp_connection.lists.list([], index, 100)['data'].each do |l|
       lists << { id: l['id'], subscribe_url: l['subscribe_url_short'] }
     end
   end
