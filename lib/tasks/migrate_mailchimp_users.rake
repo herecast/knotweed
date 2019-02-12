@@ -45,21 +45,26 @@ task migrate_mailchimp_users: :environment do
           )
           user
         else
-          temp_password = SecureRandom.hex(4)
-          user = User.create(
-            location_id: Location.find_by(city: 'Hartford', state: 'VT').id,
-            confirmed_at: Time.current,
-            nda_agreed_at: Time.current,
-            agreed_to_nda: true,
-            first_name: u["merges"]["FNAME"],
-            last_name: u["merges"]["LNAME"],
-            name: u['email'].split('@')[0],
-            email: u['email'],
-            password: temp_password
-          )
-          puts "*** Created new user with email: #{user.email}"
-          UserMailer.auto_subscribed(user: user, password: temp_password).deliver_now
-          user
+          begin
+            temp_password = SecureRandom.hex(4)
+            user = User.create!(
+              location_id: Location.find_by(city: 'Hartford', state: 'VT').id,
+              confirmed_at: Time.current,
+              nda_agreed_at: Time.current,
+              agreed_to_nda: true,
+              first_name: u["merges"]["FNAME"],
+              last_name: u["merges"]["LNAME"],
+              name: u['email'].split('@')[0],
+              email: u['email'],
+              password: temp_password
+            )
+            puts "*** Created new user with email: #{user.email}"
+            UserMailer.auto_subscribed(user: user, password: temp_password).deliver_now
+            user
+          rescue Exception => e
+            puts e.inspect
+            nil
+          end
         end
       end.compact
       puts "Finding Users"
