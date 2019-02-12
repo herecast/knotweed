@@ -1,5 +1,9 @@
+def org_allowed?(args, organization_name)
+  args.org_name.present? ? args.org_name == organization_name : true
+end
+
 desc 'Migrate mailchimp Org subscribers to new system'
-task migrate_mailchimp_users: :environment do
+task :migrate_mailchimp_users, [:org_name] => :environment do |_t, args|
   puts "Mailchimp subscription transferral"
 
   old_mailchimp_connection = Mailchimp::API.new(Figaro.env.subscriptions_mailchimp_api_key)
@@ -17,7 +21,7 @@ task migrate_mailchimp_users: :environment do
   lists.each do |l|
     # find Orgs with subscribe urls
     organization = Organization.find_by(subscribe_url: l[:subscribe_url])
-    if organization.present?
+    if organization.present? && org_allowed?(args, organization.name)
       puts "Transferring subscribers for #{organization.name}"
 
       # give Org a mailchimp segment in Master List
