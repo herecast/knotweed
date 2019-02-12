@@ -31,7 +31,7 @@ task migrate_mailchimp_users: :environment do
       # map subscribed users into batch
       users = []
       15.times do |index|
-        old_mailchimp_connection.lists.members(l[:id], 'subscribed', { start: index*100, limit: 100 })['data'].each do |user|
+        old_mailchimp_connection.lists.members(l[:id], 'subscribed', { start: index, limit: 100 })['data'].each do |user|
           users << user
         end
       end
