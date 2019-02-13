@@ -17,9 +17,6 @@ default: &default
     welcome:
       subject: "Welcome to DailyUV!"
       template_id: 273041
-    subscribe_to_blogs:
-      subject: "Be the first to know - Subscribe to your favorites"
-      template_id: 273049
     bookmarking:
       subject: "Bookmark your favorite DailyUV posts"
       template_id: 273057

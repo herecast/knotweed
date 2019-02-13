@@ -24,7 +24,6 @@ module Outreach
     def ordered_steps
       %w[
         welcome
-        subscribe_to_blogs
         bookmarking
         subscribe_to_digests
         finding_comments

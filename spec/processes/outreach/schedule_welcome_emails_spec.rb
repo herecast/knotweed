@@ -40,7 +40,7 @@ RSpec.describe Outreach::ScheduleWelcomeEmails do
           saved_segment_id: @user.mc_segment_id
         )
       end
-      expect(@campaigns_array).to receive(:schedule).exactly(5).times
+      expect(@campaigns_array).to receive(:schedule).exactly(4).times
       subject
     end
   end
