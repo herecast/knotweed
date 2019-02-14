@@ -71,4 +71,27 @@ RSpec.describe ContentMetric, type: :model do
       end
     end
   end
+
+  describe '#views_by_user_and_period' do
+    let(:period_start) { 1.week.ago }
+    let(:period_end) { 1.week.from_now }
+    let(:user) { FactoryGirl.create :user }
+    let(:org) { FactoryGirl.create :organization, pay_for_content: true }
+    let(:content) { FactoryGirl.create :content, pubdate: 2.weeks.ago, created_by: user, organization: org }
+    let!(:content_metrics) { FactoryGirl.create_list :content_metric, 3, content: content, event_type: 'impression' }
+
+    subject { ContentMetric.views_by_user_and_period(period_start: period_start, period_end: period_end, user: user) }
+
+    it 'should sum the content metric impressions matching the user\'s content' do
+      expect(subject).to eq content_metrics.count
+    end
+
+    context 'for an org without pay_for_content' do
+      let(:org) { FactoryGirl.create :organization, pay_for_content: false }
+
+      it 'should be 0' do
+        expect(subject).to eq 0
+      end
+    end
+  end
 end

@@ -181,6 +181,7 @@ ActiveRecord::Schema.define(version: 20190129171040) do
     t.index ["location_id"], name: "index_content_metrics_on_location_id", using: :btree
     t.index ["organization_id"], name: "index_content_metrics_on_organization_id", using: :btree
     t.index ["user_id"], name: "index_content_metrics_on_user_id", using: :btree
+    t.index ["created_at"], name: "index_content_metrics_on_created_at", using: :btree
   end
 
   create_table "content_reports", id: :bigserial, force: :cascade do |t|

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: content_metrics
@@ -21,6 +20,7 @@
 #
 #  index_content_metrics_on_client_id        (client_id)
 #  index_content_metrics_on_content_id       (content_id)
+#  index_content_metrics_on_created_at       (created_at)
 #  index_content_metrics_on_event_type       (event_type)
 #  index_content_metrics_on_location_id      (location_id)
 #  index_content_metrics_on_organization_id  (organization_id)
@@ -37,5 +37,16 @@ class ContentMetric < ActiveRecord::Base
 
   before_create do
     self.organization = content.organization
+  end
+
+  def self.views_by_user_and_period(period_start:, period_end:, user:)
+    period_start = period_start.beginning_of_day
+    period_end = period_end.end_of_day
+    ContentMetric.where("event_type = 'impression'")
+      .where('content_metrics.created_at BETWEEN ? and ?', period_start, period_end)
+      .where('contents.created_by_id = ?', user)
+      .joins(:content, :organization)
+      .where('pay_for_content = true')
+      .count(:id)
   end
 end

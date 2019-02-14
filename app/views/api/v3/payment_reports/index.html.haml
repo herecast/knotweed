@@ -20,19 +20,16 @@
     - if @total_payment.present?
       .container.report-summary
         .row-fluid
-          .report-summary-block
-            %h3 Total Impressions
+          .report-summary-block.span3
+            %h3 Views
+            %h2= @views
+          .report-summary-block.span3
+            %h3 Impressions
             %h2= @paid_impressions
-          .report-summary-block
-            %h3 Pay per Impression
-            %h2= number_to_currency(@pay_per_impression, precision: 4)
-          .report-summary-block
-            %h3 Revenue Share
-            %h2 #{@revenue_share}%
-          .report-summary-block
+          .report-summary-block.span3
             %h3 Total Payment
             %h2= number_to_currency(@total_payment)
-          .report-summary-block
+          .report-summary-block.span3
             %h3 Payment Date
             %h2= @payment_date.strftime("%m/%d/%Y")
       .container
