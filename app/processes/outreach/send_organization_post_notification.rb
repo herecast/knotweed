@@ -15,7 +15,7 @@ module Outreach
       @content           = content
       @organization      = content.organization
       @title             = content.title
-      @post_url          = "#{@organization_url}/#{content.id}"
+      @post_url          = "#{@organization.profile_link}/#{content.id}"
       @profile_image_url = @organization.profile_image_url
     end
 
