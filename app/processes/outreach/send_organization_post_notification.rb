@@ -5,7 +5,6 @@ module Outreach
     include MailchimpAPI
 
     ERB_NEWS_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/notification.html.erb"
-    ERB_NON_NEWS_POST_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/organization_notification.html.erb"
     ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/feature_notification.html.erb"
 
     def self.call(*args)
@@ -16,11 +15,7 @@ module Outreach
       @content           = content
       @organization      = content.organization
       @title             = content.title
-      @organization_name = @organization.name
-      @organization_url  = @organization.profile_link
       @post_url          = "#{@organization_url}/#{content.id}"
-      @banner_image_url  = @organization.background_image_url
-      @excerpt           = content_excerpt(content)
       @profile_image_url = @organization.profile_image_url
     end
 
@@ -63,8 +58,6 @@ module Outreach
       def html_path
         if @organization.feature_notification_org?
           ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH
-        elsif %i[event market talk].include?(@content.content_type)
-          ERB_NON_NEWS_POST_TEMPLATE_PATH
         else
           ERB_NEWS_TEMPLATE_PATH
         end
