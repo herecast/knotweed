@@ -30,10 +30,6 @@ DEFAULT_CONSUMER_HOST: dailyuv.com
 MAILCHIMP_API_HOST: us13.api.mailchimp.com
 MAILCHIMP_API_KEY: test
 
-SUBSCRIPTIONS_MAILCHIMP_API_HOST:     us11.api.mailchimp.com
-SUBSCRIPTIONS_MAILCHIMP_API_KEY:      this-is-not-a-real-key
-
-LISTSERV_MARKETING_URL: http://listserv.dailyUV.com
 ELASTICSEARCH_URL: http://localhost:9200
 
 REDIS_URL: redis://subtext-dev.0egmnu.0001.use1.cache.amazonaws.com/1
