@@ -48,7 +48,8 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           digest_id: organization.digest_id,
           active_subscriber_count: organization.active_subscriber_count,
           post_count: organization.contents.count,
-          total_view_count: organization.contents.sum(:view_count).to_i
+          total_view_count: organization.contents.sum(:view_count).to_i,
+          user_hide_count: organization.organization_hides.active.count
         }
       )
     end

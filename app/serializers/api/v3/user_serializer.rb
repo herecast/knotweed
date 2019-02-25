@@ -19,7 +19,8 @@ module Api
                  :location_confirmed,
                  :has_had_bookmarks,
                  :is_blogger,
-                 :organization_subscriptions
+                 :organization_subscriptions,
+                 :organization_hides
 
       def listserv_id
         object.location.try(:listserv).try(:id)
@@ -61,6 +62,12 @@ module Api
       def organization_subscriptions
         object.organization_subscriptions.active.map do |org_subscription|
           OrganizationSubscriptionSerializer.new(org_subscription, root: false)
+        end
+      end
+
+      def organization_hides
+        object.organization_hides.active.map do |organization_hide|
+          OrganizationHideSerializer.new(organization_hide, root: false)
         end
       end
     end

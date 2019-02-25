@@ -290,6 +290,26 @@ describe 'Feed endpoints', type: :request do
       end
     end
 
+    context "when user has blocked orgs" do
+      before do
+        organization = FactoryGirl.create :organization
+        @content = FactoryGirl.create :content, :news,
+          organization_id: organization.id,
+          location_id: user.location_id
+        FactoryGirl.create :organization_hide,
+          organization_id: organization.id,
+          user_id: user.id
+      end
+
+      subject { get "/api/v3/feed", params: {}, headers: headers.merge(auth_headers) }
+
+      it "does not return blocked Org content" do
+        subject
+        returned_ids = response_json[:feed_items].map { |i| i[:content][:id] }
+        expect(returned_ids).not_to include @content.id
+      end
+    end
+
     context "when 'query' parameter is present" do
       before do
         @market_post = FactoryGirl.create :content, :market_post,

@@ -150,6 +150,8 @@ Rails.application.routes.draw do
         get    '/subscriptions',    to: 'subscriptions#index'
         post   '/:organization_id/subscriptions', to: 'subscriptions#create'
         delete '/subscriptions/:id',              to: 'subscriptions#destroy'
+        post   '/:organization_id/hides', to: 'hides#create'
+        delete '/hides/:id',              to: 'hides#destroy'
       end
       get '/organizations/sitemap_ids', to: 'organizations#sitemap_ids'
 

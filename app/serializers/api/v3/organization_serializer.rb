@@ -39,7 +39,8 @@ module Api
                  :digest_id,
                  :active_subscriber_count,
                  :post_count,
-                 :total_view_count
+                 :total_view_count,
+                 :user_hide_count
 
 
       def profile_image_url
@@ -109,6 +110,10 @@ module Api
 
       def total_view_count
         object.contents.sum(:view_count).to_i
+      end
+
+      def user_hide_count
+        object.organization_hides.active.count
       end
 
       private

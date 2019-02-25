@@ -377,7 +377,8 @@ describe Api::V3::UsersController, type: :controller do
             id: os.id,
             organization_name: os.organization.name
           }
-        end
+        end,
+        organization_hides: []
       }.stringify_keys }.stringify_keys
   end
 end

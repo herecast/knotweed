@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190129171040) do
+ActiveRecord::Schema.define(version: 20190219144445) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -460,6 +460,19 @@ ActiveRecord::Schema.define(version: 20190129171040) do
     t.datetime "updated_at"
     t.index ["content_id"], name: "index_organization_content_tags_on_content_id", using: :btree
     t.index ["organization_id"], name: "index_organization_content_tags_on_organization_id", using: :btree
+  end
+
+  create_table "organization_hides", force: :cascade do |t|
+    t.bigint   "user_id"
+    t.bigint   "organization_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string   "flag_type"
+    t.bigint   "content_id"
+    t.index ["content_id"], name: "index_organization_hides_on_content_id"
+    t.index ["organization_id"], name: "index_organization_hides_on_organization_id"
+    t.index ["user_id"], name: "index_organization_hides_on_user_id"
   end
 
   create_table "organization_locations", force: :cascade do |t|

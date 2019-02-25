@@ -102,7 +102,13 @@ class ContentSearch
           not: true
         }
       }
-    }
+    }.tap do |attrs|
+      if @current_user
+        attrs[:where][:organization_id] = {
+          not: @current_user.blocked_organzation_ids
+        }
+      end
+    end
   end
 
   def add_boilerplate_opts(attrs)
@@ -125,6 +131,8 @@ class ContentSearch
   def whitelist_organizations_and_content_types(attrs)
     if @params[:content_type].present?
       attrs[:where][:content_type] = @params[:content_type]
+    elsif attrs[:where][:organization_id].present?
+      attrs[:where][:organization_id][:not] << Organization::LISTSERV_ORG_ID
     else
       attrs[:where][:organization_id] = { not: Organization::LISTSERV_ORG_ID }
     end

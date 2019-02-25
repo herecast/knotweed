@@ -50,7 +50,8 @@ RSpec.describe 'User API Endpoints', type: :request do
                 id: os.id,
                 organization_name: os.organization.name
               }
-            end
+            end,
+            organization_hides: []
           }
         )
       end

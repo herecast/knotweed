@@ -62,6 +62,7 @@ class User < ActiveRecord::Base
   has_many :contents, foreign_key: 'created_by_id'
   has_many :payments, foreign_key: 'paid_to_id'
   has_many :organization_subscriptions
+  has_many :organization_hides
 
   belongs_to :location
   mount_uploader :avatar, ImageUploader
@@ -228,6 +229,10 @@ class User < ActiveRecord::Base
 
   def new_user_mc_segment_string
     "New User ID: #{id}"
+  end
+
+  def blocked_organzation_ids
+    organization_hides.active.pluck(:organization_id)
   end
 
   private
