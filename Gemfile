@@ -20,6 +20,7 @@ gem 'datetimepicker-rails', git: 'git://github.com/zpaulovics/datetimepicker-rai
 gem "devise", '~> 4.5.0'                                # Have not yet tested the next major version
 gem 'dimensions'
 gem 'enumerize'
+gem "factory_girl_rails", "~> 4.4.0"
 gem 'faker'
 gem 'faraday_middleware-aws-signers-v4'
 gem 'figaro'
@@ -79,7 +80,6 @@ gem 'uglifier', '~> 2.4'                            # Have not yet tested the ne
 gem 'unf'
 
 group :development, :test do
-  gem "factory_girl_rails", "~> 4.4.0"              # 4.5.0 causes a failure in the test suite
   gem 'guard-bundler', require: false
   gem 'guard', require: false
   gem 'guard-rspec', require: false
