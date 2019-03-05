@@ -13,7 +13,6 @@ default: &default
     sunsetting_ads: aileen.lem@subtext.org
 
   email_outreach:
-    new_user_list_id: c3c399d570
     welcome:
       subject: "Welcome to DailyUV!"
       template_id: 273041

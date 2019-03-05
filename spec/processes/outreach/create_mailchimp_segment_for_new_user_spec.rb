@@ -16,13 +16,20 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
       mailchimp = double(lists: @lists_array)
       allow(Mailchimp::API).to receive(:new)
         .and_return(mailchimp)
+      @list_id = 'list-id'
+      env = double(
+        mailchimp_master_list_id: @list_id,
+        mailchimp_api_key: 'dummy',
+        mailchimp_api_host: 'dummy'
+      )
+      allow(Figaro).to receive(:env).and_return(env)
     end
 
     subject { Outreach::CreateMailchimpSegmentForNewUser.call(@user) }
 
     it 'subscribes User to New User list' do
       expect(@lists_array).to receive(:subscribe).with(
-        Rails.configuration.subtext.email_outreach.new_user_list_id,
+        @list_id,
         { email: @user.email },
         nil,
         'html',
@@ -40,7 +47,7 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
     it 'subscribes User to User-specific segment' do
       expect(@lists_array).to receive(:static_segment_members_add)
         .with(
-          Rails.configuration.subtext.email_outreach.new_user_list_id,
+          @list_id,
           @mc_id,
           [{ email: @user.email }]
         )

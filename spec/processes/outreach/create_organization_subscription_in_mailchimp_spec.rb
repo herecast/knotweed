@@ -6,7 +6,6 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
 
   describe "::call" do
     before do
-      @master_list_id = Rails.configuration.subtext.email_outreach.new_user_list_id
       @organization = FactoryGirl.create :organization
       @user = FactoryGirl.create :user
       @org_subscription = FactoryGirl.build :organization_subscription,
@@ -21,6 +20,13 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
       )
       mailchimp = double(lists: @lists)
       allow(Mailchimp::API).to receive(:new).and_return(mailchimp)
+      @list_id = 'list-id'
+      env = double(
+        mailchimp_master_list_id: @list_id,
+        mailchimp_api_key: 'dummy',
+        mailchimp_api_host: 'dummy'
+      )
+      allow(Figaro).to receive(:env).and_return(env)
     end
 
     subject do
@@ -35,7 +41,7 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
 
     it "ensures user is on Mailchimp master list" do
       expect(@lists).to receive(:member_info).with(
-        @master_list_id,
+        @list_id,
         [{ email: @user.email }]
       )
       subject
@@ -43,7 +49,7 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
 
     it "calls to subscribe user to Mailchimp list" do
       expect(@lists).to receive(:subscribe).with(
-        @master_list_id,
+        @list_id,
         { email: @user.email },
         nil,
         "html",
