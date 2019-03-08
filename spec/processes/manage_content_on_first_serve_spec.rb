@@ -239,15 +239,21 @@ RSpec.describe ManageContentOnFirstServe do
           }.to nil
         end
 
-        context "when Mailchimp call fails" do
+        context "when Mailchimp call fails in Production" do
           before do
             @error = Mailchimp::Error.new
             allow(Outreach::ScheduleBloggerEmails).to receive(:call).and_raise(
               @error
             )
-            allow(SlackService).to receive(:send_new_blogger_error_alert).and_return(
-              true
-            )
+            allow(SlackService).to receive(
+              :send_new_blogger_error_alert
+            ).and_return(true)
+            allow(Figaro.env).to receive(
+              :production_messaging_enabled
+            ).and_return('true')
+            allow(FacebookService).to receive(
+              :rescrape_url
+            ).and_return(true)
           end
 
           it "sends Slack notification" do
@@ -258,32 +264,6 @@ RSpec.describe ManageContentOnFirstServe do
             )
             subject
           end
-        end
-      end
-
-      context 'when content is third for the org' do
-        before do
-          @second_content = FactoryGirl.create :content,
-                                               organization_id: @organization.id,
-                                               first_served_at: nil
-          @third_content = FactoryGirl.create :content,
-                                              organization_id: @organization.id,
-                                              first_served_at: nil
-        end
-
-        subject do
-          ManageContentOnFirstServe.call(
-            content_ids: [@second_content.id, @third_content.id],
-            current_time: @current_time
-          )
-        end
-
-        it 'sends follow-up email' do
-          expect(Outreach::ScheduleBloggerEmails).to receive(:call).with(
-            user: @third_content.created_by,
-            action: 'third_blogger_post'
-          )
-          subject
         end
       end
     end

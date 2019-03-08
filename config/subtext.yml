@@ -40,9 +40,6 @@ default: &default
     first_blogger_post:
       subject: "Nice work on that first blog post!"
       template_id: 273081
-    third_blogger_post:
-      subject: "3 Blog Posts! You’re ready for this."
-      template_id: 273093
 
 
 production:

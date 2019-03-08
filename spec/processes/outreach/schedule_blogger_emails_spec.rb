@@ -35,20 +35,18 @@ RSpec.describe Outreach::ScheduleBloggerEmails do
       end
     end
 
-    context 'when action is for first or third post' do
-      %w[first_blogger_post third_blogger_post].each do |action|
-        subject do
-          Outreach::ScheduleBloggerEmails.call(
-            action: action,
-            user: @user,
-            organization: @organization
-          )
-        end
+    context 'when action is for first post' do
+      subject do
+        Outreach::ScheduleBloggerEmails.call(
+          action: 'first_blogger_post',
+          user: @user,
+          organization: @organization
+        )
+      end
 
-        it 'schedules an email' do
-          expect(@campaigns_array).to receive(:create)
-          subject
-        end
+      it 'schedules an email' do
+        expect(@campaigns_array).to receive(:create)
+        subject
       end
     end
 

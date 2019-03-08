@@ -22,7 +22,7 @@ class ManageContentOnFirstServe
           content.update_attribute(:first_served_at, @current_time)
           conditionally_schedule_outreach(content)
           conditionally_schedule_notification(content)
-          if Figaro.env.production_messaging_enabled == 'true'
+          if production_messaging_enabled?
             FacebookService.rescrape_url(content)
             if content.content_type == :news
               IntercomService.send_published_content_event(content)
@@ -35,6 +35,10 @@ class ManageContentOnFirstServe
   end
 
   private
+
+  def production_messaging_enabled?
+    Figaro.env.production_messaging_enabled == 'true'
+  end
 
   def conditionally_schedule_outreach(content)
     organization = content.organization
@@ -50,30 +54,27 @@ class ManageContentOnFirstServe
             action: 'first_blogger_post',
             user: content.created_by
           )
-        elsif ordered_ids.index(content.id) == 3
-          Outreach::ScheduleBloggerEmails.call(
-            action: 'third_blogger_post',
-            user: content.created_by
-          )
         end
       rescue Mailchimp::Error => e
-        SlackService.send_new_blogger_error_alert(
-          error: e,
-          user: content.created_by,
-          organization: organization
-        )
+        if production_messaging_enabled?
+          SlackService.send_new_blogger_error_alert(
+            error: e,
+            user: content.created_by,
+            organization: organization
+          )
+        end
       end
     end
+  end
 
-    def conditionally_schedule_notification(content)
-      if content.should_notify_subscribers?
-        begin
-          BackgroundJob.perform_later('Outreach::SendOrganizationPostNotification',
-            'call',
-            content
-          )
-        rescue
-        end
+  def conditionally_schedule_notification(content)
+    if content.should_notify_subscribers?
+      begin
+        BackgroundJob.perform_later('Outreach::SendOrganizationPostNotification',
+          'call',
+          content
+        )
+      rescue
       end
     end
   end
