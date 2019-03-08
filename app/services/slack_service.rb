@@ -46,4 +46,18 @@ module SlackService
     }.merge(BOTS[:chaco])
     notifier.post(opts)
   end
+
+  def send_new_blogger_error_alert(error:, user:, organization:)
+    text = "There appears to be a problem signing #{user.email} up in Mailchimp "
+    notifier = Slack::Notifier.new(WEBHOOK_URLS[:newbloggers])
+    opts = {
+      text: 'Problem with #{organization.name}',
+      attachments: [{
+        title: text,
+        text: error.inspect,
+        color: 'ff0000'
+      }]
+    }.merge(BOTS[:chaco])
+    notifier.post(opts)
+  end
 end

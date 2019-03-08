@@ -238,6 +238,27 @@ RSpec.describe ManageContentOnFirstServe do
             @organization.reload.reminder_campaign_id
           }.to nil
         end
+
+        context "when Mailchimp call fails" do
+          before do
+            @error = Mailchimp::Error.new
+            allow(Outreach::ScheduleBloggerEmails).to receive(:call).and_raise(
+              @error
+            )
+            allow(SlackService).to receive(:send_new_blogger_error_alert).and_return(
+              true
+            )
+          end
+
+          it "sends Slack notification" do
+            expect(SlackService).to receive(:send_new_blogger_error_alert).with(
+              error: @error,
+              user: @first_real_content.created_by,
+              organization: @first_real_content.organization
+            )
+            subject
+          end
+        end
       end
 
       context 'when content is third for the org' do

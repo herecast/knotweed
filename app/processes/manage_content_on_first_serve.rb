@@ -44,15 +44,23 @@ class ManageContentOnFirstServe
 
       # on Org create, we attach a dummy content,
       # hence bumping these indexes forward by one
-      if ordered_ids.index(content.id) == 1
-        Outreach::ScheduleBloggerEmails.call(
-          action: 'first_blogger_post',
-          user: content.created_by
-        )
-      elsif ordered_ids.index(content.id) == 3
-        Outreach::ScheduleBloggerEmails.call(
-          action: 'third_blogger_post',
-          user: content.created_by
+      begin
+        if ordered_ids.index(content.id) == 1
+          Outreach::ScheduleBloggerEmails.call(
+            action: 'first_blogger_post',
+            user: content.created_by
+          )
+        elsif ordered_ids.index(content.id) == 3
+          Outreach::ScheduleBloggerEmails.call(
+            action: 'third_blogger_post',
+            user: content.created_by
+          )
+        end
+      rescue Mailchimp::Error => e
+        SlackService.send_new_blogger_error_alert(
+          error: e,
+          user: content.created_by,
+          organization: organization
         )
       end
     end
