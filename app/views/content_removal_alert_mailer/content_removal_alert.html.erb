@@ -731,7 +731,7 @@ The DailyUV Team
                     <tbody><tr>
                         
                         <td valign="top" class="mcnTextContent" style="padding: 0px 18px 9px;color: #555555;">
-                        	If you'd like to stop receiving these email alerts when a user comments on your post, <%= mail_to "dailyuv@subtext.org", 'click here to unsubscribe.', subject: 'Unsubscribe from comment alerts', body: "Please unsubscribe this user from future comment alerts: #{edit_user_url(@content.created_by_id)}" %>
+                        	If you'd like to stop receiving these email alerts, <%= mail_to "dailyuv@subtext.org", 'click here to unsubscribe.', subject: 'Unsubscribe from comment alerts', body: "Please unsubscribe this user from future comment alerts: #{edit_user_url(@content.created_by_id)}" %>
                         </td>
                     </tr>
                 </tbody></table>
