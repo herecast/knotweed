@@ -74,7 +74,7 @@ class Location < ActiveRecord::Base
              batch_size: 1000,
              locations: ['location'],
              match: :word_start,
-             searchable: %i[city state zip]
+             searchable: %i[city state zip name]
 
   def search_data
     {
@@ -85,7 +85,8 @@ class Location < ActiveRecord::Base
       },
       city: city,
       state: state,
-      zip: zip
+      zip: zip,
+      name: name
     }
   end
 
