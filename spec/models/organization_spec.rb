@@ -15,7 +15,6 @@
 #  org_type                 :string(255)
 #  can_reverse_publish      :boolean          default(FALSE)
 #  can_publish_news         :boolean          default(FALSE)
-#  subscribe_url            :string(255)
 #  description              :text
 #  banner_ad_override       :string(255)
 #  pay_directly             :boolean          default(FALSE)

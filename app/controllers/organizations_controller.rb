@@ -120,7 +120,6 @@ class OrganizationsController < ApplicationController
       :remove_desktop_image,
       :profile_background_image_cache,
       :can_publish_news,
-      :subscribe_url,
       :description,
       :banner_ad_override,
       :pay_rate_in_cents,

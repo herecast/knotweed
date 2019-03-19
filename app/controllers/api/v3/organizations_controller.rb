@@ -82,7 +82,6 @@ module Api
         params.require(:organization).permit(
           :name,
           :description,
-          :subscribe_url,
           :background_image,
           :profile_image,
           :desktop_image,

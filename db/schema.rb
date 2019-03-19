@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190219144445) do
+ActiveRecord::Schema.define(version: 20190319162831) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -509,7 +509,6 @@ ActiveRecord::Schema.define(version: 20190219144445) do
     t.string   "org_type", limit: 255
     t.boolean  "can_reverse_publish",                  default: false
     t.boolean  "can_publish_news",                     default: false
-    t.string   "subscribe_url", limit: 255
     t.text     "description"
     t.string   "banner_ad_override", limit: 255
     t.boolean  "pay_directly", default: false

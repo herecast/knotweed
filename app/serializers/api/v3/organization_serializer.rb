@@ -6,7 +6,6 @@ module Api
       attributes :id,
                  :name,
                  :can_publish_news,
-                 :subscribe_url,
                  :business_profile_id,
                  :description,
                  :org_type,

@@ -15,7 +15,6 @@ RSpec.describe 'Organizations Endpoints', type: :request do
           id: organization.id,
           name: organization.name,
           can_publish_news: organization.can_publish_news,
-          subscribe_url: organization.subscribe_url,
           business_profile_id: a_kind_of(Integer).or(be_nil),
           description: organization.description,
           org_type: organization.org_type,
@@ -199,8 +198,7 @@ RSpec.describe 'Organizations Endpoints', type: :request do
       let(:valid_params) do
         {
           name: 'Test name',
-          description: 'My biz description',
-          subscribe_url: 'http://link.to/somewhere'
+          description: 'My biz description'
         }
       end
 
@@ -215,12 +213,11 @@ RSpec.describe 'Organizations Endpoints', type: :request do
                 headers: auth_headers
         end.to change {
           organization.reload.attributes.symbolize_keys.slice(
-            :name, :subscribe_url,
+            :name,
             :description
           )
         }.to(
           name: valid_params[:name],
-          subscribe_url: valid_params[:subscribe_url],
           description: valid_params[:description]
         )
       end
