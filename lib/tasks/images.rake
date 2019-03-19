@@ -54,4 +54,11 @@ namespace :images do
       end
     end
   end
+
+  task ensure_single_images_are_primary: :environment do
+    content_ids = Content.where("channel_type != 'BusinessProfile'").joins(:images).group('contents.id').having('COUNT(images.id) = 1').pluck('contents.id')
+    images = Image.where(imageable_type: 'Content', imageable_id: content_ids, primary: false)
+    puts "Updating #{images.count} images to primary"
+    Image.where(imageable_type: 'Content', imageable_id: content_ids, primary: false).update_all(primary: true)
+  end
 end
