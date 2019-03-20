@@ -71,6 +71,30 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
           @content.reload.mc_campaign_id
         }.to @mc_campaign_id
       end
+
+      context "when subject line is too long" do
+        before do
+          @title = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation"
+          @content = FactoryGirl.create :content,
+            title: @title,
+            location: FactoryGirl.create(:location)
+          @max = Outreach::SendOrganizationPostNotification::MAX_SUBJECT_LENGTH
+          @subj = Outreach::SendOrganizationPostNotification.new(
+            @content
+          ).send(:campaign_subject)
+        end
+
+        it "expects test title to be too long" do
+          expect(@subj.length).to be > @max
+        end
+
+        it "truncates title" do
+          formatted_subj = Outreach::SendOrganizationPostNotification.new(
+            @content
+          ).send(:formatted_subject, @subj)
+          expect(formatted_subj.length).to be <= @max
+        end
+      end
     end
   end
 end

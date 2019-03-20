@@ -6,6 +6,7 @@ module Outreach
 
     ERB_NEWS_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/notification.html.erb"
     ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH = "#{Rails.root}/app/views/subscriptions_notifications/feature_notification.html.erb"
+    MAX_SUBJECT_LENGTH = 149
 
     def self.call(*args)
       self.new(*args).call
@@ -45,7 +46,7 @@ module Outreach
       def create_campaign
         mailchimp_connection.campaigns.create('regular', {
             list_id: mailchimp_master_list_id,
-            subject: campaign_subject,
+            subject: formatted_subject(campaign_subject),
             from_email: 'dailyUV@subtext.org',
             from_name: @organization.name
           }, {
@@ -53,6 +54,14 @@ module Outreach
           },
           saved_segment_id: @organization.mc_segment_id
         )
+      end
+
+      def formatted_subject(subject)
+        if subject.length > MAX_SUBJECT_LENGTH
+          "#{subject.slice(0, (MAX_SUBJECT_LENGTH - 2)).split(' ')[0..-2].join(' ')}..."
+        else
+          subject
+        end
       end
 
       def html_path
