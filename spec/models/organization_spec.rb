@@ -273,4 +273,59 @@ describe Organization, type: :model do
       end
     end
   end
+
+  describe '#post_count' do
+    let(:organization) { FactoryGirl.create :organization }
+    subject { organization.post_count }
+
+    context 'when the org has comments' do
+      let!(:comment) { FactoryGirl.create :content, :comment, organization: organization }
+
+      it 'should not include comments in the count' do
+        expect(subject).to eq 0
+      end
+    end
+
+    context 'when the org has ads' do
+      let!(:ad) { FactoryGirl.create :content, :campaign, organization: organization }
+
+      it 'should not include ads in the count' do
+        expect(subject).to eq 0
+      end
+    end
+
+    context 'when the org has market, news, events' do
+      let!(:market) { FactoryGirl.create :content, :market_post, organization: organization }
+      let!(:news) { FactoryGirl.create :content, :news, organization: organization }
+      let!(:event) { FactoryGirl.create :content, :event, organization: organization }
+
+      it 'should include market, news, and events' do
+        expect(subject).to eq 3
+      end
+    end
+
+    context 'when the org has a future news post' do
+      let!(:future_news) { FactoryGirl.create :content, :news, organization: organization, pubdate: 1.week.from_now }
+
+      it 'should not include the future post' do
+        expect(subject).to eq 0
+      end
+    end
+
+    context 'when the org has a removed news post' do
+      let!(:removed_news) { FactoryGirl.create :content, :news, organization: organization, removed: true }
+
+      it 'should not include the removed post' do
+        expect(subject).to eq 0
+      end
+    end
+
+    context 'when the org has a biz_feed_public=FALSE post' do
+      let!(:not_public_news) { FactoryGirl.create :content, :news, organization: organization, biz_feed_public: false }
+
+      it 'should not include the unpublic post' do
+        expect(subject).to eq 0
+      end
+    end
+  end
 end

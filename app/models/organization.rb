@@ -207,6 +207,20 @@ class Organization < ActiveRecord::Base
     organization_subscriptions.active.count
   end
 
+  # counts MarketPost, News, and Events -- not comments or ads
+  def counted_posts
+    contents
+      .not_removed
+      .where('pubdate IS NOT NULL and pubdate < ?', Time.current)
+      .where("(channel_type != 'BusinessProfile' AND channel_type != 'Comment') OR channel_type IS NULL")
+      .where('content_category_id != ?', ContentCategory.find_or_create_by(name: 'campaign'))
+      .where('biz_feed_public = true OR biz_feed_public IS NULL')
+  end
+
+  def post_count
+    counted_posts.count
+  end
+
   private
 
   def trigger_content_reindex_if_name_or_profile_image_changed!

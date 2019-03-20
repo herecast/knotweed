@@ -100,15 +100,11 @@ module Api
       end
 
       def post_count
-        object.contents
-              .not_removed
-              .where('pubdate IS NOT NULL AND pubdate < ?', Time.current)
-              .where("channel_type != 'BusinessProfile' OR channel_type IS NULL")
-              .count
+        object.post_count
       end
 
       def total_view_count
-        object.contents.sum(:view_count).to_i
+        object.counted_posts.sum(:view_count).to_i
       end
 
       def user_hide_count
