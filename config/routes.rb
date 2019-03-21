@@ -198,6 +198,8 @@ Rails.application.routes.draw do
       resources :content_permissions, only: :index
       post '/metrics/profiles/:id/impressions', to: 'metrics/profiles#impression'
       post '/metrics/profiles/:id/clicks', to: 'metrics/profiles#click'
+
+      resources :mailchimp_webhooks, only: [:index, :create]
     end
   end
 end

@@ -35,7 +35,10 @@ module Outreach
         response = mailchimp_connection.lists.member_info(mailchimp_master_list_id,
           [{ email: @user.email }]
         )
-        subscribe_user_to_mailchimp_list unless response['success_count'] == 1
+        unless response['success_count'] == 1 && \
+          response['data'][0]['status'] == 'subscribed'
+          subscribe_user_to_mailchimp_list
+        end
       end
 
       def subscribe_user_to_mailchimp_list
