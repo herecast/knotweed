@@ -17,7 +17,6 @@ module Outreach
         create_user_specific_mc_segment
         add_user_to_user_specific_mc_segment
       end
-      schedule_welcome if @opts[:schedule_welcome_emails] == true
       schedule_blogger_emails if @opts[:schedule_blogger_emails] == true
     end
 
@@ -37,10 +36,6 @@ module Outreach
       if response['error_count'] > 0
         raise "Error adding user to user specific Mailchimp segment: #{response['errors'].join(', ')}"
       end
-    end
-
-    def schedule_welcome
-      ScheduleWelcomeEmails.call(@user)
     end
 
     def schedule_blogger_emails

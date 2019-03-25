@@ -12,6 +12,7 @@ class RegistrationsController < Devise::RegistrationsController
           user.nda_agreed_at = Time.current
           user.agreed_to_nda = true
           if user.save
+            add_user_to_master_list(user)
             user.ensure_authentication_token
             render(json: payload(user), status: :created) && return
           else
@@ -54,7 +55,22 @@ class RegistrationsController < Devise::RegistrationsController
   end
 
   def account_update_params
-    params.require(:user).permit(:name, :email, :location_id, :password, :password_confirmation,
-                                 :current_password)
+    params.require(:user).permit(
+      :name,
+      :email,
+      :location_id,
+      :password,
+      :password_confirmation,
+      :current_password
+    )
+  end
+
+  def add_user_to_master_list(user)
+    BackgroundJob.perform_later(
+      'Outreach::AddUserToMailchimpMasterList',
+      'call',
+      user,
+      new_blogger: true
+    )
   end
 end

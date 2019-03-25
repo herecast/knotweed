@@ -95,6 +95,18 @@ describe RegistrationsController, type: :controller do
             User.count
           }.by 1
         end
+
+        it "calls to add user to Mailchimp master list" do
+          expect(BackgroundJob).to receive(:perform_later).with(
+            'Outreach::AddUserToMailchimpMasterList',
+            'call',
+            an_instance_of(User),
+            {
+              new_blogger: true
+            }
+          )
+          subject
+        end
       end
     end
 

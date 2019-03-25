@@ -13,18 +13,6 @@ default: &default
     sunsetting_ads: aileen.lem@subtext.org
 
   email_outreach:
-    welcome:
-      subject: "Welcome to DailyUV!"
-      template_id: 273041
-    bookmarking:
-      subject: "Bookmark your favorite DailyUV posts"
-      template_id: 273057
-    subscribe_to_digests:
-      subject: "No more FOMO on the newsfeed"
-      template_id: 273061
-    finding_comments:
-      subject: "Your comments are unforgettable"
-      template_id: 273065
     initial_market_post:
       subject: "Nice going on your Market post. Don't stop there!"
       template_id: 273037

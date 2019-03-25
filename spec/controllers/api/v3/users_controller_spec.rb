@@ -269,9 +269,9 @@ describe Api::V3::UsersController, type: :controller do
                                                   email: @user.email }.stringify_keys)
       end
 
-      it 'creates Mailchimp segment for new user' do
+      it 'adds user to Mailchimp master list' do
         expectations = lambda do |job|
-          job[:args][0] == 'Outreach::CreateMailchimpSegmentForNewUser' &&
+          job[:args][0] == 'Outreach::AddUserToMailchimpMasterList' &&
             job[:args][1] == 'call'
         end
 

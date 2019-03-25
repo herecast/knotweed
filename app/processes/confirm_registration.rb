@@ -4,7 +4,7 @@
 class ConfirmRegistration
   def self.call(opts = {})
     user = User.confirm_by_token opts[:confirmation_token]
-    create_user_specific_mc_segment(user)
+    add_user_to_master_list(user)
     if user.unconfirmed_subscriptions?
       user.unconfirmed_subscriptions.each do |sub|
         sub.confirm_ip = opts[:confirm_ip]
@@ -18,9 +18,13 @@ class ConfirmRegistration
 
   private
 
-  def self.create_user_specific_mc_segment(user)
+  def self.add_user_to_master_list(user)
     if user.persisted?
-      BackgroundJob.perform_later('Outreach::CreateMailchimpSegmentForNewUser', 'call', user, schedule_welcome_emails: true)
+      BackgroundJob.perform_later(
+        'Outreach::AddUserToMailchimpMasterList',
+        'call',
+        user
+      )
     end
   end
 end
