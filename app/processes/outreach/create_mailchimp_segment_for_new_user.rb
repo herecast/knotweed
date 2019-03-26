@@ -2,6 +2,8 @@
 
 module Outreach
   class CreateMailchimpSegmentForNewUser
+    include MailchimpAPI
+
     def self.call(*args)
       new(*args).call
     end
@@ -13,7 +15,7 @@ module Outreach
 
     def call
       unless @user.mc_segment_id.present?
-        MailchimpService::NewUser.subscribe_to_list(@user)
+        conditionally_add_user_to_mailchimp_master_list(@user)
         create_user_specific_mc_segment
         add_user_to_user_specific_mc_segment
       end

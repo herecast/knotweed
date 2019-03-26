@@ -14,7 +14,7 @@ module Outreach
 
     def call
       conditionally_create_mailchimp_organization_segment
-      conditionally_add_user_to_mailchimp_master_list
+      conditionally_add_user_to_mailchimp_master_list(@user)
       add_member_to_mailchimp_organization_segment
       conditionally_undelete_org_subscription
       true
@@ -29,22 +29,6 @@ module Outreach
           ) 
           @organization.update_attribute(:mc_segment_id, response['id'])
         end
-      end
-
-      def conditionally_add_user_to_mailchimp_master_list
-        response = mailchimp_connection.lists.member_info(mailchimp_master_list_id,
-          [{ email: @user.email }]
-        )
-        unless response['success_count'] == 1 && \
-          response['data'][0]['status'] == 'subscribed'
-          subscribe_user_to_mailchimp_list
-        end
-      end
-
-      def subscribe_user_to_mailchimp_list
-        mailchimp_connection.lists.subscribe(mailchimp_master_list_id,
-          { email: @user.email }, nil, 'html', false
-        )
       end
 
       def add_member_to_mailchimp_organization_segment

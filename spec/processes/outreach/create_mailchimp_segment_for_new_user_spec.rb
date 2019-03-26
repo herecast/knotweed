@@ -11,7 +11,8 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
       @lists_array = double(
         subscribe: true,
         static_segment_add: { 'id' => @mc_id },
-        static_segment_members_add: @error_count
+        static_segment_members_add: @error_count,
+        member_info: { 'success_count' => 0 }
       )
       mailchimp = double(lists: @lists_array)
       allow(Mailchimp::API).to receive(:new)
@@ -27,7 +28,7 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
 
     subject { Outreach::CreateMailchimpSegmentForNewUser.call(@user) }
 
-    it 'subscribes User to New User list' do
+    it 'subscribes User to Master list' do
       expect(@lists_array).to receive(:subscribe).with(
         @list_id,
         { email: @user.email },
@@ -79,7 +80,6 @@ RSpec.describe Outreach::CreateMailchimpSegmentForNewUser do
       end
 
       it 'does not create Mailchimp segment for user' do
-        expect(MailchimpService::NewUser).not_to receive(:subscribe_to_list)
         expect(MailchimpService::NewUser).not_to receive(:create_segment)
         expect(MailchimpService::NewUser).not_to receive(:add_to_segment)
         subject
