@@ -263,7 +263,7 @@
     @tip Set the styling for your email's header links. Choose a color that helps them stand out from your text.
     */
         #templateHeader .mcnTextContent a,#templateHeader .mcnTextContent p a{
-            /*@editable*/color:#2BAADF;
+            /*@editable*/color:#007C89;
             /*@editable*/font-weight:normal;
             /*@editable*/text-decoration:underline;
         }
@@ -301,7 +301,7 @@
     @tip Set the styling for your email's body links. Choose a color that helps them stand out from your text.
     */
         #templateBody .mcnTextContent a,#templateBody .mcnTextContent p a{
-            /*@editable*/color:#2BAADF;
+            /*@editable*/color:#007C89;
             /*@editable*/font-weight:normal;
             /*@editable*/text-decoration:underline;
         }
@@ -685,10 +685,75 @@
                 <table align="left" border="0" cellpadding="0" cellspacing="0" style="max-width:100%; min-width:100%;" width="100%" class="mcnTextContentContainer">
                     <tbody><tr>
                         
+                        <td valign="top" class="mcnTextContent" style="padding: 0px 18px 9px; text-align: center;">
+                        
+                            <h2 style="text-align: center;"><span style="font-family:arial,helvetica neue,helvetica,sans-serif"><span style="color:#555555"><span style="font-size:24px">&nbsp;<img align="center" data-file-id="2386637" height="40" src="<%= ImageUrlService.optimize_image_url(url: @profile_image_url, height: 100, width: 100, do_crop: true) %>" style="border: 0px initial ; width: 40px; height: 40px; margin: 0px; border-radius: 100%;" width="40">&nbsp; </span><span style="font-size:16px"><%= @title %></span></span></span><span style="color:#444444"><span style="font-size:16px">&nbsp;</span></span></h2>
+
+<h2 id="ember9043" style="text-align: center;"><span style="color:#444444"><span style="font-size:16px">&nbsp;</span><span style="font-size:15px"> &nbsp; &nbsp;&nbsp;</span></span><span style="font-family:arial,helvetica neue,helvetica,sans-serif"><span style="color:#808080"><span style="font-size:12px">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span></span></span></h2>
+
+                        </td>
+                    </tr>
+                </tbody></table>
+                <!--[if mso]>
+                </td>
+                <![endif]-->
+                
+                <!--[if mso]>
+                </tr>
+                </table>
+                <![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnButtonBlock" style="min-width:100%;">
+    <tbody class="mcnButtonBlockOuter">
+        <tr>
+            <td style="padding-top:0; padding-right:18px; padding-bottom:18px; padding-left:18px;" valign="top" align="center" class="mcnButtonBlockInner">
+                <table border="0" cellpadding="0" cellspacing="0" class="mcnButtonContentContainer" style="border-collapse: separate !important;border-radius: 17px;background-color: #666A6C;">
+                    <tbody>
+                        <tr>
+                            <td align="center" valign="middle" class="mcnButtonContent" style="font-family: Arial; font-size: 12px; padding: 15px;">
+                                <a class="mcnButton " title="View on DailyUV" href="<%= @post_url %>" target="_blank" style="font-weight: bold;letter-spacing: normal;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">View on DailyUV</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock" style="min-width:100%;">
+    <tbody class="mcnTextBlockOuter">
+        <tr>
+            <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;">
+                <!--[if mso]>
+                <table align="left" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100%;">
+                <tr>
+                <![endif]-->
+                
+                <!--[if mso]>
+                <td valign="top" width="600" style="width:600px;">
+                <![endif]-->
+                <table align="left" border="0" cellpadding="0" cellspacing="0" style="max-width:100%; min-width:100%;" width="100%" class="mcnTextContentContainer">
+                    <tbody><tr>
+                        
                         <td valign="top" class="mcnTextContent" style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
                         
-                            <h2 id="ember9043" style="text-align: center;"><span style="font-family:arial,helvetica neue,helvetica,sans-serif"><span style="color:#555555"><span style="font-size:24px"><img align="center" data-file-id="2386637" height="40" src="<%= ImageUrlService.optimize_image_url(url: @profile_image_url, height: 100, width: 100, do_crop: true) %>" style="border: 0px initial ; width: 40px; height: 40px; margin: 0px; border-radius: 100%;" width="40">&nbsp; </span><%= @title %></span></span></h2>
-
+                            <div style="text-align: center;">
+                                <span style="font-size:14px">
+                                    <span style="font-family:arial,helvetica neue,helvetica,sans-serif">
+                                        <span style="color:#808080">
+                                            <a href="<%= @post_url %>" target="_blank">
+                                                <img align="center" data-file-id="2185765" height="30" src="https://gallery.mailchimp.com/e35a8c8f38a4afa517d2735de/images/2f767650-dd6a-4158-9703-a96b67d0d95c.png" style="border: 0px initial ; width: 30px; height: 30px; margin: 0px;" width="30">
+                                            </a>
+                                            <a href="<%= @post_url %>" target="_blank">Comment&nbsp;</a> &nbsp;&nbsp;
+                                            <a href='<%= "https://#{Figaro.env.default_host}/mystuff/subscriptions" %>' target="_blank">
+                                                <img align="center" data-file-id="2185821" height="25" src="https://gallery.mailchimp.com/e35a8c8f38a4afa517d2735de/images/865bb1a2-951e-47ce-b06f-92ffd7d1d48c.png" style="border: 0px initial ; width: 25px; height: 25px; margin: 0px;" width="25">
+                                            </a>
+                                            <a href='<%= "https://#{Figaro.env.default_host}/mystuff/subscriptions" %>' target="_blank">Manage alerts&nbsp;</a>
+                                        </span>
+                                    </span>
+                                </span>
+                            </div>
                         </td>
                     </tr>
                 </tbody></table>
@@ -721,22 +786,6 @@
                 <td class="mcnDividerBlockInner" style="padding: 18px;">
                 <hr class="mcnDividerContent" style="border-bottom-color:none; border-left-color:none; border-right-color:none; border-bottom-width:0; border-left-width:0; border-right-width:0; margin-top:0; margin-right:0; margin-bottom:0; margin-left:0;" />
 -->
-            </td>
-        </tr>
-    </tbody>
-</table><table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnButtonBlock" style="min-width:100%;">
-    <tbody class="mcnButtonBlockOuter">
-        <tr>
-            <td style="padding-top:0; padding-right:18px; padding-bottom:18px; padding-left:18px;" valign="top" align="center" class="mcnButtonBlockInner">
-                <table border="0" cellpadding="0" cellspacing="0" class="mcnButtonContentContainer" style="border-collapse: separate !important;border: 1px none;border-radius: 300px;background-color: #555555;">
-                    <tbody>
-                        <tr>
-                            <td align="center" valign="middle" class="mcnButtonContent" style="font-family: Arial, &quot;Helvetica Neue&quot;, Helvetica, sans-serif; font-size: 14px; padding: 15px;">
-                                <a class="mcnButton " title="View on DailyUV" href="<%= @post_url %>" target="_blank" style="font-weight: bold;letter-spacing: normal;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">View on DailyUV</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
             </td>
         </tr>
     </tbody>

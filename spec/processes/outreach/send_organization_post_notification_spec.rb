@@ -48,8 +48,8 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
           'regular', {
             list_id: @list_id,
             subject: an_instance_of(String),
-            from_email: 'dailyUV@subtext.org',
-            from_name: @organization.name
+            from_email: 'noreply@subtext.org',
+            from_name: "DailyUV"
           }, {
             html: an_instance_of(String)
           },
@@ -74,9 +74,10 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
 
       context "when subject line is too long" do
         before do
-          @title = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation"
+          @name = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation"
+          organization = FactoryGirl.create :organization, name: @name
           @content = FactoryGirl.create :content,
-            title: @title,
+            organization_id: organization.id,
             location: FactoryGirl.create(:location)
           @max = Outreach::SendOrganizationPostNotification::MAX_SUBJECT_LENGTH
           @subj = Outreach::SendOrganizationPostNotification.new(

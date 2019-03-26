@@ -39,7 +39,7 @@ module Outreach
         if @organization.feature_notification_org?
           'New DailyUV Features!'
         else
-          "#{@content.location.pretty_name} | #{@content.title}"
+          "#{@content.location.pretty_name} | #{@organization.name}"
         end
       end
 
@@ -47,8 +47,8 @@ module Outreach
         mailchimp_connection.campaigns.create('regular', {
             list_id: mailchimp_master_list_id,
             subject: formatted_subject(campaign_subject),
-            from_email: 'dailyUV@subtext.org',
-            from_name: @organization.name
+            from_email: 'noreply@subtext.org',
+            from_name: "DailyUV"
           }, {
             html: ERB.new(File.read(html_path)).result(binding)
           },
