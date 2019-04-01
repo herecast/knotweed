@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe 'Organzation Hides Endpoints', type: :request do
@@ -9,32 +11,32 @@ RSpec.describe 'Organzation Hides Endpoints', type: :request do
   describe 'POST /api/v3/organizations/:organization_id/hides' do
     subject do
       post "/api/v3/organizations/#{organization.id}/hides",
-        headers: headers,
-        params: params
+           headers: headers,
+           params: params
     end
 
-    it "creates OrganizationHide" do
-      expect{ subject }.to change{
+    it 'creates OrganizationHide' do
+      expect { subject }.to change {
         OrganizationHide.count
       }.by 1
     end
 
-    context "when OrganizationHide exists but deleted_at is not null" do
+    context 'when OrganizationHide exists but deleted_at is not null' do
       before do
         @org_hide = FactoryGirl.create :organization_hide,
-          organization_id: organization.id,
-          user_id: user.id,
-          deleted_at: Date.yesterday
+                                       organization_id: organization.id,
+                                       user_id: user.id,
+                                       deleted_at: Date.yesterday
       end
 
-      it "does not create new OrganizationHide" do
-        expect{ subject }.not_to change{
+      it 'does not create new OrganizationHide' do
+        expect { subject }.not_to change {
           OrganizationHide.count
         }
       end
 
-      it "updates deleted_at to nil" do
-        expect{ subject }.to change{
+      it 'updates deleted_at to nil' do
+        expect { subject }.to change {
           @org_hide.reload.deleted_at
         }.to nil
       end
@@ -44,18 +46,18 @@ RSpec.describe 'Organzation Hides Endpoints', type: :request do
   describe 'DELETE /api/v3/organizations/hides/:id' do
     before do
       @org_hide = FactoryGirl.create :organization_hide,
-        organization_id: organization.id,
-        user_id: user.id,
-        deleted_at: nil
+                                     organization_id: organization.id,
+                                     user_id: user.id,
+                                     deleted_at: nil
     end
 
     subject do
       delete "/api/v3/organizations/hides/#{@org_hide.id}",
-        headers: headers
+             headers: headers
     end
 
-    it "updates deleted_at to current time" do
-      expect{ subject }.to change{
+    it 'updates deleted_at to current time' do
+      expect { subject }.to change {
         @org_hide.reload.deleted_at
       }
     end

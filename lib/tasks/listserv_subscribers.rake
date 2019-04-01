@@ -15,11 +15,9 @@ namespace :listserv_subscribers do
     puts "Adding #{location_users.count} subscriptions to #{listserv.name}..."
     initial_count = listserv.subscriptions.count
     location_users.each do |u|
-      begin
-        SubscribeToListservSilently.call(listserv, u, (u.last_sign_in_ip || '1.1.1.1'))
-      rescue Exception => e
-        puts "User with email #{u.email} failed in subsciption with: #{e.inspect}"
-      end
+      SubscribeToListservSilently.call(listserv, u, (u.last_sign_in_ip || '1.1.1.1'))
+    rescue Exception => e
+      puts "User with email #{u.email} failed in subsciption with: #{e.inspect}"
     end
     puts "The #{listserv.name} digest has been updated with #{listserv.subscriptions.count - initial_count} subscriptions."
   end
@@ -44,11 +42,9 @@ namespace :listserv_subscribers do
     puts 'Creating subscriptions...'
     [lebanon_users, hanover_users].each do |l|
       l.select { |u| u.subscriptions.count == 0 }.first(50).each do |u|
-        begin
-          SubscribeToListservSilently.call(listserv, u, (u.last_sign_in_ip || '1.1.1.1'))
-        rescue Exception => e
-          puts "User with email #{u.email} failed in subsciption with: #{e.inspect}"
-        end
+        SubscribeToListservSilently.call(listserv, u, (u.last_sign_in_ip || '1.1.1.1'))
+      rescue Exception => e
+        puts "User with email #{u.email} failed in subsciption with: #{e.inspect}"
       end
     end
     puts 'Done creating subscriptions.'
@@ -69,11 +65,9 @@ namespace :listserv_subscribers do
     puts 'Creating subscriptions...'
     locations.each do |l|
       l.users.each do |u|
-        begin
-          SubscribeToListservSilently.call(listserv, u, (u.last_sign_in_ip || '1.1.1.1'))
-        rescue Exception => e
-          puts "User with email #{u.email} failed in subsciption with: #{e.inspect}"
-        end
+        SubscribeToListservSilently.call(listserv, u, (u.last_sign_in_ip || '1.1.1.1'))
+      rescue Exception => e
+        puts "User with email #{u.email} failed in subsciption with: #{e.inspect}"
       end
     end
     puts 'Done creating subscriptions.'

@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
-unless ENV["DISABLE_SPRING"] || ENV["RAILS_ENV"] == "production"
+# frozen_string_literal: true
+
+unless ENV['DISABLE_SPRING'] || ENV['RAILS_ENV'] == 'production'
   begin
-    load File.expand_path('../spring', __FILE__)
+    load File.expand_path('spring', __dir__)
   rescue LoadError => e
     raise unless e.message.include?('spring')
   end

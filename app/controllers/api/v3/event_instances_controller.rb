@@ -116,7 +116,7 @@ module Api
               date: result['key_as_string'],
               count: result['doc_count']
             }
-          end.sort_by{ |result| result[:date] }
+          end.sort_by { |result| result[:date] }
           mapped_results
         end
       end

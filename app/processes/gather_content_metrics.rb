@@ -6,8 +6,8 @@ class GatherContentMetrics
   end
 
   def initialize(opts = {})
-    @opts            = opts
-    @owner    = opts[:owner]
+    @opts = opts
+    @owner = opts[:owner]
     @start_date      = opts[:start_date]
     @end_date        = opts[:end_date]
   end

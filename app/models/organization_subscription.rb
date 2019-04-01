@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: organization_subscriptions
@@ -27,7 +29,7 @@ class OrganizationSubscription < ApplicationRecord
   belongs_to :organization, optional: false
   validates :user_id, uniqueness: { scope: :organization_id }
 
-  scope :active, ->{ where(deleted_at: nil) }
+  scope :active, -> { where(deleted_at: nil) }
 
   def create_in_mailchimp
     Outreach::CreateOrganizationSubscriptionInMailchimp.call(self)

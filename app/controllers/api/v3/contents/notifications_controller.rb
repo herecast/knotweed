@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class Contents::NotificationsController < ApiController
-
       def create
         @content = Content.find(params[:content_id])
         authorize! :update, @content
@@ -15,13 +16,11 @@ module Api
 
       private
 
-        def schedule_email_notification
-          BackgroundJob.perform_later('Outreach::SendOrganizationPostNotification',
-            'call',
-            @content
-          )
-        end
-
+      def schedule_email_notification
+        BackgroundJob.perform_later('Outreach::SendOrganizationPostNotification',
+                                    'call',
+                                    @content)
+      end
     end
   end
 end

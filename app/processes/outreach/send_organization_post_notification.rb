@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Outreach
   class SendOrganizationPostNotification
     include ContentsHelper
@@ -9,7 +11,7 @@ module Outreach
     MAX_SUBJECT_LENGTH = 149
 
     def self.call(*args)
-      self.new(*args).call
+      new(*args).call
     end
 
     def initialize(content)
@@ -29,55 +31,53 @@ module Outreach
 
     private
 
-      def raise_error_if_organization_has_no_active_subscribers
-        if @organization.active_subscriber_count == 0
-          raise "Organization has no subscribers"
-        end
+    def raise_error_if_organization_has_no_active_subscribers
+      if @organization.active_subscriber_count == 0
+        raise 'Organization has no subscribers'
       end
+    end
 
-      def campaign_subject
-        if @organization.feature_notification_org?
-          'New DailyUV Features!'
-        else
-          "#{@content.location.pretty_name} | #{@organization.name}"
-        end
+    def campaign_subject
+      if @organization.feature_notification_org?
+        'New DailyUV Features!'
+      else
+        "#{@content.location.pretty_name} | #{@organization.name}"
       end
+    end
 
-      def create_campaign
-        mailchimp_connection.campaigns.create('regular', {
-            list_id: mailchimp_master_list_id,
-            subject: formatted_subject(campaign_subject),
-            from_email: 'noreply@subtext.org',
-            from_name: "DailyUV"
-          }, {
-            html: ERB.new(File.read(html_path)).result(binding)
-          },
-          saved_segment_id: @organization.mc_segment_id
-        )
+    def create_campaign
+      mailchimp_connection.campaigns.create('regular', {
+                                              list_id: mailchimp_master_list_id,
+                                              subject: formatted_subject(campaign_subject),
+                                              from_email: 'noreply@subtext.org',
+                                              from_name: 'DailyUV'
+                                            }, {
+                                              html: ERB.new(File.read(html_path)).result(binding)
+                                            },
+                                            saved_segment_id: @organization.mc_segment_id)
+    end
+
+    def formatted_subject(subject)
+      if subject.length > MAX_SUBJECT_LENGTH
+        "#{subject.slice(0, (MAX_SUBJECT_LENGTH - 2)).split(' ')[0..-2].join(' ')}..."
+      else
+        subject
       end
+    end
 
-      def formatted_subject(subject)
-        if subject.length > MAX_SUBJECT_LENGTH
-          "#{subject.slice(0, (MAX_SUBJECT_LENGTH - 2)).split(' ')[0..-2].join(' ')}..."
-        else
-          subject
-        end
+    def html_path
+      if @organization.feature_notification_org?
+        ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH
+      else
+        ERB_NEWS_TEMPLATE_PATH
       end
+    end
 
-      def html_path
-        if @organization.feature_notification_org?
-          ERB_FEATURE_NOTIFICATION_TEMPLATE_PATH
-        else
-          ERB_NEWS_TEMPLATE_PATH
-        end
-      end
-
-      def schedule_campaign(response)
-        mailchimp_connection.campaigns.schedule(
-          response['id'],
-          5.minutes.from_now.utc.to_s.sub(' UTC', '')
-        )
-      end
-
+    def schedule_campaign(response)
+      mailchimp_connection.campaigns.schedule(
+        response['id'],
+        5.minutes.from_now.utc.to_s.sub(' UTC', '')
+      )
+    end
   end
 end

@@ -9,7 +9,7 @@ RSpec.describe AdMailer do
     subject { described_class.event_advertising_user_contact(user).deliver_now }
 
     it 'successfully delivers the email' do
-      expect{subject}.to change {
+      expect { subject }.to change {
         ActionMailer::Base.deliveries.count
       }.by(1)
     end
@@ -20,7 +20,7 @@ RSpec.describe AdMailer do
     subject { described_class.event_advertising_request(user, event).deliver_now }
 
     it 'successfully delivers the email' do
-      expect{subject}.to change {
+      expect { subject }.to change {
         ActionMailer::Base.deliveries.count
       }.by(1)
     end
@@ -32,10 +32,10 @@ RSpec.describe AdMailer do
     subject { described_class.coupon_request(email, promo_coupon).deliver_now }
 
     it 'successfully delivers the email' do
-      expect{subject}.to change {
+      expect { subject }.to change {
         ActionMailer::Base.deliveries.count
       }.by(1)
-    end    
+    end
   end
 
   describe '#ad_sunsetting' do
@@ -43,9 +43,9 @@ RSpec.describe AdMailer do
     subject { described_class.ad_sunsetting(promotion_banner).deliver_now }
 
     it 'successfully delivers the email' do
-      expect{subject}.to change {
+      expect { subject }.to change {
         ActionMailer::Base.deliveries.count
       }.by(1)
-    end    
+    end
   end
 end

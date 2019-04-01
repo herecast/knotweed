@@ -8,7 +8,6 @@ module IntercomService
                                        .where.not(first_served_at: nil)
                                        .count
 
-
     intercom = Intercom::Client.new(token: ENV['INTERCOM_ACCESS_TOKEN'])
     begin
       send_event(intercom, content, number_of_published_posts)

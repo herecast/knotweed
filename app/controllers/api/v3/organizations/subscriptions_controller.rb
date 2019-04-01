@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class Organizations::SubscriptionsController < ApiController
-
       def index
         if params[:query]
           @organizations = Organization.search(params[:query], org_query_opts)
@@ -36,38 +37,37 @@ module Api
 
       private
 
-        def serialized_organizations
-          @organizations.results.map do |org|
-            {
-              id: org.id,
-              name: org.name,
-              profile_image_url: org.profile_image_url
-            }
-          end
-        end
-
-        def new_org_subscription
-          OrganizationSubscription.find_or_initialize_by(
-            organization_id: params[:organization_id],
-            user_id: current_user.id
-          )
-        end
-
-        def org_query_opts
+      def serialized_organizations
+        @organizations.results.map do |org|
           {
-            limit: 10,
-            where: {
-              archived: {
-                in: [false, nil]
-              },
-              or: [[
-                { org_type: %w[Blog Publisher Publication] },
-                { org_type: 'Business', biz_feed_active: true }
-              ]]
-            }
+            id: org.id,
+            name: org.name,
+            profile_image_url: org.profile_image_url
           }
         end
+      end
 
+      def new_org_subscription
+        OrganizationSubscription.find_or_initialize_by(
+          organization_id: params[:organization_id],
+          user_id: current_user.id
+        )
+      end
+
+      def org_query_opts
+        {
+          limit: 10,
+          where: {
+            archived: {
+              in: [false, nil]
+            },
+            or: [[
+              { org_type: %w[Blog Publisher Publication] },
+              { org_type: 'Business', biz_feed_active: true }
+            ]]
+          }
+        }
+      end
     end
   end
 end

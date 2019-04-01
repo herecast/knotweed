@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe BillDotComService do
-
   subject { BillDotComService }
 
   it { is_expected.to respond_to(:authenticate) }

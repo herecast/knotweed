@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class Organizations::HidesController < ApiController
-
       def create
         @organization_hide = new_organization_org_hide
         if @organization_hide.update_attributes(organization_hide_attrs)
@@ -26,22 +27,21 @@ module Api
 
       private
 
-        def new_organization_org_hide
-          OrganizationHide.find_or_initialize_by(
-            user_id: current_user.id,
-            organization_id: params[:organization_id]
-          )
-        end
+      def new_organization_org_hide
+        OrganizationHide.find_or_initialize_by(
+          user_id: current_user.id,
+          organization_id: params[:organization_id]
+        )
+      end
 
-        def organization_hide_attrs
-          params.require(:organization_hide).permit(
-            :content_id,
-            :flag_type
-          ).tap do |attrs|
-            attrs[:deleted_at] = nil
-          end
+      def organization_hide_attrs
+        params.require(:organization_hide).permit(
+          :content_id,
+          :flag_type
+        ).tap do |attrs|
+          attrs[:deleted_at] = nil
         end
-
+      end
     end
   end
 end

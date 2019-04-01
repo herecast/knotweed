@@ -51,7 +51,7 @@ module ImageUrlService
     # or URIs, e.g. 'https://d3ctw1a5413a3o.cloudfront.net'.  We want to convert each item to a simple hostname.
     whitelisted_sources = ENV['IMOPT_ALLOWED_SOURCES'] || '["d3ctw1a5413a3o.cloudfront.net", "knotweed.s3.amazonaws.com", "subtext-misc.s3.amazonaws.com"]'
     JSON.parse(whitelisted_sources).map do |src|
-      src =~ /^http/i ? src.sub(%r{^https?://}, '') : src
+      /^http/i.match?(src) ? src.sub(%r{^https?://}, '') : src
     end.uniq
   end
 

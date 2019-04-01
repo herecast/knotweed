@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: organizations
@@ -61,7 +62,7 @@ class Organization < ActiveRecord::Base
   searchkick callbacks: :async,
              batch_size: 1000,
              index_prefix: Figaro.env.searchkick_index_prefix,
-             searchable: [:name, :description]
+             searchable: %i[name description]
 
   ransacker :show_news_publishers
 

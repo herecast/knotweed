@@ -678,7 +678,7 @@ describe 'Contents Endpoints', type: :request do
                     biz_feed_public: false,
                     title: valid_news_params[:title],
                     content: valid_news_params[:content],
-                    split_content: { head: valid_news_params[:content], tail: "" }
+                    split_content: { head: valid_news_params[:content], tail: '' }
                   }
                 )
               )
@@ -877,7 +877,7 @@ describe 'Contents Endpoints', type: :request do
                   content: {
                     biz_feed_public: false,
                     title: valid_talk_params[:title],
-                    content: valid_talk_params[:content],
+                    content: valid_talk_params[:content]
                   }
                 )
               )
@@ -934,7 +934,7 @@ describe 'Contents Endpoints', type: :request do
                     contact_email: valid_event_params[:contact_email],
                     cost: valid_event_params[:cost],
                     cost_type: valid_event_params[:cost_type],
-                    content: valid_event_params[:content],
+                    content: valid_event_params[:content]
                   }
                 )
 

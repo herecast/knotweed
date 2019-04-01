@@ -139,8 +139,8 @@ Rails.application.routes.draw do
       # specifying path here to avoid deprecating the frontend even though we've changed
       # the modeling
       namespace :contents do
-        get '/:content_id/promotions', to: "promotions#index"
-        post '/:content_id/promotions', to: "promotions#create"
+        get '/:content_id/promotions', to: 'promotions#index'
+        post '/:content_id/promotions', to: 'promotions#create'
       end
       namespace :organizations do
         put    '/:organization_id/contents/:content_id',      to: 'contents#update'
@@ -199,7 +199,7 @@ Rails.application.routes.draw do
       post '/metrics/profiles/:id/impressions', to: 'metrics/profiles#impression'
       post '/metrics/profiles/:id/clicks', to: 'metrics/profiles#click'
 
-      resources :mailchimp_webhooks, only: [:index, :create]
+      resources :mailchimp_webhooks, only: %i[index create]
     end
   end
 end

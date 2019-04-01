@@ -8,7 +8,7 @@ describe CommentsHelper, type: :helper do
     let(:sample_text) { '<p>Hello, blah blah, <br /> blah blah blah </p>' }
 
     it 'should remove p tags' do
-      expect(subject).to_not include('<p>','</p>')
+      expect(subject).to_not include('<p>', '</p>')
     end
 
     it 'should remove br tags' do

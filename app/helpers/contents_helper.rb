@@ -48,7 +48,7 @@ module ContentsHelper
   # Returns "dailyUV/my-org" given a full URL like "http://www.dailyUV.com/organizations/3456-my-org".
   def organization_url_label(url)
     # URI.parse requires a scheme in the URL if the rest of this method is to work.
-    url_with_scheme = url.to_s =~ %r{^http(s?)\://} ? url.to_s : "http://#{url}"
+    url_with_scheme = %r{^http(s?)\://}.match?(url.to_s) ? url.to_s : "http://#{url}"
     uri = begin
             URI.parse(url_with_scheme)
           rescue StandardError

@@ -151,7 +151,7 @@ class Location < ActiveRecord::Base
   end
 
   def self.find_by_slug_or_id(identifier)
-    if identifier.to_s =~ /^\d+$/
+    if /^\d+$/.match?(identifier.to_s)
       find(identifier)
     else
       find_by(slug: identifier)

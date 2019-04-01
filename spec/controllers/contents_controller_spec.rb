@@ -23,7 +23,7 @@ describe ContentsController, type: :controller do
 
     context 'successful update' do
       it 'should update the content record' do
-        expect{subject}.to change{content.reload.title}.to title
+        expect { subject }.to change { content.reload.title }.to title
       end
 
       context 'with :continue_editing param' do
@@ -53,7 +53,7 @@ describe ContentsController, type: :controller do
 
       it 'should parse id_in to a usable array of stripped strings' do
         subject
-        expect(request.session["contents_search"]["id_in"]).to match_array %w(1 2 5)
+        expect(request.session['contents_search']['id_in']).to match_array %w[1 2 5]
       end
     end
 

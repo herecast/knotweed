@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe IntercomService do
-
   subject { IntercomService }
 
   it { is_expected.to respond_to(:send_published_content_event) }
@@ -21,7 +20,7 @@ RSpec.describe IntercomService do
     end
 
     it 'should call `Intercom::Client#events.create`' do
-      expect(intercom_events).to receive(:create).with({
+      expect(intercom_events).to receive(:create).with(
         event_name: 'published-content',
         email: content.created_by.email,
         created_at: Time.current.to_i,
@@ -30,7 +29,7 @@ RSpec.describe IntercomService do
           "number_of_published_posts": 0,
           "post_title": content.title
         }
-      })
+      )
       subject
     end
   end

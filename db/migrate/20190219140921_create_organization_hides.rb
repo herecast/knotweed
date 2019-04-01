@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateOrganizationHides < ActiveRecord::Migration[5.1]
   def change
     create_table :organization_hides do |t|

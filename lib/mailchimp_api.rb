@@ -1,5 +1,6 @@
-module MailchimpAPI
+# frozen_string_literal: true
 
+module MailchimpAPI
   def mailchimp_connection
     Mailchimp::API.new(Figaro.env.mailchimp_api_key)
   end
@@ -18,17 +19,15 @@ module MailchimpAPI
 
   def conditionally_add_user_to_mailchimp_master_list(user)
     response = mailchimp_connection.lists.member_info(mailchimp_master_list_id,
-      [{ email: user.email }]
-    )
+                                                      [{ email: user.email }])
     unless response['success_count'] == 1 && \
-      response['data'][0]['status'] == 'subscribed'
+           response['data'][0]['status'] == 'subscribed'
       subscribe_user_to_master_list(user)
     end
   end
 
   def subscribe_user_to_master_list(user)
     mailchimp_connection.lists.subscribe(mailchimp_master_list_id,
-      { email: user.email }, nil, 'html', false
-    )
+                                         { email: user.email }, nil, 'html', false)
   end
 end

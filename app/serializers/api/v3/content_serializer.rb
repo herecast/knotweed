@@ -98,9 +98,7 @@ module Api
       end
 
       def venue_id
-        if object.channel_type == 'Event'
-          object.channel.try(:venue).try(:id)
-        end
+        object.channel.try(:venue).try(:id) if object.channel_type == 'Event'
       end
 
       def venue_name

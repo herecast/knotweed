@@ -106,7 +106,7 @@ describe Api::V3::OrganizationsController, type: :controller do
       subject
     end
 
-    context "when PRODUCTION_MESSAGING_ENABLED" do
+    context 'when PRODUCTION_MESSAGING_ENABLED' do
       before do
         allow(Figaro.env).to receive(:production_messaging_enabled).and_return('true')
       end

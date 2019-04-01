@@ -77,70 +77,62 @@ namespace :test_data do
 
   desc 'Create two users controlling organizations that can publish news'
   task create_news_ugc_users: :environment do
-    begin
-      puts 'Two users controlling orgs that can_publish_news'
-      2.times do
-        u = create_user
-        o = create_org
-        o.update_attribute(:can_publish_news, true)
-        u.add_role :manager, o
-      end
-    rescue Exception => e
-      puts 'data creation failed'
-      puts e.inspect.to_s
+    puts 'Two users controlling orgs that can_publish_news'
+    2.times do
+      u = create_user
+      o = create_org
+      o.update_attribute(:can_publish_news, true)
+      u.add_role :manager, o
     end
+  rescue Exception => e
+    puts 'data creation failed'
+    puts e.inspect.to_s
   end
 
   desc 'Create two Blog users'
   task create_blog_users: :environment do
-    begin
-      puts 'Two users that are bloggers, through the organization'
-      2.times do
-        u = create_user
-        o = create_org
-        o.update_attributes org_type: 'Blog', can_publish_news: true
-        u.add_role :manager, o
-      end
-    rescue Exception => e
-      puts 'data creation failed'
-      puts e.inspect.to_s
+    puts 'Two users that are bloggers, through the organization'
+    2.times do
+      u = create_user
+      o = create_org
+      o.update_attributes org_type: 'Blog', can_publish_news: true
+      u.add_role :manager, o
     end
+  rescue Exception => e
+    puts 'data creation failed'
+    puts e.inspect.to_s
   end
 
   desc 'Create two users: one controls a parent org, one a child org'
   task create_parent_child_org_users: :environment do
-    begin
-      puts 'Parent Organization'
-      p_user = create_user
-      p_org = create_org
-      p_user.add_role :manager, p_org
+    puts 'Parent Organization'
+    p_user = create_user
+    p_org = create_org
+    p_user.add_role :manager, p_org
 
-      puts 'Child Organization'
-      c_user = create_user
-      c_org = create_org
-      c_user.add_role :manager, c_org
+    puts 'Child Organization'
+    c_user = create_user
+    c_org = create_org
+    c_user.add_role :manager, c_org
 
-      c_org.update_attribute(:parent, p_org)
-    rescue Exception => e
-      puts 'data creation failed'
-      puts e.inspect.to_s
-    end
+    c_org.update_attribute(:parent, p_org)
+  rescue Exception => e
+    puts 'data creation failed'
+    puts e.inspect.to_s
   end
 
   desc 'Create user with Dashboard Metrics'
   task create_blogger_with_metrics: :environment do
-    begin
-      puts 'Creating Blogger with Content and Metrics'
-      blogger = create_user
-      blogger.add_role :blogger
-      org = create_org
-      blogger.add_role :manager, org
-      content = create_blogger_content(org)
-      create_reports(content)
-      content.update_attribute :view_count, content.content_reports.reduce(0) { |total, cr| total + cr.view_count }
-    rescue Exception => e
-      puts 'data creation failed'
-      puts e.inspect.to_s
-    end
+    puts 'Creating Blogger with Content and Metrics'
+    blogger = create_user
+    blogger.add_role :blogger
+    org = create_org
+    blogger.add_role :manager, org
+    content = create_blogger_content(org)
+    create_reports(content)
+    content.update_attribute :view_count, content.content_reports.reduce(0) { |total, cr| total + cr.view_count }
+  rescue Exception => e
+    puts 'data creation failed'
+    puts e.inspect.to_s
   end
 end

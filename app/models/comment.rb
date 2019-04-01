@@ -67,8 +67,7 @@ class Comment < ActiveRecord::Base
 
   private
 
-    def should_update_latest_activity?
-      content.parent.pubdate > 1.week.ago && content.parent.channel_type != 'Event'
-    end
-
+  def should_update_latest_activity?
+    content.parent.pubdate > 1.week.ago && content.parent.channel_type != 'Event'
+  end
 end

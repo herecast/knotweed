@@ -22,21 +22,21 @@ RSpec.describe CommentsController, type: :controller do
 
       it 'should reset the search query' do
         subject
-        expect(request.session["comment_search"]).to be nil
+        expect(request.session['comment_search']).to be nil
       end
     end
 
     context 'with search params' do
-      let(:params) { { q: { parent_id_eq: nil, authors_cont: nil } }  }
+      let(:params) { { q: { parent_id_eq: nil, authors_cont: nil } } }
 
       it 'should set channel type' do
         subject
-        expect(request.session["comment_search"]["channel_type_eq"]).to be 'Comment'
+        expect(request.session['comment_search']['channel_type_eq']).to be 'Comment'
       end
 
       it 'should set parent_id_not_null' do
         subject
-        expect(request.session["comment_search"]["parent_id_not_null"]).to be 1
+        expect(request.session['comment_search']['parent_id_not_null']).to be 1
       end
     end
   end

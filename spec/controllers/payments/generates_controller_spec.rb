@@ -9,11 +9,13 @@ describe Payments::GeneratesController, type: :controller do
   describe 'POST #create' do
     let(:period_start) { 2.weeks.ago.strftime('%m/%d/%Y') }
     let(:period_end) { Date.today.strftime('%m/%d/%Y') }
-    let(:period_ad_rev) { "1500.57" }
+    let(:period_ad_rev) { '1500.57' }
 
-    subject { post :create, params: {
-      period_start: period_start, period_end: period_end, period_ad_rev: period_ad_rev
-    } }
+    subject do
+      post :create, params: {
+        period_start: period_start, period_end: period_end, period_ad_rev: period_ad_rev
+      }
+    end
 
     it 'should queue GeneratePaymentsJob' do
       subject

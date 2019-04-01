@@ -134,14 +134,14 @@ describe BusinessLocationsController, type: :controller do
     subject { delete :destroy, params: { id: @business_location.id } }
 
     it 'should remove the business location' do
-      expect { subject }.to change{ BusinessLocation.count }.by(-1)
+      expect { subject }.to change { BusinessLocation.count }.by(-1)
     end
 
     context 'with a business profile' do
       before { @business_location.update(business_profile: FactoryGirl.create(:business_profile)) }
 
       it 'should not remove the business location' do
-        expect { subject }.not_to change{ BusinessLocation.count }
+        expect { subject }.not_to change { BusinessLocation.count }
       end
     end
   end
@@ -168,14 +168,14 @@ describe BusinessLocationsController, type: :controller do
           allow_any_instance_of(BusinessLocation).to receive(:update_attributes).and_return false
         end
 
-        context "when html request" do
+        context 'when html request' do
           it 'renders edit page' do
             subject
             expect(response).to render_template 'edit'
           end
         end
 
-        context "when js request" do
+        context 'when js request' do
           before do
             @errors = ['bad error']
             allow_any_instance_of(BusinessLocation).to receive(:errors).and_return @errors
@@ -185,7 +185,7 @@ describe BusinessLocationsController, type: :controller do
 
           it 'returns errors in json' do
             subject
-            expect(JSON.parse(response.body)).to eq({ "business_locations" => @errors })
+            expect(JSON.parse(response.body)).to eq('business_locations' => @errors)
           end
         end
       end

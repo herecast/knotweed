@@ -76,14 +76,14 @@ class Listserv < ActiveRecord::Base
     where(list_type: 'custom_digest')
   }
 
-  DIGEST_TEMPLATES = Dir.entries('app/views/listserv_digest_mailer/').map{ |file| file.split('.').first }.compact
+  DIGEST_TEMPLATES = Dir.entries('app/views/listserv_digest_mailer/').map { |file| file.split('.').first }.compact
 
-  LIST_TYPES = 
+  LIST_TYPES =
     [
       ['External List', 'external_list'],
       ['Internal List', 'internal_list'],
       ['Custom Digest', 'custom_digest']
-    ]
+    ].freeze
 
   def mc_group_name=(n)
     write_attribute :mc_group_name, (n.nil? ? n : n.strip)

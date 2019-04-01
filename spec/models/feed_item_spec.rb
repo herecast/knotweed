@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe FeedItem do
   describe 'initialize' do
-    subject{ FeedItem.new(obj) }
+    subject { FeedItem.new(obj) }
 
     describe 'for an organization' do
       let(:obj) { FactoryGirl.create :organization }
@@ -16,7 +18,7 @@ describe FeedItem do
     end
 
     describe 'for a `Carousel`' do
-      let(:obj) { Carousel.new() }
+      let(:obj) { Carousel.new }
       it 'should set model_type to `carousel`' do
         expect(subject.model_type).to eq 'carousel'
       end

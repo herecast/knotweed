@@ -34,7 +34,7 @@ RSpec.describe PaymentRecipientsController, type: :controller do
         expect { subject }.to change { PaymentRecipient.count }.by(1)
       end
     end
-    
+
     context 'with invalid params' do
       let(:params) { { payment_recipient: { fake_param: 'fake' } } }
       it 'does not create a payment recipient' do
@@ -55,8 +55,10 @@ RSpec.describe PaymentRecipientsController, type: :controller do
   describe 'PUT #update' do
     let!(:payment_recipient) { FactoryGirl.create :payment_recipient }
     let(:org) { FactoryGirl.create :organization }
-    let(:params) { { id: payment_recipient.id,
-                             payment_recipient: { organization_id: org.id } } }
+    let(:params) do
+      { id: payment_recipient.id,
+        payment_recipient: { organization_id: org.id } }
+    end
     subject { put :update, params: params, format: :js }
 
     it 'updates the record' do

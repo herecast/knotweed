@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: contents
@@ -522,7 +523,7 @@ class Content < ActiveRecord::Base
     UgcSanitizer.call(raw_content)
   end
 
-  def sanitized_content= new_content
+  def sanitized_content=(new_content)
     self.raw_content = new_content
   end
 
@@ -672,7 +673,7 @@ class Content < ActiveRecord::Base
   end
 
   def abridged_comments
-    children.where("pubdate IS NOT NULL AND deleted_at IS NULL")
+    children.where('pubdate IS NOT NULL AND deleted_at IS NULL')
             .order(pubdate: :desc)
             .take(6)
   end

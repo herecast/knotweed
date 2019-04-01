@@ -8,9 +8,7 @@ ENV['MAILCHIMP_API_HOST'] = 'test.com'
 ENV['MAILCHIMP_API_KEY'] = 'test.key'
 
 def mc_formatted_time(datetime)
-  if datetime.present?
-    datetime.strftime('%Y-%m-%d %H:%M:%S')
-  end
+  datetime.strftime('%Y-%m-%d %H:%M:%S') if datetime.present?
 end
 
 RSpec.describe MailchimpService do

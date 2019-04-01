@@ -65,17 +65,17 @@ describe 'Event Instance endpoints', type: :request do
       )
     end
 
-    context "when a comment is removed" do
+    context 'when a comment is removed' do
       before do
         FactoryGirl.create :content, :comment,
-          parent_id: event_instance.event.content.id,
-          deleted_at: Time.current
+                           parent_id: event_instance.event.content.id,
+                           deleted_at: Time.current
         @allowed_comment = FactoryGirl.create :content, :comment,
-          parent_id: event_instance.event.content.id,
-          deleted_at: nil
+                                              parent_id: event_instance.event.content.id,
+                                              deleted_at: nil
       end
 
-      it "is not returned with event instance" do
+      it 'is not returned with event instance' do
         returned_event = JSON.parse(subject)['event_instances'][0]
         expect(returned_event['comments'].length).to eq 1
         expect(returned_event['comments'][0]['id']).to eq @allowed_comment.channel.id

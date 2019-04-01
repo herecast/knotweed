@@ -44,7 +44,7 @@ RSpec.describe ListservsController, type: :controller do
       subject { get :index, params: { reset: true } }
 
       it 'should reset the search session' do
-        expect{ subject }.to change{ request.session["listservs_search"] }.to({ active_true: true })
+        expect { subject }.to change { request.session['listservs_search'] }.to(active_true: true)
       end
     end
 
@@ -53,7 +53,7 @@ RSpec.describe ListservsController, type: :controller do
       subject { get :index, params: { q: search_params } }
 
       it 'should set the search session' do
-        expect{ subject }.to change{ request.session["listservs_search"] }.to(search_params)
+        expect { subject }.to change { request.session['listservs_search'] }.to(search_params)
       end
     end
   end

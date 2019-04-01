@@ -41,7 +41,6 @@ module Api
                  :total_view_count,
                  :user_hide_count
 
-
       def profile_image_url
         object.profile_image_url || object.logo_url
      end

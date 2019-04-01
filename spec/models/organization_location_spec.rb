@@ -49,7 +49,7 @@ RSpec.describe OrganizationLocation, type: :model do
     subject { ol.base! }
 
     it 'should change the location type to "base"' do
-      expect{subject}.to change{ol.location_type}.to 'base'
+      expect { subject }.to change { ol.location_type }.to 'base'
     end
   end
 end

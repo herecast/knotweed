@@ -180,9 +180,8 @@ module Api
       def notify_via_slack
         if Figaro.env.production_messaging_enabled == 'true'
           BackgroundJob.perform_later('SlackService', 'send_new_blogger_alert',
-            user: current_user,
-            organization: @organization
-          )
+                                      user: current_user,
+                                      organization: @organization)
         end
       end
     end

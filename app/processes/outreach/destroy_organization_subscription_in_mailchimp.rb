@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module Outreach
   class DestroyOrganizationSubscriptionInMailchimp
     include MailchimpAPI
 
     def self.call(*args)
-      self.new(*args).call
+      new(*args).call
     end
 
     def initialize(organization_subscription)
@@ -19,12 +21,10 @@ module Outreach
 
     private
 
-      def mailchimp_organization_segment_delete_member
-        mailchimp_connection.lists.static_segment_members_del(mailchimp_master_list_id,
-          @organization.mc_segment_id,
-          [{ email: @user.email }]
-        )
-      end
-
+    def mailchimp_organization_segment_delete_member
+      mailchimp_connection.lists.static_segment_members_del(mailchimp_master_list_id,
+                                                            @organization.mc_segment_id,
+                                                            [{ email: @user.email }])
+    end
   end
 end

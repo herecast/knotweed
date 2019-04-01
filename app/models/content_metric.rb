@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: content_metrics
@@ -43,10 +44,10 @@ class ContentMetric < ActiveRecord::Base
     period_start = period_start.beginning_of_day
     period_end = period_end.end_of_day
     ContentMetric.where("event_type = 'impression'")
-      .where('content_metrics.created_at BETWEEN ? and ?', period_start, period_end)
-      .where('contents.created_by_id = ?', user)
-      .joins(:content, :organization)
-      .where('pay_for_content = true')
-      .count(:id)
+                 .where('content_metrics.created_at BETWEEN ? and ?', period_start, period_end)
+                 .where('contents.created_by_id = ?', user)
+                 .joins(:content, :organization)
+                 .where('pay_for_content = true')
+                 .count(:id)
   end
 end

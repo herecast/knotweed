@@ -260,15 +260,15 @@ describe 'Feed endpoints', type: :request do
       end
     end
 
-    context "when content has future latest_activity" do
+    context 'when content has future latest_activity' do
       before do
         content = FactoryGirl.create :content, :news
         content.update_attribute(:latest_activity, 3.days.from_now)
       end
 
-      subject { get "/api/v3/feed", params: {}, headers: headers }
+      subject { get '/api/v3/feed', params: {}, headers: headers }
 
-      it "does not not return content" do
+      it 'does not not return content' do
         subject
         expect(response_json[:feed_items].length).to eq 4
       end
@@ -290,20 +290,20 @@ describe 'Feed endpoints', type: :request do
       end
     end
 
-    context "when user has blocked orgs" do
+    context 'when user has blocked orgs' do
       before do
         organization = FactoryGirl.create :organization
         @content = FactoryGirl.create :content, :news,
-          organization_id: organization.id,
-          location_id: user.location_id
+                                      organization_id: organization.id,
+                                      location_id: user.location_id
         FactoryGirl.create :organization_hide,
-          organization_id: organization.id,
-          user_id: user.id
+                           organization_id: organization.id,
+                           user_id: user.id
       end
 
-      subject { get "/api/v3/feed", params: {}, headers: headers.merge(auth_headers) }
+      subject { get '/api/v3/feed', params: {}, headers: headers.merge(auth_headers) }
 
-      it "does not return blocked Org content" do
+      it 'does not return blocked Org content' do
         subject
         returned_ids = response_json[:feed_items].map { |i| i[:content][:id] }
         expect(returned_ids).not_to include @content.id
@@ -420,19 +420,19 @@ describe 'Feed endpoints', type: :request do
       end
     end
 
-    context "when Organization content is outside of location range" do
+    context 'when Organization content is outside of location range' do
       before do
         distant_location = FactoryGirl.create :location
         @close_location = FactoryGirl.create :location,
-          location_ids_within_fifty_miles: []
+                                             location_ids_within_fifty_miles: []
         @distant_org_item = FactoryGirl.create :content, :market_post,
-          organization_id: @organization.id,
-          location_id: distant_location.id
+                                               organization_id: @organization.id,
+                                               location_id: distant_location.id
       end
 
       subject { get "/api/v3/feed?organization_id=#{@organization.id}&location_id=#{@close_location.id}" }
 
-      it "returns content" do
+      it 'returns content' do
         subject
         expect(response_json[:feed_items].length).to eq 1
         expect(response_json[:feed_items][0][:content][:id]).to eq @distant_org_item.id

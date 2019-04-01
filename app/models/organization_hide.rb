@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: organization_hides
@@ -29,5 +31,5 @@ class OrganizationHide < ApplicationRecord
   belongs_to :organization, optional: false
   validates :user_id, uniqueness: { scope: :organization_id }
 
-  scope :active, ->{ where(deleted_at: nil) }
+  scope :active, -> { where(deleted_at: nil) }
 end

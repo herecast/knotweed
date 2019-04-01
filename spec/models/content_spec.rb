@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: contents
@@ -826,7 +827,7 @@ describe Content, type: :model do
       end
     end
 
-    context "when publisher schedules news post" do
+    context 'when publisher schedules news post' do
       let(:scheduled_pubdate) { 3.days.from_now }
 
       subject { FactoryGirl.create :content, :news, pubdate: scheduled_pubdate }

@@ -49,7 +49,6 @@ describe 'User Bookmarks endpoint', type: :request do
         expect(response).to be_a_bad_request
       end
     end
-
   end
 
   describe 'PUT /api/v3/users/:user_id/bookmarks/:id' do

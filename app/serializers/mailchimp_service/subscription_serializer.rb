@@ -3,16 +3,16 @@
 class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
   root false
   attributes :email_type,
-    :status,
-    :ip_signup,
-    :timestamp_signup,
-    :ip_opt,
-    :timestamp_opt,
-    :email_address,
-    :status_if_new,
-    :location,
-    :merge_fields,
-    :interests
+             :status,
+             :ip_signup,
+             :timestamp_signup,
+             :ip_opt,
+             :timestamp_opt,
+             :email_address,
+             :status_if_new,
+             :location,
+             :merge_fields,
+             :interests
 
   def status
     object.confirmed? ? 'subscribed' : 'pending'
@@ -85,10 +85,7 @@ class MailchimpService::SubscriptionSerializer < ActiveModel::Serializer
 
   private
 
-    def mc_formatted_time(datetime)
-      if datetime.present?
-        datetime.strftime('%Y-%m-%d %H:%M:%S')
-      end
-    end
-
+  def mc_formatted_time(datetime)
+    datetime.strftime('%Y-%m-%d %H:%M:%S') if datetime.present?
+  end
 end

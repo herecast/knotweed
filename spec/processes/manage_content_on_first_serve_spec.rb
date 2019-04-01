@@ -14,7 +14,7 @@ RSpec.describe ManageContentOnFirstServe do
       before do
         @organization = FactoryGirl.create :organization
         @content = FactoryGirl.create :content,
-          organization_id: @organization.id
+                                      organization_id: @organization.id
         allow(SlackService).to receive(
           :send_published_content_notification
         ).and_return(true)
@@ -42,7 +42,7 @@ RSpec.describe ManageContentOnFirstServe do
             )
           end
 
-          it "calls to schedule Mailchimp post" do
+          it 'calls to schedule Mailchimp post' do
             expect(BackgroundJob).to receive(:perform_later).with(
               'Outreach::SendOrganizationPostNotification',
               'call',
@@ -53,7 +53,7 @@ RSpec.describe ManageContentOnFirstServe do
         end
 
         context 'when content Organization has no subscribers' do
-          it "does not call to schedule Mailchimp post" do
+          it 'does not call to schedule Mailchimp post' do
             expect(BackgroundJob).not_to receive(:perform_later)
             subject
           end
@@ -70,7 +70,7 @@ RSpec.describe ManageContentOnFirstServe do
             @content.update_attribute(:mc_campaign_id, '1234')
           end
 
-          it "does not call to schedule Mailchimp post" do
+          it 'does not call to schedule Mailchimp post' do
             expect(BackgroundJob).not_to receive(:perform_later)
             subject
           end
@@ -239,7 +239,7 @@ RSpec.describe ManageContentOnFirstServe do
           }.to nil
         end
 
-        context "when Mailchimp call fails in Production" do
+        context 'when Mailchimp call fails in Production' do
           before do
             @error = Mailchimp::Error.new
             allow(Outreach::ScheduleBloggerEmails).to receive(:call).and_raise(
@@ -256,7 +256,7 @@ RSpec.describe ManageContentOnFirstServe do
             ).and_return(true)
           end
 
-          it "sends Slack notification" do
+          it 'sends Slack notification' do
             expect(SlackService).to receive(:send_new_blogger_error_alert).with(
               error: @error,
               user: @first_real_content.created_by,

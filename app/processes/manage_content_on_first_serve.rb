@@ -71,10 +71,9 @@ class ManageContentOnFirstServe
     if content.should_notify_subscribers?
       begin
         BackgroundJob.perform_later('Outreach::SendOrganizationPostNotification',
-          'call',
-          content
-        )
-      rescue
+                                    'call',
+                                    content)
+      rescue StandardError
       end
     end
   end
