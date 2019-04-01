@@ -47,6 +47,19 @@ module SlackService
     notifier.post(opts)
   end
 
+  def send_new_blogger_email_capture(email)
+    text = "Mobile blogger interest from #{email}"
+    notifier = Slack::Notifier.new(WEBHOOK_URLS[:newbloggers])
+    opts = {
+      text: 'New blogger interest on mobile',
+      attachments: [{
+        title: text,
+        color: '009900'
+      }]
+    }.merge(BOTS[:chaco])
+    notifier.post(opts)
+  end
+
   def send_new_blogger_error_alert(error:, user:, organization:)
     text = "There appears to be a problem signing #{user.email} up in Mailchimp "
     notifier = Slack::Notifier.new(WEBHOOK_URLS[:newbloggers])

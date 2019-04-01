@@ -152,6 +152,7 @@ Rails.application.routes.draw do
         delete '/subscriptions/:id',              to: 'subscriptions#destroy'
         post   '/:organization_id/hides', to: 'hides#create'
         delete '/hides/:id',              to: 'hides#destroy'
+        post   '/email_captures',         to: 'email_captures#create'
       end
       get '/organizations/sitemap_ids', to: 'organizations#sitemap_ids'
 
