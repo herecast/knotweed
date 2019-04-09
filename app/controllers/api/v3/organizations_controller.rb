@@ -63,8 +63,7 @@ module Api
       end
 
       def sitemap_ids
-        ids = Organization.where('id <> ?', Organization::LISTSERV_ORG_ID)\
-                          .where("
+        ids = Organization.where("
                  (org_type IN (:publishers) AND can_publish_news = TRUE) OR
                  (org_type = 'Business' AND biz_feed_active = TRUE)
           ", publishers: %w[Blog Publisher Publication])\

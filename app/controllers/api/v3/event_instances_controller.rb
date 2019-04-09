@@ -37,7 +37,6 @@ module Api
         data = EventInstance.joins(event: :content).merge(
           Content
           .not_deleted
-          .not_listserv
           .not_removed
           .where('pubdate <= ?', Time.zone.now)
         ).order('start_date DESC')\

@@ -123,7 +123,7 @@ class ContentSearch
     else
       [
         { content_type: content_types },
-        { content_type: 'event', 'organization_id' => { not: Organization::LISTSERV_ORG_ID } }
+        { content_type: 'event' }
       ]
     end
   end
@@ -131,10 +131,6 @@ class ContentSearch
   def whitelist_organizations_and_content_types(attrs)
     if @params[:content_type].present?
       attrs[:where][:content_type] = @params[:content_type]
-    elsif attrs[:where][:organization_id].present?
-      attrs[:where][:organization_id][:not] << Organization::LISTSERV_ORG_ID
-    else
-      attrs[:where][:organization_id] = { not: Organization::LISTSERV_ORG_ID }
     end
   end
 

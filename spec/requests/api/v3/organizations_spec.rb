@@ -245,21 +245,10 @@ RSpec.describe 'Organizations Endpoints', type: :request do
                          org_type: 'Publication',
                          can_publish_news: true
     end
-    let!(:org_listserv) do
-      FactoryGirl.create :organization,
-                         id: Organization::LISTSERV_ORG_ID,
-                         org_type: 'Publisher',
-                         biz_feed_active: true,
-                         can_publish_news: true
-    end
 
     subject do
       get '/api/v3/organizations/sitemap_ids'
       response_json
-    end
-
-    it 'does not return listserv' do
-      expect(subject[:organization_ids]).to_not include org_listserv.id
     end
 
     it 'includes expected ids' do

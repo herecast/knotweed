@@ -12,7 +12,7 @@ class GatherFeedRecords
   end
 
   def call
-    return empty_payload if org_present_and_biz_feed_inactive? || listserv_request_without_location?
+    return empty_payload if org_present_and_biz_feed_inactive?
 
     do_search if @params[:content_type] != 'organization'
     create_content_array
@@ -101,19 +101,11 @@ class GatherFeedRecords
     organization.org_type == 'Business' && !organization.biz_feed_active
   end
 
-  def listserv_request_without_location?
-    listserv_org_request? && @params[:location_id].blank?
-  end
-
   def first_page_of_standard_search_request?
     @params[:query].present? &&
       @params[:content_type] != 'organization' &&
       @params[:organization_id].blank? &&
       page == 1
-  end
-
-  def listserv_org_request?
-    @params[:organization_id].to_i == Organization::LISTSERV_ORG_ID
   end
 
   def assign_first_served_at_to_new_contents

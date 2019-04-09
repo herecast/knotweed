@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 describe 'User Comments endpoint', type: :request do
-  before { FactoryGirl.create :organization, name: 'Listserv' }
   let(:user) { FactoryGirl.create :user }
   let(:other_user) { FactoryGirl.create :user }
   let(:standard_org) { FactoryGirl.create :organization, standard_ugc_org: true }

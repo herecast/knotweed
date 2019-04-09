@@ -92,38 +92,6 @@ describe 'Contents Endpoints', type: :request do
       subject
       expect(response.body).to include_json(content_response_schema(content))
     end
-
-    describe 'when content requested is of listserv origin' do
-      let(:listserv_org) do
-        FactoryGirl.create(:organization,
-                           id: Organization::LISTSERV_ORG_ID)
-      end
-      before do
-        content.update organization: listserv_org
-      end
-
-      subject { get "/api/v3/contents/#{content.id}", params: {}, headers: headers }
-
-      context 'user is not signed in' do
-        it 'returns a 401 status' do
-          subject
-          expect(response.code).to eql '401'
-        end
-      end
-
-      context 'user is signed in' do
-        let(:user) { FactoryGirl.create :user }
-        let(:auth_headers) { auth_headers_for(user) }
-        before do
-          headers.merge! auth_headers
-        end
-
-        it 'returns a 200 status' do
-          subject
-          expect(response.code).to eql '200'
-        end
-      end
-    end
   end
 
   describe 'GET /api/v3/contents/:id/metrics' do
@@ -997,11 +965,6 @@ describe 'Contents Endpoints', type: :request do
       expect(subject[:content_ids]).to include *[talk, market_post, news].map(&:id)
       expect(subject[:content_ids]).to_not include event.id
       expect(subject[:content_ids]).to_not include comment.content.id
-    end
-
-    it 'does not include listserv content' do
-      market_post.update organization_id: Organization::LISTSERV_ORG_ID
-      expect(subject[:content_ids]).to_not include market_post.id
     end
 
     it 'allows specifying type separated by comma' do

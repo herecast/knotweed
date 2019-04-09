@@ -236,7 +236,7 @@ module Api
       end
 
       def content_origin
-        object.organization&.id == Organization::LISTSERV_ORG_ID ? 'listserv' : 'ugc'
+        'ugc'
       end
 
       def event_instances

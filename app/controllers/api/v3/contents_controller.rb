@@ -16,7 +16,6 @@ module Api
         end
 
         content_ids = Content.not_deleted
-                             .not_listserv
                              .not_removed
                              .not_comment
                              .where('pubdate <= ?', Time.zone.now)
@@ -57,11 +56,6 @@ module Api
         expires_in 1.minutes, public: true
 
         @content = Content.find(params[:id])
-        if @content.is_listserv? && !user_signed_in?
-          render json: {}, status: :unauthorized
-          return
-        end
-
         if has_pubdate_in_past_or_can_edit?
           @content = @content.removed == true ? CreateAlternateContent.call(@content) : @content
           render json: @content, serializer: ContentSerializer,

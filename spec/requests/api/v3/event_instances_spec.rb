@@ -190,12 +190,6 @@ describe 'Event Instance endpoints', type: :request do
                                              content_id: instance2.event.content.id)
     end
 
-    it 'does not include instance if content is listerv' do
-      instance1.event.content.update organization_id: Organization::LISTSERV_ORG_ID
-      ids = subject[:instances].map { |d| d[:id] }
-      expect(ids).to_not include instance1.id
-    end
-
     it 'does not include instance if content is removed' do
       instance1.event.content.update removed: true
       ids = subject[:instances].map { |d| d[:id] }

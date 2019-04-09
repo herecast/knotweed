@@ -56,9 +56,6 @@
 class Organization < ActiveRecord::Base
   ORG_TYPE_OPTIONS = %w[Business Publisher Publication Blog].freeze
 
-  LISTSERV_ORG_ID = 447
-  LISTSERV_ORG_NAME = 'Listserv'
-
   searchkick callbacks: :async,
              batch_size: 1000,
              index_prefix: Figaro.env.searchkick_index_prefix,

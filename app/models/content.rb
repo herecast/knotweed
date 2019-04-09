@@ -151,10 +151,6 @@ class Content < ActiveRecord::Base
     search_serializer.new(self).serializable_hash
   end
 
-  def is_listserv?
-    organization_id == Organization::LISTSERV_ORG_ID
-  end
-
   def should_index?
     deleted_at.blank? && raw_content.present?
   end
@@ -255,7 +251,6 @@ class Content < ActiveRecord::Base
 
   scope :not_deleted, -> { where(deleted_at: nil) }
   scope :not_removed, -> { where(removed: false) }
-  scope :not_listserv, -> { where('organization_id <> ?', Organization::LISTSERV_ORG_ID) }
   scope :not_comment, -> { where(parent_id: nil) }
   scope :only_categories, lambda { |names|
     joins('JOIN content_categories AS category ON root_content_category_id = category.id')\
