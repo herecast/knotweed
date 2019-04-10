@@ -127,18 +127,6 @@ ActiveRecord::Schema.define(version: 20_190_319_162_831) do
     t.index ['name'], name: 'idx_16467_index_categories_on_name', using: :btree
   end
 
-  create_table 'category_corrections', id: :bigserial, force: :cascade do |t|
-    t.bigint   'content_id'
-    t.string   'old_category', limit: 255
-    t.string   'new_category', limit: 255
-    t.string   'user_email',   limit: 255
-    t.string   'title',        limit: 255
-    t.text     'content_body'
-    t.datetime 'created_at',               null: false
-    t.datetime 'updated_at',               null: false
-    t.index ['content_id'], name: 'idx_16473_index_category_corrections_on_content_id', using: :btree
-  end
-
   create_table 'channels', id: :bigserial, force: :cascade do |t|
     t.string   'name', limit: 255
     t.datetime 'created_at',             null: false
