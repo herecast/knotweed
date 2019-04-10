@@ -119,14 +119,6 @@ ActiveRecord::Schema.define(version: 20_190_319_162_831) do
     t.index ['listserv_id'], name: 'index_campaigns_on_listserv_id', using: :btree
   end
 
-  create_table 'categories', id: :bigserial, force: :cascade do |t|
-    t.string   'name',       limit: 255
-    t.bigint   'channel_id'
-    t.datetime 'created_at',             null: false
-    t.datetime 'updated_at',             null: false
-    t.index ['name'], name: 'idx_16467_index_categories_on_name', using: :btree
-  end
-
   create_table 'channels', id: :bigserial, force: :cascade do |t|
     t.string   'name', limit: 255
     t.datetime 'created_at',             null: false
