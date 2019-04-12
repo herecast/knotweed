@@ -84,31 +84,6 @@ describe Api::V3::ContentsController, type: :controller do
     end
   end
 
-  describe 'GET similar_content', elasticsearch: true do
-    let(:content) { FactoryGirl.create :content }
-    let!(:sim_content) do
-      FactoryGirl.create :content,
-                         title: content.title,
-                         raw_content: content.sanitized_content,
-                         origin: Content::UGC_ORIGIN
-    end
-
-    subject do
-      get :similar_content, format: :json,
-                            params: { id: content.id }
-    end
-
-    it 'has 200 status code' do
-      subject
-      expect(response.code).to eq('200')
-    end
-
-    it 'responds with relation of similar content' do
-      subject
-      expect(assigns(:contents).map(&:id)).to match_array([sim_content.id])
-    end
-  end
-
   describe 'DELETE #destroy' do
     before do
       @user = FactoryGirl.create :user

@@ -69,16 +69,6 @@ module Api
         render json: { errors: [e.message] }, status: :unprocessable_entity
       end
 
-      def similar_content
-        expires_in 1.minutes, public: true
-        @content = Content.find params[:id]
-
-        @contents = @content.similar_content(4)
-
-        render json: @contents, each_serializer: HashieMashes::ContentSerializer,
-               root: 'similar_content'
-      end
-
       def metrics
         @content = Content.find(params[:id])
         authorize! :manage, @content

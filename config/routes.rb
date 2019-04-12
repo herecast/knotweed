@@ -135,7 +135,7 @@ Rails.application.routes.draw do
         post '/notifications', to: 'contents/notifications#create'
       end
       get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
-      get '/contents/:id/similar_content', to: 'contents#similar_content', as: :similar_content
+      get '/contents/:content_id/similar_content', to: 'contents/similar_contents#index'
       # specifying path here to avoid deprecating the frontend even though we've changed
       # the modeling
       namespace :contents do
