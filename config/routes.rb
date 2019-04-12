@@ -130,7 +130,7 @@ Rails.application.routes.draw do
 
       get '/feed', to: 'feed#index'
 
-      get '/contents/sitemap_ids', to: 'contents#sitemap_ids'
+      get '/contents/sitemap_ids', to: 'contents/sitemap_ids#index'
       resources :contents, only: %i[show create update destroy] do
         post '/notifications', to: 'contents/notifications#create'
       end

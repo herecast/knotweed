@@ -3,29 +3,7 @@
 module Api
   module V3
     class ContentsController < ApiController
-      before_action :check_logged_in!, except: %i[sitemap_ids show similar_content]
-
-      # For usage in sitemap generation
-      def sitemap_ids
-        types = (params[:type] || 'news,market,talk').split(/,\s*/).map do |type|
-          if type == 'talk'
-            'talk_of_the_town'
-          else
-            type
-          end
-        end
-
-        content_ids = Content.not_deleted
-                             .not_removed
-                             .not_comment
-                             .where('pubdate <= ?', Time.zone.now)
-                             .only_categories(types)
-                             .order('pubdate DESC')
-                             .limit(50_000)
-                             .pluck(:id)
-
-        render json: { content_ids: content_ids }
-      end
+      before_action :check_logged_in!, except: %i[show similar_content]
 
       def create
         authorize! :create, Content
