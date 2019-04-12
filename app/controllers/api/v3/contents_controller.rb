@@ -79,13 +79,6 @@ module Api
                root: 'similar_content'
       end
 
-      def moderate
-        content = Content.find(params[:id])
-        ModerationMailer.send_moderation_flag_v2(content, params[:flag_type], \
-                                                 current_user).deliver_later
-        head :no_content
-      end
-
       def metrics
         @content = Content.find(params[:id])
         authorize! :manage, @content

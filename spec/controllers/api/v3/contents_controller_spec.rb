@@ -109,24 +109,6 @@ describe Api::V3::ContentsController, type: :controller do
     end
   end
 
-  describe 'POST /contents/:id/moderate' do
-    subject { post :moderate, params: { id: @content.id, flag_type: 'Inappropriate' } }
-
-    before do
-      @content = FactoryGirl.create :content
-      @user = FactoryGirl.create :user
-
-      api_authenticate user: @user
-    end
-
-    it 'should queue flag notification email' do
-      expect do
-        subject
-      end.to change { ActiveJob::Base.queue_adapter.enqueued_jobs.size }.by(1)
-      expect(ActiveJob::Base.queue_adapter.enqueued_jobs.last[:job]).to eq(ActionMailer::DeliveryJob)
-    end
-  end
-
   describe 'DELETE #destroy' do
     before do
       @user = FactoryGirl.create :user

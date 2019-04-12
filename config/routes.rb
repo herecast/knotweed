@@ -89,7 +89,7 @@ Rails.application.routes.draw do
     namespace :v3, defaults: { format: 'json' } do
       get '/current_user', to: 'users#show'
       put '/current_user', to: 'users#update'
-      post '/contents/:id/moderate', to: 'contents#moderate', as: :moderate
+      post '/contents/:content_id/moderate', to: 'contents/moderations#create'
 
       get '/payment_reports', to: 'payment_reports#index', as: :payment_reports, defaults: { format: 'html' }
 
