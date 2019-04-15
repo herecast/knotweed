@@ -134,8 +134,8 @@ Rails.application.routes.draw do
       resources :contents, only: %i[show create update destroy] do
         post '/notifications', to: 'contents/notifications#create'
       end
-      get '/contents/:id/metrics', to: 'contents#metrics', as: :content_metrics
       get '/contents/:content_id/similar_content', to: 'contents/similar_contents#index'
+      get '/contents/:content_id/metrics', to: 'contents/metrics#index'
       # specifying path here to avoid deprecating the frontend even though we've changed
       # the modeling
       namespace :contents do

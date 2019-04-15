@@ -127,37 +127,6 @@ describe Api::V3::ContentsController, type: :controller do
     end
   end
 
-  describe 'GET /contents/:id/metrics' do
-    before do
-      @content = FactoryGirl.create :content
-      @user = FactoryGirl.create :user
-      api_authenticate user: @user
-    end
-
-    subject { get :metrics, params: { id: @content.id } }
-
-    context 'without owning the content' do
-      before do
-        @content.update_attribute :created_by, nil
-      end
-      it 'should respond with 403' do
-        subject
-        expect(response.code).to eq('403')
-      end
-    end
-
-    context 'as content owner' do
-      before do
-        @content.update_attribute :created_by, @user
-      end
-
-      it 'should respond with the content' do
-        subject
-        expect(assigns(:content)).to eq(@content)
-      end
-    end
-  end
-
   describe 'creating content' do
     include ActiveJob::TestHelper
 

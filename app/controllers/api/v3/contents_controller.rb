@@ -69,17 +69,6 @@ module Api
         render json: { errors: [e.message] }, status: :unprocessable_entity
       end
 
-      def metrics
-        @content = Content.find(params[:id])
-        authorize! :manage, @content
-        if params[:start_date].present? && params[:end_date].present?
-          render json: @content, serializer: ContentMetricsSerializer,
-                 context: { start_date: params[:start_date], end_date: params[:end_date] }
-        else
-          render json: {}, status: :bad_request
-        end
-      end
-
       def destroy
         @content = Content.find params[:id]
         authorize! :destroy, @content
