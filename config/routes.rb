@@ -122,7 +122,6 @@ Rails.application.routes.draw do
       get '/venues', to: 'business_locations#index', as: :venues
       get '/venue_locations', to: 'business_locations#index', as: :venue_locations,
                               defaults: { autocomplete: true, max_results: 5 }
-      get '/venues/:id/location', to: 'business_locations#location'
 
       get '/locations/:id/closest', to: 'locations#closest', as: :closest
       get '/locations/locate', to: 'locations#locate'
