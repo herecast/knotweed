@@ -152,7 +152,7 @@ Rails.application.routes.draw do
         delete '/hides/:id',              to: 'hides#destroy'
         post   '/email_captures',         to: 'email_captures#create'
       end
-      get '/organizations/sitemap_ids', to: 'organizations#sitemap_ids'
+      get '/organizations/sitemap_ids', to: 'organizations/sitemap_ids#index'
 
       resources 'organizations', only: %i[index show update create] do
         resources :metrics, only: [:index], controller: 'organizations/metrics'
