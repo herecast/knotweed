@@ -84,11 +84,11 @@ module Api
       end
 
       def verify
-        user = User.where(email: params[:email])
+        user = User.where('lower(email) = ?', params[:email].downcase)
         if user.present?
-          render(json: {}, status: :ok) && return
+          render json: {}, status: :ok
         else
-          render(json: {}, status: :not_found) && return
+          render json: {}, status: :not_found
         end
       end
 

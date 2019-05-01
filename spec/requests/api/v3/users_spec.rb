@@ -178,4 +178,35 @@ RSpec.describe 'User API Endpoints', type: :request do
       end
     end
   end
+
+  describe 'GET /api/v3/user' do
+    let(:user_email) { 'chewbacca@canteen.org' }
+
+    subject { get "/api/v3/user?email=#{user_email}" }
+
+    it "returns not_found when no user present" do
+      subject
+      expect(response).to have_http_status :not_found
+    end
+
+    context "when user exists" do
+      before do
+        FactoryGirl.create :user, email: user_email
+      end
+
+      it "returns ok status" do
+        subject
+        expect(response).to have_http_status :ok
+      end
+
+      context "when case-insensitive email matches" do
+        subject { get "/api/v3/user?email=#{user_email.upcase}" }
+
+        it "returns ok status" do
+          subject
+          expect(response).to have_http_status :ok
+        end
+      end
+    end
+  end
 end
