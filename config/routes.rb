@@ -108,8 +108,8 @@ Rails.application.routes.draw do
                                             as: :promotion_banner_metrics
       get '/promotions', to: 'promotion_banners#show'
       get '/promotions/:promotion_id', to: 'promotion_banners#show'
-      get '/event_instances/active_dates', to: 'event_instances#active_dates'
-      get '/event_instances/sitemap_ids', to: 'event_instances#sitemap_ids'
+      get '/event_instances/active_dates', to: 'event_instances/active_dates#index'
+      get '/event_instances/sitemap_ids', to: 'event_instances/sitemap_ids#index'
 
       resources 'event_instances', only: %i[index show]
 
