@@ -128,13 +128,11 @@ class Event < ActiveRecord::Base
         s.save!
       end
     end
-  rescue ActiveRecord::RecordInvalid
-    false
   end
 
-  def update_with_schedules(event_hash, schedules)
+  def update_with_schedules(event_params, schedules)
     Event.transaction do
-      update_attributes!(event_hash)
+      update_attributes!(event_params)
       schedules.each do |s|
         if s._remove
           s.destroy
@@ -143,8 +141,6 @@ class Event < ActiveRecord::Base
         end
       end
     end
-  rescue ActiveRecord::RecordInvalid
-    false
   end
 
   def owner_name

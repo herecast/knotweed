@@ -5,6 +5,7 @@ require 'spec_helper'
 describe Api::V3::ContentsController, type: :controller do
   before do
     @org = FactoryGirl.create :organization
+    FactoryGirl.create :organization, standard_ugc_org: true
   end
 
   describe 'GET #show' do
