@@ -22,7 +22,7 @@ module Outreach
     private
 
     def mailchimp_organization_segment_delete_member
-      mailchimp_connection.lists.static_segment_members_del(mailchimp_master_list_id,
+      mailchimp_connection.lists.static_segment_members_del(mailchimp_config.master_list_id,
                                                             @organization.mc_segment_id,
                                                             [{ email: @user.email }])
     end

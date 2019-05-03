@@ -19,9 +19,7 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
       )
       mailchimp = double(lists: @lists)
       allow(Mailchimp::API).to receive(:new).and_return(mailchimp)
-      @list_id = 'list-id'
       env = double(
-        mailchimp_master_list_id: @list_id,
         mailchimp_api_key: 'dummy',
         mailchimp_api_host: 'dummy'
       )
@@ -40,7 +38,7 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
 
     it 'ensures user is on Mailchimp master list' do
       expect(@lists).to receive(:member_info).with(
-        @list_id,
+        MailchimpAPI.config.master_list_id,
         [{ email: @user.email }]
       )
       subject
@@ -48,7 +46,7 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
 
     it 'calls to subscribe user to Mailchimp list' do
       expect(@lists).to receive(:subscribe).with(
-        @list_id,
+        MailchimpAPI.config.master_list_id,
         { email: @user.email },
         nil,
         'html',

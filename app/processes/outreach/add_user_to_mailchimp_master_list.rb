@@ -23,20 +23,20 @@ module Outreach
     private
 
     def add_user_to_mailchimp_master_list
-      mailchimp_connection.lists.subscribe(mailchimp_master_list_id,
+      mailchimp_connection.lists.subscribe(mailchimp_config.master_list_id,
                                            { email: @user.email }, nil, 'html', false)
     rescue Mailchimp::ListAlreadySubscribedError
     end
 
     def add_user_to_new_user_segment
-      mailchimp_connection.lists.static_segment_members_add(mailchimp_master_list_id,
-                                                            new_user_segment_id,
+      mailchimp_connection.lists.static_segment_members_add(mailchimp_config.master_list_id,
+                                                            mailchimp_config.new_user_segment_id,
                                                             [{ email: @user.email }])
     end
 
     def add_user_to_new_blogger_segment
-      mailchimp_connection.lists.static_segment_members_add(mailchimp_master_list_id,
-                                                            new_blogger_segment_id,
+      mailchimp_connection.lists.static_segment_members_add(mailchimp_config.master_list_id,
+                                                            mailchimp_config.new_blogger_segment_id,
                                                             [{ email: @user.email }])
     end
   end

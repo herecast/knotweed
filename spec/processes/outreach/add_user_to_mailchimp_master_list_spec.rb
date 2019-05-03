@@ -18,7 +18,7 @@ RSpec.describe Outreach::AddUserToMailchimpMasterList do
 
     it 'adds user to mailchimp list and new_user segment' do
       expect(@lists).to receive(:subscribe).with(
-        Figaro.env.mailchimp_master_list_id,
+        MailchimpAPI.config.master_list_id,
         {
           email: @user.email
         },
@@ -27,8 +27,8 @@ RSpec.describe Outreach::AddUserToMailchimpMasterList do
         false
       )
       expect(@lists).to receive(:static_segment_members_add).with(
-        Figaro.env.mailchimp_master_list_id,
-        Figaro.env.mailchimp_new_user_segment_id,
+        MailchimpAPI.config.master_list_id,
+        MailchimpAPI.config.new_user_segment_id,
         [{
           email: @user.email
         }]
@@ -43,8 +43,8 @@ RSpec.describe Outreach::AddUserToMailchimpMasterList do
 
       it 'adds user to new_blogger segment' do
         expect(@lists).to receive(:static_segment_members_add).with(
-          Figaro.env.mailchimp_master_list_id,
-          Figaro.env.mailchimp_new_blogger_segment_id,
+          MailchimpAPI.config.master_list_id,
+          MailchimpAPI.config.new_blogger_segment_id,
           [{
             email: @user.email
           }]

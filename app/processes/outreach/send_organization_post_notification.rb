@@ -47,7 +47,7 @@ module Outreach
 
     def create_campaign
       mailchimp_connection.campaigns.create('regular', {
-                                              list_id: mailchimp_master_list_id,
+                                              list_id: mailchimp_config.master_list_id,
                                               subject: formatted_subject(campaign_subject),
                                               from_email: 'noreply@subtext.org',
                                               from_name: 'DailyUV'

@@ -26,14 +26,14 @@ module Outreach
 
     def conditionally_create_mailchimp_organization_segment
       if @organization.mc_segment_id.nil?
-        response = mailchimp_connection.lists.static_segment_add(mailchimp_master_list_id,
+        response = mailchimp_connection.lists.static_segment_add(mailchimp_config.master_list_id,
                                                                  @organization.mc_segment_name)
         @organization.update_attribute(:mc_segment_id, response['id'])
       end
     end
 
     def add_member_to_mailchimp_organization_segment
-      mailchimp_connection.lists.static_segment_members_add(mailchimp_master_list_id,
+      mailchimp_connection.lists.static_segment_members_add(mailchimp_config.master_list_id,
                                                             @organization.mc_segment_id,
                                                             [{ email: @user.email }])
     end

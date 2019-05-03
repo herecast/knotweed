@@ -15,9 +15,7 @@ RSpec.describe Outreach::CreateUserHookCampaign do
       mailchimp = double(campaigns: @campaigns_array)
       allow(Mailchimp::API).to receive(:new)
         .and_return(mailchimp)
-      @list_id = 'list-id'
       env = double(
-        mailchimp_master_list_id: @list_id,
         mailchimp_api_key: 'dummy',
         mailchimp_api_host: 'dummy'
       )
@@ -26,7 +24,7 @@ RSpec.describe Outreach::CreateUserHookCampaign do
 
     let(:standard_opts) do
       {
-        list_id: @list_id,
+        list_id: MailchimpAPI.config.master_list_id,
         from_email: MailchimpService::UserOutreach::DEFAULT_FROM_EMAIL,
         from_name: MailchimpService::UserOutreach::DEFAULT_FROM_NAME,
         to_name: @user.name

@@ -17,9 +17,7 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
       )
       mailchimp = double(campaigns: @campaigns)
       allow(Mailchimp::API).to receive(:new).and_return(mailchimp)
-      @list_id = 'list-id'
       env = double(
-        mailchimp_master_list_id: @list_id,
         mailchimp_api_key: 'dummy',
         default_host: 'dummy',
         default_consumer_host: 'localhost'
@@ -46,7 +44,7 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
       it 'calls to Mailchimp to create campaign' do
         expect(@campaigns).to receive(:create).with(
           'regular', {
-            list_id: @list_id,
+            list_id: MailchimpAPI.config.master_list_id,
             subject: an_instance_of(String),
             from_email: 'noreply@subtext.org',
             from_name: 'DailyUV'

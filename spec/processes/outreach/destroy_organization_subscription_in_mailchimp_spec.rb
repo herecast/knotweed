@@ -14,9 +14,7 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
       @lists = double(static_segment_members_del: true)
       mailchimp = double(lists: @lists)
       allow(Mailchimp::API).to receive(:new).and_return(mailchimp)
-      @list_id = 'list-id'
       env = double(
-        mailchimp_master_list_id: @list_id,
         mailchimp_api_key: 'dummy'
       )
       allow(Figaro).to receive(:env).and_return(env)
@@ -28,7 +26,7 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
 
     it 'calls to Mailchimp to remove subscription' do
       expect(@lists).to receive(:static_segment_members_del).with(
-        @list_id,
+        MailchimpAPI.config.master_list_id,
         @mc_segment_id,
         [{ email: @user.email }]
       )

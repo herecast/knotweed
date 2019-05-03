@@ -28,7 +28,7 @@ module Outreach
     end
 
     def correct_list_id?
-      @webhook_body[:data][:list_id] == mailchimp_master_list_id
+      @webhook_body[:data][:list_id] == mailchimp_config.master_list_id
     end
 
     def user
