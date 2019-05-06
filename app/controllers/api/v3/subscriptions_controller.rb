@@ -44,12 +44,6 @@ module Api
         end
       end
 
-      def confirm
-        ConfirmSubscription.call(@subscription, request.remote_ip)
-
-        render json: {}, status: :no_content
-      end
-
       def destroy
         if params[:key].present?
           get_resource
@@ -71,19 +65,6 @@ module Api
         render json: {}, status: :no_content
       end
 
-      def unsubscribe_from_mailchimp
-        subscription = find_subscription
-        subscription.unsubscribed_at ||= Time.zone.now
-        subscription.mc_unsubscribed_at = Time.zone.now
-        subscription.save!
-
-        render json: subscription, serializer: SubscriptionSerializer
-      end
-
-      def verify_mc_webhook
-        render json: {}, status: :ok
-      end
-
       protected
 
       def get_resource
@@ -92,25 +73,15 @@ module Api
       end
 
       def subscription_params
-        params.require(:subscription).permit(:email_type, :name, :user_id,
-                                             :listserv_id, :source, :email,
-                                             :confirmed_at)
-      end
-
-      def user_from_mailchimp
-        email = params['data']['email']
-        User.find_by(email: email)
-      end
-
-      def listserv_from_mailchimp
-        mc_list_id = params['data']['list_id']
-        Listserv.where(mc_list_id: mc_list_id).try(:first)
-      end
-
-      def find_subscription
-        Subscription.where('listserv_id = ? AND email = ?',
-                           listserv_from_mailchimp.id, params['data']['email'])
-                    .try(:first)
+        params.require(:subscription).permit(
+          :email_type,
+          :name,
+          :user_id,
+          :listserv_id,
+          :source,
+          :email,
+          :confirmed_at
+        )
       end
 
       def find_user

@@ -8,7 +8,7 @@ module Api
       end
 
       def create
-        Outreach::DestroyUserOrganizationSubscriptions.call(params)
+        MailchimpService::Webhooks.handle(params)
         render json: {}, status: :ok
       end
     end

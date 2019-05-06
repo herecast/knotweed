@@ -7,13 +7,6 @@ def json_datetime(dt)
 end
 
 RSpec.describe 'Subscriptions Endpoints', type: :request do
-  describe 'GET /api/v3/unsubscribe_from_mailchimp' do
-    it 'returns 200' do
-      get '/api/v3/subscriptions/unsubscribe_from_mailchimp'
-      expect(response.status).to eql 200
-    end
-  end
-
   describe 'GET /api/v3/subscriptions' do
     let(:user) { FactoryGirl.create :user }
     let(:auth_headers) { auth_headers_for(user) }
@@ -124,62 +117,6 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
       it 'returns 404 (not found)' do
         subject
         expect(response.status).to eql 404
-      end
-    end
-  end
-
-  describe 'PATCH /api/v3/subscriptions/:key/confirm' do
-    let(:subscription) { FactoryGirl.create :subscription }
-
-    subject { patch "/api/v3/subscriptions/#{subscription.key}/confirm" }
-
-    context 'when already confirmed' do
-      before do
-        subscription.update! confirmed_at: Time.zone.now, confirm_ip: '192.168.1.0'
-      end
-
-      it 'returns 204 status' do
-        subject
-        expect(response).to have_http_status(204)
-      end
-
-      it 'does not change confirmed_at date' do
-        expect { subject }.to_not change {
-          subscription.reload.confirmed_at
-        }
-      end
-
-      context 'when unsubscribed' do
-        before do
-          subscription.update unsubscribed_at: Time.zone.now
-        end
-
-        it 'unsets unsubscribed status' do
-          expect { subject }.to change {
-            subscription.reload.unsubscribed_at
-          }.to(nil)
-        end
-      end
-    end
-
-    context 'not already confirmed' do
-      let(:remote_ip) { '192.168.0.1' }
-      before do
-        allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(remote_ip)
-      end
-
-      it 'returns 204 status' do
-        subject
-        expect(response).to have_http_status(204)
-      end
-
-      it 'sets confirm_ip and confirmed_at' do
-        expect { subject }.to change {
-          subscription.reload.attributes.with_indifferent_access.slice(:confirm_ip, :confirmed_at)
-        }.to a_hash_including(
-          confirm_ip: remote_ip,
-          confirmed_at: an_instance_of(ActiveSupport::TimeWithZone)
-        )
       end
     end
   end

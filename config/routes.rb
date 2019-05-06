@@ -175,8 +175,6 @@ Rails.application.routes.draw do
       resources 'business_categories', only: [:index]
       post '/businesses/:id/feedback', to: 'business_feedbacks#create', as: :leave_feedback
       post '/emails', to: 'emails#create'
-      get '/subscriptions/unsubscribe_from_mailchimp', to: 'subscriptions#verify_mc_webhook'
-      post '/subscriptions/unsubscribe_from_mailchimp', to: 'subscriptions#unsubscribe_from_mailchimp'
       get '/subscriptions', to: 'subscriptions#index'
       get '/subscriptions/:key', to: 'subscriptions#show'
       post '/subscriptions', to: 'subscriptions#create'

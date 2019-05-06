@@ -29,7 +29,7 @@ def mailchimp_webhook_content
           }
         }
       },
-      'list_id' => MailchimpAPI.config.master_list_id
+      'list_id' => 'dummy-id'
     },
     'format' => 'json',
     'controller' => 'api/v3/mailchimp_webhooks',
