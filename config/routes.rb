@@ -126,7 +126,7 @@ Rails.application.routes.draw do
       get '/locations/locate', to: 'locations/finds#show'
       resources :locations, only: %i[index show]
 
-      get '/feed', to: 'feed#index'
+      get '/feed', to: 'contents#index'
 
       get '/contents/sitemap_ids', to: 'contents/sitemap_ids#index'
       resources :contents, only: %i[show create update destroy] do
