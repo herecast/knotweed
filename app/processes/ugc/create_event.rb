@@ -54,6 +54,7 @@ module Ugc
           :zip
         ],
         content_attributes: [
+          :organization_id,
           :raw_content,
           :title,
           :location_id,
