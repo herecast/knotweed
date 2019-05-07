@@ -1,16 +1,14 @@
 # frozen_string_literal: true
 
-require 'icalendar/tzinfo'
 module Api
   module V3
     class UsersController < ApiController
       include EmailTemplateHelper
-      before_action :check_logged_in!, only: %i[show update logout]
+      before_action :check_logged_in!, only: %i[show update]
 
       def show
-        events_ical_url = url_for_consumer_app('/' + user_event_instances_ics_path(public_id: current_user.public_id.to_s))
         render json: current_user, serializer: UserSerializer,
-               root: 'current_user', status: 200, events_ical_url: events_ical_url,
+               root: 'current_user', status: 200,
                context: { current_ability: current_ability }
       end
 
@@ -24,83 +22,13 @@ module Api
         end
       end
 
-      def logout
-        user = current_user
-        sign_out current_user
-        user.reset_authentication_token
-        res = if user.save
-                :ok
-              else
-                :unprocessable_entity
-              end
-        reset_session
-        render json: {}, status: res
-      end
-
-      def email_confirmation
-        user = ConfirmRegistration.call(confirmation_token: params[:confirmation_token],
-                                        confirm_ip: request.remote_ip)
-        if user.errors.blank?
-          resp = { token: user.authentication_token,
-                   email: user.email }
-          render json: resp
-        else
-          head :not_found
-        end
-      end
-
-      def resend_confirmation
-        user = User.find_by_email(params[:user][:email])
-        if user.present?
-          if user.confirmed?
-            render json: { message: 'User already confirmed.' }, status: 200
-          else
-            user.resend_confirmation_instructions
-            render json: { message: "We've sent an email to #{params[:user][:email]} containing a confirmation link" },
-                   status: 200
-          end
-        else
-          render json: { errors: "#{params[:user][:email]} not found" }, status: 404
-        end
-      end
-
-      def events
-        user = User.find_by_public_id params[:public_id]
-        if user
-          cal = Icalendar::Calendar.new
-          tzid = Time.zone.tzinfo.name
-          tz = TZInfo::Timezone.get tzid
-          schedules = Schedule.joins(event: :content).where('contents.created_by_id = ?', user.id)
-          if schedules.present?
-            cal.add_timezone tz.ical_timezone schedules.first.schedule.start_time.to_datetime
-          end
-          schedules.each do |schedule|
-            cal.add_event schedule.to_icalendar_event
-          end
-          render plain: cal.to_ical
-        else
-          head :not_found
-        end
-      end
-
-      def verify
-        user = User.where('lower(email) = ?', params[:email].downcase)
-        if user.present?
+      # used for the `verify` endpoint that queries for the existence
+      # of users by email
+      def index
+        if User.exists?(['lower(email) = ?', params[:email].downcase])
           render json: {}, status: :ok
         else
           render json: {}, status: :not_found
-        end
-      end
-
-      def email_signin_link(user = User.find_by(email: params[:email]))
-        if user.present?
-          NotificationService.sign_in_link(
-            SignInToken.create(user: user)
-          )
-
-          render json: {}, status: :created
-        else
-          render json: { error: 'email does not match an existing user' }, status: 422
         end
       end
 

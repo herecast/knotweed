@@ -10,6 +10,29 @@ RSpec.describe 'User API Endpoints', type: :request do
     }
   end
 
+  describe 'GET /api/v3/user' do
+    subject { get '/api/v3/user', params: { email: email } }
+
+    context 'with existing user email' do
+      let(:user) { FactoryGirl.create :user }
+      let(:email) { user.email }
+
+      it 'responds with status OK' do
+        subject
+        expect(response.code).to eq '200'
+      end
+    end
+
+    context 'with non-existent user email' do
+      let(:email) { 'fakeemail@fake.com' }
+
+      it 'responds with 404' do
+        subject
+        expect(response.code).to eq '404'
+      end
+    end
+  end
+
   describe 'GET /api/v3/current_user' do
     context 'signed in ' do
       let(:user) { FactoryGirl.create :user }
@@ -39,7 +62,6 @@ RSpec.describe 'User API Endpoints', type: :request do
             listserv_name: an_instance_of(String).or(be_nil),
             test_group: an_instance_of(String).or(be_nil),
             user_image_url: an_instance_of(String).or(be_nil),
-            events_ical_url: an_instance_of(String).or(be_nil),
             skip_analytics: user.skip_analytics,
             managed_organization_ids: an_instance_of(Array),
             can_publish_news: user.can_publish_news?,
@@ -131,50 +153,6 @@ RSpec.describe 'User API Endpoints', type: :request do
           subject
           expect(response.code).to eq '422'
         end
-      end
-    end
-  end
-
-  describe 'POST /api/v3/users/email_signin_link' do
-    context 'Given an email from an existing user' do
-      let(:user) do
-        FactoryGirl.create :user
-      end
-
-      subject do
-        post '/api/v3/users/email_signin_link',
-             params: { email: user.email }.to_json,
-             headers: json_headers
-      end
-
-      it 'returns 201 status code' do
-        subject
-
-        expect(response.code).to eq '201'
-      end
-
-      it 'generates a sign in token, and sends the email' do
-        sign_in_token = FactoryGirl.create(:sign_in_token, user: user)
-        allow(SignInToken).to receive(:create).with(user: user).and_return(sign_in_token)
-
-        expect(NotificationService).to receive(:sign_in_link).with(
-          sign_in_token
-        )
-
-        subject
-      end
-    end
-
-    context 'Given an email which does not match a user account' do
-      subject do
-        post '/api/v3/users/email_signin_link',
-             params: { email: 'notauser@somewhere.com' }.to_json,
-             headers: json_headers
-      end
-
-      it 'responds with 422 status code' do
-        subject
-        expect(response.code).to eq '422'
       end
     end
   end

@@ -12,7 +12,6 @@ module Api
                  :listserv_name,
                  :test_group,
                  :user_image_url,
-                 :events_ical_url,
                  :skip_analytics,
                  :managed_organization_ids,
                  :can_publish_news?,
@@ -32,10 +31,6 @@ module Api
 
       def user_image_url
         object.try(:avatar).try(:url)
-      end
-
-      def events_ical_url
-        serialization_options[:events_ical_url] if object.public_id.present?
       end
 
       def managed_organization_ids

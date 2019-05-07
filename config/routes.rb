@@ -79,7 +79,6 @@ Rails.application.routes.draw do
     resources :features
 
     get '/ics/event_instances/:id', to: 'api/v3/event_instances#show', defaults: { format: 'ics' }, as: :event_instances_ics
-    get '/ics/events/:public_id', to: 'api/v3/users#events', defaults: { format: 'ics' }, as: :user_event_instances_ics
 
     get '/sidekiq_wrapper', to: 'sidekiq_wrapper#index'
   end
@@ -161,11 +160,10 @@ Rails.application.routes.draw do
       # deprecated
       post '/news/:id/impressions', to: 'metrics/contents/impressions#create'
 
-      post '/users/logout', to: 'users#logout', as: :logout
-      get '/user', to: 'users#verify'
-      post '/users/email_confirmation', to: 'users#email_confirmation', as: :email_confirmation
-      post '/users/resend_confirmation', to: 'users#resend_confirmation', as: :resend_confirmation
-      post '/users/email_signin_link', to: 'users#email_signin_link', as: :email_signin_link
+      post '/users/logout', to: 'users/sessions#destroy', as: :logout
+      get '/user', to: 'users#index'
+      post '/users/email_confirmation', to: 'users/confirmations#create', as: :email_confirmation
+      post '/users/resend_confirmation', to: 'users/confirmations#update', as: :resend_confirmation
       resources 'images', only: %i[create update destroy]
       post '/images/upsert', to: 'images#upsert'
 
