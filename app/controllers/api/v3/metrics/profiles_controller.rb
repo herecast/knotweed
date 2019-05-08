@@ -5,25 +5,8 @@ module Api
     class Metrics::ProfilesController < ApiController
       before_action :confirm_content_published
 
-      def impression
-        metric = ProfileMetric.create(
-          profile_metric_params.merge(
-            event_type: 'impression'
-          )
-        )
-        if metric.persisted?
-          render json: {}, status: 201
-        else
-          render json: { errors: metric.errors.full_messages }, status: 422
-        end
-      end
-
-      def click
-        metric = ProfileMetric.create(
-          profile_metric_params.merge(
-            event_type: 'click'
-          )
-        )
+      def create
+        metric = ProfileMetric.create(profile_metric_params)
         if metric.persisted?
           render json: {}, status: 201
         else
@@ -42,6 +25,7 @@ module Api
           user_ip: request.remote_ip,
           client_id: params[:client_id],
           content_id: params[:content_id],
+          event_type: params[:event_type],
           organization: organization
         }.tap do |data|
           if params[:location_id].present?

@@ -191,8 +191,8 @@ Rails.application.routes.draw do
 
       post '/metrics/contents/:id/impressions', to: 'metrics/contents/impressions#create'
       resources :content_permissions, only: :index
-      post '/metrics/profiles/:id/impressions', to: 'metrics/profiles#impression'
-      post '/metrics/profiles/:id/clicks', to: 'metrics/profiles#click'
+
+      post '/metrics/profiles/:id', to: 'metrics/profiles#create'
 
       resources :mailchimp_webhooks, only: %i[index create]
     end
