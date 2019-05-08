@@ -165,7 +165,6 @@ Rails.application.routes.draw do
       post '/users/email_confirmation', to: 'users/confirmations#create', as: :email_confirmation
       post '/users/resend_confirmation', to: 'users/confirmations#update', as: :resend_confirmation
       resources 'images', only: %i[create update destroy]
-      post '/images/upsert', to: 'images#upsert'
 
       delete '/content_locations/:id', to: 'content_locations#destroy'
 

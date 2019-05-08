@@ -60,69 +60,6 @@ describe Api::V3::ImagesController, type: :controller do
     end
   end
 
-  describe 'POST upsert' do
-    let(:content) { FactoryGirl.create :content, :talk }
-
-    subject do
-      post :upsert, params: { image: { image: @file1, primary: false,
-                                       content_id: content.id } }
-    end
-
-    context 'as signed in user with authorization' do
-      before do
-        content.update_attribute :created_by, @user
-      end
-
-      it 'should create an image' do
-        expect { subject }.to change { Image.count }.by 1
-      end
-
-      it 'should add an image to the content in question' do
-        expect { subject }.to change { content.images.count }.by 1
-      end
-
-      context 'existing images' do
-        before do
-          content.images = FactoryGirl.create_list(:image, 3, imageable: content)
-        end
-
-        it 'should remove the exiting images' do
-          subject
-          expect(content.images.count).to eql 1
-        end
-      end
-    end
-
-    context 'without authorization' do
-      before do
-        content.update_attribute :created_by, nil
-      end
-
-      it 'should not create an image' do
-        expect { subject }.to_not change { Image.count }
-      end
-
-      it 'should respond with 403' do
-        subject
-        expect(response.code).to eq('403')
-      end
-    end
-
-    context 'when image does not save' do
-      before do
-        content.update_attribute :created_by, @user
-        allow_any_instance_of(Image).to receive(:save).and_return(false)
-      end
-
-      subject { post :create, params: { image: { image: @file1, content_id: content.id } } }
-
-      it 'returns unprocessable entity status' do
-        subject
-        expect(response).to have_http_status :unprocessable_entity
-      end
-    end
-  end
-
   describe 'PUT update' do
     before do
       @content = FactoryGirl.create :content, created_by: @user

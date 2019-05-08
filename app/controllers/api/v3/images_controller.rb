@@ -33,22 +33,6 @@ module Api
         head :no_content
       end
 
-      # This is temporary, but to replace the single image content handling.
-      # It should be removed after all content supports multiple images.
-      def upsert
-        @content = Content.find(params[:image][:content_id])
-        authorize! :manage, @content
-
-        @image = Image.new(image_params)
-        if @image.valid?
-          @content.images.destroy_all
-          @image.save!
-          render json: @image, serializer: ImageSerializer, status: 200
-        else
-          render json: { errors: ['Image could not be updated'] }, status: 200
-        end
-      end
-
       private
 
       def image_params
