@@ -174,7 +174,6 @@ Rails.application.routes.draw do
       post '/emails', to: 'emails#create'
       get '/subscriptions', to: 'subscriptions#index'
       get '/subscriptions/:key', to: 'subscriptions#show'
-      post '/subscriptions', to: 'subscriptions#create'
       patch'/subscriptions/:key', to: 'subscriptions#update'
       patch '/subscriptions/:key/confirm', to: 'subscriptions#confirm'
       delete 'subscriptions/:key', to: 'subscriptions#destroy'

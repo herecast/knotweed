@@ -19,23 +19,6 @@ module Api
         render json: @subscription, serializer: SubscriptionSerializer
       end
 
-      def create
-        if params[:subscription][:listserv_id].present?
-          user = find_user
-          listserv = Listserv.find(params[:subscription][:listserv_id])
-          if user.confirmed?
-            @subscription = SubscribeToListservSilently.call(listserv, user, request.remote_ip)
-          elsif subscribed_from_registration?
-            @subscription = Subscription.create!(subscription_params)
-          else
-            @subscription = SubscribeToListserv.call(listserv, email: params[:subscription][:email])
-          end
-          render json: @subscription, serializer: SubscriptionSerializer, status: 201
-        else
-          render json: { errors: 'listserv_id cant be blank' }, status: 422
-        end
-      end
-
       def update
         if @subscription.update subscription_params
           render json: {}, status: :no_content
