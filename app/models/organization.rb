@@ -72,7 +72,8 @@ class Organization < ActiveRecord::Base
       certified_storyteller: certified_storyteller,
       certified_social: certified_social,
       archived: archived,
-      description: description
+      description: description,
+      can_publish_news: can_publish_news
     }
   end
 

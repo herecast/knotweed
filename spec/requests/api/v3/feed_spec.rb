@@ -321,15 +321,18 @@ describe 'Feed endpoints', type: :request do
                                            org_type: 'Business'
         @second_organization = FactoryGirl.create :organization,
                                                   name: "#{news.title} 2",
-                                                  org_type: 'Blog'
+                                                  org_type: 'Blog',
+                                                  can_publish_news: true
         @archived_business = FactoryGirl.create :organization,
                                                 name: "#{news.title} 3",
                                                 org_type: 'Business',
-                                                archived: true
+                                                archived: true,
+                                                can_publish_news: true
         @archived_publisher = FactoryGirl.create :organization,
                                                  name: "#{news.title} 4",
                                                  org_type: 'Blog',
-                                                 archived: true
+                                                 archived: true,
+                                                 can_publish_news: true
       end
 
       subject { get '/api/v3/feed', params: { query: news.title }, headers: auth_headers }
@@ -340,24 +343,16 @@ describe 'Feed endpoints', type: :request do
         expect(contents.length).to eq 2
       end
 
-      it 'returns two Organization collections' do
+      it 'returns one Organization collection' do
         subject
         collections = response_json[:feed_items].select { |i| i[:model_type] == 'carousel' }
-        expect(collections.length).to eq 2
+        expect(collections.length).to eq 1
       end
 
-      it 'does not return archived businesses' do
+      it 'does not return archived orgs' do
         subject
-        carousels = response_json[:feed_items].select { |i| i[:model_type] == 'carousel' }
-        business_carousel = carousels.find { |c| c[:carousel][:title] == 'Businesses' }
-        expect(business_carousel[:carousel][:organizations].map { |o| o[:id] }).not_to include @archived_business.id
-      end
-
-      it 'does not return archived publishers' do
-        subject
-        carousels = response_json[:feed_items].select { |i| i[:model_type] == 'carousel' }
-        business_carousel = carousels.find { |c| c[:carousel][:title] == 'Publishers' }
-        expect(business_carousel[:carousel][:organizations].map { |o| o[:id] }).not_to include @archived_publisher.id
+        carousel = response_json[:feed_items].select { |i| i[:model_type] == 'carousel' }[0]
+        expect(carousel[:carousel][:organizations].map { |o| o[:id] }).not_to include @archived_publisher.id
       end
 
       context 'when one carousel returns no Organizations' do
@@ -368,7 +363,7 @@ describe 'Feed endpoints', type: :request do
         it 'call only returns carousel with Organizations' do
           subject
           collections = response_json[:feed_items].select { |i| i[:model_type] == 'carousel' }
-          expect(collections.length).to eq 1
+          expect(collections.length).to eq 0
         end
       end
     end

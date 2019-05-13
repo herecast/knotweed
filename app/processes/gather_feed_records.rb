@@ -48,11 +48,10 @@ class GatherFeedRecords
 
   def conditionally_add_carousels
     if first_page_of_standard_search_request?
-      %w[Publishers Businesses].each do |type|
-        carousel = Carousels::OrganizationCarousel.new(title: type, query: query)
-        if carousel.organizations.count > 0
-          @records.insert(0, FeedItem.new(carousel))
-        end
+      opts = { title: 'Contributors', query: query }
+      carousel = Carousels::OrganizationCarousel.new(opts)
+      if carousel.organizations.count > 0
+        @records.insert(0, FeedItem.new(carousel))
       end
     end
   end
@@ -73,7 +72,8 @@ class GatherFeedRecords
       page: page,
       per_page: per_page,
       where: {
-        org_type: %w[Blog Publisher Publication Business]
+        can_publish_news: true,
+        archived: { in: [false, nil] }
       }
     }
   end

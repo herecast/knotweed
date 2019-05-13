@@ -12,26 +12,14 @@ class Carousels::OrganizationCarousel < Carousel
   private
 
   def find_organizations
-    @organizations = Organization.search(@query, opts.merge(send("#{@title.downcase}_opts")))
+    @organizations = Organization.search(@query, opts.merge(contributor_opts))
   end
 
-  def publishers_opts
+  def contributor_opts
     {
       where: {
-        org_type: %w[Blog Publisher Publication],
+        can_publish_news: true,
         archived: { in: [false, nil] }
-      }
-    }
-  end
-
-  def businesses_opts
-    {
-      where: {
-        org_type: 'Business',
-        archived: { in: [false, nil] }
-      },
-      boost_where: {
-        biz_feed_active: true
       }
     }
   end
