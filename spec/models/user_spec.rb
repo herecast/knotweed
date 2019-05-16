@@ -47,6 +47,7 @@
 #  mc_segment_id          :string
 #  first_name             :string
 #  last_name              :string
+#  feed_card_size         :string
 #
 # Indexes
 #
@@ -397,6 +398,28 @@ describe User, type: :model do
         it 'confirms the new users account' do
           user = User.from_facebook_oauth(facebook_response, location: location)
           expect(user.confirmed?).to eq true
+        end
+      end
+    end
+  end
+
+  describe "validations" do
+    describe "feed_card_size" do
+      context "when feed_card_size is not from options list" do
+        subject { FactoryGirl.build(:user, feed_card_size: 'bad-option') }
+
+        it "is not valid" do
+          expect(subject).not_to be_valid
+        end
+      end
+
+      context "when feed_card_size is from options list" do
+        let(:size_option) { User::FEED_CARD_SIZE_OPTIONS.first }
+
+        subject { FactoryGirl.build(:user, feed_card_size: size_option) }
+
+        it "is valid" do
+          expect(subject).to be_valid
         end
       end
     end

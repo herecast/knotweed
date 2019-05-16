@@ -197,7 +197,8 @@ describe Api::V3::UsersController, type: :controller do
             organization_name: os.organization.name
           }
         end,
-        organization_hides: []
+        organization_hides: [],
+        feed_card_size: user.feed_card_size
       }.stringify_keys }.stringify_keys
   end
 end

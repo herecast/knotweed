@@ -47,6 +47,7 @@
 #  mc_segment_id          :string
 #  first_name             :string
 #  last_name              :string
+#  feed_card_size         :string
 #
 # Indexes
 #
@@ -90,6 +91,9 @@ class User < ActiveRecord::Base
                on: :update
 
   ransacker :social_login
+
+  FEED_CARD_SIZE_OPTIONS = ['fullsize', 'midsize', 'compact']
+  validates :feed_card_size, inclusion: { in: FEED_CARD_SIZE_OPTIONS, message: 'no such feed card size' }, allow_nil: true
 
   def managed_organization_id
     Organization.with_role(:manager, self).first.try(:id)

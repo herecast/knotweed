@@ -42,7 +42,8 @@ module Api
           :location_confirmed,
           :password,
           :password_confirmation,
-          :has_had_bookmarks
+          :has_had_bookmarks,
+          :feed_card_size
         ).tap do |attrs|
           if params[:current_user][:location_id].present?
             location = Location.find_by_slug_or_id(params[:current_user][:location_id])

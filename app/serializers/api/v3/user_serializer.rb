@@ -19,7 +19,8 @@ module Api
                  :has_had_bookmarks,
                  :is_blogger,
                  :organization_subscriptions,
-                 :organization_hides
+                 :organization_hides,
+                 :feed_card_size
 
       def listserv_id
         object.location.try(:listserv).try(:id)
