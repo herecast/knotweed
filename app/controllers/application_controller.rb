@@ -24,6 +24,8 @@ class ApplicationController < ActionController::Base
   end
 
   def get_version
-    @version ||= `git rev-parse --short HEAD`.chomp
+    unless Rails.env.test?
+      @version ||= `git rev-parse --short HEAD`.chomp
+    end
   end
 end

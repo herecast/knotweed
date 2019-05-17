@@ -52,6 +52,10 @@ module Api
       def analytics_blocked?
         !!current_user.try(:skip_analytics?)
       end
+
+      def production_messaging_enabled?
+        Figaro.env.production_messaging_enabled == 'true'
+      end
     end
   end
 end

@@ -71,4 +71,17 @@ namespace :indexing do
       Rake::Task["indexing:#{task}"].invoke
     end
   end
+
+  task build_indexes: :environment do
+    [
+      Content,
+      EventInstance,
+      BusinessProfile,
+      BusinessLocation,
+      Organization,
+      Location
+    ].each do |model|
+      model.reindex
+    end
+  end
 end

@@ -124,9 +124,15 @@ module Api
       end
 
       def rescrape_facebook(content)
-        if content.pubdate.present? && content.pubdate < Time.current
+        if should_scrape_on_facebook?(content)
           BackgroundJob.perform_later('FacebookService', 'rescrape_url', content)
         end
+      end
+
+      def should_scrape_on_facebook?(content)
+        content.pubdate.present? && \
+          content.pubdate < Time.current && \
+          production_messaging_enabled?
       end
 
       def is_my_stuff_request?

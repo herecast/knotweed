@@ -88,8 +88,12 @@ module Knotweed
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins '*'
-        resource '/api/v3/*', headers: :any, methods: %i[get put patch post delete options]
+        origins /https:\/\/(.*?)\.subtext\.org/,
+          /https:\/\/(.*?)\.herokuapp\.com/
+        resource '/api/v3/*',
+          headers: :any,
+          methods: %i[get put patch post delete options],
+          credentials: true
       end
     end
     config.cache_store = :redis_store

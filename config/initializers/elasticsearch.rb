@@ -5,7 +5,7 @@ require 'faraday_middleware/aws_signers_v4'
 Ethon.logger = Logger.new('/dev/null')
 Searchkick.redis = ConnectionPool.new { Redis.new }
 Searchkick.client = Elasticsearch::Client.new(
-  url: ENV['ELASTICSEARCH_URL'],
+  url: ENV['ELASTICSEARCH_URL'] || ENV['BONSAI_URL'],
   transport_options: { request: { timeout: 60 } },
   retry_on_failure: true # https://github.com/ankane/searchkick/issues/351
 ) do |f|

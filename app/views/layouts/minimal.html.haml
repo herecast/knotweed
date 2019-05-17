@@ -4,8 +4,8 @@
     %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
     %title= content_for?(:title) ? yield(:title) : "Daily UV"
     %meta{:content => content_for?(:description) ? yield(:description) : "Knotweed", :name => "description"}
-    = stylesheet_link_tag "http://fonts.googleapis.com/css?family=Droid+Sans:400,700"
-    = stylesheet_link_tag "http://fonts.googleapis.com/css?family=Droid+Serif"
+    = stylesheet_link_tag "https://fonts.googleapis.com/css?family=Droid+Sans:400,700"
+    = stylesheet_link_tag "https://fonts.googleapis.com/css?family=Droid+Serif"
     %style
       = raw Rails.application.assets['minimal.css'].to_s
     = csrf_meta_tags

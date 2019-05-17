@@ -159,6 +159,11 @@ describe Api::V3::ContentsController, type: :controller do
       end
 
       context 'when successful' do
+        before do
+          env = double(production_messaging_enabled: 'true')
+          allow(Figaro).to receive(:env).and_return env
+        end
+
         it 'creates a new record' do
           expect { subject }.to change {
             Content.count
@@ -339,6 +344,11 @@ describe Api::V3::ContentsController, type: :controller do
       end
 
       context 'when successful' do
+        before do
+          env = double(production_messaging_enabled: 'true')
+          allow(Figaro).to receive(:env).and_return env
+        end
+
         it 'triggers a facebook recache of that content' do
           expect(BackgroundJob).to receive(:perform_later).with(
             'FacebookService',

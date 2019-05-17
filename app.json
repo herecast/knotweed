@@ -1,9 +1,85 @@
 {
   "name": "Knotweed API",
+  "scripts": {
+    "postdeploy": "bash ./postdeploy-tasks.sh"
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "hobby"
+    },
+    "worker": {
+      "quantity": 1,
+      "size": "hobby"
+    }
+  },
+  "env": {
+    "ASSETS_COMPILE": {
+      "required": "false"
+    },
+    "AWS_ACCESS_KEY_ID": {
+      "required": "true"
+    },
+    "AWS_BUCKET_NAME": {
+      "required": "true"
+    },
+    "AWS_SECRET_ACCESS_KEY": {
+      "required": "true"
+    },
+    "DB_POOL": {
+      "required": "false"
+    },
+    "GMAPS_API_KEY": {
+      "required": "false"
+    },
+    "MAILCHIMP_API_HOST": {
+      "required": "false"
+    },
+    "MAILCHIMP_API_KEY": {
+      "required": "false"
+    },
+    "OPTIMIZED_IMAGE_URI": {
+      "required": "false"
+    },
+    "HEROKU_APP_NAME": {
+      "required": "true"
+    }
+  },
+  "image": "heroku/ruby",
   "addons" : [
     {
       "plan": "bonsai:shared-10",
       "version": "2.4"
+    },
+    {
+      "plan": "heroku-redis:hobby-dev"
+    },
+    {
+      "plan": "heroku-postgresql:hobby-dev"
     }
-  ]
+  ],
+  "environments": {
+    "test": {
+      "env": {
+        "AWS_ACCESS_KEY_ID": "dummy",
+        "AWS_BUCKET_NAME": "dummy",
+        "AWS_SECRET_ACCESS_KEY": "dummy"
+      },
+      "addons": [
+        {
+          "plan": "heroku-postgresql:hobby-dev"
+        },
+        {
+          "plan": "bonsai:sandbox-6",
+          "version": "2.4"
+        },
+        {
+          "plan": "heroku-redis:hobby-dev"
+        }
+      ],
+      "scripts": {
+        "test": "bundle exec rspec"
+      }
+    }
+  }
 }
