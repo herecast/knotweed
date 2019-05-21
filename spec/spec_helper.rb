@@ -18,7 +18,6 @@ require File.expand_path('../config/environment', __dir__)
 require 'rspec/rails'
 require 'webmock/rspec'
 # require 'pry-debugger' unless ENV['RM_INFO']
-require 'vcr'
 require 'factory_girl'
 WebMock.disable_net_connect!(allow_localhost: true, allow: [
   ENV['ELASTICSEARCH_URL'],
@@ -28,11 +27,6 @@ WebMock.disable_net_connect!(allow_localhost: true, allow: [
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
-
-VCR.configure do |c|
-  c.cassette_library_dir = 'spec/fixtures/vcr_cassettes'
-  c.hook_into :webmock
-end
 
 RSpec.configure do |config|
   config.include AuthenticationHelpers, type: :controller
@@ -68,8 +62,6 @@ RSpec.configure do |config|
   config.order = 'random'
 
   config.before(:suite) do
-    # Disable VCR for the test-suite, unless a test explicitely asks for it
-    VCR.turn_off!
     ImageUploader.storage = :file
     DatabaseCleaner.allow_remote_database_url = ENV['CI']
     DatabaseCleaner.strategy = :truncation

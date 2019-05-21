@@ -722,7 +722,6 @@ GEM
       unf_ext
     unf_ext (0.0.7.5)
     unicode-display_width (1.4.0)
-    vcr (2.9.3)
     warden (1.2.7)
       rack (>= 1.0)
     webmock (3.4.2)
@@ -842,7 +841,6 @@ DEPENDENCIES
   typhoeus
   uglifier (~> 2.4)
   unf
-  vcr (~> 2.9)
   webmock
   yard
 
