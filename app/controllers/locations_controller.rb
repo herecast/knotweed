@@ -60,7 +60,10 @@ class LocationsController < ApplicationController
       :latitude,
       :longitude,
       :consumer_active,
-      :is_region
+      :is_region,
+      :image,
+      :remote_image_url,
+      :remove_image
     )
   end
 end

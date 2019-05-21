@@ -19,6 +19,7 @@
 #  default_location                :boolean          default(FALSE)
 #  location_ids_within_five_miles  :integer          default([]), is an Array
 #  location_ids_within_fifty_miles :integer          default([]), is an Array
+#  image                           :string
 #
 # Indexes
 #
@@ -43,6 +44,8 @@ class Location < ActiveRecord::Base
 
   # coordinates for the center of the upper valley
   DEFAULT_LOCATION_COORDS = [43.645, -72.243].freeze
+
+  mount_uploader :image, ImageUploader
 
   validates :slug, uniqueness: true
   validates :state, length: { is: 2 }, if: :state?

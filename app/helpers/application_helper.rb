@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ApplicationHelper
-  CONFIG_CONTROLLERS = %w[locations features sidekiq_wrapper].freeze
+  CONFIG_CONTROLLERS = %w[features sidekiq_wrapper].freeze
 
   def display_base_errors(resource)
     return '' if resource.errors.empty? || resource.errors[:base].empty?

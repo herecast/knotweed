@@ -2,16 +2,25 @@
   .row-fluid
     .span6
       = f.input :city, label: "City/Town"
-      = f.input :state do
-        = subregion_select :location, :state, Carmen::Country.coded('US')
-
+      = f.input :state, as: :select, collection: us_states
       = f.input :zip, input_html: { data: { mask: "99999" } }
       = f.input :latitude, label: "Latitude"
       = f.input :longitude, label: "Longitude"
-
     .span6
       = f.input :slug
       = f.input :is_region, label: "Region"
       = f.input :consumer_active
+  .row-fluid
+    .span4
+      = f.input :image
+    .span8
+      = f.input :remote_image_url, label: "OR Upload from URL:"
+  - if @location.image?
+    .row-fluid
+      .span4
+        = image_tag(@location.image_url, style: "max-width: 400px;")
+    .row-fluid
+      .span4
+        = f.input :remove_image, as: :boolean, label: "Remove Image?"
 
   = f.submit nil, class: "btn btn-success"

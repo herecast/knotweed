@@ -86,7 +86,10 @@ describe 'Feed endpoints', type: :request do
           location: {
             id: content.location.id,
             city: content.location.city,
-            state: content.location.state
+            state: content.location.state,
+            latitude: content.location.latitude,
+            longitude: content.location.longitude,
+            image_url: content.location.image_url
           },
           updated_at: content.updated_at.iso8601,
           venue_address: an_instance_of(String).or(be_nil),

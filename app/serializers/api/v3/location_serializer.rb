@@ -5,7 +5,14 @@ module Api
     class LocationSerializer < ActiveModel::Serializer
       attributes :id,
                  :city,
-                 :state
+                 :state,
+                 :latitude,
+                 :longitude,
+                 :image_url
+
+      def image_url
+        object.image_url
+      end
     end
   end
 end

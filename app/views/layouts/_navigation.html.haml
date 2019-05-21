@@ -167,6 +167,22 @@
         = link_to payment_recipients_path do
           %i.icon-group
           %span Payment Recipients
+- if can? :read, Location
+  %li
+    = link_to locations_path do
+      %i.icon-map-marker
+      %span Locations
+      %i.icon-angle-down.angle-down
+    %ul{ class: "nav nav-stacked #{controller_name == "locations" ? "in" : "" }" }
+      %li{ class: current_page?(locations_path) ? "active" : "" }
+        = link_to locations_path do
+          %i.icon-tasks
+          %span Search
+      - if can? :create, Location
+        %li{ class: current_page?(new_location_path) ? "active" : "" }
+          = link_to new_location_path do
+            %i.icon-plus
+            %span Create New
 
 %li
   %a.dropdown-collapse{ href: '#', class: is_config_controller_class }
@@ -175,23 +191,6 @@
     %i.icon-angle-down.angle-down
 
   %ul.nav.nav-stacked{ class: is_config_controller_class }
-    - if can? :read, Location
-      %li
-        = link_to locations_path do
-          %i.icon-map-marker
-          %span Locations
-          %i.icon-angle-down.angle-down
-        %ul{ class: "nav nav-stacked #{controller_name == "locations" ? "in" : "" }" }
-          %li{ class: current_page?(locations_path) ? "active" : "" }
-            = link_to locations_path do
-              %i.icon-tasks
-              %span Search
-          - if can? :create, Location
-            %li{ class: current_page?(new_location_path) ? "active" : "" }
-              = link_to new_location_path do
-                %i.icon-plus
-                %span Create New
-
     - if can? :manage, ActiveJob::Base
       %li{ class: controller_name == "sidekiq_wrapper" ? 'active' : '' }
         = link_to sidekiq_wrapper_path do

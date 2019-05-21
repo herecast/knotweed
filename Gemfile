@@ -9,7 +9,6 @@ gem 'active_model_serializers', '~> 0.9.3'              # 0.10 is not backward c
 gem 'american_date'
 gem 'bootstrap-sass'
 gem 'cancancan'
-gem 'carmen-rails'
 gem 'carrierwave', '~> 1.0'
 gem 'carrierwave-mimetype-fu'
 gem 'chosen-rails'

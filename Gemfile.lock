@@ -78,11 +78,6 @@ GEM
     builder (3.2.3)
     byebug (10.0.2)
     cancancan (2.3.0)
-    carmen (1.0.2)
-      activesupport (>= 3.0.0)
-    carmen-rails (1.0.1)
-      carmen (~> 1.0.0)
-      rails
     carrierwave (1.2.3)
       activemodel (>= 4.0.0)
       activesupport (>= 4.0.0)
@@ -747,7 +742,6 @@ DEPENDENCIES
   bootstrap-sass
   byebug
   cancancan
-  carmen-rails
   carrierwave (~> 1.0)
   carrierwave-mimetype-fu
   chosen-rails

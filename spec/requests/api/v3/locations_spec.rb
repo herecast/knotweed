@@ -7,7 +7,10 @@ def serialized_location(location)
     location: {
       id: location.id,
       city: location.city,
-      state: location.state
+      state: location.state,
+      latitude: an_instance_of(Float),
+      longitude: an_instance_of(Float),
+      image_url: location.image_url
     }
   }
 end
@@ -145,7 +148,7 @@ RSpec.describe 'Locations API Endpoints', type: :request do
 
         it "returns the users's location preference" do
           subject
-          expect(response_json).to eql serialized_location(location)
+          expect(response_json).to match serialized_location(location)
         end
       end
 
@@ -160,7 +163,7 @@ RSpec.describe 'Locations API Endpoints', type: :request do
 
           expect(Location).to receive(:nearest_to_ip).and_return([location])
           subject
-          expect(response_json).to eql serialized_location(location)
+          expect(response_json).to match serialized_location(location)
         end
       end
     end

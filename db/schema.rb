@@ -405,6 +405,7 @@ ActiveRecord::Schema.define(version: 20190513154230) do
     t.boolean  'default_location',                            default: false
     t.integer  'location_ids_within_five_miles',              default: [],                 array: true
     t.integer  'location_ids_within_fifty_miles',             default: [],                 array: true
+    t.string   'image'
     t.index %w[latitude longitude], name: 'index_locations_on_latitude_and_longitude', using: :btree
   end
 

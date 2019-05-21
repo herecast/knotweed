@@ -31,6 +31,7 @@
       %th Region?
       %th Consumer Active?
       %th Slug
+      %th Image?
       %th
   .span5
     = page_entries_info @locations if @locations.present?
@@ -43,5 +44,6 @@
         %td= {true => 'Yes', false => 'No'}[location.is_region?]
         %td= {true => 'Yes', false => 'No'}[location.consumer_active?]
         %td= location.slug
+        %td= location.image.present? ? link_to('See image', location.image_url, target: '_blank', class: 'btn btn-mini btn-success') : 'No image'
         %td.actions
           = link_to "edit", edit_location_path(location), class: "btn btn-mini btn-warning"

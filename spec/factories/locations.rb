@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: locations
@@ -19,6 +18,7 @@
 #  default_location                :boolean          default(FALSE)
 #  location_ids_within_five_miles  :integer          default([]), is an Array
 #  location_ids_within_fifty_miles :integer          default([]), is an Array
+#  image                           :string
 #
 # Indexes
 #

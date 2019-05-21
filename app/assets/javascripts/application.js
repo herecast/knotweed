@@ -44,3 +44,4 @@
 //= require cocoon
 //= require payments
 //= require payment_recipients
+//= require locations
