@@ -179,7 +179,10 @@ describe Api::V3::UsersController, type: :controller do
         location: {
           id: user.location.id,
           city: user.location.city,
-          state: user.location.state
+          state: user.location.state,
+          latitude: an_instance_of(Float),
+          longitude: an_instance_of(Float),
+          image_url: user.location.image_url
         }.stringify_keys,
         location_confirmed: user.location_confirmed,
         listserv_name: user.location.listserv.name,

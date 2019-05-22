@@ -55,7 +55,10 @@ RSpec.describe 'User API Endpoints', type: :request do
             location: {
               id: user.location.id,
               city: user.location.city,
-              state: user.location.state
+              state: user.location.state,
+              latitude: an_instance_of(Float),
+              longitude: an_instance_of(Float),
+              image_url: user.location.image_url
             },
             location_confirmed: user.location_confirmed?,
             listserv_id: an_instance_of(String).or(be_nil),

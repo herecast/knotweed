@@ -51,7 +51,10 @@ module Api
         {
           id: object.location.id,
           city: object.location.city,
-          state: object.location.state
+          state: object.location.state,
+          latitude: object.location.latitude,
+          longitude: object.location.longitude,
+          image_url: object.location.image_url
         }
       end
 
