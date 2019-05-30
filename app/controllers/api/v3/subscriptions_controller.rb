@@ -3,7 +3,7 @@
 module Api
   module V3
     class SubscriptionsController < ApiController
-      before_action :get_resource, only: %i[show update confirm]
+      before_action :get_resource, only: %i[show update]
       before_action :check_logged_in!, only: [:index]
 
       def index
@@ -17,6 +17,17 @@ module Api
 
       def show
         render json: @subscription, serializer: SubscriptionSerializer
+      end
+
+      def create
+        if params[:subscription][:listserv_id].present?
+          user = find_user
+          listserv = Listserv.find(params[:subscription][:listserv_id])
+          @subscription = SubscribeToListservSilently.call(listserv, user, request.remote_ip)
+          render json: @subscription, serializer: SubscriptionSerializer, status: 201
+        else
+          render json: { errors: 'listserv_id cant be blank' }, status: 422
+        end
       end
 
       def update
@@ -69,10 +80,6 @@ module Api
 
       def find_user
         User.find_by(email: params[:subscription][:email])
-      end
-
-      def subscribed_from_registration?
-        params[:subscription][:subscribed_from_registration]
       end
     end
   end

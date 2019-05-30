@@ -180,4 +180,77 @@ RSpec.describe 'Subscriptions Endpoints', type: :request do
       }.from(nil)
     end
   end
+
+  describe 'POST /api/v3/subscriptions' do
+    let(:listserv) { FactoryGirl.create :listserv }
+    let(:user) { FactoryGirl.create :user }
+    let(:unconfirmed_user) { FactoryGirl.create :user, confirmed_at: nil }
+    let(:subscription_params) do
+      { 'subscription' => { 'email' => user.email.to_s,
+                            'name' => listserv.name.to_s, 'user_id' => nil, 'listserv_id' => listserv.id.to_s } }
+    end
+    let(:invalid_sub_params) do
+      { 'subscription' => { 'id' => nil, 'email' => user.email.to_s, 'name' => listserv.name.to_s,
+                            'listserv_id' => nil } }
+    end
+    subject { post '/api/v3/subscriptions', params: subscription_params }
+
+     context 'with valid subscription attributes' do
+      it 'responds with the correct status code' do
+        subject
+        expect(response.code).to eq '201'
+      end
+
+      it 'creates new subscription' do
+        expect { subject }.to change{
+          Subscription.count
+        }.by(1)
+      end
+
+      it 'renders the the json for the new subscription' do
+        subject
+        expect(response_json[:subscription][:email]).to eq user.email
+        expect(response_json[:subscription][:name]).to eq user.name
+        expect(response_json[:subscription][:listserv_id]).to eq listserv.id
+      end
+
+       it 'can subscribe a user using listserv_id and email' do
+        expect do
+          post '/api/v3/subscriptions', params: { subscription: { listserv_id: listserv.id, email: user.email } }
+        end.to change { Subscription.count }.by(1)
+      end
+
+      context 'when a user has confirmed their account' do
+        it 'runs the SubscribeToListservSilently job' do
+          request = double('request')
+          allow(request).to receive(:remote_ip).and_return('127.0.0.1')
+          expect(SubscribeToListservSilently).to receive(:call).with(listserv, user, request.remote_ip)
+          subject
+        end
+      end
+
+      context 'when listserv_id is present' do
+        it 'creates new subscription' do
+          expect do
+            post '/api/v3/subscriptions', params: subscription_params.merge!(listserv_id: listserv.id)
+          end.to change { Subscription.count }.by(1)
+        end
+      end
+    end
+
+    context 'with invalid attributes' do
+      subject { post '/api/v3/subscriptions', params: invalid_sub_params }
+
+       it 'renders 422 status code' do
+        subject
+        expect(response.code).to eq '422'
+      end
+
+      it 'does not create a new subscription' do
+        expect { subject }.to_not change {
+          Subscription.count
+        }
+      end
+    end
+  end
 end
