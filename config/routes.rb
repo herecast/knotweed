@@ -194,6 +194,7 @@ Rails.application.routes.draw do
       post '/metrics/profiles/:id', to: 'metrics/profiles#create'
 
       resources :mailchimp_webhooks, only: %i[index create]
+      resources :rewrites, only: :index
     end
   end
 end
