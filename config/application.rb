@@ -89,7 +89,8 @@ module Knotweed
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins /https:\/\/(.*?)\.subtext\.org/,
-          /https:\/\/(.*?)\.herokuapp\.com/
+          /https:\/\/(.*?)\.herokuapp\.com/,
+          /https:\/\/(.*?)\.dailyuv\.com/
         resource '/api/v3/*',
           headers: :any,
           methods: %i[get put patch post delete options],
