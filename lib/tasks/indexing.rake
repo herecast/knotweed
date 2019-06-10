@@ -72,6 +72,20 @@ namespace :indexing do
     end
   end
 
+  task full_reindex_asnc: :environment do
+    [
+      Content,
+      EventInstance,
+      BusinessProfile,
+      BusinessLocation,
+      Organization,
+      Location
+    ].each do |model|
+      puts "Reindexing for: #{model.to_s}"
+      model.find_each { |i| i.reindex_async }
+    end
+  end
+
   task build_indexes: :environment do
     [
       Content,

@@ -14,12 +14,16 @@ Rails.application.routes.draw do
     post '/api/v3/users/sign_in_with_token', to: 'sessions#sign_in_with_token'
   end
 
+  get '/' => redirect('/admin')
+
   # /admin/...
   scope '/admin' do
     authenticated :user do
       mount Sidekiq::Web, at: '/sidekiq'
       root to: 'dashboard#index'
     end
+
+    get "/queue-status", to: 'sidekiq_queues#show'
 
     devise_for :users, controllers: { sessions: 'sessions', registrations: 'registrations' }
 
