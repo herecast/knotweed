@@ -65,6 +65,7 @@ gem 'rubypress'
 gem 'rubyzip'
 gem 'sanitize'
 gem 'sass-rails'
+gem 'scout_apm', '~> 2.4.24'
 gem 'searchkick', '~> 2.3'                          # Have not yet tested the next major version
 gem 'sidekiq'
 gem 'sidekiq-scheduler'
