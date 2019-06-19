@@ -172,7 +172,7 @@ FactoryGirl.define do
     trait :campaign do
       ad_promotion_type 'ROS'
       ad_campaign_start Date.yesterday
-      ad_campaign_end Date.tomorrow
+      ad_campaign_end 1.month.from_now
       content_category do
         ContentCategory.find_or_create_by(
           name: 'campaign'

@@ -46,47 +46,6 @@ u = User.create!(
 )
 p "Created test user #{u.email}"
 
-# quick method to generate some basic content attributes (new each time with Faker)
-def base_content_attrs
-  {
-    title: Faker::Lorem.sentence(4),
-    raw_content: Faker::Lorem.paragraph(5),
-    authors: Faker::Name.name,
-    pubdate: Time.now,
-    organization: Organization.last,
-    location_id: Location.first.id,
-    created_by: User.last,
-    updated_by: User.last
-  }
-end
-
-# create a 'talk' record
-Content.create!(base_content_attrs.merge(
-                  content_category: ContentCategory.create!(name: 'talk_of_the_town'),
-                  channel: Comment.new
-                ))
-
-# create a 'news' record
-Content.create!(base_content_attrs.merge(
-                  content_category: ContentCategory.create!(name: 'news')
-                ))
-
-# create a 'market_post' record
-Content.create!(base_content_attrs.merge(
-                  content_category: ContentCategory.create!(name: 'market'),
-                  channel: MarketPost.new
-                ))
-
-# create an 'event' record
-Content.create!(base_content_attrs.merge(
-                  content_category: ContentCategory.create(name: 'event'),
-                  channel: Event.new(
-                    event_instances: [EventInstance.new(start_date: 1.week.from_now)]
-                  )
-                ))
-
-p "Created #{Content.count} content records"
-
 # create a business profile
 BusinessLocation.create!(
   name: Faker::Company.name,
@@ -103,3 +62,28 @@ BusinessProfile.create!(
   business_location: BusinessLocation.last
 )
 p "Created business profile for #{BusinessLocation.last.name}"
+
+FactoryGirl.create(:location, id: 19) unless Location.find_by(id: 19)
+
+# quick method to generate some basic content attributes (new each time with Faker)
+def base_content_attrs
+  {
+    title: Faker::Lorem.sentence(4),
+    raw_content: Faker::Lorem.paragraph(5),
+    authors: Faker::Name.name,
+    pubdate: Time.now,
+    organization: Organization.last,
+    location_id: 19,
+    created_by: User.last,
+    updated_by: User.last
+  }
+end
+
+5.times do
+  FactoryGirl.create :content, :news, base_content_attrs
+  FactoryGirl.create :content, :event, base_content_attrs
+  FactoryGirl.create :content, :market_post, base_content_attrs
+  FactoryGirl.create :content, :talk, base_content_attrs
+end
+
+p "Created #{Content.count} content records"
