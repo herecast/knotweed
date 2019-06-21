@@ -38,7 +38,12 @@ describe 'Feed endpoints', type: :request do
                     end,
           contact_email: an_instance_of(String).or(be_nil),
           contact_phone: an_instance_of(String).or(be_nil),
-          content: content.sanitized_content,
+          content: ImageUrlService.optimize_image_urls(
+            html_text: content.sanitized_content,
+            default_width:  600,
+            default_height: 1800,
+            default_crop:   false
+          ),
           content_origin: 'ugc',
           content_type: content.content_type.to_s,
           cost: an_instance_of(String).or(be_nil),

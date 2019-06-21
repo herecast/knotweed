@@ -146,7 +146,12 @@ module Api
       end
 
       def content
-        object.sanitized_content
+        ImageUrlService.optimize_image_urls(
+          html_text: object.sanitized_content,
+          default_width:  600,
+          default_height: 1800,
+          default_crop:   false
+        )
       end
 
       def title

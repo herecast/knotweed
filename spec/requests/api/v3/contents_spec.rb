@@ -17,7 +17,12 @@ def content_response_schema(record)
       # contact_email is only returned for event and market content
       contact_email: (%i[market event].include?(record.content_type) ? (record.channel.try(:contact_email) || record.authoremail) : nil),
       contact_phone: record.channel.try(:contact_phone),
-      content: record.sanitized_content,
+      content: ImageUrlService.optimize_image_urls(
+        html_text: record.sanitized_content,
+        default_width:  600,
+        default_height: 1800,
+        default_crop:   false
+      ),
       content_origin: Content::UGC_ORIGIN.downcase,
       content_type: record.content_type.to_s,
       cost: record.channel.try(:cost),
