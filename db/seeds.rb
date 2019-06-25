@@ -79,11 +79,10 @@ def base_content_attrs
   }
 end
 
-5.times do
+6.times do
   FactoryGirl.create :content, :news, base_content_attrs
   FactoryGirl.create :content, :event, base_content_attrs
   FactoryGirl.create :content, :market_post, base_content_attrs
-  FactoryGirl.create :content, :talk, base_content_attrs
 end
 
 p "Created #{Content.count} content records"
