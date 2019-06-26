@@ -11,7 +11,8 @@
     = f.input :paid
     = f.simple_fields_for :promotable do |p|
       - if promotion.promotable.is_a? PromotionBanner
-        = p.input :promotion_type, collection: PromotionBanner::PROMOTION_TYPES, label: 'Ad type'
+        = p.input :promotion_type, collection: PromotionBanner::PROMOTION_TYPES, label: 'Promotion type'
+        = p.input :location_id, collection: Location.consumer_active.order_by_city_state.map { |l| [l.pretty_name, l.id] }
         = p.input :boost
         = p.input :campaign_start, as: :date_picker, label: 'Creative Start Date'
         = p.input :campaign_end, as: :date_picker, label: 'Creative End Date'

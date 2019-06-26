@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: promotion_banners
@@ -29,6 +28,15 @@
 #  digest_opens           :integer          default(0), not null
 #  digest_emails          :integer          default(0), not null
 #  digest_metrics_updated :datetime
+#  location_id            :bigint(8)
+#
+# Indexes
+#
+#  index_promotion_banners_on_location_id  (location_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (location_id => locations.id)
 #
 
 require 'spec_helper'

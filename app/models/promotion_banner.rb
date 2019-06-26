@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: promotion_banners
@@ -29,6 +28,15 @@
 #  digest_opens           :integer          default(0), not null
 #  digest_emails          :integer          default(0), not null
 #  digest_metrics_updated :datetime
+#  location_id            :bigint(8)
+#
+# Indexes
+#
+#  index_promotion_banners_on_location_id  (location_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (location_id => locations.id)
 #
 
 class PromotionBanner < ActiveRecord::Base
@@ -39,6 +47,7 @@ class PromotionBanner < ActiveRecord::Base
   has_many :contents, through: :content_promotion_banner_impressions
   has_many :promotion_banner_reports
   has_many :promotion_banner_metrics
+  belongs_to :location
 
   mount_uploader :banner_image, ImageUploader
   mount_uploader :coupon_image, ImageUploader
@@ -54,6 +63,7 @@ class PromotionBanner < ActiveRecord::Base
   validates :daily_max_impressions, numericality: { only_integer: true, greater_than: 0 }, if: -> { daily_max_impressions.present? }
   validates :cost_per_day, numericality: { greater_than: 0 }, if: -> { cost_per_day.present? }
   validates :cost_per_impression, numericality: { greater_than: 0 }, if: -> { cost_per_impression.present? }
+  validates :location_id, presence: true, if: -> { promotion_type == TARGETED }
   validate :presence_of_banner_image_if_necessary
   validate :will_not_have_daily_and_per_impression_cost
   validate :if_coupon_must_have_coupon_image
@@ -98,6 +108,7 @@ class PromotionBanner < ActiveRecord::Base
   # query promotion banners by multiple promotion ids
   scope :for_promotions, ->(promotion_ids) { joins(:promotion).where(promotions: { id: promotion_ids }) }
 
+  TARGETED = 'Targeted'
   RUN_OF_SITE = 'ROS'
   SPONSORED = 'Sponsored'
   DIGEST = 'Digest'
@@ -112,6 +123,7 @@ class PromotionBanner < ActiveRecord::Base
   PACKAGE_PROMINENCE = 'Package: Prominence'
 
   PROMOTION_TYPES = [
+    TARGETED,
     RUN_OF_SITE,
     SPONSORED,
     DIGEST,

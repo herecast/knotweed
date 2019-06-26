@@ -5,11 +5,12 @@ module Api
     class PromotionBannersController < ApiController
       def show
         opts                   = {}
-        opts[:limit]           = params[:limit] || 1
+        opts[:limit]           = params[:limit]
         opts[:exclude]         = params[:exclude]
         opts[:promotion_id]    = params[:promotion_id]
         opts[:content_id]      = params[:content_id]
         opts[:organization_id] = params[:organization_id]
+        opts[:location_id]     = params[:location_id]
 
         conditionally_prime_daily_ad_reports
         @selected_promotion_banners = SelectPromotionBanners.call(opts)

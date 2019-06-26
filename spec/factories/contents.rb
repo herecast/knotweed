@@ -103,6 +103,7 @@ FactoryGirl.define do
     content_category
     authoremail 'fake@email.com'
     created_by { FactoryGirl.build(:user) }
+    location
 
     trait :located do
       location do

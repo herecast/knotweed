@@ -20,8 +20,26 @@ Organization.create!(
 )
 p "Created 'DailyUV' organization"
 
-FactoryGirl.create :location, :default
-p 'Created default location'
+locations = []
+[
+  { id: 19, zip: "05001", city: "White River Junction", state: "VT", default_location: true, consumer_active: true, latitude: 43.6489596, longitude: -72.3192579 },
+  { zip: "05055", city: "Norwich", state: "VT", consumer_active: true, latitude: 43.715015, longitude: -72.308441 },
+  { zip: "03755", city: "Hanover", state: "NH", consumer_active: true, latitude: 43.702126, longitude: -72.289525 },
+  { zip: "05047", city: "Hartford", state: "VT", consumer_active: true, latitude: 43.663913, longitude: -72.369648 },
+  { zip: "03784", city: "West Lebanon", state: "NH", consumer_active: true, latitude: 43.6446508, longitude: -72.3106065 },
+  { zip: "05088", city: "Wilder", state: "VT", consumer_active: true, latitude: 43.6728484, longitude: -72.3087022 },
+  { zip: "05084", city: "West Hartford", state: "VT", consumer_active: true, latitude: 43.7013267, longitude: -72.426983 },
+  { zip: "05059", city: "Quechee", state: "VT", consumer_active: true, latitude: 43.646227, longitude: -72.4186105 },
+  { zip: "05052", city: "North Hartland", state: "VT", consumer_active: true, latitude: 43.596986, longitude: -72.359722 }
+].each do |l_hash|
+  locations << FactoryGirl.create(:location, l_hash)
+end
+locations.each do |location|
+  location.update_attribute(
+    :location_ids_within_fifty_miles, locations.map(&:id)
+  )
+end
+p 'Created locations'
 
 # create admin account
 User.create!(
@@ -63,8 +81,6 @@ BusinessProfile.create!(
 )
 p "Created business profile for #{BusinessLocation.last.name}"
 
-FactoryGirl.create(:location, id: 19) unless Location.find_by(id: 19)
-
 # quick method to generate some basic content attributes (new each time with Faker)
 def base_content_attrs
   {
@@ -73,7 +89,7 @@ def base_content_attrs
     authors: Faker::Name.name,
     pubdate: Time.now,
     organization: Organization.last,
-    location_id: 19,
+    location_id: Location.all.map(&:id).sample,
     created_by: User.last,
     updated_by: User.last
   }

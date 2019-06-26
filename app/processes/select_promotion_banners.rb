@@ -9,14 +9,14 @@ class SelectPromotionBanners
     @opts            = opts
     @banners         = []
     @exclude         = opts[:exclude] || []
-    @not_run_of_site = true
+    @opts[:limit]    = opts[:limit].present? ? opts[:limit].to_i : 1
   end
 
   def call
     return global_banner_override if global_banner_override
 
     promotion_banner_loop
-    get_random_promotion unless @banners.length == (@opts[:limit] || 1) || @not_run_of_site
+    get_random_promotion unless @banners.length == @opts[:limit]
     @banners
   end
 
@@ -28,15 +28,15 @@ class SelectPromotionBanners
     elsif @opts[:content_id].present?
       get_related_promotion
     elsif @opts[:organization_id].present?
-      organization = Organization.find @opts[:organization_id]
+      organization = Organization.find(@opts[:organization_id])
       get_organization_promotion(organization)
     else
-      @not_run_of_site = false
+      get_targeted_promotions
     end
   end
 
   def promotion_banners_needed
-    (@opts[:limit].try(:to_i) || 1) - @banners.length
+    @opts[:limit] - @banners.length
   end
 
   def add_promotion(selected_promo)
@@ -56,25 +56,23 @@ class SelectPromotionBanners
                       select_score: nil,
                       select_method: 'sponsored_content'
                     ))
-    else
-      @not_run_of_site = false
-      get_random_promotion
     end
   end
 
   def get_related_promotion
-    content = Content.find @opts[:content_id]
+    content = Content.find(@opts[:content_id])
     if content.banner_ad_override.present?
       get_direct_promotion(content.banner_ad_override)
-    elsif content.organization.banner_ad_override? && @not_run_of_site
+    elsif content.organization&.banner_ad_override?
       get_organization_promotion(content.organization)
     else
-      @not_run_of_site = false
+      @opts[:location_id] = content.location_id
+      get_targeted_promotions
     end
   end
 
   def get_organization_promotion(organization)
-    if organization.banner_ad_override.present?
+    if organization&.banner_ad_override.present?
       # TODO: this is really dependent on banner_ad_override being populated properly
       ids = organization.banner_ad_override.split(/,[\s]*?/)
       banner = PromotionBanner.for_promotions(ids).active.has_inventory.order('random()').first
@@ -84,9 +82,47 @@ class SelectPromotionBanners
                         select_score: nil,
                         select_method: 'sponsored_content'
                       ))
-      else
-        @not_run_of_site = false
-        get_related_promotion
+      end
+    end
+  end
+
+  def campaign_content_category_id
+    ContentCategory.find_or_create_by(name: 'campaign').id
+  end
+
+
+  def get_targeted_promotions
+    if @opts[:location_id].present?
+      promotions_scope = PromotionBanner.has_inventory
+                                        .where.not(id: @exclude)
+                                        .where(promotion_type: PromotionBanner::TARGETED)
+                                        .order('RANDOM()')
+
+      promotions_scope.where(location_id: @opts[:location_id])
+                      .limit(promotion_banners_needed)
+                      .each do |banner|
+        add_promotion(
+          SelectedPromotionBanner.new(
+            banner,
+            select_score: nil,
+            select_method: 'targeted'
+          )
+        )
+      end
+
+      unless promotion_banners_needed == 0
+        location = Location.find(@opts[:location_id])
+        promotions_scope.where(location_id: location.location_ids_within_fifty_miles)
+                        .limit(promotion_banners_needed)
+                        .each do |banner|
+          add_promotion(
+            SelectedPromotionBanner.new(
+              banner,
+              select_score: nil,
+              select_method: 'targeted'
+            )
+          )
+        end
       end
     end
   end
@@ -138,9 +174,7 @@ class SelectPromotionBanners
       banners = promos.collect(&:promotable).select { |p| p.is_a? PromotionBanner }
 
       if banners.count > 0
-        limit = @opts[:limit] || 1
-
-        while @banners.count < limit.to_i
+        while @banners.count < @opts[:limit]
           @banners << SelectedPromotionBanner.new(
             banners.sample,
             select_score: nil,

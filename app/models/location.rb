@@ -53,6 +53,7 @@ class Location < ActiveRecord::Base
   has_many :organization_locations
   has_many :organizations, through: :organization_locations
   has_many :contents
+  has_many :promotion_banners
 
   has_and_belongs_to_many :listservs
 
@@ -63,6 +64,7 @@ class Location < ActiveRecord::Base
 
   scope :consumer_active, -> { where consumer_active: true }
   scope :not_upper_valley, -> { where "city != 'Upper Valley'" }
+  scope :order_by_city_state, -> { order(state: :asc).order(city: :asc) }
 
   scope :non_region, lambda {
     where(is_region: false)

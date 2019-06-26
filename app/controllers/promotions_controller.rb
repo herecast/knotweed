@@ -85,10 +85,25 @@ class PromotionsController < ApplicationController
       :content_id,
       :promotable_type,
       :paid,
-      promotable_attributes: %i[id boost campaign_start campaign_end daily_max_impressions
-                                max_impressions banner_image redirect_url promotion_type sales_agent
-                                cost_per_impression cost_per_day coupon_email_body coupon_image
-                                remove_coupon_image remove_banner_image],
+      promotable_attributes: %i[
+        id
+        boost
+        campaign_start
+        campaign_end
+        daily_max_impressions
+        max_impressions
+        banner_image
+        redirect_url
+        promotion_type
+        sales_agent
+        cost_per_impression
+        cost_per_day
+        coupon_email_body
+        coupon_image
+        remove_coupon_image
+        remove_banner_image
+        location_id
+      ],
       content_attributes: [:title]
     )
   end

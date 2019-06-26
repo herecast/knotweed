@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190513154230) do
+ActiveRecord::Schema.define(version: 20190625124220) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -634,6 +634,8 @@ ActiveRecord::Schema.define(version: 20190513154230) do
     t.integer  'digest_opens',                       default: 0,     null: false
     t.integer  'digest_emails',                      default: 0,     null: false
     t.datetime 'digest_metrics_updated'
+    t.bigint    'location_id'
+    t.index ['location_id'], name: 'index_promotion_banners_on_location_id'
   end
 
   create_table 'promotion_listservs', id: :bigserial, force: :cascade do |t|

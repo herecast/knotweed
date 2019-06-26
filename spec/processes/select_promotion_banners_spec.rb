@@ -54,6 +54,18 @@ RSpec.describe SelectPromotionBanners do
         end
       end
 
+      context "when content location has promotion_banner" do
+        before do
+          @promotion_banner = FactoryGirl.create :promotion_banner,
+            location_id: content.location.id,
+            promotion_type: 'Targeted'
+        end
+
+        it "returns targeted ad connected to content location" do
+          expect(subject.map(&:promotion_banner)).to eq [@promotion_banner]
+        end
+      end
+
       context 'When banner does not have inventory' do
         let(:promo_banner) do
           FactoryGirl.create :promotion_banner, content: content,
@@ -166,6 +178,48 @@ RSpec.describe SelectPromotionBanners do
 
         it 'should return nothing' do
           expect(subject).to eq []
+        end
+      end
+    end
+
+    context 'when location id passed in' do
+      before do
+        @location = FactoryGirl.create :location
+        @promotion_banner = FactoryGirl.create :promotion_banner,
+          promotion_type: PromotionBanner::TARGETED,
+          location: @location
+        @campaign = FactoryGirl.create :content, :campaign
+        @promotion_banner.promotion.update_attribute(
+          :content_id, @campaign.id
+        )
+      end
+
+      let(:opts) { { location_id: @location.id } }
+
+      subject { SelectPromotionBanners.call(opts) }
+
+      context 'when there is ad in same location' do
+        it "returns campaign in same location" do
+          results = subject
+          expect(results.first.promotion_banner).to eq @promotion_banner
+          expect(results.first.select_method).to eq 'targeted'
+        end
+      end
+
+      context 'when ad is in location within 50 miles' do
+        before do
+          @close_location = FactoryGirl.create :location
+          @promotion_banner.update_attribute(:location_id, @close_location.id)
+          @location.update_attribute(
+            :location_ids_within_fifty_miles,
+            [@close_location.id]
+          )
+        end
+
+        it "returns campaign in close location" do
+          results = subject
+          expect(results.first.promotion_banner).to eq @promotion_banner
+          expect(results.first.select_method).to eq 'targeted'
         end
       end
     end
