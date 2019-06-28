@@ -48,51 +48,26 @@ describe Api::V3::CommentsController, type: :controller do
 
         it 'returns empty array' do
           subject
-          expect(assigns(:comments)).to eq([])
+          expect(assigns(:comments)).to eq(nil)
         end
-      end
-    end
-
-    describe 'nested comments' do
-      before do
-        @event = FactoryGirl.create :event
-        @comment1 = FactoryGirl.create :comment
-        @comment1.content.update_attributes(parent_id: @event.content.id,
-                                            pubdate: 2.hours.ago,
-                                            created_by: FactoryGirl.create(:user))
-        @comment2 = FactoryGirl.create :comment
-        @comment2.content.update_attributes(parent_id: @comment1.content.id,
-                                            pubdate: 1.hour.ago,
-                                            created_by: FactoryGirl.create(:user))
-        @comment3 = FactoryGirl.create :comment
-        @comment3.content.update_attributes(parent_id: @comment1.content.id,
-                                            pubdate: Time.current,
-                                            created_by: FactoryGirl.create(:user))
-      end
-
-      subject! { get :index, format: :json, params: { content_id: @event.content.id } }
-
-      it 'should return the results flattened and ordered' do
-        # pubdate time varies based on when the Factory creates them, so need to order first
-        # to match what the controller does
-        comments = [@comment3, @comment2, @comment1].map { |c| comment_format(c) }
-        expected = { comments: comments }.stringify_keys
-        expect(JSON.parse(response.body)).to eq(expected)
       end
     end
 
     describe 'ordered by pubdate DESC' do
       before do
         @event = FactoryGirl.create :event
-        @comment1 = FactoryGirl.create :comment, pubdate: Time.parse('2014-01-01')
-        @comment1.content.update created_by: FactoryGirl.create(:user),
-                                 parent: @event.content
-        @comment2 = FactoryGirl.create :comment, pubdate: Time.parse('2014-02-01')
-        @comment2.content.update created_by: FactoryGirl.create(:user),
-                                 parent: @comment1.content
-        @comment3 = FactoryGirl.create :comment, pubdate: Time.parse('2014-03-01')
-        @comment3.content.update parent: @comment2.content,
-                                 created_by: FactoryGirl.create(:user)
+        @comment1 = FactoryGirl.create :comment,
+          pubdate: Time.parse('2014-01-01'),
+          created_by: FactoryGirl.create(:user),
+          parent: @event.content
+        @comment2 = FactoryGirl.create :comment,
+          pubdate: Time.parse('2014-02-01'),
+          created_by: FactoryGirl.create(:user),
+          parent: @event.content
+        @comment3 = FactoryGirl.create :comment,
+          pubdate: Time.parse('2014-03-01'),
+          parent: @event.content,
+          created_by: FactoryGirl.create(:user)
       end
 
       subject! { get :index, format: :json, params: { content_id: @event.content.id } }

@@ -560,10 +560,6 @@ class Content < ActiveRecord::Base
     CGI.escape(BASE_URI + "/#{id}")
   end
 
-  def talk_comments
-    children.where(root_content_category_id: [ContentCategory.find_by_name('discussion'), ContentCategory.find_by_name('talk_of_the_town').id])
-  end
-
   def is_sponsored_content?
     content_category.name == 'sponsored_content'
   end

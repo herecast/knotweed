@@ -311,24 +311,6 @@ describe Content, type: :model do
     end
   end
 
-  describe '#talk_comments' do
-    let(:talk_category) { FactoryGirl.create :content_category, name: 'talk_of_the_town' }
-    let(:discussion_category) { FactoryGirl.create :content_category, name: 'discussion' }
-    before do
-      @content = FactoryGirl.create :content, :located, content_category: talk_category
-      @comment_content1 = FactoryGirl.create :content, :located, content_category: talk_category
-      @comment_content2 = FactoryGirl.create :content, :located, content_category: discussion_category
-      @comment1 = FactoryGirl.create :comment, content: @comment_content1
-      @comment1.content.update_attributes parent_id: @content.id
-      @comment2 = FactoryGirl.create :comment, content: @comment_content2
-      @comment2.content.update_attributes parent_id: @content.id
-    end
-
-    it 'returns content records of comments associated to a talk item' do
-      expect(@content.talk_comments).to include(@comment1.content, @comment2.content)
-    end
-  end
-
   describe 'setting content category sets root content category' do
     before do
       @cat = FactoryGirl.create :content_category

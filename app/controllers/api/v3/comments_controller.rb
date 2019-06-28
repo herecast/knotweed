@@ -5,24 +5,18 @@ module Api
     class CommentsController < ApiController
       before_action :check_logged_in!, only: [:create]
 
-      # @param the parent content id
-      # @return all child comments
       def index
         root = Content.find params[:content_id]
-        @comments = []
 
-        if root.present? && root.removed != true
-          result_list = if root.content_category.name.in? %w[talk_of_the_town discussion]
-                          root.talk_comments
-                        else
-                          root.comments
-                        end
-          @comments << result_list.not_deleted
-          get_all_comments result_list.not_deleted
-          @comments.flatten!
-          @comments.sort! { |a, b| b.pubdate <=> a.pubdate }
+        if root.present? && root.removed == false
+          @comments = root.comments
+                          .not_deleted
+                          .not_removed
+                          .order(pubdate: :desc)
+          render json: @comments, each_serializer: CommentSerializer
+        else
+          render json: [], status: :ok
         end
-        render json: @comments, each_serializer: CommentSerializer
       end
 
       def create
@@ -73,14 +67,6 @@ module Api
             content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id
           }
         }
-      end
-
-      # populates @comments with all nested child comments in the tree
-      def get_all_comments(result_list)
-        result_list.each do |comment|
-          @comments << comment.children if comment.children.present?
-          get_all_comments comment.children
-        end
       end
     end
   end
