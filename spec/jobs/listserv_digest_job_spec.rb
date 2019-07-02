@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe ListservDigestJob do
   context 'Given a listserv model' do
     let(:listserv) { FactoryGirl.create :listserv }
-    subject { described_class.new.perform(listserv) }
+    subject { described_class.new.perform(listserv, Time.current.to_i) }
 
     before do
       # mock so we aren't making api calls
@@ -59,7 +59,7 @@ RSpec.describe ListservDigestJob do
             context 'when a digest does not have enough posts' do
               let(:threshold_digest) { FactoryGirl.create :listserv, digest_query: 'SELECT * FROM CONTENTS LIMIT 1', post_threshold: 5 }
               it 'does not create a digest if posts are below post_threshold' do
-                expect { ListservDigestJob.new.perform(threshold_digest) }.to_not change {
+                expect { ListservDigestJob.new.perform(threshold_digest, Time.current.to_i) }.to_not change {
                   ListservDigest.count
                 }
               end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ListservDigestJob < ApplicationJob
-  def perform(listserv)
+  def perform(listserv, timestamp)
     @listserv = listserv
 
     if @listserv.send_digest? && @listserv.active?

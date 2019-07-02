@@ -6,7 +6,7 @@ class ScheduleListservDigestsJob < ApplicationJob
     Listserv.where(send_digest: true).where('digest_send_time IS NOT NULL').each do |ls|
       time_to_run = ls.next_digest_send_time
       unless duplicate_scheduled_job?(ls) || duplicate_retry_job?(ls)
-        ListservDigestJob.set(wait_until: time_to_run).perform_later(ls)
+        ListservDigestJob.set(wait_until: time_to_run).perform_later(ls, Time.current.to_i)
       end
     end
   end
