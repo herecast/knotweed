@@ -1434,7 +1434,7 @@ RSpec.describe MailchimpService do
     end
 
     before do
-      allow(Figaro.env).to receive('default_host').and_return('http://test.com')
+      allow(Figaro.env).to receive('default_consumer_host').and_return('http://test.com')
     end
 
     subject { described_class.add_unsubscribe_hook(list_id) }
@@ -1463,7 +1463,7 @@ RSpec.describe MailchimpService do
                         'Accept' => 'application/json'
                       },
                       body: {
-                        url: "#{Figaro.env.default_host}/api/v3/subscriptions/unsubscribe_from_mailchimp",
+                        url: "#{Figaro.env.default_consumer_host}/api/v3/subscriptions/unsubscribe_from_mailchimp",
                         events: {
                           subscribe: false,
                           unsubscribe: true,

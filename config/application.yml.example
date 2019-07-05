@@ -15,10 +15,6 @@ test:
 # google maps api key for generating business_location maps
 GMAPS_API_KEY: gmapskey
 
-# HOST to base url's in app emails off -- e.g. "admin url" in moderate emails
-# begins with this.
-DEFAULT_HOST: nick-admin.subtextdev.org
-
 # used to determine what location APIv3 uses to query for contents if the user is not
 # logged in.
 DEFAULT_LOCATION: Hartford

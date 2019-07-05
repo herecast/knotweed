@@ -19,7 +19,6 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
       allow(Mailchimp::API).to receive(:new).and_return(mailchimp)
       env = double(
         mailchimp_api_key: 'dummy',
-        default_host: 'dummy',
         default_consumer_host: 'localhost'
       )
       allow(Figaro).to receive(:env).and_return(env)

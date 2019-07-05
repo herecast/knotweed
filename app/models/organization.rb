@@ -195,7 +195,7 @@ class Organization < ActiveRecord::Base
   end
 
   def profile_link
-    "https://#{Figaro.env.default_host}/profile/#{id}"
+    "https://#{Figaro.env.default_consumer_host}/profile/#{id}"
   end
 
   def mc_segment_name

@@ -15,7 +15,7 @@ Rails.application.configure do
   config.action_controller.perform_caching = false
 
   # ActionMailer Config
-  config.action_mailer.default_url_options = { host: Figaro.env.default_host }
+  config.action_mailer.default_url_options = { host: Figaro.env.default_consumer_host }
 
   # change to true to allow email to be sent during development
   config.action_mailer.perform_deliveries = true

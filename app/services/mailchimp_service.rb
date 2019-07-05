@@ -171,7 +171,7 @@ module MailchimpService
     data = detect_error(get("/lists/#{list_id}/webhooks"))
     if data['webhooks'].empty?
       detect_error(post("/lists/#{list_id}/webhooks", body: {
-        url: "#{Figaro.env.default_host}/api/v3/subscriptions/unsubscribe_from_mailchimp",
+        url: "#{Figaro.env.default_consumer_host}/api/v3/subscriptions/unsubscribe_from_mailchimp",
         events: { subscribe: false, unsubscribe: true, profile: false, cleaned: false, upemail: false, campaign: false },
         sources: { user: true, admin: true, api: true }
       }.to_json))
