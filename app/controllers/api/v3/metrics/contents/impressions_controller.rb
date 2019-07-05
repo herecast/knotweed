@@ -7,7 +7,7 @@ module Api
         @content = Content.not_deleted.find params[:id]
 
         unless analytics_blocked?
-          BackgroundJob.perform_later('RecordContentMetric', 'call', @content, content_metric_params)
+          RecordContentMetric.call(@content, content_metric_params)
         end
 
         render json: {}, status: :accepted

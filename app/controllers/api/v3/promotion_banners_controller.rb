@@ -123,7 +123,7 @@ module Api
             data[:location_confirmed] = ['1', 1, 'true', true].include?(params[:location_confirmed])
           end
 
-          BackgroundJob.perform_later('RecordPromotionBannerMetric', 'call', data)
+          RecordPromotionBannerMetric.call(data)
         end
       end
 
@@ -142,7 +142,7 @@ module Api
               end
             end
 
-            BackgroundJob.perform_later('RecordContentMetric', 'call', @content, opts)
+            RecordContentMetric.call(@content, opts)
           end
         end
       end

@@ -107,13 +107,13 @@ describe Api::V3::PromotionBannersController, type: :controller do
     end
 
     it "calls record_promotion_banner_metric with 'impression'" do
-      expect(BackgroundJob).to receive(:perform_later).with(
-        'RecordPromotionBannerMetric', 'call', hash_including(
-                                                 event_type: 'impression',
-                                                 promotion_banner_id: @banner.id,
-                                                 client_id: 'ClientID!',
-                                                 location_id: location.id
-                                               )
+      expect(RecordPromotionBannerMetric).to receive(:call).with(
+        hash_including(
+          event_type: 'impression',
+          promotion_banner_id: @banner.id,
+          client_id: 'ClientID!',
+          location_id: location.id
+        )
       )
       subject
     end
@@ -165,18 +165,18 @@ describe Api::V3::PromotionBannersController, type: :controller do
     end
 
     it "calls record_promotion_banner_metric with 'load'" do
-      expect(BackgroundJob).to receive(:perform_later).with(
-        'RecordPromotionBannerMetric', 'call', hash_including(
-                                                 event_type: 'load',
-                                                 client_id: 'ClientId@',
-                                                 location_id: location.id,
-                                                 promotion_banner_id: @banner.id,
-                                                 current_date: Date.current.to_s,
-                                                 content_id: @content.id.to_s,
-                                                 load_time: post_params[:load_time].to_s,
-                                                 select_score: '1.9',
-                                                 select_method: 'sponsored_content'
-                                               )
+      expect(RecordPromotionBannerMetric).to receive(:call).with(
+        hash_including(
+          event_type: 'load',
+          client_id: 'ClientId@',
+          location_id: location.id,
+          promotion_banner_id: @banner.id,
+          current_date: Date.current.to_s,
+          content_id: @content.id.to_s,
+          load_time: post_params[:load_time].to_s,
+          select_score: '1.9',
+          select_method: 'sponsored_content'
+       )
       )
       subject
     end
@@ -216,19 +216,19 @@ describe Api::V3::PromotionBannersController, type: :controller do
     end
 
     it "calls record_promotion_banner_metric with 'click" do
-      expect(BackgroundJob).to receive(:perform_later).with(
-        'RecordPromotionBannerMetric', 'call', hash_including(
-                                                 event_type: 'click',
-                                                 user_id: nil,
-                                                 client_id: 'ClientId@',
-                                                 location_id: location.id,
-                                                 promotion_banner_id: @banner.id,
-                                                 current_date: Date.current.to_s,
-                                                 content_id: @content.id.to_s
-                                               )
+      expect(RecordPromotionBannerMetric).to receive(:call).with(
+        hash_including(
+          event_type: 'click',
+          user_id: nil,
+          client_id: 'ClientId@',
+          location_id: location.id,
+          promotion_banner_id: @banner.id,
+          current_date: Date.current.to_s,
+          content_id: @content.id.to_s
+       )
       )
-      expect(BackgroundJob).to receive(:perform_later).with(
-        'RecordContentMetric', 'call', @content,
+      expect(RecordContentMetric).to receive(:call).with(
+        @content,
         event_type: 'click',
         current_date: Date.current.to_s,
         user_id: nil,
