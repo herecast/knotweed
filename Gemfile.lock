@@ -780,6 +780,7 @@ DEPENDENCIES
   joiner
   jquery-datatables-rails
   jquery-rails
+  jwt (~> 1.5.6)
   kaminari (~> 0.15)
   letter_opener
   lograge

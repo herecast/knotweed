@@ -80,6 +80,7 @@ gem 'turbolinks', '~> 5.2'
 gem 'typhoeus'
 gem 'uglifier', '~> 2.4'                            # Have not yet tested the next major version
 gem 'unf'
+gem 'jwt', '~> 1.5.6'
 
 group :development, :test do
   gem 'active_record_query_trace'

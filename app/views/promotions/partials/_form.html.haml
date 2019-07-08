@@ -8,24 +8,15 @@
   .form-inputs
     %p="Title: #{promotion.content.title}"
     = f.input :description, required: true, input_html: { class: "input-block-level", rows: 5 }
-    = f.input :paid
     = f.simple_fields_for :promotable do |p|
       - if promotion.promotable.is_a? PromotionBanner
-        = p.input :promotion_type, collection: PromotionBanner::PROMOTION_TYPES, label: 'Promotion type'
+        = p.input :promotion_type, collection: PromotionBanner::PROMOTION_TYPES, label: 'Ad type', required: true
         = p.input :location_id, collection: Location.consumer_active.order_by_city_state.map { |l| [l.pretty_name, l.id] }
         = p.input :boost
         = p.input :campaign_start, as: :date_picker, label: 'Creative Start Date'
         = p.input :campaign_end, as: :date_picker, label: 'Creative End Date'
         = p.input :daily_max_impressions, label: 'Daily Maximum Impressions'
         = p.input :max_impressions, label: 'Maximum Impressions'
-        = p.input :cost_per_impression
-        = p.input :cost_per_day
-        = p.input :coupon_email_body, as: :text, label: 'Coupon Details'
-
-        - if promotion.promotable.coupon_image?
-          = p.input :remove_coupon_image, as: :boolean, label: "Remove coupon image?"
-          = image_tag(promotion.promotable.coupon_image_url) if promotion.promotable.coupon_image_url.present?
-        = p.input :coupon_image, as: :file, label: 'Coupon Image (aspect ratio: w360xh640)'
 
     - if promotion.promotable.present?
       = f.input :promotable_type, as: :hidden
@@ -39,10 +30,7 @@
         - else
           = image_tag "", id: 'promotion-preview-image'
         = g.input :banner_image, label: 'Creative Image'
-        - if @promotion.present? && (@promotion.promotable_type == 'PromotionBanner' && promotion.promotable.promotion_type == PromotionBanner::COUPON)
-          %p= "Coupon Redirect is: #{@promotion.promotable.redirect_url}"
-        - else
-          = g.input :redirect_url, label: 'Redirect URL (overridden if Ad Type = Coupon)', input_html: { class: "input-block-level" }
+        = g.input :redirect_url, label: 'Redirect URL', input_html: { class: "input-block-level" }, required: true
     = f.input :content_id, as: :hidden
 
   .form-actions

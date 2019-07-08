@@ -174,6 +174,7 @@ FactoryGirl.define do
       ad_promotion_type 'ROS'
       ad_campaign_start Date.yesterday
       ad_campaign_end 1.month.from_now
+      sequence(:ad_service_id) { |n| "ad-service-id-#{n}" } 
       content_category do
         ContentCategory.find_or_create_by(
           name: 'campaign'

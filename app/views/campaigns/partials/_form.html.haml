@@ -22,19 +22,11 @@
             = f.hidden_field :content_category, value: ContentCategory.find_by_name('campaign')
             = f.association :organization, input_html: { class: "chosen-select span12" }, label: "Advertiser"
             = f.input :title, input_html: { class: "input-block-level" }, label: 'Campaign Title'
-            = f.input :pubdate, as: :datetime_picker, input_html: { value: @content.pubdate || Date.current }
             = f.input :ad_promotion_type, collection: PromotionBanner::PROMOTION_TYPES, input_html: { class: "input-block-level" }, label: 'Ad type'
             = f.input :ad_campaign_start, as: :date_picker, label: 'Campaign Start Date'
             = f.input :ad_campaign_end, as: :date_picker, label: 'Campaign End Date'
-            = f.input :ad_sales_agent, collection: User.sales_agents.map { |u| [u.name_with_email, u.id ] }, input_html: { class: "input-block-level" }, label: 'Sales agent'
-            = f.input :ad_promoter, collection: User.promoters.map { |u| [u.name_with_email, u.id ] }, input_html: { class: "input-block-level" }, label: 'Promoter'
             = f.input :ad_max_impressions, input_html: { class: "input-block-level" }, label: "Total Ad Impressions"
             = f.input :ad_invoiced_amount, input_html: { class: "input-block-level" }, label: "Invoiced Amount"
-            = f.input :ad_invoice_paid, as: :boolean, label: "Invoice Paid"
-            = f.input :ad_commission_amount, input_html: { class: "input-block-level" }, label: "Commission Amount"
-            = f.input :ad_commission_paid, as: :boolean, label: "Comission Paid"
-            = f.input :ad_services_amount, input_html: { class: "input-block-level" }, label: "Services Amount"
-            = f.input :ad_services_paid, as: :boolean, label: 'Services Paid'
       .tab-pane#doc_content
         .summernote-wrapper
           = f.input :sanitized_content, as: :summernote, label: 'Content'

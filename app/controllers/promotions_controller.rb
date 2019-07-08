@@ -51,12 +51,16 @@ class PromotionsController < ApplicationController
 
   def create
     @promotion = Promotion.new(promotion_params)
-
-    respond_to do |format|
-      if @promotion.save
+    if @promotion.save
+      if @promotion.promotable_type == 'PromotionBanner'
+        BackgroundJob.perform_later('SubtextAdService', 'add_creative', @promotion.promotable)
+      end
+      respond_to do |format|
         format.html { redirect_to edit_campaign_path(@promotion.content), notice: 'Promotion was successfully created.' }
         format.json { render json: @promotion, status: :created, location: @promotion }
-      else
+      end
+    else
+      respond_to do |format|
         format.html { render 'new', error: @promotion.errors.messages }
         format.json { render json: @promotion.errors, status: :unprocessable_entity }
       end
@@ -68,6 +72,14 @@ class PromotionsController < ApplicationController
 
     respond_to do |format|
       if @promotion.update_attributes(promotion_params)
+        if @promotion.promotable_type == 'PromotionBanner'
+          if @promotion.promotable.ad_service_id.present? # already exists, so update
+            BackgroundJob.perform_later('SubtextAdService', 'update_creative', @promotion.promotable)
+          else
+            BackgroundJob.perform_later('SubtextAdService', 'add_creative', @promotion.promotable)
+          end
+        end
+
         format.html { redirect_to edit_campaign_path(@promotion.content), notice: 'Promotion was successfully updated.' }
         format.json { head :no_content }
       else

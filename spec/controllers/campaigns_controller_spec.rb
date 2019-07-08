@@ -134,12 +134,18 @@ RSpec.describe CampaignsController, type: :controller do
 
   describe 'POST #create' do
     context 'when content saves' do
+      before { allow(SubtextAdService).to receive(:create).and_return(true) }
       subject { post :create, params: valid_params }
 
       it 'creates campaign' do
         expect { subject }.to change {
           Content.count
         }.by 1
+      end
+
+      it 'calls `SubtextAdService.create`' do
+        expect(BackgroundJob).to receive(:perform_later).with('SubtextAdService', 'create', Content)
+        subject
       end
     end
 
@@ -149,6 +155,11 @@ RSpec.describe CampaignsController, type: :controller do
       end
 
       subject { post :create, params: valid_params }
+
+      it 'does not call `SubtextAdService.create`' do
+        expect(BackgroundJob).to_not receive(:perform_later).with('SubtextAdService', 'create', Content)
+        subject
+      end
 
       it 'does not create campaign' do
         expect { subject }.not_to change {
@@ -177,6 +188,24 @@ RSpec.describe CampaignsController, type: :controller do
         expect { subject }.to change {
           @campaigns.first.reload.title
         }.to eq new_title
+      end
+
+      describe 'when campaign already has ad_service_id' do
+        before { @campaigns.first.update ad_service_id: 'fake-ad-id' }
+
+        it 'should queue `SubtextAdService.update`' do
+          expect(BackgroundJob).to receive(:perform_later).with('SubtextAdService', 'update', Content)
+          subject
+        end
+      end
+
+      describe 'when campaign does not have ad_service_id' do
+        before { @campaigns.first.update ad_service_id: nil }
+
+        it 'should queue `SubtextAdService.update`' do
+          expect(BackgroundJob).to receive(:perform_later).with('SubtextAdService', 'create', Content)
+          subject
+        end
       end
     end
 

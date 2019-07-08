@@ -33,9 +33,11 @@ class CampaignsController < ApplicationController
   end
 
   def create
-    @content = Content.new(campaign_params)
+    @content = Content.new(campaign_params.merge({ pubdate: Date.current }))
     @content.content_category_id = campaign_content_category_id
     if @content.save
+      # create campaign on Subtext Ad Service
+      BackgroundJob.perform_later('SubtextAdService', 'create', @content)
       flash[:notice] = 'Campaign created successfully!'
       redirect_to correct_path
     else
@@ -50,6 +52,12 @@ class CampaignsController < ApplicationController
   def update
     @content = Content.find(params[:id])
     if @content.update_attributes(campaign_params)
+      # update campaign on Subtext Ad Service (or create if `ad_service_id` not present)
+      if @content.ad_service_id.present?
+        BackgroundJob.perform_later('SubtextAdService', 'update', @content)
+      else
+        BackgroundJob.perform_later('SubtextAdService', 'create', @content)
+      end
       flash[:notice] = 'Campaign updated successfully!'
       redirect_to correct_path
     else

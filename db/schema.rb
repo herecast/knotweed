@@ -241,6 +241,8 @@ ActiveRecord::Schema.define(version: 20190625124220) do
     t.boolean  'has_future_event_instance'
     t.integer  'location_id'
     t.string   'mc_campaign_id'
+    t.string "ad_service_id"
+    t.index ["ad_service_id"], name: "index_contents_on_ad_service_id"
     t.index ['authoremail'], name: 'idx_16527_index_contents_on_authoremail', using: :btree
     t.index ['authors'], name: 'idx_16527_authors', using: :btree
     t.index ['channel_id'], name: 'idx_16527_index_contents_on_channel_id', using: :btree
@@ -522,6 +524,8 @@ ActiveRecord::Schema.define(version: 20190625124220) do
     t.integer  'digest_id'
     t.string   'reminder_campaign_id'
     t.string   'mc_segment_id'
+    t.string "ad_service_id"
+    t.index ["ad_service_id"], name: "index_organizations_on_ad_service_id"
     t.index ['name'], name: 'idx_16739_index_publications_on_name', unique: true, using: :btree
   end
 
@@ -636,6 +640,8 @@ ActiveRecord::Schema.define(version: 20190625124220) do
     t.datetime 'digest_metrics_updated'
     t.bigint    'location_id'
     t.index ['location_id'], name: 'index_promotion_banners_on_location_id'
+    t.string "ad_service_id"
+    t.index ["ad_service_id"], name: "index_promotion_banners_on_ad_service_id"
   end
 
   create_table 'promotion_listservs', id: :bigserial, force: :cascade do |t|

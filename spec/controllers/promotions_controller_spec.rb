@@ -45,6 +45,8 @@ describe PromotionsController, type: :controller do
     let(:content) { FactoryGirl.create :content }
     let(:options) { { description: 'Another great promotion!', content_id: content.id } }
 
+    before { allow(SubtextAdService).to receive(:add_creative).with(any_args).and_return(true) }
+
     subject { post :create, params: { promotion: options, organization_id: @org } }
 
     describe 'with valid params' do
