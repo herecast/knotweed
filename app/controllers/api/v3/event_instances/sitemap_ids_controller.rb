@@ -3,20 +3,20 @@ module Api
     class EventInstances::SitemapIdsController < ApiController
 
       def index
-        data = EventInstance.joins(event: :content).merge(
-          Content
-          .not_deleted
-          .not_removed
-          .where('pubdate <= ?', Time.zone.now)
-        ).order('start_date DESC')\
-                            .limit(50_000)\
-                            .select('event_instances.id as id, contents.id as content_id')
+        content_scope = Content.not_deleted
+                               .not_removed
+                               .where('pubdate <= ?', Time.zone.now)
+        data = EventInstance.joins(event: :content)
+                            .merge(content_scope)
+                            .order('start_date DESC')
+                            .limit(50_000)
+                            .pluck(:id, 'contents.id')
 
         render json: {
-          instances: data.map do |instance|
+          instances: data.map do |instance_pair|
             {
-              id: instance.id,
-              content_id: instance.content_id
+              id: instance_pair[0],
+              content_id: instance_pair[1]
             }
           end
         }
