@@ -14,8 +14,8 @@ module MailchimpService
     headers    'Content-Type' => 'application/json',
                'Accept' => 'application/json'
 
-    DEFAULT_FROM_EMAIL = 'jennifer.sensenich@subtext.org'
-    DEFAULT_FROM_NAME = 'Jennifer from DailyUV'
+    DEFAULT_FROM_EMAIL = 'help@herecast.us'
+    DEFAULT_FROM_NAME = 'Jennifer from HereCast'
 
     def create_campaign(user:, subject:, template_id:, from_email: DEFAULT_FROM_EMAIL, from_name: DEFAULT_FROM_NAME)
       mailchimp_connection.campaigns.create('regular', {

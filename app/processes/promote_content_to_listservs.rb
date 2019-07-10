@@ -56,7 +56,7 @@ class PromoteContentToListservs
 
     outbound_mail.deliver_later
 
-    ReversePublisher.send_copy_to_sender_from_dailyuv(
+    ReversePublisher.send_copy_to_sender(
       @content,
       outbound_mail.text_part.body.to_s,
       outbound_mail.html_part.body.to_s

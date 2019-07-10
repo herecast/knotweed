@@ -275,7 +275,7 @@ describe Api::V3::PromotionBannersController, type: :controller do
         post :create_ad_metric, params: { ad_metric: {
           campaign: 'under-laser-cta',
           event_type: 'click',
-          page_url: 'dailyuv.com/death-star-adverts',
+          page_url: 'herecast.us/death-star-adverts',
           content: 'Want to advertise with the Republic?'
         } }
       end

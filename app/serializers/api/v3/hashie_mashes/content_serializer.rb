@@ -39,6 +39,7 @@ module Api
                    :location,
                    :location_id,
                    :organization_biz_feed_active,
+                   :organization,
                    :organization_id,
                    :organization_name,
                    :organization_profile_image_url,

@@ -57,7 +57,7 @@ module Ugc
           biz_feed_public: @params[:content][:biz_feed_public],
           raw_content: @params[:content][:content],
           pubdate: Time.zone.now,
-          organization_id: @params[:content][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
+          organization_id: @params[:content][:organization_id] || Organization.find_by(standard_ugc_org: true).id,
           content_category_id: talk_category.id,
           promote_radius: @params[:content][:promote_radius],
           location_id: @params[:content][:location_id],

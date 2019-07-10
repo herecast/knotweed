@@ -74,7 +74,7 @@ module Ugc
           content_category_id: market_category.id,
           pubdate: Time.zone.now,
           timestamp: Time.zone.now,
-          organization_id: @params[:content][:organization_id] || dailyuv_org.id,
+          organization_id: @params[:content][:organization_id] || default_org.id,
           location_id: @params[:content][:location_id],
           created_by: @current_user,
           origin: Content::UGC_ORIGIN,
@@ -87,8 +87,8 @@ module Ugc
       ContentCategory.find_or_create_by(name: 'market')
     end
 
-    def dailyuv_org
-      Organization.find_or_create_by(name: 'From DailyUV')
+    def default_org
+      Organization.find_by(standard_ugc_org: true)
     end
 
     def conditionally_schedule_outreach_email

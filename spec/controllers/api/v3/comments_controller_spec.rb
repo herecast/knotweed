@@ -105,6 +105,7 @@ describe Api::V3::CommentsController, type: :controller do
       @event_content = FactoryGirl.create :content, :located, created_by: @parent_user
       @event = FactoryGirl.create :event, content: @event_content
       api_authenticate user: @commenting_user
+      FactoryGirl.create :organization, :default
     end
 
     subject { post :create, params: { comment: { content: 'fake', parent_content_id: @event.content.id } } }
@@ -118,11 +119,11 @@ describe Api::V3::CommentsController, type: :controller do
       end
     end
 
-    it 'should automatically set organization to DailyUV' do
+    it 'should automatically set organization to HereCast' do
       subject
       expect(response.code).to eq('201')
       expect(assigns(:comment).content.parent).to eq(@event.content)
-      expect(assigns(:comment).organization.name).to eq('From DailyUV')
+      expect(assigns(:comment).organization.name).to eq('From HereCast')
     end
 
     it 'sets the origin to UGC' do

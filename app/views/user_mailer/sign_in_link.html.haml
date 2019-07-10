@@ -2,9 +2,9 @@
   Dear #{@user.name},
 
 %p
-  You requested a link to sign in to DailyUV.
+  You requested a link to sign in to HereCast.
 %p
   To continue signing in, click this link:
 
-%p= link_to 'Sign in to DailyUV.com', url_for_consumer_app('/sign_in?auth_token=' + @auth_token)
+%p= link_to 'Sign in to HereCast.us', url_for_consumer_app('/sign_in?auth_token=' + @auth_token)
 

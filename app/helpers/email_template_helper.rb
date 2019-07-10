@@ -6,6 +6,6 @@ module EmailTemplateHelper
   end
 
   def consumer_host
-    Figaro.env.default_consumer_host || 'dailyuv.com'
+    Figaro.env.default_consumer_host || 'herecast.us'
   end
 end

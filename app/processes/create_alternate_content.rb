@@ -3,8 +3,8 @@
 class CreateAlternateContent
   ALTERNATE_IMAGE_URL = 'https://s3.amazonaws.com/knotweed/duv/Default_Photo_News-01-1.jpg'
   ALTERNATE_TITLE = "We're sorry!"
-  ALTERNATE_TEXT = 'This post is not available at the present time. We apologize for the inconvenience. Please email dailyuv@subtext.org with any questions!'
-  ALTERNATE_AUTHORS = 'The team at DailyUV'
+  ALTERNATE_TEXT = 'This post is not available at the present time. We apologize for the inconvenience. Please email help@herecast.us with any questions!'
+  ALTERNATE_AUTHORS = 'The team at HereCast'
   ALTERNATE_ORGANIZATION_ID = 793
 
   def self.call(*args)

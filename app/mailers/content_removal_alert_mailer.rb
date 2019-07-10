@@ -5,7 +5,7 @@ class ContentRemovalAlertMailer < ApplicationMailer
     @content = content
     @content_type = @content.channel_type == 'Comment' ? 'comment' : 'post'
     mail(to: @content.created_by.email,
-         from: 'DailyUV <notifications@dailyuv.com>',
-         subject: "Your #{@content_type} has been removed from DailyUV")
+         from: 'HereCast <notifications@herecast.us>',
+         subject: "Your #{@content_type} has been removed from HereCast")
   end
 end

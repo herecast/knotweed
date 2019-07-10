@@ -45,8 +45,8 @@ RSpec.describe Outreach::SendOrganizationPostNotification do
           'regular', {
             list_id: MailchimpAPI.config.master_list_id,
             subject: an_instance_of(String),
-            from_email: 'noreply@subtext.org',
-            from_name: 'DailyUV'
+            from_email: 'noreply@herecast.us',
+            from_name: 'HereCast'
           }, {
             html: an_instance_of(String)
           },

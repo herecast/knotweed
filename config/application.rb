@@ -90,7 +90,9 @@ module Knotweed
       allow do
         origins /https:\/\/(.*?)\.subtext\.org/,
           /https:\/\/(.*?)\.herokuapp\.com/,
-          /https:\/\/(.*?)\.dailyuv\.com/
+          /https:\/\/(.*?)\.dailyuv\.com/,
+          /https:\/\/(.*?)\.herecast\.us/,
+          'https://herecast.us'
         resource '/api/v3/*',
           headers: :any,
           methods: %i[get put patch post delete options],

@@ -540,7 +540,7 @@ RSpec.describe MailchimpService do
                            listserv: listserv,
                            title: 'Digest of the day (q1)',
                            subject: 'Digest of the day',
-                           from_name: 'DailyUV',
+                           from_name: 'HereCast',
                            reply_to: 'duv@duv.net',
                            location_ids: [location.id]
       end

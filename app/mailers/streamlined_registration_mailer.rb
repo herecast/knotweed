@@ -9,7 +9,7 @@ class StreamlinedRegistrationMailer < Devise::Mailer
     opts[:template_name] = 'streamlined_confirmation_instructions'
     @password = opts[:password]
     @first_name = record.name.split(' ').first.capitalize
-    opts[:subject] = 'Real Quick - Confirm Your DailyUV Account'
+    opts[:subject] = 'Real Quick - Confirm Your HereCast Account'
     headers['X-PM-TrackOpens'] = 'true'
     headers['X-PM-TrackLinks'] = 'true'
     super

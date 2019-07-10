@@ -21,7 +21,7 @@ DEFAULT_LOCATION: Hartford
 
 POSTMARK_API_TOKEN: postmark-token
 
-DEFAULT_CONSUMER_HOST: dailyuv.com
+DEFAULT_CONSUMER_HOST: herecast.us
 
 MAILCHIMP_API_HOST: us13.api.mailchimp.com
 MAILCHIMP_API_KEY: test

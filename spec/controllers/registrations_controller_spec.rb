@@ -118,7 +118,7 @@ describe RegistrationsController, type: :controller do
       end
 
       it 'should be sent from the correct account' do
-        expect(mail.from).to eq ['noreply@dailyuv.com']
+        expect(mail.from).to eq ['noreply@herecast.us']
       end
 
       it 'should contain correct url' do

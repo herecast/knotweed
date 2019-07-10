@@ -7,6 +7,48 @@ describe 'Feed endpoints', type: :request do
   let(:user) { FactoryGirl.create :user }
   let(:auth_headers) { auth_headers_for(user) }
 
+  describe 'GET /api/v3/feed?content_type=calendar&start_date=', elasticsearch: true do
+    context 'when date filters passed' do
+      before do
+          @past_event = FactoryGirl.create(:event_instance, start_date: 3.days.ago)
+          @future_event = FactoryGirl.create(:event_instance, start_date: 1.day.from_now)
+          @current_event = FactoryGirl.create(:event_instance, start_date: Time.current + 1.minute)
+      end
+
+      context 'when start_date is passed' do
+        subject do
+          get '/api/v3/feed',
+            params: { start_date: Date.current, content_type: 'calendar' },
+            headers: headers
+        end
+
+        it 'returns events on or after the start date' do
+          subject
+          result_ids = response_json[:feed_items].map{ |i| i[:content][:id] }
+          expected_ids = [
+            @future_event.event.content.id, @current_event.event.content.id
+          ]
+          expect(result_ids).to match_array expected_ids
+        end
+      end
+
+      context 'when end_date is passed' do
+        subject do
+          get '/api/v3/feed',
+            params: { end_date: Time.current + 1.minute, content_type: 'calendar' },
+            headers: headers
+        end
+
+        it 'should limit results by the end date' do
+          subject
+          result_ids = response_json[:feed_items].map{ |i| i[:content][:id] }
+          expected_id = [@current_event.event.content.id]
+          expect(result_ids).to match_array(expected_id)
+        end
+      end
+    end
+  end
+
   describe 'GET /api/v3/feed', elasticsearch: true do
     shared_examples_for 'JSON schema for all Content' do
       it 'has the expected fields for all content' do
@@ -69,9 +111,19 @@ describe 'Feed endpoints', type: :request do
                   end,
           image_url: content.images[0].url,
           organization_biz_feed_active: org.biz_feed_active,
+          organization: {
+            id: org.id,
+            name: org.name,
+            profile_image_url: org.profile_image_url || org.logo_url,
+            biz_feed_active: !!org.biz_feed_active,
+            description: org.description,
+            city: org.business_locations&.first&.city,
+            state: org.business_locations&.first&.state,
+            active_subscriber_count: org.active_subscriber_count
+          },
           organization_id: org.id,
           organization_name: org.name,
-          organization_profile_image_url: nil,
+          organization_profile_image_url: org.profile_image_url,
 
           # @TODO: parent fields should be revisited, do we need them?
           parent_content_id: content.parent_id,

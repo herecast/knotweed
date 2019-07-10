@@ -10,15 +10,15 @@
 # Environment variables (ENV['...']) are set in the file config/application.yml.
 # See http://railsapps.github.io/rails-environment-variables.html
 
-# create DailyUV Organization
+# create HereCast Organization
 Organization.create!(
-  name: 'DailyUV',
+  name: 'From HereCast',
   org_type: 'Blog',
   can_publish_news: true,
   description_card_active: true,
   description: Faker::Lorem
 )
-p "Created 'DailyUV' organization"
+p "Created 'HereCast' organization"
 
 locations = []
 [

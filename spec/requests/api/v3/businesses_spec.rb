@@ -226,7 +226,7 @@ describe 'Businesses Endpoints', type: :request do
         has_retail_location: true,
         phone: '(555) 124-1234',
         hours: ['Mo-Th|8:00-17:00'],
-        website: 'http://dailyuv.com',
+        website: 'http://herecast.us',
         address: '123 foo st',
         city: 'Enfield',
         state: 'NH',

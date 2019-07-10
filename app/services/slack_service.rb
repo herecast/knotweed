@@ -26,7 +26,7 @@ module SlackService
       text: text,
       attachments: [{
         title: content.title,
-        text: "https://dailyuv.com/#{content.id}",
+        text: "https://herecast.us/#{content.id}",
         color: '3CB371'
       }]
     }.merge(BOTS[:piggy])
@@ -37,7 +37,7 @@ module SlackService
     text = "#{user.name} just created the blog #{organization.name}."
     notifier = Slack::Notifier.new(WEBHOOK_URLS[:newbloggers])
     opts = {
-      text: 'New blogger on DailyUV!',
+      text: 'New blogger on HereCast!',
       attachments: [{
         title: text,
         text: organization.profile_link,

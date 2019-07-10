@@ -35,7 +35,7 @@ RSpec.describe FacebookService do
       @content = FactoryGirl.create(:content, :news)
     end
 
-    let(:url) { "https://dailyuv.com/#{@content.id}" }
+    let(:url) { "https://herecast.us/#{@content.id}" }
 
     let!(:successful_facebook_rescrape_request) do
       stub_request(:post, "https://graph.facebook.com/?access_token=#{ENV['FACEBOOK_APP_ID']}%7C#{ENV['FACEBOOK_APP_SECRET']}&id=http://#{ENV['DEFAULT_CONSUMER_HOST']}/#{@content.id}&scrape=true")

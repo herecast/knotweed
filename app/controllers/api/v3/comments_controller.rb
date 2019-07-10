@@ -63,7 +63,7 @@ module Api
             authors: current_user.try(:name),
             raw_content: ActionView::Base.full_sanitizer.sanitize(params[:comment][:content]),
             pubdate: Time.zone.now,
-            organization_id: params[:comment][:organization_id] || Organization.find_or_create_by(name: 'From DailyUV').id,
+            organization_id: params[:comment][:organization_id] || Organization.find_by(standard_ugc_org: true).id,
             content_category_id: ContentCategory.find_or_create_by(name: 'talk_of_the_town').id
           }
         }

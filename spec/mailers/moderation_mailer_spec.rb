@@ -12,7 +12,7 @@ describe ModerationMailer, type: :mailer do
       @flagger_name = 'Joseph'
       @flagger_email = 'jos@example.com'
       @params = { classification: 'Offensive', flagger_name: @flagger_name, flagger_email: @flagger_email }
-      @subject = 'dailyUV Flagged as ' + @params[:classification] + ': ' + @content.title
+      @subject = 'HereCast Flagged as ' + @params[:classification] + ': ' + @content.title
     end
 
     describe 'moderation email' do

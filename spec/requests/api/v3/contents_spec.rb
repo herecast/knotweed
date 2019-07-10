@@ -38,6 +38,16 @@ def content_response_schema(record)
       id: record.id,
       images: [],
       image_url: nil,
+      organization: {
+        id: record.organization&.id,
+        name: record.organization&.name,
+        profile_image_url: record.organization&.profile_image_url || record.organization&.logo_url,
+        biz_feed_active: !!record.organization&.biz_feed_active,
+        description: record.organization&.description,
+        city: record.organization&.business_locations&.first&.city,
+        state: record.organization&.business_locations&.first&.state,
+        active_subscriber_count: record.organization&.active_subscriber_count
+      },
       organization_biz_feed_active: !!record.organization&.biz_feed_active,
       organization_id: record.organization&.id,
       organization_name: record.organization&.name,

@@ -13,8 +13,8 @@ class ContentSearch
     new(*args).my_stuff_query
   end
 
-  def self.organization_calendar_query(*args)
-    new(*args).organization_calendar_query
+  def self.calendar_query(*args)
+    new(*args).calendar_query
   end
 
   def initialize(params:, current_user: nil)
@@ -52,8 +52,7 @@ class ContentSearch
     end
   end
 
-  def organization_calendar_query
-    organization = Organization.find(@params[:organization_id])
+  def calendar_query
     {
       load: false,
       page: page,
@@ -61,21 +60,23 @@ class ContentSearch
       where: {
         content_type: :event,
         biz_feed_public: [true, nil],
-        starts_at: {
-          gte: Time.current
-        },
+        starts_at: starts_at_range,
         removed: {
           not: true
-        },
-        or: [[
-          { organization_id: @params[:organization_id] },
-          { id: organization.tagged_contents.pluck(:id) }
-        ]]
+        }
       },
       order: {
         starts_at: :asc
       }
-    }
+    }.tap do |attrs|
+      if @params[:organization_id].present?
+        organization = Organization.find(@params[:organization_id])
+        attrs[:where][:or] = [[
+          { organization_id: @params[:organization_id] },
+          { id: organization.tagged_contents.pluck(:id) }
+        ]]
+      end
+    end
   end
 
   private
@@ -219,5 +220,21 @@ class ContentSearch
 
   def radius_method
     "location_ids_within_#{radius}_miles".to_sym
+  end
+
+  def starts_at_range
+    if end_date.present?
+      start_date.beginning_of_day..end_date.end_of_day
+    else
+      { gte: start_date }
+    end
+  end
+
+  def start_date
+    @params[:start_date].present? ? DateTime.parse(@params[:start_date]) : DateTime.now
+  end
+
+  def end_date
+    @params[:end_date].present? ? DateTime.parse(@params[:end_date]) : nil
   end
 end

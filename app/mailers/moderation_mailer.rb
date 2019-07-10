@@ -20,7 +20,7 @@ class ModerationMailer < ActionMailer::Base
     @flagger = flagging_user
     @admin_uri = edit_content_url(@content.id)
 
-    subject = 'dailyUV Flagged as ' + flag_type + ': ' + content.title
+    subject = 'HereCast Flagged as ' + flag_type + ': ' + content.title
 
     mail(from: Rails.configuration.subtext.emails.no_reply,
          to: Rails.configuration.subtext.emails.moderation,

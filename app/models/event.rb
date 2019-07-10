@@ -143,15 +143,6 @@ class Event < ActiveRecord::Base
     end
   end
 
-  def owner_name
-    if organization.present? && (organization.name != 'From DailyUV')
-      # this prevents DailyUV from "owning" imported events on the edit page
-      organization.name
-    elsif content.try(:created_by)
-      content.created_by.name || content.created_by.email
-    end
-  end
-
   def event_instance_ids
     event_instances.pluck(:id)
   end

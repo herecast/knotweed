@@ -7,12 +7,12 @@ class UserMailer < ApplicationMailer
     @auth_token = sign_in_token.token
     @user = sign_in_token.user
 
-    mail to: @user.email, subject: 'Sign in to DailyUV.com'
+    mail to: @user.email, subject: 'Sign in to HereCast.us'
   end
 
   def auto_subscribed(user:, password:)
     @password = password
 
-    mail to: user.email, subject: 'Your free account on DailyUV is ready!'
+    mail to: user.email, subject: 'Your free account on HereCast is ready!'
   end
 end

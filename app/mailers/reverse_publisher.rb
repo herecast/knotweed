@@ -33,7 +33,7 @@ class ReversePublisher < ActionMailer::Base
          delivery_method: Rails.env == 'test' ? :test : :smtp)
   end
 
-  def send_copy_to_sender_from_dailyuv(content, outbound_text, outbound_html)
+  def send_copy_to_sender(content, outbound_text, outbound_html)
     headers['In-Reply-To'] = content.parent.try(:guid)
     @text_body = outbound_text
     @html_body = outbound_html

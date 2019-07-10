@@ -30,6 +30,7 @@ module Api
                  :location,
                  :location_id,
                  :organization_biz_feed_active,
+                 :organization,
                  :organization_id,
                  :organization_name,
                  :organization_profile_image_url,
@@ -226,6 +227,19 @@ module Api
 
       def organization_profile_image_url
         object.organization.try(:profile_image_url) || object.organization.try(:logo_url)
+      end
+
+      def organization
+        {
+          id: object.organization&.id,
+          name: object.organization&.name,
+          profile_image_url: object&.organization&.profile_image_url || object.organization&.logo_url,
+          biz_feed_active: !!object.organization&.biz_feed_active,
+          description: object.organization&.description,
+          city: object.organization&.business_locations&.first&.city,
+          state: object.organization&.business_locations&.first&.state,
+          active_subscriber_count: object.organization&.active_subscriber_count
+        }
       end
 
       def organization_name

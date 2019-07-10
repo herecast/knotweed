@@ -59,5 +59,10 @@ FactoryGirl.define do
   factory :organization do
     sequence(:name) { |n| "My Organization #{n}" }
     biz_feed_active false
+
+    trait :default do
+      name "From HereCast"
+      standard_ugc_org true
+    end
   end
 end

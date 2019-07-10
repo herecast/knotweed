@@ -606,7 +606,7 @@
                             <td class="mcnImageContent" valign="top" style="padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0; text-align:center;">
                                 
                                     
-                                        <img align="center" alt="" src="https://gallery.mailchimp.com/3b0a3ea19ca8d7b499b2203de/images/7f071aba-df38-4318-b009-73c805c5a6b3.png" width="300" style="max-width:300px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
+                                        <img align="center" alt="HereCast" src="https://gallery.mailchimp.com/e35a8c8f38a4afa517d2735de/images/9d358893-3768-4de7-98e5-d2a56018bd56.png" width="175" height="auto" style="max-width:175px; padding-top:10px;padding-bottom: 10px; display: inline !important; vertical-align: bottom;" class="mcnImage">
                                     
                                 
                             </td>
@@ -659,7 +659,7 @@
 	The following comment: "<%= @comment.content %>" posted by <%= @comment_owner.name %> has been removed from your post <%= link_to "\"#{@parent_content.title}\"", comment_alert_url(@parent_content), target: "_BLANK" %>.<br><br>
 	Let us know if you have any questions,<br><br>
 	Best,<br>
-	The DailyUV Team
+	The HereCast Team
 <% else %>
 	<%= @comment_owner.name %> commented on your post&nbsp;<%= link_to "\"#{@parent_content.title}\"", comment_alert_url(@parent_content), target: "_BLANK" %> on <%= @comment.created_at.strftime('%B %e at %l:%M%P') %>.
 <% end %>&nbsp;
@@ -733,7 +733,7 @@
                     <tbody><tr>
                         
                         <td valign="top" class="mcnTextContent" style="padding: 0px 18px 9px;color: #555555;">
-                        	If you'd like to stop receiving these email alerts, <%= mail_to "dailyuv@subtext.org", 'click here to unsubscribe.', subject: 'Unsubscribe from comment alerts', body: "Please unsubscribe this user from future comment alerts: #{edit_user_url(@parent_content.created_by_id)}" %>
+                        	If you'd like to stop receiving these email alerts, <%= mail_to "help@herecast.us", 'click here to unsubscribe.', subject: 'Unsubscribe from comment alerts', body: "Please unsubscribe this user from future comment alerts: #{edit_user_url(@parent_content.created_by_id)}" %>
                         </td>
                     </tr>
                 </tbody></table>

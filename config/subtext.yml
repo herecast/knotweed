@@ -3,31 +3,29 @@
 
 default: &default
   emails:
-    advertising:    ads@subtext.org
-    batch_jobs:     jobs@dailyuv.com
-    listserv:       uppervalley-request@dailyuv.com
-    moderation:     dailyuv@subtext.org
-    no_reply:       noreply@dailyuv.com
-    notifications:  notifications@dailyuv.com
-    support:        dailyuv@subtext.org
-    sunsetting_ads: aileen.lem@subtext.org
+    advertising:    ads@herecast.us
+    moderation:     help@herecast.us
+    no_reply:       noreply@herecast.us
+    notifications:  notifications@herecast.us
+    support:        help@herecast.us
+    sunsetting_ads: aileen.lem@herecast.us
 
   email_outreach:
     initial_market_post:
       subject: "Nice going on your Market post. Don't stop there!"
-      template_id: 273037
+      template_id: 273229
     initial_event_post:
       subject: "Nice going on your Event post. Don't stop there!"
-      template_id: 273033
+      template_id: 273233
     blogger_welcome:
-      subject: "Welcome to Your DailyUV Blog!"
-      template_id: 273077
+      subject: "Welcome to your HereCast page!"
+      template_id: 273209
     blogger_reminder:
-      subject: "Trouble getting your blog off the ground?"
-      template_id: 273089
+      subject: "Trouble starting your HereCast posts?"
+      template_id: 273213
     first_blogger_post:
-      subject: "Nice work on that first blog post!"
-      template_id: 273081
+      subject: "Nice work on that first post!"
+      template_id: 273217
 
 
 production:

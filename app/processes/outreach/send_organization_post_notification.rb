@@ -39,7 +39,7 @@ module Outreach
 
     def campaign_subject
       if @organization.feature_notification_org?
-        'New DailyUV Features!'
+        'New HereCast Features!'
       else
         "#{@content.location.pretty_name} | #{@organization.name}"
       end
@@ -49,8 +49,8 @@ module Outreach
       mailchimp_connection.campaigns.create('regular', {
                                               list_id: mailchimp_config.master_list_id,
                                               subject: formatted_subject(campaign_subject),
-                                              from_email: 'noreply@subtext.org',
-                                              from_name: 'DailyUV'
+                                              from_email: 'noreply@herecast.us',
+                                              from_name: 'HereCast'
                                             }, {
                                               html: ERB.new(File.read(html_path)).result(binding)
                                             },

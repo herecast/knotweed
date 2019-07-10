@@ -20,8 +20,8 @@ RSpec.describe CommentAlertMailer do
 
     it 'contains creates the correct subject' do
       expect_any_instance_of(CommentAlertMailer).to receive(:mail).with(to: parent_content.created_by.email,
-                                                                        from: 'DailyUV <notifications@dailyuv.com>',
-                                                                        subject: "#{comment.created_by.name} just commented on your post on DailyUV").and_return(Mail::Message.new)
+                                                                        from: 'HereCast <notifications@herecast.us>',
+                                                                        subject: "#{comment.created_by.name} just commented on your post on HereCast").and_return(Mail::Message.new)
       subject
     end
 
@@ -37,7 +37,7 @@ RSpec.describe CommentAlertMailer do
       end
 
       it 'contains a mailto link that populates an email for to an admin to unsubscribe user' do
-        expect(subject.body).to include "<a href=\"mailto:dailyuv@subtext.org?body=Please%20unsubscribe%20this%20user%20from%20future%20comment%20alerts%3A%20http%3A%2F%2F198.74.61.63%3A8002%2Fadmin%2Fusers%2F#{parent_owner.id}%2Fedit&amp;subject=Unsubscribe%20from%20comment%20alerts\">click here to unsubscribe.</a>"
+        expect(subject.body).to include "<a href=\"mailto:help@herecast.us?body=Please%20unsubscribe%20this%20user%20from%20future%20comment%20alerts%3A%20http%3A%2F%2F198.74.61.63%3A8002%2Fadmin%2Fusers%2F#{parent_owner.id}%2Fedit&amp;subject=Unsubscribe%20from%20comment%20alerts\">click here to unsubscribe.</a>"
       end
 
       context 'when comment_hidden: false' do

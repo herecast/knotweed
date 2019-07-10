@@ -57,8 +57,8 @@ class GatherFeedRecords
   end
 
   def content_opts
-    if organization_calendar_view?
-      ContentSearch.organization_calendar_query(params: @params)
+    if calendar_view?
+      ContentSearch.calendar_query(params: @params)
     else
       ContentSearch.standard_query(
         params: @params,
@@ -114,7 +114,7 @@ class GatherFeedRecords
                                 current_time: Time.current.to_s)
   end
 
-  def organization_calendar_view?
-    @params[:organization_id].present? && @params[:content_type] == 'event'
+  def calendar_view?
+    @params[:content_type] == 'event'
   end
 end
