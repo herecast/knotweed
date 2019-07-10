@@ -20,7 +20,6 @@ jQuery ->
   $(document).on 'click', '.remove-hours-field', ->
     $(this).parents('.row-fluid').first().remove()
 
-jQuery ->
   $('.edit_business_profile #business_profile_archived').on 'change', ->
     state = $(this).attr('data-state')
     if state.includes('active') and state.includes('claimed')
@@ -30,5 +29,17 @@ jQuery ->
     else
       $(this.form).submit()
 
-jQuery ->
   $('.nav-tabs a[data-target="#managers"]').tab('show') if window.location.hash == '#managers'
+
+  $(".tab-traversal-link").on 'click', ->
+    current = $(".nav-tabs-simple li.active")[0]
+    index = $(".nav-tabs-simple li").index(current)
+    new_index = index + parseInt($(this).data("moveIndex"))
+    if new_index < 0
+      new_index = 0
+    # account for tabs that might be hidden
+    new_tab = $(".nav-tabs-simple li a:eq(" + new_index + ")")
+    while new_tab.parent().hasClass("hidden")
+      new_index = new_index + parseInt($(this).data("moveIndex"))
+      new_tab = $(".nav-tabs-simple li a:eq(" + new_index + ")")
+    new_tab.tab('show')

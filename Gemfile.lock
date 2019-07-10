@@ -330,12 +330,7 @@ GEM
     fog-xml (0.1.3)
       fog-core
       nokogiri (>= 1.5.11, < 2.0.0)
-    forecast_io (2.0.2)
-      faraday
-      hashie
-      multi_json
     formatador (0.2.5)
-    foundation_emails (2.2.1.0)
     fugit (1.1.6)
       et-orbi (~> 1.1, >= 1.1.6)
       raabro (~> 1.1)
@@ -390,9 +385,6 @@ GEM
     icalendar (2.5.0)
       ice_cube (~> 0.16)
     ice_cube (0.16.0)
-    inky-rb (1.3.7.2)
-      foundation_emails (~> 2)
-      nokogiri
     intercom (3.5.26)
     ipaddress (0.8.3)
     jaro_winkler (1.5.1)
@@ -762,7 +754,6 @@ DEPENDENCIES
   faraday_middleware-aws-signers-v4
   figaro
   fog
-  forecast_io
   geocoder
   guard
   guard-bundler
@@ -774,7 +765,6 @@ DEPENDENCIES
   httparty
   icalendar
   ice_cube (= 0.16.0)
-  inky-rb
   intercom (~> 3.5.21)
   jbuilder
   joiner

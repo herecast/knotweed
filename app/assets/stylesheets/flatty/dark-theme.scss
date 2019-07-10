@@ -100,14 +100,6 @@ $galleryActionsBackground: rgba(0, 0, 0, .3);
 //recent activity
 $recentBorder: $light;
 
-//wizard
-$wizardStepCompleteBackground: $green;
-$wizardStepCompleteColor: $white;
-$wizardStepActiveBackground: $contrast;
-$wizardStepActiveColor: $white;
-$wizardStepBackground: $light;
-$wizardStepColor: darken($lightest, 70%);
-
 @import "theme/font-awesome";
 @import "theme/type";
 @import "theme/header";
@@ -122,10 +114,8 @@ $wizardStepColor: darken($lightest, 70%);
 @import "theme/calendar";
 @import "theme/chat";
 @import "theme/tasks";
-@import "theme/nestable-list";
 @import "theme/accordions";
 @import "theme/tabs";
-@import "theme/wizard";
 @import "theme/forms";
 
 @import "theme/pages/gallery";

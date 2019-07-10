@@ -14,11 +14,7 @@
 //= require jquery_ujs
 //= require flatty/jquery_ui/jquery-ui.min
 //= require flatty/bootstrap/bootstrap.min
-//= require spin.min
-//= require jquery.spin
-//= require numerous-2.1.1.min
 //= require chosen-jquery
-//= require flatty/plugins/mobile_events/jquery.mobile-events.min
 //= require flatty/jquery/jquery-migrate.min
 //= require flatty_plugins
 //= require flatty/nav
@@ -28,15 +24,10 @@
 //= require scaffold
 //= require promotions
 //= require organizations
-//= require jquery.multi-select
-//= require jquery.quicksearch
 //= require turbolinks
 //= require contents
-//= require dashboard
 //= require business_locations
 //= require campaigns
-//= require events
-//= require market_posts
 //= require users
 //= require business_profiles
 //= require summernote
@@ -44,4 +35,3 @@
 //= require cocoon
 //= require payments
 //= require payment_recipients
-//= require locations

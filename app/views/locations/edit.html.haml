@@ -5,5 +5,4 @@
         %i.icon-pencil
         Edit #{@location.name}
     .box-content
-      = simple_form_for @location do |f|
-        = render partial: 'locations/form', locals: { f: f }
+      = render partial: 'locations/form'

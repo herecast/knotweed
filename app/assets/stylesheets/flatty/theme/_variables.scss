@@ -119,13 +119,5 @@ $galleryActionsBackground: rgba(0, 0, 0, .3) !default;
 //recent activity
 $recentBorder: $light !default;
 
-//wizard
-$wizardStepCompleteBackground: $green !default;
-$wizardStepCompleteColor: $white;
-$wizardStepActiveBackground: $contrast !default;
-$wizardStepActiveColor: $white;
-$wizardStepBackground: $light !default;
-$wizardStepColor: darken($lightest, 70%) !default;
-
 //other
 $showNavCaret: true !default;

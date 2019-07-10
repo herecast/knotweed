@@ -51,10 +51,6 @@
                 = f.association :organization, input_html: { class: "chosen-select span12" }, 
                   label: "Organization"
           .span3
-            %span.btn.btn-small.btn-success#add_new_organization{ data: { toggle: "modal", 
-                target: "#organization_form", form_url: new_organization_path(short_form: true) } }
-              + Add New
-
             - if @content.id.present?
               %dl
                 %dt Quarantined?

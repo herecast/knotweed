@@ -139,19 +139,6 @@
 
           .links.card
             = link_to_add_association '+ Add Location', f, :organization_locations, class: 'btn btn-default'
-        -#.row-fluid
-          .span8
-            = text_field_tag :search_locations, nil, class: "span12", placeholder: "search available locations"
-          .span4
-            = link_to "+ Add New Promote Location", "#", class: "btn btn-success", data: { form_url: new_location_path }, id: "new_location_button"
-          .row-fluid
-            .span8
-              = f.association :locations, label: false, input_html: { class: "locations-select multi-select" }
-          .row-fluid
-            .span2.offset2.text-right
-              = link_to "select all", "#", id: "select-all-locs"
-            .span2.text-left
-              = link_to "deselect all", "#", id: "deselect-all-locs"
       .tab-pane#contacts
         .row-fluid
           .span6
@@ -165,20 +152,6 @@
         = submit_tag 'Submit and continue with this record', class: 'btn btn-success', name: 'continue_editing'
         = submit_tag 'Submit and close record', class: "btn btn-primary"
         = link_to "Cancel", :back, class: "btn"
-
-.modal.fade.modal-hack#contact_form
-  .modal-header
-    %button.close{ type: "button", data: { dismiss: "modal" } } x
-    %h3 Organization Contact
-  .modal-body
-    Loading...
-
-.modal.fade.modal-hack#location_form
-  .modal-header
-    %button.close{ type: "button", data: { dismiss: "modal" } } x
-    %h3 Location
-  .modal-body
-    Loading...
 
 .modal.fade.modal-hack#business_location_form
   .modal-header
