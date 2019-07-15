@@ -31,8 +31,7 @@ class BusinessProfilesController < ApplicationController
       flash[:notice] = "Successfully updated business #{@business_profile.business_location.name}"
       redirect_to form_submit_redirect_path(@business_profile.id)
     else
-      @users = User.all
-      get_managers
+      @managers = User.with_role(:manager, @business_profile.content.organization)
       render 'edit'
     end
   end
@@ -54,14 +53,12 @@ class BusinessProfilesController < ApplicationController
   end
 
   def new
-    @users = User.all
     @business_profile.build_business_location if @business_profile.business_location.nil?
     @business_profile.build_content
   end
 
   def edit
-    @users = User.all
-    get_managers
+    @managers = User.with_role(:manager, @business_profile.content.organization)
     @business_profile.content.images.build if @business_profile.content.images.empty?
     authorize! :edit, @business_profile
   end
@@ -95,9 +92,5 @@ class BusinessProfilesController < ApplicationController
       flash[:alert] = 'Business must be claimed to edit'
       redirect_to business_profiles_path
     end
-  end
-
-  def get_managers
-    @managers = User.with_role(:manager, @business_profile.content.organization)
   end
 end

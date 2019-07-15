@@ -29,8 +29,6 @@ jQuery ->
     else
       $(this.form).submit()
 
-  $('.nav-tabs a[data-target="#managers"]').tab('show') if window.location.hash == '#managers'
-
   $(".tab-traversal-link").on 'click', ->
     current = $(".nav-tabs-simple li.active")[0]
     index = $(".nav-tabs-simple li").index(current)

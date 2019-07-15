@@ -35,11 +35,13 @@ Rails.application.routes.draw do
     delete '/payments/:period_start/:period_end/cancel', to: 'payments#destroy', as: :cancel_payments
     resources :payment_recipients
 
+    get '/users/search', to: 'users/search#index', as: :user_search
     resources :users do
       member do
         put :update_subscription
       end
       resources :archivings, only: %i[new create], controller: 'users/archivings'
+      resources :managers, only: %i[create destroy], controller: 'users/managers'
     end
     post '/users/admin-create', to: 'users#create', as: 'create_user'
     put '/users/:id/admin-update', to: 'users#update', as: 'update_user'
@@ -59,14 +61,12 @@ Rails.application.routes.draw do
     resources :comments, only: %i[index update destroy]
     resources :business_profiles, except: [:destroy]
     namespace :business_profiles do
-      resources :managers, only: [:create]
-      delete '/managers', to: 'managers#destroy', as: 'delete_manager'
       resources :archivings, only: %i[create destroy]
       resources :claims, only: [:create]
     end
+
     resources :images, only: %i[create destroy update]
     resources :organizations, except: [:show] do
-      resources :users, only: [:index], controller: 'organizations/users'
       resources :promotions, shallow: true
     end
 

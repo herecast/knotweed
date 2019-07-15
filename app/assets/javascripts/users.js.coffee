@@ -21,3 +21,19 @@ jQuery ->
     removalId = $(this).attr('id').replace('removal-link-for-', '')
     $('#removal-link-wrapper-' + removalId).remove()
     )
+
+  $('#user_search').on 'input', ->
+    searchInput = $(this).val()
+    managedIdKey = $(this).data('searchType') + '_id'
+    if searchInput.length > 3 # only search if enough chars are typed
+      $.ajax $(this).data('searchUrl'),
+        data:
+          q:
+            name_or_email_cont: searchInput,
+          search_context:
+            search_type: $(this).data('searchType'),
+            "#{managedIdKey}": $(this).data('managedId')
+        success: (data) ->
+          $('#user_search_results tbody').html(data)
+
+  $('.nav-tabs a[data-target="#managers"]').tab('show') if window.location.hash == '#managers'

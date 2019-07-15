@@ -145,8 +145,32 @@
             = f.input :ad_contact_nickname, label: 'Contact Nickname'
             = f.input :ad_contact_fullname, label: 'Contact Fullname'
       - if @organization.id
-        .tab-pane#managers{ data: { form_url: organization_users_path(@organization) } }
-          Loading...
+        .tab-pane#managers
+          .row-fluid
+            %h2 Organization Managers
+            - if @managers.present?
+              %table.table.table-striped.table-hover
+                %thead
+                  %tr
+                    %th ID
+                    %th Name
+                    %th Email
+                    %th Remove
+                %tbody
+                  - @managers.each do |m|
+                    %tr
+                      %td= m.id
+                      %td= m.name
+                      %td= m.email
+                      %td= link_to 'remove', user_manager_path(m,
+                        organization_id: @organization.id),
+                        method: :delete, class: 'btn btn-mini btn-warning'
+            - else
+              No managers yet
+          .row-fluid
+            = render partial: 'users/partials/search_form',
+              locals: { search_type: 'organization', managed_id: @organization.id }
+
 
       .form-actions
         = submit_tag 'Submit and continue with this record', class: 'btn btn-success', name: 'continue_editing'

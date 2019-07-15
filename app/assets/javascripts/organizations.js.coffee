@@ -3,10 +3,6 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 jQuery ->
-  url = $("#managers").data("formUrl")
-  $("#managers").load url, ->
-    prepManagersTab()
-
   $('.archive-checkbox').on 'click', ->
     $(this).parent().submit()
 
@@ -56,7 +52,3 @@ prepHoursInterface = () ->
       </div>'
   $(document).on 'click', '.remove-hours-field', ->
     $(this).parents('.row-fluid').first().remove()
-
-prepManagersTab = () ->
-  setDataTable($(".data-table"))
-

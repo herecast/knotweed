@@ -1,0 +1,19 @@
+- if @users.present?
+  - @users.each do |u|
+    %tr{ class: "user-#{u.id}" }
+      %td= u.id
+      %td= u.name
+      %td= u.email
+      %td.actions
+        - if @context[:search_type].in? %w(business_profile organization)
+          = link_to "add", user_managers_path(u,
+              business_profile_id: @context[:business_profile_id],
+              organization_id: @context[:organization_id]),
+              method: :post, class: "btn btn-mini btn-warning"
+        - elsif @context[:search_type] == 'payment_recipient'
+          = link_to '+ Add', '#',
+            class: 'btn btn-small btn-success payment-recipient-action-link',
+            data: { form_url: new_payment_recipient_path(user_id: u.id) }
+
+- else
+  No results found.

@@ -110,46 +110,32 @@
                         %label
                           = i.check_box :remove_logo
                           Remove logo
-      .tab-pane.form-horizontal#managers
+      .tab-pane#managers
         .row-fluid
           %h2 Business Managers
           - if @business_profile.id.present?
-            .span12
-              %table.table.table-striped.table-hover.table-condensed
+            - if @managers.present?
+              %table.table.table-striped.table-hover
                 %thead
                   %tr
-                    %th Id
+                    %th ID
                     %th Name
                     %th Email
                     %th Remove
                 %tbody
-                  - if @managers.present?
-                    - @managers.each do |m|
-                      %tr
-                        %td= m.id
-                        %td= m.name
-                        %td= m.email
-                        %td= link_to 'remove', business_profiles_delete_manager_path(business_profile_id: @business_profile.id, user_id: m.id), method: :delete, class: 'btn btn-mini btn-warning'
-                  - else
-                    %td No managers yet
-            %h3 Search Users
-            .span12
-              %table.table.table-striped.table-hover.data-table
-                %thead
-                  %tr
-                    %th Id
-                    %th Name
-                    %th Email
-                    %th Add as Manager
-                %tbody
-                  - @users.each do |user|
-                    - unless @managers.present? and @managers.include?(user)
-                      %tr{ class: "user-#{user.id}" }
-                        %td= user.id
-                        %td= user.name if user.name.present?
-                        %td= user.email
-                        %td.actions
-                          = link_to "add", business_profiles_managers_path(business_profile_id: @business_profile.id, user_id: user.id), method: :post, class: "btn btn-mini btn-warning"
+                  - @managers.each do |m|
+                    %tr
+                      %td= m.id
+                      %td= m.name
+                      %td= m.email
+                      %td= link_to 'remove', user_manager_path(m,
+                        business_profile_id: @business_profile.id),
+                        method: :delete, class: 'btn btn-mini btn-warning'
+            - else
+              No managers yet
+            .row-fluid
+              = render partial: 'users/partials/search_form',
+                locals: { search_type: 'business_profile', managed_id: @business_profile.id }
           - else
             %p
               %b Note:

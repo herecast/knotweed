@@ -36,13 +36,16 @@ class OrganizationsController < ApplicationController
     end
   end
 
-  def edit; end
+  def edit
+    @managers = User.with_role(:manager, @organization)
+  end
 
   def update
     if @organization.update_attributes(organization_params)
       flash[:notice] = "Successfully updated organization #{@organization.id}"
       redirect_to form_submit_redirect_path(@organization.id)
     else
+      @managers = User.with_role(:manager, @organization)
       render action: 'edit'
     end
   end

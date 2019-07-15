@@ -4,7 +4,6 @@ class PaymentRecipientsController < ApplicationController
   load_and_authorize_resource except: [:index]
   def index
     @payment_recipients = PaymentRecipient.all.includes(:user, :organization)
-    @users = User.with_roles
     @recipient_user_ids = @payment_recipients.map(&:user_id)
   end
 
