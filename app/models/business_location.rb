@@ -70,10 +70,10 @@ class BusinessLocation < ActiveRecord::Base
 
   after_commit :reindex_associations_async
   def reindex_associations_async
-    business_profile.reindex_async if business_profile.present?
+    business_profile.reindex(mode: :async) if business_profile.present?
     if events.present?
       events.each do |e|
-        e.event_instances.each(&:reindex_async)
+        e.event_instances.each{ |ei| ei.reindex(mode: :async) }
       end
     end
   end

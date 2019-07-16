@@ -8,32 +8,28 @@ end
 
 INDEXED_MODELS.each do |model|
   model.class_eval do
-    def reindex
-      self.class.searchkick_index.reindex_record(self)
-      self.class.searchkick_index.refresh
+    def reindex_with_refresh(method_name = nil, **options)
+      # replacing `mode: :async` with `mode: :inline` here, AND triggering index refresh
+      self.reindex_without_refresh(method_name, options.merge({mode: :inline}))
+      self.class.search_index.refresh
     end
-
-    # this feels sort of hacky -- but jobs are just run inline in testing, so while
-    # everything is async in the app, it's not here, so we just need to add the refresh call
-    # after this method happens (since it's actually synchronous).
-    def reindex_async
-      self.class.searchkick_index.reindex_record(reload)
-      self.class.searchkick_index.refresh
-    end
+    alias_method :reindex_without_refresh, :reindex
+    alias_method :reindex, :reindex_with_refresh
   end
 end
 
 RSpec.configure do |config|
-  # only actually make calls to Elasticsearch for specs that need it
-  # to make other specs run faster
-  config.before(:each) do |example|
-    if example.metadata[:elasticsearch]
-      build_indices
-    else
-      INDEXED_MODELS.each do |model|
-        allow_any_instance_of(model).to receive(:reindex).and_return true
-        allow_any_instance_of(model).to receive(:reindex_async).and_return true
-      end
+  config.before(:suite) do
+    Searchkick.disable_callbacks
+  end
+
+  config.around(:each, elasticsearch: true) do |example|
+    Searchkick.callbacks(true) do
+      example.run
     end
+  end
+
+  config.before(:each, elasticsearch: true) do |example|
+    build_indices
   end
 end

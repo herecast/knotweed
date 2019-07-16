@@ -9,7 +9,7 @@ class ReindexEventsWithFutureInstances < ApplicationJob
     events.find_each do |e|
       start_date = e.channel.next_or_first_instance.try(:start_date)
       if start_date.present? && start_date >= Time.current
-        e.reindex_async
+        e.reindex(mode: :async)
       else
         e.update_attribute(:has_future_event_instance, false)
       end

@@ -3,9 +3,7 @@
 require 'spec_helper'
 
 describe 'Businesses Endpoints', type: :request do
-  before do
-    FactoryGirl.create :location, :default
-  end
+  let!(:default_location) { FactoryGirl.create :location, :default }
 
   let(:user) { FactoryGirl.create :user }
   let(:auth_headers) { auth_headers_for(user) }
@@ -52,19 +50,19 @@ describe 'Businesses Endpoints', type: :request do
     let(:url) { '/api/v3/businesses' }
 
     context 'a business existing that the current user owns' do
-      before do
-        location = FactoryGirl.create :business_location
-        location.update_attributes(
-          latitude: Location::DEFAULT_LOCATION_COORDS[0],
-          longitude: Location::DEFAULT_LOCATION_COORDS[1]
-        )
-        @business = FactoryGirl.create :business_profile, :claimed, business_location: location
-        @business.content.update_attribute(:created_by, user)
-        get url, params: {}, headers: auth_headers
-      end
+      let(:content) { FactoryGirl.create :content, created_by: user }
+      let(:biz_location) { FactoryGirl.create :business_location,
+                           latitude: default_location.latitude,
+                           longitude: default_location.longitude,
+                           address: nil
+      }
+      let!(:business) { FactoryGirl.create :business_profile, business_location: biz_location, content: content }
+
+      subject { get url, params: {}, headers: auth_headers }
 
       it 'response includes business, and it has can_edit=true' do
-        jbusiness = response_json[:businesses].find { |b| b[:id].eql? @business.id }
+        subject
+        jbusiness = response_json[:businesses].find { |b| b[:id].eql? business.id }
 
         expect(jbusiness).to_not be nil
         expect(jbusiness[:can_edit]).to be_truthy

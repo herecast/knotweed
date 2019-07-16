@@ -50,7 +50,7 @@ class Comment < ActiveRecord::Base
 
   after_commit do
     # the point of this is to update the latest_activity in the search index
-    content.root_parent.reindex_async
+    content.root_parent.reindex(mode: :async)
   end
 
   def method_missing(method, *args, &block)

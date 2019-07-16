@@ -15,7 +15,7 @@ jobs:
         environment:
           POSTGRES_USER: knotweed
           POSTGRES_PASSWORD: ""
-      - image: elasticsearch:2.3
+      - image: elasticsearch:6.5.4
       - image: circleci/redis
     steps:
       - checkout

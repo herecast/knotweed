@@ -3,23 +3,15 @@
 require 'spec_helper'
 
 describe Api::V3::BusinessProfilesController, type: :controller do
-  before do
-    FactoryGirl.create :location, :default
-  end
+  let(:default_location) { FactoryGirl.create :location, :default }
 
   describe 'GET index', elasticsearch: true do
-    before do
-      bls = FactoryGirl.create_list :business_location, 3
-      # set all the BP.business_locations to be in the upper valley
-      # so they return with the default search options
-      bls.each do |bl|
-        bl.update_attributes(
-          latitude: Location.default_location.coordinates[0],
-          longitude: Location.default_location.coordinates[1]
-        )
-        FactoryGirl.create :business_profile, business_location: bl
-      end
-      @bps = BusinessProfile.all
+    let!(:business_profiles) do
+      FactoryGirl.create_list :business_profile, 3,
+        business_location: FactoryGirl.create(:business_location,
+                                              address: nil,
+                                              latitude: default_location.latitude,
+                                              longitude: default_location.longitude)
     end
 
     subject { get :index }
@@ -31,7 +23,7 @@ describe Api::V3::BusinessProfilesController, type: :controller do
 
     it 'loads the business profiles' do
       subject
-      expect(assigns(:business_profiles)).to match_array(@bps)
+      expect(assigns(:business_profiles)).to match_array(business_profiles)
     end
 
     describe 'excludes archived businesses' do
@@ -159,7 +151,6 @@ describe Api::V3::BusinessProfilesController, type: :controller do
         @result = BusinessProfile.first
         @result.business_location.update_attribute :name, @search
         @result.reindex
-        BusinessProfile.searchkick_index.refresh
       end
 
       subject { get :index, params: { query: @search } }
@@ -173,40 +164,29 @@ describe Api::V3::BusinessProfilesController, type: :controller do
         before do
           @cat = FactoryGirl.create :business_category
           @cat2 = FactoryGirl.create :business_category, parents: [@cat]
-          @bps.first.business_categories << @cat
-          @bps.last.business_categories << @cat2
+          business_profiles.first.business_categories << @cat
+          business_profiles.last.business_categories << @cat2
         end
 
         it 'should return filtered results' do
           get :index, params: { category_id: @cat2.id }
-          expect(assigns(:business_profiles)).to match_array [@bps.last]
+          expect(assigns(:business_profiles)).to match_array [business_profiles.last]
         end
 
         it 'should return results for categories and their children' do
           get :index, params: { category_id: @cat }
-          expect(assigns(:business_profiles)).to match_array [@bps.first, @bps.last]
+          expect(assigns(:business_profiles)).to match_array [business_profiles.first, business_profiles.last]
         end
       end
 
       describe 'given lat/lng' do
-        before do
-          # have to set the lat/lngs of the business locations manually
-          # as geocoder just uses the same coords for everything in test environments
-          BusinessLocation.all.each do |bl|
-            bl.update_attributes(
-              latitude: Faker::Address.latitude,
-              longitude: Faker::Address.longitude
-            )
-          end
-          BusinessProfile.reindex
-          BusinessProfile.searchkick_index.refresh
-        end
+        let(:other_loc) { FactoryGirl.create :business_location }
+        let!(:other_bp) { FactoryGirl.create :business_profile, business_location: other_loc }
 
         it 'should return results within radius if specified' do
-          bp = BusinessProfile.first
-          get :index, params: { lat: bp.business_location.latitude, lng: bp.business_location.longitude,
+          get :index, params: { lat: other_loc.latitude, lng: other_loc.longitude,
                                 radius: 1 }
-          expect(assigns(:business_profiles)).to match_array [bp]
+          expect(assigns(:business_profiles)).to match_array [other_bp]
         end
       end
     end

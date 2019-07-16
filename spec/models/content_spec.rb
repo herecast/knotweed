@@ -836,17 +836,17 @@ describe Content, type: :model do
     end
   end
 
-  describe "creating a comment, reindexes it's root parent" do
+  describe "creating a comment, reindexes it's root parent", elasticsearch: true do
     let!(:root_parent) { FactoryGirl.create :content }
 
     it 'does not reindex when root_parent is self' do
       self_content = FactoryGirl.build :content
-      expect(self_content).to receive(:reindex_async).exactly(1).times
+      expect(self_content).to receive(:reindex).exactly(1).times
       self_content.save!
     end
 
     it 'child' do
-      expect(root_parent).to receive(:reindex_async)
+      expect(root_parent).to receive(:reindex)
       FactoryGirl.create :content, :comment, parent: root_parent
     end
 
@@ -856,7 +856,7 @@ describe Content, type: :model do
       grandchild = FactoryGirl.build :content, :comment, parent: child
       # to ensure same instance as in test stub
       allow(grandchild).to receive(:root_parent).and_return(root_parent)
-      expect(root_parent).to receive(:reindex_async)
+      expect(root_parent).to receive(:reindex)
 
       grandchild.save!
     end

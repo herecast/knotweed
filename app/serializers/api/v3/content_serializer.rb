@@ -310,14 +310,21 @@ module Api
       end
 
       def location
-        {
-          id: object.location&.id,
-          city: object.location&.city,
-          state: object.location&.state,
-          latitude: object.location&.latitude,
-          longitude: object.location&.longitude,
-          image_url: object.location&.image_url
-        }
+        # object.location returns false when there is no location
+        # after upgrading searchkick, so safe navigation operator
+        # now returns an error -- hence need to change approach here
+        if object.location
+          {
+            id: object.location.id,
+            city: object.location.city,
+            state: object.location.state,
+            latitude: object.location.latitude,
+            longitude: object.location.longitude,
+            image_url: object.location.image_url
+          }
+        else
+          {}
+        end
       end
 
       private

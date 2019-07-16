@@ -89,8 +89,8 @@ class BusinessProfile < ActiveRecord::Base
 
   has_and_belongs_to_many :business_categories, join_table: 'business_categories_business_profiles', after_add: :reindex_business_profile
 
-  def reindex_business_profile(_business_category)
-    reindex_async
+  def reindex_business_profile(business_category)
+    reindex(mode: :async)
   end
 
   has_many :business_feedbacks, dependent: :destroy

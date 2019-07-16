@@ -158,7 +158,7 @@ class Content < ActiveRecord::Base
   after_commit :reindex_associations_async
   def reindex_associations_async
     if channel.present? && channel.is_a?(Event)
-      channel.event_instances.each(&:reindex_async)
+      channel.event_instances.each{ |ei| ei.reindex(mode: :async) }
     end
   end
 
