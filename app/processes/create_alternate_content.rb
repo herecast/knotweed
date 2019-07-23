@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CreateAlternateContent
-  ALTERNATE_IMAGE_URL = 'https://s3.amazonaws.com/knotweed/duv/Default_Photo_News-01-1.jpg'
+  ALTERNATE_IMAGE_URL = 'https://subtext-misc.s3.amazonaws.com/default_HereCast_share.png'
   ALTERNATE_TITLE = "We're sorry!"
   ALTERNATE_TEXT = 'This post is not available at the present time. We apologize for the inconvenience. Please email help@herecast.us with any questions!'
   ALTERNATE_AUTHORS = 'The team at HereCast'

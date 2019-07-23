@@ -25,7 +25,7 @@ RSpec.describe CreateAlternateContent do
       expect(alternate_content.raw_content).not_to eq @old_raw_content
       expect(alternate_content.authors).not_to eq @old_authors
       expect(alternate_content.id).to eq @content.id
-      expect(alternate_content.images[0].image_url).to eq 'https://s3.amazonaws.com/knotweed/duv/Default_Photo_News-01-1.jpg'
+      expect(alternate_content.images[0].image_url).to eq 'https://subtext-misc.s3.amazonaws.com/default_HereCast_share.png'
     end
 
     context 'when alternate defaults have been overridden' do
