@@ -17,9 +17,6 @@ GMAPS_API_KEY: gmapskey
 
 # used to determine what location APIv3 uses to query for contents if the user is not
 # logged in.
-DEFAULT_LOCATION: Hartford
-
-POSTMARK_API_TOKEN: postmark-token
 
 DEFAULT_CONSUMER_HOST: herecast.us
 
@@ -28,10 +25,7 @@ MAILCHIMP_API_KEY: test
 
 ELASTICSEARCH_URL: http://localhost:9200
 
-REDIS_URL: redis://subtext-dev.0egmnu.0001.use1.cache.amazonaws.com/1
-
-OPTIMIZED_IMAGE_URI:      'http://dev-web.subtext.org:8880'
-OPTIMIZED_IMAGE_QUALITY:  "80"
+OPTIMIZED_IMAGE_URI:      https://qa-consumer.subtext.org/imopt
 IMOPT_ALLOWED_SOURCES:  '["d3ctw1a5413a3o.cloudfront.net", "knotweed.s3.amazonaws.com", "subtext-misc.s3.amazonaws.com"]'
 BITLY_OAUTH_KEY: 0123456789abcdef
 
