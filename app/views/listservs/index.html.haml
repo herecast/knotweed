@@ -7,9 +7,6 @@
     .box-content
       = search_form_for @search, url: listservs_path do |f|
         .controls.controls-row
-          .field.span3
-            = f.label :list_type_eq, "List Type"
-            = f.select :list_type_eq, Listserv::LIST_TYPES, include_blank: true
           .field.span2
             = f.label :active_true, "Active"
             = f.check_box :active_true
@@ -23,7 +20,6 @@
     %tr
       %th ID
       %th Name
-      %th List Type
       %th Digest Time
       %th Digest Day
       %th Subscribers
@@ -34,7 +30,6 @@
       %tr{ class: "listserv-#{ls.id}" }
         %td= ls.id
         %td= link_to ls.name, edit_listserv_path(ls)
-        %td= ls.list_type.titlecase
         %td= ls.digest_send_time.strftime('%H:%M') if ls.digest_send_time?
         %td= ls.digest_send_day
         %td= ls.active_subscriber_count

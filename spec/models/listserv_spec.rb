@@ -48,7 +48,6 @@ describe Listserv, type: :model do
   it { is_expected.to respond_to(:unsubscribe_email, :unsubscribe_email=) }
   it { is_expected.to respond_to(:post_email, :post_email=) }
   it { is_expected.to respond_to(:is_managed_list?) }
-  it { is_expected.to respond_to(:is_vc_list?) }
   it { is_expected.to respond_to(:promotions_list, :promotions_list=) }
 
   it { is_expected.to have_db_column(:mc_list_id).of_type(:string) }
@@ -62,13 +61,11 @@ describe Listserv, type: :model do
   it { is_expected.to have_db_column(:timezone).of_type(:string) }
   it { is_expected.to have_db_column(:digest_description).of_type(:text) }
   it { is_expected.to have_db_column(:digest_send_day).of_type(:string) }
-  it { is_expected.to have_db_column(:digest_query).of_type(:text) }
   it { is_expected.to have_db_column(:sponsored_by).of_type(:string) }
   it { is_expected.to have_db_column(:display_subscribe).of_type(:boolean) }
   it { is_expected.to have_db_column(:digest_subject).of_type(:string) }
   it { is_expected.to have_db_column(:digest_preheader).of_type(:string) }
   it { is_expected.to have_many(:campaigns) }
-  it { is_expected.to have_db_column(:list_type).of_type(:string) }
   it { is_expected.to have_db_column(:admin_email).of_type(:string) }
   it { is_expected.to have_db_column(:forwarding_email).of_type(:string) }
   it { is_expected.to have_db_column(:forward_for_processing).of_type(:boolean) }
@@ -93,30 +90,6 @@ describe Listserv, type: :model do
   end
 
   describe 'validation' do
-    describe 'should prevent a user from populating managed list fields if `reverse_publish_email` is populated' do
-      let(:listserv) { FactoryGirl.create :vc_listserv }
-
-      subject { listserv.post_email = Faker::Internet.email && listserv }
-
-      it { expect(subject).to_not be_valid }
-    end
-
-    describe 'should prevent a user from populating `reverse_publish_email` if managed list fields are populated' do
-      let(:listserv) { FactoryGirl.create :subtext_listserv }
-
-      subject { listserv.reverse_publish_email = Faker::Internet.email && listserv }
-
-      it { expect(subject).to_not be_valid }
-    end
-
-    describe 'should prevent user from using queries to alter data' do
-      let(:listserv) { FactoryGirl.build :listserv, digest_query: 'DROP DB' }
-      it 'does not save digest query with data altering commands' do
-        expect(listserv.valid?).to be false
-        expect(listserv.errors[:digest_query]).to include 'Commands to alter data are not allowed'
-      end
-    end
-
     context 'send_digest is true' do
       let(:listserv) { FactoryGirl.build :listserv, send_digest: true }
 
@@ -158,11 +131,6 @@ describe Listserv, type: :model do
                            promotable: FactoryGirl.create(:promotion_banner)
       end
 
-      let!(:other_promo) do
-        FactoryGirl.create :promotion,
-                           promotable: FactoryGirl.create(:promotion_listserv)
-      end
-
       it 'checks existence of promotions' do
         subject.promotion_ids = %w[8675309 234234]
         subject.valid? # trigger validation
@@ -173,15 +141,6 @@ describe Listserv, type: :model do
         expect(subject.errors).to_not have_key(:promotion_id)
       end
 
-      it 'requires promotion is tied to a PromotionBanner' do
-        subject.promotion_ids = [other_promo.id]
-        subject.valid? # trigger validation
-        expect(subject.errors).to have_key(:promotion_ids)
-
-        subject.promotion_ids = [promo_with_banner.id]
-        subject.valid? # trigger validation
-        expect(subject.errors).to_not have_key(:promotion_id)
-      end
     end
   end
 
@@ -260,23 +219,57 @@ describe Listserv, type: :model do
     end
   end
 
-  describe '#contents_from_custom_query' do
-    context 'when custom query exists, with matching records' do
-      let!(:contents) { FactoryGirl.create_list :content, 3 }
-      let!(:listserv) { Listserv.new }
-      before do
-        listserv.digest_query = 'SELECT * FROM contents'
+  describe '#digest_contents(location_ids)' do
+    let!(:listserv) { FactoryGirl.create :listserv }
+    let(:org) { FactoryGirl.create :organization }
+    let(:location) { FactoryGirl.create :location }
+
+    subject { listserv.digest_contents([location.id]) }
+
+    it 'should only return max three records per organization' do
+      FactoryGirl.create_list :content, 5, :news, organization: org, pubdate: 1.hour.ago, location: location
+      expect(subject.length).to be 3
+    end
+
+    it 'should return max 12 records' do
+      FactoryGirl.create_list :content, 15, :news, pubdate: 1.hour.ago, location: location
+      expect(subject.length).to be 12
+    end
+
+    it 'should return records ordered by view_count' do
+      popular_contents = FactoryGirl.create_list :content, 12, :news, pubdate: 2.hours.ago, view_count: 100, location: location
+      other_contents = FactoryGirl.create_list :content, 5, :news, pubdate: 1.hour.ago, location: location
+      expect(subject).to match_array(popular_contents)
+    end
+
+    it 'should only include content from the location queried' do
+      other_location_content = FactoryGirl.create :content, :news, pubdate: 1.hour.ago, location: FactoryGirl.create(:location)
+      expect(subject).to_not include(other_location_content)
+    end
+
+    it 'should only include `news` content' do
+      news_content = FactoryGirl.create :content, :news, pubdate: 1.hour.ago, location: location
+      not_news_content = FactoryGirl.create :content, pubdate: 1.hour.ago, location: location
+
+      expect(subject).to match_array [news_content]
+    end
+
+    context 'for a weekly digest' do
+      let!(:listserv) { FactoryGirl.create :listserv, digest_send_day: Date.today.strftime('%A') }
+
+      it 'should include contents from the last week' do
+        older_content = FactoryGirl.create_list :content, 5, :news, pubdate: 5.days.ago, location: location
+        expect(subject).to match_array(older_content)
       end
+    end
 
-      subject { listserv.contents_from_custom_query }
+    context 'for a daily digest' do
+      let!(:listserv) { FactoryGirl.create :listserv, digest_send_day: nil }
 
-      it 'is equal to matching records' do
-        expect(subject).to match_array contents
-      end
-
-      it 'maintains the same sort order' do
-        listserv.digest_query += ' ORDER BY id DESC'
-        expect(subject.first).to eql contents.sort_by(&:id).reverse.first
+      it 'should not include contents from older than 30 hours ago' do
+        FactoryGirl.create :content, :news, pubdate: 1.hour.ago, location: location
+        older_content = FactoryGirl.create :content, :news, pubdate: 3.days.ago, location: location
+        expect(subject).to_not include(older_content)
       end
     end
   end
@@ -383,6 +376,42 @@ describe Listserv, type: :model do
 
       it 'should not be valid' do
         expect(listserv).to_not be_valid
+      end
+    end
+  end
+
+  describe '#locations' do
+    let(:listserv) { FactoryGirl.create :listserv }
+    let(:location) { FactoryGirl.create :location }
+
+    subject { listserv.locations }
+
+    context 'with no subscriptions' do
+      it 'should return nothing' do
+        expect(subject.length).to be 0
+      end
+    end
+
+    context 'with multiple subscriptions in the same location' do
+      let!(:subscriptions) do
+        FactoryGirl.create_list :subscription, 3, :subscribed, listserv: listserv,
+          user: FactoryGirl.create(:user, location: location)
+      end
+
+      it 'should return that location' do
+        expect(subject).to match_array [location]
+      end
+    end
+
+    context 'with multiple different location subscriptions' do
+      let(:loc2) { FactoryGirl.create :location }
+      let!(:sub1) { FactoryGirl.create :subscription, :subscribed, listserv: listserv,
+                    user: FactoryGirl.create(:user, location: location) }
+      let!(:sub2) { FactoryGirl.create :subscription, :subscribed, listserv: listserv,
+                    user: FactoryGirl.create(:user, location: loc2) }
+
+      it 'should return all locations' do
+        expect(subject).to match_array [location, loc2]
       end
     end
   end

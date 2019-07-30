@@ -22,9 +22,7 @@
       = f.input :promotable_type, as: :hidden
 
     = f.simple_fields_for :promotable do |g|
-      - if promotion.promotable.is_a? PromotionListserv
-        = g.association :listserv
-      - elsif promotion.promotable.is_a? PromotionBanner
+      - if promotion.promotable.is_a? PromotionBanner
         - if promotion.promotable_banner_image?
           = image_tag(promotion.promotable_banner_image.url, id: "promotion-current-banner-image") if promotion.promotable_banner_image.url.present?
         - else

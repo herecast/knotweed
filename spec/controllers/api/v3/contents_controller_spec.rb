@@ -218,25 +218,6 @@ describe Api::V3::ContentsController, type: :controller do
           end
         end
 
-        context 'listserv ids included' do
-          let(:listservs) do
-            FactoryGirl.create_list(:listserv, 2)
-          end
-          before do
-            content_params.merge!(listserv_ids: listservs.map(&:id))
-          end
-
-          it 'promotes to listservs' do
-            expect(PromoteContentToListservs).to receive(:call).with(
-              kind_of(Content),
-              request.remote_ip,
-              *listservs
-            )
-
-            subject
-          end
-        end
-
         describe 'Events' do
           let(:business_location) { FactoryGirl.create(:business_location) }
           let(:content_params) do
@@ -357,25 +338,6 @@ describe Api::V3::ContentsController, type: :controller do
           )
 
           subject
-        end
-
-        context 'listserv ids included' do
-          let(:listservs) do
-            FactoryGirl.create_list(:listserv, 2)
-          end
-          before do
-            content_params.merge!(listserv_ids: listservs.map(&:id))
-          end
-
-          it 'promotes to listservs' do
-            expect(PromoteContentToListservs).to receive(:call).with(
-              content,
-              request.remote_ip,
-              *listservs
-            )
-
-            subject
-          end
         end
       end
 

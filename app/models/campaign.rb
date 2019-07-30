@@ -32,7 +32,6 @@ class Campaign < ActiveRecord::Base
 
   validate :require_a_community
   validate :prevent_community_overlap
-  validate :no_altering_queries
 
   def communities=(list)
     write_attribute :community_ids, (list || []).collect(&:id).sort
@@ -52,20 +51,6 @@ class Campaign < ActiveRecord::Base
 
   def promotions_list
     promotion_ids.join(', ')
-  end
-
-  def contents_from_custom_query
-    custom_ids = custom_digest_results.map { |result| result['id'].to_i }
-    Content.where(id: custom_ids).sort_by { |c| custom_ids.index(c.id) }
-  end
-
-  def no_altering_queries
-    if digest_query?
-      query_array = digest_query.upcase.split(' ')
-      reserved_commands = %w[INSERT UPDATE DELETE DROP TRUNCATE]
-      has_reserved_words = query_array.any? { |word| reserved_commands.include?(word) }
-      errors.add(:digest_query, 'Commands to alter data are not allowed') if has_reserved_words
-    end
   end
 
   protected
@@ -98,13 +83,4 @@ class Campaign < ActiveRecord::Base
     end
   end
 
-  private
-
-  def get_query
-    ActiveRecord::Base.connection.execute(digest_query)
-  end
-
-  def custom_digest_results
-    get_query.to_a
-  end
 end

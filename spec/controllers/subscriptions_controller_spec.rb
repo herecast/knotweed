@@ -8,7 +8,7 @@ RSpec.describe SubscriptionsController, type: :controller do
     sign_in @user
   end
 
-  let(:listserv) { FactoryGirl.create :subtext_listserv }
+  let(:listserv) { FactoryGirl.create :listserv }
 
   let(:valid_attributes) do
     {

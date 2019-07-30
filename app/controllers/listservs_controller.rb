@@ -20,8 +20,7 @@ class ListservsController < ApplicationController
   def show; end
 
   def new
-    # default list type should be custom digest
-    @listserv = Listserv.new(list_type: 'custom_digest')
+    @listserv = Listserv.new
   end
 
   def edit
@@ -62,7 +61,6 @@ class ListservsController < ApplicationController
       :active,
       :import_name,
       :name,
-      :reverse_publish_email,
       :subscribe_email,
       :unsubscribe_email,
       :post_email,
@@ -76,13 +74,11 @@ class ListservsController < ApplicationController
       :timezone,
       :digest_description,
       :digest_send_day,
-      :digest_query,
       :template,
       :sponsored_by,
       :display_subscribe,
       :digest_preheader,
       :digest_subject,
-      :list_type,
       :sender_name,
       :admin_email,
       :promotions_list,

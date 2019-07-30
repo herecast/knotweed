@@ -121,7 +121,6 @@ Rails.application.routes.draw do
 
       resources 'comments', only: %i[index create]
       post '/comments/unsubscribe_from_alerts', to: 'comments#unsubscribe_webhook'
-      resources 'listservs', only: %i[show index]
       get '/venues', to: 'business_locations#index', as: :venues
       get '/venue_locations', to: 'business_locations#index', as: :venue_locations,
                               defaults: { autocomplete: true, max_results: 5 }

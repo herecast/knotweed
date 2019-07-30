@@ -32,7 +32,6 @@ RSpec.describe Campaign, type: :model do
   it { is_expected.to have_db_column(:community_ids).of_type(:integer).with_options(array: true) }
   it { is_expected.to have_db_column(:promotion_ids).of_type(:integer) }
   it { is_expected.to have_db_column(:sponsored_by).of_type(:string) }
-  it { is_expected.to have_db_column(:digest_query).of_type(:text) }
   it { is_expected.to have_db_column(:preheader).of_type(:string) }
   it { is_expected.to respond_to(:promotions_list, :promotions_list=) }
 
@@ -89,11 +88,6 @@ RSpec.describe Campaign, type: :model do
                          promotable: FactoryGirl.create(:promotion_banner)
     end
 
-    let!(:other_promo) do
-      FactoryGirl.create :promotion,
-                         promotable: FactoryGirl.create(:promotion_listserv)
-    end
-
     it 'checks existence of the promotion' do
       subject.promotion_ids = ['190380']
       subject.valid? # trigger validation
@@ -102,16 +96,6 @@ RSpec.describe Campaign, type: :model do
       subject.promotion_ids = [promo_with_banner.id]
       subject.valid? # trigger validation
       expect(subject.errors).to_not have_key(:promotion_id)
-    end
-
-    it 'requires promotion is tied to a PromotionBanner' do
-      subject.promotion_ids = [other_promo.id]
-      subject.valid? # trigger validation
-      expect(subject.errors).to have_key(:promotion_ids)
-
-      subject.promotion_ids = [promo_with_banner.id]
-      subject.valid? # trigger validation
-      expect(subject.errors).to_not have_key(:promotion_ids)
     end
   end
 

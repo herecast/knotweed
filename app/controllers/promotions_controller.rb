@@ -30,8 +30,6 @@ class PromotionsController < ApplicationController
       if params[:promotable_type].present?
         if params[:promotable_type] == 'PromotionBanner'
           @promotion.promotable = PromotionBanner.new
-        elsif params[:promotable_type] == 'PromotionListserv'
-          @promotion.promotable = PromotionListserv.new
         end
       end
 

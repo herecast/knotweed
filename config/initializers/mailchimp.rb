@@ -10,7 +10,7 @@ MailchimpAPI.configure do |config|
     config.mobile_blogger_interest_list_id = '9e8da81a56'
     config.new_user_segment_id             = '454873'
     config.new_blogger_segment_id          = '454877'
-    config.digest_list_id                  = 'dummy-id'
+    config.digest_list_id                  = 'dd986fab36'
   else
     config.master_list_id                  = 'dummy-id'
     config.mobile_blogger_interest_list_id = 'dummy-id'

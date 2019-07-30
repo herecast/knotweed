@@ -48,24 +48,6 @@ FactoryGirl.define do
     name 'My Listserv'
     active true
     digest_send_time '09:15'
-
-    factory :vc_listserv do
-      sequence(:reverse_publish_email) { |n| "mylistserv#{n}@vclab.net" }
-      list_type 'external_list'
-    end
-
-    factory :subtext_listserv do
-      sequence(:post_email) { |n| "posting-#{n}@subtext.org" }
-      sequence(:subscribe_email) { |n| "subscribe-#{n}@subtext.org" }
-      sequence(:unsubscribe_email) { |n| "unsubscribe-#{n}@subtext.org" }
-      sequence(:digest_reply_to) { |n| "reply-#{n}@subtext.org" }
-      list_type 'internal_list'
-    end
-    list_type 'custom_digest'
-  end
-
-  trait :custom_digest do
     digest_send_day 'Monday'
-    list_type 'custom_digest'
   end
 end

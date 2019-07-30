@@ -2,13 +2,10 @@
   = f.error_notification
 
   .form-inputs
-    = f.input :list_type, collection: Listserv::LIST_TYPES, include_blank: false,
-      hint: "Use: 'Custom Digest' for creating a newsletter, 'Internal Digest' for UVList, and 'External Digest' for area listservs"
     = f.input :name
     = f.input :sender_name
     = f.input :digest_description
     = f.input :import_name
-    = f.input :reverse_publish_email, hint: "This can't be populated if it is a Subtext managed listserv."
     = f.input :forwarding_email, hint: "Email address to forward all received posting emails for archiving"
     = f.input :forward_for_processing, as: :boolean
     = f.input :post_threshold, hint: "Minimum number of posts required before digest will send."
@@ -17,7 +14,7 @@
       = f.button :submit, class: 'btn btn-success'
     %fieldset
       %legend Subtext Managed Listserv
-      = f.input :subscribe_email, hint: "These fields can't be populated if you are using `reverse_publish_email` (and it is a Vital Communities List)"
+      = f.input :subscribe_email
       = f.input :unsubscribe_email
       = f.input :post_email
       = f.input :mc_list_id
@@ -32,7 +29,6 @@
         = f.input :timezone, as: :time_zone, priority: /US/, hint: "The timezone digest receivers would typically be in."
         = f.input :digest_send_day, collection: Listserv.digest_days, hint: "If this is a weekely digest, select the day of the week to send.  Leave blank if daily"
         = f.input :digest_reply_to
-        = f.input :digest_query, input_html: { class: 'span12' } , hint: "This query will be used to generate the contents for the listserv"
         = f.input :digest_subject
         = f.input :digest_preheader
         = f.input :digest_header, as: :summernote
@@ -60,7 +56,6 @@
                 %th Communities
                 %th Sponsored By
                 %th Promotion
-                %th Query Override
                 %th
             %tbody
               - @listserv.campaigns.each do |campaign|

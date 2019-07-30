@@ -35,11 +35,3 @@
         %p
           %b Paid:
           = @promotion.paid
-      - elsif @promotion.promotable.is_a? PromotionListserv
-        %p
-          %b Listserv:
-          = @promotion.promotable_listserv.name
-        %p
-          %b Sent at:
-          = @promotion.promotable_sent_at
-

@@ -4,27 +4,41 @@ class ListservDigestJob < ApplicationJob
   def perform(listserv, timestamp)
     @listserv = listserv
 
-    if @listserv.send_digest? && @listserv.active?
+    locations = @listserv.locations
+
+    if @listserv.send_digest? && @listserv.active? && locations.count > 0
 
       digests = []
+
+      # map campaigns to location_ids so we can easily associate as we iterate through subscription locations
+      # seems a little better than querying campaigns (with a literal query) for every location
       if @listserv.campaigns.present?
+        location_campaigns = {}
         @listserv.campaigns.each do |campaign|
-          campaign_attrs = {
-            contents: contents_for_campaign(campaign),
-            location_ids: campaign.community_ids,
-            subscription_ids: subscription_ids_for_campaign(campaign)
-          }
-          campaign_attrs[:preheader] = campaign.preheader if campaign.preheader?
-          campaign_attrs[:sponsored_by] = campaign.sponsored_by if campaign.sponsored_by?
-          campaign_attrs[:promotion_ids] = campaign.promotion_ids if campaign.promotion_ids?
-          campaign_attrs[:title] = campaign.title if campaign.title?
-          if campaign_post_count_above_threshold?(campaign)
-            digests << ListservDigest.new(digest_attributes.merge(campaign_attrs))
+          campaign.community_ids.each do |l_id|
+            location_campaigns[l_id] = campaign
           end
         end
-      else
-        unless @listserv.custom_digest? && custom_query_count < @listserv.post_threshold
-          digests << ListservDigest.new(digest_attributes)
+      end
+
+      locations.each do |loc|
+        loc_ids_for_query = loc.location_ids_within_fifty_miles
+        location_digest_contents_count = @listserv.digest_contents(loc_ids_for_query).count
+
+        if location_digest_contents_count >= @listserv.post_threshold
+          digest_attrs = digest_attributes(loc_ids_for_query)
+
+          if location_campaigns.present? and location_campaigns[loc.id].present?
+            campaign = location_campaigns[loc.id]
+            campaign_attrs = {}
+            campaign_attrs[:preheader] = campaign.preheader if campaign.preheader?
+            campaign_attrs[:sponsored_by] = campaign.sponsored_by if campaign.sponsored_by?
+            campaign_attrs[:promotion_ids] = campaign.promotion_ids if campaign.promotion_ids?
+            campaign_attrs[:title] = campaign.title if campaign.title?
+            digest_attrs = digest_attrs.merge(campaign_attrs)
+          end
+
+          digests << ListservDigest.new(digest_attrs)
         end
       end
 
@@ -43,7 +57,7 @@ class ListservDigestJob < ApplicationJob
 
   private
 
-  def digest_attributes
+  def digest_attributes(location_ids)
     {
       listserv: @listserv,
       subject: (@listserv.digest_subject? ? @listserv.digest_subject : "#{@listserv.name} Digest"),
@@ -52,47 +66,17 @@ class ListservDigestJob < ApplicationJob
       template: @listserv.template,
       sponsored_by: @listserv.sponsored_by,
       promotion_ids: @listserv.promotion_ids,
-      title: (@listserv.digest_subject? ? @listserv.digest_subject : "#{@listserv.name} Digest")
-    }.tap do |attrs|
-      if @listserv.custom_digest?
-        unless @listserv.campaigns.present?
-          contents = @listserv.contents_from_custom_query
-          attrs.merge!(
-            contents: contents,
-            subscriptions: @listserv.subscriptions.active
-          )
-        end
-      end
-    end
+      title: (@listserv.digest_subject? ? @listserv.digest_subject : "#{@listserv.name} Digest"),
+      contents: @listserv.digest_contents(location_ids),
+      subscriptions: subscriptions_for_location(location_ids)
+    }
   end
 
-  def subscription_ids_for_campaign(campaign)
-    if campaign.community_ids.any?
-      # can't use the active scope here out of the box because of the ambiguous field names
-      # when we join
-      @listserv.subscriptions.joins('INNER JOIN users on subscriptions.user_id = users.id')
-               .where('users.location_id in (?)', campaign.community_ids)
-               .where('subscriptions.confirmed_at IS NOT NULL')
-               .where('subscriptions.unsubscribed_at IS NULL')
-               .pluck(:id)
-    else
-      @listserv.subscriptions.active.pluck(:id)
-    end
+  def subscriptions_for_location(location_ids)
+    @listserv.subscriptions.joins('INNER JOIN users on subscriptions.user_id = users.id')
+             .where(users: { location_id: location_ids })
+             .where('subscriptions.confirmed_at IS NOT NULL')
+             .where('subscriptions.unsubscribed_at IS NULL')
   end
 
-  def contents_for_campaign(campaign)
-    if campaign.digest_query?
-      campaign.contents_from_custom_query
-    else
-      @listserv.contents_from_custom_query
-    end
-  end
-
-  def campaign_post_count_above_threshold?(campaign)
-    @listserv.post_threshold <= contents_for_campaign(campaign).count
-  end
-
-  def custom_query_count
-    @listserv.try(:contents_from_custom_query).try(:count) || 0
-  end
 end

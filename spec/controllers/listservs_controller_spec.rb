@@ -11,7 +11,6 @@ RSpec.describe ListservsController, type: :controller do
   let(:valid_attributes) do
     {
       name: 'listserv1',
-      list_type: 'internal_digest',
       subscribe_email: 'subscribe@example.org',
       unsubscribe_email: 'unsubscribe@example.org',
       post_email: 'post@example.org',

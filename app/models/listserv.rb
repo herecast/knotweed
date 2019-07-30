@@ -50,40 +50,20 @@ class Listserv < ActiveRecord::Base
   has_many :subscriptions
   has_many :campaigns
 
-  validates_uniqueness_of :reverse_publish_email, :unsubscribe_email,
+  validates_uniqueness_of :unsubscribe_email,
                           :subscribe_email, :post_email, allow_blank: true
-
-  validates :reverse_publish_email, absence: { absence: true,
-                                               message: "Can't populate `reverse_publish_email` for lists that are managed by Subtext." },
-                                    if: :is_managed_list?
-  validates :unsubscribe_email, :subscribe_email, :post_email, absence: { absence: true,
-                                                                          message: "Can't populate these fields for lists that are managed by Vital Communities." },
-                                                               if: :is_vc_list?
 
   validates :digest_reply_to, presence: true, if: :send_digest?
   validates :digest_send_time, presence: true, if: :send_digest?
   validates :forwarding_email, presence: true, if: :forward_for_processing?
-  validates_presence_of :list_type
 
   validate :mc_group_name_required, if: :mc_list_id?
 
-  validate :no_altering_queries
   validate :valid_template_name
 
   scope :active, -> { where(active: true) }
 
-  scope :custom_digest, lambda {
-    where(list_type: 'custom_digest')
-  }
-
   DIGEST_TEMPLATES = Dir.entries('app/views/listserv_digest_mailer/').map { |file| file.split('.').first }.compact
-
-  LIST_TYPES =
-    [
-      ['External List', 'external_list'],
-      ['Internal List', 'internal_list'],
-      ['Custom Digest', 'custom_digest']
-    ].freeze
 
   def mc_group_name=(n)
     write_attribute :mc_group_name, (n.nil? ? n : n.strip)
@@ -105,21 +85,8 @@ class Listserv < ActiveRecord::Base
     subscribe_email.present? || post_email.present? || unsubscribe_email.present?
   end
 
-  def is_vc_list?
-    reverse_publish_email.present?
-  end
-
   def mc_sync?
     mc_list_id? && mc_group_name?
-  end
-
-  def no_altering_queries
-    if digest_query?
-      query_array = digest_query.upcase.split(' ')
-      reserved_commands = %w[INSERT UPDATE DELETE DROP TRUNCATE]
-      has_reserved_words = query_array.any? { |word| reserved_commands.include?(word) }
-      errors.add(:digest_query, 'Commands to alter data are not allowed') if has_reserved_words
-    end
   end
 
   def valid_template_name
@@ -154,17 +121,33 @@ class Listserv < ActiveRecord::Base
     ]
   end
 
-  def internal_list?
-    list_type.eql? 'internal_list'
+  def digest_contents(location_ids)
+    news_category_id = ContentCategory.find_or_create_by(name: 'news').id
+    content_ids = Organization
+      .select('contents.id')
+      .joins('INNER JOIN contents ON organizations.id = contents.organization_id')
+      .joins('INNER JOIN locations ON contents.location_id = locations.id')
+      .where('pubdate IS NOT NULL AND pubdate < NOW() AND pubdate >= ?', digest_date_bound)
+      .where(contents: { root_content_category_id: news_category_id })
+      .where(contents: { location_id: location_ids })
+      .where('contents.id IN (
+        SELECT id
+        FROM contents
+        WHERE organization_id = organizations.id AND pubdate >= ? AND pubdate < NOW() AND pubdate IS NOT NULL
+        ORDER BY view_count DESC LIMIT 3
+      )', digest_date_bound)
+      .order('view_count DESC')
+      .limit(12)
+    Content.where(id: content_ids).order('view_count DESC')
   end
 
-  def custom_digest?
-    list_type.eql?('custom_digest') && digest_query?
-  end
-
-  def contents_from_custom_query
-    custom_ids = custom_digest_results.map { |result| result['id'].to_i }
-    Content.where(id: custom_ids).sort_by { |c| custom_ids.index(c.id) }
+  def digest_date_bound
+    # weekly
+    if digest_send_day?
+      1.week.ago
+    else # daily
+      30.hours.ago
+    end
   end
 
   def promotions
@@ -179,19 +162,15 @@ class Listserv < ActiveRecord::Base
     Time.zone.parse(digest_send_time.strftime('%H:%M'))
   end
 
-  def get_query
-    ActiveRecord::Base.connection.execute(digest_query)
-  end
-
-  def custom_digest_results
-    get_query.to_a
-  end
-
   def mc_group_name_required
     if mc_list_id?
       unless mc_group_name?
         errors.add(:mc_group_name, 'required when mc_list_id present')
       end
     end
+  end
+
+  def locations
+    Location.joins(users: [:subscriptions]).where(subscriptions: { listserv_id: id }).distinct
   end
 end

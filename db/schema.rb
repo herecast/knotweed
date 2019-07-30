@@ -109,7 +109,6 @@ ActiveRecord::Schema.define(version: 20190625124220) do
     t.integer  'listserv_id'
     t.integer  'community_ids', default: [], array: true
     t.string   'sponsored_by'
-    t.text     'digest_query'
     t.datetime 'created_at',                 null: false
     t.datetime 'updated_at',                 null: false
     t.string   'title'
@@ -352,7 +351,6 @@ ActiveRecord::Schema.define(version: 20190625124220) do
 
   create_table 'listservs', id: :bigserial, force: :cascade do |t|
     t.string   'name',                        limit: 255
-    t.string   'reverse_publish_email',       limit: 255
     t.string   'import_name',                 limit: 255
     t.boolean  'active'
     t.datetime 'created_at',                                                                     null: false
@@ -372,13 +370,11 @@ ActiveRecord::Schema.define(version: 20190625124220) do
     t.string   'timezone', default: 'Eastern Time (US & Canada)'
     t.text     'digest_description'
     t.string   'digest_send_day'
-    t.text     'digest_query'
     t.string   'template'
     t.string   'sponsored_by'
     t.boolean  'display_subscribe', default: false
     t.string   'digest_subject'
     t.string   'digest_preheader'
-    t.string   'list_type', default: 'custom_list'
     t.string   'sender_name'
     t.integer  'promotion_ids', default: [], array: true
     t.string   'admin_email'
@@ -642,13 +638,6 @@ ActiveRecord::Schema.define(version: 20190625124220) do
     t.index ['location_id'], name: 'index_promotion_banners_on_location_id'
     t.string "ad_service_id"
     t.index ["ad_service_id"], name: "index_promotion_banners_on_ad_service_id"
-  end
-
-  create_table 'promotion_listservs', id: :bigserial, force: :cascade do |t|
-    t.bigint   'listserv_id'
-    t.datetime 'sent_at'
-    t.datetime 'created_at',  null: false
-    t.datetime 'updated_at',  null: false
   end
 
   create_table 'promotions', id: :bigserial, force: :cascade do |t|

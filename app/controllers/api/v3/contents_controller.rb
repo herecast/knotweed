@@ -39,7 +39,6 @@ module Api
                                        user_scope: current_user)
 
         if @content.valid?
-          promote_to_listservs @content
           rescrape_facebook @content
 
           render json: @content, serializer: ContentSerializer, status: :created
@@ -78,7 +77,6 @@ module Api
                                       user_scope: current_user)
 
         if success
-          promote_to_listservs @content
           rescrape_facebook @content
 
           render json: @content, serializer: ContentSerializer, status: :ok
@@ -108,19 +106,6 @@ module Api
         return true if can? :manage, @content
 
         @content.pubdate.present? && @content.pubdate < Time.current
-      end
-
-      def promote_to_listservs(content)
-        listserv_ids = params[:content][:listserv_ids] || []
-
-        if listserv_ids.any?
-          # reverse publish to specified listservs
-          PromoteContentToListservs.call(
-            content,
-            request.remote_ip,
-            *Listserv.where(id: listserv_ids)
-          )
-        end
       end
 
       def rescrape_facebook(content)

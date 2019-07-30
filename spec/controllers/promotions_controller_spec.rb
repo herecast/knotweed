@@ -137,14 +137,6 @@ describe PromotionsController, type: :controller do
           expect(response.code).to eq '200'
         end
       end
-
-      context 'when PromotionListserv promotable type' do
-        it 'html: responds with 200 status code' do
-          get :new, params: { organization_id: @org.id, promotable_type: 'PromotionListserv', content_id: @content.id }
-          expect(assigns(:promotion).content).to eq @content
-          expect(response.code).to eq '200'
-        end
-      end
     end
 
     context 'when no content present' do

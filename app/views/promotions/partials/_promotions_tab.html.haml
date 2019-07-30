@@ -19,9 +19,5 @@
     new_organization_promotion_path(organization_id: organization.id,
     content_id: content.id, promotable_type: 'PromotionBanner'),
     class: "btn btn-primary"
-  = link_to "+ Create New PromotionListserv", 
-    new_organization_promotion_path(organization_id: organization.id,
-    content_id: content.id, promotable_type: 'PromotionListserv'),
-    class: "btn btn-primary", disabled: !can_be_listserv_promoted(content)
 - if controller_name == 'campaigns' && content.organization.present?
   = link_to "+ Create New Creative", new_organization_promotion_path(organization_id: organization.id, content_id: content.id, promotable_type: 'PromotionBanner'), class: "btn btn-primary"

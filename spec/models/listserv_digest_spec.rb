@@ -125,12 +125,16 @@ RSpec.describe ListservDigest, type: :model do
       subject.listserv = listserv
     end
 
-    it 'returns a google analytics tag with frequecy and date' do
-      expect(subject.ga_tag).to eq "Daily_#{subject.title.tr(' ', '_')}_#{Date.today.strftime('%m_%d_%y')}"
+    context 'when the digest delivers daily' do
+      before { listserv.digest_send_day = nil }
+
+      it 'returns a google analytics tag with frequecy and date' do
+        expect(subject.ga_tag).to eq "Daily_#{subject.title.tr(' ', '_')}_#{Date.today.strftime('%m_%d_%y')}"
+      end
     end
 
     context 'when the digest delivers weekly' do
-      before { subject.listserv.digest_send_day = 'Tuesday' }
+      before { listserv.digest_send_day = 'Tuesday' }
 
       it 'has the correct frequency' do
         expect(subject.ga_tag).to eq "Weekly_#{subject.title.tr(' ', '_')}_#{Date.today.strftime('%m_%d_%y')}"
