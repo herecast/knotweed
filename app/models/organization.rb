@@ -63,25 +63,19 @@ class Organization < ActiveRecord::Base
 
   ransacker :show_news_publishers
 
-  def search_data
-    {
-      name: name,
-      org_type: org_type,
-      biz_feed_active: biz_feed_active,
-      content_category_ids: contents_root_content_category_ids_only.map(&:root_content_category_id).uniq,
-      certified_storyteller: certified_storyteller,
-      certified_social: certified_social,
-      archived: archived,
-      description: description,
-      can_publish_news: can_publish_news
-    }
-  end
-
   scope :search_import, lambda {
     includes(
       :contents_root_content_category_ids_only
     )
   }
+
+  def search_serializer
+    SearchIndexing::OrganizationSerializer
+  end
+
+  def search_data
+    search_serializer.new(self).serializable_hash
+  end
 
   has_many :contents_root_content_category_ids_only,
            -> { select('contents.root_content_category_id, contents.organization_id') },
