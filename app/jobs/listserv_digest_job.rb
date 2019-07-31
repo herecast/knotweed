@@ -26,7 +26,7 @@ class ListservDigestJob < ApplicationJob
         location_digest_contents_count = @listserv.digest_contents(loc_ids_for_query).count
 
         if location_digest_contents_count >= @listserv.post_threshold
-          digest_attrs = digest_attributes(loc_ids_for_query)
+          digest_attrs = digest_attributes(loc_ids_for_query, loc)
 
           if location_campaigns.present? and location_campaigns[loc.id].present?
             campaign = location_campaigns[loc.id]
@@ -57,7 +57,7 @@ class ListservDigestJob < ApplicationJob
 
   private
 
-  def digest_attributes(location_ids)
+  def digest_attributes(location_ids, location)
     {
       listserv: @listserv,
       subject: (@listserv.digest_subject? ? @listserv.digest_subject : "#{@listserv.name} Digest"),
@@ -68,15 +68,15 @@ class ListservDigestJob < ApplicationJob
       promotion_ids: @listserv.promotion_ids,
       title: (@listserv.digest_subject? ? @listserv.digest_subject : "#{@listserv.name} Digest"),
       contents: @listserv.digest_contents(location_ids),
-      subscriptions: subscriptions_for_location(location_ids)
+      subscriptions: subscriptions_for_location(location.id),
+      location: location
     }
   end
 
-  def subscriptions_for_location(location_ids)
+  def subscriptions_for_location(location_id)
     @listserv.subscriptions.joins('INNER JOIN users on subscriptions.user_id = users.id')
-             .where(users: { location_id: location_ids })
-             .where('subscriptions.confirmed_at IS NOT NULL')
-             .where('subscriptions.unsubscribed_at IS NULL')
+             .where(users: { location_id: location_id })
+             .active
   end
 
 end

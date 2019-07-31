@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190625124220) do
+ActiveRecord::Schema.define(version: 20190731083175) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -346,7 +346,9 @@ ActiveRecord::Schema.define(version: 20190625124220) do
     t.integer  'opens_total',      default: 0,  null: false
     t.hstore   'link_clicks',      default: {}, null: false
     t.datetime 'last_mc_report'
+    t.bigint   'location_id'
     t.index ['listserv_id'], name: 'index_listserv_digests_on_listserv_id', using: :btree
+    t.index ["location_id"], name: "index_listserv_digests_on_location_id", using: :btree
   end
 
   create_table 'listservs', id: :bigserial, force: :cascade do |t|

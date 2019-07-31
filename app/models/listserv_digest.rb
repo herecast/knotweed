@@ -4,7 +4,7 @@
 #
 # Table name: listserv_digests
 #
-#  id               :integer          not null, primary key
+#  id               :bigint(8)        not null, primary key
 #  listserv_id      :integer
 #  mc_campaign_id   :string
 #  sent_at          :datetime
@@ -26,18 +26,22 @@
 #  opens_total      :integer          default(0), not null
 #  link_clicks      :hstore           not null
 #  last_mc_report   :datetime
+#  location_id      :bigint(8)
 #
 # Indexes
 #
 #  index_listserv_digests_on_listserv_id  (listserv_id)
+#  index_listserv_digests_on_location_id  (location_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (listserv_id => listservs.id)
+#  fk_rails_...  (location_id => locations.id)
 #
 
 class ListservDigest < ActiveRecord::Base
   belongs_to :listserv
+  belongs_to :location
 
   def contents=(contents)
     self.content_ids = contents.map(&:id)

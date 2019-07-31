@@ -75,12 +75,19 @@ RSpec.describe ListservDigestJob do
     end
 
     context 'with multiple subscribers in multiple locations' do
-      let(:loc1) { FactoryGirl.create :location }
-      let(:loc2) { FactoryGirl.create :location }
-      let!(:sub1) { FactoryGirl.create :subscription, :subscribed, listserv: listserv, user: FactoryGirl.create(:user, location: loc1) }
-      let!(:sub2) { FactoryGirl.create :subscription, :subscribed, listserv: listserv, user: FactoryGirl.create(:user, location: loc2) }
-      let!(:content1) { FactoryGirl.create :content, :news, pubdate: 1.hour.ago, location: loc1 }
-      let!(:content2) { FactoryGirl.create :content, :news, pubdate: 1.hour.ago, location: loc2 }
+      before do
+        @loc1 = FactoryGirl.create :location
+        @loc2 = FactoryGirl.create :location
+        [@loc1, @loc2].each do|loc|
+          loc.location_ids_within_fifty_miles = [@loc1.id, @loc2.id]
+          loc.save!
+        end
+      end
+
+      let!(:sub1) { FactoryGirl.create :subscription, :subscribed, listserv: listserv, user: FactoryGirl.create(:user, location: @loc1) }
+      let!(:sub2) { FactoryGirl.create :subscription, :subscribed, listserv: listserv, user: FactoryGirl.create(:user, location: @loc2) }
+      let!(:content1) { FactoryGirl.create :content, :news, pubdate: 1.hour.ago, location: @loc1 }
+      let!(:content2) { FactoryGirl.create :content, :news, pubdate: 1.hour.ago, location: @loc2 }
 
       it 'should create multiple digests' do
         expect { subject }.to change {
@@ -90,9 +97,9 @@ RSpec.describe ListservDigestJob do
 
       it 'should create digests with the correct subscribers' do
         subject
-        ld1 = ListservDigest.where("content_ids @> ARRAY[?]", content1.id).first
+        ld1 = ListservDigest.find_by(location_id: sub1.user.location_id)
         expect(ld1.subscription_ids).to match_array [sub1.id]
-        ld2 = ListservDigest.where("content_ids @> ARRAY[?]", content2.id).first
+        ld2 = ListservDigest.find_by(location_id: sub2.user.location_id)
         expect(ld2.subscription_ids).to match_array [sub2.id]
       end
     end

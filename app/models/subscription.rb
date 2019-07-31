@@ -49,7 +49,7 @@ class Subscription < ActiveRecord::Base
   before_save :detect_and_connect_user, unless: :user_id?
 
   scope :active, lambda {
-    where('confirmed_at IS NOT NULL').where(unsubscribed_at: nil)
+    where.not(confirmed_at: nil).where(unsubscribed_at: nil)
   }
 
   def self.find(id)
