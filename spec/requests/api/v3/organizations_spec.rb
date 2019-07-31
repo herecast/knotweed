@@ -3,53 +3,51 @@
 require 'spec_helper'
 
 RSpec.describe 'Organizations Endpoints', type: :request do
-  describe 'GET /api/v3/organizations/:id' do
+  describe 'GET /api/v3/organizations/:id', elasticsearch: true do
     let!(:organization) { FactoryGirl.create(:organization) }
     let!(:business_location) { FactoryGirl.create(:business_location) }
 
     it 'responds with organization json' do
       organization.business_locations << business_location
       get "/api/v3/organizations/#{organization.id}"
-      expect(response_json).to match(
-        organization: {
-          id: organization.id,
-          name: organization.name,
-          can_publish_news: organization.can_publish_news,
-          business_profile_id: a_kind_of(Integer).or(be_nil),
-          description: organization.description,
-          org_type: organization.org_type,
-          can_edit: boolean,
-          profile_image_url: organization.profile_image.url,
-          background_image_url: organization.background_image.url,
-          twitter_handle: organization.twitter_handle,
-          claimed: organization.business_locations.first.try(:business_profile).try(:claimed?) || false,
-          custom_links: nil,
-          biz_feed_active: organization.biz_feed_active,
-          phone: organization.business_locations.first.phone,
-          website: organization.business_locations.first.venue_url,
-          hours: organization.business_locations.first.hours,
-          email: organization.business_locations.first.email,
-          address: organization.business_locations.first.address,
-          city: organization.business_locations.first.city,
-          state: organization.business_locations.first.state,
-          zip: organization.business_locations.first.zip,
-          certified_storyteller: organization.certified_storyteller,
-          services: organization.services,
-          contact_card_active: organization.contact_card_active,
-          description_card_active: organization.description_card_active,
-          hours_card_active: organization.hours_card_active,
-          special_link_url: organization.special_link_url,
-          special_link_text: organization.special_link_text,
-          certified_social: organization.certified_social,
-          desktop_image_url: organization.desktop_image_url,
-          calendar_view_first: organization.calendar_view_first,
-          calendar_card_active: organization.calendar_card_active,
-          digest_id: organization.digest_id,
-          active_subscriber_count: organization.active_subscriber_count,
-          post_count: organization.contents.count,
-          total_view_count: organization.contents.sum(:view_count).to_i,
-          user_hide_count: organization.organization_hides.active.count
-        }
+      expect(response_json[:organization]).to include(
+        id: organization.id,
+        name: organization.name,
+        can_publish_news: organization.can_publish_news,
+        business_profile_id: a_kind_of(Integer).or(be_nil),
+        description: organization.description,
+        org_type: organization.org_type,
+        can_edit: boolean,
+        profile_image_url: organization.profile_image.url,
+        background_image_url: organization.background_image.url,
+        twitter_handle: organization.twitter_handle,
+        claimed: organization.business_locations.first.try(:business_profile).try(:claimed?) || false,
+        custom_links: nil,
+        biz_feed_active: organization.biz_feed_active,
+        phone: organization.business_locations.first.phone,
+        website: organization.business_locations.first.venue_url,
+        hours: organization.business_locations.first.hours,
+        email: organization.business_locations.first.email,
+        address: organization.business_locations.first.address,
+        city: organization.business_locations.first.city,
+        state: organization.business_locations.first.state,
+        zip: organization.business_locations.first.zip,
+        certified_storyteller: organization.certified_storyteller,
+        services: organization.services,
+        contact_card_active: organization.contact_card_active,
+        description_card_active: organization.description_card_active,
+        hours_card_active: organization.hours_card_active,
+        special_link_url: organization.special_link_url,
+        special_link_text: organization.special_link_text,
+        certified_social: organization.certified_social,
+        desktop_image_url: organization.desktop_image_url,
+        calendar_view_first: organization.calendar_view_first,
+        calendar_card_active: organization.calendar_card_active,
+        digest_id: organization.digest_id,
+        active_subscriber_count: organization.active_subscriber_count,
+        post_count: organization.contents.count,
+        total_view_count: organization.contents.sum(:view_count).to_i,
+        user_hide_count: organization.organization_hides.active.count
       )
     end
 
@@ -58,14 +56,15 @@ RSpec.describe 'Organizations Endpoints', type: :request do
       before do
         business_profile.content.organization = organization
         business_profile.content.save!
+        organization.reindex
       end
 
       describe 'business_profile_id' do
-        subject { response_json[:organization][:business_profile_id] }
+        subject { get "/api/v3/organizations/#{organization.id}" }
 
         it 'is business_profile.id' do
-          get "/api/v3/organizations/#{organization.id}"
-          expect(subject).to eql business_profile.id
+          subject
+          expect(response_json[:organization][:business_profile_id]).to eql business_profile.id
         end
       end
     end
@@ -85,56 +84,67 @@ RSpec.describe 'Organizations Endpoints', type: :request do
     end
 
     describe 'can_edit' do
-      subject { response_json[:organization][:can_edit] }
+      subject {  }
 
       context 'When ability allows for edit' do
         before do
-          allow_any_instance_of(Ability).to receive(:can?).with(:edit, organization).and_return(true)
-          get "/api/v3/organizations/#{organization.id}"
+          @user = FactoryGirl.create :user
+          @user.add_role(:manager, organization)
+        end
+
+        let(:auth_headers) { auth_headers_for(@user) }
+
+        subject do
+          get "/api/v3/organizations/#{organization.id}",
+            headers: auth_headers
         end
 
         it 'is true' do
-          expect(subject).to eql true
+          subject
+          expect(response_json[:organization][:can_edit]).to eql true
         end
       end
 
       context 'When ability does not allow edit' do
-        before do
-          allow_any_instance_of(Ability).to receive(:can?).with(:edit, organization).and_return(false)
-          get "/api/v3/organizations/#{organization.id}"
-        end
+        subject { get "/api/v3/organizations/#{organization.id}" }
 
         it 'is false' do
-          expect(subject).to eql false
+          subject
+          expect(response_json[:organization][:can_edit]).to eql false
         end
       end
     end
   end
 
-  describe 'GET /api/v3/organizations' do
+  describe 'GET /api/v3/organizations', elasticsearch: :true do
     describe 'can_edit' do
       let!(:organization1) { FactoryGirl.create :organization }
-      subject { response_json[:organizations][0][:can_edit] }
 
       context 'When ability allows for edit' do
         before do
-          allow_any_instance_of(Ability).to receive(:can?).with(:edit, organization1).and_return(true)
-          get "/api/v3/organizations?ids[]=#{organization1.id}"
+          @user = FactoryGirl.create :user
+          @user.add_role(:manager, organization1)
+        end
+
+        let(:auth_headers) { auth_headers_for(@user) }
+
+        subject do
+          get "/api/v3/organizations?ids[]=#{organization1.id}",
+            headers: auth_headers
         end
 
         it 'is true' do
-          expect(subject).to eql true
+          subject
+          expect(response_json[:organizations][0][:can_edit]).to eql true
         end
       end
 
       context 'When ability does not allow edit' do
-        before do
-          allow_any_instance_of(Ability).to receive(:can?).with(:edit, organization1).and_return(false)
-          get "/api/v3/organizations?ids[]=#{organization1.id}"
-        end
+        subject { get "/api/v3/organizations?ids[]=#{organization1.id}" }
 
         it 'is false' do
-          expect(subject).to eql false
+          subject
+          expect(response_json[:organizations][0][:can_edit]).to eql false
         end
       end
     end

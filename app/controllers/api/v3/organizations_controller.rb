@@ -41,9 +41,10 @@ module Api
       def index
         expires_in 1.minute, public: true
         if params[:ids].present?
-          @organizations = Organization.where(id: params[:ids])
+          opts = { load: false, where: { id: params[:ids] } }
+          @organizations = Organization.search('*', opts)
         else
-          @opts = {}
+          @opts = { load: false }
           @opts[:where] = {}
           @opts[:page] = params[:page] || 1
           @opts[:includes] = [:business_locations]
@@ -51,15 +52,20 @@ module Api
           manage_certified_orgs
           query = params[:query].blank? ? '*' : params[:query]
 
-          @organizations = Organization.search query, @opts
+          @organizations = Organization.search(query, @opts)
         end
 
-        render json: @organizations, each_serializer: OrganizationSerializer, context: { current_ability: current_ability }
+        render json: organizations_with_context, status: :ok
       end
 
       def show
-        @organization = Organization.not_archived.find(params[:id])
-        render json: @organization, serializer: OrganizationSerializer, context: { current_ability: current_ability }
+        opts = { load: false, where: { archived: [false, nil], id: params[:id]}}
+        organization = Organization.search('*', opts)[0]
+        if organization.present?
+          render json: { organization: serialized_organization(organization) }, status: :ok
+        else
+          render json: {}, status: :not_found
+        end
       end
 
       protected
@@ -154,6 +160,21 @@ module Api
           # only use organizations associated with news content
           news_cat = ContentCategory.find_by_name 'news'
           @opts[:where][:content_category_ids] = [news_cat.id]
+        end
+      end
+
+      def organizations_with_context
+        @organizations.map do |organization_json|
+          serialized_organization(organization_json)
+        end
+      end
+
+      def serialized_organization(organization_json)
+        organization_json.tap do |attrs|
+          attrs['can_edit'] = current_user&.can_manage_organization?(organization_json['id']) || false
+          attrs.each do |key, value|
+            attrs.delete(key) if key[0] == '_'
+          end
         end
       end
 

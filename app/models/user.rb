@@ -240,6 +240,10 @@ class User < ActiveRecord::Base
     organization_hides.active.pluck(:organization_id)
   end
 
+  def can_manage_organization?(id)
+    roles.where(name: 'manager', resource_type: 'Organization', resource_id: id).present?
+  end
+
   private
 
   def generate_authentication_token

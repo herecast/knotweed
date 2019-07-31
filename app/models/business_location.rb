@@ -78,6 +78,13 @@ class BusinessLocation < ActiveRecord::Base
     end
   end
 
+  after_commit :reindex_organization
+  def reindex_organization
+    if organization.present?
+      organization.reindex
+    end
+  end
+
   after_validation :geocode, if: ->(obj) { obj.address.present? && (obj.saved_change_to_address? || obj.saved_change_to_name? || obj.saved_change_to_locate_include_name?) }
 
   def select_option_label

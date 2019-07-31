@@ -76,6 +76,13 @@ class BusinessProfile < ActiveRecord::Base
   accepts_nested_attributes_for :content
   validates_associated :content
 
+  after_commit :reindex_organization
+  def reindex_organization
+    if content.present? && organization.present?
+      organization.reindex
+    end
+  end
+
   after_destroy do
     if content.present?
       organization.destroy if organization.present? && (organization.contents.count == 0)

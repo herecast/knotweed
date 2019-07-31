@@ -26,7 +26,7 @@ describe Api::V3::OrganizationsController, type: :controller do
 
     it 'only responds with organizations associated with news content' do
       subject
-      expect(assigns(:organizations)).to match_array([@organization, @difft_app_org])
+      expect(assigns(:organizations).map(&:id)).to match_array([@organization.id, @difft_app_org.id])
     end
 
     describe 'with a list of organization ids' do
@@ -43,7 +43,7 @@ describe Api::V3::OrganizationsController, type: :controller do
 
       it 'should respond with the specified organizations' do
         subject
-        expect(assigns(:organizations)).to match_array @list_of_orgs
+        expect(assigns(:organizations).map(&:id)).to match_array @list_of_orgs.map(&:id)
       end
     end
   end
