@@ -48,10 +48,8 @@ def content_response_schema(record)
         state: record.organization&.business_locations&.first&.state,
         active_subscriber_count: record.organization&.active_subscriber_count
       },
-      organization_biz_feed_active: !!record.organization&.biz_feed_active,
       organization_id: record.organization&.id,
       organization_name: record.organization&.name,
-      organization_profile_image_url: record.organization&.profile_image_url,
       parent_content_id: record.parent_id,
       parent_content_type: record.parent.try(:content_type),
       parent_event_instance_id: record.parent.try(:channel).try(:event_instances).try(:first).try(:id),

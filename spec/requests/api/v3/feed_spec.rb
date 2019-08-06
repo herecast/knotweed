@@ -110,7 +110,6 @@ describe 'Feed endpoints', type: :request do
                     }
                   end,
           image_url: content.images[0].url,
-          organization_biz_feed_active: org.biz_feed_active,
           organization: {
             id: org.id,
             name: org.name,
@@ -123,7 +122,6 @@ describe 'Feed endpoints', type: :request do
           },
           organization_id: org.id,
           organization_name: org.name,
-          organization_profile_image_url: org.profile_image_url,
 
           # @TODO: parent fields should be revisited, do we need them?
           parent_content_id: content.parent_id,

@@ -114,8 +114,6 @@ Rails.application.routes.draw do
       get '/event_instances/active_dates', to: 'event_instances/active_dates#index'
       get '/event_instances/sitemap_ids', to: 'event_instances/sitemap_ids#index'
 
-      resources 'event_instances', only: %i[index show]
-
       # deprecated
       post 'events/:id/impressions', to: 'metrics/contents/impressions#create'
 
