@@ -8,7 +8,7 @@ require 'sidekiq-scheduler/web'
 Sidekiq::Web.set :session_secret, Rails.application.secrets[:secret_token]
 Sidekiq::Web.set :sessions, key: '_knotweed_sidekiq'
 
-if Rails.env.production?
+if Rails.env.production? && Figaro.env.app_name == 'Production'
   Sidekiq.configure_server do |config|
     config.on(:startup) do
       Sidekiq.schedule = YAML.load_file(File.expand_path('../../config/job_schedule.yml', __dir__))

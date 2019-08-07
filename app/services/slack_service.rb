@@ -16,7 +16,8 @@ module SlackService
 
   WEBHOOK_URLS = {
     socialmedia: 'https://hooks.slack.com/services/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',
-    newbloggers: 'https://hooks.slack.com/services/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'
+    newbloggers: 'https://hooks.slack.com/services/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',
+    dev_private: 'https://hooks.slack.com/services/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'
   }.freeze
 
   def send_published_content_notification(content)
@@ -72,5 +73,10 @@ module SlackService
       }]
     }.merge(BOTS[:chaco])
     notifier.post(opts)
+  end
+
+  def send_mailchimp_error_message(text)
+    notifier = Slack::Notifier.new(WEBHOOK_URLS[:dev_private])
+    notifier.post(text: text)
   end
 end

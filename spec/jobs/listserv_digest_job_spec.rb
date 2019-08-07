@@ -58,11 +58,9 @@ RSpec.describe ListservDigestJob do
         end
 
         it 'sends digest' do
-          mail = double
-          expect(ListservDigestMailer).to receive(:digest).with(
+          expect(Outreach::ScheduleDigest).to receive(:call).with(
             an_instance_of(ListservDigest)
-            ).and_return(mail)
-          expect(mail).to receive(:deliver_now)
+          )
           subject
         end
 
