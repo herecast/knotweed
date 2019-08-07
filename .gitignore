@@ -35,7 +35,6 @@ db/*.sqlite3
 .sass-cache
 .yardoc/
 /config/config.yml
-/config/database.yml
 /config/*.sphinx.conf
 /coverage.data
 /coverage/
