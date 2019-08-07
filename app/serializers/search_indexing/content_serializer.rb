@@ -51,11 +51,6 @@ module SearchIndexing
       object.created_by.try(:name)
     end
 
-    # do not include split content in index
-    def filter(keys)
-      keys - [:split_content]
-    end
-
     def organization_order_moment
       object.content_type == :event ? object.latest_activity : object.pubdate
     end
