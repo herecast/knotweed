@@ -130,6 +130,7 @@ class Listserv < ActiveRecord::Base
       .where('pubdate IS NOT NULL AND pubdate < NOW() AND pubdate >= ?', digest_date_bound)
       .where(contents: { root_content_category_id: news_category_id })
       .where(contents: { location_id: location_ids })
+      .where(contents: { removed: false })
       .where('contents.id IN (
         SELECT id
         FROM contents
@@ -137,7 +138,7 @@ class Listserv < ActiveRecord::Base
         ORDER BY view_count DESC LIMIT 3
       )', digest_date_bound)
       .order('view_count DESC')
-      .limit(12)
+      .limit(limit)
     Content.where(id: content_ids).order('view_count DESC')
   end
 
@@ -148,6 +149,10 @@ class Listserv < ActiveRecord::Base
     else # daily
       30.hours.ago
     end
+  end
+
+  def limit
+    digest_send_day? ? 10 : 8
   end
 
   def promotions

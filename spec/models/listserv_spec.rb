@@ -231,13 +231,13 @@ describe Listserv, type: :model do
       expect(subject.length).to be 3
     end
 
-    it 'should return max 12 records' do
+    it 'should return max 10 records' do
       FactoryGirl.create_list :content, 15, :news, pubdate: 1.hour.ago, location: location
-      expect(subject.length).to be 12
+      expect(subject.length).to be 10
     end
 
     it 'should return records ordered by view_count' do
-      popular_contents = FactoryGirl.create_list :content, 12, :news, pubdate: 2.hours.ago, view_count: 100, location: location
+      popular_contents = FactoryGirl.create_list :content, 10, :news, pubdate: 2.hours.ago, view_count: 100, location: location
       other_contents = FactoryGirl.create_list :content, 5, :news, pubdate: 1.hour.ago, location: location
       expect(subject).to match_array(popular_contents)
     end
@@ -245,6 +245,11 @@ describe Listserv, type: :model do
     it 'should only include content from the location queried' do
       other_location_content = FactoryGirl.create :content, :news, pubdate: 1.hour.ago, location: FactoryGirl.create(:location)
       expect(subject).to_not include(other_location_content)
+    end
+
+    it 'should not include removed content' do
+      removed_content = FactoryGirl.create :content, :news, organization: org, pubdate: 1.hour.ago, location: location, removed: true
+     expect(subject).to eq []
     end
 
     it 'should only include `news` content' do
