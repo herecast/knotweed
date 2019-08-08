@@ -54,6 +54,8 @@
 #
 
 class Organization < ActiveRecord::Base
+  include Searchable
+
   ORG_TYPE_OPTIONS = %w[Business Publisher Publication Blog].freeze
 
   searchkick callbacks: :async,

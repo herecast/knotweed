@@ -18,10 +18,7 @@ module Api
           FeedItem.new(content)
         end
 
-        render json: FeedContentVanillaSerializer.call(
-          records: @feed_items,
-          opts: { context: { current_ability: current_ability } }
-        ).merge(
+        render json: FeedContentVanillaSerializer.call(@feed_items).merge(
           meta: {
             total: @contents.total_entries,
             total_pages: total_pages

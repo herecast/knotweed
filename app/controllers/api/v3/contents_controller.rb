@@ -15,8 +15,7 @@ module Api
         )
 
         render json: FeedContentVanillaSerializer.call(
-          records: @result_object[:records],
-          opts: { context: { current_ability: current_ability, location_id: params[:location_id] } }
+          @result_object[:records]
         ).merge(
           meta: {
             total: @result_object[:total_entries],
@@ -52,11 +51,12 @@ module Api
       def show
         expires_in 1.minutes, public: true
 
-        @content = Content.find(params[:id])
-        if has_pubdate_in_past_or_can_edit?
-          @content = @content.removed == true ? CreateAlternateContent.call(@content) : @content
-          render json: @content, serializer: ContentSerializer,
-                 context: { current_ability: current_ability }
+        @content = Content.search_by(id: params[:id], user: current_user)
+        if @content.removed == true
+          @content = CreateAlternateContent.call(Content.find(params[:id]))
+          render json: @content, serializer: ContentSerializer, status: :ok
+        elsif has_pubdate_in_past_or_can_edit?
+          render json: { content: @content }, status: :ok
         else
           render json: {}, status: :not_found
         end
@@ -103,7 +103,7 @@ module Api
 
       def has_pubdate_in_past_or_can_edit?
         return false if @content.deleted_at.present?
-        return true if can? :manage, @content
+        return true if @content.can_edit
 
         @content.pubdate.present? && @content.pubdate < Time.current
       end

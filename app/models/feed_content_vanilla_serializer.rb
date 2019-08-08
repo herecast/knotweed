@@ -5,9 +5,8 @@ class FeedContentVanillaSerializer
     new(*args).call
   end
 
-  def initialize(records:, opts:)
-    @records       = records
-    @opts          = opts
+  def initialize(records)
+    @records = records
   end
 
   def call
@@ -32,7 +31,7 @@ class FeedContentVanillaSerializer
 
   def content(raw_content)
     if raw_content.present?
-      Api::V3::HashieMashes::ContentSerializer.new(raw_content, @opts).as_json['content']
+      Api::V3::HashieMashes::ContentSerializer.new(raw_content).as_json['content']
     end
   end
 
@@ -64,7 +63,7 @@ class FeedContentVanillaSerializer
 
   def carousel_contents(raw_contents)
     raw_contents.map do |raw_content|
-      Api::V3::HashieMashes::ContentSerializer.new(raw_content, @opts).as_json['content']
+      Api::V3::HashieMashes::ContentSerializer.new(raw_content).as_json['content']
     end
   end
 end

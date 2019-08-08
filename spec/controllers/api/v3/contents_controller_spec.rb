@@ -8,7 +8,7 @@ describe Api::V3::ContentsController, type: :controller do
     FactoryGirl.create :organization, standard_ugc_org: true
   end
 
-  describe 'GET #show' do
+  describe 'GET #show', elasticsearch: true do
     context 'when content is removed' do
       before do
         @content = FactoryGirl.create :content, :news,

@@ -59,10 +59,9 @@ module Api
       end
 
       def show
-        opts = { load: false, where: { archived: [false, nil], id: params[:id]}}
-        organization = Organization.search('*', opts)[0]
+        organization = Organization.search_by(id: params[:id], user: current_user)
         if organization.present?
-          render json: { organization: serialized_organization(organization) }, status: :ok
+          render json: { organization: organization }, status: :ok
         else
           render json: {}, status: :not_found
         end

@@ -89,7 +89,7 @@ describe 'Contents Endpoints', type: :request do
   let(:user) { FactoryGirl.create :user }
   let(:auth_headers) { auth_headers_for(user) }
 
-  describe 'GET /api/v3/contents/:id' do
+  describe 'GET /api/v3/contents/:id', elasticsearch: true do
     let(:org) { FactoryGirl.create :organization }
     let(:headers) { { 'ACCEPT' => 'application/json' } }
     let(:content) { FactoryGirl.create :content, organization: org }

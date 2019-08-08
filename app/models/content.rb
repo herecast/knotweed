@@ -97,6 +97,7 @@ class Content < ActiveRecord::Base
   extend Enumerize
   include Auditable
   include Incrementable
+  include Searchable
 
   before_create :set_latest_activity
   def set_latest_activity
