@@ -26,6 +26,9 @@ describe 'My Stuff endpoint', type: :request do
         @managed_content = FactoryGirl.create :content, :event,
                                               created_by: user,
                                               organization: managed_org
+        @owned_market = FactoryGirl.create :content, :market_post,
+                                           created_by: user,
+                                           organization: standard_org
       end
 
       context 'when no user logged in' do
@@ -54,8 +57,8 @@ describe 'My Stuff endpoint', type: :request do
 
         it "returns only current user's content" do
           subject
-          expect(response_json[:feed_items].length).to eq 2
-          expect(response_json[:feed_items].map { |c| c[:content][:id] }).to match_array [@owned_content.id, @managed_content.id]
+          expect(response_json[:feed_items].length).to eq 3
+          expect(response_json[:feed_items].map { |c| c[:content][:id] }).to match_array [@owned_content.id, @managed_content.id, @owned_market.id]
         end
 
         describe '?organization_id' do
@@ -64,8 +67,8 @@ describe 'My Stuff endpoint', type: :request do
 
             it 'returns content connected to standard_ugc_org' do
               subject
-              expect(response_json[:feed_items].length).to eq 1
-              expect(response_json[:feed_items][0][:content][:id]).to eq @owned_content.id
+              expect(response_json[:feed_items].length).to eq 2
+              expect(response_json[:feed_items].map { |c| c[:content][:id] }).to match_array [@owned_content.id, @owned_market.id]
             end
           end
 

@@ -286,7 +286,7 @@ describe 'Feed endpoints', type: :request do
 
     context 'market content' do
       let(:do_request) do
-        get '/api/v3/feed', params: {}, headers: headers
+        get '/api/v3/feed?content_type=market', params: {}, headers: headers
       end
 
       subject do
@@ -313,8 +313,8 @@ describe 'Feed endpoints', type: :request do
         get '/api/v3/feed', params: {}, headers: headers
       end
 
-      it 'returns content in standard categories including talk' do
-        expect(response_json[:feed_items].length).to eq 4
+      it 'returns events, news, talk' do
+        expect(response_json[:feed_items].length).to eq 3
       end
     end
 
@@ -328,7 +328,7 @@ describe 'Feed endpoints', type: :request do
 
       it 'does not not return content' do
         subject
-        expect(response_json[:feed_items].length).to eq 4
+        expect(response_json[:feed_items].length).to eq 3
       end
     end
 

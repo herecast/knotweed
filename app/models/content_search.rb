@@ -117,16 +117,21 @@ class ContentSearch
   end
 
   def category_options
-    content_types = %w[news market talk]
-    content_types << 'campaign' if @params[:organization_id].present?
+    content_types = %w[news talk]
+    content_types += %w[market] if should_include_market_posts?
+    content_types += %w[campaign] if @params[:organization_id].present?
     if @params[:calendar] == 'false'
       [{ content_type: content_types }]
     else
-      [
-        { content_type: content_types },
-        { content_type: 'event' }
-      ]
+      [{ content_type: content_types + %w[event] }]
     end
+  end
+
+  def should_include_market_posts?
+    @params[:content_type].present? || \
+      @params[:organization_id].present? || \
+      @params[:query].present? || \
+      @params[:my_stuff] == true
   end
 
   def whitelist_organizations_and_content_types(attrs)

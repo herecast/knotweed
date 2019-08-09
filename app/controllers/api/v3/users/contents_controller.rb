@@ -9,7 +9,7 @@ module Api
         authorize! :manage, User.find(params[:id])
 
         search_opts = ContentSearch.my_stuff_query(
-          params: params
+          params: params.merge(my_stuff: true)
         )
 
         @contents = Content.search(query, search_opts)
