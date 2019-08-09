@@ -137,9 +137,7 @@ class Listserv < ActiveRecord::Base
         WHERE organization_id = organizations.id AND pubdate >= ? AND pubdate < NOW() AND pubdate IS NOT NULL
         ORDER BY view_count DESC LIMIT 3
       )', digest_date_bound)
-      .order('view_count DESC')
-      .limit(limit)
-    Content.where(id: content_ids).order('view_count DESC')
+    Content.where(id: content_ids).order(view_count: :desc).limit(limit)
   end
 
   def digest_date_bound

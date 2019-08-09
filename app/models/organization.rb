@@ -129,7 +129,6 @@ class Organization < ActiveRecord::Base
                 :remove_desktop_image!, raise: false
 
   scope :alphabetical, -> { order('organizations.name ASC') }
-  default_scope { alphabetical }
   scope :get_children, ->(parent_ids) { where(parent_id: parent_ids) }
   scope :descendants_of, lambda { |org_ids|
     children_ids = get_children(org_ids).pluck(:id)
