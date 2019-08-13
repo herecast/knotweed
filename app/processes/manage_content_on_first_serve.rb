@@ -20,6 +20,7 @@ class ManageContentOnFirstServe
         # extra check to avoid race condition
         if content.first_served_at.nil?
           content.update_attribute(:first_served_at, @current_time)
+          content.organization.reindex(:post_count_data)
           conditionally_schedule_outreach(content)
           conditionally_schedule_notification(content)
           if production_messaging_enabled?

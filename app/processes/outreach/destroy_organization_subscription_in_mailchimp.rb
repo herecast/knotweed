@@ -17,6 +17,7 @@ module Outreach
     def call
       mailchimp_organization_segment_delete_member
       @organization_subscription.update_attribute(:deleted_at, Time.current)
+      @organization.reindex(:active_subscriber_count_data)
     end
 
     private

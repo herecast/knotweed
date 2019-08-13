@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
+RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearch: true do
   describe '::call' do
     before do
       @mc_segment_id = 'mc-ndjk21'
@@ -37,6 +37,13 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
       expect { subject }.to change {
         @org_subscription.reload.deleted_at
       }
+    end
+
+    it "calls narrow reindex on Organization" do
+      expect_any_instance_of(Organization).to receive(
+        :reindex
+      ).with(:active_subscriber_count_data)
+      subject
     end
   end
 end

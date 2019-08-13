@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Api::V3::PromotionBannersController, type: :controller do
-  describe 'GET show' do
+  describe 'GET show', elasticsearch: true do
     before do
       @org = FactoryGirl.create :organization
       @content = FactoryGirl.create :content
@@ -192,7 +192,7 @@ describe Api::V3::PromotionBannersController, type: :controller do
     end
   end
 
-  describe 'post track_click' do
+  describe 'post track_click', elasticsearch: true do
     let(:location) { FactoryGirl.create :location }
     before do
       @banner = FactoryGirl.create :promotion_banner

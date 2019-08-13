@@ -79,6 +79,14 @@ class Organization < ActiveRecord::Base
     search_serializer.new(self).serializable_hash
   end
 
+  def post_count_data
+    { post_count: post_count }
+  end
+
+  def active_subscriber_count_data
+    { active_subscriber_count: active_subscriber_count }
+  end
+
   has_many :contents_root_content_category_ids_only,
            -> { select('contents.root_content_category_id, contents.organization_id') },
            primary_key: :id,

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
+RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp, elasticsearch: true do
   describe '::call' do
     before do
       @organization = FactoryGirl.create :organization
@@ -52,6 +52,11 @@ RSpec.describe Outreach::CreateOrganizationSubscriptionInMailchimp do
         'html',
         false
       )
+      subject
+    end
+
+    it "calls for narrow reindex of Organization" do
+      expect_any_instance_of(Organization).to receive(:reindex).exactly(2).times
       subject
     end
 

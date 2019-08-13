@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Content Impressions' do
-  describe 'POST /api/v3/metrics/contents/:id/impressions', inline_jobs: true do
+  describe 'POST /api/v3/metrics/contents/:id/impressions', inline_jobs: true, elasticsearch: true do
     let(:remote_ip) { '1.1.1.1' }
     let(:user_agent) { 'AmigaVoyager/3.4.4 (MorphOS/PPC native)' }
 

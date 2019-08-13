@@ -19,6 +19,7 @@ module Outreach
       conditionally_add_user_to_mailchimp_master_list(@user)
       add_member_to_mailchimp_organization_segment
       conditionally_undelete_org_subscription
+      @organization.reindex(:active_subscriber_count_data)
       true
     end
 

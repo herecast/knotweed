@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RecordContentMetric do
+RSpec.describe RecordContentMetric, elasticsearch: true do
   before do
     @content_category = FactoryGirl.build :content_category, name: 'news'
     @news = FactoryGirl.create :content, content_category_id: @content_category.id
@@ -58,6 +58,11 @@ RSpec.describe RecordContentMetric do
         subject
         expect(@news.reload.content_reports.last.view_count).to eq 1
       end
+
+      it 'calls for minimal reindex' do
+        expect(@news).to receive(:reindex).with(:view_count_data)
+        subject
+      end
     end
 
     context 'with event_type: click' do
@@ -82,6 +87,11 @@ RSpec.describe RecordContentMetric do
       it 'increases report banner click count' do
         subject
         expect(@news.reload.content_reports.last.banner_click_count).to eq 1
+      end
+
+      it 'calls for minimal reindex' do
+        expect(@news).to receive(:reindex).with(:banner_click_count_data)
+        subject
       end
     end
   end

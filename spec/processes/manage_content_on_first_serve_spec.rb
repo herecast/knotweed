@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe ManageContentOnFirstServe do
   RSpec::Matchers.define_negated_matcher :not_change, :change
 
-  describe '::call' do
+  describe '::call', elasticsearch: true do
     before do
       @current_time = Time.current.to_s
     end
@@ -31,6 +31,13 @@ RSpec.describe ManageContentOnFirstServe do
           content_ids: [@content.id],
           current_time: @current_time
         )
+      end
+
+      it "does narrow reindex on owning Organization" do
+        expect_any_instance_of(Organization).to receive(
+          :reindex
+        ).with(:post_count_data)
+        subject
       end
 
       context 'when content has no mc_campaign_id' do

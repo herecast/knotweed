@@ -152,6 +152,14 @@ class Content < ActiveRecord::Base
     search_serializer.new(self).serializable_hash
   end
 
+  def view_count_data
+    { view_count: view_count }
+  end
+
+  def banner_click_count_data
+    { banner_click_count: banner_click_count }
+  end
+
   def should_index?
     deleted_at.blank? && raw_content.present?
   end

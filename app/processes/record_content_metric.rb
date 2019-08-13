@@ -40,9 +40,11 @@ class RecordContentMetric
     when 'impression'
       @report.increment!(:view_count)
       @content.increment!(:view_count)
+      @content.reindex(:view_count_data)
     when 'click'
       @report.increment!(:banner_click_count)
       @content.increment!(:banner_click_count)
+      @content.reindex(:banner_click_count_data)
     end
   end
 end
