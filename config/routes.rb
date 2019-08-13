@@ -185,7 +185,6 @@ Rails.application.routes.draw do
       get '/digests', to: 'digests#index'
       get '/digests/:id', to: 'digests#show'
       get '/features', to: 'features#index'
-      post '/ad_metrics', to: 'promotion_banners#create_ad_metric'
       get '/promotion_coupons/:id', to: 'promotion_banners#show_promotion_coupon'
       post '/promotion_coupons/:id/request_email', to: 'promotion_banners#create_promotion_coupon_email'
 

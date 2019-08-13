@@ -12,21 +12,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190731083175) do
+ActiveRecord::Schema.define(version: 20190812191711) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
   enable_extension 'fuzzystrmatch'
   enable_extension 'hstore'
-
-  create_table 'ad_metrics', force: :cascade do |t|
-    t.string   'campaign'
-    t.string   'event_type'
-    t.string   'page_url'
-    t.string   'content'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-  end
 
   create_table 'business_categories', id: :bigserial, force: :cascade do |t|
     t.string   'name',        limit: 255

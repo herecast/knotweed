@@ -51,16 +51,6 @@ module Api
         end
       end
 
-      def create_ad_metric
-        ad_metric = AdMetric.new(ad_metric_params)
-        if ad_metric.valid?
-          ad_metric.save unless analytics_blocked?
-          render json: {}, status: :ok
-        else
-          render json: {}, status: :bad_request
-        end
-      end
-
       def show_promotion_coupon
         @promotion_coupon = PromotionBanner.find_by(id: params[:id])
         if @promotion_coupon.present? && @promotion_coupon.promotion_type == PromotionBanner::COUPON

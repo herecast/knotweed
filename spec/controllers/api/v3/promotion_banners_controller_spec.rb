@@ -269,47 +269,6 @@ describe Api::V3::PromotionBannersController, type: :controller do
     end
   end
 
-  describe 'POST #create_ad_metric' do
-    context 'when params contain ad_metric' do
-      subject do
-        post :create_ad_metric, params: { ad_metric: {
-          campaign: 'under-laser-cta',
-          event_type: 'click',
-          page_url: 'herecast.us/death-star-adverts',
-          content: 'Want to advertise with the Republic?'
-        } }
-      end
-
-      it 'creates ad_metric' do
-        expect { subject }.to change {
-          AdMetric.count
-        }.by 1
-      end
-
-      context 'for an invalid ad_metric' do # never happens...? but controller includes this scenario, so figured I'd test
-        before { allow_any_instance_of(AdMetric).to receive(:valid?).and_return false }
-
-        it 'should respond with bad_request' do
-          subject
-          expect(response).to have_http_status :bad_request
-        end
-      end
-
-      context 'when user is admin' do
-        before do
-          user = FactoryGirl.create :user, skip_analytics: true
-          api_authenticate user: user
-        end
-
-        it 'does not record metric' do
-          expect { subject }.not_to change {
-            AdMetric.count
-          }
-        end
-      end
-    end
-  end
-
   describe 'GET #show_promotion_coupon' do
     context 'when promotion_banner does not exist' do
       subject { get :show_promotion_coupon, params: { id: '40 billion' } }
