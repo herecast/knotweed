@@ -2,6 +2,6 @@
   = f.error_notification
   .form-column
     = f.input :source
-    = f.input :destination
+    = f.input :destination, label: "Destination: if external, it MUST begin with either https:// or http://"
   .form-actions
     = f.submit class: "btn btn-primary"
