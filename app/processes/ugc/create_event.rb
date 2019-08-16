@@ -16,9 +16,14 @@ module Ugc
       @event = Event.new(event_params)
 
       schedules = @params[:content][:schedules].map { |s| Schedule.build_from_ux_for_event(s) }
-      @event.save_with_schedules(schedules)
-      @event.content.update_attribute(:location_id, @event.closest_location.id)
-      @event.content.set_event_latest_activity
+
+      Searchkick.callbacks(false) do
+        @event.save_with_schedules(schedules)
+        @event.content.update_attribute(:location_id, @event.closest_location.id)
+        @event.content.set_event_latest_activity
+      end
+
+      @event.content.reindex(mode: true)
 
       conditionally_contact_user_and_ad_team
       conditionally_schedule_outreach_email
