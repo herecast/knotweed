@@ -8,7 +8,6 @@
 #  listserv_id   :integer
 #  community_ids :integer          default([]), is an Array
 #  sponsored_by  :string
-#  digest_query  :text
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  title         :string

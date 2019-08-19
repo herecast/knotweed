@@ -4,7 +4,7 @@
 #
 # Table name: payments
 #
-#  id                 :integer          not null, primary key
+#  id                 :bigint(8)        not null, primary key
 #  period_start       :date
 #  period_end         :date
 #  paid_impressions   :integer
@@ -15,8 +15,8 @@
 #  updated_at         :datetime         not null
 #  content_id         :integer
 #  paid_to_id         :integer
-#  paid               :boolean          default(FALSE)
 #  period_ad_rev      :decimal(, )
+#  paid               :boolean          default(FALSE)
 #
 # Indexes
 #

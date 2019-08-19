@@ -4,7 +4,7 @@
 #
 # Table name: listserv_digests
 #
-#  id               :bigint(8)        not null, primary key
+#  id               :integer          not null, primary key
 #  listserv_id      :integer
 #  mc_campaign_id   :string
 #  sent_at          :datetime

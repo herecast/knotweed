@@ -6,7 +6,6 @@
 #
 #  id                          :bigint(8)        not null, primary key
 #  name                        :string(255)
-#  reverse_publish_email       :string(255)
 #  import_name                 :string(255)
 #  active                      :boolean
 #  created_at                  :datetime         not null
@@ -26,13 +25,11 @@
 #  timezone                    :string           default("Eastern Time (US & Canada)")
 #  digest_description          :text
 #  digest_send_day             :string
-#  digest_query                :text
 #  template                    :string
 #  sponsored_by                :string
 #  display_subscribe           :boolean          default(FALSE)
 #  digest_subject              :string
 #  digest_preheader            :string
-#  list_type                   :string           default("custom_list")
 #  sender_name                 :string
 #  promotion_ids               :integer          default([]), is an Array
 #  admin_email                 :string

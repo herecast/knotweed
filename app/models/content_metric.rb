@@ -4,7 +4,7 @@
 #
 # Table name: content_metrics
 #
-#  id                 :integer          not null, primary key
+#  id                 :bigint(8)        not null, primary key
 #  content_id         :integer
 #  event_type         :string
 #  user_id            :integer

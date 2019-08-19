@@ -4,7 +4,7 @@
 #
 # Table name: content_metrics
 #
-#  id                 :integer          not null, primary key
+#  id                 :bigint(8)        not null, primary key
 #  content_id         :integer
 #  event_type         :string
 #  user_id            :integer
@@ -21,6 +21,7 @@
 #
 #  index_content_metrics_on_client_id        (client_id)
 #  index_content_metrics_on_content_id       (content_id)
+#  index_content_metrics_on_created_at       (created_at)
 #  index_content_metrics_on_event_type       (event_type)
 #  index_content_metrics_on_location_id      (location_id)
 #  index_content_metrics_on_organization_id  (organization_id)

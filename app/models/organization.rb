@@ -47,10 +47,12 @@
 #  digest_id                :integer
 #  reminder_campaign_id     :string
 #  mc_segment_id            :string
+#  ad_service_id            :string
 #
 # Indexes
 #
 #  idx_16739_index_publications_on_name  (name) UNIQUE
+#  index_organizations_on_ad_service_id  (ad_service_id)
 #
 
 class Organization < ActiveRecord::Base

@@ -4,7 +4,7 @@
 #
 # Table name: payment_recipients
 #
-#  id              :integer          not null, primary key
+#  id              :bigint(8)        not null, primary key
 #  user_id         :integer
 #  organization_id :integer
 #  created_at      :datetime         not null

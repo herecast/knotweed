@@ -29,10 +29,12 @@
 #  digest_emails          :integer          default(0), not null
 #  digest_metrics_updated :datetime
 #  location_id            :bigint(8)
+#  ad_service_id          :string
 #
 # Indexes
 #
-#  index_promotion_banners_on_location_id  (location_id)
+#  index_promotion_banners_on_ad_service_id  (ad_service_id)
+#  index_promotion_banners_on_location_id    (location_id)
 #
 # Foreign Keys
 #

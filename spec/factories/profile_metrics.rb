@@ -4,7 +4,7 @@
 #
 # Table name: profile_metrics
 #
-#  id                 :integer          not null, primary key
+#  id                 :bigint(8)        not null, primary key
 #  organization_id    :integer
 #  location_id        :integer
 #  user_id            :integer

@@ -66,6 +66,7 @@
 #  alternate_image_url       :string
 #  location_id               :integer
 #  mc_campaign_id            :string
+#  ad_service_id             :string
 #
 # Indexes
 #
@@ -77,12 +78,14 @@
 #  idx_16527_index_contents_on_channel_type              (channel_type)
 #  idx_16527_index_contents_on_channelized_content_id    (channelized_content_id)
 #  idx_16527_index_contents_on_created_by                (created_by_id)
+#  idx_16527_index_contents_on_created_by_id             (created_by_id)
 #  idx_16527_index_contents_on_parent_id                 (parent_id)
 #  idx_16527_index_contents_on_root_content_category_id  (root_content_category_id)
 #  idx_16527_index_contents_on_root_parent_id            (root_parent_id)
 #  idx_16527_pubdate                                     (pubdate)
 #  idx_16527_source_id                                   (organization_id)
 #  idx_16527_title                                       (title)
+#  index_contents_on_ad_service_id                       (ad_service_id)
 #  index_contents_on_location_id                         (location_id)
 #
 # Foreign Keys
