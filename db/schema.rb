@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190812191711) do
+ActiveRecord::Schema.define(version: 20190816181826) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -39,18 +39,6 @@ ActiveRecord::Schema.define(version: 20190812191711) do
   create_table 'business_categories_business_profiles', id: false, force: :cascade do |t|
     t.bigint 'business_category_id'
     t.bigint 'business_profile_id'
-  end
-
-  create_table 'business_feedbacks', id: :bigserial, force: :cascade do |t|
-    t.integer  'created_by_id',       limit: 8
-    t.integer  'updated_by_id',       limit: 8
-    t.integer  'business_profile_id', limit: 8
-    t.boolean  'satisfaction'
-    t.boolean  'cleanliness'
-    t.boolean  'price'
-    t.boolean  'recommend'
-    t.datetime 'created_at',          null: false
-    t.datetime 'updated_at',          null: false
   end
 
   create_table 'business_locations', id: :bigserial, force: :cascade do |t|
@@ -86,11 +74,6 @@ ActiveRecord::Schema.define(version: 20190812191711) do
     t.string   'source',                    limit: 255
     t.string   'source_id',                 limit: 255
     t.float    'existence'
-    t.bigint   'feedback_count',                        default: 0
-    t.float    'feedback_recommend_avg',                default: 0.0
-    t.float    'feedback_price_avg',                    default: 0.0
-    t.float    'feedback_satisfaction_avg',             default: 0.0
-    t.float    'feedback_cleanliness_avg',              default: 0.0
     t.boolean  'archived',                              default: false
     t.index ['existence'], name: 'idx_16451_index_business_profiles_on_existence', using: :btree
     t.index %w[source source_id], name: 'idx_16451_index_business_profiles_on_source_and_source_id', using: :btree

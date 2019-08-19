@@ -4,20 +4,15 @@
 #
 # Table name: business_profiles
 #
-#  id                        :bigint(8)        not null, primary key
-#  business_location_id      :bigint(8)
-#  has_retail_location       :boolean          default(TRUE)
-#  created_at                :datetime         not null
-#  updated_at                :datetime         not null
-#  source                    :string(255)
-#  source_id                 :string(255)
-#  existence                 :float
-#  feedback_count            :bigint(8)        default(0)
-#  feedback_recommend_avg    :float            default(0.0)
-#  feedback_price_avg        :float            default(0.0)
-#  feedback_satisfaction_avg :float            default(0.0)
-#  feedback_cleanliness_avg  :float            default(0.0)
-#  archived                  :boolean          default(FALSE)
+#  id                   :bigint(8)        not null, primary key
+#  business_location_id :bigint(8)
+#  has_retail_location  :boolean          default(TRUE)
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  source               :string(255)
+#  source_id            :string(255)
+#  existence            :float
+#  archived             :boolean          default(FALSE)
 #
 # Indexes
 #
@@ -35,11 +30,6 @@ class BusinessProfile < ActiveRecord::Base
     index = {
       category_names: business_categories.map(&:name),
       category_ids: business_categories.map(&:id),
-      feedback_count: feedback_count,
-      feedback_satisfaction_avg: feedback_satisfaction_avg,
-      feedback_price_avg: feedback_price_avg,
-      feedback_recommend_avg: feedback_recommend_avg,
-      feedback_cleanliness_avg: feedback_cleanliness_avg,
       archived: archived,
       exists: (existence.nil? || (existence >= 0.4))
     }
@@ -100,37 +90,11 @@ class BusinessProfile < ActiveRecord::Base
     reindex(mode: :async)
   end
 
-  has_many :business_feedbacks, dependent: :destroy
-
   def claimed?
     content.present? && organization.present?
   end
 
-  def update_feedback_cache!
-    fb = feedback_calc # cache db call
-    self.feedback_price_avg = fb[:price]
-    self.feedback_recommend_avg = fb[:recommend]
-    self.feedback_satisfaction_avg = fb[:satisfaction]
-    self.feedback_cleanliness_avg = fb[:cleanliness]
-    self.feedback_count = business_feedbacks.size
-    save!(validate: false)
-  end
-
   private
-
-  # returns hash of aggregated feedbacks
-  #
-  # @return [Hash] average feedback values
-  def feedback_calc
-    averages = business_feedbacks.order('').select('AVG(CAST(satisfaction AS INTEGER)) sat, AVG(CAST(cleanliness AS INTEGER)) cle,' \
-                                         'AVG(CAST(price AS INTEGER)) pri, AVG(CAST(recommend AS INTEGER)) rec').first
-    {
-      satisfaction: averages.sat,
-      cleanliness: averages.cle,
-      price: averages.pri,
-      recommend: averages.rec
-    }
-  end
 
   # helper method that standardizes hours strings
   #

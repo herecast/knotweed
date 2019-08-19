@@ -169,9 +169,7 @@ Rails.application.routes.draw do
 
       delete '/content_locations/:id', to: 'content_locations#destroy'
 
-      resources 'business_profiles', only: %i[index show create update], path: 'businesses'
       resources 'business_categories', only: [:index]
-      post '/businesses/:id/feedback', to: 'business_feedbacks#create', as: :leave_feedback
       post '/emails', to: 'emails#create'
       get '/subscriptions', to: 'subscriptions#index'
       get '/subscriptions/:key', to: 'subscriptions#show'
@@ -181,7 +179,6 @@ Rails.application.routes.draw do
       delete 'subscriptions/:key', to: 'subscriptions#destroy'
       delete 'subscriptions/:listserv_id/:email', to: 'subscriptions#destroy'
 
-      put '/businesses/:id/feedback', to: 'business_feedbacks#update', as: :update_feedback
       get '/digests', to: 'digests#index'
       get '/digests/:id', to: 'digests#show'
       get '/features', to: 'features#index'
