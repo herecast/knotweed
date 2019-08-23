@@ -11,14 +11,12 @@
 #  raw_content               :text
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
-#  guid                      :string(255)
 #  pubdate                   :datetime
 #  url                       :string(255)
 #  origin                    :string(255)
 #  page                      :string(255)
 #  authoremail               :string(255)
 #  organization_id           :bigint(8)
-#  quarantine                :boolean          default(FALSE)
 #  timestamp                 :datetime
 #  parent_id                 :bigint(8)
 #  content_category_id       :bigint(8)
@@ -72,7 +70,6 @@
 #
 #  idx_16527_authors                                     (authors)
 #  idx_16527_content_category_id                         (content_category_id)
-#  idx_16527_guid                                        (guid)
 #  idx_16527_index_contents_on_authoremail               (authoremail)
 #  idx_16527_index_contents_on_channel_id                (channel_id)
 #  idx_16527_index_contents_on_channel_type              (channel_type)

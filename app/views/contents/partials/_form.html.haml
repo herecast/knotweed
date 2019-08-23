@@ -50,13 +50,6 @@
               .span12
                 = f.association :organization, input_html: { class: "chosen-select span12" }, 
                   label: "Organization"
-          .span3
-            - if @content.id.present?
-              %dl
-                %dt Quarantined?
-                %dd
-                  - if @content.quarantine
-                    %i.icon-ok
         = f.association :organizations, label: 'Tagged Organizations', input_html: { class: 'chosen-select input-block-level' }
         = f.input :title, input_html: { class: "input-block-level" }
         = f.input :subtitle, input_html: { class: "input-block-level" }

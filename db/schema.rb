@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190816181826) do
+ActiveRecord::Schema.define(version: 20190821172351) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -158,14 +158,12 @@ ActiveRecord::Schema.define(version: 20190816181826) do
     t.text     'raw_content'
     t.datetime 'created_at',                                            null: false
     t.datetime 'updated_at',                                            null: false
-    t.string   'guid', limit: 255
     t.datetime 'pubdate'
     t.string   'url',                       limit: 255
     t.string   'origin',                    limit: 255
     t.string   'page',                      limit: 255
     t.string   'authoremail',               limit: 255
     t.bigint   'organization_id'
-    t.boolean  'quarantine', default: false
     t.datetime 'timestamp'
     t.bigint   'parent_id'
     t.bigint   'content_category_id'
@@ -223,7 +221,6 @@ ActiveRecord::Schema.define(version: 20190816181826) do
     t.index ['channelized_content_id'], name: 'idx_16527_index_contents_on_channelized_content_id', using: :btree
     t.index ['content_category_id'], name: 'idx_16527_content_category_id', using: :btree
     t.index ['created_by_id'], name: 'idx_16527_index_contents_on_created_by_id', using: :btree
-    t.index ['guid'], name: 'idx_16527_guid', using: :btree
     t.index ['organization_id'], name: 'idx_16527_source_id', using: :btree
     t.index ['parent_id'], name: 'idx_16527_index_contents_on_parent_id', using: :btree
     t.index ['pubdate'], name: 'idx_16527_pubdate', using: :btree

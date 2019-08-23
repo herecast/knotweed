@@ -11,14 +11,12 @@
 #  raw_content               :text
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
-#  guid                      :string(255)
 #  pubdate                   :datetime
 #  url                       :string(255)
 #  origin                    :string(255)
 #  page                      :string(255)
 #  authoremail               :string(255)
 #  organization_id           :bigint(8)
-#  quarantine                :boolean          default(FALSE)
 #  timestamp                 :datetime
 #  parent_id                 :bigint(8)
 #  content_category_id       :bigint(8)
@@ -72,7 +70,6 @@
 #
 #  idx_16527_authors                                     (authors)
 #  idx_16527_content_category_id                         (content_category_id)
-#  idx_16527_guid                                        (guid)
 #  idx_16527_index_contents_on_authoremail               (authoremail)
 #  idx_16527_index_contents_on_channel_id                (channel_id)
 #  idx_16527_index_contents_on_channel_type              (channel_type)
@@ -212,7 +209,6 @@ class Content < ActiveRecord::Base
 
   # mapping to content record that represents the channelized content
   belongs_to :channelized_content, class_name: 'Content'
-  has_one :unchannelized_original, class_name: 'Content', foreign_key: 'channelized_content_id'
   has_one :sales_agent, class_name: 'User', primary_key: 'ad_sales_agent', foreign_key: 'id'
   has_one :promoter, class_name: 'User', primary_key: 'ad_promoter', foreign_key: 'id'
 
@@ -222,10 +218,6 @@ class Content < ActiveRecord::Base
   validates_presence_of :raw_content, :title, if: :is_event?
   validates_presence_of :raw_content, :title, if: :is_market_post?
   validates_presence_of :organization_id, :title, :ad_promotion_type, :ad_campaign_start, :ad_campaign_end, if: :is_campaign?
-
-  # check if it should be marked quarantined
-  before_save :mark_quarantined
-  before_save :set_guid
 
   # this has to be after save to accomodate the situation
   # where we are creating new content with no parent
@@ -249,17 +241,6 @@ class Content < ActiveRecord::Base
                                                   'event', 'sale_event')
                  }
   scope :market_posts, -> { where(channel_type: 'MarketPost') }
-
-  scope :if_event_only_when_instances, lambda {
-    where("(CASE #{table_name}.channel_type WHEN 'Event' THEN
-              (select count(*)
-               from event_instances ei
-               join events e on ei.event_id = e.id
-               where e.id = #{table_name}.channel_id)
-              ELSE
-                1
-              END) > 0")
-  }
 
   scope :not_deleted, -> { where(deleted_at: nil) }
   scope :not_removed, -> { where(removed: false) }
@@ -344,31 +325,6 @@ class Content < ActiveRecord::Base
     self.category = cat_name if cat_name != content_type.to_s
   end
 
-  # check that doc validates our xml requirements
-  # if not, mark it as quarantined
-  def mark_quarantined
-    if title.present? && organization.present? && pubdate.present? && strip_tags(sanitized_content).present?
-      self.quarantine = false
-    else
-      self.quarantine = true
-    end
-    true
-  end
-
-  # if guid is empty, set with our own
-  def set_guid
-    unless guid.present?
-      self.guid = ''
-      guid << if title.present?
-                title.tr(' ', '_').tr('/', '-')
-              else
-                "#{rand(10_000)}-#{rand(10_000)}"
-                   end
-      guid << '-' << pubdate.strftime('%Y-%m-%d') if pubdate.present?
-      self.guid = CGI.escape guid
-    end
-  end
-
   def set_root_content_category_id
     self.root_content_category = if content_category.present?
                                    content_category.parent || content_category
@@ -406,106 +362,6 @@ class Content < ActiveRecord::Base
     else
       self
     end
-  end
-
-  # return ordered hash of downstream thread
-  def get_downstream_thread
-    if children.present?
-      children_hash = {}
-      children.each do |c|
-        children_hash[c.id] = c.get_downstream_thread
-      end
-      children_hash
-    end
-  end
-
-  # return thread of comment-type objects associated with self
-  # NOTE: for simplicity, I'm ignoring tiers of comments here. We'll still return them...
-  # but until told otherwise, this is the way we're doing it because it's much easier.
-  def get_comment_thread(tier = 0)
-    if children.present?
-      comments = []
-      children.order('pubdate ASC').each do |c|
-        next unless c.channel_type == 'Comment'
-
-        c.tier = tier
-        comments += [c]
-        comments += c.get_comment_thread(tier + 1)
-      end
-      comments
-    else
-      []
-    end
-  end
-
-  ################
-  # Not currently used.  Maybe in the future? if not, then remove
-  #   def get_ordered_downstream_thread(tier=0)
-  #     downstream_thread = []
-  #     if children.present?
-  #       children.each do |c|
-  #         downstream_thread << [c.id, tier+1]
-  #         children2 = c.get_ordered_downstream_thread(tier+1)
-  #         downstream_thread += children2 if children2.present?
-  #       end
-  #     end
-  #     if downstream_thread.empty?
-  #       nil
-  #     else
-  #       downstream_thread
-  #     end
-  #   end
-
-  # used for the DSP to determine whether there is a promotion banner
-  def has_active_promotion?
-    PromotionBanner.for_content(id).active.count > 0
-  end
-
-  def has_active_promotion
-    has_active_promotion?
-  end
-
-  def has_paid_promotion?
-    PromotionBanner.for_content(id).paid.count > 0
-  end
-
-  def has_paid_promotion
-    has_paid_promotion?
-  end
-
-  def has_promotion_inventory?
-    PromotionBanner.for_content(id).has_inventory.count > 0
-  end
-
-  def has_promotion_inventory
-    has_promotion_inventory?
-  end
-
-  # cleans raw_content for text emails
-  #
-  # @return string with HTML tags and escaped spaces (&nbsp;) removed and hyperlinks changed to text surrounded by ()
-  def raw_content_for_text_email
-    return raw_content if raw_content.nil?
-
-    # strip HTML comments. meta, style and cdata tags (this is where Microsoft puts a whole bunch of crud that
-    # users cut and paste)
-    #
-    # Test data:
-    #
-    # 20150923 test content IDS: 784073 784727 784766 784934 786634 787513 788246 788798 788801 791517 792174 793240
-    #                            793719 793994
-    # MySQL query: SELECT * FROM contents WHERE DATE(pubdate) > DATE("2015-08-01") AND raw_content LIKE "%gte mso 9%" AND channel_type IS NOT NULL;
-    doc = Nokogiri::HTML.fragment(CGI.unescapeHTML(raw_content))
-    doc.traverse do |node|
-      node.remove if %w[comment meta style #cdata-section].include? node.name
-    end
-    clean_content = doc.to_html
-
-    # strip all tags but <p>, <br> and <a> and their href attributes and clean up &nbsp; and &amp;
-    text = sanitize(clean_content, tags: %w[a p br], attributes: %w[href]).gsub(/&nbsp;/, ' ').gsub(/&amp;/, '&')
-
-    # now convert all the p and br tags to newlines, then squeeze big sets (>3) of contiguous newlines down to just two.
-    text = text.gsub(%r{\</p\>\<p\>}, "\n").gsub(/\<p\>/, "\n").gsub(/\<br\>/, ' ').gsub(%r{\</p\>}, "\n").squeeze("\n") # .gsub(/^\n{2,}/m,"\n\n") #.squeeze("\n")
   end
 
   # Creates sanitized version of title - at this point, just stripping out listerv towns
@@ -572,10 +428,6 @@ class Content < ActiveRecord::Base
     CGI.escape(BASE_URI + "/#{id}")
   end
 
-  def is_sponsored_content?
-    content_category.name == 'sponsored_content'
-  end
-
   def increment_view_count!
     # check if content is published before incrementing
     if pubdate.present? && (pubdate <= Time.now)
@@ -584,34 +436,6 @@ class Content < ActiveRecord::Base
       end
     end
   end
-
-  # returns the URI path that matches UX2 for this content record
-  def ux2_uri
-    return '' unless root_content_category.present?
-
-    prefix = root_content_category.try(:name)
-    # convert talk_of_the_town to talk
-    prefix = 'talk' if prefix == 'talk_of_the_town'
-    "/#{prefix}/#{id}"
-  end
-
-  # boolean represents whether the record has associated metrics reports
-  def has_metrics_reports?
-    content_reports.present?
-  end
-
-  # draft management methods
-  #
-  # contents can have three states:
-  # -- draft: saved, but not published to DSP and not returned in any API responses
-  #           except dashborad)
-  # -- scheduled: saved, pubdate in the future, published to the DSP, but not returned
-  #           in API responses except dashboard *until* Time.current > pubdate
-  # -- published: normal published state. Exists in DSP, returned in API responses.
-  #
-  # there's the potential to implement this with a state_machine gem in the future,
-  # especially if it gets more complex. For now, we're just emulating that behavior
-  # as minimally as possible.
 
   # typically returns author information by checking `created_by` if available
   # or falling back to `authors` otherwise. For UGC News content, we reverse the conditional.

@@ -11,14 +11,12 @@
 #  raw_content               :text
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
-#  guid                      :string(255)
 #  pubdate                   :datetime
 #  url                       :string(255)
 #  origin                    :string(255)
 #  page                      :string(255)
 #  authoremail               :string(255)
 #  organization_id           :bigint(8)
-#  quarantine                :boolean          default(FALSE)
 #  timestamp                 :datetime
 #  parent_id                 :bigint(8)
 #  content_category_id       :bigint(8)
@@ -72,7 +70,6 @@
 #
 #  idx_16527_authors                                     (authors)
 #  idx_16527_content_category_id                         (content_category_id)
-#  idx_16527_guid                                        (guid)
 #  idx_16527_index_contents_on_authoremail               (authoremail)
 #  idx_16527_index_contents_on_channel_id                (channel_id)
 #  idx_16527_index_contents_on_channel_type              (channel_type)
@@ -147,106 +144,6 @@ describe Content, type: :model do
     end
   end
 
-  describe 'get_downstream_thread' do
-    it 'should return nil for contents without children' do
-      c = FactoryGirl.create(:content)
-      expect(c.get_downstream_thread).to eq(nil)
-    end
-
-    it 'should return a hash representing the full thread below the content' do
-      c1 = FactoryGirl.create(:content)
-      c2 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
-      c3 = FactoryGirl.create(:content, organization: c1.organization, parent: c1)
-      c4 = FactoryGirl.create(:content, organization: c1.organization, parent: c3)
-      expect(c1.get_downstream_thread).to eq(
-        c2.id => nil, c3.id => {
-          c4.id => nil
-        }
-      )
-    end
-  end
-
-  describe 'mark_quarantined' do
-    before do
-      @content = FactoryGirl.create(:content)
-    end
-
-    it 'should leave valid content unquarantined' do
-      expect(@content.quarantine).to eq(false)
-    end
-
-    it 'should mark it quarantined if sanitized_content is empty' do
-      @content.raw_content = '<br/>'
-      @content.save
-      @content.reload
-      expect(@content.quarantine).to eq(true)
-    end
-  end
-
-  describe 'set guid if not present' do
-    it 'should set the guid of new content that has none' do
-      content = FactoryGirl.create(:content)
-      expect(content.guid).to eq("#{content.title.tr(' ', '_').tr('/', '-')}-#{content.pubdate.strftime('%Y-%m-%d')}")
-    end
-    it 'should not overwrite the guid of new content that has a guid' do
-      content = FactoryGirl.create(:content, guid: 'Test-Guid')
-      expect(content.guid).to eq('Test-Guid')
-    end
-  end
-
-  describe 'has_active_promotion?' do
-    let(:content) { FactoryGirl.create(:content) }
-
-    it 'should return false if there are no promotions' do
-      expect(content.has_active_promotion?).to eq(false)
-    end
-
-    it 'should return false if there is a promotion banner but it is inactive' do
-      FactoryGirl.create :promotion_banner, :inactive, content: content
-      expect(content.has_active_promotion?).to eq(false)
-    end
-
-    it 'should return true if there is an active promotion banner attached' do
-      FactoryGirl.create :promotion_banner, :active, content: content
-      expect(content.has_active_promotion?).to eq(true)
-    end
-  end
-
-  describe '#has_promotion_inventory?' do
-    let(:content) { FactoryGirl.create(:content) }
-    subject { content.has_promotion_inventory? }
-
-    context 'when related promotion banners have inventory' do
-      before do
-        FactoryGirl.create :promotion_banner, impression_count: 100, content: content
-      end
-      it 'returns true' do
-        expect(subject).to be_truthy
-      end
-    end
-  end
-
-  describe '#has_active_promotion' do
-    it 'is an alias for #has_active_promotion?' do
-      expect(subject).to receive(:has_active_promotion?)
-      subject.has_active_promotion
-    end
-  end
-
-  describe '#has_paid_promotion' do
-    it 'is an alias for #has_paid_promotion?' do
-      expect(subject).to receive(:has_paid_promotion?)
-      subject.has_paid_promotion
-    end
-  end
-
-  describe '#has_promotion_inventory' do
-    it 'is an alias for #has_promotion_inventory?' do
-      expect(subject).to receive(:has_promotion_inventory?)
-      subject.has_promotion_inventory
-    end
-  end
-
   describe 'category' do
     before do
       @cat = FactoryGirl.create :content_category
@@ -255,50 +152,6 @@ describe Content, type: :model do
 
     it 'should return the name of the attached content category' do
       expect(@content.category).to eq(@cat.name)
-    end
-  end
-
-  describe 'get_comment_thread' do
-    before do
-      @root = FactoryGirl.create :content
-    end
-
-    subject { @root.get_comment_thread }
-
-    it 'should return an empty list if content has no children' do
-      expect(subject).to eq([])
-    end
-
-    it 'should not include any children that are not comment channel' do
-      FactoryGirl.create :content, parent_id: @root.id
-      expect(subject).to eq([])
-    end
-
-    it 'should return content with the transient attribute "tier" set' do
-      tier0 = FactoryGirl.create :comment
-      tier0.content.update_attribute :parent_id, @root.id
-      expect(subject).to eq([tier0.content])
-      expect(subject[0].tier).to eq(0)
-    end
-
-    it 'correctly assigns tiers to the whole tree' do
-      tier0 = FactoryGirl.create :comment
-      tier0.content.update_attribute :parent_id, @root.id
-      tier0_2 = FactoryGirl.create :comment
-      tier0_2.content.update_attribute :parent_id, @root.id
-      tier1 = FactoryGirl.create :comment
-      tier1.content.update_attribute :parent_id, tier0.content.id
-      tier2 = FactoryGirl.create :comment
-      tier2.content.update_attribute :parent_id, tier1.content.id
-      expect(subject.count).to eq(4)
-      tier_counts = []
-      subject.each do |com|
-        tier_counts[com.tier] ||= 0
-        tier_counts[com.tier] += 1
-      end
-      expect(tier_counts[0]).to eq(2)
-      expect(tier_counts[1]).to eq(1)
-      expect(tier_counts[2]).to eq(1)
     end
   end
 
@@ -443,44 +296,6 @@ describe Content, type: :model do
     end
   end
 
-  describe '.if_event_only_when_instances scope;' do
-    subject { Content.if_event_only_when_instances.to_a }
-
-    context 'when event exists with instances' do
-      let!(:event) { FactoryGirl.create :event }
-
-      it 'includes the event content' do
-        expect(subject).to include(event.content)
-      end
-    end
-
-    context 'When event exists containing no instances' do
-      let!(:event_no_instances) { FactoryGirl.create :event, skip_event_instance: true }
-
-      it 'does not include the event content' do
-        expect(subject).to_not include(event_no_instances.content)
-      end
-    end
-
-    context 'When non-event content exists' do
-      let!(:other_content) { FactoryGirl.create :content }
-
-      it 'includes content' do
-        expect(subject).to include(other_content)
-      end
-    end
-
-    context 'When mixed event ( with no instances ), and other content exist' do
-      let!(:event_no_instances) { FactoryGirl.create :event, skip_event_instance: true }
-      let!(:other_content) { FactoryGirl.create :content }
-
-      it 'includes other content, but not events with no instances' do
-        expect(subject).to include(other_content)
-        expect(subject).to_not include(event_no_instances)
-      end
-    end
-  end
-
   describe 'similar_content', elasticsearch: true do
     let!(:content) { FactoryGirl.create :content }
     let(:sim_attributes) do
@@ -559,29 +374,6 @@ describe Content, type: :model do
     it 'should automatically strip the title attribute' do
       c = FactoryGirl.create :content, title: '   This has Whitespace at Beginning And End  '
       expect(c.title).to eq c.title.strip
-    end
-  end
-
-  describe '#ux2_uri' do
-    context 'No root content category' do
-      before do
-        subject.root_content_category = nil
-      end
-
-      it 'is ""' do
-        expect(subject.ux2_uri).to eql ''
-      end
-    end
-
-    context 'root content category' do
-      let(:category) { FactoryGirl.create :content_category }
-      before do
-        subject.root_content_category = category
-      end
-
-      it 'is "/{root_content_category.name}/{id}"' do
-        expect(subject.ux2_uri).to eql "/#{category.name}/#{subject.id}"
-      end
     end
   end
 
