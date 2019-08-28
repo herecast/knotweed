@@ -24,6 +24,9 @@
         %li
           = link_to "#", class: "green-border", data: { toggle: "tab", target: "#managers" } do
             Managers
+      %li
+        = link_to "#", class: "green-border", data: { toggle: "tab", target: "#reports" } do
+          Reports
     .tab-content
       .tab-pane.active.form-horizontal#details
         .row-fluid
@@ -144,6 +147,7 @@
           .span6
             = f.input :ad_contact_nickname, label: 'Contact Nickname'
             = f.input :ad_contact_fullname, label: 'Contact Fullname'
+            = f.input :ad_contact_email, label: 'Contact Email'
       - if @organization.id
         .tab-pane#managers
           .row-fluid
@@ -170,7 +174,16 @@
           .row-fluid
             = render partial: 'users/partials/search_form',
               locals: { search_type: 'organization', managed_id: @organization.id }
-
+      .tab-pane#reports
+        .row-fluid
+          .span6
+            %h2 External Advertiser Reports
+            - if @organization.external_advertiser_reports.empty?
+              No advertising reports for this Organization
+            - else
+              - @organization.external_advertiser_reports.each do |report|
+                = link_to report.title, report.pdf_url
+                %br
 
       .form-actions
         = submit_tag 'Submit and continue with this record', class: 'btn btn-success', name: 'continue_editing'

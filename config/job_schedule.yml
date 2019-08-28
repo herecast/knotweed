@@ -18,3 +18,7 @@ reindex_events:
   cron: "0 1 * * *"
   class: "ReindexEventsWithFutureInstances"
   description: "Reindex events for next instance"
+send_external_advertiser_reports:
+  cron: "0 7 * * 2"
+  class: "SendExternalAdvertiserReportsJob"
+  description: "Send weekly advertiser reports"

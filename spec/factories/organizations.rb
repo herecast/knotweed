@@ -48,6 +48,7 @@
 #  reminder_campaign_id     :string
 #  mc_segment_id            :string
 #  ad_service_id            :string
+#  ad_contact_email         :string
 #
 # Indexes
 #

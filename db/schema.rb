@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190821172351) do
+ActiveRecord::Schema.define(version: 20190827201424) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -269,6 +269,15 @@ ActiveRecord::Schema.define(version: 20190821172351) do
     t.index ['venue_id'], name: 'idx_16615_index_events_on_venue_id', using: :btree
   end
 
+  create_table 'external_advertiser_reports', force: :cascade do |t|
+    t.string   'title'
+    t.string   'pdf'
+    t.bigint   'organization_id'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['organization_id'], name: 'index_external_advertiser_reports_on_organization_id', using: :btree
+  end
+
   create_table 'features', force: :cascade do |t|
     t.string   'name'
     t.text     'description'
@@ -493,6 +502,7 @@ ActiveRecord::Schema.define(version: 20190821172351) do
     t.integer  'digest_id'
     t.string   'reminder_campaign_id'
     t.string   'mc_segment_id'
+    t.string   'ad_contact_email'
     t.string "ad_service_id"
     t.index ["ad_service_id"], name: "index_organizations_on_ad_service_id"
     t.index ['name'], name: 'idx_16739_index_publications_on_name', unique: true, using: :btree

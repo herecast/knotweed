@@ -48,6 +48,7 @@
 #  reminder_campaign_id     :string
 #  mc_segment_id            :string
 #  ad_service_id            :string
+#  ad_contact_email         :string
 #
 # Indexes
 #
@@ -120,12 +121,7 @@ class Organization < ActiveRecord::Base
   has_many :organization_locations
   accepts_nested_attributes_for :organization_locations, allow_destroy: true
   has_many :locations, through: :organization_locations
-  has_many :base_locations, -> { where('"organization_locations"."location_type" = \'base\'') },
-           through: :organization_locations, source: :location
-  has_many :consumer_active_base_locations, lambda {
-    where('"organization_locations"."location_type" = \'base\' and consumer_active = true')
-  },
-           through: :organization_locations, source: :location
+  has_many :external_advertiser_reports
 
   after_commit :trigger_content_reindex_if_name_or_profile_image_changed!, on: :update
 
@@ -170,15 +166,6 @@ class Organization < ActiveRecord::Base
 
   def promotions
     Promotion.where('content_id IN (select id from contents where contents.organization_id = ?)', id)
-  end
-
-  def base_locations=(locs)
-    locs.each do |l|
-      OrganizationLocation.find_or_initialize_by(
-        organization: self,
-        location: l
-      ).base!
-    end
   end
 
   # returns an array of all organization records descended from this one

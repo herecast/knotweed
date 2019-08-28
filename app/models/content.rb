@@ -255,6 +255,17 @@ class Content < ActiveRecord::Base
                                  .where('ad_campaign_end >= ?', date)
                              }
 
+  scope :ad_campaigns_for_reports, -> {
+    where(content_category_id: ContentCategory.find_or_create_by(name: 'campaign').id)
+      .where("(ad_campaign_start >= :window_start AND ad_campaign_start < :window_end) OR
+          (ad_campaign_end >= :window_start AND ad_campaign_end < :window_end) OR
+          (ad_campaign_start <= :window_start AND ad_campaign_end >= :window_end)",
+        window_start: 8.days.ago,
+        window_end: Date.current)
+      .includes(:promotions)
+      .where.not(promotions: { id: nil })
+  }
+
   UGC_ORIGIN = 'UGC'
 
   UGC_PROCESSES = {

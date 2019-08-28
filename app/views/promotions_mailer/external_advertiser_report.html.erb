@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head></head>
+<body>
+  <p>Hi <%= @organization.ad_contact_nickname %>,</p>
+
+  <p>Below is your advertiser report as of <%= Date.current.strftime(' %B %e, %Y') %>. Please let us know if you have any questions - you can reach us at
+  <a href="mailto:ads@herecast.us">ads@HereCast.us</a>.</p>
+
+  <p>Thank you!<br>Aileen</p>
+
+  <% @campaigns.each do |campaign| %>
+    <% promotions_packet = Promotions::GatherMetrics.call(campaign) %>
+    <% impressions_to_date = promotions_packet.reduce(0) { |sum, promotion_hash| sum += promotion_hash[:impression_count] } %>
+
+    <div style="border: 1px solid black; display: inline-block;">
+      <table style="border-collapse: collapse;">
+        <tr style="border-bottom: 1px solid black;">
+          <td style="padding: 0 5px;">
+            <%= @organization.name %> - <%= campaign.title %>
+          </td>
+
+          <td style="padding: 0;">
+            <div style="border-left: 1px solid black; border-bottom: 1px solid black; padding: 0 50px;">
+              Ad Buy To-Date
+            </div>
+
+            <div style="display: flex; width: 100%; display: -webkit-box; display: -webkit-flex;">
+              <div style="text-align: center; width: 50%; border-left: 1px solid black;">
+                Impressions
+              </div>
+
+              <div style="text-align: center; width: 50%; border-left: 1px solid black;">
+                Clicks
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <% promotions_packet.each do |promotion_hash| %>
+          <% promotion = Promotion.find(promotion_hash[:id]) %>
+          <tr style="padding: 0 15px; border-bottom: 1px solid black;">
+            <td style="border-right: 1px solid black; padding: 0 5px;">
+              <span>
+                <%= "#{promotion.description} (#{promotion.promotable.campaign_start.strftime('%m/%d/%y')} - #{promotion.promotable.campaign_end.strftime('%m/%d/%y')})" %>
+              </span>
+            </td>
+
+            <td style="padding: 0;">
+              <div style="display: flex; display: -webkit-box; display: -webkit-flex;">
+                <div style="width: 50%; text-align: right; border-right: 1px solid black;">
+                  <%= promotion_hash[:impression_count] %>&nbsp;&nbsp;
+                </div>
+
+                <div style="width: 50%; text-align: right;">
+                  <%= promotion_hash[:click_count] %>&nbsp;&nbsp;
+                </div>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+
+        <tr>
+          <td style="text-align: right; border-right: 1px solid black; padding: 5px; padding: 0 5px 0 0;">
+            <strong>Totals</strong>
+          </td>
+
+          <td style="padding: 0;">
+            <div style="display: flex; display: -webkit-box; display: -webkit-flex;">
+              <div style="width: 50%; text-align: right; border-right: 1px solid black;">
+                <strong><%= impressions_to_date %></strong>&nbsp;&nbsp;
+              </div>
+
+              <div style="width: 50%; text-align: right;">
+                <strong><%= promotions_packet.reduce(0) { |sum, promotion_hash| sum += promotion_hash[:click_count] } %></strong>&nbsp;&nbsp;
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div>
+      <p style="margin: 0 0 25px 0;">
+        <strong>Start:</strong> <%= campaign.ad_campaign_start.strftime('%m/%d/%y') %>
+        &nbsp;&nbsp;&nbsp;
+        <strong>End:</strong> <%= campaign.ad_campaign_end.strftime('%m/%d/%y') %>
+        &nbsp;&nbsp;&nbsp;
+        <strong>Impressions Purchased:</strong> <%= campaign.ad_promotion_type == 'Digest' ? '0' : campaign.ad_max_impressions %>
+        &nbsp;&nbsp;&nbsp;
+        <strong>Delivered:</strong>&nbsp;
+        <% if campaign.ad_promotion_type == 'Digest' %>
+          0.0%
+        <% else %>
+          <%= number_to_percentage((impressions_to_date.to_f/campaign.ad_max_impressions.to_f) * 100, precision: 1) %>
+        <% end %>
+      </p>
+    </div>
+  <% end %>
+</body>
+</html>

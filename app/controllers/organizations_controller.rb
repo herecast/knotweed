@@ -146,6 +146,7 @@ class OrganizationsController < ApplicationController
       :calendar_view_first,
       :calendar_card_active,
       :digest_id,
+      :ad_contact_email,
       location_ids: [],
       organization_locations_attributes: %i[
         id
