@@ -63,6 +63,11 @@ RSpec.describe RecordContentMetric, elasticsearch: true do
         expect(@news).to receive(:reindex).with(:view_count_data)
         subject
       end
+
+      it "calls for minimal Organization reindex" do
+        expect(@news.organization).to receive(:reindex).with(:total_view_count_data)
+        subject
+      end
     end
 
     context 'with event_type: click' do

@@ -102,10 +102,6 @@ module Api
         object.post_count
       end
 
-      def total_view_count
-        object.counted_posts.sum(:view_count).to_i
-      end
-
       def user_hide_count
         object.organization_hides.active.count
       end

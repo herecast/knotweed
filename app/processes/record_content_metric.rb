@@ -41,6 +41,7 @@ class RecordContentMetric
       @report.increment!(:view_count)
       @content.increment!(:view_count)
       @content.reindex(:view_count_data)
+      @content.organization.reindex(:total_view_count_data)
     when 'click'
       @report.increment!(:banner_click_count)
       @content.increment!(:banner_click_count)

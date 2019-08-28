@@ -89,6 +89,10 @@ class Organization < ActiveRecord::Base
     { active_subscriber_count: active_subscriber_count }
   end
 
+  def total_view_count_data
+    { total_view_count: total_view_count }
+  end
+
   has_many :contents_root_content_category_ids_only,
            -> { select('contents.root_content_category_id, contents.organization_id') },
            primary_key: :id,
@@ -219,6 +223,10 @@ class Organization < ActiveRecord::Base
       .where("(channel_type != 'BusinessProfile' AND channel_type != 'Comment') OR channel_type IS NULL")
       .where('content_category_id != ?', ContentCategory.find_or_create_by(name: 'campaign'))
       .where('biz_feed_public = true OR biz_feed_public IS NULL')
+  end
+
+  def total_view_count
+    counted_posts.sum(:view_count).to_i
   end
 
   def post_count
