@@ -137,7 +137,7 @@ class Content < ActiveRecord::Base
              children: [:created_by],
              parent: [:root_content_category],
              content_category: [:parent],
-             organization: %i[locations consumer_active_base_locations organization_locations])
+             organization: %i[locations organization_locations])
       .where('organization_id NOT IN (4,5,328)')
       .where('root_content_category_id > 0')
       .where('raw_content IS NOT NULL')
