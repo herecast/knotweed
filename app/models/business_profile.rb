@@ -23,13 +23,11 @@
 class BusinessProfile < ActiveRecord::Base
   searchkick locations: ['location'], callbacks: :async, batch_size: 1000,
              index_prefix: Figaro.env.searchkick_index_prefix, match: :word_start,
-             searchable: %i[category_names title content business_location_name
+             searchable: %i[title content business_location_name
                             business_location_city]
 
   def search_data
     index = {
-      category_names: business_categories.map(&:name),
-      category_ids: business_categories.map(&:id),
       archived: archived,
       exists: (existence.nil? || (existence >= 0.4))
     }
@@ -53,8 +51,7 @@ class BusinessProfile < ActiveRecord::Base
 
   scope :search_import, lambda {
     includes(:content,
-             :business_location,
-             :business_categories)
+             :business_location)
       .where('archived = false')
   }
 
@@ -83,12 +80,6 @@ class BusinessProfile < ActiveRecord::Base
   accepts_nested_attributes_for :business_location
 
   delegate :organization, to: :content
-
-  has_and_belongs_to_many :business_categories, join_table: 'business_categories_business_profiles', after_add: :reindex_business_profile
-
-  def reindex_business_profile(business_category)
-    reindex(mode: :async)
-  end
 
   def claimed?
     content.present? && organization.present?

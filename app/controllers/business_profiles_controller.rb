@@ -69,9 +69,33 @@ class BusinessProfilesController < ApplicationController
     params.require(:business_profile).permit(
       :content_attributes,
       :business_location,
-      business_category_ids: [],
-      business_location_attributes: [:name, :address, :venue_url, :city, :state, :zip, :phone, :email, :id, hours: []],
-      content_attributes: [:id, :raw_content, images_attributes: %i[id image remove_image], organization_attributes: %i[id parent_id logo remove_logo]]
+      business_location_attributes: [
+        :name,
+        :address,
+        :venue_url,
+        :city,
+        :state,
+        :zip,
+        :phone,
+        :email,
+        :id,
+        hours: []
+      ],
+      content_attributes: [
+        :id,
+        :raw_content,
+        images_attributes: %i[
+          id
+          image
+          remove_image
+        ],
+        organization_attributes: %i[
+          id
+          parent_id
+          logo
+          remove_logo
+        ]
+      ]
     )
   end
 

@@ -169,7 +169,6 @@ Rails.application.routes.draw do
 
       delete '/content_locations/:id', to: 'content_locations#destroy'
 
-      resources 'business_categories', only: [:index]
       post '/emails', to: 'emails#create'
       get '/subscriptions', to: 'subscriptions#index'
       get '/subscriptions/:key', to: 'subscriptions#show'

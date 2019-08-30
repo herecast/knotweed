@@ -32,18 +32,6 @@ describe BusinessProfilesController, type: :controller do
       end
     end
 
-    context 'when searching by category' do
-      let(:business_category) { FactoryGirl.create :business_category }
-
-      subject { get :index, params: { q: { business_categories_id_in: [business_category.id] } } }
-
-      it 'returns matching businesses' do
-        @business_profiles[0].business_categories << business_category
-        subject
-        expect(assigns(:business_profiles)).to match_array [@business_profiles[0]]
-      end
-    end
-
     context 'when searching for businesses by claim' do
       before do
         @business_profiles[0].content = FactoryGirl.create :content

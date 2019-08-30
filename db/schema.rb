@@ -12,34 +12,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190827201424) do
+ActiveRecord::Schema.define(version: 20190830144042) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
   enable_extension 'fuzzystrmatch'
   enable_extension 'hstore'
-
-  create_table 'business_categories', id: :bigserial, force: :cascade do |t|
-    t.string   'name',        limit: 255
-    t.string   'description', limit: 255
-    t.string   'icon_class',  limit: 255
-    t.datetime 'created_at',              null: false
-    t.datetime 'updated_at',              null: false
-    t.string   'source', limit: 255
-    t.bigint   'source_id'
-    t.index %w[source source_id], name: 'idx_16420_index_business_categories_on_source_and_source_id', using: :btree
-  end
-
-  create_table 'business_categories_business_categories', id: false, force: :cascade do |t|
-    t.bigint 'parent_id'
-    t.bigint 'child_id'
-    t.index %w[parent_id child_id], name: 'idx_16427_business_categories_index', unique: true, using: :btree
-  end
-
-  create_table 'business_categories_business_profiles', id: false, force: :cascade do |t|
-    t.bigint 'business_category_id'
-    t.bigint 'business_profile_id'
-  end
 
   create_table 'business_locations', id: :bigserial, force: :cascade do |t|
     t.string   'name',                limit: 255

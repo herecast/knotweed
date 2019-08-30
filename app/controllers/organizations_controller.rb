@@ -157,10 +157,6 @@ class OrganizationsController < ApplicationController
     )
   end
 
-  def business_profile_params
-    params.require(:business_profile).permit(business_category_ids: [])
-  end
-
   def include_child_organizations?
     session[:organizations_search][:include_child_organizations] == '1'
   end
