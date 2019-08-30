@@ -24,7 +24,7 @@ class ManageContentOnFirstServe
           conditionally_schedule_outreach(content)
           conditionally_schedule_notification(content)
           if production_messaging_enabled?
-            FacebookService.rescrape_url(content)
+            scrape_with_facebook(content)
             if content.content_type == :news
               IntercomService.send_published_content_event(content)
               SlackService.send_published_content_notification(content)
@@ -85,6 +85,13 @@ class ManageContentOnFirstServe
         MailchimpService::UserOutreach.delete_campaign(organization.reminder_campaign_id)
       end
       organization.update_attribute(:reminder_campaign_id, nil)
+    end
+  end
+
+  def scrape_with_facebook(content)
+    begin
+      FacebookService.rescrape_url(content)
+    rescue
     end
   end
 end
