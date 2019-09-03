@@ -27,6 +27,7 @@ module Api
                  :event_instances,
                  :images,
                  :image_url,
+                 :like_count,
                  :location,
                  :location_id,
                  :organization,

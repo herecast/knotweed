@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe 'User Bookmarks endpoint', type: :request do
+describe 'User Bookmarks endpoint', type: :request, elasticsearch: true do
   before { FactoryGirl.create :organization, name: 'Listserv' }
   let(:organization) { FactoryGirl.create :organization }
   let(:owning_user) { FactoryGirl.create :user }

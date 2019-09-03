@@ -160,6 +160,10 @@ class Content < ActiveRecord::Base
     { banner_click_count: banner_click_count }
   end
 
+  def like_count_data
+    { like_count: like_count }
+  end
+
   def should_index?
     deleted_at.blank? && raw_content.present?
   end
@@ -518,6 +522,10 @@ class Content < ActiveRecord::Base
 
   def should_notify_subscribers?
     mc_campaign_id.nil? && organization.active_subscriber_count > 0
+  end
+
+  def like_count
+    user_bookmarks.count
   end
 
   private

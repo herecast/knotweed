@@ -12,19 +12,21 @@ module Api
 
       def create
         authorize! :create, UserBookmark
-        bookmark = current_user.user_bookmarks.build(bookmark_params)
-        if bookmark.save
-          render json: { bookmark: bookmark }, status: :created
+        @bookmark = current_user.user_bookmarks.build(bookmark_params)
+        if @bookmark.save
+          minimal_content_reindex
+          render json: { bookmark: @bookmark }, status: :created
         else
           render json: {}, status: :bad_request
         end
       end
 
       def update
-        bookmark = UserBookmark.find(params[:id])
-        authorize! :update, bookmark
-        if bookmark.update(bookmark_params)
-          render json: { bookmark: bookmark }, status: :ok
+        @bookmark = UserBookmark.find(params[:id])
+        authorize! :update, @bookmark
+        if @bookmark.update(bookmark_params)
+          minimal_content_reindex
+          render json: { bookmark: @bookmark }, status: :ok
         else
           render json: {}, status: :bad_request
         end
@@ -48,6 +50,10 @@ module Api
           :event_instance_id,
           :read
         )
+      end
+
+      def minimal_content_reindex
+        @bookmark.content.reindex(:like_count_data)
       end
     end
   end
