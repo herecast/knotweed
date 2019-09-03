@@ -7,7 +7,7 @@ class SendExternalAdvertiserReportsJob < ApplicationJob
 
       PromotionsMailer.external_advertiser_report(
         organization: organization,
-        campaigns: organization.contents.ad_campaigns_for_reports
+        campaigns: organization.contents.ad_campaigns_for_reports.to_a
       ).deliver_later
     end
   end
