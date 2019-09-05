@@ -32,13 +32,6 @@ namespace :indexing do
     puts 'Operation completed'
   end
 
-  task full_reindex_business_profile: :environment do
-    index_name = BusinessProfile.reindex(async: { wait: true }, refresh_interval: '30s')
-    puts 'Reindexing last hour'
-    BusinessProfile.where('updated_at > ?', 2.hours.ago).each{ |i| i.reindex(mode: :async) }
-    puts 'Operation completed'
-  end
-
   task full_reindex_business_location: :environment do
     index_name = BusinessLocation.reindex(async: { wait: true }, refresh_interval: '30s')
     puts 'Reindexing last hour'
@@ -64,7 +57,6 @@ namespace :indexing do
     %w[
       full_reindex_content
       full_reindex_event_instances
-      full_reindex_business_profile
       full_reindex_business_location
       full_reindex_organization
     ].each do |task|
@@ -76,7 +68,6 @@ namespace :indexing do
     [
       Content,
       EventInstance,
-      BusinessProfile,
       BusinessLocation,
       Organization,
       Location
@@ -90,7 +81,6 @@ namespace :indexing do
     [
       Content,
       EventInstance,
-      BusinessProfile,
       BusinessLocation,
       Organization,
       Location

@@ -42,13 +42,7 @@
             = f.input :certified_social, as: :boolean
             = f.input :calendar_view_first, as: :boolean
             = f.input :calendar_card_active, as: :boolean
-            - if @organization.has_business_profile?
-              = f.input :biz_feed_active, as: :boolean
-            - else
-              %p
-                Organization must have
-                %b Business Profile
-                to have active Biz Feed
+            = f.input :biz_feed_active, as: :boolean
             = f.input :embedded_ad, as: :boolean
             = f.input :banner_ad_override
             = f.input :archived, as: :boolean

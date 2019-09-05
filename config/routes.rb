@@ -59,11 +59,6 @@ Rails.application.routes.draw do
     post 'content/facebook_scraping', to: 'contents/facebook_scrapings#create'
     resources :campaigns, except: %i[show destroy]
     resources :comments, only: %i[index update destroy]
-    resources :business_profiles, except: [:destroy]
-    namespace :business_profiles do
-      resources :archivings, only: %i[create destroy]
-      resources :claims, only: [:create]
-    end
 
     resources :images, only: %i[create destroy update]
     resources :organizations, except: [:show] do

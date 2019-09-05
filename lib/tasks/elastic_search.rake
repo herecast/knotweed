@@ -7,7 +7,7 @@ task :reindex_after, [:date_string] => :environment do |_t, args|
   ActiveRecord::Base.logger = Logger.new(STDOUT)
   date = Chronic.parse(args.date_string)
 
-  [Content, BusinessLocation, Organization, BusinessProfile, EventInstance].each do |model|
+  [Content, Organization, BusinessLocation, EventInstance].each do |model|
     relation = model.where('contents.updated_at > ?', date)
     puts "Reindexing #{relation.count} #{model}'s\n"
     relation.find_each(&:reindex)

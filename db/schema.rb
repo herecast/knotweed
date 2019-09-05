@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190830144042) do
+ActiveRecord::Schema.define(version: 20190904134026) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -42,19 +42,6 @@ ActiveRecord::Schema.define(version: 20190830144042) do
     t.index ['city'], name: 'idx_16441_index_business_locations_on_city', using: :btree
     t.index ['created_by_id'], name: 'idx_16441_index_business_locations_on_created_by_id', using: :btree
     t.index ['name'], name: 'idx_16441_index_business_locations_on_name', using: :btree
-  end
-
-  create_table 'business_profiles', id: :bigserial, force: :cascade do |t|
-    t.bigint   'business_location_id'
-    t.boolean  'has_retail_location', default: true
-    t.datetime 'created_at',                                            null: false
-    t.datetime 'updated_at',                                            null: false
-    t.string   'source',                    limit: 255
-    t.string   'source_id',                 limit: 255
-    t.float    'existence'
-    t.boolean  'archived',                              default: false
-    t.index ['existence'], name: 'idx_16451_index_business_profiles_on_existence', using: :btree
-    t.index %w[source source_id], name: 'idx_16451_index_business_profiles_on_source_and_source_id', using: :btree
   end
 
   create_table 'campaigns', force: :cascade do |t|

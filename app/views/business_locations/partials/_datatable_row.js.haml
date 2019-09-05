@@ -1,5 +1,5 @@
 - links = "<a href='#' class='edit-business-location-link btn btn-success' data-form-url='#{edit_business_location_path(business_location)}' data-toggle='modal' data-target='#business_location_form'><i class='icon-pencil'></i></a>"
-- unless business_location.business_profile.present? or business_location.events.present?
+- unless business_location.events.present?
   - links += " <a href='#{business_location_path(business_location)}' class='btn btn-danger' data-confirm='Are you sure?' data-method='delete' data-remote='true' rel='nofollow'>X</a>"
 - if business_location.hours.empty?
   - hours = ''

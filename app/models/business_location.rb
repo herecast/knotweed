@@ -56,8 +56,6 @@ class BusinessLocation < ActiveRecord::Base
   belongs_to :organization
   has_many :events, foreign_key: 'venue_id'
 
-  has_one :business_profile
-
   serialize :hours, Array
 
   validate :state_length_if_present
@@ -70,7 +68,6 @@ class BusinessLocation < ActiveRecord::Base
 
   after_commit :reindex_associations_async
   def reindex_associations_async
-    business_profile.reindex(mode: :async) if business_profile.present?
     if events.present?
       events.each do |e|
         e.event_instances.each{ |ei| ei.reindex(mode: :async) }

@@ -5,9 +5,8 @@
       %td= u.name
       %td= u.email
       %td.actions
-        - if @context[:search_type].in? %w(business_profile organization)
+        - if @context[:search_type].in? %w(organization)
           = link_to "add", user_managers_path(u,
-              business_profile_id: @context[:business_profile_id],
               organization_id: @context[:organization_id]),
               method: :post, class: "btn btn-mini btn-warning"
         - elsif @context[:search_type] == 'payment_recipient'

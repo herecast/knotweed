@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-INDEXED_MODELS = [Content, BusinessLocation, Organization, BusinessProfile, EventInstance, Location].freeze
+INDEXED_MODELS = [Content, Organization, BusinessLocation, EventInstance, Location].freeze
 
 def build_indices
   INDEXED_MODELS.each(&:reindex)

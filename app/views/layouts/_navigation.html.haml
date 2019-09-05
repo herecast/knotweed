@@ -78,23 +78,6 @@
             %i.icon-plus
             %span Create New
 
-- if can? :read, BusinessProfile
-  %li
-    = link_to business_profiles_path do
-      %i.icon-building
-      %span Business Profiles
-      %i.icon-angle-down.angle-down
-    %ul{ class: "nav nav-stacked #{controller_name == "business_profiles" ? "in" : "" }" }
-      %li{ class: current_page?(business_profiles_path) ? "active" : "" }
-        = link_to business_profiles_path do
-          %i.icon-tasks
-          %span Search
-      - if can? :create, BusinessProfile
-        %li{ class: current_page?(new_business_profile_path) ? "active" : "" }
-          = link_to new_business_profile_path do
-            %i.icon-plus
-            %span Create New
-
 - if can? :read, BusinessLocation
   %li
     = link_to business_locations_path do

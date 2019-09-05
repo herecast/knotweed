@@ -19,17 +19,12 @@ jQuery ->
     loc_string = ""
     if ($("#business_location_locate_include_name").prop('checked'))
       loc_string = loc_string + $("#business_location_name").val() + " "
-    # this is used on both business_location forms and on business_profile forms
+
     if $('#business_location_address').length > 0
       loc_string += $("#business_location_address").val()
       loc_string += ' ' + $("#business_location_city").val()
       loc_string += ' ' + $("#business_location_state").val()
       loc_string += ' ' + $("#business_location_zip").val()
-    else # then we're on biz profile
-      loc_string += ' ' + $('#business_profile_business_location_attributes_address').val()
-      loc_string += ' ' + $('#business_profile_business_location_attributes_city').val()
-      loc_string += ' ' + $('#business_profile_business_location_attributes_state').val()
-      loc_string += ' ' + $('#business_profile_business_location_attributes_zip').val()
 
     new_src = base_src_url.replace(/q=.*/, "q=" + loc_string)
     console.log new_src

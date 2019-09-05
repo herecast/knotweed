@@ -79,8 +79,8 @@ class BusinessLocationsController < ApplicationController
 
   def destroy
     # don't allow destroy if it'd leave orphaned records
-    if @business_location.business_profile.present? || @business_location.events.present?
-      flash[:notice] = 'Could not destroy record with associated business profile or evens'
+    if @business_location.events.present?
+      flash[:notice] = 'Could not destroy record with associated events'
       respond_to do |format|
         format.html { redirect_to business_locations_path }
       end

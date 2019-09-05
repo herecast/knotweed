@@ -6,13 +6,11 @@ module Api
       attributes :id,
                  :name,
                  :can_publish_news,
-                 :business_profile_id,
                  :description,
                  :org_type,
                  :can_edit,
                  :profile_image_url,
                  :background_image_url,
-                 :claimed,
                  :twitter_handle,
                  :custom_links,
                  :biz_feed_active,
@@ -49,21 +47,12 @@ module Api
         object.background_image.url if object.background_image.present?
       end
 
-      def business_profile_id
-        bp_content = object.contents.where(channel_type: 'BusinessProfile').first
-        bp_content.channel_id if bp_content.present?
-      end
-
       def can_edit
         if context.present? && context[:current_ability].present?
           context[:current_ability].can?(:edit, object)
         else
           false
         end
-      end
-
-      def claimed
-        business_location.try(:business_profile).try(:claimed?) || false
       end
 
       def phone

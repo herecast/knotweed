@@ -230,26 +230,6 @@ describe Organization, type: :model do
     end
   end
 
-  describe '#has_business_profile?' do
-    let(:organization) { FactoryGirl.create :organization }
-
-    context 'when no related BusinessProfile' do
-      it 'returns false' do
-        expect(organization.has_business_profile?).to be false
-      end
-    end
-
-    context 'when related BusinessProfile present' do
-      before do
-        organization.contents << FactoryGirl.create(:content, channel_type: 'BusinessProfile')
-      end
-
-      it 'returns true' do
-        expect(organization.has_business_profile?).to be true
-      end
-    end
-  end
-
   describe '#post_count' do
     let(:organization) { FactoryGirl.create :organization }
     subject { organization.post_count }

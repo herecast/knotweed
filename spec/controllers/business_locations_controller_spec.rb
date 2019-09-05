@@ -136,14 +136,6 @@ describe BusinessLocationsController, type: :controller do
     it 'should remove the business location' do
       expect { subject }.to change { BusinessLocation.count }.by(-1)
     end
-
-    context 'with a business profile' do
-      before { @business_location.update(business_profile: FactoryGirl.create(:business_profile)) }
-
-      it 'should not remove the business location' do
-        expect { subject }.not_to change { BusinessLocation.count }
-      end
-    end
   end
 
   describe "PUT 'update'" do

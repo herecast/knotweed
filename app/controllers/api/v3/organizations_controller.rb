@@ -12,8 +12,7 @@ module Api
         if @organization.save
           provision_user_as_manager_and_blogger
           schedule_blogger_welcome_emails
-          conditionally_create_business_profile
-          update_business_location
+          create_or_update_business_location
           notify_via_slack
           render json: @organization, serializer: OrganizationSerializer,
                  status: 201
@@ -27,8 +26,7 @@ module Api
         authorize! :update, @organization
 
         if @organization.update(organization_params)
-          conditionally_create_business_profile
-          update_business_location
+          create_or_update_business_location
           add_custom_links if params[:organization].key?(:custom_links)
           render json: @organization, serializer: OrganizationSerializer,
                  status: 204
@@ -128,18 +126,16 @@ module Api
         end
       end
 
-      def add_custom_links
-        @organization.update_attribute(:custom_links, params[:organization][:custom_links])
-      end
-
-      def conditionally_create_business_profile
+      def create_or_update_business_location
         if @organization.business_locations.empty?
-          CreateBusinessProfileRelationship.call(org_name: @organization.name)
+          @organization.business_locations.create(business_location_params)
+        else
+          @organization.business_locations.first.update_attributes(business_location_params)
         end
       end
 
-      def update_business_location
-        @organization.business_locations.first.update_attributes(business_location_params)
+      def add_custom_links
+        @organization.update_attribute(:custom_links, params[:organization][:custom_links])
       end
 
       def manage_certified_orgs

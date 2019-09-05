@@ -29,7 +29,6 @@
 //= require business_locations
 //= require campaigns
 //= require users
-//= require business_profiles
 //= require summernote
 //= require summernote_editor
 //= require cocoon

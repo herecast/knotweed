@@ -51,7 +51,6 @@ class Ability
       end
 
       can :manage, PromotionBanner, promotion: { created_by: user }
-      can :manage, BusinessProfile, content: { created_by: user }
       can :manage, Content, created_by: user
       can :manage, Comment, created_by: user
       can :manage, UserBookmark, user: user

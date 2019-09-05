@@ -14,14 +14,12 @@ RSpec.describe 'Organizations Endpoints', type: :request do
         id: organization.id,
         name: organization.name,
         can_publish_news: organization.can_publish_news,
-        business_profile_id: a_kind_of(Integer).or(be_nil),
         description: organization.description,
         org_type: organization.org_type,
         can_edit: boolean,
         profile_image_url: organization.profile_image.url,
         background_image_url: organization.background_image.url,
         twitter_handle: organization.twitter_handle,
-        claimed: organization.business_locations.first.try(:business_profile).try(:claimed?) || false,
         custom_links: nil,
         biz_feed_active: organization.biz_feed_active,
         phone: organization.business_locations.first.phone,
@@ -49,24 +47,6 @@ RSpec.describe 'Organizations Endpoints', type: :request do
         total_view_count: organization.contents.sum(:view_count).to_i,
         user_hide_count: organization.organization_hides.active.count
       )
-    end
-
-    context 'with claimed business_profile' do
-      let!(:business_profile) { FactoryGirl.create :business_profile, :claimed, id: 100 }
-      before do
-        business_profile.content.organization = organization
-        business_profile.content.save!
-        organization.reindex
-      end
-
-      describe 'business_profile_id' do
-        subject { get "/api/v3/organizations/#{organization.id}" }
-
-        it 'is business_profile.id' do
-          subject
-          expect(response_json[:organization][:business_profile_id]).to eql business_profile.id
-        end
-      end
     end
 
     context 'when organization is archived' do

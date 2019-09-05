@@ -105,7 +105,6 @@ class Organization < ActiveRecord::Base
   has_many :children, class_name: 'Organization', foreign_key: 'parent_id'
 
   has_many :contents
-  has_many :business_profiles, through: :contents
   has_many :organization_subscriptions
   has_many :organization_hides
 
@@ -186,10 +185,6 @@ class Organization < ActiveRecord::Base
     ReindexAssociatedContentJob.perform_later self
   end
 
-  def has_business_profile?
-    contents.where(channel_type: 'BusinessProfile').present?
-  end
-
   def profile_link
     "https://#{Figaro.env.default_consumer_host}/profile/#{id}"
   end
@@ -207,7 +202,7 @@ class Organization < ActiveRecord::Base
     contents
       .not_removed
       .where('pubdate IS NOT NULL and pubdate < ?', Time.current)
-      .where("(channel_type != 'BusinessProfile' AND channel_type != 'Comment') OR channel_type IS NULL")
+      .where("channel_type != 'Comment' OR channel_type IS NULL")
       .where('content_category_id != ?', ContentCategory.find_or_create_by(name: 'campaign'))
       .where('biz_feed_public = true OR biz_feed_public IS NULL')
   end

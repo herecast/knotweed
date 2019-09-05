@@ -76,10 +76,7 @@ BusinessLocation.create!(
   latitude: Location::DEFAULT_LOCATION_COORDS[0],
   longitude: Location::DEFAULT_LOCATION_COORDS[1]
 )
-BusinessProfile.create!(
-  business_location: BusinessLocation.last
-)
-p "Created business profile for #{BusinessLocation.last.name}"
+p "Created business location for #{BusinessLocation.last.name}"
 
 # quick method to generate some basic content attributes (new each time with Faker)
 def base_content_attrs
