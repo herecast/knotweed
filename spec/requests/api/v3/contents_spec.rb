@@ -263,41 +263,6 @@ describe 'Contents Endpoints', type: :request do
           end
         end
 
-        describe 'talk content' do
-          context 'valid params' do
-            let(:valid_talk_params) do
-              {
-                content_type: 'talk',
-                title: 'TFK',
-                content: '<p>Oxygen: Inhale</p>',
-                promote_radius: 10,
-                location_id: FactoryGirl.create(:location).id
-              }
-            end
-
-            before do
-              request_body.merge!(content: valid_talk_params)
-            end
-
-            it 'return 201 status' do
-              subject
-              expect(response.status).to eql 201
-            end
-
-            it 'returns json respresenation' do
-              subject
-              expect(response.body).to include_json(
-                content_response_schema(Content.last).deep_merge(
-                  content: {
-                    title: valid_talk_params[:title],
-                    content: valid_talk_params[:content]
-                  }
-                )
-              )
-            end
-          end
-        end
-
         describe 'market content' do
           include ActiveJob::TestHelper
 
@@ -728,42 +693,6 @@ describe 'Contents Endpoints', type: :request do
                     promote_radius: valid_market_params[:promote_radius],
                     title: valid_market_params[:title],
                     location_id: valid_market_params[:location_id]
-                  }
-                )
-              )
-            end
-          end
-        end
-
-        describe 'talk content' do
-          let(:content) { FactoryGirl.create(:content, :talk, created_by: user) }
-
-          context 'valid params' do
-            let(:valid_talk_params) do
-              {
-                title: 'TFK',
-                content: '<p>Oxygen: Inhale</p>',
-                biz_feed_public: false
-              }
-            end
-
-            before do
-              request_body.merge!(content: valid_talk_params)
-            end
-
-            it 'return 200 status' do
-              subject
-              expect(response.status).to eql 200
-            end
-
-            it 'returns json respresenation' do
-              subject
-              expect(response.body).to include_json(
-                content_response_schema(Content.last).deep_merge(
-                  content: {
-                    biz_feed_public: false,
-                    title: valid_talk_params[:title],
-                    content: valid_talk_params[:content]
                   }
                 )
               )

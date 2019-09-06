@@ -34,8 +34,10 @@ module Api
           return
         end
 
-        @content = create_process.call(params,
-                                       user_scope: current_user)
+        Searchkick.callbacks(false) do
+          @content = create_process.call(params, user_scope: current_user)
+        end
+        @content.reindex(mode: true)
 
         if @content.valid?
           rescrape_facebook @content
@@ -49,8 +51,6 @@ module Api
       end
 
       def show
-        expires_in 1.minutes, public: true
-
         @content = Content.search_by(id: params[:id], user: current_user)
         if @content.removed == true
           @content = CreateAlternateContent.call(Content.find(params[:id]))
@@ -73,10 +73,12 @@ module Api
           return
         end
 
-        success = update_process.call(@content, params,
-                                      user_scope: current_user)
+        Searchkick.callbacks(false) do
+           update_process.call(@content, params, user_scope: current_user)
+        end
+        @content.reload.reindex(mode: true)
 
-        if success
+        if @content.valid?
           rescrape_facebook @content
 
           render json: @content, serializer: ContentSerializer, status: :ok

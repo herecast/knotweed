@@ -277,13 +277,11 @@ class Content < ActiveRecord::Base
       'event' => Ugc::CreateEvent,
       'market' => Ugc::CreateMarket,
       'news' => Ugc::CreateNews,
-      'talk' => Ugc::CreateTalk
     },
     'update' => {
       'event' => Ugc::UpdateEvent,
       'market' => Ugc::UpdateMarket,
       'news' => Ugc::UpdateNews,
-      'talk' => Ugc::UpdateTalk
     }
   }.freeze
 

@@ -59,6 +59,7 @@ namespace :indexing do
       full_reindex_event_instances
       full_reindex_business_location
       full_reindex_organization
+      full_reindex_location
     ].each do |task|
       Rake::Task["indexing:#{task}"].invoke
     end
