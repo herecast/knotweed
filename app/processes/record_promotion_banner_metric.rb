@@ -12,9 +12,8 @@ class RecordPromotionBannerMetric
   end
 
   def call
-    record_event
-    find_or_create_promotion_banner_report
     increment_report_stats
+    record_event
   end
 
   private
@@ -39,21 +38,18 @@ class RecordPromotionBannerMetric
     )
   end
 
-  def find_or_create_promotion_banner_report
-    @report = @promotion_banner.find_or_create_daily_report(@current_date)
-  end
-
   def increment_report_stats
     case @opts[:event_type]
     when 'load'
-      @report.increment!(:load_count)
       @promotion_banner.increment!(:load_count)
     when 'impression'
-      @report.increment!(:impression_count)
       @promotion_banner.increment!(:impression_count)
-      @promotion_banner.increment!(:daily_impression_count)
+      if @promotion_banner.last_impression.blank? or Time.current.to_date != @promotion_banner.last_impression.created_at.to_date
+        @promotion_banner.update daily_impression_count: 1
+      else
+        @promotion_banner.increment!(:daily_impression_count)
+      end
     when 'click'
-      @report.increment!(:click_count)
       @promotion_banner.increment!(:click_count)
     end
   end

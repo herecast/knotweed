@@ -1,0 +1,26 @@
+.row-fluid
+  .span12.box.bordered-box.blue-border 
+    .box-header.blue-background
+      .title
+        %i.icon-plus
+        Calculate Ad Revenue
+    .box-content
+      = form_tag ad_reports_path, method: :get, class: 'form' do
+        .control-group
+          = label_tag :period_start
+          .controls
+            = text_field_tag :period_start
+        .control-group
+          = label_tag :period_end
+          .controls
+            = text_field_tag :period_end
+        .form-actions
+          = submit_tag "Calculate Ad Revenue", class: 'btn btn-primary'
+- if @ad_revenue.present?
+  .row-fluid
+    .span12.box.bordered-box.blue-border
+      .box-header.blue-background
+        .title
+          Ad Revenue from Period #{@period_start} - #{@period_end}
+      .box-content
+        %strong= number_to_currency(@ad_revenue)

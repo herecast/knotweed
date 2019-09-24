@@ -20,33 +20,21 @@ module Api
       end
 
       def daily_impression_counts
-        scope = object.promotion_banner_reports.order('report_date ASC')
-        if context.present? && context[:start_date].present?
-          scope = scope.where('report_date >= ?', context[:start_date])
-          if context[:end_date].present?
-            scope = scope.where('report_date <= ?', context[:end_date])
-          end
-        end
-        scope.map do |report|
+        object.daily_counts(event_type: 'impression', start_date: context[:start_date], end_date: context[:end_date]).
+          map do |report|
           {
             report_date: report.report_date,
-            impression_count: report.impression_count
+            impression_count: report.daily_count
           }
         end
       end
 
       def daily_click_counts
-        scope = object.promotion_banner_reports.order('report_date ASC')
-        if context.present? && context[:start_date].present?
-          scope = scope.where('report_date >= ?', context[:start_date])
-          if context[:end_date].present?
-            scope = scope.where('report_date <= ?', context[:end_date])
-          end
-        end
-        scope.map do |report|
+        object.daily_counts(event_type: 'click', start_date: context[:start_date], end_date: context[:end_date]).
+          map do |report|
           {
             report_date: report.report_date,
-            click_count: report.click_count
+            click_count: report.daily_count
           }
         end
       end

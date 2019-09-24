@@ -25,7 +25,7 @@ module ApplicationHelper
   end
 
   def is_payments_controller_class
-    if %w[payments payment_recipients].include? controller_name
+    if %w[payments payment_recipients ad_reports].include? controller_name
       'in'
     else
       ''

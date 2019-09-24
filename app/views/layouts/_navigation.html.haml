@@ -150,6 +150,11 @@
         = link_to payment_recipients_path do
           %i.icon-group
           %span Payment Recipients
+      %li{ class: current_page?(ad_reports_path) ? 'active' : '' }
+        = link_to ad_reports_path do
+          %i.icon-file-alt
+          %span Ad Reports
+
 - if can? :read, Location
   %li
     = link_to locations_path do

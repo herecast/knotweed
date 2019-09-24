@@ -47,7 +47,6 @@ class PromotionBanner < ActiveRecord::Base
   has_one :promotion, as: :promotable
   has_many :content_promotion_banner_impressions
   has_many :contents, through: :content_promotion_banner_impressions
-  has_many :promotion_banner_reports
   has_many :promotion_banner_metrics
   belongs_to :location
 
@@ -89,14 +88,16 @@ class PromotionBanner < ActiveRecord::Base
   # this scope combines all conditions to determine whether a promotion banner has inventory
   # NOTE: we need the select clause or else the "joins" causes the scope to return
   # readonly records.
-  scope :has_inventory, lambda {
-                          includes(:promotion)
-                            .where('(impression_count < max_impressions OR max_impressions IS NULL)')
-                            .where("(daily_impression_count < (daily_max_impressions + (daily_max_impressions * #{OVER_DELIVERY_PERCENTAGE})) OR daily_max_impressions IS NULL)")
-                            .references(:promotion)
-                        }
+  # checks:
+  #  -- impression_count
+  #  -- daily_impression_count
+  #  -- -- allows exceeding daily_impression_count if the most recent impression (PromotionBannerMetric) was not today
+  scope :has_inventory, -> { includes(:promotion)
+    .where('(impression_count < max_impressions OR max_impressions IS NULL)')
+    .where("(daily_impression_count < (daily_max_impressions + (daily_max_impressions * #{OVER_DELIVERY_PERCENTAGE})) OR daily_max_impressions IS NULL OR (SELECT count(*) FROM promotion_banner_metrics WHERE promotion_banner_id=promotion_banners.id AND created_at > ?) = 0)", Time.current.beginning_of_day)
+    .references(:promotion) }
 
-  # this scope combines all conditions to determine whether a promotion banner is boosted
+ # this scope combines all conditions to determine whether a promotion banner is boosted
   # NOTE: we need the select clause or else the "joins" causes the scope to return
   # readonly records.
   scope :boost, lambda {
@@ -160,12 +161,19 @@ class PromotionBanner < ActiveRecord::Base
     active? && has_inventory?
   end
 
-  def current_daily_report(current_date = Date.current)
-    promotion_banner_reports.where('report_date >= ?', current_date).take
+  def last_impression
+    promotion_banner_metrics.where(event_type: 'impression').order('created_at DESC').first
   end
 
-  def find_or_create_daily_report(current_date = Date.current)
-    current_daily_report(current_date) || promotion_banner_reports.create!(report_date: current_date)
+  def daily_counts(event_type:, start_date:, end_date:)
+    metrics = promotion_banner_metrics
+    metrics = metrics.where('created_at >= ?', start_date) if start_date.present?
+    metrics = metrics.where('created_at <= ?', end_date) if end_date.present?
+    metrics = metrics.where(event_type: event_type)
+    metrics.
+      select("(created_at AT TIME ZONE '#{Time.now.zone}')::date as report_date, COUNT(id) as daily_count").
+      group("report_date").
+      order("report_date ASC")
   end
 
   private

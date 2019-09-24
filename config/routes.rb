@@ -32,6 +32,7 @@ Rails.application.routes.draw do
       resources :sends, only: :create
       resources :generates, only: %i[new create]
     end
+    resources :ad_reports, only: :index
     delete '/payments/:period_start/:period_end/cancel', to: 'payments#destroy', as: :cancel_payments
     resources :payment_recipients
 

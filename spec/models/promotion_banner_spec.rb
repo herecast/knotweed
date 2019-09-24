@@ -119,11 +119,14 @@ describe PromotionBanner, type: :model do
     subject { PromotionBanner.for_content(banner.promotion.content_id).has_inventory }
 
     context 'a banner with no inventory' do
-      let(:banner) do
+      let(:banner) do 
         FactoryGirl.create :promotion_banner,
-                           daily_max_impressions: 5, daily_impression_count: one_more_than_actual_allowance(5),
-                           max_impressions: nil
+                          daily_max_impressions: 5, daily_impression_count: one_more_than_actual_allowance(5),
+                          max_impressions: nil
       end
+      # need most recent metric to have been today if we want daily_impression_count to matter
+      let!(:promotion_banner_metric) { FactoryGirl.create :promotion_banner_metric, promotion_banner: banner }
+
 
       it 'should not be returned' do
         expect(subject).to_not include(banner)
@@ -162,6 +165,8 @@ describe PromotionBanner, type: :model do
         FactoryGirl.create :promotion_banner,
                            daily_max_impressions: 5, daily_impression_count: one_more_than_actual_allowance(5)
       end
+      # need most recent metric to have been today if we want daily_impression_count to matter
+      let!(:promotion_banner_metric) { FactoryGirl.create :promotion_banner_metric, promotion_banner: promotion_banner }
 
       it 'should not be included' do
         expect(subject).to_not include(promotion_banner)
@@ -185,6 +190,8 @@ describe PromotionBanner, type: :model do
                            daily_max_impressions: 5, max_impressions: 6,
                            daily_impression_count: one_more_than_actual_allowance(5), impression_count: 5
       end
+      # need most recent metric to have been today if we want daily_impression_count to matter
+      let!(:promotion_banner_metric) { FactoryGirl.create :promotion_banner_metric, promotion_banner: promotion_banner }
 
       it 'should not be included' do
         expect(subject).to_not include(promotion_banner)
@@ -353,48 +360,32 @@ describe PromotionBanner, type: :model do
     end
   end
 
-  describe '#current_daily_report' do
-    before do
-      @promotion_banner = FactoryGirl.create :promotion_banner
+  describe 'daily_counts' do
+    let(:promotion_banner) { FactoryGirl.create :promotion_banner }
+    let!(:click1_day1) { FactoryGirl.create :promotion_banner_metric, promotion_banner: promotion_banner,
+                         created_at: 3.days.ago, event_type: 'click' }
+    let!(:click2_day1) { FactoryGirl.create :promotion_banner_metric, promotion_banner: promotion_banner,
+                         created_at: 3.days.ago, event_type: 'click' }
+    let!(:click1_day2) { FactoryGirl.create :promotion_banner_metric, promotion_banner: promotion_banner,
+                         created_at: 1.day.ago, event_type: 'click' }
+    let!(:imp1_day1) { FactoryGirl.create :promotion_banner_metric, promotion_banner: promotion_banner,
+                         created_at: 3.day.ago, event_type: 'impression' }
+
+    subject { promotion_banner.daily_counts(event_type: 'click', start_date: 1.week.ago, end_date: Date.today) }
+
+    it 'should return one entry per day' do
+      expect(subject.length).to eq 2
     end
 
-    context 'when no current daily PromotionBannerReport present' do
-      it 'returns nil' do
-        expect(@promotion_banner.current_daily_report(Date.current)).to be_nil
-      end
+    it 'should count number per day' do
+      expect(subject.first.daily_count).to eq 2
     end
 
-    context 'when a current daily PromotionBannerReport is present' do
-      it 'returns report' do
-        promotion_banner_report = FactoryGirl.create(:promotion_banner_report,
-                                                     promotion_banner_id: @promotion_banner.id,
-                                                     report_date: Date.current)
-        expect(@promotion_banner.current_daily_report(Date.current)).to eq promotion_banner_report
-      end
-    end
-  end
+    context 'with start and end date specified' do
+      subject { promotion_banner.daily_counts(event_type: 'click', start_date: 4.days.ago, end_date: 2.days.ago) }
 
-  describe '#find_or_create_daily_report' do
-    before do
-      @promotion_banner = FactoryGirl.create :promotion_banner
-    end
-
-    subject { @promotion_banner.find_or_create_daily_report(Date.current) }
-
-    context 'when no current PromotionBannerReport is present' do
-      it 'creates current daily PromotionBannerReport' do
-        expect { subject }.to change {
-          PromotionBannerReport.count
-        }.by 1
-      end
-    end
-
-    context 'when current PromotionBannerReport is present' do
-      it 'returns current PromotionBannerReport' do
-        promotion_banner_report = FactoryGirl.create(:promotion_banner_report,
-                                                     promotion_banner_id: @promotion_banner.id,
-                                                     report_date: Date.current)
-        expect(subject).to eq promotion_banner_report
+      it 'should limit responses to within the date range' do
+        expect(subject.length).to eq 1
       end
     end
   end

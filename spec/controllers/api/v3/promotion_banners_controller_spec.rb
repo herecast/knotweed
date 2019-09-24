@@ -19,44 +19,6 @@ describe Api::V3::PromotionBannersController, type: :controller do
       expect(response.code).to eq('200')
     end
 
-    context 'when most_recent_reset_time is nil' do
-      before do
-        Rails.cache.clear
-      end
-
-      it 'runs background job to clear daily impressions' do
-        ENV['STACK_NAME'] = 'knotweed-production'
-        expect(BackgroundJob).to receive(:perform_later).with(
-          'PrimeDailyPromotionBannerReports', 'call', Date.current.to_s, true
-        )
-        subject
-      end
-
-      context 'when environment is non-prod' do
-        it 'primes reports with is_prod=false' do
-          ENV['STACK_NAME'] = 'hoth-qa'
-          expect(BackgroundJob).to receive(:perform_later).with(
-            'PrimeDailyPromotionBannerReports', 'call', Date.current.to_s, false
-          )
-          subject
-        end
-      end
-    end
-
-    context 'when most_recent_reset_time is from the previous day' do
-      before do
-        Rails.cache.write('most_recent_reset_time', Date.yesterday)
-      end
-
-      it 'runs background job to clear daily impressions' do
-        ENV['STACK_NAME'] = 'knotweed-production'
-        expect(BackgroundJob).to receive(:perform_later).with(
-          'PrimeDailyPromotionBannerReports', 'call', Date.current.to_s, true
-        )
-        subject
-      end
-    end
-
     context 'as a user with skip_analytics = true' do
       before do
         @user = FactoryGirl.create :user, skip_analytics: true

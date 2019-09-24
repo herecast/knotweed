@@ -32,7 +32,10 @@ describe 'Promotion Banner Endpoints', type: :request do
 
     it 'returns daily impression and click counts' do
       (2.days.ago.to_date..Date.current).each do |date|
-        FactoryGirl.create(:promotion_banner_report, promotion_banner: promotion_banner, report_date: date)
+        FactoryGirl.create(:promotion_banner_metric, promotion_banner: promotion_banner, created_at: date, event_type: 'impression')
+      end
+      (2.days.ago.to_date..Date.current).each do |date|
+        FactoryGirl.create(:promotion_banner_metric, promotion_banner: promotion_banner, created_at: date, event_type: 'click')
       end
 
       get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {}, headers: auth_headers
@@ -50,20 +53,23 @@ describe 'Promotion Banner Endpoints', type: :request do
     context 'Given 40 days of metrics data exist;' do
       before do
         (40.days.ago.to_date..Date.current).each do |date|
-          FactoryGirl.create(:promotion_banner_report, promotion_banner: promotion_banner, report_date: date)
+          FactoryGirl.create(:promotion_banner_metric, promotion_banner: promotion_banner, created_at: date, event_type: 'impression')
+        end
+        (40.days.ago.to_date..Date.current).each do |date|
+          FactoryGirl.create(:promotion_banner_metric, promotion_banner: promotion_banner, created_at: date, event_type: 'click')
         end
       end
 
       it 'returns all daily_impression_counts by default' do
         get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {}, headers: auth_headers
         impression_counts = response_json[:promotion_banner_metrics][:daily_impression_counts]
-        expect(impression_counts.count).to eql promotion_banner.promotion_banner_reports.count
+        expect(impression_counts.count).to eql promotion_banner.promotion_banner_metrics.where(event_type: 'impression').count
       end
 
       it 'returns all daily_click_counts by default' do
         get "/api/v3/promotion_banners/#{promotion_banner.id}/metrics", params: {}, headers: auth_headers
         click_counts = response_json[:promotion_banner_metrics][:daily_click_counts]
-        expect(click_counts.count).to eql promotion_banner.promotion_banner_reports.count
+        expect(click_counts.count).to eql promotion_banner.promotion_banner_metrics.where(event_type: 'click').count
       end
 
       it 'orders daily_impression_counts ASC on report_date' do
@@ -84,12 +90,12 @@ describe 'Promotion Banner Endpoints', type: :request do
 
         it 'should return all daily_impression_counts' do
           subject
-          expect(response_json[:promotion_banner_metrics][:daily_impression_counts].count).to eql promotion_banner.promotion_banner_reports.count
+          expect(response_json[:promotion_banner_metrics][:daily_impression_counts].count).to eql promotion_banner.promotion_banner_metrics.where(event_type: 'impression').count
         end
 
         it 'should return all daily_click_counts' do
           subject
-          expect(response_json[:promotion_banner_metrics][:daily_click_counts].count).to eql promotion_banner.promotion_banner_reports.count
+          expect(response_json[:promotion_banner_metrics][:daily_click_counts].count).to eql promotion_banner.promotion_banner_metrics.where(event_type: 'click').count
         end
       end
 
@@ -114,7 +120,7 @@ describe 'Promotion Banner Endpoints', type: :request do
           expect(report_dates).to satisfy { |dates| dates.all? { |d| d >= start_date } }
         end
 
-        context 'given a end_date parameter' do
+        context 'given an end_date parameter' do
           let(:end_date) { 2.days.ago.to_date }
 
           it 'returns daily_view_counts between start_date and end_date' do

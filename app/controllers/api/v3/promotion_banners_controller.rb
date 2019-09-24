@@ -12,7 +12,6 @@ module Api
         opts[:organization_id] = params[:organization_id]
         opts[:location_id]     = params[:location_id]
 
-        conditionally_prime_daily_ad_reports
         @selected_promotion_banners = SelectPromotionBanners.call(opts)
 
         render json: @selected_promotion_banners, root: :promotions,
@@ -78,15 +77,6 @@ module Api
       end
 
       protected
-
-      def conditionally_prime_daily_ad_reports
-        most_recent_reset_time = Rails.cache.fetch('most_recent_reset_time')
-        if most_recent_reset_time.nil? || most_recent_reset_time < Date.current
-          is_prod = (ENV['STACK_NAME'] == 'knotweed-production')
-          BackgroundJob.perform_later('PrimeDailyPromotionBannerReports', 'call', Date.current.to_s, is_prod)
-          Rails.cache.write('most_recent_reset_time', Time.current, expires_in: 24.hours)
-        end
-      end
 
       def record_promotion_banner_metric(promotion_banner, event_type)
         unless analytics_blocked?

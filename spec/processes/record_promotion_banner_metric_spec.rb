@@ -54,10 +54,35 @@ RSpec.describe RecordPromotionBannerMetric do
         }.by 1
       end
 
-      it 'increases daily impression count of promotion_banner' do
-        expect { subject }.to change {
-          @promotion_banner.reload.daily_impression_count
-        }.by 1
+      describe 'with no previous impressions' do
+        it 'should set the daily_impression_count to 1' do
+          expect{ subject }.to change{
+            @promotion_banner.reload.daily_impression_count
+          }.from(0).to(1)
+        end
+      end
+
+      describe 'with previous impressions on the same day' do
+        let!(:metric) { FactoryGirl.create :promotion_banner_metric, promotion_banner: @promotion_banner,
+                        created_at: Time.current, event_type: 'impression' }
+
+        it 'should increment daily_impression_count' do
+          expect{ subject }.to change{
+            @promotion_banner.reload.daily_impression_count
+          }.by(1)
+        end
+      end
+
+      describe 'with previous impressions on a different day' do
+        let!(:metric) { FactoryGirl.create :promotion_banner_metric, promotion_banner: @promotion_banner,
+                        created_at: 2.days.ago, event_type: 'impression' }
+        before { @promotion_banner.update daily_impression_count: 4 }
+
+        it 'should reset the daily_impression_count to 1' do
+          expect{ subject }.to change{
+            @promotion_banner.reload.daily_impression_count
+          }.to(1)
+        end
       end
 
       context 'when gtm is blocked on front end' do
@@ -91,45 +116,5 @@ RSpec.describe RecordPromotionBannerMetric do
       end
     end
 
-    context 'when promotion banner does not have current report' do
-      subject do
-        RecordPromotionBannerMetric.call(
-          event_type: 'load',
-          user_id: nil,
-          promotion_banner_id: @promotion_banner.id,
-          current_date: Date.current.to_s
-        )
-      end
-
-      it 'creates a promotion banner report' do
-        expect { subject }.to change {
-          PromotionBannerReport.count
-        }.by 1
-        expect(PromotionBannerReport.last.load_count).to eq 1
-      end
-    end
-
-    context 'when promotion banner has current report' do
-      before do
-        @promotion_banner_report = FactoryGirl.create :promotion_banner_report,
-                                                      promotion_banner_id: @promotion_banner.id,
-                                                      report_date: Date.current
-      end
-
-      subject do
-        RecordPromotionBannerMetric.call(
-          event_type: 'click',
-          user_id: nil,
-          promotion_banner_id: @promotion_banner.id,
-          current_date: Date.current.to_s
-        )
-      end
-
-      it 'increments promotion banner report stats' do
-        expect { subject }.to change {
-          @promotion_banner_report.reload.click_count
-        }.by 1
-      end
-    end
   end
 end
