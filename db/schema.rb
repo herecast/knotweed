@@ -543,20 +543,6 @@ ActiveRecord::Schema.define(version: 20190904134026) do
     t.index ['promotion_banner_id'], name: 'index_promotion_banner_metrics_on_promotion_banner_id', using: :btree
   end
 
-  create_table 'promotion_banner_reports', id: :bigserial, force: :cascade do |t|
-    t.bigint   'promotion_banner_id'
-    t.datetime 'report_date'
-    t.bigint   'impression_count'
-    t.bigint   'click_count'
-    t.bigint   'total_impression_count'
-    t.bigint   'total_click_count'
-    t.datetime 'created_at',             null: false
-    t.datetime 'updated_at',             null: false
-    t.integer  'load_count'
-    t.index ['promotion_banner_id'], name: 'index_promotion_banner_reports_on_promotion_banner_id', using: :btree
-    t.index ['report_date'], name: 'index_promotion_banner_reports_on_report_date', using: :btree
-  end
-
   create_table 'promotion_banners', id: :bigserial, force: :cascade do |t|
     t.string   'banner_image',           limit: 255
     t.string   'redirect_url',           limit: 255
