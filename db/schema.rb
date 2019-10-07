@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190904134026) do
+ActiveRecord::Schema.define(version: 20191003141217) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_stat_statements'
   enable_extension 'plpgsql'
@@ -468,9 +468,11 @@ ActiveRecord::Schema.define(version: 20190904134026) do
     t.string   'reminder_campaign_id'
     t.string   'mc_segment_id'
     t.string   'ad_contact_email'
+    t.bigint   'user_id'
     t.string "ad_service_id"
     t.index ["ad_service_id"], name: "index_organizations_on_ad_service_id"
     t.index ['name'], name: 'idx_16739_index_publications_on_name', unique: true, using: :btree
+    t.index ['user_id'], name: 'index_organizations_on_user_id', using: :btree
   end
 
   create_table 'payment_recipients', force: :cascade do |t|

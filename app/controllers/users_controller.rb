@@ -46,7 +46,6 @@ class UsersController < ApplicationController
 
   def edit
     @user = User.find(params[:id])
-    @organizations = Organization.with_role(:manager, @user)
     @digests = Listserv.all
   end
 

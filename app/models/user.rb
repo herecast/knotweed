@@ -66,6 +66,8 @@ class User < ActiveRecord::Base
   has_many :organization_subscriptions
   has_many :organization_hides
 
+  has_one :organization
+
   belongs_to :location
   mount_uploader :avatar, ImageUploader
   skip_callback :commit, :after, :remove_previously_stored_avatar,
@@ -96,7 +98,7 @@ class User < ActiveRecord::Base
   validates :feed_card_size, inclusion: { in: FEED_CARD_SIZE_OPTIONS, message: 'no such feed card size' }, allow_nil: true
 
   def managed_organization_id
-    Organization.with_role(:manager, self).first.try(:id)
+    Organization.not_archived.with_role(:manager, self).first.try(:id)
   end
 
   def is_organization_manager?
@@ -108,9 +110,10 @@ class User < ActiveRecord::Base
   scope :sales_agents, -> { joins(:roles).where(roles: { name: 'sales agent' }) }
   scope :promoters, -> { joins(:roles).where(roles: { name: 'promoter' }) }
   scope :with_roles, -> { where('(select count(user_id) from users_roles where user_id=users.id) > 0').includes(:roles) }
+  scope :not_archived, -> { where(archived: [false, nil]) }
 
   def managed_organizations
-    Organization.with_role(:manager, self)
+    Organization.not_archived.with_role(:manager, self)
   end
 
   def ensure_authentication_token

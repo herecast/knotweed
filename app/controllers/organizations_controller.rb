@@ -37,7 +37,6 @@ class OrganizationsController < ApplicationController
   end
 
   def edit
-    @managers = User.with_role(:manager, @organization)
   end
 
   def update
@@ -147,6 +146,7 @@ class OrganizationsController < ApplicationController
       :calendar_card_active,
       :digest_id,
       :ad_contact_email,
+      :user_id,
       location_ids: [],
       organization_locations_attributes: %i[
         id

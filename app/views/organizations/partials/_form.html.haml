@@ -20,10 +20,6 @@
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#contacts" } do
           Contacts
-      - if @organization.id
-        %li
-          = link_to "#", class: "green-border", data: { toggle: "tab", target: "#managers" } do
-            Managers
       %li
         = link_to "#", class: "green-border", data: { toggle: "tab", target: "#reports" } do
           Reports
@@ -33,6 +29,7 @@
           .span12
             = f.input :name, input_html: { class: "input-block-level" }
             = f.input :org_type, collection: Organization::ORG_TYPE_OPTIONS, label: "Organization Type"
+            = f.input :user_id, collection: User.not_archived.pluck(:email, :id).sort{ |x, y| x[0] <=> y[0] }
             = f.input :can_publish_news, input_html: { class: 'input-block-level' }
             = f.input :pay_for_content, as: :boolean
             = f.input :pay_directly, input_html: { class: 'input-block-level' }
@@ -142,29 +139,6 @@
             = f.input :ad_contact_nickname, label: 'Contact Nickname'
             = f.input :ad_contact_fullname, label: 'Contact Fullname'
             = f.input :ad_contact_email, label: 'Contact Email'
-      - if @organization.id
-        .tab-pane#managers
-          .row-fluid
-            %h2 Organization Managers
-            - if @managers.present?
-              %table.table.table-striped.table-hover
-                %thead
-                  %tr
-                    %th ID
-                    %th Name
-                    %th Email
-                    %th Remove
-                %tbody
-                  - @managers.each do |m|
-                    %tr
-                      %td= m.id
-                      %td= m.name
-                      %td= m.email
-                      %td= link_to 'remove', user_manager_path(m,
-                        organization_id: @organization.id),
-                        method: :delete, class: 'btn btn-mini btn-warning'
-            - else
-              No managers yet
           .row-fluid
             = render partial: 'users/partials/search_form',
               locals: { search_type: 'organization', managed_id: @organization.id }

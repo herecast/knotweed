@@ -49,11 +49,17 @@
 #  mc_segment_id            :string
 #  ad_service_id            :string
 #  ad_contact_email         :string
+#  user_id                  :bigint(8)
 #
 # Indexes
 #
 #  idx_16739_index_publications_on_name  (name) UNIQUE
 #  index_organizations_on_ad_service_id  (ad_service_id)
+#  index_organizations_on_user_id        (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
 #
 
 require 'spec_helper'

@@ -29,19 +29,10 @@
             %input{ type: :checkbox, id: "user_roles_#{role.name}", name: "user[roles][#{role.name}]", class: 'checkbox-control', checked: @user.roles.include?(role) }
             %label{ for: "user_roles_#{role.name}", class: 'checkbox-label-control' }
               = role.pretty_name
-      %h4 Managed Organizations
-      #organization-selectors.row-fluid
-        - if @organizations.present?
-          - @organizations.each_with_index do |org, index|
-            %div{ id: "removal-link-wrapper-#{index + 1}" }
-              %input{ type: 'hidden', name: "user[controlled_organization_#{index + 1}]", value: org.id }
-              %p
-                <b>#{org.name}</b> | 
-                %a{id: "removal-link-for-#{index + 1}", class: "organization-removal-link"} | remove
-        %select{ id: "organization-selector-" + (@organizations.present? ? @organizations.length + 1 : 1).to_s, class: 'user-organization-select' }
-          %option{ value: 'empty' } Select Organization
-          - Organization.all.each do |o|
-            %option{ value: "#{o.id}" } #{o.name}
+      %h4 Managed Organization
+      %p
+        = @user.organization&.name || 'None'
+     
   .row-fluid
     = f.input :receive_comment_alerts, class: 'checkbox-label-control'
   .row-fluid

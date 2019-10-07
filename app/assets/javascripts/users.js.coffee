@@ -17,11 +17,6 @@ jQuery ->
     $('#organization-selectors').append newSelect
     )
 
-  $('#organization-selectors').on('click', '.organization-removal-link', ->
-    removalId = $(this).attr('id').replace('removal-link-for-', '')
-    $('#removal-link-wrapper-' + removalId).remove()
-    )
-
   $('#user_search').on 'input', ->
     searchInput = $(this).val()
     managedIdKey = $(this).data('searchType') + '_id'

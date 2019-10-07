@@ -49,11 +49,17 @@
 #  mc_segment_id            :string
 #  ad_service_id            :string
 #  ad_contact_email         :string
+#  user_id                  :bigint(8)
 #
 # Indexes
 #
 #  idx_16739_index_publications_on_name  (name) UNIQUE
 #  index_organizations_on_ad_service_id  (ad_service_id)
+#  index_organizations_on_user_id        (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
 #
 
 class Organization < ActiveRecord::Base
@@ -101,6 +107,7 @@ class Organization < ActiveRecord::Base
            class_name: :Content
 
   resourcify
+  belongs_to :user
   belongs_to :parent, class_name: 'Organization'
   has_many :children, class_name: 'Organization', foreign_key: 'parent_id'
 
@@ -114,7 +121,6 @@ class Organization < ActiveRecord::Base
   # default images for contents
   has_many :images, as: :imageable, inverse_of: :imageable, dependent: :destroy
 
-  has_many :users
   has_many :business_locations
   has_many :venue_events, through: :business_locations, source: :events
   has_many :organization_locations

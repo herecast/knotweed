@@ -102,6 +102,7 @@ module Api
         organization_params.tap do |attrs|
           attrs[:can_publish_news] = true
           attrs[:org_type] = 'Blog'
+          attrs[:user_id] = current_user.id
         end
       end
 
